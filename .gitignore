@@ -1,0 +1,17 @@
+
+#	Object Files
+*.o
+*.c.obj
+obj/
+
+#	Archive Files
+*.a
+
+#	Executable Files
+*.exe
+
+#	Log Files
+logs/
+
+#	other Projects / Repositorys
+other/

@@ -1,0 +1,20 @@
+
+Simulation:
+	needs better Bound interaction
+	let Bound be specified by CPU
+		instead of being hardcoded
+
+	some numbers related to putting the "Particles" in a Grid is also currently hardcoded
+		change that, probably use the 
+
+
+
+Drawing:
+	needs Text
+	maybe Wire for Box to show bound
+		or Scale in general
+		have a Grind ?
+
+
+
+
