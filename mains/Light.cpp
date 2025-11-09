@@ -1,25 +1,14 @@
+
 #include <iostream>
 #include "OpenGL/openGL.h"
 
 #include "DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.hpp"
 
-#include "Graphics/Shader/ShaderCode.hpp"
-#include "Graphics/Shader/BaseShader.hpp"
+#include "Graphics/Shader/Code.hpp"
+#include "Graphics/Shader/Base.hpp"
 
-#include "Graphics/Uniform/Data/SizeRatio2D.hpp"
-#include "Graphics/Uniform/Data/Trans3D.hpp"
-#include "Graphics/Uniform/Data/Depth.hpp"
-
-#include "Graphics/Multiform/Data/SizeRatio2D.hpp"
-#include "Graphics/Multiform/Data/Trans3D.hpp"
-#include "Graphics/Multiform/Data/Depth.hpp"
-
-#include "Graphics/Uniform/Data/LightBase.hpp"
-#include "Graphics/Uniform/Data/LightSolar.hpp"
-#include "Graphics/Uniform/Data/LightSpot.hpp"
-
-#include "Graphics/Uniform/Data/UInt1.hpp"
-#include "Graphics/Uniform/Base/GenericUniformArray.hpp"
+#include "Graphics/UniformsInclude.hpp"
+#include "Graphics/MultiformsInclude.hpp"
 
 #include "DataStruct/LightBase.hpp"
 #include "DataStruct/LightSolar.hpp"
@@ -31,9 +20,9 @@
 #include "PolyHedra/Skin/SkinBase.hpp"
 #include "PolyHedra/Skin/Skin2DA.hpp"
 
-#include "Texture/TextureBase.hpp"
-#include "Texture/Texture2DArray.hpp"
-#include "Texture/TextureGen.hpp"
+#include "Graphics/Texture/Base.hpp"
+#include "Graphics/Texture/2DArray.hpp"
+#include "Graphics/Texture/Generate.hpp"
 
 #include "Window.hpp"
 
@@ -101,8 +90,8 @@ struct SpotLightEntry
 	}
 };
 
-DirectoryContext ImageDir("../media/Images");
-DirectoryContext ShaderDir("../media/Shaders");
+DirectoryContext ImageDir("./media/Images");
+DirectoryContext ShaderDir("./media/Shaders");
 
 Window * win;
 
@@ -117,7 +106,7 @@ PolyHedra_3D_Instances * PH0_Instances;
 
 ContainerDynamic<EntryContainerDynamic<Simple3D_InstData>::Entry*> Entrys;
 
-BaseShader * PH_Shader;
+Shader::Base * PH_Shader;
 
 Uniform::SizeRatio2D * Uni_ViewPortSizeRatio;
 Uniform::Trans3D * Uni_View;
@@ -139,7 +128,7 @@ unsigned int Light_Spot_Limit;
 LightSpot * Light_Spot_Array;
 SpotLightEntry * Light_Spot_Entry_Array;
 
-Uniform::GenericUniformArray<Uniform::LightSpot, LightSpot> * Uni_Light_Spot_Array;
+Uniform::GArray<Uniform::LightSpot, LightSpot> * Uni_Light_Spot_Array;
 
 unsigned int Light_Spot_Count;
 Uniform::UInt1 * Uni_Light_Spot_Count;
@@ -148,9 +137,9 @@ Uniform::UInt1 * Uni_Light_Spot_Count;
 
 void InitShaders()
 {
-	PH_Shader = new BaseShader((const ShaderCode []) {
-		ShaderCode::FromFile(ShaderDir.File("PH_S3D.vert")),
-		ShaderCode::FromFile(ShaderDir.File("PH_ULight.frag"))
+	PH_Shader = new Shader::Base((const Shader::Code []) {
+		Shader::Code::FromFile(ShaderDir.File("PH_S3D.vert")),
+		Shader::Code::FromFile(ShaderDir.File("PH_ULight.frag"))
 	}, 2);
 
 	Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *PH_Shader);
@@ -161,7 +150,7 @@ void InitShaders()
 	Multi_View = new Multiform::Trans3D("View");
 	Multi_Depth = new Multiform::Depth("Depth");
 
-	BaseShader * shaders [] = {
+	Shader::Base * shaders [] = {
 		PH_Shader,
 	};
 	int shader_count = 1;
@@ -174,7 +163,7 @@ void InitShaders()
 
 	Uni_Light_Ambient = new Uniform::LightBase("Ambient", *PH_Shader);
 	Uni_Light_Solar = new Uniform::LightSolar("Solar", *PH_Shader);
-	Uni_Light_Spot_Array = new Uniform::GenericUniformArray<Uniform::LightSpot, LightSpot>(Light_Spot_Limit, "SpotArr", *PH_Shader);
+	Uni_Light_Spot_Array = new Uniform::GArray<Uniform::LightSpot, LightSpot>(Light_Spot_Limit, "SpotArr", *PH_Shader);
 	Uni_Light_Spot_Count = new Uniform::UInt1(1, "SpotCount", *PH_Shader);
 }
 void FreeShaders()
@@ -251,7 +240,7 @@ void FancyInsert(unsigned int ph_idx, Point3D pos, Angle3D rot)
 }
 void Fancify()
 {
-	DirectoryContext YMT_Dir("../media/YMT/Light/");
+	DirectoryContext YMT_Dir("./media/YMT/Light/");
 	unsigned int idx_stage =				FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage.polyhedra.ymt")));
 	unsigned int idx_stage_light =			FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage_Light.polyhedra.ymt")));
 	unsigned int idx_stage_light_holder =	FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage_Light_Holder.polyhedra.ymt")));
@@ -325,18 +314,7 @@ void Init()
 
 	InitShaders();
 
-	//Poly0 = YMT::PolyHedra::Load(FileContext("../media/YMT/Spline/Drehgestell_Achse.polyhedra.ymt"));
-	//Poly0 = YMT::PolyHedra::Load(FileContext("../media/YMT/Spline/Drehgestell_Halter.polyhedra.ymt"));	//	Faces wrong way
-	//Poly0 = YMT::PolyHedra::Load(FileContext("../media/YMT/Spline/Drehgestell_Rahmen.polyhedra.ymt"));	//	Faces Wrong way
-	//Poly0 = YMT::PolyHedra::Load(FileContext("../media/YMT/Spline/Gleis_Seg.polyhedra.ymt"));				//	Faces Wrong way
-	//Poly0 = YMT::PolyHedra::Load(FileContext("../media/YMT/Spline/Schienen_Seg.polyhedra.ymt"));			//	Faces Wrong way
-	//Poly0 = YMT::PolyHedra::Load(FileContext("../media/YMT/Spline/Wagen_Flach.polyhedra.ymt"));			//	Faces Wrong way, some Geometry Wrong
-	//Poly0 = YMT::PolyHedra::Load(FileContext("../media/YMT/Spline/Wagen_Tief.polyhedra.ymt"));			//	Faces Wrong way, some Geometry Wrong
-
-	//Poly0 = YMT::PolyHedra::Load(FileContext("../media/YMT/test/cube.polyhedra.ymt"));
 	Poly0 = YMT::PolyHedra::Cube();
-	//Poly0 = YMT::PolyHedra::ConeC(12, 0.5f);
-	//Poly0 = YMT::PolyHedra::FullTexture(TextureGen::Orientation2D());
 	PH0_Instances = new PolyHedra_3D_Instances(Poly0);
 
 	AddInstances();
@@ -396,6 +374,11 @@ void Frame(double timeDelta)
 	if (win -> Keys[GLFW_KEY_3].State.GetPressed()) { Light_Spot_Entry_Array[0].Toggle(); }
 	if (win -> Keys[GLFW_KEY_4].State.GetPressed()) { Light_Spot_Entry_Array[1].Toggle(); }
 	if (win -> Keys[GLFW_KEY_5].State.GetPressed()) { Light_Spot_Entry_Array[2].Toggle(); }
+
+	if (win -> Keys[GLFW_KEY_Q].State.GetPressed())
+	{
+		std::cout << "View.Pos: " << ViewTrans.Pos << "\n";
+	}
 
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
@@ -460,17 +443,17 @@ int main()
 
 	Light_Spot_Limit = 4;
 	Light_Spot_Array = new LightSpot[Light_Spot_Limit];
-	Light_Spot_Array[0] = LightSpot(1.0f, Color(0.0f, 1.0f, 0.0f), Point3D(), Point3D(), Range(0.8, 0.95));
-	Light_Spot_Array[1] = LightSpot(1.0f, Color(0.0f, 0.0f, 1.0f), Point3D(), Point3D(), Range(0.8, 0.95));
-	Light_Spot_Array[2] = LightSpot(1.0f, Color(1.0f, 0.0f, 0.0f), Point3D(), Point3D(), Range(0.8, 0.95));
+	Light_Spot_Array[0] = LightSpot(1.0f, Color(1.0f, 0.0f, 0.0f), Point3D(), Point3D(), Range(0.8, 0.95));
+	Light_Spot_Array[1] = LightSpot(1.0f, Color(0.0f, 1.0f, 0.0f), Point3D(), Point3D(), Range(0.8, 0.95));
+	Light_Spot_Array[2] = LightSpot(1.0f, Color(0.0f, 0.0f, 1.0f), Point3D(), Point3D(), Range(0.8, 0.95));
 	Light_Spot_Array[3] = LightSpot(1.0f, Color(1.0f, 1.0f, 1.0f), Point3D(), Point3D(), Range(0.8, 0.95));
 	Light_Spot_Count = 3;
 
 	Light_Spot_Entry_Array = new SpotLightEntry[Light_Spot_Limit];
-	Light_Spot_Entry_Array[0].LookFromTo(Point3D(+32, 30, -10), Point3D(0, 0, 0));
-	Light_Spot_Entry_Array[1].LookFromTo(Point3D(+32, 30, +10), Point3D(0, 0, 0));
-	Light_Spot_Entry_Array[2].LookFromTo(Point3D(-32, 30, -10), Point3D(0, 0, 0));
-	Light_Spot_Entry_Array[3].LookFromTo(Point3D(-32, 30, +10), Point3D(0, 0, 0));
+	Light_Spot_Entry_Array[0].LookFromTo(Point3D(+22, 30, -22), Point3D(0, 0, 0));
+	Light_Spot_Entry_Array[1].LookFromTo(Point3D(  0, 30, +22), Point3D(0, 0, 0));
+	Light_Spot_Entry_Array[2].LookFromTo(Point3D(-22, 30, -22), Point3D(0, 0, 0));
+	Light_Spot_Entry_Array[3].LookFromTo(Point3D(  0, 30, -22), Point3D(0, 0, 0));
 
 	Light_Spot_Entry_Array[0].Light = &Light_Spot_Array[0];
 	Light_Spot_Entry_Array[1].Light = &Light_Spot_Array[1];

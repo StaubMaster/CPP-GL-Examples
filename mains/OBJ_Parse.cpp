@@ -9,19 +9,17 @@
 #include "DataStruct/Main/Waveform/OBJ_3D_BufferArray.hpp"
 #include "DataStruct/Main/Waveform/OBJ_3D_Shader.hpp"
 
-#include "Graphics/Multiform/Data/SizeRatio2D.hpp"
-#include "Graphics/Multiform/Data/Trans3D.hpp"
-#include "Graphics/Multiform/Data/Depth.hpp"
-#include "Graphics/Multiform/Data/LInter.hpp"
+#include "Graphics/UniformsInclude.hpp"
+#include "Graphics/MultiformsInclude.hpp"
 
-#include "Graphics/Shader/ShaderCode.hpp"
-#include "Graphics/Shader/BaseShader.hpp"
+#include "Graphics/Shader/Code.hpp"
+#include "Graphics/Shader/Base.hpp"
 
 #include "DataStruct/LInter.hpp"
 #include "DataStruct/AxisBox3D.hpp"
 #include "DataO.hpp"
 
-#include "Texture/Texture2DArray.hpp"
+#include "Graphics/Texture/2DArray.hpp"
 #include "PolyHedra/PolyHedra.hpp"
 #include "Window.hpp"
 
@@ -41,7 +39,7 @@ Window * win;
 Trans3D ViewTrans;
 Depth	ViewDepth;
 
-Texture2DArray * Tex0;
+Texture::T2DArray * Tex0;
 int OBJ_Count;
 OBJ ** OBJs;
 Point3D * OBJs_Center;
@@ -77,7 +75,7 @@ void InitShaders()
 	Multi_Depth = new Multiform::Depth("Depth");
 	Multi_ColorToTex = new Multiform::LInter("ColorToTex");
 
-	BaseShader * shaders [] = {
+	Shader::Base * shaders [] = {
 		OBJ_Shader,
 	};
 	int shader_count = 1;
@@ -108,7 +106,7 @@ void Init()
 
 	InitShaders();
 
-	Tex0 = new Texture2DArray(ImageDir.File("Orientation.png"));
+	Tex0 = new Texture::T2DArray(ImageDir.File("Orientation.png"));
 
 	OBJ_BufferArray = new OBJ_3D_BufferArray * [OBJ_Count];
 	for (int i = 0; i < OBJ_Count; i++)

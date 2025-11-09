@@ -11,7 +11,7 @@ else
 	CheckOS := $(shell uname -s)
 endif
 
-FANCY_NAME := YMT/examples
+FANCY_NAME := Examples
 
 ifeq ($(CheckOS), Windows)
 OS_ARGS := \
@@ -43,14 +43,19 @@ endif
 
 
 
+
+
 COMPILER = c++ -std=c++11
 FLAGS = -Wall -Wextra -Werror
 
+#	OpenGL			Test if Basic OpenGL Works / Compiles ?
+#	Lights
+#	Spline
+
 MAINS = \
+	Light.cpp \
 	OBJ_Parse.cpp
-#	LightTest.cpp
 #	DefaultInstances.cpp
-#	test.cpp
 #	ParticleSimulation.cpp
 
 EXES = $(MAINS:.cpp=.exe)
@@ -65,23 +70,23 @@ MAINS_DIR = mains/
 #                  Standard Makefile Commands                  #
 ################################################################
 
-all: repos_all
+all: repos
 	@mkdir -p logs/
 	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-	@$(MAKE) $(EXES) -s
+	@$(MAKE) -s $(EXES)
 
-clean: repos_clean
+clean:
 	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
 
-fclean: repos_fclean
+fclean:
 	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-	@$(MAKE) clean -s
+	@$(MAKE) -s clean
 	@rm -f $(EXES)
 
 re:
 	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-	@$(MAKE) fclean -s
-	@$(MAKE) all -s
+	@$(MAKE) -s fclean
+	@$(MAKE) -s all
 
 .PHONY: all clean fclean re
 
@@ -109,19 +114,11 @@ INCLUDES =
 ARGS_LIBRARYS = $(foreach library, $(LIBRARYS), $(library))
 ARGS_INCLUDES = $(foreach include, $(INCLUDES), -I$(include))
 
-librarys:
-	@$(FANCY_ECHO) '===='
-	@$(FANCY_ECHO) $(LIBRARYS)
-	@$(FANCY_ECHO) '===='
-	@$(FANCY_ECHO) $(ARGS_LIBRARYS)
-	@$(FANCY_ECHO) '===='
+librarys: repos_clone
+	@echo $(LIBRARYS)
 
-includes:
-	@$(FANCY_ECHO) '===='
-	@$(FANCY_ECHO) $(INCLUDES)
-	@$(FANCY_ECHO) '===='
-	@$(FANCY_ECHO) $(ARGS_INCLUDES)
-	@$(FANCY_ECHO) '===='
+includes: repos_clone
+	@echo $(INCLUDES)
 
 .PHONY: librarys includes
 
@@ -141,37 +138,37 @@ REPOS =
 repos: repos_clone
 	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Compiling: $(COLOR_FILE)$@$(COLOR_NONE)"
 	@$(foreach repo, $(REPOS), \
-		$(MAKE) -C $(repo) ; \
+		$(MAKE) -C $(repo) -s ; \
 	)
 
 repos_all: repos_clone
 	@$(foreach repo, $(REPOS), \
-		$(MAKE) -C $(repo) all ; \
+		$(MAKE) -C $(repo) -s all ; \
 	)
 
 repos_clean:
 	@$(foreach repo, $(REPOS), \
 		if [ -d $(repo) ] ; then \
-			$(MAKE) -C $(repo) clean ; \
+			$(MAKE) -C $(repo) -s clean ; \
 		fi ; \
 	)
 
 repos_fclean:
 	@$(foreach repo, $(REPOS), \
 		if [ -d $(repo) ] ; then \
-			$(MAKE) -C $(repo) fclean ; \
+			$(MAKE) -C $(repo) -s fclean ; \
 		fi ; \
 	)
 
 repos_clone:
 	@mkdir -p $(REPOS_DIR)
 	@$(foreach repo, $(REPOS), \
-		$(MAKE) $(repo)_clone ; \
+		$(MAKE) $(repo)_clone -s ; \
 	)
 
 repos_rm:
 	@$(foreach repo, $(REPOS), \
-		$(MAKE) $(repo)_rm ; \
+		$(MAKE) $(repo)_rm -s ; \
 	)
 
 .PHONY: repos repos_all repos_clean repos_fclean repos_clone repos_rm
