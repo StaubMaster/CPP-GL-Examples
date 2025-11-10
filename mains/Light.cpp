@@ -4,17 +4,14 @@
 
 #include "DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.hpp"
 
+#include "DataInclude.hpp"
+#include "DataShow.hpp"
+
 #include "Graphics/Shader/Code.hpp"
 #include "Graphics/Shader/Base.hpp"
 
 #include "Graphics/UniformsInclude.hpp"
 #include "Graphics/MultiformsInclude.hpp"
-
-#include "DataStruct/LightBase.hpp"
-#include "DataStruct/LightSolar.hpp"
-#include "DataStruct/LightSpot.hpp"
-
-#include "DataO.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Skin/SkinBase.hpp"

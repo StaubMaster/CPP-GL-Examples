@@ -47,6 +47,7 @@ MAINS = \
 	Multi.cpp \
 	Light.cpp \
 	OBJ_Parse.cpp
+#	Spline.cpp \
 #	ParticleSimulation.cpp
 
 EXES = $(MAINS:.cpp=.exe)

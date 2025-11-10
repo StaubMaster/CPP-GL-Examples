@@ -9,15 +9,14 @@
 #include "DataStruct/Main/Waveform/OBJ_3D_BufferArray.hpp"
 #include "DataStruct/Main/Waveform/OBJ_3D_Shader.hpp"
 
-#include "Graphics/UniformsInclude.hpp"
-#include "Graphics/MultiformsInclude.hpp"
+#include "DataInclude.hpp"
+#include "DataShow.hpp"
 
 #include "Graphics/Shader/Code.hpp"
 #include "Graphics/Shader/Base.hpp"
 
-#include "DataStruct/LInter.hpp"
-#include "DataStruct/AxisBox3D.hpp"
-#include "DataO.hpp"
+#include "Graphics/UniformsInclude.hpp"
+#include "Graphics/MultiformsInclude.hpp"
 
 #include "Graphics/Texture/2DArray.hpp"
 #include "PolyHedra/PolyHedra.hpp"
