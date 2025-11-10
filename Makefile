@@ -16,8 +16,8 @@ FANCY_NAME := Examples
 ifeq ($(CheckOS), Windows)
 OS_ARGS := \
 	-lglfw3 \
-	-lOpenCL \
 	-lgdi32
+#	-lOpenCL
 
 FANCY_ECHO := echo -e
 COLOR_REPO := \e[38;2;127;127;127m
@@ -48,14 +48,11 @@ endif
 COMPILER = c++ -std=c++11
 FLAGS = -Wall -Wextra -Werror
 
-#	OpenGL			Test if Basic OpenGL Works / Compiles ?
-#	Lights
-#	Spline
-
 MAINS = \
+	Basic.cpp \
+	Multi.cpp \
 	Light.cpp \
 	OBJ_Parse.cpp
-#	DefaultInstances.cpp
 #	ParticleSimulation.cpp
 
 EXES = $(MAINS:.cpp=.exe)
@@ -111,8 +108,8 @@ re:
 LIBRARYS = 
 INCLUDES = 
 
-ARGS_LIBRARYS = $(foreach library, $(LIBRARYS), $(library))
-ARGS_INCLUDES = $(foreach include, $(INCLUDES), -I$(include))
+ARGS_LIBRARYS = $(foreach library, $(LIBRARYS),$(library))
+ARGS_INCLUDES = $(foreach include, $(INCLUDES),-I$(include))
 
 librarys: repos_clone
 	@echo $(LIBRARYS)

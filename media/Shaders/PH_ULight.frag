@@ -115,6 +115,8 @@ float CalcDepthFactor()
 	return depth_factor;
 }
 
+
+
 void main()
 {
 	float	depth_factor = CalcDepthFactor();
