@@ -228,8 +228,6 @@ struct SplineObject
 	}
 };
 
-SplineCurve3D * Spline;
-
 
 
 DirectoryContext ImageDir("./media/Images");
@@ -242,16 +240,25 @@ Window * win;
 Trans3D	ViewTrans;
 Depth	ViewDepth;
 
-YMT::PolyHedra * PH;
-PolyHedra_3D_Instances * PH_Instances;
-ContainerDynamic<SplineObject> Spline_Entrys;
-ContainerDynamic<EntryContainerDynamic<Simple3D_InstData>::Entry*> Instance_Entrys;
-
 Shader::Base * PH_Shader;
 
 Uniform::SizeRatio2D * Uni_ViewPortSizeRatio;
 Uniform::Trans3D * Uni_View;
 Uniform::Depth * Uni_Depth;
+
+
+
+YMT::PolyHedra * Test_Path_PH;
+YMT::PolyHedra * Test_Node_PH;
+PolyHedra_3D_Instances * Test_Path_Instances;
+PolyHedra_3D_Instances * Test_Node_Instances;
+EntryContainerDynamic<Simple3D_InstData>::Entry* Test_Path_Instance_Entrys;
+EntryContainerDynamic<Simple3D_InstData>::Entry* Test_Node_Instance_Entrys;
+
+SplineCurve3D * Test_Spline;
+ContainerDynamic<SplineObject> Test_Spline_Entrys;
+
+
 
 
 
@@ -294,27 +301,38 @@ void InitRun()
 {
 	InitGraphics();
 
-	Spline = new SplineCurve3D((SplineNode3D []) {
+	Test_Spline = new SplineCurve3D((SplineNode3D []) {
 		SplineNode3D(Point3D(+40, +10, -20), Point3D(+1, 0, +1)),
 		SplineNode3D(Point3D(+40, -10, +20), Point3D(-1, 0, +1)),
+		SplineNode3D(Point3D(  0,   0, +40), Point3D(-1, 0,  0)),
 		SplineNode3D(Point3D(-40,   0, +20), Point3D(-1, 0, -1)),
 		SplineNode3D(Point3D(-40,   0, -20), Point3D(+1, 0, -1)),
-	}, 4, true);
+		SplineNode3D(Point3D(  0,   0, -40), Point3D(+1, 0,  0)),
+	}, 6, true);
 
-	//PH = YMT::PolyHedra::Cube();
-	PH = YMT::PolyHedra::ConeC(8, 0.5f, 2.0f);
-	PH_Instances = new PolyHedra_3D_Instances(PH);
-
-	unsigned int idx = Instance_Entrys.Insert(PH_Instances -> Alloc(32));
-	for (int i = 0; i < (*Instance_Entrys[idx]).Length; i++)
+	Test_Node_PH = YMT::PolyHedra::Cube(1.0f);
+	Test_Node_Instances = new PolyHedra_3D_Instances(Test_Node_PH);
+	Test_Node_Instance_Entrys = Test_Node_Instances -> Alloc((Test_Spline -> SegmentCount) * 2);
+	for (unsigned int i = 0; i < Test_Spline -> SegmentCount; i++)
 	{
-		Spline_Entrys.Insert(SplineObject(i, (((float)i) / (*Instance_Entrys[idx]).Length) * Spline -> SegmentCount));
+		(*Test_Node_Instance_Entrys)[i * 2 + 0].Trans.Pos = Test_Spline -> Segments[i].Node0.Pos;
+		(*Test_Node_Instance_Entrys)[i * 2 + 1].Trans.Pos = Test_Spline -> Segments[i].Node1.Pos;
+	}
+
+	Test_Path_PH = YMT::PolyHedra::ConeC(8, 0.5f, 2.0f);
+	Test_Path_Instances = new PolyHedra_3D_Instances(Test_Path_PH);
+	Test_Path_Instance_Entrys = Test_Path_Instances -> Alloc(32);
+	for (int i = 0; i < (*Test_Path_Instance_Entrys).Length; i++)
+	{
+		Test_Spline_Entrys.Insert(SplineObject(i, (((float)i) / (*Test_Path_Instance_Entrys).Length) * Test_Spline -> SegmentCount));
 	}
 }
 void FreeRun()
 {
-	delete PH_Instances;
-	delete PH;
+	delete Test_Node_Instances;
+	delete Test_Node_PH;
+	delete Test_Path_Instances;
+	delete Test_Path_PH;
 
 	FreeGraphics();
 }
@@ -329,21 +347,22 @@ void Frame(double timeDelta)
 	}
 	ViewTrans.Rot.CalcBack();
 
-	for (int i = 0; i < (*Instance_Entrys[0]).Length; i++)
+	for (int i = 0; i < (*Test_Path_Instance_Entrys).Length; i++)
 	{
 		//SplineNode3D node = Spline -> CalculateLerp(Spline_Entrys[i].SplineValue);
-		SplineNode3D node = Spline -> Calculate(Spline_Entrys[i].SplineValue);
+		SplineNode3D node = Test_Spline -> Calculate(Test_Spline_Entrys[i].SplineValue);
 
-		(*Instance_Entrys[0])[i].Trans.Pos = node.Pos;
-		(*Instance_Entrys[0])[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
-		(*Instance_Entrys[0])[i].Trans.Rot.CalcBack();
+		(*Test_Path_Instance_Entrys)[i].Trans.Pos = node.Pos;
+		(*Test_Path_Instance_Entrys)[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
+		(*Test_Path_Instance_Entrys)[i].Trans.Rot.CalcBack();
 
-		Spline_Entrys[i].SplineValue += 0.1f * timeDelta;
+		Test_Spline_Entrys[i].SplineValue += 0.1f * timeDelta;
 	}
 
 	PH_Shader -> Use();
 	Uni_View -> PutData(ViewTrans);
-	PH_Instances -> Update().Draw();
+	Test_Path_Instances -> Update().Draw();
+	Test_Node_Instances -> Update().Draw();
 }
 
 void Resize(int w, int h)
