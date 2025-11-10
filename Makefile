@@ -14,10 +14,6 @@ endif
 FANCY_NAME := Examples
 
 ifeq ($(CheckOS), Windows)
-OS_ARGS := \
-	-lglfw3 \
-	-lgdi32
-#	-lOpenCL
 
 FANCY_ECHO := echo -e
 COLOR_REPO := \e[38;2;127;127;127m
@@ -28,8 +24,6 @@ COLOR_NONE := \e[m
 endif
 
 ifeq ($(CheckOS), Darwin)
-OS_ARGS := \
-	-lglfw
 
 FANCY_ECHO := echo
 COLOR_REPO := \033[38;2;127;127;127m
@@ -95,7 +89,7 @@ re:
 
 %.exe : $(MAINS_DIR)%.cpp repos
 	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Compiling: $(COLOR_FILE)$@$(COLOR_NONE)"
-	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(OS_ARGS)
+	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
 
 
 
@@ -107,6 +101,7 @@ re:
 
 LIBRARYS = 
 INCLUDES = 
+ARGUMENTS = 
 
 ARGS_LIBRARYS = $(foreach library, $(LIBRARYS),$(library))
 ARGS_INCLUDES = $(foreach include, $(INCLUDES),-I$(include))
@@ -117,7 +112,10 @@ librarys: repos_clone
 includes: repos_clone
 	@echo $(INCLUDES)
 
-.PHONY: librarys includes
+arguments: repos_clone
+	@echo $(ARGUMENTS)
+
+.PHONY: librarys includes arguments
 
 ################################################################
 
@@ -184,8 +182,9 @@ ENGINE_HTTPS := https://github.com/StaubMaster/CPP-GL-Engine.git
 ENGINE_REPO := $(REPOS_DIR)/Engine
 
 REPOS += $(ENGINE_REPO)
-LIBRARYS += $(foreach library, $(shell $(MAKE) -C $(ENGINE_REPO) -s librarys), $(ENGINE_REPO)/$(library))
-INCLUDES += $(foreach include, $(shell $(MAKE) -C $(ENGINE_REPO) -s includes), $(ENGINE_REPO)/$(include))
+LIBRARYS += $(foreach library,$(shell $(MAKE) -C $(ENGINE_REPO) -s librarys),$(ENGINE_REPO)/$(library))
+INCLUDES += $(foreach include,$(shell $(MAKE) -C $(ENGINE_REPO) -s includes),$(ENGINE_REPO)/$(include))
+ARGUMENTS += $(foreach argument,$(shell $(MAKE) -C $(ENGINE_REPO) -s arguments),$(argument))
 
 $(ENGINE_REPO)_clone :
 	@if ! [ -d $(ENGINE_REPO) ] ; then \
