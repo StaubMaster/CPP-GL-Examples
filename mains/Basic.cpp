@@ -17,6 +17,8 @@
 #include "DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
+#include "PolyHedra/Generate.hpp"
+
 #include "PolyHedra/Skin/SkinBase.hpp"
 #include "PolyHedra/Skin/Skin2DA.hpp"
 
@@ -80,7 +82,7 @@ void InitRun()
 {
 	InitGraphics();
 
-	PH = YMT::PolyHedra::Cube();
+	PH = YMT::PolyHedra::Generate::Cube();
 	PH_Instances = new PolyHedra_3D_Instances(PH);
 
 	Instance_Entrys.Insert(PH_Instances -> Alloc(1));

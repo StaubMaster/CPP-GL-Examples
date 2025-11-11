@@ -14,6 +14,8 @@
 #include "Graphics/MultiformsInclude.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
+#include "PolyHedra/Generate.hpp"
+
 #include "PolyHedra/Skin/SkinBase.hpp"
 #include "PolyHedra/Skin/Skin2DA.hpp"
 
@@ -311,7 +313,7 @@ void Init()
 
 	InitShaders();
 
-	Poly0 = YMT::PolyHedra::Cube();
+	Poly0 = YMT::PolyHedra::Generate::Cube();
 	PH0_Instances = new PolyHedra_3D_Instances(Poly0);
 
 	AddInstances();

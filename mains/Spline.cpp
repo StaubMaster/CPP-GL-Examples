@@ -17,6 +17,8 @@
 #include "DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
+#include "PolyHedra/Generate.hpp"
+
 #include "PolyHedra/Skin/SkinBase.hpp"
 #include "PolyHedra/Skin/Skin2DA.hpp"
 
@@ -305,7 +307,7 @@ void TestSpline_Init()
 		SplineNode3D(Point3D(  0,   0, -40), Point3D(+1, 0,  0)),
 	}, 6, true, 0, 0, 0);
 
-	Test_Node_PH = YMT::PolyHedra::Cube(1.0f);
+	Test_Node_PH = YMT::PolyHedra::Generate::Cube(1.0f);
 	Test_Node_Instances = new PolyHedra_3D_Instances(Test_Node_PH);
 	Test_Node_Instance_Entrys = Test_Node_Instances -> Alloc((Test_Spline -> SegmentCount) * 2);
 	for (unsigned int i = 0; i < Test_Spline -> SegmentCount; i++)
@@ -314,7 +316,7 @@ void TestSpline_Init()
 		(*Test_Node_Instance_Entrys)[i * 2 + 1].Trans.Pos = Test_Spline -> Segments[i].Node1.Pos;
 	}
 
-	Test_Path_PH = YMT::PolyHedra::ConeC(8, 0.5f, 2.0f);
+	Test_Path_PH = YMT::PolyHedra::Generate::ConeC(8, 0.5f, 2.0f);
 	Test_Path_Instances = new PolyHedra_3D_Instances(Test_Path_PH);
 	Test_Path_Instance_Entrys = Test_Path_Instances -> Alloc(32);
 	for (int i = 0; i < (*Test_Path_Instance_Entrys).Length; i++)
