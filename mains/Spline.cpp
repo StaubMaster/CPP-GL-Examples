@@ -244,7 +244,7 @@ struct SplineObject
 
 DirectoryContext ImageDir("./media/Images");
 DirectoryContext ShaderDir("./media/Shaders");
-DirectoryContext MediaSplineDir("./media/YMT/Spline");
+DirectoryContext MediaDir("./media/YMT/Spline");
 
 
 
@@ -370,13 +370,13 @@ void TrainSpline_Init()
 		SplineNode3D(Point3D(-100, 0, +100), Point3D()),
 	}, 4, true, -0.5f, 0, 0);
 
-	unsigned int idx_axis =	Train_PHs.Insert(YMT::PolyHedra::Load(MediaSplineDir.File("Drehgestell_Achse.polyhedra.ymt")));
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaSplineDir.File("Drehgestell_Halter.polyhedra.ymt")));	//	Faces wrong way
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaSplineDir.File("Drehgestell_Rahmen.polyhedra.ymt")));	//	Faces Wrong way
-	unsigned int idx_rail =	Train_PHs.Insert(YMT::PolyHedra::Load(MediaSplineDir.File("Gleis_Seg.polyhedra.ymt")));				//	Faces Wrong way
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaSplineDir.File("Schienen_Seg.polyhedra.ymt")));			//	Faces Wrong way
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaSplineDir.File("Wagen_Flach.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaSplineDir.File("Wagen_Tief.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
+	unsigned int idx_axis =	Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Drehgestell_Achse.polyhedra.ymt")));
+							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Drehgestell_Halter.polyhedra.ymt")));	//	Faces wrong way
+							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Drehgestell_Rahmen.polyhedra.ymt")));	//	Faces Wrong way
+	unsigned int idx_rail =	Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Gleis_Seg.polyhedra.ymt")));			//	Faces Wrong way
+							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Schienen_Seg.polyhedra.ymt")));		//	Faces Wrong way
+							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Wagen_Flach.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
+							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Wagen_Tief.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
 
 	for (unsigned int i = 0; i < Train_PHs.Count(); i++)
 	{
