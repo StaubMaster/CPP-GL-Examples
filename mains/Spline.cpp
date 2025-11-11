@@ -261,7 +261,7 @@ void InitGraphics()
 {
 	PH_Shader = new Shader::Base((const Shader::Code []) {
 		Shader::Code::FromFile(ShaderDir.File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir.File("PH_Full.frag"))
+		Shader::Code::FromFile(ShaderDir.File("PH_LightFixed.frag"))
 	}, 2);
 
 	Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *PH_Shader);
