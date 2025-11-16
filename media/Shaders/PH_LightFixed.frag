@@ -18,14 +18,34 @@ struct DepthData
 
 
 
+struct LightBase
+{
+	float	Intensity;
+	vec3	Color;
+};
+
+struct LightSolar
+{
+	LightBase	Base;
+	vec3		Direction;
+};
+
+struct LightSpot
+{
+	LightBase	Base;
+	vec3		Position;
+	vec3		Direction;
+	RangeData	Range;
+};
+
+
+
 uniform DepthData Depth;
 
 uniform sampler2DArray texture0;
 
-
-
-const vec3		LightSolar = normalize(vec3(-1, +3, -2));
-const RangeData	LightRange = { 0.1, 0.9, 1.0 };
+uniform LightBase Ambient;
+uniform LightSolar Solar = LightSolar(LightBase(1.0, vec3(1.0, 1.0, 1.0)), normalize(vec3(+1, -2, +3)));
 
 
 
@@ -44,14 +64,14 @@ out vec4 Color;
 
 
 
-float CalcLightFactor()
+vec3 CalcLightFactor()
 {
-	float solar_factor;
-	solar_factor = dot(normalize(vec3(-1, +3, -2)), normalize(fs_inn.Normal));
+	vec3 ambient_factor = Ambient.Intensity * Ambient.Color;
+	vec3 solar_factor = Solar.Base.Intensity * Solar.Base.Color * dot(Solar.Direction, normalize(fs_inn.Normal));
 
-	float light_factor = solar_factor;
-	light_factor = min(max(light_factor, LightRange.Min), LightRange.Max);
-
+	vec3 light_factor = vec3(0.0, 0.0, 0.0);
+	light_factor = max(light_factor, ambient_factor);
+	light_factor = max(light_factor, solar_factor);
 	return light_factor;
 }
 
@@ -73,12 +93,16 @@ float CalcDepthFactor()
 	return depth_factor;
 }
 
+
+
 void main()
 {
-	float depth_factor = CalcDepthFactor();
-	float light_factor = CalcLightFactor();
+	float	depth_factor = CalcDepthFactor();
+	vec3	light_factor = CalcLightFactor();
 
 	vec3 col = texture(texture0, vec3(fs_inn.Tex, 0)).rgb;
+	//col = vec3(1.0, 1.0, 1.0);
+
 	col = col * light_factor;
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 

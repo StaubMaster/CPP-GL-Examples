@@ -17,6 +17,8 @@
 #include "DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
+#include "PolyHedra/Generate.hpp"
+
 #include "PolyHedra/Skin/SkinBase.hpp"
 #include "PolyHedra/Skin/Skin2DA.hpp"
 
@@ -96,10 +98,10 @@ void InitRun()
 
 	Multi_Depth -> ChangeData(ViewDepth);
 
-	PHs.Insert(YMT::PolyHedra::Cube(2.0f));
-	PHs.Insert(YMT::PolyHedra::Cube(0.5f));
-	PHs.Insert(YMT::PolyHedra::Cube(1.0f));
-	PHs.Insert(YMT::PolyHedra::Cube(1.5f));
+	PHs.Insert(YMT::PolyHedra::Generate::Cube(2.0f));
+	PHs.Insert(YMT::PolyHedra::Generate::Cube(0.5f));
+	PHs.Insert(YMT::PolyHedra::Generate::Cube(1.0f));
+	PHs.Insert(YMT::PolyHedra::Generate::Cube(1.5f));
 
 	for (unsigned int i = 0; i < PHs.Count(); i++)
 	{
