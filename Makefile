@@ -43,11 +43,12 @@ COMPILER = c++ -std=c++11
 FLAGS = -Wall -Wextra -Werror
 
 MAINS = \
-	Basic.cpp \
-	Multi.cpp \
-	Light.cpp \
-	Spline.cpp \
-	OBJ_Parse.cpp
+	UserInterface.cpp
+#	Basic.cpp \
+#	Multi.cpp \
+#	Light.cpp \
+#	Spline.cpp \
+#	OBJ_Parse.cpp
 #	ParticleSimulation.cpp
 
 EXES = $(MAINS:.cpp=.exe)
