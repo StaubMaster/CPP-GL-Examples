@@ -207,6 +207,7 @@ class Control
 {
 	public:
 		EntryContainerDynamic<UI_Inst_Data>::Entry * Entry;
+		ContainerDynamic<Control *> Children;
 
 		unsigned int	Anchor;
 		Point2D			MinDist;
@@ -215,10 +216,16 @@ class Control
 		Point2D			NormalCenter;
 
 	public:
-		Control() { }
 		Control(EntryContainerDynamic<UI_Inst_Data>::Entry * entry) :
 			Entry(entry)
 		{ }
+		~Control()
+		{
+			for (unsigned int i = 0; i < Children.Count(); i++)
+			{
+				delete Children[i];
+			}
+		}
 	public:
 		void Update(const Control * Parent)
 		{
@@ -343,10 +350,15 @@ class Control
 					}
 				}
 			}
+
+			for (unsigned int i = 0; i < Children.Count(); i++)
+			{
+				Children[i] -> Update(this);
+			}
 		}
 };
 
-ContainerDynamic<Control> Controls;
+ContainerDynamic<Control *> Controls;
 
 DirectoryContext ShaderDir("./media/Shaders");
 
@@ -372,55 +384,63 @@ void InitRun()
 	UI_Main_Data_C.Insert(UI_Main_Data(Point2D(-1, +1)));
 	UI_Main_Data_C.Insert(UI_Main_Data(Point2D(+1, +1)));
 
-	unsigned int idx;
 
-	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
-	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.2f, Color(1, 0, 0));
-	Controls[idx].Anchor = ANCHOR_X_NONE | ANCHOR_Y_NONE;
-	Controls[idx].MinDist = Point2D(24, 24);
-	Controls[idx].LenDist = Point2D(480, 360);
-	Controls[idx].MaxDist = Point2D(24, 24);
-	Controls[idx].NormalCenter = Point2D(0, 0);
 
-	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
-	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.1f, Color(0, 1, 0));
-	Controls[idx].Anchor = ANCHOR_X_MIN | ANCHOR_Y_MIN;
-	Controls[idx].MinDist = Point2D(24, 24);
-	Controls[idx].LenDist = Point2D(240, 120);
-	Controls[idx].MaxDist = Point2D(24, 24);
-	Controls[idx].NormalCenter = Point2D(0, 0);
+	Control * control;
 
-	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
-	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.1f, Color(0, 1, 0));
-	Controls[idx].Anchor = ANCHOR_X_MAX | ANCHOR_Y_MAX;
-	Controls[idx].MinDist = Point2D(24, 24);
-	Controls[idx].LenDist = Point2D(240, 120);
-	Controls[idx].MaxDist = Point2D(24, 24);
-	Controls[idx].NormalCenter = Point2D(0, 0);
+	control = new Control(UI_Inst_Data_C.Alloc(1));
+	(*control -> Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.2f, Color(1, 0, 0));
+	control -> Anchor = ANCHOR_X_NONE | ANCHOR_Y_NONE;
+	control -> MinDist = Point2D(24, 24);
+	control -> LenDist = Point2D(480, 360);
+	control -> MaxDist = Point2D(24, 24);
+	control -> NormalCenter = Point2D(0, 0);
+	Controls.Insert(control);
 
-	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
-	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.1f, Color(0, 0, 1));
-	Controls[idx].Anchor = ANCHOR_X_BOTH | ANCHOR_Y_NONE;
-	Controls[idx].MinDist = Point2D(24, 24);
-	Controls[idx].LenDist = Point2D(120, 120);
-	Controls[idx].MaxDist = Point2D(24, 24);
-	Controls[idx].NormalCenter = Point2D(0.5, 0.5);
+	control = new Control(UI_Inst_Data_C.Alloc(1));
+	(*control -> Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.1f, Color(0, 1, 0));
+	control -> Anchor = ANCHOR_X_MIN | ANCHOR_Y_MIN;
+	control -> MinDist = Point2D(24, 24);
+	control -> LenDist = Point2D(240, 120);
+	control -> MaxDist = Point2D(24, 24);
+	control -> NormalCenter = Point2D(0, 0);
+	Controls[0] -> Children.Insert(control);
 
-	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
-	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.2f, Color(0, 1, 0));
-	Controls[idx].Anchor = ANCHOR_X_MIN | ANCHOR_Y_NONE;
-	Controls[idx].MinDist = Point2D(24, 24);
-	Controls[idx].LenDist = Point2D(120, 360);
-	Controls[idx].MaxDist = Point2D(24, 24);
-	Controls[idx].NormalCenter = Point2D(0, 0);
+	control = new Control(UI_Inst_Data_C.Alloc(1));
+	(*control -> Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.1f, Color(0, 1, 0));
+	control -> Anchor = ANCHOR_X_MAX | ANCHOR_Y_MAX;
+	control -> MinDist = Point2D(24, 24);
+	control -> LenDist = Point2D(240, 120);
+	control -> MaxDist = Point2D(24, 24);
+	control -> NormalCenter = Point2D(0, 0);
+	Controls[0] -> Children.Insert(control);
 
-	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
-	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.2f, Color(0, 0, 1));
-	Controls[idx].Anchor = ANCHOR_X_MAX | ANCHOR_Y_BOTH;
-	Controls[idx].MinDist = Point2D(24, 24);
-	Controls[idx].LenDist = Point2D(120, 360);
-	Controls[idx].MaxDist = Point2D(24, 24);
-	Controls[idx].NormalCenter = Point2D(0, 0);
+	control = new Control(UI_Inst_Data_C.Alloc(1));
+	(*control -> Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.1f, Color(0, 0, 1));
+	control -> Anchor = ANCHOR_X_BOTH | ANCHOR_Y_NONE;
+	control -> MinDist = Point2D(24, 24);
+	control -> LenDist = Point2D(120, 120);
+	control -> MaxDist = Point2D(24, 24);
+	control -> NormalCenter = Point2D(0.5, 0.5);
+	Controls[0] -> Children.Insert(control);
+
+	control = new Control(UI_Inst_Data_C.Alloc(1));
+	(*control -> Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.2f, Color(0, 1, 0));
+	control -> Anchor = ANCHOR_X_MIN | ANCHOR_Y_NONE;
+	control -> MinDist = Point2D(24, 24);
+	control -> LenDist = Point2D(120, 360);
+	control -> MaxDist = Point2D(24, 24);
+	control -> NormalCenter = Point2D(0, 0);
+	Controls.Insert(control);
+
+	control = new Control(UI_Inst_Data_C.Alloc(1));
+	(*control -> Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.2f, Color(0, 0, 1));
+	control -> Anchor = ANCHOR_X_MAX | ANCHOR_Y_BOTH;
+	control -> MinDist = Point2D(24, 24);
+	control -> LenDist = Point2D(120, 360);
+	control -> MaxDist = Point2D(24, 24);
+	control -> NormalCenter = Point2D(0, 0);
+	Controls.Insert(control);
 }
 void FreeRun()
 {
@@ -431,6 +451,11 @@ void FreeRun()
 	delete Multi_ViewPortSizeRatio;
 
 	delete UI_BufferArray_;
+
+	for (unsigned int i = 0; i < Controls.Count(); i++)
+	{
+		delete Controls[i];
+	}
 }
 
 void Frame(double timeDelta)
@@ -438,12 +463,10 @@ void Frame(double timeDelta)
 	(void)timeDelta;
 	UI_Shader -> Use();
 
-	Controls[0].Update(NULL);
-	Controls[1].Update(&(Controls[0]));
-	Controls[2].Update(&(Controls[0]));
-	Controls[3].Update(&(Controls[0]));
-	Controls[4].Update(NULL);
-	Controls[5].Update(NULL);
+	for (unsigned int i = 0; i < Controls.Count(); i++)
+	{
+		Controls[i] -> Update(NULL);
+	}
 
 	UI_BufferArray_ -> Use();
 	UI_BufferArray_ -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI_Main_Data) * UI_Main_Data_C.Count(), UI_Main_Data_C.ToPointer(), GL_STREAM_DRAW);
