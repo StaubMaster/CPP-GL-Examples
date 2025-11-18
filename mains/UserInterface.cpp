@@ -197,20 +197,153 @@ Point2D Normal1ToNormal0(Point2D p)
 #define ANCHOR_X_MAX  0b0010
 #define ANCHOR_X_BOTH 0b0011
 
+#define ANCHOR_Y_MASK 0b1100
+#define ANCHOR_Y_NONE 0b0000
+#define ANCHOR_Y_MIN  0b0100
+#define ANCHOR_Y_MAX  0b1000
+#define ANCHOR_Y_BOTH 0b1100
+
 class Control
 {
 	public:
 		EntryContainerDynamic<UI_Inst_Data>::Entry * Entry;
-		unsigned int Anchor;
-		Point2D	MinDist;
-		Point2D	LenDist;
-		Point2D	MaxDist;
+
+		unsigned int	Anchor;
+		Point2D			MinDist;
+		Point2D			LenDist;
+		Point2D			MaxDist;
+		Point2D			NormalCenter;
 
 	public:
 		Control() { }
 		Control(EntryContainerDynamic<UI_Inst_Data>::Entry * entry) :
 			Entry(entry)
 		{ }
+	public:
+		void Update(const Control * Parent)
+		{
+			Point2D NormalMinDist = PixelToNormal0(MinDist);
+			Point2D NormalLenDist = PixelToNormal0(LenDist);
+			Point2D NormalMaxDist = PixelToNormal0(MaxDist);
+
+			{
+				unsigned int anchor_x = Anchor & ANCHOR_X_MASK;
+				if (anchor_x == ANCHOR_X_NONE)
+				{
+					if (Parent != NULL)
+					{
+						float t0 = (NormalCenter.X - 0);
+						float t1 = (1 - NormalCenter.X);
+						float center_x = ((*(*Parent).Entry)[0].Min.X * t0) + ((*(*Parent).Entry)[0].Max.X * t1);
+						(*Entry)[0].Min.X = center_x - (NormalLenDist.X / 2);
+						(*Entry)[0].Max.X = center_x + (NormalLenDist.X / 2);
+					}
+					else
+					{
+						(*Entry)[0].Min.X = NormalCenter.X - (NormalLenDist.X);
+						(*Entry)[0].Max.X = NormalCenter.X + (NormalLenDist.X);
+					}
+				}
+				else if (anchor_x == ANCHOR_X_MIN)
+				{
+					if (Parent != NULL)
+					{
+						(*Entry)[0].Min.X = (*(*Parent).Entry)[0].Min.X + NormalMinDist.X;
+						(*Entry)[0].Max.X = (*(*Parent).Entry)[0].Min.X + NormalMinDist.X + NormalLenDist.X;
+					}
+					else
+					{
+						(*Entry)[0].Min.X = -1 + NormalMinDist.X;
+						(*Entry)[0].Max.X = -1 + NormalMinDist.X + NormalLenDist.X;
+					}
+				}
+				else if (anchor_x == ANCHOR_X_MAX)
+				{
+					if (Parent != NULL)
+					{
+						(*Entry)[0].Min.X = (*(*Parent).Entry)[0].Max.X - NormalMaxDist.X - NormalLenDist.X;
+						(*Entry)[0].Max.X = (*(*Parent).Entry)[0].Max.X - NormalMaxDist.X;
+					}
+					else
+					{
+						(*Entry)[0].Min.X = +1 - NormalMaxDist.X - NormalLenDist.X;
+						(*Entry)[0].Max.X = +1 - NormalMaxDist.X;
+					}
+				}
+				else if (anchor_x == ANCHOR_X_BOTH)
+				{
+					if (Parent != NULL)
+					{
+						(*Entry)[0].Min.X = (*(*Parent).Entry)[0].Min.X + NormalMinDist.X;
+						(*Entry)[0].Max.X = (*(*Parent).Entry)[0].Max.X - NormalMaxDist.X;
+					}
+					else
+					{
+						(*Entry)[0].Min.X = -1 + NormalMinDist.X;
+						(*Entry)[0].Max.X = +1 - NormalMaxDist.X;
+					}
+				}
+			}
+
+			{
+				unsigned int anchor_y = Anchor & ANCHOR_Y_MASK;
+				if (anchor_y == ANCHOR_Y_NONE)
+				{
+					if (Parent != NULL)
+					{
+						float t0 = (NormalCenter.Y - 0);
+						float t1 = (1 - NormalCenter.Y);
+						float center_y = ((*(*Parent).Entry)[0].Min.Y * t0) + ((*(*Parent).Entry)[0].Max.Y * t1);
+						(*Entry)[0].Min.Y = center_y - (NormalLenDist.Y / 2);
+						(*Entry)[0].Max.Y = center_y + (NormalLenDist.Y / 2);
+					}
+					else
+					{
+						(*Entry)[0].Min.Y = NormalCenter.Y - (NormalLenDist.Y);
+						(*Entry)[0].Max.Y = NormalCenter.Y + (NormalLenDist.Y);
+					}
+				}
+				else if (anchor_y == ANCHOR_Y_MIN)
+				{
+					if (Parent != NULL)
+					{
+						(*Entry)[0].Min.Y = (*(*Parent).Entry)[0].Min.Y + NormalMinDist.Y;
+						(*Entry)[0].Max.Y = (*(*Parent).Entry)[0].Min.Y + NormalMinDist.Y + NormalLenDist.Y;
+					}
+					else
+					{
+						(*Entry)[0].Min.Y = -1 + NormalMinDist.Y;
+						(*Entry)[0].Max.Y = -1 + NormalMinDist.Y + NormalLenDist.Y;
+					}
+				}
+				else if (anchor_y == ANCHOR_Y_MAX)
+				{
+					if (Parent != NULL)
+					{
+						(*Entry)[0].Min.Y = (*(*Parent).Entry)[0].Max.Y - NormalMaxDist.Y - NormalLenDist.Y;
+						(*Entry)[0].Max.Y = (*(*Parent).Entry)[0].Max.Y - NormalMaxDist.Y;
+					}
+					else
+					{
+						(*Entry)[0].Min.Y = +1 - NormalMaxDist.Y - NormalLenDist.Y;
+						(*Entry)[0].Max.Y = +1 - NormalMaxDist.Y;
+					}
+				}
+				else if (anchor_y == ANCHOR_Y_BOTH)
+				{
+					if (Parent != NULL)
+					{
+						(*Entry)[0].Min.Y = (*(*Parent).Entry)[0].Min.Y + NormalMinDist.Y;
+						(*Entry)[0].Max.Y = (*(*Parent).Entry)[0].Max.Y - NormalMaxDist.Y;
+					}
+					else
+					{
+						(*Entry)[0].Min.Y = -1 + NormalMinDist.Y;
+						(*Entry)[0].Max.Y = +1 - NormalMaxDist.Y;
+					}
+				}
+			}
+		}
 };
 
 ContainerDynamic<Control> Controls;
@@ -243,12 +376,51 @@ void InitRun()
 
 	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
 	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.2f, Color(1, 0, 0));
-	
+	Controls[idx].Anchor = ANCHOR_X_NONE | ANCHOR_Y_NONE;
+	Controls[idx].MinDist = Point2D(24, 24);
+	Controls[idx].LenDist = Point2D(480, 360);
+	Controls[idx].MaxDist = Point2D(24, 24);
+	Controls[idx].NormalCenter = Point2D(0, 0);
+
 	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
 	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.1f, Color(0, 1, 0));
+	Controls[idx].Anchor = ANCHOR_X_MIN | ANCHOR_Y_MIN;
+	Controls[idx].MinDist = Point2D(24, 24);
+	Controls[idx].LenDist = Point2D(240, 120);
+	Controls[idx].MaxDist = Point2D(24, 24);
+	Controls[idx].NormalCenter = Point2D(0, 0);
+
+	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
+	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.1f, Color(0, 1, 0));
+	Controls[idx].Anchor = ANCHOR_X_MAX | ANCHOR_Y_MAX;
+	Controls[idx].MinDist = Point2D(24, 24);
+	Controls[idx].LenDist = Point2D(240, 120);
+	Controls[idx].MaxDist = Point2D(24, 24);
+	Controls[idx].NormalCenter = Point2D(0, 0);
 
 	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
 	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.1f, Color(0, 0, 1));
+	Controls[idx].Anchor = ANCHOR_X_BOTH | ANCHOR_Y_NONE;
+	Controls[idx].MinDist = Point2D(24, 24);
+	Controls[idx].LenDist = Point2D(120, 120);
+	Controls[idx].MaxDist = Point2D(24, 24);
+	Controls[idx].NormalCenter = Point2D(0.5, 0.5);
+
+	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
+	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.2f, Color(0, 1, 0));
+	Controls[idx].Anchor = ANCHOR_X_MIN | ANCHOR_Y_NONE;
+	Controls[idx].MinDist = Point2D(24, 24);
+	Controls[idx].LenDist = Point2D(120, 360);
+	Controls[idx].MaxDist = Point2D(24, 24);
+	Controls[idx].NormalCenter = Point2D(0, 0);
+
+	idx = Controls.Insert(Control(UI_Inst_Data_C.Alloc(1)));
+	(*Controls[idx].Entry)[0] = UI_Inst_Data(Point2D(), Point2D(), 0.2f, Color(0, 0, 1));
+	Controls[idx].Anchor = ANCHOR_X_MAX | ANCHOR_Y_BOTH;
+	Controls[idx].MinDist = Point2D(24, 24);
+	Controls[idx].LenDist = Point2D(120, 360);
+	Controls[idx].MaxDist = Point2D(24, 24);
+	Controls[idx].NormalCenter = Point2D(0, 0);
 }
 void FreeRun()
 {
@@ -266,35 +438,12 @@ void Frame(double timeDelta)
 	(void)timeDelta;
 	UI_Shader -> Use();
 
-	//	Control 0
-	{
-		//	Fixed PixelSize
-		//	Stay in Center
-		Point2D	Size(480, 360);
-		Point2D NormalCenter(0, 0);
-		(*Controls[0].Entry)[0].Min = NormalCenter - PixelToNormal0(Size);
-		(*Controls[0].Entry)[0].Max = NormalCenter + PixelToNormal0(Size);
-	}
-
-	//	Control1
-	{
-		//	Fixed PixelSize
-		//	Keep Distance from BottomLeft of Control0
-		Point2D Dist(24, 24);
-		Point2D Size(240, 120);
-		(*Controls[1].Entry)[0].Min = (*Controls[0].Entry)[0].Min + PixelToNormal0(Dist);
-		(*Controls[1].Entry)[0].Max = (*Controls[0].Entry)[0].Min + PixelToNormal0(Dist) + PixelToNormal0(Size);
-	}
-
-	//	Control2
-	{
-		//	Fixed PixelSize
-		//	Keep Distance from TopRight of Control0
-		Point2D Dist(24, 24);
-		Point2D Size(240, 120);
-		(*Controls[2].Entry)[0].Min = (*Controls[0].Entry)[0].Max - PixelToNormal0(Dist) - PixelToNormal0(Size);
-		(*Controls[2].Entry)[0].Max = (*Controls[0].Entry)[0].Max - PixelToNormal0(Dist);
-	}
+	Controls[0].Update(NULL);
+	Controls[1].Update(&(Controls[0]));
+	Controls[2].Update(&(Controls[0]));
+	Controls[3].Update(&(Controls[0]));
+	Controls[4].Update(NULL);
+	Controls[5].Update(NULL);
 
 	UI_BufferArray_ -> Use();
 	UI_BufferArray_ -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI_Main_Data) * UI_Main_Data_C.Count(), UI_Main_Data_C.ToPointer(), GL_STREAM_DRAW);
@@ -308,6 +457,10 @@ void Resize(int w, int h)
 {
 	ViewPortSizeRatio = SizeRatio2D(w, h);
 	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClearColor(window->DefaultColor.R, window->DefaultColor.G, window->DefaultColor.B, 1.0f);
+	//Frame(0);
+	//glfwSwapBuffers(window->win);
 }
 
 
