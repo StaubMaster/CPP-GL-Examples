@@ -29,6 +29,9 @@
 
 
 
+#include "UI/DisplayScale.cpp"
+
+
 
 Window * window;
 SizeRatio2D ViewPortSizeRatio;
@@ -138,60 +141,7 @@ UI_BufferArray * UI_BufferArray_;
 ContainerDynamic<UI_Main_Data> UI_Main_Data_C;
 EntryContainerDynamic<UI_Inst_Data> UI_Inst_Data_C;
 
-float Normal0ToPixel(float val, float size)
-{
-	//	Normal [ 0 ; 1 ]
-	//	Pixel [ 0 ; n ]
-	return val * size;
-}
-float PixelToNormal0(float val, float size)
-{
-	//	Pixel [ 0 ; n ]
-	//	Normal [ 0 ; 1 ]
-	return val / size;
-}
-float Normal0ToNormal1(float val)
-{
-	//	Normal0 [ 0 ; 1 ]
-	//	Normal1 [ -1 ; +1 ]
-	return (val * 2) - 1;
-}
-float Normal1ToNormal0(float val)
-{
-	//	Normal1 [ -1 ; +1 ]
-	//	Normal0 [ 0 ; 1 ]
-	return (val + 1) / 2;
-}
 
-Point2D Normal0ToPixel(Point2D p)
-{
-	p.X = Normal0ToPixel(p.X, ViewPortSizeRatio.W);
-	p.Y = Normal0ToPixel(p.Y, ViewPortSizeRatio.H);
-	return p;
-}
-Point2D PixelToNormal0(Point2D p)
-{
-	p.X = PixelToNormal0(p.X, ViewPortSizeRatio.W);
-	p.Y = PixelToNormal0(p.Y, ViewPortSizeRatio.H);
-	return p;
-}
-Point2D Normal0ToNormal1(Point2D p)
-{
-	p.X = Normal0ToNormal1(p.X);
-	p.Y = Normal0ToNormal1(p.Y);
-	return p;
-}
-Point2D Normal1ToNormal0(Point2D p)
-{
-	p.X = Normal1ToNormal0(p.X);
-	p.Y = Normal1ToNormal0(p.Y);
-	return p;
-}
-
-#define ANCHOR_NONE 0b00
-#define ANCHOR_MIN  0b01
-#define ANCHOR_MAX  0b10
-#define ANCHOR_BOTH 0b11
 
 struct AxisBox1D
 {
@@ -217,11 +167,18 @@ struct AxisBox2D
 	}
 };
 
-struct ControlAnchor
+
+
+#define ANCHOR_NONE 0b00
+#define ANCHOR_MIN  0b01
+#define ANCHOR_MAX  0b10
+#define ANCHOR_BOTH 0b11
+
+struct Anchor1D
 {
 	unsigned char Anchor;
 
-	AxisBox1D Update(AxisBox1D Dist, float Size, float NormalCenter, AxisBox1D Parent)
+	AxisBox1D Calculate(AxisBox1D Dist, float Size, float NormalCenter, AxisBox1D Parent)
 	{
 		AxisBox1D child;
 		if (Anchor == ANCHOR_NONE)
@@ -229,8 +186,8 @@ struct ControlAnchor
 			float t0 = (NormalCenter - 0);
 			float t1 = (1 - NormalCenter);
 			float center = (Parent.Min * t0) + (Parent.Max * t1);
-			child.Min = center - Size;
-			child.Max = center + Size;
+			child.Min = center - (Size / 2);
+			child.Max = center + (Size / 2);
 		}
 		else if (Anchor == ANCHOR_MIN)
 		{
@@ -251,40 +208,23 @@ struct ControlAnchor
 	}
 };
 
-/*
-how should Controls store its Boxes
-need Pixel Size for storing
-need NormalSize for recalculating
-need NormalSize in Anchors
-*/
+struct Anchor2D
+{
+	Anchor1D	X;
+	Anchor1D	Y;
 
-/*	Anchoring
-None:
-	takes: Size, NormalCenter, (Parent.Min, Parent.Max)
-	calcs: MinDist, MaxDist
-Min:
-	takes: MinDist, Size, (Parent.Min)
-	calcs: MaxDist, NormalCenter
-Max:
-	takes: MaxDist, Size, (Parent.Max)
-	calcs: MinDist, NormalCenter
-Both:
-	takes: MinDist, MaxDist, (Parent.Min, Parent.Max)
-	calcs: Size, NormalCenter
-*/
+	AxisBox2D Calculate(AxisBox2D Dist, Point2D Size, Point2D NormalCenter, AxisBox2D Parent)
+	{
+		AxisBox1D x = X.Calculate(AxisBox1D(Dist.Min.X, Dist.Max.X), Size.X, NormalCenter.X, AxisBox1D(Parent.Min.X, Parent.Max.X));
+		AxisBox1D y = Y.Calculate(AxisBox1D(Dist.Min.Y, Dist.Max.Y), Size.Y, NormalCenter.Y, AxisBox1D(Parent.Min.Y, Parent.Max.Y));
+		return AxisBox2D(
+			Point2D(x.Min, y.Min),
+			Point2D(x.Max, y.Max)
+		);
+	}
+};
 
-/*	Absolute
-	MinDist and MaxDist are relative
-	should I calculate the absolute Pixel Pos
-	and then the Normal stuff
-	dont really need that ?
 
-	it would ne more consistent
-	and I would only need to normalize at the end
-	maybe even in the shader
-
-	but to I want thing from 0 to 1 (0 to n) or -1 to +1 (-n/2 to +n/2)
-*/
 
 class Control
 {
@@ -292,20 +232,16 @@ class Control
 		EntryContainerDynamic<UI_Inst_Data>::Entry * Entry;
 		ContainerDynamic<Control *> Children;
 
-		ControlAnchor	AnchorX;
-		ControlAnchor	AnchorY;
+		float			Layer;
+
+		Anchor2D	Anchor;
 
 		Point2D			PixelMinDist;
 		Point2D			PixelSize;
 		Point2D			PixelMaxDist;
 
-		//	AxisBox2D
-		Point2D			PixelMin;
-		Point2D			PixelMax;
-
+		AxisBox2D		PixelBox;
 		Point2D			NormalCenter;
-
-		float			Layer;
 
 		Color			ColorDefault;
 		Color			ColorHover;
@@ -327,34 +263,19 @@ class Control
 		{
 			for (unsigned int i = 0; i < Children.Count(); i++)
 			{
-				Children[i] -> UpdateBox(PixelMin, PixelMax);
+				Children[i] -> UpdateBox(PixelBox);
 			}
 		}
-		void UpdateBox(const Point2D & Min, const Point2D & Max)
+		void UpdateBox(const AxisBox2D & BaseBox)
 		{
-			AxisBox1D posX = AnchorX.Update(
-				AxisBox1D(PixelMinDist.X, PixelMaxDist.X),
-				PixelSize.X,
-				NormalCenter.X,
-				AxisBox1D(Min.X, Max.X)
-			);
-
-			AxisBox1D posY = AnchorY.Update(
-				AxisBox1D(PixelMinDist.Y, PixelMaxDist.Y),
-				PixelSize.Y,
-				NormalCenter.Y,
-				AxisBox1D(Min.Y, Max.Y)
-			);
-
-			PixelMin.X = posX.Min;
-			PixelMax.X = posX.Max;
-			PixelMin.Y = posY.Min;
-			PixelMax.Y = posY.Max;
+			PixelBox = Anchor.Calculate(AxisBox2D(PixelMinDist, PixelMaxDist), PixelSize, NormalCenter, BaseBox);
 
 			if (Entry != NULL)
 			{
-				(*Entry)[0].Min = PixelToNormal0(PixelMin);
-				(*Entry)[0].Max = PixelToNormal0(PixelMax);
+				//(*Entry)[0].Min = PixelToNormal0(PixelBox.Min, Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H));
+				//(*Entry)[0].Max = PixelToNormal0(PixelBox.Max, Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H));
+				(*Entry)[0].Min = Normal0ToNormal1(PixelToNormal0(PixelBox.Min, Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H)));
+				(*Entry)[0].Max = Normal0ToNormal1(PixelToNormal0(PixelBox.Max, Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H)));
 			}
 
 			UpdateBoxChildren();
@@ -375,8 +296,7 @@ class Control
 		}
 		bool UpdateHover(Point2D mouse)
 		{
-			AxisBox2D box(PixelMin, PixelMax);
-			if (box.Intersekt(mouse))
+			if (PixelBox.Intersekt(mouse))
 			{
 				unsigned int hover_idx = 0xFFFFFFFF;
 				for (unsigned int i = 0; i < Children.Count(); i++)
@@ -440,88 +360,87 @@ void InitRun()
 
 
 
-	//WindowControl = new Control(UI_Inst_Data_C.Alloc(1));
 	WindowControl = new Control(NULL);
-	WindowControl -> AnchorX.Anchor = ANCHOR_BOTH;
-	WindowControl -> AnchorY.Anchor = ANCHOR_BOTH;
+	WindowControl -> Layer = 0.3f;
+	WindowControl -> Anchor.X.Anchor = ANCHOR_BOTH;
+	WindowControl -> Anchor.Y.Anchor = ANCHOR_BOTH;
 	WindowControl -> PixelMinDist = Point2D(0, 0);
-	WindowControl -> PixelSize = Point2D(480, 360);
+	WindowControl -> PixelSize = Point2D(0, 0);
 	WindowControl -> PixelMaxDist = Point2D(0, 0);
 	WindowControl -> NormalCenter = Point2D(0, 0);
-	WindowControl -> Layer = 0.3f;
 	WindowControl -> ColorDefault = Color(0.25f, 0.25f, 0.25f);
 	WindowControl -> ColorHover = Color(0.25f, 0.25f, 0.25f);
 
 	Control * control;
 
 	control = new Control(UI_Inst_Data_C.Alloc(1));
-	control -> AnchorX.Anchor = ANCHOR_NONE;
-	control -> AnchorY.Anchor = ANCHOR_NONE;
-	control -> PixelMinDist = Point2D(24, 24);
+	control -> Layer = 0.2f;
+	control -> Anchor.X.Anchor = ANCHOR_NONE;
+	control -> Anchor.Y.Anchor = ANCHOR_NONE;
+	control -> PixelMinDist = Point2D(12, 12);
 	control -> PixelSize = Point2D(480, 360);
-	control -> PixelMaxDist = Point2D(24, 24);
+	control -> PixelMaxDist = Point2D(12, 12);
 	control -> NormalCenter = Point2D(0.5, 0.5);
-	control -> Layer = 0.2f;
 	control -> ColorDefault = Color(0.75f, 0.75f, 0.75f);
 	control -> ColorHover = Color(0.75f, 0.75f, 0.75f);
 	WindowControl -> Children.Insert(control);
 
 	control = new Control(UI_Inst_Data_C.Alloc(1));
-	control -> AnchorX.Anchor = ANCHOR_MIN;
-	control -> AnchorY.Anchor = ANCHOR_MIN;
-	control -> PixelMinDist = Point2D(24, 24);
-	control -> PixelSize = Point2D(240, 120);
-	control -> PixelMaxDist = Point2D(24, 24);
-	control -> NormalCenter = Point2D(0, 0);
 	control -> Layer = 0.1f;
+	control -> Anchor.X.Anchor = ANCHOR_MIN;
+	control -> Anchor.Y.Anchor = ANCHOR_MIN;
+	control -> PixelMinDist = Point2D(12, 12);
+	control -> PixelSize = Point2D(120, 60);
+	control -> PixelMaxDist = Point2D(12, 12);
+	control -> NormalCenter = Point2D(0, 0);
 	control -> ColorDefault = Color(0.625f, 0.625f, 0.625f);
 	control -> ColorHover = Color(0.5f, 0.5f, 0.5f);
 	WindowControl -> Children[0] -> Children.Insert(control);
 
 	control = new Control(UI_Inst_Data_C.Alloc(1));
-	control -> AnchorX.Anchor = ANCHOR_MAX;
-	control -> AnchorY.Anchor = ANCHOR_MAX;
-	control -> PixelMinDist = Point2D(24, 24);
-	control -> PixelSize = Point2D(240, 120);
-	control -> PixelMaxDist = Point2D(24, 24);
-	control -> NormalCenter = Point2D(0, 0);
 	control -> Layer = 0.1f;
+	control -> Anchor.X.Anchor = ANCHOR_MAX;
+	control -> Anchor.Y.Anchor = ANCHOR_MAX;
+	control -> PixelMinDist = Point2D(12, 12);
+	control -> PixelSize = Point2D(120, 60);
+	control -> PixelMaxDist = Point2D(12, 12);
+	control -> NormalCenter = Point2D(0, 0);
 	control -> ColorDefault = Color(0.625f, 0.625f, 0.625f);
 	control -> ColorHover = Color(0.5f, 0.5f, 0.5f);
 	WindowControl -> Children[0] -> Children.Insert(control);
 
 	control = new Control(UI_Inst_Data_C.Alloc(1));
-	control -> AnchorX.Anchor = ANCHOR_BOTH;
-	control -> AnchorY.Anchor = ANCHOR_NONE;
-	control -> PixelMinDist = Point2D(24, 24);
-	control -> PixelSize = Point2D(120, 120);
-	control -> PixelMaxDist = Point2D(24, 24);
+	control -> Layer = 0.1f;
+	control -> Anchor.X.Anchor = ANCHOR_BOTH;
+	control -> Anchor.Y.Anchor = ANCHOR_NONE;
+	control -> PixelMinDist = Point2D(12, 12);
+	control -> PixelSize = Point2D(60, 60);
+	control -> PixelMaxDist = Point2D(12, 12);
 	control -> NormalCenter = Point2D(0.5, 0.5);
-	control -> Layer = 0.1f;
 	control -> ColorDefault = Color(0.625f, 0.625f, 0.625f);
 	control -> ColorHover = Color(0.5f, 0.5f, 0.5f);
 	WindowControl -> Children[0] -> Children.Insert(control);
 
 	control = new Control(UI_Inst_Data_C.Alloc(1));
-	control -> AnchorX.Anchor = ANCHOR_MIN;
-	control -> AnchorY.Anchor = ANCHOR_NONE;
-	control -> PixelMinDist = Point2D(24, 24);
-	control -> PixelSize = Point2D(120, 360);
-	control -> PixelMaxDist = Point2D(24, 24);
+	control -> Layer = 0.2f;
+	control -> Anchor.X.Anchor = ANCHOR_MIN;
+	control -> Anchor.Y.Anchor = ANCHOR_NONE;
+	control -> PixelMinDist = Point2D(12, 12);
+	control -> PixelSize = Point2D(60, 360);
+	control -> PixelMaxDist = Point2D(12, 12);
 	control -> NormalCenter = Point2D(0, 0.5);
-	control -> Layer = 0.2f;
 	control -> ColorDefault = Color(0.75f, 0.75f, 0.75f);
 	control -> ColorHover = Color(0.75f, 0.75f, 0.75f);
 	WindowControl -> Children.Insert(control);
 
 	control = new Control(UI_Inst_Data_C.Alloc(1));
-	control -> AnchorX.Anchor = ANCHOR_MAX;
-	control -> AnchorY.Anchor = ANCHOR_BOTH;
-	control -> PixelMinDist = Point2D(24, 24);
-	control -> PixelSize = Point2D(120, 360);
-	control -> PixelMaxDist = Point2D(24, 24);
-	control -> NormalCenter = Point2D(0, 0);
 	control -> Layer = 0.2f;
+	control -> Anchor.X.Anchor = ANCHOR_MAX;
+	control -> Anchor.Y.Anchor = ANCHOR_BOTH;
+	control -> PixelMinDist = Point2D(12, 12);
+	control -> PixelSize = Point2D(60, 360);
+	control -> PixelMaxDist = Point2D(12, 12);
+	control -> NormalCenter = Point2D(0, 0);
 	control -> ColorDefault = Color(0.75f, 0.75f, 0.75f);
 	control -> ColorHover = Color(0.75f, 0.75f, 0.75f);
 	WindowControl -> Children.Insert(control);
@@ -546,10 +465,9 @@ void Frame(double timeDelta)
 	(void)timeDelta;
 	UI_Shader -> Use();
 
-	WindowControl -> UpdateBox(Point2D(-ViewPortSizeRatio.W, -ViewPortSizeRatio.H), Point2D(+ViewPortSizeRatio.W, +ViewPortSizeRatio.H));
+	WindowControl -> UpdateBox(AxisBox2D(Point2D(0, 0), Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H)));
 	Point2D mouse = window -> CursorPixel();
-	mouse.X = (mouse.X * 2) - ViewPortSizeRatio.W;
-	mouse.Y = ViewPortSizeRatio.H - (mouse.Y * 2);
+	mouse.Y = ViewPortSizeRatio.H - mouse.Y;
 	WindowControl -> UpdateHover(mouse);
 
 	UI_BufferArray_ -> Use();
