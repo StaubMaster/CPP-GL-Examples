@@ -1,4 +1,5 @@
 #include "Base.hpp"
+#include "Manager.hpp"
 
 
 
@@ -7,6 +8,7 @@ Control::Base::Base(Manager & manager) :
 {
 	Entry = NULL,
 	Visible = true;
+	ClickFunc = NULL;
 }
 Control::Base::~Base()
 {
@@ -64,7 +66,7 @@ void Control::Base::UpdateEntryAll()
 		(*Entry)[0].Min = Normal0ToNormal1(PixelToNormal0(PixelBox.Min, ControlManager.ViewPortSize));
 		(*Entry)[0].Max = Normal0ToNormal1(PixelToNormal0(PixelBox.Max, ControlManager.ViewPortSize));
 		(*Entry)[0].Layer = Layer;
-		if (IsHover && !IsChildHover)
+		if (ControlManager.Hovering == this)
 		{
 			(*Entry)[0].Col = ColorHover;
 		}
@@ -91,33 +93,15 @@ bool Control::Base::UpdateHover(Point2D mouse)
 {
 	if (PixelBox.Intersekt(mouse))
 	{
-		IsHover = true;
-		unsigned int hover_idx = 0xFFFFFFFF;
+		ControlManager.ChangeHover(this);
+		//unsigned int hover_idx = 0xFFFFFFFF;
 		for (unsigned int i = 0; i < Children.Count(); i++)
 		{
 			if (Children[i] -> UpdateHover(mouse))
 			{
-				hover_idx = i;
 			}
-		}
-		if (hover_idx != 0xFFFFFFFF)
-		{
-			IsChildHover = true;
-		}
-		else
-		{
-			IsChildHover = false;
 		}
 		return true;
 	}
-	IsHover = false;
-	if (IsChildHover)
-	{
-		for (unsigned int i = 0; i < Children.Count(); i++)
-		{
-			Children[i] -> UpdateHover(mouse);
-		}
-	}
-	IsChildHover = false;
 	return false;
 }

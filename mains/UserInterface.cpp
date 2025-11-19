@@ -50,7 +50,7 @@ Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
 
 
 
-Control::Manager ControlManager;
+Control::Manager * ControlManager;
 Control::Window * WindowControl;
 
 
@@ -65,6 +65,20 @@ Text (with no Text for now ?)
 
 Object Slow ?
 */
+
+void click0(unsigned char clickType, unsigned char clickButton)
+{
+	std::cout << "click0\n";
+	(void)clickType;
+	(void)clickButton;
+}
+
+void click1(unsigned char clickType, unsigned char clickButton)
+{
+	std::cout << "click1\n";
+	(void)clickType;
+	(void)clickButton;
+}
 
 void InitRun()
 {
@@ -81,41 +95,43 @@ void InitRun()
 
 
 
-	ControlManager.BufferInit();
+	ControlManager = new Control::Manager();
 
-	WindowControl = new Control::Window(ControlManager);
+	WindowControl = new Control::Window(*ControlManager);
 
 	Control::Button * button;
 	Control::Form * form;
 
-	form = new Control::Form(ControlManager);
+	form = new Control::Form(*ControlManager);
 	WindowControl -> Children.Insert(form);
 
-	button = new Control::Button(ControlManager);
+	button = new Control::Button(*ControlManager);
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MIN;
+	button -> ClickFunc = click0;
 	form -> Children.Insert(button);
 
-	button = new Control::Button(ControlManager);
+	button = new Control::Button(*ControlManager);
 	button -> Anchor.X.Anchor = ANCHOR_MAX;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
+	button -> ClickFunc = click1;
 	form -> Children.Insert(button);
 
-	button = new Control::Button(ControlManager);
+	button = new Control::Button(*ControlManager);
 	button -> Anchor.X.Anchor = ANCHOR_BOTH;
 	button -> Anchor.Y.Anchor = ANCHOR_NONE;
 	button -> PixelSize = Point2D(60, 60);
 	button -> NormalCenter = Point2D(0.5, 0.5);
 	form -> Children.Insert(button);
 
-	form = new Control::Form(ControlManager);
+	form = new Control::Form(*ControlManager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
 	form -> Anchor.Y.Anchor = ANCHOR_NONE;
 	form -> PixelSize = Point2D(60, 360);
 	form -> NormalCenter = Point2D(0, 0.5);
 	WindowControl -> Children.Insert(form);
 
-	form = new Control::Form(ControlManager);
+	form = new Control::Form(*ControlManager);
 	form -> Anchor.X.Anchor = ANCHOR_MAX;
 	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
 	form -> PixelSize = Point2D(60, 360);
@@ -132,7 +148,7 @@ void FreeRun()
 
 	delete Multi_ViewPortSizeRatio;
 
-	ControlManager.BufferFree();
+	delete ControlManager;
 
 	delete WindowControl;
 }
@@ -142,21 +158,28 @@ void Frame(double timeDelta)
 	(void)timeDelta;
 	UI_Shader -> Use();
 
-	WindowControl -> UpdateBox(AxisBox2D(Point2D(0, 0), ControlManager.ViewPortSize));
+	WindowControl -> UpdateBox(AxisBox2D(Point2D(), ControlManager -> ViewPortSize));
 	WindowControl -> Show();
+
+	ControlManager -> ChangeHover(NULL);
 	Point2D mouse = window -> CursorPixel();
 	mouse.Y = ViewPortSizeRatio.H - mouse.Y;
 	WindowControl -> UpdateHover(mouse);
 
-	ControlManager.BufferUpdate();
-	ControlManager.BufferDraw();
+	if (window -> Keys[GLFW_KEY_ENTER].State.GetPressed())
+	{
+		ControlManager -> Click(CLICK_PRESS, CLICK_BUTTON_L);
+	}
+
+	ControlManager -> BufferUpdate();
+	ControlManager -> BufferDraw();
 }
 
 void Resize(int w, int h)
 {
 	ViewPortSizeRatio = SizeRatio2D(w, h);
 	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
-	ControlManager.ViewPortSize = Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H);
+	ControlManager -> ViewPortSize = Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H);
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(window->DefaultColor.R, window->DefaultColor.G, window->DefaultColor.B, 1.0f);
 	//Frame(0);

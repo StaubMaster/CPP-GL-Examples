@@ -3,6 +3,7 @@
 
 #include "Data.hpp"
 #include "Buffer.hpp"
+#include "Base.hpp"
 
 #include "DataInclude.hpp"
 
@@ -11,6 +12,8 @@
 
 namespace Control
 {
+//class Base;
+
 struct Manager
 {
 	Point2D ViewPortSize;
@@ -20,7 +23,10 @@ struct Manager
 
 	BufferArray * BufferArray;
 
-	void BufferInit()
+	Base * Hovering;
+	Base * Selected;
+
+	Manager()
 	{
 		BufferArray = new Control::BufferArray();
 
@@ -30,8 +36,11 @@ struct Manager
 		Main_Data_Container.Insert(Control::Main_Data(Point2D(+1, -1)));
 		Main_Data_Container.Insert(Control::Main_Data(Point2D(-1, +1)));
 		Main_Data_Container.Insert(Control::Main_Data(Point2D(+1, +1)));
+
+		Hovering = NULL;
+		Selected = NULL;
 	}
-	void BufferFree()
+	~Manager()
 	{
 		delete BufferArray;
 	}
@@ -48,6 +57,31 @@ struct Manager
 	{
 		BufferArray -> Use();
 		BufferArray -> Draw();
+	}
+
+
+	void ChangeHover(Base * control)
+	{
+		if (Hovering != NULL)
+		{
+			//	change Hovering Color to DefaultColor
+			Hovering = NULL;
+		}
+		if (control != NULL)
+		{
+			//	change Hovering Color to HoverColor
+			Hovering = control;
+		}
+	}
+	void Click(unsigned char clickType, unsigned char clickButton)
+	{
+		if (Hovering != NULL)
+		{
+			if (Hovering -> ClickFunc != NULL)
+			{
+				Hovering -> ClickFunc(clickType, clickButton);
+			}
+		}
 	}
 };
 };

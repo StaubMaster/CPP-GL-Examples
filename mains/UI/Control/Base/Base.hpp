@@ -2,7 +2,6 @@
 # define CONTROL_HPP
 
 #include "Data.hpp"
-#include "Manager.hpp"
 
 #include "UI/DisplayScale.hpp"
 #include "UI/AxisBox.hpp"
@@ -19,18 +18,43 @@
 	only set the information needed for that Anchor
 */
 
-/*
-	Click() calls Click Function (if it exists)
-		have seperate "Click" Functions
-		for Press Release Hold
-		and Left Right
-		have variants for Hover / Selected
+/*	Click
+how to handle
+1 Function ?
+how to handle both buttons
+or Press vs Release vs Hold
+just give that stuff to the function ?
+or have a systen where the function gets "registered"
+with certain conditions
+and then only call the function when the conditions are met
 
-	should Hovering/Selected be remembered by Controls
-	or the Control Manager
-		Manager might be better
-	Focus ? basically what I call Selected
+I think giving stuff to the function is probably the easiest
 */
+
+#define CLICK_NONE    0b00
+#define CLICK_PRESS   0b01
+#define CLICK_HOLD    0b11
+#define CLICK_RELEASE 0b10
+
+#define CLICK_BUTTON_L 0
+#define CLICK_BUTTON_R 1
+
+
+
+/*	Colors
+some things dont need Hovering
+and only need DefaultColor
+
+also need a "Pressed" Color for some
+like Buttons
+
+just have Default in Base
+and anything else is in whereever its needed
+
+right now there is nothing in the nonBases
+*/
+
+
 
 namespace Control
 {
@@ -40,21 +64,6 @@ struct Manager;
 class Base
 {
 	public:
-		/*	should be able to "dynamically" allocate and free the Entry as needed
-			needs to know the EntryContainer
-			Control Manager ?
-				also holds the Buffer and Shader
-
-			Visible
-			Show()
-				sets Visible to false
-				removes Entry
-				removes Entrys of Children (recursive)
-			Hide()
-				sets Visible to true
-				allocates Entry
-				allocates Entrys of all Visible Children (recusrsivly)
-		*/
 		Manager & ControlManager;
 
 		EntryContainerDynamic<Control::Inst_Data>::Entry * Entry;
@@ -63,7 +72,7 @@ class Base
 		float			Layer;
 		bool			Visible;
 
-		Anchor2D	Anchor;
+		Anchor2D		Anchor;
 
 		Point2D			PixelMinDist;
 		Point2D			PixelSize;
@@ -75,8 +84,7 @@ class Base
 		Color			ColorDefault;
 		Color			ColorHover;
 
-		bool			IsHover;
-		bool			IsChildHover;
+		void (*ClickFunc)(unsigned char, unsigned char);
 
 		//	Text
 		//	Image ?
@@ -84,6 +92,9 @@ class Base
 	public:
 		Base(Manager & manager);
 		virtual ~Base();
+
+		//	get/set X/Y Min/Max
+		//	would be useful for placing multiple things next to eachother
 
 	public:
 		void Show();
