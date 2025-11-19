@@ -57,6 +57,46 @@ MAINS_DIR = mains/
 
 
 
+TARGET_NAMES := 
+
+
+
+TARGET_NAMES += UI
+UI_NAME := UserInterface.exe
+UI_FILES_SRC := \
+	mains/UI/DisplayScale.cpp \
+	mains/UI/AxisBox.cpp \
+	mains/UI/Anchor.cpp \
+	mains/UI/Control/Base/Data.cpp \
+	mains/UI/Control/Base/Buffer.cpp \
+	mains/UI/Control/Base/Manager.cpp \
+	mains/UI/Control/Base/Base.cpp \
+	mains/UI/Control/Window.cpp \
+	mains/UI/Control/Form.cpp \
+	mains/UI/Control/Button.cpp \
+	mains/UserInterface.cpp
+UI_FILES_OBJ := $(UI_FILES_SRC:.cpp=.o)
+UI:
+	@mkdir -p logs/
+	@$(MAKE) -s $(UI_FILES_OBJ)
+	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Compiling: $(COLOR_FILE)$(UI_NAME)$(COLOR_NONE)"
+	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(UI_FILES_OBJ) -o $(UI_NAME) $(ARGS_LIBRARYS) $(ARGUMENTS)
+
+UI_clean:
+	rm -f $(UI_FILES_OBJ)
+
+.PHONY: UI
+
+%.o : %.cpp
+	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Compiling: $(COLOR_FILE)$@$(COLOR_NONE)"
+	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ -c $<
+
+test:
+	@$(MAKE) $(TARGET_NAMES)
+test_clean:
+	$(MAKE) $(TARGET_NAMES)_clean
+
+
 
 
 ################################################################
@@ -102,7 +142,7 @@ re:
 ################################################################
 
 LIBRARYS = 
-INCLUDES = 
+INCLUDES = ./mains
 ARGUMENTS = 
 
 ARGS_LIBRARYS = $(foreach library, $(LIBRARYS),$(library))

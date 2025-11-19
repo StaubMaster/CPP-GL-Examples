@@ -1,4 +1,4 @@
-
+#include "DisplayScale.hpp"
 #include "DataStruct/Point2D.hpp"
 
 
