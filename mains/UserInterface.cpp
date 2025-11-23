@@ -100,6 +100,7 @@ void InitRun()
 	WindowControl = new Control::Window(*ControlManager);
 
 	Control::Button * button;
+	Control::Text * text;
 	Control::Form * form;
 
 	form = new Control::Form(*ControlManager);
@@ -117,12 +118,12 @@ void InitRun()
 	button -> ClickFunc = click1;
 	form -> Children.Insert(button);
 
-	button = new Control::Button(*ControlManager);
-	button -> Anchor.X.Anchor = ANCHOR_BOTH;
-	button -> Anchor.Y.Anchor = ANCHOR_NONE;
-	button -> PixelSize = Point2D(60, 60);
-	button -> NormalCenter = Point2D(0.5, 0.5);
-	form -> Children.Insert(button);
+	text = new Control::Text(*ControlManager);
+	text -> Anchor.X.Anchor = ANCHOR_BOTH;
+	text -> Anchor.Y.Anchor = ANCHOR_NONE;
+	text -> PixelSize = Point2D(60, 60);
+	text -> NormalCenter = Point2D(0.5, 0.5);
+	form -> Children.Insert(text);
 
 	form = new Control::Form(*ControlManager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
@@ -166,7 +167,7 @@ void Frame(double timeDelta)
 	mouse.Y = ViewPortSizeRatio.H - mouse.Y;
 	WindowControl -> UpdateHover(mouse);
 
-	if (window -> Keys[GLFW_KEY_ENTER].State.GetPressed())
+	if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetPressed())
 	{
 		ControlManager -> Click(CLICK_PRESS, CLICK_BUTTON_L);
 	}

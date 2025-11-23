@@ -15,7 +15,7 @@
 
 
 /*	Setting Anchors
-	only set the information needed for that Anchor
+only set the information needed for that Anchor
 */
 
 /*	Click
@@ -29,6 +29,11 @@ with certain conditions
 and then only call the function when the conditions are met
 
 I think giving stuff to the function is probably the easiest
+*/
+
+/*	Cursor
+change Cursor when hovering Controls
+
 */
 
 #define CLICK_NONE    0b00
@@ -52,6 +57,10 @@ just have Default in Base
 and anything else is in whereever its needed
 
 right now there is nothing in the nonBases
+
+also i dont see when Window or Form would ever need a Click ?
+Window Maybe as a "didnt click anywhere else"
+so maybe just leave it in the Base ?
 */
 
 
