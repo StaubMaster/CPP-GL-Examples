@@ -27,6 +27,8 @@
 #include "Graphics/UniformsInclude.hpp"
 #include "Graphics/MultiformsInclude.hpp"
 
+#include "Graphics/Texture/2DArray.hpp"
+
 
 
 #include "UI/DisplayScale.hpp"
@@ -35,6 +37,9 @@
 
 #include "UI/Control/Base/Manager.hpp"
 #include "UI/Controls.hpp"
+
+#include "UI/Text/Data.hpp"
+#include "UI/Text/Buffer.hpp"
 
 
 
@@ -55,16 +60,66 @@ Control::Window * WindowControl;
 
 
 
-/*	Controls
-Window
-Form
+DirectoryContext ImageDir("./media/Images");
 
-Button
-Toggle
-Text (with no Text for now ?)
+UI::Text::BufferArray * Text_BufferArray;
+ContainerDynamic<UI::Text::Main_Data> Text_Main_Data_Container;
+ContainerDynamic<UI::Text::Inst_Data> Text_Inst_Data_Container;
+Shader::Base * Text_Shader;
+Texture::T2DArray * Text_Pallet_Texture;
 
-Object Slow ?
-*/
+void TextInit()
+{
+	Text_BufferArray = new UI::Text::BufferArray();
+	Text_Shader = new Shader::Base((const Shader::Code []) {
+		Shader::Code::FromFile(ShaderDir.File("Text.vert")),
+		Shader::Code::FromFile(ShaderDir.File("Text.frag"))
+	}, 2);
+
+	Image * img = ImageDir.File("Text_16_8.png").LoadImagePNG();
+	Text_Pallet_Texture = new Texture::T2DArray(img);
+	delete img;
+
+	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, -1)));
+	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
+	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
+	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
+	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
+	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, +1)));
+
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.625, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.500, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.375, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.250, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.125, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D( 0.000, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.125, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.250, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.375, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.500, 0.0), Point2D(0, 0)));
+	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.625, 0.0), Point2D(0, 0)));
+}
+void TextFree()
+{
+	delete Text_BufferArray;
+	delete Text_Shader;
+	delete Text_Pallet_Texture;
+}
+void TextFrame()
+{
+	Text_BufferArray -> Use();
+
+	Text_BufferArray -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Main_Data) * Text_Main_Data_Container.Count(), Text_Main_Data_Container.ToPointer(), GL_STREAM_DRAW);
+	Text_BufferArray -> Main.Count = Text_Main_Data_Container.Count();
+
+	Text_BufferArray -> Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Inst_Data) * Text_Inst_Data_Container.Count(), Text_Inst_Data_Container.ToPointer(), GL_STREAM_DRAW);
+	Text_BufferArray -> Inst.Count = Text_Inst_Data_Container.Count();
+
+	Text_Shader -> Use();
+	Text_Pallet_Texture -> Bind();
+	Text_BufferArray -> Draw();
+}
+
 
 void click0(unsigned char clickType, unsigned char clickButton)
 {
@@ -72,7 +127,6 @@ void click0(unsigned char clickType, unsigned char clickButton)
 	(void)clickType;
 	(void)clickButton;
 }
-
 void click1(unsigned char clickType, unsigned char clickButton)
 {
 	std::cout << "click1\n";
@@ -140,6 +194,8 @@ void InitRun()
 	WindowControl -> Children.Insert(form);
 
 	WindowControl -> Show();
+
+	TextInit();
 }
 void FreeRun()
 {
@@ -152,6 +208,8 @@ void FreeRun()
 	delete ControlManager;
 
 	delete WindowControl;
+
+	TextFree();
 }
 
 void Frame(double timeDelta)
@@ -174,6 +232,8 @@ void Frame(double timeDelta)
 
 	ControlManager -> BufferUpdate();
 	ControlManager -> BufferDraw();
+
+	TextFrame();
 }
 
 void Resize(int w, int h)

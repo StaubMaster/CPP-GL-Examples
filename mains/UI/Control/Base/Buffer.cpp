@@ -1,6 +1,8 @@
 #include "Buffer.hpp"
 #include "Data.hpp"
 
+#include "OpenGL/openGL.h"
+
 
 
 Control::Main_Attribute::Main_Attribute(

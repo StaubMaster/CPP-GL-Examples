@@ -1,14 +1,15 @@
-#ifndef CONTROL_BUFFER_HPP
-# define CONTROL_BUFFER_HPP
+#ifndef  TEXT_BUFFER
+# define TEXT_BUFFER
 
-#include "Graphics/Buffer/BaseBufferArray.hpp"
-#include "Graphics/Buffer/BaseBuffer.hpp"
+# include "Graphics/Buffer/BaseBufferArray.hpp"
+# include "Graphics/Buffer/BaseBuffer.hpp"
 
-#include "Graphics/Attribute/Base/AttributeBase.hpp"
-#include "Graphics/Attribute/Point2D.hpp"
-#include "Graphics/Attribute/Color.hpp"
+# include "Graphics/Attribute/Base/AttributeBase.hpp"
+# include "Graphics/Attribute/Point2D.hpp"
 
-namespace Control
+namespace UI
+{
+namespace Text
 {
 
 class Main_Attribute : public Attribute::Base
@@ -24,21 +25,18 @@ class Main_Attribute : public Attribute::Base
 	public:
 		void Bind(const unsigned char * & offset) const override;
 };
+
 class Inst_Attribute : public Attribute::Base
 {
 	private:
-		Attribute::Point2D	Min;
-		Attribute::Point2D	Max;
-		Attribute::FloatN	Layer;
-		Attribute::Color	Col;
+		Attribute::Point2D	Pos;
+		Attribute::Point2D	Pallet;
 	public:
 		Inst_Attribute(
 			unsigned int divisor,
 			unsigned int stride,
-			unsigned int indexMin,
-			unsigned int indexMax,
-			unsigned int indexLayer,
-			unsigned int indexCol
+			unsigned int indexPos,
+			unsigned int indexPallet
 		);
 	public:
 		void Bind(const unsigned char * & offset) const override;
@@ -58,6 +56,6 @@ class BufferArray : public BaseBufferArray
 };
 
 };
-
+};
 
 #endif

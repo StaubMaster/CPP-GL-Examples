@@ -10,6 +10,8 @@
 #include "Miscellaneous/ContainerDynamic.hpp"
 #include "Miscellaneous/EntryContainer/EntryContainerDynamic.hpp"
 
+#include "OpenGL/openGL.h"
+
 namespace Control
 {
 //class Base;
@@ -58,7 +60,6 @@ struct Manager
 		BufferArray -> Use();
 		BufferArray -> Draw();
 	}
-
 
 	void ChangeHover(Base * control)
 	{
