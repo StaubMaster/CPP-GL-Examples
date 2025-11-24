@@ -63,8 +63,8 @@ void Control::Base::UpdateEntryAll()
 {
 	if (Entry != NULL)
 	{
-		(*Entry)[0].Min = Normal0ToNormal1(PixelToNormal0(PixelBox.Min, ControlManager.ViewPortSize));
-		(*Entry)[0].Max = Normal0ToNormal1(PixelToNormal0(PixelBox.Max, ControlManager.ViewPortSize));
+		(*Entry)[0].Min = PixelBox.Min;
+		(*Entry)[0].Max = PixelBox.Max;
 		(*Entry)[0].Layer = Layer;
 		if (ControlManager.Hovering == this)
 		{

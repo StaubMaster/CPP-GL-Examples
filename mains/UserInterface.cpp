@@ -47,79 +47,112 @@ Window * window;
 SizeRatio2D ViewPortSizeRatio;
 
 DirectoryContext ShaderDir("./media/Shaders");
-
-Shader::Base * UI_Shader;
-Uniform::SizeRatio2D * Uni_ViewPortSizeRatio;
+DirectoryContext ImageDir("./media/Images");
 
 Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
 
 
 
-Control::Manager * ControlManager;
+
+
+Shader::Base * UI_Control_Shader;
+Uniform::SizeRatio2D * UI_Control_Uni_ViewPortSizeRatio;
+
+void click0(unsigned char clickType, unsigned char clickButton);
+void click1(unsigned char clickType, unsigned char clickButton);
+
+Control::Manager * UI_Control_Manager;
 Control::Window * WindowControl;
+Control::Text * Text_Test;
 
-
-
-DirectoryContext ImageDir("./media/Images");
-
-UI::Text::BufferArray * Text_BufferArray;
-ContainerDynamic<UI::Text::Main_Data> Text_Main_Data_Container;
-ContainerDynamic<UI::Text::Inst_Data> Text_Inst_Data_Container;
-Shader::Base * Text_Shader;
-Texture::T2DArray * Text_Pallet_Texture;
-
-void TextInit()
+void ControlInit()
 {
-	Text_BufferArray = new UI::Text::BufferArray();
-	Text_Shader = new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("Text.vert")),
-		Shader::Code::FromFile(ShaderDir.File("Text.frag"))
+	UI_Control_Shader = new Shader::Base((const Shader::Code []) {
+		Shader::Code::FromFile(ShaderDir.File("UI/Control.vert")),
+		Shader::Code::FromFile(ShaderDir.File("UI/Control.frag"))
 	}, 2);
+	UI_Control_Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *UI_Control_Shader);
 
-	Image * img = ImageDir.File("Text_16_8.png").LoadImagePNG();
-	Text_Pallet_Texture = new Texture::T2DArray(img);
-	delete img;
 
-	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, -1)));
-	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
-	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
-	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
-	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
-	Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, +1)));
 
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.625, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.500, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.375, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.250, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(-0.125, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D( 0.000, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.125, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.250, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.375, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.500, 0.0), Point2D(0, 0)));
-	Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(+0.625, 0.0), Point2D(0, 0)));
+	UI_Control_Manager = new Control::Manager();
+
+	WindowControl = new Control::Window(*UI_Control_Manager);
+
+	Control::Button * button;
+	Control::Text * text;
+	Control::Form * form;
+
+	form = new Control::Form(*UI_Control_Manager);
+	WindowControl -> Children.Insert(form);
+
+	button = new Control::Button(*UI_Control_Manager);
+	button -> Anchor.X.Anchor = ANCHOR_MIN;
+	button -> Anchor.Y.Anchor = ANCHOR_MIN;
+	button -> ClickFunc = click0;
+	form -> Children.Insert(button);
+
+	button = new Control::Button(*UI_Control_Manager);
+	button -> Anchor.X.Anchor = ANCHOR_MAX;
+	button -> Anchor.Y.Anchor = ANCHOR_MAX;
+	button -> ClickFunc = click1;
+	form -> Children.Insert(button);
+
+	text = new Control::Text(*UI_Control_Manager);
+	text -> Anchor.X.Anchor = ANCHOR_BOTH;
+	text -> Anchor.Y.Anchor = ANCHOR_NONE;
+	text -> PixelSize = Point2D(60, 60);
+	text -> NormalCenter = Point2D(0.5, 0.5);
+	form -> Children.Insert(text);
+	Text_Test = text;
+
+	form = new Control::Form(*UI_Control_Manager);
+	form -> Anchor.X.Anchor = ANCHOR_MIN;
+	form -> Anchor.Y.Anchor = ANCHOR_NONE;
+	form -> PixelSize = Point2D(60, 360);
+	form -> NormalCenter = Point2D(0, 0.5);
+	WindowControl -> Children.Insert(form);
+
+	form = new Control::Form(*UI_Control_Manager);
+	form -> Anchor.X.Anchor = ANCHOR_MAX;
+	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
+	form -> PixelSize = Point2D(60, 360);
+	form -> NormalCenter = Point2D(0, 0);
+	WindowControl -> Children.Insert(form);
+
+	WindowControl -> Show();
 }
-void TextFree()
+void ControlFree()
 {
-	delete Text_BufferArray;
-	delete Text_Shader;
-	delete Text_Pallet_Texture;
+	delete UI_Control_Shader;
+	delete UI_Control_Uni_ViewPortSizeRatio;
+
+	delete Multi_ViewPortSizeRatio;
+
+	delete UI_Control_Manager;
+
+	delete WindowControl;
 }
-void TextFrame()
+void ControlFrame()
 {
-	Text_BufferArray -> Use();
+	UI_Control_Shader -> Use();
 
-	Text_BufferArray -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Main_Data) * Text_Main_Data_Container.Count(), Text_Main_Data_Container.ToPointer(), GL_STREAM_DRAW);
-	Text_BufferArray -> Main.Count = Text_Main_Data_Container.Count();
+	WindowControl -> UpdateBox(AxisBox2D(Point2D(), UI_Control_Manager -> ViewPortSize));
+	WindowControl -> Show();
 
-	Text_BufferArray -> Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Inst_Data) * Text_Inst_Data_Container.Count(), Text_Inst_Data_Container.ToPointer(), GL_STREAM_DRAW);
-	Text_BufferArray -> Inst.Count = Text_Inst_Data_Container.Count();
+	UI_Control_Manager -> ChangeHover(NULL);
+	Point2D mouse = window -> CursorPixel();
+	mouse.Y = ViewPortSizeRatio.H - mouse.Y;
+	WindowControl -> UpdateHover(mouse);
 
-	Text_Shader -> Use();
-	Text_Pallet_Texture -> Bind();
-	Text_BufferArray -> Draw();
+	if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetPressed())
+	{
+		UI_Control_Manager -> Click(CLICK_PRESS, CLICK_BUTTON_L);
+	}
+
+	UI_Control_Manager -> BufferUpdate();
+	UI_Control_Manager -> BufferDraw();
 }
-
 
 void click0(unsigned char clickType, unsigned char clickButton)
 {
@@ -134,105 +167,104 @@ void click1(unsigned char clickType, unsigned char clickButton)
 	(void)clickButton;
 }
 
+
+
+
+
+Shader::Base * UI_Text_Shader;
+Uniform::SizeRatio2D * UI_Text_Uni_ViewPortSizeRatio;
+
+UI::Text::BufferArray * UI_Text_BufferArray;
+ContainerDynamic<UI::Text::Main_Data> UI_Text_Main_Data_Container;
+ContainerDynamic<UI::Text::Inst_Data> UI_Text_Inst_Data_Container;
+Texture::T2DArray * UI_Text_Pallet_Texture;
+
+void TextInit()
+{
+	UI_Text_Shader = new Shader::Base((const Shader::Code []) {
+		Shader::Code::FromFile(ShaderDir.File("UI/Text.vert")),
+		Shader::Code::FromFile(ShaderDir.File("UI/Text.frag"))
+	}, 2);
+	UI_Text_Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *UI_Text_Shader);
+
+	UI_Text_BufferArray = new UI::Text::BufferArray();
+
+	Image * img = ImageDir.File("Text_16_8.png").LoadImagePNG();
+	UI_Text_Pallet_Texture = new Texture::T2DArray(img);
+	delete img;
+
+	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, -1)));
+	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
+	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
+	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
+	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
+	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, +1)));
+
+	for (unsigned int i = 0; i <= 8; i++)
+	{
+		UI_Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(25.0 + (i * 50), 25.0), Point2D(i, 0)));
+	}
+}
+void TextFree()
+{
+	delete UI_Text_Shader;
+	delete UI_Text_Uni_ViewPortSizeRatio;
+
+	delete UI_Text_BufferArray;
+	delete UI_Text_Pallet_Texture;
+}
+void TextFrame()
+{
+	{
+		Point2D min = Text_Test -> PixelBox.Min;
+		Point2D max = Text_Test -> PixelBox.Max;
+		Point2D center = (max + min) / 2;
+		for (unsigned int i = 0; i <= 8; i++)
+		{
+			UI_Text_Inst_Data_Container[i].Pos = Point2D((min.X + 25) + (i * 50), center.Y);
+		}
+	}
+
+	UI_Text_BufferArray -> Use();
+
+	UI_Text_BufferArray -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Main_Data) * UI_Text_Main_Data_Container.Count(), UI_Text_Main_Data_Container.ToPointer(), GL_STREAM_DRAW);
+	UI_Text_BufferArray -> Main.Count = UI_Text_Main_Data_Container.Count();
+
+	UI_Text_BufferArray -> Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Inst_Data) * UI_Text_Inst_Data_Container.Count(), UI_Text_Inst_Data_Container.ToPointer(), GL_STREAM_DRAW);
+	UI_Text_BufferArray -> Inst.Count = UI_Text_Inst_Data_Container.Count();
+
+	UI_Text_Shader -> Use();
+	UI_Text_Pallet_Texture -> Bind();
+	UI_Text_BufferArray -> Draw();
+}
+
+
+
+
+
 void InitRun()
 {
-	UI_Shader = new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("UI.vert")),
-		Shader::Code::FromFile(ShaderDir.File("UI.frag"))
-	}, 2);
-
-	Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *UI_Shader);
-
-	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
-
-	Multi_ViewPortSizeRatio -> FindUniforms(&UI_Shader, 1);
-
-
-
-	ControlManager = new Control::Manager();
-
-	WindowControl = new Control::Window(*ControlManager);
-
-	Control::Button * button;
-	Control::Text * text;
-	Control::Form * form;
-
-	form = new Control::Form(*ControlManager);
-	WindowControl -> Children.Insert(form);
-
-	button = new Control::Button(*ControlManager);
-	button -> Anchor.X.Anchor = ANCHOR_MIN;
-	button -> Anchor.Y.Anchor = ANCHOR_MIN;
-	button -> ClickFunc = click0;
-	form -> Children.Insert(button);
-
-	button = new Control::Button(*ControlManager);
-	button -> Anchor.X.Anchor = ANCHOR_MAX;
-	button -> Anchor.Y.Anchor = ANCHOR_MAX;
-	button -> ClickFunc = click1;
-	form -> Children.Insert(button);
-
-	text = new Control::Text(*ControlManager);
-	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_NONE;
-	text -> PixelSize = Point2D(60, 60);
-	text -> NormalCenter = Point2D(0.5, 0.5);
-	form -> Children.Insert(text);
-
-	form = new Control::Form(*ControlManager);
-	form -> Anchor.X.Anchor = ANCHOR_MIN;
-	form -> Anchor.Y.Anchor = ANCHOR_NONE;
-	form -> PixelSize = Point2D(60, 360);
-	form -> NormalCenter = Point2D(0, 0.5);
-	WindowControl -> Children.Insert(form);
-
-	form = new Control::Form(*ControlManager);
-	form -> Anchor.X.Anchor = ANCHOR_MAX;
-	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
-	form -> PixelSize = Point2D(60, 360);
-	form -> NormalCenter = Point2D(0, 0);
-	WindowControl -> Children.Insert(form);
-
-	WindowControl -> Show();
-
+	ControlInit();
 	TextInit();
+
+	Shader::Base * shaders[2] = (Shader::Base * [])
+	{
+		UI_Control_Shader,
+		UI_Text_Shader,
+	};
+	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
+	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 2);
 }
 void FreeRun()
 {
-	delete UI_Shader;
-
-	delete Uni_ViewPortSizeRatio;
-
-	delete Multi_ViewPortSizeRatio;
-
-	delete ControlManager;
-
-	delete WindowControl;
-
+	ControlFree();
 	TextFree();
 }
 
 void Frame(double timeDelta)
 {
 	(void)timeDelta;
-	UI_Shader -> Use();
-
-	WindowControl -> UpdateBox(AxisBox2D(Point2D(), ControlManager -> ViewPortSize));
-	WindowControl -> Show();
-
-	ControlManager -> ChangeHover(NULL);
-	Point2D mouse = window -> CursorPixel();
-	mouse.Y = ViewPortSizeRatio.H - mouse.Y;
-	WindowControl -> UpdateHover(mouse);
-
-	if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetPressed())
-	{
-		ControlManager -> Click(CLICK_PRESS, CLICK_BUTTON_L);
-	}
-
-	ControlManager -> BufferUpdate();
-	ControlManager -> BufferDraw();
-
+	ControlFrame();
 	TextFrame();
 }
 
@@ -240,7 +272,7 @@ void Resize(int w, int h)
 {
 	ViewPortSizeRatio = SizeRatio2D(w, h);
 	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
-	ControlManager -> ViewPortSize = Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H);
+	UI_Control_Manager -> ViewPortSize = Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H);
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(window->DefaultColor.R, window->DefaultColor.G, window->DefaultColor.B, 1.0f);
 	//Frame(0);

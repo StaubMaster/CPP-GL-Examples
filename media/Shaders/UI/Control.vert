@@ -34,11 +34,13 @@ void main()
 	vec2 Center = (Inst_Max + Inst_Min) / 2;
 	vec2 SizeHalf = (Inst_Max - Inst_Min) / 2;
 	vec2 pos = (Main_Pos * SizeHalf) + Center;
-	gl_Position = vec4(pos, Inst_Layer, 1);
+	vec2 pos_normal = ((pos / ViewPortSizeRatio.Size) * 2) - 1;
 
-	vs_out.Min = Inst_Min * ViewPortSizeRatio.Size;
-	vs_out.Max = Inst_Max * ViewPortSizeRatio.Size;
-	vs_out.Pos = pos * ViewPortSizeRatio.Size;
+	gl_Position = vec4(pos_normal, Inst_Layer, 1);
+
+	vs_out.Min = Inst_Min;
+	vs_out.Max = Inst_Max;
+	vs_out.Pos = pos;
 
 	vs_out.Col = Inst_Col;
 }

@@ -3,7 +3,7 @@
 
 
 const float BoarderFactor = 0.05;
-const float BoarderSize = 8;
+const float BoarderSize = 4;
 
 
 

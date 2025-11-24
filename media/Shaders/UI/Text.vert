@@ -11,7 +11,8 @@ struct SizeRatio2D
 uniform SizeRatio2D ViewPortSizeRatio;
 
 const vec2 TexturePalletCount = vec2(16, 8);
-const vec2 PalletScale = vec2(0.1, 0.1);
+//const vec2 PalletScale = vec2(0.1, 0.1);
+const vec2 PalletScale = vec2(50, 50);
 
 
 
@@ -29,8 +30,12 @@ out UI_Text
 
 void main()
 {
-	vec2 pos = (Main_Pos * PalletScale) + Inst_Pos;
-	gl_Position = vec4(pos, 0.01, 1);
+	vec2 Center = Inst_Pos;
+	vec2 SizeHalf = PalletScale / 2;
+	vec2 pos = (Main_Pos * SizeHalf) + Center;
+	vec2 pos_normal = ((pos / ViewPortSizeRatio.Size) * 2) - 1;
+
+	gl_Position = vec4(pos_normal, 0.01, 1);
 
 	vec2 pallet_pos = vec2(+Main_Pos.x, -Main_Pos.y);
 	pallet_pos = ((pallet_pos + vec2(1, 1)) / 2);
