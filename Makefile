@@ -24,25 +24,27 @@ MAINS_DIR = mains/
 #                  Standard Makefile Commands                  #
 ################################################################
 
-all: repos
-	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-	@$(MAKE) -s $(EXES)
+#	all currently causes a loop
 
-clean:
+#all: repos
 #	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-	FILES_OBJ
+#	@$(MAKE) -s $(EXES)
 
-fclean:
+#clean:
+##	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
+#	FILES_OBJ
+
+#fclean:
 #	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
 #	@$(MAKE) -s clean
 #	@rm -f $(EXES)
 
-re:
-	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-	@$(MAKE) -s fclean
-	@$(MAKE) -s all
+#re:
+#	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
+#	@$(MAKE) -s fclean
+#	@$(MAKE) -s all
 
-.PHONY: all clean fclean re
+#.PHONY: all clean fclean re
 
 ################################################################
 
@@ -107,9 +109,9 @@ UI_re:
 .PHONY: UI_all UI_clean UI_fclean UI_re
 $(UI_NAME) : $(UI_FILES_OBJ)
 	$(call fancyEcho,$(FANCY_NAME),Compiling,$(UI_NAME))
-	$(MAKE) $(ENGINE_LIBRARYS)
+	@$(MAKE) $(ENGINE_LIBRARYS) -s
 	@mkdir -p logs/
-	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(UI_FILES_OBJ) -o $(UI_NAME) $(LIBRARYS) $(ARGUMENTS)
+	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(UI_FILES_OBJ) -o $(UI_NAME) $(LIBRARYS) $(ARGUMENTS)
 ################################################################
 #  maybe not
 # OBJ_Parser
