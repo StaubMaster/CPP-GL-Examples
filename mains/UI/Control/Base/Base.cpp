@@ -20,19 +20,13 @@ Control::Base::~Base()
 
 void Control::Base::Show()
 {
-	if (Visible == false)
-	{
-		Visible = true;
-	}
+	Visible = true;
 	ShowEntry();
 	UpdateEntryAll();
 }
 void Control::Base::Hide()
 {
-	if (Visible == true)
-	{
-		Visible = false;
-	}
+	Visible = false;
 	HideEntry();
 }
 
@@ -49,14 +43,21 @@ void Control::Base::ShowEntry()
 }
 void Control::Base::HideEntry()
 {
-	if (Visible == true && Entry != NULL)
+	if (Entry != NULL)
 	{
+		std::cout << "Count " << ControlManager.Inst_Data_Container.Length << "\n";
+		std::cout << "Count " << ControlManager.Inst_Data_Container.Size << "\n";
+		std::cout << "Count " << ControlManager.Inst_Data_Container.EntryRefs.Count() << "\n";
+		std::cout << "Dispose\n";
 		Entry -> Dispose();
+		std::cout << "Dispose\n";
 		Entry = NULL;
 	}
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
+		std::cout << "Here " << i << "\n";
 		Children[i] -> HideEntry();
+		std::cout << "Here " << i << "\n";
 	}
 }
 void Control::Base::UpdateEntryAll()

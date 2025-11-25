@@ -60,9 +60,11 @@ Uniform::SizeRatio2D * UI_Control_Uni_ViewPortSizeRatio;
 
 void click0(unsigned char clickType, unsigned char clickButton);
 void click1(unsigned char clickType, unsigned char clickButton);
+void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton);
 
 Control::Manager * UI_Control_Manager;
 Control::Window * WindowControl;
+Control::Form * MainForm;
 Control::Text * Text_Test;
 
 void ControlInit()
@@ -85,6 +87,7 @@ void ControlInit()
 
 	form = new Control::Form(*UI_Control_Manager);
 	WindowControl -> Children.Insert(form);
+	MainForm = form;
 
 	button = new Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
@@ -113,6 +116,12 @@ void ControlInit()
 	form -> NormalCenter = Point2D(0, 0.5);
 	WindowControl -> Children.Insert(form);
 
+	//button = new Control::Button(*UI_Control_Manager);
+	//button -> Anchor.X.Anchor = ANCHOR_BOTH;
+	//button -> Anchor.Y.Anchor = ANCHOR_MAX;
+	//button -> ClickFunc = click_toggle_MainForm;
+	//form -> Children.Insert(button);
+
 	form = new Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MAX;
 	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
@@ -121,6 +130,7 @@ void ControlInit()
 	WindowControl -> Children.Insert(form);
 
 	WindowControl -> Show();
+	MainForm -> Hide();
 }
 void ControlFree()
 {
@@ -166,7 +176,12 @@ void click1(unsigned char clickType, unsigned char clickButton)
 	(void)clickType;
 	(void)clickButton;
 }
-
+void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton)
+{
+	std::cout << "click toggle\n";
+	(void)clickType;
+	(void)clickButton;
+}
 
 
 
