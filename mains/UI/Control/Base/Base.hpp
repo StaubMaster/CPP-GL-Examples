@@ -1,5 +1,5 @@
-#ifndef  CONTROL_HPP
-# define CONTROL_HPP
+#ifndef  CONTROL_BASE_HPP
+# define CONTROL_BASE_HPP
 
 #include "Data.hpp"
 
@@ -128,11 +128,15 @@ class Base
 		//	would be useful for placing multiple things next to eachother
 
 	public:
+		void Info(std::string padding) const;
+
+	public:
 		void Show();
 		void Hide();
 	private:
 		void ShowEntry();
 		void HideEntry();
+	public:
 		void UpdateEntryAll();
 
 	public:

@@ -10,7 +10,6 @@ Control::Base::Base(Manager & manager) :
 {
 	Visible = true;
 	ClickFunc = NULL;
-	std::cout << "Control.Childre.Count() " << Children.Count() << "\n";
 }
 Control::Base::~Base()
 {
@@ -20,8 +19,20 @@ Control::Base::~Base()
 	}
 }
 
+void Control::Base::Info(std::string padding) const
+{
+	std::cout << padding << "this " << this << '\n';
+	std::cout << padding << "Entry " << Entry.Is() << '\n';
+	std::cout << padding << "Children " << Children.Count() << '\n';
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> Info(padding + "  ");
+	}
+}
+
 void Control::Base::Show()
 {
+
 	Visible = true;
 	ShowEntry();
 	UpdateEntryAll();
@@ -30,6 +41,7 @@ void Control::Base::Hide()
 {
 	Visible = false;
 	HideEntry();
+	UpdateEntryAll();
 }
 
 void Control::Base::ShowEntry()
@@ -53,17 +65,13 @@ void Control::Base::HideEntry()
 		//std::cout << "Count " << ControlManager.Inst_Data_Container.Limit() << "\n";
 		//std::cout << "Count " << ControlManager.Inst_Data_Container.Count() << "\n";
 		//std::cout << "Count " << ControlManager.Inst_Data_Container.Entrys.Count() << "\n";
-		std::cout << "Dispose\n";
 		//Entry -> Dispose();
 		Entry.Dispose();
-		std::cout << "Dispose\n";
 		//Entry = NULL;
 	}
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		std::cout << "Here " << i << "\n";
 		Children[i] -> HideEntry();
-		std::cout << "Here " << i << "\n";
 	}
 }
 void Control::Base::UpdateEntryAll()
@@ -104,6 +112,7 @@ void Control::Base::UpdateBox(const AxisBox2D & BaseBox)
 }
 bool Control::Base::UpdateHover(Point2D mouse)
 {
+	if (!Visible) { return false; }
 	if (PixelBox.Intersekt(mouse))
 	{
 		ControlManager.ChangeHover(this);

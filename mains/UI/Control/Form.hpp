@@ -1,5 +1,5 @@
-#ifndef  CONTROL_FORM
-# define CONTROL_FORM
+#ifndef  CONTROL_FORM_HPP
+# define CONTROL_FORM_HPP
 
 #include "Base/Base.hpp"
 

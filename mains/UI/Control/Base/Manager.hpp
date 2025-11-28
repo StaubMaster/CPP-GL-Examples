@@ -28,67 +28,14 @@ struct Manager
 	Base * Hovering;
 	Base * Selected;
 
-	Manager() :
-		ViewPortSize(),
-		Main_Data_Container(Container::IncreaseBehaviour::Binary, Container::DecreaseBehaviour::Binary),
-		Inst_Data_Container()
-	{
-		std::cout << "  ++++  " << "Manager()" << "\n";
-		BufferArray = new Control::BufferArray();
+	Manager();
+	~Manager();
 
-		//Main_Data_Container.Insert(Control::Main_Data(Point2D(-1, -1)));
-		//Main_Data_Container.Insert(Control::Main_Data(Point2D(-1, +1)));
-		//Main_Data_Container.Insert(Control::Main_Data(Point2D(+1, -1)));
-		//Main_Data_Container.Insert(Control::Main_Data(Point2D(+1, -1)));
-		//Main_Data_Container.Insert(Control::Main_Data(Point2D(-1, +1)));
-		//Main_Data_Container.Insert(Control::Main_Data(Point2D(+1, +1)));
+	void BufferUpdate();
+	void BufferDraw();
 
-		Hovering = NULL;
-		Selected = NULL;
-	}
-	~Manager()
-	{
-		std::cout << "  ----  " << "~Manager()" << "\n";
-		delete BufferArray;
-	}
-
-	void BufferUpdate()
-	{
-		BufferArray -> Use();
-		BufferArray -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(Control::Main_Data) * Main_Data_Container.Count(), Main_Data_Container.Data(), GL_STREAM_DRAW);
-		BufferArray -> Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(Control::Inst_Data) * Inst_Data_Container.Count(), Inst_Data_Container.Data(), GL_STREAM_DRAW);
-		BufferArray -> Main.Count = Main_Data_Container.Count();
-		BufferArray -> Inst.Count = Inst_Data_Container.Count();
-	}
-	void BufferDraw()
-	{
-		BufferArray -> Use();
-		BufferArray -> Draw();
-	}
-
-	void ChangeHover(Base * control)
-	{
-		if (Hovering != NULL)
-		{
-			//	change Hovering Color to DefaultColor
-			Hovering = NULL;
-		}
-		if (control != NULL)
-		{
-			//	change Hovering Color to HoverColor
-			Hovering = control;
-		}
-	}
-	void Click(unsigned char clickType, unsigned char clickButton)
-	{
-		if (Hovering != NULL)
-		{
-			if (Hovering -> ClickFunc != NULL)
-			{
-				Hovering -> ClickFunc(clickType, clickButton);
-			}
-		}
-	}
+	void ChangeHover(Base * control);
+	void Click(unsigned char clickType, unsigned char clickButton);
 };
 };
 

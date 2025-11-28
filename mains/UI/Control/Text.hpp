@@ -1,5 +1,5 @@
-#ifndef  CONTROL_TEXT
-# define CONTROL_TEXT
+#ifndef  CONTROL_TEXT_HPP
+# define CONTROL_TEXT_HPP
 
 #include "Base/Base.hpp"
 

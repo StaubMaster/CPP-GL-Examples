@@ -1,5 +1,5 @@
-#ifndef  CONTROL_WINDOW
-# define CONTROL_WINDOW
+#ifndef  CONTROL_WINDOW_HPP
+# define CONTROL_WINDOW_HPP
 
 #include "Base/Base.hpp"
 

@@ -1,5 +1,5 @@
-#ifndef  CONTROL_BUTTON
-# define CONTROL_BUTTON
+#ifndef  CONTROL_BUTTON_HPP
+# define CONTROL_BUTTON_HPP
 
 #include "Base/Base.hpp"
 

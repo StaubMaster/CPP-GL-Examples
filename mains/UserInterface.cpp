@@ -64,8 +64,8 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton);
 
 Control::Manager * UI_Control_Manager;
 Control::Window * WindowControl;
-//Control::Form * MainForm;
-//Control::Text * Text_Test;
+Control::Form * MainForm;
+Control::Text * Text_Test;
 
 void ControlInit()
 {
@@ -79,39 +79,30 @@ void ControlInit()
 
 
 
-	std::cout << "Manager ...\n";
 	UI_Control_Manager = new Control::Manager();
-	std::cout << "Manager done\n";
 
 	WindowControl = new Control::Window(*UI_Control_Manager);
 
-	//Control::Form * form;
-	//Control::Button * button;
-	//Control::Text * text;
+	Control::Form * form;
+	Control::Button * button;
+	Control::Text * text;
 
-	/*std::cout << "Form ...\n";
 	form = new Control::Form(*UI_Control_Manager);
 	WindowControl -> Children.Insert(form);
 	MainForm = form;
-	std::cout << "Form done\n";*/
 
-	/*std::cout << "Button ...\n";
 	button = new Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MIN;
 	button -> ClickFunc = click0;
 	form -> Children.Insert(button);
-	std::cout << "Button done\n";*/
 
-	/*std::cout << "Button ...\n";
 	button = new Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_MAX;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> ClickFunc = click1;
 	form -> Children.Insert(button);
-	std::cout << "Button done\n";*/
 
-	/*std::cout << "Text ...\n";
 	text = new Control::Text(*UI_Control_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_NONE;
@@ -119,36 +110,30 @@ void ControlInit()
 	text -> NormalCenter = Point2D(0.5, 0.5);
 	form -> Children.Insert(text);
 	Text_Test = text;
-	std::cout << "Text done\n";*/
 
-	/*std::cout << "Form ...\n";
 	form = new Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
 	form -> Anchor.Y.Anchor = ANCHOR_NONE;
 	form -> PixelSize = Point2D(60, 360);
 	form -> NormalCenter = Point2D(0, 0.5);
 	WindowControl -> Children.Insert(form);
-	std::cout << "Form done\n";*/
 
-	//button = new Control::Button(*UI_Control_Manager);
-	//button -> Anchor.X.Anchor = ANCHOR_BOTH;
-	//button -> Anchor.Y.Anchor = ANCHOR_MAX;
-	//button -> ClickFunc = click_toggle_MainForm;
-	//form -> Children.Insert(button);
+	button = new Control::Button(*UI_Control_Manager);
+	button -> Anchor.X.Anchor = ANCHOR_BOTH;
+	button -> Anchor.Y.Anchor = ANCHOR_MAX;
+	button -> ClickFunc = click_toggle_MainForm;
+	form -> Children.Insert(button);
 
-	/*std::cout << "Form ...\n";
 	form = new Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MAX;
 	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
 	form -> PixelSize = Point2D(60, 360);
 	form -> NormalCenter = Point2D(0, 0);
 	WindowControl -> Children.Insert(form);
-	std::cout << "Form done\n";*/
 
 	std::cout << "Control Init done\n";
 
-	//WindowControl -> Show();
-	//MainForm -> Hide();
+	WindowControl -> Show();
 }
 void ControlFree()
 {
@@ -172,12 +157,10 @@ void ControlFrame()
 	UI_Control_Shader -> Use();
 
 	WindowControl -> UpdateBox(AxisBox2D(Point2D(), UI_Control_Manager -> ViewPortSize));
-	WindowControl -> Show();
+	WindowControl -> UpdateEntryAll();
 
 	UI_Control_Manager -> ChangeHover(NULL);
 	Point2D mouse = window -> CursorPixel();
-
-
 	mouse.Y = ViewPortSizeRatio.H - mouse.Y;
 	WindowControl -> UpdateHover(mouse);
 
@@ -210,7 +193,16 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton)
 	std::cout << "click toggle\n";
 	(void)clickType;
 	(void)clickButton;
+	if (MainForm -> Visible)
+	{
+		MainForm -> Hide();
+	}
+	else
+	{
+		MainForm -> Show();
+	}
 }
+
 
 
 /*
@@ -286,24 +278,31 @@ void TextFrame()
 
 void InitRun()
 {
+	std::cout << "Init ...\n";
+
 	ControlInit();
 	//TextInit();
 
-	Shader::Base * shaders[1] = (Shader::Base * [])
+	Shader::Base * shaders[1] =
 	{
 		UI_Control_Shader,
 		//UI_Text_Shader,
 	};
 	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
 	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 1);
+
 	std::cout << "Init done\n";
 }
 void FreeRun()
 {
+	std::cout << "Free ...\n";
+
 	ControlFree();
 	//TextFree();
 
 	delete Multi_ViewPortSizeRatio;
+
+	std::cout << "Free done\n";
 }
 void Frame(double timeDelta)
 {

@@ -1,4 +1,4 @@
-#ifndef CONTROL_BUFFER_HPP
+#ifndef  CONTROL_BUFFER_HPP
 # define CONTROL_BUFFER_HPP
 
 #include "Graphics/Buffer/BaseBufferArray.hpp"
