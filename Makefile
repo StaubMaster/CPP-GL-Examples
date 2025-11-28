@@ -25,25 +25,27 @@ redirect:
 #                  Standard Makefile Commands                  #
 ################################################################
 
-all: repos
-	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-	@$(MAKE) -s $(EXES)
+#	all currently causes a loop
 
-clean:
+#all: repos
 #	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-	FILES_OBJ
+#	@$(MAKE) -s $(EXES)
 
-fclean:
+#clean:
+##	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
+#	FILES_OBJ
+
+#fclean:
 #	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
 #	@$(MAKE) -s clean
 #	@rm -f $(EXES)
 
-re:
-	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-	@$(MAKE) -s fclean
-	@$(MAKE) -s all
+#re:
+#	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
+#	@$(MAKE) -s fclean
+#	@$(MAKE) -s all
 
-.PHONY: all clean fclean re
+#.PHONY: all clean fclean re
 
 ################################################################
 

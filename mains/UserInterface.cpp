@@ -176,8 +176,13 @@ void ControlFrame()
 
 	UI_Control_Manager -> ChangeHover(NULL);
 	Point2D mouse = window -> CursorPixel();
+
+
 	mouse.Y = ViewPortSizeRatio.H - mouse.Y;
 	WindowControl -> UpdateHover(mouse);
+
+	//std::cout << "mouse " << mouse << "\n";
+	//std::cout << "button " << (MainForm -> Children[0] -> PixelBox.Min) << " " << (MainForm -> Children[0] -> PixelBox.Max) << "\n";
 
 	if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetPressed())
 	{
@@ -206,7 +211,6 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton)
 	(void)clickType;
 	(void)clickButton;
 }
-
 
 
 /*
@@ -301,7 +305,6 @@ void FreeRun()
 
 	delete Multi_ViewPortSizeRatio;
 }
-
 void Frame(double timeDelta)
 {
 	(void)timeDelta;
