@@ -18,7 +18,8 @@ MAINS_DIR = mains/
 
 
 
-
+redirect:
+	@echo "!!!! currently the main Standard Makefile Commands dont work. use UI_ stuff for now"
 
 ################################################################
 #                  Standard Makefile Commands                  #
@@ -64,8 +65,6 @@ FANCY_NAME := Examples
 #	so just treat everything as multiple files for now ?
 #	put all in here for now ?
 
-
-
 ################################################################
 # Basic
 # Multi
@@ -92,6 +91,7 @@ UI_FILES_OBJ := $(UI_FILES_SRC:.cpp=.o)
 UI_all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(MAKE) repos_clone -s
+	@$(MAKE) $(UI_FILES_OBJ) -s
 	@$(MAKE) $(UI_NAME) -s
 UI_clean:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
@@ -106,9 +106,10 @@ UI_re:
 	@$(MAKE) -s UI_all
 .PHONY: UI_all UI_clean UI_fclean UI_re
 $(UI_NAME) : $(UI_FILES_OBJ)
-	$(call fancyEcho,$(FANCY_NAME),Compiling,$(UI_NAME))
+	$(call fancyEcho,$(FANCY_NAME),Target,$(UI_NAME))
 	$(MAKE) $(ENGINE_LIBRARYS)
 	@mkdir -p logs/
+	$(call fancyEcho,$(FANCY_NAME),Compiling,$(UI_NAME))
 	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(UI_FILES_OBJ) -o $(UI_NAME) $(LIBRARYS) $(ARGUMENTS)
 ################################################################
 #  maybe not

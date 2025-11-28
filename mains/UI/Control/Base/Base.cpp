@@ -4,11 +4,13 @@
 
 
 Control::Base::Base(Manager & manager) :
-	ControlManager(manager)
+	ControlManager(manager),
+	Entry(),
+	Children(Container::IncreaseBehaviour::Binary, Container::DecreaseBehaviour::Binary)
 {
-	Entry = NULL,
 	Visible = true;
 	ClickFunc = NULL;
+	std::cout << "Control.Childre.Count() " << Children.Count() << "\n";
 }
 Control::Base::~Base()
 {
@@ -32,9 +34,11 @@ void Control::Base::Hide()
 
 void Control::Base::ShowEntry()
 {
-	if (Visible == true && Entry == NULL)
+	//if (Visible == true && Entry == NULL)
+	if (Visible == true && !Entry.Is())
 	{
-		Entry = ControlManager.Inst_Data_Container.Alloc(1);
+		//Entry = ControlManager.Inst_Data_Container.Alloc(1);
+		Entry.Allocate(ControlManager.Inst_Data_Container, 1);
 	}
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -43,15 +47,17 @@ void Control::Base::ShowEntry()
 }
 void Control::Base::HideEntry()
 {
-	if (Entry != NULL)
+	//if (Entry != NULL)
+	if (Entry.Is())
 	{
-		std::cout << "Count " << ControlManager.Inst_Data_Container.Length << "\n";
-		std::cout << "Count " << ControlManager.Inst_Data_Container.Size << "\n";
-		std::cout << "Count " << ControlManager.Inst_Data_Container.EntryRefs.Count() << "\n";
+		//std::cout << "Count " << ControlManager.Inst_Data_Container.Limit() << "\n";
+		//std::cout << "Count " << ControlManager.Inst_Data_Container.Count() << "\n";
+		//std::cout << "Count " << ControlManager.Inst_Data_Container.Entrys.Count() << "\n";
 		std::cout << "Dispose\n";
-		Entry -> Dispose();
+		//Entry -> Dispose();
+		Entry.Dispose();
 		std::cout << "Dispose\n";
-		Entry = NULL;
+		//Entry = NULL;
 	}
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -62,18 +68,24 @@ void Control::Base::HideEntry()
 }
 void Control::Base::UpdateEntryAll()
 {
-	if (Entry != NULL)
+	//if (Entry != NULL)
+	if (Entry.Is())
 	{
-		(*Entry)[0].Min = PixelBox.Min;
-		(*Entry)[0].Max = PixelBox.Max;
-		(*Entry)[0].Layer = Layer;
+		//(*Entry)[0].Min = PixelBox.Min;
+		//(*Entry)[0].Max = PixelBox.Max;
+		//(*Entry)[0].Layer = Layer;
+		(*Entry).Min = PixelBox.Min;
+		(*Entry).Max = PixelBox.Max;
+		(*Entry).Layer = Layer;
 		if (ControlManager.Hovering == this)
 		{
-			(*Entry)[0].Col = ColorHover;
+			//(*Entry)[0].Col = ColorHover;
+			(*Entry).Col = ColorHover;
 		}
 		else
 		{
-			(*Entry)[0].Col = ColorDefault;
+			//(*Entry)[0].Col = ColorDefault;
+			(*Entry).Col = ColorDefault;
 		}
 	}
 	for (unsigned int i = 0; i < Children.Count(); i++)

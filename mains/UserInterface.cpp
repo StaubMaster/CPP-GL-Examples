@@ -11,8 +11,8 @@
 #include "Format/Image.hpp"
 
 #include "DataShow.hpp"
-#include "Miscellaneous/ContainerDynamic.hpp"
-#include "Miscellaneous/EntryContainer/EntryContainerDynamic.hpp"
+#include "Miscellaneous/Container/Dynamic.hpp"
+#include "Miscellaneous/EntryContainer/Dynamic.hpp"
 
 #include "Graphics/Shader/Code.hpp"
 #include "Graphics/Shader/Base.hpp"
@@ -64,11 +64,13 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton);
 
 Control::Manager * UI_Control_Manager;
 Control::Window * WindowControl;
-Control::Form * MainForm;
-Control::Text * Text_Test;
+//Control::Form * MainForm;
+//Control::Text * Text_Test;
 
 void ControlInit()
 {
+	std::cout << "Control Init ...\n";
+
 	UI_Control_Shader = new Shader::Base((const Shader::Code []) {
 		Shader::Code::FromFile(ShaderDir.File("UI/Control.vert")),
 		Shader::Code::FromFile(ShaderDir.File("UI/Control.frag"))
@@ -77,30 +79,39 @@ void ControlInit()
 
 
 
+	std::cout << "Manager ...\n";
 	UI_Control_Manager = new Control::Manager();
+	std::cout << "Manager done\n";
 
 	WindowControl = new Control::Window(*UI_Control_Manager);
 
-	Control::Button * button;
-	Control::Text * text;
-	Control::Form * form;
+	//Control::Form * form;
+	//Control::Button * button;
+	//Control::Text * text;
 
+	/*std::cout << "Form ...\n";
 	form = new Control::Form(*UI_Control_Manager);
 	WindowControl -> Children.Insert(form);
 	MainForm = form;
+	std::cout << "Form done\n";*/
 
+	/*std::cout << "Button ...\n";
 	button = new Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MIN;
 	button -> ClickFunc = click0;
 	form -> Children.Insert(button);
+	std::cout << "Button done\n";*/
 
+	/*std::cout << "Button ...\n";
 	button = new Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_MAX;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> ClickFunc = click1;
 	form -> Children.Insert(button);
+	std::cout << "Button done\n";*/
 
+	/*std::cout << "Text ...\n";
 	text = new Control::Text(*UI_Control_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_NONE;
@@ -108,13 +119,16 @@ void ControlInit()
 	text -> NormalCenter = Point2D(0.5, 0.5);
 	form -> Children.Insert(text);
 	Text_Test = text;
+	std::cout << "Text done\n";*/
 
+	/*std::cout << "Form ...\n";
 	form = new Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
 	form -> Anchor.Y.Anchor = ANCHOR_NONE;
 	form -> PixelSize = Point2D(60, 360);
 	form -> NormalCenter = Point2D(0, 0.5);
 	WindowControl -> Children.Insert(form);
+	std::cout << "Form done\n";*/
 
 	//button = new Control::Button(*UI_Control_Manager);
 	//button -> Anchor.X.Anchor = ANCHOR_BOTH;
@@ -122,26 +136,36 @@ void ControlInit()
 	//button -> ClickFunc = click_toggle_MainForm;
 	//form -> Children.Insert(button);
 
+	/*std::cout << "Form ...\n";
 	form = new Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MAX;
 	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
 	form -> PixelSize = Point2D(60, 360);
 	form -> NormalCenter = Point2D(0, 0);
 	WindowControl -> Children.Insert(form);
+	std::cout << "Form done\n";*/
 
-	WindowControl -> Show();
-	MainForm -> Hide();
+	std::cout << "Control Init done\n";
+
+	//WindowControl -> Show();
+	//MainForm -> Hide();
 }
 void ControlFree()
 {
+	std::cout << "Control Free ....\n";
+
 	delete UI_Control_Shader;
 	delete UI_Control_Uni_ViewPortSizeRatio;
 
-	delete Multi_ViewPortSizeRatio;
-
+	delete WindowControl;
+	//	Removing Entrys might still cause Data Reallocation in Containers in Control Manager
+	//	have a way to mark EntryContainer for deletion so its just ignores Entry stuff
+	//	Insert should return NULL Entrys
+	//	have a way to start it again ? so it's just temprarily static ?
+	//	"immutable" ?
 	delete UI_Control_Manager;
 
-	delete WindowControl;
+	std::cout << "Control Free done\n";
 }
 void ControlFrame()
 {
@@ -185,13 +209,13 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton)
 
 
 
-
+/*
 Shader::Base * UI_Text_Shader;
 Uniform::SizeRatio2D * UI_Text_Uni_ViewPortSizeRatio;
 
 UI::Text::BufferArray * UI_Text_BufferArray;
-ContainerDynamic<UI::Text::Main_Data> UI_Text_Main_Data_Container;
-ContainerDynamic<UI::Text::Inst_Data> UI_Text_Inst_Data_Container;
+Container::Dynamic<UI::Text::Main_Data> UI_Text_Main_Data_Container;
+Container::Dynamic<UI::Text::Inst_Data> UI_Text_Inst_Data_Container;
 Texture::T2DArray * UI_Text_Pallet_Texture;
 
 void TextInit()
@@ -242,45 +266,48 @@ void TextFrame()
 
 	UI_Text_BufferArray -> Use();
 
-	UI_Text_BufferArray -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Main_Data) * UI_Text_Main_Data_Container.Count(), UI_Text_Main_Data_Container.ToPointer(), GL_STREAM_DRAW);
+	UI_Text_BufferArray -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Main_Data) * UI_Text_Main_Data_Container.Count(), UI_Text_Main_Data_Container.Data(), GL_STREAM_DRAW);
 	UI_Text_BufferArray -> Main.Count = UI_Text_Main_Data_Container.Count();
 
-	UI_Text_BufferArray -> Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Inst_Data) * UI_Text_Inst_Data_Container.Count(), UI_Text_Inst_Data_Container.ToPointer(), GL_STREAM_DRAW);
+	UI_Text_BufferArray -> Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Inst_Data) * UI_Text_Inst_Data_Container.Count(), UI_Text_Inst_Data_Container.Data(), GL_STREAM_DRAW);
 	UI_Text_BufferArray -> Inst.Count = UI_Text_Inst_Data_Container.Count();
 
 	UI_Text_Shader -> Use();
 	UI_Text_Pallet_Texture -> Bind();
 	UI_Text_BufferArray -> Draw();
 }
-
-
+*/
 
 
 
 void InitRun()
 {
 	ControlInit();
-	TextInit();
+	//TextInit();
 
-	Shader::Base * shaders[2] = (Shader::Base * [])
+	Shader::Base * shaders[1] = (Shader::Base * [])
 	{
 		UI_Control_Shader,
-		UI_Text_Shader,
+		//UI_Text_Shader,
 	};
 	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
-	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 2);
+	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 1);
+	std::cout << "Init done\n";
 }
 void FreeRun()
 {
 	ControlFree();
-	TextFree();
+	//TextFree();
+
+	delete Multi_ViewPortSizeRatio;
 }
 
 void Frame(double timeDelta)
 {
 	(void)timeDelta;
+
 	ControlFrame();
-	TextFrame();
+	//TextFrame();
 }
 
 void Resize(int w, int h)
@@ -288,6 +315,7 @@ void Resize(int w, int h)
 	ViewPortSizeRatio = SizeRatio2D(w, h);
 	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
 	UI_Control_Manager -> ViewPortSize = Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H);
+
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(window->DefaultColor.R, window->DefaultColor.G, window->DefaultColor.B, 1.0f);
 	//Frame(0);

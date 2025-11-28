@@ -9,8 +9,9 @@
 
 #include "DataInclude.hpp"
 
-#include "Miscellaneous/ContainerDynamic.hpp"
-#include "Miscellaneous/EntryContainer/EntryContainerDynamic.hpp"
+#include "Miscellaneous/Container/Dynamic.hpp"
+#include "Miscellaneous/EntryContainer/Dynamic.hpp"
+
 
 
 /*
@@ -96,8 +97,8 @@ class Base
 	public:
 		Manager & ControlManager;
 
-		EntryContainerDynamic<Control::Inst_Data>::Entry * Entry;
-		ContainerDynamic<Control::Base *> Children;
+		EntryContainer::Entry<Control::Inst_Data> Entry;
+		Container::Dynamic<Control::Base *> Children;
 
 		float			Layer;
 		bool			Visible;
