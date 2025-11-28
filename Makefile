@@ -4,8 +4,8 @@
 COMPILER = c++ -std=c++11
 FLAGS = -Wall -Wextra -Werror
 
-MAINS = 
-#	Basic.cpp \
+MAINS = \
+	Basic.cpp
 #	Multi.cpp \
 #	Light.cpp \
 #	Spline.cpp \
@@ -18,34 +18,38 @@ MAINS_DIR = mains/
 
 
 
-redirect:
-	@echo "!!!! currently the main Standard Makefile Commands dont work. use UI_ stuff for now"
-
 ################################################################
 #                  Standard Makefile Commands                  #
 ################################################################
 
 #	all currently causes a loop
 
-#all: repos
-#	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-#	@$(MAKE) -s $(EXES)
+all:
+	$(call fancyEcho,$(FANCY_NAME),Target,$@)
+	@$(MAKE) repos_clone -s
+#	@mkdir -p logs/
+	@$(MAKE) -s $(EXES)
 
-#clean:
-##	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-#	FILES_OBJ
+clean:
+	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 
-#fclean:
-#	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-#	@$(MAKE) -s clean
-#	@rm -f $(EXES)
+fclean:
+	$(call fancyEcho,$(FANCY_NAME),Target,$@)
+	@$(MAKE) -s clean
+	@rm -f $(EXES)
 
-#re:
-#	@$(FANCY_ECHO) "$(COLOR_REPO)$(FANCY_NAME): $(COLOR_TYPE)Target: $(COLOR_FILE)$@$(COLOR_NONE)"
-#	@$(MAKE) -s fclean
-#	@$(MAKE) -s all
+re:
+	$(call fancyEcho,$(FANCY_NAME),Target,$@)
+	@$(MAKE) -s fclean
+	@$(MAKE) -s all
 
-#.PHONY: all clean fclean re
+.PHONY: all clean fclean re
+
+#$(EXES) :
+#	$(call fancyEcho,$(FANCY_NAME),Target,$@)
+#	$(MAKE) $(ENGINE_LIBRARYS)
+#	@mkdir -p logs/
+#	@$(MAKE) $@ -s
 
 ################################################################
 
@@ -108,11 +112,11 @@ UI_re:
 	@$(MAKE) -s UI_all
 .PHONY: UI_all UI_clean UI_fclean UI_re
 $(UI_NAME) : $(UI_FILES_OBJ)
-	$(call fancyEcho,$(FANCY_NAME),Target,$(UI_NAME))
+	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	$(MAKE) $(ENGINE_LIBRARYS)
 	@mkdir -p logs/
-	$(call fancyEcho,$(FANCY_NAME),Compiling,$(UI_NAME))
-	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(UI_FILES_OBJ) -o $(UI_NAME) $(LIBRARYS) $(ARGUMENTS)
+	$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
+	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(UI_FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
 ################################################################
 #  maybe not
 # OBJ_Parser
@@ -124,8 +128,9 @@ $(UI_NAME) : $(UI_FILES_OBJ)
 
 
 %.exe : $(MAINS_DIR)%.cpp
+	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
+	$(MAKE) $(ENGINE_LIBRARYS)
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
-	@mkdir -p logs/
 	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
 
 %.o : %.cpp

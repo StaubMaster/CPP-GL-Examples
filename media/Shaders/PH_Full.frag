@@ -89,5 +89,6 @@ void main()
 
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
-	Color = vec4(col, 1);
+	//Color = vec4(col, 1);
+	Color = vec4(1, 1, 1, 1);
 }
