@@ -1,0 +1,3714 @@
+here
+mains/Multi.cpp:400
+<<<< Run Window
+
+INIT ...
+
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe70900
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe70660
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe705d0
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe70630
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe70720
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe70750
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe71d00
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe725a0
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe725c8
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0
+      Limit 0
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfef60
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfef60
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0x2504fe71a98
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504fe71a98
+      Limit 1
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0x2504fe71a98
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0
+        Limit 0
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725a0
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725a0
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0x2504fe71a98
+        Limit 1
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe71a98
+      Limit 1
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe71a98
+      Limit 1
+      Count 1
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfef60
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfef60
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0x2504ffa9da8
+        Limit 3
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504ffa9da8
+      Limit 3
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0x2504ffa9da8
+        Limit 3
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0x2504fe71a98
+        Limit 1
+        Count 1
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725a0
+          Data 0x2504fe71a98
+          Limit 1
+          Count 1
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725a0
+          Data 0
+          Limit 0
+          Count 1
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0x2504ffa9da8
+        Limit 3
+        Count 1
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504ffa9da8
+      Limit 3
+      Count 1
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504ffa9da8
+      Limit 3
+      Count 2
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504ffa9da8
+      Limit 3
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504ffa9da8
+      Limit 3
+      Count 2
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504ffa9da8
+      Limit 3
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504ffa9da8
+      Limit 3
+      Count 3
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfef60
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfef60
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0x2504fe72618
+        Limit 7
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0x2504fe72618
+        Limit 7
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0x2504ffa9da8
+        Limit 3
+        Count 3
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725a0
+          Data 0x2504ffa9da8
+          Limit 3
+          Count 3
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725a0
+          Data 0
+          Limit 0
+          Count 3
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0x2504fe72618
+        Limit 7
+        Count 3
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe72618
+      Limit 7
+      Count 3
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe72618
+      Limit 7
+      Count 4
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe72618
+      Limit 7
+      Count 4
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe72618
+      Limit 7
+      Count 5
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe72618
+      Limit 7
+      Count 5
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe72618
+      Limit 7
+      Count 6
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe72618
+      Limit 7
+      Count 6
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe72618
+      Limit 7
+      Count 7
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfef60
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfef60
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0x2504fe726d8
+        Limit 15
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0x2504fe726d8
+      Limit 15
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0x2504fe726d8
+        Limit 15
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0x2504fe72618
+        Limit 7
+        Count 7
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725a0
+          Data 0x2504fe72618
+          Limit 7
+          Count 7
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725a0
+          Data 0
+          Limit 0
+          Count 7
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef60
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0x2504fe726d8
+        Limit 15
+        Count 7
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe726d8
+      Limit 15
+      Count 7
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef60
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0
+      Limit 0
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfef30
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfef30
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0x2504fe71eb8
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe71eb8
+      Limit 1
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0x2504fe71eb8
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0
+        Limit 0
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725c8
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725c8
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0x2504fe71eb8
+        Limit 1
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe71eb8
+      Limit 1
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe71eb8
+      Limit 1
+      Count 1
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfef30
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfef30
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0x2504ffa9b08
+        Limit 3
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504ffa9b08
+      Limit 3
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0x2504ffa9b08
+        Limit 3
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0x2504fe71eb8
+        Limit 1
+        Count 1
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725c8
+          Data 0x2504fe71eb8
+          Limit 1
+          Count 1
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725c8
+          Data 0
+          Limit 0
+          Count 1
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0x2504ffa9b08
+        Limit 3
+        Count 1
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504ffa9b08
+      Limit 3
+      Count 1
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504ffa9b08
+      Limit 3
+      Count 2
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504ffa9b08
+      Limit 3
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504ffa9b08
+      Limit 3
+      Count 2
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504ffa9b08
+      Limit 3
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504ffa9b08
+      Limit 3
+      Count 3
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfef30
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfef30
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0x2504fe72618
+        Limit 7
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0x2504fe72618
+        Limit 7
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0x2504ffa9b08
+        Limit 3
+        Count 3
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725c8
+          Data 0x2504ffa9b08
+          Limit 3
+          Count 3
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725c8
+          Data 0
+          Limit 0
+          Count 3
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0x2504fe72618
+        Limit 7
+        Count 3
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72618
+      Limit 7
+      Count 3
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72618
+      Limit 7
+      Count 4
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72618
+      Limit 7
+      Count 4
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72618
+      Limit 7
+      Count 5
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72618
+      Limit 7
+      Count 5
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72618
+      Limit 7
+      Count 6
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72618
+      Limit 7
+      Count 6
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72618
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72618
+      Limit 7
+      Count 7
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfef30
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfef30
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0x2504fe72858
+        Limit 15
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72858
+      Limit 15
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0x2504fe72858
+        Limit 15
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0x2504fe72618
+        Limit 7
+        Count 7
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725c8
+          Data 0x2504fe72618
+          Limit 7
+          Count 7
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe725c8
+          Data 0
+          Limit 0
+          Count 7
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0x2504fe72858
+        Limit 15
+        Count 7
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 7
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 8
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72858
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 8
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72858
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 9
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72858
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 9
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72858
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 10
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72858
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 10
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72858
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 11
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfef30
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72858
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 11
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfef30
+      Data 0x2504fe72858
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Base        ResizeLimit()
+  >>>> Container::Dynamic.Info()
+    0x2504fe725a0
+    Data 0x2504fe726d8
+    Limit 15
+    Count 8
+    IsConstant false
+    IncB Binary
+    DecB Binary
+  <<<< Container::Dynamic.Info()
+    Container::Base  ++++  Base(limit)
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0x2504fe729d8
+      Limit 8
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Base  ====  Release(other)
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0x2504fe729d8
+      Limit 8
+      IsConstant false
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe726d8
+      Limit 15
+      Count 8
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ----  Dispose()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0x2504fe726d8
+        Limit 15
+        Count 8
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725a0
+        Data 0
+        Limit 0
+        Count 8
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725a0
+      Data 0x2504fe729d8
+      Limit 8
+      Count 8
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+  >>>> Container::Dynamic.Info()
+    0x2504fe725a0
+    Data 0x2504fe729d8
+    Limit 8
+    Count 8
+    IsConstant false
+    IncB Binary
+    DecB Binary
+  <<<< Container::Dynamic.Info()
+  Container::Base        ResizeLimit()
+  >>>> Container::Dynamic.Info()
+    0x2504fe725c8
+    Data 0x2504fe72858
+    Limit 15
+    Count 12
+    IsConstant false
+    IncB Binary
+    DecB Binary
+  <<<< Container::Dynamic.Info()
+    Container::Base  ++++  Base(limit)
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0x2504fe72618
+      Limit 12
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Base  ====  Release(other)
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0x2504fe72618
+      Limit 12
+      IsConstant false
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72858
+      Limit 15
+      Count 12
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ----  Dispose()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0x2504fe72858
+        Limit 15
+        Count 12
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe725c8
+        Data 0
+        Limit 0
+        Count 12
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe725c8
+      Data 0x2504fe72618
+      Limit 12
+      Count 12
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+  >>>> Container::Dynamic.Info()
+    0x2504fe725c8
+    Data 0x2504fe72618
+    Limit 12
+    Count 12
+    IsConstant false
+    IncB Binary
+    DecB Binary
+  <<<< Container::Dynamic.Info()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe72748
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe72778
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe727a0
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe72748
+      Data 0
+      Limit 0
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfefc0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfefc0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfefc0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfefc0
+        Data 0x2504fe723e0
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfefc0
+      Data 0x2504fe723e0
+      Limit 1
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfefc0
+        Data 0x2504fe723e0
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe72748
+        Data 0
+        Limit 0
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe72748
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe72748
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfefc0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe72748
+        Data 0x2504fe723e0
+        Limit 1
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe72748
+      Data 0x2504fe723e0
+      Limit 1
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfefc0
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0
+      Limit 0
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfeee0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfeee0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0x2504fe71bb8
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe71bb8
+      Limit 1
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0x2504fe71bb8
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0
+        Limit 0
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe727a0
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe727a0
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0x2504fe71bb8
+        Limit 1
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe71bb8
+      Limit 1
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe71bb8
+      Limit 1
+      Count 1
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfeee0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfeee0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0x2504ffa9f28
+        Limit 3
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504ffa9f28
+      Limit 3
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0x2504ffa9f28
+        Limit 3
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0x2504fe71bb8
+        Limit 1
+        Count 1
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe727a0
+          Data 0x2504fe71bb8
+          Limit 1
+          Count 1
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe727a0
+          Data 0
+          Limit 0
+          Count 1
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0x2504ffa9f28
+        Limit 3
+        Count 1
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504ffa9f28
+      Limit 3
+      Count 1
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504ffa9f28
+      Limit 3
+      Count 2
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504ffa9f28
+      Limit 3
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504ffa9f28
+      Limit 3
+      Count 2
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504ffa9f28
+      Limit 3
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504ffa9f28
+      Limit 3
+      Count 3
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfeee0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfeee0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0x2504fe72878
+        Limit 7
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72878
+      Limit 7
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0x2504fe72878
+        Limit 7
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0x2504ffa9f28
+        Limit 3
+        Count 3
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe727a0
+          Data 0x2504ffa9f28
+          Limit 3
+          Count 3
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe727a0
+          Data 0
+          Limit 0
+          Count 3
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0x2504fe72878
+        Limit 7
+        Count 3
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72878
+      Limit 7
+      Count 3
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72878
+      Limit 7
+      Count 4
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72878
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72878
+      Limit 7
+      Count 4
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72878
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72878
+      Limit 7
+      Count 5
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72878
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72878
+      Limit 7
+      Count 5
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72878
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72878
+      Limit 7
+      Count 6
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72878
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72878
+      Limit 7
+      Count 6
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72878
+      Limit 7
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72878
+      Limit 7
+      Count 7
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dfeee0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dfeee0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0x2504fe72aa8
+        Limit 15
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72aa8
+      Limit 15
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0x2504fe72aa8
+        Limit 15
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0x2504fe72878
+        Limit 7
+        Count 7
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe727a0
+          Data 0x2504fe72878
+          Limit 7
+          Count 7
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe727a0
+          Data 0
+          Limit 0
+          Count 7
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0x2504fe72aa8
+        Limit 15
+        Count 7
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 7
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 8
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72aa8
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 8
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72aa8
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 9
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72aa8
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 9
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72aa8
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 10
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72aa8
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 10
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72aa8
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 11
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dfeee0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72aa8
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 11
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dfeee0
+      Data 0x2504fe72aa8
+      Limit 15
+      IsConstant true
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Base        ResizeLimit()
+  >>>> Container::Dynamic.Info()
+    0x2504fe727a0
+    Data 0x2504fe72aa8
+    Limit 15
+    Count 12
+    IsConstant false
+    IncB Binary
+    DecB Binary
+  <<<< Container::Dynamic.Info()
+    Container::Base  ++++  Base(limit)
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0x2504fe72878
+      Limit 12
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Base  ====  Release(other)
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0x2504fe72878
+      Limit 12
+      IsConstant false
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72aa8
+      Limit 15
+      Count 12
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ----  Dispose()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0x2504fe72aa8
+        Limit 15
+        Count 12
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe727a0
+        Data 0
+        Limit 0
+        Count 12
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe727a0
+      Data 0x2504fe72878
+      Limit 12
+      Count 12
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dff000
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+  >>>> Container::Dynamic.Info()
+    0x2504fe727a0
+    Data 0x2504fe72878
+    Limit 12
+    Count 12
+    IsConstant false
+    IncB Binary
+    DecB Binary
+  <<<< Container::Dynamic.Info()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe70900
+      Data 0
+      Limit 0
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dff3a0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dff3a0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0x2504fe724f0
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dff3a0
+      Data 0x2504fe724f0
+      Limit 1
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0x2504fe724f0
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe70900
+        Data 0
+        Limit 0
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe70900
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe70900
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe70900
+        Data 0x2504fe724f0
+        Limit 1
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe70900
+      Data 0x2504fe724f0
+      Limit 1
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dff3a0
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+  Container::Base  ++++  Base(limit)
+  >>>> Container::Base.Info()
+    0x2504fe72ad0
+    Data 0x2504fe72518
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Base  ++++  Base()
+  >>>> Container::Base.Info()
+    0x2504fe72af0
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ++++  Dynamic(inc, dec)
+  EntryContainer::Base  ++++  Base(limit)
+  EntryContainer::Dynamic  ++++  Dynamic()
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe70660
+      Data 0
+      Limit 0
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dff3a0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dff3a0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0x2504fe724d0
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dff3a0
+      Data 0x2504fe724d0
+      Limit 1
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0x2504fe724d0
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe70660
+        Data 0
+        Limit 0
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe70660
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe70660
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe70660
+        Data 0x2504fe724d0
+        Limit 1
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe70660
+      Data 0x2504fe724d0
+      Limit 1
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dff3a0
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+
+SECTION
+
+mains/Multi.cpp:140
+Instance Count: 0
+  EntryContainer::Entry  ++++  Entry(container, count)
+    EntryContainer::Dynamic  ++++  Alloc()
+      EntryContainer::Dynamic  <-->  CopyNewLimit() ...
+      _Count 0
+      _Limit 0
+      _Data 0x2504fe72518
+      limit 1
+      l 0
+      data 0x2504fe72c78
+      EntryContainer::Dynamic  <-->  CopyNewLimit() done
+      Container::Entry  ++++  Entry(off, len)
+      EntryContainer::EntryData  ++++  EntryData(container, off, len)
+      Container::Dynamic Insert(1)
+      Container::Dynamic Insert(n)
+        Container::Entry  ++++  Entry(off, len)
+        Container::Base  <-->  ResizeLimit_GapNew() ...
+        >>>> Container::Dynamic.Info()
+          0x2504fe72af0
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+          Container::Base  ++++  Base()
+          >>>> Container::Base.Info()
+            0xc588dff310
+            Data 0
+            Limit 0
+            IsConstant false
+          <<<< Container::Base.Info()
+          Container::Base  ++++  Allocate(limit)
+            Container::Base  ----  Dispose()
+            >>>> Container::Base.Info()
+              0xc588dff310
+              Data 0
+              Limit 0
+              IsConstant false
+            <<<< Container::Base.Info()
+            >>>> Container::Base.Info()
+              0xc588dff310
+              Data 0
+              Limit 0
+              IsConstant false
+            <<<< Container::Base.Info()
+          >>>> Container::Base.Info()
+            0xc588dff310
+            Data 0x2504fe724b0
+            Limit 1
+            IsConstant false
+          <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dff310
+          Data 0x2504fe724b0
+          Limit 1
+          IsConstant false
+        <<<< Container::Base.Info()
+          Container::Base  ====  Release(other)
+          >>>> Container::Base.Info()
+            0xc588dff310
+            Data 0x2504fe724b0
+            Limit 1
+            IsConstant false
+          <<<< Container::Base.Info()
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0
+            Limit 0
+            Count 0
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+            Container::Base  ----  Dispose()
+            >>>> Container::Dynamic.Info()
+              0x2504fe72af0
+              Data 0
+              Limit 0
+              Count 0
+              IsConstant false
+              IncB Binary
+              DecB Binary
+            <<<< Container::Dynamic.Info()
+            >>>> Container::Dynamic.Info()
+              0x2504fe72af0
+              Data 0
+              Limit 0
+              Count 0
+              IsConstant false
+              IncB Binary
+              DecB Binary
+            <<<< Container::Dynamic.Info()
+          >>>> Container::Base.Info()
+            0xc588dff310
+            Data 0
+            Limit 0
+            IsConstant false
+          <<<< Container::Base.Info()
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0x2504fe724b0
+            Limit 1
+            Count 0
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe72af0
+          Data 0x2504fe724b0
+          Limit 1
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        Container::Base  <-->  ResizeLimit_GapNew() done
+        Container::Base  ----  ~Base()
+        >>>> Container::Base.Info()
+          0xc588dff310
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        Container::Entry  ----  ~Entry()
+  EntryContainer::Entry Data 0x2504ffa81e0
+Instance Count: 1
+mains/Multi.cpp:144
+Instance_Entrys Count: 0
+  EntryContainer::Entry  ====  Entry(other) ...
+    EntryContainer::Dynamic  ====  Copy()
+      Container::Entry  ====  Entry(other)
+      EntryContainer::EntryData  ====  EntryData(other)
+      Container::Dynamic Insert(1)
+      Container::Dynamic Insert(n)
+        Container::Entry  ++++  Entry(off, len)
+        Container::Base  <-->  ResizeLimit_GapNew() ...
+        >>>> Container::Dynamic.Info()
+          0x2504fe72af0
+          Data 0x2504fe724b0
+          Limit 1
+          Count 1
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+          Container::Base  ++++  Base()
+          >>>> Container::Base.Info()
+            0xc588dff310
+            Data 0
+            Limit 0
+            IsConstant false
+          <<<< Container::Base.Info()
+          Container::Base  ++++  Allocate(limit)
+            Container::Base  ----  Dispose()
+            >>>> Container::Base.Info()
+              0xc588dff310
+              Data 0
+              Limit 0
+              IsConstant false
+            <<<< Container::Base.Info()
+            >>>> Container::Base.Info()
+              0xc588dff310
+              Data 0
+              Limit 0
+              IsConstant false
+            <<<< Container::Base.Info()
+          >>>> Container::Base.Info()
+            0xc588dff310
+            Data 0x2504ffa83a0
+            Limit 3
+            IsConstant false
+          <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dff310
+          Data 0x2504ffa83a0
+          Limit 3
+          IsConstant false
+        <<<< Container::Base.Info()
+          Container::Base  ====  Release(other)
+          >>>> Container::Base.Info()
+            0xc588dff310
+            Data 0x2504ffa83a0
+            Limit 3
+            IsConstant false
+          <<<< Container::Base.Info()
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0x2504fe724b0
+            Limit 1
+            Count 1
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+            Container::Base  ----  Dispose()
+            >>>> Container::Dynamic.Info()
+              0x2504fe72af0
+              Data 0x2504fe724b0
+              Limit 1
+              Count 1
+              IsConstant false
+              IncB Binary
+              DecB Binary
+            <<<< Container::Dynamic.Info()
+            >>>> Container::Dynamic.Info()
+              0x2504fe72af0
+              Data 0
+              Limit 0
+              Count 1
+              IsConstant false
+              IncB Binary
+              DecB Binary
+            <<<< Container::Dynamic.Info()
+          >>>> Container::Base.Info()
+            0xc588dff310
+            Data 0
+            Limit 0
+            IsConstant false
+          <<<< Container::Base.Info()
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0x2504ffa83a0
+            Limit 3
+            Count 1
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe72af0
+          Data 0x2504ffa83a0
+          Limit 3
+          Count 1
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        Container::Base  <-->  ResizeLimit_GapNew() done
+        Container::Base  ----  ~Base()
+        >>>> Container::Base.Info()
+          0xc588dff310
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        Container::Entry  ----  ~Entry()
+  EntryContainer::Entry Data 0x2504ffa8300
+  EntryContainer::Entry  ====  Entry(other) done
+  Container::Dynamic Insert(1)
+  Container::Dynamic Insert(n)
+    Container::Entry  ++++  Entry(off, len)
+    Container::Base  <-->  ResizeLimit_GapNew() ...
+    >>>> Container::Dynamic.Info()
+      0x2504fe705d0
+      Data 0
+      Limit 0
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+      Container::Base  ++++  Base()
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      Container::Base  ++++  Allocate(limit)
+        Container::Base  ----  Dispose()
+        >>>> Container::Base.Info()
+          0xc588dff3a0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        >>>> Container::Base.Info()
+          0xc588dff3a0
+          Data 0
+          Limit 0
+          IsConstant false
+        <<<< Container::Base.Info()
+        EntryContainer::Entry  ++++  Entry()
+        EntryContainer::Entry Data 0
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0x2504ffa8028
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+    >>>> Container::Base.Info()
+      0xc588dff3a0
+      Data 0x2504ffa8028
+      Limit 1
+      IsConstant false
+    <<<< Container::Base.Info()
+      Container::Base  ====  Release(other)
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0x2504ffa8028
+        Limit 1
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe705d0
+        Data 0
+        Limit 0
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+        Container::Base  ----  Dispose()
+        >>>> Container::Dynamic.Info()
+          0x2504fe705d0
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+        >>>> Container::Dynamic.Info()
+          0x2504fe705d0
+          Data 0
+          Limit 0
+          Count 0
+          IsConstant false
+          IncB Binary
+          DecB Binary
+        <<<< Container::Dynamic.Info()
+      >>>> Container::Base.Info()
+        0xc588dff3a0
+        Data 0
+        Limit 0
+        IsConstant false
+      <<<< Container::Base.Info()
+      >>>> Container::Dynamic.Info()
+        0x2504fe705d0
+        Data 0x2504ffa8028
+        Limit 1
+        Count 0
+        IsConstant false
+        IncB Binary
+        DecB Binary
+      <<<< Container::Dynamic.Info()
+    >>>> Container::Dynamic.Info()
+      0x2504fe705d0
+      Data 0x2504ffa8028
+      Limit 1
+      Count 0
+      IsConstant false
+      IncB Binary
+      DecB Binary
+    <<<< Container::Dynamic.Info()
+    Container::Base  <-->  ResizeLimit_GapNew() done
+    Container::Base  ----  ~Base()
+    >>>> Container::Base.Info()
+      0xc588dff3a0
+      Data 0
+      Limit 0
+      IsConstant false
+    <<<< Container::Base.Info()
+    Container::Entry  ----  ~Entry()
+    EntryContainer::Entry  ====  operator =(other) ...
+    EntryContainer::Entry Data 0
+      EntryContainer::Entry  ----  Dispose()
+      EntryContainer::Entry Data 0
+      EntryContainer::Dynamic  ====  Copy()
+        Container::Entry  ====  Entry(other)
+        EntryContainer::EntryData  ====  EntryData(other)
+        Container::Dynamic Insert(1)
+        Container::Dynamic Insert(n)
+          Container::Entry  ++++  Entry(off, len)
+          Container::Base  <-->  ResizeLimit_GapNew() ...
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0x2504ffa83a0
+            Limit 3
+            Count 2
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+            Container::Base  ++++  Base()
+            >>>> Container::Base.Info()
+              0xc588dff230
+              Data 0
+              Limit 0
+              IsConstant false
+            <<<< Container::Base.Info()
+          >>>> Container::Base.Info()
+            0xc588dff230
+            Data 0x2504ffa83a0
+            Limit 3
+            IsConstant true
+          <<<< Container::Base.Info()
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0x2504ffa83a0
+            Limit 3
+            Count 2
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+          Container::Base  <-->  ResizeLimit_GapNew() done
+          Container::Base  ----  ~Base()
+          >>>> Container::Base.Info()
+            0xc588dff230
+            Data 0x2504ffa83a0
+            Limit 3
+            IsConstant true
+          <<<< Container::Base.Info()
+          Container::Entry  ----  ~Entry()
+    EntryContainer::Entry Data 0x2504ffa8220
+    EntryContainer::Entry  ====  operator =(other) done
+  EntryContainer::Entry  ----  ~Entry()
+  EntryContainer::Entry Data 0x2504ffa8300
+    EntryContainer::EntryData  ----  ~EntryData()
+      EntryContainer::Dynamic  ----  Free()
+        Container::Dynamic Remove(idx)
+        Container::Entry  ++++  Entry(off, len)
+        Container::Dynamic Remove(entry)
+          Container::Entry  ====  Entry(other)
+          Container::Base  <-->  ResizeLimit_GapOld() ...
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0x2504ffa83a0
+            Limit 3
+            Count 3
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+            Container::Base  ++++  Base()
+            >>>> Container::Base.Info()
+              0xc588dff2c0
+              Data 0
+              Limit 0
+              IsConstant false
+            <<<< Container::Base.Info()
+          >>>> Container::Base.Info()
+            0xc588dff2c0
+            Data 0x2504ffa83a0
+            Limit 3
+            IsConstant true
+          <<<< Container::Base.Info()
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0x2504ffa83a0
+            Limit 3
+            Count 3
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+          Container::Base  <-->  ResizeLimit_GapOld() done
+          Container::Base  ----  ~Base()
+          >>>> Container::Base.Info()
+            0xc588dff2c0
+            Data 0x2504ffa83a0
+            Limit 3
+            IsConstant true
+          <<<< Container::Base.Info()
+          Container::Entry  ----  ~Entry()
+        Container::Entry  ----  ~Entry()
+    Container::Entry  ----  ~Entry()
+Instance_Entrys Count: 1
+mains/Multi.cpp:148
+mains/Multi.cpp:160
+mains/Multi.cpp:167
+  EntryContainer::Entry  ----  ~Entry()
+  EntryContainer::Entry Data 0x2504ffa81e0
+    EntryContainer::EntryData  ----  ~EntryData()
+      EntryContainer::Dynamic  ----  Free()
+        Container::Dynamic Remove(idx)
+        Container::Entry  ++++  Entry(off, len)
+        Container::Dynamic Remove(entry)
+          Container::Entry  ====  Entry(other)
+          Container::Base  <-->  ResizeLimit_GapOld() ...
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0x2504ffa83a0
+            Limit 3
+            Count 2
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+            Container::Base  ++++  Base()
+            >>>> Container::Base.Info()
+              0xc588dff2c0
+              Data 0
+              Limit 0
+              IsConstant false
+            <<<< Container::Base.Info()
+            Container::Base  ++++  Allocate(limit)
+              Container::Base  ----  Dispose()
+              >>>> Container::Base.Info()
+                0xc588dff2c0
+                Data 0
+                Limit 0
+                IsConstant false
+              <<<< Container::Base.Info()
+              >>>> Container::Base.Info()
+                0xc588dff2c0
+                Data 0
+                Limit 0
+                IsConstant false
+              <<<< Container::Base.Info()
+            >>>> Container::Base.Info()
+              0xc588dff2c0
+              Data 0x2504fe72570
+              Limit 1
+              IsConstant false
+            <<<< Container::Base.Info()
+          >>>> Container::Base.Info()
+            0xc588dff2c0
+            Data 0x2504fe72570
+            Limit 1
+            IsConstant false
+          <<<< Container::Base.Info()
+            Container::Base  ====  Release(other)
+            >>>> Container::Base.Info()
+              0xc588dff2c0
+              Data 0x2504fe72570
+              Limit 1
+              IsConstant false
+            <<<< Container::Base.Info()
+            >>>> Container::Dynamic.Info()
+              0x2504fe72af0
+              Data 0x2504ffa83a0
+              Limit 3
+              Count 2
+              IsConstant false
+              IncB Binary
+              DecB Binary
+            <<<< Container::Dynamic.Info()
+              Container::Base  ----  Dispose()
+              >>>> Container::Dynamic.Info()
+                0x2504fe72af0
+                Data 0x2504ffa83a0
+                Limit 3
+                Count 2
+                IsConstant false
+                IncB Binary
+                DecB Binary
+              <<<< Container::Dynamic.Info()
+              >>>> Container::Dynamic.Info()
+                0x2504fe72af0
+                Data 0
+                Limit 0
+                Count 2
+                IsConstant false
+                IncB Binary
+                DecB Binary
+              <<<< Container::Dynamic.Info()
+            >>>> Container::Base.Info()
+              0xc588dff2c0
+              Data 0
+              Limit 0
+              IsConstant false
+            <<<< Container::Base.Info()
+            >>>> Container::Dynamic.Info()
+              0x2504fe72af0
+              Data 0x2504fe72570
+              Limit 1
+              Count 2
+              IsConstant false
+              IncB Binary
+              DecB Binary
+            <<<< Container::Dynamic.Info()
+          >>>> Container::Dynamic.Info()
+            0x2504fe72af0
+            Data 0x2504fe72570
+            Limit 1
+            Count 2
+            IsConstant false
+            IncB Binary
+            DecB Binary
+          <<<< Container::Dynamic.Info()
+          Container::Base  <-->  ResizeLimit_GapOld() done
+          Container::Base  ----  ~Base()
+          >>>> Container::Base.Info()
+            0xc588dff2c0
+            Data 0
+            Limit 0
+            IsConstant false
+          <<<< Container::Base.Info()
+          Container::Entry  ----  ~Entry()
+        Container::Entry  ----  ~Entry()
+    Container::Entry  ----  ~Entry()
+
+
+
+
+PH_Instances 1
+PH_Instances [0] 1
+Instance_Entrys 1
+
+INIT done
+
+
+FREE ...
+
+mains/Multi.cpp:253
+
+PH_Instances Count 1
+[0]1
+PolyHedra_3D_Instances  ----  ~PolyHedra_3D_Instances()
+src//DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.cpp:27
+src//DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.cpp:29
+  EntryContainer::Dynamic  ----  ~Dynamic()
+  EntryContainer::Base  ----  ~Base()
+    EntryContainer::EntryData  ----  ~EntryData()
+    Container::Entry  ----  ~Entry()
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe72af0
+    Data 0x2504fe72570
+    Limit 1
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe72ad0
+    Data 0x2504fe72c78
+    Limit 1
+    IsConstant false
+  <<<< Container::Base.Info()
+[0] done
+mains/Multi.cpp:268
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe70660
+    Data 0x2504fe724d0
+    Limit 1
+    IsConstant false
+  <<<< Container::Base.Info()
+
+PHs Count 1
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe727a0
+    Data 0x2504fe72878
+    Limit 12
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe72778
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe72748
+    Data 0x2504fe723e0
+    Limit 1
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe725c8
+    Data 0x2504fe72618
+    Limit 12
+    IsConstant false
+  <<<< Container::Base.Info()
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe725a0
+    Data 0x2504fe729d8
+    Limit 8
+    IsConstant false
+  <<<< Container::Base.Info()
+mains/Multi.cpp:277
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe70900
+    Data 0x2504fe724f0
+    Limit 1
+    IsConstant false
+  <<<< Container::Base.Info()
+
+PH_Shaders Count 0
+mains/Multi.cpp:286
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe70630
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+
+Uni_ViewPortSizeRatio Count 0
+mains/Multi.cpp:295
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe70720
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+
+Uni_View Count 0
+mains/Multi.cpp:304
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe70750
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+
+Uni_Depth Count 0
+mains/Multi.cpp:313
+  Container::Dynamic  ----  ~Dynamic()
+  Container::Base  ----  ~Base()
+  >>>> Container::Base.Info()
+    0x2504fe71d00
+    Data 0
+    Limit 0
+    IsConstant false
+  <<<< Container::Base.Info()
+
+mains/Multi.cpp:317
+
+FREE done
+
+>>>> Run Window
+mains/Multi.cpp:408
+mains/Multi.cpp:411
+mains/Multi.cpp:413
+
+main() return
+

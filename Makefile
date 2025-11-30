@@ -5,8 +5,10 @@ COMPILER = c++ -std=c++11
 FLAGS = -Wall -Wextra -Werror
 
 MAINS = \
-	Basic.cpp
-#	Multi.cpp \
+	Multi.cpp
+#	WindowTest.cpp
+#	EntryTest.cpp
+#	Basic.cpp
 #	Light.cpp \
 #	Spline.cpp \
 #	OBJ_Parse.cpp
@@ -27,7 +29,6 @@ MAINS_DIR = mains/
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(MAKE) repos_clone -s
-#	@mkdir -p logs/
 	@$(MAKE) -s $(EXES)
 
 clean:
@@ -129,6 +130,7 @@ $(UI_NAME) : $(UI_FILES_OBJ)
 
 %.exe : $(MAINS_DIR)%.cpp
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
+	@mkdir -p logs/
 	$(MAKE) $(ENGINE_LIBRARYS)
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)

@@ -1,5 +1,4 @@
 
-
 #include <iostream>
 #include "OpenGL/openGL.h"
 
@@ -84,27 +83,11 @@ void FreeGraphics()
 void InitRun()
 {
 	InitGraphics();
-	
-	std::cout << "\n################################################################################\n\n";
+
 	PH = YMT::PolyHedra::Generate::Cube();
-	std::cout << "\n################################################################################\n\n";
-	std::cout << PH->ToInfo() << "\n";
-	std::cout << "\n################################################################################\n\n";
 	PH_Instances = new PolyHedra_3D_Instances(PH);
-	std::cout << "\n################################################################################\n\n";
 
-	//Instance_Entrys.Insert(PH_Instances -> Alloc(1));
-	//(*Instance_Entrys[0])[0].Trans.Pos = Point3D(0, 0, 10);
-
-	//unsigned int idx = Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>());
-	std::cout << &(PH_Instances -> Instances) << " Instances\n";
 	Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH_Instances -> Instances, 1));
-	std::cout << "\ndone\n\n";
-	//Instance_Entrys.Insert(PH_Instances -> Alloc(1));
-	std::cout << "Limit: " << Instance_Entrys.Limit() << "\n";
-	std::cout << "Count: " << Instance_Entrys.Count() << "\n";
-	PH_Instances -> Instances.ShowEntrys();
-
 	Instance_Entrys[0][0].Trans.Pos = Point3D(0, 0, 10);
 }
 void FreeRun()
