@@ -34,15 +34,15 @@ struct SpotLightEntry
 	Point3D		Position;
 	Point3D		Target;
 	LightSpot	* Light;
-	EntryContainerDynamic<Simple3D_InstData>::Entry *	EntryLight;
-	EntryContainerDynamic<Simple3D_InstData>::Entry *	EntryHolder;
+	EntryContainer::Entry<Simple3D_InstData>	EntryLight;
+	EntryContainer::Entry<Simple3D_InstData>	EntryHolder;
 
 	SpotLightEntry() :
 		Position(),
 		Target(),
 		Light(NULL),
-		EntryLight(NULL),
-		EntryHolder(NULL)
+		EntryLight(),
+		EntryHolder()
 	{ }
 
 	void LookFromTo(Point3D from, Point3D to)
@@ -61,18 +61,18 @@ struct SpotLightEntry
 			Light -> Dir = (Target - Position).normalize();
 		}
 
-		if (EntryLight != NULL)
+		if (EntryLight.Is())
 		{
-			(*EntryLight)[0].Trans.Pos = Position;
-			(*EntryLight)[0].Trans.Rot = angle;
-			(*EntryLight)[0].Trans.Rot.CalcBack();
+			(*EntryLight).Trans.Pos = Position;
+			(*EntryLight).Trans.Rot = angle;
+			(*EntryLight).Trans.Rot.CalcBack();
 		}
 
-		if (EntryHolder != NULL)
+		if (EntryHolder.Is())
 		{
-			(*EntryHolder)[0].Trans.Pos = Position;
-			(*EntryHolder)[0].Trans.Rot = Angle3D(angle.X, 0, 0);
-			(*EntryHolder)[0].Trans.Rot.CalcBack();
+			(*EntryHolder).Trans.Pos = Position;
+			(*EntryHolder).Trans.Rot = Angle3D(angle.X, 0, 0);
+			(*EntryHolder).Trans.Rot.CalcBack();
 		}
 	}
 
@@ -97,13 +97,13 @@ Window * win;
 Trans3D	ViewTrans;
 Depth	ViewDepth;
 
-ContainerDynamic<YMT::PolyHedra*> FancyPolyHedras;
-ContainerDynamic<PolyHedra_3D_Instances*> FancyPolyHedraInstances;
+Container::Dynamic<YMT::PolyHedra*> FancyPolyHedras;
+Container::Dynamic<PolyHedra_3D_Instances*> FancyPolyHedraInstances;
 
 YMT::PolyHedra * Poly0;
 PolyHedra_3D_Instances * PH0_Instances;
 
-ContainerDynamic<EntryContainerDynamic<Simple3D_InstData>::Entry*> Entrys;
+Container::Dynamic<EntryContainer::Entry<Simple3D_InstData>> Entrys;
 
 Shader::Base * PH_Shader;
 
@@ -191,7 +191,8 @@ void AddInstances()
 	int i_len = 16;
 	for (int j = 0; j < j_len; j++)
 	{
-		Entrys.Insert(PH0_Instances -> Alloc(i_len));
+		//Entrys.Insert(PH0_Instances -> Alloc(i_len));
+		Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH0_Instances -> Instances, i_len));
 		//std::cout << "[" << j << "]" << (*Entrys[j]).Offset << "|" << (*Entrys[j]).Length << "\n";
 		Point3D center(
 			(std::rand() & Range_Size1) - Range_SizeH,
@@ -206,12 +207,12 @@ void AddInstances()
 		rot.CalcFore();
 		for (int i = 0; i < i_len; i++)
 		{
-			(*Entrys[j])[i].Trans.Pos = center + Point3D(
+			(Entrys[j])[i].Trans.Pos = center + Point3D(
 				(std::rand() & Range_Size1) - Range_SizeH,
 				(std::rand() & Range_Size1) - Range_SizeH,
 				(std::rand() & Range_Size1) - Range_SizeH
 			);
-			(*Entrys[j])[i].Trans.Rot = rot;
+			(Entrys[j])[i].Trans.Rot = rot;
 		}
 	}
 
@@ -221,7 +222,7 @@ void AddInstances()
 	}*/
 
 	{
-		std::cout << "Instance Count: " << (PH0_Instances -> Instances.Length) << "\n";
+		std::cout << "Instance Count: " << (PH0_Instances -> Instances.Count()) << "\n";
 		//int MemSize = (PH0_Instances -> Instances.Length) * sizeof(Simple3D_InstData);
 		//std::cout << (MemSize / (1)) << " Bytes\n";
 		//std::cout << (MemSize / (1 * 1000)) << "k Bytes\n";
@@ -233,19 +234,19 @@ void AddInstances()
 void FancyInsert(unsigned int ph_idx, Point3D pos, Angle3D rot)
 {
 	unsigned int idx = Entrys.Count();
-	Entrys.Insert(FancyPolyHedraInstances[ph_idx] -> Alloc(1));
-	(*Entrys[idx])[0].Trans = Trans3D(pos, rot);
-	(*Entrys[idx])[0].Trans.Rot.CalcBack();
+	Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(FancyPolyHedraInstances[ph_idx] -> Instances, 1));
+	(*(Entrys[idx])).Trans = Trans3D(pos, rot);
+	(*(Entrys[idx])).Trans.Rot.CalcBack();
 }
 void Fancify()
 {
 	DirectoryContext YMT_Dir("./media/YMT/Light/");
-	unsigned int idx_stage =				FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage.polyhedra.ymt")));
-	unsigned int idx_stage_light =			FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage_Light.polyhedra.ymt")));
-	unsigned int idx_stage_light_holder =	FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage_Light_Holder.polyhedra.ymt")));
-	unsigned int idx_truss =				FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Truss_Square40cm_Len200cm.polyhedra.ymt")));
-	unsigned int idx_truss_cube =			FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Truss_Cube40cm.polyhedra.ymt")));
-	unsigned int idx_chair =				FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Chair.polyhedra.ymt")));
+	unsigned int idx_stage =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage.polyhedra.ymt")));
+	unsigned int idx_stage_light =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage_Light.polyhedra.ymt")));
+	unsigned int idx_stage_light_holder =	FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage_Light_Holder.polyhedra.ymt")));
+	unsigned int idx_truss =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Truss_Square40cm_Len200cm.polyhedra.ymt")));
+	unsigned int idx_truss_cube =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Truss_Cube40cm.polyhedra.ymt")));
+	unsigned int idx_chair =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Chair.polyhedra.ymt")));
 
 	for (unsigned int i = 0; i < FancyPolyHedras.Count(); i++)
 	{
@@ -285,8 +286,8 @@ void Fancify()
 
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
-		Light_Spot_Entry_Array[i].EntryLight = FancyPolyHedraInstances[idx_stage_light] -> Alloc(1);
-		Light_Spot_Entry_Array[i].EntryHolder = FancyPolyHedraInstances[idx_stage_light_holder] -> Alloc(1);
+		Light_Spot_Entry_Array[i].EntryLight.Allocate(FancyPolyHedraInstances[idx_stage_light] -> Instances, 1);
+		Light_Spot_Entry_Array[i].EntryHolder.Allocate(FancyPolyHedraInstances[idx_stage_light_holder] -> Instances, 1);
 	}
 
 	for (int y = 0; y < 5; y++)
@@ -324,6 +325,16 @@ void Init()
 void Free()
 {
 	std::cout << "Free 0\n";
+
+	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
+	{
+		Light_Spot_Entry_Array[i].EntryLight.Dispose();
+		Light_Spot_Entry_Array[i].EntryHolder.Dispose();
+	}
+	for (unsigned int i = 0; i < Entrys.Count(); i++)
+	{
+		Entrys[i].Dispose();
+	}
 
 	delete PH0_Instances;
 	delete Poly0;
@@ -396,9 +407,9 @@ void Frame(double timeDelta)
 	}
 	Uni_Light_Spot_Count -> PutData(&Light_Spot_Count);
 
-	(*Entrys[0])[0].Trans.Pos = Point3D(0, 10, 0);
-	(*Entrys[0])[0].Trans.Rot.X += 0.01f;
-	(*Entrys[0])[0].Trans.Rot.CalcBack();
+	(Entrys[0])[0].Trans.Pos = Point3D(0, 10, 0);
+	(Entrys[0])[0].Trans.Rot.X += 0.01f;
+	(Entrys[0])[0].Trans.Rot.CalcBack();
 
 	PH0_Instances -> Update().Draw();
 	for (unsigned int i = 0; i < FancyPolyHedraInstances.Count(); i++)

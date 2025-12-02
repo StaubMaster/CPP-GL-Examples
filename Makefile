@@ -5,12 +5,10 @@ COMPILER = c++ -std=c++11
 FLAGS = -Wall -Wextra -Werror
 
 MAINS = \
-	Multi.cpp
-#	WindowTest.cpp
-#	EntryTest.cpp
-#	Basic.cpp
-#	Light.cpp \
-#	Spline.cpp \
+	Basic.cpp \
+	Multi.cpp \
+	Light.cpp
+#	Spline.cpp
 #	OBJ_Parse.cpp
 #	ParticleSimulation.cpp
 

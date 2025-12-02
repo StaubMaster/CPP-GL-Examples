@@ -92,6 +92,11 @@ void InitRun()
 }
 void FreeRun()
 {
+	for (unsigned int i = 0; i < Instance_Entrys.Count(); i++)
+	{
+		Instance_Entrys[i].Dispose();
+	}
+
 	delete PH_Instances;
 	delete PH;
 
