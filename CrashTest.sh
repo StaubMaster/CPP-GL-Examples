@@ -1,7 +1,6 @@
 #!/bin/bash
 
 EXE_FILE=./Multi.exe
-#EXE_FILE=./WindowTest.exe
 TEMP_FILE=temp
 LIMIT=100
 
@@ -10,16 +9,16 @@ RET_0=0
 RET_1=0
 while [ $COUNT -lt $LIMIT ]
 do
-#	./Multi.exe | tee $TEMP_FILE > temp2 &
-	$EXE_FILE > $TEMP_FILE &
+	$EXE_FILE &
+#	$EXE_FILE > $TEMP_FILE &
 	EXE_PID=$!
 
 #	check output to see if it loaded
 #	also
 #	direct output to file
 
-#	sleep 1
-#	kill -s SIGINT $EXE_PID
+	sleep 1
+	kill -s SIGINT $EXE_PID
 
 	wait $EXE_PID
 	EXE_RET=$?

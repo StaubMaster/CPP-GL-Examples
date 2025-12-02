@@ -70,31 +70,33 @@ Multiform::Depth * Multi_Depth;
 void InitRun()
 {
 	std::cout << "\nINIT ...\n\n";
-	//std::cout << std::flush;
+	std::cout << std::flush;
 	std::cout.flush();
 	//return;
 
 	std::cout << "\nShaders\n\n";
+	std::cout << __FILE__ << ':' << __LINE__ << '\n';
 	PH_Shaders = new Container::Dynamic<Shader::Base *>();
-	/*PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir.File("PH_Full.frag"))
-	}, 2));*/
-
-	/*PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir.File("PH_R.frag"))
-	}, 2));*/
-
-	/*PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir.File("PH_G.frag"))
-	}, 2));*/
-
-	/*PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir.File("PH_B.frag"))
-	}, 2));*/
+	std::cout << __FILE__ << ':' << __LINE__ << '\n';
+	PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
+		Shader::Code::FromFile(ShaderDir -> File("PH_S3D.vert")),
+		Shader::Code::FromFile(ShaderDir -> File("PH_Full.frag"))
+	}, 2));
+	std::cout << __FILE__ << ':' << __LINE__ << '\n';
+	PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
+		Shader::Code::FromFile(ShaderDir -> File("PH_S3D.vert")),
+		Shader::Code::FromFile(ShaderDir -> File("PH_R.frag"))
+	}, 2));
+	std::cout << __FILE__ << ':' << __LINE__ << '\n';
+	PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
+		Shader::Code::FromFile(ShaderDir -> File("PH_S3D.vert")),
+		Shader::Code::FromFile(ShaderDir -> File("PH_G.frag"))
+	}, 2));
+	std::cout << __FILE__ << ':' << __LINE__ << '\n';
+	PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
+		Shader::Code::FromFile(ShaderDir -> File("PH_S3D.vert")),
+		Shader::Code::FromFile(ShaderDir -> File("PH_B.frag"))
+	}, 2));
 
 	std::cout << "\nUniforms\n\n";
 	Uni_ViewPortSizeRatio = new Container::Dynamic<Uniform::SizeRatio2D *>();
@@ -126,9 +128,9 @@ void InitRun()
 	PHs = new Container::Dynamic<YMT::PolyHedra *>();
 	std::cout << "\nPolyHedra\n\n";
 	PHs -> Insert(YMT::PolyHedra::Generate::Cube(2.0f));
-	//PHs -> Insert(YMT::PolyHedra::Generate::Cube(0.5f));
-	//PHs -> Insert(YMT::PolyHedra::Generate::Cube(1.0f));
-	//PHs -> Insert(YMT::PolyHedra::Generate::Cube(1.5f));
+	PHs -> Insert(YMT::PolyHedra::Generate::Cube(0.5f));
+	PHs -> Insert(YMT::PolyHedra::Generate::Cube(1.0f));
+	PHs -> Insert(YMT::PolyHedra::Generate::Cube(1.5f));
 
 	std::cout << "\nPolyHedra Instances\n\n";
 	PH_Instances = new Container::Dynamic<PolyHedra_3D_Instances *>();
@@ -145,11 +147,12 @@ void InitRun()
 	{
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		std::cout << "Instance Count: " << ((*PH_Instances)[0] -> Instances.Count()) << '\n';
-		EntryContainer::Entry<Simple3D_InstData> entry((*PH_Instances)[0] -> Instances, 1);
+		EntryContainer::Entry<Simple3D_InstData> entry((*PH_Instances)[0] -> Instances, 8);
 		std::cout << "Instance Count: " << ((*PH_Instances)[0] -> Instances.Count()) << '\n';
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		std::cout << "Instance_Entrys Count: " << (Instance_Entrys -> Count()) << '\n';
-		unsigned int idx = Instance_Entrys -> Insert(entry);
+		unsigned int idx = Instance_Entrys -> Count();
+		Instance_Entrys -> Insert(entry);
 		std::cout << "Instance_Entrys Count: " << (Instance_Entrys -> Count()) << '\n';
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		//unsigned int idx = Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH_Instances[0] -> Instances, 1));
@@ -177,11 +180,12 @@ void InitRun()
 	{
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		std::cout << "Instance Count: " << ((*PH_Instances)[1] -> Instances.Count()) << '\n';
-		EntryContainer::Entry<Simple3D_InstData> entry((*PH_Instances)[1] -> Instances, 1);
+		EntryContainer::Entry<Simple3D_InstData> entry((*PH_Instances)[1] -> Instances, 8);
 		std::cout << "Instance Count: " << ((*PH_Instances)[1] -> Instances.Count()) << '\n';
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		std::cout << "Instance_Entrys Count: " << (Instance_Entrys -> Count()) << '\n';
-		unsigned int idx = Instance_Entrys -> Insert(entry);
+		unsigned int idx = Instance_Entrys -> Count();
+		Instance_Entrys -> Insert(entry);
 		std::cout << "Instance_Entrys Count: " << (Instance_Entrys -> Count()) << '\n';
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		//unsigned int idx = Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH_Instances[1] -> Instances, 1));
@@ -199,11 +203,12 @@ void InitRun()
 	{
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		std::cout << "Instance Count: " << ((*PH_Instances)[2] -> Instances.Count()) << '\n';
-		EntryContainer::Entry<Simple3D_InstData> entry((*PH_Instances)[2] -> Instances, 1);
+		EntryContainer::Entry<Simple3D_InstData> entry((*PH_Instances)[2] -> Instances, 8);
 		std::cout << "Instance Count: " << ((*PH_Instances)[2] -> Instances.Count()) << '\n';
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		std::cout << "Instance_Entrys Count: " << (Instance_Entrys -> Count()) << '\n';
-		unsigned int idx = Instance_Entrys -> Insert(entry);
+		unsigned int idx = Instance_Entrys -> Count();
+		Instance_Entrys -> Insert(entry);
 		std::cout << "Instance_Entrys Count: " << (Instance_Entrys -> Count()) << '\n';
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		//unsigned int idx = Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH_Instances[2] -> Instances, 1));
@@ -221,11 +226,12 @@ void InitRun()
 	{
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		std::cout << "Instance Count: " << ((*PH_Instances)[3] -> Instances.Count()) << '\n';
-		EntryContainer::Entry<Simple3D_InstData> entry((*PH_Instances)[3] -> Instances, 1);
+		EntryContainer::Entry<Simple3D_InstData> entry((*PH_Instances)[3] -> Instances, 8);
 		std::cout << "Instance Count: " << ((*PH_Instances)[3] -> Instances.Count()) << '\n';
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		std::cout << "Instance_Entrys Count: " << (Instance_Entrys -> Count()) << '\n';
-		unsigned int idx = Instance_Entrys -> Insert(entry);
+		unsigned int idx = Instance_Entrys -> Count();
+		Instance_Entrys -> Insert(entry);
 		std::cout << "Instance_Entrys Count: " << (Instance_Entrys -> Count()) << '\n';
 		std::cout << __FILE__ << ':' << __LINE__ << '\n';
 		//unsigned int idx = Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH_Instances[3] -> Instances, 1));
@@ -249,7 +255,7 @@ void InitRun()
 	}
 	std::cout << "\nINIT done\n\n";
 	std::cout << "Init _CrtDumpMemoryLeaks" << ' ' << _CrtDumpMemoryLeaks() << '\n';
-	//std::cout << std::flush;
+	std::cout << std::flush;
 	//std::cout.flush();
 }
 void FreeRun()
@@ -257,7 +263,7 @@ void FreeRun()
 	std::cerr << "Free _CrtDumpMemoryLeaks" << ' ' << _CrtDumpMemoryLeaks() << '\n';
 
 	std::cout << "\nFREE ...\n\n";
-	//std::cout << std::flush;
+	std::cout << std::flush;
 	//std::cout.flush();
 	//return;
 
@@ -328,7 +334,7 @@ void FreeRun()
 	std::cout << __FILE__ << ':' << __LINE__ << '\n';
 
 	std::cout << "\nFREE done\n\n";
-	//std::cout << std::flush;
+	std::cout << std::flush;
 	//std::cout.flush();
 }
 
@@ -354,7 +360,7 @@ void Frame(double timeDelta)
 
 void Resize(int w, int h)
 {
-	//Multi_ViewPortSizeRatio -> ChangeData(SizeRatio2D(w, h));
+	Multi_ViewPortSizeRatio -> ChangeData(SizeRatio2D(w, h));
 	(void)w;
 	(void)h;
 }

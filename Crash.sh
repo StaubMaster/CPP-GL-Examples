@@ -1,11 +1,8 @@
 #!/bin/bash
 
-./Multi.exe > temp &
+./Multi.exe &
 EXE_PID=$!
 
-sleep 1
-
-kill -s SIGINT $EXE_PID
 wait $EXE_PID
 EXE_RET=$?
 
