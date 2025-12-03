@@ -42,203 +42,11 @@ maybe just do Solar Light for now
 make Wheels Spin based on Wheel Radius ?
 assamble other things correctly
 */
-
-struct SplineNode3D
-{
-	Point3D	Pos;
-	Point3D	Dir;
-
-	SplineNode3D() { }
-	SplineNode3D(Point3D pos, Point3D dir)
-	{
-		Pos = pos;
-		Dir = dir;
-	}
-};
-
-struct SplineSegment3D
-{
-	SplineNode3D	Node0;
-	SplineNode3D	Node1;
-	SplineSegment3D *	Prev;
-	SplineSegment3D *	Next;
-
-	float	T;
-	float	C;
-	float	B;
-
-	SplineSegment3D() { }
-	SplineSegment3D(SplineNode3D node0, SplineNode3D node1, float t, float c, float b)
-	{
-		Node0 = node0;
-		Node1 = node1;
-		Prev = NULL;
-		Next = NULL;
-
-		T = t;
-		C = c;
-		B = b;
-	}
-
-	SplineNode3D	Calculate(float t) const
-	{
-		LInter linter;
-		linter.SetT0(t);
-
-		float Tm = 1 - T;
-		float Cm = 1 - C;
-		float Cp = 1 + C;
-		float Bm = 1 - B;
-		float Bp = 1 + B;
-
-		Point3D p[4]
-		{
-			(Prev -> Node0).Pos,
-			Node0.Pos,
-			Node1.Pos,
-			(Next -> Node1).Pos,
-		};
-
-		float f[4]
-		{
-			linter.GetT1() * linter.GetT1() * linter.GetT1(),
-			linter.GetT0() * linter.GetT1() * linter.GetT1() * 3,
-			linter.GetT0() * linter.GetT0() * linter.GetT1() * 3,
-			linter.GetT0() * linter.GetT0() * linter.GetT0(),
-		};
-
-		float m[4]
-		{
-			(Tm * Cm * Bp) / 2,
-			(Tm * Cp * Bm) / 2,
-			(Tm * Cp * Bp) / 2,
-			(Tm * Cm * Bm) / 2,
-		};
-
-		Point3D dir[2]
-		{
-			((p[1] - p[0]) * m[0]) + ((p[2] - p[1]) * m[1]),
-			((p[2] - p[1]) * m[2]) + ((p[3] - p[2]) * m[3]),
-		};
-
-		Point3D vals[4]
-		{
-			p[1],
-			p[1] + (dir[0] / 3),
-			p[2] - (dir[1] / 3),
-			p[2],
-		};
-
-
-
-		SplineNode3D node;
-
-		node.Pos = Point3D();
-		node.Pos = node.Pos + (vals[0] * f[0]);
-		node.Pos = node.Pos + (vals[1] * f[1]);
-		node.Pos = node.Pos + (vals[2] * f[2]);
-		node.Pos = node.Pos + (vals[3] * f[3]);
-
-		node.Dir = (dir[0] * linter.GetT1()) + (dir[1] * linter.GetT0());
-
-		return node;
-	}
-	SplineNode3D	CalculateLerp(float t) const
-	{
-		LInter linter;
-		linter.SetT1(t);
-
-		SplineNode3D node;
-
-		node.Pos.X = linter.Calc(Node0.Pos.X, Node1.Pos.X);
-		node.Pos.Y = linter.Calc(Node0.Pos.Y, Node1.Pos.Y);
-		node.Pos.Z = linter.Calc(Node0.Pos.Z, Node1.Pos.Z);
-
-		node.Dir.X = linter.Calc(Node0.Dir.X, Node1.Dir.X);
-		node.Dir.Y = linter.Calc(Node0.Dir.Y, Node1.Dir.Y);
-		node.Dir.Z = linter.Calc(Node0.Dir.Z, Node1.Dir.Z);
-
-		return node;
-	}};
-
-struct SplineCurve3D
-{
-	SplineSegment3D	* Segments;
-	unsigned int SegmentCount;
-
-	SplineCurve3D(SplineNode3D * nodes, unsigned int count, bool closed, float t, float c, float b)
-	{
-		count--;
-		SegmentCount = count;
-		if (closed) { SegmentCount++; }
-		Segments = new SplineSegment3D[SegmentCount];
-
-		unsigned int min = 0;
-		unsigned int max = SegmentCount - 1;
-
-		for (unsigned int i = min; i < max; i++)
-		{
-			Segments[i] = SplineSegment3D(nodes[i + 0], nodes[i + 1], t, c, b);
-		}
-		if (closed)
-		{
-			Segments[count] = SplineSegment3D(nodes[max], nodes[min], t, c, b);
-		}
-
-		for (unsigned int i = 0; i < SegmentCount; i++)
-		{
-			if (i == min)
-			{ Segments[i].Prev = &Segments[max]; }
-			else
-			{ Segments[i].Prev = &Segments[i - 1]; }
-
-			if (i == max)
-			{ Segments[i].Next = &Segments[min]; }
-			else
-			{ Segments[i].Next = &Segments[i + 1]; }
-		}
-	}
-	~SplineCurve3D()
-	{
-		delete [] Segments;
-	}
-
-	SplineNode3D	CalculateLerp(float t) const
-	{
-		//	Modulate t into range [ 0 ; SegmentCount - 1]
-		{
-			while (t < 0) { t += SegmentCount; }
-			while (t > SegmentCount) { t -= SegmentCount; }
-		}
-
-		unsigned int idx = t;	//	floors ?
-		return Segments[idx].CalculateLerp(t - idx);
-	}
-	SplineNode3D	Calculate(float t) const
-	{
-		//	Modulate t into range [ 0 ; SegmentCount - 1]
-		{
-			while (t < 0) { t += SegmentCount; }
-			while (t > SegmentCount) { t -= SegmentCount; }
-		}
-
-		unsigned int idx = t;	//	floors ?
-		return Segments[idx].Calculate(t - idx);
-	}
-};
-
-struct SplineObject
-{
-	unsigned int	Index;
-	float			SplineValue;
-
-	SplineObject() { }
-	SplineObject(unsigned int idx, float val)
-	{
-		Index = idx;
-		SplineValue = val;
-	}
-};
+#include "Spline/Factors.hpp"
+#include "Spline/SplineNode3D.hpp"
+#include "Spline/SplineSegment3D.hpp"
+#include "Spline/SplineCurve3D.hpp"
+#include "Spline/SplineObject.hpp"
 
 
 
@@ -263,7 +71,8 @@ void InitGraphics()
 {
 	PH_Shader = new Shader::Base((const Shader::Code []) {
 		Shader::Code::FromFile(ShaderDir.File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir.File("PH_LightFixed.frag"))
+		//Shader::Code::FromFile(ShaderDir.File("PH_LightFixed.frag"))
+		Shader::Code::FromFile(ShaderDir.File("PH_Full.frag"))
 	}, 2);
 
 	Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *PH_Shader);
@@ -290,14 +99,22 @@ YMT::PolyHedra * Test_Path_PH;
 YMT::PolyHedra * Test_Node_PH;
 PolyHedra_3D_Instances * Test_Path_Instances;
 PolyHedra_3D_Instances * Test_Node_Instances;
-EntryContainerDynamic<Simple3D_InstData>::Entry* Test_Path_Instance_Entrys;
-EntryContainerDynamic<Simple3D_InstData>::Entry* Test_Node_Instance_Entrys;
+EntryContainer::Entry<Simple3D_InstData> Test_Path_Instance_Entrys;
+EntryContainer::Entry<Simple3D_InstData> Test_Node_Instance_Entrys;
 
 SplineCurve3D * Test_Spline;
-ContainerDynamic<SplineObject> Test_Spline_Entrys;
+Container::Dynamic<SplineObject> Test_Spline_Entrys;
 
 void TestSpline_Init()
 {
+	/*Test_Spline = new SplineCurve3D((SplineNode3D []) {
+		SplineNode3D(Point3D(+40, +10, -20), Point3D(+1, 0, +1)),
+		SplineNode3D(Point3D(+40, -10, +20), Point3D(-1, 0, +1)),
+		SplineNode3D(Point3D(  0,   0, +40), Point3D(-1, 0,  0)),
+		SplineNode3D(Point3D(-40,   0, +20), Point3D(-1, 0, -1)),
+		SplineNode3D(Point3D(-40,   0, -20), Point3D(+1, 0, -1)),
+		SplineNode3D(Point3D(  0,   0, -40), Point3D(+1, 0,  0)),
+	}, 6, true, 0, 0, 0);*/
 	Test_Spline = new SplineCurve3D((SplineNode3D []) {
 		SplineNode3D(Point3D(+40, +10, -20), Point3D(+1, 0, +1)),
 		SplineNode3D(Point3D(+40, -10, +20), Point3D(-1, 0, +1)),
@@ -309,23 +126,26 @@ void TestSpline_Init()
 
 	Test_Node_PH = YMT::PolyHedra::Generate::Cube(1.0f);
 	Test_Node_Instances = new PolyHedra_3D_Instances(Test_Node_PH);
-	Test_Node_Instance_Entrys = Test_Node_Instances -> Alloc((Test_Spline -> SegmentCount) * 2);
+	Test_Node_Instance_Entrys.Allocate(Test_Node_Instances -> Instances, (Test_Spline -> SegmentCount) * 2);
 	for (unsigned int i = 0; i < Test_Spline -> SegmentCount; i++)
 	{
-		(*Test_Node_Instance_Entrys)[i * 2 + 0].Trans.Pos = Test_Spline -> Segments[i].Node0.Pos;
-		(*Test_Node_Instance_Entrys)[i * 2 + 1].Trans.Pos = Test_Spline -> Segments[i].Node1.Pos;
+		Test_Node_Instance_Entrys[i * 2 + 0].Trans.Pos = Test_Spline -> Segments[i].Node0.Pos;
+		Test_Node_Instance_Entrys[i * 2 + 1].Trans.Pos = Test_Spline -> Segments[i].Node1.Pos;
 	}
 
 	Test_Path_PH = YMT::PolyHedra::Generate::ConeC(8, 0.5f, 2.0f);
+	//Test_Path_PH = YMT::PolyHedra::Generate::Cube(0.5f);
 	Test_Path_Instances = new PolyHedra_3D_Instances(Test_Path_PH);
-	Test_Path_Instance_Entrys = Test_Path_Instances -> Alloc(32);
-	for (int i = 0; i < (*Test_Path_Instance_Entrys).Length; i++)
+	Test_Path_Instance_Entrys.Allocate(Test_Path_Instances -> Instances, 96);
+	for (unsigned int i = 0; i < Test_Path_Instance_Entrys.Length(); i++)
 	{
-		Test_Spline_Entrys.Insert(SplineObject(i, (((float)i) / (*Test_Path_Instance_Entrys).Length) * Test_Spline -> SegmentCount));
+		Test_Spline_Entrys.Insert(SplineObject(i, (((float)i) / Test_Path_Instance_Entrys.Length()) * Test_Spline -> SegmentCount));
 	}
 }
 void TestSpline_Free()
 {
+	Test_Path_Instance_Entrys.Dispose();
+	Test_Node_Instance_Entrys.Dispose();
 	delete Test_Node_Instances;
 	delete Test_Node_PH;
 	delete Test_Path_Instances;
@@ -333,14 +153,13 @@ void TestSpline_Free()
 }
 void TestSpline_Update(float timeDelta)
 {
-	for (int i = 0; i < (*Test_Path_Instance_Entrys).Length; i++)
+	for (unsigned int i = 0; i < Test_Path_Instance_Entrys.Length(); i++)
 	{
-		//SplineNode3D node = Spline -> CalculateLerp(Spline_Entrys[i].SplineValue);
 		SplineNode3D node = Test_Spline -> Calculate(Test_Spline_Entrys[i].SplineValue);
 
-		(*Test_Path_Instance_Entrys)[i].Trans.Pos = node.Pos;
-		(*Test_Path_Instance_Entrys)[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
-		(*Test_Path_Instance_Entrys)[i].Trans.Rot.CalcBack();
+		Test_Path_Instance_Entrys[i].Trans.Pos = node.Pos;
+		Test_Path_Instance_Entrys[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
+		Test_Path_Instance_Entrys[i].Trans.Rot.CalcBack();
 
 		Test_Spline_Entrys[i].SplineValue += 0.1f * timeDelta;
 	}
@@ -349,14 +168,14 @@ void TestSpline_Update(float timeDelta)
 
 
 SplineCurve3D * Train_Spline;
-ContainerDynamic<SplineObject> Train_Rail_Spline_Entrys;
+Container::Dynamic<SplineObject> Train_Rail_Spline_Entrys;
 float Train_Spline_Value;
 float Train_WheelSpin;
 
-ContainerDynamic<YMT::PolyHedra *> Train_PHs;
-ContainerDynamic<PolyHedra_3D_Instances *> Train_Instances;
-EntryContainerDynamic<Simple3D_InstData>::Entry* Train_Rail_Instance_Entrys;
-EntryContainerDynamic<Simple3D_InstData>::Entry* Train_Wheel_Instance_Entrys;
+Container::Dynamic<YMT::PolyHedra *> Train_PHs;
+Container::Dynamic<PolyHedra_3D_Instances *> Train_Instances;
+EntryContainer::Entry<Simple3D_InstData> Train_Rail_Instance_Entrys;
+EntryContainer::Entry<Simple3D_InstData> Train_Wheel_Instance_Entrys;
 
 void TrainSpline_Init()
 {
@@ -370,35 +189,37 @@ void TrainSpline_Init()
 		SplineNode3D(Point3D(-100, 0, +100), Point3D()),
 	}, 4, true, -0.5f, 0, 0);
 
-	unsigned int idx_axis =	Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Drehgestell_Achse.polyhedra.ymt")));
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Drehgestell_Halter.polyhedra.ymt")));	//	Faces wrong way
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Drehgestell_Rahmen.polyhedra.ymt")));	//	Faces Wrong way
-	unsigned int idx_rail =	Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Gleis_Seg.polyhedra.ymt")));			//	Faces Wrong way
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Schienen_Seg.polyhedra.ymt")));		//	Faces Wrong way
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Wagen_Flach.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
-							Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Wagen_Tief.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
+	unsigned int idx_axis =	Train_PHs.Count(); Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Drehgestell_Achse.polyhedra.ymt")));
+							Train_PHs.Count(); Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Drehgestell_Halter.polyhedra.ymt")));	//	Faces wrong way
+							Train_PHs.Count(); Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Drehgestell_Rahmen.polyhedra.ymt")));	//	Faces Wrong way
+	unsigned int idx_rail =	Train_PHs.Count(); Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Gleis_Seg.polyhedra.ymt")));			//	Faces Wrong way
+							Train_PHs.Count(); Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Schienen_Seg.polyhedra.ymt")));			//	Faces Wrong way
+							Train_PHs.Count(); Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Wagen_Flach.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
+							Train_PHs.Count(); Train_PHs.Insert(YMT::PolyHedra::Load(MediaDir.File("Wagen_Tief.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
 
 	for (unsigned int i = 0; i < Train_PHs.Count(); i++)
 	{
 		Train_Instances.Insert(new PolyHedra_3D_Instances(Train_PHs[i]));
 	}
 
-	Train_Rail_Instance_Entrys = Train_Instances[idx_rail] -> Alloc(128);
-	for (int i = 0; i < (*Train_Rail_Instance_Entrys).Length; i++)
+	Train_Rail_Instance_Entrys.Allocate(Train_Instances[idx_rail] -> Instances, 128);
+	for (unsigned int i = 0; i < Train_Rail_Instance_Entrys.Length(); i++)
 	{
 		float t = i;
-		t = t / (*Train_Rail_Instance_Entrys).Length;
+		t = t / (Train_Rail_Instance_Entrys.Length());
 		t = t * (Train_Spline -> SegmentCount);
 		SplineNode3D node = Train_Spline -> Calculate(t);
-		(*Train_Rail_Instance_Entrys)[i].Trans.Pos = node.Pos;
-		(*Train_Rail_Instance_Entrys)[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
-		(*Train_Rail_Instance_Entrys)[i].Trans.Rot.CalcBack();
+		Train_Rail_Instance_Entrys[i].Trans.Pos = node.Pos;
+		Train_Rail_Instance_Entrys[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
+		Train_Rail_Instance_Entrys[i].Trans.Rot.CalcBack();
 	}
 
-	Train_Wheel_Instance_Entrys = Train_Instances[idx_axis] -> Alloc(2);
+	Train_Wheel_Instance_Entrys.Allocate(Train_Instances[idx_axis] -> Instances, 2);
 }
 void TrainSpline_Free()
 {
+	Train_Rail_Instance_Entrys.Dispose();
+	Train_Wheel_Instance_Entrys.Dispose();
 	for (unsigned int i = 0; i < Train_PHs.Count(); i++)
 	{
 		delete Train_PHs[i];
@@ -415,10 +236,10 @@ void TrainSpline_Update(float timeDelta)
 		Angle3D a = Angle3D::FromPoint3D(node.Dir);
 		a.CalcBack();
 
-		(*Train_Wheel_Instance_Entrys)[0].Trans.Pos = node.Pos + a.rotate(Point3D(0, 6, 0));
-		(*Train_Wheel_Instance_Entrys)[0].Trans.Rot = a;
-		(*Train_Wheel_Instance_Entrys)[0].Trans.Rot.Y -= Train_WheelSpin;
-		(*Train_Wheel_Instance_Entrys)[0].Trans.Rot.CalcBack();
+		(*Train_Wheel_Instance_Entrys).Trans.Pos = node.Pos + a.rotate(Point3D(0, 6, 0));
+		(*Train_Wheel_Instance_Entrys).Trans.Rot = a;
+		(*Train_Wheel_Instance_Entrys).Trans.Rot.Y -= Train_WheelSpin;
+		(*Train_Wheel_Instance_Entrys).Trans.Rot.CalcBack();
 	}
 
 	Train_Spline_Value += 0.01f * timeDelta;

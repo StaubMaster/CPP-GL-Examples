@@ -7,8 +7,8 @@ FLAGS = -Wall -Wextra -Werror
 MAINS = \
 	Basic.cpp \
 	Multi.cpp \
-	Light.cpp
-#	Spline.cpp
+	Light.cpp \
+	Spline.cpp
 #	OBJ_Parse.cpp
 #	ParticleSimulation.cpp
 
