@@ -65,7 +65,7 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton);
 Control::Manager * UI_Control_Manager;
 Control::Window * WindowControl;
 Control::Form * MainForm;
-Control::Text * Text_Test;
+Control::Text * TextControl;
 
 void ControlInit()
 {
@@ -109,7 +109,7 @@ void ControlInit()
 	text -> PixelSize = Point2D(60, 60);
 	text -> NormalCenter = Point2D(0.5, 0.5);
 	form -> Children.Insert(text);
-	Text_Test = text;
+	TextControl = text;
 
 	form = new Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
@@ -205,14 +205,35 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton)
 
 
 
-/*
 Shader::Base * UI_Text_Shader;
 Uniform::SizeRatio2D * UI_Text_Uni_ViewPortSizeRatio;
+
+std::string UI_Text_String = "0aAzZ+-";
+bool UI_Text_String_Changed = true;
 
 UI::Text::BufferArray * UI_Text_BufferArray;
 Container::Dynamic<UI::Text::Main_Data> UI_Text_Main_Data_Container;
 Container::Dynamic<UI::Text::Inst_Data> UI_Text_Inst_Data_Container;
 Texture::T2DArray * UI_Text_Pallet_Texture;
+
+Point2D CharToTextCoord(int c)
+{
+	if (c >= '0' && c <= '9') { return Point2D(c - '0' ,0); }
+	if (c >= 'A' && c <= 'M') { return Point2D(c - 'A' ,1); }
+	if (c >= 'N' && c <= 'Z') { return Point2D(c - 'N' ,2); }
+	if (c >= 'a' && c <= 'm') { return Point2D(c - 'a' ,3); }
+	if (c >= 'n' && c <= 'z') { return Point2D(c - 'n' ,4); }
+	if (c == '+') { return Point2D(10 ,0); }
+	if (c == '-') { return Point2D(11 ,0); }
+	if (c == '*') { return Point2D(12 ,0); }
+	if (c == '/') { return Point2D(13 ,0); }
+	if (c == '=') { return Point2D(13 ,2); }
+	if (c == '<') { return Point2D(14 ,2); }
+	if (c == '>') { return Point2D(15 ,2); }
+	return Point2D(15, 0);
+}
+
+void TextChangeFunc();
 
 void TextInit()
 {
@@ -234,11 +255,6 @@ void TextInit()
 	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
 	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
 	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, +1)));
-
-	for (unsigned int i = 0; i <= 8; i++)
-	{
-		UI_Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(25.0 + (i * 50), 25.0), Point2D(i, 0)));
-	}
 }
 void TextFree()
 {
@@ -250,11 +266,22 @@ void TextFree()
 }
 void TextFrame()
 {
+	if (UI_Text_String_Changed)
 	{
-		Point2D min = Text_Test -> PixelBox.Min;
-		Point2D max = Text_Test -> PixelBox.Max;
+		UI_Text_Inst_Data_Container.Dispose();
+		for (unsigned int i = 0; i < UI_Text_String.length(); i++)
+		{
+			UI_Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(25.0 + (i * 50), 25.0),
+				CharToTextCoord(UI_Text_String[i])));
+		}
+		UI_Text_String_Changed = false;
+	}
+	
+	{
+		Point2D min = TextControl -> PixelBox.Min;
+		Point2D max = TextControl -> PixelBox.Max;
 		Point2D center = (max + min) / 2;
-		for (unsigned int i = 0; i <= 8; i++)
+		for (unsigned int i = 0; i < UI_Text_String.length(); i++)
 		{
 			UI_Text_Inst_Data_Container[i].Pos = Point2D((min.X + 25) + (i * 50), center.Y);
 		}
@@ -272,7 +299,6 @@ void TextFrame()
 	UI_Text_Pallet_Texture -> Bind();
 	UI_Text_BufferArray -> Draw();
 }
-*/
 
 
 
@@ -281,15 +307,15 @@ void InitRun()
 	std::cout << "Init ...\n";
 
 	ControlInit();
-	//TextInit();
+	TextInit();
 
-	Shader::Base * shaders[1] =
+	Shader::Base * shaders[2] =
 	{
 		UI_Control_Shader,
-		//UI_Text_Shader,
+		UI_Text_Shader,
 	};
 	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
-	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 1);
+	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 2);
 
 	std::cout << "Init done\n";
 }
@@ -298,7 +324,7 @@ void FreeRun()
 	std::cout << "Free ...\n";
 
 	ControlFree();
-	//TextFree();
+	TextFree();
 
 	delete Multi_ViewPortSizeRatio;
 
@@ -309,7 +335,7 @@ void Frame(double timeDelta)
 	(void)timeDelta;
 
 	ControlFrame();
-	//TextFrame();
+	TextFrame();
 }
 
 void Resize(int w, int h)
@@ -322,6 +348,59 @@ void Resize(int w, int h)
 	//glClearColor(window->DefaultColor.R, window->DefaultColor.G, window->DefaultColor.B, 1.0f);
 	//Frame(0);
 	//glfwSwapBuffers(window->win);
+}
+
+/*	how to send this to Controls ?
+	send to manager
+	it sends it to the Controls ?
+	what if I want multiple Control Types to accept Text
+	the easiest would be to have functions that accept this in the Base
+	and then have an empty virtual function
+	so the controls that dont need it can just ignore it
+*/
+void TextFunc(unsigned int codepoint)
+{
+	(void)codepoint;
+	//std::cout << "text [" << codepoint << "] '" << ((char)codepoint) << "'\n";
+	if (
+		(codepoint >= '0' && codepoint <= '9') ||
+		(codepoint >= 'A' && codepoint <= 'Z') ||
+		(codepoint >= 'a' && codepoint <= 'z') ||
+		codepoint == '+' || codepoint == '-' || codepoint == '*' ||
+		codepoint == '/' ||
+		codepoint == '=' || codepoint == '<' || codepoint == '>' ||
+		codepoint == ' '
+	)
+	{
+		if (UI_Control_Manager -> Selected == TextControl)
+		{
+			UI_Text_String += (char)codepoint;
+			UI_Text_String_Changed = true;
+		}
+	}
+}
+void KeyFunc(int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		//std::cout << "BackSpace\n";
+		if (UI_Control_Manager -> Selected == TextControl)
+		{
+			if (UI_Text_String.length() > 0)
+			{
+				UI_Text_String.erase(UI_Text_String.length() - 1, 1);
+				UI_Text_String_Changed = true;
+			}
+		}
+	}
+	if (key == GLFW_KEY_ENTER && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		//std::cout << "Enter\n";
+	}
+	(void)key;
+	(void)scancode;
+	(void)action;
+	(void)mods;
 }
 
 
@@ -340,7 +419,10 @@ int main()
 	window -> InitFunc = InitRun;
 	window -> FrameFunc = Frame;
 	window -> FreeFunc = FreeRun;
+
 	window -> ResizeFunc = Resize;
+	window -> TextFunc = TextFunc;
+	window -> KeyFunc = KeyFunc;
 
 	window -> DefaultColor = Color(0.875f, 0.875f, 0.875f);
 

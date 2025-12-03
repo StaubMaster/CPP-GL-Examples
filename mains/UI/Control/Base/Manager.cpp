@@ -1,4 +1,5 @@
 #include "Manager.hpp"
+#include <iostream>
 
 
 
@@ -71,4 +72,5 @@ void Control::Manager::Click(unsigned char clickType, unsigned char clickButton)
 			Hovering -> ClickFunc(clickType, clickButton);
 		}
 	}
+	Selected = Hovering;
 }
