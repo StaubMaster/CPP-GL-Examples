@@ -3,13 +3,14 @@
 
 
 
-Control::Manager::Manager() :
+Control::Manager::Manager(const DirectoryContext & dir) :
 	ViewPortSize(),
 	Main_Data_Container(Container::IncreaseBehaviour::Binary, Container::DecreaseBehaviour::Binary),
-	Inst_Data_Container()
+	Inst_Data_Container(),
+	Shader(dir),
+	BufferArray()
 {
 	std::cout << "  ++++  " << "Manager()" << "\n";
-	BufferArray = new Control::BufferArray();
 
 	Main_Data_Container.Insert(Control::Main_Data(Point2D(-1, -1)));
 	Main_Data_Container.Insert(Control::Main_Data(Point2D(-1, +1)));
@@ -24,7 +25,6 @@ Control::Manager::Manager() :
 Control::Manager::~Manager()
 {
 	std::cout << "  ----  " << "~Manager()" << "\n";
-	delete BufferArray;
 }
 
 
@@ -36,16 +36,16 @@ void Control::Manager::BufferUpdate()
 		Inst_Data_Container.CompactHere();
 	}
 
-	BufferArray -> Use();
-	BufferArray -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(Control::Main_Data) * Main_Data_Container.Count(), Main_Data_Container.Data(), GL_STREAM_DRAW);
-	BufferArray -> Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(Control::Inst_Data) * Inst_Data_Container.Count(), Inst_Data_Container.Data(), GL_STREAM_DRAW);
-	BufferArray -> Main.Count = Main_Data_Container.Count();
-	BufferArray -> Inst.Count = Inst_Data_Container.Count();
+	BufferArray.Use();
+	BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(Control::Main_Data) * Main_Data_Container.Count(), Main_Data_Container.Data(), GL_STREAM_DRAW);
+	BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(Control::Inst_Data) * Inst_Data_Container.Count(), Inst_Data_Container.Data(), GL_STREAM_DRAW);
+	BufferArray.Main.Count = Main_Data_Container.Count();
+	BufferArray.Inst.Count = Inst_Data_Container.Count();
 }
 void Control::Manager::BufferDraw()
 {
-	BufferArray -> Use();
-	BufferArray -> Draw();
+	BufferArray.Use();
+	BufferArray.Draw();
 }
 
 

@@ -83,6 +83,7 @@ UI_FILES_SRC := \
 	mains/UI/Anchor.cpp \
 	mains/UI/Control/Base/Data.cpp \
 	mains/UI/Control/Base/Buffer.cpp \
+	mains/UI/Control/Base/Shader.cpp \
 	mains/UI/Control/Base/Manager.cpp \
 	mains/UI/Control/Base/Base.cpp \
 	mains/UI/Control/Window.cpp \

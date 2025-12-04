@@ -44,7 +44,6 @@
 
 
 Window * window;
-SizeRatio2D ViewPortSizeRatio;
 
 DirectoryContext ShaderDir("./media/Shaders");
 DirectoryContext ImageDir("./media/Images");
@@ -55,14 +54,12 @@ Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
 
 
 
-Shader::Base * UI_Control_Shader;
-Uniform::SizeRatio2D * UI_Control_Uni_ViewPortSizeRatio;
-
 void click0(unsigned char clickType, unsigned char clickButton);
 void click1(unsigned char clickType, unsigned char clickButton);
 void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton);
 
 Control::Manager * UI_Control_Manager;
+
 Control::Window * WindowControl;
 Control::Form * MainForm;
 Control::Text * TextControl;
@@ -71,15 +68,9 @@ void ControlInit()
 {
 	std::cout << "Control Init ...\n";
 
-	UI_Control_Shader = new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("UI/Control.vert")),
-		Shader::Code::FromFile(ShaderDir.File("UI/Control.frag"))
-	}, 2);
-	UI_Control_Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *UI_Control_Shader);
 
 
-
-	UI_Control_Manager = new Control::Manager();
+	UI_Control_Manager = new Control::Manager(ShaderDir);
 
 	WindowControl = new Control::Window(*UI_Control_Manager);
 
@@ -139,9 +130,6 @@ void ControlFree()
 {
 	std::cout << "Control Free ....\n";
 
-	delete UI_Control_Shader;
-	delete UI_Control_Uni_ViewPortSizeRatio;
-
 	delete WindowControl;
 	//	Removing Entrys might still cause Data Reallocation in Containers in Control Manager
 	//	have a way to mark EntryContainer for deletion so its just ignores Entry stuff
@@ -154,14 +142,14 @@ void ControlFree()
 }
 void ControlFrame()
 {
-	UI_Control_Shader -> Use();
+	UI_Control_Manager -> Shader.Use();
 
 	WindowControl -> UpdateBox(AxisBox2D(Point2D(), UI_Control_Manager -> ViewPortSize));
 	WindowControl -> UpdateEntryAll();
 
 	UI_Control_Manager -> ChangeHover(NULL);
 	Point2D mouse = window -> CursorPixel();
-	mouse.Y = ViewPortSizeRatio.H - mouse.Y;
+	mouse.Y = window -> ViewPortSizeRatio.Size.Y - mouse.Y;
 	WindowControl -> UpdateHover(mouse);
 
 	//std::cout << "mouse " << mouse << "\n";
@@ -311,7 +299,7 @@ void InitRun()
 
 	Shader::Base * shaders[2] =
 	{
-		UI_Control_Shader,
+		&(UI_Control_Manager -> Shader),
 		UI_Text_Shader,
 	};
 	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
@@ -338,11 +326,10 @@ void Frame(double timeDelta)
 	TextFrame();
 }
 
-void Resize(int w, int h)
+void Resize(const SizeRatio2D & ViewPortSizeRatio)
 {
-	ViewPortSizeRatio = SizeRatio2D(w, h);
 	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
-	UI_Control_Manager -> ViewPortSize = Point2D(ViewPortSizeRatio.W, ViewPortSizeRatio.H);
+	UI_Control_Manager -> ViewPortSize = ViewPortSizeRatio.Size;
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(window->DefaultColor.R, window->DefaultColor.G, window->DefaultColor.B, 1.0f);
@@ -370,7 +357,7 @@ void TextFunc(unsigned int codepoint)
 		codepoint == '/' ||
 		codepoint == '=' || codepoint == '<' || codepoint == '>' ||
 		codepoint == ' '
-	)
+		)
 	{
 		if (UI_Control_Manager -> Selected == TextControl)
 		{

@@ -284,10 +284,10 @@ void Frame(double timeDelta)
 	}
 }
 
-void Resize(int w, int h)
+void Resize(const SizeRatio2D & ViewPortSizeRatio)
 {
 	PH_Shader -> Use();
-	Uni_ViewPortSizeRatio -> PutData(SizeRatio2D(w, h));
+	Uni_ViewPortSizeRatio -> PutData(ViewPortSizeRatio);
 }
 
 

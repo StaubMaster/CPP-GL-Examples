@@ -3,6 +3,7 @@
 
 #include "Data.hpp"
 #include "Buffer.hpp"
+#include "Shader.hpp"
 #include "Base.hpp"
 
 #include "DataInclude.hpp"
@@ -12,30 +13,35 @@
 
 #include "OpenGL/openGL.h"
 
+class DirectoryContext;
+
 namespace Control
 {
 //class Base;
 
 struct Manager
 {
-	Point2D ViewPortSize;
+	public:
+		Point2D ViewPortSize;
 
-	Container::Dynamic<Control::Main_Data> Main_Data_Container;
-	EntryContainer::Dynamic<Control::Inst_Data> Inst_Data_Container;
+		Container::Dynamic<Control::Main_Data> Main_Data_Container;
+		EntryContainer::Dynamic<Control::Inst_Data> Inst_Data_Container;
 
-	BufferArray * BufferArray;
+		BaseShader Shader;
+		BufferArray BufferArray;
 
-	Base * Hovering;
-	Base * Selected;
+		Base * Hovering;
+		Base * Selected;
 
-	Manager();
-	~Manager();
+	public:
+		Manager(const DirectoryContext & dir);
+		~Manager();
 
-	void BufferUpdate();
-	void BufferDraw();
+		void BufferUpdate();
+		void BufferDraw();
 
-	void ChangeHover(Base * control);
-	void Click(unsigned char clickType, unsigned char clickButton);
+		void ChangeHover(Base * control);
+		void Click(unsigned char clickType, unsigned char clickButton);
 };
 };
 

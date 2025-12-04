@@ -418,9 +418,9 @@ void Frame(double timeDelta)
 	}
 }
 
-void Resize(int w, int h)
+void Resize(const SizeRatio2D & ViewPortSizeRatio)
 {
-	Multi_ViewPortSizeRatio -> ChangeData(SizeRatio2D(w, h));
+	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
 }
 
 
