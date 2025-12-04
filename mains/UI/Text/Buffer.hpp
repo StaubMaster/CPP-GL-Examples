@@ -1,5 +1,5 @@
-#ifndef  TEXT_BUFFER
-# define TEXT_BUFFER
+#ifndef  UI_TEXT_BUFFER
+# define UI_TEXT_BUFFER
 
 # include "Graphics/Buffer/BaseBufferArray.hpp"
 # include "Graphics/Buffer/BaseBuffer.hpp"

@@ -1,12 +1,16 @@
-#ifndef  CONTROL_DATA_HPP
-# define CONTROL_DATA_HPP
+#ifndef  UI_CONTROL_DATA_HPP
+# define UI_CONTROL_DATA_HPP
 
 #include "DataInclude.hpp"
 
 
 
+namespace UI
+{
+
 namespace Control
 {
+
 struct Main_Data
 {
 	Point2D	Pos;
@@ -24,6 +28,9 @@ struct Inst_Data
 	Inst_Data();
 	Inst_Data(Point2D min, Point2D max, float layer, Color col);
 };
+
+};
+
 };
 
 #endif

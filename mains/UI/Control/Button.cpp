@@ -2,7 +2,7 @@
 
 
 
-Control::Button::Button(Manager & manager) : Base(manager)
+UI::Control::Button::Button(Manager & manager) : Base(manager)
 {
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
@@ -14,5 +14,5 @@ Control::Button::Button(Manager & manager) : Base(manager)
 	ColorDefault = Color(0.625f, 0.625f, 0.625f);
 	ColorHover = Color(0.5f, 0.5f, 0.5f);
 }
-Control::Button::~Button()
+UI::Control::Button::~Button()
 { }

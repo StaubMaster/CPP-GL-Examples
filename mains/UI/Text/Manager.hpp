@@ -1,5 +1,5 @@
-#ifndef  TEXT_MANAGER_HPP
-# define TEXT_MANAGER_HPP
+#ifndef  UI_TEXT_MANAGER_HPP
+# define UI_TEXT_MANAGER_HPP
 
 #include "Data.hpp"
 #include "Buffer.hpp"

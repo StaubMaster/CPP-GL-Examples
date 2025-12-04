@@ -6,12 +6,12 @@
 
 
 
-Control::BaseShader::BaseShader(const DirectoryContext & dir)
+UI::Control::BaseShader::BaseShader(const DirectoryContext & dir)
 	: Shader::Base((const Shader::Code []) {
 		Shader::Code::FromFile(dir.File("UI/Control.vert")),
 		Shader::Code::FromFile(dir.File("UI/Control.frag"))
 	}, 2),
 	ViewPortSizeRatio("ViewPortSizeRatio", *this)
 { }
-Control::BaseShader::~BaseShader()
+UI::Control::BaseShader::~BaseShader()
 { }

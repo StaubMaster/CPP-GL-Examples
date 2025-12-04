@@ -2,7 +2,7 @@
 
 
 
-Control::Text::Text(Manager & manager) : Base(manager)
+UI::Control::Text::Text(Manager & manager) : Base(manager)
 {
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
@@ -14,5 +14,5 @@ Control::Text::Text(Manager & manager) : Base(manager)
 	ColorDefault = Color(1.0f, 1.0f, 1.0f);
 	ColorHover = Color(0.875f, 0.875f, 0.875f);
 }
-Control::Text::~Text()
+UI::Control::Text::~Text()
 { }

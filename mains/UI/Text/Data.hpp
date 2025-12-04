@@ -1,5 +1,5 @@
-#ifndef  TEXT_DATA
-# define TEXT_DATA
+#ifndef  UI_TEXT_DATA
+# define UI_TEXT_DATA
 
 # include "DataInclude.hpp"
 

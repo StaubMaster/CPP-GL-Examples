@@ -1,5 +1,5 @@
-#ifndef  TEXT_SHADER_HPP
-# define TEXT_SHADER_HPP
+#ifndef  UI_TEXT_SHADER_HPP
+# define UI_TEXT_SHADER_HPP
 
 #include "Graphics/Shader/Base.hpp"
 

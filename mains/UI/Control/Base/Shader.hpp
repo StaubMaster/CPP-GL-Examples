@@ -1,5 +1,5 @@
-#ifndef  CONTROL_SHADER_HPP
-# define CONTROL_SHADER_HPP
+#ifndef  UI_CONTROL_SHADER_HPP
+# define UI_CONTROL_SHADER_HPP
 
 #include "Graphics/Shader/Base.hpp"
 
@@ -10,6 +10,9 @@
 class DirectoryContext;
 
 
+
+namespace UI
+{
 
 namespace Control
 {
@@ -22,6 +25,8 @@ class BaseShader : public Shader::Base
 	public:
 		BaseShader(const DirectoryContext & dir);
 		~BaseShader();
+};
+
 };
 
 };

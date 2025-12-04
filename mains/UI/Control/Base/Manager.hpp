@@ -1,5 +1,5 @@
-#ifndef  CONTROL_MANAGER_HPP
-# define CONTROL_MANAGER_HPP
+#ifndef  UI_CONTROL_MANAGER_HPP
+# define UI_CONTROL_MANAGER_HPP
 
 #include "Data.hpp"
 #include "Buffer.hpp"
@@ -14,6 +14,9 @@
 class DirectoryContext;
 
 
+
+namespace UI
+{
 
 namespace Control
 {
@@ -43,6 +46,9 @@ class Manager
 		void ChangeHover(Base * control);
 		void Click(unsigned char clickType, unsigned char clickButton);
 };
+
+};
+
 };
 
 #endif

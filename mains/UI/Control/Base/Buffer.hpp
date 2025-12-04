@@ -1,5 +1,5 @@
-#ifndef  CONTROL_BUFFER_HPP
-# define CONTROL_BUFFER_HPP
+#ifndef  UI_CONTROL_BUFFER_HPP
+# define UI_CONTROL_BUFFER_HPP
 
 #include "Graphics/Buffer/BaseBufferArray.hpp"
 #include "Graphics/Buffer/BaseBuffer.hpp"
@@ -7,6 +7,11 @@
 #include "Graphics/Attribute/Base/AttributeBase.hpp"
 #include "Graphics/Attribute/Point2D.hpp"
 #include "Graphics/Attribute/Color.hpp"
+
+
+
+namespace UI
+{
 
 namespace Control
 {
@@ -59,5 +64,6 @@ class BufferArray : public BaseBufferArray
 
 };
 
+};
 
 #endif

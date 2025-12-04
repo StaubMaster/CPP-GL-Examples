@@ -2,7 +2,7 @@
 
 
 
-Control::Window::Window(Manager & manager) : Base(manager)
+UI::Control::Window::Window(Manager & manager) : Base(manager)
 {
 	Layer = 1.0f;
 	Anchor.X.Anchor = ANCHOR_BOTH;
@@ -14,5 +14,5 @@ Control::Window::Window(Manager & manager) : Base(manager)
 	ColorDefault = Color(0, 0, 0);
 	ColorHover = Color(0, 0, 0);
 }
-Control::Window::~Window()
+UI::Control::Window::~Window()
 { }

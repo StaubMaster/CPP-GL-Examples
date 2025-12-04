@@ -1,5 +1,5 @@
-#ifndef  CONTROL_BASE_HPP
-# define CONTROL_BASE_HPP
+#ifndef  UI_CONTROL_BASE_HPP
+# define UI_CONTROL_BASE_HPP
 
 #include "Data.hpp"
 
@@ -87,6 +87,9 @@ Text: allows Text input/output
 
 
 
+namespace UI
+{
+
 namespace Control
 {
 
@@ -143,6 +146,9 @@ class Base
 		void UpdateBox(const AxisBox2D & BaseBox);
 		bool UpdateHover(Point2D mouse);
 };
+
+};
+
 };
 
 #endif

@@ -57,12 +57,12 @@ void click0(unsigned char clickType, unsigned char clickButton);
 void click1(unsigned char clickType, unsigned char clickButton);
 void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton);
 
-Control::Manager * UI_Control_Manager;
+UI::Control::Manager * UI_Control_Manager;
 
-Control::Window * WindowControl;
-Control::Form * MainForm;
-Control::Text * TextControl0;
-Control::Text * TextControl1;
+UI::Control::Window * WindowControl;
+UI::Control::Form * MainForm;
+UI::Control::Text * TextControl0;
+UI::Control::Text * TextControl1;
 
 void ControlInit()
 {
@@ -70,31 +70,31 @@ void ControlInit()
 
 
 
-	UI_Control_Manager = new Control::Manager(ShaderDir);
+	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
 
-	WindowControl = new Control::Window(*UI_Control_Manager);
+	WindowControl = new UI::Control::Window(*UI_Control_Manager);
 
-	Control::Form * form;
-	Control::Button * button;
-	Control::Text * text;
+	UI::Control::Form * form;
+	UI::Control::Button * button;
+	UI::Control::Text * text;
 
-	form = new Control::Form(*UI_Control_Manager);
+	form = new UI::Control::Form(*UI_Control_Manager);
 	WindowControl -> Children.Insert(form);
 	MainForm = form;
 
-	button = new Control::Button(*UI_Control_Manager);
+	button = new UI::Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MIN;
 	button -> ClickFunc = click0;
 	form -> Children.Insert(button);
 
-	button = new Control::Button(*UI_Control_Manager);
+	button = new UI::Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_MAX;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> ClickFunc = click1;
 	form -> Children.Insert(button);
 
-	text = new Control::Text(*UI_Control_Manager);
+	text = new UI::Control::Text(*UI_Control_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_NONE;
 	text -> PixelSize = Point2D(60, 60);
@@ -102,7 +102,7 @@ void ControlInit()
 	form -> Children.Insert(text);
 	TextControl0 = text;
 
-	text = new Control::Text(*UI_Control_Manager);
+	text = new UI::Control::Text(*UI_Control_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_NONE;
 	text -> PixelSize = Point2D(60, 60);
@@ -110,20 +110,20 @@ void ControlInit()
 	form -> Children.Insert(text);
 	TextControl1 = text;
 
-	form = new Control::Form(*UI_Control_Manager);
+	form = new UI::Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
 	form -> Anchor.Y.Anchor = ANCHOR_NONE;
 	form -> PixelSize = Point2D(60, 360);
 	form -> NormalCenter = Point2D(0, 0.5);
 	WindowControl -> Children.Insert(form);
 
-	button = new Control::Button(*UI_Control_Manager);
+	button = new UI::Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_BOTH;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> ClickFunc = click_toggle_MainForm;
 	form -> Children.Insert(button);
 
-	form = new Control::Form(*UI_Control_Manager);
+	form = new UI::Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MAX;
 	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
 	form -> PixelSize = Point2D(60, 360);

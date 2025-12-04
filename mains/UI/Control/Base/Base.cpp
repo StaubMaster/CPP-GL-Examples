@@ -4,7 +4,7 @@
 
 
 
-Control::Base::Base(Manager & manager) :
+UI::Control::Base::Base(Manager & manager) :
 	ControlManager(manager),
 	Entry(),
 	Children(Container::IncreaseBehaviour::Binary, Container::DecreaseBehaviour::Binary)
@@ -12,7 +12,7 @@ Control::Base::Base(Manager & manager) :
 	Visible = true;
 	ClickFunc = NULL;
 }
-Control::Base::~Base()
+UI::Control::Base::~Base()
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -20,7 +20,7 @@ Control::Base::~Base()
 	}
 }
 
-void Control::Base::Info(std::string padding) const
+void UI::Control::Base::Info(std::string padding) const
 {
 	std::cout << padding << "this " << this << '\n';
 	std::cout << padding << "Entry " << Entry.Is() << '\n';
@@ -31,21 +31,21 @@ void Control::Base::Info(std::string padding) const
 	}
 }
 
-void Control::Base::Show()
+void UI::Control::Base::Show()
 {
 
 	Visible = true;
 	ShowEntry();
 	UpdateEntryAll();
 }
-void Control::Base::Hide()
+void UI::Control::Base::Hide()
 {
 	Visible = false;
 	HideEntry();
 	UpdateEntryAll();
 }
 
-void Control::Base::ShowEntry()
+void UI::Control::Base::ShowEntry()
 {
 	//if (Visible == true && Entry == NULL)
 	if (Visible == true && !Entry.Is())
@@ -58,7 +58,7 @@ void Control::Base::ShowEntry()
 		Children[i] -> ShowEntry();
 	}
 }
-void Control::Base::HideEntry()
+void UI::Control::Base::HideEntry()
 {
 	//if (Entry != NULL)
 	if (Entry.Is())
@@ -75,7 +75,7 @@ void Control::Base::HideEntry()
 		Children[i] -> HideEntry();
 	}
 }
-void Control::Base::UpdateEntryAll()
+void UI::Control::Base::UpdateEntryAll()
 {
 	//if (Entry != NULL)
 	if (Entry.Is())
@@ -103,7 +103,7 @@ void Control::Base::UpdateEntryAll()
 	}
 }
 
-void Control::Base::UpdateBox(const AxisBox2D & BaseBox)
+void UI::Control::Base::UpdateBox(const AxisBox2D & BaseBox)
 {
 	PixelBox = Anchor.Calculate(AxisBox2D(PixelMinDist, PixelMaxDist), PixelSize, NormalCenter, BaseBox);
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -111,7 +111,7 @@ void Control::Base::UpdateBox(const AxisBox2D & BaseBox)
 		Children[i] -> UpdateBox(PixelBox);
 	}
 }
-bool Control::Base::UpdateHover(Point2D mouse)
+bool UI::Control::Base::UpdateHover(Point2D mouse)
 {
 	if (!Visible) { return false; }
 	if (PixelBox.Intersekt(mouse))

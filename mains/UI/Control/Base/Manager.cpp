@@ -7,7 +7,7 @@
 
 
 
-Control::Manager::Manager(const DirectoryContext & dir) :
+UI::Control::Manager::Manager(const DirectoryContext & dir) :
 	Shader(dir),
 	BufferArray(),
 	Main_Data_Container(),
@@ -16,24 +16,24 @@ Control::Manager::Manager(const DirectoryContext & dir) :
 {
 	std::cout << "  ++++  " << "Manager()" << "\n";
 
-	Main_Data_Container.Insert(Control::Main_Data(Point2D(-1, -1)));
-	Main_Data_Container.Insert(Control::Main_Data(Point2D(-1, +1)));
-	Main_Data_Container.Insert(Control::Main_Data(Point2D(+1, -1)));
-	Main_Data_Container.Insert(Control::Main_Data(Point2D(+1, -1)));
-	Main_Data_Container.Insert(Control::Main_Data(Point2D(-1, +1)));
-	Main_Data_Container.Insert(Control::Main_Data(Point2D(+1, +1)));
+	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, -1)));
+	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
+	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(+1, -1)));
+	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(+1, -1)));
+	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
+	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(+1, +1)));
 
 	Hovering = NULL;
 	Selected = NULL;
 }
-Control::Manager::~Manager()
+UI::Control::Manager::~Manager()
 {
 	std::cout << "  ----  " << "~Manager()" << "\n";
 }
 
 
 
-void Control::Manager::BufferUpdate()
+void UI::Control::Manager::BufferUpdate()
 {
 	if (!Inst_Data_Container.IsCompact())
 	{
@@ -41,12 +41,12 @@ void Control::Manager::BufferUpdate()
 	}
 
 	BufferArray.Use();
-	BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(Control::Main_Data) * Main_Data_Container.Count(), Main_Data_Container.Data(), GL_STREAM_DRAW);
-	BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(Control::Inst_Data) * Inst_Data_Container.Count(), Inst_Data_Container.Data(), GL_STREAM_DRAW);
+	BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Control::Main_Data) * Main_Data_Container.Count(), Main_Data_Container.Data(), GL_STREAM_DRAW);
+	BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Control::Inst_Data) * Inst_Data_Container.Count(), Inst_Data_Container.Data(), GL_STREAM_DRAW);
 	BufferArray.Main.Count = Main_Data_Container.Count();
 	BufferArray.Inst.Count = Inst_Data_Container.Count();
 }
-void Control::Manager::BufferDraw()
+void UI::Control::Manager::BufferDraw()
 {
 	BufferArray.Use();
 	BufferArray.Draw();
@@ -54,7 +54,7 @@ void Control::Manager::BufferDraw()
 
 
 
-void Control::Manager::ChangeHover(Base * control)
+void UI::Control::Manager::ChangeHover(Base * control)
 {
 	if (Hovering != NULL)
 	{
@@ -67,7 +67,7 @@ void Control::Manager::ChangeHover(Base * control)
 		Hovering = control;
 	}
 }
-void Control::Manager::Click(unsigned char clickType, unsigned char clickButton)
+void UI::Control::Manager::Click(unsigned char clickType, unsigned char clickButton)
 {
 	if (Hovering != NULL)
 	{

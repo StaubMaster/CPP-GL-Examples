@@ -2,7 +2,7 @@
 
 
 
-Control::Form::Form(Manager & manager) : Base(manager)
+UI::Control::Form::Form(Manager & manager) : Base(manager)
 {
 	Layer = 0.9f;
 	Anchor.X.Anchor = ANCHOR_NONE;
@@ -14,5 +14,5 @@ Control::Form::Form(Manager & manager) : Base(manager)
 	ColorDefault = Color(0.75f, 0.75f, 0.75f);
 	ColorHover = Color(0.75f, 0.75f, 0.75f);
 }
-Control::Form::~Form()
+UI::Control::Form::~Form()
 { }
