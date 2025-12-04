@@ -29,7 +29,7 @@ class Manager
 		BufferArray BufferArray;
 
 		Container::Dynamic<UI::Text::Main_Data> Main_Data_Container;
-		Container::Dynamic<UI::Text::Inst_Data> Inst_Data_Container;
+		EntryContainer::Dynamic<UI::Text::Inst_Data> Inst_Data_Container;
 
 		Texture::T2DArray * Pallet_Texture;
 

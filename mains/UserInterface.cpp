@@ -68,11 +68,29 @@ void ControlInit()
 {
 	std::cout << "Control Init ...\n";
 
-
-
 	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
 
 	WindowControl = new UI::Control::Window(*UI_Control_Manager);
+
+	WindowControl -> Show();
+}
+void ControlFree()
+{
+	std::cout << "Control Free ....\n";
+
+	delete WindowControl;
+	//	Removing Entrys might still cause Data Reallocation in Containers in Control Manager
+	//	have a way to mark EntryContainer for deletion so its just ignores Entry stuff
+	//	Insert should return NULL Entrys
+	//	have a way to start it again ? so it's just temprarily static ?
+	//	"immutable" ?
+	delete UI_Control_Manager;
+
+	std::cout << "Control Free done\n";
+}
+void ControlMake()
+{
+	std::cout << "Control Make ...\n";
 
 	UI::Control::Form * form;
 	UI::Control::Button * button;
@@ -130,23 +148,9 @@ void ControlInit()
 	form -> NormalCenter = Point2D(0, 0);
 	WindowControl -> Children.Insert(form);
 
-	std::cout << "Control Init done\n";
+	std::cout << "Control Make done\n";
 
 	WindowControl -> Show();
-}
-void ControlFree()
-{
-	std::cout << "Control Free ....\n";
-
-	delete WindowControl;
-	//	Removing Entrys might still cause Data Reallocation in Containers in Control Manager
-	//	have a way to mark EntryContainer for deletion so its just ignores Entry stuff
-	//	Insert should return NULL Entrys
-	//	have a way to start it again ? so it's just temprarily static ?
-	//	"immutable" ?
-	delete UI_Control_Manager;
-
-	std::cout << "Control Free done\n";
 }
 void ControlFrame()
 {
@@ -203,12 +207,6 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton)
 
 UI::Text::Manager * UI_Text_Manager;
 
-std::string UI_Text_String_0 = "Text0";
-bool UI_Text_String_0_Changed = true;
-
-std::string UI_Text_String_1 = "Text1";
-bool UI_Text_String_1_Changed = true;
-
 void TextInit()
 {
 	UI_Text_Manager = new UI::Text::Manager(ShaderDir, ImageDir);
@@ -217,48 +215,21 @@ void TextFree()
 {
 	delete UI_Text_Manager;
 }
+void TextMake()
+{
+	TextControl0 -> TextEntry.Allocate(UI_Text_Manager -> Inst_Data_Container, 16);
+	TextControl1 -> TextEntry.Allocate(UI_Text_Manager -> Inst_Data_Container, 16);
+
+	TextControl0 -> SetText("Text0");
+	TextControl1 -> SetText("Text1");
+}
 void TextFrame()
 {
-	if (UI_Text_String_0_Changed || UI_Text_String_1_Changed)
-	{
-		UI_Text_Manager -> Inst_Data_Container.Dispose();
+	TextControl0 -> UpdateTextString();
+	TextControl1 -> UpdateTextString();
 
-		unsigned int text_0_index = UI_Text_Manager -> Inst_Data_Container.Count();
-		for (unsigned int i = 0; i < UI_Text_String_0.length(); i++)
-		{
-			UI_Text_Manager -> Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(25.0 + (i * 50), 25.0),
-				UI::Text::Manager::CharToTextCoord(UI_Text_String_0[i])));
-		}
-		UI_Text_String_0_Changed = false;
-
-		unsigned int text_1_index = UI_Text_Manager -> Inst_Data_Container.Count();
-		for (unsigned int i = 0; i < UI_Text_String_1.length(); i++)
-		{
-			UI_Text_Manager -> Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(25.0 + (i * 50), 25.0),
-				UI::Text::Manager::CharToTextCoord(UI_Text_String_1[i])));
-		}
-		UI_Text_String_1_Changed = false;
-
-		Point2D min;
-		Point2D max;
-		Point2D center;
-
-		min = TextControl0 -> PixelBox.Min;
-		max = TextControl0 -> PixelBox.Max;
-		center = (max + min) / 2;
-		for (unsigned int i = 0; i < UI_Text_String_0.length(); i++)
-		{
-			UI_Text_Manager -> Inst_Data_Container[text_0_index + i].Pos = Point2D((min.X + 25) + (i * 50), center.Y);
-		}
-
-		min = TextControl1 -> PixelBox.Min;
-		max = TextControl1 -> PixelBox.Max;
-		center = (max + min) / 2;
-		for (unsigned int i = 0; i < UI_Text_String_1.length(); i++)
-		{
-			UI_Text_Manager -> Inst_Data_Container[text_1_index + i].Pos = Point2D((min.X + 25) + (i * 50), center.Y);
-		}
-	}
+	TextControl0 -> UpdateTextPos();
+	TextControl1 -> UpdateTextPos();
 
 	UI_Text_Manager -> BufferArray.Use();
 
@@ -289,6 +260,9 @@ void InitRun()
 	};
 	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
 	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 2);
+
+	ControlMake();
+	TextMake();
 
 	std::cout << "Init done\n";
 }
@@ -346,13 +320,15 @@ void TextFunc(unsigned int codepoint)
 	{
 		if (UI_Control_Manager -> Selected == TextControl0)
 		{
-			UI_Text_String_0 += (char)codepoint;
-			UI_Text_String_0_Changed = true;
+			std::string str = TextControl0 -> GetText();
+			str += (char)codepoint;
+			TextControl0 -> SetText(str);
 		}
 		if (UI_Control_Manager -> Selected == TextControl1)
 		{
-			UI_Text_String_1 += (char)codepoint;
-			UI_Text_String_1_Changed = true;
+			std::string str = TextControl1 -> GetText();
+			str += (char)codepoint;
+			TextControl1 -> SetText(str);
 		}
 	}
 }
@@ -363,18 +339,20 @@ void KeyFunc(int key, int scancode, int action, int mods)
 		//std::cout << "BackSpace\n";
 		if (UI_Control_Manager -> Selected == TextControl0)
 		{
-			if (UI_Text_String_0.length() > 0)
+			std::string str = TextControl0 -> GetText();
+			if (str.length() > 0)
 			{
-				UI_Text_String_0.erase(UI_Text_String_0.length() - 1, 1);
-				UI_Text_String_0_Changed = true;
+				str.erase(str.length() - 1, 1);
+				TextControl0 -> SetText(str);
 			}
 		}
 		if (UI_Control_Manager -> Selected == TextControl1)
 		{
-			if (UI_Text_String_1.length() > 0)
+			std::string str = TextControl1 -> GetText();
+			if (str.length() > 0)
 			{
-				UI_Text_String_1.erase(UI_Text_String_1.length() - 1, 1);
-				UI_Text_String_1_Changed = true;
+				str.erase(str.length() - 1, 1);
+				TextControl1 -> SetText(str);
 			}
 		}
 	}
