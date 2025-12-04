@@ -15,6 +15,7 @@ and then use Instances for the Position / Scaling ?
 
 namespace UI
 {
+
 namespace Text
 {
 
@@ -36,6 +37,7 @@ struct Inst_Data
 };
 
 };
+
 };
 
 #endif

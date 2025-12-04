@@ -92,6 +92,8 @@ UI_FILES_SRC := \
 	mains/UI/Control/Text.cpp \
 	mains/UI/Text/Data.cpp \
 	mains/UI/Text/Buffer.cpp \
+	mains/UI/Text/Shader.cpp \
+	mains/UI/Text/Manager.cpp \
 	mains/UserInterface.cpp
 UI_FILES_OBJ := $(UI_FILES_SRC:.cpp=.o)
 UI_all:

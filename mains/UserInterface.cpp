@@ -38,8 +38,7 @@
 #include "UI/Control/Base/Manager.hpp"
 #include "UI/Controls.hpp"
 
-#include "UI/Text/Data.hpp"
-#include "UI/Text/Buffer.hpp"
+#include "UI/Text/Manager.hpp"
 
 
 
@@ -62,7 +61,8 @@ Control::Manager * UI_Control_Manager;
 
 Control::Window * WindowControl;
 Control::Form * MainForm;
-Control::Text * TextControl;
+Control::Text * TextControl0;
+Control::Text * TextControl1;
 
 void ControlInit()
 {
@@ -98,9 +98,17 @@ void ControlInit()
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_NONE;
 	text -> PixelSize = Point2D(60, 60);
-	text -> NormalCenter = Point2D(0.5, 0.5);
+	text -> NormalCenter = Point2D(0.5, 0.5 - 0.1);
 	form -> Children.Insert(text);
-	TextControl = text;
+	TextControl0 = text;
+
+	text = new Control::Text(*UI_Control_Manager);
+	text -> Anchor.X.Anchor = ANCHOR_BOTH;
+	text -> Anchor.Y.Anchor = ANCHOR_NONE;
+	text -> PixelSize = Point2D(60, 60);
+	text -> NormalCenter = Point2D(0.5, 0.5 + 0.1);
+	form -> Children.Insert(text);
+	TextControl1 = text;
 
 	form = new Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
@@ -193,99 +201,76 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton)
 
 
 
-Shader::Base * UI_Text_Shader;
-Uniform::SizeRatio2D * UI_Text_Uni_ViewPortSizeRatio;
+UI::Text::Manager * UI_Text_Manager;
 
-std::string UI_Text_String = "0aAzZ+-";
-bool UI_Text_String_Changed = true;
+std::string UI_Text_String_0 = "Text0";
+bool UI_Text_String_0_Changed = true;
 
-UI::Text::BufferArray * UI_Text_BufferArray;
-Container::Dynamic<UI::Text::Main_Data> UI_Text_Main_Data_Container;
-Container::Dynamic<UI::Text::Inst_Data> UI_Text_Inst_Data_Container;
-Texture::T2DArray * UI_Text_Pallet_Texture;
-
-Point2D CharToTextCoord(int c)
-{
-	if (c >= '0' && c <= '9') { return Point2D(c - '0' ,0); }
-	if (c >= 'A' && c <= 'M') { return Point2D(c - 'A' ,1); }
-	if (c >= 'N' && c <= 'Z') { return Point2D(c - 'N' ,2); }
-	if (c >= 'a' && c <= 'm') { return Point2D(c - 'a' ,3); }
-	if (c >= 'n' && c <= 'z') { return Point2D(c - 'n' ,4); }
-	if (c == '+') { return Point2D(10 ,0); }
-	if (c == '-') { return Point2D(11 ,0); }
-	if (c == '*') { return Point2D(12 ,0); }
-	if (c == '/') { return Point2D(13 ,0); }
-	if (c == '=') { return Point2D(13 ,2); }
-	if (c == '<') { return Point2D(14 ,2); }
-	if (c == '>') { return Point2D(15 ,2); }
-	return Point2D(15, 0);
-}
-
-void TextChangeFunc();
+std::string UI_Text_String_1 = "Text1";
+bool UI_Text_String_1_Changed = true;
 
 void TextInit()
 {
-	UI_Text_Shader = new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("UI/Text.vert")),
-		Shader::Code::FromFile(ShaderDir.File("UI/Text.frag"))
-	}, 2);
-	UI_Text_Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *UI_Text_Shader);
-
-	UI_Text_BufferArray = new UI::Text::BufferArray();
-
-	Image * img = ImageDir.File("Text_16_8.png").LoadImagePNG();
-	UI_Text_Pallet_Texture = new Texture::T2DArray(img);
-	delete img;
-
-	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, -1)));
-	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
-	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
-	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
-	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
-	UI_Text_Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, +1)));
+	UI_Text_Manager = new UI::Text::Manager(ShaderDir, ImageDir);
 }
 void TextFree()
 {
-	delete UI_Text_Shader;
-	delete UI_Text_Uni_ViewPortSizeRatio;
-
-	delete UI_Text_BufferArray;
-	delete UI_Text_Pallet_Texture;
+	delete UI_Text_Manager;
 }
 void TextFrame()
 {
-	if (UI_Text_String_Changed)
+	if (UI_Text_String_0_Changed || UI_Text_String_1_Changed)
 	{
-		UI_Text_Inst_Data_Container.Dispose();
-		for (unsigned int i = 0; i < UI_Text_String.length(); i++)
+		UI_Text_Manager -> Inst_Data_Container.Dispose();
+
+		unsigned int text_0_index = UI_Text_Manager -> Inst_Data_Container.Count();
+		for (unsigned int i = 0; i < UI_Text_String_0.length(); i++)
 		{
-			UI_Text_Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(25.0 + (i * 50), 25.0),
-				CharToTextCoord(UI_Text_String[i])));
+			UI_Text_Manager -> Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(25.0 + (i * 50), 25.0),
+				UI::Text::Manager::CharToTextCoord(UI_Text_String_0[i])));
 		}
-		UI_Text_String_Changed = false;
-	}
-	
-	{
-		Point2D min = TextControl -> PixelBox.Min;
-		Point2D max = TextControl -> PixelBox.Max;
-		Point2D center = (max + min) / 2;
-		for (unsigned int i = 0; i < UI_Text_String.length(); i++)
+		UI_Text_String_0_Changed = false;
+
+		unsigned int text_1_index = UI_Text_Manager -> Inst_Data_Container.Count();
+		for (unsigned int i = 0; i < UI_Text_String_1.length(); i++)
 		{
-			UI_Text_Inst_Data_Container[i].Pos = Point2D((min.X + 25) + (i * 50), center.Y);
+			UI_Text_Manager -> Inst_Data_Container.Insert(UI::Text::Inst_Data(Point2D(25.0 + (i * 50), 25.0),
+				UI::Text::Manager::CharToTextCoord(UI_Text_String_1[i])));
+		}
+		UI_Text_String_1_Changed = false;
+
+		Point2D min;
+		Point2D max;
+		Point2D center;
+
+		min = TextControl0 -> PixelBox.Min;
+		max = TextControl0 -> PixelBox.Max;
+		center = (max + min) / 2;
+		for (unsigned int i = 0; i < UI_Text_String_0.length(); i++)
+		{
+			UI_Text_Manager -> Inst_Data_Container[text_0_index + i].Pos = Point2D((min.X + 25) + (i * 50), center.Y);
+		}
+
+		min = TextControl1 -> PixelBox.Min;
+		max = TextControl1 -> PixelBox.Max;
+		center = (max + min) / 2;
+		for (unsigned int i = 0; i < UI_Text_String_1.length(); i++)
+		{
+			UI_Text_Manager -> Inst_Data_Container[text_1_index + i].Pos = Point2D((min.X + 25) + (i * 50), center.Y);
 		}
 	}
 
-	UI_Text_BufferArray -> Use();
+	UI_Text_Manager -> BufferArray.Use();
 
-	UI_Text_BufferArray -> Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Main_Data) * UI_Text_Main_Data_Container.Count(), UI_Text_Main_Data_Container.Data(), GL_STREAM_DRAW);
-	UI_Text_BufferArray -> Main.Count = UI_Text_Main_Data_Container.Count();
+	UI_Text_Manager -> BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Main_Data) * UI_Text_Manager -> Main_Data_Container.Count(), UI_Text_Manager -> Main_Data_Container.Data(), GL_STREAM_DRAW);
+	UI_Text_Manager -> BufferArray.Main.Count = UI_Text_Manager -> Main_Data_Container.Count();
 
-	UI_Text_BufferArray -> Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Inst_Data) * UI_Text_Inst_Data_Container.Count(), UI_Text_Inst_Data_Container.Data(), GL_STREAM_DRAW);
-	UI_Text_BufferArray -> Inst.Count = UI_Text_Inst_Data_Container.Count();
+	UI_Text_Manager -> BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Inst_Data) * UI_Text_Manager -> Inst_Data_Container.Count(), UI_Text_Manager -> Inst_Data_Container.Data(), GL_STREAM_DRAW);
+	UI_Text_Manager -> BufferArray.Inst.Count = UI_Text_Manager -> Inst_Data_Container.Count();
 
-	UI_Text_Shader -> Use();
-	UI_Text_Pallet_Texture -> Bind();
-	UI_Text_BufferArray -> Draw();
+	UI_Text_Manager -> Shader.Use();
+	UI_Text_Manager -> Pallet_Texture -> Bind();
+	UI_Text_Manager -> BufferArray.Draw();
 }
 
 
@@ -300,7 +285,7 @@ void InitRun()
 	Shader::Base * shaders[2] =
 	{
 		&(UI_Control_Manager -> Shader),
-		UI_Text_Shader,
+		&(UI_Text_Manager -> Shader),
 	};
 	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
 	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 2);
@@ -359,10 +344,15 @@ void TextFunc(unsigned int codepoint)
 		codepoint == ' '
 		)
 	{
-		if (UI_Control_Manager -> Selected == TextControl)
+		if (UI_Control_Manager -> Selected == TextControl0)
 		{
-			UI_Text_String += (char)codepoint;
-			UI_Text_String_Changed = true;
+			UI_Text_String_0 += (char)codepoint;
+			UI_Text_String_0_Changed = true;
+		}
+		if (UI_Control_Manager -> Selected == TextControl1)
+		{
+			UI_Text_String_1 += (char)codepoint;
+			UI_Text_String_1_Changed = true;
 		}
 	}
 }
@@ -371,12 +361,20 @@ void KeyFunc(int key, int scancode, int action, int mods)
 	if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
 	{
 		//std::cout << "BackSpace\n";
-		if (UI_Control_Manager -> Selected == TextControl)
+		if (UI_Control_Manager -> Selected == TextControl0)
 		{
-			if (UI_Text_String.length() > 0)
+			if (UI_Text_String_0.length() > 0)
 			{
-				UI_Text_String.erase(UI_Text_String.length() - 1, 1);
-				UI_Text_String_Changed = true;
+				UI_Text_String_0.erase(UI_Text_String_0.length() - 1, 1);
+				UI_Text_String_0_Changed = true;
+			}
+		}
+		if (UI_Control_Manager -> Selected == TextControl1)
+		{
+			if (UI_Text_String_1.length() > 0)
+			{
+				UI_Text_String_1.erase(UI_Text_String_1.length() - 1, 1);
+				UI_Text_String_1_Changed = true;
 			}
 		}
 	}

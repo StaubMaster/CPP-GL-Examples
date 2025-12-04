@@ -1,18 +1,39 @@
-#ifndef  TEXT_SHADER
-# define TEXT_SHADER
+#ifndef  TEXT_SHADER_HPP
+# define TEXT_SHADER_HPP
 
-# include "Graphics/Shader/Base.hpp"
-# include "Graphics/Shader/Code.hpp"
+#include "Graphics/Shader/Base.hpp"
+
+#include "Graphics/UniformsInclude.hpp"
+
+
+
+class DirectoryContext;
+
+
 
 namespace UI
 {
+
 namespace Text
 {
-class Shader
+
+/*	cannot change name from TextShader to Shader because compiler gets confused
+	thinks that Shader namespace is meant
+	change Shader::Base to Graphics::Shader::Base ?
+	put all Graphics stuff into Graphics namespace
+*/
+class TextShader : public Shader::Base
 {
+	public:
+		Uniform::SizeRatio2D ViewPortSizeRatio;
+
+	public:
+		TextShader(const DirectoryContext & dir);
+		~TextShader();
+};
 
 };
-};
+
 };
 
 #endif

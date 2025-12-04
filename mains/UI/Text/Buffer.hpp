@@ -7,8 +7,11 @@
 # include "Graphics/Attribute/Base/AttributeBase.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
 
+
+
 namespace UI
 {
+
 namespace Text
 {
 
@@ -56,6 +59,7 @@ class BufferArray : public BaseBufferArray
 };
 
 };
+
 };
 
 #endif

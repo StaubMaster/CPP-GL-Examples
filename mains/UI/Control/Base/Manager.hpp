@@ -6,29 +6,29 @@
 #include "Shader.hpp"
 #include "Base.hpp"
 
-#include "DataInclude.hpp"
-
 #include "Miscellaneous/Container/Dynamic.hpp"
 #include "Miscellaneous/EntryContainer/Dynamic.hpp"
 
-#include "OpenGL/openGL.h"
+
 
 class DirectoryContext;
+
+
 
 namespace Control
 {
 //class Base;
 
-struct Manager
+class Manager
 {
 	public:
-		Point2D ViewPortSize;
+		BaseShader Shader;
+		BufferArray BufferArray;
 
 		Container::Dynamic<Control::Main_Data> Main_Data_Container;
 		EntryContainer::Dynamic<Control::Inst_Data> Inst_Data_Container;
 
-		BaseShader Shader;
-		BufferArray BufferArray;
+		Point2D ViewPortSize;
 
 		Base * Hovering;
 		Base * Selected;

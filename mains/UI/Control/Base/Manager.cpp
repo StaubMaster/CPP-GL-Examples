@@ -1,14 +1,18 @@
 #include "Manager.hpp"
+
+#include "DataInclude.hpp"
+
+#include "OpenGL/openGL.h"
 #include <iostream>
 
 
 
 Control::Manager::Manager(const DirectoryContext & dir) :
-	ViewPortSize(),
-	Main_Data_Container(Container::IncreaseBehaviour::Binary, Container::DecreaseBehaviour::Binary),
-	Inst_Data_Container(),
 	Shader(dir),
-	BufferArray()
+	BufferArray(),
+	Main_Data_Container(),
+	Inst_Data_Container(),
+	ViewPortSize()
 {
 	std::cout << "  ++++  " << "Manager()" << "\n";
 
