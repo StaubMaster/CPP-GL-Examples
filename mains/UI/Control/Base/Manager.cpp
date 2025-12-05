@@ -75,20 +75,11 @@ void UI::Control::Manager::UpdateMouse(Point2D mouse)
 
 	if (control != Hovering)
 	{
-		if (Hovering != NULL)
-		{
-			//	Hover Leave
-		}
-		if (control != NULL)
-		{
-			//	Hover Enter
-		}
+		if (Hovering != NULL) { Hovering -> HoverLeave(); }
 		Hovering = control;
+		if (Hovering != NULL) { Hovering -> HoverEnter(); }
 	}
-	if (Hovering != NULL)
-	{
-		//	Hover Over
-	}
+	if (Hovering != NULL) { /* Hover Over */ }
 }
 
 

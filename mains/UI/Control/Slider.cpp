@@ -8,9 +8,7 @@ UI::Control::Slider::Slider(Manager & manager) : Base(manager)
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
 	Anchor.Y.Anchor = ANCHOR_MIN;
-	PixelMinDist = Point2D(12, 12);
 	PixelSize = Point2D(75, 25);
-	PixelMaxDist = Point2D(12, 12);
 	NormalCenter = Point2D(0, 0);
 	ColorDefault = Color(0.375f, 0.375f, 0.375f);
 	ColorHover = Color(0.25f, 0.25f, 0.25f);
@@ -98,8 +96,11 @@ void UI::Control::Slider::RelayClick(UI::Parameter::Click params)
 	float slider_min = PixelBox.Min.X + slider_size_half;
 	float slider_max = PixelBox.Max.X - slider_size_half;
 
-	float slider_normal = (params.Absolute.X - slider_min) / (slider_max - slider_min);
-	float slider_value = (slider_normal * (SliderMax - SliderMin)) + SliderMin;
+	float slider_value = params.Absolute.X;
+	slider_value -= slider_min;
+	slider_value /= (slider_max - slider_min);
+	slider_value *= (SliderMax - SliderMin);
+	slider_value += SliderMin;
 
 	if (slider_value < SliderMin) { slider_value = SliderMin; }
 	if (slider_value > SliderMax) { slider_value = SliderMax; }

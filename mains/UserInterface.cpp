@@ -42,10 +42,10 @@
 
 
 
-Window * window;
-
 DirectoryContext ShaderDir("./media/Shaders");
 DirectoryContext ImageDir("./media/Images");
+
+Window * window;
 
 Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
 
@@ -58,19 +58,14 @@ void click1(UI::Parameter::Click params);
 void click_toggle_MainForm(UI::Parameter::Click params);
 void slider_changed(float val);
 
+
+
 UI::Control::Manager * UI_Control_Manager;
 UI::Text::Manager * UI_Text_Manager;
 
 UI::Control::Form * MainForm;
 UI::Control::TextBox * TextControl0;
 UI::Control::TextBox * TextControl1;
-UI::Control::Slider * SliderControl;
-
-//	Removing Entrys might still cause Data Reallocation in Containers in Control Manager
-//	have a way to mark EntryContainer for deletion so its just ignores Entry stuff
-//	Insert should return NULL Entrys
-//	have a way to start it again ? so it's just temprarily static ?
-//	"immutable" ?
 
 void UI_Init()
 {
@@ -98,10 +93,16 @@ void UI_Make()
 	UI::Control::Button * button;
 	UI::Control::TextBox * text;
 	UI::Control::Slider * slider;
+	UI::Control::CheckBox * check_box;
 
 	form = new UI::Control::Form(*UI_Control_Manager);
 	UI_Control_Manager -> Window -> Children.Insert(form);
 	MainForm = form;
+
+	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
+	check_box -> Anchor.X.Anchor = ANCHOR_MIN;
+	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	form -> Children.Insert(check_box);
 
 	button = new UI::Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
@@ -140,7 +141,6 @@ void UI_Make()
 	slider -> NormalCenter = Point2D(0.5, 0.5 + 0.15);
 	slider -> ValueChangedFunc = slider_changed;
 	form -> Children.Insert(slider);
-	SliderControl = slider;
 
 	form = new UI::Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
@@ -189,6 +189,8 @@ void UI_Frame()
 	UI_Text_Manager -> Draw();
 }
 
+
+
 void click0(UI::Parameter::Click params)
 {
 	std::cout << "click0\n";
@@ -201,7 +203,6 @@ void click1(UI::Parameter::Click params)
 }
 void click_toggle_MainForm(UI::Parameter::Click params)
 {
-	std::cout << "click toggle\n";
 	(void)params;
 	if (MainForm -> Visible)
 	{
@@ -265,14 +266,6 @@ void Resize(const SizeRatio2D & ViewPortSizeRatio)
 	//glfwSwapBuffers(window->win);
 }
 
-/*	how to send this to Controls ?
-	send to manager
-	it sends it to the Controls ?
-	what if I want multiple Control Types to accept Text
-	the easiest would be to have functions that accept this in the Base
-	and then have an empty virtual function
-	so the controls that dont need it can just ignore it
-*/
 void KeyFunc(int key, int scancode, int action, int mods)
 {
 	UI::Parameter::Key params;

@@ -1,6 +1,4 @@
 
-Hover dosent currently change Color
-
 some things are ugly
 
 

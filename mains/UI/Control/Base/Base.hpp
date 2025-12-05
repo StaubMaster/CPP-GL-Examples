@@ -35,101 +35,97 @@ struct Manager;
 
 class Base
 {
-	public:
-		struct Internal
-		{
-			bool	BoxChanged;
-			bool	ColorChanged;
-
-			void UpdateBox();
-			void UpdateMouse();
-			void Click();
-			void Key();
-		};
-		struct External
-		{
-			void (*HoverEnter)();	//	Mouse is now over Control, wasn't last Frame
-			void (*HoverLeave)();	//	Mouse is now not over Control, was last Frame
-			void (*HoverMove)();	//	Mouse has new Position over Control
-			void (*HoverOver)();	//	Mouse is over Control, called every Frame
-			//	Hover(type)
-
-			void (*Click)(unsigned char);
-			//	ClickDown()
-			//	ClickUp()
-			//	ClickPress()
-			//	ClickRelease()
-
-			void (*SelectionBegin)();
-			void (*SelectionEnd)();
-			//	Selection(type)
-
-			External();
-		};
-
-	public:
-		Manager & ControlManager;
-
-		EntryContainer::Entry<Control::Inst_Data> Entry;
-		Container::Dynamic<Control::Base *> Children;
-
-		float			Layer;
-		bool			Visible;
-
-		bool			ChangedBox;
-		bool			ChangedColor;
-
-		Anchor2D		Anchor;
-
-		Point2D			PixelMinDist;
-		Point2D			PixelSize;
-		Point2D			PixelMaxDist;
-
-		AxisBox2D		PixelBox;
-		Point2D			NormalCenter;
-
-		Color			ColorDefault;
-		Color			ColorHover;
-
-		void (*ClickFunc)(UI::Parameter::Click params);
-
-		//	Text
-		//	Image ?
-
-	public:
-		Base(Manager & manager);
-		virtual ~Base();
-
-		//	get/set X/Y Min/Max
-		//	would be useful for placing multiple things next to eachother
-
-	public:
-		void Info(std::string padding) const;
-	public:
-		void UpdateEntrys();
 	protected:
-		virtual void UpdateEntrysRelay();
+	Manager & ControlManager;
+
+	protected:
+	EntryContainer::Entry<Control::Inst_Data> Entry;
+	public:
+	Container::Dynamic<Control::Base *> Children;
 
 	public:
-		void Show();
-		void Hide();
+	float			Layer;
+
+	public:
+	bool			Visible;
+	//bool	Transparent	? makes removes Entry like Visible, but allows children to be visible
+	//bool	Enabled		//visible but cannot be interacted with by User, can be changed via code
+
+	public:
+	//	this is all Anchor stuff. put in struct ?
+	Anchor2D		Anchor;
+
+	Point2D			PixelMinDist;
+	Point2D			PixelSize;
+	Point2D			PixelMaxDist;
+	Point2D			NormalCenter;
+
+	protected:
+	AxisBox2D		PixelBox;
+	bool			PixelBoxChanged;
+
+	Color			ColorDefault;
+	Color			ColorHover;
+	bool			ColorChanged;
+
+	//	optional Relay functions
+	public:
+	void (*ClickFunc)(UI::Parameter::Click params);
+
+	public:
+	Base(Manager & manager);
+	virtual ~Base();
+
+	//	get/set X/Y Min/Max
+	//	would be useful for placing multiple things next to eachother
+
+	public:
+	void Info(std::string padding) const;
+
+	//	for automatic Updating. should not be called by User
+	public:
+	void UpdateEntrys();
+	protected:
+	virtual void UpdateEntryPixelBoxRelay();
+	virtual void UpdateEntryColorRelay();
+	virtual void UpdateEntrysRelay();
+
+	//	can be called by User
+	public:
+	void Show();
+	void Hide();
+
+	//	for automatic Updating. should not be called by User
 	private:
-		void UpdateVisibility(bool make_visible);
+	void UpdateVisibility(bool make_visible);
 	protected:
-		virtual void UpdateVisibilityRelay(bool make_visible);
+	virtual void UpdateVisibilityRelay(bool make_visible);
 
+	//	for automatic Updating. should not be called by User
 	public:
-		void UpdateBox(const AxisBox2D & BaseBox);
+	void UpdateBox(const AxisBox2D & BaseBox);
 	protected:
-		virtual void UpdateBoxRelay();
+	virtual void UpdateBoxRelay();
 
+	//	for automatic Updating. should not be called by User
 	public:
-		Base * CheckHover(Point2D mouse);
+	Base * CheckHover(Point2D mouse);
 
+	//	for automatic Updating. should not be called by User
 	public:
-		virtual void RelayClick(UI::Parameter::Click params);
-		virtual void RelayKey(UI::Parameter::Key params);
-		virtual void RelayText(UI::Parameter::Text params);
+	void HoverEnter();
+	void HoverLeave();
+	virtual void RelayHover(unsigned char type);
+
+	//	relay funciton to inherited Controls. should not be called by user
+	//	put all Relay stuff into struct ?
+	//	dont want in to clutter up stuff
+	//	but if i put them in struct, then they would have to change things in the base
+	//	which would require a referance, which is unnecassary
+	public:
+	virtual void RelayClick(UI::Parameter::Click params);
+	virtual void RelayKey(UI::Parameter::Key params);
+	virtual void RelayText(UI::Parameter::Text params);
 };
 
 };

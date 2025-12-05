@@ -10,4 +10,6 @@
 
 #include "Control/Slider.hpp"
 
+#include "Control/CheckBox.hpp"
+
 #endif

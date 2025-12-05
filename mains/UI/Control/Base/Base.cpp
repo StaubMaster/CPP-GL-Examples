@@ -11,8 +11,12 @@ UI::Control::Base::Base(Manager & manager) :
 {
 	Visible = true;
 	ClickFunc = NULL;
-	ChangedBox = false;
-	ChangedColor = false;
+
+	PixelMinDist = Point2D(12, 12);
+	PixelMaxDist = Point2D(12, 12);
+	PixelBoxChanged = false;
+
+	ColorChanged = false;
 }
 UI::Control::Base::~Base()
 {
@@ -21,8 +25,6 @@ UI::Control::Base::~Base()
 		delete Children[i];
 	}
 }
-
-
 
 
 
@@ -43,19 +45,15 @@ void UI::Control::Base::UpdateEntrys()
 {
 	if (Entry.Is())
 	{
-		if (ChangedBox)
+		if (PixelBoxChanged)
 		{
-			(*Entry).Min = PixelBox.Min;
-			(*Entry).Max = PixelBox.Max;
-			ChangedBox = false;
+			UpdateEntryPixelBoxRelay();
+			PixelBoxChanged = false;
 		}
-		if (ChangedColor)
+		if (ColorChanged)
 		{
-			if (ControlManager.Hovering == this)
-			{ (*Entry).Col = ColorHover; }
-			else
-			{ (*Entry).Col = ColorDefault; }
-			ChangedColor = false;
+			UpdateEntryColorRelay();
+			ColorChanged = false;
 		}
 	}
 	UpdateEntrysRelay();
@@ -64,11 +62,24 @@ void UI::Control::Base::UpdateEntrys()
 		Children[i] -> UpdateEntrys();
 	}
 }
+void UI::Control::Base::UpdateEntryPixelBoxRelay()
+{
+	(*Entry).Min = PixelBox.Min;
+	(*Entry).Max = PixelBox.Max;
+	PixelBoxChanged = false;
+}
+void UI::Control::Base::UpdateEntryColorRelay()
+{
+	if (ControlManager.Hovering != this)
+	{ (*Entry).Col = ColorDefault; }
+	else
+	{ (*Entry).Col = ColorHover; }
+	ColorChanged = false;
+}
 void UI::Control::Base::UpdateEntrysRelay()
 {
 
 }
-
 
 
 
@@ -91,8 +102,8 @@ void UI::Control::Base::UpdateVisibility(bool make_visible)
 		{
 			Entry.Allocate(ControlManager.Inst_Data_Container, 1);
 			(*Entry).Layer = Layer;
-			ChangedBox = true;
-			ChangedColor = true;
+			PixelBoxChanged = true;
+			ColorChanged = true;
 		}
 	}
 	else
@@ -115,12 +126,10 @@ void UI::Control::Base::UpdateVisibilityRelay(bool make_visible)
 
 
 
-
-
 void UI::Control::Base::UpdateBox(const AxisBox2D & BaseBox)
 {
 	PixelBox = Anchor.Calculate(AxisBox2D(PixelMinDist, PixelMaxDist), PixelSize, NormalCenter, BaseBox);
-	ChangedBox = true;
+	PixelBoxChanged = true;
 	UpdateBoxRelay();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -131,6 +140,7 @@ void UI::Control::Base::UpdateBoxRelay()
 {
 
 }
+
 
 
 UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
@@ -154,8 +164,20 @@ UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
 	return NULL;
 }
 
-
-
+void UI::Control::Base::HoverEnter()
+{
+	ColorChanged = true;
+	RelayHover(1);
+}
+void UI::Control::Base::HoverLeave()
+{
+	ColorChanged = true;
+	RelayHover(0);
+}
+void UI::Control::Base::RelayHover(unsigned char type)
+{
+	(void)type;
+}
 
 
 void UI::Control::Base::RelayClick(UI::Parameter::Click params)
