@@ -1,8 +1,11 @@
 #include "Text.hpp"
+#include "OpenGL/openGL.h"
 
 
 
-UI::Control::Text::Text(Manager & manager) : Base(manager)
+UI::Control::Text::Text(Manager & control_manager, UI::Text::Manager & text_manager)
+	: Base(control_manager),
+	TextManager(text_manager)
 {
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
@@ -28,40 +31,97 @@ std::string UI::Control::Text::GetText() const
 void UI::Control::Text::SetText(std::string str)
 {
 	String = str;
-	Changed = true;
+	ChangedText = true;
 }
 
 
 
-void UI::Control::Text::UpdateTextString()
+void UI::Control::Text::UpdateEntrysRelay()
 {
-	if (Changed)
+	if (TextEntry.Is())
+	{
+		if (ChangedText)
+		{
+			Point2D min = PixelBox.Min;
+			Point2D max = PixelBox.Max;
+			Point2D center = (max + min) / 2;
+			for (unsigned int i = 0; i < TextEntry.Length(); i++)
+			{
+				if (i < String.length())
+				{
+					TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord(String[i]);
+				}
+				else
+				{
+					TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord('\0');
+				}
+			}
+			ChangedText = false;
+		}
+	}
+}
+void UI::Control::Text::UpdateVisibilityRelay(bool make_visible)
+{
+	if (make_visible)
+	{
+		if (Visible == true && !TextEntry.Is())
+		{
+			TextEntry.Allocate(TextManager.Inst_Data_Container, 16);
+			ChangedText = true;
+		}
+	}
+	else
+	{
+		if (TextEntry.Is())
+		{
+			TextEntry.Dispose();
+		}
+	}
+}
+void UI::Control::Text::UpdateBoxRelay()
+{
+	if (TextEntry.Is())
 	{
 		Point2D min = PixelBox.Min;
 		Point2D max = PixelBox.Max;
 		Point2D center = (max + min) / 2;
 		for (unsigned int i = 0; i < TextEntry.Length(); i++)
 		{
-			if (i < String.length())
-			{
-				TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord(String[i]);
-			}
-			else
-			{
-				TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord('\0');
-			}
+			TextEntry[i].Pos = Point2D((min.X + 25) + (i * 50), center.Y);
 		}
-		Changed = false;
 	}
 }
 
-void UI::Control::Text::UpdateTextPos()
+
+
+void UI::Control::Text::Key(int key, int scancode, int action, int mods)
 {
-	Point2D min = PixelBox.Min;
-	Point2D max = PixelBox.Max;
-	Point2D center = (max + min) / 2;
-	for (unsigned int i = 0; i < TextEntry.Length(); i++)
+	if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
 	{
-		TextEntry[i].Pos = Point2D((min.X + 25) + (i * 50), center.Y);
+		if (String.length() > 0)
+		{
+			String.erase(String.length() - 1, 1);
+			ChangedText = true;
+		}
+	}
+	(void)key;
+	(void)scancode;
+	(void)action;
+	(void)mods;
+}
+void UI::Control::Text::DoText(unsigned int codepoint)
+{
+	if (
+		(codepoint >= '0' && codepoint <= '9') ||
+		(codepoint >= 'A' && codepoint <= 'Z') ||
+		(codepoint >= 'a' && codepoint <= 'z') ||
+		codepoint == '+' || codepoint == '-' || codepoint == '*' ||
+		codepoint == '/' ||
+		codepoint == '=' || codepoint == '<' || codepoint == '>' ||
+		codepoint == ' '
+		)
+	{
+		String += (char)codepoint;
+		ChangedText = true;
 	}
 }

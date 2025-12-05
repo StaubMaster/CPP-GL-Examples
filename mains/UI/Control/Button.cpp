@@ -16,3 +16,10 @@ UI::Control::Button::Button(Manager & manager) : Base(manager)
 }
 UI::Control::Button::~Button()
 { }
+
+
+
+void UI::Control::Button::Click(unsigned char code, unsigned char action)
+{
+	if (ClickFunc != NULL) { ClickFunc(code, action); }
+}

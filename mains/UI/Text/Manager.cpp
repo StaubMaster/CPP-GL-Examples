@@ -39,6 +39,28 @@ UI::Text::Manager::~Manager()
 
 
 
+void UI::Text::Manager::Draw()
+{
+	BufferArray.Use();
+
+	BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0,
+		sizeof(UI::Text::Main_Data) * Main_Data_Container.Count(),
+		Main_Data_Container.Data(), GL_STREAM_DRAW);
+	BufferArray.Main.Count = Main_Data_Container.Count();
+
+	BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0,
+		sizeof(UI::Text::Inst_Data) * Inst_Data_Container.Count(),
+		Inst_Data_Container.Data(), GL_STREAM_DRAW);
+	BufferArray.Inst.Count = Inst_Data_Container.Count();
+
+	Shader.Use();
+	Pallet_Texture -> Bind();
+	BufferArray.Use();
+	BufferArray.Draw();
+}
+
+
+
 Point2D UI::Text::Manager::CharToTextCoord(int c)
 {
 	if (c == '\0') { return Point2D(15, 0); }

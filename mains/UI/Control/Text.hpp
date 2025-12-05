@@ -20,18 +20,23 @@ namespace Control
 class Text : public Base
 {
 private:
-	bool Changed;
+	UI::Text::Manager & TextManager;
+	bool ChangedText;
 	std::string String;
-public:
 	EntryContainer::Entry<UI::Text::Inst_Data> TextEntry;
 
 public:
-	Text(Manager & manager);
+	Text(Manager & control_manager, UI::Text::Manager & text_manager);
 	~Text();
 
 public:
 	std::string GetText() const;
 	void SetText(std::string str);
+
+public:
+	void UpdateEntrysRelay() override;
+	void UpdateVisibilityRelay(bool make_visible) override;
+	void UpdateBoxRelay() override;
 
 /*
 Estimate how many Characters can fit in the TextBox
@@ -40,9 +45,10 @@ when UpdatingTextString, only set the ones in the Text Box
 
 have a way to cull Text outside of the Box (done in Shader)
 */
+
 public:
-	void UpdateTextString();
-	void UpdateTextPos();
+	void Key(int key, int scancode, int action, int mods) override;
+	void DoText(unsigned int codepoint) override;
 };
 
 };

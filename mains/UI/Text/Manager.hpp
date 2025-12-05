@@ -38,6 +38,9 @@ class Manager
 		~Manager();
 
 	public:
+		void Draw();
+
+	public:
 		static Point2D CharToTextCoord(int c);
 };
 

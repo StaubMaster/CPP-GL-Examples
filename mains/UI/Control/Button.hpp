@@ -16,6 +16,9 @@ class Button : public Base
 public:
 	Button(Manager & manager);
 	~Button();
+
+public:
+	void Click(unsigned char code, unsigned char action) override;
 };
 
 };

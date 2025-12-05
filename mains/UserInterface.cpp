@@ -58,46 +58,46 @@ void click1(unsigned char clickType, unsigned char clickButton);
 void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton);
 
 UI::Control::Manager * UI_Control_Manager;
+UI::Text::Manager * UI_Text_Manager;
 
-UI::Control::Window * WindowControl;
 UI::Control::Form * MainForm;
 UI::Control::Text * TextControl0;
 UI::Control::Text * TextControl1;
 
-void ControlInit()
+//	Removing Entrys might still cause Data Reallocation in Containers in Control Manager
+//	have a way to mark EntryContainer for deletion so its just ignores Entry stuff
+//	Insert should return NULL Entrys
+//	have a way to start it again ? so it's just temprarily static ?
+//	"immutable" ?
+
+void UI_Init()
 {
 	std::cout << "Control Init ...\n";
 
 	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
+	UI_Text_Manager = new UI::Text::Manager(ShaderDir, ImageDir);
 
-	WindowControl = new UI::Control::Window(*UI_Control_Manager);
-
-	WindowControl -> Show();
+	std::cout << "Control Init done\n";
 }
-void ControlFree()
+void UI_Free()
 {
-	std::cout << "Control Free ....\n";
+	std::cout << "Control Free ...\n";
 
-	delete WindowControl;
-	//	Removing Entrys might still cause Data Reallocation in Containers in Control Manager
-	//	have a way to mark EntryContainer for deletion so its just ignores Entry stuff
-	//	Insert should return NULL Entrys
-	//	have a way to start it again ? so it's just temprarily static ?
-	//	"immutable" ?
 	delete UI_Control_Manager;
+	delete UI_Text_Manager;
 
 	std::cout << "Control Free done\n";
 }
-void ControlMake()
+void UI_Make()
 {
-	std::cout << "Control Make ...\n";
+	std::cout << "UI Make ...\n";
 
 	UI::Control::Form * form;
 	UI::Control::Button * button;
 	UI::Control::Text * text;
 
 	form = new UI::Control::Form(*UI_Control_Manager);
-	WindowControl -> Children.Insert(form);
+	UI_Control_Manager -> Window -> Children.Insert(form);
 	MainForm = form;
 
 	button = new UI::Control::Button(*UI_Control_Manager);
@@ -112,28 +112,30 @@ void ControlMake()
 	button -> ClickFunc = click1;
 	form -> Children.Insert(button);
 
-	text = new UI::Control::Text(*UI_Control_Manager);
+	text = new UI::Control::Text(*UI_Control_Manager, *UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_NONE;
 	text -> PixelSize = Point2D(60, 60);
 	text -> NormalCenter = Point2D(0.5, 0.5 - 0.1);
 	form -> Children.Insert(text);
 	TextControl0 = text;
+	TextControl0 -> SetText("Text0");
 
-	text = new UI::Control::Text(*UI_Control_Manager);
+	text = new UI::Control::Text(*UI_Control_Manager, *UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_NONE;
 	text -> PixelSize = Point2D(60, 60);
 	text -> NormalCenter = Point2D(0.5, 0.5 + 0.1);
 	form -> Children.Insert(text);
 	TextControl1 = text;
+	TextControl1 -> SetText("Text1");
 
 	form = new UI::Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
 	form -> Anchor.Y.Anchor = ANCHOR_NONE;
 	form -> PixelSize = Point2D(60, 360);
 	form -> NormalCenter = Point2D(0, 0.5);
-	WindowControl -> Children.Insert(form);
+	UI_Control_Manager -> Window -> Children.Insert(form);
 
 	button = new UI::Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_BOTH;
@@ -146,53 +148,48 @@ void ControlMake()
 	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
 	form -> PixelSize = Point2D(60, 360);
 	form -> NormalCenter = Point2D(0, 0);
-	WindowControl -> Children.Insert(form);
+	UI_Control_Manager -> Window -> Children.Insert(form);
 
-	std::cout << "Control Make done\n";
+	std::cout << "UI Make done\n";
 
-	WindowControl -> Show();
+	UI_Control_Manager -> Window -> Show();
 }
-void ControlFrame()
+void UI_Frame()
 {
-	UI_Control_Manager -> Shader.Use();
+	UI_Control_Manager -> UpdateSize(window -> ViewPortSizeRatio.Size);
 
-	WindowControl -> UpdateBox(AxisBox2D(Point2D(), UI_Control_Manager -> ViewPortSize));
-	WindowControl -> UpdateEntryAll();
-
-	UI_Control_Manager -> ChangeHover(NULL);
 	Point2D mouse = window -> CursorPixel();
 	mouse.Y = window -> ViewPortSizeRatio.Size.Y - mouse.Y;
-	WindowControl -> UpdateHover(mouse);
-
-	//std::cout << "mouse " << mouse << "\n";
-	//std::cout << "button " << (MainForm -> Children[0] -> PixelBox.Min) << " " << (MainForm -> Children[0] -> PixelBox.Max) << "\n";
+	UI_Control_Manager -> UpdateMouse(mouse);
 
 	if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetPressed())
 	{
 		UI_Control_Manager -> Click(CLICK_PRESS, CLICK_BUTTON_L);
 	}
 
-	UI_Control_Manager -> BufferUpdate();
-	UI_Control_Manager -> BufferDraw();
+	UI_Control_Manager -> Window -> UpdateEntrys();
+
+	UI_Control_Manager -> Draw();
+	UI_Text_Manager -> Draw();
 }
 
-void click0(unsigned char clickType, unsigned char clickButton)
+void click0(unsigned char code, unsigned char action)
 {
 	std::cout << "click0\n";
-	(void)clickType;
-	(void)clickButton;
+	(void)code;
+	(void)action;
 }
-void click1(unsigned char clickType, unsigned char clickButton)
+void click1(unsigned char code, unsigned char action)
 {
 	std::cout << "click1\n";
-	(void)clickType;
-	(void)clickButton;
+	(void)code;
+	(void)action;
 }
-void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton)
+void click_toggle_MainForm(unsigned char code, unsigned char action)
 {
 	std::cout << "click toggle\n";
-	(void)clickType;
-	(void)clickButton;
+	(void)code;
+	(void)action;
 	if (MainForm -> Visible)
 	{
 		MainForm -> Hide();
@@ -205,53 +202,13 @@ void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton)
 
 
 
-UI::Text::Manager * UI_Text_Manager;
-
-void TextInit()
-{
-	UI_Text_Manager = new UI::Text::Manager(ShaderDir, ImageDir);
-}
-void TextFree()
-{
-	delete UI_Text_Manager;
-}
-void TextMake()
-{
-	TextControl0 -> TextEntry.Allocate(UI_Text_Manager -> Inst_Data_Container, 16);
-	TextControl1 -> TextEntry.Allocate(UI_Text_Manager -> Inst_Data_Container, 16);
-
-	TextControl0 -> SetText("Text0");
-	TextControl1 -> SetText("Text1");
-}
-void TextFrame()
-{
-	TextControl0 -> UpdateTextString();
-	TextControl1 -> UpdateTextString();
-
-	TextControl0 -> UpdateTextPos();
-	TextControl1 -> UpdateTextPos();
-
-	UI_Text_Manager -> BufferArray.Use();
-
-	UI_Text_Manager -> BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Main_Data) * UI_Text_Manager -> Main_Data_Container.Count(), UI_Text_Manager -> Main_Data_Container.Data(), GL_STREAM_DRAW);
-	UI_Text_Manager -> BufferArray.Main.Count = UI_Text_Manager -> Main_Data_Container.Count();
-
-	UI_Text_Manager -> BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Text::Inst_Data) * UI_Text_Manager -> Inst_Data_Container.Count(), UI_Text_Manager -> Inst_Data_Container.Data(), GL_STREAM_DRAW);
-	UI_Text_Manager -> BufferArray.Inst.Count = UI_Text_Manager -> Inst_Data_Container.Count();
-
-	UI_Text_Manager -> Shader.Use();
-	UI_Text_Manager -> Pallet_Texture -> Bind();
-	UI_Text_Manager -> BufferArray.Draw();
-}
-
 
 
 void InitRun()
 {
 	std::cout << "Init ...\n";
 
-	ControlInit();
-	TextInit();
+	UI_Init();
 
 	Shader::Base * shaders[2] =
 	{
@@ -261,8 +218,7 @@ void InitRun()
 	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
 	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 2);
 
-	ControlMake();
-	TextMake();
+	UI_Make();
 
 	std::cout << "Init done\n";
 }
@@ -270,10 +226,9 @@ void FreeRun()
 {
 	std::cout << "Free ...\n";
 
-	ControlFree();
-	TextFree();
-
 	delete Multi_ViewPortSizeRatio;
+
+	UI_Free();
 
 	std::cout << "Free done\n";
 }
@@ -281,8 +236,7 @@ void Frame(double timeDelta)
 {
 	(void)timeDelta;
 
-	ControlFrame();
-	TextFrame();
+	UI_Frame();
 }
 
 void Resize(const SizeRatio2D & ViewPortSizeRatio)
@@ -304,66 +258,13 @@ void Resize(const SizeRatio2D & ViewPortSizeRatio)
 	and then have an empty virtual function
 	so the controls that dont need it can just ignore it
 */
-void TextFunc(unsigned int codepoint)
-{
-	(void)codepoint;
-	//std::cout << "text [" << codepoint << "] '" << ((char)codepoint) << "'\n";
-	if (
-		(codepoint >= '0' && codepoint <= '9') ||
-		(codepoint >= 'A' && codepoint <= 'Z') ||
-		(codepoint >= 'a' && codepoint <= 'z') ||
-		codepoint == '+' || codepoint == '-' || codepoint == '*' ||
-		codepoint == '/' ||
-		codepoint == '=' || codepoint == '<' || codepoint == '>' ||
-		codepoint == ' '
-		)
-	{
-		if (UI_Control_Manager -> Selected == TextControl0)
-		{
-			std::string str = TextControl0 -> GetText();
-			str += (char)codepoint;
-			TextControl0 -> SetText(str);
-		}
-		if (UI_Control_Manager -> Selected == TextControl1)
-		{
-			std::string str = TextControl1 -> GetText();
-			str += (char)codepoint;
-			TextControl1 -> SetText(str);
-		}
-	}
-}
 void KeyFunc(int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-		//std::cout << "BackSpace\n";
-		if (UI_Control_Manager -> Selected == TextControl0)
-		{
-			std::string str = TextControl0 -> GetText();
-			if (str.length() > 0)
-			{
-				str.erase(str.length() - 1, 1);
-				TextControl0 -> SetText(str);
-			}
-		}
-		if (UI_Control_Manager -> Selected == TextControl1)
-		{
-			std::string str = TextControl1 -> GetText();
-			if (str.length() > 0)
-			{
-				str.erase(str.length() - 1, 1);
-				TextControl1 -> SetText(str);
-			}
-		}
-	}
-	if (key == GLFW_KEY_ENTER && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-		//std::cout << "Enter\n";
-	}
-	(void)key;
-	(void)scancode;
-	(void)action;
-	(void)mods;
+	UI_Control_Manager -> Key(key, scancode, action, mods);
+}
+void TextFunc(unsigned int codepoint)
+{
+	UI_Control_Manager -> DoText(codepoint);
 }
 
 

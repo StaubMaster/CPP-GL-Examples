@@ -86,6 +86,49 @@ Text: allows Text input/output
 #define CLICK_BUTTON_R 1
 
 
+/*	Internal and External funcitons
+
+Internal Functions
+stuff like Resize, which get called automatically to change Anchor and such
+
+External Functions
+functions Pointers for User defined functinos, like when something resizes
+
+together this would clutter up the class ?
+
+put them in a nested class
+	still have them in the Base but private ?
+
+what functions do I need ?
+
+Functions:
+	Mouse Behaviour:
+		HoverEnter
+		HoverMove
+		HoverLeave
+		HoverOver
+			Hover(type)
+		ClickDown
+		ClickUp
+		ClickPress
+		ClickRelease
+			Click(type)
+		SelectBegin
+		SelectEnd
+			Select(type)
+	KeyBoard Behaviour:
+		KeyDown
+		KeyUp
+		KeyPress
+		KeyRelease
+			Key(type)
+		Text
+	General
+		Resize
+		Move
+		Show
+		Hide
+*/
 
 namespace UI
 {
@@ -98,6 +141,38 @@ struct Manager;
 class Base
 {
 	public:
+		struct Internal
+		{
+			bool	BoxChanged;
+			bool	ColorChanged;
+
+			void UpdateBox();
+			void UpdateMouse();
+			void Click();
+			void Key();
+		};
+		struct External
+		{
+			void (*HoverEnter)();	//	Mouse is now over Control, wasn't last Frame
+			void (*HoverLeave)();	//	Mouse is now not over Control, was last Frame
+			void (*HoverMove)();	//	Mouse has new Position over Control
+			void (*HoverOver)();	//	Mouse is over Control, called every Frame
+			//	Hover(type)
+
+			void (*Click)(unsigned char);
+			//	ClickDown()
+			//	ClickUp()
+			//	ClickPress()
+			//	ClickRelease()
+
+			void (*SelectionBegin)();
+			void (*SelectionEnd)();
+			//	Selection(type)
+
+			External();
+		};
+
+	public:
 		Manager & ControlManager;
 
 		EntryContainer::Entry<Control::Inst_Data> Entry;
@@ -105,6 +180,9 @@ class Base
 
 		float			Layer;
 		bool			Visible;
+
+		bool			ChangedBox;
+		bool			ChangedColor;
 
 		Anchor2D		Anchor;
 
@@ -132,19 +210,31 @@ class Base
 
 	public:
 		void Info(std::string padding) const;
+	public:
+		void UpdateEntrys();
+	protected:
+		virtual void UpdateEntrysRelay();
 
 	public:
 		void Show();
 		void Hide();
 	private:
-		void ShowEntry();
-		void HideEntry();
-	public:
-		void UpdateEntryAll();
+		void UpdateVisibility(bool make_visible);
+	protected:
+		virtual void UpdateVisibilityRelay(bool make_visible);
 
 	public:
 		void UpdateBox(const AxisBox2D & BaseBox);
-		bool UpdateHover(Point2D mouse);
+	protected:
+		virtual void UpdateBoxRelay();
+
+	public:
+		Base * CheckHover(Point2D mouse);
+
+	public:
+		virtual void Click(unsigned char code, unsigned char action);
+		virtual void Key(int key, int scancode, int action, int mods);
+		virtual void DoText(unsigned int codepoint);
 };
 
 };

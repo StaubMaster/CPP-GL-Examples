@@ -22,6 +22,8 @@ namespace Control
 {
 //class Base;
 
+class Window;
+
 class Manager
 {
 	public:
@@ -33,6 +35,8 @@ class Manager
 
 		Point2D ViewPortSize;
 
+		UI::Control::Window * Window;
+
 		Base * Hovering;
 		Base * Selected;
 
@@ -40,11 +44,14 @@ class Manager
 		Manager(const DirectoryContext & dir);
 		~Manager();
 
-		void BufferUpdate();
-		void BufferDraw();
+		void Draw();
 
-		void ChangeHover(Base * control);
-		void Click(unsigned char clickType, unsigned char clickButton);
+		void UpdateSize(Point2D size);
+		void UpdateMouse(Point2D mouse);
+
+		void Click(unsigned char action, unsigned char code);
+		void Key(int key, int scancode, int action, int mods);
+		void DoText(unsigned int codepoint);
 };
 
 };

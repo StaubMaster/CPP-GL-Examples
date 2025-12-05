@@ -1,4 +1,5 @@
 #include "Manager.hpp"
+#include "../Window.hpp"
 
 #include "DataInclude.hpp"
 
@@ -12,7 +13,8 @@ UI::Control::Manager::Manager(const DirectoryContext & dir) :
 	BufferArray(),
 	Main_Data_Container(),
 	Inst_Data_Container(),
-	ViewPortSize()
+	ViewPortSize(),
+	Window(new UI::Control::Window(*this))
 {
 	std::cout << "  ++++  " << "Manager()" << "\n";
 
@@ -23,17 +25,21 @@ UI::Control::Manager::Manager(const DirectoryContext & dir) :
 	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
 	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(+1, +1)));
 
+	Window -> Show();
+
 	Hovering = NULL;
 	Selected = NULL;
 }
 UI::Control::Manager::~Manager()
 {
 	std::cout << "  ----  " << "~Manager()" << "\n";
+
+	delete Window;
 }
 
 
 
-void UI::Control::Manager::BufferUpdate()
+void UI::Control::Manager::Draw()
 {
 	if (!Inst_Data_Container.IsCompact())
 	{
@@ -41,40 +47,73 @@ void UI::Control::Manager::BufferUpdate()
 	}
 
 	BufferArray.Use();
-	BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Control::Main_Data) * Main_Data_Container.Count(), Main_Data_Container.Data(), GL_STREAM_DRAW);
-	BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0, sizeof(UI::Control::Inst_Data) * Inst_Data_Container.Count(), Inst_Data_Container.Data(), GL_STREAM_DRAW);
+
+	BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0,
+		sizeof(UI::Control::Main_Data) * Main_Data_Container.Count(),
+		Main_Data_Container.Data(), GL_STREAM_DRAW);
 	BufferArray.Main.Count = Main_Data_Container.Count();
+
+	BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0,
+		sizeof(UI::Control::Inst_Data) * Inst_Data_Container.Count(),
+		Inst_Data_Container.Data(), GL_STREAM_DRAW);
 	BufferArray.Inst.Count = Inst_Data_Container.Count();
-}
-void UI::Control::Manager::BufferDraw()
-{
+
+	Shader.Use();
 	BufferArray.Use();
 	BufferArray.Draw();
 }
 
 
-
-void UI::Control::Manager::ChangeHover(Base * control)
+void UI::Control::Manager::UpdateSize(Point2D size)
 {
-	if (Hovering != NULL)
+	ViewPortSize = size;
+	Window -> UpdateBox(AxisBox2D(Point2D(), size));
+}
+void UI::Control::Manager::UpdateMouse(Point2D mouse)
+{
+	UI::Control::Base * control = Window -> CheckHover(mouse);
+
+	if (control != Hovering)
 	{
-		//	change Hovering Color to DefaultColor
-		Hovering = NULL;
-	}
-	if (control != NULL)
-	{
-		//	change Hovering Color to HoverColor
+		if (Hovering != NULL)
+		{
+			//	Hover Leave
+		}
+		if (control != NULL)
+		{
+			//	Hover Enter
+		}
 		Hovering = control;
 	}
+	if (Hovering != NULL)
+	{
+		//	Hover Over
+	}
 }
-void UI::Control::Manager::Click(unsigned char clickType, unsigned char clickButton)
+
+
+
+
+
+void UI::Control::Manager::Click(unsigned char action, unsigned char code)
 {
 	if (Hovering != NULL)
 	{
-		if (Hovering -> ClickFunc != NULL)
-		{
-			Hovering -> ClickFunc(clickType, clickButton);
-		}
+		Hovering -> Click(code, action);
 	}
 	Selected = Hovering;
+}
+void UI::Control::Manager::Key(int key, int scancode, int action, int mods)
+{
+	if (Selected != NULL)
+	{
+		Selected -> Key(key, scancode, action, mods);
+	}
+}
+void UI::Control::Manager::DoText(unsigned int codepoint)
+{
+	if (Selected != NULL)
+	{
+		Selected -> DoText(codepoint);
+	}
 }

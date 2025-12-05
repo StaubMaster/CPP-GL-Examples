@@ -7,10 +7,12 @@
 UI::Control::Base::Base(Manager & manager) :
 	ControlManager(manager),
 	Entry(),
-	Children(Container::IncreaseBehaviour::Binary, Container::DecreaseBehaviour::Binary)
+	Children()
 {
 	Visible = true;
 	ClickFunc = NULL;
+	ChangedBox = false;
+	ChangedColor = false;
 }
 UI::Control::Base::~Base()
 {
@@ -19,6 +21,10 @@ UI::Control::Base::~Base()
 		delete Children[i];
 	}
 }
+
+
+
+
 
 void UI::Control::Base::Info(std::string padding) const
 {
@@ -31,100 +37,137 @@ void UI::Control::Base::Info(std::string padding) const
 	}
 }
 
-void UI::Control::Base::Show()
+
+
+void UI::Control::Base::UpdateEntrys()
+{
+	if (Entry.Is())
+	{
+		if (ChangedBox)
+		{
+			(*Entry).Min = PixelBox.Min;
+			(*Entry).Max = PixelBox.Max;
+		}
+		if (ChangedColor)
+		{
+			if (ControlManager.Hovering == this)
+			{ (*Entry).Col = ColorHover; }
+			else
+			{ (*Entry).Col = ColorDefault; }
+		}
+	}
+	UpdateEntrysRelay();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> UpdateEntrys();
+	}
+}
+void UI::Control::Base::UpdateEntrysRelay()
 {
 
+}
+
+
+
+
+void UI::Control::Base::Show()
+{
 	Visible = true;
-	ShowEntry();
-	UpdateEntryAll();
+	UpdateVisibility(true);
 }
 void UI::Control::Base::Hide()
 {
 	Visible = false;
-	HideEntry();
-	UpdateEntryAll();
+	UpdateVisibility(false);
 }
 
-void UI::Control::Base::ShowEntry()
+void UI::Control::Base::UpdateVisibility(bool make_visible)
 {
-	//if (Visible == true && Entry == NULL)
-	if (Visible == true && !Entry.Is())
+	if (make_visible)
 	{
-		//Entry = ControlManager.Inst_Data_Container.Alloc(1);
-		Entry.Allocate(ControlManager.Inst_Data_Container, 1);
-	}
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> ShowEntry();
-	}
-}
-void UI::Control::Base::HideEntry()
-{
-	//if (Entry != NULL)
-	if (Entry.Is())
-	{
-		//std::cout << "Count " << ControlManager.Inst_Data_Container.Limit() << "\n";
-		//std::cout << "Count " << ControlManager.Inst_Data_Container.Count() << "\n";
-		//std::cout << "Count " << ControlManager.Inst_Data_Container.Entrys.Count() << "\n";
-		//Entry -> Dispose();
-		Entry.Dispose();
-		//Entry = NULL;
-	}
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> HideEntry();
-	}
-}
-void UI::Control::Base::UpdateEntryAll()
-{
-	//if (Entry != NULL)
-	if (Entry.Is())
-	{
-		//(*Entry)[0].Min = PixelBox.Min;
-		//(*Entry)[0].Max = PixelBox.Max;
-		//(*Entry)[0].Layer = Layer;
-		(*Entry).Min = PixelBox.Min;
-		(*Entry).Max = PixelBox.Max;
-		(*Entry).Layer = Layer;
-		if (ControlManager.Hovering == this)
+		if (Visible == true && !Entry.Is())
 		{
-			//(*Entry)[0].Col = ColorHover;
-			(*Entry).Col = ColorHover;
-		}
-		else
-		{
-			//(*Entry)[0].Col = ColorDefault;
-			(*Entry).Col = ColorDefault;
+			Entry.Allocate(ControlManager.Inst_Data_Container, 1);
+			(*Entry).Layer = Layer;
+			ChangedBox = true;
+			ChangedColor = true;
 		}
 	}
+	else
+	{
+		if (Entry.Is())
+		{
+			Entry.Dispose();
+		}
+	}
+	UpdateVisibilityRelay(make_visible);
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> UpdateEntryAll();
+		Children[i] -> UpdateVisibility(make_visible);
 	}
 }
+void UI::Control::Base::UpdateVisibilityRelay(bool make_visible)
+{
+	(void)make_visible;
+}
+
+
+
+
 
 void UI::Control::Base::UpdateBox(const AxisBox2D & BaseBox)
 {
 	PixelBox = Anchor.Calculate(AxisBox2D(PixelMinDist, PixelMaxDist), PixelSize, NormalCenter, BaseBox);
+	UpdateBoxRelay();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> UpdateBox(PixelBox);
 	}
 }
-bool UI::Control::Base::UpdateHover(Point2D mouse)
+void UI::Control::Base::UpdateBoxRelay()
 {
-	if (!Visible) { return false; }
+
+}
+
+
+UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
+{
+	if (!Visible) { return NULL; }
 	if (PixelBox.Intersekt(mouse))
 	{
-		ControlManager.ChangeHover(this);
-		//unsigned int hover_idx = 0xFFFFFFFF;
+		Base * control = NULL;
 		for (unsigned int i = 0; i < Children.Count(); i++)
 		{
-			if (Children[i] -> UpdateHover(mouse))
+			Base * c = Children[i] -> CheckHover(mouse);
+			if (c != NULL && (control == NULL || c -> Layer < control -> Layer))
 			{
+				control = c;
 			}
 		}
-		return true;
+		if (control != NULL)
+		{ return control; }
+		return this;
 	}
-	return false;
+	return NULL;
+}
+
+
+
+
+
+void UI::Control::Base::Click(unsigned char code, unsigned char action)
+{
+	(void)code;
+	(void)action;
+}
+void UI::Control::Base::Key(int key, int scancode, int action, int mods)
+{
+	(void)key;
+	(void)scancode;
+	(void)action;
+	(void)mods;
+}
+void UI::Control::Base::DoText(unsigned int codepoint)
+{
+	(void)codepoint;
 }
