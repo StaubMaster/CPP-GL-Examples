@@ -1,0 +1,87 @@
+
+Hover dosent currently change Color
+
+some things are ugly
+
+
+
+	Setting Anchors
+only set the information needed for that Anchor
+
+	Themes
+right now each control sets its default stuff in the Constructor
+organize into themes ?
+
+
+
+
+
+	Color/Texture/Display-State
+Enabled, not Selected, not Hovering
+Enabled, not Selected, Hovering
+Enabled, Selected, not Hovering
+Enabled, Selected, Hovering
+Disabled
+
+Toggle needs State Colors
+maybe instead of Toggle, make it loop between different states ?
+maybe left click goes foreward and right goes backward
+
+
+
+
+
+
+
+	Cursor
+change Cursor when hovering Controls
+
+
+
+
+
+
+
+	Internal and External funcitons
+
+Internal Functions
+stuff like Resize, which get called automatically to change Anchor and such
+
+External Functions
+functions Pointers for User defined functinos, like when something resizes
+
+together this would clutter up the class ?
+
+put them in a nested class
+	still have them in the Base but private ?
+
+what functions do I need ?
+
+Functions:
+	Mouse Behaviour:
+		HoverEnter
+		HoverMove
+		HoverLeave
+		HoverOver
+			Hover(type)
+		ClickDown
+		ClickUp
+		ClickPress
+		ClickRelease
+			Click(type)
+		SelectBegin
+		SelectEnd
+			Select(type)
+	KeyBoard Behaviour:
+		KeyDown
+		KeyUp
+		KeyPress
+		KeyRelease
+			Key(type)
+		Text
+	General
+		Resize
+		Move
+		Show
+		Hide
+

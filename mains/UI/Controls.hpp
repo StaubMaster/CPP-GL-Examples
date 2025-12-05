@@ -6,6 +6,8 @@
 
 #include "Control/Button.hpp"
 
-#include "Control/Text.hpp"
+#include "Control/TextBox.hpp"
+
+#include "Control/Slider.hpp"
 
 #endif

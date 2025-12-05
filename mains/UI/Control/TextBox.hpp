@@ -1,5 +1,5 @@
-#ifndef  UI_CONTROL_TEXT_HPP
-# define UI_CONTROL_TEXT_HPP
+#ifndef  UI_CONTROL_TEXTBOX_HPP
+# define UI_CONTROL_TEXTBOX_HPP
 
 #include "Base/Base.hpp"
 #include "../Text/Data.hpp"
@@ -17,23 +17,27 @@ namespace UI
 namespace Control
 {
 
-class Text : public Base
+class TextBox : public Base
 {
-private:
+	private:
 	UI::Text::Manager & TextManager;
 	bool ChangedText;
 	std::string String;
 	EntryContainer::Entry<UI::Text::Inst_Data> TextEntry;
 
-public:
-	Text(Manager & control_manager, UI::Text::Manager & text_manager);
-	~Text();
+	public:
+	bool ReadOnly;
+	bool SingleLine;
 
-public:
+	public:
+	TextBox(Manager & control_manager, UI::Text::Manager & text_manager);
+	~TextBox();
+
+	public:
 	std::string GetText() const;
 	void SetText(std::string str);
 
-public:
+	public:
 	void UpdateEntrysRelay() override;
 	void UpdateVisibilityRelay(bool make_visible) override;
 	void UpdateBoxRelay() override;
@@ -47,8 +51,8 @@ have a way to cull Text outside of the Box (done in Shader)
 */
 
 public:
-	void Key(int key, int scancode, int action, int mods) override;
-	void DoText(unsigned int codepoint) override;
+	void RelayKey(UI::Parameter::Key params) override;
+	void RelayText(UI::Parameter::Text params) override;
 };
 
 };

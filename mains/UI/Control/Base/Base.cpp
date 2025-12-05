@@ -47,6 +47,7 @@ void UI::Control::Base::UpdateEntrys()
 		{
 			(*Entry).Min = PixelBox.Min;
 			(*Entry).Max = PixelBox.Max;
+			ChangedBox = false;
 		}
 		if (ChangedColor)
 		{
@@ -54,6 +55,7 @@ void UI::Control::Base::UpdateEntrys()
 			{ (*Entry).Col = ColorHover; }
 			else
 			{ (*Entry).Col = ColorDefault; }
+			ChangedColor = false;
 		}
 	}
 	UpdateEntrysRelay();
@@ -118,6 +120,7 @@ void UI::Control::Base::UpdateVisibilityRelay(bool make_visible)
 void UI::Control::Base::UpdateBox(const AxisBox2D & BaseBox)
 {
 	PixelBox = Anchor.Calculate(AxisBox2D(PixelMinDist, PixelMaxDist), PixelSize, NormalCenter, BaseBox);
+	ChangedBox = true;
 	UpdateBoxRelay();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -155,19 +158,15 @@ UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
 
 
 
-void UI::Control::Base::Click(unsigned char code, unsigned char action)
+void UI::Control::Base::RelayClick(UI::Parameter::Click params)
 {
-	(void)code;
-	(void)action;
+	(void)params;
 }
-void UI::Control::Base::Key(int key, int scancode, int action, int mods)
+void UI::Control::Base::RelayKey(UI::Parameter::Key params)
 {
-	(void)key;
-	(void)scancode;
-	(void)action;
-	(void)mods;
+	(void)params;
 }
-void UI::Control::Base::DoText(unsigned int codepoint)
+void UI::Control::Base::RelayText(UI::Parameter::Text params)
 {
-	(void)codepoint;
+	(void)params;
 }

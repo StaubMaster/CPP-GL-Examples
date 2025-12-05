@@ -95,25 +95,25 @@ void UI::Control::Manager::UpdateMouse(Point2D mouse)
 
 
 
-void UI::Control::Manager::Click(unsigned char action, unsigned char code)
+void UI::Control::Manager::RelayClick(UI::Parameter::Click params)
 {
 	if (Hovering != NULL)
 	{
-		Hovering -> Click(code, action);
+		Hovering -> RelayClick(params);
 	}
 	Selected = Hovering;
 }
-void UI::Control::Manager::Key(int key, int scancode, int action, int mods)
+void UI::Control::Manager::RelayKey(UI::Parameter::Key params)
 {
 	if (Selected != NULL)
 	{
-		Selected -> Key(key, scancode, action, mods);
+		Selected -> RelayKey(params);
 	}
 }
-void UI::Control::Manager::DoText(unsigned int codepoint)
+void UI::Control::Manager::RelayText(UI::Parameter::Text params)
 {
 	if (Selected != NULL)
 	{
-		Selected -> DoText(codepoint);
+		Selected -> RelayText(params);
 	}
 }

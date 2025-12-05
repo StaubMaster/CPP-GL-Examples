@@ -12,7 +12,7 @@ uniform SizeRatio2D ViewPortSizeRatio;
 
 const vec2 TexturePalletCount = vec2(16, 8);
 //const vec2 PalletScale = vec2(0.1, 0.1);
-const vec2 PalletScale = vec2(50, 50);
+const vec2 PalletScale = vec2(25, 25);
 
 
 

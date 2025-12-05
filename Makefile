@@ -89,7 +89,8 @@ UI_FILES_SRC := \
 	mains/UI/Control/Window.cpp \
 	mains/UI/Control/Form.cpp \
 	mains/UI/Control/Button.cpp \
-	mains/UI/Control/Text.cpp \
+	mains/UI/Control/TextBox.cpp \
+	mains/UI/Control/Slider.cpp \
 	mains/UI/Text/Data.cpp \
 	mains/UI/Text/Buffer.cpp \
 	mains/UI/Text/Shader.cpp \

@@ -6,6 +6,10 @@
 #include "Shader.hpp"
 #include "Base.hpp"
 
+#include "../../Parameter/Click.hpp"
+#include "../../Parameter/Key.hpp"
+#include "../../Parameter/Text.hpp"
+
 #include "Miscellaneous/Container/Dynamic.hpp"
 #include "Miscellaneous/EntryContainer/Dynamic.hpp"
 
@@ -49,9 +53,9 @@ class Manager
 		void UpdateSize(Point2D size);
 		void UpdateMouse(Point2D mouse);
 
-		void Click(unsigned char action, unsigned char code);
-		void Key(int key, int scancode, int action, int mods);
-		void DoText(unsigned int codepoint);
+		void RelayClick(UI::Parameter::Click params);
+		void RelayKey(UI::Parameter::Key params);
+		void RelayText(UI::Parameter::Text params);
 };
 
 };

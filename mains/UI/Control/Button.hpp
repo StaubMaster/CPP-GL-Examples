@@ -18,7 +18,7 @@ public:
 	~Button();
 
 public:
-	void Click(unsigned char code, unsigned char action) override;
+	void RelayClick(UI::Parameter::Click params) override;
 };
 
 };

@@ -53,16 +53,18 @@ Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
 
 
 
-void click0(unsigned char clickType, unsigned char clickButton);
-void click1(unsigned char clickType, unsigned char clickButton);
-void click_toggle_MainForm(unsigned char clickType, unsigned char clickButton);
+void click0(UI::Parameter::Click params);
+void click1(UI::Parameter::Click params);
+void click_toggle_MainForm(UI::Parameter::Click params);
+void slider_changed(float val);
 
 UI::Control::Manager * UI_Control_Manager;
 UI::Text::Manager * UI_Text_Manager;
 
 UI::Control::Form * MainForm;
-UI::Control::Text * TextControl0;
-UI::Control::Text * TextControl1;
+UI::Control::TextBox * TextControl0;
+UI::Control::TextBox * TextControl1;
+UI::Control::Slider * SliderControl;
 
 //	Removing Entrys might still cause Data Reallocation in Containers in Control Manager
 //	have a way to mark EntryContainer for deletion so its just ignores Entry stuff
@@ -94,7 +96,8 @@ void UI_Make()
 
 	UI::Control::Form * form;
 	UI::Control::Button * button;
-	UI::Control::Text * text;
+	UI::Control::TextBox * text;
+	UI::Control::Slider * slider;
 
 	form = new UI::Control::Form(*UI_Control_Manager);
 	UI_Control_Manager -> Window -> Children.Insert(form);
@@ -112,23 +115,32 @@ void UI_Make()
 	button -> ClickFunc = click1;
 	form -> Children.Insert(button);
 
-	text = new UI::Control::Text(*UI_Control_Manager, *UI_Text_Manager);
+	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_NONE;
-	text -> PixelSize = Point2D(60, 60);
-	text -> NormalCenter = Point2D(0.5, 0.5 - 0.1);
+	text -> PixelSize = Point2D(60, 30);
+	text -> NormalCenter = Point2D(0.5, 0.5 - 0.05);
 	form -> Children.Insert(text);
 	TextControl0 = text;
 	TextControl0 -> SetText("Text0");
 
-	text = new UI::Control::Text(*UI_Control_Manager, *UI_Text_Manager);
+	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_NONE;
-	text -> PixelSize = Point2D(60, 60);
-	text -> NormalCenter = Point2D(0.5, 0.5 + 0.1);
+	text -> PixelSize = Point2D(60, 30);
+	text -> NormalCenter = Point2D(0.5, 0.5 + 0.05);
 	form -> Children.Insert(text);
 	TextControl1 = text;
 	TextControl1 -> SetText("Text1");
+
+	slider = new UI::Control::Slider(*UI_Control_Manager);
+	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
+	slider -> Anchor.Y.Anchor = ANCHOR_NONE;
+	slider -> PixelSize = Point2D(60, 30);
+	slider -> NormalCenter = Point2D(0.5, 0.5 + 0.15);
+	slider -> ValueChangedFunc = slider_changed;
+	form -> Children.Insert(slider);
+	SliderControl = slider;
 
 	form = new UI::Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
@@ -164,7 +176,11 @@ void UI_Frame()
 
 	if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetPressed())
 	{
-		UI_Control_Manager -> Click(CLICK_PRESS, CLICK_BUTTON_L);
+		UI::Parameter::Click params;
+		params.code = CLICK_BUTTON_L;
+		params.action = CLICK_PRESS;
+		params.Absolute = mouse;
+		UI_Control_Manager -> RelayClick(params);
 	}
 
 	UI_Control_Manager -> Window -> UpdateEntrys();
@@ -173,23 +189,20 @@ void UI_Frame()
 	UI_Text_Manager -> Draw();
 }
 
-void click0(unsigned char code, unsigned char action)
+void click0(UI::Parameter::Click params)
 {
 	std::cout << "click0\n";
-	(void)code;
-	(void)action;
+	(void)params;
 }
-void click1(unsigned char code, unsigned char action)
+void click1(UI::Parameter::Click params)
 {
 	std::cout << "click1\n";
-	(void)code;
-	(void)action;
+	(void)params;
 }
-void click_toggle_MainForm(unsigned char code, unsigned char action)
+void click_toggle_MainForm(UI::Parameter::Click params)
 {
 	std::cout << "click toggle\n";
-	(void)code;
-	(void)action;
+	(void)params;
 	if (MainForm -> Visible)
 	{
 		MainForm -> Hide();
@@ -199,8 +212,10 @@ void click_toggle_MainForm(unsigned char code, unsigned char action)
 		MainForm -> Show();
 	}
 }
-
-
+void slider_changed(float val)
+{
+	TextControl0 -> SetText(std::to_string(val));
+}
 
 
 
@@ -260,11 +275,18 @@ void Resize(const SizeRatio2D & ViewPortSizeRatio)
 */
 void KeyFunc(int key, int scancode, int action, int mods)
 {
-	UI_Control_Manager -> Key(key, scancode, action, mods);
+	UI::Parameter::Key params;
+	params.key = key;
+	params.scancode = scancode;
+	params.action = action;
+	params.mods = mods;
+	UI_Control_Manager -> RelayKey(params);
 }
 void TextFunc(unsigned int codepoint)
 {
-	UI_Control_Manager -> DoText(codepoint);
+	UI::Parameter::Text params;
+	params.codepoint = codepoint;
+	UI_Control_Manager -> RelayText(params);
 }
 
 
