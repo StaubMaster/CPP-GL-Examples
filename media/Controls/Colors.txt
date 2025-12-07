@@ -1,23 +1,34 @@
 
+0.000f		0d000		0x00		0d000
+0.125f		0d032		0x1F		0d032
+0.250f		0d064		0x3F		0d064
+0.375f		0d096		0x5F		0d096
+0.500f		0d128		0x7F		0d128
+0.625f		0d160		0x9F		0d160
+0.750f		0d192		0xBF		0d192
+0.875f		0d224		0xDF		0d224
+1.000f		0d256		0xFF		0d256
+
+
+
 Window
-	ColorDefault = Color(0, 0, 0);
-	ColorHover = Color(0, 0, 0);
+ColorDefault	0.000f 0.000f 0.000f		0d000 0d000 0d000		0x00 0x00 0x00
+ColorHover		0.000f 0.000f 0.000f		0d000 0d000 0d000		0x00 0x00 0x00
 
 Form
-	ColorDefault = Color(0.75f, 0.75f, 0.75f);
-	ColorHover = Color(0.75f, 0.75f, 0.75f);
+ColorDefault	0.750f 0.750f 0.750f		0d192 0d192 0d192		0xBF 0xBF 0xBF
+ColorHover		0.750f 0.750f 0.750f		0d192 0d192 0d192		0xBF 0xBF 0xBF
 
 Button
-	ColorDefault = Color(0.625f, 0.625f, 0.625f);
-	ColorHover = Color(0.5f, 0.5f, 0.5f);
+ColorDefault	0.625f 0.625f 0.625f		0d160 0d160 0d160		0x9F 0x9F 0x9F
+ColorHover		0.500f 0.500f 0.500f		0d128 0d128 0d128		0x7F 0x7F 0x7F
 
 TextBox
-	ColorDefault = Color(1.0f, 1.0f, 1.0f);
-	ColorHover = Color(0.875f, 0.875f, 0.875f);
+ColorDefault	1.000f 1.000f 1.000f		0d256 0d256 0d256		0xFF 0xFF 0xFF
+ColorHover		0.875f 0.875f 0.875f		0d224 0d224 0d224		0xDF 0xDF 0xDF
 
 Slider
-	ColorDefault = Color(0.375f, 0.375f, 0.375f);
-	ColorHover = Color(0.25f, 0.25f, 0.25f);
-
+ColorDefault	0.375f 0.375f 0.375f		0d096 0d096 0d096		0x5F 0x5F 0x5F
+ColorHover		0.250f 0.250f 0.250f		0d064 0d064 0d064		0x3F 0x3F 0x3F
 
 

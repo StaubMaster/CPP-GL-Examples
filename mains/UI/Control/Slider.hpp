@@ -25,6 +25,7 @@ class Slider : public Base
 	float SliderSize;
 
 	float SliderValue;
+	public:
 	float SliderMin;
 	float SliderMax;
 

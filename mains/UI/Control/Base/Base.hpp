@@ -37,10 +37,11 @@ class Base
 {
 	protected:
 	Manager & ControlManager;
-
+	
 	protected:
 	EntryContainer::Entry<Control::Inst_Data> Entry;
-	public:
+	private:
+	//Base * Parent;
 	Container::Dynamic<Control::Base *> Children;
 
 	public:
@@ -55,14 +56,17 @@ class Base
 	//	this is all Anchor stuff. put in struct ?
 	Anchor2D		Anchor;
 
-	Point2D			PixelMinDist;
-	Point2D			PixelSize;
-	Point2D			PixelMaxDist;
-	Point2D			NormalCenter;
+	AxisBox2D		AnchorDist;
+	private:
+	Point2D			AnchorSize;
+	public:
+	Point2D			AnchorNormal;
+	AxisBox2D		AnchorPadding;
 
+	public:
+	AxisBox2D		AnchorBox;
 	protected:
-	AxisBox2D		PixelBox;
-	bool			PixelBoxChanged;
+	bool			AnchorBoxChanged;
 
 	Color			ColorDefault;
 	Color			ColorHover;
@@ -76,8 +80,24 @@ class Base
 	Base(Manager & manager);
 	virtual ~Base();
 
-	//	get/set X/Y Min/Max
-	//	would be useful for placing multiple things next to eachother
+	void ChildInsert(Base * control);
+
+	Point2D	GetInternalSize();
+	Point2D	GetExternalSize();
+	void	SetInternalSize(Point2D size);
+	void	SetExternalSize(Point2D size);
+
+	public:
+	float	GetPaddedMinX();
+	float	GetPaddedMaxX();
+	float	GetPaddedMinY();
+	float	GetPaddedMaxY();
+
+	public:
+	void	SetPaddedMinX(float val);
+	void	SetPaddedMaxX(float val);
+	void	SetPaddedMinY(float val);
+	void	SetPaddedMaxY(float val);
 
 	public:
 	void Info(std::string padding) const;
@@ -86,7 +106,7 @@ class Base
 	public:
 	void UpdateEntrys();
 	protected:
-	virtual void UpdateEntryPixelBoxRelay();
+	virtual void UpdateEntryAnchorBoxRelay();
 	virtual void UpdateEntryColorRelay();
 	virtual void UpdateEntrysRelay();
 

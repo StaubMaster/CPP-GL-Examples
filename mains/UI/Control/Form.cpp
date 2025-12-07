@@ -7,8 +7,8 @@ UI::Control::Form::Form(Manager & manager) : Base(manager)
 	Layer = 0.9f;
 	Anchor.X.Anchor = ANCHOR_NONE;
 	Anchor.Y.Anchor = ANCHOR_NONE;
-	PixelSize = Point2D(480, 360);
-	NormalCenter = Point2D(0.5, 0.5);
+	AnchorSize = Point2D(480, 360);
+	AnchorNormal = Point2D(0.5, 0.5);
 	ColorDefault = Color(0.75f, 0.75f, 0.75f);
 	ColorHover = Color(0.75f, 0.75f, 0.75f);
 }

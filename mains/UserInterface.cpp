@@ -55,17 +55,239 @@ Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
 
 void click0(UI::Parameter::Click params);
 void click1(UI::Parameter::Click params);
-void click_toggle_MainForm(UI::Parameter::Click params);
+void click_toggle_Example(UI::Parameter::Click params);
+void click_toggle_Settings(UI::Parameter::Click params);
 void slider_changed(float val);
+
+void settings_slider_color_r(float val);
+void settings_slider_color_g(float val);
+void settings_slider_color_b(float val);
 
 
 
 UI::Control::Manager * UI_Control_Manager;
 UI::Text::Manager * UI_Text_Manager;
 
-UI::Control::Form * MainForm;
-UI::Control::TextBox * TextControl0;
-UI::Control::TextBox * TextControl1;
+UI::Control::CheckBox * Toggle_CheckBox_Example;
+UI::Control::CheckBox * Toggle_CheckBox_Settings;
+
+UI::Control::Form * Example_Form;
+UI::Control::TextBox * Example_TextBox_0;
+UI::Control::TextBox * Example_TextBox_1;
+
+UI::Control::Form * Settings_Form;
+UI::Control::TextBox * Settings_TextBox_ColorR;
+UI::Control::TextBox * Settings_TextBox_ColorG;
+UI::Control::TextBox * Settings_TextBox_ColorB;
+
+void UI_Make_Toggles()
+{
+	UI::Control::Form * form;
+	UI::Control::CheckBox * check_box;
+
+	form = new UI::Control::Form(*UI_Control_Manager);
+	form -> Anchor.X.Anchor = ANCHOR_MIN;
+	form -> Anchor.Y.Anchor = ANCHOR_NONE;
+	form -> AnchorSize.X = 60;
+	form -> AnchorSize.Y = 360;
+	UI_Control_Manager -> Window -> ChildInsert(form);
+
+	float h = 0;
+
+	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
+	check_box -> Anchor.X.Anchor = ANCHOR_BOTH;
+	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	check_box -> AnchorDist.Max.Y = h + 12;
+	check_box -> ClickFunc = click_toggle_Example;
+	form -> ChildInsert(check_box);
+	Toggle_CheckBox_Example = check_box;
+
+	h += 12;
+	h += check_box -> AnchorSize.Y;
+	h += 12;
+
+	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
+	check_box -> Anchor.X.Anchor = ANCHOR_BOTH;
+	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	check_box -> AnchorDist.Max.Y = h + 12;
+	check_box -> ClickFunc = click_toggle_Settings;
+	form -> ChildInsert(check_box);
+	Toggle_CheckBox_Settings = check_box;
+}
+void UI_Make_Settings()
+{
+	UI::Control::Form * form;
+	UI::Control::TextBox * text_box;
+	UI::Control::Slider * slider;
+
+	form = new UI::Control::Form(*UI_Control_Manager);
+	form -> Anchor.X.Anchor = ANCHOR_MAX;
+	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
+	form -> AnchorSize.X = 240;
+	form -> AnchorSize.Y = 360;
+	UI_Control_Manager -> Window -> ChildInsert(form);
+	Settings_Form = form;
+
+	float h = 0;
+
+	text_box = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
+	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	//text_box -> AnchorDist.Max.Y = h + 12;
+	text_box -> AnchorDist.Max.Y = 0;
+	text_box -> AnchorSize.Y = 30;
+	form -> ChildInsert(text_box);
+	Settings_TextBox_ColorR = text_box;
+
+	//h += 12;
+	h += text_box -> AnchorSize.Y;
+	//h += 12;
+
+	text_box = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
+	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	//text_box -> AnchorDist.Max.Y = h + 12;
+	text_box -> AnchorDist.Max.Y = h;
+	text_box -> AnchorSize.Y = 30;
+	form -> ChildInsert(text_box);
+	Settings_TextBox_ColorG = text_box;
+
+	//h += 12;
+	h += text_box -> AnchorSize.Y;
+	//h += 12;
+
+	text_box = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
+	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	//text_box -> AnchorDist.Max.Y = h + 12;
+	text_box -> AnchorDist.Max.Y = h;
+	text_box -> AnchorSize.Y = 30;
+	form -> ChildInsert(text_box);
+	Settings_TextBox_ColorB = text_box;
+
+	//h += 12;
+	h += text_box -> AnchorSize.Y;
+	//h += 12;
+
+	slider = new UI::Control::Slider(*UI_Control_Manager);
+	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
+	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
+	//slider -> AnchorDist.Max.Y = h + 12;
+	slider -> AnchorDist.Max.Y = h;
+	slider -> ValueChangedFunc = settings_slider_color_r;
+	slider -> SliderMin = 0;
+	slider -> SliderMax = 255;
+	form -> ChildInsert(slider);
+
+	//h += 12;
+	h += slider -> AnchorSize.Y;
+	//h += 12;
+
+	slider = new UI::Control::Slider(*UI_Control_Manager);
+	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
+	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
+	slider -> AnchorDist.Max.Y = h + 12;
+	slider -> ValueChangedFunc = settings_slider_color_g;
+	slider -> SliderMin = 0;
+	slider -> SliderMax = 255;
+	form -> ChildInsert(slider);
+
+	h += 12;
+	h += slider -> AnchorSize.Y;
+	h += 12;
+
+	slider = new UI::Control::Slider(*UI_Control_Manager);
+	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
+	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
+	slider -> AnchorDist.Max.Y = h + 12;
+	slider -> ValueChangedFunc = settings_slider_color_b;
+	slider -> SliderMin = 0;
+	slider -> SliderMax = 255;
+	form -> ChildInsert(slider);
+}
+void UI_Make_Example()
+{
+	UI::Control::Form * form;
+	UI::Control::Button * button;
+	UI::Control::TextBox * text;
+	UI::Control::Slider * slider;
+	UI::Control::CheckBox * check_box;
+
+	form = new UI::Control::Form(*UI_Control_Manager);
+	UI_Control_Manager -> Window -> ChildInsert(form);
+	Example_Form = form;
+
+	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
+	check_box -> Anchor.X.Anchor = ANCHOR_MIN;
+	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	form -> ChildInsert(check_box);
+
+	float h = 0;
+
+	button = new UI::Control::Button(*UI_Control_Manager);
+	button -> Anchor.X.Anchor = ANCHOR_MIN;
+	button -> Anchor.Y.Anchor = ANCHOR_MAX;
+	button -> AnchorDist.Max.Y = h + 12;
+	button -> ClickFunc = click0;
+	form -> ChildInsert(button);
+
+	button = new UI::Control::Button(*UI_Control_Manager);
+	button -> Anchor.X.Anchor = ANCHOR_MAX;
+	button -> Anchor.Y.Anchor = ANCHOR_MAX;
+	button -> AnchorDist.Max.Y = h + 12;
+	button -> ClickFunc = click1;
+	form -> ChildInsert(button);
+
+	h = 0;
+
+	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text -> Anchor.X.Anchor = ANCHOR_BOTH;
+	text -> Anchor.Y.Anchor = ANCHOR_MIN;
+	text -> AnchorSize.X = 60;
+	text -> AnchorSize.X = 30;
+	text -> AnchorDist.Min.Y = h + 12;
+	text -> SetText("Text0");
+	form -> ChildInsert(text);
+	Example_TextBox_0 = text;
+
+	h += 12;
+	h += text -> AnchorSize.Y;
+	h += 12;
+
+	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text -> Anchor.X.Anchor = ANCHOR_BOTH;
+	text -> Anchor.Y.Anchor = ANCHOR_MIN;
+	text -> AnchorSize.X = 60;
+	text -> AnchorSize.X = 30;
+	text -> AnchorDist.Min.Y = h + 12;
+	text -> SetText("Text1");
+	form -> ChildInsert(text);
+	Example_TextBox_1 = text;
+
+	h += 12;
+	h += text -> AnchorSize.Y;
+	h += 12;
+
+	slider = new UI::Control::Slider(*UI_Control_Manager);
+	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
+	slider -> Anchor.Y.Anchor = ANCHOR_MIN;
+	slider -> AnchorSize.X = 60;
+	slider -> AnchorDist.Min.Y = h + 12;
+	slider -> ValueChangedFunc = slider_changed;
+	form -> ChildInsert(slider);
+}
+void UI_Make()
+{
+	std::cout << "UI Make ...\n";
+
+	UI_Make_Toggles();
+	UI_Make_Settings();
+	UI_Make_Example();
+
+	std::cout << "UI Make done\n";
+
+	UI_Control_Manager -> Window -> Show();
+}
 
 void UI_Init()
 {
@@ -85,87 +307,6 @@ void UI_Free()
 
 	std::cout << "Control Free done\n";
 }
-void UI_Make()
-{
-	std::cout << "UI Make ...\n";
-
-	UI::Control::Form * form;
-	UI::Control::Button * button;
-	UI::Control::TextBox * text;
-	UI::Control::Slider * slider;
-	UI::Control::CheckBox * check_box;
-
-	form = new UI::Control::Form(*UI_Control_Manager);
-	UI_Control_Manager -> Window -> Children.Insert(form);
-	MainForm = form;
-
-	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
-	check_box -> Anchor.X.Anchor = ANCHOR_MIN;
-	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
-	form -> Children.Insert(check_box);
-
-	button = new UI::Control::Button(*UI_Control_Manager);
-	button -> Anchor.X.Anchor = ANCHOR_MIN;
-	button -> Anchor.Y.Anchor = ANCHOR_MIN;
-	button -> ClickFunc = click0;
-	form -> Children.Insert(button);
-
-	button = new UI::Control::Button(*UI_Control_Manager);
-	button -> Anchor.X.Anchor = ANCHOR_MAX;
-	button -> Anchor.Y.Anchor = ANCHOR_MAX;
-	button -> ClickFunc = click1;
-	form -> Children.Insert(button);
-
-	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
-	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_NONE;
-	text -> PixelSize = Point2D(60, 30);
-	text -> NormalCenter = Point2D(0.5, 0.5 - 0.05);
-	form -> Children.Insert(text);
-	TextControl0 = text;
-	TextControl0 -> SetText("Text0");
-
-	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
-	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_NONE;
-	text -> PixelSize = Point2D(60, 30);
-	text -> NormalCenter = Point2D(0.5, 0.5 + 0.05);
-	form -> Children.Insert(text);
-	TextControl1 = text;
-	TextControl1 -> SetText("Text1");
-
-	slider = new UI::Control::Slider(*UI_Control_Manager);
-	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
-	slider -> Anchor.Y.Anchor = ANCHOR_NONE;
-	slider -> PixelSize = Point2D(60, 30);
-	slider -> NormalCenter = Point2D(0.5, 0.5 + 0.15);
-	slider -> ValueChangedFunc = slider_changed;
-	form -> Children.Insert(slider);
-
-	form = new UI::Control::Form(*UI_Control_Manager);
-	form -> Anchor.X.Anchor = ANCHOR_MIN;
-	form -> Anchor.Y.Anchor = ANCHOR_NONE;
-	form -> PixelSize = Point2D(60, 360);
-	form -> NormalCenter = Point2D(0, 0.5);
-	UI_Control_Manager -> Window -> Children.Insert(form);
-
-	button = new UI::Control::Button(*UI_Control_Manager);
-	button -> Anchor.X.Anchor = ANCHOR_BOTH;
-	button -> Anchor.Y.Anchor = ANCHOR_MAX;
-	button -> ClickFunc = click_toggle_MainForm;
-	form -> Children.Insert(button);
-
-	form = new UI::Control::Form(*UI_Control_Manager);
-	form -> Anchor.X.Anchor = ANCHOR_MAX;
-	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
-	form -> PixelSize = Point2D(60, 360);
-	form -> NormalCenter = Point2D(0, 0);
-	UI_Control_Manager -> Window -> Children.Insert(form);
-
-	std::cout << "UI Make done\n";
-
-	UI_Control_Manager -> Window -> Show();
-}
 void UI_Frame()
 {
 	UI_Control_Manager -> UpdateSize(window -> ViewPortSizeRatio.Size);
@@ -175,6 +316,7 @@ void UI_Frame()
 	UI_Control_Manager -> UpdateMouse(mouse);
 
 	if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetPressed())
+	//if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetDown())
 	{
 		UI::Parameter::Click params;
 		params.code = CLICK_BUTTON_L;
@@ -201,21 +343,38 @@ void click1(UI::Parameter::Click params)
 	std::cout << "click1\n";
 	(void)params;
 }
-void click_toggle_MainForm(UI::Parameter::Click params)
+void click_toggle_Example(UI::Parameter::Click params)
 {
-	(void)params;
-	if (MainForm -> Visible)
-	{
-		MainForm -> Hide();
-	}
+	if (Toggle_CheckBox_Example -> IsChecked())
+	{ Example_Form -> Show(); }
 	else
-	{
-		MainForm -> Show();
-	}
+	{ Example_Form -> Hide(); }
+	(void)params;
+}
+void click_toggle_Settings(UI::Parameter::Click params)
+{
+	if (Toggle_CheckBox_Settings -> IsChecked())
+	{ Settings_Form -> Show(); }
+	else
+	{ Settings_Form -> Hide(); }
+	(void)params;
 }
 void slider_changed(float val)
 {
-	TextControl0 -> SetText(std::to_string(val));
+	Example_TextBox_0 -> SetText(std::to_string(val));
+}
+
+void settings_slider_color_r(float val)
+{
+	Settings_TextBox_ColorR -> SetText(std::to_string((int)val));
+}
+void settings_slider_color_g(float val)
+{
+	Settings_TextBox_ColorG -> SetText(std::to_string((int)val));
+}
+void settings_slider_color_b(float val)
+{
+	Settings_TextBox_ColorB -> SetText(std::to_string((int)val));
 }
 
 

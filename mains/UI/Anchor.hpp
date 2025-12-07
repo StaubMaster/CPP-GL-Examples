@@ -20,6 +20,34 @@ struct Anchor1D
 {
 	unsigned char Anchor;
 
+//	private:
+//	float & MinDist;
+//	float & MaxDist;
+//	float & Size;
+//
+//	public:
+//	Anchor1D(float & min_dist, float & max_dist, float & size);
+//
+//	float GetMinDist();
+//	float GetMinSize();
+//	float GetMaxDist();
+//	float GetMaxSize();
+//	float GetSize();
+//	float GetHalfSize();
+//
+//	float GetCenter();
+//	float GetNormalCenter();
+//
+//	void SetMinDist();
+//	void SetMinSize();
+//	void SetMaxDist();
+//	void SetMaxSize();
+//	void SetSize();
+//	void SetHalfSize();
+//
+//	void SetCenter();
+//	void SetNormalCenter();
+
 	AxisBox1D Calculate(AxisBox1D Dist, float Size, float NormalCenter, AxisBox1D Parent);
 };
 

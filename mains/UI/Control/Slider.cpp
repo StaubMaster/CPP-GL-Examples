@@ -8,8 +8,7 @@ UI::Control::Slider::Slider(Manager & manager) : Base(manager)
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
 	Anchor.Y.Anchor = ANCHOR_MIN;
-	PixelSize = Point2D(75, 25);
-	NormalCenter = Point2D(0, 0);
+	AnchorSize = Point2D(75, 25);
 	ColorDefault = Color(0.375f, 0.375f, 0.375f);
 	ColorHover = Color(0.25f, 0.25f, 0.25f);
 
@@ -17,8 +16,8 @@ UI::Control::Slider::Slider(Manager & manager) : Base(manager)
 	SliderSize = 20.0f;
 
 	SliderValue = 0.0f;
-	SliderMin = 10.0f;
-	SliderMax = 20.0f;
+	SliderMin = 0.0f;
+	SliderMax = 1.0f;
 
 	ValueChangedFunc = NULL;
 }
@@ -46,12 +45,12 @@ void UI::Control::Slider::UpdateEntrysRelay()
 	{
 		if (SliderChanged)
 		{
-			(*SliderEntry).Min.Y = PixelBox.Min.Y;
-			(*SliderEntry).Max.Y = PixelBox.Max.Y;
+			(*SliderEntry).Min.Y = AnchorBox.Min.Y;
+			(*SliderEntry).Max.Y = AnchorBox.Max.Y;
 
 			float slider_size_half = SliderSize / 2;
-			float slider_min = PixelBox.Min.X + slider_size_half;
-			float slider_max = PixelBox.Max.X - slider_size_half;
+			float slider_min = AnchorBox.Min.X + slider_size_half;
+			float slider_max = AnchorBox.Max.X - slider_size_half;
 
 			float slider_normal = (SliderValue - SliderMin) / (SliderMax - SliderMin);
 			float slider_value = (slider_normal * (slider_max - slider_min)) + slider_min;
@@ -93,8 +92,8 @@ void UI::Control::Slider::UpdateBoxRelay()
 void UI::Control::Slider::RelayClick(UI::Parameter::Click params)
 {
 	float slider_size_half = SliderSize / 2;
-	float slider_min = PixelBox.Min.X + slider_size_half;
-	float slider_max = PixelBox.Max.X - slider_size_half;
+	float slider_min = AnchorBox.Min.X + slider_size_half;
+	float slider_max = AnchorBox.Max.X - slider_size_half;
 
 	float slider_value = params.Absolute.X;
 	slider_value -= slider_min;

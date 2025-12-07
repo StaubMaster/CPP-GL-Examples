@@ -1,0 +1,144 @@
+
+	# - - - - - - - - - - - - - - - - - #
+	|									|
+	|		# - - - - - - - #			|
+	|		|				|			|
+	|		|     this      |			|
+	|		|				|			|
+	|		# - - - - - - - #			|
+	|									|
+	|									|
+	# - - - - - - - - - - - - - - - - - #
+	|-------|								MinDist
+	|-----------------------|				MinDist + Size
+			|---------------|				Size
+			|---------------------------|	MaxDist + Size
+							|-----------|	MaxDist
+			|-------|-------|				HalfSize
+	|---------------|						Center
+	|---------------|						NormalCenter
+	|-----------------------------------|	ParentSize
+------------|								BoxMin
+----------------------------|				BoxMax
+
+this is all the stuff for Anchoring
+dont store everything
+most of these can be calculated
+
+what is needed ?
+BoxMin and BoxMax are what is used for actual Drawing
+MinDist MaxDist and Size and Normal Center are currently used for
+Anchoring calculations
+
+MinDist and MinDist + Size are used for placing thinds
+these also have Padded versions ?
+
+
+
+
+
+MinDist and MaxDist is relative ?
+Size is Absolute ?
+
+this stuff is used to calculate AnchorBox
+which is Absolute
+
+
+
+Anchor Min
+	keep MinDist and Size the same
+	change MaxDist as needed
+
+Anchor Max
+	keep MaxDist and Size the same
+	change MinDist as needed
+
+Anchor Both
+	keep MinDist and MaxDist the same
+	change Size as needed
+
+
+
+setting MinDist(val)
+{
+	ParentSize = MinDist + Size + MaxDist
+	if Anchor Min
+	{
+		MinDist = val
+		MaxDist = ParentSize - (val + Size)
+	}
+	if Anchor Max
+	{
+		undefined ?
+	}
+	if Anchor Both
+	{
+		MinDist = val
+		Size = ParentSize - (val + MaxDist)
+	}
+}
+
+
+
+Usage:
+
+control0.anchor = min
+control0.MinDist_Padded = 0
+control0.Size = 50
+
+control1.anchor = min
+control1.MinDist_Padded = control0.MinDistMax_Padded
+control1.Size = 50
+
+control2.anchor = max
+control2.MaxDist_Padded = 0
+control2.Size = 50
+
+control3.anchor = both
+control3.MinDist_Padded = control1.MaxDist_Padded
+control3.MaxDist_Padded = control2.MinDist_Padded
+
+
+
+should this stuff care about being Absolute  (what?)
+
+just have GetMin() and GetMax()
+GetMin()
+{
+	if Anchor == NONE
+	if Anchor == MIN	{ return MinDist }
+	if Anchor == MAX	{ return MinDist + Size }
+	if Anchor == BOTH	{ return MinDist }
+}
+so Relative to what the Anchor is
+
+SetMin(val)
+{
+	if Anchor == NONE
+	if Anchor == MIN
+	if Anchor == MAX
+	if Anchor == BOTH
+}
+
+
+
+how does C# do it ?
+the absolute stuff is specified
+so Position and Size
+the Distance stuff is handled internally
+
+
+
+do things need to be calculated whenever a variable is changed ?
+no ?
+the relevant ones get set, the others dont matter
+unless the Anchor changes suddenly
+which I currently dont do
+
+should the data be the padded ?
+and then the actual AnchorBox is inside that box ?
+
+
+
+
+

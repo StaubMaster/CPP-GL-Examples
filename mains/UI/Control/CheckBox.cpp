@@ -8,8 +8,7 @@ UI::Control::CheckBox::CheckBox(Manager & manager) : Base(manager)
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
 	Anchor.Y.Anchor = ANCHOR_MIN;
-	PixelSize = Point2D(25, 25);
-	NormalCenter = Point2D(0, 0);
+	AnchorSize = Point2D(25, 25);
 	ColorDefault = Color(1.0f, 0.0f, 0.0f);
 	ColorHover = Color(0.75f, 0.0f, 0.0f);
 

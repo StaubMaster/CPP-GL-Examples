@@ -1,0 +1,78 @@
+
+	# - - - - - - - - - - - - - - - - - #
+	|									|
+	|		# - - - - - - - #			|
+	|		|				|			|
+	|		|     this      |			|
+	|		|				|			|
+	|		# - - - - - - - #			|
+	|									|
+	|									|
+	# - - - - - - - - - - - - - - - - - #
+	|-------|								MinDist
+	|-----------------------|				MinSize
+			|---------------|				Size
+			|---------------------------|	MaxSize
+							|-----------|	MaxDist
+			|-------|-------|				HalfSize
+	|---------------|						Center
+	|---------------|						NormalCenter
+	|-----------------------------------|	Parent.Size
+----|										Parent.Min
+----------------------------------------|	Parent.Max
+------------|								Box.Min
+----------------------------|				Box.Max
+
+have a function to Calculate all the "missing" Data based on Anchor
+
+allways:
+	Parent.Size	: given
+	Parent.Min	: given
+	Parent.Max	: given
+	Box.Min		= Parent.Min + MinDist
+	Box.Max		= Parent.Max - MaxDist
+
+	HalfSize	= Size / 2
+	MinSize		= MinDist + Size
+	MaxSize		= MaxDist + Size
+
+Anchor: MIN
+	MinDist		: given
+	Size		: given
+	MaxDist		= ParentSize - MinSize
+	Center		= MinDist + HalfSize
+	NormalCenter= Center / Size
+
+Anchor: MAX
+	MaxDist		: given
+	Size		: given
+	MinDist		= ParentSize - MaxSize
+	Center		= MinDist + HalfSize
+	NormalCenter= Center / Size
+
+Anchor: BOTH
+	MinDist		: given
+	MaxDist		: given
+	Size		= ParentSize - (MinDist + MaxDist)
+	Center		= MinDist + HalfSize
+	NormalCenter= Center / Size
+
+Anchor: NONE
+	Size		: given
+	NormalCenter: given
+
+	Center = NormalCenter * Size
+	MinDist = Center - HalfSize
+	MaxDist = ParentSize - MinSize
+	NormalCenter= Center / Size
+
+
+
+when any of the given things are set
+call a function to calculate the other stuff
+
+have another function that changes ParentSize
+recalculates the stuff as needed
+and return the Box
+
+

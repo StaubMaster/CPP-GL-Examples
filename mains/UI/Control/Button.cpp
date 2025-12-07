@@ -7,8 +7,7 @@ UI::Control::Button::Button(Manager & manager) : Base(manager)
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
 	Anchor.Y.Anchor = ANCHOR_MIN;
-	PixelSize = Point2D(75, 25);
-	NormalCenter = Point2D(0, 0);
+	AnchorSize = Point2D(75, 25);
 	ColorDefault = Color(0.625f, 0.625f, 0.625f);
 	ColorHover = Color(0.5f, 0.5f, 0.5f);
 }

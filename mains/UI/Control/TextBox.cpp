@@ -10,8 +10,7 @@ UI::Control::TextBox::TextBox(Manager & control_manager, UI::Text::Manager & tex
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
 	Anchor.Y.Anchor = ANCHOR_MIN;
-	PixelSize = Point2D(50, 25);
-	NormalCenter = Point2D(0, 0);
+	AnchorSize = Point2D(50, 25);
 	ColorDefault = Color(1.0f, 1.0f, 1.0f);
 	ColorHover = Color(0.875f, 0.875f, 0.875f);
 }
@@ -40,8 +39,8 @@ void UI::Control::TextBox::UpdateEntrysRelay()
 	{
 		if (ChangedText)
 		{
-			Point2D min = PixelBox.Min;
-			Point2D max = PixelBox.Max;
+			Point2D min = AnchorBox.Min;
+			Point2D max = AnchorBox.Max;
 			Point2D center = (max + min) / 2;
 			for (unsigned int i = 0; i < TextEntry.Length(); i++)
 			{
@@ -81,8 +80,8 @@ void UI::Control::TextBox::UpdateBoxRelay()
 	if (TextEntry.Is())
 	{
 		Point2D PalletScale(25, 25);
-		Point2D min = PixelBox.Min;
-		Point2D max = PixelBox.Max;
+		Point2D min = AnchorBox.Min;
+		Point2D max = AnchorBox.Max;
 		Point2D center = (max + min) / 2;
 		for (unsigned int i = 0; i < TextEntry.Length(); i++)
 		{
