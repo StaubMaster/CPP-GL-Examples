@@ -7,7 +7,18 @@
 UI::Control::Base::Base(Manager & manager) :
 	ControlManager(manager),
 	Entry(),
-	Children()
+	Children(),
+	Layer(0.0f),
+	Anchor(
+		Anchor1D(
+			AnchorSize.X, AnchorDist.Min.X, AnchorDist.Max.X, AnchorNormal.X,
+			AnchorPadding.Min.X, AnchorPadding.Max.X
+		),
+		Anchor1D(
+			AnchorSize.Y, AnchorDist.Min.Y, AnchorDist.Max.Y, AnchorNormal.Y,
+			AnchorPadding.Min.Y, AnchorPadding.Max.Y
+		)
+	)
 {
 	Visible = true;
 
@@ -15,8 +26,8 @@ UI::Control::Base::Base(Manager & manager) :
 	AnchorDist = AxisBox2D(Point2D(0, 0), Point2D(0, 0));
 
 	//float padding = 10;
-	//float padding = 5;
-	float padding = 0;
+	float padding = 5;
+	//float padding = 0;
 	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
 	AnchorBoxChanged = false;
 
@@ -211,9 +222,10 @@ void UI::Control::Base::UpdateVisibilityRelay(bool make_visible)
 
 void UI::Control::Base::UpdateBox(const AxisBox2D & BaseBox)
 {
-	AnchorBox = Anchor.Calculate(AnchorDist, AnchorSize, AnchorNormal, BaseBox);
-	AnchorBox.Min += AnchorPadding.Min;
-	AnchorBox.Max -= AnchorPadding.Max;
+	//AnchorBox = Anchor.Calculate(AnchorDist, AnchorSize, AnchorNormal, BaseBox);
+	AnchorBox = Anchor.Calculate(BaseBox);
+	//AnchorBox.Min += AnchorPadding.Min;
+	//AnchorBox.Max -= AnchorPadding.Max;
 	AnchorBoxChanged = true;
 	UpdateBoxRelay();
 	for (unsigned int i = 0; i < Children.Count(); i++)

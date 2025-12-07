@@ -13,7 +13,7 @@ UI::Control::Slider::Slider(Manager & manager) : Base(manager)
 	ColorHover = Color(0.25f, 0.25f, 0.25f);
 
 	SliderChanged = true;
-	SliderSize = 20.0f;
+	SliderSize = 10.0f;
 
 	SliderValue = 0.0f;
 	SliderMin = 0.0f;

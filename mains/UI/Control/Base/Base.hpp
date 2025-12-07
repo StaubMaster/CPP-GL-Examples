@@ -48,25 +48,23 @@ class Base
 	float			Layer;
 
 	public:
+	Anchor2D		Anchor;
+
+	protected:
+	Point2D			AnchorSize;
+	AxisBox2D		AnchorDist;
+	Point2D			AnchorNormal;
+	public:
+	AxisBox2D		AnchorPadding;
+
+	protected:
+	AxisBox2D		AnchorBox;
+	bool			AnchorBoxChanged;
+
+	public:
 	bool			Visible;
 	//bool	Transparent	? makes removes Entry like Visible, but allows children to be visible
 	//bool	Enabled		//visible but cannot be interacted with by User, can be changed via code
-
-	public:
-	//	this is all Anchor stuff. put in struct ?
-	Anchor2D		Anchor;
-
-	AxisBox2D		AnchorDist;
-	private:
-	Point2D			AnchorSize;
-	public:
-	Point2D			AnchorNormal;
-	AxisBox2D		AnchorPadding;
-
-	public:
-	AxisBox2D		AnchorBox;
-	protected:
-	bool			AnchorBoxChanged;
 
 	Color			ColorDefault;
 	Color			ColorHover;
@@ -81,23 +79,6 @@ class Base
 	virtual ~Base();
 
 	void ChildInsert(Base * control);
-
-	Point2D	GetInternalSize();
-	Point2D	GetExternalSize();
-	void	SetInternalSize(Point2D size);
-	void	SetExternalSize(Point2D size);
-
-	public:
-	float	GetPaddedMinX();
-	float	GetPaddedMaxX();
-	float	GetPaddedMinY();
-	float	GetPaddedMaxY();
-
-	public:
-	void	SetPaddedMinX(float val);
-	void	SetPaddedMaxX(float val);
-	void	SetPaddedMinY(float val);
-	void	SetPaddedMaxY(float val);
 
 	public:
 	void Info(std::string padding) const;

@@ -74,6 +74,7 @@ UI::Control::CheckBox * Toggle_CheckBox_Settings;
 UI::Control::Form * Example_Form;
 UI::Control::TextBox * Example_TextBox_0;
 UI::Control::TextBox * Example_TextBox_1;
+UI::Control::TextBox * Example_TextBox_2;
 
 UI::Control::Form * Settings_Form;
 UI::Control::TextBox * Settings_TextBox_ColorR;
@@ -88,8 +89,9 @@ void UI_Make_Toggles()
 	form = new UI::Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
 	form -> Anchor.Y.Anchor = ANCHOR_NONE;
-	form -> AnchorSize.X = 60;
-	form -> AnchorSize.Y = 360;
+	form -> Anchor.X.SetPaddedMinDist(0);
+	form -> Anchor.X.SetSize(60);
+	form -> Anchor.Y.SetSize(360);
 	UI_Control_Manager -> Window -> ChildInsert(form);
 
 	float h = 0;
@@ -97,19 +99,21 @@ void UI_Make_Toggles()
 	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
 	check_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
-	check_box -> AnchorDist.Max.Y = h + 12;
+	check_box -> Anchor.X.SetPaddedMinDist(0);
+	check_box -> Anchor.X.SetPaddedMaxDist(0);
+	check_box -> Anchor.Y.SetPaddedMaxDist(h);
 	check_box -> ClickFunc = click_toggle_Example;
 	form -> ChildInsert(check_box);
 	Toggle_CheckBox_Example = check_box;
 
-	h += 12;
-	h += check_box -> AnchorSize.Y;
-	h += 12;
+	h = check_box -> Anchor.Y.GetPaddedMaxSize();
 
 	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
 	check_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
-	check_box -> AnchorDist.Max.Y = h + 12;
+	check_box -> Anchor.X.SetPaddedMinDist(0);
+	check_box -> Anchor.X.SetPaddedMaxDist(0);
+	check_box -> Anchor.Y.SetPaddedMaxDist(h);
 	check_box -> ClickFunc = click_toggle_Settings;
 	form -> ChildInsert(check_box);
 	Toggle_CheckBox_Settings = check_box;
@@ -123,8 +127,8 @@ void UI_Make_Settings()
 	form = new UI::Control::Form(*UI_Control_Manager);
 	form -> Anchor.X.Anchor = ANCHOR_MAX;
 	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
-	form -> AnchorSize.X = 240;
-	form -> AnchorSize.Y = 360;
+	form -> Anchor.X.SetSize(240);
+	form -> Anchor.Y.SetSize(360);
 	UI_Control_Manager -> Window -> ChildInsert(form);
 	Settings_Form = form;
 
@@ -133,73 +137,68 @@ void UI_Make_Settings()
 	text_box = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
 	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
-	//text_box -> AnchorDist.Max.Y = h + 12;
-	text_box -> AnchorDist.Max.Y = 0;
-	text_box -> AnchorSize.Y = 30;
+	text_box -> Anchor.X.SetPaddedMinDist(0);
+	text_box -> Anchor.X.SetPaddedMaxDist(0);
+	text_box -> Anchor.Y.SetPaddedMaxDist(h);
 	form -> ChildInsert(text_box);
 	Settings_TextBox_ColorR = text_box;
 
-	//h += 12;
-	h += text_box -> AnchorSize.Y;
-	//h += 12;
+	h = text_box -> Anchor.Y.GetPaddedMaxSize();
 
 	text_box = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
 	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
-	//text_box -> AnchorDist.Max.Y = h + 12;
-	text_box -> AnchorDist.Max.Y = h;
-	text_box -> AnchorSize.Y = 30;
+	text_box -> Anchor.X.SetPaddedMinDist(0);
+	text_box -> Anchor.X.SetPaddedMaxDist(0);
+	text_box -> Anchor.Y.SetPaddedMaxDist(h);
 	form -> ChildInsert(text_box);
 	Settings_TextBox_ColorG = text_box;
 
-	//h += 12;
-	h += text_box -> AnchorSize.Y;
-	//h += 12;
+	h = text_box -> Anchor.Y.GetPaddedMaxSize();
 
 	text_box = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
 	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
-	//text_box -> AnchorDist.Max.Y = h + 12;
-	text_box -> AnchorDist.Max.Y = h;
-	text_box -> AnchorSize.Y = 30;
+	text_box -> Anchor.X.SetPaddedMinDist(0);
+	text_box -> Anchor.X.SetPaddedMaxDist(0);
+	text_box -> Anchor.Y.SetPaddedMaxDist(h);
 	form -> ChildInsert(text_box);
 	Settings_TextBox_ColorB = text_box;
 
-	//h += 12;
-	h += text_box -> AnchorSize.Y;
-	//h += 12;
+	h = text_box -> Anchor.Y.GetPaddedMaxSize();
 
 	slider = new UI::Control::Slider(*UI_Control_Manager);
 	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
 	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
-	//slider -> AnchorDist.Max.Y = h + 12;
-	slider -> AnchorDist.Max.Y = h;
+	slider -> Anchor.X.SetPaddedMinDist(0);
+	slider -> Anchor.X.SetPaddedMaxDist(0);
+	slider -> Anchor.Y.SetPaddedMaxDist(h);
 	slider -> ValueChangedFunc = settings_slider_color_r;
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
 
-	//h += 12;
-	h += slider -> AnchorSize.Y;
-	//h += 12;
+	h = slider -> Anchor.Y.GetPaddedMaxSize();
 
 	slider = new UI::Control::Slider(*UI_Control_Manager);
 	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
 	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
-	slider -> AnchorDist.Max.Y = h + 12;
+	slider -> Anchor.X.SetPaddedMinDist(0);
+	slider -> Anchor.X.SetPaddedMaxDist(0);
+	slider -> Anchor.Y.SetPaddedMaxDist(h);
 	slider -> ValueChangedFunc = settings_slider_color_g;
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
 
-	h += 12;
-	h += slider -> AnchorSize.Y;
-	h += 12;
+	h = slider -> Anchor.Y.GetPaddedMaxSize();
 
 	slider = new UI::Control::Slider(*UI_Control_Manager);
 	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
 	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
-	slider -> AnchorDist.Max.Y = h + 12;
+	slider -> Anchor.X.SetPaddedMinDist(0);
+	slider -> Anchor.X.SetPaddedMaxDist(0);
+	slider -> Anchor.Y.SetPaddedMaxDist(h);
 	slider -> ValueChangedFunc = settings_slider_color_b;
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
@@ -217,64 +216,85 @@ void UI_Make_Example()
 	UI_Control_Manager -> Window -> ChildInsert(form);
 	Example_Form = form;
 
-	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
-	check_box -> Anchor.X.Anchor = ANCHOR_MIN;
-	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
-	form -> ChildInsert(check_box);
-
+	float w = 0;
 	float h = 0;
 
 	button = new UI::Control::Button(*UI_Control_Manager);
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
-	button -> AnchorDist.Max.Y = h + 12;
+	button -> Anchor.X.SetPaddedMinDist(w);
+	button -> Anchor.Y.SetPaddedMaxDist(h);
 	button -> ClickFunc = click0;
 	form -> ChildInsert(button);
 
+	w = button -> Anchor.X.GetPaddedMinSize();
+
 	button = new UI::Control::Button(*UI_Control_Manager);
-	button -> Anchor.X.Anchor = ANCHOR_MAX;
+	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
-	button -> AnchorDist.Max.Y = h + 12;
+	button -> Anchor.X.SetPaddedMinDist(w);
+	button -> Anchor.Y.SetPaddedMaxDist(h);
 	button -> ClickFunc = click1;
 	form -> ChildInsert(button);
 
-	h = 0;
+	w = button -> Anchor.X.GetPaddedMinSize();
+
+	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
+	check_box -> Anchor.X.Anchor = ANCHOR_MIN;
+	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	check_box -> Anchor.X.SetPaddedMinDist(w);
+	check_box -> Anchor.Y.SetPaddedMaxDist(h);
+	form -> ChildInsert(check_box);
+
+	w = 0;
+	h = check_box -> Anchor.Y.GetPaddedMaxSize();
 
 	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_MIN;
-	text -> AnchorSize.X = 60;
-	text -> AnchorSize.X = 30;
-	text -> AnchorDist.Min.Y = h + 12;
+	text -> Anchor.Y.Anchor = ANCHOR_MAX;
+	text -> Anchor.X.SetPaddedMinDist(0);
+	text -> Anchor.X.SetPaddedMaxDist(0);
+	text -> Anchor.Y.SetPaddedMaxDist(h);
 	text -> SetText("Text0");
 	form -> ChildInsert(text);
 	Example_TextBox_0 = text;
 
-	h += 12;
-	h += text -> AnchorSize.Y;
-	h += 12;
+	w = 0;
+	h = text -> Anchor.Y.GetPaddedMaxSize();
 
 	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_MIN;
-	text -> AnchorSize.X = 60;
-	text -> AnchorSize.X = 30;
-	text -> AnchorDist.Min.Y = h + 12;
+	text -> Anchor.Y.Anchor = ANCHOR_MAX;
+	text -> Anchor.X.SetPaddedMinDist(0);
+	text -> Anchor.X.SetPaddedMaxDist(0);
+	text -> Anchor.Y.SetPaddedMaxDist(h);
 	text -> SetText("Text1");
 	form -> ChildInsert(text);
 	Example_TextBox_1 = text;
 
-	h += 12;
-	h += text -> AnchorSize.Y;
-	h += 12;
+	w = 0;
+	h = text -> Anchor.Y.GetPaddedMaxSize();
 
 	slider = new UI::Control::Slider(*UI_Control_Manager);
-	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
-	slider -> Anchor.Y.Anchor = ANCHOR_MIN;
-	slider -> AnchorSize.X = 60;
-	slider -> AnchorDist.Min.Y = h + 12;
+	slider -> Anchor.X.Anchor = ANCHOR_MIN;
+	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
+	slider -> Anchor.X.SetPaddedMinDist(w);
+	slider -> Anchor.X.SetSize(200);
+	slider -> Anchor.Y.SetPaddedMaxDist(h);
 	slider -> ValueChangedFunc = slider_changed;
 	form -> ChildInsert(slider);
+
+	w = slider -> Anchor.X.GetPaddedMinSize();
+
+	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text -> Anchor.X.Anchor = ANCHOR_BOTH;
+	text -> Anchor.Y.Anchor = ANCHOR_MAX;
+	text -> Anchor.X.SetPaddedMinDist(w);
+	text -> Anchor.X.SetPaddedMaxDist(0);
+	text -> Anchor.Y.SetPaddedMaxDist(h);
+	text -> SetText("0");
+	form -> ChildInsert(text);
+	Example_TextBox_2 = text;
 }
 void UI_Make()
 {
@@ -295,6 +315,8 @@ void UI_Init()
 
 	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
 	UI_Text_Manager = new UI::Text::Manager(ShaderDir, ImageDir);
+
+	UI_Control_Manager -> UpdateSize(window -> ViewPortSizeRatio.Size);
 
 	std::cout << "Control Init done\n";
 }
@@ -361,7 +383,7 @@ void click_toggle_Settings(UI::Parameter::Click params)
 }
 void slider_changed(float val)
 {
-	Example_TextBox_0 -> SetText(std::to_string(val));
+	Example_TextBox_2 -> SetText(std::to_string(val));
 }
 
 void settings_slider_color_r(float val)

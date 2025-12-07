@@ -64,7 +64,6 @@ Anchor: NONE
 	Center = NormalCenter * Size
 	MinDist = Center - HalfSize
 	MaxDist = ParentSize - MinSize
-	NormalCenter= Center / Size
 
 
 
