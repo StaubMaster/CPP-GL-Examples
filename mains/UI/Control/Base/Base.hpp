@@ -31,7 +31,7 @@ namespace UI
 namespace Control
 {
 
-struct Manager;
+class Manager;
 
 class Base
 {

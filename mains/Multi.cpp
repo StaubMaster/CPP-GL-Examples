@@ -36,10 +36,6 @@
 
 #include <signal.h>
 
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-
 
 
 DirectoryContext * ImageDir = new DirectoryContext("./media/Images");
@@ -254,14 +250,11 @@ void InitRun()
 		std::cout << "Instance_Entrys " << (Instance_Entrys -> Count()) << '\n';
 	}
 	std::cout << "\nINIT done\n\n";
-	std::cout << "Init _CrtDumpMemoryLeaks" << ' ' << _CrtDumpMemoryLeaks() << '\n';
 	std::cout << std::flush;
 	//std::cout.flush();
 }
 void FreeRun()
 {
-	std::cerr << "Free _CrtDumpMemoryLeaks" << ' ' << _CrtDumpMemoryLeaks() << '\n';
-
 	std::cout << "\nFREE ...\n\n";
 	std::cout << std::flush;
 	//std::cout.flush();
@@ -386,7 +379,6 @@ int main()
 	try
 	{
 	//atexit(check_leaks);
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	signal(SIGINT, signal_handler);
 	std::cout << "here\n";
@@ -423,7 +415,6 @@ int main()
 	std::cout << ">>>> Run Window" << '\n';
 	
 	std::cout << __FILE__ << ':' << __LINE__ << '\n';
-	std::cout << "_CrtDumpMemoryLeaks" << ' ' << _CrtDumpMemoryLeaks() << '\n';
 
 	delete win;
 	std::cout << __FILE__ << ':' << __LINE__ << '\n';
@@ -440,7 +431,6 @@ int main()
 		std::cerr << "Error: " << "Unknown" << '\n';
 	}
 
-	std::cout << "_CrtDumpMemoryLeaks" << ' ' << _CrtDumpMemoryLeaks() << '\n';
 	std::cout << "\nmain() return\n\n";
 	return 0;
 }
