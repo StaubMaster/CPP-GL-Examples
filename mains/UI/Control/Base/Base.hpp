@@ -65,7 +65,7 @@ class Base
 	bool			Enabled;		//visible but cannot be interacted with by User, can be changed via code, Grayed out ?
 	bool			Visible;		//is current and children visible
 	bool			Opaque;			//is current invisible, does not effect children
-	private:
+	protected:
 	bool			Drawable;		//should this currently be drawn ?
 
 	public:

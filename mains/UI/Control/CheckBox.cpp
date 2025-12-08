@@ -66,6 +66,8 @@ void UI::Control::CheckBox::RelayHover(unsigned char type)
 
 void UI::Control::CheckBox::RelayClick(UI::Parameter::Click params)
 {
+	if (!Enabled || !Visible || !Drawable) { return; }
+
 	Checked = !Checked;
 	ColorChanged = true;
 	if (ClickFunc != NULL) { ClickFunc(params); }

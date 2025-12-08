@@ -294,6 +294,7 @@ void UI_Make_Example()
 	text -> Anchor.X.SetPaddedMaxDist(0);
 	text -> Anchor.Y.SetPaddedMaxDist(h);
 	text -> SetText("0");
+	text -> ReadOnly = true;
 	form -> ChildInsert(text);
 	Example_TextBox_2 = text;
 }

@@ -18,5 +18,7 @@ UI::Control::Button::~Button()
 
 void UI::Control::Button::RelayClick(UI::Parameter::Click params)
 {
+	if (!Enabled || !Visible || !Drawable) { return; }
+
 	if (ClickFunc != NULL) { ClickFunc(params); }
 }

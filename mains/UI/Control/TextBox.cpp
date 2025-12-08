@@ -13,6 +13,9 @@ UI::Control::TextBox::TextBox(Manager & control_manager, UI::Text::Manager & tex
 	AnchorSize = Point2D(50, 25);
 	ColorDefault = Color(1.0f, 1.0f, 1.0f);
 	ColorHover = Color(0.875f, 0.875f, 0.875f);
+
+	ReadOnly = false;
+	SingleLine = true;
 }
 UI::Control::TextBox::~TextBox()
 { }
@@ -92,6 +95,8 @@ void UI::Control::TextBox::UpdateBoxRelay()
 
 void UI::Control::TextBox::RelayKey(UI::Parameter::Key params)
 {
+	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
+
 	if (params.key == GLFW_KEY_BACKSPACE && (params.action == GLFW_PRESS || params.action == GLFW_REPEAT))
 	{
 		if (String.length() > 0)
@@ -103,6 +108,8 @@ void UI::Control::TextBox::RelayKey(UI::Parameter::Key params)
 }
 void UI::Control::TextBox::RelayText(UI::Parameter::Text params)
 {
+	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
+
 	if (
 		(params.codepoint >= '0' && params.codepoint <= '9') ||
 		(params.codepoint >= 'A' && params.codepoint <= 'Z') ||
