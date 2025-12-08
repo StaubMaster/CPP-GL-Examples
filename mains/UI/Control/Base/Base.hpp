@@ -67,7 +67,16 @@ class Base
 	bool			Opaque;			//is current invisible, does not effect children
 	protected:
 	bool			Drawable;		//should this currently be drawn ?
-
+	/*
+		rename Drawable
+		Enabled and Visible have 2 Variants
+		1. what this Control want to be
+		2. what does Parent(recursive) allow
+		have functions to check for combinations
+		WantsEntry() { Drawable & Visible & Opaque }
+		AcceptsUserInput() { WantsEntry() & Enabled }
+	*/
+	
 	public:
 	Color			ColorDefault;
 	//Color			ColorDisabled;
