@@ -1,46 +1,37 @@
 #include <iostream>
 #include "OpenGL/openGL.h"
 
-#include "PolyHedra.hpp"
 #include "Window.hpp"
-#include "TextureArray.hpp"
+#include "PolyHedra/PolyHedra.hpp"
+#include "Graphics/Texture/2DArray.hpp"
 
-#include "PH/PolyHedra_MainData.hpp"
-#include "PH/PolyHedra_MainBuffer.hpp"
+#include "DataInclude.hpp"
+#include "DataShow.hpp"
 
-#include "DataStruct/SizeRatio2D.hpp"
-#include "DataStruct/Trans3D.hpp"
-#include "DataStruct/Depth.hpp"
-#include "DataStruct/Ray3D.hpp"
+#include "DataStruct/Main/PolyHedra.hpp"
+#include "DataStruct/Inst/Physics3D.hpp"
 
-#include "Physics3D/Physics3D_InstData.hpp"
-#include "Physics3D/Physics3D_InstAttrib.hpp"
-#include "Physics3D/Physics3D_InstBuffer.hpp"
-
-#include "Graphics/Shader/BaseShader.hpp"
-#include "Graphics/Shader/ShaderCode.hpp"
+#include "Graphics/Shader/Base.hpp"
+#include "Graphics/Shader/Code.hpp"
 #include "Graphics/Buffer/Instance_Base_BufferArray.hpp"
 
-#include "Graphics/Uniform/Data/SizeRatio2D.hpp"
-#include "Graphics/Uniform/Data/Trans3D.hpp"
-#include "Graphics/Uniform/Data/Depth.hpp"
+#include "Graphics/UniformsInclude.hpp"
 
 #include "FileContext.hpp"
 #include "DirectoryContext.hpp"
 
-#include "DataO.hpp"
+
+
+//#define CL_HPP_ENABLE_EXCEPTIONS
+//#define CL_HPP_TARGET_OPENCL_VERSION 200
+//#include <CL/opencl.hpp>
+#include <opencl.h>
 
 
 
-#define CL_HPP_ENABLE_EXCEPTIONS
-#define CL_HPP_TARGET_OPENCL_VERSION 200
-#include <CL/opencl.hpp>
-
-
-
-DirectoryContext ImageDir("../media/Images");
-DirectoryContext ShaderDir("../media/Shaders");
-DirectoryContext KernelDir("../media/Kernel");
+DirectoryContext ImageDir("../../media/Images");
+DirectoryContext ShaderDir("../../media/Shaders");
+DirectoryContext KernelDir("../../media/Kernel");
 
 
 
@@ -50,7 +41,7 @@ Trans3D	ViewTrans;
 Depth	ViewDepth;
 Ray3D	ViewRay;
 
-TextureArray * Texture;
+Texture::T2DArray * Texture;
 
 YMT::PolyHedra * PH;
 
@@ -61,7 +52,7 @@ Instance_Base_BufferArray<
 	Physics3D_InstBuffer
 > * PH_Physics3D_BufferArray;
 
-BaseShader * PH_Physics3D_Shader;
+Shader::Base * PH_Physics3D_Shader;
 
 Uniform::SizeRatio2D * Uni_ViewPortSizeRatio;
 Uniform::Trans3D * Uni_ViewTrans;
@@ -262,7 +253,7 @@ void Init()
 {
 	std::cout << "Init 0\n";
 
-	Texture = new TextureArray(128, 128, 1, (FileContext[])
+	Texture = new Texture::T2DArray(128, 128, 1, (FileContext[])
 	{
 		ImageDir.File("GrayDeant.png"),
 	});
@@ -286,9 +277,9 @@ void Init()
 		delete [] data;
 	}
 
-	PH_Physics3D_Shader = new BaseShader((const ShaderCode []) {
-		ShaderCode::FromFile(ShaderDir.File("PH_Phys3D.vert")),
-		ShaderCode::FromFile(ShaderDir.File("PH_Full.frag"))
+	PH_Physics3D_Shader = new Shader::Base((const Shader::Code []) {
+		Shader::Code::FromFile(ShaderDir.File("PH_Phys3D.vert")),
+		Shader::Code::FromFile(ShaderDir.File("PH_Full.frag"))
 	}, 2);
 	Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *PH_Physics3D_Shader);
 	Uni_ViewTrans = new Uniform::Trans3D("View", *PH_Physics3D_Shader);
@@ -320,6 +311,8 @@ void Free()
 }
 void Frame(double timeDelta)
 {
+	PH_Physics3D_Shader -> Use();
+
 	if (win -> IsMouseLocked())
 	{
 		ViewTrans.TransformFlatX(win -> MoveFromKeys(20.0f * timeDelta), win -> SpinFromCursor(0.2f * timeDelta));
@@ -344,9 +337,10 @@ void Frame(double timeDelta)
 	Texture -> Bind();
 	PH_Physics3D_BufferArray -> Draw();
 }
-void Resize(int w, int h)
+void Resize(const SizeRatio2D & ViewPortSizeRatio)
 {
-	Uni_ViewPortSizeRatio -> PutData(SizeRatio2D(w, h));
+	PH_Physics3D_Shader -> Use();
+	Uni_ViewPortSizeRatio -> PutData(ViewPortSizeRatio);
 }
 
 

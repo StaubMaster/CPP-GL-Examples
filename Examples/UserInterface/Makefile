@@ -39,9 +39,9 @@ FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(MAKE) repos_clone -s
-	@$(MAKE) $(FILES_OBJ) -s
-	@$(MAKE) $(NAME) -s
+	@$(MAKE) -s repos_clone
+	@$(MAKE) -s $(FILES_OBJ)
+	@$(MAKE) -s $(NAME)
 
 clean:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
