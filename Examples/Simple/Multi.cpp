@@ -38,8 +38,8 @@
 
 
 
-DirectoryContext * ImageDir = new DirectoryContext("./media/Images");
-DirectoryContext * ShaderDir = new DirectoryContext("./media/Shaders");
+DirectoryContext * ImageDir = new DirectoryContext("../../media/Images");
+DirectoryContext * ShaderDir = new DirectoryContext("../../media/Shaders");
 
 
 

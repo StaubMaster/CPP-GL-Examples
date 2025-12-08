@@ -42,8 +42,8 @@
 
 
 
-DirectoryContext ShaderDir("./media/Shaders");
-DirectoryContext ImageDir("./media/Images");
+DirectoryContext ShaderDir("../../media/Shaders");
+DirectoryContext ImageDir("../../media/Images");
 
 Window * window;
 

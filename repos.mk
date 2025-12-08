@@ -1,11 +1,14 @@
 
+ifndef REPOS_DIR
+$(error REPOS_DIR needs to be set. REPOS_DIR := other/)
+endif
+
 
 
 ################################################################
 #                             REPO                             #
 ################################################################
 
-REPOS_DIR := other/
 REPOS_STATIC = 
 REPOS_DYNAMIC = 
 REPOS_ALL = $(REPOS_STATIC) $(REPOS_DYNAMIC)

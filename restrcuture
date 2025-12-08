@@ -1,0 +1,35 @@
+
+UserInterface has a lot of files
+
+Spline also has a few files
+
+Light could also be split into multiple files
+
+Basic and Multi are single files
+
+having everything in one directory is unorganized
+
+put UI into seperate file
+
+have UI Makefile and main in a directory
+have Source Files in seperate directory ?
+since that stuff might be used somewhere else as well ?
+
+keep Basic and Multi together ?
+
+
+
+Examples
+Examples/Simple/Makefile
+Examples/Simple/Basic.cpp
+Examples/Simple/Multi.cpp
+Examples/UserInterface
+Examples/UserInterface/Makefile
+Examples/UserInterface/main.cpp
+Examples/Spline
+Examples/Spline/Makefile
+Examples/Spline/main.cpp
+
+src
+src/UI/...
+src/Spline/...

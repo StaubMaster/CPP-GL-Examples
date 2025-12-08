@@ -33,6 +33,7 @@
 #include "Format/Image.hpp"
 
 
+
 /*	ToDo
 Calculate Spline Length for SplineSegment and SplineCurve
 
@@ -50,9 +51,9 @@ assamble other things correctly
 
 
 
-DirectoryContext ImageDir("./media/Images");
-DirectoryContext ShaderDir("./media/Shaders");
-DirectoryContext MediaDir("./media/YMT/Spline");
+DirectoryContext ImageDir("../../media/Images");
+DirectoryContext ShaderDir("../../media/Shaders");
+DirectoryContext MediaDir("../../media/YMT/Spline");
 
 
 

@@ -89,8 +89,9 @@ struct SpotLightEntry
 	}
 };
 
-DirectoryContext ImageDir("./media/Images");
-DirectoryContext ShaderDir("./media/Shaders");
+DirectoryContext ImageDir("../../media/Images");
+DirectoryContext ShaderDir("../../media/Shaders");
+DirectoryContext PolyHedra_Dir("../../media/YMT/Light/");
 
 Window * win;
 
@@ -240,13 +241,12 @@ void FancyInsert(unsigned int ph_idx, Point3D pos, Angle3D rot)
 }
 void Fancify()
 {
-	DirectoryContext YMT_Dir("./media/YMT/Light/");
-	unsigned int idx_stage =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage.polyhedra.ymt")));
-	unsigned int idx_stage_light =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage_Light.polyhedra.ymt")));
-	unsigned int idx_stage_light_holder =	FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Stage_Light_Holder.polyhedra.ymt")));
-	unsigned int idx_truss =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Truss_Square40cm_Len200cm.polyhedra.ymt")));
-	unsigned int idx_truss_cube =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Truss_Cube40cm.polyhedra.ymt")));
-	unsigned int idx_chair =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(YMT_Dir.File("Chair.polyhedra.ymt")));
+	unsigned int idx_stage =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(PolyHedra_Dir.File("Stage.polyhedra.ymt")));
+	unsigned int idx_stage_light =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(PolyHedra_Dir.File("Stage_Light.polyhedra.ymt")));
+	unsigned int idx_stage_light_holder =	FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(PolyHedra_Dir.File("Stage_Light_Holder.polyhedra.ymt")));
+	unsigned int idx_truss =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(PolyHedra_Dir.File("Truss_Square40cm_Len200cm.polyhedra.ymt")));
+	unsigned int idx_truss_cube =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(PolyHedra_Dir.File("Truss_Cube40cm.polyhedra.ymt")));
+	unsigned int idx_chair =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(YMT::PolyHedra::Load(PolyHedra_Dir.File("Chair.polyhedra.ymt")));
 
 	for (unsigned int i = 0; i < FancyPolyHedras.Count(); i++)
 	{
