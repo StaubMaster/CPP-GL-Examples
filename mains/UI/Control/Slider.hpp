@@ -42,7 +42,8 @@ class Slider : public Base
 
 	public:
 	void UpdateEntrysRelay() override;
-	void UpdateVisibilityRelay(bool make_visible) override;
+	void InsertDrawingEntryRelay() override;
+	void RemoveDrawingEntryRelay() override;
 	void UpdateBoxRelay() override;
 
 	void RelayClick(UI::Parameter::Click params) override;

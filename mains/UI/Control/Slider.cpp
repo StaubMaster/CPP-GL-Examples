@@ -62,24 +62,21 @@ void UI::Control::Slider::UpdateEntrysRelay()
 		}
 	}
 }
-void UI::Control::Slider::UpdateVisibilityRelay(bool make_visible)
+void UI::Control::Slider::InsertDrawingEntryRelay()
 {
-	if (make_visible)
+	if (!SliderEntry.Is())
 	{
-		if (Visible == true && !SliderEntry.Is())
-		{
-			SliderEntry.Allocate(ControlManager.Inst_Data_Container, 1);
-			(*SliderEntry).Col = Color(0.5f, 0.5f, 0.5f);
-			(*SliderEntry).Layer = Layer - 0.01f;
-			SliderChanged = true;
-		}
+		SliderEntry.Allocate(ControlManager.Inst_Data_Container, 1);
+		(*SliderEntry).Col = Color(0.5f, 0.5f, 0.5f);
+		(*SliderEntry).Layer = Layer - 0.01f;
+		SliderChanged = true;
 	}
-	else
+}
+void UI::Control::Slider::RemoveDrawingEntryRelay()
+{
+	if (SliderEntry.Is())
 	{
-		if (SliderEntry.Is())
-		{
-			SliderEntry.Dispose();
-		}
+		SliderEntry.Dispose();
 	}
 }
 void UI::Control::Slider::UpdateBoxRelay()

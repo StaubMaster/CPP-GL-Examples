@@ -57,24 +57,22 @@ void UI::Control::TextBox::UpdateEntrysRelay()
 		}
 	}
 }
-void UI::Control::TextBox::UpdateVisibilityRelay(bool make_visible)
+void UI::Control::TextBox::InsertDrawingEntryRelay()
 {
-	if (make_visible)
+	if (!TextEntry.Is())
 	{
-		if (Visible == true && !TextEntry.Is())
-		{
-			TextEntry.Allocate(TextManager.Inst_Data_Container, 16);
-			ChangedText = true;
-		}
-	}
-	else
-	{
-		if (TextEntry.Is())
-		{
-			TextEntry.Dispose();
-		}
+		TextEntry.Allocate(TextManager.Inst_Data_Container, 16);
+		ChangedText = true;
 	}
 }
+void UI::Control::TextBox::RemoveDrawingEntryRelay()
+{
+	if (TextEntry.Is())
+	{
+		TextEntry.Dispose();
+	}
+}
+
 void UI::Control::TextBox::UpdateBoxRelay()
 {
 	if (TextEntry.Is())

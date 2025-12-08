@@ -41,7 +41,7 @@ class Base
 	protected:
 	EntryContainer::Entry<Control::Inst_Data> Entry;
 	private:
-	//Base * Parent;
+	Base * Parent;
 	Container::Dynamic<Control::Base *> Children;
 
 	public:
@@ -62,11 +62,15 @@ class Base
 	bool			AnchorBoxChanged;
 
 	public:
-	bool			Visible;
-	//bool	Transparent	? makes removes Entry like Visible, but allows children to be visible
-	//bool	Enabled		//visible but cannot be interacted with by User, can be changed via code
+	bool			Enabled;		//visible but cannot be interacted with by User, can be changed via code, Grayed out ?
+	bool			Visible;		//is current and children visible
+	bool			Opaque;			//is current invisible, does not effect children
+	private:
+	bool			Drawable;		//should this currently be drawn ?
 
+	public:
 	Color			ColorDefault;
+	//Color			ColorDisabled;
 	Color			ColorHover;
 	bool			ColorChanged;
 
@@ -93,14 +97,22 @@ class Base
 
 	//	can be called by User
 	public:
+	void MakeEnabled();
+	void MakeDisabled();
+
 	void Show();
 	void Hide();
 
+	void MakeTransParent();
+	void MakeOpaque();
+
 	//	for automatic Updating. should not be called by User
 	private:
-	void UpdateVisibility(bool make_visible);
-	protected:
-	virtual void UpdateVisibilityRelay(bool make_visible);
+	void UpdateVisibility();
+	void InsertDrawingEntry();
+	void RemoveDrawingEntry();
+	virtual void InsertDrawingEntryRelay();
+	virtual void RemoveDrawingEntryRelay();
 
 	//	for automatic Updating. should not be called by User
 	public:

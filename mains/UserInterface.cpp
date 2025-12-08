@@ -70,17 +70,6 @@ UI::Text::Manager * UI_Text_Manager;
 
 UI::Control::CheckBox * Toggle_CheckBox_Example;
 UI::Control::CheckBox * Toggle_CheckBox_Settings;
-
-UI::Control::Form * Example_Form;
-UI::Control::TextBox * Example_TextBox_0;
-UI::Control::TextBox * Example_TextBox_1;
-UI::Control::TextBox * Example_TextBox_2;
-
-UI::Control::Form * Settings_Form;
-UI::Control::TextBox * Settings_TextBox_ColorR;
-UI::Control::TextBox * Settings_TextBox_ColorG;
-UI::Control::TextBox * Settings_TextBox_ColorB;
-
 void UI_Make_Toggles()
 {
 	UI::Control::Form * form;
@@ -118,6 +107,11 @@ void UI_Make_Toggles()
 	form -> ChildInsert(check_box);
 	Toggle_CheckBox_Settings = check_box;
 }
+
+UI::Control::Form * Settings_Form;
+UI::Control::TextBox * Settings_TextBox_ColorR;
+UI::Control::TextBox * Settings_TextBox_ColorG;
+UI::Control::TextBox * Settings_TextBox_ColorB;
 void UI_Make_Settings()
 {
 	UI::Control::Form * form;
@@ -130,6 +124,7 @@ void UI_Make_Settings()
 	form -> Anchor.X.SetSize(240);
 	form -> Anchor.Y.SetSize(360);
 	UI_Control_Manager -> Window -> ChildInsert(form);
+	form -> Hide();
 	Settings_Form = form;
 
 	float h = 0;
@@ -204,6 +199,11 @@ void UI_Make_Settings()
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
 }
+
+UI::Control::Form * Example_Form;
+UI::Control::TextBox * Example_TextBox_0;
+UI::Control::TextBox * Example_TextBox_1;
+UI::Control::TextBox * Example_TextBox_2;
 void UI_Make_Example()
 {
 	UI::Control::Form * form;
@@ -214,6 +214,7 @@ void UI_Make_Example()
 
 	form = new UI::Control::Form(*UI_Control_Manager);
 	UI_Control_Manager -> Window -> ChildInsert(form);
+	form -> Hide();
 	Example_Form = form;
 
 	float w = 0;
@@ -296,6 +297,7 @@ void UI_Make_Example()
 	form -> ChildInsert(text);
 	Example_TextBox_2 = text;
 }
+
 void UI_Make()
 {
 	std::cout << "UI Make ...\n";
