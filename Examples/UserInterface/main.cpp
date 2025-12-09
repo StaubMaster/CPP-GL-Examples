@@ -53,10 +53,10 @@ Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
 
 
 
-void click0(UI::Parameter::Click params);
-void click1(UI::Parameter::Click params);
-void click_toggle_Example(UI::Parameter::Click params);
-void click_toggle_Settings(UI::Parameter::Click params);
+void click0(UserParameter::Click params);
+void click1(UserParameter::Click params);
+void click_toggle_Example(UserParameter::Click params);
+void click_toggle_Settings(UserParameter::Click params);
 void slider_changed(float val);
 
 void settings_slider_color_r(float val);
@@ -334,41 +334,34 @@ void UI_Free()
 }
 void UI_Frame()
 {
-	UI_Control_Manager -> UpdateSize(window -> ViewPortSizeRatio.Size);
-
 	Point2D mouse = window -> CursorPixel();
 	mouse.Y = window -> ViewPortSizeRatio.Size.Y - mouse.Y;
+
+	UI_Control_Manager -> UpdateSize(window -> ViewPortSizeRatio.Size);
 	UI_Control_Manager -> UpdateMouse(mouse);
-
-	if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetPressed())
-	//if (window -> MouseButtons[GLFW_MOUSE_BUTTON_LEFT].State.GetDown())
-	{
-		UI::Parameter::Click params;
-		params.code = CLICK_BUTTON_L;
-		params.action = CLICK_PRESS;
-		params.Absolute = mouse;
-		UI_Control_Manager -> RelayClick(params);
-	}
-
 	UI_Control_Manager -> Window -> UpdateEntrys();
-
 	UI_Control_Manager -> Draw();
+
 	UI_Text_Manager -> Draw();
 }
 
 
 
-void click0(UI::Parameter::Click params)
+void click0(UserParameter::Click params)
 {
-	std::cout << "click0\n";
-	(void)params;
+	if (params.Action == GLFW_PRESS)
+	{
+		std::cout << "click0\n";
+	}
 }
-void click1(UI::Parameter::Click params)
+void click1(UserParameter::Click params)
 {
-	std::cout << "click1\n";
-	(void)params;
+	if (params.Action == GLFW_PRESS)
+	{
+		std::cout << "click1\n";
+	}
 }
-void click_toggle_Example(UI::Parameter::Click params)
+void click_toggle_Example(UserParameter::Click params)
 {
 	if (Toggle_CheckBox_Example -> IsChecked())
 	{ Example_Form -> Show(); }
@@ -376,7 +369,7 @@ void click_toggle_Example(UI::Parameter::Click params)
 	{ Example_Form -> Hide(); }
 	(void)params;
 }
-void click_toggle_Settings(UI::Parameter::Click params)
+void click_toggle_Settings(UserParameter::Click params)
 {
 	if (Toggle_CheckBox_Settings -> IsChecked())
 	{ Settings_Form -> Show(); }
@@ -450,19 +443,16 @@ void Resize(const SizeRatio2D & ViewPortSizeRatio)
 	//glfwSwapBuffers(window->win);
 }
 
-void KeyFunc(int key, int scancode, int action, int mods)
+void ClickFunc(UserParameter::Click params)
 {
-	UI::Parameter::Key params;
-	params.key = key;
-	params.scancode = scancode;
-	params.action = action;
-	params.mods = mods;
+	UI_Control_Manager -> RelayClick(params);
+}
+void KeyFunc(UserParameter::Key params)
+{
 	UI_Control_Manager -> RelayKey(params);
 }
-void TextFunc(unsigned int codepoint)
+void TextFunc(UserParameter::Text params)
 {
-	UI::Parameter::Text params;
-	params.codepoint = codepoint;
 	UI_Control_Manager -> RelayText(params);
 }
 
@@ -484,8 +474,10 @@ int main()
 	window -> FreeFunc = FreeRun;
 
 	window -> ResizeFunc = Resize;
-	window -> TextFunc = TextFunc;
+
+	window -> ClickFunc = ClickFunc;
 	window -> KeyFunc = KeyFunc;
+	window -> TextFunc = TextFunc;
 
 	window -> DefaultColor = Color(0.875f, 0.875f, 0.875f);
 

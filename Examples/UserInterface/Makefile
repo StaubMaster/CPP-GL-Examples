@@ -12,6 +12,7 @@ FILES_SRC := \
 	$(BASE_DIR)src/UI/DisplayScale.cpp \
 	$(BASE_DIR)src/UI/AxisBox.cpp \
 	$(BASE_DIR)src/UI/Anchor.cpp \
+\
 	$(BASE_DIR)src/UI/Control/Base/Data.cpp \
 	$(BASE_DIR)src/UI/Control/Base/Buffer.cpp \
 	$(BASE_DIR)src/UI/Control/Base/Shader.cpp \
@@ -23,11 +24,12 @@ FILES_SRC := \
 	$(BASE_DIR)src/UI/Control/TextBox.cpp \
 	$(BASE_DIR)src/UI/Control/Slider.cpp \
 	$(BASE_DIR)src/UI/Control/CheckBox.cpp \
+\
 	$(BASE_DIR)src/UI/Text/Data.cpp \
 	$(BASE_DIR)src/UI/Text/Buffer.cpp \
 	$(BASE_DIR)src/UI/Text/Shader.cpp \
 	$(BASE_DIR)src/UI/Text/Manager.cpp \
-	UserInterface.cpp
+	main.cpp
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
