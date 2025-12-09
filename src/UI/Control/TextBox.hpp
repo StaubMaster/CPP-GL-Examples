@@ -21,9 +21,10 @@ class TextBox : public Base
 {
 	private:
 	UI::Text::Manager & TextManager;
-	bool ChangedText;
-	std::string String;
 	EntryContainer::Entry<UI::Text::Inst_Data> TextEntry;
+
+	std::string String;
+	bool ChangedText;
 
 	public:
 	bool ReadOnly;
@@ -52,8 +53,8 @@ have a way to cull Text outside of the Box (done in Shader)
 */
 
 public:
-	void RelayKey(UI::Parameter::Key params) override;
-	void RelayText(UI::Parameter::Text params) override;
+	void RelayKey(UserParameter::Key params) override;
+	void RelayText(UserParameter::Text params) override;
 };
 
 };

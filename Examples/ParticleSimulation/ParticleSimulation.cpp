@@ -3,7 +3,9 @@
 
 #include "Window.hpp"
 #include "PolyHedra/PolyHedra.hpp"
+#include "PolyHedra/Generate.hpp"
 #include "Graphics/Texture/2DArray.hpp"
+#include "PolyHedra/Skin/Skin2DA.hpp"
 
 #include "DataInclude.hpp"
 #include "DataShow.hpp"
@@ -22,10 +24,10 @@
 
 
 
-//#define CL_HPP_ENABLE_EXCEPTIONS
-//#define CL_HPP_TARGET_OPENCL_VERSION 200
-//#include <CL/opencl.hpp>
-#include <opencl.h>
+#define CL_HPP_ENABLE_EXCEPTIONS
+#define CL_HPP_TARGET_OPENCL_VERSION 200
+#include <CL/opencl.hpp>
+//#include <opencl.h>
 
 
 
@@ -41,7 +43,7 @@ Trans3D	ViewTrans;
 Depth	ViewDepth;
 Ray3D	ViewRay;
 
-Texture::T2DArray * Texture;
+Texture::T2DArray * PH_Texture;
 
 YMT::PolyHedra * PH;
 
@@ -253,13 +255,14 @@ void Init()
 {
 	std::cout << "Init 0\n";
 
-	Texture = new Texture::T2DArray(128, 128, 1, (FileContext[])
+	PH_Texture = new Texture::T2DArray(128, 128, 1, (FileContext[])
 	{
 		ImageDir.File("GrayDeant.png"),
 	});
 
-	PH = YMT::PolyHedra::ConeC(4, 0.5f);
+	PH = YMT::PolyHedra::Generate::ConeC(4, 0.5f, 1.0f);
 	std::cout << (PH -> ToInfo()) << "\n";
+
 	PH_Physics3D_BufferArray = new Instance_Base_BufferArray<
 		PolyHedra_MainData,
 		PolyHedra_MainBuffer,
@@ -296,7 +299,7 @@ void Free()
 {
 	std::cout << "Free 0\n";
 
-	delete Texture;
+	delete PH_Texture;
 	delete PH;
 
 	delete PH_Physics3D_BufferArray;
@@ -313,7 +316,7 @@ void Frame(double timeDelta)
 {
 	PH_Physics3D_Shader -> Use();
 
-	if (win -> IsMouseLocked())
+	if (win -> IsCursorLocked())
 	{
 		ViewTrans.TransformFlatX(win -> MoveFromKeys(20.0f * timeDelta), win -> SpinFromCursor(0.2f * timeDelta));
 	}
@@ -334,7 +337,7 @@ void Frame(double timeDelta)
 	cl::finish();
 
 	PH_Physics3D_BufferArray -> BindInst((const Physics3D_InstData *)Physics3D_GPU_Ptr, EntityCount);
-	Texture -> Bind();
+	PH_Texture -> Bind();
 	PH_Physics3D_BufferArray -> Draw();
 }
 void Resize(const SizeRatio2D & ViewPortSizeRatio)

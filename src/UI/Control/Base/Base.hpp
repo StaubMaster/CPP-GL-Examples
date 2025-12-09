@@ -6,9 +6,11 @@
 #include "UI/DisplayScale.hpp"
 #include "UI/AxisBox.hpp"
 #include "UI/Anchor.hpp"
-#include "UI/Parameter/Click.hpp"
-#include "UI/Parameter/Key.hpp"
-#include "UI/Parameter/Text.hpp"
+
+#include "UserParameter/Click.hpp"
+#include "UserParameter/Scroll.hpp"
+#include "UserParameter/Key.hpp"
+#include "UserParameter/Text.hpp"
 
 #include "DataInclude.hpp"
 
@@ -16,14 +18,6 @@
 #include "Miscellaneous/EntryContainer/Dynamic.hpp"
 
 
-
-#define CLICK_NONE    0b00
-#define CLICK_PRESS   0b01
-#define CLICK_HOLD    0b11
-#define CLICK_RELEASE 0b10
-
-#define CLICK_BUTTON_L 0
-#define CLICK_BUTTON_R 1
 
 namespace UI
 {
@@ -83,10 +77,6 @@ class Base
 	Color			ColorHover;
 	bool			ColorChanged;
 
-	//	optional Relay functions
-	public:
-	void (*ClickFunc)(UI::Parameter::Click params);
-
 	public:
 	Base(Manager & manager);
 	virtual ~Base();
@@ -145,9 +135,10 @@ class Base
 	//	but if i put them in struct, then they would have to change things in the base
 	//	which would require a referance, which is unnecassary
 	public:
-	virtual void RelayClick(UI::Parameter::Click params);
-	virtual void RelayKey(UI::Parameter::Key params);
-	virtual void RelayText(UI::Parameter::Text params);
+	virtual void RelayClick(UserParameter::Click params);
+	virtual void RelayScroll(UserParameter::Scroll params);
+	virtual void RelayKey(UserParameter::Key params);
+	virtual void RelayText(UserParameter::Text params);
 };
 
 };

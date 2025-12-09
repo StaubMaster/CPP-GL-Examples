@@ -1,5 +1,6 @@
 #include "TextBox.hpp"
 #include "OpenGL/openGL.h"
+#include <iostream>
 
 
 
@@ -93,11 +94,11 @@ void UI::Control::TextBox::UpdateBoxRelay()
 
 
 
-void UI::Control::TextBox::RelayKey(UI::Parameter::Key params)
+void UI::Control::TextBox::RelayKey(UserParameter::Key params)
 {
 	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
 
-	if (params.key == GLFW_KEY_BACKSPACE && (params.action == GLFW_PRESS || params.action == GLFW_REPEAT))
+	if (params.KeyCode == GLFW_KEY_BACKSPACE && (params.Action == GLFW_PRESS || params.Action == GLFW_REPEAT))
 	{
 		if (String.length() > 0)
 		{
@@ -106,23 +107,23 @@ void UI::Control::TextBox::RelayKey(UI::Parameter::Key params)
 		}
 	}
 }
-void UI::Control::TextBox::RelayText(UI::Parameter::Text params)
+void UI::Control::TextBox::RelayText(UserParameter::Text params)
 {
 	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
 
 	if (
-		(params.codepoint >= '0' && params.codepoint <= '9') ||
-		(params.codepoint >= 'A' && params.codepoint <= 'Z') ||
-		(params.codepoint >= 'a' && params.codepoint <= 'z') ||
-		params.codepoint == '+' || params.codepoint == '-' || params.codepoint == '*' ||
-		params.codepoint == '/' ||
-		params.codepoint == '=' || params.codepoint == '<' || params.codepoint == '>' ||
-		params.codepoint == ' '
+		(params.Codepoint >= '0' && params.Codepoint <= '9') ||
+		(params.Codepoint >= 'A' && params.Codepoint <= 'Z') ||
+		(params.Codepoint >= 'a' && params.Codepoint <= 'z') ||
+		params.Codepoint == '+' || params.Codepoint == '-' || params.Codepoint == '*' ||
+		params.Codepoint == '/' ||
+		params.Codepoint == '=' || params.Codepoint == '<' || params.Codepoint == '>' ||
+		params.Codepoint == ' '
 		)
 	{
 		if (String.length() < TextEntry.Length())
 		{
-			String += (char)params.codepoint;
+			String += (char)params.Codepoint;
 			ChangedText = true;
 		}
 	}

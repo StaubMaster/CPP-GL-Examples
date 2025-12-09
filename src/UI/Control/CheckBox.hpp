@@ -13,6 +13,9 @@ namespace Control
 
 class CheckBox : public Base
 {
+	public:
+	void (*ClickFunc)(UserParameter::Click params);
+
 	private:
 	bool Checked;
 
@@ -35,7 +38,7 @@ class CheckBox : public Base
 	void RelayHover(unsigned char type) override;
 
 	public:
-	void RelayClick(UI::Parameter::Click params) override;
+	void RelayClick(UserParameter::Click params) override;
 };
 
 };

@@ -36,8 +36,6 @@ UI::Control::Base::Base(Manager & manager) :
 	AnchorBoxChanged = false;
 
 	ColorChanged = false;
-
-	ClickFunc = NULL;
 }
 UI::Control::Base::~Base()
 {
@@ -241,15 +239,19 @@ void UI::Control::Base::RelayHover(unsigned char type)
 
 
 
-void UI::Control::Base::RelayClick(UI::Parameter::Click params)
+void UI::Control::Base::RelayClick(UserParameter::Click params)
 {
 	(void)params;
 }
-void UI::Control::Base::RelayKey(UI::Parameter::Key params)
+void UI::Control::Base::RelayScroll(UserParameter::Scroll params)
 {
 	(void)params;
 }
-void UI::Control::Base::RelayText(UI::Parameter::Text params)
+void UI::Control::Base::RelayKey(UserParameter::Key params)
+{
+	(void)params;
+}
+void UI::Control::Base::RelayText(UserParameter::Text params)
 {
 	(void)params;
 }

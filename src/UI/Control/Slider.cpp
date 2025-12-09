@@ -86,7 +86,7 @@ void UI::Control::Slider::UpdateBoxRelay()
 
 
 
-void UI::Control::Slider::RelayClick(UI::Parameter::Click params)
+void UI::Control::Slider::RelayClick(UserParameter::Click params)
 {
 	if (!Enabled || !Visible || !Drawable) { return; }
 
@@ -94,7 +94,7 @@ void UI::Control::Slider::RelayClick(UI::Parameter::Click params)
 	float slider_min = AnchorBox.Min.X + slider_size_half;
 	float slider_max = AnchorBox.Max.X - slider_size_half;
 
-	float slider_value = params.Absolute.X;
+	float slider_value = params.Position.X;
 	slider_value -= slider_min;
 	slider_value /= (slider_max - slider_min);
 	slider_value *= (SliderMax - SliderMin);

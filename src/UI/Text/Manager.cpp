@@ -41,6 +41,11 @@ UI::Text::Manager::~Manager()
 
 void UI::Text::Manager::Draw()
 {
+	if (!Inst_Data_Container.IsCompact())
+	{
+		Inst_Data_Container.CompactHere();
+	}
+
 	BufferArray.Use();
 
 	BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0,

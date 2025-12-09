@@ -1,5 +1,6 @@
 #include "CheckBox.hpp"
 #include "Base/Manager.hpp"
+#include "OpenGL/openGL.h"
 
 
 
@@ -43,14 +44,14 @@ void UI::Control::CheckBox::UpdateEntryColorRelay()
 {
 	if (ControlManager.Hovering != this)
 	{
-		if (Checked)
+		if (!Checked)
 		{ (*Entry).Col = ColorDefault; }
 		else
 		{ (*Entry).Col = ColorChecked; }
 	}
 	else
 	{
-		if (Checked)
+		if (!Checked)
 		{ (*Entry).Col = ColorHover; }
 		else
 		{ (*Entry).Col = ColorCheckedHover; }
@@ -64,11 +65,14 @@ void UI::Control::CheckBox::RelayHover(unsigned char type)
 
 
 
-void UI::Control::CheckBox::RelayClick(UI::Parameter::Click params)
+void UI::Control::CheckBox::RelayClick(UserParameter::Click params)
 {
 	if (!Enabled || !Visible || !Drawable) { return; }
 
-	Checked = !Checked;
-	ColorChanged = true;
-	if (ClickFunc != NULL) { ClickFunc(params); }
+	if (params.Action == GLFW_PRESS || params.Action == GLFW_REPEAT)
+	{
+		Checked = !Checked;
+		ColorChanged = true;
+		if (ClickFunc != NULL) { ClickFunc(params); }
+	}
 }
