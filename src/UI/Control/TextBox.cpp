@@ -53,9 +53,9 @@ void UI::Control::TextBox::PutCharactersEntrys()
 	for (unsigned int i = 0; i < TextEntry.Length(); i++)
 	{
 		if (i < Text.length())
-		{ TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord(Text[i]); }
+		{ TextEntry[i].Pallet = TextManager.CharToPalletEntry(Text[i]); }
 		else
-		{ TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord('\0'); }
+		{ TextEntry[i].Pallet = TextManager.CharToPalletEntry('\0'); }
 		TextEntry[i].Pos = Point2D((min.X + (CharacterSize.X * 0.5f)) + (i * CharacterSize.X), center.Y);
 	}
 }

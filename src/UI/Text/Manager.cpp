@@ -66,7 +66,7 @@ void UI::Text::Manager::Draw()
 
 
 
-Point2D UI::Text::Manager::CharToTextCoord(int c)
+Point2D UI::Text::Manager::CharToPalletEntry(int c)
 {
 	if (c == '\0') { return Point2D(15, 0); }
 	if (c >= '0' && c <= '9') { return Point2D(c - '0', 0); }
@@ -78,8 +78,8 @@ Point2D UI::Text::Manager::CharToTextCoord(int c)
 	if (c == '-') { return Point2D(11, 0); }
 	if (c == '*') { return Point2D(12, 0); }
 	if (c == '/') { return Point2D(13, 0); }
-	if (c == '=') { return Point2D(13, 2); }
-	if (c == '<') { return Point2D(14, 2); }
-	if (c == '>') { return Point2D(15, 2); }
+	if (c == '=') { return Point2D(13, 1); }
+	if (c == '<') { return Point2D(14, 1); }
+	if (c == '>') { return Point2D(15, 1); }
 	return Point2D(15, 0);
 }

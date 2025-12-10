@@ -41,7 +41,7 @@ class Manager
 		void Draw();
 
 	public:
-		static Point2D CharToTextCoord(int c);
+		Point2D CharToPalletEntry(int c);
 };
 
 };
