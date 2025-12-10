@@ -69,7 +69,7 @@ void UI::Control::CheckBox::RelayClick(UserParameter::Click params)
 {
 	if (!Enabled || !Visible || !Drawable) { return; }
 
-	if (params.Action == GLFW_PRESS || params.Action == GLFW_REPEAT)
+	if (params.Action.IsPress() || params.Action.IsRepeat())
 	{
 		Checked = !Checked;
 		ColorChanged = true;

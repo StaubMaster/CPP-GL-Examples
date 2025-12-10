@@ -51,7 +51,7 @@ class Manager
 
 		void Draw();
 
-		void UpdateSize(Point2D size);
+		void UpdateSize(const SizeRatio2D & ViewPortSizeRatio);
 		void UpdateMouse(Point2D mouse);
 
 		void RelayClick(UserParameter::Click params);

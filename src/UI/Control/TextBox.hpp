@@ -23,20 +23,28 @@ class TextBox : public Base
 	UI::Text::Manager & TextManager;
 	EntryContainer::Entry<UI::Text::Inst_Data> TextEntry;
 
-	std::string String;
-	bool ChangedText;
+	Point2D			CharacterSize;
+	Point2D			CharacterCountLimit2D;
+	unsigned int	CharacterCountLimit;
+	bool			CharacterCountLimitChanged;
+
+	std::string	Text;
+	bool		TextChanged;
 
 	public:
-	bool ReadOnly;
-	bool SingleLine;
+	bool	ReadOnly;
+	bool	SingleLine;
 
 	public:
 	TextBox(Manager & control_manager, UI::Text::Manager & text_manager);
 	~TextBox();
 
+	private:
+	void CalcCharacterCount();
+
 	public:
 	std::string GetText() const;
-	void SetText(std::string str);
+	void SetText(std::string text);
 
 	public:
 	void UpdateEntrysRelay() override;
@@ -52,7 +60,8 @@ when UpdatingTextString, only set the ones in the Text Box
 have a way to cull Text outside of the Box (done in Shader)
 */
 
-public:
+	public:
+	void RelayClick(UserParameter::Click params) override;
 	void RelayKey(UserParameter::Key params) override;
 	void RelayText(UserParameter::Text params) override;
 };

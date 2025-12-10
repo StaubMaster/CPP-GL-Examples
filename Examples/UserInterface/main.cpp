@@ -319,7 +319,7 @@ void UI_Init()
 	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
 	UI_Text_Manager = new UI::Text::Manager(ShaderDir, ImageDir);
 
-	UI_Control_Manager -> UpdateSize(window -> ViewPortSizeRatio.Size);
+	UI_Control_Manager -> UpdateSize(window -> ViewPortSizeRatio);
 
 	std::cout << "Control Init done\n";
 }
@@ -335,9 +335,7 @@ void UI_Free()
 void UI_Frame()
 {
 	Point2D mouse = window -> CursorPixel();
-	mouse.Y = window -> ViewPortSizeRatio.Size.Y - mouse.Y;
 
-	UI_Control_Manager -> UpdateSize(window -> ViewPortSizeRatio.Size);
 	UI_Control_Manager -> UpdateMouse(mouse);
 	UI_Control_Manager -> Window -> UpdateEntrys();
 	UI_Control_Manager -> Draw();
@@ -349,14 +347,14 @@ void UI_Frame()
 
 void click0(UserParameter::Click params)
 {
-	if (params.Action == GLFW_PRESS)
+	if (params.Action.IsPress())
 	{
 		std::cout << "click0\n";
 	}
 }
 void click1(UserParameter::Click params)
 {
-	if (params.Action == GLFW_PRESS)
+	if (params.Action.IsPress())
 	{
 		std::cout << "click1\n";
 	}
@@ -435,7 +433,7 @@ void Frame(double timeDelta)
 void Resize(const SizeRatio2D & ViewPortSizeRatio)
 {
 	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
-	UI_Control_Manager -> ViewPortSize = ViewPortSizeRatio.Size;
+	UI_Control_Manager -> UpdateSize(ViewPortSizeRatio);
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(window->DefaultColor.R, window->DefaultColor.G, window->DefaultColor.B, 1.0f);

@@ -51,7 +51,7 @@ void UI::Control::Base::ChildInsert(Base * control)
 {
 	Children.Insert(control);
 	control -> Parent = this;
-	control -> UpdateBox(AnchorBox);
+	control -> UpdateBox();
 	control -> UpdateVisibility();
 }
 
@@ -154,6 +154,9 @@ void UI::Control::Base::UpdateVisibility()
 	else
 	{ RemoveDrawingEntry(); }
 
+	if (Drawable)
+	{ UpdateBox(); }
+
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> UpdateVisibility();
@@ -183,17 +186,18 @@ void UI::Control::Base::RemoveDrawingEntryRelay() { }
 
 
 
-void UI::Control::Base::UpdateBox(const AxisBox2D & BaseBox)
+void UI::Control::Base::UpdateBox()
 {
-	//AnchorBox = Anchor.Calculate(AnchorDist, AnchorSize, AnchorNormal, BaseBox);
-	AnchorBox = Anchor.Calculate(BaseBox);
-	//AnchorBox.Min += AnchorPadding.Min;
-	//AnchorBox.Max -= AnchorPadding.Max;
-	AnchorBoxChanged = true;
+	if (Parent != NULL)
+	{
+		AnchorBox = Anchor.Calculate(Parent -> AnchorBox);
+		AnchorBoxChanged = true;
+	}
+	std::cout << "Size " << AnchorSize.X << " " << AnchorSize.Y << "\n";
 	UpdateBoxRelay();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> UpdateBox(AnchorBox);
+		Children[i] -> UpdateBox();
 	}
 }
 void UI::Control::Base::UpdateBoxRelay() { }

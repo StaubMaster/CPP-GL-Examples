@@ -115,7 +115,7 @@ class Base
 
 	//	for automatic Updating. should not be called by User
 	public:
-	void UpdateBox(const AxisBox2D & BaseBox);
+	void UpdateBox();
 	protected:
 	virtual void UpdateBoxRelay();
 

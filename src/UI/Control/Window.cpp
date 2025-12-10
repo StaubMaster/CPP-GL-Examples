@@ -14,3 +14,12 @@ UI::Control::Window::Window(Manager & manager) : Base(manager)
 }
 UI::Control::Window::~Window()
 { }
+
+
+
+void UI::Control::Window::UpdateWindowSize(Point2D size)
+{
+	AnchorBox.Min = Point2D();
+	AnchorBox.Max = size;
+	UpdateBox();
+}
