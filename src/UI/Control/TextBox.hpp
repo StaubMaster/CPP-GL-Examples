@@ -40,7 +40,11 @@ class TextBox : public Base
 	~TextBox();
 
 	private:
+	void ShowInfo() const;
+
+	private:
 	void CalcCharacterCount();
+	void PutCharactersEntrys();
 
 	public:
 	std::string GetText() const;
@@ -52,16 +56,7 @@ class TextBox : public Base
 	void RemoveDrawingEntryRelay() override;
 	void UpdateBoxRelay() override;
 
-/*
-Estimate how many Characters can fit in the TextBox
-allocate an Entry with that much
-when UpdatingTextString, only set the ones in the Text Box
-
-have a way to cull Text outside of the Box (done in Shader)
-*/
-
 	public:
-	void RelayClick(UserParameter::Click params) override;
 	void RelayKey(UserParameter::Key params) override;
 	void RelayText(UserParameter::Text params) override;
 };

@@ -193,7 +193,6 @@ void UI::Control::Base::UpdateBox()
 		AnchorBox = Anchor.Calculate(Parent -> AnchorBox);
 		AnchorBoxChanged = true;
 	}
-	std::cout << "Size " << AnchorSize.X << " " << AnchorSize.Y << "\n";
 	UpdateBoxRelay();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{

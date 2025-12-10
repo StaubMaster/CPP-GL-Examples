@@ -39,11 +39,24 @@ void UI::Control::TextBox::CalcCharacterCount()
 	unsigned int count = 0;
 	count += ceil(CharacterCountLimit2D.X);
 	count += ceil(CharacterCountLimit2D.Y);
-	std::cout << "new Count " << CharacterCountLimit << " " << count << "\n";
 	if (CharacterCountLimit != count)
 	{
 		CharacterCountLimit = count;
 		CharacterCountLimitChanged = true;
+	}
+}
+void UI::Control::TextBox::PutCharactersEntrys()
+{
+	Point2D min = AnchorBox.Min;
+	Point2D max = AnchorBox.Max;
+	Point2D center = (max + min) / 2;
+	for (unsigned int i = 0; i < TextEntry.Length(); i++)
+	{
+		if (i < Text.length())
+		{ TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord(Text[i]); }
+		else
+		{ TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord('\0'); }
+		TextEntry[i].Pos = Point2D((min.X + (CharacterSize.X * 0.5f)) + (i * CharacterSize.X), center.Y);
 	}
 }
 
@@ -67,7 +80,6 @@ void UI::Control::TextBox::UpdateEntrysRelay()
 	{
 		if (CharacterCountLimitChanged)
 		{
-			std::cout << "Update CharacterCountLimitChanged\n";
 			TextEntry.Dispose();
 			TextManager.Inst_Data_Container.CompactHere();
 			TextEntry.Allocate(TextManager.Inst_Data_Container, CharacterCountLimit);
@@ -76,80 +88,37 @@ void UI::Control::TextBox::UpdateEntrysRelay()
 		}
 		if (TextChanged)
 		{
-			Point2D min = AnchorBox.Min;
-			Point2D max = AnchorBox.Max;
-			Point2D center = (max + min) / 2;
-			for (unsigned int i = 0; i < TextEntry.Length(); i++)
-			{
-				if (i < Text.length())
-				{
-					TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord(Text[i]);
-				}
-				else
-				{
-					TextEntry[i].Pallet = UI::Text::Manager::CharToTextCoord('\0');
-				}
-			}
+			PutCharactersEntrys();
 			TextChanged = false;
 		}
 	}
 }
 void UI::Control::TextBox::InsertDrawingEntryRelay()
 {
-	std::cout << "  Insert Text " << (TextEntry.Is()) << '\n';
-	std::cout << "Size " << AnchorSize.X << " " << AnchorSize.Y << "\n";
 	if (!TextEntry.Is())
 	{
 		CalcCharacterCount();
 		TextEntry.Allocate(TextManager.Inst_Data_Container, CharacterCountLimit);
 	}
-	std::cout << "! Insert Text " << (TextEntry.Is()) << '\n';
 }
 void UI::Control::TextBox::RemoveDrawingEntryRelay()
 {
-	std::cout << "  Remove Text " << (TextEntry.Is()) << '\n';
 	if (TextEntry.Is())
 	{
 		TextEntry.Dispose();
 	}
-	std::cout << "! Remove Text " << (TextEntry.Is()) << '\n';
 }
 
 void UI::Control::TextBox::UpdateBoxRelay()
 {
-	std::cout << "Update Text Box " << (TextEntry.Is()) << '\n';
 	if (TextEntry.Is())
 	{
-		std::cout << "Size " << AnchorSize.X << " " << AnchorSize.Y << "\n";
 		CalcCharacterCount();
-
-		Point2D min = AnchorBox.Min;
-		Point2D max = AnchorBox.Max;
-		Point2D center = (max + min) / 2;
-		for (unsigned int i = 0; i < TextEntry.Length(); i++)
-		{
-			TextEntry[i].Pos = Point2D((min.X + (CharacterSize.X * 0.5f)) + (i * CharacterSize.X), center.Y);
-		}
 	}
 }
 
 
 
-void UI::Control::TextBox::RelayClick(UserParameter::Click params)
-{
-	if (params.Code == GLFW_MOUSE_BUTTON_2 && params.Action.IsPress())
-	{
-		std::cout << "TextBox Info\n";
-		std::cout << "Limit2D" << ' ' << CharacterCountLimit2D.X << ' ' << CharacterCountLimit2D.Y << '\n';
-		std::cout << "Limit  " << ' ' << CharacterCountLimit << '\n';
-		std::cout << "Entry  " << ' ' << TextEntry.Length() << '\n';
-		std::cout << "Text   " << ' ' << '"' << Text << '"' << '\n';
-	}
-	if (params.Code == GLFW_MOUSE_BUTTON_3 && params.Action.IsPress())
-	{
-		TextChanged = true;
-	}
-}
 void UI::Control::TextBox::RelayKey(UserParameter::Key params)
 {
 	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
