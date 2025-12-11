@@ -29,10 +29,14 @@ out UI_Text
 
 void main()
 {
+	vec2 main_pos = Main_Pos;
+	main_pos.y = -main_pos.y;
+
 	vec2 Center = Inst_Pos;
 	vec2 SizeHalf = PalletSize / 2;
-	vec2 pos = (Main_Pos * SizeHalf) + Center;
+	vec2 pos = (main_pos * SizeHalf) + Center;
 	vec2 pos_normal = ((pos / ViewPortSizeRatio.Size) * 2) - 1;
+	pos_normal.y = -pos_normal.y;
 
 	gl_Position = vec4(pos_normal, 0.01, 1);
 

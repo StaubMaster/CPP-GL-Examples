@@ -71,7 +71,6 @@ void UI::Control::Manager::UpdateSize(const SizeRatio2D & ViewPortSizeRatio)
 }
 void UI::Control::Manager::UpdateMouse(Point2D mouse)
 {
-	mouse.Y = ViewPortSize.Y - mouse.Y;
 	UI::Control::Base * control = Window -> CheckHover(mouse);
 
 	if (control != Hovering)

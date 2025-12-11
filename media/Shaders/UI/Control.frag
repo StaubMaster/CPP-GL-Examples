@@ -32,13 +32,13 @@ void main()
 	float factor = 1.0;
 	if (mul_min < BoarderSize && mul_max < BoarderSize)
 	{
-		if (mul_min < mul_max)	{ factor -= BoarderFactor; }
-		else					{ factor += BoarderFactor; }
+		if (mul_min < mul_max)	{ factor += BoarderFactor; }
+		else					{ factor -= BoarderFactor; }
 	}
 	else if (mul_min < BoarderSize && mul_max > BoarderSize)
-	{ factor -= BoarderFactor; }
-	else if (mul_min > BoarderSize && mul_max < BoarderSize)
 	{ factor += BoarderFactor; }
+	else if (mul_min > BoarderSize && mul_max < BoarderSize)
+	{ factor -= BoarderFactor; }
 
 	col = col * factor;
 	Pixel = vec4(col, 1);

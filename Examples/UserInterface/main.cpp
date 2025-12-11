@@ -334,7 +334,7 @@ void UI_Free()
 }
 void UI_Frame()
 {
-	Point2D mouse = window -> CursorPixel();
+	Point2D mouse = window -> MouseManager.CursorPixelPosition();
 
 	UI_Control_Manager -> UpdateMouse(mouse);
 	UI_Control_Manager -> Window -> UpdateEntrys();
@@ -473,7 +473,7 @@ int main()
 
 	window -> ResizeFunc = Resize;
 
-	window -> ClickFunc = ClickFunc;
+	window -> ChangeCallbackClick(ClickFunc);
 	window -> KeyFunc = KeyFunc;
 	window -> TextFunc = TextFunc;
 
