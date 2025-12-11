@@ -18,7 +18,7 @@ UI::Control::Button::~Button()
 
 
 
-void UI::Control::Button::RelayClick(UserParameter::Click params)
+void UI::Control::Button::RelayClick(UserParameter::Mouse::Click params)
 {
 	if (!Enabled || !Visible || !Drawable) { return; }
 

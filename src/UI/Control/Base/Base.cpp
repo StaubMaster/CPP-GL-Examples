@@ -57,19 +57,6 @@ void UI::Control::Base::ChildInsert(Base * control)
 
 
 
-void UI::Control::Base::Info(std::string padding) const
-{
-	std::cout << padding << "this " << this << '\n';
-	std::cout << padding << "Entry " << Entry.Is() << '\n';
-	std::cout << padding << "Children " << Children.Count() << '\n';
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> Info(padding + "  ");
-	}
-}
-
-
-
 void UI::Control::Base::UpdateEntrys()
 {
 	if (Entry.Is())
@@ -91,21 +78,6 @@ void UI::Control::Base::UpdateEntrys()
 		Children[i] -> UpdateEntrys();
 	}
 }
-void UI::Control::Base::UpdateEntryAnchorBoxRelay()
-{
-	(*Entry).Min = AnchorBox.Min;
-	(*Entry).Max = AnchorBox.Max;
-	AnchorBoxChanged = false;
-}
-void UI::Control::Base::UpdateEntryColorRelay()
-{
-	if (ControlManager.Hovering != this)
-	{ (*Entry).Col = ColorDefault; }
-	else
-	{ (*Entry).Col = ColorHover; }
-	ColorChanged = false;
-}
-void UI::Control::Base::UpdateEntrysRelay() { }
 
 
 
@@ -181,8 +153,6 @@ void UI::Control::Base::RemoveDrawingEntry()
 	}
 	RemoveDrawingEntryRelay();
 }
-void UI::Control::Base::InsertDrawingEntryRelay() { }
-void UI::Control::Base::RemoveDrawingEntryRelay() { }
 
 
 
@@ -199,7 +169,6 @@ void UI::Control::Base::UpdateBox()
 		Children[i] -> UpdateBox();
 	}
 }
-void UI::Control::Base::UpdateBoxRelay() { }
 
 
 
@@ -235,26 +204,48 @@ void UI::Control::Base::HoverLeave()
 	ColorChanged = true;
 	RelayHover(0);
 }
+
+
+
+void UI::Control::Base::UpdateEntryAnchorBoxRelay()
+{
+	(*Entry).Min = AnchorBox.Min;
+	(*Entry).Max = AnchorBox.Max;
+	AnchorBoxChanged = false;
+}
+void UI::Control::Base::UpdateEntryColorRelay()
+{
+	if (ControlManager.Hovering != this)
+	{ (*Entry).Col = ColorDefault; }
+	else
+	{ (*Entry).Col = ColorHover; }
+	ColorChanged = false;
+}
+void UI::Control::Base::UpdateEntrysRelay() { }
+
+void UI::Control::Base::InsertDrawingEntryRelay() { }
+void UI::Control::Base::RemoveDrawingEntryRelay() { }
+void UI::Control::Base::UpdateBoxRelay() { }
+
+
+
 void UI::Control::Base::RelayHover(unsigned char type)
 {
 	(void)type;
 }
-
-
-
-void UI::Control::Base::RelayClick(UserParameter::Click params)
+void UI::Control::Base::RelayClick(UserParameter::Mouse::Click params)
 {
 	(void)params;
 }
-void UI::Control::Base::RelayScroll(UserParameter::Scroll params)
+void UI::Control::Base::RelayScroll(UserParameter::Mouse::Scroll params)
 {
 	(void)params;
 }
-void UI::Control::Base::RelayKey(UserParameter::Key params)
+void UI::Control::Base::RelayKey(UserParameter::KeyBoard::Key params)
 {
 	(void)params;
 }
-void UI::Control::Base::RelayText(UserParameter::Text params)
+void UI::Control::Base::RelayText(UserParameter::KeyBoard::Text params)
 {
 	(void)params;
 }

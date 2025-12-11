@@ -65,7 +65,7 @@ void UI::Control::CheckBox::RelayHover(unsigned char type)
 
 
 
-void UI::Control::CheckBox::RelayClick(UserParameter::Click params)
+void UI::Control::CheckBox::RelayClick(UserParameter::Mouse::Click params)
 {
 	if (!Enabled || !Visible || !Drawable) { return; }
 

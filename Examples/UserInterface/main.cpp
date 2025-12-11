@@ -53,10 +53,10 @@ Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
 
 
 
-void click0(UserParameter::Click params);
-void click1(UserParameter::Click params);
-void click_toggle_Example(UserParameter::Click params);
-void click_toggle_Settings(UserParameter::Click params);
+void click0(UserParameter::Mouse::Click params);
+void click1(UserParameter::Mouse::Click params);
+void click_toggle_Example(UserParameter::Mouse::Click params);
+void click_toggle_Settings(UserParameter::Mouse::Click params);
 void slider_changed(float val);
 
 void settings_slider_color_r(float val);
@@ -345,21 +345,21 @@ void UI_Frame()
 
 
 
-void click0(UserParameter::Click params)
+void click0(UserParameter::Mouse::Click params)
 {
 	if (params.Action.IsPress())
 	{
 		std::cout << "click0\n";
 	}
 }
-void click1(UserParameter::Click params)
+void click1(UserParameter::Mouse::Click params)
 {
 	if (params.Action.IsPress())
 	{
 		std::cout << "click1\n";
 	}
 }
-void click_toggle_Example(UserParameter::Click params)
+void click_toggle_Example(UserParameter::Mouse::Click params)
 {
 	if (Toggle_CheckBox_Example -> IsChecked())
 	{ Example_Form -> Show(); }
@@ -367,7 +367,7 @@ void click_toggle_Example(UserParameter::Click params)
 	{ Example_Form -> Hide(); }
 	(void)params;
 }
-void click_toggle_Settings(UserParameter::Click params)
+void click_toggle_Settings(UserParameter::Mouse::Click params)
 {
 	if (Toggle_CheckBox_Settings -> IsChecked())
 	{ Settings_Form -> Show(); }
@@ -441,15 +441,15 @@ void Resize(const SizeRatio2D & ViewPortSizeRatio)
 	//glfwSwapBuffers(window->win);
 }
 
-void ClickFunc(UserParameter::Click params)
+void ClickFunc(UserParameter::Mouse::Click params)
 {
 	UI_Control_Manager -> RelayClick(params);
 }
-void KeyFunc(UserParameter::Key params)
+void KeyFunc(UserParameter::KeyBoard::Key params)
 {
 	UI_Control_Manager -> RelayKey(params);
 }
-void TextFunc(UserParameter::Text params)
+void TextFunc(UserParameter::KeyBoard::Text params)
 {
 	UI_Control_Manager -> RelayText(params);
 }

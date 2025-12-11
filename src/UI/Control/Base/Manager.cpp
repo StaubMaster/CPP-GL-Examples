@@ -87,7 +87,7 @@ void UI::Control::Manager::UpdateMouse(Point2D mouse)
 
 
 
-void UI::Control::Manager::RelayClick(UserParameter::Click params)
+void UI::Control::Manager::RelayClick(UserParameter::Mouse::Click params)
 {
 	if (Hovering != NULL)
 	{
@@ -95,21 +95,21 @@ void UI::Control::Manager::RelayClick(UserParameter::Click params)
 	}
 	Selected = Hovering;
 }
-void UI::Control::Manager::RelayScroll(UserParameter::Scroll params)
+void UI::Control::Manager::RelayScroll(UserParameter::Mouse::Scroll params)
 {
 	if (Selected != NULL)
 	{
 		Selected -> RelayScroll(params);
 	}
 }
-void UI::Control::Manager::RelayKey(UserParameter::Key params)
+void UI::Control::Manager::RelayKey(UserParameter::KeyBoard::Key params)
 {
 	if (Selected != NULL)
 	{
 		Selected -> RelayKey(params);
 	}
 }
-void UI::Control::Manager::RelayText(UserParameter::Text params)
+void UI::Control::Manager::RelayText(UserParameter::KeyBoard::Text params)
 {
 	if (Selected != NULL)
 	{

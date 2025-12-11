@@ -46,7 +46,7 @@ class Slider : public Base
 	void RemoveDrawingEntryRelay() override;
 	void UpdateBoxRelay() override;
 
-	void RelayClick(UserParameter::Click params) override;
+	void RelayClick(UserParameter::Mouse::Click params) override;
 	//	Drag function
 };
 

@@ -14,14 +14,14 @@ namespace Control
 class Button : public Base
 {
 	public:
-	void (*ClickFunc)(UserParameter::Click params);
+	void (*ClickFunc)(UserParameter::Mouse::Click params);
 
 	public:
 	Button(Manager & manager);
 	~Button();
 
 	public:
-	void RelayClick(UserParameter::Click params) override;
+	void RelayClick(UserParameter::Mouse::Click params) override;
 };
 
 };

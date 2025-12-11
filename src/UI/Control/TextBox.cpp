@@ -119,7 +119,7 @@ void UI::Control::TextBox::UpdateBoxRelay()
 
 
 
-void UI::Control::TextBox::RelayKey(UserParameter::Key params)
+void UI::Control::TextBox::RelayKey(UserParameter::KeyBoard::Key params)
 {
 	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
 
@@ -132,7 +132,7 @@ void UI::Control::TextBox::RelayKey(UserParameter::Key params)
 		}
 	}
 }
-void UI::Control::TextBox::RelayText(UserParameter::Text params)
+void UI::Control::TextBox::RelayText(UserParameter::KeyBoard::Text params)
 {
 	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
 

@@ -7,10 +7,11 @@
 #include "UI/AxisBox.hpp"
 #include "UI/Anchor.hpp"
 
-#include "UserParameter/Click.hpp"
-#include "UserParameter/Scroll.hpp"
-#include "UserParameter/Key.hpp"
-#include "UserParameter/Text.hpp"
+#include "UserParameter/Mouse/Click.hpp"
+#include "UserParameter/Mouse/Scroll.hpp"
+
+#include "UserParameter/KeyBoard/Key.hpp"
+#include "UserParameter/KeyBoard/Text.hpp"
 
 #include "DataInclude.hpp"
 
@@ -61,16 +62,7 @@ class Base
 	bool			Opaque;			//is current invisible, does not effect children
 	protected:
 	bool			Drawable;		//should this currently be drawn ?
-	/*
-		rename Drawable
-		Enabled and Visible have 2 Variants
-		1. what this Control want to be
-		2. what does Parent(recursive) allow
-		have functions to check for combinations
-		WantsEntry() { Drawable & Visible & Opaque }
-		AcceptsUserInput() { WantsEntry() & Enabled }
-	*/
-	
+
 	public:
 	Color			ColorDefault;
 	//Color			ColorDisabled;
@@ -83,25 +75,21 @@ class Base
 
 	void ChildInsert(Base * control);
 
-	public:
-	void Info(std::string padding) const;
-
 	//	for automatic Updating. should not be called by User
 	public:
 	void UpdateEntrys();
-	protected:
-	virtual void UpdateEntryAnchorBoxRelay();
-	virtual void UpdateEntryColorRelay();
-	virtual void UpdateEntrysRelay();
 
-	//	can be called by User
 	public:
+
+	//	Enabled
 	void MakeEnabled();
 	void MakeDisabled();
 
+	//	Visibility
 	void Show();
 	void Hide();
 
+	//	Transparent
 	void MakeTransParent();
 	void MakeOpaque();
 
@@ -110,14 +98,10 @@ class Base
 	void UpdateVisibility();
 	void InsertDrawingEntry();
 	void RemoveDrawingEntry();
-	virtual void InsertDrawingEntryRelay();
-	virtual void RemoveDrawingEntryRelay();
 
 	//	for automatic Updating. should not be called by User
 	public:
 	void UpdateBox();
-	protected:
-	virtual void UpdateBoxRelay();
 
 	//	for automatic Updating. should not be called by User
 	public:
@@ -127,18 +111,24 @@ class Base
 	public:
 	void HoverEnter();
 	void HoverLeave();
-	virtual void RelayHover(unsigned char type);
 
-	//	relay funciton to inherited Controls. should not be called by user
-	//	put all Relay stuff into struct ?
-	//	dont want in to clutter up stuff
-	//	but if i put them in struct, then they would have to change things in the base
-	//	which would require a referance, which is unnecassary
+	//	Relay Auto
+	protected:
+	virtual void UpdateEntryAnchorBoxRelay();
+	virtual void UpdateEntryColorRelay();
+	virtual void UpdateEntrysRelay();
+
+	virtual void InsertDrawingEntryRelay();
+	virtual void RemoveDrawingEntryRelay();
+	virtual void UpdateBoxRelay();
+
+	//	Relay User
 	public:
-	virtual void RelayClick(UserParameter::Click params);
-	virtual void RelayScroll(UserParameter::Scroll params);
-	virtual void RelayKey(UserParameter::Key params);
-	virtual void RelayText(UserParameter::Text params);
+	virtual void RelayHover(unsigned char type);
+	virtual void RelayClick(UserParameter::Mouse::Click params);
+	virtual void RelayScroll(UserParameter::Mouse::Scroll params);
+	virtual void RelayKey(UserParameter::KeyBoard::Key params);
+	virtual void RelayText(UserParameter::KeyBoard::Text params);
 };
 
 };
