@@ -334,7 +334,7 @@ void UI_Free()
 }
 void UI_Frame()
 {
-	Point2D mouse = window -> MouseManager.CursorPixelPosition();
+	Point2D mouse = window -> MouseManager.CursorPixelPosition().Absolute;
 
 	UI_Control_Manager -> UpdateMouse(mouse);
 	UI_Control_Manager -> Window -> UpdateEntrys();
