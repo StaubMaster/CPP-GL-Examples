@@ -66,7 +66,7 @@ AxisBox1D Anchor1D::Calculate(AxisBox1D Parent)
 	float ParentSize = Parent.Max - Parent.Min;
 	if (Anchor == ANCHOR_BOTH)
 	{
-		Size = ParentSize - GetMinSize();
+		Size = ParentSize - (MinDist + MaxDist);
 		NormalCenter = GetCenter() / ParentSize;
 	}
 	else if (Anchor == ANCHOR_MIN)

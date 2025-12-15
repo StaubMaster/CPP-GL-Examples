@@ -2,7 +2,7 @@
 
 
 
-UI::Control::Button::Button(Manager & manager) : Base(manager)
+UI::Control::Button::Button() : Base()
 {
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;

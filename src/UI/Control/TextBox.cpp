@@ -6,8 +6,8 @@
 
 
 
-UI::Control::TextBox::TextBox(Manager & control_manager, UI::Text::Manager & text_manager)
-	: Base(control_manager),
+UI::Control::TextBox::TextBox(UI::Text::Manager & text_manager)
+	: Base(),
 	TextManager(text_manager)
 {
 	Layer = 0.1f;
@@ -115,6 +115,7 @@ void UI::Control::TextBox::UpdateBoxRelay()
 	if (TextEntry.Is())
 	{
 		CalcCharacterCount();
+		TextChanged = true;
 	}
 }
 

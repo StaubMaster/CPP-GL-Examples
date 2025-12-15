@@ -33,7 +33,7 @@ class Slider : public Base
 	void (*ValueChangedFunc)(float);
 
 	public:
-	Slider(Manager & manager);
+	Slider();
 	~Slider();
 
 	public:

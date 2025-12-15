@@ -14,7 +14,7 @@ UI::Control::Manager::Manager(const DirectoryContext & dir) :
 	Main_Data_Container(),
 	Inst_Data_Container(),
 	ViewPortSize(),
-	Window(new UI::Control::Window(*this))
+	Window(new UI::Control::Window(this))
 {
 	std::cout << "  ++++  " << "Manager()" << "\n";
 

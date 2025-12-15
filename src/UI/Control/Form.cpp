@@ -2,7 +2,7 @@
 
 
 
-UI::Control::Form::Form(Manager & manager) : Base(manager)
+UI::Control::Form::Form() : Base()
 {
 	Layer = 0.9f;
 	Anchor.X.Anchor = ANCHOR_NONE;

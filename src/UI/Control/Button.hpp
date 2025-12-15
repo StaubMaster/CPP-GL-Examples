@@ -17,7 +17,7 @@ class Button : public Base
 	void (*ClickFunc)(UserParameter::Mouse::Click params);
 
 	public:
-	Button(Manager & manager);
+	Button();
 	~Button();
 
 	public:

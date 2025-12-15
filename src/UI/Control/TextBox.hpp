@@ -36,7 +36,7 @@ class TextBox : public Base
 	bool	SingleLine;
 
 	public:
-	TextBox(Manager & control_manager, UI::Text::Manager & text_manager);
+	TextBox(UI::Text::Manager & text_manager);
 	~TextBox();
 
 	private:

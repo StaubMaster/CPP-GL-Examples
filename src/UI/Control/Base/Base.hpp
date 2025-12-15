@@ -31,13 +31,13 @@ class Manager;
 class Base
 {
 	protected:
-	Manager & ControlManager;
+	Manager * ControlManager;
 	
 	protected:
 	EntryContainer::Entry<Control::Inst_Data> Entry;
-	private:
 	Base * Parent;
 	Container::Dynamic<Control::Base *> Children;
+	private:
 
 	public:
 	float			Layer;
@@ -52,8 +52,8 @@ class Base
 	public:
 	AxisBox2D		AnchorPadding;
 
-	protected:
 	AxisBox2D		AnchorBox;
+	protected:
 	bool			AnchorBoxChanged;
 
 	public:
@@ -70,7 +70,7 @@ class Base
 	bool			ColorChanged;
 
 	public:
-	Base(Manager & manager);
+	Base();
 	virtual ~Base();
 
 	void ChildInsert(Base * control);

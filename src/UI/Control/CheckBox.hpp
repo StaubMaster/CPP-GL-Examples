@@ -25,7 +25,7 @@ class CheckBox : public Base
 	bool Color2Changed;
 
 	public:
-	CheckBox(Manager & manager);
+	CheckBox();
 	~CheckBox();
 
 	public:

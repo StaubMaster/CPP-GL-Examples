@@ -4,7 +4,7 @@
 
 
 
-UI::Control::CheckBox::CheckBox(Manager & manager) : Base(manager)
+UI::Control::CheckBox::CheckBox() : Base()
 {
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
@@ -42,7 +42,7 @@ void UI::Control::CheckBox::Check(bool state)
 
 void UI::Control::CheckBox::UpdateEntryColorRelay()
 {
-	if (ControlManager.Hovering != this)
+	if (ControlManager -> Hovering != this)
 	{
 		if (!Checked)
 		{ (*Entry).Col = ColorDefault; }

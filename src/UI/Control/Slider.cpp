@@ -3,7 +3,7 @@
 
 
 
-UI::Control::Slider::Slider(Manager & manager) : Base(manager)
+UI::Control::Slider::Slider() : Base()
 {
 	Layer = 0.1f;
 	Anchor.X.Anchor = ANCHOR_MIN;
@@ -66,7 +66,7 @@ void UI::Control::Slider::InsertDrawingEntryRelay()
 {
 	if (!SliderEntry.Is())
 	{
-		SliderEntry.Allocate(ControlManager.Inst_Data_Container, 1);
+		SliderEntry.Allocate(ControlManager -> Inst_Data_Container, 1);
 		(*SliderEntry).Col = Color(0.5f, 0.5f, 0.5f);
 		(*SliderEntry).Layer = Layer - 0.01f;
 		SliderChanged = true;

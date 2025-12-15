@@ -75,7 +75,7 @@ void UI_Make_Toggles()
 	UI::Control::Form * form;
 	UI::Control::CheckBox * check_box;
 
-	form = new UI::Control::Form(*UI_Control_Manager);
+	form = new UI::Control::Form();
 	form -> Anchor.X.Anchor = ANCHOR_MIN;
 	form -> Anchor.Y.Anchor = ANCHOR_NONE;
 	form -> Anchor.X.SetPaddedMinDist(0);
@@ -85,7 +85,7 @@ void UI_Make_Toggles()
 
 	float h = 0;
 
-	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
+	check_box = new UI::Control::CheckBox();
 	check_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
 	check_box -> Anchor.X.SetPaddedMinDist(0);
@@ -97,7 +97,7 @@ void UI_Make_Toggles()
 
 	h = check_box -> Anchor.Y.GetPaddedMaxSize();
 
-	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
+	check_box = new UI::Control::CheckBox();
 	check_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
 	check_box -> Anchor.X.SetPaddedMinDist(0);
@@ -118,7 +118,7 @@ void UI_Make_Settings()
 	UI::Control::TextBox * text_box;
 	UI::Control::Slider * slider;
 
-	form = new UI::Control::Form(*UI_Control_Manager);
+	form = new UI::Control::Form();
 	form -> Anchor.X.Anchor = ANCHOR_MAX;
 	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
 	form -> Anchor.X.SetSize(240);
@@ -129,7 +129,7 @@ void UI_Make_Settings()
 
 	float h = 0;
 
-	text_box = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text_box = new UI::Control::TextBox(*UI_Text_Manager);
 	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
 	text_box -> Anchor.X.SetPaddedMinDist(0);
@@ -140,7 +140,7 @@ void UI_Make_Settings()
 
 	h = text_box -> Anchor.Y.GetPaddedMaxSize();
 
-	text_box = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text_box = new UI::Control::TextBox(*UI_Text_Manager);
 	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
 	text_box -> Anchor.X.SetPaddedMinDist(0);
@@ -151,7 +151,7 @@ void UI_Make_Settings()
 
 	h = text_box -> Anchor.Y.GetPaddedMaxSize();
 
-	text_box = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text_box = new UI::Control::TextBox(*UI_Text_Manager);
 	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
 	text_box -> Anchor.X.SetPaddedMinDist(0);
@@ -162,7 +162,7 @@ void UI_Make_Settings()
 
 	h = text_box -> Anchor.Y.GetPaddedMaxSize();
 
-	slider = new UI::Control::Slider(*UI_Control_Manager);
+	slider = new UI::Control::Slider();
 	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
 	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
 	slider -> Anchor.X.SetPaddedMinDist(0);
@@ -175,7 +175,7 @@ void UI_Make_Settings()
 
 	h = slider -> Anchor.Y.GetPaddedMaxSize();
 
-	slider = new UI::Control::Slider(*UI_Control_Manager);
+	slider = new UI::Control::Slider();
 	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
 	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
 	slider -> Anchor.X.SetPaddedMinDist(0);
@@ -188,7 +188,7 @@ void UI_Make_Settings()
 
 	h = slider -> Anchor.Y.GetPaddedMaxSize();
 
-	slider = new UI::Control::Slider(*UI_Control_Manager);
+	slider = new UI::Control::Slider();
 	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
 	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
 	slider -> Anchor.X.SetPaddedMinDist(0);
@@ -211,16 +211,21 @@ void UI_Make_Example()
 	UI::Control::TextBox * text;
 	UI::Control::Slider * slider;
 	UI::Control::CheckBox * check_box;
+	(void)button;
+	(void)slider;
+	(void)check_box;
 
-	form = new UI::Control::Form(*UI_Control_Manager);
+	form = new UI::Control::Form();
 	UI_Control_Manager -> Window -> ChildInsert(form);
 	form -> Hide();
 	Example_Form = form;
 
 	float w = 0;
 	float h = 0;
+	(void)w;
+	(void)h;
 
-	button = new UI::Control::Button(*UI_Control_Manager);
+/*	button = new UI::Control::Button();
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> Anchor.X.SetPaddedMinDist(w);
@@ -230,7 +235,7 @@ void UI_Make_Example()
 
 	w = button -> Anchor.X.GetPaddedMinSize();
 
-	button = new UI::Control::Button(*UI_Control_Manager);
+	button = new UI::Control::Button();
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> Anchor.X.SetPaddedMinDist(w);
@@ -240,7 +245,7 @@ void UI_Make_Example()
 
 	w = button -> Anchor.X.GetPaddedMinSize();
 
-	check_box = new UI::Control::CheckBox(*UI_Control_Manager);
+	check_box = new UI::Control::CheckBox();
 	check_box -> Anchor.X.Anchor = ANCHOR_MIN;
 	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
 	check_box -> Anchor.X.SetPaddedMinDist(w);
@@ -248,9 +253,9 @@ void UI_Make_Example()
 	form -> ChildInsert(check_box);
 
 	w = 0;
-	h = check_box -> Anchor.Y.GetPaddedMaxSize();
+	h = check_box -> Anchor.Y.GetPaddedMaxSize();*/
 
-	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text = new UI::Control::TextBox(*UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_MAX;
 	text -> Anchor.X.SetPaddedMinDist(0);
@@ -260,10 +265,10 @@ void UI_Make_Example()
 	form -> ChildInsert(text);
 	Example_TextBox_0 = text;
 
-	w = 0;
+/*	w = 0;
 	h = text -> Anchor.Y.GetPaddedMaxSize();
 
-	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text = new UI::Control::TextBox(*UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_MAX;
 	text -> Anchor.X.SetPaddedMinDist(0);
@@ -276,7 +281,7 @@ void UI_Make_Example()
 	w = 0;
 	h = text -> Anchor.Y.GetPaddedMaxSize();
 
-	slider = new UI::Control::Slider(*UI_Control_Manager);
+	slider = new UI::Control::Slider();
 	slider -> Anchor.X.Anchor = ANCHOR_MIN;
 	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
 	slider -> Anchor.X.SetPaddedMinDist(w);
@@ -287,7 +292,7 @@ void UI_Make_Example()
 
 	w = slider -> Anchor.X.GetPaddedMinSize();
 
-	text = new UI::Control::TextBox(*UI_Control_Manager, *UI_Text_Manager);
+	text = new UI::Control::TextBox(*UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
 	text -> Anchor.Y.Anchor = ANCHOR_MAX;
 	text -> Anchor.X.SetPaddedMinDist(w);
@@ -296,7 +301,7 @@ void UI_Make_Example()
 	text -> SetText("0");
 	text -> ReadOnly = true;
 	form -> ChildInsert(text);
-	Example_TextBox_2 = text;
+	Example_TextBox_2 = text;*/
 }
 
 void UI_Make()

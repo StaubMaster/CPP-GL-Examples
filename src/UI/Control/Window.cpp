@@ -2,8 +2,10 @@
 
 
 
-UI::Control::Window::Window(Manager & manager) : Base(manager)
+UI::Control::Window::Window(Manager * manager) : Base()
 {
+	ControlManager = manager;
+
 	Layer = 1.0f;
 	Anchor.X.Anchor = ANCHOR_BOTH;
 	Anchor.Y.Anchor = ANCHOR_BOTH;

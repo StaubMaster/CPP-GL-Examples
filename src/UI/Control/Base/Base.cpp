@@ -4,8 +4,8 @@
 
 
 
-UI::Control::Base::Base(Manager & manager) :
-	ControlManager(manager),
+UI::Control::Base::Base() :
+	ControlManager(NULL),
 	Entry(),
 	Parent(NULL),
 	Children(),
@@ -50,6 +50,7 @@ UI::Control::Base::~Base()
 void UI::Control::Base::ChildInsert(Base * control)
 {
 	Children.Insert(control);
+	control -> ControlManager = ControlManager;
 	control -> Parent = this;
 	control -> UpdateBox();
 	control -> UpdateVisibility();
@@ -138,7 +139,7 @@ void UI::Control::Base::InsertDrawingEntry()
 {
 	if (!Entry.Is())
 	{
-		Entry.Allocate(ControlManager.Inst_Data_Container, 1);
+		Entry.Allocate(ControlManager -> Inst_Data_Container, 1);
 		(*Entry).Layer = Layer;
 		AnchorBoxChanged = true;
 		ColorChanged = true;
@@ -215,7 +216,7 @@ void UI::Control::Base::UpdateEntryAnchorBoxRelay()
 }
 void UI::Control::Base::UpdateEntryColorRelay()
 {
-	if (ControlManager.Hovering != this)
+	if (ControlManager -> Hovering != this)
 	{ (*Entry).Col = ColorDefault; }
 	else
 	{ (*Entry).Col = ColorHover; }

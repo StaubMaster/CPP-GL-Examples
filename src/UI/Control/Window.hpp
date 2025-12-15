@@ -14,7 +14,7 @@ namespace Control
 class Window : public Base
 {
 	public:
-		Window(Manager & manager);
+		Window(Manager * manager);
 		~Window();
 
 	public:
