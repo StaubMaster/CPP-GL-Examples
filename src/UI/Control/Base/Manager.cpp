@@ -101,6 +101,13 @@ void UI::Control::Manager::RelayScroll(UserParameter::Mouse::Scroll params)
 		Selected -> RelayScroll(params);
 	}
 }
+void UI::Control::Manager::RelayCursorDrag(UserParameter::Mouse::Drag params)
+{
+	if (Selected != NULL)
+	{
+		Selected -> RelayCursorDrag(params);
+	}
+}
 void UI::Control::Manager::RelayKey(UserParameter::KeyBoard::Key params)
 {
 	if (Selected != NULL)

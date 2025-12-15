@@ -9,6 +9,7 @@
 
 #include "UserParameter/Mouse/Click.hpp"
 #include "UserParameter/Mouse/Scroll.hpp"
+#include "UserParameter/Mouse/Drag.hpp"
 
 #include "UserParameter/KeyBoard/Key.hpp"
 #include "UserParameter/KeyBoard/Text.hpp"
@@ -127,6 +128,7 @@ class Base
 	virtual void RelayHover(unsigned char type);
 	virtual void RelayClick(UserParameter::Mouse::Click params);
 	virtual void RelayScroll(UserParameter::Mouse::Scroll params);
+	virtual void RelayCursorDrag(UserParameter::Mouse::Drag params);
 	virtual void RelayKey(UserParameter::KeyBoard::Key params);
 	virtual void RelayText(UserParameter::KeyBoard::Text params);
 };

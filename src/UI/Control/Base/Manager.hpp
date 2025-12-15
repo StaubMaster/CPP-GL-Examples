@@ -8,6 +8,7 @@
 
 #include "UserParameter/Mouse/Click.hpp"
 #include "UserParameter/Mouse/Scroll.hpp"
+#include "UserParameter/Mouse/Drag.hpp"
 
 #include "UserParameter/KeyBoard/Key.hpp"
 #include "UserParameter/KeyBoard/Text.hpp"
@@ -57,6 +58,8 @@ class Manager
 
 		void RelayClick(UserParameter::Mouse::Click params);
 		void RelayScroll(UserParameter::Mouse::Scroll params);
+		void RelayCursorDrag(UserParameter::Mouse::Drag params);
+
 		void RelayKey(UserParameter::KeyBoard::Key params);
 		void RelayText(UserParameter::KeyBoard::Text params);
 };

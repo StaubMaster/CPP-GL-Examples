@@ -108,3 +108,25 @@ void UI::Control::Slider::RelayClick(UserParameter::Mouse::Click params)
 
 	if (ValueChangedFunc != NULL) { ValueChangedFunc(SliderValue); }
 }
+void UI::Control::Slider::RelayCursorDrag(UserParameter::Mouse::Drag params)
+{
+	if (!Enabled || !Visible || !Drawable) { return; }
+
+	float slider_size_half = SliderSize / 2;
+	float slider_min = AnchorBox.Min.X + slider_size_half;
+	float slider_max = AnchorBox.Max.X - slider_size_half;
+
+	float slider_value = params.Position.Absolute.X;
+	slider_value -= slider_min;
+	slider_value /= (slider_max - slider_min);
+	slider_value *= (SliderMax - SliderMin);
+	slider_value += SliderMin;
+
+	if (slider_value < SliderMin) { slider_value = SliderMin; }
+	if (slider_value > SliderMax) { slider_value = SliderMax; }
+
+	SliderValue = slider_value;
+	SliderChanged = true;
+
+	if (ValueChangedFunc != NULL) { ValueChangedFunc(SliderValue); }
+}

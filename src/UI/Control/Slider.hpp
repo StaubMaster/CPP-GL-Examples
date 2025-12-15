@@ -47,7 +47,7 @@ class Slider : public Base
 	void UpdateBoxRelay() override;
 
 	void RelayClick(UserParameter::Mouse::Click params) override;
-	//	Drag function
+	void RelayCursorDrag(UserParameter::Mouse::Drag params) override;
 };
 
 };

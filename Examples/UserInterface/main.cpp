@@ -211,9 +211,6 @@ void UI_Make_Example()
 	UI::Control::TextBox * text;
 	UI::Control::Slider * slider;
 	UI::Control::CheckBox * check_box;
-	(void)button;
-	(void)slider;
-	(void)check_box;
 
 	form = new UI::Control::Form();
 	UI_Control_Manager -> Window -> ChildInsert(form);
@@ -222,10 +219,8 @@ void UI_Make_Example()
 
 	float w = 0;
 	float h = 0;
-	(void)w;
-	(void)h;
 
-/*	button = new UI::Control::Button();
+	button = new UI::Control::Button();
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> Anchor.X.SetPaddedMinDist(w);
@@ -253,7 +248,7 @@ void UI_Make_Example()
 	form -> ChildInsert(check_box);
 
 	w = 0;
-	h = check_box -> Anchor.Y.GetPaddedMaxSize();*/
+	h = check_box -> Anchor.Y.GetPaddedMaxSize();
 
 	text = new UI::Control::TextBox(*UI_Text_Manager);
 	text -> Anchor.X.Anchor = ANCHOR_BOTH;
@@ -265,7 +260,7 @@ void UI_Make_Example()
 	form -> ChildInsert(text);
 	Example_TextBox_0 = text;
 
-/*	w = 0;
+	w = 0;
 	h = text -> Anchor.Y.GetPaddedMaxSize();
 
 	text = new UI::Control::TextBox(*UI_Text_Manager);
@@ -301,7 +296,7 @@ void UI_Make_Example()
 	text -> SetText("0");
 	text -> ReadOnly = true;
 	form -> ChildInsert(text);
-	Example_TextBox_2 = text;*/
+	Example_TextBox_2 = text;
 }
 
 void UI_Make()
@@ -450,6 +445,21 @@ void ClickFunc(UserParameter::Mouse::Click params)
 {
 	UI_Control_Manager -> RelayClick(params);
 }
+void ScrollFunc(UserParameter::Mouse::Scroll params)
+{
+	std::cout << "Scroll " << params.X << ' ' << params.Y << '\n';
+	(void)params;
+}
+void MoveFunc(UserParameter::Mouse::Position params)
+{
+	//std::cout << "Move " << params.Absolute << '\n';
+	(void)params;
+}
+void DragFunc(UserParameter::Mouse::Drag params)
+{
+	UI_Control_Manager -> RelayCursorDrag(params);
+}
+
 void KeyFunc(UserParameter::KeyBoard::Key params)
 {
 	UI_Control_Manager -> RelayKey(params);
@@ -478,7 +488,11 @@ int main()
 
 	window -> ResizeFunc = Resize;
 
-	window -> ChangeCallbackClick(ClickFunc);
+	window -> ChangeCallback_CursorClick(ClickFunc);
+	window -> ChangeCallback_CursorScroll(ScrollFunc);
+	window -> ChangeCallback_CursorMove(MoveFunc);
+	window -> ChangeCallback_CursorDrag(DragFunc);
+
 	window -> KeyFunc = KeyFunc;
 	window -> TextFunc = TextFunc;
 
