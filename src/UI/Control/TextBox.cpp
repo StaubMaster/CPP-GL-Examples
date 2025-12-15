@@ -58,6 +58,8 @@ void UI::Control::TextBox::PutCharactersEntrys()
 		else
 		{ TextEntry[i].Pallet = TextManager.CharToPalletEntry('\0'); }
 		TextEntry[i].Pos = Point2D((min.X + (CharacterSize.X * 0.5f)) + (i * CharacterSize.X), center.Y);
+		TextEntry[i].Bound.Min = min;
+		TextEntry[i].Bound.Max = max;
 	}
 }
 

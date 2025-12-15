@@ -34,12 +34,16 @@ class Inst_Attribute : public Attribute::Base
 	private:
 		Attribute::Point2D	Pos;
 		Attribute::Point2D	Pallet;
+		Attribute::Point2D	BoundMin;
+		Attribute::Point2D	BoundMax;
 	public:
 		Inst_Attribute(
 			unsigned int divisor,
 			unsigned int stride,
 			unsigned int indexPos,
-			unsigned int indexPallet
+			unsigned int indexPallet,
+			unsigned int indexBoundMin,
+			unsigned int indexBoundMax
 		);
 	public:
 		void Bind(const unsigned char * & offset) const override;

@@ -107,6 +107,18 @@ void UI_Make_Toggles()
 	check_box -> ClickFunc = click_toggle_Settings;
 	form -> ChildInsert(check_box);
 	Toggle_CheckBox_Settings = check_box;
+
+	UI::Control::TextBox * text_box;
+
+	text_box = new UI::Control::TextBox(*UI_Text_Manager);
+	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
+	//text_box -> Anchor.Y.Anchor = ANCHOR_BOTH;
+	text_box -> Anchor.Y.Anchor = ANCHOR_MIN;
+	text_box -> Anchor.X.SetPaddedMinDist(0);
+	text_box -> Anchor.X.SetPaddedMaxDist(0);
+	text_box -> Anchor.Y.SetPaddedMinDist(0);
+	//text_box -> Anchor.Y.SetPaddedMaxDist(0);
+	UI_Control_Manager -> Window -> ChildInsert(text_box);
 }
 
 UI::Control::Form * Settings_Form;

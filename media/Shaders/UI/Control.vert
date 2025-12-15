@@ -16,6 +16,7 @@ layout(location = 0) in vec2 Main_Pos;	//	square in range [ -1 , +1 ]
 
 layout(location = 1) in vec2 Inst_Min;
 layout(location = 2) in vec2 Inst_Max;
+
 layout(location = 3) in float Inst_Layer;
 layout(location = 4) in vec3 Inst_Col;
 

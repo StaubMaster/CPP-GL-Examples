@@ -20,9 +20,14 @@ layout(location = 0) in vec2 Main_Pos;	//	square in range [ -1 , +1 ]
 layout(location = 1) in vec2 Inst_Pos;
 layout(location = 2) in vec2 Inst_Pallet;
 
+layout(location = 3) in vec2 Inst_BoundMin;
+layout(location = 4) in vec2 Inst_BoundMax;
+
 out UI_Text
 {
 	vec2	PalletPos;
+	vec2	BoundMin;
+	vec2	BoundMax;
 } vs_out;
 
 
@@ -45,4 +50,9 @@ void main()
 	pallet_pos = Inst_Pallet + pallet_pos;
 	pallet_pos = (pallet_pos / TexturePalletCount);
 	vs_out.PalletPos = pallet_pos;
+
+	vs_out.BoundMin.x = Inst_BoundMin.x;
+	vs_out.BoundMin.y = ViewPortSizeRatio.Size.y - Inst_BoundMax.y;
+	vs_out.BoundMax.x = Inst_BoundMax.x;
+	vs_out.BoundMax.y = ViewPortSizeRatio.Size.y - Inst_BoundMin.y;
 }

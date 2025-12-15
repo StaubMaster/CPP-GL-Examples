@@ -2,6 +2,7 @@
 # define UI_TEXT_DATA
 
 # include "DataInclude.hpp"
+# include "UI/AxisBox.hpp"
 
 /*	for now:
 Main is just a small Box where the Texture gets drawn ?
@@ -31,6 +32,7 @@ struct Inst_Data
 {
 	Point2D Pos;
 	Point2D Pallet;
+	AxisBox2D Bound;
 
 	Inst_Data();
 	Inst_Data(Point2D pos, Point2D pallet);
