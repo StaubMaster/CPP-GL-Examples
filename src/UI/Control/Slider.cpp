@@ -1,5 +1,6 @@
 #include "Slider.hpp"
 #include "Base/Manager.hpp"
+#include "UserParameter/MouseInclude.hpp"
 
 
 

@@ -18,8 +18,10 @@ FILES_SRC := \
 	$(BASE_DIR)src/UI/Control/Base/Shader.cpp \
 	$(BASE_DIR)src/UI/Control/Base/Manager.cpp \
 	$(BASE_DIR)src/UI/Control/Base/Base.cpp \
+\
 	$(BASE_DIR)src/UI/Control/Window.cpp \
 	$(BASE_DIR)src/UI/Control/Form.cpp \
+	$(BASE_DIR)src/UI/Control/GroupBox.cpp \
 	$(BASE_DIR)src/UI/Control/Button.cpp \
 	$(BASE_DIR)src/UI/Control/TextBox.cpp \
 	$(BASE_DIR)src/UI/Control/Slider.cpp \

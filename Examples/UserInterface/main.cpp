@@ -5,6 +5,7 @@
 #include "Debug.hpp"
 
 #include "Window.hpp"
+#include "UserParameter/MouseInclude.hpp"
 
 #include "DirectoryContext.hpp"
 #include "FileContext.hpp"
@@ -36,7 +37,7 @@
 #include "UI/Anchor.hpp"
 
 #include "UI/Control/Base/Manager.hpp"
-#include "UI/Controls.hpp"
+#include "UI/ControlsInclude.hpp"
 
 #include "UI/Text/Manager.hpp"
 
@@ -207,6 +208,7 @@ UI::Control::TextBox * Example_TextBox_2;
 void UI_Make_Example()
 {
 	UI::Control::Form * form;
+	UI::Control::GroupBox * group_box;
 	UI::Control::Button * button;
 	UI::Control::TextBox * text;
 	UI::Control::Slider * slider;
@@ -220,13 +222,21 @@ void UI_Make_Example()
 	float w = 0;
 	float h = 0;
 
+	group_box = new UI::Control::GroupBox();
+	group_box -> Anchor.X.Anchor = ANCHOR_BOTH;
+	group_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	group_box -> Anchor.X.SetPaddedMinDist(0);
+	group_box -> Anchor.X.SetPaddedMaxDist(0);
+	group_box -> Anchor.Y.SetPaddedMaxDist(h);
+	form -> ChildInsert(group_box);
+
 	button = new UI::Control::Button();
 	button -> Anchor.X.Anchor = ANCHOR_MIN;
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> Anchor.X.SetPaddedMinDist(w);
 	button -> Anchor.Y.SetPaddedMaxDist(h);
 	button -> ClickFunc = click0;
-	form -> ChildInsert(button);
+	group_box -> ChildInsert(button);
 
 	w = button -> Anchor.X.GetPaddedMinSize();
 
@@ -236,7 +246,7 @@ void UI_Make_Example()
 	button -> Anchor.X.SetPaddedMinDist(w);
 	button -> Anchor.Y.SetPaddedMaxDist(h);
 	button -> ClickFunc = click1;
-	form -> ChildInsert(button);
+	group_box -> ChildInsert(button);
 
 	w = button -> Anchor.X.GetPaddedMinSize();
 
@@ -245,7 +255,7 @@ void UI_Make_Example()
 	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
 	check_box -> Anchor.X.SetPaddedMinDist(w);
 	check_box -> Anchor.Y.SetPaddedMaxDist(h);
-	form -> ChildInsert(check_box);
+	group_box -> ChildInsert(check_box);
 
 	w = 0;
 	h = check_box -> Anchor.Y.GetPaddedMaxSize();
@@ -257,7 +267,7 @@ void UI_Make_Example()
 	text -> Anchor.X.SetPaddedMaxDist(0);
 	text -> Anchor.Y.SetPaddedMaxDist(h);
 	text -> SetText("Text0");
-	form -> ChildInsert(text);
+	group_box -> ChildInsert(text);
 	Example_TextBox_0 = text;
 
 	w = 0;
@@ -270,11 +280,11 @@ void UI_Make_Example()
 	text -> Anchor.X.SetPaddedMaxDist(0);
 	text -> Anchor.Y.SetPaddedMaxDist(h);
 	text -> SetText("Text1");
-	form -> ChildInsert(text);
+	group_box -> ChildInsert(text);
 	Example_TextBox_1 = text;
 
 	w = 0;
-	h = text -> Anchor.Y.GetPaddedMaxSize();
+	h = group_box -> Anchor.Y.GetPaddedMaxSize();
 
 	slider = new UI::Control::Slider();
 	slider -> Anchor.X.Anchor = ANCHOR_MIN;

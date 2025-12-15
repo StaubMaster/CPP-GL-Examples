@@ -1,4 +1,5 @@
 #include "Manager.hpp"
+#include "UserParameter/MouseInclude.hpp"
 #include "../Window.hpp"
 
 #include "DataInclude.hpp"

@@ -1,5 +1,6 @@
 #include "Base.hpp"
 #include "Manager.hpp"
+#include "UserParameter/MouseInclude.hpp"
 #include <iostream>
 
 
@@ -239,6 +240,10 @@ void UI::Control::Base::RelayClick(UserParameter::Mouse::Click params)
 	(void)params;
 }
 void UI::Control::Base::RelayScroll(UserParameter::Mouse::Scroll params)
+{
+	(void)params;
+}
+void UI::Control::Base::RelayCursorDrag(UserParameter::Mouse::Drag params)
 {
 	(void)params;
 }

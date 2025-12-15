@@ -4,11 +4,12 @@
 #include "Data.hpp"
 #include "Buffer.hpp"
 #include "Shader.hpp"
-#include "Base.hpp"
+//#include "Base.hpp"
 
-#include "UserParameter/Mouse/Click.hpp"
-#include "UserParameter/Mouse/Scroll.hpp"
-#include "UserParameter/Mouse/Drag.hpp"
+//#include "UserParameter/Mouse/Click.hpp"
+//#include "UserParameter/Mouse/Scroll.hpp"
+//#include "UserParameter/Mouse/Drag.hpp"
+#include "UserParameter/MouseDeclare.hpp"
 
 #include "UserParameter/KeyBoard/Key.hpp"
 #include "UserParameter/KeyBoard/Text.hpp"
@@ -27,7 +28,7 @@ namespace UI
 
 namespace Control
 {
-//class Base;
+class Base;
 
 class Window;
 
