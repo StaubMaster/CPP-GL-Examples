@@ -112,12 +112,10 @@ void UI_Make_Toggles()
 
 	text_box = new UI::Control::TextBox(*UI_Text_Manager);
 	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
-	//text_box -> Anchor.Y.Anchor = ANCHOR_BOTH;
 	text_box -> Anchor.Y.Anchor = ANCHOR_MIN;
 	text_box -> Anchor.X.SetPaddedMinDist(0);
 	text_box -> Anchor.X.SetPaddedMaxDist(0);
 	text_box -> Anchor.Y.SetPaddedMinDist(0);
-	//text_box -> Anchor.Y.SetPaddedMaxDist(0);
 	UI_Control_Manager -> Window -> ChildInsert(text_box);
 }
 

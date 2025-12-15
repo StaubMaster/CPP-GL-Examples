@@ -11,7 +11,7 @@ struct SizeRatio2D
 uniform SizeRatio2D ViewPortSizeRatio;
 
 const vec2 TexturePalletCount = vec2(16, 8);
-const vec2 PalletSize = vec2(25, 25);
+const vec2 PalletSize = vec2(20, 20);
 
 
 
