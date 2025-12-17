@@ -63,16 +63,11 @@ void UI::Text::Font::ParsingData::Parse_Character(const ParsingCommand & cmd)
 
 	Point2D pos(cmd.ToFloat(1), cmd.ToFloat(2));
 	Point2D size(cmd.ToFloat(3), cmd.ToFloat(4));
+
 	if (cmd.ToString(0) == "Default")
-	{
-		std::cout << "Char Default\n";
-		Temp -> Change_DefaultCharacter(pos, size);
-	}
+	{ Temp -> Change_DefaultCharacter(pos, size); }
 	else
-	{
-		std::cout << "Char " << cmd.ToInt32(0) << '\n';
-		Temp -> Insert_Character(cmd.ToUInt32(0), pos, size);
-	}
+	{ Temp -> Insert_Character(cmd.ToUInt32(0), pos, size); }
 }
 
 

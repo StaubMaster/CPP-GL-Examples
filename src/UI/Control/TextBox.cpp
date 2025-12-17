@@ -139,7 +139,7 @@ void UI::Control::TextBox::RelayText(UserParameter::KeyBoard::Text params)
 {
 	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
 
-	if (
+	/*if (
 		(params.Codepoint >= '0' && params.Codepoint <= '9') ||
 		(params.Codepoint >= 'A' && params.Codepoint <= 'Z') ||
 		(params.Codepoint >= 'a' && params.Codepoint <= 'z') ||
@@ -147,7 +147,7 @@ void UI::Control::TextBox::RelayText(UserParameter::KeyBoard::Text params)
 		params.Codepoint == '/' ||
 		params.Codepoint == '=' || params.Codepoint == '<' || params.Codepoint == '>' ||
 		params.Codepoint == ' '
-		)
+		)*/
 	{
 		Text += (char)params.Codepoint;
 		TextChanged = true;
