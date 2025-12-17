@@ -19,7 +19,7 @@ UI::Text::Manager::Manager(const DirectoryContext & shader_dir, const DirectoryC
 {
 	std::cout << "  ++++  " << "UI::Text::Manager::Manager()" << '\n';
 
-	Image * img = image_dir.File("Text_16_8.png").LoadImagePNG();
+	Image * img = image_dir.File("Text_16x8_32x32.png").LoadImagePNG();
 	Pallet_Texture = new Texture::T2DArray(img);
 	delete img;
 
@@ -72,14 +72,12 @@ Point2D UI::Text::Manager::CharToPalletEntry(int c)
 	if (c >= '0' && c <= '9') { return Point2D(c - '0', 0); }
 	if (c >= 'A' && c <= 'M') { return Point2D(c - 'A', 1); }
 	if (c >= 'N' && c <= 'Z') { return Point2D(c - 'N', 2); }
-	if (c >= 'a' && c <= 'm') { return Point2D(c - 'a', 3); }
-	if (c >= 'n' && c <= 'z') { return Point2D(c - 'n', 4); }
+//	if (c >= 'a' && c <= 'm') { return Point2D(c - 'a', 3); }
+//	if (c >= 'n' && c <= 'z') { return Point2D(c - 'n', 4); }
 	if (c == '+') { return Point2D(10, 0); }
 	if (c == '-') { return Point2D(11, 0); }
-	if (c == '*') { return Point2D(12, 0); }
-	if (c == '/') { return Point2D(13, 0); }
-	if (c == '=') { return Point2D(13, 1); }
-	if (c == '<') { return Point2D(14, 1); }
-	if (c == '>') { return Point2D(15, 1); }
+	if (c == '=') { return Point2D(12, 0); }
+	if (c == '<') { return Point2D(13, 0); }
+	if (c == '>') { return Point2D(14, 0); }
 	return Point2D(15, 0);
 }
