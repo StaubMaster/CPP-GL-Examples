@@ -2,13 +2,14 @@
 
 
 
-struct SizeRatio2D
+struct DisplaySize
 {
-	vec2 Size;
+	vec2 WindowSize;
+	vec2 BufferSize;
 	vec2 Ratio;
 };
 
-uniform SizeRatio2D ViewPortSizeRatio;
+uniform DisplaySize WindowSize;
 
 
 
@@ -38,7 +39,7 @@ void main()
 	vec2 Center = (Inst_Max + Inst_Min) / 2;
 	vec2 SizeHalf = (Inst_Max - Inst_Min) / 2;
 	vec2 pos = (main_pos * SizeHalf) + Center;
-	vec2 pos_normal = ((pos / ViewPortSizeRatio.Size) * 2) - 1;
+	vec2 pos_normal = ((pos / WindowSize.BufferSize) * 2) - 1;
 	pos_normal.y = -pos_normal.y;
 
 	gl_Position = vec4(pos_normal, Inst_Layer, 1);

@@ -25,7 +25,7 @@ namespace Text
 class TextShader : public Shader::Base
 {
 	public:
-		Uniform::SizeRatio2D ViewPortSizeRatio;
+		Uniform::WindowBufferSize2D WindowSize;
 
 	public:
 		TextShader(const DirectoryContext & dir);

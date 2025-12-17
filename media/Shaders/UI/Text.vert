@@ -2,13 +2,14 @@
 
 
 
-struct SizeRatio2D
+struct DisplaySize
 {
-	vec2 Size;
+	vec2 WindowSize;
+	vec2 BufferSize;
 	vec2 Ratio;
 };
 
-uniform SizeRatio2D ViewPortSizeRatio;
+uniform DisplaySize WindowSize;
 
 const vec2 TexturePalletCount = vec2(16, 8);
 const vec2 PalletSize = vec2(20, 20);
@@ -40,7 +41,7 @@ void main()
 	vec2 Center = Inst_Pos;
 	vec2 SizeHalf = PalletSize / 2;
 	vec2 pos = (main_pos * SizeHalf) + Center;
-	vec2 pos_normal = ((pos / ViewPortSizeRatio.Size) * 2) - 1;
+	vec2 pos_normal = ((pos / WindowSize.BufferSize) * 2) - 1;
 	pos_normal.y = -pos_normal.y;
 
 	gl_Position = vec4(pos_normal, 0.01, 1);
@@ -52,7 +53,7 @@ void main()
 	vs_out.PalletPos = pallet_pos;
 
 	vs_out.BoundMin.x = Inst_BoundMin.x;
-	vs_out.BoundMin.y = ViewPortSizeRatio.Size.y - Inst_BoundMax.y;
+	vs_out.BoundMin.y = WindowSize.BufferSize.y - Inst_BoundMax.y;
 	vs_out.BoundMax.x = Inst_BoundMax.x;
-	vs_out.BoundMax.y = ViewPortSizeRatio.Size.y - Inst_BoundMin.y;
+	vs_out.BoundMax.y = WindowSize.BufferSize.y - Inst_BoundMin.y;
 }

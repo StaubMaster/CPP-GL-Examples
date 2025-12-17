@@ -11,7 +11,7 @@ UI::Control::BaseShader::BaseShader(const DirectoryContext & dir)
 		Shader::Code::FromFile(dir.File("UI/Control.vert")),
 		Shader::Code::FromFile(dir.File("UI/Control.frag"))
 	}, 2),
-	ViewPortSizeRatio("ViewPortSizeRatio", *this)
+	WindowSize("WindowSize", *this)
 { }
 UI::Control::BaseShader::~BaseShader()
 { }

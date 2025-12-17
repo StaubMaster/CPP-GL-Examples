@@ -14,7 +14,7 @@ UI::Control::Manager::Manager(const DirectoryContext & dir) :
 	BufferArray(),
 	Main_Data_Container(),
 	Inst_Data_Container(),
-	ViewPortSize(),
+	WindowSize(),
 	Window(new UI::Control::Window(this))
 {
 	std::cout << "  ++++  " << "Manager()" << "\n";
@@ -65,10 +65,10 @@ void UI::Control::Manager::Draw()
 }
 
 
-void UI::Control::Manager::UpdateSize(const SizeRatio2D & ViewPortSizeRatio)
+void UI::Control::Manager::UpdateSize(const WindowBufferSize2D & window_size)
 {
-	ViewPortSize = ViewPortSizeRatio.Size;
-	Window -> UpdateWindowSize(ViewPortSize);
+	WindowSize = window_size;
+	Window -> UpdateWindowSize(WindowSize.WindowSize);
 }
 void UI::Control::Manager::UpdateMouse(Point2D mouse)
 {

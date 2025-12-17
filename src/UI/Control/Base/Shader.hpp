@@ -20,7 +20,7 @@ namespace Control
 class BaseShader : public Shader::Base
 {
 	public:
-		Uniform::SizeRatio2D ViewPortSizeRatio;
+		Uniform::WindowBufferSize2D WindowSize;
 
 	public:
 		BaseShader(const DirectoryContext & dir);

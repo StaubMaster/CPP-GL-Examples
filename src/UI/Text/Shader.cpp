@@ -11,7 +11,7 @@ UI::Text::TextShader::TextShader(const DirectoryContext & dir)
 		Shader::Code::FromFile(dir.File("UI/Text.vert")),
 		Shader::Code::FromFile(dir.File("UI/Text.frag"))
 	}, 2),
-	ViewPortSizeRatio("ViewPortSizeRatio", *this)
+	WindowSize("WindowSize", *this)
 { }
 UI::Text::TextShader::~TextShader()
 { }

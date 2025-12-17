@@ -32,7 +32,6 @@
 
 
 
-#include "UI/DisplayScale.hpp"
 #include "UI/AxisBox.hpp"
 #include "UI/Anchor.hpp"
 
@@ -48,7 +47,7 @@ DirectoryContext ImageDir("../../media/Images");
 
 Window * window;
 
-Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
+Multiform::WindowBufferSize2D * Multi_WindowSize;
 
 
 
@@ -339,7 +338,7 @@ void UI_Init()
 	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
 	UI_Text_Manager = new UI::Text::Manager(ShaderDir, ImageDir);
 
-	UI_Control_Manager -> UpdateSize(window -> ViewPortSizeRatio);
+	UI_Control_Manager -> UpdateSize(window -> Size);
 
 	std::cout << "Control Init done\n";
 }
@@ -426,8 +425,8 @@ void InitRun()
 		&(UI_Control_Manager -> Shader),
 		&(UI_Text_Manager -> Shader),
 	};
-	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
-	Multi_ViewPortSizeRatio -> FindUniforms(shaders, 2);
+	Multi_WindowSize = new Multiform::WindowBufferSize2D("WindowSize");
+	Multi_WindowSize -> FindUniforms(shaders, 2);
 
 	UI_Make();
 
@@ -437,7 +436,7 @@ void FreeRun()
 {
 	std::cout << "Free ...\n";
 
-	delete Multi_ViewPortSizeRatio;
+	delete Multi_WindowSize;
 
 	UI_Free();
 
@@ -450,10 +449,10 @@ void Frame(double timeDelta)
 	UI_Frame();
 }
 
-void Resize(const SizeRatio2D & ViewPortSizeRatio)
+void Resize(const WindowBufferSize2D & WindowSize)
 {
-	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
-	UI_Control_Manager -> UpdateSize(ViewPortSizeRatio);
+	Multi_WindowSize -> ChangeData(WindowSize);
+	UI_Control_Manager -> UpdateSize(WindowSize);
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(window->DefaultColor.R, window->DefaultColor.G, window->DefaultColor.B, 1.0f);

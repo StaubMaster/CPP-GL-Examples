@@ -29,7 +29,8 @@ void main()
 {
 	vec4 col = texture(texture0, vec3(fs_inn.PalletPos, 0));
 
-	vec2 pos = gl_FragCoord.xy / 2;	//	only on Mac, because FrameBufferSize != WindowSize
+	//vec2 pos = gl_FragCoord.xy / 2;	//	only on Mac, because FrameBufferSize != WindowSize
+	vec2 pos = gl_FragCoord.xy;
 
 	if (col.a == 0) { discard; }
 

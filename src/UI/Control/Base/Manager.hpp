@@ -6,6 +6,8 @@
 #include "Shader.hpp"
 //#include "Base.hpp"
 
+#include "Display/WindowBufferSize2D.hpp"
+
 //#include "UserParameter/Mouse/Click.hpp"
 //#include "UserParameter/Mouse/Scroll.hpp"
 //#include "UserParameter/Mouse/Drag.hpp"
@@ -41,7 +43,7 @@ class Manager
 		Container::Dynamic<Control::Main_Data> Main_Data_Container;
 		EntryContainer::Dynamic<Control::Inst_Data> Inst_Data_Container;
 
-		Point2D ViewPortSize;
+		WindowBufferSize2D WindowSize;
 
 		UI::Control::Window * Window;
 
@@ -54,7 +56,7 @@ class Manager
 
 		void Draw();
 
-		void UpdateSize(const SizeRatio2D & ViewPortSizeRatio);
+		void UpdateSize(const WindowBufferSize2D & window_size);
 		void UpdateMouse(Point2D mouse);
 
 		void RelayClick(UserParameter::Mouse::Click params);
