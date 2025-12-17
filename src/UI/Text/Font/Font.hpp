@@ -4,7 +4,7 @@
 # include "Parsing/ParsingCommand.hpp"
 # include "Format/Image.hpp"
 # include "Miscellaneous/Container/Dynamic.hpp"
-# include "UI/AxisBox.hpp"
+# include "DataStruct/AxisBox2D.hpp"
 
 # include <string>
 # include <exception>

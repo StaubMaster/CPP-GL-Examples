@@ -29,15 +29,15 @@ void main()
 {
 	vec4 col = texture(texture0, vec3(fs_inn.PalletPos, 0));
 
-	//vec2 pos = gl_FragCoord.xy / 2;	//	only on Mac, because FrameBufferSize != WindowSize
-	vec2 pos = gl_FragCoord.xy;
-
 	if (col.a == 0) { discard; }
+	if (col.r >= 128) { discard; }
+	if (col.g >= 128) { discard; }
+	if (col.b >= 128) { discard; }
 
-	if (pos.x >= fs_inn.BoundMin.x &&
-		pos.x <= fs_inn.BoundMax.x &&
-		pos.y >= fs_inn.BoundMin.y &&
-		pos.y <= fs_inn.BoundMax.y)
+	if (gl_FragCoord.x >= fs_inn.BoundMin.x &&
+		gl_FragCoord.x <= fs_inn.BoundMax.x &&
+		gl_FragCoord.y >= fs_inn.BoundMin.y &&
+		gl_FragCoord.y <= fs_inn.BoundMax.y)
 	{ Pixel = vec4(col); }
 	else { discard; }
 

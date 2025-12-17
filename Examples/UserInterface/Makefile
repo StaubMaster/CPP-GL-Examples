@@ -1,4 +1,5 @@
 
+NAME := UserInterface.exe
 COMPILER := c++ -std=c++11
 FLAGS := -Wall -Wextra -Werror
 
@@ -6,10 +7,7 @@ BASE_DIR := ../../
 
 
 
-NAME := UserInterface.exe
-
 FILES_SRC := \
-	$(BASE_DIR)src/UI/AxisBox.cpp \
 	$(BASE_DIR)src/UI/Anchor.cpp \
 \
 	$(BASE_DIR)src/UI/Control/Base/Data.cpp \
