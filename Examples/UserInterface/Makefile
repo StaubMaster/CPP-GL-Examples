@@ -9,7 +9,6 @@ BASE_DIR := ../../
 NAME := UserInterface.exe
 
 FILES_SRC := \
-	$(BASE_DIR)src/UI/DisplayScale.cpp \
 	$(BASE_DIR)src/UI/AxisBox.cpp \
 	$(BASE_DIR)src/UI/Anchor.cpp \
 \

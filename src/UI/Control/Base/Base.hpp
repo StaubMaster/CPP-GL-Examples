@@ -3,13 +3,9 @@
 
 #include "Data.hpp"
 
-#include "UI/DisplayScale.hpp"
 #include "UI/AxisBox.hpp"
 #include "UI/Anchor.hpp"
 
-//#include "UserParameter/Mouse/Click.hpp"
-//#include "UserParameter/Mouse/Scroll.hpp"
-//#include "UserParameter/Mouse/Drag.hpp"
 #include "UserParameter/MouseDeclare.hpp"
 
 #include "UserParameter/KeyBoard/Key.hpp"
