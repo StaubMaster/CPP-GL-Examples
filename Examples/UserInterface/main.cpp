@@ -44,6 +44,7 @@
 
 DirectoryContext ShaderDir("../../media/Shaders");
 DirectoryContext ImageDir("../../media/Images");
+DirectoryContext TextDir("../../media/Text");
 
 Window * window;
 
@@ -336,7 +337,7 @@ void UI_Init()
 	std::cout << "Control Init ...\n";
 
 	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
-	UI_Text_Manager = new UI::Text::Manager(ShaderDir, ImageDir);
+	UI_Text_Manager = new UI::Text::Manager(ShaderDir, TextDir);
 
 	UI_Control_Manager -> UpdateSize(window -> Size);
 

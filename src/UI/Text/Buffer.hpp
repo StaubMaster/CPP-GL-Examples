@@ -33,7 +33,8 @@ class Inst_Attribute : public Attribute::Base
 {
 	private:
 		Attribute::Point2D	Pos;
-		Attribute::Point2D	Pallet;
+		Attribute::Point2D	PalletMin;
+		Attribute::Point2D	PalletMax;
 		Attribute::Point2D	BoundMin;
 		Attribute::Point2D	BoundMax;
 	public:
@@ -41,7 +42,8 @@ class Inst_Attribute : public Attribute::Base
 			unsigned int divisor,
 			unsigned int stride,
 			unsigned int indexPos,
-			unsigned int indexPallet,
+			unsigned int indexPalletMin,
+			unsigned int indexPalletMax,
 			unsigned int indexBoundMin,
 			unsigned int indexBoundMax
 		);

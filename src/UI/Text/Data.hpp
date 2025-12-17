@@ -31,11 +31,11 @@ struct Main_Data
 struct Inst_Data
 {
 	Point2D Pos;
-	Point2D Pallet;
+	AxisBox2D Pallet;
 	AxisBox2D Bound;
 
 	Inst_Data();
-	Inst_Data(Point2D pos, Point2D pallet);
+	Inst_Data(Point2D pos, AxisBox2D pallet);
 };
 
 };

@@ -11,7 +11,6 @@ struct DisplaySize
 
 uniform DisplaySize WindowSize;
 
-const vec2 TexturePalletCount = vec2(16, 8);
 const vec2 PalletSize = vec2(20, 20);
 
 
@@ -19,10 +18,12 @@ const vec2 PalletSize = vec2(20, 20);
 layout(location = 0) in vec2 Main_Pos;	//	square in range [ -1 , +1 ]
 
 layout(location = 1) in vec2 Inst_Pos;
-layout(location = 2) in vec2 Inst_Pallet;
 
-layout(location = 3) in vec2 Inst_BoundMin;
-layout(location = 4) in vec2 Inst_BoundMax;
+layout(location = 2) in vec2 Inst_PalletMin;
+layout(location = 3) in vec2 Inst_PalletMax;
+
+layout(location = 4) in vec2 Inst_BoundMin;
+layout(location = 5) in vec2 Inst_BoundMax;
 
 out UI_Text
 {
@@ -46,11 +47,9 @@ void main()
 
 	gl_Position = vec4(pos_normal, 0.01, 1);
 
-	vec2 pallet_pos = vec2(+Main_Pos.x, -Main_Pos.y);
-	pallet_pos = ((pallet_pos + vec2(1, 1)) / 2);
-	pallet_pos = Inst_Pallet + pallet_pos;
-	pallet_pos = (pallet_pos / TexturePalletCount);
-	vs_out.PalletPos = pallet_pos;
+	vec2 pallet_t0 = ((vec2(-Main_Pos.x, +Main_Pos.y) + vec2(1, 1)) / 2);
+	vec2 pallet_t1 = vec2(1, 1) - pallet_t0;
+	vs_out.PalletPos = (Inst_PalletMin * pallet_t0) + (Inst_PalletMax * pallet_t1);
 
 	vs_out.BoundMin.x = Inst_BoundMin.x;
 	vs_out.BoundMin.y = WindowSize.BufferSize.y - Inst_BoundMax.y;

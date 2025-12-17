@@ -1,0 +1,44 @@
+
+#  comment
+#  this is a Atlas Map File ?
+#
+#  Specify Image Atlas Texture File
+#    maybe allow multiple Files ?
+#
+#  Specify where each Character is in the File
+#    each Atlas Map is for 1 Atlas Image
+#    allow an Atlas Map to include another Atlas Map ?
+#
+#  Commands
+#    Format ?
+#      Monospace ?
+#        I dont have anything else right now
+#    Image path_to_file
+#      no spaces in path ?
+#    Character Code Pos.X Pos.Y Size.X Size.Y
+#      Code Default is for when no Code is matched
+#      Pos is Normalized [ 0 ; 1 ]
+#    Scale Size.X Size.Y
+#      what scale to use for Positions
+#      default is Size of Texture Size
+#      
+
+Image Font0.png
+
+Scale 16 8
+
+Character Default 15.0 00.0 1.0 1.0
+
+# '0' to '9'
+Character 48 00.0 00.0 1.0 1.0
+Character 49 01.0 00.0 1.0 1.0
+Character 50 02.0 00.0 1.0 1.0
+Character 51 03.0 00.0 1.0 1.0
+Character 52 04.0 00.0 1.0 1.0
+Character 53 05.0 00.0 1.0 1.0
+Character 54 06.0 00.0 1.0 1.0
+Character 55 07.0 00.0 1.0 1.0
+Character 56 08.0 00.0 1.0 1.0
+Character 57 09.0 00.0 1.0 1.0
+
+

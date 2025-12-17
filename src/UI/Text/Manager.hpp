@@ -8,6 +8,7 @@
 #include "Miscellaneous/Container/Dynamic.hpp"
 #include "Miscellaneous/EntryContainer/Dynamic.hpp"
 
+#include "Font/Font.hpp"
 #include "Graphics/Texture/2DArray.hpp"
 
 
@@ -31,17 +32,15 @@ class Manager
 		Container::Dynamic<UI::Text::Main_Data> Main_Data_Container;
 		EntryContainer::Dynamic<UI::Text::Inst_Data> Inst_Data_Container;
 
+		Font * TextFont;
 		Texture::T2DArray * Pallet_Texture;
 
 	public:
-		Manager(const DirectoryContext & shader_dir, const DirectoryContext & image_dir);
+		Manager(const DirectoryContext & shader_dir, const DirectoryContext & text_dir);
 		~Manager();
 
 	public:
 		void Draw();
-
-	public:
-		Point2D CharToPalletEntry(int c);
 };
 
 };

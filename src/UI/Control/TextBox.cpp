@@ -53,13 +53,12 @@ void UI::Control::TextBox::PutCharactersEntrys()
 	Point2D center = (max + min) / 2;
 	for (unsigned int i = 0; i < TextEntry.Length(); i++)
 	{
-		if (i < Text.length())
-		{ TextEntry[i].Pallet = TextManager.CharToPalletEntry(Text[i]); }
-		else
-		{ TextEntry[i].Pallet = TextManager.CharToPalletEntry('\0'); }
 		TextEntry[i].Pos = Point2D((min.X + (CharacterSize.X * 0.5f)) + (i * CharacterSize.X), center.Y);
-		TextEntry[i].Bound.Min = min;
-		TextEntry[i].Bound.Max = max;
+		if (i < Text.length())
+		{ TextEntry[i].Pallet = TextManager.TextFont -> CharacterBoxFromCode(Text[i]); }
+		else
+		{ TextEntry[i].Pallet = TextManager.TextFont -> CharacterBoxFromCode('\0'); }
+		TextEntry[i].Bound = AnchorBox;
 	}
 }
 

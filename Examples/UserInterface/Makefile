@@ -30,6 +30,9 @@ FILES_SRC := \
 	$(BASE_DIR)src/UI/Text/Buffer.cpp \
 	$(BASE_DIR)src/UI/Text/Shader.cpp \
 	$(BASE_DIR)src/UI/Text/Manager.cpp \
+	$(BASE_DIR)src/UI/Text/Font/Font.cpp \
+	$(BASE_DIR)src/UI/Text/Font/Template.cpp \
+	$(BASE_DIR)src/UI/Text/Font/Parsing.cpp \
 	main.cpp
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
