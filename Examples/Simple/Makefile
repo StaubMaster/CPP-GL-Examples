@@ -46,11 +46,12 @@ re:
 
 
 include $(BASE_DIR)fancy.mk
-FANCY_NAME := UserInterface
+FANCY_NAME := Simple
 
 
 
 %.exe : %.cpp
+	@mkdir -p logs/
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
 

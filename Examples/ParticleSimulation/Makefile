@@ -1,4 +1,5 @@
 
+NAME := ParticleSimulation.exe
 COMPILER := c++ -std=c++11
 FLAGS := -Wall -Wextra -Werror
 
@@ -6,10 +7,8 @@ BASE_DIR := ../../
 
 
 
-NAME := ParticleSimulation.exe
-
 FILES_SRC := \
-	ParticleSimulation.cpp
+	main.cpp
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 

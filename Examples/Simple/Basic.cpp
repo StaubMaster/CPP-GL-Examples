@@ -52,7 +52,7 @@ Container::Dynamic<EntryContainer::Entry<Simple3D_InstData>> Instance_Entrys;
 
 Shader::Base * PH_Shader;
 
-Uniform::SizeRatio2D * Uni_ViewPortSizeRatio;
+Uniform::WindowBufferSize2D * Uni_WindowSize;
 Uniform::Trans3D * Uni_View;
 Uniform::Depth * Uni_Depth;
 
@@ -65,7 +65,7 @@ void InitGraphics()
 		Shader::Code::FromFile(ShaderDir.File("PH_Full.frag"))
 	}, 2);
 
-	Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *PH_Shader);
+	Uni_WindowSize = new Uniform::WindowBufferSize2D("WindowSize", *PH_Shader);
 	Uni_View = new Uniform::Trans3D("View", *PH_Shader);
 	Uni_Depth = new Uniform::Depth("Depth", *PH_Shader);
 }
@@ -73,7 +73,7 @@ void FreeGraphics()
 {
 	delete PH_Shader;
 
-	delete Uni_ViewPortSizeRatio;
+	delete Uni_WindowSize;
 	delete Uni_View;
 	delete Uni_Depth;
 }
@@ -107,7 +107,7 @@ void FreeRun()
 
 void Frame(double timeDelta)
 {
-	if (win -> IsCursorLocked())
+	if (win -> MouseManager.CursorModeIsLocked())
 	{
 		ViewTrans.TransformFlatX(win -> MoveFromKeys(20.0f * timeDelta), win -> SpinFromCursor(0.2f * timeDelta));
 	}
@@ -128,10 +128,10 @@ void Frame(double timeDelta)
 	PH_Instances -> Update().Draw();
 }
 
-void Resize(const SizeRatio2D & ViewPortSizeRatio)
+void Resize(const WindowBufferSize2D & WindowSize)
 {
 	PH_Shader -> Use();
-	Uni_ViewPortSizeRatio -> PutData(ViewPortSizeRatio);
+	Uni_WindowSize -> PutData(WindowSize);
 }
 
 

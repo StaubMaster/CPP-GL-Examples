@@ -8,9 +8,10 @@ struct Trans3D
 	mat3 Rot;
 };
 
-struct SizeRatio2D
+struct WindowBufferSize2D
 {
-	vec2 Size;
+	vec2 WindowSize;
+	vec2 BufferSize;
 	vec2 Ratio;
 };
 
@@ -30,7 +31,7 @@ struct DepthData
 
 
 
-uniform SizeRatio2D ViewPortSizeRatio;
+uniform WindowBufferSize2D WindowSize;
 
 uniform Trans3D View;
 
@@ -72,8 +73,8 @@ vec4 proj(in vec3 p_inn)
 	p_out.z = p_inn.z * Depth.Factors[5] - Depth.Factors[6];
 	p_out.w = p_inn.z;
 
-	p_out.x = p_out.x * ViewPortSizeRatio.Ratio.x;
-	p_out.y = p_out.y * ViewPortSizeRatio.Ratio.y;
+	p_out.x = p_out.x * WindowSize.Ratio.x;
+	p_out.y = p_out.y * WindowSize.Ratio.y;
 
 	return p_out;
 }

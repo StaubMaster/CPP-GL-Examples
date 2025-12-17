@@ -1,4 +1,6 @@
 
+
+NAME := InterPolation.exe
 COMPILER := c++ -std=c++11
 FLAGS := -Wall -Wextra -Werror
 
@@ -6,10 +8,8 @@ BASE_DIR := ../../
 
 
 
-NAME := InterPolation.exe
-
 FILES_SRC := \
-	InterPolation.cpp
+	main.cpp
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 

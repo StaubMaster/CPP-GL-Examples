@@ -53,11 +53,11 @@ Container::Dynamic<PolyHedra_3D_Instances *> * PH_Instances;
 Container::Dynamic<EntryContainer::Entry<Simple3D_InstData>> * Instance_Entrys;
 
 Container::Dynamic<Shader::Base *> * PH_Shaders;
-Container::Dynamic<Uniform::SizeRatio2D *> * Uni_ViewPortSizeRatio;
+Container::Dynamic<Uniform::WindowBufferSize2D *> * Uni_WindowSize;
 Container::Dynamic<Uniform::Trans3D *> * Uni_View;
 Container::Dynamic<Uniform::Depth *> * Uni_Depth;
 
-Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
+Multiform::WindowBufferSize2D * Multi_WindowSize;
 Multiform::Trans3D * Multi_View;
 Multiform::Depth * Multi_Depth;
 
@@ -95,26 +95,26 @@ void InitRun()
 	}, 2));
 
 	std::cout << "\nUniforms\n\n";
-	Uni_ViewPortSizeRatio = new Container::Dynamic<Uniform::SizeRatio2D *>();
+	Uni_WindowSize = new Container::Dynamic<Uniform::WindowBufferSize2D *>();
 	Uni_View = new Container::Dynamic<Uniform::Trans3D *>();
 	Uni_Depth = new Container::Dynamic<Uniform::Depth *>();
 	std::cout << "\nUniforms\n\n";
 	for (unsigned int i = 0; i < PH_Shaders -> Count(); i++)
 	{
-		Uni_ViewPortSizeRatio -> Insert(new Uniform::SizeRatio2D("ViewPortSizeRatio", *((*PH_Shaders)[i])));
+		Uni_WindowSize -> Insert(new Uniform::WindowBufferSize2D("WindowSize", *((*PH_Shaders)[i])));
 		Uni_View -> Insert(new Uniform::Trans3D("View", *((*PH_Shaders)[i])));
 		Uni_Depth -> Insert(new Uniform::Depth("Depth", *((*PH_Shaders)[i])));
 	}
 
 	std::cout << "\nMultiform\n\n";
-	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
+	Multi_WindowSize = new Multiform::WindowBufferSize2D("WindowSize");
 	Multi_View = new Multiform::Trans3D("View");
 	Multi_Depth = new Multiform::Depth("Depth");
 	{
 		Shader::Base** shaders = (Shader::Base**)PH_Shaders -> Data();
 		unsigned int shaders_count = PH_Shaders -> Count();
 
-		Multi_ViewPortSizeRatio -> FindUniforms(shaders, shaders_count);
+		Multi_WindowSize -> FindUniforms(shaders, shaders_count);
 		Multi_View -> FindUniforms(shaders, shaders_count);
 		Multi_Depth -> FindUniforms(shaders, shaders_count);
 	}
@@ -297,13 +297,13 @@ void FreeRun()
 	delete PH_Shaders;
 
 	std::cout << '\n';
-	std::cout << "Uni_ViewPortSizeRatio" << ' ' << "Count" << ' ' << Uni_ViewPortSizeRatio -> Count() << '\n';
-	for (unsigned int i = 0; i < Uni_ViewPortSizeRatio -> Count(); i++)
+	std::cout << "Uni_WindowSize" << ' ' << "Count" << ' ' << Uni_WindowSize -> Count() << '\n';
+	for (unsigned int i = 0; i < Uni_WindowSize -> Count(); i++)
 	{
-		delete (*Uni_ViewPortSizeRatio)[i];
+		delete (*Uni_WindowSize)[i];
 	}
 	std::cout << __FILE__ << ':' << __LINE__ << '\n';
-	delete Uni_ViewPortSizeRatio;
+	delete Uni_WindowSize;
 
 	std::cout << '\n';
 	std::cout << "Uni_View" << ' ' << "Count" << ' ' << Uni_View -> Count() << '\n';
@@ -335,7 +335,7 @@ void FreeRun()
 
 void Frame(double timeDelta)
 {
-	if (win -> IsCursorLocked())
+	if (win -> MouseManager.CursorModeIsLocked())
 	{
 		ViewTrans.TransformFlatX(win -> MoveFromKeys(20.0f * timeDelta), win -> SpinFromCursor(0.2f * timeDelta));
 	}
@@ -351,9 +351,9 @@ void Frame(double timeDelta)
 	}
 }
 
-void Resize(const SizeRatio2D & ViewPortSizeRatio)
+void Resize(const WindowBufferSize2D & WindowSize)
 {
-	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
+	Multi_WindowSize -> ChangeData(WindowSize);
 }
 
 

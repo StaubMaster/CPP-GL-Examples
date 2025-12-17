@@ -108,11 +108,11 @@ Container::Dynamic<EntryContainer::Entry<Simple3D_InstData>> Entrys;
 
 Shader::Base * PH_Shader;
 
-Uniform::SizeRatio2D * Uni_ViewPortSizeRatio;
+Uniform::WindowBufferSize2D * Uni_WindowSize;
 Uniform::Trans3D * Uni_View;
 Uniform::Depth * Uni_Depth;
 
-Multiform::SizeRatio2D * Multi_ViewPortSizeRatio;
+Multiform::WindowBufferSize2D * Multi_WindowSize;
 Multiform::Trans3D * Multi_View;
 Multiform::Depth * Multi_Depth;
 
@@ -142,11 +142,11 @@ void InitShaders()
 		Shader::Code::FromFile(ShaderDir.File("PH_ULight.frag"))
 	}, 2);
 
-	Uni_ViewPortSizeRatio = new Uniform::SizeRatio2D("ViewPortSizeRatio", *PH_Shader);
+	Uni_WindowSize = new Uniform::WindowBufferSize2D("WindowSize", *PH_Shader);
 	Uni_View = new Uniform::Trans3D("View", *PH_Shader);
 	Uni_Depth = new Uniform::Depth("Depth", *PH_Shader);
 
-	Multi_ViewPortSizeRatio = new Multiform::SizeRatio2D("ViewPortSizeRatio");
+	Multi_WindowSize = new Multiform::WindowBufferSize2D("WindowSize");
 	Multi_View = new Multiform::Trans3D("View");
 	Multi_Depth = new Multiform::Depth("Depth");
 
@@ -155,7 +155,7 @@ void InitShaders()
 	};
 	int shader_count = 1;
 
-	Multi_ViewPortSizeRatio -> FindUniforms(shaders, shader_count);
+	Multi_WindowSize -> FindUniforms(shaders, shader_count);
 	Multi_View -> FindUniforms(shaders, shader_count);
 	Multi_Depth -> FindUniforms(shaders, shader_count);
 
@@ -170,11 +170,11 @@ void FreeShaders()
 {
 	delete PH_Shader;
 
-	delete Uni_ViewPortSizeRatio;
+	delete Uni_WindowSize;
 	delete Uni_View;
 	delete Uni_Depth;
 
-	delete Multi_ViewPortSizeRatio;
+	delete Multi_WindowSize;
 	delete Multi_View;
 	delete Multi_Depth;
 
@@ -358,7 +358,7 @@ void Update(double timeDelta)
 }
 void Frame(double timeDelta)
 {
-	if (win -> IsCursorLocked())
+	if (win -> MouseManager.CursorModeIsLocked())
 	{
 		ViewTrans.TransformFlatX(win -> MoveFromKeys(20.0f * timeDelta), win -> SpinFromCursor(0.2f * timeDelta));
 	}
@@ -367,25 +367,25 @@ void Frame(double timeDelta)
 	//Light_Spot.Pos = ViewTrans.Pos;
 	//Light_Spot.Dir = ViewTrans.Rot.rotate(Point3D(0, 0, 1));
 
-	if (win -> Keys[GLFW_KEY_1].State.GetPressed())
+	if (win -> Keys[GLFW_KEY_1].IsPress())
 	{
 		if (Light_Ambient.Intensity == 0.0f)
 		{ Light_Ambient.Intensity = Light_Ambient_Intensity; }
 		else
 		{ Light_Ambient.Intensity = 0.0f; }
 	}
-	if (win -> Keys[GLFW_KEY_2].State.GetPressed())
+	if (win -> Keys[GLFW_KEY_2].IsPress())
 	{
 		if (Light_Solar.Base.Intensity == 0.0f)
 		{ Light_Solar.Base.Intensity = Light_Solar_Intensity; }
 		else
 		{ Light_Solar.Base.Intensity = 0.0f; }
 	}
-	if (win -> Keys[GLFW_KEY_3].State.GetPressed()) { Light_Spot_Entry_Array[0].Toggle(); }
-	if (win -> Keys[GLFW_KEY_4].State.GetPressed()) { Light_Spot_Entry_Array[1].Toggle(); }
-	if (win -> Keys[GLFW_KEY_5].State.GetPressed()) { Light_Spot_Entry_Array[2].Toggle(); }
+	if (win -> Keys[GLFW_KEY_3].IsPress()) { Light_Spot_Entry_Array[0].Toggle(); }
+	if (win -> Keys[GLFW_KEY_4].IsPress()) { Light_Spot_Entry_Array[1].Toggle(); }
+	if (win -> Keys[GLFW_KEY_5].IsPress()) { Light_Spot_Entry_Array[2].Toggle(); }
 
-	if (win -> Keys[GLFW_KEY_Q].State.GetPressed())
+	if (win -> Keys[GLFW_KEY_Q].IsPress())
 	{
 		std::cout << "View.Pos: " << ViewTrans.Pos << "\n";
 	}
@@ -418,9 +418,9 @@ void Frame(double timeDelta)
 	}
 }
 
-void Resize(const SizeRatio2D & ViewPortSizeRatio)
+void Resize(const WindowBufferSize2D & WindowSize)
 {
-	Multi_ViewPortSizeRatio -> ChangeData(ViewPortSizeRatio);
+	Multi_WindowSize -> ChangeData(WindowSize);
 }
 
 
