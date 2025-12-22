@@ -4,6 +4,8 @@
 #include "FileContext.hpp"
 #include "DirectoryContext.hpp"
 
+#include "Debug.hpp"
+
 
 
 UI::Text::Font::ParsingData::ParsingData(const FileContext & file) :

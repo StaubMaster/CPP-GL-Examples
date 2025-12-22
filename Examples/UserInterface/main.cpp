@@ -420,13 +420,12 @@ void InitRun()
 
 	UI_Init();
 
-	Shader::Base * shaders[2] =
-	{
-		&(UI_Control_Manager -> Shader),
-		&(UI_Text_Manager -> Shader),
-	};
+	Container::Base<Shader::Base *> shaders(2);
+	shaders[0] = &(UI_Control_Manager -> Shader);
+	shaders[1] = &(UI_Text_Manager -> Shader);
+
 	Multi_WindowSize = new Multiform::WindowBufferSize2D("WindowSize");
-	Multi_WindowSize -> FindUniforms(shaders, 2);
+	Multi_WindowSize -> FindUniforms(shaders);
 
 	UI_Make();
 
