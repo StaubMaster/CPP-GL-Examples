@@ -16,7 +16,7 @@
 #include "Graphics/UniformsInclude.hpp"
 #include "Graphics/MultiformsInclude.hpp"
 
-#include "DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.hpp"
+#include "PolyHedra/Simple3D/PolyHedra_3D_Instances.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
@@ -36,6 +36,14 @@
 
 
 
+#include "Graphics/Buffer/ArrayBase.hpp"
+#include "Graphics/Buffer/Base.hpp"
+#include "Graphics/Buffer/Attribute.hpp"
+#include "Graphics/Attribute/Trans3D.hpp"
+#include "PolyHedra/MainData/PolyHedra_MainAttrib.hpp"
+
+
+
 DirectoryContext ImageDir("../../media/Images");
 DirectoryContext ShaderDir("../../media/Shaders");
 
@@ -50,6 +58,14 @@ YMT::PolyHedra * PH;
 PolyHedra_3D_Instances * PH_Instances;
 Container::Dynamic<EntryContainer::Entry<Simple3D_InstData>> Instance_Entrys;
 
+Buffer::ArrayBase BufferArray;
+Buffer::Attribute BufferMain;
+Buffer::Attribute BufferInst;
+PolyHedra_MainAttrib AttributeMain(0, sizeof(PolyHedra_MainData), 0, 1, 2);
+Attribute::Trans3D AttributeInst(1, sizeof(Simple3D_InstData), 3, 4);
+
+
+
 Shader::Base * PH_Shader;
 
 Uniform::WindowBufferSize2D * Uni_WindowSize;
@@ -60,17 +76,24 @@ Uniform::Depth * Uni_Depth;
 
 void InitGraphics()
 {
-	PH_Shader = new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir.File("PH_Full.frag"))
-	}, 2);
+	PH_Shader = new Shader::Base(
+		Container::Base<Shader::Code>(
+			(Shader::Code [])
+			{
+				Shader::Code(ShaderDir.File("PH_S3D.vert")),
+				Shader::Code(ShaderDir.File("PH_Full.frag"))
+			}, 2
+		)
+	);
+	PH_Shader -> Compile();
 
-	Uni_WindowSize = new Uniform::WindowBufferSize2D("WindowSize", *PH_Shader);
-	Uni_View = new Uniform::Trans3D("View", *PH_Shader);
-	Uni_Depth = new Uniform::Depth("Depth", *PH_Shader);
+	Uni_WindowSize = new Uniform::WindowBufferSize2D(Uniform::NameShader("WindowSize", *PH_Shader));
+	Uni_View = new Uniform::Trans3D(Uniform::NameShader("View", *PH_Shader));
+	Uni_Depth = new Uniform::Depth(Uniform::NameShader("Depth", *PH_Shader));
 }
 void FreeGraphics()
 {
+	PH_Shader -> Dispose();
 	delete PH_Shader;
 
 	delete Uni_WindowSize;
@@ -89,6 +112,25 @@ void InitRun()
 
 	Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH_Instances -> Instances, 1));
 	Instance_Entrys[0][0].Trans.Pos = Point3D(0, 0, 10);
+
+	BufferArray.Create();
+	BufferArray.Bind();
+
+	BufferMain.Create();
+	BufferMain.Attributes.Allocate(1);
+	BufferMain.Attributes[0] = &AttributeMain;
+
+	BufferInst.Create();
+	BufferInst.Attributes.Allocate(1);
+	BufferInst.Attributes[0] = &AttributeInst;
+
+	{
+		int count;
+		PolyHedra_MainData * data = PH -> ToMainData(count);
+		BufferMain.Bind(GL_ARRAY_BUFFER, sizeof(PolyHedra_MainData) * count, data, GL_STATIC_DRAW);
+		BufferMain.Count = count;
+		delete[] data;
+	}
 }
 void FreeRun()
 {
@@ -96,6 +138,10 @@ void FreeRun()
 	{
 		Instance_Entrys[i].Dispose();
 	}
+
+	BufferInst.Delete();
+	BufferMain.Delete();
+	BufferArray.Delete();
 
 	delete PH_Instances;
 	delete PH;
@@ -114,7 +160,6 @@ void Frame(double timeDelta)
 	ViewTrans.Rot.CalcBack();
 	//std::cout << "View " << ViewTrans.Pos << ' ' << ViewTrans.Rot << '\n';
 
-
 	Instance_Entrys[0][0].Trans.Rot.X += 1.0f * timeDelta;
 	Instance_Entrys[0][0].Trans.Rot.CalcBack();
 
@@ -123,14 +168,23 @@ void Frame(double timeDelta)
 	//std::cout << "Trans " << (PH_Instances->Instances.Data()[0].Trans.Pos) << " " << (PH_Instances->Instances.Data()[0].Trans.Rot) << "\n";
 	//std::cout << "Changed " << PH_Instances->Instances.Changed << "\n";
 
-	PH_Shader -> Use();
+	PH_Shader -> Bind();
 	Uni_View -> PutData(ViewTrans);
-	PH_Instances -> Update().Draw();
+	//PH_Instances -> Update().Draw();
+
+	if (PH_Instances -> Instances.Changed)
+	{
+		BufferArray.Bind();
+		BufferInst.Bind(GL_ARRAY_BUFFER, sizeof(Simple3D_InstData) * PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data(), GL_STREAM_DRAW);
+		BufferInst.Count = PH_Instances -> Instances.Count();
+	}
+	BufferArray.Bind();
+	glDrawArraysInstanced(GL_TRIANGLES, 0, BufferMain.Count, BufferInst.Count);
 }
 
 void Resize(const WindowBufferSize2D & WindowSize)
 {
-	PH_Shader -> Use();
+	PH_Shader -> Bind();
 	Uni_WindowSize -> PutData(WindowSize);
 }
 
@@ -164,7 +218,6 @@ int main()
 	Debug::Log << "<<<< Run Window" << Debug::Done;
 	win -> Run();
 	Debug::Log << ">>>> Run Window" << Debug::Done;
-
 
 
 	delete win;

@@ -16,7 +16,7 @@
 #include "Graphics/UniformsInclude.hpp"
 #include "Graphics/MultiformsInclude.hpp"
 
-#include "DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.hpp"
+#include "PolyHedra/Simple3D/PolyHedra_3D_Instances.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
@@ -74,25 +74,30 @@ void InitRun()
 	std::cout << __FILE__ << ':' << __LINE__ << '\n';
 	PH_Shaders = new Container::Dynamic<Shader::Base *>();
 	std::cout << __FILE__ << ':' << __LINE__ << '\n';
-	PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir -> File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir -> File("PH_Full.frag"))
-	}, 2));
+	PH_Shaders -> Insert(new Shader::Base(Container::Base<Shader::Code>((const Shader::Code []) {
+		Shader::Code(ShaderDir -> File("PH_S3D.vert")),
+		Shader::Code(ShaderDir -> File("PH_Full.frag")),
+	}, 2)));
 	std::cout << __FILE__ << ':' << __LINE__ << '\n';
-	PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir -> File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir -> File("PH_R.frag"))
-	}, 2));
+	PH_Shaders -> Insert(new Shader::Base(Container::Base<Shader::Code>((const Shader::Code []) {
+		Shader::Code(ShaderDir -> File("PH_S3D.vert")),
+		Shader::Code(ShaderDir -> File("PH_R.frag")),
+	}, 2)));
 	std::cout << __FILE__ << ':' << __LINE__ << '\n';
-	PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir -> File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir -> File("PH_G.frag"))
-	}, 2));
+	PH_Shaders -> Insert(new Shader::Base(Container::Base<Shader::Code>((const Shader::Code []) {
+		Shader::Code(ShaderDir -> File("PH_S3D.vert")),
+		Shader::Code(ShaderDir -> File("PH_G.frag")),
+	}, 2)));
 	std::cout << __FILE__ << ':' << __LINE__ << '\n';
-	PH_Shaders -> Insert(new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir -> File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir -> File("PH_B.frag"))
-	}, 2));
+	PH_Shaders -> Insert(new Shader::Base(Container::Base<Shader::Code>((const Shader::Code []) {
+		Shader::Code(ShaderDir -> File("PH_S3D.vert")),
+		Shader::Code(ShaderDir -> File("PH_B.frag")),
+	}, 2)));
+
+	for (unsigned int i = 0; i < PH_Shaders -> Count(); i++)
+	{
+		(*PH_Shaders)[i] -> Compile();
+	}
 
 	std::cout << "\nUniforms\n\n";
 	Uni_WindowSize = new Container::Dynamic<Uniform::WindowBufferSize2D *>();
@@ -101,9 +106,9 @@ void InitRun()
 	std::cout << "\nUniforms\n\n";
 	for (unsigned int i = 0; i < PH_Shaders -> Count(); i++)
 	{
-		Uni_WindowSize -> Insert(new Uniform::WindowBufferSize2D("WindowSize", *((*PH_Shaders)[i])));
-		Uni_View -> Insert(new Uniform::Trans3D("View", *((*PH_Shaders)[i])));
-		Uni_Depth -> Insert(new Uniform::Depth("Depth", *((*PH_Shaders)[i])));
+		Uni_WindowSize -> Insert(new Uniform::WindowBufferSize2D(Uniform::NameShader("WindowSize", *((*PH_Shaders)[i]))));
+		Uni_View -> Insert(new Uniform::Trans3D(Uniform::NameShader("View", *((*PH_Shaders)[i]))));
+		Uni_Depth -> Insert(new Uniform::Depth(Uniform::NameShader("Depth", *((*PH_Shaders)[i]))));
 	}
 
 	std::cout << "\nMultiform\n\n";
@@ -111,12 +116,9 @@ void InitRun()
 	Multi_View = new Multiform::Trans3D("View");
 	Multi_Depth = new Multiform::Depth("Depth");
 	{
-		Shader::Base** shaders = (Shader::Base**)PH_Shaders -> Data();
-		unsigned int shaders_count = PH_Shaders -> Count();
-
-		Multi_WindowSize -> FindUniforms(shaders, shaders_count);
-		Multi_View -> FindUniforms(shaders, shaders_count);
-		Multi_Depth -> FindUniforms(shaders, shaders_count);
+		Multi_WindowSize -> FindUniforms(*PH_Shaders);
+		Multi_View -> FindUniforms(*PH_Shaders);
+		Multi_Depth -> FindUniforms(*PH_Shaders);
 	}
 	Multi_Depth -> ChangeData(ViewDepth);
 	
@@ -343,7 +345,7 @@ void Frame(double timeDelta)
 	Multi_View -> ChangeData(ViewTrans);
 	for (unsigned int i = 0; i < PH_Shaders -> Count(); i++)
 	{
-		(*PH_Shaders)[i] -> Use();
+		(*PH_Shaders)[i] -> Bind();
 		if (i < PH_Instances -> Count())
 		{
 			(*PH_Instances)[i] -> Update().Draw();

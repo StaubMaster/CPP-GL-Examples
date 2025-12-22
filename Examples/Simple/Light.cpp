@@ -2,7 +2,7 @@
 #include <iostream>
 #include "OpenGL/openGL.h"
 
-#include "DataStruct/Full/PolyHedra_3D/PolyHedra_3D_Instances.hpp"
+#include "PolyHedra/Simple3D/PolyHedra_3D_Instances.hpp"
 
 #include "DataInclude.hpp"
 #include "DataShow.hpp"
@@ -137,34 +137,33 @@ Uniform::UInt1 * Uni_Light_Spot_Count;
 
 void InitShaders()
 {
-	PH_Shader = new Shader::Base((const Shader::Code []) {
-		Shader::Code::FromFile(ShaderDir.File("PH_S3D.vert")),
-		Shader::Code::FromFile(ShaderDir.File("PH_ULight.frag"))
-	}, 2);
+	PH_Shader = new Shader::Base(Container::Base<Shader::Code>((const Shader::Code []) {
+		Shader::Code(ShaderDir.File("PH_S3D.vert")),
+		Shader::Code(ShaderDir.File("PH_ULight.frag")),
+	}, 2));
+	PH_Shader -> Compile();
 
-	Uni_WindowSize = new Uniform::WindowBufferSize2D("WindowSize", *PH_Shader);
-	Uni_View = new Uniform::Trans3D("View", *PH_Shader);
-	Uni_Depth = new Uniform::Depth("Depth", *PH_Shader);
+	Uni_WindowSize = new Uniform::WindowBufferSize2D(Uniform::NameShader("WindowSize", *PH_Shader));
+	Uni_View = new Uniform::Trans3D(Uniform::NameShader("View", *PH_Shader));
+	Uni_Depth = new Uniform::Depth(Uniform::NameShader("Depth", *PH_Shader));
 
 	Multi_WindowSize = new Multiform::WindowBufferSize2D("WindowSize");
 	Multi_View = new Multiform::Trans3D("View");
 	Multi_Depth = new Multiform::Depth("Depth");
 
-	Shader::Base * shaders [] = {
-		PH_Shader,
-	};
-	int shader_count = 1;
+	Container::Base<Shader::Base*>shaders(1);
+	shaders[0] = PH_Shader;
 
-	Multi_WindowSize -> FindUniforms(shaders, shader_count);
-	Multi_View -> FindUniforms(shaders, shader_count);
-	Multi_Depth -> FindUniforms(shaders, shader_count);
+	Multi_WindowSize -> FindUniforms(shaders);
+	Multi_View -> FindUniforms(shaders);
+	Multi_Depth -> FindUniforms(shaders);
 
 	Multi_Depth -> ChangeData(ViewDepth);
 
-	Uni_Light_Ambient = new Uniform::LightBase("Ambient", *PH_Shader);
-	Uni_Light_Solar = new Uniform::LightSolar("Solar", *PH_Shader);
-	Uni_Light_Spot_Array = new Uniform::GArray<Uniform::LightSpot, LightSpot>(Light_Spot_Limit, "SpotArr", *PH_Shader);
-	Uni_Light_Spot_Count = new Uniform::UInt1(1, "SpotCount", *PH_Shader);
+	Uni_Light_Ambient = new Uniform::LightBase(Uniform::NameShader("Ambient", *PH_Shader));
+	Uni_Light_Solar = new Uniform::LightSolar(Uniform::NameShader("Solar", *PH_Shader));
+	Uni_Light_Spot_Array = new Uniform::GArray<Uniform::LightSpot, LightSpot>(Light_Spot_Limit, Uniform::NameShader("SpotArr", *PH_Shader));
+	Uni_Light_Spot_Count = new Uniform::UInt1(Uniform::NameShader("SpotCount", *PH_Shader));
 }
 void FreeShaders()
 {
@@ -395,7 +394,7 @@ void Frame(double timeDelta)
 		Light_Spot_Entry_Array[i].Update();
 	}
 
-	PH_Shader -> Use();
+	PH_Shader -> Bind();
 	Uni_Light_Ambient -> PutData(Light_Ambient);
 	Uni_Light_Solar -> PutData(Light_Solar);
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
