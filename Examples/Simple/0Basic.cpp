@@ -44,10 +44,20 @@
 
 
 
-DirectoryContext ImageDir("../../media/Images");
-DirectoryContext ShaderDir("../../media/Shaders");
+struct MainContext
+{
+DirectoryContext ImageDir;
+DirectoryContext ShaderDir;
 
+PolyHedra_MainAttrib AttributeMain;
+Attribute::Trans3D AttributeInst;
 
+MainContext() :
+	ImageDir("../../media/Images"),
+	ShaderDir("../../media/Shaders"),
+	AttributeMain(0, sizeof(PolyHedra_MainData), 0, 1, 2),
+	AttributeInst(1, sizeof(Simple3D_InstData), 3, 4)
+{ }
 
 Window * win;
 
@@ -61,13 +71,8 @@ Container::Dynamic<EntryContainer::Entry<Simple3D_InstData>> Instance_Entrys;
 Buffer::ArrayBase BufferArray;
 Buffer::Attribute BufferMain;
 Buffer::Attribute BufferInst;
-PolyHedra_MainAttrib AttributeMain(0, sizeof(PolyHedra_MainData), 0, 1, 2);
-Attribute::Trans3D AttributeInst(1, sizeof(Simple3D_InstData), 3, 4);
-
-
 
 Shader::Base * PH_Shader;
-
 Uniform::WindowBufferSize2D * Uni_WindowSize;
 Uniform::Trans3D * Uni_View;
 Uniform::Depth * Uni_Depth;
@@ -113,23 +118,26 @@ void InitRun()
 	Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH_Instances -> Instances, 1));
 	Instance_Entrys[0][0].Trans.Pos = Point3D(0, 0, 10);
 
-	BufferArray.Create();
-	BufferArray.Bind();
-
-	BufferMain.Create();
-	BufferMain.Attributes.Allocate(1);
-	BufferMain.Attributes[0] = &AttributeMain;
-
-	BufferInst.Create();
-	BufferInst.Attributes.Allocate(1);
-	BufferInst.Attributes[0] = &AttributeInst;
-
 	{
-		int count;
-		PolyHedra_MainData * data = PH -> ToMainData(count);
-		BufferMain.Bind(GL_ARRAY_BUFFER, sizeof(PolyHedra_MainData) * count, data, GL_STATIC_DRAW);
-		BufferMain.Count = count;
-		delete[] data;
+		BufferArray.Create();
+		BufferArray.Bind();
+		BufferMain.Create();
+		BufferMain.Attributes.Allocate(1);
+		BufferMain.Attributes[0] = &AttributeMain;
+		{
+			int count;
+			PolyHedra_MainData * data = PH -> ToMainData(count);
+			BufferMain.Bind(GL_ARRAY_BUFFER, sizeof(PolyHedra_MainData) * count, data, GL_STATIC_DRAW);
+			BufferMain.Count = count;
+			delete[] data;
+		}
+		BufferInst.Create();
+		BufferInst.Attributes.Allocate(1);
+		BufferInst.Attributes[0] = &AttributeInst;
+		{
+			BufferInst.Bind(GL_ARRAY_BUFFER, sizeof(Simple3D_InstData) * PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data(), GL_STREAM_DRAW);
+			BufferInst.Count = PH_Instances -> Instances.Count();
+		}
 	}
 }
 void FreeRun()
@@ -139,23 +147,39 @@ void FreeRun()
 		Instance_Entrys[i].Dispose();
 	}
 
-	BufferInst.Delete();
-	BufferMain.Delete();
-	BufferArray.Delete();
-
 	delete PH_Instances;
 	delete PH;
 
+	{
+		BufferInst.Delete();
+		BufferMain.Delete();
+		BufferArray.Delete();
+	}
+
 	FreeGraphics();
+}
+
+static void InitRun(void * data)
+{
+	MainContext * context = (MainContext *)data;
+	context -> InitRun();
+}
+static void FreeRun(void * data)
+{
+	MainContext * context = (MainContext *)data;
+	context -> FreeRun();
 }
 
 
 
 void Frame(double timeDelta)
 {
+	if (win -> Keys[GLFW_KEY_TAB].IsPress()) { win -> MouseManager.CursorModeToggle(); }
 	if (win -> MouseManager.CursorModeIsLocked())
 	{
 		ViewTrans.TransformFlatX(win -> MoveFromKeys(20.0f * timeDelta), win -> SpinFromCursor(0.2f * timeDelta));
+		if (ViewTrans.Rot.Y > Angle3D::DegreeToRadian(+90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(+90); }
+		if (ViewTrans.Rot.Y < Angle3D::DegreeToRadian(-90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(-90); }
 	}
 	ViewTrans.Rot.CalcBack();
 	//std::cout << "View " << ViewTrans.Pos << ' ' << ViewTrans.Rot << '\n';
@@ -172,41 +196,50 @@ void Frame(double timeDelta)
 	Uni_View -> PutData(ViewTrans);
 	//PH_Instances -> Update().Draw();
 
-	if (PH_Instances -> Instances.Changed)
 	{
+		if (PH_Instances -> Instances.Changed)
+		{
+			BufferArray.Bind();
+			BufferInst.Bind(GL_ARRAY_BUFFER, sizeof(Simple3D_InstData) * PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data(), GL_STREAM_DRAW);
+			BufferInst.Count = PH_Instances -> Instances.Count();
+		}
 		BufferArray.Bind();
-		BufferInst.Bind(GL_ARRAY_BUFFER, sizeof(Simple3D_InstData) * PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data(), GL_STREAM_DRAW);
-		BufferInst.Count = PH_Instances -> Instances.Count();
+		glDrawArraysInstanced(GL_TRIANGLES, 0, BufferMain.Count, BufferInst.Count);
 	}
-	BufferArray.Bind();
-	glDrawArraysInstanced(GL_TRIANGLES, 0, BufferMain.Count, BufferInst.Count);
 }
-
 void Resize(const WindowBufferSize2D & WindowSize)
 {
 	PH_Shader -> Bind();
 	Uni_WindowSize -> PutData(WindowSize);
 }
 
+static void Frame(void * data, double timeDelta)
+{
+	MainContext * context = (MainContext *)data;
+	context -> Frame(timeDelta);
+}
+static void Resize(void * data, const WindowBufferSize2D & WindowSize)
+{
+	MainContext * context = (MainContext *)data;
+	context -> Resize(WindowSize);
+}
+
 
 
 int main()
 {
-	Debug::NewFileInDir(DirectoryContext("logs/"));
-
 	if (glfwInit() == 0)
 	{
 		std::cout << "GLFW Init Failed\n";
 		return -1;
 	}
 
-	win = new Window(640, 480);
-	win -> InitFunc = InitRun;
+	win = new Window();
+	win -> Data = this;
 	win -> FrameFunc = Frame;
+	win -> InitFunc = InitRun;
 	win -> FreeFunc = FreeRun;
 	win -> ResizeFunc = Resize;
-
-	win -> DefaultColor = Color(0.5f, 0.5f, 0.5f);
 
 	ViewTrans = Trans3D(Point3D(0, 0, 0), Angle3D(0, 0, 0));
 	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
@@ -219,10 +252,24 @@ int main()
 	win -> Run();
 	Debug::Log << ">>>> Run Window" << Debug::Done;
 
-
 	delete win;
 
 	glfwTerminate();
-	std::cout << "main() return";
 	return 0;
+}
+};
+
+int main()
+{
+	int ret = 1;
+	Debug::NewFileInDir(DirectoryContext("logs/"));
+	Debug::Log << "0 Basic" << Debug::Done;
+	{
+		MainContext * context = new MainContext();
+		try { ret = context -> main(); }
+		catch (...) { Debug::Log << "Error: " << " Unknown" << Debug::Done; }
+		delete context;
+	}
+	Debug::Log << "main() return " << ret << Debug::Done;
+	return ret;
 }

@@ -395,7 +395,7 @@ int main()
 		return -1;
 	}
 
-	win = new Window(640, 480);
+	win = new Window();
 	win -> InitFunc = InitRun;
 	win -> FrameFunc = Frame;
 	win -> FreeFunc = FreeRun;

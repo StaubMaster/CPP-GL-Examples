@@ -432,7 +432,7 @@ int main()
 		return -1;
 	}
 
-	win = new Window(640, 480);
+	win = new Window();
 	win -> InitFunc = Init;
 	win -> FrameFunc = Frame;
 	win -> FreeFunc = Free;
