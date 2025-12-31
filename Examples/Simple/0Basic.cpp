@@ -7,8 +7,8 @@
 #include "DataInclude.hpp"
 #include "DataShow.hpp"
 
-#include "Miscellaneous/Container/Dynamic.hpp"
-#include "Miscellaneous/EntryContainer/Dynamic.hpp"
+#include "Miscellaneous/Container/Binary.hpp"
+#include "Miscellaneous/EntryContainer/Binary.hpp"
 
 #include "Graphics/Shader/Code.hpp"
 #include "Graphics/Shader/Base.hpp"
@@ -40,7 +40,16 @@
 #include "Graphics/Buffer/Base.hpp"
 #include "Graphics/Buffer/Attribute.hpp"
 #include "Graphics/Attribute/Trans3D.hpp"
-#include "PolyHedra/MainData/PolyHedra_MainAttrib.hpp"
+
+#include "InstanceData/Simple3D/Simple3D_InstBuffer.hpp"
+#include "PolyHedra/MainData/PolyHedra_MainBuffer.hpp"
+
+#include "Miscellaneous/Container/BehaviourShow.hpp"
+
+
+
+#define NEW_BUFFERS
+//#define OLD_BUFFERS
 
 
 
@@ -49,28 +58,40 @@ struct MainContext
 DirectoryContext ImageDir;
 DirectoryContext ShaderDir;
 
-PolyHedra_MainAttrib AttributeMain;
-Attribute::Trans3D AttributeInst;
+#ifdef NEW_BUFFERS
+PolyHedra_MainBuffer BufferMain;
+Simple3D_InstBuffer BufferInst;
+Texture::Base * BufferTexture;
+Buffer::ArrayBase BufferArray;
+#endif
+
+Window * win;
 
 MainContext() :
 	ImageDir("../../media/Images"),
 	ShaderDir("../../media/Shaders"),
-	AttributeMain(0, sizeof(PolyHedra_MainData), 0, 1, 2),
-	AttributeInst(1, sizeof(Simple3D_InstData), 3, 4)
+#ifdef NEW_BUFFERS
+	BufferMain(0, 1, 2),
+	BufferInst(3, 4),
+	BufferArray(),
+#endif
+	win(NULL)
 { }
-
-Window * win;
 
 Trans3D	ViewTrans;
 Depth	ViewDepth;
 
 YMT::PolyHedra * PH;
-PolyHedra_3D_Instances * PH_Instances;
-Container::Dynamic<EntryContainer::Entry<Simple3D_InstData>> Instance_Entrys;
 
-Buffer::ArrayBase BufferArray;
-Buffer::Attribute BufferMain;
-Buffer::Attribute BufferInst;
+#ifdef OLD_BUFFERS
+PolyHedra_3D_Instances * PH_Instances;
+#endif
+
+#ifdef NEW_BUFFERS
+EntryContainer::Binary<Simple3D_InstData> Instances;
+#endif
+
+Container::Binary<EntryContainer::Entry<Simple3D_InstData>> Instance_Entrys;
 
 Shader::Base * PH_Shader;
 Uniform::WindowBufferSize2D * Uni_WindowSize;
@@ -82,13 +103,11 @@ Uniform::Depth * Uni_Depth;
 void InitGraphics()
 {
 	PH_Shader = new Shader::Base(
-		Container::Base<Shader::Code>(
-			(Shader::Code [])
-			{
-				Shader::Code(ShaderDir.File("PH_S3D.vert")),
-				Shader::Code(ShaderDir.File("PH_Full.frag"))
-			}, 2
-		)
+		Container::Pointer<Shader::Code>(2, (Shader::Code [])
+		{
+			Shader::Code(ShaderDir.File("PH_S3D.vert")),
+			Shader::Code(ShaderDir.File("PH_Full.frag"))
+		})
 	);
 	PH_Shader -> Compile();
 
@@ -113,32 +132,34 @@ void InitRun()
 	InitGraphics();
 
 	PH = YMT::PolyHedra::Generate::Cube();
-	PH_Instances = new PolyHedra_3D_Instances(PH);
 
+	#ifdef OLD_BUFFERS
+	PH_Instances = new PolyHedra_3D_Instances(PH);
 	Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH_Instances -> Instances, 1));
 	Instance_Entrys[0][0].Trans.Pos = Point3D(0, 0, 10);
+	#endif
 
+	#ifdef NEW_BUFFERS
+	Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(Instances, 1));
+	Instance_Entrys[0][0].Trans.Pos = Point3D(0, 0, 10);
+	#endif
+
+	#ifdef NEW_BUFFERS
+	BufferArray.Create();
+	BufferArray.Bind();
+	BufferMain.Create();
 	{
-		BufferArray.Create();
-		BufferArray.Bind();
-		BufferMain.Create();
-		BufferMain.Attributes.Allocate(1);
-		BufferMain.Attributes[0] = &AttributeMain;
-		{
-			int count;
-			PolyHedra_MainData * data = PH -> ToMainData(count);
-			BufferMain.Bind(GL_ARRAY_BUFFER, sizeof(PolyHedra_MainData) * count, data, GL_STATIC_DRAW);
-			BufferMain.Count = count;
-			delete[] data;
-		}
-		BufferInst.Create();
-		BufferInst.Attributes.Allocate(1);
-		BufferInst.Attributes[0] = &AttributeInst;
-		{
-			BufferInst.Bind(GL_ARRAY_BUFFER, sizeof(Simple3D_InstData) * PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data(), GL_STREAM_DRAW);
-			BufferInst.Count = PH_Instances -> Instances.Count();
-		}
+		Container::Pointer<PolyHedra_MainData> data = PH -> ToMainData();
+		BufferMain.Bind(data);
+		data.Dispose();
+		BufferTexture = PH -> Skin -> ToTexture();
 	}
+	BufferInst.Create();
+	/*{
+		Container::Pointer<Simple3D_InstData> data(PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data());
+		BufferInst.Bind(data);
+	}*/
+	#endif
 }
 void FreeRun()
 {
@@ -147,14 +168,18 @@ void FreeRun()
 		Instance_Entrys[i].Dispose();
 	}
 
+	#ifdef OLD_BUFFERS
 	delete PH_Instances;
-	delete PH;
+	#endif
 
-	{
-		BufferInst.Delete();
-		BufferMain.Delete();
-		BufferArray.Delete();
-	}
+	#ifdef NEW_BUFFERS
+	BufferInst.Delete();
+	BufferMain.Delete();
+	BufferArray.Delete();
+	delete BufferTexture;
+	#endif
+
+	delete PH;
 
 	FreeGraphics();
 }
@@ -194,18 +219,25 @@ void Frame(double timeDelta)
 
 	PH_Shader -> Bind();
 	Uni_View -> PutData(ViewTrans);
-	//PH_Instances -> Update().Draw();
 
+	#ifdef OLD_BUFFERS
+	PH_Instances -> Update().Draw();
+	#endif
+
+	#ifdef NEW_BUFFERS
+	if (Instances.Changed)
 	{
-		if (PH_Instances -> Instances.Changed)
-		{
-			BufferArray.Bind();
-			BufferInst.Bind(GL_ARRAY_BUFFER, sizeof(Simple3D_InstData) * PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data(), GL_STREAM_DRAW);
-			BufferInst.Count = PH_Instances -> Instances.Count();
-		}
 		BufferArray.Bind();
-		glDrawArraysInstanced(GL_TRIANGLES, 0, BufferMain.Count, BufferInst.Count);
+		BufferTexture -> Bind();
+		//BufferInst.Bind(GL_ARRAY_BUFFER, sizeof(Simple3D_InstData) * PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data(), GL_STREAM_DRAW);
+		//BufferInst.Count = PH_Instances -> Instances.Count();
+		//BufferInst.Bind(PH_Instances -> Instances.Data(), PH_Instances -> Instances.Count());
+		Container::Pointer<Simple3D_InstData> data(Instances.Count(), Instances.Data());
+		BufferInst.Bind(data);
 	}
+	BufferArray.Bind();
+	glDrawArraysInstanced(GL_TRIANGLES, 0, BufferMain.DrawCount, BufferInst.DrawCount);
+	#endif
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
@@ -240,6 +272,7 @@ int main()
 	win -> InitFunc = InitRun;
 	win -> FreeFunc = FreeRun;
 	win -> ResizeFunc = Resize;
+	//win -> FrameNumberTerminate = 4;
 
 	ViewTrans = Trans3D(Point3D(0, 0, 0), Angle3D(0, 0, 0));
 	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
