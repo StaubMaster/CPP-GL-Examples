@@ -16,8 +16,6 @@
 #include "Graphics/UniformsInclude.hpp"
 #include "Graphics/MultiformsInclude.hpp"
 
-#include "PolyHedra/Simple3D/PolyHedra_3D_Instances.hpp"
-
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
 
@@ -25,7 +23,7 @@
 #include "PolyHedra/Skin/Skin2DA.hpp"
 
 #include "Graphics/Texture/Base.hpp"
-#include "Graphics/Texture/2DArray.hpp"
+#include "Graphics/Texture/Array2D.hpp"
 #include "Graphics/Texture/Generate.hpp"
 
 #include "Window.hpp"
@@ -41,15 +39,13 @@
 #include "Graphics/Buffer/Attribute.hpp"
 #include "Graphics/Attribute/Trans3D.hpp"
 
-#include "InstanceData/Simple3D/Simple3D_InstBuffer.hpp"
-#include "PolyHedra/MainData/PolyHedra_MainBuffer.hpp"
+//#include "InstanceData/Simple3D/Simple3D_InstBuffer.hpp"
+//#include "PolyHedra/MainData/PolyHedra_MainBuffer.hpp"
+#include "PolyHedra/Simple3D/ManagerSingle.hpp"
+#include "PolyHedra/Simple3D/ManagerMulti.hpp"
+#include "PolyHedra/Simple3D/PolyHedra_3D_Instances.hpp"
 
 #include "Miscellaneous/Container/BehaviourShow.hpp"
-
-
-
-#define NEW_BUFFERS
-//#define OLD_BUFFERS
 
 
 
@@ -58,71 +54,61 @@ struct MainContext
 DirectoryContext ImageDir;
 DirectoryContext ShaderDir;
 
-#ifdef NEW_BUFFERS
-PolyHedra_MainBuffer BufferMain;
-Simple3D_InstBuffer BufferInst;
-Texture::Base * BufferTexture;
-Buffer::ArrayBase BufferArray;
-#endif
-
 Window * win;
 
 MainContext() :
 	ImageDir("../../media/Images"),
 	ShaderDir("../../media/Shaders"),
-#ifdef NEW_BUFFERS
-	BufferMain(0, 1, 2),
-	BufferInst(3, 4),
-	BufferArray(),
-#endif
 	win(NULL)
 { }
 
 Trans3D	ViewTrans;
 Depth	ViewDepth;
 
-YMT::PolyHedra * PH;
+//PolyHedra_3D_Instances * PH_Instances;
 
-#ifdef OLD_BUFFERS
-PolyHedra_3D_Instances * PH_Instances;
-#endif
+//Shader::Base * PH_Shader;
+//Uniform::WindowBufferSize2D * Uni_WindowSize;
+//Uniform::Trans3D * Uni_View;
+//Uniform::Depth * Uni_Depth;
 
-#ifdef NEW_BUFFERS
-EntryContainer::Binary<Simple3D_InstData> Instances;
-#endif
+PolyHedra_Simple3D::ManagerMulti PolyHedra_3D_Manager;
 
 Container::Binary<EntryContainer::Entry<Simple3D_InstData>> Instance_Entrys;
 
-Shader::Base * PH_Shader;
-Uniform::WindowBufferSize2D * Uni_WindowSize;
-Uniform::Trans3D * Uni_View;
-Uniform::Depth * Uni_Depth;
 
 
 
 void InitGraphics()
 {
-	PH_Shader = new Shader::Base(
+	//PH_Shader = new Shader::Base(
+	//	Container::Pointer<Shader::Code>(2, (Shader::Code [])
+	//	{
+	//		Shader::Code(ShaderDir.File("PH_S3D.vert")),
+	//		Shader::Code(ShaderDir.File("PH_Full.frag"))
+	//	})
+	//);
+	//Uni_WindowSize = new Uniform::WindowBufferSize2D(Uniform::NameShader("WindowSize", *PH_Shader));
+	//Uni_View = new Uniform::Trans3D(Uniform::NameShader("View", *PH_Shader));
+	//Uni_Depth = new Uniform::Depth(Uniform::NameShader("Depth", *PH_Shader));
+
+	PolyHedra_3D_Manager.DefaultShader.Change(
 		Container::Pointer<Shader::Code>(2, (Shader::Code [])
 		{
 			Shader::Code(ShaderDir.File("PH_S3D.vert")),
 			Shader::Code(ShaderDir.File("PH_Full.frag"))
 		})
 	);
-	PH_Shader -> Compile();
-
-	Uni_WindowSize = new Uniform::WindowBufferSize2D(Uniform::NameShader("WindowSize", *PH_Shader));
-	Uni_View = new Uniform::Trans3D(Uniform::NameShader("View", *PH_Shader));
-	Uni_Depth = new Uniform::Depth(Uniform::NameShader("Depth", *PH_Shader));
+	PolyHedra_3D_Manager.DefaultShader.Create();
+	PolyHedra_3D_Manager.DefaultShader.Depth.PutData(ViewDepth);
 }
 void FreeGraphics()
 {
-	PH_Shader -> Dispose();
-	delete PH_Shader;
-
-	delete Uni_WindowSize;
-	delete Uni_View;
-	delete Uni_Depth;
+	//PH_Shader -> Delete();
+	//delete PH_Shader;
+	//delete Uni_WindowSize;
+	//delete Uni_View;
+	//delete Uni_Depth;
 }
 
 
@@ -131,35 +117,14 @@ void InitRun()
 {
 	InitGraphics();
 
-	PH = YMT::PolyHedra::Generate::Cube();
+	PolyHedra * PH = PolyHedra::Generate::HexaHedron();
 
-	#ifdef OLD_BUFFERS
-	PH_Instances = new PolyHedra_3D_Instances(PH);
-	Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(PH_Instances -> Instances, 1));
-	Instance_Entrys[0][0].Trans.Pos = Point3D(0, 0, 10);
-	#endif
+	//PH_Instances = new PolyHedra_3D_Instances();
+	//PH_Instances -> Create();
+	//PH_Instances -> SetPolyHedra(PH);
+	//Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(*(PH_Instances -> Instances), 1));
 
-	#ifdef NEW_BUFFERS
-	Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(Instances, 1));
-	Instance_Entrys[0][0].Trans.Pos = Point3D(0, 0, 10);
-	#endif
-
-	#ifdef NEW_BUFFERS
-	BufferArray.Create();
-	BufferArray.Bind();
-	BufferMain.Create();
-	{
-		Container::Pointer<PolyHedra_MainData> data = PH -> ToMainData();
-		BufferMain.Bind(data);
-		data.Dispose();
-		BufferTexture = PH -> Skin -> ToTexture();
-	}
-	BufferInst.Create();
-	/*{
-		Container::Pointer<Simple3D_InstData> data(PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data());
-		BufferInst.Bind(data);
-	}*/
-	#endif
+	Instance_Entrys.Insert(PolyHedra_3D_Manager.Place(PH, 1));
 }
 void FreeRun()
 {
@@ -168,18 +133,10 @@ void FreeRun()
 		Instance_Entrys[i].Dispose();
 	}
 
-	#ifdef OLD_BUFFERS
-	delete PH_Instances;
-	#endif
-
-	#ifdef NEW_BUFFERS
-	BufferInst.Delete();
-	BufferMain.Delete();
-	BufferArray.Delete();
-	delete BufferTexture;
-	#endif
-
-	delete PH;
+	//PH_Instances -> Delete();
+	//delete PH_Instances;
+	
+	PolyHedra_3D_Manager.Clear();
 
 	FreeGraphics();
 }
@@ -209,40 +166,37 @@ void Frame(double timeDelta)
 	ViewTrans.Rot.CalcBack();
 	//std::cout << "View " << ViewTrans.Pos << ' ' << ViewTrans.Rot << '\n';
 
-	Instance_Entrys[0][0].Trans.Rot.X += 1.0f * timeDelta;
-	Instance_Entrys[0][0].Trans.Rot.CalcBack();
+	for (unsigned int i = 0; i < Instance_Entrys.Count(); i++)
+	{
+		for (unsigned int j = 0; j < Instance_Entrys[i].Length(); j++)
+		{
+			Instance_Entrys[i][j].Trans.Pos = Point3D(i * 2, j * 2, 10);
+			Instance_Entrys[i][j].Trans.Rot.X += 1.0f * timeDelta;
+			Instance_Entrys[i][j].Trans.Rot.CalcBack();
+		}
+	}
 
 	//std::cout << "Limit " << PH_Instances->Instances.Limit() << "\n";
 	//std::cout << "Count " << PH_Instances->Instances.Count() << "\n";
 	//std::cout << "Trans " << (PH_Instances->Instances.Data()[0].Trans.Pos) << " " << (PH_Instances->Instances.Data()[0].Trans.Rot) << "\n";
 	//std::cout << "Changed " << PH_Instances->Instances.Changed << "\n";
 
-	PH_Shader -> Bind();
-	Uni_View -> PutData(ViewTrans);
+	//PH_Shader -> Bind();
+	//Uni_View -> PutData(ViewTrans);
+	PolyHedra_3D_Manager.DefaultShader.Bind();
+	PolyHedra_3D_Manager.DefaultShader.View.PutData(ViewTrans);
+	PolyHedra_3D_Manager.DefaultShader.Depth.PutData(ViewDepth);
+	PolyHedra_3D_Manager.DefaultShader.WindowSize.PutData(win -> Size);
 
-	#ifdef OLD_BUFFERS
-	PH_Instances -> Update().Draw();
-	#endif
-
-	#ifdef NEW_BUFFERS
-	if (Instances.Changed)
-	{
-		BufferArray.Bind();
-		BufferTexture -> Bind();
-		//BufferInst.Bind(GL_ARRAY_BUFFER, sizeof(Simple3D_InstData) * PH_Instances -> Instances.Count(), PH_Instances -> Instances.Data(), GL_STREAM_DRAW);
-		//BufferInst.Count = PH_Instances -> Instances.Count();
-		//BufferInst.Bind(PH_Instances -> Instances.Data(), PH_Instances -> Instances.Count());
-		Container::Pointer<Simple3D_InstData> data(Instances.Count(), Instances.Data());
-		BufferInst.Bind(data);
-	}
-	BufferArray.Bind();
-	glDrawArraysInstanced(GL_TRIANGLES, 0, BufferMain.DrawCount, BufferInst.DrawCount);
-	#endif
+	//PH_Instances -> Draw();
+	PolyHedra_3D_Manager.Draw();
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
-	PH_Shader -> Bind();
-	Uni_WindowSize -> PutData(WindowSize);
+	//PH_Shader -> Bind();
+	//Uni_WindowSize -> PutData(WindowSize);
+	PolyHedra_3D_Manager.DefaultShader.Bind();
+	PolyHedra_3D_Manager.DefaultShader.WindowSize.PutData(WindowSize);
 }
 
 static void Frame(void * data, double timeDelta)
