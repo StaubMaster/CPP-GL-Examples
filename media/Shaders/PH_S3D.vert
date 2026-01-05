@@ -37,6 +37,8 @@ uniform Trans3D View;
 
 uniform DepthData Depth;
 
+uniform float FOV;
+
 
 
 layout(location = 0) in vec3 VPos;
@@ -68,8 +70,10 @@ vec4 proj(in vec3 p_inn)
 {
 	vec4 p_out;
 
-	p_out.x = p_inn.x;
-	p_out.y = p_inn.y;
+	float s = 1 / tan(FOV / 2);
+
+	p_out.x = p_inn.x * s;
+	p_out.y = p_inn.y * s;
 	p_out.z = p_inn.z * Depth.Factors[5] - Depth.Factors[6];
 	p_out.w = p_inn.z;
 

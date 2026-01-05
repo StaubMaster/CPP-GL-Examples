@@ -27,6 +27,7 @@
 #include "Graphics/Texture/Generate.hpp"
 
 #include "Window.hpp"
+#include "UserParameter/Mouse/Scroll.hpp"
 
 #include "DirectoryContext.hpp"
 #include "FileContext.hpp"
@@ -47,7 +48,11 @@
 
 #include "Miscellaneous/Container/BehaviourShow.hpp"
 
+#include <math.h>
 
+
+
+void CursorScroll(UserParameter::Mouse::Scroll params);
 
 struct MainContext
 {
@@ -64,6 +69,7 @@ MainContext() :
 
 Trans3D	ViewTrans;
 Depth	ViewDepth;
+float	ViewFOV = 90;
 
 //PolyHedra_3D_Instances * PH_Instances;
 
@@ -74,8 +80,7 @@ Depth	ViewDepth;
 
 PolyHedra_Simple3D::ManagerMulti PolyHedra_3D_Manager;
 
-Container::Binary<EntryContainer::Entry<Simple3D_InstData>> Instance_Entrys;
-
+Container::Binary<EntryContainer::Entry<Simple3D::Data>> Instance_Entrys;
 
 
 
@@ -100,7 +105,7 @@ void InitGraphics()
 		})
 	);
 	PolyHedra_3D_Manager.DefaultShader.Create();
-	PolyHedra_3D_Manager.DefaultShader.Depth.PutData(ViewDepth);
+	PolyHedra_3D_Manager.DefaultShader.Depth.Put(ViewDepth);
 }
 void FreeGraphics()
 {
@@ -122,7 +127,7 @@ void InitRun()
 	//PH_Instances = new PolyHedra_3D_Instances();
 	//PH_Instances -> Create();
 	//PH_Instances -> SetPolyHedra(PH);
-	//Instance_Entrys.Insert(EntryContainer::Entry<Simple3D_InstData>(*(PH_Instances -> Instances), 1));
+	//Instance_Entrys.Insert(EntryContainer::Entry<Simple3D::Data>(*(PH_Instances -> Instances), 1));
 
 	Instance_Entrys.Insert(PolyHedra_3D_Manager.Place(PH, 1));
 }
@@ -154,6 +159,15 @@ static void FreeRun(void * data)
 
 
 
+void CursorScroll(UserParameter::Mouse::Scroll params)
+{
+	if (win -> MouseManager.CursorModeIsLocked())
+	{
+		ViewFOV -= params.Y;
+		std::cout << "FOV " << ViewFOV << '\n';
+	}
+}
+
 void Frame(double timeDelta)
 {
 	if (win -> Keys[GLFW_KEY_TAB].IsPress()) { win -> MouseManager.CursorModeToggle(); }
@@ -183,10 +197,10 @@ void Frame(double timeDelta)
 
 	//PH_Shader -> Bind();
 	//Uni_View -> PutData(ViewTrans);
+	float fov_rad = Angle3D::DegreeToRadian(ViewFOV);
 	PolyHedra_3D_Manager.DefaultShader.Bind();
-	PolyHedra_3D_Manager.DefaultShader.View.PutData(ViewTrans);
-	PolyHedra_3D_Manager.DefaultShader.Depth.PutData(ViewDepth);
-	PolyHedra_3D_Manager.DefaultShader.WindowSize.PutData(win -> Size);
+	PolyHedra_3D_Manager.DefaultShader.View.Put(ViewTrans);
+	PolyHedra_3D_Manager.DefaultShader.FOV.PutData(&fov_rad);
 
 	//PH_Instances -> Draw();
 	PolyHedra_3D_Manager.Draw();
@@ -196,7 +210,7 @@ void Resize(const WindowBufferSize2D & WindowSize)
 	//PH_Shader -> Bind();
 	//Uni_WindowSize -> PutData(WindowSize);
 	PolyHedra_3D_Manager.DefaultShader.Bind();
-	PolyHedra_3D_Manager.DefaultShader.WindowSize.PutData(WindowSize);
+	PolyHedra_3D_Manager.DefaultShader.WindowSize.Put(WindowSize);
 }
 
 static void Frame(void * data, double timeDelta)
@@ -226,6 +240,7 @@ int main()
 	win -> InitFunc = InitRun;
 	win -> FreeFunc = FreeRun;
 	win -> ResizeFunc = Resize;
+	win -> ChangeCallback_CursorScroll(::CursorScroll);
 	//win -> FrameNumberTerminate = 4;
 
 	ViewTrans = Trans3D(Point3D(0, 0, 0), Angle3D(0, 0, 0));
@@ -246,13 +261,17 @@ int main()
 }
 };
 
+MainContext * context;
+
+void CursorScroll(UserParameter::Mouse::Scroll params) { context -> CursorScroll(params); }
+
 int main()
 {
 	int ret = 1;
 	Debug::NewFileInDir(DirectoryContext("logs/"));
 	Debug::Log << "0 Basic" << Debug::Done;
 	{
-		MainContext * context = new MainContext();
+		context = new MainContext();
 		try { ret = context -> main(); }
 		catch (...) { Debug::Log << "Error: " << " Unknown" << Debug::Done; }
 		delete context;
