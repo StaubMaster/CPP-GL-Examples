@@ -53,7 +53,7 @@ FANCY_NAME := Simple
 
 
 
-%.exe : %.cpp
+%.exe : %.cpp $(LIBRARYS)
 	@mkdir -p logs/
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	@echo $(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)

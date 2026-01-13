@@ -29,9 +29,9 @@
 #include "Window.hpp"
 #include "UserParameter/Mouse/Scroll.hpp"
 
-#include "DirectoryContext.hpp"
-#include "FileContext.hpp"
-#include "Format/Image.hpp"
+#include "FileInfo.hpp"
+#include "DirectoryInfo.hpp"
+#include "Image.hpp"
 
 
 
@@ -56,14 +56,16 @@ void CursorScroll(UserParameter::Mouse::Scroll params);
 
 struct MainContext
 {
-DirectoryContext ImageDir;
-DirectoryContext ShaderDir;
+DirectoryInfo ImageDir;
+DirectoryInfo ShaderDir;
+DirectoryInfo YMTDir;
 
 Window * win;
 
 MainContext() :
 	ImageDir("../../media/Images"),
 	ShaderDir("../../media/Shaders"),
+	YMTDir("../../media/YMT"),
 	win(NULL)
 { }
 
@@ -105,6 +107,7 @@ void InitGraphics()
 		})
 	);
 	PolyHedra_3D_Manager.DefaultShader.Create();
+	PolyHedra_3D_Manager.DefaultShader.Bind();
 	PolyHedra_3D_Manager.DefaultShader.Depth.Put(ViewDepth);
 }
 void FreeGraphics()
@@ -122,14 +125,51 @@ void InitRun()
 {
 	InitGraphics();
 
-	PolyHedra * PH = PolyHedra::Generate::HexaHedron();
+	Image img;
+	PolyHedra * PH;
 
 	//PH_Instances = new PolyHedra_3D_Instances();
 	//PH_Instances -> Create();
 	//PH_Instances -> SetPolyHedra(PH);
 	//Instance_Entrys.Insert(EntryContainer::Entry<Simple3D::Data>(*(PH_Instances -> Instances), 1));
 
-	Instance_Entrys.Insert(PolyHedra_3D_Manager.Place(PH, 1));
+	EntryContainer::Entry<Simple3D::Data> entry;
+
+	img = ImageDir.File("Test.png").LoadImage();
+	{
+		//FileInfo file(R"(F:\Code\GitRepositorys\C++\CPP-GL-Examples\other\Engine\media\Images\Wood.png)");
+		//FileInfo file(R"(F:\Code\GitRepositorys\C++\CPP-GL-Examples\other\Engine\media\Images\Cloth.png)");
+		//img = file.LoadImage();
+		//img = Texture::Generate::Wood16x16();
+		/*std::cout << "[ " << img.W() << " | " << img.H() << " ]\n";
+		uint32 col;
+		for (unsigned int y = 0; y < img.H(); y++)
+		{
+			for (unsigned int x = 0; x < img.W(); x++)
+			{
+				col = img.Pixel(x, y).ToUInt32_RGBA();
+				std::cout << "0x" << ToBase16(col) << ", ";
+			}
+			std::cout << '\n';
+		}*/
+	}
+	//PolyHedra * PH = PolyHedra::Generate::HexaHedron();
+	//PH = PolyHedra::Generate::DuoHedra(img);
+	PH = PolyHedra::Generate::FramedImage(img);
+	entry = PolyHedra_3D_Manager.Place(PH, 1);
+	entry[0].Trans.Pos = Point3D(0, 0, 1);
+	entry[0].Trans.Rot = Angle3D(0, 0, 0);
+	entry[0].Trans.Rot.CalcBack();
+	Instance_Entrys.Insert(entry);
+
+	//PH = PolyHedra::Load(YMTDir.File("test/cube.polyhedra.ymt"));
+	//entry = PolyHedra_3D_Manager.Place(PH, 1);
+	//entry[0].Trans.Pos = Point3D(0, 0, 0);
+	//entry[0].Trans.Rot = Angle3D(0, 0, 0);
+	//entry[0].Trans.Rot.CalcBack();
+	//Instance_Entrys.Insert(entry);
+
+	PolyHedra_3D_Manager.DefaultShader.LogInfo();
 }
 void FreeRun()
 {
@@ -164,7 +204,7 @@ void CursorScroll(UserParameter::Mouse::Scroll params)
 	if (win -> MouseManager.CursorModeIsLocked())
 	{
 		ViewFOV -= params.Y;
-		std::cout << "FOV " << ViewFOV << '\n';
+		//std::cout << "FOV " << ViewFOV << '\n';
 	}
 }
 
@@ -173,22 +213,22 @@ void Frame(double timeDelta)
 	if (win -> Keys[GLFW_KEY_TAB].IsPress()) { win -> MouseManager.CursorModeToggle(); }
 	if (win -> MouseManager.CursorModeIsLocked())
 	{
-		ViewTrans.TransformFlatX(win -> MoveFromKeys(20.0f * timeDelta), win -> SpinFromCursor(0.2f * timeDelta));
+		ViewTrans.TransformFlatX(win -> MoveFromKeys(2.0f * timeDelta), win -> SpinFromCursor(ViewFOV * 0.005f * timeDelta));
 		if (ViewTrans.Rot.Y > Angle3D::DegreeToRadian(+90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(+90); }
 		if (ViewTrans.Rot.Y < Angle3D::DegreeToRadian(-90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(-90); }
 	}
 	ViewTrans.Rot.CalcBack();
 	//std::cout << "View " << ViewTrans.Pos << ' ' << ViewTrans.Rot << '\n';
 
-	for (unsigned int i = 0; i < Instance_Entrys.Count(); i++)
+	/*for (unsigned int i = 0; i < Instance_Entrys.Count(); i++)
 	{
 		for (unsigned int j = 0; j < Instance_Entrys[i].Length(); j++)
 		{
 			Instance_Entrys[i][j].Trans.Pos = Point3D(i * 2, j * 2, 10);
-			Instance_Entrys[i][j].Trans.Rot.X += 1.0f * timeDelta;
+			//Instance_Entrys[i][j].Trans.Rot.X += 1.0f * timeDelta;
 			Instance_Entrys[i][j].Trans.Rot.CalcBack();
 		}
-	}
+	}*/
 
 	//std::cout << "Limit " << PH_Instances->Instances.Limit() << "\n";
 	//std::cout << "Count " << PH_Instances->Instances.Count() << "\n";
@@ -268,7 +308,7 @@ void CursorScroll(UserParameter::Mouse::Scroll params) { context -> CursorScroll
 int main()
 {
 	int ret = 1;
-	Debug::NewFileInDir(DirectoryContext("logs/"));
+	Debug::NewFileInDir(DirectoryInfo("logs/"));
 	Debug::Log << "0 Basic" << Debug::Done;
 	{
 		context = new MainContext();
