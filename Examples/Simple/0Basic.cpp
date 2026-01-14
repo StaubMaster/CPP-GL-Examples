@@ -128,6 +128,7 @@ void InitGraphics()
 	PolyHedra_3D_Manager.DefaultShader.Change(code);
 	std::cout << "Change done\n";
 	std::cout << "\n";
+
 	code.Dispose();
 
 	Debug::Log << "DefaultShader.Create" << Debug::Done;
@@ -164,25 +165,7 @@ void InitRun()
 	EntryContainer::Entry<Simple3D::Data> entry;
 
 	img = ImageDir.File("Test.png").LoadImage();
-	{
-		//FileInfo file(R"(F:\Code\GitRepositorys\C++\CPP-GL-Examples\other\Engine\media\Images\Wood.png)");
-		//FileInfo file(R"(F:\Code\GitRepositorys\C++\CPP-GL-Examples\other\Engine\media\Images\Cloth.png)");
-		//img = file.LoadImage();
-		//img = Texture::Generate::Wood16x16();
-		/*std::cout << "[ " << img.W() << " | " << img.H() << " ]\n";
-		uint32 col;
-		for (unsigned int y = 0; y < img.H(); y++)
-		{
-			for (unsigned int x = 0; x < img.W(); x++)
-			{
-				col = img.Pixel(x, y).ToUInt32_RGBA();
-				std::cout << "0x" << ToBase16(col) << ", ";
-			}
-			std::cout << '\n';
-		}*/
-	}
-	//PolyHedra * PH = PolyHedra::Generate::HexaHedron();
-	//PH = PolyHedra::Generate::DuoHedra(img);
+	std::cout << "PNG done\n";
 	PH = PolyHedra::Generate::FramedImage(img);
 	entry = PolyHedra_3D_Manager.Place(PH, 1);
 	entry[0].Trans.Pos = Point3D(0, 0, 1);
@@ -190,12 +173,32 @@ void InitRun()
 	entry[0].Trans.Rot.CalcBack();
 	Instance_Entrys.Insert(entry);
 
+	img = ImageDir.File("Text_16x8_32x32.png").LoadImage();
+	std::cout << "PNG done\n";
+	PH = PolyHedra::Generate::FramedImage(img);
+	entry = PolyHedra_3D_Manager.Place(PH, 1);
+	entry[0].Trans.Pos = Point3D(2, 3.2, 1);
+	entry[0].Trans.Rot = Angle3D(0, 0, 0);
+	entry[0].Trans.Rot.CalcBack();
+	Instance_Entrys.Insert(entry);
+
+	img = ImageDir.File("Sender-Weinsberg-Steinbruchweg.png").LoadImage();
+	std::cout << "PNG done\n";
+	PH = PolyHedra::Generate::FramedImage(img);
+	entry = PolyHedra_3D_Manager.Place(PH, 1);
+	entry[0].Trans.Pos = Point3D(-5.2, 0, 1);
+	entry[0].Trans.Rot = Angle3D(0, 0, 0);
+	entry[0].Trans.Rot.CalcBack();
+	Instance_Entrys.Insert(entry);
+
+	//PH = PolyHedra::Generate::HexaHedron(0.5f);
 	//PH = PolyHedra::Load(YMTDir.File("test/cube.polyhedra.ymt"));
-	//entry = PolyHedra_3D_Manager.Place(PH, 1);
-	//entry[0].Trans.Pos = Point3D(0, 0, 0);
-	//entry[0].Trans.Rot = Angle3D(0, 0, 0);
-	//entry[0].Trans.Rot.CalcBack();
-	//Instance_Entrys.Insert(entry);
+	PH = PolyHedra::Load(YMTDir.File("Light/Chair.polyhedra.ymt"));
+	entry = PolyHedra_3D_Manager.Place(PH, 1);
+	entry[0].Trans.Pos = Point3D(0, -10, -10);
+	entry[0].Trans.Rot = Angle3D(0, 0, 0);
+	entry[0].Trans.Rot.CalcBack();
+	Instance_Entrys.Insert(entry);
 
 	PolyHedra_3D_Manager.DefaultShader.LogInfo();
 }
