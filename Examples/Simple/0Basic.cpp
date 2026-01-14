@@ -88,6 +88,7 @@ Container::Binary<EntryContainer::Entry<Simple3D::Data>> Instance_Entrys;
 
 void InitGraphics()
 {
+	Debug::Log << "Init Graphics ...\n";
 	//PH_Shader = new Shader::Base(
 	//	Container::Pointer<Shader::Code>(2, (Shader::Code [])
 	//	{
@@ -99,16 +100,43 @@ void InitGraphics()
 	//Uni_View = new Uniform::Trans3D(Uniform::NameShader("View", *PH_Shader));
 	//Uni_Depth = new Uniform::Depth(Uniform::NameShader("Depth", *PH_Shader));
 
-	PolyHedra_3D_Manager.DefaultShader.Change(
+	Debug::Log << "DefaultShader.Change" << Debug::Done;
+	/*PolyHedra_3D_Manager.DefaultShader.Change(
 		Container::Pointer<Shader::Code>(2, (Shader::Code [])
 		{
 			Shader::Code(ShaderDir.File("PH_S3D.vert")),
 			Shader::Code(ShaderDir.File("PH_Full.frag"))
 		})
-	);
+	);*/
+	std::cout << "\n\n\n";
+	Container::Fixed<Shader::Code> code(2);
+
+	std::cout << "\n";
+	std::cout << "File 0\n";
+	code.Insert(Shader::Code(ShaderDir.File("PH_S3D.vert")));
+	std::cout << "File 0 " << (&code[0].File.Path.Segments) << "\n";
+	std::cout << "\n";
+
+	std::cout << "\n";
+	std::cout << "File 1\n";
+	code.Insert(Shader::Code(ShaderDir.File("PH_Full.frag")));
+	std::cout << "File 1 " << (&code[1].File.Path.Segments) << "\n";
+	std::cout << "\n";
+
+	std::cout << "\n";
+	std::cout << "Change\n";
+	PolyHedra_3D_Manager.DefaultShader.Change(code);
+	std::cout << "Change done\n";
+	std::cout << "\n";
+	code.Dispose();
+
+	Debug::Log << "DefaultShader.Create" << Debug::Done;
 	PolyHedra_3D_Manager.DefaultShader.Create();
+	Debug::Log << "DefaultShader.Bind" << Debug::Done;
 	PolyHedra_3D_Manager.DefaultShader.Bind();
+	Debug::Log << "DefaultShader.Depth.Put" << Debug::Done;
 	PolyHedra_3D_Manager.DefaultShader.Depth.Put(ViewDepth);
+	Debug::Log << "Init Graphics done" << Debug::Done;
 }
 void FreeGraphics()
 {
@@ -188,8 +216,11 @@ void FreeRun()
 
 static void InitRun(void * data)
 {
+	Debug::Log << "static Init Run 0" << Debug::Done;
 	MainContext * context = (MainContext *)data;
+	Debug::Log << "static Init Run 1" << Debug::Done;
 	context -> InitRun();
+	Debug::Log << "static Init Run 2" << Debug::Done;
 }
 static void FreeRun(void * data)
 {
@@ -273,6 +304,8 @@ int main()
 		std::cout << "GLFW Init Failed\n";
 		return -1;
 	}
+
+	//Debug::Log << "InitFunc: " << ((const void *)InitRun) << Debug::Done;
 
 	win = new Window();
 	win -> Data = this;

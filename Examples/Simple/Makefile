@@ -1,6 +1,6 @@
 
-#COMPILER := c++ -std=c++11
-COMPILER := g++ -g -std=c++11
+COMPILER := c++ -std=c++11
+#COMPILER := g++ -g -std=c++11
 FLAGS := -Wall -Wextra -Werror
 #FLAGS += -fsanitize=address,undefined
 #	gdb prog.exe
@@ -53,7 +53,8 @@ FANCY_NAME := Simple
 
 
 
-%.exe : %.cpp $(LIBRARYS)
+%.exe : %.cpp
+	@$(MAKE) $(LIBRARYS)
 	@mkdir -p logs/
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	@echo $(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
