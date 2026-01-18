@@ -1,0 +1,53 @@
+
+[New Thread 31508.0x9ac4]
+  ----  Fixed 0x5ff740
+Image.Dispose(): 0 0 0
+Image.Init(): new[] 0xe0f6f68 512 256
+Image.Bind(): delete[] 0 0 0
+Image.Bind(): delete[] 0 0 0
+Image.Image(): new[] 0xe1d2fe8 16 16
+Image.Bind(): delete[] 0 0 0
+Image.Bind(): delete[] 0 0 0
+scale: ( 2.56 | 1.28 )
+  ++++  Fixed 0xda0f6e8
+  ++++  Fixed 0xda0f7a8
+Skin2DA::ToTexture() ...
+Texture::Array2D::Assign(w, h, imgs) ...
+Image.Image(): new[] 0xe1dbb98 4 4
+Image.Image(): new[] 0xda47f88 512 256
+Image.Dispose(): 0xe1dbb98 4 4
+Image.Bind(): delete[] 0 0 0
+Image.Image(): new[] 0xdac7fc8 512 256
+Image.Dispose(): 0xdac7fc8 512 256
+Image.Image(): new[] 0xdac7fc8 512 256
+Image.Dispose(): 0xdac7fc8 512 256
+Image.Dispose(): 0xda47f88 512 256
+Texture::Array2D::Assign(w, h, imgs) done
+Skin2DA::ToTexture() done
+Image.Dispose(): 0 0 0
+Image.Init(): new[] 0x11b04048 675 900
+Image.Bind(): delete[] 0xe0f6f68 512 256
+Image.Bind(): delete[] 0 0 0
+Image.Image(): new[] 0xdb47658 16 16
+Image.Bind(): delete[] 0 0 0
+Image.Bind(): delete[] 0 0 0
+scale: ( 3.375 | 4.5 )
+  ++++  Fixed 0xdb49c58
+  ++++  Fixed 0xdb49d18
+Skin2DA::ToTexture() ...
+Texture::Array2D::Assign(w, h, imgs) ...
+Image.Image(): new[] 0xe0f2ba8 4 4
+Image.Image(): new[] 0x11d66048 675 900
+Image.Dispose(): 0xe0f2ba8 4 4
+Image.Bind(): delete[] 0 0 0
+Image.Image(): new[] 0x11fcb048 675 900
+Image.Dispose(): 0x11fcb048 675 900
+Image.Image(): new[] 0x11fcc048 675 900
+Image.Dispose(): 0x11fcc048 675 900
+Image.Dispose(): 0x11d66048 675 900
+Texture::Array2D::Assign(w, h, imgs) done
+Skin2DA::ToTexture() done
+Window Loop ...
+Window Loop done
+Image.Dispose(): 0xe0f6f68 512 256
+warning: Critical error detected c0000374
