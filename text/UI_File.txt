@@ -1,5 +1,14 @@
 
-
 save/load Controls from File
 
 
+
+functions
+
+give the UI Manager a list of functions
+function pointers and string names
+
+then when a UI File wants to call a Function
+it can look for it
+
+but how would Parameters work ?

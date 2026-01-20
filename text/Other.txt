@@ -1,0 +1,16 @@
+
+right now it is "recursive"
+
+make it so only the last one, where the .exe is made
+in this case the Examples
+have a folder for "other"
+
+and it downloads all the git stuff
+
+then the Engine just looks for the FileManager
+in the same folder as itself
+
+or maybe have en Environment Variable for where it finds this stuff
+but then that wouldnt work on thers peoples PCs
+
+

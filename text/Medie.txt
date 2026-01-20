@@ -1,0 +1,6 @@
+
+remove media folder from Engine
+only the ones here are used
+
+rename Shaders to have better names
+

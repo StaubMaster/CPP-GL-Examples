@@ -1,0 +1,16 @@
+
+right now a lot of things need to be basically copy and pasted to get this to run
+
+make a main() wrapper that does all of that
+
+maybe do more with the UI
+
+make a sort of main Menu
+from where you can select the Example to test
+
+that means all need to be compiled into one
+should be fine
+
+
+
+
