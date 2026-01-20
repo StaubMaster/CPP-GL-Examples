@@ -443,7 +443,7 @@ int main()
 	win -> FreeFunc = Free;
 	win -> ResizeFunc = Resize;
 
-	win -> DefaultColor = Color(0.0f, 0.0f, 0.0f);
+	win -> DefaultColor = ColorF4(0.0f, 0.0f, 0.0f);
 
 	ViewTrans = Trans3D(Point3D(0, 10, -65), Angle3D(0, 0, 0));
 	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
@@ -453,14 +453,14 @@ int main()
 
 	Light_Ambient_Intensity = 0.01f;
 	Light_Solar_Intensity = 0.2f;
-	Light_Ambient = LightBase(Light_Ambient_Intensity, Color(1.0f, 1.0f, 1.0f));
-	Light_Solar = LightSolar(Light_Solar_Intensity, Color(1.0f, 1.0f, 1.0f), Point3D(+1, -3, +2).normalize());
+	Light_Ambient = LightBase(Light_Ambient_Intensity, ColorF4(1.0f, 1.0f, 1.0f));
+	Light_Solar = LightSolar(Light_Solar_Intensity, ColorF4(1.0f, 1.0f, 1.0f), Point3D(+1, -3, +2).normalize());
 
 	Light_Spot_Array = new LightSpot[Light_Spot_Limit];
-	Light_Spot_Array[0] = LightSpot(1.0f, Color(1.0f, 0.0f, 0.0f), Point3D(), Point3D(), Range(0.8, 0.95));
-	Light_Spot_Array[1] = LightSpot(1.0f, Color(0.0f, 1.0f, 0.0f), Point3D(), Point3D(), Range(0.8, 0.95));
-	Light_Spot_Array[2] = LightSpot(1.0f, Color(0.0f, 0.0f, 1.0f), Point3D(), Point3D(), Range(0.8, 0.95));
-	Light_Spot_Array[3] = LightSpot(1.0f, Color(1.0f, 1.0f, 1.0f), Point3D(), Point3D(), Range(0.8, 0.95));
+	Light_Spot_Array[0] = LightSpot(1.0f, ColorF4(1.0f, 0.0f, 0.0f), Point3D(), Point3D(), Range(0.8, 0.95));
+	Light_Spot_Array[1] = LightSpot(1.0f, ColorF4(0.0f, 1.0f, 0.0f), Point3D(), Point3D(), Range(0.8, 0.95));
+	Light_Spot_Array[2] = LightSpot(1.0f, ColorF4(0.0f, 0.0f, 1.0f), Point3D(), Point3D(), Range(0.8, 0.95));
+	Light_Spot_Array[3] = LightSpot(1.0f, ColorF4(1.0f, 1.0f, 1.0f), Point3D(), Point3D(), Range(0.8, 0.95));
 	Light_Spot_Count = 3;
 
 	Light_Spot_Entry_Array = new SpotLightEntry[Light_Spot_Limit];

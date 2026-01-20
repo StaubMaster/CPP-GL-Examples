@@ -13,7 +13,7 @@ struct DepthData
 {
 	float[7]	Factors;
 	RangeData	Range;
-	vec3		Color;
+	vec4		Color;
 };
 
 
@@ -21,7 +21,7 @@ struct DepthData
 struct LightBase
 {
 	float	Intensity;
-	vec3	Color;
+	vec4	Color;
 };
 
 struct LightSolar
