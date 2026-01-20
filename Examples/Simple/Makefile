@@ -10,9 +10,8 @@ BASE_DIR := ../../
 
 
 MAINS = \
-	0Basic.cpp
-#	1Multi.cpp
-#	2Light.cpp
+	Basic.cpp \
+	Light.cpp
 
 EXES = $(MAINS:.cpp=.exe)
 

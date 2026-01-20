@@ -85,9 +85,9 @@ void main()
 {
 	float	depth_factor = CalcDepthFactor();
 
-	vec3 col = texture(texture0, vec3(fs_inn.Tex)).rgb;
+	vec4 col = texture(texture0, fs_inn.Tex);
 
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
-	Color = vec4(col, 1);
+	Color = col;
 }
