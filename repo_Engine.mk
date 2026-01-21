@@ -25,6 +25,10 @@ ifeq ($(CheckOS), Darwin)
 ENGINE_ARGUMENTS = -lglfw
 endif
 
+ifeq ($(CheckOS), Linux)
+ENGINE_ARGUMENTS = -lglfw
+endif
+
 LIBRARYS += $(ENGINE_LIBRARYS)
 INCLUDES += $(ENGINE_INCLUDES)
 ARGUMENTS += $(ENGINE_ARGUMENTS)

@@ -125,8 +125,6 @@ void InitRun()
 	entry[0].Trans.Rot = Angle3D(0, 0, 0);
 	entry[0].Trans.Rot.CalcBack();
 	Instance_Entrys.Insert(entry);
-
-	PolyHedra_3D_Manager.DefaultShader.LogInfo();
 }
 void FreeRun()
 {
@@ -227,7 +225,7 @@ void SCursorScroll(UserParameter::Mouse::Scroll params) { context -> CursorScrol
 int main()
 {
 	int ret = 1;
-	Debug::NewFileInDir(DirectoryInfo("logs/"));
+	Debug::NewFileInDir(DirectoryInfo("./logs/"));
 	Debug::Log << "Basic" << Debug::Done;
 	{
 		context = new MainContext();
