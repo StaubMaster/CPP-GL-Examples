@@ -1,6 +1,6 @@
 
-COMPILER := c++ -std=c++11
-#COMPILER := g++ -g -std=c++11
+#COMPILER := c++ -std=c++11
+COMPILER := g++ -g -std=c++11
 FLAGS := -Wall -Wextra -Werror
 #FLAGS += -fsanitize=address,undefined
 #	gdb prog.exe
@@ -56,7 +56,9 @@ FANCY_NAME := Simple
 	@$(MAKE) $(LIBRARYS)
 	@mkdir -p logs/
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
+	@echo
 	@echo $(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
+	@echo
 	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
 
 
@@ -89,4 +91,6 @@ arguments: repos_clone
 
 REPOS_DIR := $(BASE_DIR)other/
 include $(BASE_DIR)repos.mk
-include $(BASE_DIR)repo_Engine.mk
+include $(BASE_DIR)otherFileManager.mk
+include $(BASE_DIR)otherEngine.mk
+include $(BASE_DIR)otherOpenGL.mk
