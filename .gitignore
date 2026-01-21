@@ -14,4 +14,8 @@ obj/
 logs/
 
 #	other Projects / Repositorys
-other/
+#other/
+#	OpenGL shouldnt be ignored
+#	explicitly ignore all the other stuff
+other/Engine
+other/FileManager

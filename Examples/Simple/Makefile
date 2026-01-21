@@ -56,10 +56,7 @@ FANCY_NAME := Simple
 	@$(MAKE) $(LIBRARYS)
 	@mkdir -p logs/
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
-	@echo
-	@echo $(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
-	@echo
-	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
+	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
 
 
 
@@ -91,6 +88,6 @@ arguments: repos_clone
 
 REPOS_DIR := $(BASE_DIR)other/
 include $(BASE_DIR)repos.mk
-include $(BASE_DIR)otherFileManager.mk
 include $(BASE_DIR)otherEngine.mk
+include $(BASE_DIR)otherFileManager.mk
 include $(BASE_DIR)otherOpenGL.mk

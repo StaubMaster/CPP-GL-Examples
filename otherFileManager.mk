@@ -3,7 +3,7 @@
 #                          FileManager                         #
 ################################################################
 
-FM_HTTPS := https://github.com/StaubMaster/CPP-GL-FileManager.git
+FM_HTTPS := https://github.com/StaubMaster/CPP-FileManager.git
 FM_REPO := $(REPOS_DIR)/FileManager
 
 REPOS_DYNAMIC += $(FM_REPO)
@@ -20,10 +20,10 @@ INCLUDES += $(FM_INCLUDES)
 ARGUMENTS += $(FM_ARGUMENTS)
 
 $(FM_REPO) :
-	git clone $(FM_HTTPS) $(FM_REPO) -q
-	$(MAKE) -C $(FM_REPO) repos_clone -s
+	git clone $(FM_HTTPS) -q $(FM_REPO)
+	$(MAKE) -C $(FM_REPO) -s repos_clone
 
 $(FM_LIBRARYS) : $(FM_REPO)
-	$(MAKE) -C $(FM_REPO) $(@:$(FM_REPO)/%=%) -s
+	$(MAKE) -C $(FM_REPO) -s $(@:$(FM_REPO)/%=%)
 
 ################################################################
