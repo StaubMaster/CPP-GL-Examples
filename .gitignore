@@ -1,21 +1,18 @@
 
-#	Object Files
+#	Objects
 *.o
-*.c.obj
-obj/
 
-#	Archive Files
+#	Archchives
 *.a
 
-#	Executable Files
+#	Excutables
 *.exe
 
-#	Log Files
+
+
+#	Logs
 logs/
 
-#	other Projects / Repositorys
-#other/
-#	OpenGL shouldnt be ignored
-#	explicitly ignore all the other stuff
+#	Other
 other/Engine
 other/FileManager
