@@ -26,6 +26,8 @@
 #include "DirectoryInfo.hpp"
 #include "Image.hpp"
 
+#include <exception>
+
 
 
 void SInitRun();
@@ -63,8 +65,8 @@ void InitGraphics()
 {
 	{
 		Container::Fixed<Shader::Code> code(2);
-		code.Insert(Shader::Code(ShaderDir.File("PH_S3D.vert")));
-		code.Insert(Shader::Code(ShaderDir.File("PH_Full.frag")));
+		code.Insert(Shader::Code(ShaderDir.File("PH/Simple3D.vert")));
+		code.Insert(Shader::Code(ShaderDir.File("PH/Full.frag")));
 		PolyHedra_3D_Manager.DefaultShader.Change(code);
 		code.Dispose();
 	}
@@ -230,7 +232,8 @@ int main()
 	{
 		context = new MainContext();
 		try { ret = context -> Main(); }
-		catch (...) { Debug::Log << "Error: " << " Unknown" << Debug::Done; }
+		catch (std::exception & ex) { Debug::Log << "Error: " << ex.what() << Debug::Done; }
+		catch (...) { Debug::Log << "Error: " << "Unknown" << Debug::Done; }
 		delete context;
 	}
 	Debug::Log << "main() return " << ret << Debug::Done;

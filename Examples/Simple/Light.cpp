@@ -153,8 +153,8 @@ void InitShaders()
 {
 	{
 		Container::Fixed<Shader::Code> code(2);
-		code.Insert(Shader::Code(ShaderDir.File("PH_S3D.vert")));
-		code.Insert(Shader::Code(ShaderDir.File("PH_ULight.frag")));
+		code.Insert(Shader::Code(ShaderDir.File("PH/Simple3D.vert")));
+		code.Insert(Shader::Code(ShaderDir.File("PH/UniLight4.frag")));
 		//code.Insert(Shader::Code(ShaderDir.File("PH_Full.frag")));
 		LightShader.Change(code);
 		code.Dispose();
