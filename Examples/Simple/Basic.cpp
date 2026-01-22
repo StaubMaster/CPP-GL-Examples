@@ -104,7 +104,7 @@ void InitRun()
 	entry[0].Trans.Rot.CalcBack();
 	Instance_Entrys.Insert(entry);
 
-	img = ImageDir.File("Sender-Weinsberg-Steinbruchweg_small.png").LoadImage();
+	img = ImageDir.File("Sender-Weinsberg-Steinbruchweg_small.png").LoadImage(true);
 	/*{
 		FileInfo file = ImageDir.File("Sender-Weinsberg-Steinbruchweg.png");
 		std::cout << "PNG ...\n";
@@ -117,6 +117,22 @@ void InitRun()
 	PH = PolyHedra::Generate::FramedImage(img);
 	entry = PolyHedra_3D_Manager.Place(PH, 1);
 	entry[0].Trans.Pos = Point3D(-5.2, 0, 1);
+	entry[0].Trans.Rot = Angle3D(0, 0, 0);
+	entry[0].Trans.Rot.CalcBack();
+	Instance_Entrys.Insert(entry);
+
+	img = YMTDir.File("Light/ChairCloth.png").LoadImage();
+	PH = PolyHedra::Generate::FramedImage(img, 8);
+	entry = PolyHedra_3D_Manager.Place(PH, 1);
+	entry[0].Trans.Pos = Point3D(0, -2.5f, 1);
+	entry[0].Trans.Rot = Angle3D(0, 0, 0);
+	entry[0].Trans.Rot.CalcBack();
+	Instance_Entrys.Insert(entry);
+
+	img = YMTDir.File("Light/ChairMetal.png").LoadImage(true);
+	PH = PolyHedra::Generate::FramedImage(img, 8);
+	entry = PolyHedra_3D_Manager.Place(PH, 1);
+	entry[0].Trans.Pos = Point3D(2.5f, -2.5f, 1);
 	entry[0].Trans.Rot = Angle3D(0, 0, 0);
 	entry[0].Trans.Rot.CalcBack();
 	Instance_Entrys.Insert(entry);
