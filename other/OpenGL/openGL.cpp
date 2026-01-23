@@ -179,70 +179,78 @@ void OpenGL::ShowGeneralLimits()
 void OpenGL::ShowUniformLimits()
 {
 	std::cout << "OpenGL Limits Uniforms\n";
-	ShowTable(
-		1, (std::string[]) {
+	{
+		std::string tablecols[1] {
 			"",
-		},
-		3, (std::string[]) {
+		};
+		std::string tablerows[3] {
 			"Locations",
 			"Block Size",
 			"Buffer Bindings",
-		},
-		15, 7,
-		(int []) {
-			getInt(GL_MAX_UNIFORM_LOCATIONS),
-			getInt(GL_MAX_UNIFORM_BLOCK_SIZE),
-			getInt(GL_MAX_UNIFORM_BUFFER_BINDINGS),
-		}
-	);
+		};
+		int data[] = {
+				getInt(GL_MAX_UNIFORM_LOCATIONS),
+				getInt(GL_MAX_UNIFORM_BLOCK_SIZE),
+				getInt(GL_MAX_UNIFORM_BUFFER_BINDINGS),
+		};
+		ShowTable(
+			1, tablecols,
+			3, tablerows,
+			15, 7,
+			data
+		);
+	}
 	std::cout << "\n";
-	ShowTable(
-		3, (std::string[]) {
+	{
+		std::string tablecols[3] {
 			"Vert",
 			"Geom",
 			"Frag",
-		},
-		4, (std::string[]) {
+		};
+		std::string tablerows[4] {
 			"Blocks",
 			"Vectors",
 			"Components",
 			"Combined Components",
-		},
-		20, 8,
-		(int []) {
-			getInt(GL_MAX_VERTEX_UNIFORM_BLOCKS),
-			getInt(GL_MAX_VERTEX_UNIFORM_COMPONENTS),
-			getInt(GL_MAX_VERTEX_UNIFORM_VECTORS),
-			getInt(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS),
-
-			getInt(GL_MAX_GEOMETRY_UNIFORM_BLOCKS),
-			-1,
-			getInt(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS),
-			getInt(GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS),
-			
-			getInt(GL_MAX_FRAGMENT_UNIFORM_BLOCKS),
-			getInt(GL_MAX_FRAGMENT_UNIFORM_VECTORS),
-			getInt(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS),
-			getInt(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS),
-		}
-	);
+		};
+		int data[] = {
+				getInt(GL_MAX_VERTEX_UNIFORM_BLOCKS),
+				getInt(GL_MAX_VERTEX_UNIFORM_COMPONENTS),
+				getInt(GL_MAX_VERTEX_UNIFORM_VECTORS),
+				getInt(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS),
+				
+				getInt(GL_MAX_GEOMETRY_UNIFORM_BLOCKS),
+				-1,
+				getInt(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS),
+				getInt(GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS),
+				
+				getInt(GL_MAX_FRAGMENT_UNIFORM_BLOCKS),
+				getInt(GL_MAX_FRAGMENT_UNIFORM_VECTORS),
+				getInt(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS),
+				getInt(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS),
+		};
+		ShowTable(
+			3, tablecols,
+			4, tablerows,
+			20, 8,
+			data
+		);
+	}
 }
 void OpenGL::ShowTextureLimits()
 {
-	ShowTable(
-		4, (std::string[]) {
-			"Vert",
-			"Geom",
-			"Frag",
-			"All",
-		},
-		3, (std::string[]) {
-			"Texture Image Units",
-			"Image Uniforms",
-			"Combined Image Uniforms",
-		},
-		23, 4,
-		(int []) {
+	std::string tablecols[4] {
+		"Vert",
+		"Geom",
+		"Frag",
+		"All",
+	};
+	std::string tablerows[3] {
+		"Texture Image Units",
+		"Image Uniforms",
+		"Combined Image Uniforms",
+	};
+	int data[] = {
 			getInt(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS),
 			getInt(GL_MAX_VERTEX_IMAGE_UNIFORMS),
 			-1,
@@ -258,7 +266,12 @@ void OpenGL::ShowTextureLimits()
 			-1,
 			-1,
 			getInt(GL_MAX_COMBINED_IMAGE_UNIFORMS),
-		}
+	};
+	ShowTable(
+		4, tablecols,
+		3, tablerows,
+		23, 4,
+		data
 	);
 
 	{
@@ -276,23 +289,26 @@ void OpenGL::ShowTextureLimits()
 void OpenGL::ShowVertexLimits()
 {
 	std::cout << "OpenGL Limits Shader Vertex\n";
-	ShowTable(
-		1, (std::string[]) {
-			"",
-		},
-		4, (std::string[]) {
-			"Attribs",
-			"Attrib Bindings",
-			"Attrib Stride",
-			"Attrib Relative Offset",
-		},
-		22, 4,
-		(int []) {
+	std::string tablecols[1] {
+		"",
+	};
+	std::string tablerows[4] {
+		"Attribs",
+		"Attrib Bindings",
+		"Attrib Stride",
+		"Attrib Relative Offset",
+	};
+	int data[] = {
 			getInt(GL_MAX_VERTEX_ATTRIBS),
 			getInt(GL_MAX_VERTEX_ATTRIB_BINDINGS),
 			getInt(GL_MAX_VERTEX_ATTRIB_STRIDE),
 			getInt(GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET),
-		}
+	};
+	ShowTable(
+		1, tablecols,
+		4, tablerows,
+		22, 4,
+		data
 	);
 }
 void OpenGL::ShowLimits()
@@ -303,62 +319,77 @@ void OpenGL::ShowLimits()
 	ShowUniformLimits();
 	std::cout << "\n";
 
-	ShowTable(
-		3, (std::string[]) {
+	{
+		std::string tablecols[3] {
 			"Vert",
 			"Geom",
 			"Frag",
-		},
-		3, (std::string[]) {
+		};
+		std::string tablerows[3] {
 			"Input Components",
 			"Output Components",
 			"Total Output Components",
-		},
-		23, 4,
-		(int []) {
+		};
+		int data[] = {
 			-1,
 			getInt(GL_MAX_VERTEX_OUTPUT_COMPONENTS),
 			-1,
-
+			
 			getInt(GL_MAX_GEOMETRY_INPUT_COMPONENTS),
 			getInt(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS),
 			getInt(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS),
-
+			
 			getInt(GL_MAX_FRAGMENT_INPUT_COMPONENTS),
 			-1,
 			-1
-		}
-	);
+		};
+		ShowTable(
+			3, tablecols,
+			3, tablerows,
+			23, 4,
+			data
+		);
+	}
 	std::cout << "\n";
 	std::cout << "Shader Storage Buffer\n";
-	ShowTable(
-		3, (std::string[]) {
+	{
+		std::string tablecols[3] {
 			"Vert",
 			"Geom",
 			"Frag",
-		},
-		1, (std::string[]) {
+		};
+		std::string tablerows[1] {
 			"SSB Blocks",
-		},
-		10, 4,
-		(int []) {
+		};
+		int data[] = {
 			getInt(GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS),
 			getInt(GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS),
 			getInt(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS),
-		}
-	);
-	ShowTable(
-		1, (std::string[]) {
-			"",
-		},
-		1, (std::string[]) {
-			"SSB Size",
-		},
-		8, 10,
-		(int []) {
+		};
+		ShowTable(
+			3, tablecols,
+			1, tablerows,
+			10, 4,
+			data
+		);
+	}
+	{
+		std::string tablecols[1] {
+				"",
+		};
+		std::string tablerows[1] {
+				"SSB Size",
+		};
+		int data[] = {
 			getInt(GL_MAX_SHADER_STORAGE_BLOCK_SIZE),
-		}
-	);
+		};
+		ShowTable(
+			1, tablecols,
+			1, tablerows,
+			8, 10,
+			data
+		);
+	}
 	std::cout << "\n";
 	ShowTextureLimits();
 	std::cout << "\n";

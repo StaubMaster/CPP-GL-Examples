@@ -21,7 +21,6 @@ ARGUMENTS += $(FM_ARGUMENTS)
 
 $(FM_REPO) :
 	git clone $(FM_HTTPS) -q $(FM_REPO)
-	$(MAKE) -C $(FM_REPO) -s repos_clone
 
 $(FM_LIBRARYS) : $(FM_REPO)
 	$(MAKE) -C $(FM_REPO) -s $(@:$(FM_REPO)/%=%)

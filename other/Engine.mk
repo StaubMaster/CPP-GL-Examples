@@ -21,7 +21,6 @@ ARGUMENTS += $(ENGINE_ARGUMENTS)
 
 $(ENGINE_REPO) :
 	git clone $(ENGINE_HTTPS) -q $(ENGINE_REPO)
-	$(MAKE) -C $(ENGINE_REPO) -s repos_clone
 
 $(ENGINE_LIBRARYS) : $(ENGINE_REPO)
 	$(MAKE) -C $(ENGINE_REPO) -s $(@:$(ENGINE_REPO)/%=%)

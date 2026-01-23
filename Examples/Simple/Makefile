@@ -88,6 +88,6 @@ arguments: repos_clone
 
 REPOS_DIR := $(BASE_DIR)other/
 include $(BASE_DIR)repos.mk
-include $(BASE_DIR)otherEngine.mk
-include $(BASE_DIR)otherFileManager.mk
-include $(BASE_DIR)otherOpenGL.mk
+include $(BASE_DIR)other/Engine.mk
+include $(BASE_DIR)other/FileManager.mk
+include $(BASE_DIR)other/OpenGL.mk

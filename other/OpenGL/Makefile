@@ -1,6 +1,14 @@
 
 NAME := openGL.a
+
+COMPILER_C := cc -fPIE
+COMPILER_CPP := g++ -g -std=c++11
 FLAGS := -Wall -Wextra -Werror
+ARCHIVER := ar -rcs
+REMOVER := rm -f
+
+FANCY_NAME := OpenGL
+include fancy.mk
 
 
 
@@ -14,45 +22,31 @@ FILES_OBJ := $(FILES_OBJ:.cpp=.o)
 
 
 
-
-
-################################################################
-#                           OS Stuff                           #
-################################################################
-
-ifeq ($(OS), Windows_NT)
-	CheckOS := Windows
-else
-	CheckOS := $(shell uname -s)
-endif
-
-################################################################
-
-
-
-
-
 ################################################################
 
 all:
-	$(MAKE) $(FILES_OBJ)
-	$(MAKE) $(NAME)
+	@$(call fancyNameTargetEcho,$@)
+	@$(MAKE) -s $(NAME)
 
 clean:
-	rm -f $(FILES_OBJ)
+	@$(call fancyNameTargetEcho,$@)
+	@$(REMOVER) $(FILES_OBJ)
 
 fclean:
-	$(MAKE) clean
-	rm -f $(NAME)
+	@$(call fancyNameTargetEcho,$@)
+	@$(MAKE) -s clean
+	@$(REMOVER) $(NAME)
 
 re:
-	$(MAKE) fclean
-	$(MAKE) all
+	@$(call fancyNameTargetEcho,$@)
+	@$(MAKE) -s fclean
+	@$(MAKE) -s all
 
 .PHONY: all clean fclean re
 
 $(NAME) : $(FILES_OBJ)
-	ar -rcs $(NAME) $(FILES_OBJ)
+	@$(call fancyNameArchivingEcho,$@)
+	@$(ARCHIVER) $(NAME) $(FILES_OBJ)
 
 ################################################################
 
@@ -61,10 +55,12 @@ $(NAME) : $(FILES_OBJ)
 
 
 %.o : %.c
-	cc $(FLAGS) -c $^ -o $@
+	@$(call fancyNameCompilingEcho,$@)
+	@$(COMPILER_C) $(FLAGS) -c $^ -o $@
 
 %.o : %.cpp
-	c++ -std=c++11 $(FLAGS) -c $^ -o $@
+	@$(call fancyNameCompilingEcho,$@)
+	@$(COMPILER_CPP) $(FLAGS) -c $^ -o $@
 
 
 
@@ -73,22 +69,30 @@ $(NAME) : $(FILES_OBJ)
 
 
 ################################################################
-
-LIBRARYS = $(NAME)
-INCLUDES = ../
-ARGUMENTS = $(OS_ARGS)
-
-librarys:
-	@echo $(LIBRARYS)
-
-includes:
-	@echo $(INCLUDES)
-
-arguments:
-	@echo $(ARGUMENTS)
-
-.PHONY: librarys includes arguments
-
+#                           OS Stuff                           #
 ################################################################
-
-
+#
+#ifeq ($(OS), Windows_NT)
+#	CheckOS := Windows
+#else
+#	CheckOS := $(shell uname -s)
+#endif
+#
+################################################################
+#
+#LIBRARYS := $(NAME)
+#INCLUDES := ../
+#ARGUMENTS := $(OS_ARGS)
+#
+#librarys:
+#	@echo $(LIBRARYS)
+#
+#includes:
+#	@echo $(INCLUDES)
+#
+#arguments:
+#	@echo $(ARGUMENTS)
+#
+#.PHONY: librarys includes arguments
+#
+################################################################
