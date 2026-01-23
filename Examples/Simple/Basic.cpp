@@ -48,16 +48,35 @@ MainContext() :
 	ImageDir("../../media/Images"),
 	ShaderDir("../../media/Shaders"),
 	YMTDir("../../media/YMT"),
-	win(NULL)
+	win(NULL),
+	ViewTrans(),
+	ViewDepth(),
+	ViewFOV(),
+	_PolyHedra_3D_Manager(new PolyHedra_Simple3D::ManagerMulti()),
+	PolyHedra_3D_Manager(*_PolyHedra_3D_Manager),
+	_Instance_Entrys(new Container::Binary<EntryContainer::Entry<Simple3D::Data>>()),
+	Instance_Entrys(*_Instance_Entrys)
 { }
+~MainContext()
+{
+	std::cout << "deleting _PolyHedra_3D_Manager ...\n";
+	delete _PolyHedra_3D_Manager;
+	std::cout << "deleting _PolyHedra_3D_Manager done\n";
+
+	std::cout << "deleting _Instance_Entrys ...\n";
+	delete _Instance_Entrys;
+	std::cout << "deleting _Instance_Entrys done\n";
+}
 
 Trans3D	ViewTrans;
 Depth	ViewDepth;
-float	ViewFOV = 90;
+float	ViewFOV;
 
-PolyHedra_Simple3D::ManagerMulti PolyHedra_3D_Manager;
+PolyHedra_Simple3D::ManagerMulti * _PolyHedra_3D_Manager;
+PolyHedra_Simple3D::ManagerMulti & PolyHedra_3D_Manager;
 
-Container::Binary<EntryContainer::Entry<Simple3D::Data>> Instance_Entrys;
+Container::Binary<EntryContainer::Entry<Simple3D::Data>> * _Instance_Entrys;
+Container::Binary<EntryContainer::Entry<Simple3D::Data>> & Instance_Entrys;
 
 
 
@@ -150,8 +169,7 @@ void FreeRun()
 	{
 		Instance_Entrys[i].Dispose();
 	}
-
-	PolyHedra_3D_Manager.Clear();
+	PolyHedra_3D_Manager.Dispose();
 
 	FreeGraphics();
 }
@@ -218,6 +236,7 @@ int Main()
 	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
 	ViewDepth.Range = Range(0.8f, 1.0f);
 	ViewDepth.Color = win -> DefaultColor;
+	ViewFOV = 90;
 
 	Debug::Log << "<<<< Run Window" << Debug::Done;
 	win -> Run();
@@ -250,7 +269,9 @@ int main()
 		try { ret = context -> Main(); }
 		catch (std::exception & ex) { Debug::Log << "Error: " << ex.what() << Debug::Done; }
 		catch (...) { Debug::Log << "Error: " << "Unknown" << Debug::Done; }
+		std::cout << "Deleting Context ...\n" << std::flush;
 		delete context;
+		std::cout << "Deleting Context done\n" << std::flush;
 	}
 	Debug::Log << "main() return " << ret << Debug::Done;
 	return ret;

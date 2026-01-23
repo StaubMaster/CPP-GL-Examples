@@ -26,6 +26,7 @@ FILES_OBJ := $(FILES_SRC:.cpp=.o)
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(MAKE) -s repos_clone
+	@echo $(LIBRARYS)
 	@$(MAKE) -s $(EXES)
 
 clean:
@@ -53,7 +54,7 @@ FANCY_NAME := Simple
 
 
 %.exe : %.cpp
-	@$(MAKE) $(LIBRARYS)
+	@$(MAKE) -s $(LIBRARYS)
 	@mkdir -p logs/
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ $< $(ARGS_LIBRARYS) $(ARGUMENTS)
