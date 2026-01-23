@@ -9,13 +9,13 @@ UI::Text::Font::Character::Character() :
 
 
 
-UI::Text::Font::Font()
+UI::Text::Font::Font() :
+	AtlasTexture()
 {
-	AtlasTexture = NULL;
 }
 UI::Text::Font::~Font()
 {
-	delete AtlasTexture;
+	AtlasTexture.Dispose();
 }
 
 

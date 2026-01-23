@@ -20,8 +20,8 @@ class CheckBox : public Base
 	bool Checked;
 
 	private:
-	Color ColorChecked;
-	Color ColorCheckedHover;
+	ColorF4 ColorChecked;
+	ColorF4 ColorCheckedHover;
 	bool Color2Changed;
 
 	public:

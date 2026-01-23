@@ -1,4 +1,6 @@
 
+################################################################
+
 ifeq ($(OS), Windows_NT)
 	CheckOS := Windows
 else
@@ -39,12 +41,20 @@ endif
 
 
 
+#	@$(call fancyEcho,Arg0,Arg1,Arg2)
+
 define fancyEcho
 	@$(FANCY_ECHO) "$(COLOR_REPO)$(1): $(COLOR_TYPE)$(2): $(COLOR_FILE)$(3)$(COLOR_NONE)"
 endef
 
+define fancyNameTargetEcho
+	@$(call fancyEcho,$(FANCY_NAME),Target,$(1))
+endef
 
+define fancyNameCompilingEcho
+	@$(call fancyEcho,$(FANCY_NAME),Compiling,$(1))
+endef
 
-fancy_explanation:
-	@$(call fancyEcho,Fancy,Default,Example)
-.PHONY: fancy_explanation
+define fancyNameArchivingEcho
+	@$(call fancyEcho,$(FANCY_NAME),Archiving,$(1))
+endef

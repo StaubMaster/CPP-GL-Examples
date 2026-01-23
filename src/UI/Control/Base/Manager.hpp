@@ -16,12 +16,12 @@
 #include "UserParameter/KeyBoard/Key.hpp"
 #include "UserParameter/KeyBoard/Text.hpp"
 
-#include "Miscellaneous/Container/Dynamic.hpp"
-#include "Miscellaneous/EntryContainer/Dynamic.hpp"
+#include "Miscellaneous/Container/Binary.hpp"
+#include "Miscellaneous/EntryContainer/Binary.hpp"
 
 
 
-class DirectoryContext;
+class DirectoryInfo;
 
 
 
@@ -37,11 +37,11 @@ class Window;
 class Manager
 {
 	public:
-		BaseShader Shader;
+		Shader Shader;
 		BufferArray BufferArray;
 
-		Container::Dynamic<Control::Main_Data> Main_Data_Container;
-		EntryContainer::Dynamic<Control::Inst_Data> Inst_Data_Container;
+		Container::Binary<Control::Main_Data> Main_Data_Container;
+		EntryContainer::Binary<Control::Inst_Data> Inst_Data_Container;
 
 		WindowBufferSize2D WindowSize;
 
@@ -51,7 +51,7 @@ class Manager
 		Base * Selected;
 
 	public:
-		Manager(const DirectoryContext & dir);
+		Manager(const DirectoryInfo & dir);
 		~Manager();
 
 		void Draw();

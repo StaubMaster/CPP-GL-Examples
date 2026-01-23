@@ -2,9 +2,9 @@
 
 #include "DataInclude.hpp"
 
-#include "DirectoryContext.hpp"
-#include "FileContext.hpp"
-#include "Format/Image.hpp"
+#include "DirectoryInfo.hpp"
+#include "FileInfo.hpp"
+#include "Image.hpp"
 
 #include "DataShow.hpp"
 #include "OpenGL/openGL.h"
@@ -12,7 +12,7 @@
 
 
 
-UI::Text::Manager::Manager(const DirectoryContext & shader_dir, const DirectoryContext & text_dir) :
+UI::Text::Manager::Manager(const DirectoryInfo & shader_dir, const DirectoryInfo & text_dir) :
 	Shader(shader_dir),
 	BufferArray(),
 	Main_Data_Container(),
@@ -26,7 +26,8 @@ UI::Text::Manager::Manager(const DirectoryContext & shader_dir, const DirectoryC
 	{
 		std::cout << "Font" << ' ' << (TextFont -> Characters[i].Code) << ' ' << (TextFont -> Characters[i].Box.Min) << ' ' << (TextFont -> Characters[i].Box.Max) << '\n';
 	}*/
-	Pallet_Texture = new Texture::T2DArray(TextFont -> AtlasTexture);
+	Pallet_Texture = new Texture::Array2D();
+	Pallet_Texture -> Assign(TextFont -> AtlasTexture);
 
 	//Image * img = image_dir.File("Text_16x8_32x32.png").LoadImagePNG();
 	//Image * img = Image::Missing();
@@ -57,20 +58,13 @@ void UI::Text::Manager::Draw()
 		Inst_Data_Container.CompactHere();
 	}
 
-	BufferArray.Use();
+	BufferArray.Bind();
 
-	BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0,
-		sizeof(UI::Text::Main_Data) * Main_Data_Container.Count(),
-		Main_Data_Container.Data(), GL_STREAM_DRAW);
-	BufferArray.Main.Count = Main_Data_Container.Count();
+	BufferArray.Main.Change(Main_Data_Container);
+	BufferArray.Inst.Change(Inst_Data_Container);
 
-	BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0,
-		sizeof(UI::Text::Inst_Data) * Inst_Data_Container.Count(),
-		Inst_Data_Container.Data(), GL_STREAM_DRAW);
-	BufferArray.Inst.Count = Inst_Data_Container.Count();
-
-	Shader.Use();
+	Shader.Bind();
 	Pallet_Texture -> Bind();
-	BufferArray.Use();
+	BufferArray.Bind();
 	BufferArray.Draw();
 }

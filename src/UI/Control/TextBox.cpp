@@ -14,8 +14,8 @@ UI::Control::TextBox::TextBox(UI::Text::Manager & text_manager)
 	Anchor.X.Anchor = ANCHOR_MIN;
 	Anchor.Y.Anchor = ANCHOR_MIN;
 	AnchorSize = Point2D(50, 25);
-	ColorDefault = Color(1.0f, 1.0f, 1.0f);
-	ColorHover = Color(0.875f, 0.875f, 0.875f);
+	ColorDefault = ColorF4(1.0f, 1.0f, 1.0f);
+	ColorHover = ColorF4(0.875f, 0.875f, 0.875f);
 
 	CharacterSize = Point2D(20, 20);
 	CharacterCountLimit = 0;

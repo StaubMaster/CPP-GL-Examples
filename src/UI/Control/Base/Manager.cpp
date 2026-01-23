@@ -2,15 +2,21 @@
 #include "UserParameter/MouseInclude.hpp"
 #include "../Window.hpp"
 
+#include "Graphics/Shader/Code.hpp"
+#include "DirectoryInfo.hpp"
+
 #include "DataInclude.hpp"
 
 #include "OpenGL/openGL.h"
 #include <iostream>
 
+#include "Debug.hpp"
+#include "DataShow.hpp"
 
 
-UI::Control::Manager::Manager(const DirectoryContext & dir) :
-	Shader(dir),
+
+UI::Control::Manager::Manager(const DirectoryInfo & dir) :
+	Shader(),
 	BufferArray(),
 	Main_Data_Container(),
 	Inst_Data_Container(),
@@ -18,6 +24,15 @@ UI::Control::Manager::Manager(const DirectoryContext & dir) :
 	Window(new UI::Control::Window(this))
 {
 	std::cout << "  ++++  " << "Manager()" << "\n";
+
+	{
+		Container::Fixed<::Shader::Code> code(2);
+		code.Insert(::Shader::Code(dir.File("UI/Control.vert")));
+		code.Insert(::Shader::Code(dir.File("UI/Control.frag")));
+		Shader.Change(code);
+	}
+	Shader.Create();
+	BufferArray.Create();
 
 	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, -1)));
 	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
@@ -35,6 +50,9 @@ UI::Control::Manager::~Manager()
 {
 	std::cout << "  ----  " << "~Manager()" << "\n";
 
+	BufferArray.Delete();
+	Shader.Delete();
+
 	delete Window;
 }
 
@@ -47,20 +65,35 @@ void UI::Control::Manager::Draw()
 		Inst_Data_Container.CompactHere();
 	}
 
-	BufferArray.Use();
+	//Shader.LogInfo();
+	//BufferArray.LogInfo();
 
-	BufferArray.Main.BindData(GL_ARRAY_BUFFER, 0,
-		sizeof(UI::Control::Main_Data) * Main_Data_Container.Count(),
-		Main_Data_Container.Data(), GL_STREAM_DRAW);
-	BufferArray.Main.Count = Main_Data_Container.Count();
+	{
+		Debug::Log << "Main Data:\n";
+		for (unsigned int i = 0; i < Main_Data_Container.Count(); i++)
+		{
+			Main_Data & data = Main_Data_Container[i];
+			Debug::Log << data.Pos << "\n";
+		}
+		Debug::Log << Debug::Done;
+	}
 
-	BufferArray.Inst.BindData(GL_ARRAY_BUFFER, 0,
-		sizeof(UI::Control::Inst_Data) * Inst_Data_Container.Count(),
-		Inst_Data_Container.Data(), GL_STREAM_DRAW);
-	BufferArray.Inst.Count = Inst_Data_Container.Count();
+	{
+		Debug::Log << "Inst Data:\n";
+		for (unsigned int i = 0; i < Inst_Data_Container.Count(); i++)
+		{
+			Inst_Data & data = Inst_Data_Container[i];
+			Debug::Log << data.Min << " " << data.Max << " " << data.Layer << " " << data.Col << "\n";
+		}
+		Debug::Log << Debug::Done;
+	}
 
-	Shader.Use();
-	BufferArray.Use();
+	BufferArray.Bind();
+	BufferArray.Main.Change(Main_Data_Container);
+	BufferArray.Inst.Change(Inst_Data_Container);
+
+	Shader.Bind();
+	BufferArray.Bind();
 	BufferArray.Draw();
 }
 

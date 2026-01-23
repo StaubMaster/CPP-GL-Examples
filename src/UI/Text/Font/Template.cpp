@@ -21,13 +21,13 @@ void UI::Text::Font::Template::Change_Scale(Point2D scale)
 {
 	Scale = scale;
 }
-void UI::Text::Font::Template::Insert_Image(Image * img)
+void UI::Text::Font::Template::Insert_Image(Image img)
 {
-	if (Referance.AtlasTexture != NULL)
+	if (!Referance.AtlasTexture.Empty())
 	{
-		delete Referance.AtlasTexture;
+		Referance.AtlasTexture.Dispose();
 	}
-	Referance.AtlasTexture = img;
+	Referance.AtlasTexture.Bind(img);
 }
 void UI::Text::Font::Template::Change_DefaultCharacter(Point2D pos, Point2D size)
 {

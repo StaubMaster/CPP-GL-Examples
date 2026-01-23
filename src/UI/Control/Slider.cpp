@@ -10,8 +10,8 @@ UI::Control::Slider::Slider() : Base()
 	Anchor.X.Anchor = ANCHOR_MIN;
 	Anchor.Y.Anchor = ANCHOR_MIN;
 	AnchorSize = Point2D(75, 25);
-	ColorDefault = Color(0.375f, 0.375f, 0.375f);
-	ColorHover = Color(0.25f, 0.25f, 0.25f);
+	ColorDefault = ColorF4(0.375f, 0.375f, 0.375f);
+	ColorHover = ColorF4(0.25f, 0.25f, 0.25f);
 
 	SliderChanged = true;
 	SliderSize = 10.0f;
@@ -68,7 +68,7 @@ void UI::Control::Slider::InsertDrawingEntryRelay()
 	if (!SliderEntry.Is())
 	{
 		SliderEntry.Allocate(ControlManager -> Inst_Data_Container, 1);
-		(*SliderEntry).Col = Color(0.5f, 0.5f, 0.5f);
+		(*SliderEntry).Col = ColorF4(0.5f, 0.5f, 0.5f);
 		(*SliderEntry).Layer = Layer - 0.01f;
 		SliderChanged = true;
 	}

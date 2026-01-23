@@ -1,8 +1,8 @@
 #ifndef  UI_TEXT_BUFFER
 # define UI_TEXT_BUFFER
 
-# include "Graphics/Buffer/BaseBufferArray.hpp"
-# include "Graphics/Buffer/BaseBuffer.hpp"
+#include "Graphics/Buffer/ArrayBase.hpp"
+#include "Graphics/Buffer/Attribute.hpp"
 
 # include "Graphics/Attribute/Base/AttributeBase.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
@@ -15,53 +15,46 @@ namespace UI
 namespace Text
 {
 
-class Main_Attribute : public Attribute::Base
+class Main_Buffer : public ::Buffer::Attribute
 {
 	private:
-		Attribute::Point2D	Pos;
+	::Attribute::Point2D	Pos;
 	public:
-		Main_Attribute(
-			unsigned int divisor,
-			unsigned int stride,
-			unsigned int indexPos
-		);
-	public:
-		void Bind(const unsigned char * & offset) const override;
+	Main_Buffer(
+		unsigned int indexPos
+	);
 };
 
-class Inst_Attribute : public Attribute::Base
+class Inst_Buffer : public ::Buffer::Attribute
 {
 	private:
-		Attribute::Point2D	Pos;
-		Attribute::Point2D	PalletMin;
-		Attribute::Point2D	PalletMax;
-		Attribute::Point2D	BoundMin;
-		Attribute::Point2D	BoundMax;
+	::Attribute::Point2D	Pos;
+	::Attribute::Point2D	PalletMin;
+	::Attribute::Point2D	PalletMax;
+	::Attribute::Point2D	BoundMin;
+	::Attribute::Point2D	BoundMax;
 	public:
-		Inst_Attribute(
-			unsigned int divisor,
-			unsigned int stride,
-			unsigned int indexPos,
-			unsigned int indexPalletMin,
-			unsigned int indexPalletMax,
-			unsigned int indexBoundMin,
-			unsigned int indexBoundMax
-		);
-	public:
-		void Bind(const unsigned char * & offset) const override;
+	Inst_Buffer(
+		unsigned int indexPos,
+		unsigned int indexPalletMin,
+		unsigned int indexPalletMax,
+		unsigned int indexBoundMin,
+		unsigned int indexBoundMax
+	);
 };
 
-class BufferArray : public BaseBufferArray
+class BufferArray : public ::BufferArray::Base
 {
 	public:
-		BaseBuffer Main;
-		BaseBuffer Inst;
+	Main_Buffer		Main;
+	Inst_Buffer		Inst;
+	unsigned int	DrawMode;
 
 	public:
-		BufferArray();
+	BufferArray();
 
 	public:
-		void Draw() override;
+	void Draw();
 };
 
 };

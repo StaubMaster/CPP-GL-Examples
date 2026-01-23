@@ -10,13 +10,13 @@ UI::Control::CheckBox::CheckBox() : Base()
 	Anchor.X.Anchor = ANCHOR_MIN;
 	Anchor.Y.Anchor = ANCHOR_MIN;
 	AnchorSize = Point2D(25, 25);
-	ColorDefault = Color(1.0f, 0.0f, 0.0f);
-	ColorHover = Color(0.75f, 0.0f, 0.0f);
+	ColorDefault = ColorF4(1.0f, 0.0f, 0.0f);
+	ColorHover = ColorF4(0.75f, 0.0f, 0.0f);
 
 	Checked = false;
 
-	ColorChecked = Color(0.0f, 1.0f, 0.0f);
-	ColorCheckedHover = Color(0.0f, 0.75f, 0.0f);
+	ColorChecked = ColorF4(0.0f, 1.0f, 0.0f);
+	ColorCheckedHover = ColorF4(0.0f, 0.75f, 0.0f);
 }
 UI::Control::CheckBox::~CheckBox()
 { }

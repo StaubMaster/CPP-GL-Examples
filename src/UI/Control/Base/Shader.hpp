@@ -7,7 +7,7 @@
 
 
 
-class DirectoryContext;
+class DirectoryInfo;
 
 
 
@@ -17,14 +17,15 @@ namespace UI
 namespace Control
 {
 
-class BaseShader : public Shader::Base
+class Shader : public ::Shader::Base
 {
 	public:
-		Uniform::WindowBufferSize2D WindowSize;
+	Uniform::WindowBufferSize2D WindowSize;
 
 	public:
-		BaseShader(const DirectoryContext & dir);
-		~BaseShader();
+	Shader();
+	//Shader(const DirectoryInfo & dir);
+	~Shader();
 };
 
 };

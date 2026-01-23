@@ -5,49 +5,52 @@
 
 
 
-UI::Control::Main_Attribute::Main_Attribute(
-	unsigned int divisor,
-	unsigned int stride,
+UI::Control::Main_Buffer::Main_Buffer(
 	unsigned int indexPos
 ) :
-	Pos(divisor, stride, indexPos)
-{ }
-void UI::Control::Main_Attribute::Bind(const unsigned char * & offset) const
+	Pos(0, sizeof(Main_Data), indexPos)
 {
-	Pos.Bind(offset);
+	Attributes.Allocate(1);
+	Attributes.Insert(&Pos);
 }
 
 
 
-UI::Control::Inst_Attribute::Inst_Attribute(
-	unsigned int divisor,
-	unsigned int stride,
+UI::Control::Inst_Buffer::Inst_Buffer(
 	unsigned int indexMin,
 	unsigned int indexMax,
 	unsigned int indexLayer,
 	unsigned int indexCol
 ) :
-	Min(divisor, stride, indexMin),
-	Max(divisor, stride, indexMax),
-	Layer(divisor, stride, indexLayer),
-	Col(divisor, stride, indexCol)
-{ }
-void UI::Control::Inst_Attribute::Bind(const unsigned char * & offset) const
+	Min(1, sizeof(Inst_Data), indexMin),
+	Max(1, sizeof(Inst_Data), indexMax),
+	Layer(1, sizeof(Inst_Data), indexLayer),
+	Col(1, sizeof(Inst_Data), indexCol)
 {
-	Min.Bind(offset);
-	Max.Bind(offset);
-	Layer.Bind(offset);
-	Col.Bind(offset);
+	Attributes.Allocate(4);
+	Attributes.Insert(&Min);
+	Attributes.Insert(&Max);
+	Attributes.Insert(&Layer);
+	Attributes.Insert(&Col);
 }
 
 
 
+//#include "Debug.hpp"
+//#include <sstream>
 
 UI::Control::BufferArray::BufferArray() :
-	Main(1, (Attribute::Base * []) { new Main_Attribute(0, sizeof(UI::Control::Main_Data), 0) }),
-	Inst(1, (Attribute::Base * []) { new Inst_Attribute(1, sizeof(UI::Control::Inst_Data), 1, 2, 3, 4) })
-{ }
+	Main(0),
+	Inst(1, 2, 3, 4),
+	DrawMode(GL_TRIANGLES)
+{
+	Buffers.Allocate(2);
+	Buffers.Insert(&Main);
+	Buffers.Insert(&Inst);
+}
 void UI::Control::BufferArray::Draw()
 {
-	glDrawArraysInstanced(GL_TRIANGLES, 0, Main.Count, Inst.Count);
+	//Debug::Log << "Draw: " << Main.DrawCount << " " << Inst.DrawCount << Debug::Done;
+	Bind();
+	glDrawArraysInstanced(DrawMode, 0, Main.DrawCount, Inst.DrawCount);
 }

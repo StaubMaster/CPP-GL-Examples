@@ -1,15 +1,15 @@
 #ifndef  UI_TEXT_FONT_HPP
 # define UI_TEXT_FONT_HPP
 
-# include "Parsing/ParsingCommand.hpp"
-# include "Format/Image.hpp"
-# include "Miscellaneous/Container/Dynamic.hpp"
-# include "DataStruct/AxisBox2D.hpp"
+# include "FileParsing/Text/TextCommand.hpp"
+# include "Image.hpp"
+# include "Miscellaneous/Container/Binary.hpp"
+# include "ValueType/AxisBox2D.hpp"
 
 # include <string>
 # include <exception>
 
-struct FileContext;
+class FileInfo;
 
 namespace UI
 {
@@ -28,9 +28,9 @@ class Font
 	};
 
 	public:
-	Image *							AtlasTexture;
+	Image							AtlasTexture;
 	Character						DefaultCharacter;
-	Container::Dynamic<Character>	Characters;
+	Container::Binary<Character>	Characters;
 
 	private:
 	Font();
@@ -47,7 +47,7 @@ class Font
 	private:
 	struct ParsingData;
 	public:
-	static Font * Parse(const FileContext & file);
+	static Font * Parse(const FileInfo & file);
 };
 
 };

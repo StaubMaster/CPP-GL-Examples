@@ -1,12 +1,12 @@
 #ifndef  UI_CONTROL_BUFFER_HPP
 # define UI_CONTROL_BUFFER_HPP
 
-#include "Graphics/Buffer/BaseBufferArray.hpp"
-#include "Graphics/Buffer/BaseBuffer.hpp"
+#include "Graphics/Buffer/ArrayBase.hpp"
+#include "Graphics/Buffer/Attribute.hpp"
 
 #include "Graphics/Attribute/Base/AttributeBase.hpp"
 #include "Graphics/Attribute/Point2D.hpp"
-#include "Graphics/Attribute/Color.hpp"
+#include "Graphics/Attribute/ColorF4.hpp"
 
 
 
@@ -16,50 +16,44 @@ namespace UI
 namespace Control
 {
 
-class Main_Attribute : public Attribute::Base
+class Main_Buffer : public ::Buffer::Attribute
 {
 	private:
-		Attribute::Point2D	Pos;
+	::Attribute::Point2D	Pos;
 	public:
-		Main_Attribute(
-			unsigned int divisor,
-			unsigned int stride,
-			unsigned int indexPos
-		);
-	public:
-		void Bind(const unsigned char * & offset) const override;
+	Main_Buffer(
+		unsigned int indexPos
+	);
 };
-class Inst_Attribute : public Attribute::Base
+
+class Inst_Buffer : public Buffer::Attribute
 {
 	private:
-		Attribute::Point2D	Min;
-		Attribute::Point2D	Max;
-		Attribute::FloatN	Layer;
-		Attribute::Color	Col;
+	::Attribute::Point2D	Min;
+	::Attribute::Point2D	Max;
+	::Attribute::FloatN		Layer;
+	::Attribute::ColorF4	Col;
 	public:
-		Inst_Attribute(
-			unsigned int divisor,
-			unsigned int stride,
-			unsigned int indexMin,
-			unsigned int indexMax,
-			unsigned int indexLayer,
-			unsigned int indexCol
-		);
-	public:
-		void Bind(const unsigned char * & offset) const override;
+	Inst_Buffer(
+		unsigned int indexMin,
+		unsigned int indexMax,
+		unsigned int indexLayer,
+		unsigned int indexCol
+	);
 };
 
-class BufferArray : public BaseBufferArray
+class BufferArray : public ::BufferArray::Base
 {
 	public:
-		BaseBuffer Main;
-		BaseBuffer Inst;
+	Main_Buffer		Main;
+	Inst_Buffer		Inst;
+	unsigned int	DrawMode;
 
 	public:
-		BufferArray();
+	BufferArray();
 
 	public:
-		void Draw() override;
+	void Draw();
 };
 
 };

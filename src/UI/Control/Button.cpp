@@ -9,8 +9,8 @@ UI::Control::Button::Button() : Base()
 	Anchor.X.Anchor = ANCHOR_MIN;
 	Anchor.Y.Anchor = ANCHOR_MIN;
 	AnchorSize = Point2D(75, 25);
-	ColorDefault = Color(0.625f, 0.625f, 0.625f);
-	ColorHover = Color(0.5f, 0.5f, 0.5f);
+	ColorDefault = ColorF4(0.625f, 0.625f, 0.625f);
+	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
 	
 	ClickFunc = NULL;
 }

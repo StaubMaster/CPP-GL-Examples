@@ -1,22 +1,20 @@
 #include "Shader.hpp"
 #include "Graphics/Shader/Code.hpp"
+#include "Miscellaneous/Container/Fixed.hpp"
 
-#include "DirectoryContext.hpp"
-#include "FileContext.hpp"
+#include "DirectoryInfo.hpp"
+#include "FileInfo.hpp"
 
 
 
-UI::Text::TextShader::TextShader(const DirectoryContext & dir)
-	: Shader::Base(
-		Container::Base<Shader::Code>(
-			(Shader::Code [])
-			{
-				Shader::Code(dir.File("UI/Text.vert")),
-				Shader::Code(dir.File("UI/Text.frag"))
-			}, 2
-		)
-	),
+UI::Text::TextShader::TextShader(const DirectoryInfo & dir)
+	: Shader::Base(),
 	WindowSize(Uniform::NameShader("WindowSize", *this))
-{ }
+{
+	Container::Fixed<::Shader::Code> code(2);
+	code.Insert(Shader::Code(dir.File("UI/Text.vert")));
+	code.Insert(Shader::Code(dir.File("UI/Text.frag")));
+	Change(code);
+}
 UI::Text::TextShader::~TextShader()
 { }

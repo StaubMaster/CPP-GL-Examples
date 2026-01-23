@@ -1,15 +1,15 @@
 #ifndef  UI_TEXT_FONT_PARSING_HPP
 # define UI_TEXT_FONT_PARSING_HPP
 
+# include "FileInfo.hpp"
 # include "UI/Text/Font/Font.hpp"
-# include "Parsing/ParsingCommand.hpp"
 
-# include "DataStruct/Point2D.hpp"
+# include "ValueType/Point2D.hpp"
 
 # include <string>
 # include <exception>
 
-class FileContext;
+class TextCommand;
 
 namespace UI
 {
@@ -17,21 +17,22 @@ namespace UI
 namespace Text
 {
 
-struct Font::ParsingData : public ParsingCommand::EnvironmentData
+struct Font::ParsingData
 {
+	FileInfo			File;
 	Font *				Data;
 	Font::Template *	Temp;
 
-	ParsingData(const FileContext & file);
+	ParsingData(const FileInfo & file);
 	~ParsingData();
 
-	void Parse(const ParsingCommand & cmd) override;
+	void Parse(const TextCommand & cmd);
 
-	void Parse_Type(const ParsingCommand & cmd);
+	void Parse_Type(const TextCommand & cmd);
 
-	void Parse_Image(const ParsingCommand & cmd);
-	void Parse_Scale(const ParsingCommand & cmd);
-	void Parse_Character(const ParsingCommand & cmd);
+	void Parse_Image(const TextCommand & cmd);
+	void Parse_Scale(const TextCommand & cmd);
+	void Parse_Character(const TextCommand & cmd);
 };
 
 };

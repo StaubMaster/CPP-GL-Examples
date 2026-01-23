@@ -1,8 +1,8 @@
 #include "Anchor.hpp"
 
-#include "DataStruct/Point2D.hpp"
-#include "DataStruct/AxisBox1D.hpp"
-#include "DataStruct/AxisBox2D.hpp"
+#include "ValueType/Point2D.hpp"
+#include "ValueType/AxisBox1D.hpp"
+#include "ValueType/AxisBox2D.hpp"
 
 
 

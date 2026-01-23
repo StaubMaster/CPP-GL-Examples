@@ -5,15 +5,15 @@
 #include "Buffer.hpp"
 #include "Shader.hpp"
 
-#include "Miscellaneous/Container/Dynamic.hpp"
-#include "Miscellaneous/EntryContainer/Dynamic.hpp"
+#include "Miscellaneous/Container/Binary.hpp"
+#include "Miscellaneous/EntryContainer/Binary.hpp"
 
 #include "Font/Font.hpp"
-#include "Graphics/Texture/2DArray.hpp"
+#include "Graphics/Texture/Array2D.hpp"
 
 
 
-class DirectoryContext;
+class DirectoryInfo;
 
 
 
@@ -26,21 +26,21 @@ namespace Text
 class Manager
 {
 	public:
-		TextShader Shader;
-		BufferArray BufferArray;
+	TextShader Shader;
+	BufferArray BufferArray;
 
-		Container::Dynamic<UI::Text::Main_Data> Main_Data_Container;
-		EntryContainer::Dynamic<UI::Text::Inst_Data> Inst_Data_Container;
+	Container::Binary<UI::Text::Main_Data> Main_Data_Container;
+	EntryContainer::Binary<UI::Text::Inst_Data> Inst_Data_Container;
 
-		Font * TextFont;
-		Texture::T2DArray * Pallet_Texture;
-
-	public:
-		Manager(const DirectoryContext & shader_dir, const DirectoryContext & text_dir);
-		~Manager();
+	Font * TextFont;
+	Texture::Array2D * Pallet_Texture;
 
 	public:
-		void Draw();
+	Manager(const DirectoryInfo & shader_dir, const DirectoryInfo & text_dir);
+	~Manager();
+
+	public:
+	void Draw();
 };
 
 };

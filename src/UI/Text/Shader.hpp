@@ -7,7 +7,7 @@
 
 
 
-class DirectoryContext;
+class DirectoryInfo;
 
 
 
@@ -25,11 +25,11 @@ namespace Text
 class TextShader : public Shader::Base
 {
 	public:
-		Uniform::WindowBufferSize2D WindowSize;
+	Uniform::WindowBufferSize2D WindowSize;
 
 	public:
-		TextShader(const DirectoryContext & dir);
-		~TextShader();
+	TextShader(const DirectoryInfo & dir);
+	~TextShader();
 };
 
 };

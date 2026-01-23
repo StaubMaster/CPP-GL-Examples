@@ -7,28 +7,28 @@
 #include "Window.hpp"
 #include "UserParameter/MouseInclude.hpp"
 
-#include "DirectoryContext.hpp"
-#include "FileContext.hpp"
-#include "Format/Image.hpp"
+#include "DirectoryInfo.hpp"
+#include "FileInfo.hpp"
+#include "Image.hpp"
 
 #include "DataShow.hpp"
-#include "Miscellaneous/Container/Dynamic.hpp"
-#include "Miscellaneous/EntryContainer/Dynamic.hpp"
+
+#include "Miscellaneous/Container/Fixed.hpp"
 
 #include "Graphics/Shader/Code.hpp"
 #include "Graphics/Shader/Base.hpp"
 
-#include "Graphics/Buffer/BaseBufferArray.hpp"
-#include "Graphics/Buffer/BaseBuffer.hpp"
+#include "Graphics/Buffer/ArrayBase.hpp"
+#include "Graphics/Buffer/Base.hpp"
 
 #include "Graphics/Attribute/Base/AttributeBase.hpp"
 #include "Graphics/Attribute/Point2D.hpp"
-#include "Graphics/Attribute/Color.hpp"
+#include "Graphics/Attribute/ColorF4.hpp"
 
 #include "Graphics/UniformsInclude.hpp"
 #include "Graphics/MultiformsInclude.hpp"
 
-#include "Graphics/Texture/2DArray.hpp"
+#include "Graphics/Texture/Array2D.hpp"
 
 
 
@@ -41,9 +41,9 @@
 
 
 
-DirectoryContext ShaderDir("../../media/Shaders");
-DirectoryContext ImageDir("../../media/Images");
-DirectoryContext TextDir("../../media/Text");
+DirectoryInfo ShaderDir("../../media/Shaders");
+DirectoryInfo ImageDir("../../media/Images");
+DirectoryInfo TextDir("../../media/Text");
 
 Window * window;
 
@@ -359,7 +359,7 @@ void UI_Frame()
 	UI_Control_Manager -> Window -> UpdateEntrys();
 	UI_Control_Manager -> Draw();
 
-	UI_Text_Manager -> Draw();
+	//UI_Text_Manager -> Draw();
 }
 
 
@@ -420,9 +420,9 @@ void InitRun()
 
 	UI_Init();
 
-	Container::Base<Shader::Base *> shaders(2);
-	shaders[0] = &(UI_Control_Manager -> Shader);
-	shaders[1] = &(UI_Text_Manager -> Shader);
+	Container::Fixed<Shader::Base *> shaders(2);
+	shaders.Insert(&(UI_Control_Manager -> Shader));
+	shaders.Insert(&(UI_Text_Manager -> Shader));
 
 	Multi_WindowSize = new Multiform::WindowBufferSize2D("WindowSize");
 	Multi_WindowSize -> FindUniforms(shaders);
@@ -491,7 +491,7 @@ void TextFunc(UserParameter::KeyBoard::Text params)
 
 int main()
 {
-	Debug::NewFileInDir(DirectoryContext("logs/"));
+	Debug::NewFileInDir(DirectoryInfo("logs/"));
 
 	if (glfwInit() == 0)
 	{
@@ -499,7 +499,7 @@ int main()
 		return -1;
 	}
 
-	window = new Window(640, 480);
+	window = new Window();
 	window -> InitFunc = InitRun;
 	window -> FrameFunc = Frame;
 	window -> FreeFunc = FreeRun;
@@ -514,7 +514,8 @@ int main()
 	window -> KeyFunc = KeyFunc;
 	window -> TextFunc = TextFunc;
 
-	window -> DefaultColor = Color(0.875f, 0.875f, 0.875f);
+	//window -> DefaultColor = ColorF4(0.875f, 0.875f, 0.875f);
+	window -> DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
 
 	Debug::Log << "<<<< Run Window" << Debug::Done;
 	window -> Run();

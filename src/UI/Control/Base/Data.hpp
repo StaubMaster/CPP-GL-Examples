@@ -23,10 +23,10 @@ struct Inst_Data
 	Point2D	Min;
 	Point2D	Max;
 	float	Layer;
-	Color Col;
+	ColorF4	Col;
 
 	Inst_Data();
-	Inst_Data(Point2D min, Point2D max, float layer, Color col);
+	Inst_Data(Point2D min, Point2D max, float layer, ColorF4 col);
 };
 
 };

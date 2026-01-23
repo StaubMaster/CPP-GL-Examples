@@ -4,36 +4,44 @@ COMPILER := c++ -std=c++11
 FLAGS := -Wall -Wextra -Werror
 
 BASE_DIR := ../../
+UI_DIR := $(BASE_DIR)/src/UI/
+
+include $(BASE_DIR)fancy.mk
+FANCY_NAME := UserInterface
+
+
 
 
 
 FILES_SRC := \
-	$(BASE_DIR)src/UI/Anchor.cpp \
+	$(UI_DIR)/Anchor.cpp \
 \
-	$(BASE_DIR)src/UI/Control/Base/Data.cpp \
-	$(BASE_DIR)src/UI/Control/Base/Buffer.cpp \
-	$(BASE_DIR)src/UI/Control/Base/Shader.cpp \
-	$(BASE_DIR)src/UI/Control/Base/Manager.cpp \
-	$(BASE_DIR)src/UI/Control/Base/Base.cpp \
+	$(UI_DIR)/Control/Base/Data.cpp \
+	$(UI_DIR)/Control/Base/Buffer.cpp \
+	$(UI_DIR)/Control/Base/Shader.cpp \
+	$(UI_DIR)/Control/Base/Manager.cpp \
+	$(UI_DIR)/Control/Base/Base.cpp \
 \
-	$(BASE_DIR)src/UI/Control/Window.cpp \
-	$(BASE_DIR)src/UI/Control/Form.cpp \
-	$(BASE_DIR)src/UI/Control/GroupBox.cpp \
-	$(BASE_DIR)src/UI/Control/Button.cpp \
-	$(BASE_DIR)src/UI/Control/TextBox.cpp \
-	$(BASE_DIR)src/UI/Control/Slider.cpp \
-	$(BASE_DIR)src/UI/Control/CheckBox.cpp \
+	$(UI_DIR)/Control/Window.cpp \
+	$(UI_DIR)/Control/Form.cpp \
+	$(UI_DIR)/Control/GroupBox.cpp \
+	$(UI_DIR)/Control/Button.cpp \
+	$(UI_DIR)/Control/TextBox.cpp \
+	$(UI_DIR)/Control/Slider.cpp \
+	$(UI_DIR)/Control/CheckBox.cpp \
 \
-	$(BASE_DIR)src/UI/Text/Data.cpp \
-	$(BASE_DIR)src/UI/Text/Buffer.cpp \
-	$(BASE_DIR)src/UI/Text/Shader.cpp \
-	$(BASE_DIR)src/UI/Text/Manager.cpp \
-	$(BASE_DIR)src/UI/Text/Font/Font.cpp \
-	$(BASE_DIR)src/UI/Text/Font/Template.cpp \
-	$(BASE_DIR)src/UI/Text/Font/Parsing.cpp \
+	$(UI_DIR)/Text/Data.cpp \
+	$(UI_DIR)/Text/Buffer.cpp \
+	$(UI_DIR)/Text/Shader.cpp \
+	$(UI_DIR)/Text/Manager.cpp \
+	$(UI_DIR)/Text/Font/Font.cpp \
+	$(UI_DIR)/Text/Font/Template.cpp \
+	$(UI_DIR)/Text/Font/Parsing.cpp \
 	main.cpp
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
+
+
 
 
 
@@ -44,7 +52,6 @@ FILES_OBJ := $(FILES_SRC:.cpp=.o)
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(MAKE) -s repos_clone
-	@$(MAKE) -s $(FILES_OBJ)
 	@$(MAKE) -s $(NAME)
 
 clean:
@@ -74,14 +81,13 @@ $(NAME) : $(FILES_OBJ)
 
 
 
-include $(BASE_DIR)fancy.mk
-FANCY_NAME := UserInterface
-
 
 
 %.o : %.cpp
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ -c $<
+
+
 
 
 
@@ -113,4 +119,6 @@ arguments: repos_clone
 
 REPOS_DIR := $(BASE_DIR)other/
 include $(BASE_DIR)repos.mk
-include $(BASE_DIR)repo_Engine.mk
+include $(BASE_DIR)other/Engine.mk
+include $(BASE_DIR)other/FileManager.mk
+include $(BASE_DIR)other/OpenGL.mk

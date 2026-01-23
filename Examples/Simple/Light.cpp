@@ -330,16 +330,7 @@ void Free()
 		Entrys[i].Dispose();
 	}
 
-	//delete PH0_Instances;
-	//delete Poly0;
-	/*for (unsigned int i = 0; i < FancyPolyHedraInstances.Count(); i++)
-	{
-		delete FancyPolyHedraInstances[i];
-	}*/
-	/*for (unsigned int i = 0; i < FancyPolyHedras.Count(); i++)
-	{
-		delete FancyPolyHedras[i];
-	}*/
+	PolyHedra_3D_Manager.Dispose();
 
 	FreeShaders();
 

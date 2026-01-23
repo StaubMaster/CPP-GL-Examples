@@ -11,8 +11,8 @@ UI::Control::Window::Window(Manager * manager) : Base()
 	Anchor.Y.Anchor = ANCHOR_BOTH;
 	AnchorDist.Min = Point2D(0, 0);
 	AnchorDist.Max = Point2D(0, 0);
-	ColorDefault = Color(0, 0, 0);
-	ColorHover = Color(0, 0, 0);
+	ColorDefault = ColorF4(0, 0, 0);
+	ColorHover = ColorF4(0, 0, 0);
 }
 UI::Control::Window::~Window()
 { }

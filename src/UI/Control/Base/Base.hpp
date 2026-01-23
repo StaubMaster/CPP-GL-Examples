@@ -12,8 +12,8 @@
 
 #include "DataInclude.hpp"
 
-#include "Miscellaneous/Container/Dynamic.hpp"
-#include "Miscellaneous/EntryContainer/Dynamic.hpp"
+#include "Miscellaneous/Container/Binary.hpp"
+#include "Miscellaneous/EntryContainer/Binary.hpp"
 
 
 
@@ -33,7 +33,7 @@ class Base
 	protected:
 	EntryContainer::Entry<Control::Inst_Data> Entry;
 	Base * Parent;
-	Container::Dynamic<Control::Base *> Children;
+	Container::Binary<Control::Base *> Children;
 	private:
 
 	public:
@@ -61,9 +61,9 @@ class Base
 	bool			Drawable;		//should this currently be drawn ?
 
 	public:
-	Color			ColorDefault;
+	ColorF4			ColorDefault;
 	//Color			ColorDisabled;
-	Color			ColorHover;
+	ColorF4			ColorHover;
 	bool			ColorChanged;
 
 	public:
