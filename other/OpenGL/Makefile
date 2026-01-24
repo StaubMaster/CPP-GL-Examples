@@ -12,11 +12,17 @@ include fancy.mk
 
 
 
+DIR_SRC := src/
+DIR_OBJ := obj/
+
+
+
 FILES_SRC := \
-	openGL.cpp \
+	$(DIR_SRC)OpenGL/openGL.cpp \
+	$(DIR_SRC)OpenGL/Errors.cpp \
 	glad/glad.c
 
-FILES_OBJ := $(FILES_SRC)
+FILES_OBJ := $(FILES_SRC:$(DIR_SRC)%=$(DIR_OBJ)%)
 FILES_OBJ := $(FILES_OBJ:.c=.o)
 FILES_OBJ := $(FILES_OBJ:.cpp=.o)
 
@@ -26,6 +32,7 @@ FILES_OBJ := $(FILES_OBJ:.cpp=.o)
 
 all:
 	@$(call fancyNameTargetEcho,$@)
+	@$(MAKE) -s $(FILES_OBJ)
 	@$(MAKE) -s $(NAME)
 
 clean:
@@ -54,15 +61,15 @@ $(NAME) : $(FILES_OBJ)
 
 
 
-%.o : %.c
+$(DIR_OBJ)%.o: $(DIR_SRC)%.c
 	@$(call fancyNameCompilingEcho,$@)
-	@$(COMPILER_C) $(FLAGS) -c $^ -o $@
+	@mkdir -p $(dir $@)
+	@$(COMPILER_C) $(FLAGS) $(ARGS_INCLUDES) -c $^ -o $@
 
-%.o : %.cpp
+$(DIR_OBJ)%.o: $(DIR_SRC)%.cpp
 	@$(call fancyNameCompilingEcho,$@)
-	@$(COMPILER_CPP) $(FLAGS) -c $^ -o $@
-
-
+	@mkdir -p $(dir $@)
+	@$(COMPILER_CPP) $(FLAGS) $(ARGS_INCLUDES) -c $^ -o $@
 
 
 
@@ -79,20 +86,23 @@ $(NAME) : $(FILES_OBJ)
 #endif
 #
 ################################################################
-#
-#LIBRARYS := $(NAME)
-#INCLUDES := ../
-#ARGUMENTS := $(OS_ARGS)
-#
-#librarys:
-#	@echo $(LIBRARYS)
-#
-#includes:
-#	@echo $(INCLUDES)
-#
-#arguments:
-#	@echo $(ARGUMENTS)
-#
-#.PHONY: librarys includes arguments
-#
+
+LIBRARYS := $(NAME)
+INCLUDES := include
+ARGUMENTS := $(OS_ARGS)
+
+ARGS_LIBRARYS = $(foreach library,$(LIBRARYS),$(library))
+ARGS_INCLUDES = $(foreach include, $(INCLUDES),-I$(include))
+
+librarys:
+	@echo $(LIBRARYS)
+
+includes:
+	@echo $(INCLUDES)
+
+arguments:
+	@echo $(ARGUMENTS)
+
+.PHONY: librarys includes arguments
+
 ################################################################

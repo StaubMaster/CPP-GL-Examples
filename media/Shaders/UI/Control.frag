@@ -13,7 +13,7 @@ in Vert_UI
 	vec2	Max;
 	vec2	Pos;
 	vec4	Col;
-} fs_in;
+} fs_inn;
 
 out vec4 Pixel;
 
@@ -21,23 +21,22 @@ out vec4 Pixel;
 
 void main()
 {
-//	vec2 diff_min = abs(fs_in.Min - fs_in.Pos);
-//	vec2 diff_max = abs(fs_in.Max - fs_in.Pos);
-//
-//	float mul_min = min(diff_min.x, diff_min.y);
-//	float mul_max = min(diff_max.x, diff_max.y);
-//
-//	float factor = 1.0;
-//	if (mul_min < BoarderSize && mul_max < BoarderSize)
-//	{
-//		if (mul_min < mul_max)	{ factor += BoarderFactor; }
-//		else					{ factor -= BoarderFactor; }
-//	}
-//	else if (mul_min < BoarderSize && mul_max > BoarderSize)
-//	{ factor += BoarderFactor; }
-//	else if (mul_min > BoarderSize && mul_max < BoarderSize)
-//	{ factor -= BoarderFactor; }
-//
-//	Pixel = fs_in.Col * factor;
-	Pixel = vec4(0, 0, 0, 1);
+	vec2 diff_min = abs(fs_inn.Min - fs_inn.Pos);
+	vec2 diff_max = abs(fs_inn.Max - fs_inn.Pos);
+
+	float mul_min = min(diff_min.x, diff_min.y);
+	float mul_max = min(diff_max.x, diff_max.y);
+
+	float factor = 1.0;
+	if (mul_min < BoarderSize && mul_max < BoarderSize)
+	{
+		if (mul_min < mul_max)	{ factor += BoarderFactor; }
+		else					{ factor -= BoarderFactor; }
+	}
+	else if (mul_min < BoarderSize && mul_max > BoarderSize)
+	{ factor += BoarderFactor; }
+	else if (mul_min > BoarderSize && mul_max < BoarderSize)
+	{ factor -= BoarderFactor; }
+
+	Pixel = fs_inn.Col * factor;
 }

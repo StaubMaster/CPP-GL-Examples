@@ -1,5 +1,5 @@
-#include "openGL.hpp"
-#include "openGL.h"
+#include "OpenGL/openGL.hpp"
+#include "OpenGL/openGL.h"
 
 #include <iostream>
 #include <string>

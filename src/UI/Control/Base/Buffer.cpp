@@ -8,6 +8,7 @@
 UI::Control::Main_Buffer::Main_Buffer(
 	unsigned int indexPos
 ) :
+	::Buffer::Attribute(GL_ARRAY_BUFFER, GL_STATIC_DRAW, sizeof(Main_Data)),
 	Pos(0, sizeof(Main_Data), indexPos)
 {
 	Attributes.Allocate(1);
@@ -22,6 +23,7 @@ UI::Control::Inst_Buffer::Inst_Buffer(
 	unsigned int indexLayer,
 	unsigned int indexCol
 ) :
+	::Buffer::Attribute(GL_ARRAY_BUFFER, GL_STREAM_DRAW, sizeof(Inst_Data)),
 	Min(1, sizeof(Inst_Data), indexMin),
 	Max(1, sizeof(Inst_Data), indexMax),
 	Layer(1, sizeof(Inst_Data), indexLayer),
@@ -36,9 +38,6 @@ UI::Control::Inst_Buffer::Inst_Buffer(
 
 
 
-//#include "Debug.hpp"
-//#include <sstream>
-
 UI::Control::BufferArray::BufferArray() :
 	Main(0),
 	Inst(1, 2, 3, 4),
@@ -50,7 +49,6 @@ UI::Control::BufferArray::BufferArray() :
 }
 void UI::Control::BufferArray::Draw()
 {
-	//Debug::Log << "Draw: " << Main.DrawCount << " " << Inst.DrawCount << Debug::Done;
 	Bind();
 	glDrawArraysInstanced(DrawMode, 0, Main.DrawCount, Inst.DrawCount);
 }

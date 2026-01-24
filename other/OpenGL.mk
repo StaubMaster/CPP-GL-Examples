@@ -12,7 +12,7 @@ REPOS_STATIC += $(OPENGL_DIR)
 #OPENGL_ARGUMENTS = $(call repoArguments,$(OPENGL_DIR))
 
 OPENGL_LIBRARYS = $(OPENGL_DIR)/openGL.a
-OPENGL_INCLUDES = $(OPENGL_DIR)/../
+OPENGL_INCLUDES = $(OPENGL_DIR)/include/
 
 ifeq ($(CheckOS), Windows)
 OPENGL_ARGUMENTS = -lglfw3 -lgdi32

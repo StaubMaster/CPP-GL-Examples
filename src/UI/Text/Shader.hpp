@@ -28,7 +28,8 @@ class TextShader : public Shader::Base
 	Uniform::WindowBufferSize2D WindowSize;
 
 	public:
-	TextShader(const DirectoryInfo & dir);
+	TextShader();
+	//TextShader(const DirectoryInfo & dir);
 	~TextShader();
 };
 

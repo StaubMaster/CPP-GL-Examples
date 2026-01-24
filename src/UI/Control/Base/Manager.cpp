@@ -10,8 +10,9 @@
 #include "OpenGL/openGL.h"
 #include <iostream>
 
-#include "Debug.hpp"
-#include "DataShow.hpp"
+//#include "OpenGL/Errors.hpp"
+//#include "Debug.hpp"
+//#include "DataShow.hpp"
 
 
 
@@ -63,29 +64,6 @@ void UI::Control::Manager::Draw()
 	if (!Inst_Data_Container.IsCompact())
 	{
 		Inst_Data_Container.CompactHere();
-	}
-
-	//Shader.LogInfo();
-	//BufferArray.LogInfo();
-
-	{
-		Debug::Log << "Main Data:\n";
-		for (unsigned int i = 0; i < Main_Data_Container.Count(); i++)
-		{
-			Main_Data & data = Main_Data_Container[i];
-			Debug::Log << data.Pos << "\n";
-		}
-		Debug::Log << Debug::Done;
-	}
-
-	{
-		Debug::Log << "Inst Data:\n";
-		for (unsigned int i = 0; i < Inst_Data_Container.Count(); i++)
-		{
-			Inst_Data & data = Inst_Data_Container[i];
-			Debug::Log << data.Min << " " << data.Max << " " << data.Layer << " " << data.Col << "\n";
-		}
-		Debug::Log << Debug::Done;
 	}
 
 	BufferArray.Bind();

@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include "OpenGL/openGL.h"
+#include "OpenGL/Errors.hpp"
 
 #include "Debug.hpp"
 
@@ -359,7 +360,7 @@ void UI_Frame()
 	UI_Control_Manager -> Window -> UpdateEntrys();
 	UI_Control_Manager -> Draw();
 
-	//UI_Text_Manager -> Draw();
+	UI_Text_Manager -> Draw();
 }
 
 
@@ -514,8 +515,7 @@ int main()
 	window -> KeyFunc = KeyFunc;
 	window -> TextFunc = TextFunc;
 
-	//window -> DefaultColor = ColorF4(0.875f, 0.875f, 0.875f);
-	window -> DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
+	window -> DefaultColor = ColorF4(0.875f, 0.875f, 0.875f);
 
 	Debug::Log << "<<<< Run Window" << Debug::Done;
 	window -> Run();
