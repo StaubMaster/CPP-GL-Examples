@@ -21,23 +21,6 @@ namespace OpenGL
 
 	void ShowBufferInfo();
 
-	/*struct Shader
-	{
-		unsigned int ID;
-		bool Valid();
-		bool IsBound();
-		bool Bind();
-		void Create();
-		void Delete();
-	};*/
-	//typedef unsigned int ShaderID;
-	/*enum class ShaderType
-	{
-		Vertex = GL_VERTEX_SHADER,
-		Geometry = GL_GEOMETRY_SHADER,
-		Fragment = GL_FRAGMENT_SHADER,
-	};*/
-
 	
 };
 

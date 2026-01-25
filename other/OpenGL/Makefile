@@ -18,7 +18,7 @@ DIR_OBJ := obj/
 
 
 FILES_SRC := \
-	$(DIR_SRC)OpenGL/openGL.cpp \
+	$(DIR_SRC)OpenGL.cpp \
 	$(DIR_SRC)OpenGL/Errors.cpp \
 	glad/glad.c
 
@@ -54,6 +54,9 @@ re:
 $(NAME) : $(FILES_OBJ)
 	@$(call fancyNameArchivingEcho,$@)
 	@$(ARCHIVER) $(NAME) $(FILES_OBJ)
+
+test:
+	$(COMPILER_CPP) $(FLAGS) EnumBits.cpp -o EnumBits.exe
 
 ################################################################
 

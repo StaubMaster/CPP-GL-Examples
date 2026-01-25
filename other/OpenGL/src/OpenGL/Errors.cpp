@@ -1,5 +1,5 @@
 #include "OpenGL/Errors.hpp"
-#include "OpenGL/openGL.hpp"
+#include "openGL.hpp"
 
 
 
