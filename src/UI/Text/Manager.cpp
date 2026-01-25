@@ -8,7 +8,6 @@
 #include "FileInfo.hpp"
 #include "Image.hpp"
 
-#include "OpenGL/openGL.h"
 #include "DataShow.hpp"
 #include <iostream>
 

@@ -36,7 +36,7 @@ GL::CStringBuffer GL::GetShaderInfoLog(ShaderID shader, int & length)
 int GL::GetProgramiv(ShaderProgramID shader, ShaderProgramParameterName parameterName)
 {
 	int param;
-	glGetShaderiv(shader, (unsigned int)parameterName, &param);
+	glGetProgramiv(shader, (unsigned int)parameterName, &param);
 	return param;
 }
 bool GL::IsProgram(ShaderProgramID program) { return glIsProgram(program); }

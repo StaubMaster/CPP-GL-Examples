@@ -1,7 +1,5 @@
 
 #include <iostream>
-#include "OpenGL/openGL.h"
-#include "OpenGL/Errors.hpp"
 
 #include "Debug.hpp"
 

@@ -1,14 +1,14 @@
 #include "Buffer.hpp"
 #include "Data.hpp"
 
-#include "OpenGL/openGL.h"
+#include "OpenGL.hpp"
 
 
 
 UI::Control::Main_Buffer::Main_Buffer(
 	unsigned int indexPos
 ) :
-	::Buffer::Attribute(GL_ARRAY_BUFFER, GL_STATIC_DRAW, sizeof(Main_Data)),
+	::Buffer::Attribute(GL::BufferTarget::ArrayBuffer, GL::BufferDataUsage::StaticDraw, sizeof(Main_Data)),
 	Pos(0, sizeof(Main_Data), indexPos)
 {
 	Attributes.Allocate(1);
@@ -23,7 +23,7 @@ UI::Control::Inst_Buffer::Inst_Buffer(
 	unsigned int indexLayer,
 	unsigned int indexCol
 ) :
-	::Buffer::Attribute(GL_ARRAY_BUFFER, GL_STREAM_DRAW, sizeof(Inst_Data)),
+	::Buffer::Attribute(GL::BufferTarget::ArrayBuffer, GL::BufferDataUsage::StreamDraw, sizeof(Inst_Data)),
 	Min(1, sizeof(Inst_Data), indexMin),
 	Max(1, sizeof(Inst_Data), indexMax),
 	Layer(1, sizeof(Inst_Data), indexLayer),
@@ -41,7 +41,7 @@ UI::Control::Inst_Buffer::Inst_Buffer(
 UI::Control::BufferArray::BufferArray() :
 	Main(0),
 	Inst(1, 2, 3, 4),
-	DrawMode(GL_TRIANGLES)
+	DrawMode(GL::DrawMode::Triangles)
 {
 	Buffers.Allocate(2);
 	Buffers.Insert(&Main);
@@ -50,5 +50,5 @@ UI::Control::BufferArray::BufferArray() :
 void UI::Control::BufferArray::Draw()
 {
 	Bind();
-	glDrawArraysInstanced(DrawMode, 0, Main.DrawCount, Inst.DrawCount);
+	GL::DrawArraysInstanced(DrawMode, 0, Main.DrawCount, Inst.DrawCount);
 }

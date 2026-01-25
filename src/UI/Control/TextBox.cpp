@@ -1,6 +1,5 @@
 #include "TextBox.hpp"
 #include "Base/Manager.hpp"
-#include "OpenGL/openGL.h"
 #include <iostream>
 #include <math.h>
 

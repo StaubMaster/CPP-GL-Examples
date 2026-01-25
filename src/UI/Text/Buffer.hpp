@@ -48,7 +48,7 @@ class BufferArray : public ::BufferArray::Base
 	public:
 	Main_Buffer		Main;
 	Inst_Buffer		Inst;
-	unsigned int	DrawMode;
+	GL::DrawMode	DrawMode;
 
 	public:
 	BufferArray();

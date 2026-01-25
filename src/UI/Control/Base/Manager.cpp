@@ -7,7 +7,6 @@
 
 #include "DataInclude.hpp"
 
-#include "OpenGL/openGL.h"
 #include <iostream>
 
 //#include "OpenGL/Errors.hpp"
