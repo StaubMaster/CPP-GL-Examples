@@ -4,6 +4,30 @@
 
 
 
+GL::Error GL::GetError() { return (GL::Error)glGetError(); }
+
+//void	GL::GetBooleanv(ParameterName pname, bool & data) { glGetBooleanv((unsigned int)pname, &data); }
+void	GL::GetFloatv(ParameterName pname, float & data) { glGetFloatv((unsigned int)pname, &data); }
+void	GL::GetIntegerv(ParameterName pname, int & data) { glGetIntegerv((unsigned int)pname, &data); }
+
+//bool	GL::GetBooleanv(ParameterName pname) { bool val; GetBooleanv(pname, val); return val; }
+float	GL::GetFloatv(ParameterName pname) { float val; GetFloatv(pname, val); return val; }
+int		GL::GetIntegerv(ParameterName pname) { int val; GetIntegerv(pname, val); return val; }
+
+void	GL::Enable(Capability cap) { glEnable((unsigned int)cap); }
+void	GL::Disable(Capability cap) { glDisable((unsigned int)cap); }
+void	GL::Enablei(Capability cap, unsigned int index) { glEnablei((unsigned int)cap, index); }
+void	GL::Disablei(Capability cap, unsigned int index) { glDisablei((unsigned int)cap, index); }
+bool	GL::IsEnabled(Capability cap) { return glIsEnabled((unsigned int)cap); }
+bool	GL::IsEnabledi(Capability cap, unsigned int index) { return glIsEnabledi((unsigned int)cap, index); }
+
+void	GL::Clear(ClearMask mask) { glClear((unsigned int)mask); }
+void	GL::ClearColor(float red, float green, float blue, float alpha) { glClearColor(red, green, blue, alpha); }
+
+
+
+
+
 int GL::GetShaderiv(ShaderID shader, ShaderParameterName parameterName)
 {
 	int param;
@@ -153,3 +177,36 @@ GL::BufferID GL::CreateBuffer() { BufferID buffer; GenBuffers(1, &buffer); retur
 void GL::DeleteBuffer(BufferID buffer) { DeleteBuffers(1, &buffer); }
 void GL::BindBuffer(BufferTarget target, BufferID buffer) { glBindBuffer((unsigned int)target, buffer); }
 void GL::BufferData(BufferTarget target, Size size, VData data, BufferDataUsage usage) { glBufferData((unsigned int)target, size, data, (unsigned int)usage); }
+
+
+
+
+
+bool	GL::IsTexture(TextureID texture) { return glIsTexture(texture); }
+void	GL::GenTextures(Size n, TextureID textures[]) { glGenTextures(n, textures); }
+void	GL::DeleteTextures(Size n, const TextureID textures[]) { glDeleteTextures(n, textures); }
+GL::TextureID	GL::CreateTexture() { TextureID texture; GenTextures(1, &texture); return texture; }
+void		GL::DeleteTexture(TextureID texture) { DeleteTextures(1, &texture); }
+void	GL::BindTexture(TextureTarget target, TextureID texture) { glBindTexture((unsigned int)target, texture); }
+void	GL::GenerateMipmap(TextureTarget target) { glGenerateMipmap((unsigned int)target); }
+
+void	GL::TexImage1D(TextureTarget target, int level, TextureInternalFormat internalformat, Size width, int border, TextureFormat format, TextureType type, VData data)
+{ glTexImage1D((unsigned int)target, level, (int)internalformat, width, border, (unsigned int)format, (unsigned int)type, data); }
+void	GL::TexImage2D(TextureTarget target, int level, TextureInternalFormat internalformat, Size width, Size height, int border, TextureFormat format, TextureType type, VData data)
+{ glTexImage2D((unsigned int)target, level, (int)internalformat, width, height, border, (unsigned int)format, (unsigned int)type, data); }
+void	GL::TexImage3D(TextureTarget target, int level, TextureInternalFormat internalformat, Size width, Size height, Size depth, int border, TextureFormat format, TextureType type, VData data)
+{ glTexImage3D((unsigned int)target, level, (int)internalformat, width, height, depth, border, (unsigned int)format, (unsigned int)type, data); }
+
+void	GL::TexSubImage1D(TextureTarget target, int level, int xoffset, Size width, TextureFormat format, TextureType type, VData data)
+{ glTexSubImage1D((unsigned int)target, level, xoffset, width, (unsigned int)format, (unsigned int)type, data); }
+void	GL::TexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, Size width, Size height, TextureFormat format, TextureType type, VData data)
+{ glTexSubImage2D((unsigned int)target, level, xoffset, yoffset, width, height, (unsigned int)format, (unsigned int)type, data); }
+void	GL::TexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, Size width, Size height, Size depth, TextureFormat format, TextureType type, VData data)
+{ glTexSubImage3D((unsigned int)target, level, xoffset, yoffset, zoffset, width, height, depth, (unsigned int)format, (unsigned int)type, data); }
+
+void	GL::TexParameterf(TextureTarget target, TextureParameterName pname, VFloat param) { glTexParameterf((unsigned int)target, (unsigned int)pname, param); }
+void	GL::TexParameteri(TextureTarget target, TextureParameterName pname, VInt param) { glTexParameteri((unsigned int)target, (unsigned int)pname, param); }
+void	GL::TexParameterfv(TextureTarget target, TextureParameterName pname, VFloatCData params) { glTexParameterfv((unsigned int)target, (unsigned int)pname, params); }
+void	GL::TexParameteriv(TextureTarget target, TextureParameterName pname, VIntCData params) { glTexParameteriv((unsigned int)target, (unsigned int)pname, params); }
+void	GL::TexParameterIiv(TextureTarget target, TextureParameterName pname, VIntCData params) { glTexParameterIiv((unsigned int)target, (unsigned int)pname, params); }
+void	GL::TexParameterIuiv(TextureTarget target, TextureParameterName pname, VUIntCData params) { glTexParameterIuiv((unsigned int)target, (unsigned int)pname, params); }

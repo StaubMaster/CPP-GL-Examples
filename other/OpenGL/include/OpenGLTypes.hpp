@@ -25,7 +25,10 @@ namespace GL
 
 	typedef const void *	VData;
 
-
+	enum class Error : unsigned int;
+	enum class ParameterName : unsigned int;
+	enum class Capability : unsigned int;
+	enum class ClearMask : unsigned int;
 
 
 
@@ -70,6 +73,16 @@ namespace GL
 	typedef unsigned int BufferID;
 	enum class BufferTarget : unsigned int;
 	enum class BufferDataUsage : unsigned int;
+
+
+
+	//	Texture
+	typedef unsigned int TextureID;
+	enum class TextureTarget : unsigned int;
+	enum class TextureParameterName : unsigned int;
+	enum class TextureFormat : unsigned int;
+	enum class TextureType : unsigned int;
+	enum class TextureInternalFormat : unsigned int;
 };
 
 #endif

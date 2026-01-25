@@ -7,6 +7,35 @@
 
 namespace GL
 {
+	//	General
+	Error GetError();
+
+	void	GetBooleanv(ParameterName pname, bool & data);
+//	void	GetDoublev(ParameterName pname, double & data);
+	void	GetFloatv(ParameterName pname, float & data);
+	void	GetIntegerv(ParameterName pname, int & data);
+
+	bool	GetBooleanv(ParameterName pname);
+	float	GetFloatv(ParameterName pname);
+	int		GetIntegerv(ParameterName pname);
+
+	//	void	GetInteger64v(ParameterName pname, GLint64 & data);
+//	void	GetBooleani_v(GLenum target, GLuint index, GLboolean & data);
+//	void	GetIntegeri_v(GLenum target, GLuint index, GLint & data);
+//	void	GetInteger64i_v(GLenum target, GLuint index, GLint64 & data);
+
+	void	Enable(Capability cap);
+	void	Disable(Capability cap);
+	void	Enablei(Capability cap, unsigned int index);
+	void	Disablei(Capability cap, unsigned int index);
+	bool	IsEnabled(Capability cap);
+	bool	IsEnabledi(Capability cap, unsigned int index);
+
+	void	Clear(ClearMask mask);
+	void	ClearColor(float red, float green, float blue, float alpha);
+
+
+
 	//	Shader
 	int				GetShaderiv(ShaderID shader, ShaderParameterName parameterName);
 	bool			IsShader(ShaderID shader);
@@ -129,6 +158,32 @@ namespace GL
 	void		DeleteBuffer(BufferID buffer);
 	void	BindBuffer(BufferTarget target, BufferID buffer);
 	void	BufferData(BufferTarget target, Size size, VData data, BufferDataUsage usage);
+
+
+
+	//	Texture
+	bool	IsTexture(TextureID texture);
+	void	GenTextures(Size n, TextureID textures[]);
+	void	DeleteTextures(Size n, const TextureID textures[]);
+	TextureID	CreateTexture();
+	void		DeleteTexture(TextureID texture);
+	void	BindTexture(TextureTarget target, TextureID texture);
+	void	GenerateMipmap(TextureTarget target);
+
+	void	TexImage1D(TextureTarget target, int level, TextureInternalFormat internalformat, Size width, int border, TextureFormat format, TextureType type, VData data);
+	void	TexImage2D(TextureTarget target, int level, TextureInternalFormat internalformat, Size width, Size height, int border, TextureFormat format, TextureType type, VData data);
+	void	TexImage3D(TextureTarget target, int level, TextureInternalFormat internalformat, Size width, Size height, Size depth, int border, TextureFormat format, TextureType type, VData data);
+
+	void	TexSubImage1D(TextureTarget target, int level, int xoffset, Size width, TextureFormat format, TextureType type, VData data);
+	void	TexSubImage2D(TextureTarget target, int level, int xoffset, int yoffset, Size width, Size height, TextureFormat format, TextureType type, VData data);
+	void	TexSubImage3D(TextureTarget target, int level, int xoffset, int yoffset, int zoffset, Size width, Size height, Size depth, TextureFormat format, TextureType type, VData data);
+
+	void	TexParameterf(TextureTarget target, TextureParameterName pname, VFloat param);
+	void	TexParameteri(TextureTarget target, TextureParameterName pname, VInt param);
+	void	TexParameterfv(TextureTarget target, TextureParameterName pname, VFloatCData params);
+	void	TexParameteriv(TextureTarget target, TextureParameterName pname, VIntCData params);
+	void	TexParameterIiv(TextureTarget target, TextureParameterName pname, VIntCData params);
+	void	TexParameterIuiv(TextureTarget target, TextureParameterName pname, VUIntCData params);
 };
 
 #endif
