@@ -30,6 +30,11 @@ namespace GL
 	enum class Capability : unsigned int;
 	enum class ClearMask : unsigned int;
 
+	enum class Comparison : unsigned int;
+
+	enum class Side : unsigned int;
+	enum class FrontSide : unsigned int;
+
 
 
 	//	Shader

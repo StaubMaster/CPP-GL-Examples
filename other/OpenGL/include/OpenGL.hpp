@@ -34,6 +34,14 @@ namespace GL
 	void	Clear(ClearMask mask);
 	void	ClearColor(float red, float green, float blue, float alpha);
 
+	void	CullFace(Side mode);
+	void	FrontFace(FrontSide mode);
+
+	void	DepthMask(bool flag);
+	void	DepthFunc(Comparison func);
+	void	DepthRange(float n, float f);	//	is actually double
+	void	ClearDepth(float depth);		//	is actually double
+
 
 
 	//	Shader

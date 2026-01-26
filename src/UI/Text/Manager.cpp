@@ -36,8 +36,9 @@ UI::Text::Manager::Manager(const DirectoryInfo & shader_dir, const DirectoryInfo
 	{
 		std::cout << "Font" << ' ' << (TextFont -> Characters[i].Code) << ' ' << (TextFont -> Characters[i].Box.Min) << ' ' << (TextFont -> Characters[i].Box.Max) << '\n';
 	}*/
-	Pallet_Texture = new Texture::Array2D();
-	Pallet_Texture -> Assign(TextFont -> AtlasTexture);
+	Pallet_Texture.Create();
+	Pallet_Texture.Bind();
+	Pallet_Texture.Assign(TextFont -> AtlasTexture);
 
 	//Image * img = image_dir.File("Text_16x8_32x32.png").LoadImagePNG();
 	//Image * img = Image::Missing();
@@ -58,7 +59,7 @@ UI::Text::Manager::~Manager()
 	BufferArray.Delete();
 	Shader.Delete();
 
-	delete Pallet_Texture;
+	Pallet_Texture.Delete();
 	delete TextFont;
 }
 
@@ -76,7 +77,7 @@ void UI::Text::Manager::Draw()
 	BufferArray.Inst.Change(Inst_Data_Container);
 
 	Shader.Bind();
-	Pallet_Texture -> Bind();
+	Pallet_Texture.Bind();
 	BufferArray.Bind();
 	BufferArray.Draw();
 }

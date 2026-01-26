@@ -24,6 +24,14 @@ bool	GL::IsEnabledi(Capability cap, unsigned int index) { return glIsEnabledi((u
 void	GL::Clear(ClearMask mask) { glClear((unsigned int)mask); }
 void	GL::ClearColor(float red, float green, float blue, float alpha) { glClearColor(red, green, blue, alpha); }
 
+void	GL::CullFace(Side mode) { glCullFace((unsigned int)mode); }
+void	GL::FrontFace(FrontSide mode) { glFrontFace((unsigned int)mode); }
+
+void	GL::DepthMask(bool flag)  { glDepthMask(flag); }
+void	GL::DepthFunc(Comparison func) { glDepthFunc((unsigned int)func); }
+void	GL::DepthRange(float n, float f) { glDepthRange(n, f); }
+void	GL::ClearDepth(float depth) { glClearDepth(depth); }
+
 
 
 

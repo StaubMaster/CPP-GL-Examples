@@ -310,6 +310,30 @@ namespace GL
 	};
 	ClearMask operator|(ClearMask v0, ClearMask v1);
 
+	enum class Comparison : unsigned int
+	{
+		Never = GL_NEVER,		//	0
+		Less = GL_LESS,			//	<
+		Equal = GL_EQUAL,		//	==
+		Lequal = GL_LEQUAL,		//	<=
+		Greater = GL_GREATER,	//	>
+		Notequal = GL_NOTEQUAL,	//	!=
+		Gequal = GL_GEQUAL,		//	>=
+		Always = GL_ALWAYS,		//	1
+	};
+
+	enum class Side : unsigned int
+	{
+		Front = GL_FRONT,
+		Back = GL_BACK,
+		FrontAndBack = GL_FRONT_AND_BACK,
+	};
+	enum class FrontSide : unsigned int
+	{
+		Cw = GL_CW,
+		Ccw = GL_CCW,
+	};
+
 
 
 	//	Shader

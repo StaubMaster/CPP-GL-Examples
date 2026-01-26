@@ -1,7 +1,6 @@
 
 #include <iostream>
-#include "OpenGL/openGL.h"
-
+#include "OpenGL.hpp"
 #include "Debug.hpp"
 
 #include "DataInclude.hpp"

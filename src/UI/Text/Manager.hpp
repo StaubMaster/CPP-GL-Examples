@@ -33,7 +33,7 @@ class Manager
 	EntryContainer::Binary<UI::Text::Inst_Data> Inst_Data_Container;
 
 	Font * TextFont;
-	Texture::Array2D * Pallet_Texture;
+	Texture::Array2D Pallet_Texture;
 
 	public:
 	Manager(const DirectoryInfo & shader_dir, const DirectoryInfo & text_dir);
