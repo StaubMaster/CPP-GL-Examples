@@ -41,13 +41,13 @@ DirectoryInfo ImageDir;
 DirectoryInfo ShaderDir;
 DirectoryInfo YMTDir;
 
-Window * win;
+Window window;
 
 MainContext() :
 	ImageDir("../../media/Images"),
 	ShaderDir("../../media/Shaders"),
 	YMTDir("../../media/YMT"),
-	win(NULL),
+	window(),
 	ViewTrans(),
 	ViewDepth(),
 	ViewFOV(),
@@ -175,10 +175,10 @@ void FreeRun()
 
 void Frame(double timeDelta)
 {
-	if (win -> Keys[GLFW_KEY_TAB].IsPress()) { win -> MouseManager.CursorModeToggle(); }
-	if (win -> MouseManager.CursorModeIsLocked())
+	if (window.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
+	if (window.MouseManager.CursorModeIsLocked())
 	{
-		ViewTrans.TransformFlatX(win -> MoveFromKeys(2.0f * timeDelta), win -> SpinFromCursor(ViewFOV * 0.005f * timeDelta));
+		ViewTrans.TransformFlatX(window.MoveFromKeys(2.0f * timeDelta), window.SpinFromCursor(ViewFOV * 0.005f * timeDelta));
 		if (ViewTrans.Rot.Y > Angle3D::DegreeToRadian(+90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(+90); }
 		if (ViewTrans.Rot.Y < Angle3D::DegreeToRadian(-90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(-90); }
 	}
@@ -209,7 +209,7 @@ void Resize(const WindowBufferSize2D & WindowSize)
 
 void CursorScroll(UserParameter::Mouse::Scroll params)
 {
-	if (win -> MouseManager.CursorModeIsLocked())
+	if (window.MouseManager.CursorModeIsLocked())
 	{
 		ViewFOV -= params.Y;
 		//std::cout << "FOV " << ViewFOV << '\n';
@@ -224,24 +224,24 @@ int Main()
 		return -1;
 	}
 
-	win = new Window();
-	win -> FrameFunc = SFrame;
-	win -> InitFunc = SInitRun;
-	win -> FreeFunc = SFreeRun;
-	win -> ResizeFunc = SResize;
-	win -> ChangeCallback_CursorScroll(SCursorScroll);
+	window.Create();
+	window.FrameFunc = SFrame;
+	window.InitFunc = SInitRun;
+	window.FreeFunc = SFreeRun;
+	window.ResizeFunc = SResize;
+	window.ChangeCallback_CursorScroll(SCursorScroll);
 
 	ViewTrans = Trans3D(Point3D(0, 0, 0), Angle3D(0, 0, 0));
 	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
 	ViewDepth.Range = Range(0.8f, 1.0f);
-	ViewDepth.Color = win -> DefaultColor;
+	ViewDepth.Color = window.DefaultColor;
 	ViewFOV = 90;
 
 	Debug::Log << "<<<< Run Window" << Debug::Done;
-	win -> Run();
+	window.Run();
 	Debug::Log << ">>>> Run Window" << Debug::Done;
 
-	delete win;
+	window.Delete();
 
 	glfwTerminate();
 	return 0;

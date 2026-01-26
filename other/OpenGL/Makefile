@@ -18,8 +18,8 @@ DIR_OBJ := obj/
 
 
 FILES_SRC := \
+	$(DIR_SRC)OpenGLEnums.cpp \
 	$(DIR_SRC)OpenGL.cpp \
-	$(DIR_SRC)OpenGL/Errors.cpp \
 	glad/glad.c
 
 FILES_OBJ := $(FILES_SRC:$(DIR_SRC)%=$(DIR_OBJ)%)

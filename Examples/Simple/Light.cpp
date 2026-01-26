@@ -132,7 +132,7 @@ DirectoryInfo ImageDir("../../media/Images");
 DirectoryInfo ShaderDir("../../media/Shaders");
 DirectoryInfo PolyHedra_Dir("../../media/YMT/Light/");
 
-Window * win;
+Window window;
 
 Trans3D	ViewTrans;
 Depth	ViewDepth;
@@ -343,10 +343,10 @@ void Update(double timeDelta)
 }
 void Frame(double timeDelta)
 {
-	if (win -> Keys[GLFW_KEY_TAB].IsPress()) { win -> MouseManager.CursorModeToggle(); }
-	if (win -> MouseManager.CursorModeIsLocked())
+	if (window.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
+	if (window.MouseManager.CursorModeIsLocked())
 	{
-		ViewTrans.TransformFlatX(win -> MoveFromKeys(20.0f * timeDelta), win -> SpinFromCursor(0.2f * timeDelta));
+		ViewTrans.TransformFlatX(window.MoveFromKeys(20.0f * timeDelta), window.SpinFromCursor(0.2f * timeDelta));
 	}
 	ViewTrans.Rot.CalcBack();
 
@@ -355,25 +355,25 @@ void Frame(double timeDelta)
 	//Light_Spot.Pos = ViewTrans.Pos;
 	//Light_Spot.Dir = ViewTrans.Rot.rotate(Point3D(0, 0, 1));
 
-	if (win -> Keys[GLFW_KEY_1].IsPress())
+	if (window.Keys[GLFW_KEY_1].IsPress())
 	{
 		if (Light_Ambient.Intensity == 0.0f)
 		{ Light_Ambient.Intensity = Light_Ambient_Intensity; }
 		else
 		{ Light_Ambient.Intensity = 0.0f; }
 	}
-	if (win -> Keys[GLFW_KEY_2].IsPress())
+	if (window.Keys[GLFW_KEY_2].IsPress())
 	{
 		if (Light_Solar.Base.Intensity == 0.0f)
 		{ Light_Solar.Base.Intensity = Light_Solar_Intensity; }
 		else
 		{ Light_Solar.Base.Intensity = 0.0f; }
 	}
-	if (win -> Keys[GLFW_KEY_3].IsPress()) { Light_Spot_Entry_Array[0].Toggle(); }
-	if (win -> Keys[GLFW_KEY_4].IsPress()) { Light_Spot_Entry_Array[1].Toggle(); }
-	if (win -> Keys[GLFW_KEY_5].IsPress()) { Light_Spot_Entry_Array[2].Toggle(); }
+	if (window.Keys[GLFW_KEY_3].IsPress()) { Light_Spot_Entry_Array[0].Toggle(); }
+	if (window.Keys[GLFW_KEY_4].IsPress()) { Light_Spot_Entry_Array[1].Toggle(); }
+	if (window.Keys[GLFW_KEY_5].IsPress()) { Light_Spot_Entry_Array[2].Toggle(); }
 
-	if (win -> Keys[GLFW_KEY_Q].IsPress())
+	if (window.Keys[GLFW_KEY_Q].IsPress())
 	{
 		std::cout << "View.Pos: " << ViewTrans.Pos << "\n";
 	}
@@ -428,18 +428,18 @@ int main()
 		return -1;
 	}
 
-	win = new Window();
-	win -> InitFunc = Init;
-	win -> FrameFunc = Frame;
-	win -> FreeFunc = Free;
-	win -> ResizeFunc = Resize;
+	window.Create();
+	window.InitFunc = Init;
+	window.FrameFunc = Frame;
+	window.FreeFunc = Free;
+	window.ResizeFunc = Resize;
 
-	win -> DefaultColor = ColorF4(0.0f, 0.0f, 0.0f);
+	window.DefaultColor = ColorF4(0.0f, 0.0f, 0.0f);
 
 	ViewTrans = Trans3D(Point3D(0, 10, -65), Angle3D(0, 0, 0));
 	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
 	ViewDepth.Range = Range(0.8f, 1.0f);
-	ViewDepth.Color = win -> DefaultColor;
+	ViewDepth.Color = window.DefaultColor;
 	ViewFOV = 90;
 
 	Light_Ambient_Intensity = 0.01f;
@@ -468,14 +468,14 @@ int main()
 
 
 	std::cout << "++++ Run\n";
-	win -> Run();
+	window.Run();
 	std::cout << "---- Run\n";
 
 
 
 	delete[] Light_Spot_Entry_Array;
 	delete[] Light_Spot_Array;
-	delete win;
+	window.Delete();
 
 
 

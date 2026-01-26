@@ -44,7 +44,7 @@ DirectoryInfo ShaderDir("../../media/Shaders");
 DirectoryInfo ImageDir("../../media/Images");
 DirectoryInfo TextDir("../../media/Text");
 
-Window * window;
+Window window;
 
 Multiform::WindowBufferSize2D * Multi_WindowSize;
 
@@ -337,7 +337,7 @@ void UI_Init()
 	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
 	UI_Text_Manager = new UI::Text::Manager(ShaderDir, TextDir);
 
-	UI_Control_Manager -> UpdateSize(window -> Size);
+	UI_Control_Manager -> UpdateSize(window.Size);
 
 	std::cout << "Control Init done\n";
 }
@@ -352,7 +352,7 @@ void UI_Free()
 }
 void UI_Frame()
 {
-	Point2D mouse = window -> MouseManager.CursorPixelPosition().Absolute;
+	Point2D mouse = window.MouseManager.CursorPixelPosition().Absolute;
 
 	UI_Control_Manager -> UpdateMouse(mouse);
 	UI_Control_Manager -> Window -> UpdateEntrys();
@@ -498,28 +498,28 @@ int main()
 		return -1;
 	}
 
-	window = new Window();
-	window -> InitFunc = InitRun;
-	window -> FrameFunc = Frame;
-	window -> FreeFunc = FreeRun;
+	window.Create();
+	window.InitFunc = InitRun;
+	window.FrameFunc = Frame;
+	window.FreeFunc = FreeRun;
 
-	window -> ResizeFunc = Resize;
+	window.ResizeFunc = Resize;
 
-	window -> ChangeCallback_CursorClick(ClickFunc);
-	window -> ChangeCallback_CursorScroll(ScrollFunc);
-	window -> ChangeCallback_CursorMove(MoveFunc);
-	window -> ChangeCallback_CursorDrag(DragFunc);
+	window.ChangeCallback_CursorClick(ClickFunc);
+	window.ChangeCallback_CursorScroll(ScrollFunc);
+	window.ChangeCallback_CursorMove(MoveFunc);
+	window.ChangeCallback_CursorDrag(DragFunc);
 
-	window -> KeyFunc = KeyFunc;
-	window -> TextFunc = TextFunc;
+	window.KeyFunc = KeyFunc;
+	window.TextFunc = TextFunc;
 
-	window -> DefaultColor = ColorF4(0.875f, 0.875f, 0.875f);
+	window.DefaultColor = ColorF4(0.875f, 0.875f, 0.875f);
 
 	Debug::Log << "<<<< Run Window" << Debug::Done;
-	window -> Run();
+	window.Run();
 	Debug::Log << ">>>> Run Window" << Debug::Done;
 
-	delete window;
+	window.Delete();
 
 	glfwTerminate();
 	std::cout << "main() return";
