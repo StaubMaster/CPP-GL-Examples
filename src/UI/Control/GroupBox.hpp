@@ -15,7 +15,7 @@ class GroupBox : public Base
 {
 	public:
 	GroupBox();
-	~GroupBox();
+	virtual ~GroupBox();
 };
 
 };

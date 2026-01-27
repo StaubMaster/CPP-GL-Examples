@@ -16,6 +16,13 @@ struct AxisBox2D;
 
 
 
+/*	Unknown Size
+when a Control is not yet a Child of something that is in the Window
+
+
+
+*/
+
 struct Anchor1D
 {
 	private:
@@ -75,6 +82,7 @@ struct Anchor1D
 	void SetPaddedHalfSize(float val);
 	void SetPaddedMinSize(float val);
 	void SetPaddedMaxSize(float val);
+
 
 
 	AxisBox1D Calculate(AxisBox1D Parent);

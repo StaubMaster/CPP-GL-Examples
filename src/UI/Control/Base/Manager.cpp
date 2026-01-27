@@ -23,7 +23,7 @@ UI::Control::Manager::Manager(const DirectoryInfo & dir) :
 	WindowSize(),
 	Window(new UI::Control::Window(this))
 {
-	std::cout << "  ++++  " << "Manager()" << "\n";
+	std::cout << "  ++++  " << "UI::Control::Manager::Manager()" << "\n";
 
 	{
 		Container::Fixed<::Shader::Code> code(2);
@@ -48,7 +48,7 @@ UI::Control::Manager::Manager(const DirectoryInfo & dir) :
 }
 UI::Control::Manager::~Manager()
 {
-	std::cout << "  ----  " << "~Manager()" << "\n";
+	std::cout << "  ----  " << "UI::Control::Manager::~Manager()" << "\n";
 
 	BufferArray.Delete();
 	Shader.Delete();

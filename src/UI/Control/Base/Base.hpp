@@ -29,7 +29,7 @@ class Base
 {
 	protected:
 	Manager * ControlManager;
-	
+
 	protected:
 	EntryContainer::Entry<Control::Inst_Data> Entry;
 	Base * Parent;
@@ -71,6 +71,7 @@ class Base
 	virtual ~Base();
 
 	void ChildInsert(Base * control);
+	void ChangeManager(Manager * manager);
 
 	//	for automatic Updating. should not be called by User
 	public:

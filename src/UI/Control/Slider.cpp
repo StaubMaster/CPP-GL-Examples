@@ -35,7 +35,7 @@ void UI::Control::Slider::SetValue(float val)
 {
 	SliderValue = val;
 	SliderChanged = true;
-	if (ValueChangedFunc != NULL) { ValueChangedFunc(SliderValue); }
+	if (ValueChangedFunc != NULL) { ValueChangedFunc -> Run(SliderValue); }
 }
 
 
@@ -65,7 +65,7 @@ void UI::Control::Slider::UpdateEntrysRelay()
 }
 void UI::Control::Slider::InsertDrawingEntryRelay()
 {
-	if (!SliderEntry.Is())
+	if (!SliderEntry.Is() && ControlManager != NULL)
 	{
 		SliderEntry.Allocate(ControlManager -> Inst_Data_Container, 1);
 		(*SliderEntry).Col = ColorF4(0.5f, 0.5f, 0.5f);
@@ -75,7 +75,7 @@ void UI::Control::Slider::InsertDrawingEntryRelay()
 }
 void UI::Control::Slider::RemoveDrawingEntryRelay()
 {
-	if (SliderEntry.Is())
+	if (SliderEntry.Is() || ControlManager == NULL)
 	{
 		SliderEntry.Dispose();
 	}
@@ -107,7 +107,7 @@ void UI::Control::Slider::RelayClick(UserParameter::Mouse::Click params)
 	SliderValue = slider_value;
 	SliderChanged = true;
 
-	if (ValueChangedFunc != NULL) { ValueChangedFunc(SliderValue); }
+	if (ValueChangedFunc != NULL) { ValueChangedFunc -> Run(SliderValue); }
 }
 void UI::Control::Slider::RelayCursorDrag(UserParameter::Mouse::Drag params)
 {
@@ -129,5 +129,5 @@ void UI::Control::Slider::RelayCursorDrag(UserParameter::Mouse::Drag params)
 	SliderValue = slider_value;
 	SliderChanged = true;
 
-	if (ValueChangedFunc != NULL) { ValueChangedFunc(SliderValue); }
+	if (ValueChangedFunc != NULL) { ValueChangedFunc -> Run(SliderValue); }
 }

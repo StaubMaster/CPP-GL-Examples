@@ -4,7 +4,7 @@
 # include "SplineNode3D.hpp"
 # include "Factors.hpp"
 
-# include "DataStruct/LInter.hpp"
+# include "ValueType/LInter.hpp"
 
 Factors<float> Factors_TBC(float T, float B, float C)
 {

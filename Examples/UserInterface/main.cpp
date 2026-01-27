@@ -37,6 +37,7 @@
 #include "UI/ControlsInclude.hpp"
 
 #include "UI/Text/Manager.hpp"
+#include "UI/CallBack/Static.hpp"
 
 
 
@@ -61,6 +62,13 @@ void slider_changed(float val);
 void settings_slider_color_r(float val);
 void settings_slider_color_g(float val);
 void settings_slider_color_b(float val);
+
+
+
+StaticCallBack<float> slider_changed_callback(slider_changed);
+StaticCallBack<float> settings_slider_color_r_callback(settings_slider_color_r);
+StaticCallBack<float> settings_slider_color_g_callback(settings_slider_color_g);
+StaticCallBack<float> settings_slider_color_b_callback(settings_slider_color_b);
 
 
 
@@ -177,7 +185,7 @@ void UI_Make_Settings()
 	slider -> Anchor.X.SetPaddedMinDist(0);
 	slider -> Anchor.X.SetPaddedMaxDist(0);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc = settings_slider_color_r;
+	slider -> ValueChangedFunc = &settings_slider_color_r_callback;
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
@@ -190,7 +198,7 @@ void UI_Make_Settings()
 	slider -> Anchor.X.SetPaddedMinDist(0);
 	slider -> Anchor.X.SetPaddedMaxDist(0);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc = settings_slider_color_g;
+	slider -> ValueChangedFunc = &settings_slider_color_g_callback;
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
@@ -203,7 +211,7 @@ void UI_Make_Settings()
 	slider -> Anchor.X.SetPaddedMinDist(0);
 	slider -> Anchor.X.SetPaddedMaxDist(0);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc = settings_slider_color_b;
+	slider -> ValueChangedFunc = &settings_slider_color_b_callback;
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
@@ -300,7 +308,7 @@ void UI_Make_Example()
 	slider -> Anchor.X.SetPaddedMinDist(w);
 	slider -> Anchor.X.SetSize(200);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc = slider_changed;
+	slider -> ValueChangedFunc = &slider_changed_callback;
 	form -> ChildInsert(slider);
 
 	w = slider -> Anchor.X.GetPaddedMinSize();
@@ -326,8 +334,6 @@ void UI_Make()
 	UI_Make_Example();
 
 	std::cout << "UI Make done\n";
-
-	UI_Control_Manager -> Window -> Show();
 }
 
 void UI_Init()
@@ -336,7 +342,6 @@ void UI_Init()
 
 	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
 	UI_Text_Manager = new UI::Text::Manager(ShaderDir, TextDir);
-
 	UI_Control_Manager -> UpdateSize(window.Size);
 
 	std::cout << "Control Init done\n";

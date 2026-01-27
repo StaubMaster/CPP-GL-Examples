@@ -1,7 +1,7 @@
 #ifndef  SPLINE_NODE_3D_HPP
 # define SPLINE_NODE_3D_HPP
 
-# include "DataStruct/Point3D.hpp"
+# include "ValueType/Point3D.hpp"
 
 struct SplineNode3D
 {

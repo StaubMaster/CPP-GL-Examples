@@ -1,7 +1,8 @@
 #ifndef  UI_CONTROL_SLIDER_HPP
 # define UI_CONTROL_SLIDER_HPP
 
-#include "Base/Base.hpp"
+# include "Base/Base.hpp"
+# include "UI/CallBack/Base.hpp"
 
 
 
@@ -30,7 +31,8 @@ class Slider : public Base
 	float SliderMax;
 
 	public:
-	void (*ValueChangedFunc)(float);
+	//void (*ValueChangedFunc)(float);
+	BaseCallBack<float> * ValueChangedFunc;
 
 	public:
 	Slider();

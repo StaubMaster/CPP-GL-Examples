@@ -1,6 +1,7 @@
 
 NAME := UserInterface.exe
-COMPILER := c++ -std=c++11
+#COMPILER := c++ -std=c++11
+COMPILER := g++ -g -std=c++11
 FLAGS := -Wall -Wextra -Werror
 
 BASE_DIR := ../../
@@ -37,6 +38,7 @@ FILES_SRC := \
 	$(UI_DIR)/Text/Font/Font.cpp \
 	$(UI_DIR)/Text/Font/Template.cpp \
 	$(UI_DIR)/Text/Font/Parsing.cpp \
+\
 	main.cpp
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)

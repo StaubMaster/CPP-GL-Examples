@@ -26,7 +26,6 @@ FILES_OBJ := $(FILES_SRC:.cpp=.o)
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(MAKE) -s repos_clone
-	@echo $(LIBRARYS)
 	@$(MAKE) -s $(EXES)
 
 clean:

@@ -51,10 +51,18 @@ UI::Control::Base::~Base()
 void UI::Control::Base::ChildInsert(Base * control)
 {
 	Children.Insert(control);
-	control -> ControlManager = ControlManager;
 	control -> Parent = this;
+	ChangeManager(ControlManager);
 	control -> UpdateBox();
 	control -> UpdateVisibility();
+}
+void UI::Control::Base::ChangeManager(Manager * manager)
+{
+	ControlManager = manager;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> ChangeManager(manager);
+	}
 }
 
 
@@ -138,7 +146,7 @@ void UI::Control::Base::UpdateVisibility()
 }
 void UI::Control::Base::InsertDrawingEntry()
 {
-	if (!Entry.Is())
+	if (!Entry.Is() && ControlManager != NULL)
 	{
 		Entry.Allocate(ControlManager -> Inst_Data_Container, 1);
 		(*Entry).Layer = Layer;
@@ -149,7 +157,7 @@ void UI::Control::Base::InsertDrawingEntry()
 }
 void UI::Control::Base::RemoveDrawingEntry()
 {
-	if (Entry.Is())
+	if (Entry.Is() || ControlManager == NULL)
 	{
 		Entry.Dispose();
 	}

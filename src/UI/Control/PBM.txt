@@ -1,0 +1,12 @@
+
+right now only Padding exists
+
+make a full Padding Boarder Margin system
+
+
+
+Padding:	the distance from a Control has on the inside
+Boarder:	the visible outline of a Control, currently hardcoded in Shaders
+Margin:		the distance that a Control has on the outside
+
+
