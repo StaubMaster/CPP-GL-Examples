@@ -2,7 +2,7 @@
 # define UI_CONTROL_SLIDER_HPP
 
 # include "Base/Base.hpp"
-# include "UI/CallBack/Base.hpp"
+# include "Function/Pointer.hpp"
 
 
 
@@ -32,7 +32,7 @@ class Slider : public Base
 
 	public:
 	//void (*ValueChangedFunc)(float);
-	BaseCallBack<float> * ValueChangedFunc;
+	FunctionPointer<float>	ValueChangedFunc;
 
 	public:
 	Slider();

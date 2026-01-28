@@ -37,8 +37,8 @@ class Window;
 class Manager
 {
 	public:
-		Shader Shader;
-		BufferArray BufferArray;
+		UI::Control::Shader Shader;
+		UI::Control::BufferArray BufferArray;
 
 		Container::Binary<Control::Main_Data> Main_Data_Container;
 		EntryContainer::Binary<Control::Inst_Data> Inst_Data_Container;

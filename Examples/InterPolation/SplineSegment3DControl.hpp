@@ -3,7 +3,7 @@
 
 # include "Spline/SplineSegment3D.hpp"
 # include "UI/ControlsInclude.hpp"
-# include "UI/CallBack/Object.hpp"
+# include "Function/Object.hpp"
 
 # include <iostream>
 
@@ -35,9 +35,9 @@ class SplineSegment3D : public GroupBox
 	TextBox	C_Text;
 
 	private:
-	//ObjectCallBack<SplineSegment3D>	T_Slider_CallBack;
-	//ObjectCallBack<SplineSegment3D>	B_Slider_CallBack;
-	//ObjectCallBack<SplineSegment3D>	C_Slider_CallBack;
+	//ObjectFunction<SplineSegment3D>	T_Slider_CallBack;
+	//ObjectFunction<SplineSegment3D>	B_Slider_CallBack;
+	//ObjectFunction<SplineSegment3D>	C_Slider_CallBack;
 
 	::SplineSegment3D * Object;
 

@@ -35,7 +35,7 @@ void UI::Control::Slider::SetValue(float val)
 {
 	SliderValue = val;
 	SliderChanged = true;
-	if (ValueChangedFunc != NULL) { ValueChangedFunc -> Run(SliderValue); }
+	ValueChangedFunc(SliderValue);
 }
 
 
@@ -107,7 +107,7 @@ void UI::Control::Slider::RelayClick(UserParameter::Mouse::Click params)
 	SliderValue = slider_value;
 	SliderChanged = true;
 
-	if (ValueChangedFunc != NULL) { ValueChangedFunc -> Run(SliderValue); }
+	ValueChangedFunc(SliderValue);
 }
 void UI::Control::Slider::RelayCursorDrag(UserParameter::Mouse::Drag params)
 {
@@ -129,5 +129,5 @@ void UI::Control::Slider::RelayCursorDrag(UserParameter::Mouse::Drag params)
 	SliderValue = slider_value;
 	SliderChanged = true;
 
-	if (ValueChangedFunc != NULL) { ValueChangedFunc -> Run(SliderValue); }
+	ValueChangedFunc(SliderValue);
 }

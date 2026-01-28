@@ -74,7 +74,7 @@ re:
 
 $(NAME) : $(FILES_OBJ)
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	$(MAKE) $(ENGINE_LIBRARYS)
+	$(MAKE) $(LIBRARYS)
 	@mkdir -p logs/
 	$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)

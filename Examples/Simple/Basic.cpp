@@ -19,6 +19,8 @@
 #include "Miscellaneous/EntryContainer/Binary.hpp"
 
 #include "Window.hpp"
+#include "ValueType/View.hpp"
+#include "Function/Object.hpp"
 #include "UserParameter/Mouse/Scroll.hpp"
 
 #include "FileInfo.hpp"
@@ -29,55 +31,29 @@
 
 
 
-void SInitRun();
-void SFreeRun();
-void SFrame(double timeDelta);
-void SResize(const WindowBufferSize2D & WindowSize);
-void SCursorScroll(UserParameter::Mouse::Scroll params);
-
 struct MainContext
 {
 DirectoryInfo ImageDir;
 DirectoryInfo ShaderDir;
 DirectoryInfo YMTDir;
 
-Window window;
+Window	window;
+View	view;
 
 MainContext() :
 	ImageDir("../../media/Images"),
 	ShaderDir("../../media/Shaders"),
 	YMTDir("../../media/YMT"),
 	window(),
-	ViewTrans(),
-	ViewDepth(),
-	ViewFOV(),
-	_PolyHedra_3D_Manager(new PolyHedra_Simple3D::ManagerMulti()),
-	PolyHedra_3D_Manager(*_PolyHedra_3D_Manager),
-	_Instance_Entrys(new Container::Binary<EntryContainer::Entry<Simple3D::Data>>()),
-	Instance_Entrys(*_Instance_Entrys)
+	view()
 { }
 ~MainContext()
-{
-	std::cout << "deleting _PolyHedra_3D_Manager ...\n";
-	delete _PolyHedra_3D_Manager;
-	std::cout << "deleting _PolyHedra_3D_Manager done\n";
-
-	std::cout << "deleting _Instance_Entrys ...\n";
-	delete _Instance_Entrys;
-	std::cout << "deleting _Instance_Entrys done\n";
-}
-
-Trans3D	ViewTrans;
-Depth	ViewDepth;
-float	ViewFOV;
-
-PolyHedra_Simple3D::ManagerMulti * _PolyHedra_3D_Manager;
-PolyHedra_Simple3D::ManagerMulti & PolyHedra_3D_Manager;
-
-Container::Binary<EntryContainer::Entry<Simple3D::Data>> * _Instance_Entrys;
-Container::Binary<EntryContainer::Entry<Simple3D::Data>> & Instance_Entrys;
+{ }
 
 
+
+PolyHedra_Simple3D::ManagerMulti PolyHedra_3D_Manager;
+Container::Binary<EntryContainer::Entry<Simple3D::Data>> Instance_Entrys;
 
 void InitGraphics()
 {
@@ -90,7 +66,7 @@ void InitGraphics()
 	}
 	PolyHedra_3D_Manager.DefaultShader.Create();
 	PolyHedra_3D_Manager.DefaultShader.Bind();
-	PolyHedra_3D_Manager.DefaultShader.Depth.Put(ViewDepth);
+	PolyHedra_3D_Manager.DefaultShader.Depth.Put(view.Depth);
 }
 void FreeGraphics()
 { }
@@ -178,11 +154,14 @@ void Frame(double timeDelta)
 	if (window.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
-		ViewTrans.TransformFlatX(window.MoveFromKeys(2.0f * timeDelta), window.SpinFromCursor(ViewFOV * 0.005f * timeDelta));
-		if (ViewTrans.Rot.Y > Angle3D::DegreeToRadian(+90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(+90); }
-		if (ViewTrans.Rot.Y < Angle3D::DegreeToRadian(-90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(-90); }
+		Trans3D trans = window.MoveSpinFromKeysCursor();
+		if (window.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
+		trans.Pos *= 2;
+		trans.Rot.X *= view.FOV * 0.005f;
+		trans.Rot.Y *= view.FOV * 0.005f;
+		trans.Rot.Z *= view.FOV * 0.005f;
+		view.TransformFlatX(trans, timeDelta);
 	}
-	ViewTrans.Rot.CalcBack();
 
 	/*for (unsigned int i = 0; i < Instance_Entrys.Count(); i++)
 	{
@@ -194,9 +173,9 @@ void Frame(double timeDelta)
 		}
 	}*/
 
-	float fov_rad = Angle3D::DegreeToRadian(ViewFOV);
+	float fov_rad = Angle3D::DegreeToRadian(view.FOV);
 	PolyHedra_3D_Manager.DefaultShader.Bind();
-	PolyHedra_3D_Manager.DefaultShader.View.Put(ViewTrans);
+	PolyHedra_3D_Manager.DefaultShader.View.Put(view.Trans);
 	PolyHedra_3D_Manager.DefaultShader.FOV.PutData(&fov_rad);
 
 	PolyHedra_3D_Manager.Draw();
@@ -211,31 +190,19 @@ void CursorScroll(UserParameter::Mouse::Scroll params)
 {
 	if (window.MouseManager.CursorModeIsLocked())
 	{
-		ViewFOV -= params.Y;
+		view.FOV -= params.Y;
 		//std::cout << "FOV " << ViewFOV << '\n';
 	}
 }
 
 int Main()
 {
-	if (glfwInit() == 0)
-	{
-		std::cout << "GLFW Init Failed\n";
-		return -1;
-	}
-
 	window.Create();
-	window.FrameFunc = SFrame;
-	window.InitFunc = SInitRun;
-	window.FreeFunc = SFreeRun;
-	window.ResizeFunc = SResize;
-	window.ChangeCallback_CursorScroll(SCursorScroll);
-
-	ViewTrans = Trans3D(Point3D(0, 0, 0), Angle3D(0, 0, 0));
-	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
-	ViewDepth.Range = Range(0.8f, 1.0f);
-	ViewDepth.Color = window.DefaultColor;
-	ViewFOV = 90;
+	window.InitCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::InitRun));
+	window.FreeCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::FreeRun));
+	window.FrameCallBack.Change(ObjectFunction<MainContext, void, double>::New(this, &MainContext::Frame));
+	window.ResizeCallBack.Change(ObjectFunction<MainContext, void, const WindowBufferSize2D &>::New(this, &MainContext::Resize));
+	window.ChangeCallback_CursorScroll(ObjectFunction<MainContext, void, UserParameter::Mouse::Scroll>::New(this, &MainContext::CursorScroll));
 
 	Debug::Log << "<<<< Run Window" << Debug::Done;
 	window.Run();
@@ -243,35 +210,31 @@ int Main()
 
 	window.Delete();
 
-	glfwTerminate();
 	return 0;
 }
 };
 
 
 
-MainContext * context;
-
-void SInitRun() { context -> InitRun(); }
-void SFreeRun() { context -> FreeRun(); }
-void SFrame(double timeDelta) { context -> Frame(timeDelta); }
-void SResize(const WindowBufferSize2D & WindowSize) { context -> Resize(WindowSize); }
-void SCursorScroll(UserParameter::Mouse::Scroll params) { context -> CursorScroll(params); }
-
-int main()
+int main(int argc, char * argv[])
 {
-	int ret = 1;
+	int ret = -1;
 	Debug::NewFileInDir(DirectoryInfo("./logs/"));
-	Debug::Log << "Basic" << Debug::Done;
+	if (argc > 0)	{ Debug::Log << argv[0] << Debug::Done; }
+	else			{ Debug::Log << "NoName" << Debug::Done; }
+	if (glfwInit() == 0) { std::cout << "GLFW Init Failed\n"; return -1; }
 	{
-		context = new MainContext();
-		try { ret = context -> Main(); }
-		catch (std::exception & ex) { Debug::Log << "Error: " << ex.what() << Debug::Done; }
-		catch (...) { Debug::Log << "Error: " << "Unknown" << Debug::Done; }
-		std::cout << "Deleting Context ...\n" << std::flush;
-		delete context;
-		std::cout << "Deleting Context done\n" << std::flush;
+		try
+		{
+			MainContext context;
+			ret = context.Main();
+		}
+		catch (std::exception & ex)
+		{ Debug::Log << "Error: " << ex.what() << Debug::Done; }
+		catch (...)
+		{ Debug::Log << "Error: " << "Unknown" << Debug::Done; }
 	}
+	glfwTerminate();
 	Debug::Log << "main() return " << ret << Debug::Done;
 	return ret;
 }

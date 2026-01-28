@@ -19,10 +19,35 @@
 #include "Miscellaneous/EntryContainer/Binary.hpp"
 
 #include "Window.hpp"
+#include "Function/Object.hpp"
+#include "ValueType/View.hpp"
 
 #include "FileInfo.hpp"
 #include "DirectoryInfo.hpp"
 #include "Image.hpp"
+
+
+
+struct MainContext
+{
+DirectoryInfo ImageDir;
+DirectoryInfo ShaderDir;
+DirectoryInfo PolyHedraDir;
+
+Window window;
+View	view;
+
+MainContext() :
+	ImageDir("../../media/Images"),
+	ShaderDir("../../media/Shaders"),
+	PolyHedraDir("../../media/YMT/Light/"),
+	window(),
+	view()
+{ }
+~MainContext()
+{ }
+
+
 
 struct SpotLightEntry
 {
@@ -128,16 +153,6 @@ class CLightShader : public PolyHedra_Simple3D::Shader
 	{ }
 };
 
-DirectoryInfo ImageDir("../../media/Images");
-DirectoryInfo ShaderDir("../../media/Shaders");
-DirectoryInfo PolyHedra_Dir("../../media/YMT/Light/");
-
-Window window;
-
-Trans3D	ViewTrans;
-Depth	ViewDepth;
-float	ViewFOV;
-
 CLightShader LightShader;
 
 PolyHedra_Simple3D::ManagerMulti PolyHedra_3D_Manager;
@@ -161,8 +176,8 @@ void InitShaders()
 	}
 	LightShader.Create();
 	LightShader.Bind();
-	LightShader.Depth.Put(ViewDepth);
-	float fov_rad = Angle3D::DegreeToRadian(ViewFOV);
+	LightShader.Depth.Put(view.Depth);
+	float fov_rad = Angle3D::DegreeToRadian(view.FOV);
 	LightShader.FOV.PutData(&fov_rad);
 	PolyHedra_3D_Manager.DefaultShaderToUse = &LightShader;
 }
@@ -230,12 +245,12 @@ void FancyInsert(unsigned int ph_idx, Point3D pos, Angle3D rot)
 }
 void Fancify()
 {
-	unsigned int idx_stage =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedra_Dir.File("Stage.polyhedra.ymt")));
-	unsigned int idx_stage_light =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedra_Dir.File("Stage_Light.polyhedra.ymt")));
-	unsigned int idx_stage_light_holder =	FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedra_Dir.File("Stage_Light_Holder.polyhedra.ymt")));
-	unsigned int idx_truss =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedra_Dir.File("Truss_Square40cm_Len200cm.polyhedra.ymt")));
-	unsigned int idx_truss_cube =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedra_Dir.File("Truss_Cube40cm.polyhedra.ymt")));
-	unsigned int idx_chair =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedra_Dir.File("Chair.polyhedra.ymt")));
+	unsigned int idx_stage =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedraDir.File("Stage.polyhedra.ymt")));
+	unsigned int idx_stage_light =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedraDir.File("Stage_Light.polyhedra.ymt")));
+	unsigned int idx_stage_light_holder =	FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedraDir.File("Stage_Light_Holder.polyhedra.ymt")));
+	unsigned int idx_truss =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedraDir.File("Truss_Square40cm_Len200cm.polyhedra.ymt")));
+	unsigned int idx_truss_cube =			FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedraDir.File("Truss_Cube40cm.polyhedra.ymt")));
+	unsigned int idx_chair =				FancyPolyHedras.Count(); FancyPolyHedras.Insert(PolyHedra::Load(PolyHedraDir.File("Chair.polyhedra.ymt")));
 
 	for (unsigned int i = 0; i < FancyPolyHedras.Count(); i++)
 	{
@@ -346,12 +361,17 @@ void Frame(double timeDelta)
 	if (window.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
-		ViewTrans.TransformFlatX(window.MoveFromKeys(20.0f * timeDelta), window.SpinFromCursor(0.2f * timeDelta));
+		Trans3D trans = window.MoveSpinFromKeysCursor();
+		if (window.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
+		trans.Pos *= 2;
+		trans.Rot.X *= view.FOV * 0.005f;
+		trans.Rot.Y *= view.FOV * 0.005f;
+		trans.Rot.Z *= view.FOV * 0.005f;
+		view.TransformFlatX(trans, timeDelta);
 	}
-	ViewTrans.Rot.CalcBack();
 
 	LightShader.Bind();
-	LightShader.View.Put(ViewTrans);
+	LightShader.View.Put(view.Trans);
 	//Light_Spot.Pos = ViewTrans.Pos;
 	//Light_Spot.Dir = ViewTrans.Rot.rotate(Point3D(0, 0, 1));
 
@@ -372,11 +392,6 @@ void Frame(double timeDelta)
 	if (window.Keys[GLFW_KEY_3].IsPress()) { Light_Spot_Entry_Array[0].Toggle(); }
 	if (window.Keys[GLFW_KEY_4].IsPress()) { Light_Spot_Entry_Array[1].Toggle(); }
 	if (window.Keys[GLFW_KEY_5].IsPress()) { Light_Spot_Entry_Array[2].Toggle(); }
-
-	if (window.Keys[GLFW_KEY_Q].IsPress())
-	{
-		std::cout << "View.Pos: " << ViewTrans.Pos << "\n";
-	}
 
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
@@ -415,32 +430,17 @@ void Resize(const WindowBufferSize2D & WindowSize)
 	//Multi_WindowSize -> ChangeData(WindowSize);
 }
 
-
-
-int main()
+int Main()
 {
-	Debug::NewFileInDir(DirectoryInfo("logs/"));
-	Debug::Log << "Light" << Debug::Done;
-
-	if (glfwInit() == 0)
-	{
-		std::cout << "GLFW Init Failed\n";
-		return -1;
-	}
-
 	window.Create();
-	window.InitFunc = Init;
-	window.FrameFunc = Frame;
-	window.FreeFunc = Free;
-	window.ResizeFunc = Resize;
+	window.InitCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::Init));
+	window.FreeCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::Free));
+	window.FrameCallBack.Change(ObjectFunction<MainContext, void, double>::New(this, &MainContext::Frame));
+	window.ResizeCallBack.Change(ObjectFunction<MainContext, void, const WindowBufferSize2D &>::New(this, &MainContext::Resize));
 
 	window.DefaultColor = ColorF4(0.0f, 0.0f, 0.0f);
-
-	ViewTrans = Trans3D(Point3D(0, 10, -65), Angle3D(0, 0, 0));
-	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
-	ViewDepth.Range = Range(0.8f, 1.0f);
-	ViewDepth.Color = window.DefaultColor;
-	ViewFOV = 90;
+	view.Depth.Color = window.DefaultColor;
+	view.Trans = Trans3D(Point3D(0, 10, -65), Angle3D(0, 0, 0));
 
 	Light_Ambient_Intensity = 0.01f;
 	Light_Solar_Intensity = 0.2f;
@@ -477,9 +477,31 @@ int main()
 	delete[] Light_Spot_Array;
 	window.Delete();
 
-
-
-	glfwTerminate();
-	std::cout << "main() return";
 	return 0;
+}
+};
+
+
+
+int main(int argc, char * argv[])
+{
+	int ret = -1;
+	Debug::NewFileInDir(DirectoryInfo("./logs/"));
+	if (argc > 0)	{ Debug::Log << argv[0] << Debug::Done; }
+	else			{ Debug::Log << "NoName" << Debug::Done; }
+	if (glfwInit() == 0) { std::cout << "GLFW Init Failed\n"; return -1; }
+	{
+		try
+		{
+			MainContext context;
+			ret = context.Main();
+		}
+		catch (std::exception & ex)
+		{ Debug::Log << "Error: " << ex.what() << Debug::Done; }
+		catch (...)
+		{ Debug::Log << "Error: " << "Unknown" << Debug::Done; }
+	}
+	glfwTerminate();
+	Debug::Log << "main() return " << ret << Debug::Done;
+	return ret;
 }

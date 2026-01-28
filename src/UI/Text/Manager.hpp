@@ -26,8 +26,8 @@ namespace Text
 class Manager
 {
 	public:
-	TextShader Shader;
-	BufferArray BufferArray;
+	UI::Text::TextShader Shader;
+	UI::Text::BufferArray BufferArray;
 
 	Container::Binary<UI::Text::Main_Data> Main_Data_Container;
 	EntryContainer::Binary<UI::Text::Inst_Data> Inst_Data_Container;

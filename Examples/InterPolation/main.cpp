@@ -18,6 +18,8 @@
 #include "PolyHedra/Simple3D/ManagerMulti.hpp"
 
 #include "Window.hpp"
+#include "ValueType/View.hpp"
+#include "Function/Object.hpp"
 
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"
@@ -46,18 +48,28 @@ assamble other things correctly
 
 
 
-DirectoryInfo ImageDir("../../media/Images");
-DirectoryInfo ShaderDir("../../media/Shaders");
-DirectoryInfo MediaDir("../../media/YMT/Spline");
-DirectoryInfo TextDir("../../media/Text");
+struct MainContext
+{
+DirectoryInfo ImageDir;
+DirectoryInfo ShaderDir;
+DirectoryInfo PolyHedraDir;
+DirectoryInfo TextDir;
+
+Window	window;
+View	view;
+
+MainContext() :
+	ImageDir("../../media/Images"),
+	ShaderDir("../../media/Shaders"),
+	PolyHedraDir("../../media/YMT/Spline"),
+	TextDir("../../media/Text"),
+	window(),
+	view()
+{ }
+~MainContext()
+{ }
 
 
-
-Window window;
-
-Trans3D	ViewTrans;
-Depth	ViewDepth;
-float	ViewFOV;
 
 UI::Control::Manager * UI_Control_Manager;
 UI::Text::Manager * UI_Text_Manager;
@@ -75,8 +87,8 @@ void InitGraphics()
 	}
 	PolyHedra_3D_Manager.DefaultShader.Create();
 	PolyHedra_3D_Manager.DefaultShader.Bind();
-	PolyHedra_3D_Manager.DefaultShader.Depth.Put(ViewDepth);
-	float fov_rad = Angle3D::DegreeToRadian(ViewFOV);
+	PolyHedra_3D_Manager.DefaultShader.Depth.Put(view.Depth);
+	float fov_rad = Angle3D::DegreeToRadian(view.FOV);
 	PolyHedra_3D_Manager.DefaultShader.FOV.PutData(&fov_rad);
 
 	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
@@ -112,14 +124,17 @@ void TestSpline_Init()
 		SplineNode3D(Point3D(-40,   0, -20), Point3D(+1, 0, -1)),
 		SplineNode3D(Point3D(  0,   0, -40), Point3D(+1, 0,  0)),
 	}, 6, true, 0, 0, 0);*/
-	Test_Spline = new SplineCurve3D((SplineNode3D []) {
-		SplineNode3D(Point3D(+40, +10, -20), Point3D(+1, 0, +1)),
-		SplineNode3D(Point3D(+40, -10, +20), Point3D(-1, 0, +1)),
-		SplineNode3D(Point3D(  0,   0, +40), Point3D(-1, 0,  0)),
-		SplineNode3D(Point3D(-40,   0, +20), Point3D(-1, 0, -1)),
-		SplineNode3D(Point3D(-40,   0, -20), Point3D(+1, 0, -1)),
-		SplineNode3D(Point3D(  0,   0, -40), Point3D(+1, 0,  0)),
-	}, 6, true, 0, 0, 0);
+	{
+		SplineNode3D nodes[6] {
+			SplineNode3D(Point3D(+40, +10, -20), Point3D(+1, 0, +1)),
+			SplineNode3D(Point3D(+40, -10, +20), Point3D(-1, 0, +1)),
+			SplineNode3D(Point3D(  0,   0, +40), Point3D(-1, 0,  0)),
+			SplineNode3D(Point3D(-40,   0, +20), Point3D(-1, 0, -1)),
+			SplineNode3D(Point3D(-40,   0, -20), Point3D(+1, 0, -1)),
+			SplineNode3D(Point3D(  0,   0, -40), Point3D(+1, 0,  0)),
+		};
+		Test_Spline = new SplineCurve3D(nodes, 6, true, 0, 0, 0);
+	}
 
 	Test_Node_Instance_Entrys = PolyHedra_3D_Manager.Place(PolyHedra::Generate::HexaHedron(1.0f), (Test_Spline -> SegmentCount) * 2);
 	for (unsigned int i = 0; i < Test_Spline -> SegmentCount; i++)
@@ -171,20 +186,23 @@ void TrainSpline_Init()
 	Train_Spline_Value = 0;
 	Train_WheelSpin = 0;
 
-	Train_Spline = new SplineCurve3D((SplineNode3D []) {
-		SplineNode3D(Point3D(+100, 0, +100), Point3D()),
-		SplineNode3D(Point3D(+100, 0, -100), Point3D()),
-		SplineNode3D(Point3D(-100, 0, -100), Point3D()),
-		SplineNode3D(Point3D(-100, 0, +100), Point3D()),
-	}, 4, true, -0.5f, 0, 0);
+	{
+		SplineNode3D nodes[4] {
+			SplineNode3D(Point3D(+100, 0, +100), Point3D()),
+			SplineNode3D(Point3D(+100, 0, -100), Point3D()),
+			SplineNode3D(Point3D(-100, 0, -100), Point3D()),
+			SplineNode3D(Point3D(-100, 0, +100), Point3D()),
+		};
+		Train_Spline = new SplineCurve3D(nodes, 4, true, -0.5f, 0, 0);
+	}
 
-	unsigned int idx_axis =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(MediaDir.File("Drehgestell_Achse.polyhedra.ymt")));
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(MediaDir.File("Drehgestell_Halter.polyhedra.ymt")));	//	Faces wrong way
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(MediaDir.File("Drehgestell_Rahmen.polyhedra.ymt")));	//	Faces Wrong way
-	unsigned int idx_rail =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(MediaDir.File("Gleis_Seg.polyhedra.ymt")));			//	Faces Wrong way
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(MediaDir.File("Schienen_Seg.polyhedra.ymt")));			//	Faces Wrong way
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(MediaDir.File("Wagen_Flach.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(MediaDir.File("Wagen_Tief.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
+	unsigned int idx_axis =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Achse.polyhedra.ymt")));
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Halter.polyhedra.ymt")));	//	Faces wrong way
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Rahmen.polyhedra.ymt")));	//	Faces Wrong way
+	unsigned int idx_rail =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Gleis_Seg.polyhedra.ymt")));			//	Faces Wrong way
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Schienen_Seg.polyhedra.ymt")));			//	Faces Wrong way
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Flach.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Tief.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
 
 	Train_Rail_Instance_Entry = PolyHedra_3D_Manager.Place(idx_rail, 128);
 	for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Length(); i++)
@@ -375,19 +393,23 @@ void Frame(double timeDelta)
 	if (window.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
-		ViewTrans.TransformFlatX(window.MoveFromKeys(2.0f * timeDelta), window.SpinFromCursor(ViewFOV * 0.005f * timeDelta));
-		if (ViewTrans.Rot.Y > Angle3D::DegreeToRadian(+90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(+90); }
-		if (ViewTrans.Rot.Y < Angle3D::DegreeToRadian(-90)) { ViewTrans.Rot.Y = Angle3D::DegreeToRadian(-90); }
+		Trans3D trans = window.MoveSpinFromKeysCursor();
+		if (window.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
+		trans.Pos *= 2;
+		trans.Rot.X *= view.FOV * 0.005f;
+		trans.Rot.Y *= view.FOV * 0.005f;
+		trans.Rot.Z *= view.FOV * 0.005f;
+		view.TransformFlatX(trans, timeDelta);
 	}
-	ViewTrans.Rot.CalcBack();
 
 	TestSpline_Update(timeDelta);
 	TrainSpline_Update(timeDelta);
 
 	PolyHedra_3D_Manager.DefaultShader.Bind();
-	PolyHedra_3D_Manager.DefaultShader.View.Put(ViewTrans);
+	PolyHedra_3D_Manager.DefaultShader.View.Put(view.Trans);
 	PolyHedra_3D_Manager.Draw();
 
+	GL::Clear(GL::ClearMask::DepthBufferBit);
 	Point2D mouse = window.MouseManager.CursorPixelPosition().Absolute;
 	UI_Control_Manager -> UpdateMouse(mouse);
 	UI_Control_Manager -> Window -> UpdateEntrys();
@@ -423,51 +445,46 @@ void Resize(const WindowBufferSize2D & WindowSize)
 	UI_Control_Manager -> UpdateSize(WindowSize);
 }
 
-
-
-int main()
+int Main()
 {
-	Debug::NewFileInDir(DirectoryInfo("logs/"));
-
-	if (glfwInit() == 0)
-	{
-		std::cout << "GLFW Init Failed\n";
-		return -1;
-	}
-
 	window.Create();
-	window.InitFunc = InitRun;
-	window.FrameFunc = Frame;
-	window.FreeFunc = FreeRun;
-	window.ResizeFunc = Resize;
-	//window.FrameNumberTerminate = 4;
+	window.InitCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::InitRun));
+	window.FreeCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::FreeRun));
+	window.FrameCallBack.Change(ObjectFunction<MainContext, void, double>::New(this, &MainContext::Frame));
+	window.ResizeCallBack.Change(ObjectFunction<MainContext, void, const WindowBufferSize2D &>::New(this, &MainContext::Resize));
 
-	window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
-
-	ViewTrans = Trans3D(Point3D(0, 0, 0), Angle3D(0, 0, 0));
-	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
-	ViewDepth.Range = Range(0.8f, 1.0f);
-	ViewDepth.Color = window.DefaultColor;
-	ViewFOV = 90;
-
-
-
-	try
-	{
-		Debug::Log << "<<<< Run Window" << Debug::Done;
-		window.Run();
-		Debug::Log << ">>>> Run Window" << Debug::Done;
-	}
-	catch (std::exception & e)
-	{
-		Debug::Log << "Run Exception: " << e.what() << '\n';
-	}
-
-
+	Debug::Log << "<<<< Run Window" << Debug::Done;
+	window.Run();
+	Debug::Log << ">>>> Run Window" << Debug::Done;
 
 	window.Delete();
 
-	glfwTerminate();
-	std::cout << "main() return";
 	return 0;
+}
+};
+
+
+
+int main(int argc, char * argv[])
+{
+	std::cout << "int main() ...\n";
+	int ret = -1;
+	Debug::NewFileInDir(DirectoryInfo("./logs/"));
+	if (argc > 0)	{ Debug::Log << argv[0] << Debug::Done; }
+	else			{ Debug::Log << "NoName" << Debug::Done; }
+	if (glfwInit() == 0) { std::cout << "GLFW Init Failed\n"; return -1; }
+	{
+		try
+		{
+			MainContext context;
+			ret = context.Main();
+		}
+		catch (std::exception & ex)
+		{ Debug::Log << "Error: " << ex.what() << Debug::Done; }
+		catch (...)
+		{ Debug::Log << "Error: " << "Unknown" << Debug::Done; }
+	}
+	glfwTerminate();
+	Debug::Log << "main() return " << ret << Debug::Done;
+	return ret;
 }
