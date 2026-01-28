@@ -445,18 +445,19 @@ void Resize(const WindowBufferSize2D & WindowSize)
 	UI_Control_Manager -> UpdateSize(WindowSize);
 }
 
+
+
 int Main()
 {
-	window.Create();
 	window.InitCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::InitRun));
 	window.FreeCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::FreeRun));
 	window.FrameCallBack.Change(ObjectFunction<MainContext, void, double>::New(this, &MainContext::Frame));
 	window.ResizeCallBack.Change(ObjectFunction<MainContext, void, const WindowBufferSize2D &>::New(this, &MainContext::Resize));
 
+	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;
 	window.Run();
 	Debug::Log << ">>>> Run Window" << Debug::Done;
-
 	window.Delete();
 
 	return 0;

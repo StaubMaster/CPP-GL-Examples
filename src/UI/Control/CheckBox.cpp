@@ -73,6 +73,6 @@ void UI::Control::CheckBox::RelayClick(UserParameter::Mouse::Click params)
 	{
 		Checked = !Checked;
 		ColorChanged = true;
-		if (ClickFunc != NULL) { ClickFunc(params); }
+		ClickFunc(params);
 	}
 }

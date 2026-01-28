@@ -4,6 +4,7 @@
 #include "Debug.hpp"
 
 #include "Window.hpp"
+#include "Function/Object.hpp"
 #include "UserParameter/MouseInclude.hpp"
 
 #include "DirectoryInfo.hpp"
@@ -37,38 +38,29 @@
 #include "UI/ControlsInclude.hpp"
 
 #include "UI/Text/Manager.hpp"
-#include "UI/CallBack/Static.hpp"
 
 
 
-DirectoryInfo ShaderDir("../../media/Shaders");
-DirectoryInfo ImageDir("../../media/Images");
-DirectoryInfo TextDir("../../media/Text");
+struct MainContext
+{
+DirectoryInfo ShaderDir;
+DirectoryInfo ImageDir;
+DirectoryInfo TextDir;
 
 Window window;
 
+MainContext() :
+	ShaderDir("../../media/Shaders"),
+	ImageDir("../../media/Images"),
+	TextDir("../../media/Text"),
+	window()
+{ }
+~MainContext()
+{ }
+
+
+
 Multiform::WindowBufferSize2D * Multi_WindowSize;
-
-
-
-
-
-void click0(UserParameter::Mouse::Click params);
-void click1(UserParameter::Mouse::Click params);
-void click_toggle_Example(UserParameter::Mouse::Click params);
-void click_toggle_Settings(UserParameter::Mouse::Click params);
-void slider_changed(float val);
-
-void settings_slider_color_r(float val);
-void settings_slider_color_g(float val);
-void settings_slider_color_b(float val);
-
-
-
-StaticCallBack<float> slider_changed_callback(slider_changed);
-StaticCallBack<float> settings_slider_color_r_callback(settings_slider_color_r);
-StaticCallBack<float> settings_slider_color_g_callback(settings_slider_color_g);
-StaticCallBack<float> settings_slider_color_b_callback(settings_slider_color_b);
 
 
 
@@ -98,7 +90,7 @@ void UI_Make_Toggles()
 	check_box -> Anchor.X.SetPaddedMinDist(0);
 	check_box -> Anchor.X.SetPaddedMaxDist(0);
 	check_box -> Anchor.Y.SetPaddedMaxDist(h);
-	check_box -> ClickFunc = click_toggle_Example;
+	check_box -> ClickFunc.Change(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::click_toggle_Example));
 	form -> ChildInsert(check_box);
 	Toggle_CheckBox_Example = check_box;
 
@@ -110,7 +102,7 @@ void UI_Make_Toggles()
 	check_box -> Anchor.X.SetPaddedMinDist(0);
 	check_box -> Anchor.X.SetPaddedMaxDist(0);
 	check_box -> Anchor.Y.SetPaddedMaxDist(h);
-	check_box -> ClickFunc = click_toggle_Settings;
+	check_box -> ClickFunc.Change(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::click_toggle_Settings));
 	form -> ChildInsert(check_box);
 	Toggle_CheckBox_Settings = check_box;
 
@@ -185,7 +177,7 @@ void UI_Make_Settings()
 	slider -> Anchor.X.SetPaddedMinDist(0);
 	slider -> Anchor.X.SetPaddedMaxDist(0);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc = &settings_slider_color_r_callback;
+	slider -> ValueChangedFunc.Change(ObjectFunction<MainContext, void, float>::New(this, &MainContext::settings_slider_color_r));
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
@@ -198,7 +190,7 @@ void UI_Make_Settings()
 	slider -> Anchor.X.SetPaddedMinDist(0);
 	slider -> Anchor.X.SetPaddedMaxDist(0);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc = &settings_slider_color_g_callback;
+	slider -> ValueChangedFunc.Change(ObjectFunction<MainContext, void, float>::New(this, &MainContext::settings_slider_color_g));
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
@@ -211,7 +203,7 @@ void UI_Make_Settings()
 	slider -> Anchor.X.SetPaddedMinDist(0);
 	slider -> Anchor.X.SetPaddedMaxDist(0);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc = &settings_slider_color_b_callback;
+	slider -> ValueChangedFunc.Change(ObjectFunction<MainContext, void, float>::New(this, &MainContext::settings_slider_color_b));
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
@@ -251,7 +243,7 @@ void UI_Make_Example()
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> Anchor.X.SetPaddedMinDist(w);
 	button -> Anchor.Y.SetPaddedMaxDist(h);
-	button -> ClickFunc = click0;
+	button -> ClickFunc.Change(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::click0));
 	group_box -> ChildInsert(button);
 
 	w = button -> Anchor.X.GetPaddedMinSize();
@@ -261,7 +253,7 @@ void UI_Make_Example()
 	button -> Anchor.Y.Anchor = ANCHOR_MAX;
 	button -> Anchor.X.SetPaddedMinDist(w);
 	button -> Anchor.Y.SetPaddedMaxDist(h);
-	button -> ClickFunc = click1;
+	button -> ClickFunc.Change(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::click1));
 	group_box -> ChildInsert(button);
 
 	w = button -> Anchor.X.GetPaddedMinSize();
@@ -308,7 +300,7 @@ void UI_Make_Example()
 	slider -> Anchor.X.SetPaddedMinDist(w);
 	slider -> Anchor.X.SetSize(200);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc = &slider_changed_callback;
+	slider -> ValueChangedFunc.Change(ObjectFunction<MainContext, void, float>::New(this, &MainContext::slider_changed));
 	form -> ChildInsert(slider);
 
 	w = slider -> Anchor.X.GetPaddedMinSize();
@@ -493,40 +485,55 @@ void TextFunc(UserParameter::KeyBoard::Text params)
 
 
 
-int main()
+int Main()
 {
-	Debug::NewFileInDir(DirectoryInfo("logs/"));
+	window.InitCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::InitRun));
+	window.FreeCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::FreeRun));
+	window.FrameCallBack.Change(ObjectFunction<MainContext, void, double>::New(this, &MainContext::Frame));
+	window.ResizeCallBack.Change(ObjectFunction<MainContext, void, const WindowBufferSize2D &>::New(this, &MainContext::Resize));
 
-	if (glfwInit() == 0)
-	{
-		std::cout << "GLFW Init Failed\n";
-		return -1;
-	}
+	window.ChangeCallback_CursorClick(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::ClickFunc));
+	window.ChangeCallback_CursorScroll(ObjectFunction<MainContext, void, UserParameter::Mouse::Scroll>::New(this, &MainContext::ScrollFunc));
+	window.ChangeCallback_CursorMove(ObjectFunction<MainContext, void, UserParameter::Mouse::Position>::New(this, &MainContext::MoveFunc));
+	window.ChangeCallback_CursorDrag(ObjectFunction<MainContext, void, UserParameter::Mouse::Drag>::New(this, &MainContext::DragFunc));
 
-	window.Create();
-	window.InitFunc = InitRun;
-	window.FrameFunc = Frame;
-	window.FreeFunc = FreeRun;
-
-	window.ResizeFunc = Resize;
-
-	window.ChangeCallback_CursorClick(ClickFunc);
-	window.ChangeCallback_CursorScroll(ScrollFunc);
-	window.ChangeCallback_CursorMove(MoveFunc);
-	window.ChangeCallback_CursorDrag(DragFunc);
-
-	window.KeyFunc = KeyFunc;
-	window.TextFunc = TextFunc;
-
+	window.KeyCallBack.Change(ObjectFunction<MainContext, void, UserParameter::KeyBoard::Key>::New(this, &MainContext::KeyFunc));
+	window.TextCallBack.Change(ObjectFunction<MainContext, void, UserParameter::KeyBoard::Text>::New(this, &MainContext::TextFunc));
+	
 	window.DefaultColor = ColorF4(0.875f, 0.875f, 0.875f);
-
+	
+	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;
 	window.Run();
 	Debug::Log << ">>>> Run Window" << Debug::Done;
-
 	window.Delete();
 
-	glfwTerminate();
-	std::cout << "main() return";
 	return 0;
+}
+};
+
+
+
+int main(int argc, char * argv[])
+{
+	std::cout << "int main() ...\n";
+	int ret = -1;
+	Debug::NewFileInDir(DirectoryInfo("./logs/"));
+	if (argc > 0)	{ Debug::Log << argv[0] << Debug::Done; }
+	else			{ Debug::Log << "NoName" << Debug::Done; }
+	if (glfwInit() == 0) { std::cout << "GLFW Init Failed\n"; return -1; }
+	{
+		try
+		{
+			MainContext context;
+			ret = context.Main();
+		}
+		catch (std::exception & ex)
+		{ Debug::Log << "Error: " << ex.what() << Debug::Done; }
+		catch (...)
+		{ Debug::Log << "Error: " << "Unknown" << Debug::Done; }
+	}
+	glfwTerminate();
+	Debug::Log << "main() return " << ret << Debug::Done;
+	return ret;
 }

@@ -14,11 +14,11 @@ namespace Control
 class Window : public Base
 {
 	public:
-		Window(Manager * manager);
-		~Window();
+	Window(Manager * manager);
+	~Window();
 
 	public:
-		void UpdateWindowSize(Point2D size);
+	void UpdateWindowSize(Point2D size);
 };
 
 };

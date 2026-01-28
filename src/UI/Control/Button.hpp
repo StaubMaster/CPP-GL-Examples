@@ -1,7 +1,8 @@
 #ifndef  UI_CONTROL_BUTTON_HPP
 # define UI_CONTROL_BUTTON_HPP
 
-#include "Base/Base.hpp"
+# include "Base/Base.hpp"
+# include "Function/Pointer.hpp"
 
 
 
@@ -14,7 +15,7 @@ namespace Control
 class Button : public Base
 {
 	public:
-	void (*ClickFunc)(UserParameter::Mouse::Click params);
+	FunctionPointer<UserParameter::Mouse::Click>	ClickFunc;
 
 	public:
 	Button();
