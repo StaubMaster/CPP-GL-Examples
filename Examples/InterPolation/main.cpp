@@ -20,6 +20,8 @@
 #include "Window.hpp"
 #include "ValueType/View.hpp"
 #include "Function/Object.hpp"
+#include "UserParameter/KeyBoardInclude.hpp"
+#include "UserParameter/MouseInclude.hpp"
 
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"
@@ -44,6 +46,7 @@ assamble other things correctly
 
 #include "UI/Control/Base/Manager.hpp"
 #include "UI/Text/Manager.hpp"
+#include "UI/Text/Font/Font.hpp"
 #include "SplineSegment3DControl.hpp"
 
 
@@ -71,8 +74,8 @@ MainContext() :
 
 
 
-UI::Control::Manager * UI_Control_Manager;
-UI::Text::Manager * UI_Text_Manager;
+UI::Control::Manager UI_Control_Manager;
+UI::Text::Manager UI_Text_Manager;
 
 PolyHedra_Simple3D::ManagerMulti PolyHedra_3D_Manager;
 
@@ -91,15 +94,41 @@ void InitGraphics()
 	float fov_rad = Angle3D::DegreeToRadian(view.FOV);
 	PolyHedra_3D_Manager.DefaultShader.FOV.PutData(&fov_rad);
 
-	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
-	UI_Text_Manager = new UI::Text::Manager(ShaderDir, TextDir);
-	UI_Control_Manager -> UpdateSize(window.Size);
+	{
+		Container::Fixed<::Shader::Code> code(2);
+		code.Insert(::Shader::Code(ShaderDir.File("UI/Control.vert")));
+		code.Insert(::Shader::Code(ShaderDir.File("UI/Control.frag")));
+		UI_Control_Manager.Shader.Change(code);
+	}
+	UI_Control_Manager.Shader.Create();
+	UI_Control_Manager.BufferArray.Create();
+	UI_Control_Manager.UpdateSize(window.Size);
+
+	{
+		Container::Fixed<::Shader::Code> code(2);
+		code.Insert(::Shader::Code(ShaderDir.File("UI/Text.vert")));
+		code.Insert(::Shader::Code(ShaderDir.File("UI/Text.frag")));
+		UI_Text_Manager.Shader.Change(code);
+	}
+	UI_Text_Manager.Shader.Create();
+	UI_Text_Manager.BufferArray.Create();
+
+	{
+		UI_Text_Manager.TextFont = UI::Text::Font::Parse(TextDir.File("Font0.atlas"));
+		UI_Text_Manager.Pallet_Texture.Create();
+		UI_Text_Manager.Pallet_Texture.Bind();
+		UI_Text_Manager.Pallet_Texture.Assign(UI_Text_Manager.TextFont -> AtlasTexture);
+	}
+	UI_Control_Manager.Window.ChangeManager(&UI_Control_Manager);
+	UI_Control_Manager.Window.ChangeManager(&UI_Text_Manager);
+
+	window.KeyBoardManager.KeyCallBack.Change(&UI_Control_Manager, &UI::Control::Manager::RelayKey);
+	window.KeyBoardManager.TextCallBack.Change(&UI_Control_Manager, &UI::Control::Manager::RelayText);
+	window.MouseManager.CallbackClick.Change(&UI_Control_Manager, &UI::Control::Manager::RelayClick);
+	window.MouseManager.CallbackDrag.Change(&UI_Control_Manager, &UI::Control::Manager::RelayCursorDrag);
 }
 void FreeGraphics()
-{
-	delete UI_Control_Manager;
-	delete UI_Text_Manager;
-}
+{ }
 
 
 
@@ -225,11 +254,21 @@ void TrainSpline_Free()
 }
 void TrainSpline_Update(float timeDelta)
 {
+	for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Length(); i++)
+	{
+		float t = i;
+		t = t / (Train_Rail_Instance_Entry.Length());
+		t = t * (Train_Spline -> SegmentCount);
+		SplineNode3D node = Train_Spline -> Calculate(t);
+		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
+		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
+		Train_Rail_Instance_Entry[i].Trans.Rot.CalcBack();
+	}
+
 	{
 		SplineNode3D node = Train_Spline -> Calculate(Train_Spline_Value);
 		Angle3D a = Angle3D::FromPoint3D(node.Dir);
 		a.CalcBack();
-
 		(*Train_Wheel_Instance_Entry).Trans.Pos = node.Pos + a.rotate(Point3D(0, 6, 0));
 		(*Train_Wheel_Instance_Entry).Trans.Rot = a;
 		(*Train_Wheel_Instance_Entry).Trans.Rot.Y -= Train_WheelSpin;
@@ -242,133 +281,10 @@ void TrainSpline_Update(float timeDelta)
 
 
 
-UI::Control::Form * Example_Form;
-UI::Control::TextBox * Example_TextBox_0;
-UI::Control::TextBox * Example_TextBox_1;
-UI::Control::TextBox * Example_TextBox_2;
-void UI_Make_Example()
-{
-	UI::Control::Form * form;
-	UI::Control::GroupBox * group_box;
-	UI::Control::Button * button;
-	UI::Control::TextBox * text;
-	UI::Control::Slider * slider;
-	UI::Control::CheckBox * check_box;
-
-	form = new UI::Control::Form();
-	UI_Control_Manager -> Window -> ChildInsert(form);
-	//form -> Hide();
-	Example_Form = form;
-
-	float w = 0;
-	float h = 0;
-
-	group_box = new UI::Control::GroupBox();
-	group_box -> Anchor.X.Anchor = ANCHOR_BOTH;
-	group_box -> Anchor.Y.Anchor = ANCHOR_MAX;
-	group_box -> Anchor.X.SetPaddedMinDist(0);
-	group_box -> Anchor.X.SetPaddedMaxDist(0);
-	group_box -> Anchor.Y.SetPaddedMaxDist(h);
-	form -> ChildInsert(group_box);
-
-	button = new UI::Control::Button();
-	button -> Anchor.X.Anchor = ANCHOR_MIN;
-	button -> Anchor.Y.Anchor = ANCHOR_MAX;
-	button -> Anchor.X.SetPaddedMinDist(w);
-	button -> Anchor.Y.SetPaddedMaxDist(h);
-	//button -> ClickFunc = click0;
-	group_box -> ChildInsert(button);
-
-	w = button -> Anchor.X.GetPaddedMinSize();
-
-	button = new UI::Control::Button();
-	button -> Anchor.X.Anchor = ANCHOR_MIN;
-	button -> Anchor.Y.Anchor = ANCHOR_MAX;
-	button -> Anchor.X.SetPaddedMinDist(w);
-	button -> Anchor.Y.SetPaddedMaxDist(h);
-	//button -> ClickFunc = click1;
-	group_box -> ChildInsert(button);
-
-	w = button -> Anchor.X.GetPaddedMinSize();
-
-	check_box = new UI::Control::CheckBox();
-	check_box -> Anchor.X.Anchor = ANCHOR_MIN;
-	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
-	check_box -> Anchor.X.SetPaddedMinDist(w);
-	check_box -> Anchor.Y.SetPaddedMaxDist(h);
-	group_box -> ChildInsert(check_box);
-
-	w = 0;
-	h = check_box -> Anchor.Y.GetPaddedMaxSize();
-
-	text = new UI::Control::TextBox(*UI_Text_Manager);
-	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_MAX;
-	text -> Anchor.X.SetPaddedMinDist(0);
-	text -> Anchor.X.SetPaddedMaxDist(0);
-	text -> Anchor.Y.SetPaddedMaxDist(h);
-	text -> SetText("Text0");
-	group_box -> ChildInsert(text);
-	Example_TextBox_0 = text;
-
-	w = 0;
-	h = text -> Anchor.Y.GetPaddedMaxSize();
-
-	text = new UI::Control::TextBox(*UI_Text_Manager);
-	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_MAX;
-	text -> Anchor.X.SetPaddedMinDist(0);
-	text -> Anchor.X.SetPaddedMaxDist(0);
-	text -> Anchor.Y.SetPaddedMaxDist(h);
-	text -> SetText("Text1");
-	group_box -> ChildInsert(text);
-	Example_TextBox_1 = text;
-
-	w = 0;
-	h = group_box -> Anchor.Y.GetPaddedMaxSize();
-
-	slider = new UI::Control::Slider();
-	slider -> Anchor.X.Anchor = ANCHOR_MIN;
-	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
-	slider -> Anchor.X.SetPaddedMinDist(w);
-	slider -> Anchor.X.SetSize(200);
-	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	//slider -> ValueChangedFunc = &slider_changed_callback;
-	form -> ChildInsert(slider);
-
-	w = slider -> Anchor.X.GetPaddedMinSize();
-
-	text = new UI::Control::TextBox(*UI_Text_Manager);
-	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_MAX;
-	text -> Anchor.X.SetPaddedMinDist(w);
-	text -> Anchor.X.SetPaddedMaxDist(0);
-	text -> Anchor.Y.SetPaddedMaxDist(h);
-	text -> SetText("0");
-	text -> ReadOnly = true;
-	form -> ChildInsert(text);
-	Example_TextBox_2 = text;
-}
-
-
-
 void MakeRun()
 {
-	//Form = new UI::Control::Form();
-	//UI_Control_Manager -> Window -> ChildInsert(Form);
-
-	SplineSegment3D_Control = new UI::Control::SplineSegment3D(*UI_Text_Manager);
-	//Form -> ChildInsert(SplineSegment3D_Control);
-
-	//SplineSegment3D_Control -> ChildInsert(&(SplineSegment3D_Control -> T_Slider));
-	//SplineSegment3D_Control -> ChildInsert(&(SplineSegment3D_Control -> T_Text));
-	//SplineSegment3D_Control -> ChildInsert(&(SplineSegment3D_Control -> B_Slider));
-	//SplineSegment3D_Control -> ChildInsert(&(SplineSegment3D_Control -> B_Text));
-	//SplineSegment3D_Control -> ChildInsert(&(SplineSegment3D_Control -> C_Slider));
-	//SplineSegment3D_Control -> ChildInsert(&(SplineSegment3D_Control -> C_Text));
-	UI_Control_Manager -> Window -> ChildInsert(SplineSegment3D_Control);
-
-	//UI_Make_Example();
+	SplineSegment3D_Control = new UI::Control::SplineSegment3D();
+	UI_Control_Manager.Window.ChildInsert(SplineSegment3D_Control);
 }
 
 void InitRun()
@@ -378,6 +294,8 @@ void InitRun()
 	TrainSpline_Init();
 
 	MakeRun();
+	//if (Test_Spline -> SegmentCount != 0) { SplineSegment3D_Control -> ChangeObject(&(Test_Spline -> Segments[0])); }
+	if (Train_Spline -> SegmentCount != 0) { SplineSegment3D_Control -> ChangeObject(&(Train_Spline -> Segments[0])); }
 }
 void FreeRun()
 {
@@ -386,15 +304,13 @@ void FreeRun()
 	FreeGraphics();
 }
 
-
-
 void Frame(double timeDelta)
 {
-	if (window.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
+	if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		Trans3D trans = window.MoveSpinFromKeysCursor();
-		if (window.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
+		if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
 		trans.Pos *= 2;
 		trans.Rot.X *= view.FOV * 0.005f;
 		trans.Rot.Y *= view.FOV * 0.005f;
@@ -411,24 +327,10 @@ void Frame(double timeDelta)
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	Point2D mouse = window.MouseManager.CursorPixelPosition().Absolute;
-	UI_Control_Manager -> UpdateMouse(mouse);
-	UI_Control_Manager -> Window -> UpdateEntrys();
-	UI_Control_Manager -> Draw();
-	UI_Text_Manager -> Draw();
-
-	std::cout << "Anchor:\n";
-	std::cout << (UI_Control_Manager -> Window -> AnchorBox) << '\n';
-	//std::cout << (SplineSegment3D_Control -> AnchorBox) << '\n';
-	//std::cout << (SplineSegment3D_Control -> T_Slider.AnchorBox) << '\n';
-	std::cout << '\n';
-	{
-		std::cout << "Count: " << (UI_Control_Manager -> Inst_Data_Container.Count()) << '\n';
-		for (unsigned int i = 0; i < UI_Control_Manager -> Inst_Data_Container.Count(); i++)
-		{
-			std::cout << (UI_Control_Manager -> Inst_Data_Container[i].Min) << ' ' << (UI_Control_Manager -> Inst_Data_Container[i].Max) << '\n';
-		}
-	}
-	std::cout << '\n';
+	UI_Control_Manager.UpdateMouse(mouse);
+	UI_Control_Manager.Window.UpdateEntrys();
+	UI_Control_Manager.Draw();
+	UI_Text_Manager.Draw();
 }
 
 void Resize(const WindowBufferSize2D & WindowSize)
@@ -436,23 +338,23 @@ void Resize(const WindowBufferSize2D & WindowSize)
 	PolyHedra_3D_Manager.DefaultShader.Bind();
 	PolyHedra_3D_Manager.DefaultShader.WindowSize.Put(WindowSize);
 
-	UI_Control_Manager -> Shader.Bind();
-	UI_Control_Manager -> Shader.WindowSize.Put(WindowSize);
+	UI_Control_Manager.Shader.Bind();
+	UI_Control_Manager.Shader.WindowSize.Put(WindowSize);
 
-	UI_Text_Manager -> Shader.Bind();
-	UI_Text_Manager -> Shader.WindowSize.Put(WindowSize);
+	UI_Text_Manager.Shader.Bind();
+	UI_Text_Manager.Shader.WindowSize.Put(WindowSize);
 
-	UI_Control_Manager -> UpdateSize(WindowSize);
+	UI_Control_Manager.UpdateSize(WindowSize);
 }
 
 
 
 int Main()
 {
-	window.InitCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::InitRun));
-	window.FreeCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::FreeRun));
-	window.FrameCallBack.Change(ObjectFunction<MainContext, void, double>::New(this, &MainContext::Frame));
-	window.ResizeCallBack.Change(ObjectFunction<MainContext, void, const WindowBufferSize2D &>::New(this, &MainContext::Resize));
+	window.InitCallBack.Change<MainContext>(this, &MainContext::InitRun);
+	window.FreeCallBack.Change<MainContext>(this, &MainContext::FreeRun);
+	window.FrameCallBack.Change<MainContext>(this, &MainContext::Frame);
+	window.ResizeCallBack.Change<MainContext>(this, &MainContext::Resize);
 
 	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;

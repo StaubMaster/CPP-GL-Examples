@@ -13,7 +13,7 @@
 
 
 
-UI::Text::Manager::Manager(const DirectoryInfo & shader_dir, const DirectoryInfo & text_dir) :
+UI::Text::Manager::Manager() :
 	Shader(),
 	BufferArray(),
 	Main_Data_Container(),
@@ -21,24 +21,15 @@ UI::Text::Manager::Manager(const DirectoryInfo & shader_dir, const DirectoryInfo
 {
 	std::cout << "  ++++  " << "UI::Text::Manager::Manager()" << '\n';
 
-	{
-		Container::Fixed<::Shader::Code> code(2);
-		code.Insert(::Shader::Code(shader_dir.File("UI/Text.vert")));
-		code.Insert(::Shader::Code(shader_dir.File("UI/Text.frag")));
-		Shader.Change(code);
-	}
-	Shader.Create();
-	BufferArray.Create();
-
-	TextFont = Font::Parse(text_dir.File("Font0.atlas"));
+	//TextFont = Font::Parse(text_dir.File("Font0.atlas"));
 	//std::cout << "Font" << ' ' << "Default" << ' ' << (TextFont -> DefaultCharacter.Box.Min) << ' ' << (TextFont -> DefaultCharacter.Box.Max) << '\n';
 	/*for (unsigned int i = 0; i < TextFont -> Characters.Count(); i++)
 	{
 		std::cout << "Font" << ' ' << (TextFont -> Characters[i].Code) << ' ' << (TextFont -> Characters[i].Box.Min) << ' ' << (TextFont -> Characters[i].Box.Max) << '\n';
 	}*/
-	Pallet_Texture.Create();
-	Pallet_Texture.Bind();
-	Pallet_Texture.Assign(TextFont -> AtlasTexture);
+	//Pallet_Texture.Create();
+	//Pallet_Texture.Bind();
+	//Pallet_Texture.Assign(TextFont -> AtlasTexture);
 
 	//Image * img = image_dir.File("Text_16x8_32x32.png").LoadImagePNG();
 	//Image * img = Image::Missing();

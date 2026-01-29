@@ -15,29 +15,40 @@
 #include "Miscellaneous/Container/Binary.hpp"
 #include "Miscellaneous/EntryContainer/Binary.hpp"
 
-
-
 namespace UI
 {
-
+namespace Text { class Manager; };
 namespace Control
 {
-
 class Manager;
-
 class Base
 {
 	protected:
-	Manager * ControlManager;
+	Manager *			ControlManager;
+	UI::Text::Manager *	TextManager;
 
 	protected:
-	EntryContainer::Entry<Control::Inst_Data> Entry;
+	EntryContainer::Entry<Control::Inst_Data> ControlEntry;
+
+	protected:
 	Base * Parent;
 	Container::Binary<Control::Base *> Children;
-	private:
 
 	public:
 	float			Layer;
+
+	protected:
+	bool			_Enabled;		//visible but cannot be interacted with by User, can be changed via code, Grayed out ?
+	bool			_Visible;		//is current and children visible
+	bool			_Opaque;		//is current invisible, does not effect children
+
+	//	these are based on the others
+	//	have a function that "calculates" the value every time
+	bool			_Drawable;		//should this currently be drawn ?
+	bool			_Interactible;	//can be interacted with
+
+	public:
+	bool			Deletable;		//should be deleted when Parent is deleted
 
 	public:
 	Anchor2D		Anchor;
@@ -54,13 +65,6 @@ class Base
 	bool			AnchorBoxChanged;
 
 	public:
-	bool			Enabled;		//visible but cannot be interacted with by User, can be changed via code, Grayed out ?
-	bool			Visible;		//is current and children visible
-	bool			Opaque;			//is current invisible, does not effect children
-	protected:
-	bool			Drawable;		//should this currently be drawn ?
-
-	public:
 	ColorF4			ColorDefault;
 	//Color			ColorDisabled;
 	ColorF4			ColorHover;
@@ -70,30 +74,38 @@ class Base
 	Base();
 	virtual ~Base();
 
+	public:
+	void ChildInsert(Base & control);
 	void ChildInsert(Base * control);
-	void ChangeManager(Manager * manager);
+	virtual void ChangeManager(Manager * manager);
+	virtual void ChangeManager(UI::Text::Manager * manager);
 
 	//	for automatic Updating. should not be called by User
 	public:
 	void UpdateEntrys();
 
 	public:
-
 	//	Enabled
+	//bool IsEnabled();
 	void MakeEnabled();
 	void MakeDisabled();
-
+	
+	public:
 	//	Visibility
+	//bool Visible();
 	void Show();
 	void Hide();
-
+	
+	public:
 	//	Transparent
-	void MakeTransParent();
+	//bool IsTransparent();
+	//bool IsOpaque();
+	void MakeTransparent();
 	void MakeOpaque();
 
 	//	for automatic Updating. should not be called by User
 	private:
-	void UpdateVisibility();
+	void UpdateDrawable();
 	void InsertDrawingEntry();
 	void RemoveDrawingEntry();
 
@@ -129,9 +141,7 @@ class Base
 	virtual void RelayKey(UserParameter::KeyBoard::Key params);
 	virtual void RelayText(UserParameter::KeyBoard::Text params);
 };
-
 };
-
 };
 
 #endif

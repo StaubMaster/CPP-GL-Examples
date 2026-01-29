@@ -7,10 +7,16 @@
 
 UI::Control::Base::Base() :
 	ControlManager(NULL),
-	Entry(),
+	TextManager(NULL),
+	ControlEntry(),
 	Parent(NULL),
 	Children(),
 	Layer(0.0f),
+	_Enabled(true),
+	_Visible(true),
+	_Opaque(true),
+	_Drawable(true),
+	_Interactible(true),
 	Anchor(
 		Anchor1D(
 			AnchorSize.X, AnchorDist.Min.X, AnchorDist.Max.X, AnchorNormal.X,
@@ -22,11 +28,6 @@ UI::Control::Base::Base() :
 		)
 	)
 {
-	Enabled = true;
-	Visible = true;
-	Opaque = true;
-	Drawable = true;
-
 	//AnchorDist = AxisBox2D(Point2D(12, 12), Point2D(12, 12));
 	AnchorDist = AxisBox2D(Point2D(0, 0), Point2D(0, 0));
 
@@ -40,21 +41,28 @@ UI::Control::Base::Base() :
 }
 UI::Control::Base::~Base()
 {
-	for (unsigned int i = 0; i < Children.Count(); i++)
+	/*for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		delete Children[i];
-	}
+	}*/
 }
 
 
 
+void UI::Control::Base::ChildInsert(Base & control)
+{
+	std::cout << "Insert Child ....\n";
+	Children.Insert(&control);
+	control.Parent = this;
+	control.ChangeManager(ControlManager);
+	control.ChangeManager(TextManager);
+	control.UpdateBox();
+	control.UpdateDrawable();
+	std::cout << "Insert Child done\n";
+}
 void UI::Control::Base::ChildInsert(Base * control)
 {
-	Children.Insert(control);
-	control -> Parent = this;
-	ChangeManager(ControlManager);
-	control -> UpdateBox();
-	control -> UpdateVisibility();
+	ChildInsert(*control);
 }
 void UI::Control::Base::ChangeManager(Manager * manager)
 {
@@ -64,12 +72,22 @@ void UI::Control::Base::ChangeManager(Manager * manager)
 		Children[i] -> ChangeManager(manager);
 	}
 }
+void UI::Control::Base::ChangeManager(UI::Text::Manager * manager)
+{
+	TextManager = manager;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> ChangeManager(manager);
+	}
+}
+
+
 
 
 
 void UI::Control::Base::UpdateEntrys()
 {
-	if (Entry.Is())
+	if (ControlEntry.Is())
 	{
 		if (AnchorBoxChanged)
 		{
@@ -93,63 +111,69 @@ void UI::Control::Base::UpdateEntrys()
 
 void UI::Control::Base::MakeEnabled()
 {
-	Enabled = true;
+	_Enabled = true;
+	_Interactible = _Enabled && _Drawable;
+	//UpdateDrawable();
 }
 void UI::Control::Base::MakeDisabled()
 {
-	Enabled = false;
+	_Enabled = false;
+	_Interactible = _Enabled && _Drawable;
+	//UpdateDrawable();
 }
 
 void UI::Control::Base::Show()
 {
-	Visible = true;
-	UpdateVisibility();
+	_Visible = true;
+	UpdateDrawable();
 }
 void UI::Control::Base::Hide()
 {
-	Visible = false;
-	UpdateVisibility();
+	_Visible = false;
+	UpdateDrawable();
 }
 
-void UI::Control::Base::MakeTransParent()
+void UI::Control::Base::MakeTransparent()
 {
-	Opaque = false;
-	RemoveDrawingEntry();
-	UpdateVisibility();
+	_Opaque = false;
+	//RemoveDrawingEntry();
+	UpdateDrawable();
 }
 void UI::Control::Base::MakeOpaque()
 {
-	Opaque = true;
-	InsertDrawingEntry();
-	UpdateVisibility();
+	_Opaque = true;
+	//InsertDrawingEntry();
+	UpdateDrawable();
 }
 
-void UI::Control::Base::UpdateVisibility()
+void UI::Control::Base::UpdateDrawable()
 {
 	if (Parent != NULL)
-	{ Drawable = Visible && (Parent -> Drawable); }
+	{ _Drawable = _Visible && (Parent -> _Drawable); }
 	else
-	{ Drawable = Visible; }
+	{ _Drawable = _Visible; }
 
-	if (Drawable && Opaque)
+	if (_Drawable && _Opaque)
 	{ InsertDrawingEntry(); }
 	else
 	{ RemoveDrawingEntry(); }
 
-	if (Drawable)
+	_Interactible = _Enabled && _Drawable;
+
+	if (_Drawable)
 	{ UpdateBox(); }
 
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> UpdateVisibility();
+		Children[i] -> UpdateDrawable();
 	}
 }
 void UI::Control::Base::InsertDrawingEntry()
 {
-	if (!Entry.Is() && ControlManager != NULL)
+	if (!ControlEntry.Is() && ControlManager != NULL)
 	{
-		Entry.Allocate(ControlManager -> Inst_Data_Container, 1);
-		(*Entry).Layer = Layer;
+		ControlEntry.Allocate(ControlManager -> Inst_Data_Container, 1);
+		(*ControlEntry).Layer = Layer;
 		AnchorBoxChanged = true;
 		ColorChanged = true;
 	}
@@ -157,9 +181,9 @@ void UI::Control::Base::InsertDrawingEntry()
 }
 void UI::Control::Base::RemoveDrawingEntry()
 {
-	if (Entry.Is() || ControlManager == NULL)
+	if (ControlEntry.Is() || ControlManager == NULL)
 	{
-		Entry.Dispose();
+		ControlEntry.Dispose();
 	}
 	RemoveDrawingEntryRelay();
 }
@@ -184,8 +208,8 @@ void UI::Control::Base::UpdateBox()
 
 UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
 {
-	if (!Visible) { return NULL; }
-	if (!Enabled) { return NULL; }
+	if (!_Visible) { return NULL; }
+	if (!_Enabled) { return NULL; }
 	if (AnchorBox.Intersekt(mouse))
 	{
 		Base * control = NULL;
@@ -219,16 +243,16 @@ void UI::Control::Base::HoverLeave()
 
 void UI::Control::Base::UpdateEntryAnchorBoxRelay()
 {
-	(*Entry).Min = AnchorBox.Min;
-	(*Entry).Max = AnchorBox.Max;
+	(*ControlEntry).Min = AnchorBox.Min;
+	(*ControlEntry).Max = AnchorBox.Max;
 	AnchorBoxChanged = false;
 }
 void UI::Control::Base::UpdateEntryColorRelay()
 {
 	if (ControlManager -> Hovering != this)
-	{ (*Entry).Col = ColorDefault; }
+	{ (*ControlEntry).Col = ColorDefault; }
 	else
-	{ (*Entry).Col = ColorHover; }
+	{ (*ControlEntry).Col = ColorHover; }
 	ColorChanged = false;
 }
 void UI::Control::Base::UpdateEntrysRelay() { }

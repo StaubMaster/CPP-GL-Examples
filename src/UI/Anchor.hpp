@@ -3,25 +3,20 @@
 
 
 
-#define ANCHOR_NONE 0b00
-#define ANCHOR_MIN  0b01
-#define ANCHOR_MAX  0b10
-#define ANCHOR_BOTH 0b11
-
-
-
-struct Point2D;
 struct AxisBox1D;
 struct AxisBox2D;
 
 
 
-/*	Unknown Size
-when a Control is not yet a Child of something that is in the Window
+enum class AnchorType : unsigned char
+{
+	None	= 0b00,
+	Min		= 0b01,
+	Max		= 0b10,
+	Both	= 0b11,
+};
 
 
-
-*/
 
 struct Anchor1D
 {
@@ -35,7 +30,7 @@ struct Anchor1D
 	float & MaxPadding;
 
 	public:
-	unsigned char Anchor;
+	AnchorType Anchor;
 
 	Anchor1D(float & size, float & min_dist, float & max_dist, float & normal_center, float & min_padding, float & max_padding);
 
@@ -85,9 +80,12 @@ struct Anchor1D
 
 
 
+	
+
 	AxisBox1D Calculate(AxisBox1D Parent);
-	//AxisBox1D Calculate(AxisBox1D Dist, float Size, float NormalCenter, AxisBox1D Parent);
 };
+
+
 
 struct Anchor2D
 {
@@ -97,7 +95,8 @@ struct Anchor2D
 	Anchor2D(Anchor1D x, Anchor1D y);
 
 	AxisBox2D Calculate(AxisBox2D Parent);
-	//AxisBox2D Calculate(AxisBox2D Dist, Point2D Size, Point2D NormalCenter, AxisBox2D Parent);
 };
+
+
 
 #endif

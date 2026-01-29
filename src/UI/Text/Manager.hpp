@@ -13,10 +13,6 @@
 
 
 
-class DirectoryInfo;
-
-
-
 namespace UI
 {
 
@@ -32,11 +28,11 @@ class Manager
 	Container::Binary<UI::Text::Main_Data> Main_Data_Container;
 	EntryContainer::Binary<UI::Text::Inst_Data> Inst_Data_Container;
 
-	Font * TextFont;
+	UI::Text::Font * TextFont;
 	Texture::Array2D Pallet_Texture;
 
 	public:
-	Manager(const DirectoryInfo & shader_dir, const DirectoryInfo & text_dir);
+	Manager();
 	~Manager();
 
 	public:

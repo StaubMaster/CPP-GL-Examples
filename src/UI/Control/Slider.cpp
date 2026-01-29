@@ -7,8 +7,8 @@
 UI::Control::Slider::Slider() : Base()
 {
 	Layer = 0.1f;
-	Anchor.X.Anchor = ANCHOR_MIN;
-	Anchor.Y.Anchor = ANCHOR_MIN;
+	Anchor.X.Anchor = AnchorType::Min;
+	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = Point2D(75, 25);
 	ColorDefault = ColorF4(0.375f, 0.375f, 0.375f);
 	ColorHover = ColorF4(0.25f, 0.25f, 0.25f);
@@ -89,7 +89,7 @@ void UI::Control::Slider::UpdateBoxRelay()
 
 void UI::Control::Slider::RelayClick(UserParameter::Mouse::Click params)
 {
-	if (!Enabled || !Visible || !Drawable) { return; }
+	if (!_Interactible) { return; }
 
 	float slider_size_half = SliderSize / 2;
 	float slider_min = AnchorBox.Min.X + slider_size_half;
@@ -111,7 +111,7 @@ void UI::Control::Slider::RelayClick(UserParameter::Mouse::Click params)
 }
 void UI::Control::Slider::RelayCursorDrag(UserParameter::Mouse::Drag params)
 {
-	if (!Enabled || !Visible || !Drawable) { return; }
+	if (!_Interactible) { return; }
 
 	float slider_size_half = SliderSize / 2;
 	float slider_min = AnchorBox.Min.X + slider_size_half;

@@ -1,17 +1,17 @@
 #include "TextBox.hpp"
 #include "Base/Manager.hpp"
+#include "UI/Text/Manager.hpp"
 #include <iostream>
 #include <math.h>
 
 
 
-UI::Control::TextBox::TextBox(UI::Text::Manager & text_manager)
-	: Base(),
-	TextManager(text_manager)
+UI::Control::TextBox::TextBox()
+	: Base()
 {
 	Layer = 0.1f;
-	Anchor.X.Anchor = ANCHOR_MIN;
-	Anchor.Y.Anchor = ANCHOR_MIN;
+	Anchor.X.Anchor = AnchorType::Min;
+	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = Point2D(50, 25);
 	ColorDefault = ColorF4(1.0f, 1.0f, 1.0f);
 	ColorHover = ColorF4(0.875f, 0.875f, 0.875f);
@@ -53,10 +53,13 @@ void UI::Control::TextBox::PutCharactersEntrys()
 	for (unsigned int i = 0; i < TextEntry.Length(); i++)
 	{
 		TextEntry[i].Pos = Point2D((min.X + (CharacterSize.X * 0.5f)) + (i * CharacterSize.X), center.Y);
-		if (i < Text.length())
-		{ TextEntry[i].Pallet = TextManager.TextFont -> CharacterBoxFromCode(Text[i]); }
-		else
-		{ TextEntry[i].Pallet = TextManager.TextFont -> CharacterBoxFromCode('\0'); }
+		if (TextManager != NULL)
+		{
+			if (i < Text.length())
+			{ TextEntry[i].Pallet = TextManager -> TextFont -> CharacterBoxFromCode(Text[i]); }
+			else
+			{ TextEntry[i].Pallet = TextManager -> TextFont -> CharacterBoxFromCode('\0'); }
+		}
 		TextEntry[i].Bound = AnchorBox;
 	}
 }
@@ -77,13 +80,13 @@ void UI::Control::TextBox::SetText(std::string text)
 
 void UI::Control::TextBox::UpdateEntrysRelay()
 {
-	if (TextEntry.Is())
+	if (TextEntry.Is() && TextManager != NULL)
 	{
 		if (CharacterCountLimitChanged)
 		{
 			TextEntry.Dispose();
-			TextManager.Inst_Data_Container.CompactHere();
-			TextEntry.Allocate(TextManager.Inst_Data_Container, CharacterCountLimit);
+			TextManager -> Inst_Data_Container.CompactHere();
+			TextEntry.Allocate(TextManager -> Inst_Data_Container, CharacterCountLimit);
 			TextChanged = true;
 			CharacterCountLimitChanged = false;
 		}
@@ -96,15 +99,23 @@ void UI::Control::TextBox::UpdateEntrysRelay()
 }
 void UI::Control::TextBox::InsertDrawingEntryRelay()
 {
-	if (!TextEntry.Is())
+	std::cout << this << " TextBox::InsertDrawingEntryRelay ....\n";
+	if (!TextEntry.Is() && TextManager != NULL)
 	{
+		std::cout << this << "   Entry\n";
 		CalcCharacterCount();
-		TextEntry.Allocate(TextManager.Inst_Data_Container, CharacterCountLimit);
+		TextEntry.Allocate(TextManager -> Inst_Data_Container, CharacterCountLimit);
 	}
+	else
+	{
+		std::cout << this << "   !TextEntry.Is() " << (!TextEntry.Is()) << '\n';
+		std::cout << this << "   TextManager != NULL " << (TextManager != NULL) << '\n';
+	}
+	std::cout << this << " TextBox::InsertDrawingEntryRelay done\n";
 }
 void UI::Control::TextBox::RemoveDrawingEntryRelay()
 {
-	if (TextEntry.Is())
+	if (TextEntry.Is() || TextManager == NULL)
 	{
 		TextEntry.Dispose();
 	}
@@ -123,7 +134,7 @@ void UI::Control::TextBox::UpdateBoxRelay()
 
 void UI::Control::TextBox::RelayKey(UserParameter::KeyBoard::Key params)
 {
-	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
+	if (!_Interactible || ReadOnly) { return; }
 
 	if (params.Code == GLFW_KEY_BACKSPACE && (params.Action.IsPress() || params.Action.IsRepeat()))
 	{
@@ -136,7 +147,7 @@ void UI::Control::TextBox::RelayKey(UserParameter::KeyBoard::Key params)
 }
 void UI::Control::TextBox::RelayText(UserParameter::KeyBoard::Text params)
 {
-	if (!Enabled || !Visible || !Drawable || ReadOnly) { return; }
+	if (!_Interactible || ReadOnly) { return; }
 
 	/*if (
 		(params.Codepoint >= '0' && params.Codepoint <= '9') ||

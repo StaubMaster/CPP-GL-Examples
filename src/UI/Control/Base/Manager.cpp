@@ -15,24 +15,15 @@
 
 
 
-UI::Control::Manager::Manager(const DirectoryInfo & dir) :
+UI::Control::Manager::Manager() :
 	Shader(),
 	BufferArray(),
 	Main_Data_Container(),
 	Inst_Data_Container(),
 	WindowSize(),
-	Window(new UI::Control::Window(this))
+	Window()
 {
 	std::cout << "  ++++  " << "UI::Control::Manager::Manager()" << "\n";
-
-	{
-		Container::Fixed<::Shader::Code> code(2);
-		code.Insert(::Shader::Code(dir.File("UI/Control.vert")));
-		code.Insert(::Shader::Code(dir.File("UI/Control.frag")));
-		Shader.Change(code);
-	}
-	Shader.Create();
-	BufferArray.Create();
 
 	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, -1)));
 	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
@@ -41,7 +32,7 @@ UI::Control::Manager::Manager(const DirectoryInfo & dir) :
 	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
 	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(+1, +1)));
 
-	Window -> Show();
+	Window.Show();
 
 	Hovering = NULL;
 	Selected = NULL;
@@ -52,8 +43,6 @@ UI::Control::Manager::~Manager()
 
 	BufferArray.Delete();
 	Shader.Delete();
-
-	delete Window;
 }
 
 
@@ -78,11 +67,11 @@ void UI::Control::Manager::Draw()
 void UI::Control::Manager::UpdateSize(const WindowBufferSize2D & window_size)
 {
 	WindowSize = window_size;
-	Window -> UpdateWindowSize(WindowSize.WindowSize);
+	Window.UpdateWindowSize(WindowSize.WindowSize);
 }
 void UI::Control::Manager::UpdateMouse(Point2D mouse)
 {
-	UI::Control::Base * control = Window -> CheckHover(mouse);
+	UI::Control::Base * control = Window.CheckHover(mouse);
 
 	if (control != Hovering)
 	{

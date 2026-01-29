@@ -3,24 +3,18 @@
 
 #include "Base/Base.hpp"
 #include "../Text/Data.hpp"
-#include "../Text/Manager.hpp"
 
 #include "Miscellaneous/EntryContainer/Entry.hpp"
 
 #include <string>
 
-
-
 namespace UI
 {
-
 namespace Control
 {
-
 class TextBox : public Base
 {
 	private:
-	UI::Text::Manager & TextManager;
 	EntryContainer::Entry<UI::Text::Inst_Data> TextEntry;
 
 	Point2D			CharacterSize;
@@ -36,7 +30,7 @@ class TextBox : public Base
 	bool	SingleLine;
 
 	public:
-	TextBox(UI::Text::Manager & text_manager);
+	TextBox();
 	~TextBox();
 
 	private:
@@ -60,9 +54,7 @@ class TextBox : public Base
 	void RelayKey(UserParameter::KeyBoard::Key params) override;
 	void RelayText(UserParameter::KeyBoard::Text params) override;
 };
-
 };
-
 };
 
 #endif

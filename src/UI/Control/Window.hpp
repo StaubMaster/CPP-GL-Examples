@@ -14,11 +14,14 @@ namespace Control
 class Window : public Base
 {
 	public:
-	Window(Manager * manager);
+	Window();
 	~Window();
 
 	public:
 	void UpdateWindowSize(Point2D size);
+
+	void ChangeManager(Manager * manager) override;
+	void ChangeManager(UI::Text::Manager * manager) override;
 };
 
 };

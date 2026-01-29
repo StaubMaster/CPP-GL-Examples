@@ -75,8 +75,8 @@ void UI_Make_Toggles()
 	UI::Control::CheckBox * check_box;
 
 	form = new UI::Control::Form();
-	form -> Anchor.X.Anchor = ANCHOR_MIN;
-	form -> Anchor.Y.Anchor = ANCHOR_NONE;
+	form -> Anchor.X.Anchor = AnchorType::Min;
+	form -> Anchor.Y.Anchor = AnchorType::None;
 	form -> Anchor.X.SetPaddedMinDist(0);
 	form -> Anchor.X.SetSize(60);
 	form -> Anchor.Y.SetSize(360);
@@ -85,32 +85,32 @@ void UI_Make_Toggles()
 	float h = 0;
 
 	check_box = new UI::Control::CheckBox();
-	check_box -> Anchor.X.Anchor = ANCHOR_BOTH;
-	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	check_box -> Anchor.X.Anchor = AnchorType::Both;
+	check_box -> Anchor.Y.Anchor = AnchorType::Max;
 	check_box -> Anchor.X.SetPaddedMinDist(0);
 	check_box -> Anchor.X.SetPaddedMaxDist(0);
 	check_box -> Anchor.Y.SetPaddedMaxDist(h);
-	check_box -> ClickFunc.Change(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::click_toggle_Example));
+	check_box -> ClickFunc.Change(this, &MainContext::click_toggle_Example);
 	form -> ChildInsert(check_box);
 	Toggle_CheckBox_Example = check_box;
 
 	h = check_box -> Anchor.Y.GetPaddedMaxSize();
 
 	check_box = new UI::Control::CheckBox();
-	check_box -> Anchor.X.Anchor = ANCHOR_BOTH;
-	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	check_box -> Anchor.X.Anchor = AnchorType::Both;
+	check_box -> Anchor.Y.Anchor = AnchorType::Max;
 	check_box -> Anchor.X.SetPaddedMinDist(0);
 	check_box -> Anchor.X.SetPaddedMaxDist(0);
 	check_box -> Anchor.Y.SetPaddedMaxDist(h);
-	check_box -> ClickFunc.Change(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::click_toggle_Settings));
+	check_box -> ClickFunc.Change(this, &MainContext::click_toggle_Settings);
 	form -> ChildInsert(check_box);
 	Toggle_CheckBox_Settings = check_box;
 
 	UI::Control::TextBox * text_box;
 
 	text_box = new UI::Control::TextBox(*UI_Text_Manager);
-	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text_box -> Anchor.Y.Anchor = ANCHOR_MIN;
+	text_box -> Anchor.X.Anchor = AnchorType::Both;
+	text_box -> Anchor.Y.Anchor = AnchorType::Min;
 	text_box -> Anchor.X.SetPaddedMinDist(0);
 	text_box -> Anchor.X.SetPaddedMaxDist(0);
 	text_box -> Anchor.Y.SetPaddedMinDist(0);
@@ -128,8 +128,8 @@ void UI_Make_Settings()
 	UI::Control::Slider * slider;
 
 	form = new UI::Control::Form();
-	form -> Anchor.X.Anchor = ANCHOR_MAX;
-	form -> Anchor.Y.Anchor = ANCHOR_BOTH;
+	form -> Anchor.X.Anchor = AnchorType::Max;
+	form -> Anchor.Y.Anchor = AnchorType::Both;
 	form -> Anchor.X.SetSize(240);
 	form -> Anchor.Y.SetSize(360);
 	UI_Control_Manager -> Window -> ChildInsert(form);
@@ -139,8 +139,8 @@ void UI_Make_Settings()
 	float h = 0;
 
 	text_box = new UI::Control::TextBox(*UI_Text_Manager);
-	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	text_box -> Anchor.X.Anchor = AnchorType::Both;
+	text_box -> Anchor.Y.Anchor = AnchorType::Max;
 	text_box -> Anchor.X.SetPaddedMinDist(0);
 	text_box -> Anchor.X.SetPaddedMaxDist(0);
 	text_box -> Anchor.Y.SetPaddedMaxDist(h);
@@ -150,8 +150,8 @@ void UI_Make_Settings()
 	h = text_box -> Anchor.Y.GetPaddedMaxSize();
 
 	text_box = new UI::Control::TextBox(*UI_Text_Manager);
-	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	text_box -> Anchor.X.Anchor = AnchorType::Both;
+	text_box -> Anchor.Y.Anchor = AnchorType::Max;
 	text_box -> Anchor.X.SetPaddedMinDist(0);
 	text_box -> Anchor.X.SetPaddedMaxDist(0);
 	text_box -> Anchor.Y.SetPaddedMaxDist(h);
@@ -161,8 +161,8 @@ void UI_Make_Settings()
 	h = text_box -> Anchor.Y.GetPaddedMaxSize();
 
 	text_box = new UI::Control::TextBox(*UI_Text_Manager);
-	text_box -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	text_box -> Anchor.X.Anchor = AnchorType::Both;
+	text_box -> Anchor.Y.Anchor = AnchorType::Max;
 	text_box -> Anchor.X.SetPaddedMinDist(0);
 	text_box -> Anchor.X.SetPaddedMaxDist(0);
 	text_box -> Anchor.Y.SetPaddedMaxDist(h);
@@ -172,12 +172,12 @@ void UI_Make_Settings()
 	h = text_box -> Anchor.Y.GetPaddedMaxSize();
 
 	slider = new UI::Control::Slider();
-	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
-	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
+	slider -> Anchor.X.Anchor = AnchorType::Both;
+	slider -> Anchor.Y.Anchor = AnchorType::Max;
 	slider -> Anchor.X.SetPaddedMinDist(0);
 	slider -> Anchor.X.SetPaddedMaxDist(0);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc.Change(ObjectFunction<MainContext, void, float>::New(this, &MainContext::settings_slider_color_r));
+	slider -> ValueChangedFunc.Change(this, &MainContext::settings_slider_color_r);
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
@@ -185,12 +185,12 @@ void UI_Make_Settings()
 	h = slider -> Anchor.Y.GetPaddedMaxSize();
 
 	slider = new UI::Control::Slider();
-	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
-	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
+	slider -> Anchor.X.Anchor = AnchorType::Both;
+	slider -> Anchor.Y.Anchor = AnchorType::Max;
 	slider -> Anchor.X.SetPaddedMinDist(0);
 	slider -> Anchor.X.SetPaddedMaxDist(0);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc.Change(ObjectFunction<MainContext, void, float>::New(this, &MainContext::settings_slider_color_g));
+	slider -> ValueChangedFunc.Change(this, &MainContext::settings_slider_color_g);
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
@@ -198,12 +198,12 @@ void UI_Make_Settings()
 	h = slider -> Anchor.Y.GetPaddedMaxSize();
 
 	slider = new UI::Control::Slider();
-	slider -> Anchor.X.Anchor = ANCHOR_BOTH;
-	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
+	slider -> Anchor.X.Anchor = AnchorType::Both;
+	slider -> Anchor.Y.Anchor = AnchorType::Max;
 	slider -> Anchor.X.SetPaddedMinDist(0);
 	slider -> Anchor.X.SetPaddedMaxDist(0);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc.Change(ObjectFunction<MainContext, void, float>::New(this, &MainContext::settings_slider_color_b));
+	slider -> ValueChangedFunc.Change(this, &MainContext::settings_slider_color_b);
 	slider -> SliderMin = 0;
 	slider -> SliderMax = 255;
 	form -> ChildInsert(slider);
@@ -231,36 +231,36 @@ void UI_Make_Example()
 	float h = 0;
 
 	group_box = new UI::Control::GroupBox();
-	group_box -> Anchor.X.Anchor = ANCHOR_BOTH;
-	group_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	group_box -> Anchor.X.Anchor = AnchorType::Both;
+	group_box -> Anchor.Y.Anchor = AnchorType::Max;
 	group_box -> Anchor.X.SetPaddedMinDist(0);
 	group_box -> Anchor.X.SetPaddedMaxDist(0);
 	group_box -> Anchor.Y.SetPaddedMaxDist(h);
 	form -> ChildInsert(group_box);
 
 	button = new UI::Control::Button();
-	button -> Anchor.X.Anchor = ANCHOR_MIN;
-	button -> Anchor.Y.Anchor = ANCHOR_MAX;
+	button -> Anchor.X.Anchor = AnchorType::Min;
+	button -> Anchor.Y.Anchor = AnchorType::Max;
 	button -> Anchor.X.SetPaddedMinDist(w);
 	button -> Anchor.Y.SetPaddedMaxDist(h);
-	button -> ClickFunc.Change(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::click0));
+	button -> ClickFunc.Change(this, &MainContext::click0);
 	group_box -> ChildInsert(button);
 
 	w = button -> Anchor.X.GetPaddedMinSize();
 
 	button = new UI::Control::Button();
-	button -> Anchor.X.Anchor = ANCHOR_MIN;
-	button -> Anchor.Y.Anchor = ANCHOR_MAX;
+	button -> Anchor.X.Anchor = AnchorType::Min;
+	button -> Anchor.Y.Anchor = AnchorType::Max;
 	button -> Anchor.X.SetPaddedMinDist(w);
 	button -> Anchor.Y.SetPaddedMaxDist(h);
-	button -> ClickFunc.Change(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::click1));
+	button -> ClickFunc.Change(this, &MainContext::click1);
 	group_box -> ChildInsert(button);
 
 	w = button -> Anchor.X.GetPaddedMinSize();
 
 	check_box = new UI::Control::CheckBox();
-	check_box -> Anchor.X.Anchor = ANCHOR_MIN;
-	check_box -> Anchor.Y.Anchor = ANCHOR_MAX;
+	check_box -> Anchor.X.Anchor = AnchorType::Min;
+	check_box -> Anchor.Y.Anchor = AnchorType::Max;
 	check_box -> Anchor.X.SetPaddedMinDist(w);
 	check_box -> Anchor.Y.SetPaddedMaxDist(h);
 	group_box -> ChildInsert(check_box);
@@ -269,8 +269,8 @@ void UI_Make_Example()
 	h = check_box -> Anchor.Y.GetPaddedMaxSize();
 
 	text = new UI::Control::TextBox(*UI_Text_Manager);
-	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_MAX;
+	text -> Anchor.X.Anchor = AnchorType::Both;
+	text -> Anchor.Y.Anchor = AnchorType::Max;
 	text -> Anchor.X.SetPaddedMinDist(0);
 	text -> Anchor.X.SetPaddedMaxDist(0);
 	text -> Anchor.Y.SetPaddedMaxDist(h);
@@ -282,8 +282,8 @@ void UI_Make_Example()
 	h = text -> Anchor.Y.GetPaddedMaxSize();
 
 	text = new UI::Control::TextBox(*UI_Text_Manager);
-	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_MAX;
+	text -> Anchor.X.Anchor = AnchorType::Both;
+	text -> Anchor.Y.Anchor = AnchorType::Max;
 	text -> Anchor.X.SetPaddedMinDist(0);
 	text -> Anchor.X.SetPaddedMaxDist(0);
 	text -> Anchor.Y.SetPaddedMaxDist(h);
@@ -295,19 +295,19 @@ void UI_Make_Example()
 	h = group_box -> Anchor.Y.GetPaddedMaxSize();
 
 	slider = new UI::Control::Slider();
-	slider -> Anchor.X.Anchor = ANCHOR_MIN;
-	slider -> Anchor.Y.Anchor = ANCHOR_MAX;
+	slider -> Anchor.X.Anchor = AnchorType::Min;
+	slider -> Anchor.Y.Anchor = AnchorType::Max;
 	slider -> Anchor.X.SetPaddedMinDist(w);
 	slider -> Anchor.X.SetSize(200);
 	slider -> Anchor.Y.SetPaddedMaxDist(h);
-	slider -> ValueChangedFunc.Change(ObjectFunction<MainContext, void, float>::New(this, &MainContext::slider_changed));
+	slider -> ValueChangedFunc.Change(this, &MainContext::slider_changed);
 	form -> ChildInsert(slider);
 
 	w = slider -> Anchor.X.GetPaddedMinSize();
 
 	text = new UI::Control::TextBox(*UI_Text_Manager);
-	text -> Anchor.X.Anchor = ANCHOR_BOTH;
-	text -> Anchor.Y.Anchor = ANCHOR_MAX;
+	text -> Anchor.X.Anchor = AnchorType::Both;
+	text -> Anchor.Y.Anchor = AnchorType::Max;
 	text -> Anchor.X.SetPaddedMinDist(w);
 	text -> Anchor.X.SetPaddedMaxDist(0);
 	text -> Anchor.Y.SetPaddedMaxDist(h);
@@ -487,21 +487,21 @@ void TextFunc(UserParameter::KeyBoard::Text params)
 
 int Main()
 {
-	window.InitCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::InitRun));
-	window.FreeCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::FreeRun));
-	window.FrameCallBack.Change(ObjectFunction<MainContext, void, double>::New(this, &MainContext::Frame));
-	window.ResizeCallBack.Change(ObjectFunction<MainContext, void, const WindowBufferSize2D &>::New(this, &MainContext::Resize));
+	window.InitCallBack.Change(this, &MainContext::InitRun);
+	window.FreeCallBack.Change(this, &MainContext::FreeRun);
+	window.FrameCallBack.Change(this, &MainContext::Frame);
+	window.ResizeCallBack.Change(this, &MainContext::Resize);
 
-	window.ChangeCallback_CursorClick(ObjectFunction<MainContext, void, UserParameter::Mouse::Click>::New(this, &MainContext::ClickFunc));
-	window.ChangeCallback_CursorScroll(ObjectFunction<MainContext, void, UserParameter::Mouse::Scroll>::New(this, &MainContext::ScrollFunc));
-	window.ChangeCallback_CursorMove(ObjectFunction<MainContext, void, UserParameter::Mouse::Position>::New(this, &MainContext::MoveFunc));
-	window.ChangeCallback_CursorDrag(ObjectFunction<MainContext, void, UserParameter::Mouse::Drag>::New(this, &MainContext::DragFunc));
+	window.KeyBoardManager.KeyCallBack.Change(this, &MainContext::KeyFunc);
+	window.KeyBoardManager.TextCallBack.Change(this, &MainContext::TextFunc);
 
-	window.KeyCallBack.Change(ObjectFunction<MainContext, void, UserParameter::KeyBoard::Key>::New(this, &MainContext::KeyFunc));
-	window.TextCallBack.Change(ObjectFunction<MainContext, void, UserParameter::KeyBoard::Text>::New(this, &MainContext::TextFunc));
-	
+	window.MouseManager.CallbackClick.Change(this, &MainContext::ClickFunc);
+	window.MouseManager.CallbackScroll.Change(this, &MainContext::ScrollFunc);
+	window.MouseManager.CallbackMove.Change(this, &MainContext::MoveFunc);
+	window.MouseManager.CallbackDrag.Change(this, &MainContext::DragFunc);
+
 	window.DefaultColor = ColorF4(0.875f, 0.875f, 0.875f);
-	
+
 	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;
 	window.Run();

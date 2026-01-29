@@ -7,8 +7,8 @@
 UI::Control::CheckBox::CheckBox() : Base()
 {
 	Layer = 0.1f;
-	Anchor.X.Anchor = ANCHOR_MIN;
-	Anchor.Y.Anchor = ANCHOR_MIN;
+	Anchor.X.Anchor = AnchorType::Min;
+	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = Point2D(25, 25);
 	ColorDefault = ColorF4(1.0f, 0.0f, 0.0f);
 	ColorHover = ColorF4(0.75f, 0.0f, 0.0f);
@@ -45,16 +45,16 @@ void UI::Control::CheckBox::UpdateEntryColorRelay()
 	if (ControlManager -> Hovering != this)
 	{
 		if (!Checked)
-		{ (*Entry).Col = ColorDefault; }
+		{ (*ControlEntry).Col = ColorDefault; }
 		else
-		{ (*Entry).Col = ColorChecked; }
+		{ (*ControlEntry).Col = ColorChecked; }
 	}
 	else
 	{
 		if (!Checked)
-		{ (*Entry).Col = ColorHover; }
+		{ (*ControlEntry).Col = ColorHover; }
 		else
-		{ (*Entry).Col = ColorCheckedHover; }
+		{ (*ControlEntry).Col = ColorCheckedHover; }
 	}
 }
 void UI::Control::CheckBox::RelayHover(unsigned char type)
@@ -67,7 +67,7 @@ void UI::Control::CheckBox::RelayHover(unsigned char type)
 
 void UI::Control::CheckBox::RelayClick(UserParameter::Mouse::Click params)
 {
-	if (!Enabled || !Visible || !Drawable) { return; }
+	if (!_Interactible) { return; }
 
 	if (params.Action.IsPress() || params.Action.IsRepeat())
 	{

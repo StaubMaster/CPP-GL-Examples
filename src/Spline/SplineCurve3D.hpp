@@ -9,65 +9,21 @@ struct SplineCurve3D
 	SplineSegment3D	* Segments;
 	unsigned int SegmentCount;
 
-	SplineCurve3D(SplineNode3D * nodes, unsigned int count, bool closed, float t, float c, float b)
-	{
-		count--;
-		SegmentCount = count;
-		if (closed) { SegmentCount++; }
-		Segments = new SplineSegment3D[SegmentCount];
+	float T;
+	float B;
+	float C;
 
-		unsigned int min = 0;
-		unsigned int max = SegmentCount - 1;
+	void SetT(float val);
+	void SetB(float val);
+	void SetC(float val);
 
-		for (unsigned int i = min; i < max; i++)
-		{
-			Segments[i] = SplineSegment3D(nodes[i + 0], nodes[i + 1], t, c, b);
-		}
-		if (closed)
-		{
-			Segments[count] = SplineSegment3D(nodes[max], nodes[min], t, c, b);
-		}
+	void CalcTBCFromSegments();
 
-		for (unsigned int i = 0; i < SegmentCount; i++)
-		{
-			if (i == min)
-			{ Segments[i].Prev = &Segments[max]; }
-			else
-			{ Segments[i].Prev = &Segments[i - 1]; }
+	SplineCurve3D(SplineNode3D * nodes, unsigned int count, bool closed, float t, float b, float c);
+	~SplineCurve3D();
 
-			if (i == max)
-			{ Segments[i].Next = &Segments[min]; }
-			else
-			{ Segments[i].Next = &Segments[i + 1]; }
-		}
-	}
-	~SplineCurve3D()
-	{
-		delete [] Segments;
-	}
-
-	SplineNode3D	CalculateLerp(float t) const
-	{
-		//	Modulate t into range [ 0 ; SegmentCount - 1]
-		{
-			while (t < 0) { t += SegmentCount; }
-			while (t > SegmentCount) { t -= SegmentCount; }
-		}
-
-		unsigned int idx = t;	//	floors ?
-		return Segments[idx].CalculateLerp(t - idx);
-	}
-	SplineNode3D	Calculate(float t) const
-	{
-		//	Modulate t into range [ 0 ; SegmentCount - 1]
-		{
-			while (t < 0) { t += SegmentCount; }
-			while (t > SegmentCount) { t -= SegmentCount; }
-		}
-
-		unsigned int idx = t;	//	floors ?
-		return Segments[idx].Calculate(t - idx);
-	}
+	SplineNode3D	CalculateLerp(float t) const;
+	SplineNode3D	Calculate(float t) const;
 };
 
 #endif

@@ -358,11 +358,11 @@ void Update(double timeDelta)
 }
 void Frame(double timeDelta)
 {
-	if (window.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
+	if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		Trans3D trans = window.MoveSpinFromKeysCursor();
-		if (window.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
+		if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
 		trans.Pos *= 2;
 		trans.Rot.X *= view.FOV * 0.005f;
 		trans.Rot.Y *= view.FOV * 0.005f;
@@ -375,23 +375,23 @@ void Frame(double timeDelta)
 	//Light_Spot.Pos = ViewTrans.Pos;
 	//Light_Spot.Dir = ViewTrans.Rot.rotate(Point3D(0, 0, 1));
 
-	if (window.Keys[GLFW_KEY_1].IsPress())
+	if (window.KeyBoardManager.Keys[GLFW_KEY_1].IsPress())
 	{
 		if (Light_Ambient.Intensity == 0.0f)
 		{ Light_Ambient.Intensity = Light_Ambient_Intensity; }
 		else
 		{ Light_Ambient.Intensity = 0.0f; }
 	}
-	if (window.Keys[GLFW_KEY_2].IsPress())
+	if (window.KeyBoardManager.Keys[GLFW_KEY_2].IsPress())
 	{
 		if (Light_Solar.Base.Intensity == 0.0f)
 		{ Light_Solar.Base.Intensity = Light_Solar_Intensity; }
 		else
 		{ Light_Solar.Base.Intensity = 0.0f; }
 	}
-	if (window.Keys[GLFW_KEY_3].IsPress()) { Light_Spot_Entry_Array[0].Toggle(); }
-	if (window.Keys[GLFW_KEY_4].IsPress()) { Light_Spot_Entry_Array[1].Toggle(); }
-	if (window.Keys[GLFW_KEY_5].IsPress()) { Light_Spot_Entry_Array[2].Toggle(); }
+	if (window.KeyBoardManager.Keys[GLFW_KEY_3].IsPress()) { Light_Spot_Entry_Array[0].Toggle(); }
+	if (window.KeyBoardManager.Keys[GLFW_KEY_4].IsPress()) { Light_Spot_Entry_Array[1].Toggle(); }
+	if (window.KeyBoardManager.Keys[GLFW_KEY_5].IsPress()) { Light_Spot_Entry_Array[2].Toggle(); }
 
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
@@ -433,10 +433,10 @@ void Resize(const WindowBufferSize2D & WindowSize)
 int Main()
 {
 	window.Create();
-	window.InitCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::Init));
-	window.FreeCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::Free));
-	window.FrameCallBack.Change(ObjectFunction<MainContext, void, double>::New(this, &MainContext::Frame));
-	window.ResizeCallBack.Change(ObjectFunction<MainContext, void, const WindowBufferSize2D &>::New(this, &MainContext::Resize));
+	window.InitCallBack.Change(this, &MainContext::Init);
+	window.FreeCallBack.Change(this, &MainContext::Free);
+	window.FrameCallBack.Change(this, &MainContext::Frame);
+	window.ResizeCallBack.Change(this, &MainContext::Resize);
 
 	window.DefaultColor = ColorF4(0.0f, 0.0f, 0.0f);
 	view.Depth.Color = window.DefaultColor;

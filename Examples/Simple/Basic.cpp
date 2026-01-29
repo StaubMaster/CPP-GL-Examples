@@ -151,11 +151,11 @@ void FreeRun()
 
 void Frame(double timeDelta)
 {
-	if (window.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
+	if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		Trans3D trans = window.MoveSpinFromKeysCursor();
-		if (window.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
+		if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
 		trans.Pos *= 2;
 		trans.Rot.X *= view.FOV * 0.005f;
 		trans.Rot.Y *= view.FOV * 0.005f;
@@ -198,11 +198,11 @@ void CursorScroll(UserParameter::Mouse::Scroll params)
 int Main()
 {
 	window.Create();
-	window.InitCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::InitRun));
-	window.FreeCallBack.Change(ObjectFunction<MainContext, void>::New(this, &MainContext::FreeRun));
-	window.FrameCallBack.Change(ObjectFunction<MainContext, void, double>::New(this, &MainContext::Frame));
-	window.ResizeCallBack.Change(ObjectFunction<MainContext, void, const WindowBufferSize2D &>::New(this, &MainContext::Resize));
-	window.ChangeCallback_CursorScroll(ObjectFunction<MainContext, void, UserParameter::Mouse::Scroll>::New(this, &MainContext::CursorScroll));
+	window.InitCallBack.Change(this, &MainContext::InitRun);
+	window.FreeCallBack.Change(this, &MainContext::FreeRun);
+	window.FrameCallBack.Change(this, &MainContext::Frame);
+	window.ResizeCallBack.Change(this, &MainContext::Resize);
+	window.MouseManager.CallbackScroll.Change(this, &MainContext::CursorScroll);
 
 	Debug::Log << "<<<< Run Window" << Debug::Done;
 	window.Run();

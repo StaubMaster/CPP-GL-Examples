@@ -7,6 +7,7 @@ FLAGS := -Wall -Wextra -Werror
 
 BASE_DIR := ../../
 UI_DIR := $(BASE_DIR)/src/UI/
+SPLINE_DIR := $(BASE_DIR)/src/Spline/
 
 include $(BASE_DIR)fancy.mk
 FANCY_NAME := InterPolation
@@ -40,6 +41,12 @@ FILES_SRC := \
 	$(UI_DIR)/Text/Font/Template.cpp \
 	$(UI_DIR)/Text/Font/Parsing.cpp \
 \
+	$(SPLINE_DIR)/SplineNode3D.cpp \
+	$(SPLINE_DIR)/SplineSegment3D.cpp \
+	$(SPLINE_DIR)/SplineCurve3D.cpp \
+	$(SPLINE_DIR)/SplineObject.cpp \
+\
+	SplineSegment3DControl.cpp \
 	main.cpp
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
