@@ -22,7 +22,10 @@ struct SplineCurve3D
 	SplineCurve3D(SplineNode3D * nodes, unsigned int count, bool closed, float t, float b, float c);
 	~SplineCurve3D();
 
+	unsigned int	FindSegmentIndex(float & t) const;
+
 	SplineNode3D	InterpolateLinear(float t) const;
+	SplineNode3D	InterpolateCubicHermite(float t) const;
 	SplineNode3D	Interpolate0(float t) const;
 	SplineNode3D	Interpolate1(float t) const;
 };

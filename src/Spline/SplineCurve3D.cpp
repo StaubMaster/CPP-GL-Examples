@@ -87,36 +87,37 @@ SplineCurve3D::~SplineCurve3D()
 	delete [] Segments;
 }
 
-SplineNode3D SplineCurve3D::InterpolateLinear(float t) const
+
+
+unsigned int SplineCurve3D::FindSegmentIndex(float & t) const
 {
 	//	Modulate t into range [ 0 ; SegmentCount - 1]
 	{
 		while (t < 0) { t += SegmentCount; }
 		while (t > SegmentCount) { t -= SegmentCount; }
 	}
+	return t;	//	floors ?
+}
 
-	unsigned int idx = t;	//	floors ?
+
+
+SplineNode3D SplineCurve3D::InterpolateLinear(float t) const
+{
+	unsigned int idx = FindSegmentIndex(t);
 	return Segments[idx].InterpolateLinear(t - idx);
+}
+SplineNode3D SplineCurve3D::InterpolateCubicHermite(float t) const
+{
+	unsigned int idx = FindSegmentIndex(t);
+	return Segments[idx].InterpolateCubicHermite(t - idx);
 }
 SplineNode3D SplineCurve3D::Interpolate0(float t) const
 {
-	//	Modulate t into range [ 0 ; SegmentCount - 1]
-	{
-		while (t < 0) { t += SegmentCount; }
-		while (t > SegmentCount) { t -= SegmentCount; }
-	}
-
-	unsigned int idx = t;	//	floors ?
+	unsigned int idx = FindSegmentIndex(t);
 	return Segments[idx].Interpolate0(t - idx);
 }
 SplineNode3D SplineCurve3D::Interpolate1(float t) const
 {
-	//	Modulate t into range [ 0 ; SegmentCount - 1]
-	{
-		while (t < 0) { t += SegmentCount; }
-		while (t > SegmentCount) { t -= SegmentCount; }
-	}
-
-	unsigned int idx = t;	//	floors ?
+	unsigned int idx = FindSegmentIndex(t);
 	return Segments[idx].Interpolate1(t - idx);
 }

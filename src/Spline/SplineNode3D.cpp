@@ -2,10 +2,11 @@
 
 
 
-SplineNode3D::SplineNode3D()
+SplineNode3D::SplineNode3D() :
+	Pos(),
+	Dir()
 { }
-SplineNode3D::SplineNode3D(Point3D pos, Point3D dir)
-{
-	Pos = pos;
-	Dir = dir;
-}
+SplineNode3D::SplineNode3D(Point3D pos, Point3D dir) :
+	Pos(pos),
+	Dir(dir)
+{ }

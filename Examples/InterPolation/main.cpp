@@ -217,10 +217,10 @@ void TrainSpline_Init()
 
 	{
 		SplineNode3D nodes[4] {
-			SplineNode3D(Point3D(+100, 0, +100), Point3D()),
-			SplineNode3D(Point3D(+100, 0, -100), Point3D()),
-			SplineNode3D(Point3D(-100, 0, -100), Point3D()),
-			SplineNode3D(Point3D(-100, 0, +100), Point3D()),
+			SplineNode3D(Point3D(+100, 0, +100), Point3D(+200, 0, -200)),
+			SplineNode3D(Point3D(+100, 0, -100), Point3D(-200, 0, -200)),
+			SplineNode3D(Point3D(-100, 0, -100), Point3D(-200, 0, +200)),
+			SplineNode3D(Point3D(-100, 0, +100), Point3D(+200, 0, +200)),
 		};
 		Train_Spline = new SplineCurve3D(nodes, 4, true, -0.5f, 0, 0);
 	}
@@ -228,7 +228,7 @@ void TrainSpline_Init()
 	unsigned int idx_axis =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Achse.polyhedra.ymt")));
 							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Halter.polyhedra.ymt")));	//	Faces wrong way
 							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Rahmen.polyhedra.ymt")));	//	Faces Wrong way
-	unsigned int idx_rail =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Gleis_Seg.polyhedra.ymt")));			//	Faces Wrong way
+	unsigned int idx_rail =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Gleis_Seg.polyhedra.ymt")));				//	Faces Wrong way
 							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Schienen_Seg.polyhedra.ymt")));			//	Faces Wrong way
 							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Flach.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
 							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Tief.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
@@ -259,14 +259,14 @@ void TrainSpline_Update(float timeDelta)
 		float t = i;
 		t = t / (Train_Rail_Instance_Entry.Length());
 		t = t * (Train_Spline -> SegmentCount);
-		SplineNode3D node = Train_Spline -> Interpolate1(t);
+		SplineNode3D node = Train_Spline -> InterpolateCubicHermite(t);
 		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
 		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
 		Train_Rail_Instance_Entry[i].Trans.Rot.CalcBack();
 	}
 
 	{
-		SplineNode3D node = Train_Spline -> Interpolate1(Train_Spline_Value);
+		SplineNode3D node = Train_Spline -> InterpolateCubicHermite(Train_Spline_Value);
 		Angle3D a = Angle3D::FromPoint3D(node.Dir);
 		a.CalcBack();
 		(*Train_Wheel_Instance_Entry).Trans.Pos = node.Pos + a.rotate(Point3D(0, 6, 0));
@@ -310,7 +310,7 @@ void Frame(double timeDelta)
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		Trans3D trans = window.MoveSpinFromKeysCursor();
-		if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
+		if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 30; }
 		trans.Pos *= 2;
 		trans.Rot.X *= view.FOV * 0.005f;
 		trans.Rot.Y *= view.FOV * 0.005f;
