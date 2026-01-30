@@ -187,7 +187,7 @@ void TestSpline_Update(float timeDelta)
 {
 	for (unsigned int i = 0; i < Test_Path_Instance_Entrys.Length(); i++)
 	{
-		SplineNode3D node = Test_Spline -> Calculate(Test_Spline_Entrys[i].SplineValue);
+		SplineNode3D node = Test_Spline -> Interpolate0(Test_Spline_Entrys[i].SplineValue);
 
 		Test_Path_Instance_Entrys[i].Trans.Pos = node.Pos;
 		Test_Path_Instance_Entrys[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
@@ -239,7 +239,7 @@ void TrainSpline_Init()
 		float t = i;
 		t = t / (Train_Rail_Instance_Entry.Length());
 		t = t * (Train_Spline -> SegmentCount);
-		SplineNode3D node = Train_Spline -> Calculate(t);
+		SplineNode3D node = Train_Spline -> Interpolate0(t);
 		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
 		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
 		Train_Rail_Instance_Entry[i].Trans.Rot.CalcBack();
@@ -259,14 +259,14 @@ void TrainSpline_Update(float timeDelta)
 		float t = i;
 		t = t / (Train_Rail_Instance_Entry.Length());
 		t = t * (Train_Spline -> SegmentCount);
-		SplineNode3D node = Train_Spline -> Calculate(t);
+		SplineNode3D node = Train_Spline -> Interpolate1(t);
 		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
 		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
 		Train_Rail_Instance_Entry[i].Trans.Rot.CalcBack();
 	}
 
 	{
-		SplineNode3D node = Train_Spline -> Calculate(Train_Spline_Value);
+		SplineNode3D node = Train_Spline -> Interpolate1(Train_Spline_Value);
 		Angle3D a = Angle3D::FromPoint3D(node.Dir);
 		a.CalcBack();
 		(*Train_Wheel_Instance_Entry).Trans.Pos = node.Pos + a.rotate(Point3D(0, 6, 0));

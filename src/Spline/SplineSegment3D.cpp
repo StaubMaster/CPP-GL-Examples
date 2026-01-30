@@ -29,6 +29,30 @@ Factors<float> Factors_T_Something(float t)
 	factors[3] = +factorDir3;
 	return factors;
 }
+Factors<float> Factors_CubicHermite(float t)
+{
+/*	CubicHermite	expanded
+h[00]	+2t^3 - 3t^2 + 1
+h[01]	  t^3 - 2t^2 + t
+h[10]	-2t^3 - 3t^2
+h[11]	  t^3 -  t^2
+*/
+/*	CubicHermite	factorized
+h[00]	(1 + 2t)(1 - t)^2
+h[01]	t(1 - t)^2
+h[10]	t^2(3 - 2t)
+h[11]	t^2(t - 1)
+*/
+	float t1 = t;
+	float t2 = t1 * t;
+	float t3 = t2 * t;
+	Factors<float> factors(4);
+	factors[0] = (2 * t3) - (3 * t2) + 1;
+	factors[1] = t3 - (2 * t2) + t;
+	factors[2] = (-2 * t3) - (3 * t2);
+	factors[3] = t3 - t2;
+	return factors;
+}
 
 
 
@@ -46,7 +70,39 @@ SplineSegment3D::SplineSegment3D(SplineNode3D node0, SplineNode3D node1, float t
 	C = c;
 }
 
-SplineNode3D SplineSegment3D::Calculate(float t) const
+
+
+
+
+SplineNode3D SplineSegment3D::InterpolateLinear(float t) const
+{
+	LInter linter;
+	linter.SetT1(t);
+
+	SplineNode3D node;
+
+	node.Pos.X = linter.Calc(Node0.Pos.X, Node1.Pos.X);
+	node.Pos.Y = linter.Calc(Node0.Pos.Y, Node1.Pos.Y);
+	node.Pos.Z = linter.Calc(Node0.Pos.Z, Node1.Pos.Z);
+
+	node.Dir.X = linter.Calc(Node0.Dir.X, Node1.Dir.X);
+	node.Dir.Y = linter.Calc(Node0.Dir.Y, Node1.Dir.Y);
+	node.Dir.Z = linter.Calc(Node0.Dir.Z, Node1.Dir.Z);
+
+	return node;
+}
+
+
+
+SplineNode3D SplineSegment3D::InterpolateCubicHermite(float t) const
+{
+	
+}
+
+
+
+//	Bernstein / Bezier	???
+SplineNode3D SplineSegment3D::Interpolate0(float t) const
 {
 	LInter linter;
 	linter.SetT0(t);
@@ -70,7 +126,6 @@ SplineNode3D SplineSegment3D::Calculate(float t) const
 	//factorPos[2] *= 3;
 
 	Factors<float> factorDir = Factors_T_Something(t);
-
 	Factors<float> TBC = Factors_TBC(T, B, C);
 
 	Point3D dir[2]
@@ -114,20 +169,73 @@ SplineNode3D SplineSegment3D::Calculate(float t) const
 
 	return node;
 }
-SplineNode3D SplineSegment3D::CalculateLerp(float t) const
+
+
+
+SplineNode3D SplineSegment3D::Interpolate1(float t) const
 {
 	LInter linter;
-	linter.SetT1(t);
+	linter.SetT0(t);
+
+	Point3D p[4]
+	{
+		(Prev -> Node0).Pos,
+		Node0.Pos,
+		Node1.Pos,
+		(Next -> Node1).Pos,
+	};
+
+	float factorPos[4]
+	{
+		linter.GetT1() * linter.GetT1() * linter.GetT1(),
+		linter.GetT0() * linter.GetT1() * linter.GetT1(),
+		linter.GetT0() * linter.GetT0() * linter.GetT1(),
+		linter.GetT0() * linter.GetT0() * linter.GetT0(),
+	};
+	factorPos[1] *= 3;
+	factorPos[2] *= 3;
+
+	Factors<float> factorDir = Factors_T_Something(t);
+
+	Factors<float> TBC = Factors_TBC(T, B, C);
+
+	Point3D dir[2]
+	/*{
+		((p[1] - p[0]) * TBC[0]) + ((p[2] - p[1]) * TBC[1]),
+		((p[2] - p[1]) * TBC[2]) + ((p[3] - p[2]) * TBC[3]),
+	};*/
+	{
+		(p[1] - p[0]) + (p[2] - p[1]),
+		(p[2] - p[1]) + (p[3] - p[2]),
+	};
+
+	Point3D vals[4]
+	{
+		p[1],
+		p[1] + (dir[0] / 3),
+		p[2] - (dir[1] / 3),
+		p[2],
+	};
+	/*{
+		(p[1]),
+		(p[1] * 3) + (dir[0] / 2),
+		(p[2] * 3) - (dir[1] / 2),
+		(p[2]),
+	};*/
 
 	SplineNode3D node;
 
-	node.Pos.X = linter.Calc(Node0.Pos.X, Node1.Pos.X);
-	node.Pos.Y = linter.Calc(Node0.Pos.Y, Node1.Pos.Y);
-	node.Pos.Z = linter.Calc(Node0.Pos.Z, Node1.Pos.Z);
+	node.Pos = node.Pos + (vals[0] * factorPos[0]);
+	node.Pos = node.Pos + (vals[1] * factorPos[1]);
+	node.Pos = node.Pos + (vals[2] * factorPos[2]);
+	node.Pos = node.Pos + (vals[3] * factorPos[3]);
 
-	node.Dir.X = linter.Calc(Node0.Dir.X, Node1.Dir.X);
-	node.Dir.Y = linter.Calc(Node0.Dir.Y, Node1.Dir.Y);
-	node.Dir.Z = linter.Calc(Node0.Dir.Z, Node1.Dir.Z);
+	node.Dir = node.Dir + (vals[0] * factorDir[0]);
+	node.Dir = node.Dir + (vals[1] * factorDir[1]);
+	node.Dir = node.Dir + (vals[2] * factorDir[2]);
+	node.Dir = node.Dir + (vals[3] * factorDir[3]);
+
+	node.Dir = (dir[0] * linter.GetT1()) + (dir[1] * linter.GetT0());
 
 	return node;
 }

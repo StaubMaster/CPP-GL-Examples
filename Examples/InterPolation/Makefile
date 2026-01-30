@@ -17,7 +17,8 @@ FANCY_NAME := InterPolation
 
 
 FILES_SRC := \
-	$(UI_DIR)/Anchor.cpp \
+	$(UI_DIR)/Anchor1D.cpp \
+	$(UI_DIR)/Anchor2D.cpp \
 \
 	$(UI_DIR)/Control/Base/Data.cpp \
 	$(UI_DIR)/Control/Base/Buffer.cpp \

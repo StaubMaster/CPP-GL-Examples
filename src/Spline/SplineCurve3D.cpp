@@ -87,7 +87,7 @@ SplineCurve3D::~SplineCurve3D()
 	delete [] Segments;
 }
 
-SplineNode3D	SplineCurve3D::CalculateLerp(float t) const
+SplineNode3D SplineCurve3D::InterpolateLinear(float t) const
 {
 	//	Modulate t into range [ 0 ; SegmentCount - 1]
 	{
@@ -96,9 +96,9 @@ SplineNode3D	SplineCurve3D::CalculateLerp(float t) const
 	}
 
 	unsigned int idx = t;	//	floors ?
-	return Segments[idx].CalculateLerp(t - idx);
+	return Segments[idx].InterpolateLinear(t - idx);
 }
-SplineNode3D	SplineCurve3D::Calculate(float t) const
+SplineNode3D SplineCurve3D::Interpolate0(float t) const
 {
 	//	Modulate t into range [ 0 ; SegmentCount - 1]
 	{
@@ -107,5 +107,16 @@ SplineNode3D	SplineCurve3D::Calculate(float t) const
 	}
 
 	unsigned int idx = t;	//	floors ?
-	return Segments[idx].Calculate(t - idx);
+	return Segments[idx].Interpolate0(t - idx);
+}
+SplineNode3D SplineCurve3D::Interpolate1(float t) const
+{
+	//	Modulate t into range [ 0 ; SegmentCount - 1]
+	{
+		while (t < 0) { t += SegmentCount; }
+		while (t > SegmentCount) { t -= SegmentCount; }
+	}
+
+	unsigned int idx = t;	//	floors ?
+	return Segments[idx].Interpolate1(t - idx);
 }

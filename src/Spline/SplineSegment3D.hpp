@@ -17,8 +17,9 @@ struct SplineSegment3D
 	SplineSegment3D();
 	SplineSegment3D(SplineNode3D node0, SplineNode3D node1, float t, float b, float c);
 
-	SplineNode3D	Calculate(float t) const;
-	SplineNode3D	CalculateLerp(float t) const;
+	SplineNode3D	InterpolateLinear(float t) const;
+	SplineNode3D	InterpolateKochanekBartels(float t) const;
+	SplineNode3D	Interpolate1(float t) const;
 };
 
 #endif

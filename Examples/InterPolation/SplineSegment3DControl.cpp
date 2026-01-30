@@ -22,75 +22,45 @@ UI::Control::SplineSegment3D::SplineSegment3D() :
 	float x = 0;
 	float y = 0;
 
-	T_Slider.Anchor.X.Anchor = AnchorType::Min;
-	T_Slider.Anchor.Y.Anchor = AnchorType::Min;
-	T_Slider.Anchor.X.SetPaddedMinDist(0);
-	T_Slider.Anchor.X.SetSize(160);
-	T_Slider.Anchor.Y.SetPaddedMinDist(y);
-	x = T_Slider.Anchor.X.GetPaddedMinSize();
+	T_Slider.Anchor.X.AnchorMin(0, 160);
+	T_Slider.Anchor.Y.AnchorMin(y);
+	x = T_Slider.Anchor.X.GetMinSize();
 
-	T_Text.Anchor.X.Anchor = AnchorType::Both;
-	T_Text.Anchor.Y.Anchor = AnchorType::Min;
-	T_Text.Anchor.X.SetPaddedMinDist(x);
-	T_Text.Anchor.X.SetPaddedMaxDist(0);
-	T_Text.Anchor.Y.SetPaddedMinDist(y);
-	y = T_Slider.Anchor.Y.GetPaddedMinSize();
+	T_Text.Anchor.X.AnchorBoth(x, 0);
+	T_Text.Anchor.Y.AnchorMin(y);
+	y = T_Slider.Anchor.Y.GetMinSize();
 
-	B_Slider.Anchor.X.Anchor = AnchorType::Min;
-	B_Slider.Anchor.Y.Anchor = AnchorType::Min;
-	B_Slider.Anchor.X.SetPaddedMinDist(0);
-	B_Slider.Anchor.X.SetSize(160);
-	B_Slider.Anchor.Y.SetPaddedMinDist(y);
-	x = B_Slider.Anchor.X.GetPaddedMinSize();
+	B_Slider.Anchor.X.AnchorMin(0, 160);
+	B_Slider.Anchor.Y.AnchorMin(y);
+	x = B_Slider.Anchor.X.GetMinSize();
 
-	B_Text.Anchor.X.Anchor = AnchorType::Both;
-	B_Text.Anchor.Y.Anchor = AnchorType::Min;
-	B_Text.Anchor.X.SetPaddedMinDist(x);
-	B_Text.Anchor.X.SetPaddedMaxDist(0);
-	B_Text.Anchor.Y.SetPaddedMinDist(y);
-	y = B_Slider.Anchor.Y.GetPaddedMinSize();
+	B_Text.Anchor.X.AnchorBoth(x, 0);
+	B_Text.Anchor.Y.AnchorMin(y);
+	y = B_Slider.Anchor.Y.GetMinSize();
 
-	C_Slider.Anchor.X.Anchor = AnchorType::Min;
-	C_Slider.Anchor.Y.Anchor = AnchorType::Min;
-	C_Slider.Anchor.X.SetPaddedMinDist(0);
-	C_Slider.Anchor.X.SetSize(160);
-	C_Slider.Anchor.Y.SetPaddedMinDist(y);
-	x = C_Slider.Anchor.X.GetPaddedMinSize();
+	C_Slider.Anchor.X.AnchorMin(0, 160);
+	C_Slider.Anchor.Y.AnchorMin(y);
+	x = C_Slider.Anchor.X.GetMinSize();
 
-	C_Text.Anchor.X.Anchor = AnchorType::Both;
-	C_Text.Anchor.Y.Anchor = AnchorType::Min;
-	C_Text.Anchor.X.SetPaddedMinDist(x);
-	C_Text.Anchor.X.SetPaddedMaxDist(0);
-	C_Text.Anchor.Y.SetPaddedMinDist(y);
-	y = C_Slider.Anchor.Y.GetPaddedMinSize();
+	C_Text.Anchor.X.AnchorBoth(x, 0);
+	C_Text.Anchor.Y.AnchorMin(y);
+	y = C_Slider.Anchor.Y.GetMinSize();
 
-	Prev_Button.Anchor.X.Anchor = AnchorType::Min;
-	Prev_Button.Anchor.Y.Anchor = AnchorType::Min;
-	Prev_Button.Anchor.X.SetPaddedMinDist(0);
-	Prev_Button.Anchor.X.SetPaddedMaxDist(0);
-	Prev_Button.Anchor.Y.SetPaddedMinDist(y);
-	x = Prev_Button.Anchor.X.GetPaddedMinSize();
+	Prev_Button.Anchor.X.AnchorMin(0);
+	Prev_Button.Anchor.Y.AnchorMin(y);
+	x = Prev_Button.Anchor.X.GetMinSize();
 
-	Prev_Text.Anchor.X.Anchor = AnchorType::Both;
-	Prev_Text.Anchor.Y.Anchor = AnchorType::Min;
-	Prev_Text.Anchor.X.SetPaddedMinDist(x);
-	Prev_Text.Anchor.X.SetPaddedMaxDist(0);
-	Prev_Text.Anchor.Y.SetPaddedMinDist(y);
-	y = Prev_Text.Anchor.Y.GetPaddedMinSize();
+	Prev_Text.Anchor.X.AnchorBoth(x, 0);
+	Prev_Text.Anchor.Y.AnchorMin(y);
+	y = Prev_Text.Anchor.Y.GetMinSize();
 
-	Next_Button.Anchor.X.Anchor = AnchorType::Min;
-	Next_Button.Anchor.Y.Anchor = AnchorType::Min;
-	Next_Button.Anchor.X.SetPaddedMinDist(0);
-	Next_Button.Anchor.X.SetPaddedMaxDist(0);
-	Next_Button.Anchor.Y.SetPaddedMinDist(y);
-	x = Next_Button.Anchor.X.GetPaddedMinSize();
+	Next_Button.Anchor.X.AnchorMin(0);
+	Next_Button.Anchor.Y.AnchorMin(y);
+	x = Next_Button.Anchor.X.GetMinSize();
 
-	Next_Text.Anchor.X.Anchor = AnchorType::Both;
-	Next_Text.Anchor.Y.Anchor = AnchorType::Min;
-	Next_Text.Anchor.X.SetPaddedMinDist(x);
-	Next_Text.Anchor.X.SetPaddedMaxDist(0);
-	Next_Text.Anchor.Y.SetPaddedMinDist(y);
-	y = Next_Text.Anchor.Y.GetPaddedMinSize();
+	Next_Text.Anchor.X.AnchorBoth(x, 0);
+	Next_Text.Anchor.Y.AnchorMin(y);
+	y = Next_Text.Anchor.Y.GetMinSize();
 
 	T_Slider.SliderMin = -1.0f;
 	B_Slider.SliderMin = -1.0f;
@@ -127,8 +97,8 @@ UI::Control::SplineSegment3D::SplineSegment3D() :
 
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	Anchor.X.SetPaddedMinDist(0);
-	Anchor.Y.SetPaddedMinDist(0);
+	Anchor.X.SetMinDist(0);
+	Anchor.Y.SetMinDist(0);
 	Anchor.X.SetSize(320);
 	Anchor.Y.SetSize((25 + 5 * 2) * 5);
 }
