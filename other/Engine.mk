@@ -3,26 +3,26 @@
 #                            Engine                            #
 ################################################################
 
-ENGINE_HTTPS := https://github.com/StaubMaster/CPP-GL-Engine.git
-ENGINE_REPO := $(REPOS_DIR)/Engine
+ENGINE_URL := https://github.com/StaubMaster/CPP-GL-Engine.git
+ENGINE_DIR := $(REPOS_DIR)/Engine
 
-REPOS_DYNAMIC += $(ENGINE_REPO)
+REPOS_DYNAMIC += $(ENGINE_DIR)
 
-#ENGINE_LIBRARYS = $(call repoLibrarys,$(ENGINE_REPO))
-#ENGINE_INCLUDES = $(call repoIncludes,$(ENGINE_REPO))
-#ENGINE_ARGUMENTS = $(call repoArguments,$(ENGINE_REPO))
+#ENGINE_LIBRARYS = $(call repoLibrarys,$(ENGINE_DIR))
+#ENGINE_INCLUDES = $(call repoIncludes,$(ENGINE_DIR))
+#ENGINE_ARGUMENTS = $(call repoArguments,$(ENGINE_DIR))
 
-ENGINE_LIBRARYS = $(ENGINE_REPO)/Engine.a
-ENGINE_INCLUDES = $(ENGINE_REPO)/include
+ENGINE_LIBRARYS = $(ENGINE_DIR)/Engine.a
+ENGINE_INCLUDES = $(ENGINE_DIR)/include
 
 LIBRARYS += $(ENGINE_LIBRARYS)
 INCLUDES += $(ENGINE_INCLUDES)
 ARGUMENTS += $(ENGINE_ARGUMENTS)
 
-$(ENGINE_REPO) :
-	git clone $(ENGINE_HTTPS) -q $(ENGINE_REPO)
+$(ENGINE_DIR) :
+	git clone $(ENGINE_URL) -q $(ENGINE_DIR)
 
-$(ENGINE_LIBRARYS) : $(ENGINE_REPO)
-	$(MAKE) -C $(ENGINE_REPO) -s $(@:$(ENGINE_REPO)/%=%)
+$(ENGINE_LIBRARYS) : $(ENGINE_DIR)
+	$(MAKE) -C $(ENGINE_DIR) -s $(@:$(ENGINE_DIR)/%=%)
 
 ################################################################
