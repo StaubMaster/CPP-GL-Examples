@@ -46,11 +46,10 @@ uniform sampler2DArray texture0;
 
 uniform LightBase Ambient;
 uniform LightSolar Solar;
-uniform LightSpot Spot;
 
 const uint SpotLimit = uint(4);
 uniform LightSpot[SpotLimit] SpotArr;
-uniform uint SpotCount;
+uniform uint SpotCount = uint(0);
 
 
 

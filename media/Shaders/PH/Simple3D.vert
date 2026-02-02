@@ -86,11 +86,13 @@ vec4 proj(in vec3 p_inn)
 void main()
 {
 	vs_out.Original = VPos;
-	vs_out.Absolute = (vs_out.Original * IRot) + IPos;
+//	vs_out.Absolute = (vs_out.Original * (IRot)) + IPos;
+	vs_out.Absolute = (vs_out.Original * transpose(IRot)) + IPos;
 	vs_out.Relative = (vs_out.Absolute - View.Pos) * View.Rot;
 
 	gl_Position = proj(vs_out.Relative);
 
-	vs_out.Normal = -(VNorm * IRot);
+//	vs_out.Normal = -(VNorm * (IRot));
+	vs_out.Normal = -(VNorm * transpose(IRot));
 	vs_out.Tex = VTex;
 }

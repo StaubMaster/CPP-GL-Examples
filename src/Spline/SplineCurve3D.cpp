@@ -111,6 +111,16 @@ SplineNode3D SplineCurve3D::InterpolateCubicHermite(float t) const
 	unsigned int idx = FindSegmentIndex(t);
 	return Segments[idx].InterpolateCubicHermite(t - idx);
 }
+SplineNode3D SplineCurve3D::InterpolateFiniteDifference(float t) const
+{
+	unsigned int idx = FindSegmentIndex(t);
+	return Segments[idx].InterpolateFiniteDifference(t - idx);
+}
+SplineNode3D SplineCurve3D::InterpolateKochanekBartels(float t) const
+{
+	unsigned int idx = FindSegmentIndex(t);
+	return Segments[idx].InterpolateKochanekBartels(t - idx);
+}
 SplineNode3D SplineCurve3D::Interpolate0(float t) const
 {
 	unsigned int idx = FindSegmentIndex(t);

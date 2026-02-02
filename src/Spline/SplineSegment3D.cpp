@@ -2,22 +2,11 @@
 #include "Factors.hpp"
 #include "ValueType/LInter.hpp"
 
+#include "DataShow.hpp"
+#include <iostream>
 
 
-Factors<float> Factors_TBC(float T, float B, float C)
-{
-	float Tm = 1 - T;
-	float Bm = 1 - B;
-	float Bp = 1 + B;
-	float Cm = 1 - C;
-	float Cp = 1 + C;
-	Factors<float> factors(4);
-	factors[0] = (Tm * Bp * Cm) / 2;
-	factors[1] = (Tm * Bm * Cp) / 2;
-	factors[2] = (Tm * Bp * Cp) / 2;
-	factors[3] = (Tm * Bm * Cm) / 2;
-	return factors;
-}
+
 /*
 	these are used for Trangent calculation so I assume they are Defivatives ?
 h[00] = -(3t^3) + 3 * (2t^2) - 3;
@@ -70,11 +59,52 @@ Factors<float> Factors_T_Something(float t)
 	return factors;
 }
 
+static Factors<float> CalcFactorsPos(float t)
+{
+	Factors<float> factors(4);
+	float t0 = 1;
+	float t1 = t0 * t;
+	float t2 = t1 * t;
+	float t3 = t2 * t;
+	factors[0] = (2 * t3) - (3 * t2) + (1 * t0);
+	factors[1] = t3 - (2 * t2) + t1;
+	factors[2] = -(2 * t3) + (3 * t2);
+	factors[3] = t3 - t2;
+	return factors;
+}
+static Factors<float> CalcFactorsDir(float t)
+{
+	Factors<float> factors(4);
+	float t0 = 0;
+	float t1 = 1;
+	float t2 = 2 * t;
+	float t3 = 3 * t * t;
+	factors[0] = (2 * t3) - (3 * t2) + (1 * t0);
+	factors[1] = t3 - (2 * t2) + t1;
+	factors[2] = -(2 * t3) + (3 * t2);
+	factors[3] = t3 - t2;
+	return factors;
+}
+static Factors<float> CalcFactorsTCB(float T, float B, float C)
+{
+	float Tm = 1 - T;
+	float Cm = 1 - C;
+	float Cp = 1 + C;
+	float Bm = 1 - B;
+	float Bp = 1 + B;
+	Factors<float> factors(4);
+	factors[0] = (Tm * Cm * Bp) / 2;
+	factors[1] = (Tm * Cp * Bm) / 2;
+	factors[2] = (Tm * Cp * Bp) / 2;
+	factors[3] = (Tm * Cm * Bm) / 2;
+	return factors;
+}
+
 
 
 SplineSegment3D::SplineSegment3D()
 { }
-SplineSegment3D::SplineSegment3D(SplineNode3D node0, SplineNode3D node1, float t, float b, float c)
+SplineSegment3D::SplineSegment3D(SplineNode3D node0, SplineNode3D node1, float t, float c, float b)
 {
 	Node0 = node0;
 	Node1 = node1;
@@ -82,8 +112,8 @@ SplineSegment3D::SplineSegment3D(SplineNode3D node0, SplineNode3D node1, float t
 	Next = 0;
 
 	T = t;
-	B = b;
 	C = c;
+	B = b;
 }
 
 
@@ -208,29 +238,8 @@ something about derivatives ?
 */
 SplineNode3D SplineSegment3D::InterpolateCubicHermite(float t) const
 {
-	Factors<float> factorsPos(4);
-	{
-		float t0 = 1;
-		float t1 = t0 * t;
-		float t2 = t1 * t;
-		float t3 = t2 * t;
-		factorsPos[0] = (2 * t3) - (3 * t2) + (1 * t0);
-		factorsPos[1] = t3 - (2 * t2) + t1;
-		factorsPos[2] = -(2 * t3) + (3 * t2);
-		factorsPos[3] = t3 - t2;
-	}
-
-	Factors<float> factorsDir(4);
-	{
-		float t0 = 0;
-		float t1 = 1;
-		float t2 = 2 * t;
-		float t3 = 3 * t * t;
-		factorsDir[0] = (2 * t3) - (3 * t2) + (1 * t0);
-		factorsDir[1] = t3 - (2 * t2) + t1;
-		factorsDir[2] = -(2 * t3) + (3 * t2);
-		factorsDir[3] = t3 - t2;
-	}
+	Factors<float> factorsPos = CalcFactorsPos(t);
+	Factors<float> factorsDir = CalcFactorsDir(t);
 
 	SplineNode3D node;
 
@@ -243,6 +252,78 @@ SplineNode3D SplineSegment3D::InterpolateCubicHermite(float t) const
 	node.Dir += (Node0.Dir * factorsDir[1]);
 	node.Dir += (Node1.Pos * factorsDir[2]);
 	node.Dir += (Node1.Dir * factorsDir[3]);
+
+	return node;
+}
+
+
+
+SplineNode3D SplineSegment3D::InterpolateFiniteDifference(float t) const
+{
+	Point3D	dir0, dir1;
+	{
+		Point3D	diff_Here = Node1.Pos - Node0.Pos;
+		Point3D diff_Prev;
+		Point3D diff_Next;
+		if (Prev != 0) { diff_Prev = Node0.Pos - (Prev -> Node0.Pos); }
+		else { diff_Prev = diff_Here; }
+		if (Next != 0) { diff_Next = (Next -> Node1.Pos) - Node1.Pos; }
+		else { diff_Next = diff_Here; }
+		dir0 = (diff_Here + diff_Prev) / 2;
+		dir1 = (diff_Here + diff_Next) / 2;
+	}
+
+	Factors<float> factorsPos = CalcFactorsPos(t);
+	Factors<float> factorsDir = CalcFactorsDir(t);
+
+	SplineNode3D node;
+
+	node.Pos += (Node0.Pos * factorsPos[0]);
+	node.Pos += (dir0 * factorsPos[1]);
+	node.Pos += (Node1.Pos * factorsPos[2]);
+	node.Pos += (dir1 * factorsPos[3]);
+
+	node.Dir += (Node0.Pos * factorsDir[0]);
+	node.Dir += (dir0 * factorsDir[1]);
+	node.Dir += (Node1.Pos * factorsDir[2]);
+	node.Dir += (dir1 * factorsDir[3]);
+
+	return node;
+}
+
+
+
+SplineNode3D SplineSegment3D::InterpolateKochanekBartels(float t) const
+{
+	Point3D	dir0, dir1;
+	{
+		Point3D	diff_Here = Node1.Pos - Node0.Pos;
+		Point3D diff_Prev;
+		Point3D diff_Next;
+		if (Prev != 0) { diff_Prev = Node0.Pos - (Prev -> Node0.Pos); }
+		else { diff_Prev = diff_Here; }
+		if (Next != 0) { diff_Next = (Next -> Node1.Pos) - Node1.Pos; }
+		else { diff_Next = diff_Here; }
+
+		Factors<float> factorsTCB = CalcFactorsTCB(T, C, B);
+		dir0 = (diff_Prev * factorsTCB[2] + diff_Here * factorsTCB[3]) / 2;
+		dir1 = (diff_Here * factorsTCB[0] + diff_Next * factorsTCB[1]) / 2;
+	}
+
+	Factors<float> factorsPos = CalcFactorsPos(t);
+	Factors<float> factorsDir = CalcFactorsDir(t);
+
+	SplineNode3D node;
+
+	node.Pos += (Node0.Pos * factorsPos[0]);
+	node.Pos += (dir0 * factorsPos[1]);
+	node.Pos += (Node1.Pos * factorsPos[2]);
+	node.Pos += (dir1 * factorsPos[3]);
+
+	node.Dir += (Node0.Pos * factorsDir[0]);
+	node.Dir += (dir0 * factorsDir[1]);
+	node.Dir += (Node1.Pos * factorsDir[2]);
+	node.Dir += (dir1 * factorsDir[3]);
 
 	return node;
 }
@@ -274,7 +355,7 @@ SplineNode3D SplineSegment3D::Interpolate0(float t) const
 	//factorPos[2] *= 3;
 
 	Factors<float> factorDir = Factors_T_Something(t);
-	Factors<float> TBC = Factors_TBC(T, B, C);
+	Factors<float> TBC = CalcFactorsTCB(T, B, C);
 
 	Point3D dir[2]
 	{
@@ -345,7 +426,7 @@ SplineNode3D SplineSegment3D::Interpolate1(float t) const
 
 	Factors<float> factorDir = Factors_T_Something(t);
 
-	Factors<float> TBC = Factors_TBC(T, B, C);
+	Factors<float> TBC = CalcFactorsTCB(T, B, C);
 
 	Point3D dir[2]
 	/*{

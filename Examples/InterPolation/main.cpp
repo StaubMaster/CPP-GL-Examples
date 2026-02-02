@@ -27,8 +27,6 @@
 #include "FileInfo.hpp"
 #include "Image.hpp"
 
-
-
 /*	ToDo
 Calculate Spline Length for SplineSegment and SplineCurve
 
@@ -38,6 +36,7 @@ maybe just do Solar Light for now
 make Wheels Spin based on Wheel Radius ?
 assamble other things correctly
 */
+
 #include "Spline/Factors.hpp"
 #include "Spline/SplineNode3D.hpp"
 #include "Spline/SplineSegment3D.hpp"
@@ -91,8 +90,7 @@ void InitGraphics()
 	PolyHedra_3D_Manager.DefaultShader.Create();
 	PolyHedra_3D_Manager.DefaultShader.Bind();
 	PolyHedra_3D_Manager.DefaultShader.Depth.Put(view.Depth);
-	float fov_rad = Angle3D::DegreeToRadian(view.FOV);
-	PolyHedra_3D_Manager.DefaultShader.FOV.PutData(&fov_rad);
+	PolyHedra_3D_Manager.DefaultShader.FOV.Put(view.FOV);
 
 	{
 		Container::Fixed<::Shader::Code> code(2);
@@ -191,7 +189,7 @@ void TestSpline_Update(float timeDelta)
 
 		Test_Path_Instance_Entrys[i].Trans.Pos = node.Pos;
 		Test_Path_Instance_Entrys[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
-		Test_Path_Instance_Entrys[i].Trans.Rot.CalcBack();
+		//Test_Path_Instance_Entrys[i].Trans.Rot.CalcBack();
 
 		Test_Spline_Entrys[i].SplineValue += 0.1f * timeDelta;
 	}
@@ -216,7 +214,8 @@ void TrainSpline_Init()
 	Train_WheelSpin = 0;
 
 	{
-		SplineNode3D nodes[4] {
+		SplineNode3D nodes[4]
+		{
 			SplineNode3D(Point3D(+100, 0, +100), Point3D(+200, 0, -200)),
 			SplineNode3D(Point3D(+100, 0, -100), Point3D(-200, 0, -200)),
 			SplineNode3D(Point3D(-100, 0, -100), Point3D(-200, 0, +200)),
@@ -234,7 +233,7 @@ void TrainSpline_Init()
 							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Tief.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
 
 	Train_Rail_Instance_Entry = PolyHedra_3D_Manager.Place(idx_rail, 128);
-	for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Length(); i++)
+	/*for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Length(); i++)
 	{
 		float t = i;
 		t = t / (Train_Rail_Instance_Entry.Length());
@@ -242,8 +241,8 @@ void TrainSpline_Init()
 		SplineNode3D node = Train_Spline -> Interpolate0(t);
 		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
 		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
-		Train_Rail_Instance_Entry[i].Trans.Rot.CalcBack();
-	}
+		//Train_Rail_Instance_Entry[i].Trans.Rot.CalcBack();
+	}*/
 
 	Train_Wheel_Instance_Entry = PolyHedra_3D_Manager.Place(idx_axis, 2);
 }
@@ -259,20 +258,18 @@ void TrainSpline_Update(float timeDelta)
 		float t = i;
 		t = t / (Train_Rail_Instance_Entry.Length());
 		t = t * (Train_Spline -> SegmentCount);
-		SplineNode3D node = Train_Spline -> InterpolateCubicHermite(t);
+		SplineNode3D node = Train_Spline -> InterpolateKochanekBartels(t);
 		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
 		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
-		Train_Rail_Instance_Entry[i].Trans.Rot.CalcBack();
 	}
 
 	{
-		SplineNode3D node = Train_Spline -> InterpolateCubicHermite(Train_Spline_Value);
+		SplineNode3D node = Train_Spline -> InterpolateKochanekBartels(Train_Spline_Value);
 		Angle3D a = Angle3D::FromPoint3D(node.Dir);
-		a.CalcBack();
-		(*Train_Wheel_Instance_Entry).Trans.Pos = node.Pos + a.rotate(Point3D(0, 6, 0));
+		(*Train_Wheel_Instance_Entry).Trans.Pos = node.Pos + a.rotateBack(Point3D(0, 6, 0));
 		(*Train_Wheel_Instance_Entry).Trans.Rot = a;
-		(*Train_Wheel_Instance_Entry).Trans.Rot.Y -= Train_WheelSpin;
-		(*Train_Wheel_Instance_Entry).Trans.Rot.CalcBack();
+		(*Train_Wheel_Instance_Entry).Trans.Rot.Y -= Angle::Radians(Train_WheelSpin);
+		(*Train_Wheel_Instance_Entry).Trans.Rot.CalcMatrix();
 	}
 
 	Train_Spline_Value += 0.01f * timeDelta;
@@ -312,9 +309,9 @@ void Frame(double timeDelta)
 		Trans3D trans = window.MoveSpinFromKeysCursor();
 		if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 30; }
 		trans.Pos *= 2;
-		trans.Rot.X *= view.FOV * 0.005f;
-		trans.Rot.Y *= view.FOV * 0.005f;
-		trans.Rot.Z *= view.FOV * 0.005f;
+		trans.Rot.X *= view.FOV.ToDegrees() * 0.005f;
+		trans.Rot.Y *= view.FOV.ToDegrees() * 0.005f;
+		trans.Rot.Z *= view.FOV.ToDegrees() * 0.005f;
 		view.TransformFlatX(trans, timeDelta);
 	}
 

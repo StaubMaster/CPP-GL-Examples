@@ -16,9 +16,10 @@ UI::Control::Slider::Slider() : Base()
 	SliderChanged = true;
 	SliderSize = 10.0f;
 
-	SliderValue = 0.0f;
-	SliderMin = 0.0f;
-	SliderMax = 1.0f;
+	Value = 0.0f;
+	ValueResolution = 0.01f;
+	ValueMin = 0.0f;
+	ValueMax = 1.0f;
 
 	ValueChangedFunc = NULL;
 }
@@ -29,15 +30,40 @@ UI::Control::Slider::~Slider()
 
 float UI::Control::Slider::GetValue()
 {
-	return SliderValue;
+	return Value;
 }
 void UI::Control::Slider::SetValue(float val)
 {
-	SliderValue = val;
+	Value = val;
 	SliderChanged = true;
-	ValueChangedFunc(SliderValue);
+	ValueChangedFunc(Value);
 }
+void UI::Control::Slider::ChangeValue(UserParameter::Mouse::Position mouse_pos)
+{
+	if (!_Interactible) { return; }
 
+	float slider_size_half = SliderSize / 2;
+	float slider_pos_min = AnchorBox.Min.X + slider_size_half;
+	float slider_pos_max = AnchorBox.Max.X - slider_size_half;
+
+	float slider_value = mouse_pos.Absolute.X;
+	slider_value -= slider_pos_min;
+	slider_value /= (slider_pos_max - slider_pos_min);
+	slider_value *= (ValueMax - ValueMin);
+	slider_value += ValueMin;
+
+	slider_value /= ValueResolution;
+	slider_value = (int)slider_value;
+	slider_value *= ValueResolution;
+
+	if (slider_value < ValueMin) { slider_value = ValueMin; }
+	if (slider_value > ValueMax) { slider_value = ValueMax; }
+
+	Value = slider_value;
+	SliderChanged = true;
+
+	ValueChangedFunc(Value);
+}
 
 
 void UI::Control::Slider::UpdateEntrysRelay()
@@ -53,7 +79,7 @@ void UI::Control::Slider::UpdateEntrysRelay()
 			float slider_min = AnchorBox.Min.X + slider_size_half;
 			float slider_max = AnchorBox.Max.X - slider_size_half;
 
-			float slider_normal = (SliderValue - SliderMin) / (SliderMax - SliderMin);
+			float slider_normal = (Value - ValueMin) / (ValueMax - ValueMin);
 			float slider_value = (slider_normal * (slider_max - slider_min)) + slider_min;
 			
 			(*SliderEntry).Min.X = slider_value - slider_size_half;
@@ -89,45 +115,12 @@ void UI::Control::Slider::UpdateBoxRelay()
 
 void UI::Control::Slider::RelayClick(UserParameter::Mouse::Click params)
 {
-	if (!_Interactible) { return; }
-
-	float slider_size_half = SliderSize / 2;
-	float slider_min = AnchorBox.Min.X + slider_size_half;
-	float slider_max = AnchorBox.Max.X - slider_size_half;
-
-	float slider_value = params.Position.Absolute.X;
-	slider_value -= slider_min;
-	slider_value /= (slider_max - slider_min);
-	slider_value *= (SliderMax - SliderMin);
-	slider_value += SliderMin;
-
-	if (slider_value < SliderMin) { slider_value = SliderMin; }
-	if (slider_value > SliderMax) { slider_value = SliderMax; }
-
-	SliderValue = slider_value;
-	SliderChanged = true;
-
-	ValueChangedFunc(SliderValue);
+	if (params.Action.IsPress())
+	{
+		ChangeValue(params.Position);
+	}
 }
 void UI::Control::Slider::RelayCursorDrag(UserParameter::Mouse::Drag params)
 {
-	if (!_Interactible) { return; }
-
-	float slider_size_half = SliderSize / 2;
-	float slider_min = AnchorBox.Min.X + slider_size_half;
-	float slider_max = AnchorBox.Max.X - slider_size_half;
-
-	float slider_value = params.Position.Absolute.X;
-	slider_value -= slider_min;
-	slider_value /= (slider_max - slider_min);
-	slider_value *= (SliderMax - SliderMin);
-	slider_value += SliderMin;
-
-	if (slider_value < SliderMin) { slider_value = SliderMin; }
-	if (slider_value > SliderMax) { slider_value = SliderMax; }
-
-	SliderValue = slider_value;
-	SliderChanged = true;
-
-	ValueChangedFunc(SliderValue);
+	ChangeValue(params.Position);
 }

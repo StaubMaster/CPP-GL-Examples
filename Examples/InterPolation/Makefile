@@ -80,7 +80,7 @@ re:
 
 .PHONY: all clean fclean re
 
-$(NAME) : $(FILES_OBJ)
+$(NAME) : $(FILES_OBJ) $(LIBRARYS)
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	$(MAKE) $(LIBRARYS)
 	@mkdir -p logs/

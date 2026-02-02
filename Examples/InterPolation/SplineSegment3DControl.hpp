@@ -15,12 +15,12 @@ class SplineSegment3D : public GroupBox
 {
 	private:
 	Slider	T_Slider;
-	Slider	B_Slider;
 	Slider	C_Slider;
+	Slider	B_Slider;
 
 	TextBox	T_Text;
-	TextBox	B_Text;
 	TextBox	C_Text;
+	TextBox	B_Text;
 
 	Button	Prev_Button;
 	Button	Next_Button;

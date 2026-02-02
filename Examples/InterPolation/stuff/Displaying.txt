@@ -1,0 +1,59 @@
+
+have a better way of displaying certain stuff
+
+mainly thinking of Wire stuff
+WireFrame
+{
+	Corners
+	Indexes for Element Buffer
+	draw Lines (2 Indexes pre Line)
+
+	PolyHedra
+	{
+		make a line for each side of a triangle
+		remove duplicates
+		maybe have that as an extra functino ?
+	}
+
+	how to do Color ?
+	one Color per Corner
+}
+
+
+
+Spline
+	split Spline into segments (8 or so. probably base on distance ?)
+	draw those lines
+
+Control Points
+	draw a Line for from Pos to Pos + Dir
+
+
+
+
+
+Point		small Spheare
+Direction	Arrow
+
+these would be nice to have a constant size on screen ?
+or maybe do scale them, but give them a minimum and maximum size on screen
+the lines have constant thickness (1 Pixel) so having these be constant would be consistent
+
+these might be easiest with geometry Shaders
+for points, put a small square aroud the point
+for arrows, put small lines at the end of the line
+
+or
+
+for Points, have a thing in the Main Buffer
+then have the actual Point in the Inst Buffer
+then calculate the distance from the View to the Point
+and use that as scale
+
+with Arrows
+needs a Line, which is just a cylinder, scale that between the points
+but how to do the head ?
+just scale the whole thing ?
+that might stretch a lot
+
+

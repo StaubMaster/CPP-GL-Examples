@@ -1,0 +1,28 @@
+
+right now i have the Light Shader stuff, but only use it for the Light Example
+the rest use a FullBright Shader
+but FullBright can be done with the Light Shader
+
+
+
+use the Light Shader for everything
+but then the Light stuff needs Setup
+
+make another "Manager" for that stuff
+make a seperate one for just the Light stuff ?
+or add this stuff to the PolyHedra Manager ?
+
+
+
+also having the UI Stuff together might me nice as well ?
+
+
+
+also I dont like how setting Shader Files works currently
+
+
+
+PolyHedra Single Manager	rename to	PolyHedra Simple3D Instances
+PolyHedra Multi Manager		rename to	PolyHedra Simple3D Manager
+
+

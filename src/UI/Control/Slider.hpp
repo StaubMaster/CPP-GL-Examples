@@ -23,12 +23,13 @@ class Slider : public Base
 	EntryContainer::Entry<Control::Inst_Data> SliderEntry;
 
 	bool SliderChanged;
-	float SliderSize;
+	float SliderSize;	//NubSize
 
-	float SliderValue;
+	float Value;
 	public:
-	float SliderMin;
-	float SliderMax;
+	float ValueResolution;
+	float ValueMin;
+	float ValueMax;
 
 	public:
 	//void (*ValueChangedFunc)(float);
@@ -41,6 +42,8 @@ class Slider : public Base
 	public:
 	float GetValue();
 	void SetValue(float val);
+	private:
+	void ChangeValue(UserParameter::Mouse::Position mouse_pos);
 
 	public:
 	void UpdateEntrysRelay() override;

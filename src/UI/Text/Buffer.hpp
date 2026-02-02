@@ -4,7 +4,7 @@
 #include "Graphics/Buffer/ArrayBase.hpp"
 #include "Graphics/Buffer/Attribute.hpp"
 
-# include "Graphics/Attribute/Base/AttributeBase.hpp"
+# include "Graphics/Attribute/Base/Base.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
 
 

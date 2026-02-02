@@ -26,6 +26,9 @@ struct SplineCurve3D
 
 	SplineNode3D	InterpolateLinear(float t) const;
 	SplineNode3D	InterpolateCubicHermite(float t) const;
+	SplineNode3D	InterpolateFiniteDifference(float t) const;
+	SplineNode3D	InterpolateKochanekBartels(float t) const;
+
 	SplineNode3D	Interpolate0(float t) const;
 	SplineNode3D	Interpolate1(float t) const;
 };

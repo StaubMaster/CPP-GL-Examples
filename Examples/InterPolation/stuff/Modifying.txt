@@ -1,0 +1,13 @@
+
+already have a system in C# to drag a Point along a Line or Plane
+
+
+
+the stuff in C# is Transformation stuff
+what else is there ?
+all the parameter changing cant be displayed concretely ?
+so they have to be done with Controls
+or be displayed concretely, so making them points
+and then those can be dragged normally
+
+

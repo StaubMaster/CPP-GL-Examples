@@ -1,0 +1,13 @@
+Type Skin2DA
+Format S_2025_10_27
+
+W 128
+H 128
+
+File Images/Meta_128x128.png
+File Images/MetalRust_128x128.png
+File Images/Concrete_128x128.png
+
+Normals calcF
+
+
