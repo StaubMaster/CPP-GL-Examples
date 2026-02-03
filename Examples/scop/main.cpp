@@ -101,24 +101,30 @@ void Init()
 	Tex0 = new Texture::Array2D();
 	Tex0 -> Assign(ImageDir.File("Orientation.png"));
 
+std::cerr << __FILE__ << ' ' << __LINE__ << ' ' << GL::GetError() << '\n';
 	OBJ_BufferArray = new OBJ_3D_BufferArray * [OBJ_Count];
 	for (int i = 0; i < OBJ_Count; i++)
 	{
+std::cerr << __FILE__ << ' ' << __LINE__ << ' ' << GL::GetError() << '\n';
 		OBJ_BufferArray[i] = new OBJ_3D_BufferArray();
+std::cerr << __FILE__ << ' ' << __LINE__ << ' ' << GL::GetError() << '\n';
 		OBJ_BufferArray[i] -> Create();
+std::cerr << __FILE__ << ' ' << __LINE__ << ' ' << GL::GetError() << '\n';
 
 		int main_count;
 		OBJ_MainData * main_data;
 		main_data = OBJs[i] -> ToMainData(main_count, Tex0 -> SizeRatio);
 		Container::Pointer<OBJ_MainData> MainData(main_count, main_data);
-		{
+		/*{
 			std::cout << "Main: " << MainData.Count() << "\n";
 			for (unsigned int i = 0; i < MainData.Count(); i++)
 			{
 				std::cout << MainData[i].Position << "\n";
 			}
-		}
+		}*/
+std::cerr << __FILE__ << ' ' << __LINE__ << ' ' << GL::GetError() << '\n';
 		OBJ_BufferArray[i] -> Main.Change(MainData);
+std::cerr << __FILE__ << ' ' << __LINE__ << ' ' << GL::GetError() << '\n';
 		delete [] main_data;
 
 		Simple3D::Data inst_data []
@@ -126,16 +132,18 @@ void Init()
 			(Simple3D::Data)Trans3D(Point3D(), Angle3D()),
 		};
 		Container::Pointer<Simple3D::Data> InstData(1, inst_data);
-		{
+		/*{
 			std::cout << "Inst: " << InstData.Count() << "\n";
 			for (unsigned int i = 0; i < InstData.Count(); i++)
 			{
 				std::cout << InstData[i].Trans << "\n";
 			}
-		}
+		}*/
+std::cerr << __FILE__ << ' ' << __LINE__ << ' ' << GL::GetError() << '\n';
 		OBJ_BufferArray[i] -> Inst.Change(InstData);
+std::cerr << __FILE__ << ' ' << __LINE__ << ' ' << GL::GetError() << '\n';
 	}
-
+std::cerr << __FILE__ << ' ' << __LINE__ << ' ' << GL::GetError() << '\n';
 	std::cout << "Init 1\n";
 }
 void Free()
@@ -258,12 +266,13 @@ void Frame(double timeDelta)
 
 	GL::Disable(GL::Capability::CullFace);
 	GL::Disable(GL::Capability::DepthTest);
-	OBJ_Shader -> Bind();
 	//Tex0 -> Bind();
-	for (int i = 0; i < OBJ_Count; i++)
+	OBJ_Shader -> Bind();
+	OBJ_BufferArray[0] -> Draw();
+	/*for (int i = 0; i < OBJ_Count; i++)
 	{
 		OBJ_BufferArray[i] -> Draw();
-	}
+	}*/
 }
 
 void Resize(const WindowBufferSize2D & WindowSize)
