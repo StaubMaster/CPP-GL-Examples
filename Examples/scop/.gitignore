@@ -1,0 +1,20 @@
+
+#	Object Files
+*.o
+*.c.obj
+obj/
+
+#	Archive Files
+*.a
+
+#	Executable Files
+*.exe
+scop
+
+#	Log Files
+*.log
+
+#	Other
+other/Engine
+other/FileManager
+other/OpenGL
