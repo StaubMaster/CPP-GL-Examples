@@ -81,11 +81,11 @@ re:
 .PHONY: all clean fclean re
 
 $(NAME) : $(FILES_OBJ) $(LIBRARYS)
-	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	$(MAKE) $(LIBRARYS)
+	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
+	@$(MAKE) $(LIBRARYS)
 	@mkdir -p logs/
-	$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
-	$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
+	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
+	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
 
 ################################################################
 

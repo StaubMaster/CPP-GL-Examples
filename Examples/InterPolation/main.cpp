@@ -162,8 +162,10 @@ void TestSpline_Init()
 		};
 		Test_Spline = new SplineCurve3D(nodes, 6, true, 0, 0, 0);
 	}
+std::cout << __LINE__ << '\n';
 
 	Test_Node_Instance_Entrys = PolyHedra_3D_Manager.Place(PolyHedra::Generate::HexaHedron(1.0f), (Test_Spline -> SegmentCount) * 2);
+std::cout << __LINE__ << '\n';
 	for (unsigned int i = 0; i < Test_Spline -> SegmentCount; i++)
 	{
 		Test_Node_Instance_Entrys[i * 2 + 0].Trans.Pos = Test_Spline -> Segments[i].Node0.Pos;
@@ -224,13 +226,13 @@ void TrainSpline_Init()
 		Train_Spline = new SplineCurve3D(nodes, 4, true, -0.5f, 0, 0);
 	}
 
-	unsigned int idx_axis =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Achse.polyhedra.ymt")));
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Halter.polyhedra.ymt")));	//	Faces wrong way
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Rahmen.polyhedra.ymt")));	//	Faces Wrong way
-	unsigned int idx_rail =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Gleis_Seg.polyhedra.ymt")));				//	Faces Wrong way
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Schienen_Seg.polyhedra.ymt")));			//	Faces Wrong way
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Flach.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Tief.polyhedra.ymt")));			//	Faces Wrong way, some Geometry Wrong
+	unsigned int idx_axis =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Achse.polyhedra")));
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Halter.polyhedra")));	//	Faces wrong way
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Rahmen.polyhedra")));	//	Faces Wrong way
+	unsigned int idx_rail =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Gleis_Seg.polyhedra")));				//	Faces Wrong way
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Schienen_Seg.polyhedra")));			//	Faces Wrong way
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Flach.polyhedra")));			//	Faces Wrong way, some Geometry Wrong
+							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Tief.polyhedra")));			//	Faces Wrong way, some Geometry Wrong
 
 	Train_Rail_Instance_Entry = PolyHedra_3D_Manager.Place(idx_rail, 128);
 	/*for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Length(); i++)
