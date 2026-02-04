@@ -52,27 +52,64 @@ MainContext() :
 
 
 
-Wavefront::Simple3D::Shader OBJ_Shader;
+Wavefront::Simple3D::Shader	OBJ_Shader;
 Texture::Array2D Tex0;
 bool	Spinning;
 
 int OBJ_Limit;
 int OBJ_Count;
-Wavefront::OBJ ** OBJs;
-Point3D * OBJs_Center;
-Trans3D * OBJs_Trans;
 
-Wavefront::Simple3D::BufferArray ** OBJ_BufferArray;
+struct DisplayObject3D
+{
+	Wavefront::OBJ *	OBJ;
+	Point3D				Center;
+	Trans3D				Trans;
+	Wavefront::Simple3D::BufferArray * BufferArray;
+};
+DisplayObject3D * Obj3Ds;
 
-LInter ColorToTex;
-float ColorToTex_Speed = 0.01f;
-bool ColorToTex_Direction = false;
-bool ColorToTex_Direction_last = false;
 
-LInter ShowLightFactor;
-float ShowLightFactor_Speed = 0.01f;
-bool ShowLightFactor_Direction = false;
-bool ShowLightFactor_Direction_last = false;
+
+struct DynamicLinearInterpolator
+{
+	::LInter LInter;
+	bool Direction;
+	float Speed;
+
+	DynamicLinearInterpolator() :
+		LInter(),
+		Direction(false),
+		Speed(0.01f)
+	{ }
+
+	void Toggle()
+	{
+		Direction = !Direction;
+	}
+	void Update()
+	{
+		if (!Direction)
+		{
+			if (LInter.GetT1() > Speed) 
+			{
+				LInter.SetT0(LInter.GetT0() + Speed);
+			}
+			else { LInter.SetT0(1.0); }
+		}
+		else
+		{
+			if (LInter.GetT0() > Speed)
+			{
+				LInter.SetT1(LInter.GetT1() + Speed);
+			}
+			else { LInter.SetT1(1.0); }
+		}
+	}
+};
+DynamicLinearInterpolator ColorToTex;
+DynamicLinearInterpolator ShowLightFactor;
+
+
 
 void InitShaders()
 {
@@ -85,17 +122,16 @@ void InitShaders()
 	OBJ_Shader.Create();
 	OBJ_Shader.Depth.Put(view.Depth);
 
-	ColorToTex = LInter::T0();
-	ColorToTex_Direction = false;
+	ColorToTex.LInter = LInter::T0();
+	ColorToTex.Direction = false;
 
-	ShowLightFactor = LInter::T1();
-	ShowLightFactor_Direction = true;
-	ShowLightFactor_Direction_last = true;
+	ShowLightFactor.LInter = LInter::T1();
+	ShowLightFactor.Direction = true;
 
 	OBJ_Shader.Bind();
 	OBJ_Shader.Depth.Put(view.Depth);
-	OBJ_Shader.ColorToTex.Put(ColorToTex);
-	OBJ_Shader.ShowLightFactor.Put(ShowLightFactor);
+	OBJ_Shader.ColorToTex.Put(ColorToTex.LInter);
+	OBJ_Shader.ShowLightFactor.Put(ShowLightFactor.LInter);
 }
 void FreeShaders()
 {
@@ -112,19 +148,18 @@ void Init()
 
 	Tex0.Assign(ImageDir.File("Orientation.png"));
 
-	OBJ_BufferArray = new Wavefront::Simple3D::BufferArray * [OBJ_Count];
 	for (int i = 0; i < OBJ_Count; i++)
 	{
-		OBJ_BufferArray[i] = new Wavefront::Simple3D::BufferArray();
-		OBJ_BufferArray[i] -> Create();
-		OBJ_BufferArray[i] -> Bind();
+		Obj3Ds[i].BufferArray = new Wavefront::Simple3D::BufferArray();
+		Obj3Ds[i].BufferArray -> Create();
+		Obj3Ds[i].BufferArray -> Bind();
 
 		{
 			int main_count;
 			Wavefront::Main::Data * main_data;
-			main_data = OBJs[i] -> ToMainData(main_count, Tex0.SizeRatio);
+			main_data = Obj3Ds[i].OBJ -> ToMainData(main_count, Tex0.SizeRatio);
 			Container::Pointer<Wavefront::Main::Data> MainData(main_count, main_data);
-			OBJ_BufferArray[i] -> Main.Change(MainData);
+			Obj3Ds[i].BufferArray -> Main.Change(MainData);
 			delete [] main_data;
 		}
 
@@ -134,7 +169,7 @@ void Init()
 				(Simple3D::Data)Trans3D(Point3D(), Angle3D()),
 			};
 			Container::Pointer<Simple3D::Data> InstData(1, inst_data);
-			OBJ_BufferArray[i] -> Inst.Change(InstData);
+			Obj3Ds[i].BufferArray -> Inst.Change(InstData);
 		}
 	}
 	std::cout << "Init 1\n";
@@ -142,12 +177,6 @@ void Init()
 void Free()
 {
 	std::cout << "Free 0\n";
-
-	for (int i = 0; i < OBJ_Count; i++)
-	{
-		delete OBJ_BufferArray[i];
-	}
-	delete [] OBJ_BufferArray;
 
 	FreeShaders();
 
@@ -158,50 +187,23 @@ void Update_ColorToTex()
 {
 	if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress())
 	{
-		if (ColorToTex_Direction_last == false)
-		{
-			ColorToTex_Direction = !ColorToTex_Direction;
-			ColorToTex_Direction_last = true;
-		}
-	} else { ColorToTex_Direction_last = false; }
+		ColorToTex.Toggle();
+	}
+	ColorToTex.Update();
 
-	if (!ColorToTex_Direction)
-	{
-		if (ColorToTex.GetT1() > ColorToTex_Speed) { ColorToTex.SetT0(ColorToTex.GetT0() + ColorToTex_Speed); }
-		else { ColorToTex.SetT0(1.0); }
-	}
-	else
-	{
-		if (ColorToTex.GetT0() > ColorToTex_Speed) { ColorToTex.SetT1(ColorToTex.GetT1() + ColorToTex_Speed); }
-		else { ColorToTex.SetT1(1.0); }
-	}
 	OBJ_Shader.Bind();
-	OBJ_Shader.ColorToTex.Put(ColorToTex);
+	OBJ_Shader.ColorToTex.Put(ColorToTex.LInter);
 }
 void Update_ShowLightFactor()
 {
 	if (window.KeyBoardManager.Keys[GLFW_KEY_L].IsPress())
 	{
-		if (ShowLightFactor_Direction_last == false)
-		{
-			ShowLightFactor_Direction = !ShowLightFactor_Direction;
-			ShowLightFactor_Direction_last = true;
-		}
-	} else { ShowLightFactor_Direction_last = false; }
-
-	if (!ShowLightFactor_Direction)
-	{
-		if (ShowLightFactor.GetT1() > ShowLightFactor_Speed) { ShowLightFactor.SetT0(ShowLightFactor.GetT0() + ShowLightFactor_Speed); }
-		else { ShowLightFactor.SetT0(1.0); }
+		ShowLightFactor.Toggle();
 	}
-	else
-	{
-		if (ShowLightFactor.GetT0() > ShowLightFactor_Speed) { ShowLightFactor.SetT1(ShowLightFactor.GetT1() + ShowLightFactor_Speed); }
-		else { ShowLightFactor.SetT1(1.0); }
-	}
+	ShowLightFactor.Update();
 
 	OBJ_Shader.Bind();
-	OBJ_Shader.ShowLightFactor.Put(ShowLightFactor);
+	OBJ_Shader.ShowLightFactor.Put(ShowLightFactor.LInter);
 }
 void Update_ObjTrans(double timeDelta)
 {
@@ -214,18 +216,18 @@ void Update_ObjTrans(double timeDelta)
 	{
 		if (Spinning)
 		{
-			OBJs_Trans[i].Rot.CalcMatrix();
-			OBJs_Trans[i].Pos = OBJs_Trans[i].Pos + (OBJs_Trans[i].Rot.rotateBack(OBJs_Center[i]));
-			OBJs_Trans[i].Rot.X += Angle::Radians(0.01f);
-			OBJs_Trans[i].Rot.CalcMatrix();
-			OBJs_Trans[i].Pos = OBJs_Trans[i].Pos - (OBJs_Trans[i].Rot.rotateBack(OBJs_Center[i]));
+			Obj3Ds[i].Trans.Rot.CalcMatrix();
+			Obj3Ds[i].Trans.Pos = Obj3Ds[i].Trans.Pos + (Obj3Ds[i].Trans.Rot.rotateBack(Obj3Ds[i].Center));
+			Obj3Ds[i].Trans.Rot.X += Angle::Radians(0.01f);
+			Obj3Ds[i].Trans.Rot.CalcMatrix();
+			Obj3Ds[i].Trans.Pos = Obj3Ds[i].Trans.Pos - (Obj3Ds[i].Trans.Rot.rotateBack(Obj3Ds[i].Center));
 		}
 
 		if (!window.MouseManager.CursorModeIsLocked())
 		{
-			OBJs_Trans[i].Pos = OBJs_Trans[i].Pos + view.Trans.Rot.rotateBack(window.MoveFromKeys() * (2.0f * timeDelta));
+			Obj3Ds[i].Trans.Pos = Obj3Ds[i].Trans.Pos + view.Trans.Rot.rotateBack(window.MoveFromKeys() * (2.0f * timeDelta));
 		}
-		OBJs_Trans[i].Rot.CalcMatrix();
+		Obj3Ds[i].Trans.Rot.CalcMatrix();
 
 		{
 			Trans3D trans;
@@ -233,10 +235,10 @@ void Update_ObjTrans(double timeDelta)
 			trans.Rot = Angle3D();
 			Simple3D::Data inst_data []
 			{
-				(Simple3D::Data)OBJs_Trans[i],
+				(Simple3D::Data)Obj3Ds[i].Trans,
 			};
 			Container::Pointer<Simple3D::Data> InstData(1, inst_data);
-			OBJ_BufferArray[i] -> Inst.Change(InstData);
+			Obj3Ds[i].BufferArray -> Inst.Change(InstData);
 		}
 	}
 }
@@ -265,10 +267,9 @@ void Frame(double timeDelta)
 	OBJ_Shader.Bind();
 	for (int i = 0; i < OBJ_Count; i++)
 	{
-		OBJ_BufferArray[i] -> Draw();
+		Obj3Ds[i].BufferArray -> Draw();
 	}
 }
-
 void Resize(const WindowBufferSize2D & WindowSize)
 {
 	OBJ_Shader.Bind();
@@ -281,9 +282,9 @@ void LoadObject(FileInfo file)
 	if (file.Mode.IsDirectory()) { std::cout << file.Path << ": Is a Directory.\n"; return; }
 	if (file.Extension() != ".obj") { std::cout << file.Path << ": Does not have .obj extension.\n"; return; }
 
-	OBJs[OBJ_Count] = Wavefront::OBJ::Load(file);
-	OBJs_Center[OBJ_Count] = OBJs[OBJ_Count] -> ToAxisBox().Center();
-	OBJs_Trans[OBJ_Count] = Trans3D(Point3D(OBJ_Count * 5, 0, 3) - OBJs_Center[OBJ_Count], Angle3D());
+	Obj3Ds[OBJ_Count].OBJ = Wavefront::OBJ::Load(file);
+	Obj3Ds[OBJ_Count].Center = Obj3Ds[OBJ_Count].OBJ -> ToAxisBox().Center();
+	Obj3Ds[OBJ_Count].Trans = Trans3D(Point3D(OBJ_Count * 5, 0, 3) - Obj3Ds[OBJ_Count].Center, Angle3D());
 	OBJ_Count++;
 }
 
@@ -302,11 +303,7 @@ int main(int argc, char * argv[])
 	{
 		OBJ_Limit = 0;
 		if (argc != 0) { OBJ_Limit = argc - 1; }
-		
-		OBJs = new Wavefront::OBJ * [OBJ_Limit];
-		OBJs_Center = new Point3D[OBJ_Limit];
-		OBJs_Trans = new Trans3D[OBJ_Limit];
-
+		Obj3Ds = new DisplayObject3D[OBJ_Limit];
 		OBJ_Count = 0;
 		for (int i = 0; i < OBJ_Limit; i++)
 		{
@@ -329,10 +326,12 @@ int main(int argc, char * argv[])
 	}
 
 	{
-		for (int i = 0; i < OBJ_Count; i++) { delete OBJs[i]; }
-		delete [] OBJs;
-		delete [] OBJs_Center;
-		delete [] OBJs_Trans;
+		for (int i = 0; i < OBJ_Count; i++)
+		{
+			delete Obj3Ds[i].OBJ;
+			delete Obj3Ds[i].BufferArray;
+		}
+		delete [] Obj3Ds;
 	}
 	return ret;
 }
