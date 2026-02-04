@@ -8,10 +8,6 @@ OPENGL_DIR := $(REPOS_DIR)/OpenGL
 
 REPOS_DYNAMIC += $(OPENGL_DIR)
 
-#OPENGL_LIBRARYS = $(call repoLibrarys,$(OPENGL_DIR))
-#OPENGL_INCLUDES = $(call repoIncludes,$(OPENGL_DIR))
-#OPENGL_ARGUMENTS = $(call repoArguments,$(OPENGL_DIR))
-
 OPENGL_LIBRARYS = $(OPENGL_DIR)/OpenGL.a
 OPENGL_INCLUDES = $(OPENGL_DIR)/include/
 

@@ -8,10 +8,6 @@ ENGINE_DIR := $(REPOS_DIR)/Engine
 
 REPOS_DYNAMIC += $(ENGINE_DIR)
 
-#ENGINE_LIBRARYS = $(call repoLibrarys,$(ENGINE_DIR))
-#ENGINE_INCLUDES = $(call repoIncludes,$(ENGINE_DIR))
-#ENGINE_ARGUMENTS = $(call repoArguments,$(ENGINE_DIR))
-
 ENGINE_LIBRARYS = $(ENGINE_DIR)/Engine.a
 ENGINE_INCLUDES = $(ENGINE_DIR)/include
 

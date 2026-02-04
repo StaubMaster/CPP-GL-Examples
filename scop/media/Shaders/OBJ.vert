@@ -96,12 +96,12 @@ void main()
 
 	gl_Position = proj(vs_out.Relative);
 
-//	vs_out.Normal = VNorm * transpose(IRot);
-//	vs_out.Tex = VTex;
-//	vs_out.Col = VCol;
-//
-//	vs_out.AmbientColor = VAmbientColor;
-//	vs_out.DiffuseColor = VDiffuseColor;
-//	vs_out.SpecularPower = VSpecularPower;
-//	vs_out.SpecularColor = VSpecularColor;
+	vs_out.Normal = VNorm * transpose(IRot);
+	vs_out.Tex = VTex;
+	vs_out.Col = VCol;
+
+	vs_out.AmbientColor = VAmbientColor;
+	vs_out.DiffuseColor = VDiffuseColor;
+	vs_out.SpecularPower = VSpecularPower;
+	vs_out.SpecularColor = VSpecularColor;
 }

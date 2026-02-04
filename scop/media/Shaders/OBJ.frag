@@ -100,12 +100,11 @@ float CalcDepthFactor()
 void main()
 {
 	//float	depth_factor = CalcDepthFactor();
-//	vec4	light_factor = CalcLightFactor();
-//
-//	light_factor = light_factor * ShowLightFactor.T0 + vec4(1, 1, 1, 1) * ShowLightFactor.T1;
-//
-//	vec4 col;
-//	col = (fs_inn.Col * ColorToTex.T0) + (texture(texture0, fs_inn.Tex) * ColorToTex.T1);
-//	Color = col * light_factor;
-	Color = vec4(1, 1, 1, 1);
+	vec4	light_factor = CalcLightFactor();
+
+	light_factor = light_factor * ShowLightFactor.T0 + vec4(1, 1, 1, 1) * ShowLightFactor.T1;
+
+	vec4 col;
+	col = (fs_inn.Col * ColorToTex.T0) + (texture(texture0, fs_inn.Tex) * ColorToTex.T1);
+	Color = col * light_factor;
 }
