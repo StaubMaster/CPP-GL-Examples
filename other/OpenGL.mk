@@ -3,10 +3,9 @@
 #                            OpenGL                            #
 ################################################################
 
-OPENGL_URL := https://github.com/StaubMaster/CPP-OpenGL.git
 OPENGL_DIR := $(REPOS_DIR)/OpenGL
 
-REPOS_DYNAMIC += $(OPENGL_DIR)
+REPOS_LIST += $(OPENGL_DIR)
 
 #OPENGL_LIBRARYS = $(call repoLibrarys,$(OPENGL_DIR))
 #OPENGL_INCLUDES = $(call repoIncludes,$(OPENGL_DIR))
@@ -30,9 +29,6 @@ endif
 LIBRARYS += $(OPENGL_LIBRARYS)
 INCLUDES += $(OPENGL_INCLUDES)
 ARGUMENTS += $(OPENGL_ARGUMENTS)
-
-$(OPENGL_DIR) :
-	git clone $(OPENGL_URL) -q $(OPENGL_DIR)
 
 $(OPENGL_LIBRARYS) : $(OPENGL_DIR)
 	$(MAKE) -C $(OPENGL_DIR) $(@:$(OPENGL_DIR)/%=%) -s

@@ -9,27 +9,25 @@ endif
 #                             REPO                             #
 ################################################################
 
-REPOS_STATIC = 
-REPOS_DYNAMIC = 
-REPOS_ALL = $(REPOS_STATIC) $(REPOS_DYNAMIC)
+REPOS_LIST =
 
 ################################################################
 
 repos: repos_clone
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(foreach repo, $(REPOS_ALL), \
+	@$(foreach repo, $(REPOS_LIST), \
 		$(MAKE) -C $(repo) -s ; \
 	)
 
 repos_all: repos_clone
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(foreach repo, $(REPOS_ALL), \
+	@$(foreach repo, $(REPOS_LIST), \
 		$(MAKE) -C $(repo) -s all ; \
 	)
 
 repos_clean:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(foreach repo, $(REPOS_ALL), \
+	@$(foreach repo, $(REPOS_LIST), \
 		if [ -d $(repo) ] ; then \
 			$(MAKE) -C $(repo) -s clean ; \
 		fi ; \
@@ -37,7 +35,7 @@ repos_clean:
 
 repos_fclean:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(foreach repo, $(REPOS_ALL), \
+	@$(foreach repo, $(REPOS_LIST), \
 		if [ -d $(repo) ] ; then \
 			$(MAKE) -C $(repo) -s fclean ; \
 		fi ; \
@@ -49,13 +47,11 @@ repos_fclean:
 
 repos_clone:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-#	@mkdir -p $(REPOS_DIR)
-#	@$(MAKE) $(REPOS_DYNAMIC) -s
+	git submodule --quiet update --init  
 
 repos_rm:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-#	@rm -rf $(REPOS_DYNAMIC)
-#	@rm -rf $(REPOS_DIR)
+	git submodule --quiet deinit --all 
 
 .PHONY: repos_clone repos_rm
 
