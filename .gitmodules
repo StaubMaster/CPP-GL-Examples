@@ -1,0 +1,3 @@
+[submodule "other/Engine"]
+	path = other/Engine
+	url = https://github.com/StaubMaster/CPP-GL-Engine.git
