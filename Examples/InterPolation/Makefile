@@ -60,7 +60,7 @@ FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(MAKE) -s repos_clone
+	@$(MAKE) -s repos
 	@$(MAKE) -s $(FILES_OBJ)
 	@$(MAKE) -s $(NAME)
 
@@ -82,7 +82,6 @@ re:
 
 $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(MAKE) $(LIBRARYS)
 	@mkdir -p logs/
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
