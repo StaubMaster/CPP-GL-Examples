@@ -1,0 +1,51 @@
+
+
+#-------#-------#-------#-------#-------#	Spline
+P-------H-------N	Neighbours
+0-------1			Object
+		0-------1	Object
+
+
+
+
+
+C : Calculate(d) Direction(s)
+		#-------#-------#-------#
+P-------H-------N
+		C-------#-------#-------#
+		P-------H-------N
+		C-------C-------#-------#
+				P-------H-------N
+		C-------C-------C-------#
+						P-------H-------N
+		C-------C-------C-------C
+
+Objects
+		#-------#-------#-------#
+P-------H-------N
+		0-------1
+		|
+
+		#-------#-------#-------#
+		P-------H-------N
+		0-------1
+				0-------1
+				|
+
+
+
+
+
+Data:
+	each curve is made of points
+	each point is part of 2 segments
+	but each point might have different tangants
+
+	store the points in an array
+	store all the segments in an array
+	each segments Pole has a pointer to its positions ?
+
+	the segments shouldnt be directly accessible from the outside anyway
+	so just store the pole points in the poles
+
+	this could cause disconnect, but shouldnt

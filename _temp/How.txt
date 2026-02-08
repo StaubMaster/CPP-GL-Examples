@@ -1,0 +1,132 @@
+
+how should these be used
+
+internal
+<Type<>> : Member<>
+{
+	Type()
+		Limit = 0
+		Count = 0
+		Pointer = NULL
+	Type(unsigned int limit)
+		same as Type()
+		.Allocate(limit)
+	Type(unsigned int limit, count)
+		same as Type()
+		.Allocate(limit, count)
+
+	~Type()
+		Context depandent
+			delete[] Pointer
+	Type(Member<> other)
+		Limit = 0
+		Count = 0
+		Pointer = NULL
+		Context depandent
+			.Bind(other) or .Copy(other)
+	Type & operator=(Member<> other) = delete
+		Context depandent
+			.Bind(other) or .Copy(other)
+
+
+
+	some of this stuff could be put into Member
+	problem:
+		Allocate might need to delete first
+		how to know what to do in the derived ?
+	solution:
+		have a function that then gets implemented in the child
+		based on what it should do
+
+	void	Forget()
+		Limit = 0
+		Count = 0
+		Pointer = NULL
+	void	Delete()
+		delete[] Pointer
+		Forget()
+	Behaviour already does this ?
+	but Behaviour also is used for Assignment
+	and is changed
+	Behaviour should be constant
+	checking for NULL is trivial and usually unnessacerry (how tf is that written ?)
+
+	the Behaviour is also used for Assigning
+	but since Assigning is = delete-d in this idea, that dosent matter ?
+
+
+
+	Allocate(limit, (count))
+	Allocate(limit, count = 0)
+		Pointer = new[limit]
+	Remember(pointer, limit, (count))
+	Remember(pointer, limit, count = 0)
+		Pointer = pointer
+
+	if count is not given, should
+		count = limit
+	or
+		count = 0
+	count = 0 probably makes more sense
+	only Array<> and maybe Pointer<> use count = limit
+	all the others use count = 0
+	maybe take a bool ?
+	or allways take count ?
+
+
+
+	void	Dispose()
+		changes Limit to 0
+		changes Count to 0
+		Context depandent
+			delete[]s the Pointer
+			when called from outside, should allways delete[]
+		changes Pointer to NULL
+	void	Allocate(unsigned int limit)
+		.Dispose()s (delete?)
+		changes Limit to limit
+		changes Count to 0 (is done by .Dispose())
+		new[limit]s Pointer
+	void	Allocate(unsigned int limit, unsigned int count)
+		.Dispose()s (delete?)
+		changes Limit to limit
+		changes Count to count
+		new[limit]s Pointer
+	void	Remember(<> * pointer, unsigned int limit)
+		.Dispose()s (delete?)
+		changes Limit to limit
+		changes Count to count
+		new[limit]s Pointer
+	void	Remember(<> * pointer, unsigned int limit, unsigned int count)
+
+
+
+	void			Bind(Member<> other)
+		takes Limit and Count from other
+		takes Pointer from other
+	static <Type<>>	Bind(Member<> other)
+		creates a new Object that uses then .Bind(other)
+	void			Copy(Member<> other)
+		takes Limit and Count from other
+		allocates new Pointer and copys from other.Pointer up to Count
+	static <Type<>>	Copy(Member<> other)
+		creates a new Object that uses then .Copy(other)
+	void			Swap(Member<> other)
+		switches Limit woth other.Limit
+		switches Count woth other.Count
+		switches Pointer woth other.Pointer
+
+
+
+	static <Type<>>	Resize(Member<> other, unsigned int limit)
+		creates a new Object
+		the Object .Allocate(limit)s
+		count = other.Count
+		if (limit < count) { count = limit }
+		copy [count] from other
+	void			Resize(unsigned int limit)
+		other = Resize(limit)
+		other.Swap(this)
+		other.Dispose() (delete?)
+
+}
