@@ -39,9 +39,9 @@ class CubicSpline3D : public InterPolator3D
 		float B;
 	};
 	static Tangents FiniteDifference(ChainNeighbours3D neighbours);
-	static Tangents CatmullRom(ChainNeighbours3D neighbours, float Tk);
-	static Tangents Cardinal(ChainNeighbours3D neighbours, float ck);
-	static Tangents KochanekBartels(ChainNeighbours3D neighbours, FactorsTCB tcb);
+	//static Tangents CatmullRom(ChainNeighbours3D neighbours, float Tk);
+	//static Tangents Cardinal(ChainNeighbours3D neighbours, float ck);
+	//static Tangents KochanekBartels(ChainNeighbours3D neighbours, FactorsTCB tcb);
 };
 
 #endif

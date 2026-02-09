@@ -47,7 +47,7 @@ repos_fclean:
 
 repos_clone:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	git submodule --quiet update --init
+#	git submodule --quiet update --init
 
 repos_rm:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)

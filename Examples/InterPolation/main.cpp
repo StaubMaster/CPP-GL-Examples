@@ -48,6 +48,10 @@ assamble other things correctly
 #include "UI/Text/Font/Font.hpp"
 #include "SplineSegment3DControl.hpp"
 
+#include "Spline/ChainNeighbours3D.hpp"
+#include "Spline/CubicSpline3D.hpp"
+#include "Spline/CubicSplineCurve3D.hpp"
+
 
 
 struct MainContext
@@ -85,7 +89,7 @@ void InitGraphics()
 		code.Insert(Shader::Code(ShaderDir.File("PH/Simple3D.vert")));
 		code.Insert(Shader::Code(ShaderDir.File("PH/Full.frag")));
 		PolyHedra_3D_Manager.DefaultShader.Change(code);
-		code.Dispose();
+		code.Clear();
 	}
 	PolyHedra_3D_Manager.DefaultShader.Create();
 	PolyHedra_3D_Manager.DefaultShader.Bind();
@@ -202,7 +206,8 @@ void TestSpline_Update(float timeDelta)
 UI::Control::Form * Form;
 UI::Control::SplineSegment3D * SplineSegment3D_Control;
 
-SplineCurve3D * Train_Spline;
+//SplineCurve3D * Train_Spline;
+CubicSplineCurve3D * Train_Spline;
 Container::Binary<SplineObject> Train_Rail_Spline_Entrys;
 float Train_Spline_Value;
 float Train_WheelSpin;
@@ -223,7 +228,15 @@ void TrainSpline_Init()
 			SplineNode3D(Point3D(-100, 0, -100), Point3D(-200, 0, +200)),
 			SplineNode3D(Point3D(-100, 0, +100), Point3D(+200, 0, +200)),
 		};
-		Train_Spline = new SplineCurve3D(nodes, 4, true, -0.5f, 0, 0);
+		//Train_Spline = new SplineCurve3D(nodes, 4, true, -0.5f, 0, 0);
+
+		Train_Spline = new CubicSplineCurve3D();
+		Train_Spline -> Nodes.Allocate(4, 4);
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			Train_Spline -> Nodes[i] = nodes[i].Pos;
+		}
+		Train_Spline -> FiniteDifference();
 	}
 
 	unsigned int idx_axis =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Achse.polyhedra")));
@@ -259,14 +272,19 @@ void TrainSpline_Update(float timeDelta)
 	{
 		float t = i;
 		t = t / (Train_Rail_Instance_Entry.Length());
-		t = t * (Train_Spline -> SegmentCount);
-		SplineNode3D node = Train_Spline -> InterpolateKochanekBartels(t);
+		//t = t * (Train_Spline -> SegmentCount);
+		t = t * (Train_Spline -> Segments.Count());
+		//SplineNode3D node = Train_Spline -> InterpolateKochanekBartels(t);
+		SplineNode3D node;
+		node.Pos = Train_Spline -> InterPolate(t);
 		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
 		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
 	}
 
 	{
-		SplineNode3D node = Train_Spline -> InterpolateKochanekBartels(Train_Spline_Value);
+		//SplineNode3D node = Train_Spline -> InterpolateKochanekBartels(Train_Spline_Value);
+		SplineNode3D node;
+		node.Pos = Train_Spline -> InterPolate(Train_Spline_Value);
 		Angle3D a = Angle3D::FromPoint3D(node.Dir);
 		(*Train_Wheel_Instance_Entry).Trans.Pos = node.Pos + a.rotateBack(Point3D(0, 6, 0));
 		(*Train_Wheel_Instance_Entry).Trans.Rot = a;
@@ -294,7 +312,7 @@ void InitRun()
 
 	MakeRun();
 	//if (Test_Spline -> SegmentCount != 0) { SplineSegment3D_Control -> ChangeObject(&(Test_Spline -> Segments[0])); }
-	if (Train_Spline -> SegmentCount != 0) { SplineSegment3D_Control -> ChangeObject(&(Train_Spline -> Segments[0])); }
+	//if (Train_Spline -> Segments.Count() != 0) { SplineSegment3D_Control -> ChangeObject(&(Train_Spline -> Segments[0])); }
 }
 void FreeRun()
 {

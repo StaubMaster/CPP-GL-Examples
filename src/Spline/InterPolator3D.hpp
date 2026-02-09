@@ -6,7 +6,7 @@
 class InterPolator3D
 {
 	public:
-	~InterPolator3D();
+	virtual ~InterPolator3D();
 	InterPolator3D();
 	InterPolator3D(const InterPolator3D & other);
 	InterPolator3D & operator=(const InterPolator3D & other);

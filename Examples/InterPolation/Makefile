@@ -47,6 +47,11 @@ FILES_SRC := \
 	$(SPLINE_DIR)/SplineCurve3D.cpp \
 	$(SPLINE_DIR)/SplineObject.cpp \
 \
+	$(SPLINE_DIR)/InterPolator3D.cpp \
+	$(SPLINE_DIR)/ChainNeighbours3D.cpp \
+	$(SPLINE_DIR)/CubicSpline3D.cpp \
+	$(SPLINE_DIR)/CubicSplineCurve3D.cpp \
+\
 	SplineSegment3DControl.cpp \
 	main.cpp
 
