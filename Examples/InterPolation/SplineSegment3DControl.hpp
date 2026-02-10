@@ -2,6 +2,7 @@
 # define SPLINE_SEGMENT_3D_CONTROL_HPP
 
 # include "Spline/SplineSegment3D.hpp"
+# include "Spline/CubicSpline3D.hpp"
 
 # include "UI/ControlsInclude.hpp"
 # include "UserParameter/MouseDeclare.hpp"
@@ -29,13 +30,15 @@ class SplineSegment3D : public GroupBox
 	TextBox	Next_Text;
 
 	private:
-	::SplineSegment3D * Object;
+//	::SplineSegment3D * Object;
+	::CubicSpline3D::FactorsTCB * TCB;
 
 	public:
 	SplineSegment3D();
 	~SplineSegment3D();
 
-	void ChangeObject(::SplineSegment3D * obj);
+	//void ChangeObject(::SplineSegment3D * obj);
+	void ChangeObject(::CubicSpline3D::FactorsTCB * obj);
 
 	private:
 	void T_Slider_CallBack_Func(float val);

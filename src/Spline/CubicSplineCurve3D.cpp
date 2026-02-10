@@ -143,6 +143,29 @@ void CubicSplineCurve3D::FiniteDifference()
 		ChangeNextPole0(i, Nodes[i], tans.Dir0);
 	}
 }
-//void CubicSplineCurve3D::CatmullRom(ChainNeighbours3D neighbours, float Tk);
-//void CubicSplineCurve3D::Cardinal(ChainNeighbours3D neighbours, float ck);
-//void CubicSplineCurve3D::KochanekBartels(ChainNeighbours3D neighbours, FactorsTCB tcb);
+//void CubicSplineCurve3D::CatmullRom(float Tk);
+//void CubicSplineCurve3D::Cardinal(float ck);
+void CubicSplineCurve3D::KochanekBartels(CubicSpline3D::FactorsTCB tcb)
+{
+	if (Nodes.Count() <= 1) { return; }
+
+	if (Loop)
+	{ Segments.Allocate(Nodes.Count(), Nodes.Count()); }
+	else
+	{ Segments.Allocate(Nodes.Count() - 1, Nodes.Count() - 1); }
+
+	ChainNeighbours3D		neighbours;
+	CubicSpline3D::Tangents		tans;
+
+	for (unsigned int i = 0; i < Nodes.Count(); i++)
+	{
+		neighbours.Prev = PrevNodePointer(i);
+		neighbours.Here = Nodes[i];
+		neighbours.Next = NextNodePointer(i);
+
+		tans = CubicSpline3D::KochanekBartels(neighbours, tcb);
+
+		ChangePrevPole1(i, Nodes[i], tans.Dir1);
+		ChangeNextPole0(i, Nodes[i], tans.Dir0);
+	}
+}

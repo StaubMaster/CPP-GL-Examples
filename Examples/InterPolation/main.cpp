@@ -204,6 +204,7 @@ void TestSpline_Update(float timeDelta)
 
 UI::Control::Form * Form;
 UI::Control::SplineSegment3D * SplineSegment3D_Control;
+CubicSpline3D::FactorsTCB	TCB;
 
 //SplineCurve3D * Train_Spline;
 CubicSplineCurve3D * Train_Spline;
@@ -222,11 +223,40 @@ void TrainSpline_Init()
 
 	{
 		Train_Spline = new CubicSplineCurve3D();
-		Train_Spline -> Nodes.List({
+		/*Train_Spline -> Nodes.List({
 			Point3D(+100, 0, +100),
 			Point3D(+100, 0, -100),
 			Point3D(-100, 0, -100),
 			Point3D(-100, 0, +100),
+		});*/
+		/*Train_Spline -> Nodes.List({
+			Point3D(+50, 0, +100),
+			Point3D(+50, 0,    0),
+			Point3D(+50, 0, -100),
+			Point3D(-50, 0, -100),
+			Point3D(-50, 0,    0),
+			Point3D(-50, 0, +100),
+		});*/
+		Train_Spline -> Nodes.List({
+			Point3D(+ 25, 0, +100),
+			Point3D(+ 75, 0, +100),
+			Point3D(+100, 0, + 75),
+			Point3D(+100, 0, + 25),
+
+			Point3D(+100, 0, - 25),
+			Point3D(+100, 0, - 75),
+			Point3D(+ 75, 0, -100),
+			Point3D(+ 25, 0, -100),
+
+			Point3D(- 25, 0, -100),
+			Point3D(- 75, 0, -100),
+			Point3D(-100, 0, - 75),
+			Point3D(-100, 0, - 25),
+
+			Point3D(-100, 0, + 25),
+			Point3D(-100, 0, + 75),
+			Point3D(- 75, 0, +100),
+			Point3D(- 25, 0, +100),
 		});
 		Train_Spline -> FiniteDifference();
 	}
@@ -267,6 +297,8 @@ void TrainSpline_Free()
 }
 void TrainSpline_Update(float timeDelta)
 {
+	Train_Spline -> KochanekBartels(TCB);
+
 	for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Length(); i++)
 	{
 		float t = i;
@@ -314,6 +346,7 @@ void InitRun()
 	MakeRun();
 	//if (Test_Spline -> SegmentCount != 0) { SplineSegment3D_Control -> ChangeObject(&(Test_Spline -> Segments[0])); }
 	//if (Train_Spline -> Segments.Count() != 0) { SplineSegment3D_Control -> ChangeObject(&(Train_Spline -> Segments[0])); }
+	SplineSegment3D_Control -> ChangeObject(&TCB);
 }
 void FreeRun()
 {

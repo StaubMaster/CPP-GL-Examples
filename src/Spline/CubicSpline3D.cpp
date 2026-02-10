@@ -90,4 +90,45 @@ CubicSpline3D::Tangents CubicSpline3D::FiniteDifference(ChainNeighbours3D neighb
 }
 //CubicSpline3D::Tangents CubicSpline3D::CatmullRom(ChainNeighbours3D neighbours, float Tk)
 //CubicSpline3D::Tangents CubicSpline3D::Cardinal(ChainNeighbours3D neighbours, float ck)
-//CubicSpline3D::Tangents CubicSpline3D::KochanekBartels(ChainNeighbours3D neighbours, FactorsTCB tcb)
+CubicSpline3D::Tangents CubicSpline3D::KochanekBartels(ChainNeighbours3D neighbours, FactorsTCB tcb)
+{
+	Tangents	tans;
+	Point3D		dirPrev;
+	Point3D		dirNext;
+
+	if (neighbours.Prev != nullptr && neighbours.Next != nullptr)
+	{
+		dirPrev = (neighbours.Here) - (*neighbours.Prev);
+		dirNext = (*neighbours.Next) - (neighbours.Here);
+	}
+	else if (neighbours.Prev == nullptr && neighbours.Next != nullptr)
+	{
+		dirNext = (*neighbours.Next) - (neighbours.Here);
+		dirPrev = dirNext;
+	}
+	else if (neighbours.Prev != nullptr && neighbours.Next == nullptr)
+	{
+		dirPrev = (neighbours.Here) - (*neighbours.Prev);
+		dirNext = dirPrev;
+	}
+	else
+	{ }
+
+	float factorsTCB[4];
+	{
+		float Tm = 1 - tcb.T;
+		float Cm = 1 - tcb.C;
+		float Cp = 1 + tcb.C;
+		float Bm = 1 - tcb.B;
+		float Bp = 1 + tcb.B;
+
+		factorsTCB[0] = (Tm * Cm * Bp) / 2;
+		factorsTCB[1] = (Tm * Cp * Bm) / 2;
+		factorsTCB[2] = (Tm * Cp * Bp) / 2;
+		factorsTCB[3] = (Tm * Cm * Bm) / 2;
+	};
+
+	tans.Dir0 = dirPrev * factorsTCB[0] + dirNext * factorsTCB[1];
+	tans.Dir1 = dirPrev * factorsTCB[2] + dirNext * factorsTCB[3];
+	return tans;
+}

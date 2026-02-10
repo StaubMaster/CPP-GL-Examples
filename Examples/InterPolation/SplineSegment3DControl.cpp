@@ -17,7 +17,8 @@ UI::Control::SplineSegment3D::SplineSegment3D() :
 	Next_Button(),
 	Prev_Text(),
 	Next_Text(),
-	Object(NULL)
+	//Object(NULL)
+	TCB(nullptr)
 {
 	float x = 0;
 	float y = 0;
@@ -111,7 +112,7 @@ UI::Control::SplineSegment3D::~SplineSegment3D()
 
 
 
-void UI::Control::SplineSegment3D::ChangeObject(::SplineSegment3D * obj)
+/*void UI::Control::SplineSegment3D::ChangeObject(::SplineSegment3D * obj)
 {
 	Object = obj;
 	T_Slider.SetValue(Object -> T);
@@ -119,6 +120,15 @@ void UI::Control::SplineSegment3D::ChangeObject(::SplineSegment3D * obj)
 	B_Slider.SetValue(Object -> B);
 	if (Object -> Prev == NULL) { Prev_Text.SetText("Prev:false"); } else { Prev_Text.SetText("Prev:true"); }
 	if (Object -> Next == NULL) { Next_Text.SetText("Next:false"); } else { Next_Text.SetText("Next:true"); }
+}*/
+void UI::Control::SplineSegment3D::ChangeObject(::CubicSpline3D::FactorsTCB * obj)
+{
+	TCB = obj;
+	T_Slider.SetValue(TCB -> T);
+	C_Slider.SetValue(TCB -> C);
+	B_Slider.SetValue(TCB -> B);
+	//if (Object -> Prev == NULL) { Prev_Text.SetText("Prev:false"); } else { Prev_Text.SetText("Prev:true"); }
+	//if (Object -> Next == NULL) { Next_Text.SetText("Next:false"); } else { Next_Text.SetText("Next:true"); }
 }
 
 
@@ -126,35 +136,38 @@ void UI::Control::SplineSegment3D::ChangeObject(::SplineSegment3D * obj)
 void UI::Control::SplineSegment3D::T_Slider_CallBack_Func(float val)
 {
 	T_Text.SetText("T:" + std::to_string((float)val));
-	if (Object != NULL) { Object -> T = val; }
+//	if (Object != NULL) { Object -> T = val; }
+	if (TCB != NULL) { TCB -> T = val; }
 }
 void UI::Control::SplineSegment3D::C_Slider_CallBack_Func(float val)
 {
 	C_Text.SetText("C:" + std::to_string((float)val));
-	if (Object != NULL) { Object -> C = val; }
+//	if (Object != NULL) { Object -> C = val; }
+	if (TCB != NULL) { TCB -> T = val; }
 }
 void UI::Control::SplineSegment3D::B_Slider_CallBack_Func(float val)
 {
 	B_Text.SetText("B:" + std::to_string((float)val));
-	if (Object != NULL) { Object -> B = val; }
+//	if (Object != NULL) { Object -> B = val; }
+	if (TCB != NULL) { TCB -> T = val; }
 }
 void UI::Control::SplineSegment3D::Prev_Button_CallBack_Func(UserParameter::Mouse::Click params)
 {
 	if (params.Action.IsPress())
 	{
-		if (Object -> Prev != NULL)
+		/*if (Object -> Prev != NULL)
 		{
 			ChangeObject(Object -> Prev);
-		}
+		}*/
 	}
 }
 void UI::Control::SplineSegment3D::Next_Button_CallBack_Func(UserParameter::Mouse::Click params)
 {
 	if (params.Action.IsPress())
 	{
-		if (Object -> Next != NULL)
+		/*if (Object -> Next != NULL)
 		{
 			ChangeObject(Object -> Next);
-		}
+		}*/
 	}
 }

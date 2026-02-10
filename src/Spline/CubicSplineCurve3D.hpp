@@ -37,7 +37,7 @@ class CubicSplineCurve3D : public InterPolator3D
 	void FiniteDifference();
 	//void CatmullRom(float Tk);
 	//void Cardinal(float ck);
-	//void KochanekBartels(FactorsTCB tcb);
+	void KochanekBartels(CubicSpline3D::FactorsTCB tcb);
 };
 
 #endif
