@@ -223,12 +223,12 @@ void TrainSpline_Init()
 
 	{
 		Train_Spline = new CubicSplineCurve3D();
-		/*Train_Spline -> Nodes.List({
+		Train_Spline -> Nodes.List({
 			Point3D(+100, 0, +100),
 			Point3D(+100, 0, -100),
 			Point3D(-100, 0, -100),
 			Point3D(-100, 0, +100),
-		});*/
+		});
 		/*Train_Spline -> Nodes.List({
 			Point3D(+50, 0, +100),
 			Point3D(+50, 0,    0),
@@ -237,7 +237,7 @@ void TrainSpline_Init()
 			Point3D(-50, 0,    0),
 			Point3D(-50, 0, +100),
 		});*/
-		Train_Spline -> Nodes.List({
+		/*Train_Spline -> Nodes.List({
 			Point3D(+ 25, 0, +100),
 			Point3D(+ 75, 0, +100),
 			Point3D(+100, 0, + 75),
@@ -257,7 +257,7 @@ void TrainSpline_Init()
 			Point3D(-100, 0, + 75),
 			Point3D(- 75, 0, +100),
 			Point3D(- 25, 0, +100),
-		});
+		});*/
 		Train_Spline -> FiniteDifference();
 	}
 
