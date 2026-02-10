@@ -6,7 +6,8 @@
 CubicSplineCurve3D::~CubicSplineCurve3D()
 { }
 CubicSplineCurve3D::CubicSplineCurve3D() :
-	InterPolator3D()
+	InterPolator3D(),
+	Loop(true)
 { }
 CubicSplineCurve3D::CubicSplineCurve3D(const CubicSplineCurve3D & other) :
 	InterPolator3D(),
@@ -22,64 +23,124 @@ CubicSplineCurve3D & CubicSplineCurve3D::operator=(const CubicSplineCurve3D & ot
 
 
 
-Point3D CubicSplineCurve3D::InterPolate(float t)
+unsigned int CubicSplineCurve3D::SegmentIndex(float & t)
 {
 	//	Modulate t into range [ 0 ; SegmentCount - 1]
 	{
 		while (t < 0) { t += Segments.Count(); }
 		while (t > Segments.Count()) { t -= Segments.Count(); }
 	}
-	unsigned int idx = t;
-	return Segments[idx].InterPolate(t - idx);
+	return t;
+}
+Point3D CubicSplineCurve3D::InterPolatePos(float t)
+{
+	unsigned int idx = SegmentIndex(t);
+	return Segments[idx].InterPolatePos(t - idx);
+}
+Point3D CubicSplineCurve3D::InterPolateDir(float t)
+{
+	unsigned int idx = SegmentIndex(t);
+	return Segments[idx].InterPolateDir(t - idx);
 }
 
 
 
+Point3D * CubicSplineCurve3D::PrevNodePointer(unsigned int idx)
+{
+	if (idx == Nodes.MinIndex())
+	{
+		if (!Loop)
+		{
+			return nullptr;
+		}
+		else
+		{
+			return &Nodes.MaxItem();
+		}
+	}
+	else
+	{
+		idx--;
+		return &Nodes[idx];
+	}
+}
+Point3D * CubicSplineCurve3D::NextNodePointer(unsigned int idx)
+{
+	if (idx == Nodes.MaxIndex())
+	{
+		if (!Loop)
+		{
+			return nullptr;
+		}
+		else
+		{
+			return &Nodes.MinItem();
+		}
+	}
+	else
+	{
+		idx++;
+		return &Nodes[idx];
+	}
+}
+
+void CubicSplineCurve3D::ChangePrevPole1(unsigned int idx, Point3D pos, Point3D dir)
+{
+	if (idx == 0)
+	{
+		if (Loop)
+		{
+			Segments.MaxItem().Pole1.Pos = pos;
+			Segments.MaxItem().Pole1.Dir = dir;
+		}
+	}
+	else
+	{
+		idx -= 1;
+		Segments[idx].Pole1.Pos = pos;
+		Segments[idx].Pole1.Dir = dir;
+	}
+}
+void CubicSplineCurve3D::ChangeNextPole0(unsigned int idx, Point3D pos, Point3D dir)
+{
+	if (idx == Segments.Count())
+	{
+		if (Loop)
+		{
+			Segments.MinItem().Pole0.Pos = pos;
+			Segments.MinItem().Pole0.Dir = dir;
+		}
+	}
+	else
+	{
+		idx -= 0;
+		Segments[idx].Pole0.Pos = pos;
+		Segments[idx].Pole0.Dir = dir;
+	}
+}
+
 void CubicSplineCurve3D::FiniteDifference()
 {
-	if (Nodes.Count() <= 1)
+	if (Nodes.Count() <= 1) { return; }
+
+	if (Loop)
+	{ Segments.Allocate(Nodes.Count(), Nodes.Count()); }
+	else
+	{ Segments.Allocate(Nodes.Count() - 1, Nodes.Count() - 1); }
+
+	ChainNeighbours3D		neighbours;
+	CubicSpline3D::Tangents		tans;
+
+	for (unsigned int i = 0; i < Nodes.Count(); i++)
 	{
-		return;
-	}
+		neighbours.Prev = PrevNodePointer(i);
+		neighbours.Here = Nodes[i];
+		neighbours.Next = NextNodePointer(i);
 
-	//	NoLoop
-	{
-		Segments.Allocate(Nodes.Count() - 1, Nodes.Count() - 1);
+		tans = CubicSpline3D::FiniteDifference(neighbours);
 
-		ChainNeighbours3D	neighbours;
-		CubicSpline3D::Tangents	tans;
-
-		//	First
-		{
-			unsigned int i = 0;
-			neighbours.Prev = nullptr;
-			neighbours.Here = Nodes[i];
-			neighbours.Next = &Nodes[i + 1];
-			tans = CubicSpline3D::FiniteDifference(neighbours);
-			Segments[i - 0].Pole0.Pos = Nodes[i];
-			Segments[i - 0].Pole0.Dir = tans.Dir0;
-		}
-		for (unsigned int i = 1; i < Nodes.Count() - 1; i++)
-		{
-			neighbours.Prev = &Nodes[i - 1];
-			neighbours.Here = Nodes[i];
-			neighbours.Next = &Nodes[i + 1];
-			tans = CubicSpline3D::FiniteDifference(neighbours);
-			Segments[i - 1].Pole1.Pos = Nodes[i];
-			Segments[i - 1].Pole1.Dir = tans.Dir1;
-			Segments[i - 0].Pole0.Pos = Nodes[i];
-			Segments[i - 0].Pole0.Dir = tans.Dir0;
-		}
-		//	Last
-		{
-			unsigned int i = Nodes.Count() - 1;
-			neighbours.Prev = &Nodes[i - 1];
-			neighbours.Here = Nodes[i];
-			neighbours.Next = nullptr;
-			tans = CubicSpline3D::FiniteDifference(neighbours);
-			Segments[i - 1].Pole1.Pos = Nodes[i];
-			Segments[i - 1].Pole1.Dir = tans.Dir1;
-		}
+		ChangePrevPole1(i, Nodes[i], tans.Dir1);
+		ChangeNextPole0(i, Nodes[i], tans.Dir0);
 	}
 }
 //void CubicSplineCurve3D::CatmullRom(ChainNeighbours3D neighbours, float Tk);

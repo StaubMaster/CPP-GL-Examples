@@ -1,7 +1,7 @@
 #ifndef  CUBIC_SPLINE_3D_HPP
 # define CUBIC_SPLINE_3D_HPP
 
-# include "Interpolator3D.hpp"
+# include "InterPolator3D.hpp"
 # include "ValueType/Point3D.hpp"
 
 struct ChainNeighbours3D;
@@ -24,7 +24,8 @@ class CubicSpline3D : public InterPolator3D
 	CubicSpline3D & operator=(const CubicSpline3D & other);
 
 	public:
-	Point3D InterPolate(float t) override;
+	Point3D InterPolatePos(float t) override;
+	Point3D InterPolateDir(float t) override;
 
 	public:
 	struct Tangents

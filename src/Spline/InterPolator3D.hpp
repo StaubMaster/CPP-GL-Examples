@@ -12,7 +12,8 @@ class InterPolator3D
 	InterPolator3D & operator=(const InterPolator3D & other);
 
 	public:
-	virtual Point3D InterPolate(float t) = 0;
+	virtual Point3D InterPolatePos(float t) = 0;
+	virtual Point3D InterPolateDir(float t) = 0;
 };
 
 #endif

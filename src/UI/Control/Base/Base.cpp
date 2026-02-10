@@ -1,7 +1,6 @@
 #include "Base.hpp"
 #include "Manager.hpp"
 #include "UserParameter/MouseInclude.hpp"
-#include <iostream>
 
 
 
@@ -51,14 +50,12 @@ UI::Control::Base::~Base()
 
 void UI::Control::Base::ChildInsert(Base & control)
 {
-	std::cout << "Insert Child ....\n";
 	Children.Insert(&control);
 	control.Parent = this;
 	control.ChangeManager(ControlManager);
 	control.ChangeManager(TextManager);
 	control.UpdateBox();
 	control.UpdateDrawable();
-	std::cout << "Insert Child done\n";
 }
 void UI::Control::Base::ChildInsert(Base * control)
 {

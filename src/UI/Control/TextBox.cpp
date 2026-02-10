@@ -1,7 +1,6 @@
 #include "TextBox.hpp"
 #include "Base/Manager.hpp"
 #include "UI/Text/Manager.hpp"
-#include <iostream>
 #include <math.h>
 
 
@@ -99,19 +98,11 @@ void UI::Control::TextBox::UpdateEntrysRelay()
 }
 void UI::Control::TextBox::InsertDrawingEntryRelay()
 {
-	std::cout << this << " TextBox::InsertDrawingEntryRelay ....\n";
 	if (!TextEntry.Is() && TextManager != NULL)
 	{
-		std::cout << this << "   Entry\n";
 		CalcCharacterCount();
 		TextEntry.Allocate(TextManager -> Inst_Data_Container, CharacterCountLimit);
 	}
-	else
-	{
-		std::cout << this << "   !TextEntry.Is() " << (!TextEntry.Is()) << '\n';
-		std::cout << this << "   TextManager != NULL " << (TextManager != NULL) << '\n';
-	}
-	std::cout << this << " TextBox::InsertDrawingEntryRelay done\n";
 }
 void UI::Control::TextBox::RemoveDrawingEntryRelay()
 {

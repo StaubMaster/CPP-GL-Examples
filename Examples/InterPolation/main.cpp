@@ -16,6 +16,7 @@
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/Simple3D/ManagerMulti.hpp"
+#include "PolyHedra/Main/Data.hpp"
 
 #include "Window.hpp"
 #include "ValueType/View.hpp"
@@ -166,10 +167,8 @@ void TestSpline_Init()
 		};
 		Test_Spline = new SplineCurve3D(nodes, 6, true, 0, 0, 0);
 	}
-std::cout << __LINE__ << '\n';
 
 	Test_Node_Instance_Entrys = PolyHedra_3D_Manager.Place(PolyHedra::Generate::HexaHedron(1.0f), (Test_Spline -> SegmentCount) * 2);
-std::cout << __LINE__ << '\n';
 	for (unsigned int i = 0; i < Test_Spline -> SegmentCount; i++)
 	{
 		Test_Node_Instance_Entrys[i * 2 + 0].Trans.Pos = Test_Spline -> Segments[i].Node0.Pos;
@@ -212,6 +211,7 @@ Container::Binary<SplineObject> Train_Rail_Spline_Entrys;
 float Train_Spline_Value;
 float Train_WheelSpin;
 
+EntryContainer::Entry<Simple3D::Data> Train_Node_Instance_Entrys;
 EntryContainer::Entry<Simple3D::Data> Train_Rail_Instance_Entry;
 EntryContainer::Entry<Simple3D::Data> Train_Wheel_Instance_Entry;
 
@@ -221,22 +221,20 @@ void TrainSpline_Init()
 	Train_WheelSpin = 0;
 
 	{
-		SplineNode3D nodes[4]
-		{
-			SplineNode3D(Point3D(+100, 0, +100), Point3D(+200, 0, -200)),
-			SplineNode3D(Point3D(+100, 0, -100), Point3D(-200, 0, -200)),
-			SplineNode3D(Point3D(-100, 0, -100), Point3D(-200, 0, +200)),
-			SplineNode3D(Point3D(-100, 0, +100), Point3D(+200, 0, +200)),
-		};
-		//Train_Spline = new SplineCurve3D(nodes, 4, true, -0.5f, 0, 0);
-
 		Train_Spline = new CubicSplineCurve3D();
-		Train_Spline -> Nodes.Allocate(4, 4);
-		for (unsigned int i = 0; i < 4; i++)
-		{
-			Train_Spline -> Nodes[i] = nodes[i].Pos;
-		}
+		Train_Spline -> Nodes.List({
+			Point3D(+100, 0, +100),
+			Point3D(+100, 0, -100),
+			Point3D(-100, 0, -100),
+			Point3D(-100, 0, +100),
+		});
 		Train_Spline -> FiniteDifference();
+	}
+
+	Train_Node_Instance_Entrys = PolyHedra_3D_Manager.Place(PolyHedra::Generate::HexaHedron(2.0f), Train_Spline -> Nodes.Count());
+	for (unsigned int i = 0; i < Train_Node_Instance_Entrys.Length(); i++)
+	{
+		Train_Node_Instance_Entrys[i].Trans.Pos = Train_Spline -> Nodes[i];
 	}
 
 	unsigned int idx_axis =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Achse.polyhedra")));
@@ -247,7 +245,8 @@ void TrainSpline_Init()
 							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Flach.polyhedra")));			//	Faces Wrong way, some Geometry Wrong
 							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Tief.polyhedra")));			//	Faces Wrong way, some Geometry Wrong
 
-	Train_Rail_Instance_Entry = PolyHedra_3D_Manager.Place(idx_rail, 128);
+	Train_Rail_Instance_Entry = PolyHedra_3D_Manager.Place(idx_rail, 64);
+	//Train_Rail_Instance_Entry = PolyHedra_3D_Manager.Place(idx_rail, 128);
 	/*for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Length(); i++)
 	{
 		float t = i;
@@ -276,7 +275,8 @@ void TrainSpline_Update(float timeDelta)
 		t = t * (Train_Spline -> Segments.Count());
 		//SplineNode3D node = Train_Spline -> InterpolateKochanekBartels(t);
 		SplineNode3D node;
-		node.Pos = Train_Spline -> InterPolate(t);
+		node.Pos = Train_Spline -> InterPolatePos(t);
+		node.Dir = Train_Spline -> InterPolateDir(t);
 		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
 		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
 	}
@@ -284,7 +284,8 @@ void TrainSpline_Update(float timeDelta)
 	{
 		//SplineNode3D node = Train_Spline -> InterpolateKochanekBartels(Train_Spline_Value);
 		SplineNode3D node;
-		node.Pos = Train_Spline -> InterPolate(Train_Spline_Value);
+		node.Pos = Train_Spline -> InterPolatePos(Train_Spline_Value);
+		node.Dir = Train_Spline -> InterPolateDir(Train_Spline_Value);
 		Angle3D a = Angle3D::FromPoint3D(node.Dir);
 		(*Train_Wheel_Instance_Entry).Trans.Pos = node.Pos + a.rotateBack(Point3D(0, 6, 0));
 		(*Train_Wheel_Instance_Entry).Trans.Rot = a;
