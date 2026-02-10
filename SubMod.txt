@@ -1,0 +1,12 @@
+
+
+
+git push
+fatal: You are not currently on a branch.
+
+git log --oneline -n1
+	the sha is also given by the next command
+git checkout main
+git merge <sha>
+
+git push
