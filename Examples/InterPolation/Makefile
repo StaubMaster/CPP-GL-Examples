@@ -29,21 +29,18 @@ FILES_OBJ := $(FILES_SRC:.cpp=.o)
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(MAKE) -s repos_all
+	@$(MAKE) -s other_all
 	@$(MAKE) -s $(FILES_OBJ)
 	@$(MAKE) -s $(NAME)
 
 clean:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@rm -f $(FILES_OBJ)
-	@$(MAKE) -C $(BASE_DIR)/other/UI -s clean
-	@$(MAKE) -C $(BASE_DIR)/other/Spline -s clean
 
 fclean:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(MAKE) -s clean
 	@rm -f $(NAME)
-	@$(MAKE) -C $(BASE_DIR)/other/UI -s fclean
-	@$(MAKE) -C $(BASE_DIR)/other/Spline -s fclean
 
 re:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
@@ -55,7 +52,6 @@ re:
 $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@mkdir -p logs/
-	$(MAKE) $(LIBRARYS)
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
 
@@ -93,19 +89,8 @@ arguments: repos_clone
 
 ################################################################
 
+OTHER_DIR := $(BASE_DIR)/other/
+include $(OTHER_DIR)/other.mk
 
-
-$(BASE_DIR)/other/UI/UI.a:
-	$(MAKE) -C $(BASE_DIR)/other/UI -s all
-LIBRARYS += $(BASE_DIR)/other/UI/UI.a
-INCLUDES += $(BASE_DIR)/other
-
-$(BASE_DIR)/other/Spline/Spline.a:
-	$(MAKE) -C $(BASE_DIR)/other/Spline -s all
-LIBRARYS += $(BASE_DIR)/other/Spline/Spline.a
-INCLUDES += $(BASE_DIR)/other
-
-
-
-REPOS_DIR := $(BASE_DIR)repos/
+REPOS_DIR := $(BASE_DIR)/repos/
 include $(REPOS_DIR)/repos.mk
