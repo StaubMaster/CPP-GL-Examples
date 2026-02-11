@@ -1,9 +1,9 @@
-[submodule "other/Engine"]
-	path = other/Engine
+[submodule "repos/Engine"]
+	path = repos/Engine
 	url = https://github.com/StaubMaster/CPP-GL-Engine.git
-[submodule "other/FileManager"]
-	path = other/FileManager
+[submodule "repos/FileManager"]
+	path = repos/FileManager
 	url = https://github.com/StaubMaster/CPP-FileManager.git
-[submodule "other/OpenGL"]
-	path = other/OpenGL
+[submodule "repos/OpenGL"]
+	path = repos/OpenGL
 	url = https://github.com/StaubMaster/CPP-OpenGL.git

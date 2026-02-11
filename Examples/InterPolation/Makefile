@@ -65,7 +65,7 @@ FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(MAKE) -s repos
+	@$(MAKE) -s repos_all
 	@$(MAKE) -s $(FILES_OBJ)
 	@$(MAKE) -s $(NAME)
 
@@ -127,8 +127,5 @@ arguments: repos_clone
 
 
 
-REPOS_DIR := $(BASE_DIR)other/
-include $(BASE_DIR)repos.mk
-include $(BASE_DIR)other/Engine.mk
-include $(BASE_DIR)other/FileManager.mk
-include $(BASE_DIR)other/OpenGL.mk
+REPOS_DIR := $(BASE_DIR)repos/
+include $(REPOS_DIR)/repos.mk

@@ -13,12 +13,6 @@ REPOS_LIST =
 
 ################################################################
 
-repos: repos_clone
-	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(foreach repo, $(REPOS_LIST), \
-		$(MAKE) -C $(repo) -s ; \
-	)
-
 repos_all: repos_clone
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(foreach repo, $(REPOS_LIST), \
@@ -41,7 +35,7 @@ repos_fclean:
 		fi ; \
 	)
 
-.PHONY: repos repos_all repos_clean repos_fclean
+.PHONY: repos_all repos_clean repos_fclean
 
 ################################################################
 
@@ -60,53 +54,8 @@ repos_rm:
 
 ################################################################
 
-#repos_librarys:
-#	@echo $(foreach repo,\
-		$(REPOS),\
-		$(foreach library,\
-			$(shell $(MAKE) -C $(repo) -s librarys),\
-			$(repo)/$(library)\
-		)\
-	)
-
-#repos_includes:
-#	@echo $(foreach repo,\
-		$(REPOS),\
-		$(foreach include,\
-			$(shell $(MAKE) -C $(repo) -s includes),\
-			$(repo)/$(include)\
-		)\
-	)
-
-#repos_arguments:
-#	@echo $(foreach repo,\
-		$(REPOS),\
-		$(foreach argument,\
-			$(shell $(MAKE) -C $(repo) -s arguments),\
-			$(repo)/$(argument)\
-		)\
-	)
-
-#.PHONY: repos_librarys repos_includes repos_arguments
-
-################################################################
-
-
-
-
-
-################################################################
-
-define repoLibrarys
-	$(foreach library,$(shell if [ -d $(1) ]; then $(MAKE) -C $(1) -s librarys; fi),$(1)/$(library))
-endef
-
-define repoIncludes
-	$(foreach include,$(shell if [ -d $(1) ]; then $(MAKE) -C $(1) -s includes; fi),$(1)/$(include))
-endef
-
-define repoArguments
-	$(foreach argument,$(shell if [ -d $(1) ]; then $(MAKE) -C $(1) -s arguments; fi),$(argument))
-endef
+include $(REPOS_DIR)/Engine.mk
+include $(REPOS_DIR)/FileManager.mk
+include $(REPOS_DIR)/OpenGL.mk
 
 ################################################################
