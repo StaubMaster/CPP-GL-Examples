@@ -6,8 +6,6 @@ COMPILER := g++ -g -std=c++11
 FLAGS := -Wall -Wextra -Werror
 
 BASE_DIR := ../../
-UI_DIR := $(BASE_DIR)/src/UI/
-SPLINE_DIR := $(BASE_DIR)/src/Spline/
 
 include $(BASE_DIR)fancy.mk
 FANCY_NAME := InterPolation
@@ -17,41 +15,6 @@ FANCY_NAME := InterPolation
 
 
 FILES_SRC := \
-	$(UI_DIR)/Anchor1D.cpp \
-	$(UI_DIR)/Anchor2D.cpp \
-\
-	$(UI_DIR)/Control/Base/Data.cpp \
-	$(UI_DIR)/Control/Base/Buffer.cpp \
-	$(UI_DIR)/Control/Base/Shader.cpp \
-	$(UI_DIR)/Control/Base/Manager.cpp \
-	$(UI_DIR)/Control/Base/Base.cpp \
-\
-	$(UI_DIR)/Control/Window.cpp \
-	$(UI_DIR)/Control/Form.cpp \
-	$(UI_DIR)/Control/GroupBox.cpp \
-	$(UI_DIR)/Control/Button.cpp \
-	$(UI_DIR)/Control/TextBox.cpp \
-	$(UI_DIR)/Control/Slider.cpp \
-	$(UI_DIR)/Control/CheckBox.cpp \
-\
-	$(UI_DIR)/Text/Data.cpp \
-	$(UI_DIR)/Text/Buffer.cpp \
-	$(UI_DIR)/Text/Shader.cpp \
-	$(UI_DIR)/Text/Manager.cpp \
-	$(UI_DIR)/Text/Font/Font.cpp \
-	$(UI_DIR)/Text/Font/Template.cpp \
-	$(UI_DIR)/Text/Font/Parsing.cpp \
-\
-	$(SPLINE_DIR)/SplineNode3D.cpp \
-	$(SPLINE_DIR)/SplineSegment3D.cpp \
-	$(SPLINE_DIR)/SplineCurve3D.cpp \
-	$(SPLINE_DIR)/SplineObject.cpp \
-\
-	$(SPLINE_DIR)/InterPolator3D.cpp \
-	$(SPLINE_DIR)/ChainNeighbours3D.cpp \
-	$(SPLINE_DIR)/CubicSpline3D.cpp \
-	$(SPLINE_DIR)/CubicSplineCurve3D.cpp \
-\
 	SplineSegment3DControl.cpp \
 	main.cpp
 
@@ -72,11 +35,15 @@ all:
 clean:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@rm -f $(FILES_OBJ)
+	@$(MAKE) -C $(BASE_DIR)/other/UI -s clean
+	@$(MAKE) -C $(BASE_DIR)/other/Spline -s clean
 
 fclean:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(MAKE) -s clean
 	@rm -f $(NAME)
+	@$(MAKE) -C $(BASE_DIR)/other/UI -s fclean
+	@$(MAKE) -C $(BASE_DIR)/other/Spline -s fclean
 
 re:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
@@ -88,6 +55,7 @@ re:
 $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@mkdir -p logs/
+	$(MAKE) $(LIBRARYS)
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
 	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
 
@@ -106,7 +74,7 @@ $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 ################################################################
 
 LIBRARYS = 
-INCLUDES = $(BASE_DIR)src
+INCLUDES = .
 ARGUMENTS = 
 
 ARGS_LIBRARYS = $(foreach library, $(LIBRARYS),$(library))
@@ -124,6 +92,18 @@ arguments: repos_clone
 .PHONY: librarys includes arguments
 
 ################################################################
+
+
+
+$(BASE_DIR)/other/UI/UI.a:
+	$(MAKE) -C $(BASE_DIR)/other/UI -s all
+LIBRARYS += $(BASE_DIR)/other/UI/UI.a
+INCLUDES += $(BASE_DIR)/other
+
+$(BASE_DIR)/other/Spline/Spline.a:
+	$(MAKE) -C $(BASE_DIR)/other/Spline -s all
+LIBRARYS += $(BASE_DIR)/other/Spline/Spline.a
+INCLUDES += $(BASE_DIR)/other
 
 
 

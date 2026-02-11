@@ -13,8 +13,3 @@
 #	Logs
 logs/
 *.log
-
-#	Other
-#other/Engine
-#other/FileManager
-#other/OpenGL
