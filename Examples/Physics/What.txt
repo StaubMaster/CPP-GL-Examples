@@ -1,0 +1,39 @@
+
+I suddenly feel like figuring out Physics stuff
+I alread tried once in 2D
+but it didnt look right
+
+
+
+
+
+Box Box collision
+- check Box vs Box Intersection
+- get overlap
+- seperate based on overlap (how?)
+
+Seperating Force is based on:
+	velocity
+	mass (just imply as 1 for now)
+	face normals ?
+just the closest face ?
+or all, but multiplies with inverse of distance ?
+I think only the closest
+and apply a force that is normal to that face
+since thats how real collision would work ?
+unless the object is a bit elastic (everything is a bit elastic)
+in which case a smell bit gets caught at the edge
+and would apply a foce to that face as well
+but only against the velocity
+not in general
+
+
+
+
+
+Friction:
+	apllied agaisnt the velocity
+	or just along the face ?
+	based on downward Force (the force pressing faces together)
+	also normal Force, pushes things apart
+
