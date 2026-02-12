@@ -140,129 +140,43 @@ void Free()
 	Physics2D_Shader.Delete();
 }
 
-//	FIGURE OUT BOX VS BOX INTERSECTION, THEN PUT IT INTO THE AXIXBOX STRUCTS
-static bool Intersekt(AxisBox2D box0, AxisBox2D box1)
-{
-/*
-: A : B : C :
-: D : E : F :
-
-:	#-0-#			:	#---0---#		:	#-----0-----#	:
-:			#-1-#	:		#---1---#	:		#-1-#		:
-
-:			#-0-#	:		#---0---#	:		#-0-#		:
-:	#-1-#			:	#---1---#		:	#-----1-----#	:
-
-				: A : B : C : D : E : F :
-Min0 <=> Min1	: < : < : < : > : > : > :
-Max0 <=> Min1	: < : > : > : > : > : > :
-Min0 <=> Max1	: < : < : < : > : < : < :
-Max0 <=> Max1	: < : < : < : > : > : > :
-				: A : B : C : D : E : F :
-Max0  >  Min1 | Min0  <  Max1
-*/
-	return (
-		((box0.Max.X > box1.Min.X) & (box0.Min.X < box1.Max.X)) &
-		((box0.Max.Y > box1.Min.Y) & (box0.Min.Y < box1.Max.Y))
-	);
-}
 void Update(float timeDelta)
 {
 	AxisBox2D box0 = Box0;
 	box0.Min += Instances_Box0[0].Pos;
 	box0.Max += Instances_Box0[0].Pos;
-	
 
 	for (unsigned int i = 0; i < Instances_Box1.Count(); i++)
 	{
-	AxisBox2D box1 = Box1;
-	box1.Min += Instances_Box1[i].Pos;
-	box1.Max += Instances_Box1[i].Pos;
+		AxisBox2D box1 = Box1;
+		box1.Min += Instances_Box1[i].Pos;
+		box1.Max += Instances_Box1[i].Pos;
 
-	if (Intersekt(box0, box1))
-	{
-/*
-	#-----------#
-	|			|
-	|		#---|-------#	#
-	|		|	|		|	|
-	#-------|---#		|	#
-			|			|
-			#-----------#
-
-			#---#			Overlap
-
-	#-------------------#
-	|					|
-	|	#-----------#	|	#
-	|	|			|	|	|
-	#---|-----------|---#	#
-		|			|
-		#-----------#
-
-		#-----------#		Overlap
-	#---#			#---#	Overlap ?
-	I think it should be
-	#---------------#
-		#---------------#
-	allways Min to Max and Max to Min
-	allways the smaller one (for Boxes)
-	
-	so just calculate all combinations of
-	Min to Max and Max to Min
-	then look for the smallest one
-
-*/
-		Point2D Diff;
+		if (box0.Intersekt(box1))
 		{
-			Point2D Diff0 = box0.Max - box1.Min;
-			Point2D Diff1 = box1.Max - box0.Min;
-			if (fabs(Diff0.X) < fabs(Diff1.X)) { Diff.X = Diff0.X; } else { Diff.X = Diff1.X; }
-			if (fabs(Diff0.Y) < fabs(Diff1.Y)) { Diff.Y = Diff0.Y; } else { Diff.Y = Diff1.Y; }
-		}
-
-		Point2D vel;
-		if (Instances_Box1[0].Vel.X > 0) { vel.X = +Instances_Box1[0].Vel.X; }
-		if (Instances_Box1[0].Vel.X < 0) { vel.X = -Instances_Box1[0].Vel.X; }
-		if (Instances_Box1[0].Vel.Y > 0) { vel.Y = +Instances_Box1[0].Vel.Y; }
-		if (Instances_Box1[0].Vel.Y < 0) { vel.Y = -Instances_Box1[0].Vel.Y; }
-
-/*
-	Reflect Vel around Normal Vector
-	(only when going againsts the normal ?)
-	simplify for now ? yes.
-	just figure out what side is the closest
-	(thats what Diff does)
-	then reflect Vel around that
-*/
-		//float diff;
-		if (fabs(Diff.X) < fabs(Diff.Y))
-		{
-			if (Diff.X > 0)
+			Point2D normal;
 			{
-				//diff = +Diff.X;
-				if (Instances_Box1[i].Vel.X < 0) { Instances_Box1[i].Vel.X = +fabs(Instances_Box1[i].Vel.X); }
+				Point2D Diff;
+				Point2D Diff0 = box0.Max - box1.Min;
+				Point2D Diff1 = box1.Max - box0.Min;
+				if (fabs(Diff0.X) < fabs(Diff1.X)) { Diff.X = Diff0.X; } else { Diff.X = Diff1.X; }
+				if (fabs(Diff0.Y) < fabs(Diff1.Y)) { Diff.Y = Diff0.Y; } else { Diff.Y = Diff1.Y; }
+
+				if (fabs(Diff.X) < fabs(Diff.Y))
+				{ normal.X = Diff.X; }
+				else
+				{ normal.Y = Diff.Y; }
 			}
-			if (Diff.X < 0)
+
+			Point2D & vel = Instances_Box1[i].Vel;
 			{
-				//diff = -Diff.X;
-				if (Instances_Box1[i].Vel.X > 0) { Instances_Box1[i].Vel.X = -fabs(Instances_Box1[i].Vel.X); }
+				float dot = Point2D::dot(vel, normal);
+				if (dot < 0)
+				{
+					vel = vel - (normal * (2 * (dot / normal.length2())));
+				}
 			}
 		}
-		if (fabs(Diff.Y) < fabs(Diff.X))
-		{
-			if (Diff.Y > 0)
-			{
-				//diff = +Diff.Y;
-				if (Instances_Box1[i].Vel.Y < 0) { Instances_Box1[i].Vel.Y = +fabs(Instances_Box1[i].Vel.Y); }
-			}
-			if (Diff.Y < 0)
-			{
-				//diff = -Diff.Y;
-				if (Instances_Box1[i].Vel.Y > 0) { Instances_Box1[i].Vel.Y = -fabs(Instances_Box1[i].Vel.Y); }
-			}
-		}
-	}
 	}
 
 	for (unsigned int i = 0; i < Instances_Box1.Count(); i++)
