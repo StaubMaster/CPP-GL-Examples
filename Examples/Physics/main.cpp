@@ -24,6 +24,7 @@
 #include "Graphics/Shader/Code.hpp"
 #include "Miscellaneous/Container/Array.hpp"
 #include "Miscellaneous/Container/Binary.hpp"
+#include "Miscellaneous/EntryContainer/Binary.hpp"
 
 
 
@@ -72,99 +73,141 @@ MainContext()
 
 
 
-Physics2D::Shader		Physics2D_Shader;
+Physics2D::Shader	Physics2D_Shader;
 
-AxisBox2D	Box0;
-AxisBox2D	Box1;
 
-Physics2D::BufferArray	Physics2D_BufferArray_Box0;
-Physics2D::BufferArray	Physics2D_BufferArray_Box1;
 
-Container::Binary<Physics2D::Inst::Data>	Instances_Box0;
-Container::Binary<Physics2D::Inst::Data>	Instances_Box1;
+struct PhysicsBox2D_Main
+{
+	AxisBox2D	Box;
+	Physics2D::BufferArray	BufferArray;
+	EntryContainer::Binary<Physics2D::Inst::Data>	* Instances;
+
+	PhysicsBox2D_Main()
+		: Box()
+		, BufferArray()
+		, Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
+	{ }
+	void Dispose()
+	{
+		delete Instances;
+	}
+
+	void UpdateMain()
+	{
+		Container::Binary<Physics2D::Main::Data> data;
+		data.Insert(Physics2D::Main::Data(Point2D(Box.Min.X, Box.Min.Y), ColorF4(1, 0, 0)));
+		data.Insert(Physics2D::Main::Data(Point2D(Box.Min.X, Box.Max.Y), ColorF4(0, 1, 0)));
+		data.Insert(Physics2D::Main::Data(Point2D(Box.Max.X, Box.Min.Y), ColorF4(0, 0, 1)));
+		data.Insert(Physics2D::Main::Data(Point2D(Box.Max.X, Box.Min.Y), ColorF4(0, 0, 1)));
+		data.Insert(Physics2D::Main::Data(Point2D(Box.Min.X, Box.Max.Y), ColorF4(0, 1, 0)));
+		data.Insert(Physics2D::Main::Data(Point2D(Box.Max.X, Box.Max.Y), ColorF4(1, 0, 0)));
+		BufferArray.Bind();
+		BufferArray.Main.Change(data);
+	}
+	void UpdateInst()
+	{
+		BufferArray.Bind();
+		BufferArray.Inst.Change(*Instances);
+	}
+	void Draw()
+	{
+		BufferArray.Draw();
+	}
+
+	AxisBox2D	CalculateInstance(Physics2D::Inst::Data data)
+	{
+		return AxisBox2D(
+			Box.Min + data.Pos,
+			Box.Max + data.Pos
+		);
+	}
+};
+//Container::Binary<PhysicsBox2D_Main> Box_Buffers;
+Container::Array<PhysicsBox2D_Main> Box_Buffers;
+
+
+
+struct PhysicsBox2D
+{
+	PhysicsBox2D_Main *	Buffer;
+	EntryContainer::Entry<Physics2D::Inst::Data>	Instance;
+	bool	IsStatic;
+
+	~PhysicsBox2D()
+	{ }
+	PhysicsBox2D()
+		: Buffer(nullptr)
+		, Instance()
+		, IsStatic(true)
+	{ }
+	PhysicsBox2D(PhysicsBox2D_Main & buffer, bool is_static)
+		: Buffer(&buffer)
+		, Instance(*buffer.Instances, 1)
+		, IsStatic(is_static)
+	{ }
+	PhysicsBox2D(PhysicsBox2D_Main & buffer, Point2D pos, bool is_static)
+		: Buffer(&buffer)
+		, Instance(*buffer.Instances, 1)
+		, IsStatic(is_static)
+	{
+		(*Instance).Pos = pos;
+	}
+	PhysicsBox2D(PhysicsBox2D_Main & buffer, Point2D pos, Point2D vel, bool is_static)
+		: Buffer(&buffer)
+		, Instance(*buffer.Instances, 1)
+		, IsStatic(is_static)
+	{
+		(*Instance).Pos = pos;
+		(*Instance).Vel = vel;
+	}
+	
+
+	AxisBox2D CalculateInstance()
+	{
+		if (Buffer == nullptr) { return AxisBox2D(); }
+		return Buffer -> CalculateInstance(*Instance);
+	}
+};
+Container::Binary<PhysicsBox2D>	Boxes;
 
 
 
 void Make()
 {
-	Container::Entry entry;
+	Box_Buffers.Allocate(2, 2);
 
-	Box0 = AxisBox2D(Point2D(-1, -1), Point2D(+1, +1));
-	{
-		Container::Binary<Physics2D::Main::Data> data;
-		data.Insert(Physics2D::Main::Data(Point2D(Box0.Min.X, Box0.Min.Y), ColorF4(1, 0, 0)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box0.Min.X, Box0.Max.Y), ColorF4(0, 1, 0)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box0.Max.X, Box0.Min.Y), ColorF4(0, 0, 1)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box0.Max.X, Box0.Min.Y), ColorF4(0, 0, 1)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box0.Min.X, Box0.Max.Y), ColorF4(0, 1, 0)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box0.Max.X, Box0.Max.Y), ColorF4(1, 0, 0)));
-		Physics2D_BufferArray_Box0.Bind();
-		Physics2D_BufferArray_Box0.Main.Change(data);
-	}
+	Box_Buffers[0].BufferArray.Create();
+	Box_Buffers[0].Box = AxisBox2D(Point2D(-1, -1), Point2D(+1, +1));
+	Box_Buffers[0].UpdateMain();
 
-	entry = Instances_Box0.Insert(Physics2D::Inst::Data());
-	Instances_Box0[entry.Offset].Pos = Point2D(0, 0);
-	Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
-
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], true));
 	{
 		float factor = 2.0f;
 		for (int i = -7; i <= +7; i++)
 		{
-			entry = Instances_Box0.Insert(Physics2D::Inst::Data());
-			Instances_Box0[entry.Offset].Pos = Point2D(i * factor, -8 * factor);
-			Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
+			Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(i * factor, -8 * factor), true));
+			Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(i * factor, +8 * factor), true));
+			Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-8 * factor, i * factor), true));
+			Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(+8 * factor, i * factor), true));
 		}
-		for (int i = -7; i <= +7; i++)
-		{
-			entry = Instances_Box0.Insert(Physics2D::Inst::Data());
-			Instances_Box0[entry.Offset].Pos = Point2D(i * factor, +8 * factor);
-			Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
-		}
-		for (int i = -7; i <= +7; i++)
-		{
-			entry = Instances_Box0.Insert(Physics2D::Inst::Data());
-			Instances_Box0[entry.Offset].Pos = Point2D(-8 * factor, i * factor);
-			Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
-		}
-		for (int i = -7; i <= +7; i++)
-		{
-			entry = Instances_Box0.Insert(Physics2D::Inst::Data());
-			Instances_Box0[entry.Offset].Pos = Point2D(+8 * factor, i * factor);
-			Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
-		}
-		entry = Instances_Box0.Insert(Physics2D::Inst::Data());
-		Instances_Box0[entry.Offset].Pos = Point2D(+7 * factor, 0);
-		Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
+		Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(+6 * factor, 0), true));
 	}
 
-	Box1 = AxisBox2D(Point2D(-2, -1), Point2D(+2, +1));
-	{
-		Container::Binary<Physics2D::Main::Data> data;
-		data.Insert(Physics2D::Main::Data(Point2D(Box1.Min.X, Box1.Min.Y), ColorF4(1, 0, 0)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box1.Min.X, Box1.Max.Y), ColorF4(0, 1, 0)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box1.Max.X, Box1.Min.Y), ColorF4(0, 0, 1)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box1.Max.X, Box1.Min.Y), ColorF4(0, 0, 1)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box1.Min.X, Box1.Max.Y), ColorF4(0, 1, 0)));
-		data.Insert(Physics2D::Main::Data(Point2D(Box1.Max.X, Box1.Max.Y), ColorF4(1, 0, 0)));
-		Physics2D_BufferArray_Box1.Bind();
-		Physics2D_BufferArray_Box1.Main.Change(data);
-	}
+	Box_Buffers[1].BufferArray.Create();
+	Box_Buffers[1].Box = AxisBox2D(Point2D(-2, -1), Point2D(+2, +1));
+	Box_Buffers[1].UpdateMain();
 
-	entry = Instances_Box1.Insert(Physics2D::Inst::Data());
-	Instances_Box1[entry.Offset].Pos = Point2D(2, 3);
-	Instances_Box1[entry.Offset].Vel = Point2D(0, -1);
-
-	entry = Instances_Box1.Insert(Physics2D::Inst::Data());
-	Instances_Box1[entry.Offset].Pos = Point2D(5, 1);
-	Instances_Box1[entry.Offset].Vel = Point2D(-1, 0);
-
-	entry = Instances_Box1.Insert(Physics2D::Inst::Data());
-	Instances_Box1[entry.Offset].Pos = Point2D(-7, 0.5);
-	Instances_Box1[entry.Offset].Vel = Point2D(1, 0);
-
-	entry = Instances_Box1.Insert(Physics2D::Inst::Data());
-	Instances_Box1[entry.Offset].Pos = Point2D(1, -9);
-	Instances_Box1[entry.Offset].Vel = Point2D(0, 1);
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[1], Point2D(2, 3), Point2D(0, -1), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[1], Point2D(5, 1), Point2D(-1, 0), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[1], Point2D(-7, 0.5), Point2D(1, 0), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[1], Point2D(1, -9), Point2D(0, 1), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(7, 7), Point2D(1, 1), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(6, -7), Point2D(2, 1), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-6, -6), Point2D(7, -5), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-9, -6), Point2D(7, -5), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-9, -9), Point2D(7, -5), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-6, -9), Point2D(7, -5), false));
 }
 
 
@@ -172,16 +215,18 @@ void Make()
 void Init()
 {
 	Physics2D_Shader.Create();
-	Physics2D_BufferArray_Box0.Create();
-	Physics2D_BufferArray_Box1.Create();
 
 	Make();
 }
 void Free()
 {
-	Physics2D_BufferArray_Box1.Delete();
-	Physics2D_BufferArray_Box0.Delete();
+	Boxes.Clear();
 	Physics2D_Shader.Delete();
+	for (unsigned int i = 0; i < Box_Buffers.Count(); i++)
+	{
+		Box_Buffers[i].BufferArray.Delete();
+		Box_Buffers[i].Dispose();
+	}
 }
 
 void Bounce01(const AxisBox2D & box0, const AxisBox2D & box1, Point2D & vel1)
@@ -209,26 +254,31 @@ void Bounce01(const AxisBox2D & box0, const AxisBox2D & box1, Point2D & vel1)
 		}
 	}
 }
-
 void Update(float timeDelta)
 {
-	for (unsigned int i0 = 0; i0 < Instances_Box0.Count(); i0++)
+	for (unsigned int i0 = 0; i0 < Boxes.Count(); i0++)
 	{
-		AxisBox2D box0 = Box0;
-		box0.Min += Instances_Box0[i0].Pos;
-		box0.Max += Instances_Box0[i0].Pos;
-		for (unsigned int i1 = 0; i1 < Instances_Box1.Count(); i1++)
+		AxisBox2D box0 = Boxes[i0].CalculateInstance();
+		for (unsigned int i1 = 0; i1 < Boxes.Count(); i1++)
 		{
-			AxisBox2D box1 = Box1;
-			box1.Min += Instances_Box1[i1].Pos;
-			box1.Max += Instances_Box1[i1].Pos;
-			Bounce01(box0, box1, Instances_Box1[i1].Vel);
+			if (i0 != i1)
+			{
+				AxisBox2D box1 = Boxes[i1].CalculateInstance();
+				Bounce01(box0, box1, (*Boxes[i1].Instance).Vel);
+			}
 		}
 	}
 
-	for (unsigned int i = 0; i < Instances_Box1.Count(); i++)
+	for (unsigned int i = 0; i < Boxes.Count(); i++)
 	{
-		Instances_Box1[i].Pos += Instances_Box1[i].Vel * timeDelta;
+		if (Boxes[i].IsStatic)
+		{
+			(*Boxes[i].Instance).Vel = Point2D();
+		}
+		else
+		{
+			(*Boxes[i].Instance).Pos += (*Boxes[i].Instance).Vel * timeDelta;
+		}
 	}
 }
 
@@ -259,11 +309,10 @@ void Frame(double timeDelta)
 	Physics2D_Shader.ViewPos.Put(ViewPos);
 	Physics2D_Shader.ViewScale.PutData(&ViewScale);
 
-	Physics2D_BufferArray_Box0.Bind();
-	Physics2D_BufferArray_Box0.Inst.Change(Instances_Box0);
-
-	Physics2D_BufferArray_Box1.Bind();
-	Physics2D_BufferArray_Box1.Inst.Change(Instances_Box1);
+	for (unsigned int i = 0; i < Box_Buffers.Count(); i++)
+	{
+		Box_Buffers[i].UpdateInst();
+	}
 
 
 
@@ -271,8 +320,10 @@ void Frame(double timeDelta)
 	GL::Disable(GL::Capability::CullFace);
 
 	Physics2D_Shader.Bind();
-	Physics2D_BufferArray_Box0.Draw();
-	Physics2D_BufferArray_Box1.Draw();
+	for (unsigned int i = 0; i < Box_Buffers.Count(); i++)
+	{
+		Box_Buffers[i].Draw();
+	}
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
@@ -323,6 +374,7 @@ int main(int argc, char * argv[])
 		{
 			MainContext context;
 			ret = context.Main();
+			std::cout << "MainContext done\n";
 		}
 		catch (std::exception & ex)
 		{ Debug::Log << "Error: " << ex.what() << Debug::Done; }

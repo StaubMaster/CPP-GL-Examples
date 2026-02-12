@@ -12,6 +12,8 @@ struct Data
 	Point2D		Pos;
 	Point2D		Vel;
 	Data();
+	Data(Point2D pos);
+	Data(Point2D pos, Point2D vel);
 };
 };
 };
