@@ -1,11 +1,11 @@
 
 ################################################################
 
-UI_DIR := $(OTHER_DIR)/UI
+UI_DIR := $(OTHER_DIR)/UserInterface
 OTHER_LIST += $(UI_DIR)
 
-UI_LIBRARYS := $(UI_DIR)/UI.a
-UI_INCLUDES := $(UI_DIR)/../
+UI_LIBRARYS := $(UI_DIR)/UserInterface.a
+UI_INCLUDES := $(UI_DIR)/
 UI_ARGUMENTS :=
 
 LIBRARYS += $(UI_LIBRARYS)

@@ -1,6 +1,6 @@
 #include "TextBox.hpp"
 #include "Base/Manager.hpp"
-#include "UI/Text/Manager.hpp"
+#include "Text/Manager.hpp"
 #include <math.h>
 
 

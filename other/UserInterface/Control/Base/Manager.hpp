@@ -5,7 +5,7 @@
 #include "Buffer.hpp"
 #include "Shader.hpp"
 
-#include "UI/Control/Window.hpp"
+#include "Control/Window.hpp"
 
 #include "Display/WindowBufferSize2D.hpp"
 

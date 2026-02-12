@@ -37,7 +37,7 @@ other_fclean:
 
 ################################################################
 
-include $(OTHER_DIR)/UI.mk
-include $(OTHER_DIR)/Spline.mk
+include $(OTHER_DIR)/UserInterface.mk
+include $(OTHER_DIR)/InterPolation.mk
 
 ################################################################

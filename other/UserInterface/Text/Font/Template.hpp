@@ -1,7 +1,7 @@
 #ifndef  UI_TEXT_FONT_TEMPLATE_HPP
 # define UI_TEXT_FONT_TEMPLATE_HPP
 
-# include "UI/Text/Font/Font.hpp"
+# include "Text/Font/Font.hpp"
 
 # include "ValueType/Point2D.hpp"
 

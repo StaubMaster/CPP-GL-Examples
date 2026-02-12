@@ -2,7 +2,7 @@
 # define UI_TEXT_FONT_PARSING_HPP
 
 # include "FileInfo.hpp"
-# include "UI/Text/Font/Font.hpp"
+# include "Text/Font/Font.hpp"
 
 # include "ValueType/Point2D.hpp"
 

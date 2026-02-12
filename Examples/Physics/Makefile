@@ -15,6 +15,10 @@ FANCY_NAME := Physics
 ################################################################
 
 FILES_SRC := \
+	Physics2D/Main/Buffer.cpp \
+	Physics2D/Inst/Buffer.cpp \
+	Physics2D/BufferArray.cpp \
+	Physics2D/Shader.cpp \
 	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
@@ -22,7 +26,6 @@ FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	echo $(ARGS_INCLUDES)
 	@$(MAKE) -s repos_all
 	@$(MAKE) -s other_all
 	@$(MAKE) -s $(FILES_OBJ)

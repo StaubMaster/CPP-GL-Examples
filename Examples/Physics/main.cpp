@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <exception>
+
 #include "OpenGL.hpp"
 #include "Debug.hpp"
 

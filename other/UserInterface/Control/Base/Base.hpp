@@ -3,7 +3,7 @@
 
 #include "Data.hpp"
 
-#include "UI/Anchor2D.hpp"
+#include "Anchor2D.hpp"
 
 #include "UserParameter/MouseDeclare.hpp"
 
@@ -15,7 +15,7 @@
 #include "Miscellaneous/Container/Binary.hpp"
 #include "Miscellaneous/EntryContainer/Binary.hpp"
 
-#include "UI/AnchorEnum.hpp"
+#include "AnchorEnum.hpp"
 
 namespace UI
 {

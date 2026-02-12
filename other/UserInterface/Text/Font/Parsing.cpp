@@ -1,5 +1,5 @@
-#include "UI/Text/Font/Parsing.hpp"
-#include "UI/Text/Font/Template.hpp"
+#include "Text/Font/Parsing.hpp"
+#include "Text/Font/Template.hpp"
 
 #include "FileParsing/Text/TextCommand.hpp"
 #include "FileParsing/Text/TextCommandStream.hpp"

@@ -1,5 +1,5 @@
 
-NAME := UI.a
+NAME := InterPolation.a
 
 COMPILER := g++ -g -std=c++11
 FLAGS := -Wall -Wextra -Werror
@@ -8,7 +8,7 @@ REMOVER := rm -f
 
 
 
-FANCY_NAME := UI
+FANCY_NAME := InterPolation
 include ../../fancy.mk
 
 
@@ -17,30 +17,15 @@ DIR_SRC := ./
 DIR_OBJ := ./
 
 FILES_SRC := \
-	$(DIR_SRC)/Anchor1D.cpp \
-	$(DIR_SRC)/Anchor2D.cpp \
+	$(DIR_SRC)/SplineNode3D.cpp \
+	$(DIR_SRC)/SplineSegment3D.cpp \
+	$(DIR_SRC)/SplineCurve3D.cpp \
+	$(DIR_SRC)/SplineObject.cpp \
 \
-	$(DIR_SRC)/Control/Base/Data.cpp \
-	$(DIR_SRC)/Control/Base/Buffer.cpp \
-	$(DIR_SRC)/Control/Base/Shader.cpp \
-	$(DIR_SRC)/Control/Base/Manager.cpp \
-	$(DIR_SRC)/Control/Base/Base.cpp \
-\
-	$(DIR_SRC)/Control/Window.cpp \
-	$(DIR_SRC)/Control/Form.cpp \
-	$(DIR_SRC)/Control/GroupBox.cpp \
-	$(DIR_SRC)/Control/Button.cpp \
-	$(DIR_SRC)/Control/TextBox.cpp \
-	$(DIR_SRC)/Control/Slider.cpp \
-	$(DIR_SRC)/Control/CheckBox.cpp \
-\
-	$(DIR_SRC)/Text/Data.cpp \
-	$(DIR_SRC)/Text/Buffer.cpp \
-	$(DIR_SRC)/Text/Shader.cpp \
-	$(DIR_SRC)/Text/Manager.cpp \
-	$(DIR_SRC)/Text/Font/Font.cpp \
-	$(DIR_SRC)/Text/Font/Template.cpp \
-	$(DIR_SRC)/Text/Font/Parsing.cpp
+	$(DIR_SRC)/InterPolator3D.cpp \
+	$(DIR_SRC)/ChainNeighbours3D.cpp \
+	$(DIR_SRC)/CubicSpline3D.cpp \
+	$(DIR_SRC)/CubicSplineCurve3D.cpp
 
 FILES_OBJ := $(FILES_SRC:$(DIR_SRC)%=$(DIR_OBJ)%)
 FILES_OBJ := $(FILES_OBJ:.cpp=.o)
@@ -81,7 +66,7 @@ $(DIR_OBJ)%.o : $(DIR_SRC)%.cpp
 
 
 LIBRARYS = 
-INCLUDES = ../
+INCLUDES = .
 ARGUMENTS = 
 
 ARGS_LIBRARYS = $(foreach library, $(LIBRARYS),$(library))
