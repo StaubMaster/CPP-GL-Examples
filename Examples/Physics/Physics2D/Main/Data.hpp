@@ -12,6 +12,9 @@ struct Data
 {
 	Point2D		Pos;
 	ColorF4		Col;
+	Data();
+	Data(Point2D pos);
+	Data(Point2D pos, ColorF4 col);
 };
 };
 };

@@ -15,7 +15,9 @@ FANCY_NAME := Physics
 ################################################################
 
 FILES_SRC := \
+	Physics2D/Main/Data.cpp \
 	Physics2D/Main/Buffer.cpp \
+	Physics2D/Inst/Data.cpp \
 	Physics2D/Inst/Buffer.cpp \
 	Physics2D/BufferArray.cpp \
 	Physics2D/Shader.cpp \
