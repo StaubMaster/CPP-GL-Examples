@@ -87,6 +87,8 @@ Container::Binary<Physics2D::Inst::Data>	Instances_Box1;
 
 void Make()
 {
+	Container::Entry entry;
+
 	Box0 = AxisBox2D(Point2D(-1, -1), Point2D(+1, +1));
 	{
 		Container::Binary<Physics2D::Main::Data> data;
@@ -99,9 +101,41 @@ void Make()
 		Physics2D_BufferArray_Box0.Bind();
 		Physics2D_BufferArray_Box0.Main.Change(data);
 	}
-	Instances_Box0.Insert(Physics2D::Inst::Data());
-	Instances_Box0[0].Pos = Point2D(0, 0);
-	Instances_Box0[0].Vel = Point2D(0, 0);
+
+	entry = Instances_Box0.Insert(Physics2D::Inst::Data());
+	Instances_Box0[entry.Offset].Pos = Point2D(0, 0);
+	Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
+
+	{
+		float factor = 2.0f;
+		for (int i = -7; i <= +7; i++)
+		{
+			entry = Instances_Box0.Insert(Physics2D::Inst::Data());
+			Instances_Box0[entry.Offset].Pos = Point2D(i * factor, -8 * factor);
+			Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
+		}
+		for (int i = -7; i <= +7; i++)
+		{
+			entry = Instances_Box0.Insert(Physics2D::Inst::Data());
+			Instances_Box0[entry.Offset].Pos = Point2D(i * factor, +8 * factor);
+			Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
+		}
+		for (int i = -7; i <= +7; i++)
+		{
+			entry = Instances_Box0.Insert(Physics2D::Inst::Data());
+			Instances_Box0[entry.Offset].Pos = Point2D(-8 * factor, i * factor);
+			Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
+		}
+		for (int i = -7; i <= +7; i++)
+		{
+			entry = Instances_Box0.Insert(Physics2D::Inst::Data());
+			Instances_Box0[entry.Offset].Pos = Point2D(+8 * factor, i * factor);
+			Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
+		}
+		entry = Instances_Box0.Insert(Physics2D::Inst::Data());
+		Instances_Box0[entry.Offset].Pos = Point2D(+7 * factor, 0);
+		Instances_Box0[entry.Offset].Vel = Point2D(0, 0);
+	}
 
 	Box1 = AxisBox2D(Point2D(-2, -1), Point2D(+2, +1));
 	{
@@ -115,12 +149,22 @@ void Make()
 		Physics2D_BufferArray_Box1.Bind();
 		Physics2D_BufferArray_Box1.Main.Change(data);
 	}
-	Instances_Box1.Insert(Physics2D::Inst::Data());
-	Instances_Box1[0].Pos = Point2D(2, 3);
-	Instances_Box1[0].Vel = Point2D(0, -0.5f);
-	Instances_Box1.Insert(Physics2D::Inst::Data());
-	Instances_Box1[1].Pos = Point2D(5, 1);
-	Instances_Box1[1].Vel = Point2D(-0.5f, 0);
+
+	entry = Instances_Box1.Insert(Physics2D::Inst::Data());
+	Instances_Box1[entry.Offset].Pos = Point2D(2, 3);
+	Instances_Box1[entry.Offset].Vel = Point2D(0, -1);
+
+	entry = Instances_Box1.Insert(Physics2D::Inst::Data());
+	Instances_Box1[entry.Offset].Pos = Point2D(5, 1);
+	Instances_Box1[entry.Offset].Vel = Point2D(-1, 0);
+
+	entry = Instances_Box1.Insert(Physics2D::Inst::Data());
+	Instances_Box1[entry.Offset].Pos = Point2D(-7, 0.5);
+	Instances_Box1[entry.Offset].Vel = Point2D(1, 0);
+
+	entry = Instances_Box1.Insert(Physics2D::Inst::Data());
+	Instances_Box1[entry.Offset].Pos = Point2D(1, -9);
+	Instances_Box1[entry.Offset].Vel = Point2D(0, 1);
 }
 
 
@@ -140,42 +184,45 @@ void Free()
 	Physics2D_Shader.Delete();
 }
 
+void Bounce01(const AxisBox2D & box0, const AxisBox2D & box1, Point2D & vel1)
+{
+	if (box0.Intersekt(box1))
+	{
+		Point2D normal;
+		{
+			Point2D diff;
+			{
+				Point2D diff0 = box0.Max - box1.Min;
+				Point2D diff1 = box0.Min - box1.Max;
+				if (fabs(diff0.X) < fabs(diff1.X)) { diff.X = diff0.X; } else { diff.X = diff1.X; }
+				if (fabs(diff0.Y) < fabs(diff1.Y)) { diff.Y = diff0.Y; } else { diff.Y = diff1.Y; }
+			}
+			if (fabs(diff.X) < fabs(diff.Y)) { normal.X = diff.X; } else { normal.Y = diff.Y; }
+		}
+
+		{
+			float dot = Point2D::dot(vel1, normal);
+			if (dot < 0)
+			{
+				vel1 = vel1 - (normal * (2 * (dot / normal.length2())));
+			}
+		}
+	}
+}
+
 void Update(float timeDelta)
 {
-	AxisBox2D box0 = Box0;
-	box0.Min += Instances_Box0[0].Pos;
-	box0.Max += Instances_Box0[0].Pos;
-
-	for (unsigned int i = 0; i < Instances_Box1.Count(); i++)
+	for (unsigned int i0 = 0; i0 < Instances_Box0.Count(); i0++)
 	{
-		AxisBox2D box1 = Box1;
-		box1.Min += Instances_Box1[i].Pos;
-		box1.Max += Instances_Box1[i].Pos;
-
-		if (box0.Intersekt(box1))
+		AxisBox2D box0 = Box0;
+		box0.Min += Instances_Box0[i0].Pos;
+		box0.Max += Instances_Box0[i0].Pos;
+		for (unsigned int i1 = 0; i1 < Instances_Box1.Count(); i1++)
 		{
-			Point2D normal;
-			{
-				Point2D Diff;
-				Point2D Diff0 = box0.Max - box1.Min;
-				Point2D Diff1 = box1.Max - box0.Min;
-				if (fabs(Diff0.X) < fabs(Diff1.X)) { Diff.X = Diff0.X; } else { Diff.X = Diff1.X; }
-				if (fabs(Diff0.Y) < fabs(Diff1.Y)) { Diff.Y = Diff0.Y; } else { Diff.Y = Diff1.Y; }
-
-				if (fabs(Diff.X) < fabs(Diff.Y))
-				{ normal.X = Diff.X; }
-				else
-				{ normal.Y = Diff.Y; }
-			}
-
-			Point2D & vel = Instances_Box1[i].Vel;
-			{
-				float dot = Point2D::dot(vel, normal);
-				if (dot < 0)
-				{
-					vel = vel - (normal * (2 * (dot / normal.length2())));
-				}
-			}
+			AxisBox2D box1 = Box1;
+			box1.Min += Instances_Box1[i1].Pos;
+			box1.Max += Instances_Box1[i1].Pos;
+			Bounce01(box0, box1, Instances_Box1[i1].Vel);
 		}
 	}
 
