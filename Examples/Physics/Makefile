@@ -21,7 +21,8 @@ FILES_SRC := \
 	Physics2D/Inst/Buffer.cpp \
 	Physics2D/BufferArray.cpp \
 	Physics2D/Shader.cpp \
-	main.cpp
+	PolyGon.cpp \
+	main_PolyGon.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 ################################################################
