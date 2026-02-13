@@ -10,10 +10,11 @@
 #include "DataShow.hpp"
 
 #include "Window.hpp"
-#include "ValueType/View.hpp"
 #include "Function/Object.hpp"
 #include "UserParameter/KeyBoardInclude.hpp"
 #include "UserParameter/MouseInclude.hpp"
+#include "ValueType/View.hpp"
+#include "View2D.hpp"
 
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"
@@ -47,8 +48,7 @@ DirectoryInfo PolyHedraDir;
 DirectoryInfo TextDir;
 
 Window	window;
-Point2D	ViewPos;
-float	ViewScale;
+View2D	view;
 
 MainContext()
 	: ImageDir("../../media/Images")
@@ -56,9 +56,7 @@ MainContext()
 	, PolyHedraDir("../../media/YMT")
 	, TextDir("../../media/Text")
 	, window()
-//	, view()
-	, ViewPos()
-	, ViewScale(10.0f)
+	, view(View2D::Default())
 {
 	{
 		Container::Array<Shader::Code> code({
@@ -262,21 +260,33 @@ void Bounce01(PhysicsBox2D & phys_box0, PhysicsBox2D & phys_box1)
 		}
 	}*/
 
+	// dot > 0 means normal is pointing away from body0 ?
+	/*{
+		Point2D rel = (*phys_box1.Instance).Pos - (*phys_box0.Instance).Pos;
+		float dot = Point2D::dot(rel, normal);
+		std::cout << "rel: " << rel << '\n';
+		std::cout << "nrm: " << normal << '\n';
+		std::cout << "dot: " << dot << '\n';
+	}*/
+
 	//	Mass Impulse Thing
 	{
-		Point2D rel = vel1 - vel0;
-		float relativeNormal = Point2D::dot(rel, normal);
+		normal = normal.normalize();
+
+		Point2D vel_rel = vel1 - vel0;
+		float NormalVelFactor = Point2D::dot(vel_rel, normal);
 
 		float Mass0 = 1.0f;
 		float Mass1 = 1.0f;
-		float combinedMassInverse = ((1 / Mass0) + (1 / Mass1));
+		float MassInverseSum = ((1 / Mass0) + (1 / Mass1));
 
-		float e = 0.5f;	//	BounceFactor
-		float magniture = ((1.0f + e) * relativeNormal) / combinedMassInverse;
-		Point2D impulse = normal * magniture;
+		float e = 1.0f;	//	BounceFactor
+		float impulseFactor = (-(1.0f + e) * NormalVelFactor) / MassInverseSum;
 
-		vel0 = vel0 + (impulse / Mass0);
-		vel1 = vel1 - (impulse / Mass1);
+		Point2D impulse = normal * impulseFactor;
+		
+		vel0 = (vel0 - (impulse / Mass0));
+		vel1 = (vel1 + (impulse / Mass1));
 	}
 
 	if (phys_box0.IsStatic) { vel0 = Point2D(); }
@@ -286,12 +296,9 @@ void Update(float timeDelta)
 {
 	for (unsigned int i0 = 0; i0 < Boxes.Count(); i0++)
 	{
-		for (unsigned int i1 = 0; i1 < Boxes.Count(); i1++)
+		for (unsigned int i1 = i0 + 1; i1 < Boxes.Count(); i1++)
 		{
-			if (i0 != i1)
-			{
-				Bounce01(Boxes[i0], Boxes[i1]);
-			}
+			Bounce01(Boxes[i0], Boxes[i1]);
 		}
 	}
 
@@ -322,14 +329,14 @@ void Frame(double timeDelta)
 		Point2D move2D(move3D.X, move3D.Z);
 		//if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { move2D *= 30; }
 		move2D *= 2.0f;
-		ViewPos += move2D * timeDelta;
+		view.Transform(move2D, timeDelta);
 	}
 
 	Update(timeDelta);
 
 	Physics2D_Shader.Bind();
-	Physics2D_Shader.ViewPos.Put(ViewPos);
-	Physics2D_Shader.ViewScale.PutData(&ViewScale);
+	Physics2D_Shader.ViewPos.Put(view.Pos);
+	Physics2D_Shader.ViewScale.PutData(&view.Scale);
 
 	for (unsigned int i = 0; i < Box_Buffers.Count(); i++)
 	{
@@ -355,9 +362,9 @@ void Resize(const WindowBufferSize2D & WindowSize)
 
 void CursorScroll(UserParameter::Mouse::Scroll params)
 {
-	ViewScale -= params.Y * 1.0f;
-	if (ViewScale <= 0) { ViewScale = 1.0f; }
-	if (ViewScale >= 100) { ViewScale = 100.0f; }
+	view.Scale -= params.Y * 1.0f;
+	if (view.Scale <= 0)   { view.Scale = 1.0f; }
+	if (view.Scale >= 100) { view.Scale = 100.0f; }
 }
 
 
