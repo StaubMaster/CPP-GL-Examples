@@ -128,9 +128,11 @@ Container::Array<PhysicsBox2D_Main> Box_Buffers;
 
 struct PhysicsBox2D
 {
-	PhysicsBox2D_Main *	Buffer;
+	PhysicsBox2D_Main *		Buffer;
 	EntryContainer::Entry<Physics2D::Inst::Data>	Instance;
 	bool	IsStatic;
+	float	Mass;
+	float	Bounciness;
 
 	~PhysicsBox2D()
 	{ }
@@ -138,16 +140,22 @@ struct PhysicsBox2D
 		: Buffer(nullptr)
 		, Instance()
 		, IsStatic(true)
+		, Mass(1.0f)
+		, Bounciness(0.5f)
 	{ }
 	PhysicsBox2D(PhysicsBox2D_Main & buffer, bool is_static)
 		: Buffer(&buffer)
 		, Instance(*buffer.Instances, 1)
 		, IsStatic(is_static)
+		, Mass(1.0f)
+		, Bounciness(0.5f)
 	{ }
 	PhysicsBox2D(PhysicsBox2D_Main & buffer, Point2D pos, bool is_static)
 		: Buffer(&buffer)
 		, Instance(*buffer.Instances, 1)
 		, IsStatic(is_static)
+		, Mass(1.0f)
+		, Bounciness(0.5f)
 	{
 		(*Instance).Pos = pos;
 	}
@@ -155,6 +163,8 @@ struct PhysicsBox2D
 		: Buffer(&buffer)
 		, Instance(*buffer.Instances, 1)
 		, IsStatic(is_static)
+		, Mass(1.0f)
+		, Bounciness(0.5f)
 	{
 		(*Instance).Pos = pos;
 		(*Instance).Vel = vel;
@@ -173,40 +183,45 @@ Container::Binary<PhysicsBox2D>	Boxes;
 
 void Make()
 {
-	Box_Buffers.Allocate(2, 2);
+	Box_Buffers.Allocate(4, 4);
 
-	Box_Buffers[0].BufferArray.Create();
-	Box_Buffers[0].Box = AxisBox2D(Point2D(-1, -1), Point2D(+1, +1));
-	Box_Buffers[0].UpdateMain();
+	unsigned int wall_x = 0;
+	unsigned int wall_y = 1;
 
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], true));
-	{
-		float factor = 2.0f;
-		for (int i = -7; i <= +7; i++)
-		{
-			Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(i * factor, -8 * factor), true));
-			Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(i * factor, +8 * factor), true));
-			Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-8 * factor, i * factor), true));
-			Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(+8 * factor, i * factor), true));
-		}
-		Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(+6 * factor, 0), true));
-	}
+	unsigned int box_1 = 2;
+	unsigned int box_2 = 3;
 
-	Box_Buffers[1].BufferArray.Create();
-	Box_Buffers[1].Box = AxisBox2D(Point2D(-2, -1), Point2D(+2, +1));
-	Box_Buffers[1].UpdateMain();
+	Box_Buffers[wall_x].BufferArray.Create();
+	Box_Buffers[wall_x].Box = AxisBox2D(Point2D(-16, -1), Point2D(+16, +1));
+	Box_Buffers[wall_x].UpdateMain();
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[wall_x], Point2D(0, -16), true));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[wall_x], Point2D(0, +16), true));
 
-	Boxes.Insert(PhysicsBox2D(Box_Buffers[1], Point2D(2, 3), Point2D(0, -1), false));
-	Boxes.Insert(PhysicsBox2D(Box_Buffers[1], Point2D(1, -2), Point2D(0, 1), false));
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[1], Point2D(5, 1), Point2D(-1, 0), false));
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[1], Point2D(-7, 0.5), Point2D(1, 0), false));
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[1], Point2D(1, -9), Point2D(0, 1), false));
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(7, 7), Point2D(1, 1), false));
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(6, -7), Point2D(2, 1), false));
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-6, -6), Point2D(7, -5), false));
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-9, -6), Point2D(7, -5), false));
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-9, -9), Point2D(7, -5), false));
-//	Boxes.Insert(PhysicsBox2D(Box_Buffers[0], Point2D(-6, -9), Point2D(7, -5), false));
+	Box_Buffers[wall_y].BufferArray.Create();
+	Box_Buffers[wall_y].Box = AxisBox2D(Point2D(-1, -16), Point2D(+1, +16));
+	Box_Buffers[wall_y].UpdateMain();
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[wall_y], Point2D(-16, 0), true));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[wall_y], Point2D(+16, 0), true));
+
+	Box_Buffers[box_1].BufferArray.Create();
+	Box_Buffers[box_1].Box = AxisBox2D(Point2D(-1, -1), Point2D(+1, +1));
+	Box_Buffers[box_1].UpdateMain();
+
+	Box_Buffers[box_2].BufferArray.Create();
+	Box_Buffers[box_2].Box = AxisBox2D(Point2D(-2, -1), Point2D(+2, +1));
+	Box_Buffers[box_2].UpdateMain();
+
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_2], Point2D(5, 0), Point2D(-1, 0), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_2], Point2D(2, -2), Point2D(0, 1), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_2], Point2D(2, 3), Point2D(0, -1), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_2], Point2D(-7, 0.5), Point2D(1, 0), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_2], Point2D(1, -9), Point2D(0, 1), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_1], Point2D(7, 7), Point2D(1, 1), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_1], Point2D(6, -7), Point2D(2, 1), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_1], Point2D(-6, -6), Point2D(7, -5), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_1], Point2D(-9, -6), Point2D(7, -5), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_1], Point2D(-9, -9), Point2D(7, -5), false));
+	Boxes.Insert(PhysicsBox2D(Box_Buffers[box_1], Point2D(-6, -9), Point2D(7, -5), false));
 }
 
 
@@ -251,42 +266,24 @@ void Bounce01(PhysicsBox2D & phys_box0, PhysicsBox2D & phys_box1)
 		if (fabs(diff.X) < fabs(diff.Y)) { normal.X = diff.X; } else { normal.Y = diff.Y; }
 	}
 
-	//	Velocity Reflector
-	/*{
-		float dot = Point2D::dot(vel1, normal);
-		if (dot < 0)
-		{
-			vel1 = vel1 - (normal * (2 * (dot / normal.length2())));
-		}
-	}*/
-
-	// dot > 0 means normal is pointing away from body0 ?
-	/*{
-		Point2D rel = (*phys_box1.Instance).Pos - (*phys_box0.Instance).Pos;
-		float dot = Point2D::dot(rel, normal);
-		std::cout << "rel: " << rel << '\n';
-		std::cout << "nrm: " << normal << '\n';
-		std::cout << "dot: " << dot << '\n';
-	}*/
-
-	//	Mass Impulse Thing
 	{
 		normal = normal.normalize();
+		float e = 1.0f;
 
 		Point2D vel_rel = vel1 - vel0;
 		float NormalVelFactor = Point2D::dot(vel_rel, normal);
 
-		float Mass0 = 1.0f;
-		float Mass1 = 1.0f;
-		float MassInverseSum = ((1 / Mass0) + (1 / Mass1));
+		float MassInverse0 = 0;
+		float MassInverse1 = 0;
+		if (!phys_box0.IsStatic) { MassInverse0 = 1 / phys_box0.Mass; }
+		if (!phys_box1.IsStatic) { MassInverse1 = 1 / phys_box1.Mass; }
+		float MassInverseSum = MassInverse0 + MassInverse1;
 
-		float e = 1.0f;	//	BounceFactor
 		float impulseFactor = (-(1.0f + e) * NormalVelFactor) / MassInverseSum;
 
 		Point2D impulse = normal * impulseFactor;
-		
-		vel0 = (vel0 - (impulse / Mass0));
-		vel1 = (vel1 + (impulse / Mass1));
+		if (!phys_box0.IsStatic) { vel0 = (vel0 - (impulse / phys_box0.Mass)); }
+		if (!phys_box1.IsStatic) { vel1 = (vel1 + (impulse / phys_box1.Mass)); }
 	}
 
 	if (phys_box0.IsStatic) { vel0 = Point2D(); }
