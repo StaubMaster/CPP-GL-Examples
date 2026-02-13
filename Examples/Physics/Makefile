@@ -21,7 +21,6 @@ FILES_SRC := \
 	Physics2D/Inst/Buffer.cpp \
 	Physics2D/BufferArray.cpp \
 	Physics2D/Shader.cpp \
-	View2D.cpp \
 	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 

@@ -11,6 +11,7 @@ class Shader : public ::Shader::Base
 	public:
 	Uniform::WindowBufferSize2D	WindowSize;
 	Uniform::Point2D			ViewPos;
+	Uniform::Angle2D			ViewRot;
 	Uniform::Float1				ViewScale;
 	public:
 	Shader();

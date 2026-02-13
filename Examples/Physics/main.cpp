@@ -325,14 +325,16 @@ void Frame(double timeDelta)
 		Point3D move3D = window.MoveFromKeys();
 		Point2D move2D(move3D.X, move3D.Z);
 		//if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { move2D *= 30; }
+		Angle2D spin(Angle::Radians(move3D.Y * 0.5f));
 		move2D *= 2.0f;
-		view.Transform(move2D, timeDelta);
+		view.Transform(move2D, spin, timeDelta);
 	}
 
 	Update(timeDelta);
 
 	Physics2D_Shader.Bind();
 	Physics2D_Shader.ViewPos.Put(view.Pos);
+	Physics2D_Shader.ViewRot.Put(view.Rot);
 	Physics2D_Shader.ViewScale.PutData(&view.Scale);
 
 	for (unsigned int i = 0; i < Box_Buffers.Count(); i++)
