@@ -13,7 +13,7 @@ REPOS_LIST =
 
 ################################################################
 
-repos_all: repos_clone
+repos_all:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(foreach repo, $(REPOS_LIST), \
 		$(MAKE) -C $(repo) -s all ; \
