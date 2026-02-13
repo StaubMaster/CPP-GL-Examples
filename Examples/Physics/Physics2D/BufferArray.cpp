@@ -8,7 +8,7 @@
 
 Physics2D::BufferArray::BufferArray() :
 	Main(0, 1),
-	Inst(2, 3),
+	Inst(2, 3, 5, 6),
 	DrawMode(GL::DrawMode::Triangles)
 {
 	Buffers.Allocate(2),

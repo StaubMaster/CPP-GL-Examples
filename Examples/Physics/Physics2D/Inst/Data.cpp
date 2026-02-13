@@ -3,14 +3,14 @@
 
 
 Physics2D::Inst::Data::Data()
-	: Pos()
+	: Now()
 	, Vel()
 { }
-Physics2D::Inst::Data::Data(Point2D pos)
-	: Pos(pos)
+Physics2D::Inst::Data::Data(Trans2D now)
+	: Now(now)
 	, Vel()
 { }
-Physics2D::Inst::Data::Data(Point2D pos, Point2D vel)
-	: Pos(pos)
+Physics2D::Inst::Data::Data(Trans2D now, Trans2D vel)
+	: Now(now)
 	, Vel(vel)
 { }

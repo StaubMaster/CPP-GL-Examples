@@ -145,23 +145,23 @@ struct PhysicsObject2D
 		, Mass(1.0f)
 		, Bounciness(0.5f)
 	{ }
-	PhysicsObject2D(Physics2D_Main & buffer, Point2D pos, bool is_static)
+	PhysicsObject2D(Physics2D_Main & buffer, Trans2D now, bool is_static)
 		: Buffer(&buffer)
 		, Instance(*buffer.Instances, 1)
 		, IsStatic(is_static)
 		, Mass(1.0f)
 		, Bounciness(0.5f)
 	{
-		(*Instance).Pos = pos;
+		(*Instance).Now = now;
 	}
-	PhysicsObject2D(Physics2D_Main & buffer, Point2D pos, Point2D vel, bool is_static)
+	PhysicsObject2D(Physics2D_Main & buffer, Trans2D now, Trans2D vel, bool is_static)
 		: Buffer(&buffer)
 		, Instance(*buffer.Instances, 1)
 		, IsStatic(is_static)
 		, Mass(1.0f)
 		, Bounciness(0.5f)
 	{
-		(*Instance).Pos = pos;
+		(*Instance).Now = now;
 		(*Instance).Vel = vel;
 	}
 };
@@ -182,8 +182,8 @@ void Make()
 		gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 	}
 	Object_Buffers[0].UpdateMain();
-	Objects.Insert(PhysicsObject2D(Object_Buffers[0], Point2D(-2, -0.5f), Point2D(+1, 0), false));
-	Objects.Insert(PhysicsObject2D(Object_Buffers[0], Point2D(+2, +0.5f), Point2D(-1, 0), false));
+	Objects.Insert(PhysicsObject2D(Object_Buffers[0], Trans2D(Point2D(-2, -0.5f), Angle2D()), Trans2D(Point2D(+1, 0), Angle2D()), false));
+	Objects.Insert(PhysicsObject2D(Object_Buffers[0], Trans2D(Point2D(+2, +0.5f), Angle2D()), Trans2D(Point2D(-1, 0), Angle2D()), false));
 }
 
 
@@ -274,35 +274,21 @@ void Bounce01(PhysicsObject2D & phys_obj_0, PhysicsObject2D & phys_obj_1)
 {
 	if (phys_obj_0.IsStatic && phys_obj_1.IsStatic) { return; }
 
-	//std::cout << "\n\nChecking ....\n";
 	Point2D normal;
 	if (!Intersekt(
-		*(phys_obj_0.Buffer -> Gon), Trans2D((*phys_obj_0.Instance).Pos, Angle2D()),
-		*(phys_obj_1.Buffer -> Gon), Trans2D((*phys_obj_1.Instance).Pos, Angle2D()),
+		*(phys_obj_0.Buffer -> Gon), (*phys_obj_0.Instance).Now,
+		*(phys_obj_1.Buffer -> Gon), (*phys_obj_1.Instance).Now,
 		normal
 	)) { return; }
-	std::cout << "Collision\n";
 
-	Point2D & vel0 = (*phys_obj_0.Instance).Vel;
-	Point2D & vel1 = (*phys_obj_1.Instance).Vel;
-
-	/*Point2D normal;
-	{
-		Point2D diff;
-		{
-			Point2D diff0 = box0.Max - box1.Min;
-			Point2D diff1 = box0.Min - box1.Max;
-			if (fabs(diff0.X) < fabs(diff1.X)) { diff.X = diff0.X; } else { diff.X = diff1.X; }
-			if (fabs(diff0.Y) < fabs(diff1.Y)) { diff.Y = diff0.Y; } else { diff.Y = diff1.Y; }
-		}
-		if (fabs(diff.X) < fabs(diff.Y)) { normal.X = diff.X; } else { normal.Y = diff.Y; }
-	}*/
+	Trans2D & vel0 = (*phys_obj_0.Instance).Vel;
+	Trans2D & vel1 = (*phys_obj_1.Instance).Vel;
 
 	{
 		normal = normal.normalize();
 		float e = 0.5f;
 
-		Point2D vel_rel = vel1 - vel0;
+		Point2D vel_rel = vel1.Pos - vel0.Pos;
 		float NormalVelFactor = Point2D::dot(vel_rel, normal);
 
 		float MassInverse0 = 0;
@@ -314,12 +300,12 @@ void Bounce01(PhysicsObject2D & phys_obj_0, PhysicsObject2D & phys_obj_1)
 		float impulseFactor = (-(1.0f + e) * NormalVelFactor) / MassInverseSum;
 
 		Point2D impulse = normal * impulseFactor;
-		if (!phys_obj_0.IsStatic) { vel0 = (vel0 - (impulse / phys_obj_0.Mass)); }
-		if (!phys_obj_1.IsStatic) { vel1 = (vel1 + (impulse / phys_obj_1.Mass)); }
+		if (!phys_obj_0.IsStatic) { vel0.Pos = (vel0.Pos - (impulse / phys_obj_0.Mass)); }
+		if (!phys_obj_1.IsStatic) { vel1.Pos = (vel1.Pos + (impulse / phys_obj_1.Mass)); }
 	}
 
-	if (phys_obj_0.IsStatic) { vel0 = Point2D(); }
-	if (phys_obj_1.IsStatic) { vel1 = Point2D(); }
+	if (phys_obj_0.IsStatic) { vel0.Pos = Point2D(); }
+	if (phys_obj_1.IsStatic) { vel1.Pos = Point2D(); }
 }
 void Update(float timeDelta)
 {
@@ -335,7 +321,7 @@ void Update(float timeDelta)
 	{
 		if (!Objects[i].IsStatic)
 		{
-			(*Objects[i].Instance).Pos = (*Objects[i].Instance).Pos + ((*Objects[i].Instance).Vel * timeDelta);
+			(*Objects[i].Instance).Now.Pos = (*Objects[i].Instance).Now.Pos + ((*Objects[i].Instance).Vel.Pos * timeDelta);
 		}
 	}
 	//(void)timeDelta;

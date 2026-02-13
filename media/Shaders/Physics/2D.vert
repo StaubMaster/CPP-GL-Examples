@@ -27,7 +27,10 @@ layout(location = 0) in vec2 VPos;
 layout(location = 1) in vec4 VCol;
 
 layout(location = 2) in vec2 IPos;
-layout(location = 3) in vec2 IVel;
+layout(location = 3) in mat2 IRot;
+
+//layout(location = 5) in vec2 IVelPos;
+//layout(location = 6) in mat2 IVelRot;
 
 
 
@@ -40,7 +43,7 @@ out Vert {
 void main()
 {
 	vec2 pos = VPos;
-	pos = pos + IPos;
+	pos = (pos * transpose(IRot)) + IPos;
 	pos = (pos - View.Pos) * View.Rot;
 	pos = pos * WindowSize.Ratio;
 	pos = pos / Scale;
