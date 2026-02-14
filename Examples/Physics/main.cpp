@@ -37,7 +37,7 @@
 
 
 
-#include "Collision2D.hpp"
+#include "Physics2D/Collision.hpp"
 #include "Physics2D/MainInstance.hpp"
 #include "Physics2D/Object.hpp"
 
@@ -80,106 +80,21 @@ MainContext()
 
 Physics2D::Shader	Physics2D_Shader;
 
-
-
-/*struct Physics2D_Main
-{
-	PolyGon *	Gon;
-	Physics2D::BufferArray	BufferArray;
-	EntryContainer::Binary<Physics2D::Inst::Data>	* Instances;
-
-	Physics2D_Main()
-		: Gon(new PolyGon())
-		, BufferArray()
-		, Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
-	{ }
-	void Dispose()
-	{
-		delete Instances;
-		delete Gon;
-	}
-
-	void UpdateMain()
-	{
-		Container::Pointer<Physics2D::Main::Data> data = Gon -> ToPhysics2D();
-		BufferArray.Bind();
-		BufferArray.Main.Change(data);
-		data.Delete();
-	}
-	void UpdateInst()
-	{
-		BufferArray.Bind();
-		BufferArray.Inst.Change(*Instances);
-	}
-	void Draw()
-	{
-		BufferArray.Draw();
-	}
-};*/
-//Container::Array<Physics2D_Main> Physics_MainInstances;
-Container::Array<Physics2D::MainInstance> Physics_MainInstances;
-
-
-
-/*struct Physics2D::Object
-{
-	Physics2D_Main *		Buffer;
-	EntryContainer::Entry<Physics2D::Inst::Data>	Instance;
-	bool	IsStatic;
-	float	Mass;
-	float	Bounciness;
-
-	~Physics2D::Object()
-	{ }
-	Physics2D::Object()
-		: Buffer(nullptr)
-		, Instance()
-		, IsStatic(true)
-		, Mass(1.0f)
-		, Bounciness(0.5f)
-	{ }
-	Physics2D::Object(Physics2D_Main & buffer, bool is_static)
-		: Buffer(&buffer)
-		, Instance(*buffer.Instances, 1)
-		, IsStatic(is_static)
-		, Mass(1.0f)
-		, Bounciness(0.5f)
-	{ }
-	Physics2D::Object(Physics2D_Main & buffer, Trans2D now, bool is_static)
-		: Buffer(&buffer)
-		, Instance(*buffer.Instances, 1)
-		, IsStatic(is_static)
-		, Mass(1.0f)
-		, Bounciness(0.5f)
-	{
-		(*Instance).Now = now;
-	}
-	Physics2D::Object(Physics2D_Main & buffer, Trans2D now, Trans2D vel, bool is_static)
-		: Buffer(&buffer)
-		, Instance(*buffer.Instances, 1)
-		, IsStatic(is_static)
-		, Mass(1.0f)
-		, Bounciness(0.5f)
-	{
-		(*Instance).Now = now;
-		(*Instance).Vel = vel;
-	}
-};*/
-//Container::Binary<Physics2D::Object>	Objects;
-Container::Binary<Physics2D::Object>	Objects;
+Container::Array<Physics2D::MainInstance>	Physics2D_MainInstances;
+Container::Binary<Physics2D::Object>		Physics2D_Objects;
 
 
 
 void Make()
 {
-	Physics_MainInstances.Allocate(3, 3);
+	Physics2D_MainInstances.Allocate(3, 3);
 
 
 
 	unsigned int wall = 0;
-	Physics_MainInstances[wall].BufferArray.Create();
+	Physics2D_MainInstances[wall].BufferArray.Create();
 	{
-		PolyGon & poly_gon = *(Physics_MainInstances[wall].PolyGon);
+		PolyGon & poly_gon = *(Physics2D_MainInstances[wall].PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-10, 0), ColorF4(1, 1, 1)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+10, 0), ColorF4(1, 1, 1)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-10, -1), ColorF4(0, 0, 0)));
@@ -187,36 +102,36 @@ void Make()
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
-	Physics_MainInstances[wall].UpdateMain();
+	Physics2D_MainInstances[wall].UpdateMain();
 
-	Objects.Insert(Physics2D::Object(Physics_MainInstances[wall], Trans2D(Point2D(0, -10), Angle2D(Angle::Degrees(  0))), Trans2D(Point2D(0, 0), Angle2D()), true));
-	Objects.Insert(Physics2D::Object(Physics_MainInstances[wall], Trans2D(Point2D(-10, 0), Angle2D(Angle::Degrees( 90))), Trans2D(Point2D(0, 0), Angle2D()), true));
-	Objects.Insert(Physics2D::Object(Physics_MainInstances[wall], Trans2D(Point2D(0, +10), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D()), true));
-	Objects.Insert(Physics2D::Object(Physics_MainInstances[wall], Trans2D(Point2D(+10, 0), Angle2D(Angle::Degrees(270))), Trans2D(Point2D(0, 0), Angle2D()), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(0, -10), Angle2D(Angle::Degrees(  0))), Trans2D(Point2D(0, 0), Angle2D()), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(-10, 0), Angle2D(Angle::Degrees( 90))), Trans2D(Point2D(0, 0), Angle2D()), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(0, +10), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D()), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+10, 0), Angle2D(Angle::Degrees(270))), Trans2D(Point2D(0, 0), Angle2D()), true));
 
 
 
 	unsigned int obj0 = 1;
-	Physics_MainInstances[obj0].BufferArray.Create();
+	Physics2D_MainInstances[obj0].BufferArray.Create();
 	{
-		PolyGon & poly_gon = *(Physics_MainInstances[obj0].PolyGon);
+		PolyGon & poly_gon = *(Physics2D_MainInstances[obj0].PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1, -1), ColorF4(1, 0, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1, -1), ColorF4(0, 1, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0, +1), ColorF4(0, 0, 1)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 	}
-	Physics_MainInstances[obj0].UpdateMain();
+	Physics2D_MainInstances[obj0].UpdateMain();
 
 //	Stuck in Wall. Bounces back "into" Wall every time it would get out.
 //	No Force pushing it out.
-//	Objects.Insert(Physics2D::Object(Physics_MainInstances[obj0], Trans2D(Point2D(-10, 0), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-10, 0), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
 
-	Objects.Insert(Physics2D::Object(Physics_MainInstances[obj0], Trans2D(Point2D( 0,  0), Angle2D(Angle::Degrees(0))), Trans2D(Point2D( 0, 0), Angle2D()), false));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D( 0,  0), Angle2D(Angle::Degrees(0))), Trans2D(Point2D( 0, 0), Angle2D()), false));
 
-	Objects.Insert(Physics2D::Object(Physics_MainInstances[obj0], Trans2D(Point2D(+3, -1), Angle2D(Angle::Degrees(40))), Trans2D(Point2D(-1, 0), Angle2D()), false));
-	Objects.Insert(Physics2D::Object(Physics_MainInstances[obj0], Trans2D(Point2D(-3, -1), Angle2D(Angle::Degrees(80))), Trans2D(Point2D(+1, 0), Angle2D()), false));
-	Objects.Insert(Physics2D::Object(Physics_MainInstances[obj0], Trans2D(Point2D(+3, +1), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-1, 0), Angle2D()), false));
-	Objects.Insert(Physics2D::Object(Physics_MainInstances[obj0], Trans2D(Point2D(-3, +1), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+1, 0), Angle2D()), false));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+3, -1), Angle2D(Angle::Degrees(40))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-3, -1), Angle2D(Angle::Degrees(80))), Trans2D(Point2D(+1, 0), Angle2D()), false));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+3, +1), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-3, +1), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+1, 0), Angle2D()), false));
 }
 
 
@@ -230,46 +145,36 @@ void Init()
 void Free()
 {
 	Physics2D_Shader.Delete();
-	Objects.Clear();
-	for (unsigned int i = 0; i < Physics_MainInstances.Count(); i++)
+	Physics2D_Objects.Clear();
+	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
-		Physics_MainInstances[i].BufferArray.Delete();
-		Physics_MainInstances[i].Dispose();
+		Physics2D_MainInstances[i].BufferArray.Delete();
+		Physics2D_MainInstances[i].Dispose();
 	}
 }
 
 
 
-void Bounce(Physics2D::Object & phys_obj_0, Physics2D::Object & phys_obj_1)
+void Bounce(Physics2D::Object & obj0, Physics2D::Object & obj1)
 {
-	if (phys_obj_0.IsStatic && phys_obj_1.IsStatic) { return; }
+	if (obj0.IsStatic && obj1.IsStatic) { return; }
 
-	Trans2D & now0 = phys_obj_0.Now();
-	Trans2D & now1 = phys_obj_1.Now();
-
-	Collision2D::PolyGonContactData contact_data = Collision2D::PolyGonContactData::Check(
-		Collision2D::TransPolyGon(phys_obj_0.PolyGon(), now0),
-		Collision2D::TransPolyGon(phys_obj_1.PolyGon(), now1)
-	);
+	Physics2D::PolyGonContactData contact_data = Physics2D::PolyGonContactData::Check(obj0, obj1);
 	if (!contact_data.Valid) { return; }
 
-	Point2D Contact0 = phys_obj_0.PolyGon() -> Corners[contact_data.Contact0Udx].Pos;
-	Point2D Contact1 = phys_obj_1.PolyGon() -> Corners[contact_data.Contact1Udx].Pos;
+	Point2D Contact0 = obj0.PolyGon() -> Corners[contact_data.Contact0Udx].Pos;
+	Point2D Contact1 = obj1.PolyGon() -> Corners[contact_data.Contact1Udx].Pos;
 
-	Trans2D & vel0 = phys_obj_0.Vel();
-	Trans2D & vel1 = phys_obj_1.Vel();
-
-	{
 		Point2D normal = contact_data.Normal.normalize();
 		float e = 1.0f;
 
-		Point2D vel_rel = vel1.Pos - vel0.Pos;
+		Point2D vel_rel = obj1.Vel().Pos - obj0.Vel().Pos;
 		float NormalVelFactor = Point2D::dot(vel_rel, normal);
 
 		float MassInverse0 = 0;
 		float MassInverse1 = 0;
-		if (!phys_obj_0.IsStatic) { MassInverse0 = 1 / phys_obj_0.Mass; }
-		if (!phys_obj_1.IsStatic) { MassInverse1 = 1 / phys_obj_1.Mass; }
+		if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.Mass; }
+		if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.Mass; }
 		float MassInverseSum = MassInverse0 + MassInverse1;
 
 		Matrix2x2 InertiaTensor0 = Matrix2x2::Default();
@@ -295,8 +200,8 @@ void Bounce(Physics2D::Object & phys_obj_0, Physics2D::Object & phys_obj_1)
 			w = (RelCon.perp() / RelCon.len())
 		*/
 
-		Point2D RelativeContact0 = Contact0 - now0.Pos;
-		Point2D RelativeContact1 = Contact1 - now1.Pos;
+		Point2D RelativeContact0 = Contact0 - obj0.Now().Pos;
+		Point2D RelativeContact1 = Contact1 - obj1.Now().Pos;
 		Point2D RelativeContactPerp0 = RelativeContact0.perpendicular0();
 		Point2D RelativeContactPerp1 = RelativeContact1.perpendicular0();
 
@@ -322,46 +227,45 @@ void Bounce(Physics2D::Object & phys_obj_0, Physics2D::Object & phys_obj_1)
 		float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum);
 		Point2D Impulse = normal * ImpulseFactor;
 
-		if (!phys_obj_0.IsStatic) { vel0.Pos = (vel0.Pos - (Impulse / phys_obj_0.Mass)); }
-		if (!phys_obj_1.IsStatic) { vel1.Pos = (vel1.Pos + (Impulse / phys_obj_1.Mass)); }
+		if (!obj0.IsStatic) { obj0.Vel().Pos -= (Impulse / obj0.Mass); }
+		if (!obj1.IsStatic) { obj1.Vel().Pos += (Impulse / obj1.Mass); }
 
-		//if (!phys_obj_0.IsStatic) { vel0.Rot = (vel0.Rot - (InertiaFactor0 * ImpulseFactor)); }
-		//if (!phys_obj_1.IsStatic) { vel1.Rot = (vel1.Rot - (InertiaFactor1 * ImpulseFactor)); }
-	}
+		//if (!obj0.IsStatic) { vel0.Rot -= (InertiaFactor0 * ImpulseFactor); }
+		//if (!obj1.IsStatic) { vel1.Rot += (InertiaFactor1 * ImpulseFactor); }
 
-	if (phys_obj_0.IsStatic) { vel0.Pos = Point2D(); }
-	if (phys_obj_1.IsStatic) { vel1.Pos = Point2D(); }
+	if (obj0.IsStatic) { obj0.Vel().Pos = Point2D(); }
+	if (obj1.IsStatic) { obj1.Vel().Pos = Point2D(); }
 }
 
 void UpdateGravity(float timeDelta)
 {
 	Point2D	Gravity = view.Trans.Rot.rotateBack(Point2D(0, -1)) * (3.0f * timeDelta);
-	for (unsigned int i = 0; i < Objects.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
 	{
-		if (!Objects[i].IsStatic)
+		if (!Physics2D_Objects[i].IsStatic)
 		{
-			Objects[i].Vel().Pos += Gravity;
+			Physics2D_Objects[i].Vel().Pos += Gravity;
 		}
 	}
 }
 void UpdateCollision()
 {
-	for (unsigned int i0 = 0; i0 < Objects.Count(); i0++)
+	for (unsigned int i0 = 0; i0 < Physics2D_Objects.Count(); i0++)
 	{
-		for (unsigned int i1 = i0 + 1; i1 < Objects.Count(); i1++)
+		for (unsigned int i1 = i0 + 1; i1 < Physics2D_Objects.Count(); i1++)
 		{
-			Bounce(Objects[i0], Objects[i1]);
+			Bounce(Physics2D_Objects[i0], Physics2D_Objects[i1]);
 		}
 	}
 }
 void UpdateOrientation(float timeDelta)
 {
-	for (unsigned int i = 0; i < Objects.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
 	{
-		if (!Objects[i].IsStatic)
+		if (!Physics2D_Objects[i].IsStatic)
 		{
-			Objects[i].Now().Pos += (Objects[i].Vel().Pos * timeDelta);
-			Objects[i].Now().Rot += (Objects[i].Vel().Rot * timeDelta);
+			Physics2D_Objects[i].Now().Pos += (Physics2D_Objects[i].Vel().Pos * timeDelta);
+			Physics2D_Objects[i].Now().Rot += (Physics2D_Objects[i].Vel().Rot * timeDelta);
 		}
 	}
 }
@@ -400,9 +304,9 @@ void Frame(double timeDelta)
 	Physics2D_Shader.View.Put(view.Trans);
 	Physics2D_Shader.Scale.PutData(&view.Scale);
 
-	for (unsigned int i = 0; i < Physics_MainInstances.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
-		Physics_MainInstances[i].UpdateInst();
+		Physics2D_MainInstances[i].UpdateInst();
 	}
 
 
@@ -411,9 +315,9 @@ void Frame(double timeDelta)
 	GL::Disable(GL::Capability::CullFace);
 
 	Physics2D_Shader.Bind();
-	for (unsigned int i = 0; i < Physics_MainInstances.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
-		Physics_MainInstances[i].Draw();
+		Physics2D_MainInstances[i].Draw();
 	}
 }
 void Resize(const WindowBufferSize2D & WindowSize)

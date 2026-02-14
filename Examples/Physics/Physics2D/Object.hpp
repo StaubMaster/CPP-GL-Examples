@@ -19,10 +19,16 @@ struct Object
 
 	bool				Valid() const;
 	const ::PolyGon *	PolyGon() const;
+
 	const Trans2D &		Now() const;
 	const Trans2D &		Vel() const;
+
 	Trans2D &			Now();
 	Trans2D &			Vel();
+
+	unsigned int	CornerCount() const;
+	unsigned int	SideCount() const;
+	Point2D			TransCorner(unsigned int idx) const;
 
 	~Object();
 	Object();

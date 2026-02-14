@@ -27,7 +27,7 @@ FILES_SRC := \
 \
 	Physics2D/MainInstance.cpp \
 	Physics2D/Object.cpp \
-	Collision2D.cpp \
+	Physics2D/Collision.cpp \
 \
 	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)

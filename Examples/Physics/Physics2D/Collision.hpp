@@ -1,31 +1,12 @@
-#ifndef  COLLISION_2D_HPP
-# define COLLISION_2D_HPP
+#ifndef  PHYSICS_2D_COLLISION_HPP
+# define PHYSICS_2D_COLLISION_HPP
 
-# include "PolyGon/PolyGon.hpp"
-# include "ValueType/Trans2D.hpp"
+# include "Physics2D/Object.hpp"
 
 # include "ValueType/AxisBox1D.hpp"
 
-namespace Collision2D
+namespace Physics2D
 {
-	struct TransPolyGon
-	{
-		const ::PolyGon & PolyGon;
-		const ::Trans2D & Trans;
-
-		unsigned int Corners() const;
-		Point2D TransCorner(unsigned int idx) const;
-
-		~TransPolyGon();
-		TransPolyGon() = delete;
-
-		TransPolyGon(const TransPolyGon & other);
-		TransPolyGon & operator=(const TransPolyGon & other) = delete;
-
-		TransPolyGon(const ::PolyGon & poly_gon, const ::Trans2D & trans);
-		TransPolyGon(const ::PolyGon * poly_gon, const ::Trans2D & trans);
-	};
-
 	struct PolyGonProjectionData
 	{
 		AxisBox1D		Box;
@@ -41,7 +22,7 @@ namespace Collision2D
 		void Consider(float val, unsigned int idx);
 
 		static PolyGonProjectionData Project(
-			const TransPolyGon & poly_gon,
+			const Object & obj,
 			Point2D normal
 		);
 	};
@@ -62,13 +43,13 @@ namespace Collision2D
 		bool Compare(const PolyGonContactData & other) const;
 
 		static PolyGonContactData Check(
-			const TransPolyGon & poly_gon_0,
-			const TransPolyGon & poly_gon_1,
+			const Object & obj0,
+			const Object & obj1,
 			Point2D normal
 		);
 		static PolyGonContactData Check(
-			const TransPolyGon & poly_gon_0,
-			const TransPolyGon & poly_gon_1
+			const Object & obj0,
+			const Object & obj1
 		);
 	};
 
