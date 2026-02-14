@@ -1,5 +1,5 @@
-#include "Buffer.hpp"
-#include "Data.hpp"
+#include "PolyGon/Main/Buffer.hpp"
+#include "PolyGon/Main/Data.hpp"
 
 #include "OpenGL.hpp"
 

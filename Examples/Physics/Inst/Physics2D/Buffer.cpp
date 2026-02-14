@@ -1,5 +1,5 @@
-#include "Buffer.hpp"
-#include "Data.hpp"
+#include "Inst/Physics2D/Buffer.hpp"
+#include "Inst/Physics2D/Data.hpp"
 
 #include "OpenGL.hpp"
 

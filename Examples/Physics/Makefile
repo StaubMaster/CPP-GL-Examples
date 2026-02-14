@@ -15,14 +15,19 @@ FANCY_NAME := Physics
 ################################################################
 
 FILES_SRC := \
-	Physics2D/Main/Data.cpp \
-	Physics2D/Main/Buffer.cpp \
-	Physics2D/Inst/Data.cpp \
-	Physics2D/Inst/Buffer.cpp \
-	Physics2D/BufferArray.cpp \
-	Physics2D/Shader.cpp \
-	PolyGon.cpp \
-	main_PolyGon.cpp
+	Inst/Physics2D/Data.cpp \
+	Inst/Physics2D/Buffer.cpp \
+\
+	PolyGon/PolyGon.cpp \
+	PolyGon/Data.cpp \
+	PolyGon/Main/Data.cpp \
+	PolyGon/Main/Buffer.cpp \
+	PolyGon/Physics2D/BufferArray.cpp \
+	PolyGon/Physics2D/Shader.cpp \
+\
+	Collision2D.cpp \
+\
+	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 ################################################################

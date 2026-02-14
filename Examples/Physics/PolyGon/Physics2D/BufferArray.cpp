@@ -1,6 +1,6 @@
-#include "BufferArray.hpp"
-#include "Main/Buffer.hpp"
-#include "Inst/Data.hpp"
+#include "PolyGon/Physics2D/BufferArray.hpp"
+#include "PolyGon/Main/Buffer.hpp"
+#include "Inst/Physics2D/Buffer.hpp"
 
 #include "OpenGL.hpp"
 

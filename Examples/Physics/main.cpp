@@ -27,12 +27,17 @@
 
 
 
-#include "Physics2D/BufferArray.hpp"
-#include "Physics2D/Shader.hpp"
-#include "Physics2D/Main/Data.hpp"
-#include "Physics2D/Inst/Data.hpp"
+#include "PolyGon/Physics2D/BufferArray.hpp"
+#include "PolyGon/Physics2D/Shader.hpp"
+#include "PolyGon/Main/Data.hpp"
+#include "Inst/Physics2D/Data.hpp"
 
-#include "PolyGon.hpp"
+#include "PolyGon/PolyGon.hpp"
+#include "PolyGon/Data.hpp"
+
+
+
+#include "Collision2D.hpp"
 
 
 
@@ -198,6 +203,10 @@ void Make()
 	}
 	Object_Buffers[obj0].UpdateMain();
 
+//	Stuck in Wall. Bounces back "into" Wall every time it would get out.
+//	No Force pushing it out.
+//	Objects.Insert(PhysicsObject2D(Object_Buffers[obj0], Trans2D(Point2D(-10, 0), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+
 	Objects.Insert(PhysicsObject2D(Object_Buffers[obj0], Trans2D(Point2D( 0,  0), Angle2D(Angle::Degrees(0))), Trans2D(Point2D( 0, 0), Angle2D()), false));
 
 	Objects.Insert(PhysicsObject2D(Object_Buffers[obj0], Trans2D(Point2D(+3, -1), Angle2D(Angle::Degrees(40))), Trans2D(Point2D(-1, 0), Angle2D()), false));
@@ -227,153 +236,6 @@ void Free()
 
 
 
-struct ProjectionData
-{
-	AxisBox1D		Box;
-	unsigned int	MinUdx;
-	unsigned int	MaxUdx;
-};
-ProjectionData ProjectBox(
-	const PolyGon & gon, const Trans2D & trans,
-	Point2D normal)
-{
-	ProjectionData data;
-	data.MinUdx = 0xFFFFFFFF;
-	data.MaxUdx = 0xFFFFFFFF;
-	for (unsigned int i = 0; i < gon.Corners.Count(); i++)
-	{
-		Point2D	pos = gon.Corners[i].Pos;
-		pos = trans.Rot.rotateBack(pos) + trans.Pos;
-		float dot = Point2D::dot(normal, pos);
-		if (data.MinUdx == 0xFFFFFFFF || dot < data.Box.Min) { data.MinUdx = i; data.Box.Min = dot; }
-		if (data.MaxUdx == 0xFFFFFFFF || dot > data.Box.Max) { data.MaxUdx = i; data.Box.Max = dot; }
-	}
-	return data;
-}
-
-struct ContactData
-{
-	bool	Is;
-	Point2D		Normal;
-	float			Distance;
-	unsigned int	Contact0Udx;
-	unsigned int	Contact1Udx;
-
-	ContactData()
-		: Is(false)
-		, Normal()
-		, Distance(INFINITY)
-		, Contact0Udx(0xFFFFFFFF)
-		, Contact1Udx(0xFFFFFFFF)
-	{ }
-
-	void Consider(const ContactData & other)
-	{
-		if (!other.Is) { return; }
-		if (!Is || fabs(other.Distance) < fabs(Distance))
-		{
-			Is = other.Is;
-			Normal = other.Normal;
-			Distance = other.Distance;
-			Contact0Udx = other.Contact0Udx;
-			Contact1Udx = other.Contact1Udx;
-		}
-	}
-};
-
-ContactData Intersekt(
-	const PolyGon & gon0, const Trans2D & trans0,
-	const PolyGon & gon1, const Trans2D & trans1,
-	Point2D normal)
-{
-	ContactData data;
-	data.Normal = normal;
-	data.Contact0Udx = 0xFFFFFFFF;
-	data.Contact1Udx = 0xFFFFFFFF;
-
-	ProjectionData projData0 = ProjectBox(gon0, trans0, normal);
-	ProjectionData projData1 = ProjectBox(gon1, trans1, normal);
-
-	if (projData0.Box.Intersekt(projData1.Box))
-	{
-		float diff0 = projData0.Box.Max - projData1.Box.Min;
-		float diff1 = projData0.Box.Min - projData1.Box.Max;
-		if (fabs(diff0) < fabs(diff1))
-		{
-			data.Distance = diff0;
-			data.Contact0Udx = projData0.MaxUdx;
-			data.Contact1Udx = projData1.MinUdx;
-		}
-		else
-		{
-			data.Distance = diff1;
-			data.Contact0Udx = projData0.MinUdx;
-			data.Contact1Udx = projData1.MaxUdx;
-		}
-		data.Is = true;
-	}
-	else
-	{
-		data.Is = false;
-	}
-	return data;
-}
-
-bool Intersekt(
-	const PolyGon & gon0, const Trans2D & trans0,
-	const PolyGon & gon1, const Trans2D & trans1,
-	ContactData & data)
-{
-	ContactData	temp_data;
-	Point2D n;
-
-	for (unsigned int i = 0; i < gon0.Sides.Count(); i++)
-	{
-		Point2D pos0 = gon0.Corners[gon0.Sides[i].Corner0.Udx].Pos;
-		Point2D pos1 = gon0.Corners[gon0.Sides[i].Corner1.Udx].Pos;
-		Point2D pos2 = gon0.Corners[gon0.Sides[i].Corner2.Udx].Pos;
-
-		n = (pos1 - pos0).perpendicular0();
-		temp_data = Intersekt(gon0, trans0, gon1, trans1, n);
-		if (!temp_data.Is) { return false; }
-		data.Consider(temp_data);
-
-		n = (pos2 - pos1).perpendicular0();
-		temp_data = Intersekt(gon0, trans0, gon1, trans1, n);
-		if (!temp_data.Is) { return false; }
-		data.Consider(temp_data);
-
-		n = (pos0 - pos2).perpendicular0();
-		temp_data = Intersekt(gon0, trans0, gon1, trans1, n);
-		if (!temp_data.Is) { return false; }
-		data.Consider(temp_data);
-	}
-
-	for (unsigned int i = 0; i < gon1.Sides.Count(); i++)
-	{
-		Point2D pos0 = gon1.Corners[gon1.Sides[i].Corner0.Udx].Pos;
-		Point2D pos1 = gon1.Corners[gon1.Sides[i].Corner1.Udx].Pos;
-		Point2D pos2 = gon1.Corners[gon1.Sides[i].Corner2.Udx].Pos;
-
-		n = (pos1 - pos0).perpendicular0();
-		temp_data = Intersekt(gon0, trans0, gon1, trans1, n);
-		if (!temp_data.Is) { return false; }
-		data.Consider(temp_data);
-
-		n = (pos2 - pos1).perpendicular0();
-		temp_data = Intersekt(gon0, trans0, gon1, trans1, n);
-		if (!temp_data.Is) { return false; }
-		data.Consider(temp_data);
-
-		n = (pos0 - pos2).perpendicular0();
-		temp_data = Intersekt(gon0, trans0, gon1, trans1, n);
-		if (!temp_data.Is) { return false; }
-		data.Consider(temp_data);
-	}
-
-	return true;
-}
-
 void Bounce(PhysicsObject2D & phys_obj_0, PhysicsObject2D & phys_obj_1)
 {
 	if (phys_obj_0.IsStatic && phys_obj_1.IsStatic) { return; }
@@ -381,12 +243,11 @@ void Bounce(PhysicsObject2D & phys_obj_0, PhysicsObject2D & phys_obj_1)
 	Trans2D & now0 = (*phys_obj_0.Instance).Now;
 	Trans2D & now1 = (*phys_obj_1.Instance).Now;
 
-	ContactData contact_data;
-	if (!Intersekt(
-		*(phys_obj_0.Buffer -> Gon), now0,
-		*(phys_obj_1.Buffer -> Gon), now1,
-		contact_data
-	)) { return; }
+	Collision2D::PolyGonContactData contact_data = Collision2D::PolyGonContactData::Check(
+		Collision2D::TransPolyGon(phys_obj_0.Buffer -> Gon, now0),
+		Collision2D::TransPolyGon(phys_obj_1.Buffer -> Gon, now1)
+	);
+	if (!contact_data.Valid) { return; }
 
 	Point2D Contact0 = phys_obj_0.Buffer -> Gon -> Corners[contact_data.Contact0Udx].Pos;
 	Point2D Contact1 = phys_obj_1.Buffer -> Gon -> Corners[contact_data.Contact1Udx].Pos;
@@ -468,7 +329,18 @@ void Bounce(PhysicsObject2D & phys_obj_0, PhysicsObject2D & phys_obj_1)
 	if (phys_obj_1.IsStatic) { vel1.Pos = Point2D(); }
 }
 
-void Update(float timeDelta)
+void UpdateGravity(float timeDelta)
+{
+	Point2D	Gravity = view.Trans.Rot.rotateBack(Point2D(0, -1)) * (3.0f * timeDelta);
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (!Objects[i].IsStatic)
+		{
+			(*Objects[i].Instance).Vel.Pos = (*Objects[i].Instance).Vel.Pos + Gravity;
+		}
+	}
+}
+void UpdateCollision()
 {
 	for (unsigned int i0 = 0; i0 < Objects.Count(); i0++)
 	{
@@ -477,7 +349,9 @@ void Update(float timeDelta)
 			Bounce(Objects[i0], Objects[i1]);
 		}
 	}
-
+}
+void UpdateOrientation(float timeDelta)
+{
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (!Objects[i].IsStatic)
@@ -486,7 +360,12 @@ void Update(float timeDelta)
 			(*Objects[i].Instance).Now.Rot = (*Objects[i].Instance).Now.Rot + ((*Objects[i].Instance).Vel.Rot * timeDelta);
 		}
 	}
-	//(void)timeDelta;
+}
+void Update(float timeDelta)
+{
+	UpdateGravity(timeDelta);
+	UpdateCollision();
+	UpdateOrientation(timeDelta);
 }
 
 void Frame(double timeDelta)

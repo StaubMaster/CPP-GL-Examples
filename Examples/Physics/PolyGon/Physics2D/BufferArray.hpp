@@ -2,8 +2,9 @@
 # define PHYSICS_2D_BUFFER_ARRAY_HPP
 
 # include "Graphics/Buffer/ArrayBase.hpp"
-# include "Main/Buffer.hpp"
-# include "Inst/Buffer.hpp"
+# include "PolyGon/Main/Buffer.hpp"
+# include "Inst/Physics2D/Buffer.hpp"
+
 # include "OpenGLTypes.hpp"
 
 namespace Physics2D
