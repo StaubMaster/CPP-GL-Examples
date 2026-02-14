@@ -25,6 +25,8 @@ FILES_SRC := \
 	PolyGon/Physics2D/BufferArray.cpp \
 	PolyGon/Physics2D/Shader.cpp \
 \
+	Physics2D/MainInstance.cpp \
+	Physics2D/Object.cpp \
 	Collision2D.cpp \
 \
 	main.cpp
