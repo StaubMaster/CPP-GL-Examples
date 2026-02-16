@@ -58,4 +58,10 @@ or try to average somehow
 
 
 
+I remember some stuff
+instead of checking for Contact in the current Frame
+check the time of the Frame
+and check if there is a Contact within that time
 
+if there are, go to the first contact, resolve that
+and then loop that until the frame is over
