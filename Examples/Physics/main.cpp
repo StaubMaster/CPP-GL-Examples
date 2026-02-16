@@ -94,20 +94,21 @@ void Make()
 	unsigned int wall = 0;
 	Physics2D_MainInstances[wall].BufferArray.Create();
 	{
+		float thickness = 0.1f;
 		PolyGon & poly_gon = *(Physics2D_MainInstances[wall].PolyGon);
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-10, 0), ColorF4(1, 1, 1)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+10, 0), ColorF4(1, 1, 1)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-10, -1), ColorF4(0, 0, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+10, -1), ColorF4(0, 0, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1, 0), ColorF4(1, 1, 1)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1, 0), ColorF4(1, 1, 1)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1 - thickness, -thickness), ColorF4(0, 0, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1 + thickness, -thickness), ColorF4(0, 0, 0)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
 	Physics2D_MainInstances[wall].UpdateMain();
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(0, -10), Angle2D(Angle::Degrees(  0))), Trans2D(Point2D(0, 0), Angle2D()), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(-10, 0), Angle2D(Angle::Degrees( 90))), Trans2D(Point2D(0, 0), Angle2D()), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(0, +10), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D()), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+10, 0), Angle2D(Angle::Degrees(270))), Trans2D(Point2D(0, 0), Angle2D()), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), Trans2D(Point2D(0, 0), Angle2D()), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees( 90))), Trans2D(Point2D(0, 0), Angle2D()), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D()), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees(270))), Trans2D(Point2D(0, 0), Angle2D()), true));
 
 
 
@@ -115,23 +116,30 @@ void Make()
 	Physics2D_MainInstances[obj0].BufferArray.Create();
 	{
 		PolyGon & poly_gon = *(Physics2D_MainInstances[obj0].PolyGon);
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1, -1), ColorF4(1, 0, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1, -1), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0, +1), ColorF4(0, 0, 1)));
+		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1, -1), ColorF4(1, 0, 0)));
+		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1, -1), ColorF4(0, 1, 0)));
+		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0, +1), ColorF4(0, 0, 1)));
+
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.025f, -0.400f), ColorF4(1, 0, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.025f, -0.400f), ColorF4(0, 1, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.000f, +0.400f), ColorF4(0, 0, 1)));
+
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 	}
 	Physics2D_MainInstances[obj0].UpdateMain();
 
 //	Stuck in Wall. Bounces back "into" Wall every time it would get out.
 //	No Force pushing it out.
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-10, 0), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-1.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D( 0,  0), Angle2D(Angle::Degrees(0))), Trans2D(Point2D( 0, 0), Angle2D()), false));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+3, -1), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-3, -1), Angle2D(Angle::Degrees(80))), Trans2D(Point2D(+1, 0), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+3, +1), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-1, 0), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-3, +1), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+1, 0), Angle2D()), false));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
+
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
 }
 
 
@@ -159,6 +167,7 @@ void Bounce(Physics2D::Object & obj0, Physics2D::Object & obj1)
 {
 	if (obj0.IsStatic && obj1.IsStatic) { return; }
 
+	// Currently only handles one Contact. Should handle all Contacts
 	Physics2D::PolyGonContactData contact_data = Physics2D::PolyGonContactData::Check(obj0, obj1);
 	if (!contact_data.Valid) { return; }
 
@@ -174,6 +183,8 @@ void Bounce(Physics2D::Object & obj0, Physics2D::Object & obj1)
 
 	float ContactDistance0 = RelativeContact0.length();
 	float ContactDistance1 = RelativeContact1.length();
+	(void)ContactDistance0;
+	(void)ContactDistance1;
 
 
 
@@ -185,91 +196,56 @@ void Bounce(Physics2D::Object & obj0, Physics2D::Object & obj1)
 
 
 
-	//Point2D RelativeContactPerp0 = RelativeContact0.perpendicular0();
-	//Point2D RelativeContactPerp1 = RelativeContact1.perpendicular0();
+	Point3D normal_3D(normal.X, normal.Y, 0);
+	Point3D RelativeContact0_3D(RelativeContact0.X, RelativeContact0.Y, 0);
+	Point3D RelativeContact1_3D(RelativeContact1.X, RelativeContact1.Y, 0);
 
-	//float InertiaTensor0 = 1.0f;
-	//float InertiaTensor1 = 1.0f;
-	//float InertiaTensorInverse0 = 1 / InertiaTensor0;
-	//float InertiaTensorInverse1 = 1 / InertiaTensor1;
+	Point3D ContactNormal0_3D = Point3D::cross(RelativeContact0_3D, normal_3D);
+	Point3D ContactNormal1_3D = Point3D::cross(RelativeContact1_3D, normal_3D);
+	Point3D ContactPerpendicular0_3D = Point3D::cross(ContactNormal0_3D, RelativeContact0_3D);
+	Point3D ContactPerpendicular1_3D = Point3D::cross(ContactNormal1_3D, RelativeContact1_3D);
+	Point3D ContactPerpendicularSum_3D = ContactPerpendicular0_3D + ContactPerpendicular1_3D;
 
-	//Point2D r0 = RelativeContactPerp0 * InertiaTensorInverse0;
-	//Point2D r1 = RelativeContactPerp1 * InertiaTensorInverse1;
-	//r0 = r0.perpendicular0();
-	//r1 = r1.perpendicular0();
+	float InertiaFactorSum = Point2D::dot(Point2D(ContactPerpendicularSum_3D.X, ContactPerpendicularSum_3D.Y), normal);
 
-	//float InertiaFactor = Point2D::dot(r0 + r1, normal);
-	//std::cout << "InertiaFactor0 " << r0 << '\n';
-	//std::cout << "InertiaFactor1 " << r1 << '\n';
-	//std::cout << "InertiaFactor  " << InertiaFactor << '\n';
 
-//	float InertiaTensor0 = 0.5f;
-//	float InertiaTensor1 = 0.5f;
-//
-//	float IntertiaFactor0 = ContactDistance0 * InertiaTensor0;
-//	float IntertiaFactor1 = ContactDistance1 * InertiaTensor1;
-//	float InertiaFactorSum = IntertiaFactor0 + IntertiaFactor1;
-//	std::cout << "InertiaFactor0 " << IntertiaFactor0 << '\n';
-//	std::cout << "InertiaFactor1 " << IntertiaFactor1 << '\n';
-//	std::cout << "InertiaFactorS " << InertiaFactorSum << '\n';
 
-	Point3D normal3D(normal.X, normal.Y, 0);
-	Point3D rel0(RelativeContact0.X, RelativeContact0.Y, 0);
-	Point3D rel1(RelativeContact1.X, RelativeContact1.Y, 0);
-
-	Point3D cross00 = Point3D::cross(rel0, normal3D);
-	Point3D cross01 = Point3D::cross(rel1, normal3D);
-	Point3D cross10 = Point3D::cross(cross00, rel0);
-	Point3D cross11 = Point3D::cross(cross01, rel1);
-	Point3D sum = cross10 + cross11;
-
-	float InertiaFactorSum = Point2D::dot(Point2D(sum.X, sum.Y), normal);
-
-	std::cout << "normal: " << normal3D << '\n';
-	std::cout << "rel0: " << rel0 << '\n';
-	std::cout << "rel1: " << rel1 << '\n';
-	std::cout << "cross10: " << cross10 << '\n';
-	std::cout << "cross11: " << cross11 << '\n';
-	std::cout << InertiaFactorSum << '\n';
+	std::cout << '\n';
+	std::cout << "normal_3D: " << normal_3D << ' ' << normal_3D.length() << '\n';
+	std::cout << "RelativeContact0_3D: " << RelativeContact0_3D << ' ' << RelativeContact0_3D.length() << '\n';
+	std::cout << "RelativeContact1_3D: " << RelativeContact1_3D << ' ' << RelativeContact1_3D.length() << '\n';
+	std::cout << "ContactPerpendicular0_3D: " << ContactPerpendicular0_3D << ' ' << ContactPerpendicular0_3D.length() << '\n';
+	std::cout << "ContactPerpendicular1_3D: " << ContactPerpendicular1_3D << ' ' << ContactPerpendicular1_3D.length() << '\n';
+	std::cout << "ContactPerpendicularSum_3D: " << ContactPerpendicularSum_3D << ' ' << ContactPerpendicularSum_3D.length() << '\n';
 	std::cout << '\n';
 
-	(void)ContactDistance0;
-	(void)ContactDistance1;
+
 
 	float e = 1.0f;
 	Point2D vel_rel = obj1.Vel().Pos - obj0.Vel().Pos;
 	float NormalVelFactor = Point2D::dot(vel_rel, normal);
 
-//	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
-	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum);
-//	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
+	std::cout << "normal           : " << normal << '\n';
+	std::cout << "vel_rel          : " << vel_rel << '\n';
+	std::cout << "NormalVelFactor  : " << NormalVelFactor << '\n';
+	std::cout << "MassInverseSum   : " << MassInverseSum << '\n';
+	std::cout << "InertiaFactorSum : " << InertiaFactorSum << '\n';
+
+	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
+//	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum);
+	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
 
 	if (!obj0.IsStatic) { obj0.Vel().Pos -= normal * (ImpulseFactor / obj0.Mass); }
 	if (!obj1.IsStatic) { obj1.Vel().Pos += normal * (ImpulseFactor / obj1.Mass); }
 
-//	if (!obj0.IsStatic) { obj0.Vel().Rot -= Angle::Radians((cross00 * ImpulseFactor).length()); }
-//	if (!obj1.IsStatic) { obj1.Vel().Rot += Angle::Radians((cross01 * ImpulseFactor).length()); }
-
-//	float dot0 = Point2D::dot(RelativeContact0, obj0.Vel().Pos);
-//	float dot1 = Point2D::dot(RelativeContact1, obj1.Vel().Pos);
-//	std::cout << "dot0 " << dot0 << '\n';
-//	std::cout << "dot1 " << dot1 << '\n';
-//
-//	Angle angle0 = Angle::SaCos(dot0 / (ContactDistance0 * obj0.Vel().Pos.length()));
-//	Angle angle1 = Angle::SaCos(dot1 / (ContactDistance1 * obj1.Vel().Pos.length()));
-//	std::cout << "angle0 " << angle0 << '\n';
-//	std::cout << "angle1 " << angle1 << '\n';
-//
-//	float w0 = (obj0.Vel().Pos.length() * angle0.Sin()) / ContactDistance0;
-//	float w1 = (obj1.Vel().Pos.length() * angle1.Sin()) / ContactDistance1;
-//	std::cout << "w0 " << w0 << '\n';
-//	std::cout << "w1 " << w1 << '\n';
-//
-//	if (!obj0.IsStatic) { obj0.Vel().Rot -= Angle::Radians(ImpulseFactor * w0); }
-//	if (!obj1.IsStatic) { obj1.Vel().Rot += Angle::Radians(ImpulseFactor * w1); }
+//	My Angle Spinning is "the wrong way". positive should be counter-clockwise, mine is clockwise
+	if (!obj0.IsStatic) { obj0.Vel().Rot -= Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
+	if (!obj1.IsStatic) { obj1.Vel().Rot += Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
 
 	if (obj0.IsStatic) { obj0.Vel() = Trans2D(); }
 	if (obj1.IsStatic) { obj1.Vel() = Trans2D(); }
+
+	std::cout << '\n';
 }
 
 void UpdateGravity(float timeDelta)
@@ -351,7 +327,11 @@ void Frame(double timeDelta)
 		view.Transform(trans, timeDelta);
 	}
 
-	Update(timeDelta);
+	//Update(timeDelta);
+	if (window.KeyBoardManager.Keys[GLFW_KEY_E].IsDown())
+	{ Update(1 / 60.0f); }
+	if (window.KeyBoardManager.Keys[GLFW_KEY_Q].IsPress())
+	{ Update(1 / 60.0f); }
 
 	Physics2D_Shader.Bind();
 	Physics2D_Shader.View.Put(view.Trans);
@@ -383,9 +363,24 @@ void Resize(const WindowBufferSize2D & WindowSize)
 
 void CursorScroll(UserParameter::Mouse::Scroll params)
 {
-	view.Scale -= params.Y * 1.0f;
-	if (view.Scale <= 0)   { view.Scale = 1.0f; }
-	if (view.Scale >= 100) { view.Scale = 100.0f; }
+	Point2D HalfSize = window.Size.WindowSize / 2;
+
+	Point2D CursorPos = window.MouseManager.CursorPixelPosition().Absolute - HalfSize;
+	CursorPos.Y = -CursorPos.Y;
+	CursorPos = (CursorPos / window.Size.Ratio) / HalfSize;
+
+	Point2D ZoomPos = (CursorPos * view.Scale) + view.Trans.Pos;
+
+	if (params.Y < 0.0f) { while (params.Y < 0.0f) { view.Scale *= 2; params.Y++; } }
+	if (params.Y > 0.0f) { while (params.Y > 0.0f) { view.Scale /= 2; params.Y--; } }
+
+	#define ZOOM_MIN 1.0 / (1 << 6)
+	#define ZOOM_MAX 1.0 * (1 << 6)
+
+	if (view.Scale <= ZOOM_MIN) { view.Scale = ZOOM_MIN; }
+	if (view.Scale >= ZOOM_MAX) { view.Scale = ZOOM_MAX; }
+
+	view.Trans.Pos = ZoomPos - (CursorPos * view.Scale);
 }
 
 
@@ -398,6 +393,8 @@ int Main()
 	window.ResizeCallBack.Change<MainContext>(this, &MainContext::Resize);
 
 	window.MouseManager.CallbackScroll.Change(this, &MainContext::CursorScroll);
+
+	view.Scale = 1.0f;
 
 	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;

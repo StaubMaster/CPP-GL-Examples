@@ -1,0 +1,61 @@
+
+Problems with the current system
+
+
+
+only resolves one Contact
+should resolve all ?
+
+individually or combined ?
+
+
+
+Rotation
+Collision is allways resolved, based on PointVel
+so if both object are stationary
+but hit eachother through Rotation
+then nothing happens
+because RelPointVel is 0
+
+
+
+
+
+Solution ?:
+Calculate relative Velocity at Contact Point
+Calculate absolute Velocity at Contact Point
+
+what about Mass ?
+is the entire Mass of the object Concentrated into a Point
+
+it is a rigid Body (does not deform)
+with a single Mass (same Density everywhere)
+
+
+
+
+
+make Bounce() more general
+should:
+# take a Point (on both Bodys)
+# calculate their Speed/Momentums (Linear and Angular)
+# claculate Impulse
+# apply Impulse
+
+do that with every Contact
+
+this means that order would matter ?
+so store all Impulses (how they change Velocity)
+then apply all of them at the end ?
+
+this might cause things to overshoot ?
+so a "Ball" with a few Corners would have a few Contacts
+but a "Ball" with many Corners would have many  Contacts
+
+so calculateing in Order is probably the best Idea
+
+or try to average somehow
+
+
+
+
