@@ -1,0 +1,117 @@
+
+Wikipedia Says (paraphrased)
+n   : normal
+In  : Inertia Tensor n
+rn  : Relative Contact n
+IFn : Inertia Factor n
+IF  : Inertia Factor
+(1)		IFn = (1 / In) * (rn x n) x rn
+(2)		IF = (IF0 + IF1) dot n
+
+
+
+(1)		IFn = (1 / In) * (rn x n) x rn
+
+m3  :  1 / m3
+iIn :  1 / In		invert Inertia Tensor
+
+v3  :  v3 x v3
+rAn :  rn x n		cross Product of Contact Point and Normal gives rotation Axis ?
+
+v3  :  m3 * v3
+ran : iIn * rAn		rotation Axis Force Vector ?
+
+v3  :  v3 x v3
+    : ran x rn		current Force of Inertia at Contact Point
+
+
+
+ s  :  s / s
+iIn :  1 / In
+
+v2  :  v2 .perp
+rAn :  rn .perp
+
+v2  :   s * v2
+ran : iIn * rAn
+
+v2  :  v2 .perp
+    : ran .perp
+
+
+
+	inverting Inertia Tensor should be the same
+	use the relative Contact Point to calculate the "rotation Axis"
+	multiply that with inverted Inertia Tensor (is also 1 Value in 2D ?)
+	turn back into a vector ?
+
+
+
+figure it out myself ?
+Spinning in 2D is just a single value (how fast / which dir to spin)
+multiply the spinnig size with Distance to Contact
+spinning is Perpendicular to Distance
+multiplied with Inertia Tensor (random Value) that has something to do with Mass
+
+spin0 = spin0 - impulseForce * InertiaTensor0 * (RelativeContact0 x Normal)
+spin1 = spin1 + impulseForce * InertiaTensor1 * (RelativeContact1 x Normal)
+
+ω'₀ = ω₀ - j * (1 / I₀) * (r₀ x n)
+ω'₁ = ω₁ + j * (1 / I₁) * (r₁ x n)
+
+<vector3> = <vector3> ± <scalar> * (1 / <matrix3x3>) * (<vector3> x <vector3>)
+
+
+
+
+
+2D:
+<scalar> #ω : Angular Velocity (how fast the Angle Changes)?
+<scalar> #v : Angular Velocity of Point (how fast the Point is moving)?
+<scalar> #r : Distance of Point (Radius)
+#ω = #v / #r
+so:
+#v = #ω * #r
+
+<vector2> _v : Velocity of Point
+<vector2> _r : Position of Point
+<vector2> _-v : parallel Component of _v (relative to _r)
+<vector2> _+v : Perpendicular Component of _v (relative to _r)
+<vector2> #+v : Lenght of _+v
+#ω = #+v / #r
+
+<scalar>   θ : Angle of _+v to _v
+#+v = #v * sin(θ)
+
+#ω = #v * sin(θ) / #r
+
+dot Product:
+{
+	<vectorN> _A
+	<vectorN> _B
+	<scalar>  #A : Lenght of _A
+	<scalar>   θ : Angle between _A and _B
+	_A dot _B = #A * cos(θ)
+	sin(θ) = Perpendicular =
+}
+
+
+
+
+
+3D:
+<vector3> _r : Position
+<scalar>  #r : Radius (length of _r ?)
+<vector3> _u : Normal of Plane (Unit)
+<scalar>  #ω : (Orbital) Angular Velocity
+<vector3> _ω : 
+
+_ω = #ω * _u = ((#v * sin(θ)) / #r) * _u
+
+_ω = (_r x _v) / (#r * #r)
+
+_+v = _ω x _r
+
+
+
+

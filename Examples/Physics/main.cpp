@@ -128,10 +128,10 @@ void Make()
 
 	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D( 0,  0), Angle2D(Angle::Degrees(0))), Trans2D(Point2D( 0, 0), Angle2D()), false));
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+3, -1), Angle2D(Angle::Degrees(40))), Trans2D(Point2D(-1, 0), Angle2D()), false));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-3, -1), Angle2D(Angle::Degrees(80))), Trans2D(Point2D(+1, 0), Angle2D()), false));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+3, +1), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-1, 0), Angle2D()), false));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-3, +1), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+1, 0), Angle2D()), false));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+3, -1), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-3, -1), Angle2D(Angle::Degrees(80))), Trans2D(Point2D(+1, 0), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+3, +1), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-3, +1), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+1, 0), Angle2D()), false));
 }
 
 
@@ -162,79 +162,114 @@ void Bounce(Physics2D::Object & obj0, Physics2D::Object & obj1)
 	Physics2D::PolyGonContactData contact_data = Physics2D::PolyGonContactData::Check(obj0, obj1);
 	if (!contact_data.Valid) { return; }
 
-	Point2D Contact0 = obj0.PolyGon() -> Corners[contact_data.Contact0Udx].Pos;
-	Point2D Contact1 = obj1.PolyGon() -> Corners[contact_data.Contact1Udx].Pos;
+	Point2D normal = contact_data.Normal.normalize();
 
-		Point2D normal = contact_data.Normal.normalize();
-		float e = 1.0f;
+	//Point2D Contact0 = obj0.PolyGon() -> Corners[contact_data.Contact0Udx].Pos;
+	//Point2D Contact1 = obj1.PolyGon() -> Corners[contact_data.Contact1Udx].Pos;
+	Point2D Contact0 = obj0.TransCorner(contact_data.Contact0Udx);
+	Point2D Contact1 = obj1.TransCorner(contact_data.Contact1Udx);
 
-		Point2D vel_rel = obj1.Vel().Pos - obj0.Vel().Pos;
-		float NormalVelFactor = Point2D::dot(vel_rel, normal);
+	Point2D RelativeContact0 = Contact0 - obj0.Now().Pos;
+	Point2D RelativeContact1 = Contact1 - obj1.Now().Pos;
 
-		float MassInverse0 = 0;
-		float MassInverse1 = 0;
-		if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.Mass; }
-		if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.Mass; }
-		float MassInverseSum = MassInverse0 + MassInverse1;
+	float ContactDistance0 = RelativeContact0.length();
+	float ContactDistance1 = RelativeContact1.length();
 
-		Matrix2x2 InertiaTensor0 = Matrix2x2::Default();
-		Matrix2x2 InertiaTensor1 = Matrix2x2::Default();
-		Matrix2x2 InertiaTensorInverse0 = InertiaTensor0.Inverse();
-		Matrix2x2 InertiaTensorInverse1 = InertiaTensor1.Inverse();
-		/*	What is Inertia Tensor ?
-				Wikipedia has info about 3D, but not 2D
-		*/
 
-		/*	how does Angular Velocity work in general ?
-			others 3D:
-				a Vector that points in the rotation axis
-				with the Length being how fast it spins
-			my 3D:
-				euler angles
-			even with euler angles, at any given instance,
-			an object spins along a single plane
-			but 2D first
-		*/
 
-		/*
-			w = (RelCon.perp() / RelCon.len())
-		*/
+	float MassInverse0 = 0;
+	float MassInverse1 = 0;
+	if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.Mass; }
+	if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.Mass; }
+	float MassInverseSum = MassInverse0 + MassInverse1;
 
-		Point2D RelativeContact0 = Contact0 - obj0.Now().Pos;
-		Point2D RelativeContact1 = Contact1 - obj1.Now().Pos;
-		Point2D RelativeContactPerp0 = RelativeContact0.perpendicular0();
-		Point2D RelativeContactPerp1 = RelativeContact1.perpendicular0();
 
-		//	Wiki Says (paraphrased)
-		//	n   : normal
-		//	In  : Inertia Tensor n
-		//	rn  : Relative Contact n
-		//	IFn : Inertia Factor n
-		//	IF  : Inertia Factor
-		//	IFn = (1 / In) * (rn x n) x rn		3D
-		//	IFn = (1 / In) * (rn.perp())		2D (not use if this is correct)
-		//	IF = (IF0 + IF1) dot n
 
-		//Point2D InertiaFactor0 = InertiaTensorInverse0 * RelativeContactPerp0;
-		//Point2D InertiaFactor1 = InertiaTensorInverse1 * RelativeContactPerp1;
-		//float InertiaFactorSum = Point2D::dot(InertiaFactor0 + InertiaFactor1, normal);
-		//(void)InertiaFactorSum;
-		//std::cout << "InertiaFactor0 " << InertiaFactor0 << '\n';
-		//std::cout << "InertiaFactor1 " << InertiaFactor1 << '\n';
-		//std::cout << "InertiaFactorSum " << InertiaFactorSum << '\n';
+	//Point2D RelativeContactPerp0 = RelativeContact0.perpendicular0();
+	//Point2D RelativeContactPerp1 = RelativeContact1.perpendicular0();
 
-		//float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
-		float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum);
-		Point2D Impulse = normal * ImpulseFactor;
+	//float InertiaTensor0 = 1.0f;
+	//float InertiaTensor1 = 1.0f;
+	//float InertiaTensorInverse0 = 1 / InertiaTensor0;
+	//float InertiaTensorInverse1 = 1 / InertiaTensor1;
 
-		if (!obj0.IsStatic) { obj0.Vel().Pos -= (Impulse / obj0.Mass); }
-		if (!obj1.IsStatic) { obj1.Vel().Pos += (Impulse / obj1.Mass); }
+	//Point2D r0 = RelativeContactPerp0 * InertiaTensorInverse0;
+	//Point2D r1 = RelativeContactPerp1 * InertiaTensorInverse1;
+	//r0 = r0.perpendicular0();
+	//r1 = r1.perpendicular0();
 
-		//if (!obj0.IsStatic) { vel0.Rot -= (InertiaFactor0 * ImpulseFactor); }
-		//if (!obj1.IsStatic) { vel1.Rot += (InertiaFactor1 * ImpulseFactor); }
+	//float InertiaFactor = Point2D::dot(r0 + r1, normal);
+	//std::cout << "InertiaFactor0 " << r0 << '\n';
+	//std::cout << "InertiaFactor1 " << r1 << '\n';
+	//std::cout << "InertiaFactor  " << InertiaFactor << '\n';
 
-	if (obj0.IsStatic) { obj0.Vel().Pos = Point2D(); }
-	if (obj1.IsStatic) { obj1.Vel().Pos = Point2D(); }
+//	float InertiaTensor0 = 0.5f;
+//	float InertiaTensor1 = 0.5f;
+//
+//	float IntertiaFactor0 = ContactDistance0 * InertiaTensor0;
+//	float IntertiaFactor1 = ContactDistance1 * InertiaTensor1;
+//	float InertiaFactorSum = IntertiaFactor0 + IntertiaFactor1;
+//	std::cout << "InertiaFactor0 " << IntertiaFactor0 << '\n';
+//	std::cout << "InertiaFactor1 " << IntertiaFactor1 << '\n';
+//	std::cout << "InertiaFactorS " << InertiaFactorSum << '\n';
+
+	Point3D normal3D(normal.X, normal.Y, 0);
+	Point3D rel0(RelativeContact0.X, RelativeContact0.Y, 0);
+	Point3D rel1(RelativeContact1.X, RelativeContact1.Y, 0);
+
+	Point3D cross00 = Point3D::cross(rel0, normal3D);
+	Point3D cross01 = Point3D::cross(rel1, normal3D);
+	Point3D cross10 = Point3D::cross(cross00, rel0);
+	Point3D cross11 = Point3D::cross(cross01, rel1);
+	Point3D sum = cross10 + cross11;
+
+	float InertiaFactorSum = Point2D::dot(Point2D(sum.X, sum.Y), normal);
+
+	std::cout << "normal: " << normal3D << '\n';
+	std::cout << "rel0: " << rel0 << '\n';
+	std::cout << "rel1: " << rel1 << '\n';
+	std::cout << "cross10: " << cross10 << '\n';
+	std::cout << "cross11: " << cross11 << '\n';
+	std::cout << InertiaFactorSum << '\n';
+	std::cout << '\n';
+
+	(void)ContactDistance0;
+	(void)ContactDistance1;
+
+	float e = 1.0f;
+	Point2D vel_rel = obj1.Vel().Pos - obj0.Vel().Pos;
+	float NormalVelFactor = Point2D::dot(vel_rel, normal);
+
+//	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
+	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum);
+//	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
+
+	if (!obj0.IsStatic) { obj0.Vel().Pos -= normal * (ImpulseFactor / obj0.Mass); }
+	if (!obj1.IsStatic) { obj1.Vel().Pos += normal * (ImpulseFactor / obj1.Mass); }
+
+//	if (!obj0.IsStatic) { obj0.Vel().Rot -= Angle::Radians((cross00 * ImpulseFactor).length()); }
+//	if (!obj1.IsStatic) { obj1.Vel().Rot += Angle::Radians((cross01 * ImpulseFactor).length()); }
+
+//	float dot0 = Point2D::dot(RelativeContact0, obj0.Vel().Pos);
+//	float dot1 = Point2D::dot(RelativeContact1, obj1.Vel().Pos);
+//	std::cout << "dot0 " << dot0 << '\n';
+//	std::cout << "dot1 " << dot1 << '\n';
+//
+//	Angle angle0 = Angle::SaCos(dot0 / (ContactDistance0 * obj0.Vel().Pos.length()));
+//	Angle angle1 = Angle::SaCos(dot1 / (ContactDistance1 * obj1.Vel().Pos.length()));
+//	std::cout << "angle0 " << angle0 << '\n';
+//	std::cout << "angle1 " << angle1 << '\n';
+//
+//	float w0 = (obj0.Vel().Pos.length() * angle0.Sin()) / ContactDistance0;
+//	float w1 = (obj1.Vel().Pos.length() * angle1.Sin()) / ContactDistance1;
+//	std::cout << "w0 " << w0 << '\n';
+//	std::cout << "w1 " << w1 << '\n';
+//
+//	if (!obj0.IsStatic) { obj0.Vel().Rot -= Angle::Radians(ImpulseFactor * w0); }
+//	if (!obj1.IsStatic) { obj1.Vel().Rot += Angle::Radians(ImpulseFactor * w1); }
+
+	if (obj0.IsStatic) { obj0.Vel() = Trans2D(); }
+	if (obj1.IsStatic) { obj1.Vel() = Trans2D(); }
 }
 
 void UpdateGravity(float timeDelta)
@@ -274,6 +309,24 @@ void Update(float timeDelta)
 	//UpdateGravity(timeDelta);
 	UpdateCollision();
 	UpdateOrientation(timeDelta);
+}
+
+
+void Test()
+{
+/*
+	Point3D	a(1.23, 5.48f, 9.28f);
+	Point3D b(3.543f, 4.5f, 3.02f);
+	Point3D c = Point3D::cross(a, b);
+	Angle d = Angle::SaCos(Point3D::dot(a, b) / (a.length() * b.length()));
+	std::cout << a << '\n';
+	std::cout << b << '\n';
+	std::cout << c << '\n';
+	std::cout << a.length() << '\n';
+	std::cout << b.length() << '\n';
+	std::cout << c.length() << '\n';
+	std::cout << d << '\n';
+*/
 }
 
 void Frame(double timeDelta)
@@ -319,6 +372,8 @@ void Frame(double timeDelta)
 	{
 		Physics2D_MainInstances[i].Draw();
 	}
+
+	Test();
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
