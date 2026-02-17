@@ -1,12 +1,12 @@
-#include "PolyGon/Physics2D/BufferArray.hpp"
+#include "Arrow2D/Buffer.hpp"
 
 #include "OpenGL.hpp"
 
 
 
-Physics2D::BufferArray::BufferArray() :
+Arrow2D::Buffer::Buffer() :
 	Main(0, 1),
-	Inst(2, 3, 5, 6),
+	Inst(2, 3, 4),
 	DrawMode(GL::DrawMode::Triangles)
 {
 	Buffers.Allocate(2),
@@ -16,7 +16,7 @@ Physics2D::BufferArray::BufferArray() :
 
 
 
-void Physics2D::BufferArray::Draw()
+void Arrow2D::Buffer::Draw()
 {
 	Bind();
 	GL::DrawArraysInstanced(DrawMode, 0, Main.DrawCount, Inst.DrawCount);

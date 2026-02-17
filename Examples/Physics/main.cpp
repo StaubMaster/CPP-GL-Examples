@@ -41,7 +41,12 @@
 #include "Physics2D/MainInstance.hpp"
 #include "Physics2D/Object.hpp"
 
+#include "Arrow2D/Main/Data.hpp"
+#include "Arrow2D/Inst/Data.hpp"
+#include "Arrow2D/Buffer.hpp"
+#include "Arrow2D/Shader.hpp"
 
+#include "Graphics/Texture/Array2D.hpp"
 
 #include <math.h>
 
@@ -75,6 +80,13 @@ MainContext()
 		});
 		Physics2D_Shader.Change(code);
 	}
+	{
+		Container::Array<Shader::Code> code({
+			Shader::Code(ShaderDir.File("Arrow2D/Shader.vert")),
+			Shader::Code(ShaderDir.File("Arrow2D/Shader.frag")),
+		});
+		Arrow2D_Shader.Change(code);
+	}
 }
 ~MainContext()
 { }
@@ -85,6 +97,101 @@ Physics2D::Shader	Physics2D_Shader;
 
 Container::Array<Physics2D::MainInstance>	Physics2D_MainInstances;
 Container::Binary<Physics2D::Object>		Physics2D_Objects;
+
+Arrow2D::Shader	Arrow2D_Shader;
+Arrow2D::Buffer	Arrow2D_Buffer;
+Texture::Array2D Arrow2D_Texture;
+
+/* Arrows
+	Textures:
+		Beginning
+		Middle
+		Ending
+	Point2D Pos
+	Point2D Dir (not normal)
+	Size (width of Texture)
+
+Len = |Dir|
+		Pos								Pos + Dir
+		|------------------Len------------------|
+		# - - - # - - - - - - - - - - - # - - - #
+	|	|		|						|		|
+Size|	|		|						|		|
+	|	|		|						|		|
+		# - - - # - - - - - - - - - - - # - - - #
+		|-Size--|						|--Size-|
+				|--(Len - (Size * 2))---|
+*/
+void ArrowTest()
+{
+	Arrow2D_Buffer.Bind();
+
+	{
+		Container::Binary<FileInfo> files;
+		files.Insert(ImageDir.File("Arrow/L0_32x32.png"));
+		files.Insert(ImageDir.File("Arrow/M0_32x32.png"));
+		files.Insert(ImageDir.File("Arrow/R1_32x32.png"));
+		Arrow2D_Texture.Assign(32, 32, files);
+	}
+
+	{
+		AxisBox2D	Pos;
+		float		Tex;
+
+		Container::Binary<Arrow2D::Main::Data> data;
+
+		Pos = AxisBox2D(Point2D(-4, -1), Point2D(-2, +1));
+		Tex = 0;
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(0, 0, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(0, 1, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(1, 0, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(1, 0, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(0, 1, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(1, 1, Tex)));
+
+		Pos = AxisBox2D(Point2D(-1, -1), Point2D(+1, +1));
+		Tex = 1;
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(0, 0, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(0, 1, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(1, 0, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(1, 0, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(0, 1, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(1, 1, Tex)));
+
+		Pos = AxisBox2D(Point2D(+2, -1), Point2D(+4, +1));
+		Tex = 2;
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(0, 0, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(0, 1, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(1, 0, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(1, 0, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(0, 1, Tex)));
+		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(1, 1, Tex)));
+
+		Arrow2D_Buffer.Main.Change(data);
+		std::cout << "Main: " << data.Count() << '\n';
+		for (unsigned int i = 0; i < data.Count(); i++)
+		{
+			std::cout << data[i].Pos << ' ' << data[i].Tex << '\n';
+		}
+	}
+
+	{
+		Container::Binary<Arrow2D::Inst::Data> data;
+
+		data.Insert(Arrow2D::Inst::Data(Point2D(-0.25f, -0.25f), Point2D(+0.5f, +0.5f), 0.1f));
+		data.Insert(Arrow2D::Inst::Data(Point2D(-0.50f, -0.50f), Point2D(+1.0f, +0.0f), 0.1f));
+
+		Arrow2D_Buffer.Inst.Change(data);
+		/*std::cout << "Inst: " << data.Count() << '\n';
+		for (unsigned int i = 0; i < data.Count(); i++)
+		{
+			std::cout << data[i].Pos << ' ' << data[i].Dir << ' ' << data[i].Size << '\n';
+		}*/
+	}
+	Arrow2D_Shader.Bind();
+	Arrow2D_Texture.Bind();
+	Arrow2D_Buffer.Draw();
+}
 
 
 
@@ -159,6 +266,10 @@ void Make()
 void Init()
 {
 	Physics2D_Shader.Create();
+	
+	Arrow2D_Shader.Create();
+	Arrow2D_Buffer.Create();
+	Arrow2D_Texture.Create();
 
 	Make();
 }
@@ -171,6 +282,10 @@ void Free()
 		Physics2D_MainInstances[i].BufferArray.Delete();
 		Physics2D_MainInstances[i].Dispose();
 	}
+
+	Arrow2D_Shader.Delete();
+	Arrow2D_Buffer.Delete();
+	Arrow2D_Texture.Delete();
 }
 
 
@@ -292,6 +407,7 @@ void Frame(double timeDelta)
 	}
 
 	Test();
+	ArrowTest();
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
