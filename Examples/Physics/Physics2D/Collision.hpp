@@ -31,6 +31,7 @@ namespace Physics2D
 	{
 		bool			Valid;
 		Point2D			Normal;
+		Point2D			Contact;
 		float			Distance;
 		unsigned int	Contact0Udx;
 		unsigned int	Contact1Udx;
@@ -42,21 +43,31 @@ namespace Physics2D
 
 		bool Compare(const PolyGonContactData & other) const;
 
-		static PolyGonContactData Check(
+		static PolyGonContactData CheckContact(
 			const Object & obj0,
 			const Object & obj1,
-			Point2D normal
+			Point2D normal,
+			float time
 		);
-		static PolyGonContactData Check(
+		static PolyGonContactData CheckContact(
 			const Object & obj0,
-			const Object & obj1
+			const Object & obj1,
+			float time
 		);
 	};
 
-	/*void Collide(
-		const PolyGon & poly_gon_0, const Trans2D & trans_0, Trans2D vel_0,
-		const PolyGon & poly_gon_1, const Trans2D & trans_1, Trans2D vel_1
-	);*/
+	void CollideLinear(
+		Object & obj0,
+		Object & obj1
+	);
+	void CollideRotate(
+		Object & obj0,
+		Object & obj1
+	);
+	void Collide(
+		Object & obj0,
+		Object & obj1
+	);
 };
 
 #endif

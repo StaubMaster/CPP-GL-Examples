@@ -28,7 +28,12 @@ struct Object
 
 	unsigned int	CornerCount() const;
 	unsigned int	SideCount() const;
-	Point2D			TransCorner(unsigned int idx) const;
+
+	Point2D	CornerFromIndex(unsigned int idx) const;
+
+	Point2D	RelativePositionOf(Point2D p) const;
+	Point2D	AbsolutePositionOf(Point2D p) const;
+	Point2D	AbsoluteVelocityOf(Point2D p) const;
 
 	~Object();
 	Object();

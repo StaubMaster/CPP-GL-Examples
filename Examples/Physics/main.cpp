@@ -57,6 +57,8 @@ DirectoryInfo TextDir;
 Window	window;
 View2D	view;
 
+bool Paused;
+
 MainContext()
 	: ImageDir("../../media/Images")
 	, ShaderDir("../../media/Shaders")
@@ -64,6 +66,7 @@ MainContext()
 	, TextDir("../../media/Text")
 	, window()
 	, view(View2D::Default())
+	, Paused(true)
 {
 	{
 		Container::Array<Shader::Code> code({
@@ -116,30 +119,39 @@ void Make()
 	Physics2D_MainInstances[obj0].BufferArray.Create();
 	{
 		PolyGon & poly_gon = *(Physics2D_MainInstances[obj0].PolyGon);
-		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1, -1), ColorF4(1, 0, 0)));
-		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1, -1), ColorF4(0, 1, 0)));
-		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0, +1), ColorF4(0, 0, 1)));
-
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.025f, -0.400f), ColorF4(1, 0, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.025f, -0.400f), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.000f, +0.400f), ColorF4(0, 0, 1)));
-
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 	}
 	Physics2D_MainInstances[obj0].UpdateMain();
+
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(0.0f, 0.0f), Angle2D()), false));
+
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
 
 //	Stuck in Wall. Bounces back "into" Wall every time it would get out.
 //	No Force pushing it out.
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-1.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
 
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
+	unsigned int obj1 = 2;
+	Physics2D_MainInstances[obj1].BufferArray.Create();
+	{
+		PolyGon & poly_gon = *(Physics2D_MainInstances[obj1].PolyGon);
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.025f, -0.400f), ColorF4(1, 0, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.025f, -0.400f), ColorF4(0, 1, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.000f, +0.400f), ColorF4(0, 0, 1)));
+		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
+	}
+	Physics2D_MainInstances[obj1].UpdateMain();
+
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj1], Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj1], Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
 }
 
 
@@ -163,91 +175,6 @@ void Free()
 
 
 
-void Bounce(Physics2D::Object & obj0, Physics2D::Object & obj1)
-{
-	if (obj0.IsStatic && obj1.IsStatic) { return; }
-
-	// Currently only handles one Contact. Should handle all Contacts
-	Physics2D::PolyGonContactData contact_data = Physics2D::PolyGonContactData::Check(obj0, obj1);
-	if (!contact_data.Valid) { return; }
-
-	Point2D normal = contact_data.Normal.normalize();
-
-	//Point2D Contact0 = obj0.PolyGon() -> Corners[contact_data.Contact0Udx].Pos;
-	//Point2D Contact1 = obj1.PolyGon() -> Corners[contact_data.Contact1Udx].Pos;
-	Point2D Contact0 = obj0.TransCorner(contact_data.Contact0Udx);
-	Point2D Contact1 = obj1.TransCorner(contact_data.Contact1Udx);
-
-	Point2D RelativeContact0 = Contact0 - obj0.Now().Pos;
-	Point2D RelativeContact1 = Contact1 - obj1.Now().Pos;
-
-	float ContactDistance0 = RelativeContact0.length();
-	float ContactDistance1 = RelativeContact1.length();
-	(void)ContactDistance0;
-	(void)ContactDistance1;
-
-
-
-	float MassInverse0 = 0;
-	float MassInverse1 = 0;
-	if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.Mass; }
-	if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.Mass; }
-	float MassInverseSum = MassInverse0 + MassInverse1;
-
-
-
-	Point3D normal_3D(normal.X, normal.Y, 0);
-	Point3D RelativeContact0_3D(RelativeContact0.X, RelativeContact0.Y, 0);
-	Point3D RelativeContact1_3D(RelativeContact1.X, RelativeContact1.Y, 0);
-
-	Point3D ContactNormal0_3D = Point3D::cross(RelativeContact0_3D, normal_3D);
-	Point3D ContactNormal1_3D = Point3D::cross(RelativeContact1_3D, normal_3D);
-	Point3D ContactPerpendicular0_3D = Point3D::cross(ContactNormal0_3D, RelativeContact0_3D);
-	Point3D ContactPerpendicular1_3D = Point3D::cross(ContactNormal1_3D, RelativeContact1_3D);
-	Point3D ContactPerpendicularSum_3D = ContactPerpendicular0_3D + ContactPerpendicular1_3D;
-
-	float InertiaFactorSum = Point2D::dot(Point2D(ContactPerpendicularSum_3D.X, ContactPerpendicularSum_3D.Y), normal);
-
-
-
-	std::cout << '\n';
-	std::cout << "normal_3D: " << normal_3D << ' ' << normal_3D.length() << '\n';
-	std::cout << "RelativeContact0_3D: " << RelativeContact0_3D << ' ' << RelativeContact0_3D.length() << '\n';
-	std::cout << "RelativeContact1_3D: " << RelativeContact1_3D << ' ' << RelativeContact1_3D.length() << '\n';
-	std::cout << "ContactPerpendicular0_3D: " << ContactPerpendicular0_3D << ' ' << ContactPerpendicular0_3D.length() << '\n';
-	std::cout << "ContactPerpendicular1_3D: " << ContactPerpendicular1_3D << ' ' << ContactPerpendicular1_3D.length() << '\n';
-	std::cout << "ContactPerpendicularSum_3D: " << ContactPerpendicularSum_3D << ' ' << ContactPerpendicularSum_3D.length() << '\n';
-	std::cout << '\n';
-
-
-
-	float e = 1.0f;
-	Point2D vel_rel = obj1.Vel().Pos - obj0.Vel().Pos;
-	float NormalVelFactor = Point2D::dot(vel_rel, normal);
-
-	std::cout << "normal           : " << normal << '\n';
-	std::cout << "vel_rel          : " << vel_rel << '\n';
-	std::cout << "NormalVelFactor  : " << NormalVelFactor << '\n';
-	std::cout << "MassInverseSum   : " << MassInverseSum << '\n';
-	std::cout << "InertiaFactorSum : " << InertiaFactorSum << '\n';
-
-	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
-//	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum);
-	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
-
-	if (!obj0.IsStatic) { obj0.Vel().Pos -= normal * (ImpulseFactor / obj0.Mass); }
-	if (!obj1.IsStatic) { obj1.Vel().Pos += normal * (ImpulseFactor / obj1.Mass); }
-
-//	My Angle Spinning is "the wrong way". positive should be counter-clockwise, mine is clockwise
-	if (!obj0.IsStatic) { obj0.Vel().Rot -= Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
-	if (!obj1.IsStatic) { obj1.Vel().Rot += Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
-
-	if (obj0.IsStatic) { obj0.Vel() = Trans2D(); }
-	if (obj1.IsStatic) { obj1.Vel() = Trans2D(); }
-
-	std::cout << '\n';
-}
-
 void UpdateGravity(float timeDelta)
 {
 	Point2D	Gravity = view.Trans.Rot.rotateBack(Point2D(0, -1)) * (3.0f * timeDelta);
@@ -265,7 +192,9 @@ void UpdateCollision()
 	{
 		for (unsigned int i1 = i0 + 1; i1 < Physics2D_Objects.Count(); i1++)
 		{
-			Bounce(Physics2D_Objects[i0], Physics2D_Objects[i1]);
+			//Physics2D::CollideLinear(Physics2D_Objects[i0], Physics2D_Objects[i1]); // good
+			//Physics2D::CollideRotate(Physics2D_Objects[i0], Physics2D_Objects[i1]); // wack
+			Physics2D::Collide(Physics2D_Objects[i0], Physics2D_Objects[i1]);
 		}
 	}
 }
@@ -323,15 +252,24 @@ void Frame(double timeDelta)
 		Point3D move3D = window.MoveFromKeys();
 		trans.Pos = Point2D(move3D.X, move3D.Z) * 2.0f;
 		//if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { move2D *= 30; }
-		trans.Rot = Angle2D(Angle::Radians(move3D.Y * 0.5f));
+		//trans.Rot = Angle2D(Angle::Radians(move3D.Y * 0.5f));
 		view.Transform(trans, timeDelta);
 	}
 
-	//Update(timeDelta);
-	if (window.KeyBoardManager.Keys[GLFW_KEY_E].IsDown())
-	{ Update(1 / 60.0f); }
-	if (window.KeyBoardManager.Keys[GLFW_KEY_Q].IsPress())
-	{ Update(1 / 60.0f); }
+	if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress())
+	{ Paused = !Paused; }
+
+	if (Paused)
+	{
+		if (window.KeyBoardManager.Keys[GLFW_KEY_O].IsDown())
+		{ Update(1 / 60.0f); }
+		if (window.KeyBoardManager.Keys[GLFW_KEY_I].IsPress())
+		{ Update(1 / 60.0f); }
+	}
+	else
+	{
+		Update(timeDelta);
+	}
 
 	Physics2D_Shader.Bind();
 	Physics2D_Shader.View.Put(view.Trans);

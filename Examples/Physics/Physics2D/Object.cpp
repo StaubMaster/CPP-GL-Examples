@@ -14,10 +14,31 @@ Trans2D & Physics2D::Object::Vel() { return (*Data).Vel; }
 
 unsigned int Physics2D::Object::CornerCount() const { return (PolyGon() -> Corners.Count()); }
 unsigned int Physics2D::Object::SideCount() const { return (PolyGon() -> Sides.Count()); }
-Point2D Physics2D::Object::TransCorner(unsigned int idx) const
+
+Point2D Physics2D::Object::CornerFromIndex(unsigned int idx) const { return PolyGon() -> Corners[idx].Pos; }
+
+Point2D Physics2D::Object::RelativePositionOf(Point2D p) const
 {
-	const Trans2D & trans = Now();
-	return trans.Rot.rotateBack(PolyGon() -> Corners[idx].Pos) + trans.Pos;
+	const Trans2D & now = Now();
+	return now.Rot.rotateFore(p - now.Pos);
+}
+Point2D Physics2D::Object::AbsolutePositionOf(Point2D p) const
+{
+	const Trans2D & now = Now();
+	return now.Rot.rotateBack(p) + now.Pos;
+}
+Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
+{
+	const Trans2D & vel = Vel();
+	Point2D v;
+
+	Point2D perp = p.perpendicular0().normalize();
+	// use Angle stuff instead ?
+
+	v = perp * (vel.Rot.Ang.ToRadians() * p.length());
+	v += vel.Pos;
+
+	return v;
 }
 
 
