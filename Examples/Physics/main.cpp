@@ -82,7 +82,7 @@ MainContext()
 	}
 	{
 		Container::Array<Shader::Code> code({
-			Shader::Code(ShaderDir.File("Arrow2D/Shader.vert")),
+			Shader::Code(ShaderDir.File("Arrow2D/View.vert")),
 			Shader::Code(ShaderDir.File("Arrow2D/Shader.frag")),
 		});
 		Arrow2D_Shader.Change(code);
@@ -188,12 +188,25 @@ void ArrowTest()
 		//	560 x 420	+0.75 , +0.75
 		//	640 x 480	+1.00 , +1.00
 
-		Point2D Center = window.Size.BufferSize / 2;
-		Point2D Cursor = window.MouseManager.CursorPixelPosition().Absolute;
-		data.Insert(Arrow2D::Inst::Data(Center, Cursor, 20));
+		//Point2D Cursor = AbsolutePositionToWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
+		//data.Insert(Arrow2D::Inst::Data(Point2D(), Cursor, 20));
+		//data.Insert(Arrow2D::Inst::Data(Point2D(0, 1), Point2D(1, 1), 20));
 
-		data.Insert(Arrow2D::Inst::Data(Point2D(240, 180), Point2D(400, 300), 20));
-		data.Insert(Arrow2D::Inst::Data(Point2D(160, 120), Point2D(480, 120), 20));
+		Point2D now;
+		Point2D vel;
+		for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+		{
+			now = Physics2D_Objects[i].Now().Pos;
+			vel = Physics2D_Objects[i].Vel().Pos;
+			data.Insert(Arrow2D::Inst::Data(now, now + vel, 10));
+			for (unsigned int j = 0; j < Physics2D_Objects[i].CornerCount(); j++)
+			{
+				Point2D p = Physics2D_Objects[i].CornerFromIndex(j);
+				Point2D now = Physics2D_Objects[i].AbsolutePositionOf(p);
+				Point2D vel = Physics2D_Objects[i].AbsoluteVelocityOf(p);
+				data.Insert(Arrow2D::Inst::Data(now, now + vel, 10));
+			}
+		}
 
 		Arrow2D_Buffer.Inst.Change(data);
 		/*std::cout << "Inst: " << data.Count() << '\n';
@@ -203,6 +216,9 @@ void ArrowTest()
 		}*/
 	}
 	Arrow2D_Shader.Bind();
+	Arrow2D_Shader.View.Put(view.Trans);
+	Arrow2D_Shader.Scale.PutData(&view.Scale);
+
 	Arrow2D_Texture.Bind();
 	Arrow2D_Buffer.Draw();
 }
@@ -249,7 +265,9 @@ void Make()
 
 	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(0.0f, 0.0f), Angle2D()), false));
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(45))), false));
+
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
@@ -429,6 +447,17 @@ void Resize(const WindowBufferSize2D & WindowSize)
 	Physics2D_Shader.WindowSize.Put(WindowSize);
 	Arrow2D_Shader.Bind();
 	Arrow2D_Shader.WindowSize.Put(WindowSize);
+}
+
+//	Make this better and Put into Window
+//	Make similar Function for reverse Calculation
+Point2D AbsolutePositionToWindowPixel(Point2D pos)
+{
+	Point2D HalfSize = window.Size.WindowSize / 2;	// Calculate in Window ?
+	Point2D CursorPos = pos - HalfSize;
+	CursorPos.Y = -CursorPos.Y;
+	CursorPos = (CursorPos / window.Size.Ratio) / HalfSize;
+	return (CursorPos * view.Scale) + view.Trans.Pos;
 }
 
 void CursorScroll(UserParameter::Mouse::Scroll params)
