@@ -33,6 +33,7 @@ Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
 	Point2D v;
 
 	Point2D perp = p.perpendicular0().normalize();
+	perp = Now().Rot.rotateBack(perp);
 	// use Angle stuff instead ?
 
 	v = perp * (vel.Rot.Ang.ToRadians() * p.length());

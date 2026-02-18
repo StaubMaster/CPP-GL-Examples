@@ -425,8 +425,8 @@ void Physics2D::Collide(
 	if (!obj0.IsStatic) { obj0.Vel().Pos -= contact_data.Normal * (ImpulseFactor / obj0.Mass); }
 	if (!obj1.IsStatic) { obj1.Vel().Pos += contact_data.Normal * (ImpulseFactor / obj1.Mass); }
 
-//	if (!obj0.IsStatic) { obj0.Vel().Rot += Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
-//	if (!obj1.IsStatic) { obj1.Vel().Rot -= Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
+	if (!obj0.IsStatic) { obj0.Vel().Rot += Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
+	if (!obj1.IsStatic) { obj1.Vel().Rot -= Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
 
 	if (obj0.IsStatic) { obj0.Vel() = Trans2D(); }
 	if (obj1.IsStatic) { obj1.Vel() = Trans2D(); }
