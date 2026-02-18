@@ -3,17 +3,17 @@
 
 
 Arrow2D::Inst::Data::Data()
-	: Pos()
-	, Dir()
+	: Pos0()
+	, Pos1()
 	, Size()
 { }
-Arrow2D::Inst::Data::Data(Point2D pos, Point2D dir)
-	: Pos(pos)
-	, Dir(dir)
+Arrow2D::Inst::Data::Data(Point2D pos0, Point2D pos1)
+	: Pos0(pos0)
+	, Pos1(pos1)
 	, Size()
 { }
-Arrow2D::Inst::Data::Data(Point2D pos, Point2D dir, float size)
-	: Pos(pos)
-	, Dir(dir)
+Arrow2D::Inst::Data::Data(Point2D pos0, Point2D pos1, float size)
+	: Pos0(pos0)
+	, Pos1(pos1)
 	, Size(size)
 { }

@@ -12,13 +12,13 @@ namespace Inst
 class Buffer : public ::Buffer::Attribute
 {
 	private:
-	::Attribute::Point2D	Pos;
-	::Attribute::Point2D	Dir;
+	::Attribute::Point2D	Pos0;
+	::Attribute::Point2D	Pos1;
 	::Attribute::FloatN		Size;
 	public:
 	Buffer(
-		unsigned int indexPos,
-		unsigned int indexDir,
+		unsigned int indexPos0,
+		unsigned int indexPos1,
 		unsigned int indexSize
 	);
 };

@@ -9,12 +9,12 @@ namespace Inst
 {
 struct Data
 {
-	Point2D		Pos;
-	Point2D		Dir;
+	Point2D		Pos0;
+	Point2D		Pos1;
 	float		Size;
 	Data();
-	Data(Point2D pos, Point2D dir);
-	Data(Point2D pos, Point2D dir, float size);
+	Data(Point2D pos0, Point2D pos1);
+	Data(Point2D pos0, Point2D pos1, float size);
 };
 };
 };

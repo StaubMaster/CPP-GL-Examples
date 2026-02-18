@@ -168,18 +168,32 @@ void ArrowTest()
 		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(1, 1, Tex)));
 
 		Arrow2D_Buffer.Main.Change(data);
-		std::cout << "Main: " << data.Count() << '\n';
+		/*std::cout << "Main: " << data.Count() << '\n';
 		for (unsigned int i = 0; i < data.Count(); i++)
 		{
 			std::cout << data[i].Pos << ' ' << data[i].Tex << '\n';
-		}
+		}*/
 	}
 
 	{
 		Container::Binary<Arrow2D::Inst::Data> data;
 
-		data.Insert(Arrow2D::Inst::Data(Point2D(-0.25f, -0.25f), Point2D(+0.5f, +0.5f), 0.1f));
-		data.Insert(Arrow2D::Inst::Data(Point2D(-0.50f, -0.50f), Point2D(+1.0f, +0.0f), 0.1f));
+		//	  0 x   0	-1.00 , -1.00
+		//	 80 x  60	-0.75 , -0.75
+		//	160 x 120	-0.50 , -0.50
+		//	240 x 180	-0.25 , -0.25
+		//	320 x 240	 0.00 ,  0.00
+		//	400 x 300	+0.25 , +0.25
+		//	480 x 360	+0.50 , +0.50
+		//	560 x 420	+0.75 , +0.75
+		//	640 x 480	+1.00 , +1.00
+
+		Point2D Center = window.Size.BufferSize / 2;
+		Point2D Cursor = window.MouseManager.CursorPixelPosition().Absolute;
+		data.Insert(Arrow2D::Inst::Data(Center, Cursor, 20));
+
+		data.Insert(Arrow2D::Inst::Data(Point2D(240, 180), Point2D(400, 300), 20));
+		data.Insert(Arrow2D::Inst::Data(Point2D(160, 120), Point2D(480, 120), 20));
 
 		Arrow2D_Buffer.Inst.Change(data);
 		/*std::cout << "Inst: " << data.Count() << '\n';
@@ -413,6 +427,8 @@ void Resize(const WindowBufferSize2D & WindowSize)
 {
 	Physics2D_Shader.Bind();
 	Physics2D_Shader.WindowSize.Put(WindowSize);
+	Arrow2D_Shader.Bind();
+	Arrow2D_Shader.WindowSize.Put(WindowSize);
 }
 
 void CursorScroll(UserParameter::Mouse::Scroll params)
