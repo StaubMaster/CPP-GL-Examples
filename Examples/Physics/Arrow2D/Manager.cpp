@@ -9,10 +9,8 @@
 
 
 
-Arrow2D::Manager::~Manager()
-{ }
-Arrow2D::Manager::Manager()
-{ }
+Arrow2D::Manager::~Manager() { }
+Arrow2D::Manager::Manager() { }
 
 
 

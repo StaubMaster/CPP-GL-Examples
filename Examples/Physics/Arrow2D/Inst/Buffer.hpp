@@ -19,6 +19,7 @@ class Buffer : public ::Buffer::Attribute
 	::Attribute::ColorF4	Col;
 	public:
 	Buffer(
+		BufferArray::Base & buffer_array,
 		unsigned int indexPos0,
 		unsigned int indexPos1,
 		unsigned int indexSize,

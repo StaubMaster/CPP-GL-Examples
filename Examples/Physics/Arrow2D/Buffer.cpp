@@ -4,20 +4,16 @@
 
 
 
-Arrow2D::Buffer::Buffer() :
-	Main(0, 1),
-	Inst(2, 3, 4, 5),
-	DrawMode(GL::DrawMode::Triangles)
+Arrow2D::Buffer::~Buffer() { }
+Arrow2D::Buffer::Buffer()
+	: ::BufferArray::MainInst(GL::DrawMode::Triangles)
+	, Main(*this, 0, 1)
+	, Inst(*this, 2, 3, 4, 5)
 {
+	MainPtr = &Main;
+	InstPtr = &Inst;
+
 	Buffers.Allocate(2),
 	Buffers.Insert(&Main);
 	Buffers.Insert(&Inst);
-}
-
-
-
-void Arrow2D::Buffer::Draw()
-{
-	Bind();
-	GL::DrawArraysInstanced(DrawMode, 0, Main.DrawCount, Inst.DrawCount);
 }

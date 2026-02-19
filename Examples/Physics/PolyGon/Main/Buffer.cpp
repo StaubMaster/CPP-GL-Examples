@@ -6,11 +6,12 @@
 
 
 Physics2D::Main::Buffer::Buffer(
+	BufferArray::Base & buffer_array,
 	unsigned int indexPos,
 	unsigned int indexCol
-)	: ::Buffer::Attribute(GL::BufferTarget::ArrayBuffer, GL::BufferDataUsage::StaticDraw, sizeof(Data))
-	, Pos(0, sizeof(Data), indexPos)
-	, Col(0, sizeof(Data), indexCol)
+)	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
+	, Pos(*this, indexPos)
+	, Col(*this, indexCol)
 {
 	Attributes.Allocate(2);
 	Attributes.Insert(&Pos);

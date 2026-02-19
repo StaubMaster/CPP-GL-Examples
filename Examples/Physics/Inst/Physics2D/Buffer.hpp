@@ -15,6 +15,7 @@ class Buffer : public ::Buffer::Attribute
 	::Attribute::Trans2D	Vel;
 	public:
 	Buffer(
+		BufferArray::Base & buffer_array,
 		unsigned int indexNowPos,
 		unsigned int indexNowRot,
 		unsigned int indexVelPos,

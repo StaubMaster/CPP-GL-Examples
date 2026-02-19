@@ -104,17 +104,6 @@ void Arrow2DInit()
 // sets GL Buffers
 void Arrow2DMake()
 {
-	Arrow2D_Manager.Buffer.Bind();
-	{
-		Arrow2D_Manager.Texture.Bind();
-		Container::Binary<FileInfo> files;
-		//files.Insert(ImageDir.File("Arrow/L0_32x32.png"));
-		//files.Insert(ImageDir.File("Arrow/M0_32x32.png"));
-		//files.Insert(ImageDir.File("Arrow/R1_32x32.png"));
-		files.Insert(ImageDir.File("Arrow/96x32.png"));
-		Arrow2D_Manager.Texture.Assign(96, 32, files);
-	}
-
 	{
 		AxisBox2D	Pos;
 		AxisBox2D	Tex;
@@ -155,17 +144,20 @@ void Arrow2DMake()
 			std::cout << data[i].Pos << ' ' << data[i].Tex << '\n';
 		}*/
 	}
+
+	{
+		Arrow2D_Manager.Texture.Bind();
+		Container::Binary<FileInfo> files;
+		//files.Insert(ImageDir.File("Arrow/L0_32x32.png"));
+		//files.Insert(ImageDir.File("Arrow/M0_32x32.png"));
+		//files.Insert(ImageDir.File("Arrow/R1_32x32.png"));
+		files.Insert(ImageDir.File("Arrow/96x32.png"));
+		Arrow2D_Manager.Texture.Assign(96, 32, files);
+	}
 }
 
 void Arrow2DFrame()
 {
-	
-}
-
-void ArrowTest()
-{
-	Arrow2D_Manager.Buffer.Bind();
-
 	{
 		Container::Binary<Arrow2D::Inst::Data> data;
 
@@ -421,7 +413,7 @@ void Frame(double timeDelta)
 	}
 
 	Test();
-	ArrowTest();
+	Arrow2DFrame();
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
