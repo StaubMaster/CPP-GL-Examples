@@ -17,3 +17,9 @@ Arrow2D::Inst::Data::Data(Point2D pos0, Point2D pos1, float size)
 	, Pos1(pos1)
 	, Size(size)
 { }
+Arrow2D::Inst::Data::Data(Point2D pos0, Point2D pos1, float size, ColorF4 col)
+	: Pos0(pos0)
+	, Pos1(pos1)
+	, Size(size)
+	, Col(col)
+{ }

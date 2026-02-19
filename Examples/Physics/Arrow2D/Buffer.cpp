@@ -6,7 +6,7 @@
 
 Arrow2D::Buffer::Buffer() :
 	Main(0, 1),
-	Inst(2, 3, 4),
+	Inst(2, 3, 4, 5),
 	DrawMode(GL::DrawMode::Triangles)
 {
 	Buffers.Allocate(2),

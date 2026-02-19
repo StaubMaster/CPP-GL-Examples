@@ -22,22 +22,18 @@ uniform float Scale;
 
 
 layout(location = 0) in vec2 Main_Pos;
-/*	Main
-	#---#---#---# -1
-	| L | M | R |
-	#---#---#---# +1
-	-2  -1 +1  +2
-*/
 layout(location = 1) in vec3 Main_Tex;
 
 layout(location = 2) in vec2 Inst_Pos0;
 layout(location = 3) in vec2 Inst_Pos1;
 
 layout(location = 4) in float Inst_Size;
+layout(location = 5) in vec4 Inst_Col;
 
 out Vert_UI
 {
 	vec3	Tex;
+	vec4	Col;
 } vs_out;
 
 
@@ -47,32 +43,32 @@ void main()
 	vec2 pos0 = Inst_Pos0;
 	vec2 pos1 = Inst_Pos1;
 
-	vec2 dir = pos1 - pos0;
-	vec2 dirX = normalize(dir);
+	pos0 = (pos0 - View.Pos) * View.Rot;
+	pos1 = (pos1 - View.Pos) * View.Rot;
+
+	pos0 = pos0 * WindowSize.Ratio;
+	pos1 = pos1 * WindowSize.Ratio;
+
+	pos0 = pos0 / Scale;
+	pos1 = pos1 / Scale;
+
+	//	Normal to Pixel
+	vec2 dir = (pos1 - pos0) * WindowSize.BufferSize;
+	vec2 dirX = normalize(dir) * Inst_Size;
 	vec2 dirY = vec2(+dirX.y, -dirX.x);
 
-	dirX = dirX * Inst_Size;
-	dirY = dirY * Inst_Size;
-
-	pos0 = ((pos0 / WindowSize.BufferSize) * 2) - 1; pos0.y = -pos0.y;
-	pos1 = ((pos1 / WindowSize.BufferSize) * 2) - 1; pos1.y = -pos1.y;
-
-	dirX = dirX / WindowSize.BufferSize; dirX.y = -dirX.y;
-	dirY = dirY / WindowSize.BufferSize; dirY.y = -dirY.y;
+	//	Pixel to Normal
+	dirX /= WindowSize.BufferSize;
+	dirY /= WindowSize.BufferSize;
 
 
-
-	vec2 pos;
 
 	//	Conditional stuff in Shader is Bad
+	vec2 pos;
 
 	//	Middle
 	if (Main_Pos.x < 0.0) { pos = Main_Pos + vec2(3, 0); }
 	if (Main_Pos.x > 0.0) { pos = Main_Pos - vec2(3, 0); }
-
-	//	Ends
-	if (Main_Pos.x < -1.5) { pos = Main_Pos + vec2(4, 0); }
-	if (Main_Pos.x > +1.5) { pos = Main_Pos - vec2(4, 0); }
 
 	pos = (dirX * pos.x) + (dirY * pos.y);
 
@@ -82,4 +78,5 @@ void main()
 	gl_Position = vec4(pos, 0, 1);
 
 	vs_out.Tex = Main_Tex;
+	vs_out.Col = Inst_Col;
 }
