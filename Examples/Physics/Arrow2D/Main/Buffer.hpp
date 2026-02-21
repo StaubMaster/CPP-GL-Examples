@@ -13,15 +13,11 @@ namespace Main
 {
 class Buffer : public ::Buffer::Attribute
 {
-	private:
+	public:
 	::Attribute::Point2D	Pos;
 	::Attribute::Point3D	Tex;
 	public:
-	Buffer(
-		BufferArray::Base & buffer_array,
-		unsigned int indexPos,
-		unsigned int indexTex
-	);
+	Buffer(BufferArray::Base & buffer_array);
 };
 };
 };

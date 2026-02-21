@@ -93,13 +93,18 @@ Arrow2D::Manager Arrow2D_Manager;
 // Init: sets all the File stuff
 void Arrow2DInit()
 {
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(ShaderDir.File("Arrow2D/Shader.vert")),
-			Shader::Code(ShaderDir.File("Arrow2D/Shader.frag")),
-		});
-		Arrow2D_Manager.Shader.Change(code);
-	}
+	Container::Array<Shader::Code> code({
+		Shader::Code(ShaderDir.File("Arrow2D/Shader.vert")),
+		Shader::Code(ShaderDir.File("Arrow2D/Shader.frag")),
+	});
+	Arrow2D_Manager.Shader.Change(code);
+
+	Arrow2D_Manager.Buffer.Main.Pos.Change(0);
+	Arrow2D_Manager.Buffer.Main.Tex.Change(1);
+	Arrow2D_Manager.Buffer.Inst.Pos0.Change(2);
+	Arrow2D_Manager.Buffer.Inst.Pos1.Change(3);
+	Arrow2D_Manager.Buffer.Inst.Size.Change(4);
+	Arrow2D_Manager.Buffer.Inst.Col.Change(5);
 }
 // sets GL Buffers
 void Arrow2DMake()
@@ -180,6 +185,8 @@ void Arrow2DFrame()
 				Point2D now = Physics2D_Objects[i].AbsolutePositionOf(p);
 				Point2D vel = Physics2D_Objects[i].AbsoluteVelocityOf(p);
 				data.Insert(Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(0.5f, 1.0f, 0.5f)));
+				vel -= Physics2D_Objects[i].Vel().Pos;
+				data.Insert(Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(1.0f, 0.5f, 0.5f)));
 			}
 		}
 
@@ -338,23 +345,6 @@ void Update(float timeDelta)
 
 
 
-void Test()
-{
-/*
-	Point3D	a(1.23, 5.48f, 9.28f);
-	Point3D b(3.543f, 4.5f, 3.02f);
-	Point3D c = Point3D::cross(a, b);
-	Angle d = Angle::SaCos(Point3D::dot(a, b) / (a.length() * b.length()));
-	std::cout << a << '\n';
-	std::cout << b << '\n';
-	std::cout << c << '\n';
-	std::cout << a.length() << '\n';
-	std::cout << b.length() << '\n';
-	std::cout << c.length() << '\n';
-	std::cout << d << '\n';
-*/
-}
-
 void Frame(double timeDelta)
 {
 	//if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
@@ -376,6 +366,8 @@ void Frame(double timeDelta)
 		//trans.Rot = Angle2D(Angle::Radians(move3D.Y * 0.5f));
 		view.Transform(trans, timeDelta);
 	}
+
+
 
 	if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress())
 	{ Paused = !Paused; }
@@ -412,7 +404,6 @@ void Frame(double timeDelta)
 		Physics2D_MainInstances[i].Draw();
 	}
 
-	Test();
 	Arrow2DFrame();
 }
 void Resize(const WindowBufferSize2D & WindowSize)

@@ -9,6 +9,10 @@ Physics2D::MainInstance::MainInstance()
 	, BufferArray()
 	, Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
 {
+	BufferArray.Main.Pos.Change(0);
+	BufferArray.Main.Col.Change(1);
+	BufferArray.Inst.Now.Pos.Change(2);
+	BufferArray.Inst.Now.Rot.Change(3, 4);
 	BufferArray.Create();
 }
 Physics2D::MainInstance::MainInstance(const MainInstance & other)

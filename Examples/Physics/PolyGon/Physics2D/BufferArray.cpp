@@ -4,10 +4,11 @@
 
 
 
-Physics2D::BufferArray::BufferArray() :
-	Main(*this, 0, 1),
-	Inst(*this, 2, 3, 5, 6),
-	DrawMode(GL::DrawMode::Triangles)
+Physics2D::BufferArray::BufferArray()
+	: ::BufferArray::Base()
+	, Main(*this)
+	, Inst(*this)
+	, DrawMode(GL::DrawMode::Triangles)
 {
 	Buffers.Allocate(2),
 	Buffers.Insert(&Main);

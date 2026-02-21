@@ -10,17 +10,11 @@ namespace Inst
 {
 class Buffer : public ::Buffer::Attribute
 {
-	private:
+	public:
 	::Attribute::Trans2D	Now;
 	::Attribute::Trans2D	Vel;
 	public:
-	Buffer(
-		BufferArray::Base & buffer_array,
-		unsigned int indexNowPos,
-		unsigned int indexNowRot,
-		unsigned int indexVelPos,
-		unsigned int indexVelRot
-	);
+	Buffer(BufferArray::Base & buffer_array);
 };
 };
 };

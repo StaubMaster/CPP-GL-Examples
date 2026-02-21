@@ -5,17 +5,12 @@
 
 
 
-Arrow2D::Inst::Buffer::Buffer(
-	BufferArray::Base & buffer_array,
-	unsigned int indexPos0,
-	unsigned int indexPos1,
-	unsigned int indexSize,
-	unsigned int indexCol
-)	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 1, sizeof(Data))
-	, Pos0(*this, indexPos0)
-	, Pos1(*this, indexPos1)
-	, Size(*this, indexSize)
-	, Col(*this, indexCol)
+Arrow2D::Inst::Buffer::Buffer(BufferArray::Base & buffer_array)
+	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Data))
+	, Pos0()
+	, Pos1()
+	, Size()
+	, Col()
 {
 	Attributes.Allocate(4, 0);
 	Attributes.Insert(&Pos0);

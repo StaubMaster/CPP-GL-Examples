@@ -5,13 +5,10 @@
 
 
 
-Physics2D::Main::Buffer::Buffer(
-	BufferArray::Base & buffer_array,
-	unsigned int indexPos,
-	unsigned int indexCol
-)	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
-	, Pos(*this, indexPos)
-	, Col(*this, indexCol)
+Physics2D::Main::Buffer::Buffer(BufferArray::Base & buffer_array)
+	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
+	, Pos()
+	, Col()
 {
 	Attributes.Allocate(2);
 	Attributes.Insert(&Pos);

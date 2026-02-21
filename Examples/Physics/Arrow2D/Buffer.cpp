@@ -7,8 +7,8 @@
 Arrow2D::Buffer::~Buffer() { }
 Arrow2D::Buffer::Buffer()
 	: ::BufferArray::MainInst(GL::DrawMode::Triangles)
-	, Main(*this, 0, 1)
-	, Inst(*this, 2, 3, 4, 5)
+	, Main(*this)
+	, Inst(*this)
 {
 	MainPtr = &Main;
 	InstPtr = &Inst;

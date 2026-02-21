@@ -5,13 +5,10 @@
 
 
 
-Arrow2D::Main::Buffer::Buffer(
-	BufferArray::Base & buffer_array,
-	unsigned int indexPos,
-	unsigned int indexTex
-)	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
-	, Pos(*this, indexPos)
-	, Tex(*this, indexTex)
+Arrow2D::Main::Buffer::Buffer(BufferArray::Base & buffer_array)
+	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
+	, Pos()
+	, Tex()
 {
 	Attributes.Allocate(2);
 	Attributes.Insert(&Pos);

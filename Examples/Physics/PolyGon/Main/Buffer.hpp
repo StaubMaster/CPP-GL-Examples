@@ -11,15 +11,11 @@ namespace Main
 {
 class Buffer : public ::Buffer::Attribute
 {
-	private:
+	public:
 	::Attribute::Point2D	Pos;
 	::Attribute::ColorF4	Col;
 	public:
-	Buffer(
-		BufferArray::Base & buffer_array,
-		unsigned int indexPos,
-		unsigned int indexCol
-	);
+	Buffer(BufferArray::Base & buffer_array);
 };
 };
 };
