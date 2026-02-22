@@ -3,6 +3,7 @@
 
 # include "ValueType/Point2D.hpp"
 # include "ValueType/ColorF4.hpp"
+# include "ValueType/Line2D.hpp"
 
 namespace Arrow2D
 {
@@ -18,6 +19,7 @@ struct Data
 	Data(Point2D pos0, Point2D pos1);
 	Data(Point2D pos0, Point2D pos1, float size);
 	Data(Point2D pos0, Point2D pos1, float size, ColorF4 col);
+	Data(Line2D line, float size, ColorF4 col);
 };
 };
 };

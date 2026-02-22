@@ -8,6 +8,7 @@
 
 #include "DataInclude.hpp"
 #include "DataShow.hpp"
+#include "ValueType/Intersect.hpp"
 
 #include "Window.hpp"
 #include "Function/Object.hpp"
@@ -161,13 +162,98 @@ void Arrow2DMake()
 	}
 }
 
+float ShowDot(Container::Binary<Arrow2D::Inst::Data> & arrow_data,
+	Point2D pos, Point2D dir0, Point2D dir1,
+	ColorF4 col)
+{
+	float dot = Point2D::dot(dir0, dir1);
+	Point2D p;
+
+	p = pos + (dir0.normalize() * (dot / dir0.length()));
+	arrow_data.Insert(Arrow2D::Inst::Data(pos + dir0, p, 10, col));
+	arrow_data.Insert(Arrow2D::Inst::Data(pos + dir1, p, 10, col));
+
+	p = pos + (dir1.normalize() * (dot / dir1.length()));
+	arrow_data.Insert(Arrow2D::Inst::Data(pos + dir0, p, 10, col));
+	arrow_data.Insert(Arrow2D::Inst::Data(pos + dir1, p, 10, col));
+
+	return dot;
+}
+void Test(Container::Binary<Arrow2D::Inst::Data> & arrow_data)
+{
+//	Point2D pos = Point2D(0, 0);
+//	Point2D dir0 = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
+//	Point2D dir1 = Point2D(1.0f, 0.0f);
+//	arrow_data.Insert(Arrow2D::Inst::Data(pos, pos + dir0, 20, ColorF4(0, 0, 0)));
+//	arrow_data.Insert(Arrow2D::Inst::Data(pos, pos + dir1, 20, ColorF4(0, 0, 0)));
+//	ShowDot(arrow_data, pos, dir0, dir1, ColorF4(0, 1, 0));
+//	{
+//		float cross = dir0.cross(dir1);
+//		Point2D pos0 = pos + (dir0 * cross);
+//		Point2D pos1 = pos + (dir1 * cross);
+//		arrow_data.Insert(Arrow2D::Inst::Data(pos, pos0, 20, ColorF4(1, 0, 0)));
+//		arrow_data.Insert(Arrow2D::Inst::Data(pos, pos1, 20, ColorF4(1, 0, 0)));
+//		arrow_data.Insert(Arrow2D::Inst::Data(pos0, pos1, 20, ColorF4(1, 0, 0)));
+//	}
+
+	Ray2D ray(Point2D(0, 0), AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute));
+	arrow_data.Insert(Arrow2D::Inst::Data(ray.Pos, ray.Pos + ray.Dir, 20, ColorF4(0, 0, 0)));
+
+	Line2D line(Point2D(-0.5f, +0.5f), Point2D(+0.5f, +0.5f));
+	arrow_data.Insert(Arrow2D::Inst::Data(line, 20, ColorF4(0, 0, 0)));
+
+	Point2D perp(-ray.Dir.Y, +ray.Dir.X);
+	arrow_data.Insert(Arrow2D::Inst::Data(ray.Pos, ray.Pos + perp, 10, ColorF4(1, 1, 1)));
+
+	Point2D diff = line.Pos1 - line.Pos0;
+	Point2D rel0 = ray.Pos - line.Pos0;
+	arrow_data.Insert(Arrow2D::Inst::Data(ray.Pos, line.Pos0, 10, ColorF4(1, 1, 1)));
+
+	float dot = diff.dot(perp);
+	if (dot == 0.0f)
+	{
+		// Parallel
+	}
+
+	float ray_t = diff.cross(rel0) / dot;
+	float line_t = rel0.dot(perp) / dot;
+
+	ColorF4 col;
+	if (ray_t > 0.0f && (line_t >= 0.0f && line_t <= 1.0f))
+	{ col = ColorF4(0, 1, 0); }
+	else
+	{ col = ColorF4(1, 0, 0); }
+	arrow_data.Insert(Arrow2D::Inst::Data(ray.ToLine(ray_t), 10, col));
+	arrow_data.Insert(Arrow2D::Inst::Data(line.Pos0, line.Pos0 + (diff * line_t), 10, col));
+
+//	ColorF4 col;
+//	float dot;
+//	Point2D pos;
+
+	//dot = Point2D::dot(perp, diff);
+	//if (dot != 0.0f)
+//	{
+//		dot = ShowDot(arrow_data, ray.Pos, ray.Dir, -rel0, ColorF4(1, 0, 0));
+//		(void)dot;
+//
+//		dot = ShowDot(arrow_data, line.Pos0, diff, rel0, ColorF4(0, 1, 0));
+//
+//		//col = ColorF4(0, 1, 0);
+//		//dot = Point2D::dot(diff, perp) / dot;
+//
+//		//pos = line.Pos0 + (diff.normalize() * (dot / diff.length()));
+//		//arrow_data.Insert(Arrow2D::Inst::Data(ray.Pos, pos, 10, col));
+//		//arrow_data.Insert(Arrow2D::Inst::Data(line.Pos1, pos, 10, col));
+//	}
+}
+
 void Arrow2DFrame()
 {
 	{
 		Container::Binary<Arrow2D::Inst::Data> data;
 
 		//{
-		//	Point2D Cursor = AbsolutePositionToWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
+		//	Point2D Cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
 		//	data.Insert(Arrow2D::Inst::Data(Point2D(), Cursor, 20, ColorF4(1.0f, 1.0f, 1.0f)));
 		//	data.Insert(Arrow2D::Inst::Data(Point2D(0, 1), Point2D(1, 1), 20, ColorF4(0.5f, 0.5f, 0.5f)));
 		//}
@@ -345,6 +431,46 @@ void Update(float timeDelta)
 
 
 
+bool TestPointInPolyGon(const Physics2D::Object & obj, Point2D p)
+{
+	//	instead of Transforming the Corners
+	//	Transform ray Backwards
+
+	Ray2D ray(p, Point2D(1, 0));
+	Line2D line;
+
+	ray = obj.Now().Transform1(ray);
+
+	unsigned int sum = 0;
+	for (unsigned int i = 0; i < obj.SideCount(); i++)
+	{
+		//Point2D corner0 = obj.AbsolutePositionOf(obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner0.Udx));
+		//Point2D corner1 = obj.AbsolutePositionOf(obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner1.Udx));
+		//Point2D corner2 = obj.AbsolutePositionOf(obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner2.Udx));
+		Point2D corner0 = obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner0.Udx);
+		Point2D corner1 = obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner1.Udx);
+		Point2D corner2 = obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner2.Udx);
+
+		if (IsIntersecting(ray, Line2D(corner0, corner1))) { sum++; }
+		if (IsIntersecting(ray, Line2D(corner1, corner2))) { sum++; }
+		if (IsIntersecting(ray, Line2D(corner2, corner0))) { sum++; }
+	}
+
+	return (sum % 2) != 0;
+}
+void TestCursoeSelect()
+{
+	Point2D cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
+	
+	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+	{
+		if (TestPointInPolyGon(Physics2D_Objects[i], cursor))
+		{
+			std::cout << "Hovering: " << i << '\n';
+		}
+	}
+}
+
 void Frame(double timeDelta)
 {
 	//if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
@@ -367,7 +493,7 @@ void Frame(double timeDelta)
 		view.Transform(trans, timeDelta);
 	}
 
-
+	TestCursoeSelect();
 
 	if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress())
 	{ Paused = !Paused; }
@@ -414,9 +540,7 @@ void Resize(const WindowBufferSize2D & WindowSize)
 	Arrow2D_Manager.Shader.WindowSize.Put(WindowSize);
 }
 
-//	Make this better and Put into Window
-//	Make similar Function for reverse Calculation
-Point2D AbsolutePositionToWindowPixel(Point2D pos)
+Point2D AbsolutePositionOfWindowPixel(Point2D pos)
 {
 	Point2D HalfSize = window.Size.WindowSize / 2;	// Calculate in Window ?
 	Point2D CursorPos = pos - HalfSize;
@@ -446,6 +570,15 @@ void CursorScroll(UserParameter::Mouse::Scroll params)
 
 	view.Trans.Pos = ZoomPos - (CursorPos * view.Scale);
 }
+void CursorClick(UserParameter::Mouse::Click params)
+{
+	(void)params;
+
+}
+void CursorDrag(UserParameter::Mouse::Drag params)
+{
+	(void)params;
+}
 
 
 
@@ -457,6 +590,8 @@ int Main()
 	window.ResizeCallBack.Change<MainContext>(this, &MainContext::Resize);
 
 	window.MouseManager.CallbackScroll.Change(this, &MainContext::CursorScroll);
+	window.MouseManager.CallbackClick.Change(this, &MainContext::CursorClick);
+	window.MouseManager.CallbackDrag.Change(this, &MainContext::CursorDrag);
 
 	view.Scale = 1.0f;
 
