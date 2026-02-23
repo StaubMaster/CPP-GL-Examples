@@ -15,7 +15,9 @@ Wire2D::Main::Buffer::Buffer(BufferArray::Base & buffer_array)
 	Attributes.Insert(&Col);
 }
 
+
+
 Wire2D::Elem::Buffer::~Buffer() { }
 Wire2D::Elem::Buffer::Buffer(BufferArray::Base & buffer_array)
-	: ::Buffer::Base(buffer_array, GL::BufferTarget::ElementArrayBuffer)
+	: ::Buffer::Element(buffer_array, GL::BufferDataUsage::StaticDraw, GL::DrawIndexType::UnsignedInt)
 { }

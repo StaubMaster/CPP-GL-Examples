@@ -15,6 +15,8 @@ FANCY_NAME := Physics
 ################################################################
 
 FILES_SRC := \
+	Graphics/Buffer/Element.cpp \
+\
 	Arrow2D/Main/Data.cpp \
 	Arrow2D/Main/Buffer.cpp \
 	Arrow2D/Inst/Data.cpp \
@@ -24,6 +26,7 @@ FILES_SRC := \
 	Arrow2D/Manager.cpp \
 \
 	WireFrame2D/Main/Buffer.cpp \
+	WireFrame2D/Buffer.cpp \
 	WireFrame2D/Shader.cpp \
 	WireFrame2D/WireFrame2D.cpp \
 \

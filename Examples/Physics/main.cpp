@@ -48,6 +48,7 @@
 
 #include "WireFrame2D/WireFrame2D.hpp"
 #include "WireFrame2D/Main/Buffer.hpp"
+#include "WireFrame2D/Buffer.hpp"
 #include "WireFrame2D/Shader.hpp"
 
 #include <math.h>
@@ -406,7 +407,7 @@ void Free()
 
 void UpdateGravity(float timeDelta)
 {
-	Point2D	Gravity = view.Trans.Rot.rotateBack(Point2D(0, -1)) * (3.0f * timeDelta);
+	Point2D	Gravity = view.Trans.Rot.rotateBack(Point2D(0, -1) * 3.0f) * timeDelta;
 	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
 	{
 		if (!Physics2D_Objects[i].IsStatic)
@@ -461,20 +462,13 @@ void Test()
 		WireShader.Change(code);
 	}
 
-	BufferArray::Base		WireBuffer;
-	WireBuffer.Buffers.Allocate(3);
-	Wire2D::Main::Buffer	WireMainBuffer(WireBuffer);
-	Wire2D::Elem::Buffer	WireElemBuffer(WireBuffer);
-	Physics2D::Inst::Buffer	WireInstBuffer(WireBuffer);
-	WireBuffer.Buffers.Insert(&WireMainBuffer);
-	WireBuffer.Buffers.Insert(&WireElemBuffer);
-	WireBuffer.Buffers.Insert(&WireInstBuffer);
+	Wire2D::Buffer	WireBuffer;
+	WireBuffer.Main.Pos.Change(0);
+	WireBuffer.Main.Col.Change(1);
+	WireBuffer.Inst.Now.Pos.Change(2);
+	WireBuffer.Inst.Now.Rot.Change(3, 4);
 
-	WireMainBuffer.Pos.Change(0);
-	WireMainBuffer.Col.Change(1);
 
-	WireInstBuffer.Now.Pos.Change(2);
-	WireInstBuffer.Now.Rot.Change(3, 4);
 
 	WireShader.Create();
 	WireBuffer.Create();
@@ -495,20 +489,15 @@ void Test()
 	wire.Sides.Insert(WireFrame2D::Side(2, 3));
 	wire.Sides.Insert(WireFrame2D::Side(3, 0));
 
-	WireMainBuffer.Change(wire.Corners);
-
-	{
-		WireElemBuffer.Bind();
-		GL::BufferData(GL::BufferTarget::ElementArrayBuffer, wire.Sides.VoidLimit(), wire.Sides.VoidData(), GL::BufferDataUsage::StaticDraw);
-	}
-
 	Container::Binary<Physics2D::Inst::Data> instances;
 	instances.Insert(Physics2D::Inst::Data(Trans2D(Point2D(), Angle2D())));
-	WireInstBuffer.Change(instances);
+
+	WireBuffer.Main.Change(wire.Corners);
+	WireBuffer.Elem.Change(wire.Sides, 2);
+	WireBuffer.Inst.Change(instances);
 
 	WireShader.Bind();
-	WireBuffer.Bind();
-	GL::DrawElementsInstanced(GL::DrawMode::Lines, (wire.Sides.Count() * 2), GL::DrawIndexType::UnsignedInt, instances.Count());
+	WireBuffer.Draw();
 
 	WireBuffer.Delete();
 	WireShader.Delete();

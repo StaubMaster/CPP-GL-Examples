@@ -2,7 +2,7 @@
 # define WIRE_2D_MAIN_BUFFER_HPP
 
 # include "Graphics/Buffer/Attribute.hpp"
-# include "Graphics/Buffer/Base.hpp"
+# include "Graphics/Buffer/Element.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
 # include "Graphics/Attribute/ColorF4.hpp"
 
@@ -24,7 +24,7 @@ class Buffer : public ::Buffer::Attribute
 };
 namespace Elem
 {
-class Buffer : public ::Buffer::Base
+class Buffer : public ::Buffer::Element
 {
 	public:
 	~Buffer();

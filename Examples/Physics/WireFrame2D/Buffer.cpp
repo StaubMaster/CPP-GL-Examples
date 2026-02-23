@@ -1,19 +1,12 @@
-#include "Arrow2D/Buffer.hpp"
-
-#include "OpenGL.hpp"
+#include "WireFrame2D/Buffer.hpp"
 
 
 
-Arrow2D::Buffer::~Buffer() { }
-Arrow2D::Buffer::Buffer()
-	: ::BufferArray::MainInst(GL::DrawMode::Triangles)
-	, Main(*this)
-	, Inst(*this)
-{
-	MainPtr = &Main;
-	InstPtr = &Inst;
-
-	Buffers.Allocate(2),
-	Buffers.Insert(&Main);
-	Buffers.Insert(&Inst);
-}
+Wire2D::Buffer::~Buffer() { }
+Wire2D::Buffer::Buffer()
+	: ::BufferArray::MainElemInst<
+		Wire2D::Main::Buffer,
+		Wire2D::Elem::Buffer,
+		Physics2D::Inst::Buffer
+	>(GL::DrawMode::Lines)
+{ }
