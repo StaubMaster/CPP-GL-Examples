@@ -1,0 +1,36 @@
+#ifndef  WIRE_2D_MAIN_BUFFER_HPP
+# define WIRE_2D_MAIN_BUFFER_HPP
+
+# include "Graphics/Buffer/Attribute.hpp"
+# include "Graphics/Buffer/Base.hpp"
+# include "Graphics/Attribute/Point2D.hpp"
+# include "Graphics/Attribute/ColorF4.hpp"
+
+namespace BufferArray { class Base; };
+
+namespace Wire2D
+{
+namespace Main
+{
+class Buffer : public ::Buffer::Attribute
+{
+	public:
+	::Attribute::Point2D	Pos;
+	::Attribute::ColorF4	Col;
+	public:
+	~Buffer();
+	Buffer(BufferArray::Base & buffer_array);
+};
+};
+namespace Elem
+{
+class Buffer : public ::Buffer::Base
+{
+	public:
+	~Buffer();
+	Buffer(BufferArray::Base & buffer_array);
+};
+};
+};
+
+#endif

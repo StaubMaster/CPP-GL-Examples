@@ -43,6 +43,9 @@ struct Object
 	Object(Physics2D::MainInstance & main_inst, bool is_static);
 	Object(Physics2D::MainInstance & main_inst, Trans2D now, bool is_static);
 	Object(Physics2D::MainInstance & main_inst, Trans2D now, Trans2D vel, bool is_static);
+
+	public:
+	bool IsContaining(Point2D p) const;
 };
 };
 

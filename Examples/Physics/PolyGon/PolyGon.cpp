@@ -1,6 +1,10 @@
 #include "PolyGon.hpp"
 #include "PolyGon/Data.hpp"
 
+#include "ValueType/Ray2D.hpp"
+#include "ValueType/Line2D.hpp"
+#include "ValueType/Intersect.hpp"
+
 
 
 PolyGon::PolyGon()
@@ -47,4 +51,28 @@ Container::Pointer<Physics2D::Main::Data> PolyGon::ToPhysics2D() const
 	}
 
 	return data;
+}
+
+
+
+
+
+bool PolyGon::IsIntersecting(Ray2D ray) const
+{
+	unsigned int sum = 0;
+	for (unsigned int i = 0; i < Sides.Count(); i++)
+	{
+		Point2D corner0 = Corners[(Sides[i].Corner0.Udx)].Pos;
+		Point2D corner1 = Corners[(Sides[i].Corner1.Udx)].Pos;
+		Point2D corner2 = Corners[(Sides[i].Corner2.Udx)].Pos;
+
+		if (::IsIntersecting(ray, Line2D(corner0, corner1))) { sum++; }
+		if (::IsIntersecting(ray, Line2D(corner1, corner2))) { sum++; }
+		if (::IsIntersecting(ray, Line2D(corner2, corner0))) { sum++; }
+	}
+	return (sum % 2) != 0;
+}
+bool PolyGon::IsContaining(Point2D p) const
+{
+	return IsIntersecting(Ray2D(p, Point2D(1, 0)));
 }

@@ -23,6 +23,10 @@ FILES_SRC := \
 	Arrow2D/Shader.cpp \
 	Arrow2D/Manager.cpp \
 \
+	WireFrame2D/Main/Buffer.cpp \
+	WireFrame2D/Shader.cpp \
+	WireFrame2D/WireFrame2D.cpp \
+\
 	Inst/Physics2D/Data.cpp \
 	Inst/Physics2D/Buffer.cpp \
 \

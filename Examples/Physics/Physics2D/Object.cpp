@@ -94,3 +94,12 @@ Physics2D::Object::Object(Physics2D::MainInstance & main_inst, Trans2D now, Tran
 	Now() = now;
 	Vel() = vel;
 }
+
+
+
+
+
+bool Physics2D::Object::IsContaining(Point2D p) const
+{
+	return PolyGon() -> IsContaining(Now().Transform1(p));
+}

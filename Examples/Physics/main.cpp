@@ -46,6 +46,10 @@
 #include "Arrow2D/Main/Data.hpp"
 #include "Arrow2D/Inst/Data.hpp"
 
+#include "WireFrame2D/WireFrame2D.hpp"
+#include "WireFrame2D/Main/Buffer.hpp"
+#include "WireFrame2D/Shader.hpp"
+
 #include <math.h>
 
 
@@ -90,13 +94,25 @@ Physics2D::Shader	Physics2D_Shader;
 Container::Array<Physics2D::MainInstance>	Physics2D_MainInstances;
 Container::Binary<Physics2D::Object>		Physics2D_Objects;
 
+unsigned int FindHoveringObjectIndex(Point2D p)
+{
+	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+	{
+		if (Physics2D_Objects[i].IsContaining(p))
+		{
+			return i;
+		}
+	}
+	return 0xFFFFFFFF;
+}
+
 Arrow2D::Manager Arrow2D_Manager;
 // Init: sets all the File stuff
 void Arrow2DInit()
 {
 	Container::Array<Shader::Code> code({
-		Shader::Code(ShaderDir.File("Arrow2D/Shader.vert")),
-		Shader::Code(ShaderDir.File("Arrow2D/Shader.frag")),
+		Shader::Code(ShaderDir.File("Arrow/2D.vert")),
+		Shader::Code(ShaderDir.File("Arrow/2D.frag")),
 	});
 	Arrow2D_Manager.Shader.Change(code);
 
@@ -431,44 +447,73 @@ void Update(float timeDelta)
 
 
 
-bool TestPointInPolyGon(const Physics2D::Object & obj, Point2D p)
+void Test()
 {
-	//	instead of Transforming the Corners
-	//	Transform ray Backwards
+	GL::Enable(GL::Capability::DebugOutput);	// GL 4.3
 
-	Ray2D ray(p, Point2D(1, 0));
-	Line2D line;
-
-	ray = obj.Now().Transform1(ray);
-
-	unsigned int sum = 0;
-	for (unsigned int i = 0; i < obj.SideCount(); i++)
+	Debug::Log << "Test ...." << Debug::Done;
+	Wire2D::Shader	WireShader;
 	{
-		//Point2D corner0 = obj.AbsolutePositionOf(obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner0.Udx));
-		//Point2D corner1 = obj.AbsolutePositionOf(obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner1.Udx));
-		//Point2D corner2 = obj.AbsolutePositionOf(obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner2.Udx));
-		Point2D corner0 = obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner0.Udx);
-		Point2D corner1 = obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner1.Udx);
-		Point2D corner2 = obj.CornerFromIndex(obj.PolyGon() -> Sides[i].Corner2.Udx);
-
-		if (IsIntersecting(ray, Line2D(corner0, corner1))) { sum++; }
-		if (IsIntersecting(ray, Line2D(corner1, corner2))) { sum++; }
-		if (IsIntersecting(ray, Line2D(corner2, corner0))) { sum++; }
+		Container::Array<Shader::Code> code({
+			Shader::Code(ShaderDir.File("Wire/2D.vert")),
+			Shader::Code(ShaderDir.File("Wire/2D.frag")),
+		});
+		WireShader.Change(code);
 	}
 
-	return (sum % 2) != 0;
-}
-void TestCursoeSelect()
-{
-	Point2D cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
-	
-	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+	BufferArray::Base		WireBuffer;
+	WireBuffer.Buffers.Allocate(3);
+	Wire2D::Main::Buffer	WireMainBuffer(WireBuffer);
+	Wire2D::Elem::Buffer	WireElemBuffer(WireBuffer);
+	Physics2D::Inst::Buffer	WireInstBuffer(WireBuffer);
+	WireBuffer.Buffers.Insert(&WireMainBuffer);
+	WireBuffer.Buffers.Insert(&WireElemBuffer);
+	WireBuffer.Buffers.Insert(&WireInstBuffer);
+
+	WireMainBuffer.Pos.Change(0);
+	WireMainBuffer.Col.Change(1);
+
+	WireInstBuffer.Now.Pos.Change(2);
+	WireInstBuffer.Now.Rot.Change(3, 4);
+
+	WireShader.Create();
+	WireBuffer.Create();
+
+	WireShader.Bind();
+	WireShader.WindowSize.Put(window.Size);
+	WireShader.View.Put(view.Trans);
+	WireShader.Scale.PutData(&view.Scale);
+
+	WireFrame2D wire;
+	wire.Corners.Insert(WireFrame2D::Corner(Point2D(-0.25f, -0.25f), ColorF4(0, 0, 0)));
+	wire.Corners.Insert(WireFrame2D::Corner(Point2D(+0.25f, -0.25f), ColorF4(1, 0, 0)));
+	wire.Corners.Insert(WireFrame2D::Corner(Point2D(+0.25f, +0.25f), ColorF4(0, 1, 0)));
+	wire.Corners.Insert(WireFrame2D::Corner(Point2D(-0.25f, +0.25f), ColorF4(0, 0, 1)));
+
+	wire.Sides.Insert(WireFrame2D::Side(0, 1));
+	wire.Sides.Insert(WireFrame2D::Side(1, 2));
+	wire.Sides.Insert(WireFrame2D::Side(2, 3));
+	wire.Sides.Insert(WireFrame2D::Side(3, 0));
+
+	WireMainBuffer.Change(wire.Corners);
+
 	{
-		if (TestPointInPolyGon(Physics2D_Objects[i], cursor))
-		{
-			std::cout << "Hovering: " << i << '\n';
-		}
+		WireElemBuffer.Bind();
+		GL::BufferData(GL::BufferTarget::ElementArrayBuffer, wire.Sides.VoidLimit(), wire.Sides.VoidData(), GL::BufferDataUsage::StaticDraw);
 	}
+
+	Container::Binary<Physics2D::Inst::Data> instances;
+	instances.Insert(Physics2D::Inst::Data(Trans2D(Point2D(), Angle2D())));
+	WireInstBuffer.Change(instances);
+
+	WireShader.Bind();
+	WireBuffer.Bind();
+	GL::DrawElementsInstanced(GL::DrawMode::Lines, (wire.Sides.Count() * 2), GL::DrawIndexType::UnsignedInt, instances.Count());
+
+	WireBuffer.Delete();
+	WireShader.Delete();
+
+	Debug::Log << "Test done" << Debug::Done;
 }
 
 void Frame(double timeDelta)
@@ -492,8 +537,6 @@ void Frame(double timeDelta)
 		//trans.Rot = Angle2D(Angle::Radians(move3D.Y * 0.5f));
 		view.Transform(trans, timeDelta);
 	}
-
-	TestCursoeSelect();
 
 	if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress())
 	{ Paused = !Paused; }
@@ -531,6 +574,8 @@ void Frame(double timeDelta)
 	}
 
 	Arrow2DFrame();
+
+	Test();
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
@@ -549,7 +594,7 @@ Point2D AbsolutePositionOfWindowPixel(Point2D pos)
 	return (CursorPos * view.Scale) + view.Trans.Pos;
 }
 
-void CursorScroll(UserParameter::Mouse::Scroll params)
+void MouseScroll(UserParameter::Mouse::Scroll params)
 {
 	Point2D HalfSize = window.Size.WindowSize / 2;
 
@@ -570,14 +615,29 @@ void CursorScroll(UserParameter::Mouse::Scroll params)
 
 	view.Trans.Pos = ZoomPos - (CursorPos * view.Scale);
 }
-void CursorClick(UserParameter::Mouse::Click params)
+void MouseClick(UserParameter::Mouse::Click params)
 {
 	(void)params;
-
 }
-void CursorDrag(UserParameter::Mouse::Drag params)
+void MouseDrag(UserParameter::Mouse::Drag params)
 {
 	(void)params;
+}
+
+void KeyBoardKey(UserParameter::KeyBoard::Key params)
+{
+	if (params.Action.IsPress())
+	{
+		if (params.Code.Flags == GLFW_KEY_DELETE)
+		{
+			Point2D cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
+			unsigned int idx = FindHoveringObjectIndex(cursor);
+			if (idx != 0xFFFFFFFF)
+			{
+				Physics2D_Objects.Remove(idx);
+			}
+		}
+	}
 }
 
 
@@ -589,9 +649,11 @@ int Main()
 	window.FrameCallBack.Change<MainContext>(this, &MainContext::Frame);
 	window.ResizeCallBack.Change<MainContext>(this, &MainContext::Resize);
 
-	window.MouseManager.CallbackScroll.Change(this, &MainContext::CursorScroll);
-	window.MouseManager.CallbackClick.Change(this, &MainContext::CursorClick);
-	window.MouseManager.CallbackDrag.Change(this, &MainContext::CursorDrag);
+	window.MouseManager.CallbackScroll.Change(this, &MainContext::MouseScroll);
+	window.MouseManager.CallbackClick.Change(this, &MainContext::MouseClick);
+	window.MouseManager.CallbackDrag.Change(this, &MainContext::MouseDrag);
+
+	window.KeyBoardManager.KeyCallBack.Change(this, &MainContext::KeyBoardKey);
 
 	view.Scale = 1.0f;
 

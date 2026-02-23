@@ -5,6 +5,8 @@
 # include "Miscellaneous/Container/Pointer.hpp"
 # include "Main/Data.hpp"
 
+struct Ray2D;
+
 class PolyGon
 {
 	public:
@@ -17,8 +19,8 @@ class PolyGon
 	Container::Binary<Side>		Sides;
 
 	public:
-	PolyGon();
 	~PolyGon();
+	PolyGon();
 
 	PolyGon(const PolyGon & other) = delete;
 	PolyGon & operator=(const PolyGon & other) = delete;
@@ -27,6 +29,10 @@ class PolyGon
 	void Clear();
 
 	Container::Pointer<Physics2D::Main::Data>	ToPhysics2D() const;
+
+	public:
+	bool IsIntersecting(Ray2D ray) const;
+	bool IsContaining(Point2D p) const;
 };
 
 #endif
