@@ -7,6 +7,8 @@
 
 #include "DirectoryInfo.hpp"
 
+#include "ValueType/AxisBox2D.hpp"
+
 
 
 Arrow2D::Manager::~Manager() { }

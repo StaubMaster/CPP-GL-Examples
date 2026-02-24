@@ -9,16 +9,10 @@
 
 namespace Arrow2D
 {
-class Buffer : public ::BufferArray::MainInst
-{
-	public:
-	Arrow2D::Main::Buffer	Main;
-	Arrow2D::Inst::Buffer	Inst;
-
-	public:
-	~Buffer();
-	Buffer();
-};
+typedef BufferArray::MainInst<
+	Arrow2D::Main::Buffer,
+	Arrow2D::Inst::Buffer
+> Buffer;
 };
 
 #endif

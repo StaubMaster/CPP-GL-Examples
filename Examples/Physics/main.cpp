@@ -83,7 +83,7 @@ MainContext()
 		});
 		Physics2D_Shader.Change(code);
 	}
-	Arrow2DInit();
+	Arrow2D_Manager.InitExternal(ShaderDir);
 }
 ~MainContext()
 { }
@@ -108,161 +108,6 @@ unsigned int FindHoveringObjectIndex(Point2D p)
 }
 
 Arrow2D::Manager Arrow2D_Manager;
-// Init: sets all the File stuff
-void Arrow2DInit()
-{
-	Container::Array<Shader::Code> code({
-		Shader::Code(ShaderDir.File("Arrow/2D.vert")),
-		Shader::Code(ShaderDir.File("Arrow/2D.frag")),
-	});
-	Arrow2D_Manager.Shader.Change(code);
-
-	Arrow2D_Manager.Buffer.Main.Pos.Change(0);
-	Arrow2D_Manager.Buffer.Main.Tex.Change(1);
-	Arrow2D_Manager.Buffer.Inst.Pos0.Change(2);
-	Arrow2D_Manager.Buffer.Inst.Pos1.Change(3);
-	Arrow2D_Manager.Buffer.Inst.Size.Change(4);
-	Arrow2D_Manager.Buffer.Inst.Col.Change(5);
-}
-// sets GL Buffers
-void Arrow2DMake()
-{
-	{
-		AxisBox2D	Pos;
-		AxisBox2D	Tex;
-
-		Container::Binary<Arrow2D::Main::Data> data;
-
-		Pos = AxisBox2D(Point2D(-3, -1), Point2D(-1, +1));
-		Tex = AxisBox2D(Point2D(0 / 96.0f, 0), Point2D(32 / 96.0f, 1));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(Tex.Min.X, Tex.Min.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(Tex.Max.X, Tex.Max.Y, 0)));
-
-		Pos = AxisBox2D(Point2D(-1, -1), Point2D(+1, +1));
-		Tex = AxisBox2D(Point2D(32 / 96.0f, 0), Point2D(64 / 96.0f, 1));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(Tex.Min.X, Tex.Min.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(Tex.Max.X, Tex.Max.Y, 0)));
-
-		Pos = AxisBox2D(Point2D(+1, -1), Point2D(+3, +1));
-		Tex = AxisBox2D(Point2D(64 / 96.0f, 0), Point2D(96 / 96.0f, 1));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(Tex.Min.X, Tex.Min.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-		data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(Tex.Max.X, Tex.Max.Y, 0)));
-
-		Arrow2D_Manager.Buffer.Main.Change(data);
-		/*std::cout << "Main: " << data.Count() << '\n';
-		for (unsigned int i = 0; i < data.Count(); i++)
-		{
-			std::cout << data[i].Pos << ' ' << data[i].Tex << '\n';
-		}*/
-	}
-
-	{
-		Arrow2D_Manager.Texture.Bind();
-		Container::Binary<FileInfo> files;
-		//files.Insert(ImageDir.File("Arrow/L0_32x32.png"));
-		//files.Insert(ImageDir.File("Arrow/M0_32x32.png"));
-		//files.Insert(ImageDir.File("Arrow/R1_32x32.png"));
-		files.Insert(ImageDir.File("Arrow/96x32.png"));
-		Arrow2D_Manager.Texture.Assign(96, 32, files);
-	}
-}
-
-float ShowDot(Container::Binary<Arrow2D::Inst::Data> & arrow_data,
-	Point2D pos, Point2D dir0, Point2D dir1,
-	ColorF4 col)
-{
-	float dot = Point2D::dot(dir0, dir1);
-	Point2D p;
-
-	p = pos + (dir0.normalize() * (dot / dir0.length()));
-	arrow_data.Insert(Arrow2D::Inst::Data(pos + dir0, p, 10, col));
-	arrow_data.Insert(Arrow2D::Inst::Data(pos + dir1, p, 10, col));
-
-	p = pos + (dir1.normalize() * (dot / dir1.length()));
-	arrow_data.Insert(Arrow2D::Inst::Data(pos + dir0, p, 10, col));
-	arrow_data.Insert(Arrow2D::Inst::Data(pos + dir1, p, 10, col));
-
-	return dot;
-}
-void Test(Container::Binary<Arrow2D::Inst::Data> & arrow_data)
-{
-//	Point2D pos = Point2D(0, 0);
-//	Point2D dir0 = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
-//	Point2D dir1 = Point2D(1.0f, 0.0f);
-//	arrow_data.Insert(Arrow2D::Inst::Data(pos, pos + dir0, 20, ColorF4(0, 0, 0)));
-//	arrow_data.Insert(Arrow2D::Inst::Data(pos, pos + dir1, 20, ColorF4(0, 0, 0)));
-//	ShowDot(arrow_data, pos, dir0, dir1, ColorF4(0, 1, 0));
-//	{
-//		float cross = dir0.cross(dir1);
-//		Point2D pos0 = pos + (dir0 * cross);
-//		Point2D pos1 = pos + (dir1 * cross);
-//		arrow_data.Insert(Arrow2D::Inst::Data(pos, pos0, 20, ColorF4(1, 0, 0)));
-//		arrow_data.Insert(Arrow2D::Inst::Data(pos, pos1, 20, ColorF4(1, 0, 0)));
-//		arrow_data.Insert(Arrow2D::Inst::Data(pos0, pos1, 20, ColorF4(1, 0, 0)));
-//	}
-
-	Ray2D ray(Point2D(0, 0), AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute));
-	arrow_data.Insert(Arrow2D::Inst::Data(ray.Pos, ray.Pos + ray.Dir, 20, ColorF4(0, 0, 0)));
-
-	Line2D line(Point2D(-0.5f, +0.5f), Point2D(+0.5f, +0.5f));
-	arrow_data.Insert(Arrow2D::Inst::Data(line, 20, ColorF4(0, 0, 0)));
-
-	Point2D perp(-ray.Dir.Y, +ray.Dir.X);
-	arrow_data.Insert(Arrow2D::Inst::Data(ray.Pos, ray.Pos + perp, 10, ColorF4(1, 1, 1)));
-
-	Point2D diff = line.Pos1 - line.Pos0;
-	Point2D rel0 = ray.Pos - line.Pos0;
-	arrow_data.Insert(Arrow2D::Inst::Data(ray.Pos, line.Pos0, 10, ColorF4(1, 1, 1)));
-
-	float dot = diff.dot(perp);
-	if (dot == 0.0f)
-	{
-		// Parallel
-	}
-
-	float ray_t = diff.cross(rel0) / dot;
-	float line_t = rel0.dot(perp) / dot;
-
-	ColorF4 col;
-	if (ray_t > 0.0f && (line_t >= 0.0f && line_t <= 1.0f))
-	{ col = ColorF4(0, 1, 0); }
-	else
-	{ col = ColorF4(1, 0, 0); }
-	arrow_data.Insert(Arrow2D::Inst::Data(ray.ToLine(ray_t), 10, col));
-	arrow_data.Insert(Arrow2D::Inst::Data(line.Pos0, line.Pos0 + (diff * line_t), 10, col));
-
-//	ColorF4 col;
-//	float dot;
-//	Point2D pos;
-
-	//dot = Point2D::dot(perp, diff);
-	//if (dot != 0.0f)
-//	{
-//		dot = ShowDot(arrow_data, ray.Pos, ray.Dir, -rel0, ColorF4(1, 0, 0));
-//		(void)dot;
-//
-//		dot = ShowDot(arrow_data, line.Pos0, diff, rel0, ColorF4(0, 1, 0));
-//
-//		//col = ColorF4(0, 1, 0);
-//		//dot = Point2D::dot(diff, perp) / dot;
-//
-//		//pos = line.Pos0 + (diff.normalize() * (dot / diff.length()));
-//		//arrow_data.Insert(Arrow2D::Inst::Data(ray.Pos, pos, 10, col));
-//		//arrow_data.Insert(Arrow2D::Inst::Data(line.Pos1, pos, 10, col));
-//	}
-}
 
 void Arrow2DFrame()
 {
@@ -302,7 +147,7 @@ void Arrow2DFrame()
 	}
 	Arrow2D_Manager.Shader.Bind();
 	Arrow2D_Manager.Shader.View.Put(view.Trans);
-	Arrow2D_Manager.Shader.Scale.PutData(&view.Scale);
+	Arrow2D_Manager.Shader.Scale.Put(view.Scale);
 
 	Arrow2D_Manager.Texture.Bind();
 	Arrow2D_Manager.Buffer.Draw();
@@ -385,8 +230,7 @@ void Init()
 	Physics2D_Shader.Create();
 
 	Arrow2D_Manager.GraphicsCreate();
-
-	Arrow2DMake();
+	Arrow2D_Manager.InitInternal(ImageDir);
 
 	Make();
 }
@@ -453,6 +297,7 @@ void Test()
 	GL::Enable(GL::Capability::DebugOutput);	// GL 4.3
 
 	Debug::Log << "Test ...." << Debug::Done;
+
 	Wire2D::Shader	WireShader;
 	{
 		Container::Array<Shader::Code> code({
@@ -462,43 +307,43 @@ void Test()
 		WireShader.Change(code);
 	}
 
-	Wire2D::Buffer	WireBuffer;
-	WireBuffer.Main.Pos.Change(0);
-	WireBuffer.Main.Col.Change(1);
-	WireBuffer.Inst.Now.Pos.Change(2);
-	WireBuffer.Inst.Now.Rot.Change(3, 4);
-
-
+	Wire2D::Buffer	WireBuffer(GL::DrawMode::Lines);
+	{
+		WireBuffer.Main.Pos.Change(0);
+		WireBuffer.Main.Col.Change(1);
+		WireBuffer.Inst.Now.Pos.Change(2);
+		WireBuffer.Inst.Now.Rot.Change(3, 4);
+	}
 
 	WireShader.Create();
 	WireBuffer.Create();
+	{
+		WireShader.WindowSize.Put(window.Size);
+		WireShader.View.Put(view.Trans);
+		WireShader.Scale.Put(view.Scale);
 
-	WireShader.Bind();
-	WireShader.WindowSize.Put(window.Size);
-	WireShader.View.Put(view.Trans);
-	WireShader.Scale.PutData(&view.Scale);
+		WireFrame2D wire;
 
-	WireFrame2D wire;
-	wire.Corners.Insert(WireFrame2D::Corner(Point2D(-0.25f, -0.25f), ColorF4(0, 0, 0)));
-	wire.Corners.Insert(WireFrame2D::Corner(Point2D(+0.25f, -0.25f), ColorF4(1, 0, 0)));
-	wire.Corners.Insert(WireFrame2D::Corner(Point2D(+0.25f, +0.25f), ColorF4(0, 1, 0)));
-	wire.Corners.Insert(WireFrame2D::Corner(Point2D(-0.25f, +0.25f), ColorF4(0, 0, 1)));
+		wire.Insert_Corner(Point2D(-0.25f, -0.25f), ColorF4(0, 0, 0));
+		wire.Insert_Corner(Point2D(+0.25f, -0.25f), ColorF4(1, 0, 0));
+		wire.Insert_Corner(Point2D(+0.25f, +0.25f), ColorF4(0, 1, 0));
+		wire.Insert_Corner(Point2D(-0.25f, +0.25f), ColorF4(0, 0, 1));
 
-	wire.Sides.Insert(WireFrame2D::Side(0, 1));
-	wire.Sides.Insert(WireFrame2D::Side(1, 2));
-	wire.Sides.Insert(WireFrame2D::Side(2, 3));
-	wire.Sides.Insert(WireFrame2D::Side(3, 0));
+		wire.Insert_Side(0, 1);
+		wire.Insert_Side(1, 2);
+		wire.Insert_Side(2, 3);
+		wire.Insert_Side(3, 0);
 
-	Container::Binary<Physics2D::Inst::Data> instances;
-	instances.Insert(Physics2D::Inst::Data(Trans2D(Point2D(), Angle2D())));
+		Container::Binary<Physics2D::Inst::Data> instances;
+		instances.Insert(Physics2D::Inst::Data(Trans2D(Point2D(), Angle2D())));
 
-	WireBuffer.Main.Change(wire.Corners);
-	WireBuffer.Elem.Change(wire.Sides, 2);
-	WireBuffer.Inst.Change(instances);
+		WireBuffer.Main.Change(wire.Corners);
+		WireBuffer.Elem.Change(wire.Sides, 2);
+		WireBuffer.Inst.Change(instances);
 
-	WireShader.Bind();
-	WireBuffer.Draw();
-
+		WireShader.Bind();
+		WireBuffer.Draw();
+	}
 	WireBuffer.Delete();
 	WireShader.Delete();
 
@@ -544,7 +389,7 @@ void Frame(double timeDelta)
 
 	Physics2D_Shader.Bind();
 	Physics2D_Shader.View.Put(view.Trans);
-	Physics2D_Shader.Scale.PutData(&view.Scale);
+	Physics2D_Shader.Scale.Put(view.Scale);
 
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
@@ -568,9 +413,7 @@ void Frame(double timeDelta)
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
-	Physics2D_Shader.Bind();
 	Physics2D_Shader.WindowSize.Put(WindowSize);
-	Arrow2D_Manager.Shader.Bind();
 	Arrow2D_Manager.Shader.WindowSize.Put(WindowSize);
 }
 

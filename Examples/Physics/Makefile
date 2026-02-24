@@ -26,7 +26,6 @@ FILES_SRC := \
 	Arrow2D/Manager.cpp \
 \
 	WireFrame2D/Main/Buffer.cpp \
-	WireFrame2D/Buffer.cpp \
 	WireFrame2D/Shader.cpp \
 	WireFrame2D/WireFrame2D.cpp \
 \

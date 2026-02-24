@@ -9,7 +9,13 @@
 
 namespace Wire2D
 {
-class Buffer : public ::BufferArray::MainElemInst<
+typedef BufferArray::MainElemInst<
+	Wire2D::Main::Buffer,
+	Wire2D::Elem::Buffer,
+	Physics2D::Inst::Buffer
+> Buffer;
+
+/*class Buffer : public ::BufferArray::MainElemInst<
 	Wire2D::Main::Buffer,
 	Wire2D::Elem::Buffer,
 	Physics2D::Inst::Buffer
@@ -18,7 +24,7 @@ class Buffer : public ::BufferArray::MainElemInst<
 	public:
 	~Buffer();
 	Buffer();
-};
+};*/
 };
 
 #endif

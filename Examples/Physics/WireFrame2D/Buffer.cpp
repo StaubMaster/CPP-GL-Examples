@@ -2,6 +2,7 @@
 
 
 
+/*
 Wire2D::Buffer::~Buffer() { }
 Wire2D::Buffer::Buffer()
 	: ::BufferArray::MainElemInst<
@@ -10,3 +11,4 @@ Wire2D::Buffer::Buffer()
 		Physics2D::Inst::Buffer
 	>(GL::DrawMode::Lines)
 { }
+*/

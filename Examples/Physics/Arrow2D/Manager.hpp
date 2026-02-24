@@ -21,6 +21,9 @@ struct Manager
 	~Manager();
 	Manager();
 
+	void InitExternal(const DirectoryInfo & shaderDir);
+	void InitInternal(const DirectoryInfo & imageDir);
+
 	void GraphicsCreate();
 	void GraphicsDelete();
 
