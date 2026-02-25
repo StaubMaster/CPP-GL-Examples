@@ -1,39 +1,58 @@
-#include "Arrow2D/Manager.hpp"
-
-#include "Arrow2D/Main/Data.hpp"
-#include "Arrow2D/Inst/Data.hpp"
+#include "WireFrame2D/Manager.hpp"
 
 #include "Miscellaneous/Container/Binary.hpp"
+#include "Miscellaneous/Container/Array.hpp"
+
+#include "Graphics/Shader/Code.hpp"
 
 #include "DirectoryInfo.hpp"
 
-#include "ValueType/AxisBox2D.hpp"
+
+
+Wire2D::Manager::~Manager() { }
+Wire2D::Manager::Manager()
+	: Shader()
+	, Buffer(GL::DrawMode::Lines)
+{ }
 
 
 
-Arrow2D::Manager::~Manager() { }
-Arrow2D::Manager::Manager() { }
+void Wire2D::Manager::InitExternal(const DirectoryInfo & shaderDir)
+{
+	{
+		Container::Array<::Shader::Code> code({
+			::Shader::Code(shaderDir.File("Wire/2D.vert")),
+			::Shader::Code(shaderDir.File("Wire/2D.frag")),
+		});
+		Shader.Change(code);
+	}
+
+	{
+		Buffer.Main.Pos.Change(0);
+		Buffer.Main.Col.Change(1);
+		Buffer.Inst.Now.Pos.Change(2);
+		Buffer.Inst.Now.Rot.Change(3, 4);
+	}
+}
+//void Wire2D::Manager::InitInternal() { }
 
 
 
-void Arrow2D::Manager::GraphicsCreate()
+void Wire2D::Manager::GraphicsCreate()
 {
 	Shader.Create();
 	Buffer.Create();
-	Texture.Create();
 }
-void Arrow2D::Manager::GraphicsDelete()
+void Wire2D::Manager::GraphicsDelete()
 {
 	Shader.Delete();
 	Buffer.Delete();
-	Texture.Delete();
 }
 
 
 
-void Arrow2D::Manager::Draw()
+void Wire2D::Manager::Draw()
 {
 	Shader.Bind();
-	Texture.Bind();
 	Buffer.Draw();
 }

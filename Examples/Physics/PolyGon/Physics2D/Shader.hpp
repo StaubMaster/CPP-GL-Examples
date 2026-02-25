@@ -11,7 +11,7 @@ class Shader : public ::Shader::Base
 	public:
 	Uniform::WindowBufferSize2D	WindowSize;
 	Uniform::Trans2D			View;
-	Uniform::Float1				Scale;
+	Uniform::Float				Scale;
 	public:
 	Shader();
 };

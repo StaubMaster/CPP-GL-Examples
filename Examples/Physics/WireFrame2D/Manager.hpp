@@ -1,25 +1,23 @@
-#ifndef  ARROW_2D_MANAGER_HPP
-# define ARROW_2D_MANAGER_HPP
+#ifndef  WIRE_2D_MANAGER_HPP
+# define WIRE_2D_MANAGER_HPP
 
-# include "Arrow2D/Shader.hpp"
-# include "Arrow2D/Buffer.hpp"
-//# include "Arrow2D/Main/Data.hpp"
-//# include "Arrow2D/Inst/Data.hpp"
-//# include "Miscellaneous/Container/Binary.hpp"
-# include "Graphics/Texture/Array2D.hpp"
+# include "WireFrame2D/Shader.hpp"
+# include "WireFrame2D/Buffer.hpp"
 
 class DirectoryInfo;
 
-namespace Arrow2D
+namespace Wire2D
 {
 struct Manager
 {
-	::Arrow2D::Shader	Shader;
-	::Arrow2D::Buffer	Buffer;
-	::Texture::Array2D	Texture;
+	::Wire2D::Shader	Shader;
+	::Wire2D::Buffer	Buffer;
 
 	~Manager();
 	Manager();
+
+	void InitExternal(const DirectoryInfo & shaderDir);
+//	void InitInternal();
 
 	void GraphicsCreate();
 	void GraphicsDelete();

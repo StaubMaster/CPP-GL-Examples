@@ -47,9 +47,11 @@
 #include "Arrow2D/Inst/Data.hpp"
 
 #include "WireFrame2D/WireFrame2D.hpp"
-#include "WireFrame2D/Main/Buffer.hpp"
-#include "WireFrame2D/Buffer.hpp"
-#include "WireFrame2D/Shader.hpp"
+#include "WireFrame2D/Manager.hpp"
+
+#include "Graphics/MultiformsInclude.hpp"
+#include "Graphics/Multiform/Trans2D.hpp"
+#include "Graphics/Multiform/Float.hpp"
 
 #include <math.h>
 
@@ -67,6 +69,10 @@ View2D	view;
 
 bool Paused;
 
+Multiform::WindowBufferSize2D	Multiform_WindowSize;
+Multiform::Trans2D				Multiform_View;
+Multiform::Float				Multiform_Scale;
+
 MainContext()
 	: ImageDir("../../media/Images")
 	, ShaderDir("../../media/Shaders")
@@ -75,6 +81,9 @@ MainContext()
 	, window()
 	, view(View2D::Default())
 	, Paused(true)
+	, Multiform_WindowSize("WindowSize")
+	, Multiform_View("View")
+	, Multiform_Scale("Scale")
 {
 	{
 		Container::Array<Shader::Code> code({
@@ -84,11 +93,19 @@ MainContext()
 		Physics2D_Shader.Change(code);
 	}
 	Arrow2D_Manager.InitExternal(ShaderDir);
+	Wire_Manager.InitExternal(ShaderDir);
+
+	Container::Array<Shader::Base *> shaders({
+		&Physics2D_Shader,
+		&Arrow2D_Manager.Shader,
+		&Wire_Manager.Shader,
+	});
+	Multiform_WindowSize.FindUniforms(shaders);
+	Multiform_View.FindUniforms(shaders);
+	Multiform_Scale.FindUniforms(shaders);
 }
 ~MainContext()
 { }
-
-
 
 Physics2D::Shader	Physics2D_Shader;
 
@@ -107,9 +124,10 @@ unsigned int FindHoveringObjectIndex(Point2D p)
 	return 0xFFFFFFFF;
 }
 
-Arrow2D::Manager Arrow2D_Manager;
 
-void Arrow2DFrame()
+
+Arrow2D::Manager Arrow2D_Manager;
+void Arrow2D_Frame()
 {
 	{
 		Container::Binary<Arrow2D::Inst::Data> data;
@@ -145,12 +163,38 @@ void Arrow2DFrame()
 			std::cout << data[i].Pos << ' ' << data[i].Dir << ' ' << data[i].Size << '\n';
 		}*/
 	}
-	Arrow2D_Manager.Shader.Bind();
-	Arrow2D_Manager.Shader.View.Put(view.Trans);
-	Arrow2D_Manager.Shader.Scale.Put(view.Scale);
 
+	Arrow2D_Manager.Shader.Bind();
 	Arrow2D_Manager.Texture.Bind();
 	Arrow2D_Manager.Buffer.Draw();
+}
+
+Wire2D::Manager Wire_Manager;
+void Wire2D_Frame()
+{
+	WireFrame2D wire;
+
+	wire.Insert_Corner(Point2D(-0.25f, -0.25f), ColorF4(0, 0, 0));
+	wire.Insert_Corner(Point2D(+0.25f, -0.25f), ColorF4(1, 0, 0));
+	wire.Insert_Corner(Point2D(+0.25f, +0.25f), ColorF4(0, 1, 0));
+	wire.Insert_Corner(Point2D(-0.25f, +0.25f), ColorF4(0, 0, 1));
+
+	wire.Insert_Side(0, 1);
+	wire.Insert_Side(1, 2);
+	wire.Insert_Side(2, 3);
+	wire.Insert_Side(3, 0);
+
+	Container::Binary<Physics2D::Inst::Data> instances;
+	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+	{
+		instances.Insert(Physics2D::Inst::Data(Physics2D_Objects[i].Now()));
+	}
+
+	Wire_Manager.Buffer.Main.Change(wire.Corners);
+	Wire_Manager.Buffer.Elem.Change(wire.Sides, 2);
+	Wire_Manager.Buffer.Inst.Change(instances);
+
+	Wire_Manager.Draw();
 }
 
 
@@ -232,6 +276,8 @@ void Init()
 	Arrow2D_Manager.GraphicsCreate();
 	Arrow2D_Manager.InitInternal(ImageDir);
 
+	Wire_Manager.GraphicsCreate();
+
 	Make();
 }
 void Free()
@@ -245,6 +291,7 @@ void Free()
 	}
 
 	Arrow2D_Manager.GraphicsDelete();
+	Wire_Manager.GraphicsDelete();
 }
 
 
@@ -294,59 +341,7 @@ void Update(float timeDelta)
 
 void Test()
 {
-	GL::Enable(GL::Capability::DebugOutput);	// GL 4.3
-
 	Debug::Log << "Test ...." << Debug::Done;
-
-	Wire2D::Shader	WireShader;
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(ShaderDir.File("Wire/2D.vert")),
-			Shader::Code(ShaderDir.File("Wire/2D.frag")),
-		});
-		WireShader.Change(code);
-	}
-
-	Wire2D::Buffer	WireBuffer(GL::DrawMode::Lines);
-	{
-		WireBuffer.Main.Pos.Change(0);
-		WireBuffer.Main.Col.Change(1);
-		WireBuffer.Inst.Now.Pos.Change(2);
-		WireBuffer.Inst.Now.Rot.Change(3, 4);
-	}
-
-	WireShader.Create();
-	WireBuffer.Create();
-	{
-		WireShader.WindowSize.Put(window.Size);
-		WireShader.View.Put(view.Trans);
-		WireShader.Scale.Put(view.Scale);
-
-		WireFrame2D wire;
-
-		wire.Insert_Corner(Point2D(-0.25f, -0.25f), ColorF4(0, 0, 0));
-		wire.Insert_Corner(Point2D(+0.25f, -0.25f), ColorF4(1, 0, 0));
-		wire.Insert_Corner(Point2D(+0.25f, +0.25f), ColorF4(0, 1, 0));
-		wire.Insert_Corner(Point2D(-0.25f, +0.25f), ColorF4(0, 0, 1));
-
-		wire.Insert_Side(0, 1);
-		wire.Insert_Side(1, 2);
-		wire.Insert_Side(2, 3);
-		wire.Insert_Side(3, 0);
-
-		Container::Binary<Physics2D::Inst::Data> instances;
-		instances.Insert(Physics2D::Inst::Data(Trans2D(Point2D(), Angle2D())));
-
-		WireBuffer.Main.Change(wire.Corners);
-		WireBuffer.Elem.Change(wire.Sides, 2);
-		WireBuffer.Inst.Change(instances);
-
-		WireShader.Bind();
-		WireBuffer.Draw();
-	}
-	WireBuffer.Delete();
-	WireShader.Delete();
-
 	Debug::Log << "Test done" << Debug::Done;
 }
 
@@ -371,6 +366,8 @@ void Frame(double timeDelta)
 		//trans.Rot = Angle2D(Angle::Radians(move3D.Y * 0.5f));
 		view.Transform(trans, timeDelta);
 	}
+	Multiform_View.ChangeData(view.Trans);
+	Multiform_Scale.ChangeData(view.Scale);
 
 	if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress())
 	{ Paused = !Paused; }
@@ -386,10 +383,6 @@ void Frame(double timeDelta)
 	{
 		Update(timeDelta);
 	}
-
-	Physics2D_Shader.Bind();
-	Physics2D_Shader.View.Put(view.Trans);
-	Physics2D_Shader.Scale.Put(view.Scale);
 
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
@@ -407,14 +400,17 @@ void Frame(double timeDelta)
 		Physics2D_MainInstances[i].Draw();
 	}
 
-	Arrow2DFrame();
+	Wire2D_Frame();
+	Arrow2D_Frame();
 
 	Test();
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
-	Physics2D_Shader.WindowSize.Put(WindowSize);
-	Arrow2D_Manager.Shader.WindowSize.Put(WindowSize);
+	//Physics2D_Shader.WindowSize.Put(WindowSize);
+	//Arrow2D_Manager.Shader.WindowSize.Put(WindowSize);
+	//Wire_Manager.Shader.WindowSize.Put(WindowSize);
+	Multiform_WindowSize.ChangeData(WindowSize);
 }
 
 Point2D AbsolutePositionOfWindowPixel(Point2D pos)

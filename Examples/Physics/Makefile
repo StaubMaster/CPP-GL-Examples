@@ -27,6 +27,7 @@ FILES_SRC := \
 \
 	WireFrame2D/Main/Buffer.cpp \
 	WireFrame2D/Shader.cpp \
+	WireFrame2D/Manager.cpp \
 	WireFrame2D/WireFrame2D.cpp \
 \
 	Inst/Physics2D/Data.cpp \
