@@ -10,9 +10,12 @@ Physics2D::MainInstance::~MainInstance()
 { }
 Physics2D::MainInstance::MainInstance()
 	: PolyGon(new ::PolyGon())
+	, WireFrame(new ::WireFrame2D())
+	, WireFrameBox(new ::WireFrame2D())
 	, Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
 	, PolyGon_Buffer(GL::DrawMode::Triangles)
 	, WireFrame_Buffer(GL::DrawMode::Lines)
+	, WireFrameBox_Buffer(GL::DrawMode::Lines)
 {
 	{
 		PolyGon_Buffer.Main.Pos.Change(0);
@@ -28,19 +31,32 @@ Physics2D::MainInstance::MainInstance()
 		WireFrame_Buffer.Inst.Now.Rot.Change(3, 4);
 		WireFrame_Buffer.Create();
 	}
+	{
+		WireFrameBox_Buffer.Main.Pos.Change(0);
+		WireFrameBox_Buffer.Main.Col.Change(1);
+		WireFrameBox_Buffer.Inst.Now.Pos.Change(2);
+		WireFrameBox_Buffer.Inst.Now.Rot.Change(3, 4);
+		WireFrameBox_Buffer.Create();
+	}
 }
 Physics2D::MainInstance::MainInstance(const MainInstance & other)
 	: PolyGon(other.PolyGon)
+	, WireFrame(other.WireFrame)
+	, WireFrameBox(other.WireFrameBox)
 	, Instances(other.Instances)
 	, PolyGon_Buffer(other.PolyGon_Buffer)
 	, WireFrame_Buffer(other.WireFrame_Buffer)
+	, WireFrameBox_Buffer(other.WireFrameBox_Buffer)
 { }
 Physics2D::MainInstance & Physics2D::MainInstance::operator=(const MainInstance & other)
 {
 	PolyGon = other.PolyGon;
+	WireFrame = other.WireFrame;
+	WireFrameBox = other.WireFrameBox;
 	Instances = other.Instances;
 	PolyGon_Buffer = other.PolyGon_Buffer;
 	WireFrame_Buffer = other.WireFrame_Buffer;
+	WireFrameBox_Buffer = other.WireFrameBox_Buffer;
 	return *this;
 }
 
@@ -48,10 +64,13 @@ Physics2D::MainInstance & Physics2D::MainInstance::operator=(const MainInstance 
 
 void Physics2D::MainInstance::Dispose()
 {
+	delete PolyGon;
+	delete WireFrame;
+	delete WireFrameBox;
+	delete Instances;
 	PolyGon_Buffer.Delete();
 	WireFrame_Buffer.Delete();
-	delete PolyGon;
-	delete Instances;
+	WireFrameBox_Buffer.Delete();
 }
 
 
@@ -64,32 +83,38 @@ void Physics2D::MainInstance::UpdateMain()
 		data.Delete();
 	}
 	{
-		AxisBox2D box;
+		WireFrame -> Clear();
+		ColorF4 col;
 		for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
 		{
-			box.Consider(PolyGon -> Corners[i].Pos);
+			col = PolyGon -> Corners[i].Col;
+			col.R = 1.0f - col.R;
+			col.G = 1.0f - col.G;
+			col.B = 1.0f - col.B;
+			WireFrame -> Insert_Corner(PolyGon -> Corners[i].Pos, col);
 		}
+		for (unsigned int i = 0; i < PolyGon -> Sides.Count(); i++)
+		{
+			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner0.Udx, PolyGon -> Sides[i].Corner1.Udx);
+			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner1.Udx, PolyGon -> Sides[i].Corner2.Udx);
+			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner2.Udx, PolyGon -> Sides[i].Corner0.Udx);
+		}
+		WireFrame_Buffer.Main.Change(WireFrame -> Corners);
+		WireFrame_Buffer.Elem.Change(WireFrame -> Sides, 2);
+	}
+	{
+		AxisBox2D box = PolyGon -> ToAxisBox();
 		box.Min -= 0.01f;
 		box.Max += 0.01f;
-
-		WireFrame.Clear();
-
-		WireFrame.Insert_Corner(Point2D(box.Min.X, box.Min.Y), ColorF4(0, 0, 0));
-		WireFrame.Insert_Corner(Point2D(box.Max.X, box.Min.Y), ColorF4(1, 0, 0));
-		WireFrame.Insert_Corner(Point2D(box.Max.X, box.Max.Y), ColorF4(0, 1, 0));
-		WireFrame.Insert_Corner(Point2D(box.Min.X, box.Max.Y), ColorF4(0, 0, 1));
-
-		WireFrame.Insert_Side(0, 1);
-		WireFrame.Insert_Side(1, 2);
-		WireFrame.Insert_Side(2, 3);
-		WireFrame.Insert_Side(3, 0);
-
-		WireFrame_Buffer.Main.Change(WireFrame.Corners);
-		WireFrame_Buffer.Elem.Change(WireFrame.Sides, 2);
+		WireFrameBox -> Clear();
+		WireFrameBox -> Insert_Box(box, ColorF4());
+		WireFrameBox_Buffer.Main.Change(WireFrameBox -> Corners);
+		WireFrameBox_Buffer.Elem.Change(WireFrameBox -> Sides, 2);
 	}
 }
 void Physics2D::MainInstance::UpdateInst()
 {
 	PolyGon_Buffer.Inst.Change(*Instances);
 	WireFrame_Buffer.Inst.Change(*Instances);
+	WireFrameBox_Buffer.Inst.Change(*Instances);
 }

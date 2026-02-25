@@ -22,11 +22,13 @@ namespace Physics2D
 struct MainInstance
 {
 	::PolyGon *		PolyGon;
-	::WireFrame2D	WireFrame;
+	::WireFrame2D *	WireFrame;
+	::WireFrame2D *	WireFrameBox;
 	EntryContainer::Binary<Physics2D::Inst::Data> *		Instances;
 
 	::BufferArray::MainInst<PolyGonGraphics::Buffer, Physics2D::Inst::Buffer>							PolyGon_Buffer;
 	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Physics2D::Inst::Buffer>	WireFrame_Buffer;
+	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Physics2D::Inst::Buffer>	WireFrameBox_Buffer;
 
 	~MainInstance();
 	MainInstance();

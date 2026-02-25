@@ -57,6 +57,11 @@
 
 
 
+//	Normal
+//	Regular
+//	Reverse
+//	Inverted
+
 struct MainContext
 {
 DirectoryInfo ImageDir;
@@ -264,6 +269,8 @@ void Free()
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
 		Physics2D_MainInstances[i].PolyGon_Buffer.Delete();
+		Physics2D_MainInstances[i].WireFrame_Buffer.Delete();
+		Physics2D_MainInstances[i].WireFrameBox_Buffer.Delete();
 		Physics2D_MainInstances[i].Dispose();
 	}
 
@@ -315,12 +322,6 @@ void Update(float timeDelta)
 
 
 
-void Test()
-{
-	Debug::Log << "Test ...." << Debug::Done;
-	Debug::Log << "Test done" << Debug::Done;
-}
-
 void Frame(double timeDelta)
 {
 	//if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
@@ -345,8 +346,7 @@ void Frame(double timeDelta)
 	Multiform_View.ChangeData(view.Trans);
 	Multiform_Scale.ChangeData(view.Scale);
 
-	if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress())
-	{ Paused = !Paused; }
+	if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress()) { Paused = !Paused; }
 
 	if (Paused)
 	{
@@ -381,16 +381,15 @@ void Frame(double timeDelta)
 	{
 		Physics2D_MainInstances[i].WireFrame_Buffer.Draw();
 	}
+	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	{
+		Physics2D_MainInstances[i].WireFrameBox_Buffer.Draw();
+	}
 
 	Arrow2D_Frame();
-
-	Test();
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
-	//Physics2D_Shader_PolyGon.WindowSize.Put(WindowSize);
-	//Arrow2D_Manager.Shader.WindowSize.Put(WindowSize);
-	//Wire_Manager.Shader.WindowSize.Put(WindowSize);
 	Multiform_WindowSize.ChangeData(WindowSize);
 }
 

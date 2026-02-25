@@ -6,6 +6,7 @@
 # include "PolyGon/Graphics/Data.hpp"
 
 struct Ray2D;
+struct AxisBox2D;
 
 class PolyGon
 {
@@ -28,6 +29,7 @@ class PolyGon
 	public:
 	void Clear();
 
+	AxisBox2D ToAxisBox() const;
 	Container::Pointer<PolyGonGraphics::Data>	ToMainData() const;
 
 	public:

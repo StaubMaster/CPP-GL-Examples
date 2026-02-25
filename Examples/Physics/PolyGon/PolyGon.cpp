@@ -3,6 +3,7 @@
 
 #include "ValueType/Ray2D.hpp"
 #include "ValueType/Line2D.hpp"
+#include "ValueType/AxisBox2D.hpp"
 #include "ValueType/Intersect.hpp"
 
 
@@ -24,6 +25,15 @@ void PolyGon::Clear()
 
 
 
+AxisBox2D PolyGon::ToAxisBox() const
+{
+	AxisBox2D box;
+	for (unsigned int i = 0; i < Corners.Count(); i++)
+	{
+		box.Consider(Corners[i].Pos);
+	}
+	return box;
+}
 Container::Pointer<PolyGonGraphics::Data> PolyGon::ToMainData() const
 {
 	Container::Pointer<PolyGonGraphics::Data> data(Sides.Count() * 3);

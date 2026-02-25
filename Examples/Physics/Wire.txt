@@ -31,3 +31,16 @@ each MainInstance should have
 }
 
 
+
+
+
+How to Show/Hide WireFrame (or just any Elements)
+have seperate Instances for each ?
+
+have Instances be the "Main" Container
+so of the actual Objects
+
+but then every Frame, make seperate Lists for each "Type"
+so have Toggles for PolyGon, WireFrame and WireFrameBox
+then make a Container as big as Instances (or just Binary)
+and then fill that with the actual Buffer Instances
