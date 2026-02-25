@@ -1,13 +1,11 @@
-#ifndef  POLYGON_GRAPHICS_MAIN_BUFFER_HPP
-# define POLYGON_GRAPHICS_MAIN_BUFFER_HPP
+#ifndef  POLYGON_GRAPHICS_BUFFER_HPP
+# define POLYGON_GRAPHICS_BUFFER_HPP
 
 # include "Graphics/Buffer/Attribute.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
 # include "Graphics/Attribute/ColorF4.hpp"
 
 namespace PolyGonGraphics
-{
-namespace Main
 {
 class Buffer : public ::Buffer::Attribute
 {
@@ -16,7 +14,6 @@ class Buffer : public ::Buffer::Attribute
 	::Attribute::ColorF4	Col;
 	public:
 	Buffer(BufferArray::Base & buffer_array);
-};
 };
 };
 

@@ -30,7 +30,7 @@
 
 //#include "PolyGon/Physics2D/BufferArray.hpp"
 #include "Physics2D/Shaders/PolyGon.hpp"
-#include "PolyGon/Main/Data.hpp"
+#include "PolyGon/Graphics/Data.hpp"
 #include "Inst/Physics2D/Data.hpp"
 
 #include "PolyGon/PolyGon.hpp"
@@ -86,19 +86,25 @@ MainContext()
 	, Multiform_Scale("Scale")
 {
 	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(ShaderDir.File("Physics/2D.vert")),
-			Shader::Code(ShaderDir.File("Physics/2D.frag")),
+		Container::Array<::Shader::Code> code({
+			::Shader::Code(ShaderDir.File("Physics/2D.vert")),
+			::Shader::Code(ShaderDir.File("Physics/2D.frag")),
 		});
 		Physics2D_Shader_PolyGon.Change(code);
 	}
+	{
+		Container::Array<::Shader::Code> code({
+			::Shader::Code(ShaderDir.File("Wire/2D.vert")),
+			::Shader::Code(ShaderDir.File("Wire/2D.frag")),
+		});
+		Physics2D_Shader_WireFrame.Change(code);
+	}
 	Arrow2D_Manager.InitExternal(ShaderDir);
-	Wire_Manager.InitExternal(ShaderDir);
 
 	Container::Array<Shader::Base *> shaders({
 		&Physics2D_Shader_PolyGon,
+		&Physics2D_Shader_WireFrame,
 		&Arrow2D_Manager.Shader,
-		&Wire_Manager.Shader,
 	});
 	Multiform_WindowSize.FindUniforms(shaders);
 	Multiform_View.FindUniforms(shaders);
@@ -108,6 +114,7 @@ MainContext()
 { }
 
 Physics2D::Shaders::PolyGon	Physics2D_Shader_PolyGon;
+Wire2D::Shader				Physics2D_Shader_WireFrame;
 
 Container::Array<Physics2D::MainInstance>	Physics2D_MainInstances;
 Container::Binary<Physics2D::Object>		Physics2D_Objects;
@@ -167,34 +174,6 @@ void Arrow2D_Frame()
 	Arrow2D_Manager.Shader.Bind();
 	Arrow2D_Manager.Texture.Bind();
 	Arrow2D_Manager.Buffer.Draw();
-}
-
-Wire2D::Manager Wire_Manager;
-void Wire2D_Frame()
-{
-	WireFrame2D wire;
-
-	wire.Insert_Corner(Point2D(-0.25f, -0.25f), ColorF4(0, 0, 0));
-	wire.Insert_Corner(Point2D(+0.25f, -0.25f), ColorF4(1, 0, 0));
-	wire.Insert_Corner(Point2D(+0.25f, +0.25f), ColorF4(0, 1, 0));
-	wire.Insert_Corner(Point2D(-0.25f, +0.25f), ColorF4(0, 0, 1));
-
-	wire.Insert_Side(0, 1);
-	wire.Insert_Side(1, 2);
-	wire.Insert_Side(2, 3);
-	wire.Insert_Side(3, 0);
-
-	Container::Binary<Physics2D::Inst::Data> instances;
-	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
-	{
-		instances.Insert(Physics2D::Inst::Data(Physics2D_Objects[i].Now()));
-	}
-
-	Wire_Manager.Buffer.Main.Change(wire.Corners);
-	Wire_Manager.Buffer.Elem.Change(wire.Sides, 2);
-	Wire_Manager.Buffer.Inst.Change(instances);
-
-	Wire_Manager.Draw();
 }
 
 
@@ -276,8 +255,6 @@ void Init()
 	Arrow2D_Manager.GraphicsCreate();
 	Arrow2D_Manager.InitInternal(ImageDir);
 
-	Wire_Manager.GraphicsCreate();
-
 	Make();
 }
 void Free()
@@ -291,7 +268,6 @@ void Free()
 	}
 
 	Arrow2D_Manager.GraphicsDelete();
-	Wire_Manager.GraphicsDelete();
 }
 
 
@@ -397,10 +373,15 @@ void Frame(double timeDelta)
 	Physics2D_Shader_PolyGon.Bind();
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].Draw();
+		Physics2D_MainInstances[i].PolyGon_Buffer.Draw();
 	}
 
-	Wire2D_Frame();
+	Physics2D_Shader_WireFrame.Bind();
+	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	{
+		Physics2D_MainInstances[i].WireFrame_Buffer.Draw();
+	}
+
 	Arrow2D_Frame();
 
 	Test();

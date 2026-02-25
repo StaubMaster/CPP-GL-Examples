@@ -35,8 +35,8 @@ FILES_SRC := \
 \
 	PolyGon/PolyGon.cpp \
 	PolyGon/Data.cpp \
-	PolyGon/Main/Data.cpp \
-	PolyGon/Main/Buffer.cpp \
+	PolyGon/Graphics/Data.cpp \
+	PolyGon/Graphics/Buffer.cpp \
 \
 	Physics2D/Shaders/PolyGon.cpp \
 	Physics2D/MainInstance.cpp \

@@ -24,9 +24,9 @@ void PolyGon::Clear()
 
 
 
-Container::Pointer<PolyGonGraphics::Main::Data> PolyGon::ToMainData() const
+Container::Pointer<PolyGonGraphics::Data> PolyGon::ToMainData() const
 {
-	Container::Pointer<PolyGonGraphics::Main::Data> data(Sides.Count() * 3);
+	Container::Pointer<PolyGonGraphics::Data> data(Sides.Count() * 3);
 
 	for (unsigned int f = 0; f < Sides.Count(); f++)
 	{

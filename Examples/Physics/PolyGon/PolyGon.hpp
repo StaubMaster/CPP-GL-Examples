@@ -3,7 +3,7 @@
 
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Container/Pointer.hpp"
-# include "Main/Data.hpp"
+# include "PolyGon/Graphics/Data.hpp"
 
 struct Ray2D;
 
@@ -28,7 +28,7 @@ class PolyGon
 	public:
 	void Clear();
 
-	Container::Pointer<PolyGonGraphics::Main::Data>	ToMainData() const;
+	Container::Pointer<PolyGonGraphics::Data>	ToMainData() const;
 
 	public:
 	bool IsIntersecting(Ray2D ray) const;
