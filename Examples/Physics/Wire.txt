@@ -1,0 +1,33 @@
+
+each Polygon Should have a WireFrame
+
+also have a Oriented Box for each Polygon
+
+
+
+
+
+Graphics:
+
+a Polygon is just a Polygon
+a Physics Object is a Polygon at with a Orientation
+there can be different Physics Objects with the same or a different Polygon
+
+right now I call this the MainInstance (maybe just Main ?)
+and the individual Objects are Instances
+
+
+
+each MainInstance should have
+{
+	PolyGon
+	TransBox
+
+	PolyGon_Buffer
+	PolyGon_WireBuffer
+	TransBox_WireBuffer
+
+	Binary<>	InstanceData
+}
+
+

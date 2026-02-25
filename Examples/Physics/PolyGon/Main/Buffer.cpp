@@ -5,7 +5,7 @@
 
 
 
-Physics2D::Main::Buffer::Buffer(BufferArray::Base & buffer_array)
+PolyGonGraphics::Main::Buffer::Buffer(BufferArray::Base & buffer_array)
 	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
 	, Pos()
 	, Col()

@@ -28,7 +28,7 @@ class PolyGon
 	public:
 	void Clear();
 
-	Container::Pointer<Physics2D::Main::Data>	ToPhysics2D() const;
+	Container::Pointer<PolyGonGraphics::Main::Data>	ToMainData() const;
 
 	public:
 	bool IsIntersecting(Ray2D ray) const;

@@ -6,25 +6,25 @@ Physics2D::MainInstance::~MainInstance()
 { }
 Physics2D::MainInstance::MainInstance()
 	: PolyGon(new ::PolyGon())
-	, BufferArray()
 	, Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
+	, PolyGon_Buffer(GL::DrawMode::Triangles)
 {
-	BufferArray.Main.Pos.Change(0);
-	BufferArray.Main.Col.Change(1);
-	BufferArray.Inst.Now.Pos.Change(2);
-	BufferArray.Inst.Now.Rot.Change(3, 4);
-	BufferArray.Create();
+	PolyGon_Buffer.Main.Pos.Change(0);
+	PolyGon_Buffer.Main.Col.Change(1);
+	PolyGon_Buffer.Inst.Now.Pos.Change(2);
+	PolyGon_Buffer.Inst.Now.Rot.Change(3, 4);
+	PolyGon_Buffer.Create();
 }
 Physics2D::MainInstance::MainInstance(const MainInstance & other)
 	: PolyGon(other.PolyGon)
-	, BufferArray(other.BufferArray)
 	, Instances(other.Instances)
+	, PolyGon_Buffer(other.PolyGon_Buffer)
 { }
 Physics2D::MainInstance & Physics2D::MainInstance::operator=(const MainInstance & other)
 {
 	PolyGon = other.PolyGon;
-	BufferArray = other.BufferArray;
 	Instances = other.Instances;
+	PolyGon_Buffer = other.PolyGon_Buffer;
 	return *this;
 }
 
@@ -32,7 +32,7 @@ Physics2D::MainInstance & Physics2D::MainInstance::operator=(const MainInstance 
 
 void Physics2D::MainInstance::Dispose()
 {
-	BufferArray.Delete();
+	PolyGon_Buffer.Delete();
 	delete PolyGon;
 	delete Instances;
 }
@@ -41,17 +41,17 @@ void Physics2D::MainInstance::Dispose()
 
 void Physics2D::MainInstance::UpdateMain()
 {
-	Container::Pointer<Physics2D::Main::Data> data = PolyGon -> ToPhysics2D();
-	BufferArray.Bind();
-	BufferArray.Main.Change(data);
+	Container::Pointer<PolyGonGraphics::Main::Data> data = PolyGon -> ToMainData();
+	PolyGon_Buffer.Bind();
+	PolyGon_Buffer.Main.Change(data);
 	data.Delete();
 }
 void Physics2D::MainInstance::UpdateInst()
 {
-	BufferArray.Bind();
-	BufferArray.Inst.Change(*Instances);
+	PolyGon_Buffer.Bind();
+	PolyGon_Buffer.Inst.Change(*Instances);
 }
 void Physics2D::MainInstance::Draw()
 {
-	BufferArray.Draw();
+	PolyGon_Buffer.Draw();
 }

@@ -28,8 +28,8 @@
 
 
 
-#include "PolyGon/Physics2D/BufferArray.hpp"
-#include "PolyGon/Physics2D/Shader.hpp"
+//#include "PolyGon/Physics2D/BufferArray.hpp"
+#include "Physics2D/Shaders/PolyGon.hpp"
 #include "PolyGon/Main/Data.hpp"
 #include "Inst/Physics2D/Data.hpp"
 
@@ -90,13 +90,13 @@ MainContext()
 			Shader::Code(ShaderDir.File("Physics/2D.vert")),
 			Shader::Code(ShaderDir.File("Physics/2D.frag")),
 		});
-		Physics2D_Shader.Change(code);
+		Physics2D_Shader_PolyGon.Change(code);
 	}
 	Arrow2D_Manager.InitExternal(ShaderDir);
 	Wire_Manager.InitExternal(ShaderDir);
 
 	Container::Array<Shader::Base *> shaders({
-		&Physics2D_Shader,
+		&Physics2D_Shader_PolyGon,
 		&Arrow2D_Manager.Shader,
 		&Wire_Manager.Shader,
 	});
@@ -107,7 +107,7 @@ MainContext()
 ~MainContext()
 { }
 
-Physics2D::Shader	Physics2D_Shader;
+Physics2D::Shaders::PolyGon	Physics2D_Shader_PolyGon;
 
 Container::Array<Physics2D::MainInstance>	Physics2D_MainInstances;
 Container::Binary<Physics2D::Object>		Physics2D_Objects;
@@ -206,7 +206,7 @@ void Make()
 
 
 	unsigned int wall = 0;
-	Physics2D_MainInstances[wall].BufferArray.Create();
+	Physics2D_MainInstances[wall].PolyGon_Buffer.Create();
 	{
 		float thickness = 0.1f;
 		PolyGon & poly_gon = *(Physics2D_MainInstances[wall].PolyGon);
@@ -227,7 +227,7 @@ void Make()
 
 
 	unsigned int obj0 = 1;
-	Physics2D_MainInstances[obj0].BufferArray.Create();
+	Physics2D_MainInstances[obj0].PolyGon_Buffer.Create();
 	{
 		PolyGon & poly_gon = *(Physics2D_MainInstances[obj0].PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0)));
@@ -253,7 +253,7 @@ void Make()
 
 
 	unsigned int obj1 = 2;
-	Physics2D_MainInstances[obj1].BufferArray.Create();
+	Physics2D_MainInstances[obj1].PolyGon_Buffer.Create();
 	{
 		PolyGon & poly_gon = *(Physics2D_MainInstances[obj1].PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.025f, -0.400f), ColorF4(1, 0, 0)));
@@ -271,7 +271,7 @@ void Make()
 
 void Init()
 {
-	Physics2D_Shader.Create();
+	Physics2D_Shader_PolyGon.Create();
 
 	Arrow2D_Manager.GraphicsCreate();
 	Arrow2D_Manager.InitInternal(ImageDir);
@@ -282,11 +282,11 @@ void Init()
 }
 void Free()
 {
-	Physics2D_Shader.Delete();
+	Physics2D_Shader_PolyGon.Delete();
 	Physics2D_Objects.Clear();
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].BufferArray.Delete();
+		Physics2D_MainInstances[i].PolyGon_Buffer.Delete();
 		Physics2D_MainInstances[i].Dispose();
 	}
 
@@ -394,7 +394,7 @@ void Frame(double timeDelta)
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 
-	Physics2D_Shader.Bind();
+	Physics2D_Shader_PolyGon.Bind();
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
 		Physics2D_MainInstances[i].Draw();
@@ -407,7 +407,7 @@ void Frame(double timeDelta)
 }
 void Resize(const WindowBufferSize2D & WindowSize)
 {
-	//Physics2D_Shader.WindowSize.Put(WindowSize);
+	//Physics2D_Shader_PolyGon.WindowSize.Put(WindowSize);
 	//Arrow2D_Manager.Shader.WindowSize.Put(WindowSize);
 	//Wire_Manager.Shader.WindowSize.Put(WindowSize);
 	Multiform_WindowSize.ChangeData(WindowSize);

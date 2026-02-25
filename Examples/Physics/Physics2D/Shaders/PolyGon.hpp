@@ -1,19 +1,23 @@
-#ifndef  PHYSICS_2D_SHADER_HPP
-# define PHYSICS_2D_SHADER_HPP
+#ifndef  PHYSICS_2D_SHADER_POLYGON_HPP
+# define PHYSICS_2D_SHADER_POLYGON_HPP
 
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/UniformsInclude.hpp"
 
 namespace Physics2D
 {
-class Shader : public ::Shader::Base
+namespace Shaders
+{
+class PolyGon : public ::Shader::Base
 {
 	public:
 	Uniform::WindowBufferSize2D	WindowSize;
 	Uniform::Trans2D			View;
 	Uniform::Float				Scale;
 	public:
-	Shader();
+	~PolyGon();
+	PolyGon();
+};
 };
 };
 
