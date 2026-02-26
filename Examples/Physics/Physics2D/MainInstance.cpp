@@ -12,7 +12,10 @@ Physics2D::MainInstance::MainInstance()
 	: PolyGon(new ::PolyGon())
 	, WireFrame(new ::WireFrame2D())
 	, WireFrameBox(new ::WireFrame2D())
-	, Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
+//	, Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
+	, PolyGon_Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
+	, WireFrame_Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
+	, WireFrameBox_Instances(new EntryContainer::Binary<Physics2D::Inst::Data>())
 	, PolyGon_Buffer(GL::DrawMode::Triangles)
 	, WireFrame_Buffer(GL::DrawMode::Lines)
 	, WireFrameBox_Buffer(GL::DrawMode::Lines)
@@ -43,7 +46,10 @@ Physics2D::MainInstance::MainInstance(const MainInstance & other)
 	: PolyGon(other.PolyGon)
 	, WireFrame(other.WireFrame)
 	, WireFrameBox(other.WireFrameBox)
-	, Instances(other.Instances)
+//	, Instances(other.Instances)
+	, PolyGon_Instances(other.PolyGon_Instances)
+	, WireFrame_Instances(other.WireFrame_Instances)
+	, WireFrameBox_Instances(other.WireFrameBox_Instances)
 	, PolyGon_Buffer(other.PolyGon_Buffer)
 	, WireFrame_Buffer(other.WireFrame_Buffer)
 	, WireFrameBox_Buffer(other.WireFrameBox_Buffer)
@@ -53,7 +59,10 @@ Physics2D::MainInstance & Physics2D::MainInstance::operator=(const MainInstance 
 	PolyGon = other.PolyGon;
 	WireFrame = other.WireFrame;
 	WireFrameBox = other.WireFrameBox;
-	Instances = other.Instances;
+//	Instances = other.Instances;
+	PolyGon_Instances = other.PolyGon_Instances;
+	WireFrame_Instances = other.WireFrame_Instances;
+	WireFrameBox_Instances = other.WireFrameBox_Instances;
 	PolyGon_Buffer = other.PolyGon_Buffer;
 	WireFrame_Buffer = other.WireFrame_Buffer;
 	WireFrameBox_Buffer = other.WireFrameBox_Buffer;
@@ -67,7 +76,10 @@ void Physics2D::MainInstance::Dispose()
 	delete PolyGon;
 	delete WireFrame;
 	delete WireFrameBox;
-	delete Instances;
+//	delete Instances;
+	delete PolyGon_Instances;
+	delete WireFrame_Instances;
+	delete WireFrameBox_Instances;
 	PolyGon_Buffer.Delete();
 	WireFrame_Buffer.Delete();
 	WireFrameBox_Buffer.Delete();
@@ -114,7 +126,15 @@ void Physics2D::MainInstance::UpdateMain()
 }
 void Physics2D::MainInstance::UpdateInst()
 {
-	PolyGon_Buffer.Inst.Change(*Instances);
-	WireFrame_Buffer.Inst.Change(*Instances);
-	WireFrameBox_Buffer.Inst.Change(*Instances);
+//	PolyGon_Buffer.Inst.Change(*Instances);
+//	WireFrame_Buffer.Inst.Change(*Instances);
+//	WireFrameBox_Buffer.Inst.Change(*Instances);
+
+	PolyGon_Instances -> CompactHere();
+	WireFrame_Instances -> CompactHere();
+	WireFrameBox_Instances -> CompactHere();
+
+	PolyGon_Buffer.Inst.Change(*PolyGon_Instances);
+	WireFrame_Buffer.Inst.Change(*WireFrame_Instances);
+	WireFrameBox_Buffer.Inst.Change(*WireFrameBox_Instances);
 }

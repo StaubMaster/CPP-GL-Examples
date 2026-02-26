@@ -12,19 +12,33 @@ namespace Physics2D
 struct Object
 {
 	Physics2D::MainInstance *		MainInstance;
-	EntryContainer::Entry<Physics2D::Inst::Data>	Data;
+
+	Physics2D::Inst::Data			Data;
+
+	EntryContainer::Entry<Physics2D::Inst::Data>	Data_PolyGon;
+	EntryContainer::Entry<Physics2D::Inst::Data>	Data_WireFrame;
+	EntryContainer::Entry<Physics2D::Inst::Data>	Data_WireFrameBox;
 
 	bool	IsStatic;
 	float	Mass;
 
 	bool				Valid() const;
 	const ::PolyGon *	PolyGon() const;
+	void				Update();
 
 	const Trans2D &		Now() const;
 	const Trans2D &		Vel() const;
 
 	Trans2D &			Now();
 	Trans2D &			Vel();
+
+	void	Show_PolyGon();
+	void	Show_WireFrame();
+	void	Show_WireFrameBox();
+
+	void	Hide_PolyGon();
+	void	Hide_WireFrame();
+	void	Hide_WireFrameBox();
 
 	unsigned int	CornerCount() const;
 	unsigned int	SideCount() const;

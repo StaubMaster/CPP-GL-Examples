@@ -208,6 +208,12 @@ void Make()
 	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D()), true));
 	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees(270))), Trans2D(Point2D(0, 0), Angle2D()), true));
 
+	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+	{
+		Physics2D_Objects[i].Hide_WireFrame();
+		Physics2D_Objects[i].Hide_WireFrameBox();
+	}
+
 
 
 	unsigned int obj0 = 1;
@@ -310,6 +316,7 @@ void UpdateOrientation(float timeDelta)
 		{
 			Physics2D_Objects[i].Now().Pos += (Physics2D_Objects[i].Vel().Pos * timeDelta);
 			Physics2D_Objects[i].Now().Rot += (Physics2D_Objects[i].Vel().Rot * timeDelta);
+			Physics2D_Objects[i].Update();
 		}
 	}
 }
