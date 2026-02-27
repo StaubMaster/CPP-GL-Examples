@@ -104,40 +104,34 @@ Physics2D::Object::Object(Physics2D::MainInstance & main_inst, bool is_static)
 	: MainInstance(&main_inst)
 	, Data()
 	, Data_PolyGon(*(*MainInstance).PolyGon_Instances, 1)
-	, Data_WireFrame(*(*MainInstance).WireFrame_Instances, 1)
-	, Data_WireFrameBox(*(*MainInstance).WireFrameBox_Instances, 1)
+	, Data_WireFrame()
+	, Data_WireFrameBox()
 	, IsStatic(is_static)
 	, Mass(1.0f)
 {
-	(*Data_PolyGon) = Data;
-	(*Data_WireFrame) = Data;
-	(*Data_WireFrameBox) = Data;
+//	(*Data_PolyGon) = Data;
 }
 Physics2D::Object::Object(Physics2D::MainInstance & main_inst, Trans2D now, bool is_static)
 	: MainInstance(&main_inst)
 	, Data(now)
 	, Data_PolyGon(*(*MainInstance).PolyGon_Instances, 1)
-	, Data_WireFrame(*(*MainInstance).WireFrame_Instances, 1)
-	, Data_WireFrameBox(*(*MainInstance).WireFrameBox_Instances, 1)
+	, Data_WireFrame()
+	, Data_WireFrameBox()
 	, IsStatic(is_static)
 	, Mass(1.0f)
 {
-	(*Data_PolyGon) = Data;
-	(*Data_WireFrame) = Data;
-	(*Data_WireFrameBox) = Data;
+//	(*Data_PolyGon) = Data;
 }
 Physics2D::Object::Object(Physics2D::MainInstance & main_inst, Trans2D now, Trans2D vel, bool is_static)
 	: MainInstance(&main_inst)
 	, Data(now, vel)
 	, Data_PolyGon(*(*MainInstance).PolyGon_Instances, 1)
-	, Data_WireFrame(*(*MainInstance).WireFrame_Instances, 1)
-	, Data_WireFrameBox(*(*MainInstance).WireFrameBox_Instances, 1)
+	, Data_WireFrame()
+	, Data_WireFrameBox()
 	, IsStatic(is_static)
 	, Mass(1.0f)
 {
-	(*Data_PolyGon) = Data;
-	(*Data_WireFrame) = Data;
-	(*Data_WireFrameBox) = Data;
+//	(*Data_PolyGon) = Data;
 }
 
 

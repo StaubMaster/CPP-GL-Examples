@@ -114,6 +114,9 @@ MainContext()
 	Multiform_WindowSize.FindUniforms(shaders);
 	Multiform_View.FindUniforms(shaders);
 	Multiform_Scale.FindUniforms(shaders);
+
+	Object_Selected = Undex::Invalid();
+	Object_Hovering = Undex::Invalid();
 }
 ~MainContext()
 { }
@@ -124,16 +127,19 @@ Wire2D::Shader				Physics2D_Shader_WireFrame;
 Container::Array<Physics2D::MainInstance>	Physics2D_MainInstances;
 Container::Binary<Physics2D::Object>		Physics2D_Objects;
 
-unsigned int FindHoveringObjectIndex(Point2D p)
+Undex	Object_Selected;
+Undex	Object_Hovering;
+
+Undex FindHoveringObjectIndex(Point2D p)
 {
-	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+	for (Undex u; u < Physics2D_Objects.Count(); u++)
 	{
-		if (Physics2D_Objects[i].IsContaining(p))
+		if (Physics2D_Objects[u.Value].IsContaining(p))
 		{
-			return i;
+			return u;
 		}
 	}
-	return 0xFFFFFFFF;
+	return Undex::Invalid();
 }
 
 
@@ -207,12 +213,6 @@ void Make()
 	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees( 90))), Trans2D(Point2D(0, 0), Angle2D()), true));
 	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D()), true));
 	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees(270))), Trans2D(Point2D(0, 0), Angle2D()), true));
-
-	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
-	{
-		Physics2D_Objects[i].Hide_WireFrame();
-		Physics2D_Objects[i].Hide_WireFrameBox();
-	}
 
 
 
@@ -316,7 +316,6 @@ void UpdateOrientation(float timeDelta)
 		{
 			Physics2D_Objects[i].Now().Pos += (Physics2D_Objects[i].Vel().Pos * timeDelta);
 			Physics2D_Objects[i].Now().Rot += (Physics2D_Objects[i].Vel().Rot * timeDelta);
-			Physics2D_Objects[i].Update();
 		}
 	}
 }
@@ -329,7 +328,7 @@ void Update(float timeDelta)
 
 
 
-void Frame(double timeDelta)
+void UpdateView(float timeDelta)
 {
 	//if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
 	/*if (window.MouseManager.CursorModeIsLocked())
@@ -352,27 +351,45 @@ void Frame(double timeDelta)
 	}
 	Multiform_View.ChangeData(view.Trans);
 	Multiform_Scale.ChangeData(view.Scale);
+}
 
-	if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress()) { Paused = !Paused; }
+void Frame(double timeDelta)
+{
+	UpdateView(timeDelta);
 
-	if (Paused)
 	{
-		if (window.KeyBoardManager.Keys[GLFW_KEY_O].IsDown())
-		{ Update(1 / 60.0f); }
-		if (window.KeyBoardManager.Keys[GLFW_KEY_I].IsPress())
-		{ Update(1 / 60.0f); }
+		if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress()) { Paused = !Paused; }
+		if (Paused)
+		{
+			if (window.KeyBoardManager.Keys[GLFW_KEY_O].IsDown())
+			{
+				Update(1 / 60.0f);
+			}
+			else if (window.KeyBoardManager.Keys[GLFW_KEY_I].IsPress())
+			{
+				Update(1 / 60.0f);
+			}
+		}
+		else
+		{
+			Update(timeDelta);
+		}
+
+		for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+		{
+			Physics2D_Objects[i].Update();
+		}
+		
+		for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+		{
+			Physics2D_MainInstances[i].UpdateInst();
+		}
 	}
-	else
+
 	{
-		Update(timeDelta);
+		Point2D cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
+		Object_Hovering = FindHoveringObjectIndex(cursor);
 	}
-
-	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
-	{
-		Physics2D_MainInstances[i].UpdateInst();
-	}
-
-
 
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
@@ -432,7 +449,25 @@ void MouseScroll(UserParameter::Mouse::Scroll params)
 }
 void MouseClick(UserParameter::Mouse::Click params)
 {
-	(void)params;
+	if (params.Action.IsPress())
+	{
+		if (params.Code == UserParameter::Mouse::Button::MouseL)
+		{
+			if (Object_Selected.IsValid())
+			{
+				Physics2D_Objects[Object_Selected.Value].Hide_WireFrame();
+				Physics2D_Objects[Object_Selected.Value].Hide_WireFrameBox();
+			}
+
+			Object_Selected = Object_Hovering;
+
+			if (Object_Selected.IsValid())
+			{
+				Physics2D_Objects[Object_Selected.Value].Show_WireFrame();
+				Physics2D_Objects[Object_Selected.Value].Show_WireFrameBox();
+			}
+		}
+	}
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
@@ -443,13 +478,12 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 {
 	if (params.Action.IsPress())
 	{
-		if (params.Code.Flags == GLFW_KEY_DELETE)
+		if (params.Code == UserParameter::KeyBoard::Keys::Delete)
 		{
-			Point2D cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
-			unsigned int idx = FindHoveringObjectIndex(cursor);
-			if (idx != 0xFFFFFFFF)
+			if (Object_Selected.IsValid())
 			{
-				Physics2D_Objects.Remove(idx);
+				Physics2D_Objects.Remove(Object_Selected.Value);
+				Object_Selected = Undex::Invalid();
 			}
 		}
 	}
