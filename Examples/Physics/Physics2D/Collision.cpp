@@ -228,8 +228,8 @@ void Physics2D::CollideLinear(
 	Point2D Contact0 = obj0.AbsolutePositionOf(obj0.CornerFromIndex(contact_data.Contact0Udx));
 	Point2D Contact1 = obj1.AbsolutePositionOf(obj1.CornerFromIndex(contact_data.Contact1Udx));
 
-	Point2D RelativeContact0 = Contact0 - obj0.Now().Pos;
-	Point2D RelativeContact1 = Contact1 - obj1.Now().Pos;
+	Point2D RelativeContact0 = Contact0 - obj0.Data.Now.Pos;
+	Point2D RelativeContact1 = Contact1 - obj1.Data.Now.Pos;
 
 	float MassInverse0 = 0;
 	float MassInverse1 = 0;
@@ -240,17 +240,17 @@ void Physics2D::CollideLinear(
 
 
 	float e = 1.0f;
-	Point2D vel_rel = obj1.Vel().Pos - obj0.Vel().Pos;
+	Point2D vel_rel = obj1.Data.Vel.Pos - obj0.Data.Vel.Pos;
 	float NormalVelFactor = Point2D::dot(vel_rel, normal);
 
 	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum);
 	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
 
-	if (!obj0.IsStatic) { obj0.Vel().Pos -= normal * (ImpulseFactor / obj0.Mass); }
-	if (!obj1.IsStatic) { obj1.Vel().Pos += normal * (ImpulseFactor / obj1.Mass); }
+	if (!obj0.IsStatic) { obj0.Data.Vel.Pos -= normal * (ImpulseFactor / obj0.Mass); }
+	if (!obj1.IsStatic) { obj1.Data.Vel.Pos += normal * (ImpulseFactor / obj1.Mass); }
 
-	if (obj0.IsStatic) { obj0.Vel() = Trans2D(); }
-	if (obj1.IsStatic) { obj1.Vel() = Trans2D(); }
+	if (obj0.IsStatic) { obj0.Data.Vel = Trans2D(); }
+	if (obj1.IsStatic) { obj1.Data.Vel = Trans2D(); }
 
 	std::cout << '\n';
 }
@@ -273,8 +273,8 @@ void Physics2D::CollideRotate(
 	Point2D Contact0 = obj0.AbsolutePositionOf(obj0.CornerFromIndex(contact_data.Contact0Udx));
 	Point2D Contact1 = obj1.AbsolutePositionOf(obj1.CornerFromIndex(contact_data.Contact1Udx));
 
-	Point2D RelativeContact0 = Contact0 - obj0.Now().Pos;
-	Point2D RelativeContact1 = Contact1 - obj1.Now().Pos;
+	Point2D RelativeContact0 = Contact0 - obj0.Data.Now.Pos;
+	Point2D RelativeContact1 = Contact1 - obj1.Data.Now.Pos;
 
 	float ContactDistance0 = RelativeContact0.length();
 	float ContactDistance1 = RelativeContact1.length();
@@ -317,7 +317,7 @@ void Physics2D::CollideRotate(
 
 
 	float e = 1.0f;
-	Point2D vel_rel = obj1.Vel().Pos - obj0.Vel().Pos;
+	Point2D vel_rel = obj1.Data.Vel.Pos - obj0.Data.Vel.Pos;
 	float NormalVelFactor = Point2D::dot(vel_rel, normal);
 
 	std::cout << "normal           : " << normal << '\n';
@@ -329,15 +329,15 @@ void Physics2D::CollideRotate(
 	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
 	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
 
-	if (!obj0.IsStatic) { obj0.Vel().Pos -= normal * (ImpulseFactor / obj0.Mass); }
-	if (!obj1.IsStatic) { obj1.Vel().Pos += normal * (ImpulseFactor / obj1.Mass); }
+	if (!obj0.IsStatic) { obj0.Data.Vel.Pos -= normal * (ImpulseFactor / obj0.Mass); }
+	if (!obj1.IsStatic) { obj1.Data.Vel.Pos += normal * (ImpulseFactor / obj1.Mass); }
 
 //	My Angle Spinning is "the wrong way". positive should be counter-clockwise, mine is clockwise
-	if (!obj0.IsStatic) { obj0.Vel().Rot += Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
-	if (!obj1.IsStatic) { obj1.Vel().Rot -= Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
+	if (!obj0.IsStatic) { obj0.Data.Vel.Rot += Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
+	if (!obj1.IsStatic) { obj1.Data.Vel.Rot -= Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
 
-	if (obj0.IsStatic) { obj0.Vel() = Trans2D(); }
-	if (obj1.IsStatic) { obj1.Vel() = Trans2D(); }
+	if (obj0.IsStatic) { obj0.Data.Vel = Trans2D(); }
+	if (obj1.IsStatic) { obj1.Data.Vel = Trans2D(); }
 
 	std::cout << '\n';
 }
@@ -368,8 +368,8 @@ void Physics2D::Collide(
 	Point2D ContactVel0 = obj0.AbsoluteVelocityOf(contact_data.Contact);
 	Point2D ContactVel1 = obj1.AbsoluteVelocityOf(contact_data.Contact);
 
-	Point2D RelativeContact0 = contact_data.Contact - obj0.Now().Pos;
-	Point2D RelativeContact1 = contact_data.Contact - obj1.Now().Pos;
+	Point2D RelativeContact0 = contact_data.Contact - obj0.Data.Now.Pos;
+	Point2D RelativeContact1 = contact_data.Contact - obj1.Data.Now.Pos;
 
 
 
@@ -422,14 +422,14 @@ void Physics2D::Collide(
 	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
 	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
 
-	if (!obj0.IsStatic) { obj0.Vel().Pos -= contact_data.Normal * (ImpulseFactor / obj0.Mass); }
-	if (!obj1.IsStatic) { obj1.Vel().Pos += contact_data.Normal * (ImpulseFactor / obj1.Mass); }
+	if (!obj0.IsStatic) { obj0.Data.Vel.Pos -= contact_data.Normal * (ImpulseFactor / obj0.Mass); }
+	if (!obj1.IsStatic) { obj1.Data.Vel.Pos += contact_data.Normal * (ImpulseFactor / obj1.Mass); }
 
-	if (!obj0.IsStatic) { obj0.Vel().Rot += Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
-	if (!obj1.IsStatic) { obj1.Vel().Rot -= Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
+	if (!obj0.IsStatic) { obj0.Data.Vel.Rot += Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
+	if (!obj1.IsStatic) { obj1.Data.Vel.Rot -= Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
 
-	if (obj0.IsStatic) { obj0.Vel() = Trans2D(); }
-	if (obj1.IsStatic) { obj1.Vel() = Trans2D(); }
+	if (obj0.IsStatic) { obj0.Data.Vel = Trans2D(); }
+	if (obj1.IsStatic) { obj1.Data.Vel = Trans2D(); }
 
 	std::cout << '\n';
 }

@@ -11,27 +11,24 @@ namespace Physics2D
 {
 struct Object
 {
-	Physics2D::InstanceManager *		InstanceManager;
-
-	Physics2D::Inst::Data			Data;
+	Physics2D::InstanceManager *	InstanceManager;
 
 	EntryContainer::Entry<Physics2D::Inst::Data>	Data_PolyGon;
 	EntryContainer::Entry<Physics2D::Inst::Data>	Data_WireFrame;
 	EntryContainer::Entry<Physics2D::Inst::Data>	Data_WireFrameBox;
 	EntryContainer::Entry<Arrow2D::Inst::Data>		Data_Arrows;
 
+	Physics2D::Inst::Data	Data;
+
+	bool	IsTangible;
 	bool	IsStatic;
 	float	Mass;
 
-	bool				Valid() const;
+	bool				IsValid() const;
 	const ::PolyGon *	PolyGon() const;
-	void				Update();
 
-	const Trans2D &		Now() const;
-	const Trans2D &		Vel() const;
-
-	Trans2D &			Now();
-	Trans2D &			Vel();
+	public:
+	void	UpdateEntrys();
 
 	void	Show_PolyGon();
 	void	Show_WireFrame();
@@ -63,9 +60,6 @@ struct Object
 
 	public:
 	bool IsContaining(Point2D p) const;
-
-	public:
-	void UpdateArrows();
 };
 };
 

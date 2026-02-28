@@ -132,19 +132,23 @@ Undex FindHoveringObjectIndex(Point2D p)
 
 
 
-// Drag Origin should be attached to Relative Position in Object
 bool Drag_Is;
+Undex Drag_Object;
 Point2D Drag_Pos0;
 Point2D Drag_Pos1;
 EntryContainer::Entry<Arrow2D::Inst::Data> Drag_Arrow;
+/* Drag
+	currently changes Linear Velocity when Drag is done
+	just apply Force/Impulse while Drag is active
+*/
+void Drag_Update()
+{
+	if (!Drag_Is) { return; }
+	(*Drag_Arrow).Pos0 = Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
+}
 
 void Arrow2D_Frame()
 {
-	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
-	{
-		Physics2D_Objects[i].UpdateArrows();
-	}
-
 	Physics2D_Manager.Arrow_Inst_Update();
 	Physics2D_Manager.Shader_Arrow.Bind();
 	Physics2D_Manager.Texture_Arrow.Bind();
@@ -261,7 +265,7 @@ void UpdateGravity(float timeDelta)
 	{
 		if (!Physics2D_Objects[i].IsStatic)
 		{
-			Physics2D_Objects[i].Vel().Pos += Gravity;
+			Physics2D_Objects[i].Data.Vel.Pos += Gravity;
 		}
 	}
 }
@@ -283,8 +287,8 @@ void UpdateOrientation(float timeDelta)
 	{
 		if (!Physics2D_Objects[i].IsStatic)
 		{
-			Physics2D_Objects[i].Now().Pos += (Physics2D_Objects[i].Vel().Pos * timeDelta);
-			Physics2D_Objects[i].Now().Rot += (Physics2D_Objects[i].Vel().Rot * timeDelta);
+			Physics2D_Objects[i].Data.Now.Pos += (Physics2D_Objects[i].Data.Vel.Pos * timeDelta);
+			Physics2D_Objects[i].Data.Now.Rot += (Physics2D_Objects[i].Data.Vel.Rot * timeDelta);
 		}
 	}
 }
@@ -346,7 +350,7 @@ void Frame(double timeDelta)
 
 		for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
 		{
-			Physics2D_Objects[i].Update();
+			Physics2D_Objects[i].UpdateEntrys();
 		}
 		
 		for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
@@ -359,6 +363,10 @@ void Frame(double timeDelta)
 		Point2D cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
 		Object_Hovering = FindHoveringObjectIndex(cursor);
 	}
+
+	Drag_Update();
+
+
 
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
@@ -445,7 +453,7 @@ void MouseClick(UserParameter::Mouse::Click params)
 		{
 			if (Object_Selected.IsValid())
 			{
-				Point2D rel = Drag_Pos1 - Drag_Pos0;
+				Point2D rel = Drag_Pos1 - Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
 				Physics2D_Objects[Object_Selected.Value].Data.Vel.Pos += rel;
 			}
 			Drag_Is = false;
@@ -457,17 +465,21 @@ void MouseDrag(UserParameter::Mouse::Drag params)
 {
 	if (!Drag_Is)
 	{
-		Drag_Is = true;
-		Drag_Arrow.Allocate(*Physics2D_Manager.Instances_Arrow, 1);
+		Point2D cursor = AbsolutePositionOfWindowPixel(params.Origin.Absolute);
+		Drag_Object = FindHoveringObjectIndex(cursor);
+		if (Drag_Object.IsValid())
+		{
+			Drag_Is = true;
+			Drag_Pos0 = Physics2D_Objects[Drag_Object.Value].RelativePositionOf(cursor);
+			Drag_Arrow.Allocate(*Physics2D_Manager.Instances_Arrow, 1);
+			(*Drag_Arrow).Col = ColorF4(1, 1, 1);
+			(*Drag_Arrow).Size = 20.0f;
+		}
 	}
 	if (Drag_Arrow.Is())
 	{
-		Drag_Pos0 = AbsolutePositionOfWindowPixel(params.Origin.Absolute);
 		Drag_Pos1 = AbsolutePositionOfWindowPixel(params.Position.Absolute);
-		(*Drag_Arrow).Col = ColorF4(1, 1, 1);
-		(*Drag_Arrow).Pos0 = Drag_Pos0;
 		(*Drag_Arrow).Pos1 = Drag_Pos1;
-		(*Drag_Arrow).Size = 20.0f;
 	}
 }
 
