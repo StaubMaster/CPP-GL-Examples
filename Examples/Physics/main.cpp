@@ -39,10 +39,12 @@
 
 
 #include "Physics2D/Collision.hpp"
-#include "Physics2D/MainInstance.hpp"
+#include "Physics2D/Manager.hpp"
+#include "Physics2D/InstanceManager.hpp"
 #include "Physics2D/Object.hpp"
 
 #include "Arrow2D/Manager.hpp"
+#include "Arrow2D/Shader.hpp"
 #include "Arrow2D/Main/Data.hpp"
 #include "Arrow2D/Inst/Data.hpp"
 
@@ -90,26 +92,12 @@ MainContext()
 	, Multiform_View("View")
 	, Multiform_Scale("Scale")
 {
-	{
-		Container::Array<::Shader::Code> code({
-			::Shader::Code(ShaderDir.File("Physics/2D.vert")),
-			::Shader::Code(ShaderDir.File("Physics/2D.frag")),
-		});
-		Physics2D_Shader_PolyGon.Change(code);
-	}
-	{
-		Container::Array<::Shader::Code> code({
-			::Shader::Code(ShaderDir.File("Wire/2D.vert")),
-			::Shader::Code(ShaderDir.File("Wire/2D.frag")),
-		});
-		Physics2D_Shader_WireFrame.Change(code);
-	}
-	Arrow2D_Manager.InitExternal(ShaderDir);
+	Physics2D_Manager.InitExternal(ShaderDir);
 
 	Container::Array<Shader::Base *> shaders({
-		&Physics2D_Shader_PolyGon,
-		&Physics2D_Shader_WireFrame,
-		&Arrow2D_Manager.Shader,
+		&Physics2D_Manager.Shader_PolyGon,
+		&Physics2D_Manager.Shader_WireFrame,
+		&Physics2D_Manager.Shader_Arrow,
 	});
 	Multiform_WindowSize.FindUniforms(shaders);
 	Multiform_View.FindUniforms(shaders);
@@ -119,13 +107,13 @@ MainContext()
 	Object_Hovering = Undex::Invalid();
 }
 ~MainContext()
-{ }
+{
+	Physics2D_Manager.Dispose();
+}
 
-Physics2D::Shaders::PolyGon	Physics2D_Shader_PolyGon;
-Wire2D::Shader				Physics2D_Shader_WireFrame;
-
-Container::Array<Physics2D::MainInstance>	Physics2D_MainInstances;
-Container::Binary<Physics2D::Object>		Physics2D_Objects;
+Physics2D::Manager								Physics2D_Manager;
+Container::Array<Physics2D::InstanceManager>	Physics2D_MainInstances;
+Container::Binary<Physics2D::Object>			Physics2D_Objects;
 
 Undex	Object_Selected;
 Undex	Object_Hovering;
@@ -144,47 +132,23 @@ Undex FindHoveringObjectIndex(Point2D p)
 
 
 
-Arrow2D::Manager Arrow2D_Manager;
+// Drag Origin should be attached to Relative Position in Object
+bool Drag_Is;
+Point2D Drag_Pos0;
+Point2D Drag_Pos1;
+EntryContainer::Entry<Arrow2D::Inst::Data> Drag_Arrow;
+
 void Arrow2D_Frame()
 {
+	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
 	{
-		Container::Binary<Arrow2D::Inst::Data> data;
-
-		//{
-		//	Point2D Cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
-		//	data.Insert(Arrow2D::Inst::Data(Point2D(), Cursor, 20, ColorF4(1.0f, 1.0f, 1.0f)));
-		//	data.Insert(Arrow2D::Inst::Data(Point2D(0, 1), Point2D(1, 1), 20, ColorF4(0.5f, 0.5f, 0.5f)));
-		//}
-
-		Point2D now;
-		Point2D vel;
-		for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
-		{
-			now = Physics2D_Objects[i].Now().Pos;
-			vel = Physics2D_Objects[i].Vel().Pos;
-			data.Insert(Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(0.5f, 0.5f, 1.0f)));
-			for (unsigned int j = 0; j < Physics2D_Objects[i].CornerCount(); j++)
-			{
-				Point2D p = Physics2D_Objects[i].CornerFromIndex(j);
-				Point2D now = Physics2D_Objects[i].AbsolutePositionOf(p);
-				Point2D vel = Physics2D_Objects[i].AbsoluteVelocityOf(p);
-				data.Insert(Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(0.5f, 1.0f, 0.5f)));
-				vel -= Physics2D_Objects[i].Vel().Pos;
-				data.Insert(Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(1.0f, 0.5f, 0.5f)));
-			}
-		}
-
-		Arrow2D_Manager.Buffer.Inst.Change(data);
-		/*std::cout << "Inst: " << data.Count() << '\n';
-		for (unsigned int i = 0; i < data.Count(); i++)
-		{
-			std::cout << data[i].Pos << ' ' << data[i].Dir << ' ' << data[i].Size << '\n';
-		}*/
+		Physics2D_Objects[i].UpdateArrows();
 	}
 
-	Arrow2D_Manager.Shader.Bind();
-	Arrow2D_Manager.Texture.Bind();
-	Arrow2D_Manager.Buffer.Draw();
+	Physics2D_Manager.Arrow_Inst_Update();
+	Physics2D_Manager.Shader_Arrow.Bind();
+	Physics2D_Manager.Texture_Arrow.Bind();
+	Physics2D_Manager.Buffer_Arrow.Draw();
 }
 
 
@@ -196,7 +160,7 @@ void Make()
 
 
 	unsigned int wall = 0;
-	Physics2D_MainInstances[wall].PolyGon_Buffer.Create();
+	Physics2D_MainInstances[wall].Buffer_PolyGon.Create();
 	{
 		float thickness = 0.1f;
 		PolyGon & poly_gon = *(Physics2D_MainInstances[wall].PolyGon);
@@ -207,17 +171,16 @@ void Make()
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
-	Physics2D_MainInstances[wall].UpdateMain();
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), Trans2D(Point2D(0, 0), Angle2D()), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees( 90))), Trans2D(Point2D(0, 0), Angle2D()), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D()), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees(270))), Trans2D(Point2D(0, 0), Angle2D()), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees( 90))), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees(270))), true));
 
 
 
 	unsigned int obj0 = 1;
-	Physics2D_MainInstances[obj0].PolyGon_Buffer.Create();
+	Physics2D_MainInstances[obj0].Buffer_PolyGon.Create();
 	{
 		PolyGon & poly_gon = *(Physics2D_MainInstances[obj0].PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0)));
@@ -225,7 +188,6 @@ void Make()
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 	}
-	Physics2D_MainInstances[obj0].UpdateMain();
 
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(0.0f, 0.1f), Angle2D(Angle::Degrees(45))), false));
 
@@ -243,7 +205,7 @@ void Make()
 
 
 	unsigned int obj1 = 2;
-	Physics2D_MainInstances[obj1].PolyGon_Buffer.Create();
+	Physics2D_MainInstances[obj1].Buffer_PolyGon.Create();
 	{
 		PolyGon & poly_gon = *(Physics2D_MainInstances[obj1].PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.025f, -0.400f), ColorF4(1, 0, 0)));
@@ -251,36 +213,43 @@ void Make()
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.000f, +0.400f), ColorF4(0, 0, 1)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 	}
-	Physics2D_MainInstances[obj1].UpdateMain();
 
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj1], Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj1], Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
+
+
+
+	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	{
+		Physics2D_MainInstances[i].Manager = &Physics2D_Manager;
+		Physics2D_MainInstances[i].InitExternal();
+		Physics2D_MainInstances[i].GraphicsCreate();
+		Physics2D_MainInstances[i].InitInternal();
+		Physics2D_MainInstances[i].UpdateMain();
+	}
 }
 
 
 
 void Init()
 {
-	Physics2D_Shader_PolyGon.Create();
+	Physics2D_Manager.GraphicsCreate();
 
-	Arrow2D_Manager.GraphicsCreate();
-	Arrow2D_Manager.InitInternal(ImageDir);
+	Physics2D_Manager.InitInternal(ImageDir);
+	Physics2D_Manager.Arrow_Main_Default();
 
 	Make();
 }
 void Free()
 {
-	Physics2D_Shader_PolyGon.Delete();
 	Physics2D_Objects.Clear();
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].PolyGon_Buffer.Delete();
-		Physics2D_MainInstances[i].WireFrame_Buffer.Delete();
-		Physics2D_MainInstances[i].WireFrameBox_Buffer.Delete();
+		Physics2D_MainInstances[i].GraphicsDelete();
 		Physics2D_MainInstances[i].Dispose();
 	}
 
-	Arrow2D_Manager.GraphicsDelete();
+	Physics2D_Manager.GraphicsDelete();
 }
 
 
@@ -394,20 +363,20 @@ void Frame(double timeDelta)
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 
-	Physics2D_Shader_PolyGon.Bind();
+	Physics2D_Manager.Shader_PolyGon.Bind();
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].PolyGon_Buffer.Draw();
+		Physics2D_MainInstances[i].Buffer_PolyGon.Draw();
 	}
 
-	Physics2D_Shader_WireFrame.Bind();
+	Physics2D_Manager.Shader_WireFrame.Bind();
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].WireFrame_Buffer.Draw();
+		Physics2D_MainInstances[i].Buffer_WireFrame.Draw();
 	}
 	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].WireFrameBox_Buffer.Draw();
+		Physics2D_MainInstances[i].Buffer_WireFrameBox.Draw();
 	}
 
 	Arrow2D_Frame();
@@ -457,6 +426,7 @@ void MouseClick(UserParameter::Mouse::Click params)
 			{
 				Physics2D_Objects[Object_Selected.Value].Hide_WireFrame();
 				Physics2D_Objects[Object_Selected.Value].Hide_WireFrameBox();
+				Physics2D_Objects[Object_Selected.Value].Hide_Arrows();
 			}
 
 			Object_Selected = Object_Hovering;
@@ -465,13 +435,40 @@ void MouseClick(UserParameter::Mouse::Click params)
 			{
 				Physics2D_Objects[Object_Selected.Value].Show_WireFrame();
 				Physics2D_Objects[Object_Selected.Value].Show_WireFrameBox();
+				Physics2D_Objects[Object_Selected.Value].Show_Arrows();
 			}
+		}
+	}
+	if (params.Action.IsRelease())
+	{
+		if (Drag_Is)
+		{
+			if (Object_Selected.IsValid())
+			{
+				Point2D rel = Drag_Pos1 - Drag_Pos0;
+				Physics2D_Objects[Object_Selected.Value].Data.Vel.Pos += rel;
+			}
+			Drag_Is = false;
+			Drag_Arrow.Dispose();
 		}
 	}
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
-	(void)params;
+	if (!Drag_Is)
+	{
+		Drag_Is = true;
+		Drag_Arrow.Allocate(*Physics2D_Manager.Instances_Arrow, 1);
+	}
+	if (Drag_Arrow.Is())
+	{
+		Drag_Pos0 = AbsolutePositionOfWindowPixel(params.Origin.Absolute);
+		Drag_Pos1 = AbsolutePositionOfWindowPixel(params.Position.Absolute);
+		(*Drag_Arrow).Col = ColorF4(1, 1, 1);
+		(*Drag_Arrow).Pos0 = Drag_Pos0;
+		(*Drag_Arrow).Pos1 = Drag_Pos1;
+		(*Drag_Arrow).Size = 20.0f;
+	}
 }
 
 void KeyBoardKey(UserParameter::KeyBoard::Key params)

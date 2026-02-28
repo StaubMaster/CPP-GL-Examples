@@ -39,7 +39,8 @@ FILES_SRC := \
 	PolyGon/Graphics/Buffer.cpp \
 \
 	Physics2D/Shaders/PolyGon.cpp \
-	Physics2D/MainInstance.cpp \
+	Physics2D/InstanceManager.cpp \
+	Physics2D/Manager.cpp \
 	Physics2D/Object.cpp \
 	Physics2D/Collision.cpp \
 \
