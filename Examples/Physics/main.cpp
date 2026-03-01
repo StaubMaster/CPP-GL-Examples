@@ -141,10 +141,51 @@ EntryContainer::Entry<Arrow2D::Inst::Data> Drag_Arrow;
 	currently changes Linear Velocity when Drag is done
 	just apply Force/Impulse while Drag is active
 */
+void Drag_Begin(Point2D pos0)
+{
+	if (!Drag_Is)
+	{
+		Drag_Object = FindHoveringObjectIndex(pos0);
+		if (Drag_Object.IsValid())
+		{
+			Drag_Pos0 = Physics2D_Objects[Drag_Object.Value].RelativePositionOf(pos0);
+			Drag_Arrow.Allocate(*Physics2D_Manager.Instances_Arrow, 1);
+			(*Drag_Arrow).Col = ColorF4(1, 1, 1);
+			(*Drag_Arrow).Size = 20.0f;
+			Drag_Is = true;
+		}
+	}
+}
+void Drag_Move(Point2D pos1)
+{
+	if (Drag_Is)
+	{
+		Drag_Pos1 = pos1;
+		(*Drag_Arrow).Pos1 = Drag_Pos1;
+	}
+}
+void Drag_End()
+{
+	if (Drag_Is)
+	{
+		/*if (Object_Selected.IsValid())
+		{
+			Point2D rel = Drag_Pos1 - Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
+			Physics2D_Objects[Object_Selected.Value].Data.Vel.Pos += rel;
+		}*/
+		Drag_Is = false;
+		Drag_Arrow.Dispose();
+	}
+}
 void Drag_Update()
 {
 	if (!Drag_Is) { return; }
+	Drag_Pos1 = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
 	(*Drag_Arrow).Pos0 = Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
+	(*Drag_Arrow).Pos1 = Drag_Pos1;
+
+	Point2D rel = Drag_Pos1 - Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
+	Physics2D_Objects[Object_Selected.Value].Data.Vel.Pos += rel * 0.1f;
 }
 
 void Arrow2D_Frame()
@@ -275,9 +316,9 @@ void UpdateCollision()
 	{
 		for (unsigned int i1 = i0 + 1; i1 < Physics2D_Objects.Count(); i1++)
 		{
-			//Physics2D::CollideLinear(Physics2D_Objects[i0], Physics2D_Objects[i1]); // good
+			Physics2D::CollideLinear(Physics2D_Objects[i0], Physics2D_Objects[i1]); // good
 			//Physics2D::CollideRotate(Physics2D_Objects[i0], Physics2D_Objects[i1]); // wack
-			Physics2D::Collide(Physics2D_Objects[i0], Physics2D_Objects[i1]);
+			//Physics2D::Collide(Physics2D_Objects[i0], Physics2D_Objects[i1]);
 		}
 	}
 }
@@ -294,7 +335,7 @@ void UpdateOrientation(float timeDelta)
 }
 void Update(float timeDelta)
 {
-	//UpdateGravity(timeDelta);
+//	UpdateGravity(timeDelta);
 	UpdateCollision();
 	UpdateOrientation(timeDelta);
 }
@@ -326,8 +367,68 @@ void UpdateView(float timeDelta)
 	Multiform_Scale.ChangeData(view.Scale);
 }
 
+void Test()
+{
+	Point2D HalfSize = window.Size.WindowSize / 2;	// Calculate in Window ?
+
+	std::stringstream ss;
+	ss << "window1 " << window.Size.WindowSize << '\n';
+	ss << "window2 " << HalfSize << '\n';
+
+	ss << '\n';
+
+
+
+	Point2D pos;
+
+/*
+n = ((p / w) * 2) - 1
+
+n = (p * (2 / w)) - 1
+n = (p * (2 / w)) - ((2 / w) * (2 / w))
+
+n = (p - (2 / w)) * (2 / w)
+
+n = (p - (w / 2)) / (w / 2)
+*/
+
+	pos = window.MouseManager.CursorPixelPosition().Absolute;
+	ss << "Corner TopLeft " << pos << '\n';
+
+	pos = pos - HalfSize;
+	ss << "Center TopLeft " << pos << '\n';
+
+	pos = pos / HalfSize;
+	ss << "Normal1 TopLeft " << pos << '\n';
+
+	ss << '\n';
+
+
+
+	pos = window.MouseManager.CursorPixelPosition().Absolute;
+	ss << "Corner TopLeft " << pos << '\n';
+
+	pos = pos / window.Size.WindowSize;
+	ss << "Normal0 TopLeft " << pos << '\n';
+
+	pos = (pos * 2) - 1;
+	ss << "Normal1 TopLeft " << pos << '\n';
+
+	ss << '\n';
+
+
+
+	ss << '\n';
+	std::cout << ss.str();
+
+	pos = (pos / window.Size.Ratio);
+	pos = (pos * view.Scale) + view.Trans.Pos;
+}
+
 void Frame(double timeDelta)
 {
+	Test();
+
 	UpdateView(timeDelta);
 
 	{
@@ -394,13 +495,27 @@ void Resize(const WindowBufferSize2D & WindowSize)
 	Multiform_WindowSize.ChangeData(WindowSize);
 }
 
-Point2D AbsolutePositionOfWindowPixel(Point2D pos)
+Point2D WindowTopLeftToCenter(Point2D pos)
 {
 	Point2D HalfSize = window.Size.WindowSize / 2;	// Calculate in Window ?
-	Point2D CursorPos = pos - HalfSize;
-	CursorPos.Y = -CursorPos.Y;
-	CursorPos = (CursorPos / window.Size.Ratio) / HalfSize;
-	return (CursorPos * view.Scale) + view.Trans.Pos;
+	pos = pos - HalfSize;
+	pos.Y = -pos.Y;
+	return pos;
+}
+Point2D CenterToAbsolute(Point2D pos)
+{
+	Point2D HalfSize = window.Size.WindowSize / 2;	// Calculate in Window ?
+	pos = pos / HalfSize;
+	pos = pos / window.Size.Ratio;
+	pos = (pos * view.Scale) + view.Trans.Pos;
+	return pos;
+}
+
+Point2D AbsolutePositionOfWindowPixel(Point2D pos)
+{
+	pos = WindowTopLeftToCenter(pos);
+	pos = CenterToAbsolute(pos);
+	return pos;
 }
 
 void MouseScroll(UserParameter::Mouse::Scroll params)
@@ -449,38 +564,13 @@ void MouseClick(UserParameter::Mouse::Click params)
 	}
 	if (params.Action.IsRelease())
 	{
-		if (Drag_Is)
-		{
-			if (Object_Selected.IsValid())
-			{
-				Point2D rel = Drag_Pos1 - Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
-				Physics2D_Objects[Object_Selected.Value].Data.Vel.Pos += rel;
-			}
-			Drag_Is = false;
-			Drag_Arrow.Dispose();
-		}
+		Drag_End();
 	}
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
-	if (!Drag_Is)
-	{
-		Point2D cursor = AbsolutePositionOfWindowPixel(params.Origin.Absolute);
-		Drag_Object = FindHoveringObjectIndex(cursor);
-		if (Drag_Object.IsValid())
-		{
-			Drag_Is = true;
-			Drag_Pos0 = Physics2D_Objects[Drag_Object.Value].RelativePositionOf(cursor);
-			Drag_Arrow.Allocate(*Physics2D_Manager.Instances_Arrow, 1);
-			(*Drag_Arrow).Col = ColorF4(1, 1, 1);
-			(*Drag_Arrow).Size = 20.0f;
-		}
-	}
-	if (Drag_Arrow.Is())
-	{
-		Drag_Pos1 = AbsolutePositionOfWindowPixel(params.Position.Absolute);
-		(*Drag_Arrow).Pos1 = Drag_Pos1;
-	}
+	Drag_Begin(AbsolutePositionOfWindowPixel(params.Origin.Absolute));
+	Drag_Move(AbsolutePositionOfWindowPixel(params.Position.Absolute));
 }
 
 void KeyBoardKey(UserParameter::KeyBoard::Key params)
