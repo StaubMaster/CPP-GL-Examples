@@ -8,16 +8,21 @@ struct Trans2D
 	mat2 Rot;
 };
 
-struct WindowBufferSize2D
+struct PixelSize
 {
-	vec2 WindowSize;
-	vec2 BufferSize;
+	vec2 Full;
+	vec2 Half;
+};
+struct sDisplaySize
+{
 	vec2 Ratio;
+	PixelSize Window;
+	PixelSize Buffer;
 };
 
 
 
-uniform WindowBufferSize2D WindowSize;
+uniform sDisplaySize DisplaySize;
 uniform Trans2D View;
 uniform float Scale;
 
@@ -45,7 +50,7 @@ void main()
 	vec2 pos = VPos;
 	pos = (pos * transpose(IRot)) + IPos;
 	pos = (pos - View.Pos) * View.Rot;
-	pos = pos * WindowSize.Ratio;
+	pos = pos * DisplaySize.Ratio;
 	pos = pos / Scale;
 
 	gl_Position = vec4(pos, 0, 1);

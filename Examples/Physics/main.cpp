@@ -76,7 +76,7 @@ View2D	view;
 
 bool Paused;
 
-Multiform::WindowBufferSize2D	Multiform_WindowSize;
+Multiform::DisplaySize			Multiform_DisplaySize;
 Multiform::Trans2D				Multiform_View;
 Multiform::Float				Multiform_Scale;
 
@@ -88,7 +88,7 @@ MainContext()
 	, window()
 	, view(View2D::Default())
 	, Paused(true)
-	, Multiform_WindowSize("WindowSize")
+	, Multiform_DisplaySize("DisplaySize")
 	, Multiform_View("View")
 	, Multiform_Scale("Scale")
 {
@@ -99,7 +99,7 @@ MainContext()
 		&Physics2D_Manager.Shader_WireFrame,
 		&Physics2D_Manager.Shader_Arrow,
 	});
-	Multiform_WindowSize.FindUniforms(shaders);
+	Multiform_DisplaySize.FindUniforms(shaders);
 	Multiform_View.FindUniforms(shaders);
 	Multiform_Scale.FindUniforms(shaders);
 
@@ -180,7 +180,7 @@ void Drag_End()
 void Drag_Update()
 {
 	if (!Drag_Is) { return; }
-	Drag_Pos1 = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
+	Drag_Pos1 = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPosition().Window.Corner);
 	(*Drag_Arrow).Pos0 = Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
 	(*Drag_Arrow).Pos1 = Drag_Pos1;
 
@@ -369,10 +369,10 @@ void UpdateView(float timeDelta)
 
 void Test()
 {
-	Point2D HalfSize = window.Size.WindowSize / 2;	// Calculate in Window ?
+	Point2D HalfSize = window.Size.Window.Full / 2;	// Calculate in Window ?
 
 	std::stringstream ss;
-	ss << "window1 " << window.Size.WindowSize << '\n';
+	ss << "window1 " << window.Size.Window.Full << '\n';
 	ss << "window2 " << HalfSize << '\n';
 
 	ss << '\n';
@@ -392,7 +392,7 @@ n = (p - (2 / w)) * (2 / w)
 n = (p - (w / 2)) / (w / 2)
 */
 
-	pos = window.MouseManager.CursorPixelPosition().Absolute;
+	pos = window.MouseManager.CursorPosition().Window.Corner;
 	ss << "Corner TopLeft " << pos << '\n';
 
 	pos = pos - HalfSize;
@@ -405,10 +405,10 @@ n = (p - (w / 2)) / (w / 2)
 
 
 
-	pos = window.MouseManager.CursorPixelPosition().Absolute;
+	pos = window.MouseManager.CursorPosition().Window.Corner;
 	ss << "Corner TopLeft " << pos << '\n';
 
-	pos = pos / window.Size.WindowSize;
+	pos = pos / window.Size.Window.Full;
 	ss << "Normal0 TopLeft " << pos << '\n';
 
 	pos = (pos * 2) - 1;
@@ -461,7 +461,7 @@ void Frame(double timeDelta)
 	}
 
 	{
-		Point2D cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPixelPosition().Absolute);
+		Point2D cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPosition().Window.Corner);
 		Object_Hovering = FindHoveringObjectIndex(cursor);
 	}
 
@@ -490,21 +490,21 @@ void Frame(double timeDelta)
 
 	Arrow2D_Frame();
 }
-void Resize(const WindowBufferSize2D & WindowSize)
+void Resize(const DisplaySize & Size)
 {
-	Multiform_WindowSize.ChangeData(WindowSize);
+	Multiform_DisplaySize.ChangeData(Size);
 }
 
 Point2D WindowTopLeftToCenter(Point2D pos)
 {
-	Point2D HalfSize = window.Size.WindowSize / 2;	// Calculate in Window ?
+	Point2D HalfSize = window.Size.Window.Full / 2;	// Calculate in Window ?
 	pos = pos - HalfSize;
 	pos.Y = -pos.Y;
 	return pos;
 }
 Point2D CenterToAbsolute(Point2D pos)
 {
-	Point2D HalfSize = window.Size.WindowSize / 2;	// Calculate in Window ?
+	Point2D HalfSize = window.Size.Window.Full / 2;	// Calculate in Window ?
 	pos = pos / HalfSize;
 	pos = pos / window.Size.Ratio;
 	pos = (pos * view.Scale) + view.Trans.Pos;
@@ -520,9 +520,9 @@ Point2D AbsolutePositionOfWindowPixel(Point2D pos)
 
 void MouseScroll(UserParameter::Mouse::Scroll params)
 {
-	Point2D HalfSize = window.Size.WindowSize / 2;
+	Point2D HalfSize = window.Size.Window.Full / 2;
 
-	Point2D CursorPos = window.MouseManager.CursorPixelPosition().Absolute - HalfSize;
+	Point2D CursorPos = window.MouseManager.CursorPosition().Window.Corner - HalfSize;
 	CursorPos.Y = -CursorPos.Y;
 	CursorPos = (CursorPos / window.Size.Ratio) / HalfSize;
 
@@ -569,8 +569,8 @@ void MouseClick(UserParameter::Mouse::Click params)
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
-	Drag_Begin(AbsolutePositionOfWindowPixel(params.Origin.Absolute));
-	Drag_Move(AbsolutePositionOfWindowPixel(params.Position.Absolute));
+	Drag_Begin(AbsolutePositionOfWindowPixel(params.Origin.Window.Corner));
+	Drag_Move(AbsolutePositionOfWindowPixel(params.Position.Window.Corner));
 }
 
 void KeyBoardKey(UserParameter::KeyBoard::Key params)

@@ -8,14 +8,19 @@ struct Trans2D
 	mat2 Rot;
 };
 
-struct DisplaySize
+struct PixelSize
 {
-	vec2 WindowSize;
-	vec2 BufferSize;
+	vec2 Full;
+	vec2 Half;
+};
+struct sDisplaySize
+{
 	vec2 Ratio;
+	PixelSize Window;
+	PixelSize Buffer;
 };
 
-uniform DisplaySize WindowSize;
+uniform sDisplaySize DisplaySize;
 uniform Trans2D View;
 uniform float Scale;
 
@@ -46,20 +51,20 @@ void main()
 	pos0 = (pos0 - View.Pos) * View.Rot;
 	pos1 = (pos1 - View.Pos) * View.Rot;
 
-	pos0 = pos0 * WindowSize.Ratio;
-	pos1 = pos1 * WindowSize.Ratio;
+	pos0 = pos0 * DisplaySize.Ratio;
+	pos1 = pos1 * DisplaySize.Ratio;
 
 	pos0 = pos0 / Scale;
 	pos1 = pos1 / Scale;
 
 	//	Normal to Pixel
-	vec2 dir = (pos1 - pos0) * WindowSize.BufferSize;
+	vec2 dir = (pos1 - pos0) * DisplaySize.Buffer.Full;
 	vec2 dirX = normalize(dir) * Inst_Size;
 	vec2 dirY = vec2(+dirX.y, -dirX.x);
 
 	//	Pixel to Normal
-	dirX /= WindowSize.BufferSize;
-	dirY /= WindowSize.BufferSize;
+	dirX /= DisplaySize.Buffer.Full;
+	dirY /= DisplaySize.Buffer.Full;
 
 
 

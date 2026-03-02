@@ -6,7 +6,7 @@ Physics2D::Shaders::PolyGon::~PolyGon()
 { }
 Physics2D::Shaders::PolyGon::PolyGon()
 	: ::Shader::Base()
-	, WindowSize(*this, "WindowSize")
+	, DisplaySize(*this, "DisplaySize")
 	, View(*this, "View")
 	, Scale(*this, "Scale")
 { }

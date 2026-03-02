@@ -11,7 +11,7 @@ namespace Shaders
 class PolyGon : public ::Shader::Base
 {
 	public:
-	Uniform::WindowBufferSize2D	WindowSize;
+	Uniform::DisplaySize		DisplaySize;
 	Uniform::Trans2D			View;
 	Uniform::Float				Scale;
 	public:
