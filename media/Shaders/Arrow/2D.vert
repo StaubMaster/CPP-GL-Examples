@@ -48,8 +48,8 @@ void main()
 	vec2 pos0 = Inst_Pos0;
 	vec2 pos1 = Inst_Pos1;
 
-	pos0 = (pos0 - View.Pos) * View.Rot;
-	pos1 = (pos1 - View.Pos) * View.Rot;
+	pos0 = (pos0 - View.Pos) * transpose(View.Rot);
+	pos1 = (pos1 - View.Pos) * transpose(View.Rot);
 
 	pos0 = pos0 * DisplaySize.Ratio;
 	pos1 = pos1 * DisplaySize.Ratio;

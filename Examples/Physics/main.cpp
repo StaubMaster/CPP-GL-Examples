@@ -59,11 +59,6 @@
 
 
 
-//	Normal
-//	Regular
-//	Reverse
-//	Inverted
-
 struct MainContext
 {
 DirectoryInfo ImageDir;
@@ -132,7 +127,7 @@ Undex FindHoveringObjectIndex(Point2D p)
 
 
 
-bool Drag_Is;
+bool Drag_Is = false;
 Undex Drag_Object;
 Point2D Drag_Pos0;
 Point2D Drag_Pos1;
@@ -180,7 +175,7 @@ void Drag_End()
 void Drag_Update()
 {
 	if (!Drag_Is) { return; }
-	Drag_Pos1 = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPosition().Window.Corner);
+	Drag_Pos1 = DisplayToAbsolute(window.MouseManager.CursorPosition());
 	(*Drag_Arrow).Pos0 = Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
 	(*Drag_Arrow).Pos1 = Drag_Pos1;
 
@@ -218,9 +213,9 @@ void Make()
 	}
 
 	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees( 90))), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees( 90))), true));
 	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees(270))), true));
+	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees(270))), true));
 
 
 
@@ -301,7 +296,7 @@ void Free()
 
 void UpdateGravity(float timeDelta)
 {
-	Point2D	Gravity = view.Trans.Rot.rotateBack(Point2D(0, -1) * 3.0f) * timeDelta;
+	Point2D	Gravity = (view.Trans.Rot / (Point2D(0, -1) * 3.0f)) * timeDelta;
 	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
 	{
 		if (!Physics2D_Objects[i].IsStatic)
@@ -359,71 +354,19 @@ void UpdateView(float timeDelta)
 		Trans2D trans;
 		Point3D move3D = window.MoveFromKeys();
 		trans.Pos = Point2D(move3D.X, move3D.Z) * 2.0f;
+
+		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Q.Flags].IsDown()) { trans.Rot.Ang += Angle::Degrees(45); }
+		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::E.Flags].IsDown()) { trans.Rot.Ang -= Angle::Degrees(45); }
+
 		//if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { move2D *= 30; }
 		//trans.Rot = Angle2D(Angle::Radians(move3D.Y * 0.5f));
-		view.Transform(trans, timeDelta);
+		view.Change(trans, timeDelta);
 	}
 	Multiform_View.ChangeData(view.Trans);
 	Multiform_Scale.ChangeData(view.Scale);
 }
 
-void Test()
-{
-	Point2D HalfSize = window.Size.Window.Full / 2;	// Calculate in Window ?
-
-	std::stringstream ss;
-	ss << "window1 " << window.Size.Window.Full << '\n';
-	ss << "window2 " << HalfSize << '\n';
-
-	ss << '\n';
-
-
-
-	Point2D pos;
-
-/*
-n = ((p / w) * 2) - 1
-
-n = (p * (2 / w)) - 1
-n = (p * (2 / w)) - ((2 / w) * (2 / w))
-
-n = (p - (2 / w)) * (2 / w)
-
-n = (p - (w / 2)) / (w / 2)
-*/
-
-	pos = window.MouseManager.CursorPosition().Window.Corner;
-	ss << "Corner TopLeft " << pos << '\n';
-
-	pos = pos - HalfSize;
-	ss << "Center TopLeft " << pos << '\n';
-
-	pos = pos / HalfSize;
-	ss << "Normal1 TopLeft " << pos << '\n';
-
-	ss << '\n';
-
-
-
-	pos = window.MouseManager.CursorPosition().Window.Corner;
-	ss << "Corner TopLeft " << pos << '\n';
-
-	pos = pos / window.Size.Window.Full;
-	ss << "Normal0 TopLeft " << pos << '\n';
-
-	pos = (pos * 2) - 1;
-	ss << "Normal1 TopLeft " << pos << '\n';
-
-	ss << '\n';
-
-
-
-	ss << '\n';
-	std::cout << ss.str();
-
-	pos = (pos / window.Size.Ratio);
-	pos = (pos * view.Scale) + view.Trans.Pos;
-}
+void Test() { }
 
 void Frame(double timeDelta)
 {
@@ -461,7 +404,7 @@ void Frame(double timeDelta)
 	}
 
 	{
-		Point2D cursor = AbsolutePositionOfWindowPixel(window.MouseManager.CursorPosition().Window.Corner);
+		Point2D cursor = DisplayToAbsolute(window.MouseManager.CursorPosition());
 		Object_Hovering = FindHoveringObjectIndex(cursor);
 	}
 
@@ -495,26 +438,18 @@ void Resize(const DisplaySize & Size)
 	Multiform_DisplaySize.ChangeData(Size);
 }
 
-Point2D WindowTopLeftToCenter(Point2D pos)
+Point2D DisplayToAbsolute(DisplayPosition display_pos)
 {
-	Point2D HalfSize = window.Size.Window.Full / 2;	// Calculate in Window ?
-	pos = pos - HalfSize;
+	// Window Space to View Space
+	// Display to Relative
+	Point2D pos = display_pos.NormalRel;
 	pos.Y = -pos.Y;
-	return pos;
-}
-Point2D CenterToAbsolute(Point2D pos)
-{
-	Point2D HalfSize = window.Size.Window.Full / 2;	// Calculate in Window ?
-	pos = pos / HalfSize;
 	pos = pos / window.Size.Ratio;
-	pos = (pos * view.Scale) + view.Trans.Pos;
-	return pos;
-}
 
-Point2D AbsolutePositionOfWindowPixel(Point2D pos)
-{
-	pos = WindowTopLeftToCenter(pos);
-	pos = CenterToAbsolute(pos);
+	// View Space to "World" Space
+	// Relative to Absolute
+	pos = view * pos;
+
 	return pos;
 }
 
@@ -569,8 +504,8 @@ void MouseClick(UserParameter::Mouse::Click params)
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
-	Drag_Begin(AbsolutePositionOfWindowPixel(params.Origin.Window.Corner));
-	Drag_Move(AbsolutePositionOfWindowPixel(params.Position.Window.Corner));
+	Drag_Begin(DisplayToAbsolute(params.Origin));
+	Drag_Move(DisplayToAbsolute(params.Position));
 }
 
 void KeyBoardKey(UserParameter::KeyBoard::Key params)

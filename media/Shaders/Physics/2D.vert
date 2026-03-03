@@ -48,8 +48,8 @@ out Vert {
 void main()
 {
 	vec2 pos = VPos;
-	pos = (pos * transpose(IRot)) + IPos;
-	pos = (pos - View.Pos) * View.Rot;
+	pos = (pos * IRot) + IPos;
+	pos = (pos - View.Pos) * transpose(View.Rot);
 	pos = pos * DisplaySize.Ratio;
 	pos = pos / Scale;
 

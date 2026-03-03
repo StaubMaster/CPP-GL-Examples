@@ -95,12 +95,12 @@ unsigned int Physics2D::Object::SideCount() const { return (PolyGon() -> Sides.C
 
 Point2D Physics2D::Object::CornerFromIndex(unsigned int idx) const { return PolyGon() -> Corners[idx].Pos; }
 
-Point2D Physics2D::Object::RelativePositionOf(Point2D p) const { return Data.Now.Rot.rotateFore(p - Data.Now.Pos); }
-Point2D Physics2D::Object::AbsolutePositionOf(Point2D p) const { return Data.Now.Rot.rotateBack(p) + Data.Now.Pos; }
+Point2D Physics2D::Object::RelativePositionOf(Point2D p) const { return Data.Now / p; }
+Point2D Physics2D::Object::AbsolutePositionOf(Point2D p) const { return Data.Now * p; }
 Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
 {
 	Point2D perp = p.perpendicular0().normalize();
-	perp = Data.Now.Rot.rotateBack(perp);
+	perp = Data.Now.Rot / (perp);
 	// use Angle stuff instead ?
 
 	Point2D v;
@@ -192,4 +192,4 @@ Physics2D::Object::Object(Physics2D::InstanceManager & inst_manager, Trans2D now
 
 
 
-bool Physics2D::Object::IsContaining(Point2D p) const { return PolyGon() -> IsContaining(Data.Now.Transform1(p)); }
+bool Physics2D::Object::IsContaining(Point2D p) const { return PolyGon() -> IsContaining(Data.Now / p); }
