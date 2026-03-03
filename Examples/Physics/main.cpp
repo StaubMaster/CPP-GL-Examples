@@ -455,24 +455,19 @@ Point2D DisplayToAbsolute(DisplayPosition display_pos)
 
 void MouseScroll(UserParameter::Mouse::Scroll params)
 {
-	Point2D HalfSize = window.Size.Window.Full / 2;
-
-	Point2D CursorPos = window.MouseManager.CursorPosition().Window.Corner - HalfSize;
-	CursorPos.Y = -CursorPos.Y;
-	CursorPos = (CursorPos / window.Size.Ratio) / HalfSize;
-
-	Point2D ZoomPos = (CursorPos * view.Scale) + view.Trans.Pos;
+	Point2D cursor = DisplayToAbsolute(window.MouseManager.CursorPosition());
+	Point2D cursor_abs = view / cursor;
 
 	if (params.Y < 0.0f) { while (params.Y < 0.0f) { view.Scale *= 2; params.Y++; } }
 	if (params.Y > 0.0f) { while (params.Y > 0.0f) { view.Scale /= 2; params.Y--; } }
-
+	
 	#define ZOOM_MIN 1.0 / (1 << 6)
 	#define ZOOM_MAX 1.0 * (1 << 6)
-
+	
 	if (view.Scale <= ZOOM_MIN) { view.Scale = ZOOM_MIN; }
 	if (view.Scale >= ZOOM_MAX) { view.Scale = ZOOM_MAX; }
 
-	view.Trans.Pos = ZoomPos - (CursorPos * view.Scale);
+	view.Trans.Pos = cursor - (view.Trans.Rot * (cursor_abs * view.Scale));
 }
 void MouseClick(UserParameter::Mouse::Click params)
 {

@@ -49,9 +49,35 @@ void main()
 {
 	vec2 pos = VPos;
 	pos = (pos * IRot) + IPos;
-	pos = (pos - View.Pos) * transpose(View.Rot);
+
+//	pos = (pos - View.Pos) * transpose(View.Rot);
+//	pos = pos / Scale;
+
+// testing turning all View stuff into a matrix
+	{
+		mat3x3 view_mat_pos = mat3x3(
+			1.0, 0.0, -View.Pos[0],
+			0.0, 1.0, -View.Pos[1],
+			0.0, 0.0, 1.0
+		);
+		mat3x3 view_mat_rot = mat3x3(
+			View.Rot[0][0], View.Rot[1][0], 0.0,
+			View.Rot[0][1], View.Rot[1][1], 0.0,
+			0.0           , 0.0           , 1.0
+		);
+		mat3x3 view_mat_scl = mat3x3(
+			1.0 / Scale, 0.0, 0.0,
+			0.0, 1.0 / Scale, 0.0,
+			0.0, 0.0, 1.0
+		);
+		mat3x3 view_mat = (view_mat_pos * view_mat_rot) * view_mat_scl;
+	
+		vec3 pos3 = vec3(pos, 1);
+		pos3 = pos3 * view_mat;
+		pos = vec2(pos3.x, pos3.y);
+	}
+
 	pos = pos * DisplaySize.Ratio;
-	pos = pos / Scale;
 
 	gl_Position = vec4(pos, 0, 1);
 
