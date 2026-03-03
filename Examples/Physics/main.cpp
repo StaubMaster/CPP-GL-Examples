@@ -375,14 +375,14 @@ void Frame(double timeDelta)
 	UpdateView(timeDelta);
 
 	{
-		if (window.KeyBoardManager.Keys[GLFW_KEY_P].IsPress()) { Paused = !Paused; }
+		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsPress()) { Paused = !Paused; }
 		if (Paused)
 		{
-			if (window.KeyBoardManager.Keys[GLFW_KEY_O].IsDown())
+			if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsDown())
 			{
 				Update(1 / 60.0f);
 			}
-			else if (window.KeyBoardManager.Keys[GLFW_KEY_I].IsPress())
+			else if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::I.Flags].IsPress())
 			{
 				Update(1 / 60.0f);
 			}
@@ -438,36 +438,38 @@ void Resize(const DisplaySize & Size)
 	Multiform_DisplaySize.ChangeData(Size);
 }
 
-Point2D DisplayToAbsolute(DisplayPosition display_pos)
+// put this in Window / DisplaySize
+Point2D DisplayToRelative(DisplayPosition display_pos)
 {
-	// Window Space to View Space
-	// Display to Relative
 	Point2D pos = display_pos.NormalRel;
 	pos.Y = -pos.Y;
-	pos = pos / window.Size.Ratio;
+	pos = pos / window.Size.Ratio.Value;
+	return pos;
+}
 
-	// View Space to "World" Space
-	// Relative to Absolute
+// this is just View
+Point2D DisplayToAbsolute(DisplayPosition display_pos)
+{
+	Point2D pos = DisplayToRelative(display_pos);
 	pos = view * pos;
-
 	return pos;
 }
 
 void MouseScroll(UserParameter::Mouse::Scroll params)
 {
-	Point2D cursor = DisplayToAbsolute(window.MouseManager.CursorPosition());
-	Point2D cursor_abs = view / cursor;
+	Point2D cursor_rel = DisplayToRelative(window.MouseManager.CursorPosition());
+	Point2D cursor_abs = view * cursor_rel;
 
 	if (params.Y < 0.0f) { while (params.Y < 0.0f) { view.Scale *= 2; params.Y++; } }
 	if (params.Y > 0.0f) { while (params.Y > 0.0f) { view.Scale /= 2; params.Y--; } }
 	
 	#define ZOOM_MIN 1.0 / (1 << 6)
 	#define ZOOM_MAX 1.0 * (1 << 6)
-	
+
 	if (view.Scale <= ZOOM_MIN) { view.Scale = ZOOM_MIN; }
 	if (view.Scale >= ZOOM_MAX) { view.Scale = ZOOM_MAX; }
 
-	view.Trans.Pos = cursor - (view.Trans.Rot * (cursor_abs * view.Scale));
+	view.Trans.Pos = cursor_abs - (view.Trans.Rot * (cursor_rel * view.Scale));
 }
 void MouseClick(UserParameter::Mouse::Click params)
 {
@@ -507,6 +509,10 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 {
 	if (params.Action.IsPress())
 	{
+		if (params.Code == UserParameter::KeyBoard::Keys::Insert)
+		{
+			Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[1], Trans2D(DisplayToAbsolute(window.MouseManager.CursorPosition()), Angle2D()), false));
+		}
 		if (params.Code == UserParameter::KeyBoard::Keys::Delete)
 		{
 			if (Object_Selected.IsValid())
