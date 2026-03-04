@@ -59,6 +59,157 @@
 
 
 
+struct FrameBufferTest
+{
+	struct DataMain
+	{
+		Point2D	Pos;
+		Point2D	Tex;
+		DataMain() { }
+		DataMain(Point2D pos, Point2D tex)
+			: Pos(pos)
+			, Tex(tex)
+		{ }
+	};
+	struct DataInst
+	{
+		Point2D	Pos;
+		DataInst() { }
+		DataInst(Point2D pos)
+			: Pos(pos)
+		{ }
+	};
+
+	class BufferMain : public ::Buffer::Attribute
+	{
+		public:
+		::Attribute::Point2D	Pos;
+		::Attribute::Point2D	Tex;
+		public:
+		~BufferMain() { }
+		BufferMain(BufferArray::Base & buffer_array)
+			: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(DataMain))
+		{
+			Attributes.Insert(&Pos);
+			Attributes.Insert(&Tex);
+		}
+	};
+	class BufferInst : public ::Buffer::Attribute
+	{
+		public:
+		::Attribute::Point2D	Pos;
+		public:
+		~BufferInst() { }
+		BufferInst(BufferArray::Base & buffer_array)
+			: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 1, sizeof(DataInst))
+		{
+			Attributes.Insert(&Pos);
+		}
+	};
+	class Buffer : public ::BufferArray::MainInst<BufferMain, BufferInst>
+	{
+		public:
+		~Buffer() { }
+		Buffer()
+			: ::BufferArray::MainInst<BufferMain, BufferInst>(GL::DrawMode::Triangles)
+		{ }
+	};
+
+	class Shader : public ::Shader::Base
+	{
+		// no Uniforms
+		public:
+		~Shader() { }
+		Shader()
+			: ::Shader::Base()
+		{ }
+	};
+
+	FrameBufferTest::Shader	Shader;
+	FrameBufferTest::Buffer	Buffer;
+	GL::TextureID	Texture;
+	unsigned int FrameBuffer;
+
+	~FrameBufferTest() { }
+	FrameBufferTest()
+		: Shader()
+		, Buffer()
+		, Texture(0)
+		, FrameBuffer(0)
+	{ }
+
+	void InitExternal(DirectoryInfo & ShaderDir)
+	{
+		{
+			Container::Array<::Shader::Code> code({
+				::Shader::Code(ShaderDir.File("Frame/Test.vert")),
+				::Shader::Code(ShaderDir.File("Frame/Test.frag")),
+			});
+			Shader.Change(code);
+		}
+		{
+			Buffer.Main.Pos.Change(0);
+			Buffer.Main.Tex.Change(1);
+			Buffer.Inst.Pos.Change(2);
+		}
+	}
+	void InitInternal(DirectoryInfo & ImageDir)
+	{
+		{
+			Container::Binary<DataMain> data;
+			data.Insert(DataMain(Point2D(-0.75f, -0.75f), Point2D(0, 0)));
+			data.Insert(DataMain(Point2D(+0.75f, -0.75f), Point2D(1, 0)));
+			data.Insert(DataMain(Point2D(-0.75f, +0.75f), Point2D(0, 1)));
+			data.Insert(DataMain(Point2D(-0.75f, +0.75f), Point2D(0, 1)));
+			data.Insert(DataMain(Point2D(+0.75f, -0.75f), Point2D(1, 0)));
+			data.Insert(DataMain(Point2D(+0.75f, +0.75f), Point2D(1, 1)));
+			Buffer.Main.Change(data);
+		}
+		{
+			Container::Binary<DataInst> data;
+			data.Insert(DataInst(Point2D(0.0f, 0.0f)));
+			Buffer.Inst.Change(data);
+		}
+		{
+			//Image img = ImageDir.File("Wood.png").LoadImage();
+			//GL::BindTexture(GL::TextureTarget::Texture2D, Texture);
+			//GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
+			//GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMinFilter, GL_NEAREST);
+			//GL::TexImage2D(GL::TextureTarget::Texture2D, 0, GL::TextureInternalFormat::Rgba, img.W(), img.H(), 0, GL::TextureFormat::Rgba, GL::TextureType::UnsignedInt8888Rev, img.Data());
+			//img.Dispose();
+			//GL::GenerateMipmap(GL::TextureTarget::Texture2D);
+			(void)ImageDir;
+		}
+	}
+
+	void GraphicsCreate()
+	{
+		Shader.Create();
+		Buffer.Create();
+		Texture = GL::CreateTexture();
+		glGenFramebuffers(1, &FrameBuffer);
+	}
+	void GraphicsDelete()
+	{
+		Shader.Delete();
+		Buffer.Delete();
+		GL::DeleteTexture(Texture);
+		glDeleteFramebuffers(1, &FrameBuffer);
+	}
+
+	void Bind() { glBindFramebuffer(GL_FRAMEBUFFER, FrameBuffer); }
+	void UnBind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+
+	void Draw()
+	{
+		Shader.Bind();
+		GL::BindTexture(GL::TextureTarget::Texture2D, Texture);
+		Buffer.Draw();
+	}
+};
+
+
+
 struct MainContext
 {
 DirectoryInfo ImageDir;
@@ -100,6 +251,8 @@ MainContext()
 
 	Object_Selected = Undex::Invalid();
 	Object_Hovering = Undex::Invalid();
+
+	FrameBufferTest.InitExternal(ShaderDir);
 }
 ~MainContext()
 {
@@ -175,13 +328,15 @@ void Drag_End()
 void Drag_Update()
 {
 	if (!Drag_Is) { return; }
-	Drag_Pos1 = DisplayToAbsolute(window.MouseManager.CursorPosition());
+	Drag_Pos1 = view * window.Size.Convert(window.MouseManager.CursorPosition());
 	(*Drag_Arrow).Pos0 = Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
 	(*Drag_Arrow).Pos1 = Drag_Pos1;
 
 	Point2D rel = Drag_Pos1 - Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
 	Physics2D_Objects[Object_Selected.Value].Data.Vel.Pos += rel * 0.1f;
 }
+
+::FrameBufferTest	FrameBufferTest;
 
 void Arrow2D_Frame()
 {
@@ -231,9 +386,9 @@ void Make()
 
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(0.0f, 0.1f), Angle2D(Angle::Degrees(45))), false));
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(0.0f, 0.0f), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(0.0f, 0.0f), Angle2D()), false));
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
 //	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
@@ -278,7 +433,13 @@ void Init()
 	Physics2D_Manager.InitInternal(ImageDir);
 	Physics2D_Manager.Arrow_Main_Default();
 
+	FrameBufferTest.GraphicsCreate();
+	FrameBufferTest.InitInternal(ImageDir);
+
 	Make();
+
+	GL::Disable(GL::Capability::DepthTest);
+	GL::Disable(GL::Capability::CullFace);
 }
 void Free()
 {
@@ -290,6 +451,7 @@ void Free()
 	}
 
 	Physics2D_Manager.GraphicsDelete();
+	FrameBufferTest.GraphicsDelete();
 }
 
 
@@ -368,6 +530,61 @@ void UpdateView(float timeDelta)
 
 void Test() { }
 
+void ScreenShot()
+{
+//	std::string file_name(Debug::TimeStampFileName());
+
+	FrameBufferTest.Bind();
+
+	GL::BindTexture(GL::TextureTarget::Texture2D, FrameBufferTest.Texture);
+	GL::TexImage2D(GL::TextureTarget::Texture2D, 0, GL::TextureInternalFormat::Rgba, window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y, 0, GL::TextureFormat::Rgba, GL::TextureType::UnsignedByte, nullptr);
+
+	GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
+	GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMinFilter, GL_NEAREST);
+
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, FrameBufferTest.Texture, 0);
+	unsigned int DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, DrawBuffers);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "something went wrong.\n";
+	}
+	else
+	{
+		FrameBufferTest.Bind();
+		glViewport(0, 0, window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y);
+		GL::ClearColor(window.DefaultColor.R, window.DefaultColor.G, window.DefaultColor.B, window.DefaultColor.A);
+		GL::Clear(GL::ClearMask::ColorBufferBit);
+		Draw();
+//		std::cout << "ScreenShot" << ' ' << file_name << '\n';
+	}
+
+	FrameBufferTest.UnBind();
+}
+
+void Draw()
+{	
+	FrameBufferTest.Draw();
+	
+	Physics2D_Manager.Shader_PolyGon.Bind();
+	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	{
+		Physics2D_MainInstances[i].Buffer_PolyGon.Draw();
+	}
+
+	Physics2D_Manager.Shader_WireFrame.Bind();
+	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	{
+		Physics2D_MainInstances[i].Buffer_WireFrame.Draw();
+	}
+	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	{
+		Physics2D_MainInstances[i].Buffer_WireFrameBox.Draw();
+	}
+
+	Arrow2D_Frame();
+}
 void Frame(double timeDelta)
 {
 	Test();
@@ -404,60 +621,27 @@ void Frame(double timeDelta)
 	}
 
 	{
-		Point2D cursor = DisplayToAbsolute(window.MouseManager.CursorPosition());
+		Point2D cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
 		Object_Hovering = FindHoveringObjectIndex(cursor);
 	}
 
 	Drag_Update();
 
-
-
-	GL::Disable(GL::Capability::DepthTest);
-	GL::Disable(GL::Capability::CullFace);
-
-	Physics2D_Manager.Shader_PolyGon.Bind();
-	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::F12.Flags].IsPress())
 	{
-		Physics2D_MainInstances[i].Buffer_PolyGon.Draw();
+		ScreenShot();
 	}
 
-	Physics2D_Manager.Shader_WireFrame.Bind();
-	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
-	{
-		Physics2D_MainInstances[i].Buffer_WireFrame.Draw();
-	}
-	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
-	{
-		Physics2D_MainInstances[i].Buffer_WireFrameBox.Draw();
-	}
-
-	Arrow2D_Frame();
+	Draw();
 }
 void Resize(const DisplaySize & Size)
 {
 	Multiform_DisplaySize.ChangeData(Size);
 }
 
-// put this in Window / DisplaySize
-Point2D DisplayToRelative(DisplayPosition display_pos)
-{
-	Point2D pos = display_pos.NormalRel;
-	pos.Y = -pos.Y;
-	pos = pos / window.Size.Ratio.Value;
-	return pos;
-}
-
-// this is just View
-Point2D DisplayToAbsolute(DisplayPosition display_pos)
-{
-	Point2D pos = DisplayToRelative(display_pos);
-	pos = view * pos;
-	return pos;
-}
-
 void MouseScroll(UserParameter::Mouse::Scroll params)
 {
-	Point2D cursor_rel = DisplayToRelative(window.MouseManager.CursorPosition());
+	Point2D cursor_rel = window.Size.Convert(window.MouseManager.CursorPosition());
 	Point2D cursor_abs = view * cursor_rel;
 
 	if (params.Y < 0.0f) { while (params.Y < 0.0f) { view.Scale *= 2; params.Y++; } }
@@ -501,8 +685,8 @@ void MouseClick(UserParameter::Mouse::Click params)
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
-	Drag_Begin(DisplayToAbsolute(params.Origin));
-	Drag_Move(DisplayToAbsolute(params.Position));
+	Drag_Begin(view * window.Size.Convert(params.Origin));
+	Drag_Move(view * window.Size.Convert(params.Position));
 }
 
 void KeyBoardKey(UserParameter::KeyBoard::Key params)
@@ -511,7 +695,7 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 	{
 		if (params.Code == UserParameter::KeyBoard::Keys::Insert)
 		{
-			Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[1], Trans2D(DisplayToAbsolute(window.MouseManager.CursorPosition()), Angle2D()), false));
+			Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[1], Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()), false));
 		}
 		if (params.Code == UserParameter::KeyBoard::Keys::Delete)
 		{
