@@ -58,6 +58,10 @@
 #include <math.h>
 
 
+// Test
+#include "../ImageTest/BitMap.hpp"
+
+
 
 struct FrameBufferTest
 {
@@ -172,12 +176,15 @@ struct FrameBufferTest
 		}
 		{
 			//Image img = ImageDir.File("Wood.png").LoadImage();
-			//GL::BindTexture(GL::TextureTarget::Texture2D, Texture);
-			//GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
-			//GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMinFilter, GL_NEAREST);
-			//GL::TexImage2D(GL::TextureTarget::Texture2D, 0, GL::TextureInternalFormat::Rgba, img.W(), img.H(), 0, GL::TextureFormat::Rgba, GL::TextureType::UnsignedInt8888Rev, img.Data());
-			//img.Dispose();
-			//GL::GenerateMipmap(GL::TextureTarget::Texture2D);
+			Image img = LoadBitMap(ImageDir.File("BitMap.bmp"));
+
+			GL::BindTexture(GL::TextureTarget::Texture2D, Texture);
+			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
+			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMinFilter, GL_NEAREST);
+			GL::TexImage2D(GL::TextureTarget::Texture2D, 0, GL::TextureInternalFormat::Rgba, img.W(), img.H(), 0, GL::TextureFormat::Rgba, GL::TextureType::UnsignedInt8888Rev, img.Data());
+			GL::GenerateMipmap(GL::TextureTarget::Texture2D);
+
+			img.Dispose();
 			(void)ImageDir;
 		}
 	}
@@ -626,6 +633,8 @@ void Frame(double timeDelta)
 	}
 
 	Drag_Update();
+
+
 
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::F12.Flags].IsPress())
 	{

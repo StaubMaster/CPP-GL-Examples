@@ -1,5 +1,5 @@
 
-NAME := Physics.exe
+NAME := ImageTest.exe
 
 #COMPILER := c++ -std=c++11
 COMPILER := g++ -g -std=c++11
@@ -10,41 +10,12 @@ REMOVER := rm -f
 
 BASE_DIR := ../../
 include $(BASE_DIR)fancy.mk
-FANCY_NAME := Physics
+FANCY_NAME := ImageTest
 
 ################################################################
 
 FILES_SRC := \
-	Graphics/Buffer/Element.cpp \
-\
-	Arrow2D/Main/Data.cpp \
-	Arrow2D/Main/Buffer.cpp \
-	Arrow2D/Inst/Data.cpp \
-	Arrow2D/Inst/Buffer.cpp \
-	Arrow2D/Buffer.cpp \
-	Arrow2D/Shader.cpp \
-	Arrow2D/Manager.cpp \
-\
-	WireFrame2D/Main/Buffer.cpp \
-	WireFrame2D/Shader.cpp \
-	WireFrame2D/Manager.cpp \
-	WireFrame2D/WireFrame2D.cpp \
-\
-	Inst/Physics2D/Data.cpp \
-	Inst/Physics2D/Buffer.cpp \
-\
-	PolyGon/PolyGon.cpp \
-	PolyGon/Data.cpp \
-	PolyGon/Graphics/Data.cpp \
-	PolyGon/Graphics/Buffer.cpp \
-\
-	Physics2D/Shaders/PolyGon.cpp \
-	Physics2D/InstanceManager.cpp \
-	Physics2D/Manager.cpp \
-	Physics2D/Object.cpp \
-	Physics2D/Collision.cpp \
-\
-	../ImageTest/BitMap.cpp \
+	BitMap.cpp \
 	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
