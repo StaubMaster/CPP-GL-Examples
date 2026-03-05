@@ -180,10 +180,7 @@ struct FrameBufferTest
 		{
 			//Image img = ImageDir.File("Wood.png").LoadImage();
 			Image img = BitMap::Load(ImageDir.File("BitMap.bmp"));
-
-			ByteBlock block;
-			block = ImageDir.File("BitMap.bmp").LoadBytes();
-			ImageDir.File("BitMap2.bmp").SaveBytes(block);
+			BitMap::Save(ImageDir.File("BitMap2.bmp"), img);
 
 			GL::BindTexture(GL::TextureTarget::Texture2D, Textures[0]);
 			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
@@ -649,7 +646,7 @@ void Frame(double timeDelta)
 
 
 
-//	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::F12.Flags].IsPress())
+	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::F12.Flags].IsPress())
 	{
 		ScreenShot();
 		FrameBufferTest.Swap();
