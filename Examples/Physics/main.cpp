@@ -60,6 +60,7 @@
 
 // Test
 #include "FileFormat/BitMap/BitMap.hpp"
+#include "FileParsing/ByteBlock.hpp"
 
 
 
@@ -179,6 +180,10 @@ struct FrameBufferTest
 		{
 			//Image img = ImageDir.File("Wood.png").LoadImage();
 			Image img = BitMap::Load(ImageDir.File("BitMap.bmp"));
+
+			ByteBlock block;
+			block = ImageDir.File("BitMap.bmp").LoadBytes();
+			ImageDir.File("BitMap2.bmp").SaveBytes(block);
 
 			GL::BindTexture(GL::TextureTarget::Texture2D, Textures[0]);
 			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
