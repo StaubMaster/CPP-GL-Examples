@@ -70,7 +70,16 @@ re:
 	@$(MAKE) -s fclean
 	@$(MAKE) -s all
 
-.PHONY: all clean fclean re
+exe:
+	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
+	@mkdir -p logs/
+	@$(MAKE) -s repos_all
+	@$(MAKE) -s other_all
+	@$(MAKE) -s $(FILES_OBJ)
+	@$(call fancyEcho,$(FANCY_NAME),Compiling,$(NAME))
+	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $(NAME) $(LIBRARYS) $(ARGUMENTS)
+
+.PHONY: all clean fclean re exe
 
 $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)

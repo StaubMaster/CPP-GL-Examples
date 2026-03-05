@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <exception>
+#include <string>
 
 #include "OpenGL.hpp"
 #include "Debug.hpp"
@@ -180,7 +181,9 @@ struct FrameBufferTest
 		{
 			//Image img = ImageDir.File("Wood.png").LoadImage();
 			Image img = BitMap::Load(ImageDir.File("BitMap.bmp"));
-			BitMap::Save(ImageDir.File("BitMap2.bmp"), img);
+
+			//std::string file_name = "ScreenShots/" + Debug::TimeStampFileName() + ".bmp";
+			//BitMap::Save(ImageDir.File(file_name.c_str()), img);
 
 			GL::BindTexture(GL::TextureTarget::Texture2D, Textures[0]);
 			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
@@ -212,6 +215,19 @@ struct FrameBufferTest
 
 	void Bind() { glBindFramebuffer(GL_FRAMEBUFFER, FrameBuffer); }
 	void UnBind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+
+	void ToImage(DirectoryInfo & ImageDir, unsigned int w, unsigned int h)
+	{
+		Image img(w, h);
+
+		glReadPixels(0, 0, img.W(), img.H(), (unsigned int)GL::TextureFormat::Rgba, (unsigned int)GL::TextureType::UnsignedInt8888Rev, img.Data());
+
+		std::string file_name = "ScreenShots/" + Debug::TimeStampFileName() + ".bmp";
+		std::cout << "ScreenShot: " << file_name << ' ' << img.W() << 'x' << img.H() << '\n';
+
+		BitMap::Save(ImageDir.File(file_name.c_str()), img);
+		img.Dispose();
+	}
 
 	void Draw()
 	{
@@ -549,8 +565,7 @@ void Test() { }
 
 void ScreenShot()
 {
-//	std::string file_name(Debug::TimeStampFileName());
-
+/*
 	FrameBufferTest.Bind();
 
 	GL::BindTexture(GL::TextureTarget::Texture2D, FrameBufferTest.Textures[!FrameBufferTest.TextureToUse]);
@@ -574,10 +589,15 @@ void ScreenShot()
 		GL::ClearColor(window.DefaultColor.R, window.DefaultColor.G, window.DefaultColor.B, window.DefaultColor.A);
 		GL::Clear(GL::ClearMask::ColorBufferBit);
 		Draw();
-//		std::cout << "ScreenShot" << ' ' << file_name << '\n';
+
+		FrameBufferTest.ToImage(ImageDir, window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y);
 	}
 
+
 	FrameBufferTest.UnBind();
+*/
+
+	FrameBufferTest.ToImage(ImageDir, window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y);
 }
 
 void Draw()
@@ -646,13 +666,13 @@ void Frame(double timeDelta)
 
 
 
+	Draw();
+
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::F12.Flags].IsPress())
 	{
 		ScreenShot();
-		FrameBufferTest.Swap();
+		//FrameBufferTest.Swap();
 	}
-
-	Draw();
 }
 void Resize(const DisplaySize & Size)
 {
