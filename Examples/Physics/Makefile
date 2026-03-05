@@ -44,7 +44,6 @@ FILES_SRC := \
 	Physics2D/Object.cpp \
 	Physics2D/Collision.cpp \
 \
-	../ImageTest/BitMap.cpp \
 	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
