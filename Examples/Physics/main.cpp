@@ -131,14 +131,16 @@ struct FrameBufferTest
 
 	FrameBufferTest::Shader	Shader;
 	FrameBufferTest::Buffer	Buffer;
-	GL::TextureID	Texture;
+	bool			TextureToUse;
+	GL::TextureID	Textures[2];
 	unsigned int FrameBuffer;
 
 	~FrameBufferTest() { }
 	FrameBufferTest()
 		: Shader()
 		, Buffer()
-		, Texture(0)
+		, TextureToUse(0)
+		, Textures{ 0, 0 }
 		, FrameBuffer(0)
 	{ }
 
@@ -178,7 +180,7 @@ struct FrameBufferTest
 			//Image img = ImageDir.File("Wood.png").LoadImage();
 			Image img = BitMap::Load(ImageDir.File("BitMap.bmp"));
 
-			GL::BindTexture(GL::TextureTarget::Texture2D, Texture);
+			GL::BindTexture(GL::TextureTarget::Texture2D, Textures[0]);
 			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
 			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMinFilter, GL_NEAREST);
 			GL::TexImage2D(GL::TextureTarget::Texture2D, 0, GL::TextureInternalFormat::Rgba, img.W(), img.H(), 0, GL::TextureFormat::Rgba, GL::TextureType::UnsignedInt8888Rev, img.Data());
@@ -193,14 +195,16 @@ struct FrameBufferTest
 	{
 		Shader.Create();
 		Buffer.Create();
-		Texture = GL::CreateTexture();
+		Textures[0] = GL::CreateTexture();
+		Textures[1] = GL::CreateTexture();
 		glGenFramebuffers(1, &FrameBuffer);
 	}
 	void GraphicsDelete()
 	{
 		Shader.Delete();
 		Buffer.Delete();
-		GL::DeleteTexture(Texture);
+		GL::DeleteTexture(Textures[0]);
+		GL::DeleteTexture(Textures[1]);
 		glDeleteFramebuffers(1, &FrameBuffer);
 	}
 
@@ -210,8 +214,12 @@ struct FrameBufferTest
 	void Draw()
 	{
 		Shader.Bind();
-		GL::BindTexture(GL::TextureTarget::Texture2D, Texture);
+		GL::BindTexture(GL::TextureTarget::Texture2D, Textures[TextureToUse]);
 		Buffer.Draw();
+	}
+	void Swap()
+	{
+		TextureToUse = !TextureToUse;
 	}
 };
 
@@ -543,13 +551,13 @@ void ScreenShot()
 
 	FrameBufferTest.Bind();
 
-	GL::BindTexture(GL::TextureTarget::Texture2D, FrameBufferTest.Texture);
+	GL::BindTexture(GL::TextureTarget::Texture2D, FrameBufferTest.Textures[!FrameBufferTest.TextureToUse]);
 	GL::TexImage2D(GL::TextureTarget::Texture2D, 0, GL::TextureInternalFormat::Rgba, window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y, 0, GL::TextureFormat::Rgba, GL::TextureType::UnsignedByte, nullptr);
 
 	GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
 	GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMinFilter, GL_NEAREST);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, FrameBufferTest.Texture, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, FrameBufferTest.Textures[!FrameBufferTest.TextureToUse], 0);
 	unsigned int DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, DrawBuffers);
 
@@ -636,9 +644,10 @@ void Frame(double timeDelta)
 
 
 
-	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::F12.Flags].IsPress())
+//	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::F12.Flags].IsPress())
 	{
 		ScreenShot();
+		FrameBufferTest.Swap();
 	}
 
 	Draw();
