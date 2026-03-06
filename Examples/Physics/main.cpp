@@ -179,9 +179,8 @@ struct FrameBufferTest
 			Buffer.Inst.Change(data);
 		}
 		{
-			//Image img = ImageDir.File("Wood.png").LoadImage();
-			Image img = BitMap::Load(ImageDir.File("BitMap.bmp"));
-
+			Image img = ImageDir.File("Wood.png").LoadImage();
+			//Image img = BitMap::Load(ImageDir.File("BitMap.bmp"));
 			//std::string file_name = "ScreenShots/" + Debug::TimeStampFileName() + ".bmp";
 			//BitMap::Save(ImageDir.File(file_name.c_str()), img);
 
