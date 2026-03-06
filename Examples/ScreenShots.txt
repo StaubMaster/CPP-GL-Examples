@@ -1,7 +1,0 @@
-
-want to improve GitHub / ReadMe
-
-would need ScreenShots for that ?
-
-1. draw the FrameBuffer to a Textre
-2. put that data into a .bmp for now

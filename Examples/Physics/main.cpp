@@ -135,7 +135,7 @@ struct FrameBufferTest
 	FrameBufferTest::Buffer	Buffer;
 	bool			TextureToUse;
 	GL::TextureID	Textures[2];
-	unsigned int FrameBuffer;
+	unsigned int	FrameBuffer;
 
 	~FrameBufferTest() { }
 	FrameBufferTest()
