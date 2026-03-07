@@ -29,7 +29,6 @@
 
 
 
-//#include "PolyGon/Physics2D/BufferArray.hpp"
 #include "Physics2D/Shaders/PolyGon.hpp"
 #include "PolyGon/Graphics/Data.hpp"
 #include "Inst/Physics2D/Data.hpp"
@@ -57,11 +56,6 @@
 #include "Graphics/Multiform/Float.hpp"
 
 #include <math.h>
-
-
-// Test
-#include "FileFormat/BitMap/BitMap.hpp"
-#include "FileParsing/ByteBlock.hpp"
 
 
 
@@ -181,16 +175,6 @@ SDrag Drag;
 
 
 
-void Arrow2D_Frame()
-{
-	Physics2D_Manager.Arrow_Inst_Update();
-	Physics2D_Manager.Shader_Arrow.Bind();
-	Physics2D_Manager.Texture_Arrow.Bind();
-	Physics2D_Manager.Buffer_Arrow.Draw();
-}
-
-
-
 void Make()
 {
 	Physics2D_Manager.MainInstances.Allocate(3, 3);
@@ -295,49 +279,6 @@ void Free()
 
 
 
-void UpdateGravity(float timeDelta)
-{
-	Point2D	Gravity = (view.Trans.Rot / (Point2D(0, -1) * 3.0f)) * timeDelta;
-	for (unsigned int i = 0; i < Physics2D_Manager.Objects.Count(); i++)
-	{
-		if (!Physics2D_Manager.Objects[i].IsStatic)
-		{
-			Physics2D_Manager.Objects[i].Data.Vel.Pos += Gravity;
-		}
-	}
-}
-void UpdateCollision()
-{
-	for (unsigned int i0 = 0; i0 < Physics2D_Manager.Objects.Count(); i0++)
-	{
-		for (unsigned int i1 = i0 + 1; i1 < Physics2D_Manager.Objects.Count(); i1++)
-		{
-			Physics2D::CollideLinear(Physics2D_Manager.Objects[i0], Physics2D_Manager.Objects[i1]); // good
-			//Physics2D::CollideRotate(Physics2D_Manager.Objects[i0], Physics2D_Manager.Objects[i1]); // wack
-			//Physics2D::Collide(Physics2D_Manager.Objects[i0], Physics2D_Manager.Objects[i1]);
-		}
-	}
-}
-void UpdateOrientation(float timeDelta)
-{
-	for (unsigned int i = 0; i < Physics2D_Manager.Objects.Count(); i++)
-	{
-		if (!Physics2D_Manager.Objects[i].IsStatic)
-		{
-			Physics2D_Manager.Objects[i].Data.Now.Pos += (Physics2D_Manager.Objects[i].Data.Vel.Pos * timeDelta);
-			Physics2D_Manager.Objects[i].Data.Now.Rot += (Physics2D_Manager.Objects[i].Data.Vel.Rot * timeDelta);
-		}
-	}
-}
-void Update(float timeDelta)
-{
-//	UpdateGravity(timeDelta);
-	UpdateCollision();
-	UpdateOrientation(timeDelta);
-}
-
-
-
 void UpdateView(float timeDelta)
 {
 	//if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
@@ -366,8 +307,6 @@ void UpdateView(float timeDelta)
 	Multiform_View.ChangeData(view.Trans);
 	Multiform_Scale.ChangeData(view.Scale);
 }
-
-void Test() { }
 
 void ScreenShot()
 {
@@ -413,32 +352,13 @@ void ScreenShot()
 	img.Dispose();
 }
 
-
-
 void Draw()
 {
-	Physics2D_Manager.Shader_PolyGon.Bind();
-	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
-	{
-		Physics2D_Manager.MainInstances[i].Buffer_PolyGon.Draw();
-	}
-
-	Physics2D_Manager.Shader_WireFrame.Bind();
-	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
-	{
-		Physics2D_Manager.MainInstances[i].Buffer_WireFrame.Draw();
-	}
-	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
-	{
-		Physics2D_Manager.MainInstances[i].Buffer_WireFrameBox.Draw();
-	}
-
-	Arrow2D_Frame();
+	Physics2D_Manager.Draw();
 }
+
 void Frame(double timeDelta)
 {
-	Test();
-
 	UpdateView(timeDelta);
 
 	{
@@ -447,27 +367,19 @@ void Frame(double timeDelta)
 		{
 			if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsDown())
 			{
-				Update(1 / 60.0f);
+				Physics2D_Manager.Update(1 / 60.0f);
 			}
 			else if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::I.Flags].IsPress())
 			{
-				Update(1 / 60.0f);
+				Physics2D_Manager.Update(1 / 60.0f);
 			}
 		}
 		else
 		{
-			Update(timeDelta);
+			Physics2D_Manager.Update(timeDelta);
 		}
 
-		for (unsigned int i = 0; i < Physics2D_Manager.Objects.Count(); i++)
-		{
-			Physics2D_Manager.Objects[i].UpdateEntrys();
-		}
-		
-		for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
-		{
-			Physics2D_Manager.MainInstances[i].UpdateInst();
-		}
+		Physics2D_Manager.UpdateGraphics();
 	}
 
 	{
@@ -484,9 +396,9 @@ void Frame(double timeDelta)
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::F12.Flags].IsPress())
 	{
 		ScreenShot();
-		//FrameBufferTest.Swap();
 	}
 }
+
 void Resize(const DisplaySize & Size)
 {
 	Multiform_DisplaySize.ChangeData(Size);
@@ -494,6 +406,9 @@ void Resize(const DisplaySize & Size)
 
 void MouseScroll(UserParameter::Mouse::Scroll params)
 {
+	// put this stuff into view ?
+	// make a function for view to spin around cursor / point ?
+
 	Point2D cursor_rel = window.Size.Convert(window.MouseManager.CursorPosition());
 	Point2D cursor_abs = view * cursor_rel;
 

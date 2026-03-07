@@ -18,6 +18,7 @@
 # include "Arrow2D/Inst/Data.hpp"
 
 #include "ValueType/Undex.hpp"
+#include "ValueType/View2D.hpp"
 
 
 
@@ -54,9 +55,17 @@ struct Manager
 
 	void Arrow_Main_Default();
 	void Arrow_Inst_Update();
+	void Arrow_Draw();
 
-	void Update(float timeDelta);
 	void Draw();
+	void UpdateGraphics();
+
+
+
+	void UpdateGravity(float timeDelta);
+	void UpdateCollision(float timeDelta);
+	void UpdateOrientation(float timeDelta);
+	void Update(float timeDelta);
 
 
 

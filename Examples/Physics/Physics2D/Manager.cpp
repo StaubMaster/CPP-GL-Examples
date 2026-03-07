@@ -1,4 +1,5 @@
 #include "Physics2D/Manager.hpp"
+#include "Physics2D/Collision.hpp"
 
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"
@@ -145,19 +146,93 @@ void Physics2D::Manager::Arrow_Inst_Update()
 	Instances_Arrow.CompactHere();
 	Buffer_Arrow.Inst.Change(Instances_Arrow);
 }
-
-
-
-void Physics2D::Manager::Update(float timeDelta)
+void  Physics2D::Manager::Arrow_Draw()
 {
-	(void)timeDelta;
+	Arrow_Inst_Update();
+	Shader_Arrow.Bind();
+	Texture_Arrow.Bind();
+	Buffer_Arrow.Draw();
 }
+
+
+
 void Physics2D::Manager::Draw()
 {
+	Shader_PolyGon.Bind();
+	for (unsigned int i = 0; i < MainInstances.Count(); i++)
+	{
+		MainInstances[i].Buffer_PolyGon.Draw();
+	}
 
+	Shader_WireFrame.Bind();
+	for (unsigned int i = 0; i < MainInstances.Count(); i++)
+	{
+		MainInstances[i].Buffer_WireFrame.Draw();
+	}
+	for (unsigned int i = 0; i < MainInstances.Count(); i++)
+	{
+		MainInstances[i].Buffer_WireFrameBox.Draw();
+	}
+
+	Arrow_Draw();
+}
+void Physics2D::Manager::UpdateGraphics()
+{
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		Objects[i].UpdateEntrys();
+	}
+	
+	for (unsigned int i = 0; i < MainInstances.Count(); i++)
+	{
+		MainInstances[i].UpdateInst();
+	}
 }
 
 
+
+void Physics2D::Manager::UpdateGravity(float timeDelta)
+{
+	//Point2D	Gravity = (view.Trans.Rot / (Point2D(0, -1) * 3.0f)) * timeDelta;
+	Point2D	Gravity = (Point2D(0, -1) * 3.0f) * timeDelta;
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (!Objects[i].IsStatic)
+		{
+			Objects[i].Data.Vel.Pos += Gravity;
+		}
+	}
+}
+void Physics2D::Manager::UpdateCollision(float timeDelta)
+{
+	for (unsigned int i0 = 0; i0 < Objects.Count(); i0++)
+	{
+		for (unsigned int i1 = i0 + 1; i1 < Objects.Count(); i1++)
+		{
+			Physics2D::CollideLinear(Objects[i0], Objects[i1]); // good
+			//Physics2D::CollideRotate(Objects[i0], Objects[i1]); // wack
+			//Physics2D::Collide(Objects[i0], Objects[i1]);
+		}
+	}
+	(void)timeDelta;
+}
+void Physics2D::Manager::UpdateOrientation(float timeDelta)
+{
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (!Objects[i].IsStatic)
+		{
+			Objects[i].Data.Now.Pos += (Objects[i].Data.Vel.Pos * timeDelta);
+			Objects[i].Data.Now.Rot += (Objects[i].Data.Vel.Rot * timeDelta);
+		}
+	}
+}
+void Physics2D::Manager::Update(float timeDelta)
+{
+	//UpdateGravity(timeDelta);
+	UpdateCollision(timeDelta);
+	UpdateOrientation(timeDelta);
+}
 
 
 
