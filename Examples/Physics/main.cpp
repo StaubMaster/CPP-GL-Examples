@@ -133,9 +133,9 @@ struct FrameBufferTest
 
 	FrameBufferTest::Shader	Shader;
 	FrameBufferTest::Buffer	Buffer;
-	bool			TextureToUse;
-	GL::TextureID	Textures[2];
-	unsigned int	FrameBuffer;
+	bool				TextureToUse;
+	GL::TextureID		Textures[2];
+	GL::FrameBufferID	FrameBuffer;
 
 	~FrameBufferTest() { }
 	FrameBufferTest()
@@ -187,7 +187,7 @@ struct FrameBufferTest
 			GL::BindTexture(GL::TextureTarget::Texture2D, Textures[0]);
 			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
 			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMinFilter, GL_NEAREST);
-			GL::TexImage2D(GL::TextureTarget::Texture2D, 0, GL::TextureInternalFormat::Rgba, img.W(), img.H(), 0, GL::TextureFormat::Rgba, GL::TextureType::UnsignedInt8888Rev, img.Data());
+			GL::TexImage2D(GL::TextureTarget::Texture2D, 0, GL::InternalFormat::Rgba, img.W(), img.H(), 0, GL::PixelDataFormat::Rgba, GL::PixelDataType::UnsignedInt8888Rev, img.Data());
 			GL::GenerateMipmap(GL::TextureTarget::Texture2D);
 
 			img.Dispose();
@@ -201,7 +201,7 @@ struct FrameBufferTest
 		Buffer.Create();
 		Textures[0] = GL::CreateTexture();
 		Textures[1] = GL::CreateTexture();
-		glGenFramebuffers(1, &FrameBuffer);
+		FrameBuffer = GL::CreateFramebuffer();
 	}
 	void GraphicsDelete()
 	{
@@ -209,24 +209,11 @@ struct FrameBufferTest
 		Buffer.Delete();
 		GL::DeleteTexture(Textures[0]);
 		GL::DeleteTexture(Textures[1]);
-		glDeleteFramebuffers(1, &FrameBuffer);
+		GL::DeleteFramebuffer(FrameBuffer);
 	}
 
-	void Bind() { glBindFramebuffer(GL_FRAMEBUFFER, FrameBuffer); }
-	void UnBind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
-
-	void ToImage(DirectoryInfo & ImageDir, unsigned int w, unsigned int h)
-	{
-		Image img(w, h);
-
-		glReadPixels(0, 0, img.W(), img.H(), (unsigned int)GL::TextureFormat::Rgba, (unsigned int)GL::TextureType::UnsignedInt8888Rev, img.Data());
-
-		std::string file_name = "ScreenShots/" + Debug::TimeStampFileName() + ".bmp";
-		std::cout << "ScreenShot: " << file_name << ' ' << img.W() << 'x' << img.H() << '\n';
-
-		BitMap::Save(ImageDir.File(file_name.c_str()), img);
-		img.Dispose();
-	}
+	void Bind() { GL::BindFramebuffer(GL::FrameBufferTarget::Framebuffer, FrameBuffer); }
+	void UnBind() { GL::BindFramebuffer(GL::FrameBufferTarget::Framebuffer, 0); }
 
 	void Draw()
 	{
@@ -592,12 +579,21 @@ void ScreenShot()
 		FrameBufferTest.ToImage(ImageDir, window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y);
 	}
 
-
 	FrameBufferTest.UnBind();
 */
 
-	FrameBufferTest.ToImage(ImageDir, window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y);
+	Image img(window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y);
+
+	GL::ReadPixels(0, 0, img.W(), img.H(), GL::PixelDataFormat::Rgba, GL::PixelDataType::UnsignedInt8888Rev, img.Data());
+
+	std::string file_name = "ScreenShots/" + Debug::TimeStampFileName() + ".bmp";
+	std::cout << "ScreenShot: " << file_name << ' ' << img.W() << 'x' << img.H() << '\n';
+
+	BitMap::Save(ImageDir.File(file_name.c_str()), img);
+	img.Dispose();
 }
+
+
 
 void Draw()
 {	
