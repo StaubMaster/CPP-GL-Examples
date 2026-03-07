@@ -65,170 +65,6 @@
 
 
 
-struct FrameBufferTest
-{
-	struct DataMain
-	{
-		Point2D	Pos;
-		Point2D	Tex;
-		DataMain() { }
-		DataMain(Point2D pos, Point2D tex)
-			: Pos(pos)
-			, Tex(tex)
-		{ }
-	};
-	struct DataInst
-	{
-		Point2D	Pos;
-		DataInst() { }
-		DataInst(Point2D pos)
-			: Pos(pos)
-		{ }
-	};
-
-	class BufferMain : public ::Buffer::Attribute
-	{
-		public:
-		::Attribute::Point2D	Pos;
-		::Attribute::Point2D	Tex;
-		public:
-		~BufferMain() { }
-		BufferMain(BufferArray::Base & buffer_array)
-			: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(DataMain))
-		{
-			Attributes.Insert(&Pos);
-			Attributes.Insert(&Tex);
-		}
-	};
-	class BufferInst : public ::Buffer::Attribute
-	{
-		public:
-		::Attribute::Point2D	Pos;
-		public:
-		~BufferInst() { }
-		BufferInst(BufferArray::Base & buffer_array)
-			: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 1, sizeof(DataInst))
-		{
-			Attributes.Insert(&Pos);
-		}
-	};
-	class Buffer : public ::BufferArray::MainInst<BufferMain, BufferInst>
-	{
-		public:
-		~Buffer() { }
-		Buffer()
-			: ::BufferArray::MainInst<BufferMain, BufferInst>(GL::DrawMode::Triangles)
-		{ }
-	};
-
-	class Shader : public ::Shader::Base
-	{
-		// no Uniforms
-		public:
-		~Shader() { }
-		Shader()
-			: ::Shader::Base()
-		{ }
-	};
-
-	FrameBufferTest::Shader	Shader;
-	FrameBufferTest::Buffer	Buffer;
-	bool				TextureToUse;
-	GL::TextureID		Textures[2];
-	GL::FrameBufferID	FrameBuffer;
-
-	~FrameBufferTest() { }
-	FrameBufferTest()
-		: Shader()
-		, Buffer()
-		, TextureToUse(0)
-		, Textures{ 0, 0 }
-		, FrameBuffer(0)
-	{ }
-
-	void InitExternal(DirectoryInfo & ShaderDir)
-	{
-		{
-			Container::Array<::Shader::Code> code({
-				::Shader::Code(ShaderDir.File("Frame/Test.vert")),
-				::Shader::Code(ShaderDir.File("Frame/Test.frag")),
-			});
-			Shader.Change(code);
-		}
-		{
-			Buffer.Main.Pos.Change(0);
-			Buffer.Main.Tex.Change(1);
-			Buffer.Inst.Pos.Change(2);
-		}
-	}
-	void InitInternal(DirectoryInfo & ImageDir)
-	{
-		{
-			Container::Binary<DataMain> data;
-			data.Insert(DataMain(Point2D(-0.75f, -0.75f), Point2D(0, 0)));
-			data.Insert(DataMain(Point2D(+0.75f, -0.75f), Point2D(1, 0)));
-			data.Insert(DataMain(Point2D(-0.75f, +0.75f), Point2D(0, 1)));
-			data.Insert(DataMain(Point2D(-0.75f, +0.75f), Point2D(0, 1)));
-			data.Insert(DataMain(Point2D(+0.75f, -0.75f), Point2D(1, 0)));
-			data.Insert(DataMain(Point2D(+0.75f, +0.75f), Point2D(1, 1)));
-			Buffer.Main.Change(data);
-		}
-		{
-			Container::Binary<DataInst> data;
-			data.Insert(DataInst(Point2D(0.0f, 0.0f)));
-			Buffer.Inst.Change(data);
-		}
-		{
-			Image img = ImageDir.File("Wood.png").LoadImage();
-			//Image img = BitMap::Load(ImageDir.File("BitMap.bmp"));
-			//std::string file_name = "ScreenShots/" + Debug::TimeStampFileName() + ".bmp";
-			//BitMap::Save(ImageDir.File(file_name.c_str()), img);
-
-			GL::BindTexture(GL::TextureTarget::Texture2D, Textures[0]);
-			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMagFilter, GL_NEAREST);
-			GL::TexParameteri(GL::TextureTarget::Texture2D, GL::TextureParameterName::TextureMinFilter, GL_NEAREST);
-			GL::TexImage2D(GL::TextureTarget::Texture2D, 0, GL::InternalFormat::Rgba, img.W(), img.H(), 0, GL::PixelDataFormat::Rgba, GL::PixelDataType::UnsignedInt8888Rev, img.Data());
-			GL::GenerateMipmap(GL::TextureTarget::Texture2D);
-
-			img.Dispose();
-			(void)ImageDir;
-		}
-	}
-
-	void GraphicsCreate()
-	{
-		Shader.Create();
-		Buffer.Create();
-		Textures[0] = GL::CreateTexture();
-		Textures[1] = GL::CreateTexture();
-		FrameBuffer = GL::CreateFramebuffer();
-	}
-	void GraphicsDelete()
-	{
-		Shader.Delete();
-		Buffer.Delete();
-		GL::DeleteTexture(Textures[0]);
-		GL::DeleteTexture(Textures[1]);
-		GL::DeleteFramebuffer(FrameBuffer);
-	}
-
-	void Bind() { GL::BindFramebuffer(GL::FrameBufferTarget::Framebuffer, FrameBuffer); }
-	void UnBind() { GL::BindFramebuffer(GL::FrameBufferTarget::Framebuffer, 0); }
-
-	void Draw()
-	{
-		Shader.Bind();
-		GL::BindTexture(GL::TextureTarget::Texture2D, Textures[TextureToUse]);
-		Buffer.Draw();
-	}
-	void Swap()
-	{
-		TextureToUse = !TextureToUse;
-	}
-};
-
-
-
 struct MainContext
 {
 DirectoryInfo ImageDir;
@@ -270,92 +106,80 @@ MainContext()
 
 	Object_Selected = Undex::Invalid();
 	Object_Hovering = Undex::Invalid();
-
-	FrameBufferTest.InitExternal(ShaderDir);
 }
 ~MainContext()
 {
 	Physics2D_Manager.Dispose();
 }
 
-Physics2D::Manager								Physics2D_Manager;
-Container::Array<Physics2D::InstanceManager>	Physics2D_MainInstances;
-Container::Binary<Physics2D::Object>			Physics2D_Objects;
+Physics2D::Manager	Physics2D_Manager;
 
 Undex	Object_Selected;
 Undex	Object_Hovering;
 
-Undex FindHoveringObjectIndex(Point2D p)
+
+
+struct SDrag
 {
-	for (Undex u; u < Physics2D_Objects.Count(); u++)
-	{
-		if (Physics2D_Objects[u.Value].IsContaining(p))
-		{
-			return u;
-		}
-	}
-	return Undex::Invalid();
-}
-
-
-
-bool Drag_Is = false;
-Undex Drag_Object;
-Point2D Drag_Pos0;
-Point2D Drag_Pos1;
-EntryContainer::Entry<Arrow2D::Inst::Data> Drag_Arrow;
+bool Is = false;
+Undex Object;
+Point2D Pos0;
+Point2D Pos1;
+EntryContainer::Entry<Arrow2D::Inst::Data> Arrow;
 /* Drag
 	currently changes Linear Velocity when Drag is done
 	just apply Force/Impulse while Drag is active
 */
-void Drag_Begin(Point2D pos0)
+void Begin(Point2D pos0, Physics2D::Manager & manager)
 {
-	if (!Drag_Is)
+	if (!Is)
 	{
-		Drag_Object = FindHoveringObjectIndex(pos0);
-		if (Drag_Object.IsValid())
+		Object = manager.FindObjectIndex(pos0);
+		if (Object.IsValid())
 		{
-			Drag_Pos0 = Physics2D_Objects[Drag_Object.Value].RelativePositionOf(pos0);
-			Drag_Arrow.Allocate(*Physics2D_Manager.Instances_Arrow, 1);
-			(*Drag_Arrow).Col = ColorF4(1, 1, 1);
-			(*Drag_Arrow).Size = 20.0f;
-			Drag_Is = true;
+			Pos0 = manager.Objects[Object.Value].RelativePositionOf(pos0);
+			Arrow.Allocate(manager.Instances_Arrow, 1);
+			(*Arrow).Col = ColorF4(1, 1, 1);
+			(*Arrow).Size = 20.0f;
+			Is = true;
 		}
 	}
 }
-void Drag_Move(Point2D pos1)
+void Move(Point2D pos1)
 {
-	if (Drag_Is)
+	if (Is)
 	{
-		Drag_Pos1 = pos1;
-		(*Drag_Arrow).Pos1 = Drag_Pos1;
+		Pos1 = pos1;
+		(*Arrow).Pos1 = Pos1;
 	}
 }
-void Drag_End()
+void End()
 {
-	if (Drag_Is)
+	if (Is)
 	{
 		/*if (Object_Selected.IsValid())
 		{
-			Point2D rel = Drag_Pos1 - Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
-			Physics2D_Objects[Object_Selected.Value].Data.Vel.Pos += rel;
+			Point2D rel = Pos1 - Physics2D_Manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
+			Physics2D_Manager.Objects[Object_Selected.Value].Data.Vel.Pos += rel;
 		}*/
-		Drag_Is = false;
-		Drag_Arrow.Dispose();
+		Is = false;
+		Arrow.Dispose();
 	}
 }
-void Drag_Update()
+void Update(const View2D & view, const Window & window, Physics2D::Manager & manager)
 {
-	if (!Drag_Is) { return; }
-	Drag_Pos1 = view * window.Size.Convert(window.MouseManager.CursorPosition());
-	(*Drag_Arrow).Pos0 = Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
-	(*Drag_Arrow).Pos1 = Drag_Pos1;
+	if (!Is) { return; }
+	Pos1 = view * window.Size.Convert(window.MouseManager.CursorPosition());
+	(*Arrow).Pos0 = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
+	(*Arrow).Pos1 = Pos1;
 
-	Point2D rel = Drag_Pos1 - Physics2D_Objects[Drag_Object.Value].AbsolutePositionOf(Drag_Pos0);
-	Physics2D_Objects[Object_Selected.Value].Data.Vel.Pos += rel * 0.1f;
+	Point2D rel = Pos1 - manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
+	manager.Objects[Object.Value].Data.Vel.Pos += rel * 0.1f;
 }
+};
+SDrag Drag;
 
-::FrameBufferTest	FrameBufferTest;
+
 
 void Arrow2D_Frame()
 {
@@ -369,15 +193,15 @@ void Arrow2D_Frame()
 
 void Make()
 {
-	Physics2D_MainInstances.Allocate(3, 3);
+	Physics2D_Manager.MainInstances.Allocate(3, 3);
 
 
 
 	unsigned int wall = 0;
-	Physics2D_MainInstances[wall].Buffer_PolyGon.Create();
+	Physics2D_Manager.MainInstances[wall].Buffer_PolyGon.Create();
 	{
 		float thickness = 0.1f;
-		PolyGon & poly_gon = *(Physics2D_MainInstances[wall].PolyGon);
+		PolyGon & poly_gon = *(Physics2D_Manager.MainInstances[wall].PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1, 0), ColorF4(1, 1, 1)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1, 0), ColorF4(1, 1, 1)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1 - thickness, -thickness), ColorF4(0, 0, 0)));
@@ -386,60 +210,60 @@ void Make()
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
 
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees( 90))), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), true));
-	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[wall], Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees(270))), true));
+	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[wall], Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true));
+	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees( 90))), true));
+	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[wall], Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), true));
+	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[wall], Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees(270))), true));
 
 
 
 	unsigned int obj0 = 1;
-	Physics2D_MainInstances[obj0].Buffer_PolyGon.Create();
+	Physics2D_Manager.MainInstances[obj0].Buffer_PolyGon.Create();
 	{
-		PolyGon & poly_gon = *(Physics2D_MainInstances[obj0].PolyGon);
+		PolyGon & poly_gon = *(Physics2D_Manager.MainInstances[obj0].PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 	}
 
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(0.0f, 0.1f), Angle2D(Angle::Degrees(45))), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(0.0f, 0.1f), Angle2D(Angle::Degrees(45))), false));
 
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(0.0f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(0.0f, 0.0f), Angle2D()), false));
 
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
 
 //	Stuck in Wall. Bounces back "into" Wall every time it would get out.
 //	No Force pushing it out.
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj0], Trans2D(Point2D(-1.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(-1.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
 
 
 
 	unsigned int obj1 = 2;
-	Physics2D_MainInstances[obj1].Buffer_PolyGon.Create();
+	Physics2D_Manager.MainInstances[obj1].Buffer_PolyGon.Create();
 	{
-		PolyGon & poly_gon = *(Physics2D_MainInstances[obj1].PolyGon);
+		PolyGon & poly_gon = *(Physics2D_Manager.MainInstances[obj1].PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.025f, -0.400f), ColorF4(1, 0, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.025f, -0.400f), ColorF4(0, 1, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.000f, +0.400f), ColorF4(0, 0, 1)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 	}
 
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj1], Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
-//	Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[obj1], Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj1], Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj1], Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
 
 
 
-	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].Manager = &Physics2D_Manager;
-		Physics2D_MainInstances[i].InitExternal();
-		Physics2D_MainInstances[i].GraphicsCreate();
-		Physics2D_MainInstances[i].InitInternal();
-		Physics2D_MainInstances[i].UpdateMain();
+		Physics2D_Manager.MainInstances[i].Manager = &Physics2D_Manager;
+		Physics2D_Manager.MainInstances[i].InitExternal();
+		Physics2D_Manager.MainInstances[i].GraphicsCreate();
+		Physics2D_Manager.MainInstances[i].InitInternal();
+		Physics2D_Manager.MainInstances[i].UpdateMain();
 	}
 }
 
@@ -452,9 +276,6 @@ void Init()
 	Physics2D_Manager.InitInternal(ImageDir);
 	Physics2D_Manager.Arrow_Main_Default();
 
-	FrameBufferTest.GraphicsCreate();
-	FrameBufferTest.InitInternal(ImageDir);
-
 	Make();
 
 	GL::Disable(GL::Capability::DepthTest);
@@ -462,15 +283,14 @@ void Init()
 }
 void Free()
 {
-	Physics2D_Objects.Clear();
-	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	Physics2D_Manager.Objects.Clear();
+	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].GraphicsDelete();
-		Physics2D_MainInstances[i].Dispose();
+		Physics2D_Manager.MainInstances[i].GraphicsDelete();
+		Physics2D_Manager.MainInstances[i].Dispose();
 	}
 
 	Physics2D_Manager.GraphicsDelete();
-	FrameBufferTest.GraphicsDelete();
 }
 
 
@@ -478,34 +298,34 @@ void Free()
 void UpdateGravity(float timeDelta)
 {
 	Point2D	Gravity = (view.Trans.Rot / (Point2D(0, -1) * 3.0f)) * timeDelta;
-	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_Manager.Objects.Count(); i++)
 	{
-		if (!Physics2D_Objects[i].IsStatic)
+		if (!Physics2D_Manager.Objects[i].IsStatic)
 		{
-			Physics2D_Objects[i].Data.Vel.Pos += Gravity;
+			Physics2D_Manager.Objects[i].Data.Vel.Pos += Gravity;
 		}
 	}
 }
 void UpdateCollision()
 {
-	for (unsigned int i0 = 0; i0 < Physics2D_Objects.Count(); i0++)
+	for (unsigned int i0 = 0; i0 < Physics2D_Manager.Objects.Count(); i0++)
 	{
-		for (unsigned int i1 = i0 + 1; i1 < Physics2D_Objects.Count(); i1++)
+		for (unsigned int i1 = i0 + 1; i1 < Physics2D_Manager.Objects.Count(); i1++)
 		{
-			Physics2D::CollideLinear(Physics2D_Objects[i0], Physics2D_Objects[i1]); // good
-			//Physics2D::CollideRotate(Physics2D_Objects[i0], Physics2D_Objects[i1]); // wack
-			//Physics2D::Collide(Physics2D_Objects[i0], Physics2D_Objects[i1]);
+			Physics2D::CollideLinear(Physics2D_Manager.Objects[i0], Physics2D_Manager.Objects[i1]); // good
+			//Physics2D::CollideRotate(Physics2D_Manager.Objects[i0], Physics2D_Manager.Objects[i1]); // wack
+			//Physics2D::Collide(Physics2D_Manager.Objects[i0], Physics2D_Manager.Objects[i1]);
 		}
 	}
 }
 void UpdateOrientation(float timeDelta)
 {
-	for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_Manager.Objects.Count(); i++)
 	{
-		if (!Physics2D_Objects[i].IsStatic)
+		if (!Physics2D_Manager.Objects[i].IsStatic)
 		{
-			Physics2D_Objects[i].Data.Now.Pos += (Physics2D_Objects[i].Data.Vel.Pos * timeDelta);
-			Physics2D_Objects[i].Data.Now.Rot += (Physics2D_Objects[i].Data.Vel.Rot * timeDelta);
+			Physics2D_Manager.Objects[i].Data.Now.Pos += (Physics2D_Manager.Objects[i].Data.Vel.Pos * timeDelta);
+			Physics2D_Manager.Objects[i].Data.Now.Rot += (Physics2D_Manager.Objects[i].Data.Vel.Rot * timeDelta);
 		}
 	}
 }
@@ -596,23 +416,21 @@ void ScreenShot()
 
 
 void Draw()
-{	
-	FrameBufferTest.Draw();
-	
+{
 	Physics2D_Manager.Shader_PolyGon.Bind();
-	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].Buffer_PolyGon.Draw();
+		Physics2D_Manager.MainInstances[i].Buffer_PolyGon.Draw();
 	}
 
 	Physics2D_Manager.Shader_WireFrame.Bind();
-	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].Buffer_WireFrame.Draw();
+		Physics2D_Manager.MainInstances[i].Buffer_WireFrame.Draw();
 	}
-	for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
 	{
-		Physics2D_MainInstances[i].Buffer_WireFrameBox.Draw();
+		Physics2D_Manager.MainInstances[i].Buffer_WireFrameBox.Draw();
 	}
 
 	Arrow2D_Frame();
@@ -641,23 +459,23 @@ void Frame(double timeDelta)
 			Update(timeDelta);
 		}
 
-		for (unsigned int i = 0; i < Physics2D_Objects.Count(); i++)
+		for (unsigned int i = 0; i < Physics2D_Manager.Objects.Count(); i++)
 		{
-			Physics2D_Objects[i].UpdateEntrys();
+			Physics2D_Manager.Objects[i].UpdateEntrys();
 		}
 		
-		for (unsigned int i = 0; i < Physics2D_MainInstances.Count(); i++)
+		for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
 		{
-			Physics2D_MainInstances[i].UpdateInst();
+			Physics2D_Manager.MainInstances[i].UpdateInst();
 		}
 	}
 
 	{
 		Point2D cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
-		Object_Hovering = FindHoveringObjectIndex(cursor);
+		Object_Hovering = Physics2D_Manager.FindObjectIndex(cursor);
 	}
 
-	Drag_Update();
+	Drag.Update(view, window, Physics2D_Manager);
 
 
 
@@ -698,30 +516,30 @@ void MouseClick(UserParameter::Mouse::Click params)
 		{
 			if (Object_Selected.IsValid())
 			{
-				Physics2D_Objects[Object_Selected.Value].Hide_WireFrame();
-				Physics2D_Objects[Object_Selected.Value].Hide_WireFrameBox();
-				Physics2D_Objects[Object_Selected.Value].Hide_Arrows();
+				Physics2D_Manager.Objects[Object_Selected.Value].Hide_WireFrame();
+				Physics2D_Manager.Objects[Object_Selected.Value].Hide_WireFrameBox();
+				Physics2D_Manager.Objects[Object_Selected.Value].Hide_Arrows();
 			}
 
 			Object_Selected = Object_Hovering;
 
 			if (Object_Selected.IsValid())
 			{
-				Physics2D_Objects[Object_Selected.Value].Show_WireFrame();
-				Physics2D_Objects[Object_Selected.Value].Show_WireFrameBox();
-				Physics2D_Objects[Object_Selected.Value].Show_Arrows();
+				Physics2D_Manager.Objects[Object_Selected.Value].Show_WireFrame();
+				Physics2D_Manager.Objects[Object_Selected.Value].Show_WireFrameBox();
+				Physics2D_Manager.Objects[Object_Selected.Value].Show_Arrows();
 			}
 		}
 	}
 	if (params.Action.IsRelease())
 	{
-		Drag_End();
+		Drag.End();
 	}
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
-	Drag_Begin(view * window.Size.Convert(params.Origin));
-	Drag_Move(view * window.Size.Convert(params.Position));
+	Drag.Begin(view * window.Size.Convert(params.Origin), Physics2D_Manager);
+	Drag.Move(view * window.Size.Convert(params.Position));
 }
 
 void KeyBoardKey(UserParameter::KeyBoard::Key params)
@@ -730,13 +548,13 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 	{
 		if (params.Code == UserParameter::KeyBoard::Keys::Insert)
 		{
-			Physics2D_Objects.Insert(Physics2D::Object(Physics2D_MainInstances[1], Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()), false));
+			Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[1], Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()), false));
 		}
 		if (params.Code == UserParameter::KeyBoard::Keys::Delete)
 		{
 			if (Object_Selected.IsValid())
 			{
-				Physics2D_Objects.Remove(Object_Selected.Value);
+				Physics2D_Manager.Objects.Remove(Object_Selected.Value);
 				Object_Selected = Undex::Invalid();
 			}
 		}

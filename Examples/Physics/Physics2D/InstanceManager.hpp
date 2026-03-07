@@ -1,7 +1,7 @@
 #ifndef  PHYSICS_2D_INSTANCES_MANAGER_HPP
 # define PHYSICS_2D_INSTANCES_MANAGER_HPP
 
-# include "Physics2D/Manager.hpp"
+//# include "Physics2D/Manager.hpp"
 
 # include "Miscellaneous/EntryContainer/Binary.hpp"
 
@@ -21,6 +21,8 @@
 
 namespace Physics2D
 {
+struct Manager;
+
 struct InstanceManager
 {
 	::Physics2D::Manager *	Manager;

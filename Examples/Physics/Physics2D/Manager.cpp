@@ -18,20 +18,23 @@ Physics2D::Manager::~Manager()
 Physics2D::Manager::Manager()
 	: Shader_PolyGon()
 	, Shader_WireFrame()
+	, MainInstances()
+
 	, Shader_Arrow()
-	, Instances_Arrow(new EntryContainer::Binary<Arrow2D::Inst::Data>())
 	, Buffer_Arrow(GL::DrawMode::Triangles)
 	, Texture_Arrow()
+	, Instances_Arrow()
+
+	, Objects()
 { }
+
 //Physics2D::Manager::Manager(const Manager & other);
 //Physics2D::Manager & Physics2D::Manager::operator=(const Manager & other);
 
 
 
 void Physics2D::Manager::Dispose()
-{
-	delete Instances_Arrow;
-}
+{ }
 
 
 
@@ -139,6 +142,33 @@ void Physics2D::Manager::Arrow_Main_Default()
 }
 void Physics2D::Manager::Arrow_Inst_Update()
 {
-	Instances_Arrow -> CompactHere();
-	Buffer_Arrow.Inst.Change(*Instances_Arrow);
+	Instances_Arrow.CompactHere();
+	Buffer_Arrow.Inst.Change(Instances_Arrow);
+}
+
+
+
+void Physics2D::Manager::Update(float timeDelta)
+{
+	(void)timeDelta;
+}
+void Physics2D::Manager::Draw()
+{
+
+}
+
+
+
+
+
+Undex Physics2D::Manager::FindObjectIndex(Point2D p) const
+{
+	for (Undex u; u.Value < Objects.Count(); u++)
+	{
+		if (Objects[u.Value].IsContaining(p))
+		{
+			return u;
+		}
+	}
+	return Undex::Invalid();
 }

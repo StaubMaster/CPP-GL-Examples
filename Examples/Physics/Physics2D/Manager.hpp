@@ -2,8 +2,13 @@
 # define PHYSICS_2D_MANAGER_HPP
 
 # include "Miscellaneous/EntryContainer/Binary.hpp"
+# include "Miscellaneous/Container/Binary.hpp"
+# include "Miscellaneous/Container/Array.hpp"
 
 # include "Graphics/Texture/Array2D.hpp"
+
+# include "Physics2D/InstanceManager.hpp"
+# include "Physics2D/Object.hpp"
 
 # include "Physics2D/Shaders/PolyGon.hpp"
 # include "WireFrame2D/Shader.hpp"
@@ -11,6 +16,8 @@
 # include "Arrow2D/Shader.hpp"
 # include "Arrow2D/Buffer.hpp"
 # include "Arrow2D/Inst/Data.hpp"
+
+#include "ValueType/Undex.hpp"
 
 
 
@@ -20,17 +27,20 @@ namespace Physics2D
 {
 struct Manager
 {
-	Physics2D::Shaders::PolyGon	Shader_PolyGon;
-	Wire2D::Shader				Shader_WireFrame;
-	::Arrow2D::Shader			Shader_Arrow;
+	Physics2D::Shaders::PolyGon		Shader_PolyGon;
+	Wire2D::Shader					Shader_WireFrame;
+	Container::Array<Physics2D::InstanceManager>	MainInstances;
+	
+	::Arrow2D::Shader								Shader_Arrow;
+	::Arrow2D::Buffer								Buffer_Arrow;
+	::Texture::Array2D								Texture_Arrow;
+	EntryContainer::Binary<Arrow2D::Inst::Data>		Instances_Arrow;
 
-	EntryContainer::Binary<Arrow2D::Inst::Data> *	Instances_Arrow;
-
-	::Arrow2D::Buffer	Buffer_Arrow;
-	::Texture::Array2D	Texture_Arrow;
+	Container::Binary<Physics2D::Object>			Objects;
 
 	~Manager();
 	Manager();
+
 	Manager(const Manager & other) = delete;
 	Manager & operator=(const Manager & other) = delete;
 
@@ -44,6 +54,13 @@ struct Manager
 
 	void Arrow_Main_Default();
 	void Arrow_Inst_Update();
+
+	void Update(float timeDelta);
+	void Draw();
+
+
+
+	Undex FindObjectIndex(Point2D p) const;
 };
 };
 

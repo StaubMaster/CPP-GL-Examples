@@ -1,14 +1,21 @@
 #ifndef  PHYSICS_2D_OBJECT_HPP
 # define PHYSICS_2D_OBJECT_HPP
 
-# include "Physics2D/InstanceManager.hpp"
+//# include "Physics2D/InstanceManager.hpp"
+
+# include "Inst/Physics2D/Data.hpp"
+# include "Arrow2D/Inst/Data.hpp"
 
 # include "Miscellaneous/EntryContainer/Entry.hpp"
 
 # include "ValueType/Trans2D.hpp"
 
+class PolyGon;
+
 namespace Physics2D
 {
+struct InstanceManager;
+
 struct Object
 {
 	Physics2D::InstanceManager *	InstanceManager;
