@@ -203,6 +203,19 @@ void Physics2D::Manager::UpdateGravity(float timeDelta)
 		}
 	}
 }
+void Physics2D::Manager::UpdateAirResistance(float timeDelta)
+{
+	float resistance = 0.05f;
+	float factor = 1.0f - (resistance * timeDelta);
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (!Objects[i].IsStatic)
+		{
+			Objects[i].Data.Vel.Pos *= factor;
+		}
+	}
+}
+
 void Physics2D::Manager::UpdateCollision(float timeDelta)
 {
 	for (unsigned int i0 = 0; i0 < Objects.Count(); i0++)
@@ -229,7 +242,9 @@ void Physics2D::Manager::UpdateOrientation(float timeDelta)
 }
 void Physics2D::Manager::Update(float timeDelta)
 {
-	//UpdateGravity(timeDelta);
+	UpdateAirResistance(timeDelta);
+	UpdateGravity(timeDelta);
+
 	UpdateCollision(timeDelta);
 	UpdateOrientation(timeDelta);
 }

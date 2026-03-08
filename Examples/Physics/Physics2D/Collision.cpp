@@ -433,3 +433,79 @@ void Physics2D::Collide(
 
 	std::cout << '\n';
 }
+
+
+
+
+/*
+	treat pos like contact pos
+	treat dir like normal
+*/
+Physics2D::ObjectForceData Physics2D::ApplyImpulse(Object & obj, Point2D pos, Point2D dir, float force, bool change)
+{
+	(void)obj;
+	(void)force;
+	(void)change;
+
+	ObjectForceData data;
+	data.Center = obj.AbsolutePositionOf(Point2D());
+
+	Point2D Contact = pos;
+	data.Contact = Contact;
+
+	data.Direction = dir;
+
+	Point2D normal = dir.normalize();
+	data.Normal = normal;
+	
+	Point2D RelativeContact = Contact - obj.Data.Now.Pos;
+
+	float MassInverse = 0;
+	if (!obj.IsStatic) { MassInverse = 1 / obj.Mass; }
+
+	Point3D normal_3D(normal.X, normal.Y, 0);
+	Point3D RelativeContact_3D(RelativeContact.X, RelativeContact.Y, 0);
+
+	Point3D ContactNormal_3D = Point3D::cross(RelativeContact_3D, normal_3D);
+	Point3D ContactPerpendicular_3D = Point3D::cross(ContactNormal_3D, RelativeContact_3D);
+
+	Point2D ContactPerpendicular(ContactPerpendicular_3D.X, ContactPerpendicular_3D.Y);
+	data.Perp = ContactPerpendicular;
+
+	float InertiaFactor = Point2D::dot(ContactPerpendicular, normal);
+
+//	std::cout << '\n';
+//	std::cout << "normal_3D: " << normal_3D << ' ' << normal_3D.length() << '\n';
+//	std::cout << "RelativeContact_3D: " << RelativeContact_3D << ' ' << RelativeContact_3D.length() << '\n';
+//	std::cout << "ContactPerpendicular_3D: " << ContactPerpendicular_3D << ' ' << ContactPerpendicular_3D.length() << '\n';
+//	std::cout << '\n';
+
+
+
+//	float e = 1.0f;
+//	Point2D vel_rel = obj.Data.Vel.Pos;
+//	float NormalVelFactor = Point2D::dot(vel_rel, normal);
+
+//	std::cout << "normal           : " << normal << '\n';
+//	std::cout << "vel_rel          : " << vel_rel << '\n';
+//	std::cout << "NormalVelFactor  : " << NormalVelFactor << '\n';
+//	std::cout << "MassInverseSum   : " << MassInverse << '\n';
+//	std::cout << "InertiaFactorSum : " << InertiaFactor << '\n';
+
+//	float ImpulseFactor = (force * NormalVelFactor) / (MassInverse + InertiaFactor);
+	(void)MassInverse;
+	(void)InertiaFactor;
+	float ImpulseFactor = force * dir.length();
+//	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
+
+	data.Impulse = normal * (ImpulseFactor / obj.Mass);
+
+	if (change)
+	{
+		if (!obj.IsStatic) { obj.Data.Vel.Pos += normal * (ImpulseFactor / obj.Mass); }
+		//if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians((ContactNormal_3D * ImpulseFactor).length()); }
+		if (obj.IsStatic) { obj.Data.Vel = Trans2D(); }
+	}
+
+	return data;
+}

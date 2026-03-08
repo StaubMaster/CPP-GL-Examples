@@ -55,6 +55,8 @@
 #include "Graphics/Multiform/Trans2D.hpp"
 #include "Graphics/Multiform/Float.hpp"
 
+#include "FileFormat/BitMap/BitMap.hpp"
+
 #include <math.h>
 
 
@@ -116,10 +118,13 @@ Undex	Object_Hovering;
 struct SDrag
 {
 bool Is = false;
+bool FollowMouse = true;
+
 Undex Object;
 Point2D Pos0;
 Point2D Pos1;
 EntryContainer::Entry<Arrow2D::Inst::Data> Arrow;
+EntryContainer::Entry<Arrow2D::Inst::Data> Arrow_Impulse;
 /* Drag
 	currently changes Linear Velocity when Drag is done
 	just apply Force/Impulse while Drag is active
@@ -133,6 +138,7 @@ void Begin(Point2D pos0, Physics2D::Manager & manager)
 		{
 			Pos0 = manager.Objects[Object.Value].RelativePositionOf(pos0);
 			Arrow.Allocate(manager.Instances_Arrow, 1);
+			Arrow_Impulse.Allocate(manager.Instances_Arrow, 10);
 			(*Arrow).Col = ColorF4(1, 1, 1);
 			(*Arrow).Size = 20.0f;
 			Is = true;
@@ -158,17 +164,70 @@ void End()
 		}*/
 		Is = false;
 		Arrow.Dispose();
+		Arrow_Impulse.Dispose();
 	}
 }
-void Update(const View2D & view, const Window & window, Physics2D::Manager & manager)
+void Change(Point2D pos1, Physics2D::Manager & manager)
 {
 	if (!Is) { return; }
-	Pos1 = view * window.Size.Convert(window.MouseManager.CursorPosition());
+	Pos1 = pos1;
+	(*Arrow).Size = 0.0f;
 	(*Arrow).Pos0 = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
 	(*Arrow).Pos1 = Pos1;
+}
+void Update(Physics2D::Manager & manager, bool is_paused)
+{
+	if (!Is) { return; }
 
-	Point2D rel = Pos1 - manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
-	manager.Objects[Object.Value].Data.Vel.Pos += rel * 0.1f;
+	//Point2D rel = Pos1 - manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
+	//manager.Objects[Object.Value].Data.Vel.Pos += rel * 0.1f;
+
+	// 1. lock dragging. so that mouse can me moved normally
+	// 2. struct that holds internal Data
+	// 3. use that data to show arrows ?
+
+	Point2D absolute = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
+	Physics2D::ObjectForceData data = Physics2D::ApplyImpulse(manager.Objects[Object.Value], absolute, (Pos1 - absolute), 0.1f, !is_paused);
+
+	Arrow_Impulse[0].Col = ColorF4(0.5f, 0.5f, 0.5f);
+	Arrow_Impulse[0].Pos0 = data.Center;
+	Arrow_Impulse[0].Pos1 = data.Contact;
+	Arrow_Impulse[0].Size = 16.0f;
+
+	if (data.Normal.length2() > data.Direction.length2())
+	{
+		Arrow_Impulse[1].Col = ColorF4(0.5f, 1.0f, 0.5f);
+		Arrow_Impulse[1].Pos0 = data.Contact;
+		Arrow_Impulse[1].Pos1 = data.Contact + data.Normal;
+		Arrow_Impulse[1].Size = 12.0f;
+
+		Arrow_Impulse[2].Col = ColorF4(0.0f, 0.5f, 0.0f);
+		Arrow_Impulse[2].Pos0 = data.Contact;
+		Arrow_Impulse[2].Pos1 = data.Contact + data.Direction;
+		Arrow_Impulse[2].Size = 20.0f;
+	}
+	else
+	{
+		Arrow_Impulse[1].Col = ColorF4(0.0f, 0.5f, 0.0f);
+		Arrow_Impulse[1].Pos0 = data.Contact;
+		Arrow_Impulse[1].Pos1 = data.Contact + data.Direction;
+		Arrow_Impulse[1].Size = 12.0f;
+
+		Arrow_Impulse[2].Col = ColorF4(0.5f, 1.0f, 0.5f);
+		Arrow_Impulse[2].Pos0 = data.Contact;
+		Arrow_Impulse[2].Pos1 = data.Contact + data.Normal;
+		Arrow_Impulse[2].Size = 20.0f;
+	}
+
+	Arrow_Impulse[3].Col = ColorF4(1, 0, 0);
+	Arrow_Impulse[3].Pos0 = data.Contact;
+	Arrow_Impulse[3].Pos1 = data.Contact + data.Perp;
+	Arrow_Impulse[3].Size = 16.0f;
+
+	Arrow_Impulse[4].Col = ColorF4(0, 0, 1);
+	Arrow_Impulse[4].Pos0 = data.Contact;
+	Arrow_Impulse[4].Pos1 = data.Contact + data.Impulse;
+	Arrow_Impulse[4].Size = 16.0f;
 }
 };
 SDrag Drag;
@@ -382,12 +441,29 @@ void Frame(double timeDelta)
 		Physics2D_Manager.UpdateGraphics();
 	}
 
+	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::K.Flags].IsPress())
+	{
+		if (Drag.FollowMouse)
+		{
+			Drag.FollowMouse = false;
+		}
+		else
+		{
+			Drag.FollowMouse = true;
+			Drag.End();
+		}
+	}
+
 	{
 		Point2D cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
 		Object_Hovering = Physics2D_Manager.FindObjectIndex(cursor);
-	}
 
-	Drag.Update(view, window, Physics2D_Manager);
+		if (Drag.FollowMouse)
+		{
+			Drag.Change(cursor, Physics2D_Manager);
+		}
+	}
+	Drag.Update(Physics2D_Manager, Paused);
 
 
 
@@ -448,13 +524,19 @@ void MouseClick(UserParameter::Mouse::Click params)
 	}
 	if (params.Action.IsRelease())
 	{
-		Drag.End();
+		if (Drag.FollowMouse)
+		{
+			Drag.End();
+		}
 	}
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
-	Drag.Begin(view * window.Size.Convert(params.Origin), Physics2D_Manager);
-	Drag.Move(view * window.Size.Convert(params.Position));
+	if (Drag.FollowMouse)
+	{
+		Drag.Begin(view * window.Size.Convert(params.Origin), Physics2D_Manager);
+		Drag.Move(view * window.Size.Convert(params.Position));
+	}
 }
 
 void KeyBoardKey(UserParameter::KeyBoard::Key params)

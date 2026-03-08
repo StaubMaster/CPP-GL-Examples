@@ -4,6 +4,8 @@
 # include "Physics2D/Object.hpp"
 
 # include "ValueType/AxisBox1D.hpp"
+# include "ValueType/Point2D.hpp"
+# include "ValueType/Point3D.hpp"
 
 namespace Physics2D
 {
@@ -68,6 +70,25 @@ namespace Physics2D
 		Object & obj0,
 		Object & obj1
 	);
+
+/* Arrows
+	Center of Mass
+	Contact
+	Direction
+*/
+	struct ObjectForceData
+	{
+		Point2D Center;
+
+		Point2D Contact;
+		Point2D Direction;
+		Point2D Normal;
+
+		Point2D Perp;
+
+		Point2D Impulse;
+	};
+	ObjectForceData ApplyImpulse(Object & obj, Point2D pos, Point2D dir, float force, bool change);
 };
 
 #endif
