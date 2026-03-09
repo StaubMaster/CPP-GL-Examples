@@ -193,8 +193,8 @@ void Physics2D::Manager::UpdateGraphics()
 
 void Physics2D::Manager::UpdateGravity(float timeDelta)
 {
-	//Point2D	Gravity = (view.Trans.Rot / (Point2D(0, -1) * 3.0f)) * timeDelta;
-	Point2D	Gravity = (Point2D(0, -1) * 3.0f) * timeDelta;
+	//Point2D Gravity = (view.Trans.Rot / (Point2D(0, -1) * 3.0f)) * timeDelta;
+	Point2D Gravity = (Point2D(0, -1) * 3.0f) * timeDelta;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (!Objects[i].IsStatic)

@@ -88,7 +88,7 @@ namespace Physics2D
 
 		Point2D Impulse;
 	};
-	ObjectForceData ApplyImpulse(Object & obj, Point2D pos, Point2D dir, float force, bool change);
+	ObjectForceData ApplyImpulse(float timeDelta, Object & obj, Point2D pos, Point2D dir, float force, bool change);
 };
 
 #endif

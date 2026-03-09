@@ -175,7 +175,7 @@ void Change(Point2D pos1, Physics2D::Manager & manager)
 	(*Arrow).Pos0 = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
 	(*Arrow).Pos1 = Pos1;
 }
-void Update(Physics2D::Manager & manager, bool is_paused)
+void Update(float timeDelta, Physics2D::Manager & manager, bool is_paused)
 {
 	if (!Is) { return; }
 
@@ -187,46 +187,64 @@ void Update(Physics2D::Manager & manager, bool is_paused)
 	// 3. use that data to show arrows ?
 
 	Point2D absolute = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
-	Physics2D::ObjectForceData data = Physics2D::ApplyImpulse(manager.Objects[Object.Value], absolute, (Pos1 - absolute), 0.1f, !is_paused);
+	Physics2D::ObjectForceData data = Physics2D::ApplyImpulse(timeDelta, manager.Objects[Object.Value], absolute, (Pos1 - absolute), 10.0f, !is_paused);
 
 	Arrow_Impulse[0].Col = ColorF4(0.5f, 0.5f, 0.5f);
 	Arrow_Impulse[0].Pos0 = data.Center;
 	Arrow_Impulse[0].Pos1 = data.Contact;
 	Arrow_Impulse[0].Size = 16.0f;
 
-	if (data.Normal.length2() > data.Direction.length2())
+	// Direction, Normal, Impulse all go in the same direction
+	// the longest should be thick and in the back
+	// the shortest should be thin and in the front
 	{
-		Arrow_Impulse[1].Col = ColorF4(0.5f, 1.0f, 0.5f);
-		Arrow_Impulse[1].Pos0 = data.Contact;
-		Arrow_Impulse[1].Pos1 = data.Contact + data.Normal;
-		Arrow_Impulse[1].Size = 12.0f;
+		float values[3]
+		{
+			data.Normal.length2(),
+			data.Direction.length2(),
+			data.Impulse.length2(),
+		};
+		unsigned int ranks[3];
+		for (unsigned int j = 0; j < 3; j++)
+		{
+			ranks[j] = 0;
+			for (unsigned int i = 0; i < 3; i++)
+			{
+				if (i != j)
+				{
+					if (values[j] < values[i])
+					{
+						ranks[j]++;
+					}
+				}
+			}
+		}
+		float sizes[3]
+		{
+			20.0f,
+			16.0f,
+			12.0f,
+		};
 
-		Arrow_Impulse[2].Col = ColorF4(0.0f, 0.5f, 0.0f);
-		Arrow_Impulse[2].Pos0 = data.Contact;
-		Arrow_Impulse[2].Pos1 = data.Contact + data.Direction;
-		Arrow_Impulse[2].Size = 20.0f;
+		Arrow_Impulse[ranks[0] + 1].Col = ColorF4(0.5f, 1.0f, 0.5f);
+		Arrow_Impulse[ranks[0] + 1].Pos0 = data.Contact;
+		Arrow_Impulse[ranks[0] + 1].Pos1 = data.Contact + data.Normal;
+		Arrow_Impulse[ranks[0] + 1].Size = sizes[ranks[0]];
+
+		Arrow_Impulse[ranks[1] + 1].Col = ColorF4(0.0f, 0.5f, 0.0f);
+		Arrow_Impulse[ranks[1] + 1].Pos0 = data.Contact;
+		Arrow_Impulse[ranks[1] + 1].Pos1 = data.Contact + data.Direction;
+		Arrow_Impulse[ranks[1] + 1].Size = sizes[ranks[1]];
+
+		Arrow_Impulse[ranks[2] + 1].Col = ColorF4(0, 0, 1);
+		Arrow_Impulse[ranks[2] + 1].Pos0 = data.Contact;
+		Arrow_Impulse[ranks[2] + 1].Pos1 = data.Contact + data.Impulse;
+		Arrow_Impulse[ranks[2] + 1].Size = sizes[ranks[2]];
 	}
-	else
-	{
-		Arrow_Impulse[1].Col = ColorF4(0.0f, 0.5f, 0.0f);
-		Arrow_Impulse[1].Pos0 = data.Contact;
-		Arrow_Impulse[1].Pos1 = data.Contact + data.Direction;
-		Arrow_Impulse[1].Size = 12.0f;
 
-		Arrow_Impulse[2].Col = ColorF4(0.5f, 1.0f, 0.5f);
-		Arrow_Impulse[2].Pos0 = data.Contact;
-		Arrow_Impulse[2].Pos1 = data.Contact + data.Normal;
-		Arrow_Impulse[2].Size = 20.0f;
-	}
-
-	Arrow_Impulse[3].Col = ColorF4(1, 0, 0);
-	Arrow_Impulse[3].Pos0 = data.Contact;
-	Arrow_Impulse[3].Pos1 = data.Contact + data.Perp;
-	Arrow_Impulse[3].Size = 16.0f;
-
-	Arrow_Impulse[4].Col = ColorF4(0, 0, 1);
+	Arrow_Impulse[4].Col = ColorF4(1, 0, 0);
 	Arrow_Impulse[4].Pos0 = data.Contact;
-	Arrow_Impulse[4].Pos1 = data.Contact + data.Impulse;
+	Arrow_Impulse[4].Pos1 = data.Contact + data.Perp;
 	Arrow_Impulse[4].Size = 16.0f;
 }
 };
@@ -234,6 +252,10 @@ SDrag Drag;
 
 
 
+/* PolyGon
+	Lines that define the Edge of the PolyGon
+	Triangles that are used for Drawing
+*/
 void Make()
 {
 	Physics2D_Manager.MainInstances.Allocate(3, 3);
@@ -289,10 +311,12 @@ void Make()
 	Physics2D_Manager.MainInstances[obj1].Buffer_PolyGon.Create();
 	{
 		PolyGon & poly_gon = *(Physics2D_Manager.MainInstances[obj1].PolyGon);
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.025f, -0.400f), ColorF4(1, 0, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.025f, -0.400f), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.000f, +0.400f), ColorF4(0, 0, 1)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, +0.1f), ColorF4(1, 0, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, -0.1f), ColorF4(0, 0, 1)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, +0.1f), ColorF4(0, 1, 0)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
+		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
 
 //	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj1], Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
@@ -416,30 +440,25 @@ void Draw()
 	Physics2D_Manager.Draw();
 }
 
+void Update(double timeDelta)
+{
+	Physics2D_Manager.Update(timeDelta);
+}
+
 void Frame(double timeDelta)
 {
 	UpdateView(timeDelta);
 
 	{
-		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsPress()) { Paused = !Paused; }
-		if (Paused)
-		{
-			if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsDown())
-			{
-				Physics2D_Manager.Update(1 / 60.0f);
-			}
-			else if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::I.Flags].IsPress())
-			{
-				Physics2D_Manager.Update(1 / 60.0f);
-			}
-		}
-		else
-		{
-			Physics2D_Manager.Update(timeDelta);
-		}
+		Point2D cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
+		Object_Hovering = Physics2D_Manager.FindObjectIndex(cursor);
 
-		Physics2D_Manager.UpdateGraphics();
+		if (Drag.FollowMouse)
+		{
+			Drag.Change(cursor, Physics2D_Manager);
+		}
 	}
+	Drag.Update(timeDelta, Physics2D_Manager, Paused);
 
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::K.Flags].IsPress())
 	{
@@ -454,16 +473,28 @@ void Frame(double timeDelta)
 		}
 	}
 
-	{
-		Point2D cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
-		Object_Hovering = Physics2D_Manager.FindObjectIndex(cursor);
 
-		if (Drag.FollowMouse)
+
+	{
+		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsPress()) { Paused = !Paused; }
+		if (Paused)
 		{
-			Drag.Change(cursor, Physics2D_Manager);
+			if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsDown())
+			{
+				Update(1 / 60.0f);
+			}
+			else if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::I.Flags].IsPress())
+			{
+				Update(1 / 60.0f);
+			}
 		}
+		else
+		{
+			Update(timeDelta);
+		}
+
+		Physics2D_Manager.UpdateGraphics();
 	}
-	Drag.Update(Physics2D_Manager, Paused);
 
 
 
@@ -510,6 +541,7 @@ void MouseClick(UserParameter::Mouse::Click params)
 				Physics2D_Manager.Objects[Object_Selected.Value].Hide_WireFrame();
 				Physics2D_Manager.Objects[Object_Selected.Value].Hide_WireFrameBox();
 				Physics2D_Manager.Objects[Object_Selected.Value].Hide_Arrows();
+				std::cout << "UnSelect: " << Object_Selected << '\n';
 			}
 
 			Object_Selected = Object_Hovering;
@@ -519,6 +551,7 @@ void MouseClick(UserParameter::Mouse::Click params)
 				Physics2D_Manager.Objects[Object_Selected.Value].Show_WireFrame();
 				Physics2D_Manager.Objects[Object_Selected.Value].Show_WireFrameBox();
 				Physics2D_Manager.Objects[Object_Selected.Value].Show_Arrows();
+				std::cout << "UnSelect: " << Object_Selected << '\n';
 			}
 		}
 	}
@@ -547,7 +580,7 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 		{
 			Physics2D_Manager.Objects.Insert(
 				Physics2D::Object(
-					Physics2D_Manager.MainInstances[1],
+					Physics2D_Manager.MainInstances[2],
 					Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()),
 					//Trans2D(Point2D(), Angle2D(Angle::Degrees(45))),
 					false
@@ -556,10 +589,19 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 		}
 		if (params.Code == UserParameter::KeyBoard::Keys::Delete)
 		{
-			if (Object_Selected.IsValid())
+			try
 			{
-				Physics2D_Manager.Objects.Remove(Object_Selected.Value);
-				Object_Selected = Undex::Invalid();
+				if (Object_Selected.IsValid())
+				{
+					std::cout << "Delete: " << Object_Selected << '\n';
+					Physics2D_Manager.Objects.Remove(Object_Selected.Value);
+					Object_Selected = Undex::Invalid();
+					Drag.End();
+				}
+			}
+			catch (std::exception & e)
+			{
+				std::cerr << "Failed to Delete Object " << Object_Selected << ": " << e.what() << '\n';
 			}
 		}
 	}
