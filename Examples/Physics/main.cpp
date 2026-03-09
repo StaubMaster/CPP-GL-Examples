@@ -354,7 +354,7 @@ void UpdateView(float timeDelta)
 	{
 		Trans2D trans;
 		Point3D move3D = window.MoveFromKeys();
-		trans.Pos = Point2D(move3D.X, move3D.Z) * 2.0f;
+		trans.Pos = Point2D(move3D.X, move3D.Z) * 2.0f * view.Scale;
 
 		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Q.Flags].IsDown()) { trans.Rot.Ang += Angle::Degrees(45); }
 		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::E.Flags].IsDown()) { trans.Rot.Ang -= Angle::Degrees(45); }
@@ -545,7 +545,14 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 	{
 		if (params.Code == UserParameter::KeyBoard::Keys::Insert)
 		{
-			Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[1], Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()), false));
+			Physics2D_Manager.Objects.Insert(
+				Physics2D::Object(
+					Physics2D_Manager.MainInstances[1],
+					Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()),
+					//Trans2D(Point2D(), Angle2D(Angle::Degrees(45))),
+					false
+				)
+			);
 		}
 		if (params.Code == UserParameter::KeyBoard::Keys::Delete)
 		{

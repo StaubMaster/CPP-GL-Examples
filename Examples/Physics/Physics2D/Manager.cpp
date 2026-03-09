@@ -212,6 +212,7 @@ void Physics2D::Manager::UpdateAirResistance(float timeDelta)
 		if (!Objects[i].IsStatic)
 		{
 			Objects[i].Data.Vel.Pos *= factor;
+			Objects[i].Data.Vel.Rot *= factor;
 		}
 	}
 }

@@ -22,15 +22,15 @@ void Physics2D::Object::UpdateEntrys()
 		Point2D now = Data.Now.Pos;
 		Point2D vel = Data.Vel.Pos;
 		Data_Arrows[0] = Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(0.5f, 0.5f, 1.0f));
-		/*for (unsigned int j = 0; j < Physics2D_Objects[i].CornerCount(); j++)
+		for (unsigned int j = 0; j < CornerCount(); j++)
 		{
-			Point2D p = Physics2D_Objects[i].CornerFromIndex(j);
-			Point2D now = Physics2D_Objects[i].AbsolutePositionOf(p);
-			Point2D vel = Physics2D_Objects[i].AbsoluteVelocityOf(p);
-			data.Insert(Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(0.5f, 1.0f, 0.5f)));
-			vel -= Physics2D_Objects[i].Data.Vel.Pos;
-			data.Insert(Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(1.0f, 0.5f, 0.5f)));
-		}*/
+			Point2D p = CornerFromIndex(j);
+			Point2D now = AbsolutePositionOf(p);
+			Point2D vel = AbsoluteVelocityOf(p);
+			Data_Arrows[1 + (j * 2 + 0)] = Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(0.5f, 1.0f, 0.5f));
+			vel -= Data.Vel.Pos;
+			Data_Arrows[1 + (j * 2 + 1)] = Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(1.0f, 0.5f, 0.5f));
+		}
 	}
 }
 
@@ -61,7 +61,7 @@ void Physics2D::Object::Show_Arrows()
 {
 	if (!Data_Arrows.Is())
 	{
-		Data_Arrows.Allocate((*(*InstanceManager).Manager).Instances_Arrow, 1);
+		Data_Arrows.Allocate((*(*InstanceManager).Manager).Instances_Arrow, 1 + CornerCount() * 2);
 	}
 }
 
@@ -104,14 +104,9 @@ Point2D Physics2D::Object::AbsolutePositionOf(Point2D p) const { return Data.Now
 Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
 {
 	Point2D perp = p.perpendicular0().normalize();
-	perp = Data.Now.Rot / (perp);
-	// use Angle stuff instead ?
-
-	Point2D v;
-	v = perp * (Data.Vel.Rot.Ang.ToRadians() * p.length());
-	v += Data.Vel.Pos;
-
-	return v;
+	perp = Data.Now.Rot * perp;
+	perp = perp * (Data.Vel.Rot.Ang.ToRadians() * p.length());
+	return Data.Vel.Pos - perp;
 }
 
 

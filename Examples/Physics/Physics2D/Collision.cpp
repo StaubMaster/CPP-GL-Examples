@@ -472,6 +472,12 @@ Physics2D::ObjectForceData Physics2D::ApplyImpulse(Object & obj, Point2D pos, Po
 	Point2D ContactPerpendicular(ContactPerpendicular_3D.X, ContactPerpendicular_3D.Y);
 	data.Perp = ContactPerpendicular;
 
+	std::cout << "Norm: " << normal_3D << ' ' << normal_3D.length() << '\n';
+	std::cout << "Rel : " << RelativeContact_3D << ' ' << RelativeContact_3D.length() << '\n';
+	std::cout << "Norm: " << ContactNormal_3D << ' ' << ContactNormal_3D.length() << '\n';
+	std::cout << "Perp: " << ContactPerpendicular_3D << ' ' << ContactPerpendicular_3D.length() << '\n';
+	std::cout << '\n';
+
 	float InertiaFactor = Point2D::dot(ContactPerpendicular, normal);
 
 //	std::cout << '\n';
@@ -496,14 +502,14 @@ Physics2D::ObjectForceData Physics2D::ApplyImpulse(Object & obj, Point2D pos, Po
 	(void)MassInverse;
 	(void)InertiaFactor;
 	float ImpulseFactor = force * dir.length();
-//	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
+	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
 
 	data.Impulse = normal * (ImpulseFactor / obj.Mass);
 
 	if (change)
 	{
 		if (!obj.IsStatic) { obj.Data.Vel.Pos += normal * (ImpulseFactor / obj.Mass); }
-		//if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians((ContactNormal_3D * ImpulseFactor).length()); }
+		if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians(ContactNormal_3D.Z * ImpulseFactor * 10.0f); }
 		if (obj.IsStatic) { obj.Data.Vel = Trans2D(); }
 	}
 
