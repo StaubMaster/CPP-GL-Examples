@@ -19,6 +19,7 @@
 
 #include "ValueType/Undex.hpp"
 #include "ValueType/View2D.hpp"
+#include "ValueType/Point2D.hpp"
 
 
 
@@ -38,6 +39,9 @@ struct Manager
 	EntryContainer::Binary<Arrow2D::Inst::Data>		Instances_Arrow;
 
 	Container::Binary<Physics2D::Object>			Objects;
+	
+	Point2D		Gravity;
+	float		AirResistance;
 
 	~Manager();
 	Manager();

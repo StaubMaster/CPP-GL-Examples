@@ -77,28 +77,39 @@ namespace Physics2D
 		Ray2D Drag;
 		Line2D Contact;
 
-		Ray2D ForceLin;
-		Ray2D ForceAng;
+		Ray2D ForcePos;
+		Ray2D ForceRot;
 
 		Ray2D Torque;
 
-		Ray2D MomentumAngular;
+		Ray2D ChangeRot;
 	};
 	ObjectTorqueData ApplyTorque(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change);
 
 	struct ObjectForceData
 	{
-		Point2D Center;
+		Ray2D Drag;
+		Line2D Contact;
 
-		Point2D Contact;
-		Point2D Direction;
-		Point2D Normal;
+		Ray2D ForcePos;
+		Ray2D ForceRot;
 
-		Point2D Perp;
+		Ray2D Torque;
 
-		Point2D Impulse;
+		Ray2D ChangePos;
+		Ray2D ChangeRot;
+
+//		Point2D Center;
+//
+//		Point2D Contact;
+//		Point2D Direction;
+//		Point2D Normal;
+//
+//		Point2D Perp;
+//
+//		Point2D Impulse;
 	};
-	ObjectForceData ApplyImpulse(float timeDelta, Object & obj, Point2D pos, Point2D dir, float force, bool change);
+	ObjectForceData ApplyForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change);
 };
 
 #endif

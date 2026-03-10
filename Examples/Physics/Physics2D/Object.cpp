@@ -21,16 +21,17 @@ void Physics2D::Object::UpdateEntrys()
 	{
 		Point2D now = Data.Now.Pos;
 		Point2D vel = Data.Vel.Pos;
-		Data_Arrows[0] = Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(0.5f, 0.5f, 1.0f));
+		Data_Arrows[0] = Arrow2D::Inst::Data(now, now + vel, 12, ColorF4(0.5f, 0.5f, 1.0f));
 		for (unsigned int j = 0; j < CornerCount(); j++)
 		{
 			Point2D p = CornerFromIndex(j);
 			Point2D now = AbsolutePositionOf(p);
 			Point2D vel = AbsoluteVelocityOf(p);
-			Data_Arrows[1 + (j * 2 + 0)] = Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(0.5f, 1.0f, 0.5f));
+			Data_Arrows[1 + (j * 2 + 0)] = Arrow2D::Inst::Data(now, now + vel, 12, ColorF4(0.5f, 1.0f, 0.5f));
 			vel -= Data.Vel.Pos;
-			Data_Arrows[1 + (j * 2 + 1)] = Arrow2D::Inst::Data(now, now + vel, 10, ColorF4(1.0f, 0.5f, 0.5f));
+			Data_Arrows[1 + (j * 2 + 1)] = Arrow2D::Inst::Data(now, now + vel, 12, ColorF4(1.0f, 0.5f, 0.5f));
 		}
+		Data_Arrows[1 + CornerCount() * 2] = Arrow2D::Inst::Data(now, now + InstanceManager -> Manager -> Gravity, 24, ColorF4(0.0f, 0.5f, 0.0f));
 	}
 }
 
@@ -61,7 +62,7 @@ void Physics2D::Object::Show_Arrows()
 {
 	if (!Data_Arrows.Is())
 	{
-		Data_Arrows.Allocate((*(*InstanceManager).Manager).Instances_Arrow, 1 + CornerCount() * 2);
+		Data_Arrows.Allocate((*(*InstanceManager).Manager).Instances_Arrow, 1 + CornerCount() * 2 + 1);
 	}
 }
 

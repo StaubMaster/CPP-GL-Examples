@@ -464,26 +464,21 @@ so Torque depends on how much of the Force is Perpendicular to the Distance from
 
 Physics2D::ObjectTorqueData Physics2D::ApplyTorque(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change)
 {
-	(void)timeDelta;
-	(void)obj;
-	(void)scalar;
-	(void)change;
-
 	ObjectTorqueData data;
 	data.Drag = drag;
 
 	Point2D center = obj.AbsolutePositionOf(Point2D());
 	data.Contact = Line2D(center, drag.Pos);
 
-	Point2D relative_Contact = drag.Pos - center;
-	float relative_Contact_Distance2 = relative_Contact.length2();
+	Point2D RelativeContact = drag.Pos - center;
+	float RelativeContactDistance2 = RelativeContact.length2();
 
-	float dot = Point2D::dot(drag.Dir, relative_Contact);
+	float dot = Point2D::dot(drag.Dir, RelativeContact);
 
-	Point2D forceLin = (relative_Contact * ((dot / relative_Contact_Distance2)));
-	Point2D forceAng = drag.Dir - forceLin;
-	data.ForceLin = Ray2D(drag.Pos, forceLin);
-	data.ForceAng = Ray2D(drag.Pos, forceAng);
+	Point2D ForcePos = (RelativeContact * ((dot / RelativeContactDistance2)));
+	Point2D ForceRot = drag.Dir - ForcePos;
+	data.ForcePos = Ray2D(drag.Pos, ForcePos);
+	data.ForceRot = Ray2D(drag.Pos, ForceRot);
 
 /*
 τ = r x F
@@ -504,56 +499,82 @@ I = r * r * m
 L = I * ω
 */
 
-	float Torque = Point2D::cross(relative_Contact, forceAng);
+	float Torque = Point2D::cross(RelativeContact, ForceRot);
 	data.Torque = Ray2D(center, Point2D(0, Torque));
 
 //	Point2D Momentum_linear = obj.AbsoluteVelocityOf(drag.Pos);
 //	float Momentum_angular = Point2D::cross(relative_Contact, Momentum_linear);
 //	data.MomentumAngular = Ray2D(center, Point2D(0, Momentum_angular));
 
-	float angular_change = (Torque / relative_Contact_Distance2) * scalar;
+	float MomentOfInertia = obj.Mass / RelativeContactDistance2;
+
+	float ChangeRot = (Torque * MomentOfInertia) * scalar;
+	data.ChangeRot = Ray2D(center, Point2D(0, ChangeRot));
 
 	if (change)
 	{
-		if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians(angular_change) * timeDelta; }
+		if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians(ChangeRot) * timeDelta; }
 		if (obj.IsStatic) { obj.Data.Vel = Trans2D(); }
 	}
 
 	return data;
 }
-Physics2D::ObjectForceData Physics2D::ApplyImpulse(float timeDelta, Object & obj, Point2D pos, Point2D dir, float force, bool change)
+Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change)
 {
+	(void)timeDelta;
+	(void)scalar;
+	(void)change;
+
 	ObjectForceData data;
-	data.Center = obj.AbsolutePositionOf(Point2D());
+	data.Drag = drag;
 
-	Point2D Contact = pos;
-	data.Contact = Contact;
+	Point2D center = obj.AbsolutePositionOf(Point2D());
+	data.Contact = Line2D(center, drag.Pos);
 
-	data.Direction = dir;
+	Point2D RelativeContact = drag.Pos - center;
+	float RelativeContactDistance2 = RelativeContact.length2();
 
-	Point2D normal = dir.normalize();
-	data.Normal = normal;
-	
-	Point2D RelativeContact = Contact - obj.Data.Now.Pos;
+	Point2D Force = drag.Dir;
+	float dot = Point2D::dot(Force, RelativeContact);
 
-	float MassInverse = 0;
-	if (!obj.IsStatic) { MassInverse = 1 / obj.Mass; }
+	Point2D ForcePos = (RelativeContact * ((dot / RelativeContactDistance2)));
+	Point2D ForceRot = Force - ForcePos;
+	data.ForcePos = Ray2D(drag.Pos, ForcePos);
+	data.ForceRot = Ray2D(drag.Pos, ForceRot);
 
-	Point3D normal_3D(normal.X, normal.Y, 0);
-	Point3D RelativeContact_3D(RelativeContact.X, RelativeContact.Y, 0);
 
-	Point3D ContactNormal_3D = Point3D::cross(RelativeContact_3D, normal_3D);
-	Point3D ContactPerpendicular_3D = Point3D::cross(ContactNormal_3D, RelativeContact_3D);
 
-	Point2D ContactPerpendicular(ContactPerpendicular_3D.X, ContactPerpendicular_3D.Y);
-	data.Perp = ContactPerpendicular;
-
-	std::cout << "Norm: " << normal_3D << ' ' << normal_3D.length() << '\n';
-	std::cout << "Rel : " << RelativeContact_3D << ' ' << RelativeContact_3D.length() << '\n';
-	std::cout << "Norm: " << ContactNormal_3D << ' ' << ContactNormal_3D.length() << '\n';
-	std::cout << "Perp: " << ContactPerpendicular_3D << ' ' << ContactPerpendicular_3D.length() << '\n';
-
-	float InertiaFactor = Point2D::dot(ContactPerpendicular, normal);
+//	ObjectForceData data;
+//	data.Center = obj.AbsolutePositionOf(Point2D());
+//
+//	Point2D Contact = pos;
+//	data.Contact = Contact;
+//
+//	data.Direction = dir;
+//
+//	Point2D normal = dir.normalize();
+//	data.Normal = normal;
+//
+//	Point2D RelativeContact = Contact - obj.Data.Now.Pos;
+//
+//	float MassInverse = 0;
+//	if (!obj.IsStatic) { MassInverse = 1 / obj.Mass; }
+//
+//	Point3D normal_3D(normal.X, normal.Y, 0);
+//	Point3D RelativeContact_3D(RelativeContact.X, RelativeContact.Y, 0);
+//
+//	Point3D ContactNormal_3D = Point3D::cross(RelativeContact_3D, normal_3D);
+//	Point3D ContactPerpendicular_3D = Point3D::cross(ContactNormal_3D, RelativeContact_3D);
+//
+//	Point2D ContactPerpendicular(ContactPerpendicular_3D.X, ContactPerpendicular_3D.Y);
+//	data.Perp = ContactPerpendicular;
+//
+//	std::cout << "Norm: " << normal_3D << ' ' << normal_3D.length() << '\n';
+//	std::cout << "Rel : " << RelativeContact_3D << ' ' << RelativeContact_3D.length() << '\n';
+//	std::cout << "Norm: " << ContactNormal_3D << ' ' << ContactNormal_3D.length() << '\n';
+//	std::cout << "Perp: " << ContactPerpendicular_3D << ' ' << ContactPerpendicular_3D.length() << '\n';
+//
+//	float InertiaFactor = Point2D::dot(ContactPerpendicular, normal);
 
 //	std::cout << '\n';
 //	std::cout << "normal_3D: " << normal_3D << ' ' << normal_3D.length() << '\n';
@@ -574,22 +595,33 @@ Physics2D::ObjectForceData Physics2D::ApplyImpulse(float timeDelta, Object & obj
 //	std::cout << "InertiaFactorSum : " << InertiaFactor << '\n';
 
 //	float ImpulseFactor = (force * NormalVelFactor) / (MassInverse + InertiaFactor);
-	(void)MassInverse;
-	(void)InertiaFactor;
+//	(void)MassInverse;
+//	(void)InertiaFactor;
 
-	float ImpulseFactor = force * dir.length();
-	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
+//	float ImpulseFactor = force * dir.length();
+//	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
 
-	Point2D ImpulseMove = normal * (ImpulseFactor / obj.Mass);
-	data.Impulse = ImpulseMove * timeDelta;
+//	Point2D ImpulseMove = normal * (ImpulseFactor / obj.Mass);
+//	data.Impulse = ImpulseMove * timeDelta;
+
+	float Torque = Point2D::cross(RelativeContact, ForceRot);
+	data.Torque = Ray2D(center, Point2D(0, Torque));
+
+	float MomentOfInertia = obj.Mass / RelativeContactDistance2;
+
+	Point2D ChangePos = Force * timeDelta;
+	data.ChangePos = Ray2D(center, ChangePos);
+
+	float ChangeRot = (Torque * MomentOfInertia);
+	data.ChangeRot = Ray2D(center, Point2D(0, ChangeRot * timeDelta));
 
 	if (change)
 	{
-		if (!obj.IsStatic) { obj.Data.Vel.Pos += ImpulseMove * timeDelta; }
-		if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians(ContactNormal_3D.Z * ImpulseFactor / 0.1f) * timeDelta; }
+		if (!obj.IsStatic) { obj.Data.Vel.Pos += ChangePos; }
+		if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians(ChangeRot) * timeDelta; }
 		if (obj.IsStatic) { obj.Data.Vel = Trans2D(); }
 	}
 
-	std::cout << '\n';
+//	std::cout << '\n';
 	return data;
 }

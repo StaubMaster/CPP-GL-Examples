@@ -185,28 +185,30 @@ void Change(Point2D pos1, Physics2D::Manager & manager)
 }
 void Update(float timeDelta, Physics2D::Manager & manager, bool is_paused)
 {
-//	TestForce(timeDelta, manager, is_paused);
-	TestTorque(timeDelta, manager, is_paused);
-}
-
-void TestTorque(float timeDelta, Physics2D::Manager & manager, bool is_paused)
-{
 	if (!Is) { return; }
 
 	Point2D absolute = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
-	Physics2D::ObjectTorqueData data = Physics2D::ApplyTorque(timeDelta, manager.Objects[Object.Value], Ray2D(absolute, (Pos1 - absolute)), 1.0f, !is_paused);
+	Ray2D drag = Ray2D(absolute, (Pos1 - absolute));
+
+//	TestTorque(timeDelta, manager, drag, is_paused);
+	TestForce(timeDelta, manager, drag, is_paused);
+}
+
+void TestTorque(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool is_paused)
+{
+	Physics2D::ObjectTorqueData data = Physics2D::ApplyTorque(timeDelta, manager.Objects[Object.Value], drag, 1.0f, !is_paused);
 
 	Arrow_Impulse[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 	Arrow_Impulse[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 0.5f), 16.0f, data.Drag);
 
-	Arrow_Impulse[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForceLin);
-	Arrow_Impulse[3] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForceAng);
+	Arrow_Impulse[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForcePos);
+	Arrow_Impulse[3] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForceRot);
 
 	{
 		float values[2]
 		{
 			data.Torque.Dir.length2(),
-			data.MomentumAngular.Dir.length2(),
+			data.ChangeRot.Dir.length2(),
 		};
 		unsigned int ranks[2];
 		for (unsigned int j = 0; j < 2; j++)
@@ -229,19 +231,51 @@ void TestTorque(float timeDelta, Physics2D::Manager & manager, bool is_paused)
 			16.0f,
 		};
 		Arrow_Impulse[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), sizes[ranks[0]], data.Torque);
-		Arrow_Impulse[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.MomentumAngular);
+		Arrow_Impulse[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.ChangeRot);
 	}
 }
-void TestForce(float timeDelta, Physics2D::Manager & manager, bool is_paused)
+void TestForce(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool is_paused)
 {
-	if (!Is) { return; }
+	Physics2D::ObjectForceData data = Physics2D::ApplyForce(timeDelta, manager.Objects[Object.Value], drag, 1.0f, !is_paused);
 
-	Point2D absolute = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
-	Physics2D::ObjectForceData data = Physics2D::ApplyImpulse(timeDelta, manager.Objects[Object.Value], absolute, (Pos1 - absolute), 10.0f, !is_paused);
+	Arrow_Impulse[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
+	Arrow_Impulse[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 24.0f, data.Drag);
 
-	Arrow_Impulse[0] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 0.5f), 16.0f, data.Center, data.Contact);
+	Arrow_Impulse[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForcePos);
+	Arrow_Impulse[3] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForceRot);
 
 	{
+		float values[2]
+		{
+			data.Torque.Dir.length2(),
+			data.ChangeRot.Dir.length2(),
+		};
+		unsigned int ranks[2];
+		for (unsigned int j = 0; j < 2; j++)
+		{
+			ranks[j] = 0;
+			for (unsigned int i = 0; i < 2; i++)
+			{
+				if (i != j)
+				{
+					if (values[j] < values[i])
+					{
+						ranks[j]++;
+					}
+				}
+			}
+		}
+		float sizes[2]
+		{
+			20.0f,
+			16.0f,
+		};
+		Arrow_Impulse[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), sizes[ranks[0]], data.Torque);
+		Arrow_Impulse[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.ChangeRot);
+	}
+	Arrow_Impulse[6] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), 16.0f, data.ChangePos);
+
+	/*{
 		float values[3]
 		{
 			data.Normal.length2(),
@@ -273,9 +307,9 @@ void TestForce(float timeDelta, Physics2D::Manager & manager, bool is_paused)
 		Arrow_Impulse[ranks[0] + 1] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[0]], Ray2D(data.Contact, data.Normal));
 		Arrow_Impulse[ranks[1] + 1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 0.0f), sizes[ranks[1]], Ray2D(data.Contact, data.Direction));
 		Arrow_Impulse[ranks[2] + 1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 1.0f), sizes[ranks[2]], Ray2D(data.Contact, data.Impulse));
-	}
+	}*/
 
-	Arrow_Impulse[4] = Arrow2D::Inst::Data(ColorF4(1, 0, 0), 16.0f, Ray2D(data.Contact, data.Perp));
+	//Arrow_Impulse[4] = Arrow2D::Inst::Data(ColorF4(1, 0, 0), 16.0f, Ray2D(data.Contact, data.Perp));
 }
 };
 SDrag Drag;
@@ -288,6 +322,11 @@ SDrag Drag;
 */
 void Make()
 {
+	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
+	Physics2D_Manager.AirResistance = 0.1f;
+
+
+
 	Physics2D_Manager.MainInstances.Allocate(3, 3);
 
 

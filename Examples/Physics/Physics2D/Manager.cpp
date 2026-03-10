@@ -27,6 +27,9 @@ Physics2D::Manager::Manager()
 	, Instances_Arrow()
 
 	, Objects()
+
+	, Gravity()
+	, AirResistance(0.0f)
 { }
 
 //Physics2D::Manager::Manager(const Manager & other);
@@ -193,20 +196,18 @@ void Physics2D::Manager::UpdateGraphics()
 
 void Physics2D::Manager::UpdateGravity(float timeDelta)
 {
-	//Point2D Gravity = (view.Trans.Rot / (Point2D(0, -1) * 3.0f)) * timeDelta;
-	Point2D Gravity = (Point2D(0, -1) * 3.0f) * timeDelta;
+	Point2D GravityAccel = Gravity * timeDelta;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (!Objects[i].IsStatic)
 		{
-			Objects[i].Data.Vel.Pos += Gravity;
+			Objects[i].Data.Vel.Pos += GravityAccel;
 		}
 	}
 }
 void Physics2D::Manager::UpdateAirResistance(float timeDelta)
 {
-	float resistance = 0.05f;
-	float factor = 1.0f - (resistance * timeDelta);
+	float factor = 1.0f - (AirResistance * timeDelta);
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (!Objects[i].IsStatic)
@@ -243,8 +244,8 @@ void Physics2D::Manager::UpdateOrientation(float timeDelta)
 }
 void Physics2D::Manager::Update(float timeDelta)
 {
-//	UpdateAirResistance(timeDelta);
-//	UpdateGravity(timeDelta);
+	UpdateAirResistance(timeDelta);
+	UpdateGravity(timeDelta);
 
 	UpdateCollision(timeDelta);
 	UpdateOrientation(timeDelta);
