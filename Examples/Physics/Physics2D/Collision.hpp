@@ -4,8 +4,9 @@
 # include "Physics2D/Object.hpp"
 
 # include "ValueType/AxisBox1D.hpp"
+
 # include "ValueType/Point2D.hpp"
-# include "ValueType/Point3D.hpp"
+# include "ValueType/Ray2D.hpp"
 
 namespace Physics2D
 {
@@ -71,11 +72,20 @@ namespace Physics2D
 		Object & obj1
 	);
 
-/* Arrows
-	Center of Mass
-	Contact
-	Direction
-*/
+	struct ObjectTorqueData
+	{
+		Ray2D Drag;
+		Line2D Contact;
+
+		Ray2D ForceLin;
+		Ray2D ForceAng;
+
+		Ray2D Torque;
+
+		Ray2D MomentumAngular;
+	};
+	ObjectTorqueData ApplyTorque(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change);
+
 	struct ObjectForceData
 	{
 		Point2D Center;

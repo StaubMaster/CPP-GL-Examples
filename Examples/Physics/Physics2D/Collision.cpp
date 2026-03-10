@@ -438,15 +438,91 @@ void Physics2D::Collide(
 
 
 /*
-	treat pos like contact pos
-	treat dir like normal
+⁺⁻¹²³
+Mass:	M	kg
+Length:	L	m
+Time:	T	s
+
+Velocity:				M ⁰ L⁺¹ T⁻¹		Length / Time
+Accelleration:			M ⁰ L⁺¹ T⁻²		Velocity / Time
+Force:					M⁺¹ L⁺¹ T⁻²		Accelleration * Mass
+Momentum:				M⁺¹ L⁺¹ T⁻¹		Velocity * Mass = Force * Time
+Impulse:				M⁺¹ L⁺¹ T⁻¹		Force * Time
+
+Angular_Velocity:		M ⁰ L ⁰ T⁻¹		Time
+Angular_Accelleration:	M ⁰ L ⁰ T⁻²		Time * Time
+Torque:					M⁺¹ L⁺² T⁻²		Force * Length
+Angular_Momentum:		M⁺¹ L⁺² T⁻¹		Torque * Time
+Moment_of_Inertia:		M⁺¹ L⁺² T ⁰		Torque / Angular_Accelleration = Angular_Momentum * Time
+
 */
-Physics2D::ObjectForceData Physics2D::ApplyImpulse(float timeDelta, Object & obj, Point2D pos, Point2D dir, float force, bool change)
+
+/*
+the body is rigid, so any rotational force allways rotates the whole mass ?
+so Torque depends on how much of the Force is Perpendicular to the Distance from the Center
+*/
+
+Physics2D::ObjectTorqueData Physics2D::ApplyTorque(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change)
 {
+	(void)timeDelta;
 	(void)obj;
-	(void)force;
+	(void)scalar;
 	(void)change;
 
+	ObjectTorqueData data;
+	data.Drag = drag;
+
+	Point2D center = obj.AbsolutePositionOf(Point2D());
+	data.Contact = Line2D(center, drag.Pos);
+
+	Point2D relative_Contact = drag.Pos - center;
+	float relative_Contact_Distance2 = relative_Contact.length2();
+
+	float dot = Point2D::dot(drag.Dir, relative_Contact);
+
+	Point2D forceLin = (relative_Contact * ((dot / relative_Contact_Distance2)));
+	Point2D forceAng = drag.Dir - forceLin;
+	data.ForceLin = Ray2D(drag.Pos, forceLin);
+	data.ForceAng = Ray2D(drag.Pos, forceAng);
+
+/*
+τ = r x F
+L = r x p
+
+r : relative_Contact
+F : Force
+τ : Torque
+p : linear Momentum
+L : angular Momentum
+
+m : Mass
+ω : angular Velocity
+
+L = I * ω
+I = r * r * m
+
+L = I * ω
+*/
+
+	float Torque = Point2D::cross(relative_Contact, forceAng);
+	data.Torque = Ray2D(center, Point2D(0, Torque));
+
+//	Point2D Momentum_linear = obj.AbsoluteVelocityOf(drag.Pos);
+//	float Momentum_angular = Point2D::cross(relative_Contact, Momentum_linear);
+//	data.MomentumAngular = Ray2D(center, Point2D(0, Momentum_angular));
+
+	float angular_change = (Torque / relative_Contact_Distance2) * scalar;
+
+	if (change)
+	{
+		if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians(angular_change) * timeDelta; }
+		if (obj.IsStatic) { obj.Data.Vel = Trans2D(); }
+	}
+
+	return data;
+}
+Physics2D::ObjectForceData Physics2D::ApplyImpulse(float timeDelta, Object & obj, Point2D pos, Point2D dir, float force, bool change)
+{
 	ObjectForceData data;
 	data.Center = obj.AbsolutePositionOf(Point2D());
 
@@ -500,16 +576,6 @@ Physics2D::ObjectForceData Physics2D::ApplyImpulse(float timeDelta, Object & obj
 //	float ImpulseFactor = (force * NormalVelFactor) / (MassInverse + InertiaFactor);
 	(void)MassInverse;
 	(void)InertiaFactor;
-
-/* Apply Force
-	Force:
-		(Mass * Length) / (Time * Time)
-	Accelleration:
-		(Length) / (Time * Time)
-		(Force) / (Mass)
-	Velocity:
-		(Length) / (Time)
-*/
 
 	float ImpulseFactor = force * dir.length();
 	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';

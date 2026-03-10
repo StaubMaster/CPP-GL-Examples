@@ -61,6 +61,14 @@
 
 
 
+/* Torque Test
+	use Mouse to set the point to apply Force
+	Force is perpendicular to the Distance from the Center
+	use Draw Destination to figure out Force Direction
+	use Distance to figure out Force Strength
+	
+*/
+
 struct MainContext
 {
 DirectoryInfo ImageDir;
@@ -177,26 +185,62 @@ void Change(Point2D pos1, Physics2D::Manager & manager)
 }
 void Update(float timeDelta, Physics2D::Manager & manager, bool is_paused)
 {
+//	TestForce(timeDelta, manager, is_paused);
+	TestTorque(timeDelta, manager, is_paused);
+}
+
+void TestTorque(float timeDelta, Physics2D::Manager & manager, bool is_paused)
+{
 	if (!Is) { return; }
 
-	//Point2D rel = Pos1 - manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
-	//manager.Objects[Object.Value].Data.Vel.Pos += rel * 0.1f;
+	Point2D absolute = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
+	Physics2D::ObjectTorqueData data = Physics2D::ApplyTorque(timeDelta, manager.Objects[Object.Value], Ray2D(absolute, (Pos1 - absolute)), 1.0f, !is_paused);
 
-	// 1. lock dragging. so that mouse can me moved normally
-	// 2. struct that holds internal Data
-	// 3. use that data to show arrows ?
+	Arrow_Impulse[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
+	Arrow_Impulse[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 0.5f), 16.0f, data.Drag);
+
+	Arrow_Impulse[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForceLin);
+	Arrow_Impulse[3] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForceAng);
+
+	{
+		float values[2]
+		{
+			data.Torque.Dir.length2(),
+			data.MomentumAngular.Dir.length2(),
+		};
+		unsigned int ranks[2];
+		for (unsigned int j = 0; j < 2; j++)
+		{
+			ranks[j] = 0;
+			for (unsigned int i = 0; i < 2; i++)
+			{
+				if (i != j)
+				{
+					if (values[j] < values[i])
+					{
+						ranks[j]++;
+					}
+				}
+			}
+		}
+		float sizes[2]
+		{
+			20.0f,
+			16.0f,
+		};
+		Arrow_Impulse[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), sizes[ranks[0]], data.Torque);
+		Arrow_Impulse[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.MomentumAngular);
+	}
+}
+void TestForce(float timeDelta, Physics2D::Manager & manager, bool is_paused)
+{
+	if (!Is) { return; }
 
 	Point2D absolute = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
 	Physics2D::ObjectForceData data = Physics2D::ApplyImpulse(timeDelta, manager.Objects[Object.Value], absolute, (Pos1 - absolute), 10.0f, !is_paused);
 
-	Arrow_Impulse[0].Col = ColorF4(0.5f, 0.5f, 0.5f);
-	Arrow_Impulse[0].Pos0 = data.Center;
-	Arrow_Impulse[0].Pos1 = data.Contact;
-	Arrow_Impulse[0].Size = 16.0f;
+	Arrow_Impulse[0] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 0.5f), 16.0f, data.Center, data.Contact);
 
-	// Direction, Normal, Impulse all go in the same direction
-	// the longest should be thick and in the back
-	// the shortest should be thin and in the front
 	{
 		float values[3]
 		{
@@ -226,26 +270,12 @@ void Update(float timeDelta, Physics2D::Manager & manager, bool is_paused)
 			12.0f,
 		};
 
-		Arrow_Impulse[ranks[0] + 1].Col = ColorF4(0.5f, 1.0f, 0.5f);
-		Arrow_Impulse[ranks[0] + 1].Pos0 = data.Contact;
-		Arrow_Impulse[ranks[0] + 1].Pos1 = data.Contact + data.Normal;
-		Arrow_Impulse[ranks[0] + 1].Size = sizes[ranks[0]];
-
-		Arrow_Impulse[ranks[1] + 1].Col = ColorF4(0.0f, 0.5f, 0.0f);
-		Arrow_Impulse[ranks[1] + 1].Pos0 = data.Contact;
-		Arrow_Impulse[ranks[1] + 1].Pos1 = data.Contact + data.Direction;
-		Arrow_Impulse[ranks[1] + 1].Size = sizes[ranks[1]];
-
-		Arrow_Impulse[ranks[2] + 1].Col = ColorF4(0, 0, 1);
-		Arrow_Impulse[ranks[2] + 1].Pos0 = data.Contact;
-		Arrow_Impulse[ranks[2] + 1].Pos1 = data.Contact + data.Impulse;
-		Arrow_Impulse[ranks[2] + 1].Size = sizes[ranks[2]];
+		Arrow_Impulse[ranks[0] + 1] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[0]], Ray2D(data.Contact, data.Normal));
+		Arrow_Impulse[ranks[1] + 1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 0.0f), sizes[ranks[1]], Ray2D(data.Contact, data.Direction));
+		Arrow_Impulse[ranks[2] + 1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 1.0f), sizes[ranks[2]], Ray2D(data.Contact, data.Impulse));
 	}
 
-	Arrow_Impulse[4].Col = ColorF4(1, 0, 0);
-	Arrow_Impulse[4].Pos0 = data.Contact;
-	Arrow_Impulse[4].Pos1 = data.Contact + data.Perp;
-	Arrow_Impulse[4].Size = 16.0f;
+	Arrow_Impulse[4] = Arrow2D::Inst::Data(ColorF4(1, 0, 0), 16.0f, Ray2D(data.Contact, data.Perp));
 }
 };
 SDrag Drag;

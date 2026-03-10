@@ -243,8 +243,8 @@ void Physics2D::Manager::UpdateOrientation(float timeDelta)
 }
 void Physics2D::Manager::Update(float timeDelta)
 {
-	UpdateAirResistance(timeDelta);
-	UpdateGravity(timeDelta);
+//	UpdateAirResistance(timeDelta);
+//	UpdateGravity(timeDelta);
 
 	UpdateCollision(timeDelta);
 	UpdateOrientation(timeDelta);
