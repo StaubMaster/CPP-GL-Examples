@@ -236,7 +236,7 @@ void TestTorque(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool 
 }
 void TestForce(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool is_paused)
 {
-	Physics2D::ObjectForceData data = Physics2D::ApplyForce(timeDelta, manager.Objects[Object.Value], drag, 1.0f, !is_paused);
+	Physics2D::ObjectForceData data = Physics2D::ApplyForce(timeDelta, manager.Objects[Object.Value], drag, 10.0f, !is_paused);
 
 	Arrow_Impulse[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 	Arrow_Impulse[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 24.0f, data.Drag);
@@ -509,9 +509,13 @@ void Draw()
 	Physics2D_Manager.Draw();
 }
 
-void Update(double timeDelta)
+void Update(double timeDelta, bool is_paused)
 {
-	Physics2D_Manager.Update(timeDelta);
+	Drag.Update(timeDelta, Physics2D_Manager, is_paused);
+	if (!is_paused)
+	{
+		Physics2D_Manager.Update(timeDelta);
+	}
 }
 
 void Frame(double timeDelta)
@@ -527,7 +531,6 @@ void Frame(double timeDelta)
 			Drag.Change(cursor, Physics2D_Manager);
 		}
 	}
-	Drag.Update(timeDelta, Physics2D_Manager, Paused);
 
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::K.Flags].IsPress())
 	{
@@ -548,18 +551,22 @@ void Frame(double timeDelta)
 		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsPress()) { Paused = !Paused; }
 		if (Paused)
 		{
-			if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsDown())
+			if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::O.Flags].IsDown())
 			{
-				Update(1 / 60.0f);
+				Update(1.0f / 60.0f, false);
 			}
 			else if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::I.Flags].IsPress())
 			{
-				Update(1 / 60.0f);
+				Update(1.0f / 60.0f, false);
+			}
+			else
+			{
+				Update(1.0f / 60.0f, true);
 			}
 		}
 		else
 		{
-			Update(timeDelta);
+			Update(timeDelta, false);
 		}
 
 		Physics2D_Manager.UpdateGraphics();
