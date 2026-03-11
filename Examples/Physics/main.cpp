@@ -322,12 +322,12 @@ SDrag Drag;
 */
 void Make()
 {
-	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
+//	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
 	Physics2D_Manager.AirResistance = 0.1f;
 
 
 
-	Physics2D_Manager.MainInstances.Allocate(3, 3);
+	Physics2D_Manager.MainInstances.Allocate(4, 4);
 
 
 
@@ -390,6 +390,20 @@ void Make()
 
 //	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj1], Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
 //	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj1], Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
+
+
+
+	unsigned int obj2 = 3;
+	Physics2D_Manager.MainInstances[obj2].Buffer_PolyGon.Create();
+	{
+		PolyGon & poly_gon = *(Physics2D_Manager.MainInstances[obj2].PolyGon);
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, -0.1f), ColorF4(0, 1, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 1)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1.0f, +0.1f), ColorF4(0, 1, 0)));
+		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
+		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
+	}
 
 
 
@@ -656,7 +670,7 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 		{
 			Physics2D_Manager.Objects.Insert(
 				Physics2D::Object(
-					Physics2D_Manager.MainInstances[2],
+					Physics2D_Manager.MainInstances[3],
 					Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()),
 					//Trans2D(Point2D(), Angle2D(Angle::Degrees(45))),
 					false

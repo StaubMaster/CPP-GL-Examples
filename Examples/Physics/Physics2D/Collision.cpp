@@ -553,7 +553,7 @@ Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, 
 
 	if (change)
 	{
-		if (!obj.IsStatic) { obj.Data.Vel.Pos += ChangePos; }
+		//if (!obj.IsStatic) { obj.Data.Vel.Pos += ChangePos; }
 		if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians(ChangeRot); }
 		if (obj.IsStatic) { obj.Data.Vel = Trans2D(); }
 	}
