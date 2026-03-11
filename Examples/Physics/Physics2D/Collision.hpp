@@ -72,6 +72,17 @@ namespace Physics2D
 		Object & obj1
 	);
 
+	struct ObjectMomentOfIntertiaData
+	{
+		Line2D Contact;
+
+		Ray2D VelocityPos;
+		Ray2D VelocityRot;
+
+
+	};
+	ObjectMomentOfIntertiaData CheckMomentOfIntertia(float timeDelta, Object & obj, Point2D pos);
+
 	struct ObjectTorqueData
 	{
 		Ray2D Drag;

@@ -457,10 +457,131 @@ Moment_of_Inertia:		M⁺¹ L⁺² T ⁰		Torque / Angular_Accelleration = Angula
 
 */
 
-/*
-the body is rigid, so any rotational force allways rotates the whole mass ?
-so Torque depends on how much of the Force is Perpendicular to the Distance from the Center
+/* figure out Moment of Inertia
+
+m : Partical Mass
+r : Partical Position
+v : linear Velocity
+p : linear Momentum
+ω : angular Velocity
+L : angular Momentum
+I : Moment of Intertia
+
+L = I * ω
+L = r x p
+p = m * v
+
+m is allways the full mass of the Object
+since it is Rigid ?
+
+I = L / ω
+ω is known
+L = r x p
+r is known
+p = m * v
+m is known
+v = |r| * ω ?
+
+Orbital Angular Momentum in case of Circel:
+I = |r| * |r| * m
+ω = |v| / |r|
+L = (|r| * |r| * m) % (|v| / |r|)
+L = |r| * m * |v|
+|v| = |r| * ω
+
+L = |r| * m * |r| * ω
 */
+
+/* Problem
+I think the problem is treating the Mass of a Perticle
+like the Mass of the Object
+*/
+
+/* Moment of Inertia shows how Inertia Tensor is calculated
+I = [3, 3]
+
+N : Number of Point Masses
+m : Point Mass
+r : Vector to Point Mass
+i : { 0 1 2 } as { x y z } for r.i
+j : { 0 1 2 } as { x y z } for r.j
+
+I[i, j] = sum(k 0 to N) { m[k] * ( |r[k]|^2 * (i == j) - (r.i * r.j)) }
+
+Diagonal Elements:
+Ixx = sum(k 0 to N) { m[k] * (y[k]^2 + z[k]^2) }
+Iyy = sum(k 0 to N) { m[k] * (z[k]^2 + x[k]^2) }
+Izz = sum(k 0 to N) { m[k] * (x[k]^2 + y[k]^2) }
+
+Off Diagonal Elements:
+Ixy = Iyx = -sum(k 0 to N) { m[k] * (x[k] * y[k]) }
+Izx = Ixz = -sum(k 0 to N) { m[k] * (z[k] * x[k]) }
+Iyz = Izy = -sum(k 0 to N) { m[k] * (y[k] * z[k]) }
+
+Ixx is Moment of Inertia around X-Axis when rotated around X-Axis
+Ixy is Moment of Inertia around Y-Axis when rotated around Y-Axis
+*/
+
+/* Moment of Inertia vs Inertia Tensor
+I think the Inertia Tensor is constant per Object
+while the Moment of Inertia changes depending on the Axis of Rotation
+*/
+
+/* full Mass per Point Mass ?
+for a Cuboid (w, h, d)
+I = [
+	[ (1/12) * m * (h^2 + d^2) 0 0 ]
+	[ 0 (1/12) * m * (d^2 + w^2) 0 ]
+	[ 0 0 (1/12) * m * (w^2 + h^2) ]
+]
+the Loop just multiplys stuff
+this gives each Point (1/12) of the full Mass
+since there are 8 Points, that gives (8/12) ?
+where is the rest ? in the Middle ?
+how is this calculated
+
+Mass should be uniform
+so each Point should have the same
+but then with 8 Points each should have (1/8) of the Mass
+
+(1/12) comes as a Sum of all Points
+so each Point only has ((1/12)/8)
+so only (1/96), that is very small
+
+*/
+
+Physics2D::ObjectMomentOfIntertiaData Physics2D::CheckMomentOfIntertia(float timeDelta, Object & obj, Point2D pos)
+{
+	(void)timeDelta;
+	ObjectMomentOfIntertiaData data;
+
+	Point2D center = obj.AbsolutePositionOf(Point2D());
+	data.Contact = Line2D(center, pos);
+
+	float m = obj.Mass;
+	Point2D r = pos - obj.Data.Now.Pos;
+	float ω = obj.Data.Vel.Rot.Ang.ToRadians();
+	Point2D v = Point2D::cross(ω, r); // ?
+	Point2D p = v * m;
+	float L1 = Point2D::cross(r, p);
+	float I = L1 / ω;
+	float L2 = r.length2() * m * ω;
+
+	data.VelocityPos = Ray2D(pos, v);
+	data.VelocityRot = Ray2D(center, Point2D(0, ω));
+
+	std::cout << "m : " << m << '\n';
+	std::cout << "r : " << r << '\n';
+	std::cout << "ω : " << ω << '\n';
+	std::cout << "v : " << v << '\n';
+	std::cout << "p : " << p << '\n';
+	std::cout << "L1: " << L1 << '\n';
+	std::cout << "L2: " << L2 << '\n';
+	std::cout << "I : " << I << '\n';
+	std::cout << '\n';
+
+	return data;
+}
 
 Physics2D::ObjectTorqueData Physics2D::ApplyTorque(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change)
 {
@@ -480,31 +601,8 @@ Physics2D::ObjectTorqueData Physics2D::ApplyTorque(float timeDelta, Object & obj
 	data.ForcePos = Ray2D(drag.Pos, ForcePos);
 	data.ForceRot = Ray2D(drag.Pos, ForceRot);
 
-/*
-τ = r x F
-L = r x p
-
-r : relative_Contact
-F : Force
-τ : Torque
-p : linear Momentum
-L : angular Momentum
-
-m : Mass
-ω : angular Velocity
-
-L = I * ω
-I = r * r * m
-
-L = I * ω
-*/
-
 	float Torque = Point2D::cross(RelativeContact, ForceRot);
 	data.Torque = Ray2D(center, Point2D(0, Torque));
-
-//	Point2D Momentum_linear = obj.AbsoluteVelocityOf(drag.Pos);
-//	float Momentum_angular = Point2D::cross(relative_Contact, Momentum_linear);
-//	data.MomentumAngular = Ray2D(center, Point2D(0, Momentum_angular));
 
 	float MomentOfInertia = obj.Mass / RelativeContactDistance2;
 
