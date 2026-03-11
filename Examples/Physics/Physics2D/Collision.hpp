@@ -79,7 +79,7 @@ namespace Physics2D
 		Ray2D VelocityPos;
 		Ray2D VelocityRot;
 
-
+		Line2D CenterOfMass;
 	};
 	ObjectMomentOfIntertiaData CheckMomentOfIntertia(float timeDelta, Object & obj, Point2D pos);
 

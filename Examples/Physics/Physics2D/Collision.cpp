@@ -547,6 +547,9 @@ but then with 8 Points each should have (1/8) of the Mass
 (1/12) comes as a Sum of all Points
 so each Point only has ((1/12)/8)
 so only (1/96), that is very small
+*/
+
+/*
 
 */
 

@@ -357,6 +357,8 @@ void CheckMomentOfInertia(float timeDelta, Point2D pos)
 
 	CheckMomentOfInertia_Arrows[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityPos);
 	CheckMomentOfInertia_Arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityRot);
+
+	CheckMomentOfInertia_Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.CenterOfMass);
 }
 
 
