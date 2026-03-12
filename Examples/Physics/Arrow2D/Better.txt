@@ -1,0 +1,33 @@
+
+get rid of Instance Container
+
+recreate Instance Container every Frame
+when Buffer changes
+
+
+
+Arrow:Data stores Arrow:Inst:Data and some flags
+Flags:
+	Show	should be shown this Frame
+	Remove	should be deleted after this Frame
+
+Arrow:Manager
+	stores a Container of Arrow:Data
+	should be EntryContainer ?
+	{
+		I dont know how EntryContainer handles copying things that also contain Entrys
+		currently Container uses Copy Assignment to Copy
+		this can be slow, and the old stuff gets deleted right after
+		so just copy the Raw Data
+		add a CopyVoid function that all Containers use when resizing
+
+		in general, this is bad
+		Example: FilePath
+		{
+			this stores a Pointer internally
+			that gets deleted when destructed
+			so then copying Raw data, the pointer gets copied
+			which then gets deleted and becomes invalid
+		}
+	}
+	

@@ -167,8 +167,45 @@ void Arrow2D::Manager::Main_Default()
 }
 void Arrow2D::Manager::Inst_Update()
 {
-	Instances.CompactHere();
-	Buffer.Inst.Change(Instances);
+	// Count Instances to Display
+	unsigned int c = 0;
+	for (unsigned int i = 0; i < Instances.Count(); i++)
+	{
+		if (Instances[i] != nullptr && Instances[i] -> DisplayThisFrame)
+		{
+			c += Instances[i] -> DataArray.Count();
+		}
+	}
+
+	// Data of Instances to Display
+	Container::Fixed<Arrow2D::Inst::Data> data(c);
+	for (unsigned int i = 0; i < Instances.Count(); i++)
+	{
+		if (Instances[i] != nullptr && Instances[i] -> DisplayThisFrame)
+		{
+			for (unsigned int j = 0; j < Instances[i] -> DataArray.Count(); j++)
+			{
+				data.Insert(Instances[i] -> DataArray[j]);
+			}
+		}
+	}
+
+	// Remove Instances to Remove
+	// Remove() copy everything above down
+	// this can be optimized
+	for (unsigned int i = 0; i < Instances.Count(); i++)
+	{
+		if (Instances[i] != nullptr && Instances[i] -> DisposeThisFrame)
+		{
+			//Instances[i].Dispose();
+			delete Instances[i];
+			Instances.Remove(i);
+			i--;
+		}
+	}
+	//Instances.CompactHere();
+	Buffer.Inst.Change(data);
+	//Buffer.Inst.Change(Instances);
 }
 void Arrow2D::Manager::Draw()
 {

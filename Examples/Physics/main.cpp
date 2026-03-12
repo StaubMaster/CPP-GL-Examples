@@ -132,8 +132,9 @@ bool FollowMouse = true;
 Undex Object;
 Point2D Pos0;
 Point2D Pos1;
-EntryContainer::Entry<Arrow2D::Inst::Data> Arrow;
-EntryContainer::Entry<Arrow2D::Inst::Data> Arrow_Test;
+Arrow2D::Object Arrow;
+Arrow2D::Object Arrow_Test;
+
 /* Drag
 	currently changes Linear Velocity when Drag is done
 	just apply Force/Impulse while Drag is active
@@ -146,10 +147,8 @@ void Begin(Point2D pos0, Physics2D::Manager & manager)
 		if (Object.IsValid())
 		{
 			Pos0 = manager.Objects[Object.Value].RelativePositionOf(pos0);
-			//Arrow.Allocate(manager.Arrow.Instances, 1);
-			//Arrow_Test.Allocate(manager.Arrow.Instances, 10);
-			Arrow.Allocate(Arrow2D::Manager::Current().Instances, 1);
-			Arrow_Test.Allocate(Arrow2D::Manager::Current().Instances, 10);
+			Arrow.Allocate(1);
+			Arrow_Test.Allocate(10);
 			(*Arrow).Col = ColorF4(1, 1, 1);
 			(*Arrow).Size = 20.0f;
 			Is = true;
@@ -182,6 +181,7 @@ void Change(Point2D pos1, Physics2D::Manager & manager)
 {
 	if (!Is) { return; }
 	Pos1 = pos1;
+	(void)manager;
 	(*Arrow).Size = 0.0f;
 	(*Arrow).Pos0 = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
 	(*Arrow).Pos1 = Pos1;
@@ -218,7 +218,7 @@ void RankLengths(unsigned int count, float values[], unsigned int ranks[])
 void TestTorque(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool is_paused)
 {
 	Physics2D::ObjectTorqueData data = Physics2D::ApplyTorque(timeDelta, manager.Objects[Object.Value], drag, 1.0f, !is_paused);
-
+	return; /*
 	Arrow_Test[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 	Arrow_Test[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 0.5f), 16.0f, data.Drag);
 
@@ -240,7 +240,7 @@ void TestTorque(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool 
 		};
 		Arrow_Test[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), sizes[ranks[0]], data.Torque);
 		Arrow_Test[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.ChangeRot);
-	}
+	}*/
 }
 void TestForce(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool is_paused)
 {
@@ -269,102 +269,22 @@ void TestForce(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool i
 		Arrow_Test[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.ChangeRot);
 	}
 	Arrow_Test[6] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), 16.0f, data.ChangePos);
-
-	/*{
-		float values[3]
-		{
-			data.Normal.length2(),
-			data.Direction.length2(),
-			data.Impulse.length2(),
-		};
-		unsigned int ranks[3];
-		for (unsigned int j = 0; j < 3; j++)
-		{
-			ranks[j] = 0;
-			for (unsigned int i = 0; i < 3; i++)
-			{
-				if (i != j)
-				{
-					if (values[j] < values[i])
-					{
-						ranks[j]++;
-					}
-				}
-			}
-		}
-		float sizes[3]
-		{
-			20.0f,
-			16.0f,
-			12.0f,
-		};
-
-		Arrow_Impulse[ranks[0] + 1] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[0]], Ray2D(data.Contact, data.Normal));
-		Arrow_Impulse[ranks[1] + 1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 0.0f), sizes[ranks[1]], Ray2D(data.Contact, data.Direction));
-		Arrow_Impulse[ranks[2] + 1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 1.0f), sizes[ranks[2]], Ray2D(data.Contact, data.Impulse));
-	}*/
-
-	//Arrow_Test[4] = Arrow2D::Inst::Data(ColorF4(1, 0, 0), 16.0f, Ray2D(data.Contact, data.Perp));
 }
 };
 SDrag Drag;
 
 
 
-/* Arrows Allocation sucks
-some other stuff too
-
-how it would be nice:
-in a function, or whereever
-you can just declate an arrow
-make it point somewhere
-and thats it
-
-in the background
-statically bind a current "Arrow Manager"
-(I currently only use one)
-
-remember this Instance
-Draw everything
-and then clear all arrows ?
-maybe not all
-
-make it so then the arrow object is deleted
-it still gets drawn, and then deleted
-unless specified otherwise
-
-if the arrow does now get deleted
-so if it is a member
-then keep it active
-unless it is explicitly deactvated
-
-deactivated arrows can be reactivated
-which is the same is declaring them
-
-when an arrow is declared, but no "Arrow Manager" is bound
-dont crash, just make the Arrow Deactivated
-
-
-
-maybe do this for all Graphics Objects
-like Physics Objects
-but there the problem is that Physics Objects can have different main Data
-*/
-
-/* how to only delete once Frame happens ?
-*/
-Arrow2D::Object CheckMomentOfInertia_Arrows;
 void CheckMomentOfInertia(float timeDelta, Point2D pos)
 {
 	if (!Object_Selected.IsValid()) { return; }
 	Physics2D::ObjectMomentOfIntertiaData data = Physics2D::CheckMomentOfIntertia(timeDelta, Physics2D_Manager.Objects[Object_Selected.Value], pos);
 
-	CheckMomentOfInertia_Arrows.Data[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
-
-	CheckMomentOfInertia_Arrows.Data[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityPos);
-	CheckMomentOfInertia_Arrows.Data[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityRot);
-
-	CheckMomentOfInertia_Arrows.Data[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.CenterOfMass);
+	Arrow2D::Object arrows(4);
+	arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
+	arrows[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityPos);
+	arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityRot);
+	arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.CenterOfMass);
 }
 
 
@@ -486,11 +406,11 @@ void Init()
 
 	//CheckMomentOfInertia_Arrows.Allocate(Physics2D_Manager.Arrow.Instances, 10);
 	//CheckMomentOfInertia_Arrows.Allocate(Arrow2D::Manager::Current().Instances, 10);
-	CheckMomentOfInertia_Arrows.Allocate(10);
+	//CheckMomentOfInertia_Arrows.Allocate(10);
 }
 void Free()
 {
-	CheckMomentOfInertia_Arrows.Dispose();
+	//CheckMomentOfInertia_Arrows.Dispose();
 
 	Physics2D_Manager.Objects.Clear();
 	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)

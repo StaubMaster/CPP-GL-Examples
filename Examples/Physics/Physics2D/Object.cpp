@@ -63,7 +63,7 @@ void Physics2D::Object::Show_Arrows()
 	if (!Data_Arrows.Is())
 	{
 		//Data_Arrows.Allocate((*(*InstanceManager).Manager).Arrow.Instances, 1 + CornerCount() * 2 + 1);
-		Data_Arrows.Allocate(Arrow2D::Manager::Current().Instances, 1 + CornerCount() * 2 + 1);
+		//Data_Arrows.Allocate(Arrow2D::Manager::Current().Instances, 1 + CornerCount() * 2 + 1);
 	}
 }
 

@@ -6,8 +6,10 @@
 
 # include "Graphics/Texture/Array2D.hpp"
 
-# include "Arrow2D/Inst/Data.hpp"
+//# include "Arrow2D/Inst/Data.hpp"
+# include "Arrow2D/Data.hpp"
 # include "Miscellaneous/EntryContainer/Binary.hpp"
+# include "Miscellaneous/Container/Binary.hpp"
 
 class DirectoryInfo;
 
@@ -25,7 +27,9 @@ struct Manager
 	::Arrow2D::Shader								Shader;
 	::Arrow2D::Buffer								Buffer;
 	::Texture::Array2D								Texture;
-	EntryContainer::Binary<Arrow2D::Inst::Data>		Instances;
+//	EntryContainer::Binary<Arrow2D::Inst::Data>		Instances;
+//	EntryContainer::Binary<Arrow2D::Data>			Instances;
+	Container::Binary<Arrow2D::Data*>				Instances;
 
 	~Manager();
 	Manager();
