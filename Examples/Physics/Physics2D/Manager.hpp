@@ -13,9 +13,7 @@
 # include "Physics2D/Shaders/PolyGon.hpp"
 # include "WireFrame2D/Shader.hpp"
 
-# include "Arrow2D/Shader.hpp"
-# include "Arrow2D/Buffer.hpp"
-# include "Arrow2D/Inst/Data.hpp"
+# include "Arrow2D/Manager.hpp"
 
 #include "ValueType/Undex.hpp"
 #include "ValueType/View2D.hpp"
@@ -32,13 +30,10 @@ struct Manager
 	Physics2D::Shaders::PolyGon		Shader_PolyGon;
 	Wire2D::Shader					Shader_WireFrame;
 	Container::Array<Physics2D::InstanceManager>	MainInstances;
-	
-	::Arrow2D::Shader								Shader_Arrow;
-	::Arrow2D::Buffer								Buffer_Arrow;
-	::Texture::Array2D								Texture_Arrow;
-	EntryContainer::Binary<Arrow2D::Inst::Data>		Instances_Arrow;
 
-	Container::Binary<Physics2D::Object>			Objects;
+	::Arrow2D::Manager		Arrow;
+
+	Container::Binary<Physics2D::Object>	Objects;
 	
 	Point2D		Gravity;
 	float		AirResistance;
@@ -56,13 +51,13 @@ struct Manager
 
 	void GraphicsCreate();
 	void GraphicsDelete();
+	void GraphicsUpdate();
 
-	void Arrow_Main_Default();
-	void Arrow_Inst_Update();
-	void Arrow_Draw();
+//	void Arrow_Main_Default();
+//	void Arrow_Inst_Update();
+//	void Arrow_Draw();
 
 	void Draw();
-	void UpdateGraphics();
 
 
 

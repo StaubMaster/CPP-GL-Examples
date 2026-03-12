@@ -14,23 +14,43 @@
 
 
 
-Arrow2D::Manager::~Manager() { }
+
+
+Arrow2D::Manager * Arrow2D::Manager::CurrentPointer = nullptr;
+Arrow2D::Manager & Arrow2D::Manager::Current() { return *CurrentPointer; }
+bool Arrow2D::Manager::CheckCurrent() { return (Arrow2D::Manager::CurrentPointer != nullptr); }
+void Arrow2D::Manager::ClearCurrent() { Arrow2D::Manager::CurrentPointer = nullptr; }
+bool Arrow2D::Manager::IsCurrent() const { return (Arrow2D::Manager::CurrentPointer == this); }
+void Arrow2D::Manager::MakeCurrent() { Arrow2D::Manager::CurrentPointer = this; }
+
+
+
+
+
+Arrow2D::Manager::~Manager() { if (IsCurrent()) { ClearCurrent(); } }
 Arrow2D::Manager::Manager()
-	: Buffer(GL::DrawMode::Triangles)
+	: Shader()
+	, Buffer(GL::DrawMode::Triangles)
+	, Texture()
+	, Instances()
 { }
 
 
 
-void Arrow2D::Manager::InitExternal(const DirectoryInfo & shaderDir)
+void Arrow2D::Manager::Dispose()
+{ }
+
+
+
+void Arrow2D::Manager::InitExternal(const DirectoryInfo & ShaderDir)
 {
 	{
 		Container::Array<::Shader::Code> code({
-			::Shader::Code(shaderDir.File("Arrow/2D.vert")),
-			::Shader::Code(shaderDir.File("Arrow/2D.frag")),
+			::Shader::Code(ShaderDir.File("Arrow/2D.vert")),
+			::Shader::Code(ShaderDir.File("Arrow/2D.frag")),
 		});
 		Shader.Change(code);
 	}
-
 	{
 		Buffer.Main.Pos.Change(0);
 		Buffer.Main.Tex.Change(1);
@@ -40,7 +60,7 @@ void Arrow2D::Manager::InitExternal(const DirectoryInfo & shaderDir)
 		Buffer.Inst.Col.Change(5);
 	}
 }
-void Arrow2D::Manager::InitInternal(const DirectoryInfo & imageDir)
+void Arrow2D::Manager::InitInternal(const DirectoryInfo & ImageDir)
 {
 	{
 		AxisBox2D	Pos;
@@ -85,8 +105,9 @@ void Arrow2D::Manager::InitInternal(const DirectoryInfo & imageDir)
 
 	{
 		Texture.Bind();
-		Container::Binary<FileInfo> files;
-		files.Insert(imageDir.File("Arrow/96x32.png"));
+		Container::Array<FileInfo> files({
+			ImageDir.File("Arrow/96x32.png"),
+		});
 		Texture.Assign(96, 32, files);
 	}
 }
@@ -108,8 +129,50 @@ void Arrow2D::Manager::GraphicsDelete()
 
 
 
+void Arrow2D::Manager::Main_Default()
+{
+	AxisBox2D	Pos;
+	AxisBox2D	Tex;
+
+	Container::Binary<Arrow2D::Main::Data> data;
+
+	Pos = AxisBox2D(Point2D(-3, -1), Point2D(-1, +1));
+	Tex = AxisBox2D(Point2D(0 / 96.0f, 0), Point2D(32 / 96.0f, 1));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(Tex.Min.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(Tex.Max.X, Tex.Max.Y, 0)));
+
+	Pos = AxisBox2D(Point2D(-1, -1), Point2D(+1, +1));
+	Tex = AxisBox2D(Point2D(32 / 96.0f, 0), Point2D(64 / 96.0f, 1));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(Tex.Min.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(Tex.Max.X, Tex.Max.Y, 0)));
+
+	Pos = AxisBox2D(Point2D(+1, -1), Point2D(+3, +1));
+	Tex = AxisBox2D(Point2D(64 / 96.0f, 0), Point2D(96 / 96.0f, 1));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(Tex.Min.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(Tex.Max.X, Tex.Max.Y, 0)));
+
+	Buffer.Main.Change(data);
+}
+void Arrow2D::Manager::Inst_Update()
+{
+	Instances.CompactHere();
+	Buffer.Inst.Change(Instances);
+}
 void Arrow2D::Manager::Draw()
 {
+	Inst_Update();
 	Shader.Bind();
 	Texture.Bind();
 	Buffer.Draw();

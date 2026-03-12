@@ -47,6 +47,7 @@
 #include "Arrow2D/Shader.hpp"
 #include "Arrow2D/Main/Data.hpp"
 #include "Arrow2D/Inst/Data.hpp"
+#include "Arrow2D/Object.hpp"
 
 #include "WireFrame2D/WireFrame2D.hpp"
 #include "WireFrame2D/Manager.hpp"
@@ -102,7 +103,7 @@ MainContext()
 	Container::Array<Shader::Base *> shaders({
 		&Physics2D_Manager.Shader_PolyGon,
 		&Physics2D_Manager.Shader_WireFrame,
-		&Physics2D_Manager.Shader_Arrow,
+		&Physics2D_Manager.Arrow.Shader,
 	});
 	Multiform_DisplaySize.FindUniforms(shaders);
 	Multiform_View.FindUniforms(shaders);
@@ -145,8 +146,10 @@ void Begin(Point2D pos0, Physics2D::Manager & manager)
 		if (Object.IsValid())
 		{
 			Pos0 = manager.Objects[Object.Value].RelativePositionOf(pos0);
-			Arrow.Allocate(manager.Instances_Arrow, 1);
-			Arrow_Test.Allocate(manager.Instances_Arrow, 10);
+			//Arrow.Allocate(manager.Arrow.Instances, 1);
+			//Arrow_Test.Allocate(manager.Arrow.Instances, 10);
+			Arrow.Allocate(Arrow2D::Manager::Current().Instances, 1);
+			Arrow_Test.Allocate(Arrow2D::Manager::Current().Instances, 10);
 			(*Arrow).Col = ColorF4(1, 1, 1);
 			(*Arrow).Size = 20.0f;
 			Is = true;
@@ -347,18 +350,21 @@ maybe do this for all Graphics Objects
 like Physics Objects
 but there the problem is that Physics Objects can have different main Data
 */
-EntryContainer::Entry<Arrow2D::Inst::Data> CheckMomentOfInertia_Arrows;
+
+/* how to only delete once Frame happens ?
+*/
+Arrow2D::Object CheckMomentOfInertia_Arrows;
 void CheckMomentOfInertia(float timeDelta, Point2D pos)
 {
 	if (!Object_Selected.IsValid()) { return; }
 	Physics2D::ObjectMomentOfIntertiaData data = Physics2D::CheckMomentOfIntertia(timeDelta, Physics2D_Manager.Objects[Object_Selected.Value], pos);
 
-	CheckMomentOfInertia_Arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
+	CheckMomentOfInertia_Arrows.Data[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 
-	CheckMomentOfInertia_Arrows[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityPos);
-	CheckMomentOfInertia_Arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityRot);
+	CheckMomentOfInertia_Arrows.Data[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityPos);
+	CheckMomentOfInertia_Arrows.Data[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityRot);
 
-	CheckMomentOfInertia_Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.CenterOfMass);
+	CheckMomentOfInertia_Arrows.Data[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.CenterOfMass);
 }
 
 
@@ -471,14 +477,16 @@ void Init()
 	Physics2D_Manager.GraphicsCreate();
 
 	Physics2D_Manager.InitInternal(ImageDir);
-	Physics2D_Manager.Arrow_Main_Default();
+	Physics2D_Manager.Arrow.Main_Default();
 
 	Make();
 
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 
-	CheckMomentOfInertia_Arrows.Allocate(Physics2D_Manager.Instances_Arrow, 10);
+	//CheckMomentOfInertia_Arrows.Allocate(Physics2D_Manager.Arrow.Instances, 10);
+	//CheckMomentOfInertia_Arrows.Allocate(Arrow2D::Manager::Current().Instances, 10);
+	CheckMomentOfInertia_Arrows.Allocate(10);
 }
 void Free()
 {
@@ -636,7 +644,7 @@ void Frame(double timeDelta)
 			Update(timeDelta, false);
 		}
 
-		Physics2D_Manager.UpdateGraphics();
+		Physics2D_Manager.GraphicsUpdate();
 	}
 
 
