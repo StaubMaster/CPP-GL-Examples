@@ -25,15 +25,24 @@ struct Manager;
 
 struct InstanceManager
 {
+	static InstanceManager * CurrentPointer;
+	static InstanceManager & Current();
+	static bool CheckCurrent();
+	static void ClearCurrent();
+	bool IsCurrent() const;
+	void MakeCurrent();
+
+
+
 	::Physics2D::Manager *	Manager;
 
 	::PolyGon *		PolyGon;
 	::WireFrame2D *	WireFrame;
 	::WireFrame2D *	WireFrameBox;
 
-	::EntryContainer::Binary<Physics2D::Inst::Data> *		Instances_PolyGon;
-	::EntryContainer::Binary<Physics2D::Inst::Data> *		Instances_WireFrame;
-	::EntryContainer::Binary<Physics2D::Inst::Data> *		Instances_WireFrameBox;
+//	::EntryContainer::Binary<Physics2D::Inst::Data> *		Instances_PolyGon;
+//	::EntryContainer::Binary<Physics2D::Inst::Data> *		Instances_WireFrame;
+//	::EntryContainer::Binary<Physics2D::Inst::Data> *		Instances_WireFrameBox;
 
 	::BufferArray::MainInst<PolyGonGraphics::Buffer, Physics2D::Inst::Buffer>							Buffer_PolyGon;
 	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Physics2D::Inst::Buffer>	Buffer_WireFrame;

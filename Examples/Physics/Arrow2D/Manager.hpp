@@ -24,6 +24,8 @@ struct Manager
 	bool IsCurrent() const;
 	void MakeCurrent();
 
+
+
 	::Arrow2D::Shader								Shader;
 	::Arrow2D::Buffer								Buffer;
 	::Texture::Array2D								Texture;

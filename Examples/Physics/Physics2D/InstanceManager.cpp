@@ -6,6 +6,19 @@
 
 
 
+
+
+Physics2D::InstanceManager * Physics2D::InstanceManager::CurrentPointer = nullptr;
+Physics2D::InstanceManager & Physics2D::InstanceManager::Current() { return *CurrentPointer; }
+bool Physics2D::InstanceManager::CheckCurrent() { return (Physics2D::InstanceManager::CurrentPointer != nullptr); }
+void Physics2D::InstanceManager::ClearCurrent() { Physics2D::InstanceManager::CurrentPointer = nullptr; }
+bool Physics2D::InstanceManager::IsCurrent() const { return (Physics2D::InstanceManager::CurrentPointer == this); }
+void Physics2D::InstanceManager::MakeCurrent() { Physics2D::InstanceManager::CurrentPointer = this; }
+
+
+
+
+
 Physics2D::InstanceManager::~InstanceManager()
 { }
 Physics2D::InstanceManager::InstanceManager()
@@ -13,9 +26,9 @@ Physics2D::InstanceManager::InstanceManager()
 	, PolyGon(new ::PolyGon())
 	, WireFrame(new ::WireFrame2D())
 	, WireFrameBox(new ::WireFrame2D())
-	, Instances_PolyGon(new EntryContainer::Binary<Physics2D::Inst::Data>())
-	, Instances_WireFrame(new EntryContainer::Binary<Physics2D::Inst::Data>())
-	, Instances_WireFrameBox(new EntryContainer::Binary<Physics2D::Inst::Data>())
+//	, Instances_PolyGon(new EntryContainer::Binary<Physics2D::Inst::Data>())
+//	, Instances_WireFrame(new EntryContainer::Binary<Physics2D::Inst::Data>())
+//	, Instances_WireFrameBox(new EntryContainer::Binary<Physics2D::Inst::Data>())
 	, Buffer_PolyGon(GL::DrawMode::Triangles)
 	, Buffer_WireFrame(GL::DrawMode::Lines)
 	, Buffer_WireFrameBox(GL::DrawMode::Lines)
@@ -25,9 +38,9 @@ Physics2D::InstanceManager::InstanceManager(const InstanceManager & other)
 	, PolyGon(other.PolyGon)
 	, WireFrame(other.WireFrame)
 	, WireFrameBox(other.WireFrameBox)
-	, Instances_PolyGon(other.Instances_PolyGon)
-	, Instances_WireFrame(other.Instances_WireFrame)
-	, Instances_WireFrameBox(other.Instances_WireFrameBox)
+//	, Instances_PolyGon(other.Instances_PolyGon)
+//	, Instances_WireFrame(other.Instances_WireFrame)
+//	, Instances_WireFrameBox(other.Instances_WireFrameBox)
 	, Buffer_PolyGon(other.Buffer_PolyGon)
 	, Buffer_WireFrame(other.Buffer_WireFrame)
 	, Buffer_WireFrameBox(other.Buffer_WireFrameBox)
@@ -38,9 +51,9 @@ Physics2D::InstanceManager & Physics2D::InstanceManager::operator=(const Instanc
 	PolyGon = other.PolyGon;
 	WireFrame = other.WireFrame;
 	WireFrameBox = other.WireFrameBox;
-	Instances_PolyGon = other.Instances_PolyGon;
-	Instances_WireFrame = other.Instances_WireFrame;
-	Instances_WireFrameBox = other.Instances_WireFrameBox;
+//	Instances_PolyGon = other.Instances_PolyGon;
+//	Instances_WireFrame = other.Instances_WireFrame;
+//	Instances_WireFrameBox = other.Instances_WireFrameBox;
 	Buffer_PolyGon = other.Buffer_PolyGon;
 	Buffer_WireFrame = other.Buffer_WireFrame;
 	Buffer_WireFrameBox = other.Buffer_WireFrameBox;
@@ -55,9 +68,9 @@ void Physics2D::InstanceManager::Dispose()
 	delete WireFrame;
 	delete WireFrameBox;
 
-	delete Instances_PolyGon;
-	delete Instances_WireFrame;
-	delete Instances_WireFrameBox;
+//	delete Instances_PolyGon;
+//	delete Instances_WireFrame;
+//	delete Instances_WireFrameBox;
 }
 
 
@@ -144,11 +157,11 @@ void Physics2D::InstanceManager::UpdateInst()
 //	Buffer_WireFrame.Inst.Change(*Instances);
 //	Buffer_WireFrameBox.Inst.Change(*Instances);
 
-	Instances_PolyGon -> CompactHere();
-	Instances_WireFrame -> CompactHere();
-	Instances_WireFrameBox -> CompactHere();
+//	Instances_PolyGon -> CompactHere();
+//	Instances_WireFrame -> CompactHere();
+//	Instances_WireFrameBox -> CompactHere();
 
-	Buffer_PolyGon.Inst.Change(*Instances_PolyGon);
-	Buffer_WireFrame.Inst.Change(*Instances_WireFrame);
-	Buffer_WireFrameBox.Inst.Change(*Instances_WireFrameBox);
+//	Buffer_PolyGon.Inst.Change(*Instances_PolyGon);
+//	Buffer_WireFrame.Inst.Change(*Instances_WireFrame);
+//	Buffer_WireFrameBox.Inst.Change(*Instances_WireFrameBox);
 }

@@ -146,7 +146,7 @@ void Begin(Point2D pos0, Physics2D::Manager & manager)
 		Object = manager.FindObjectIndex(pos0);
 		if (Object.IsValid())
 		{
-			Pos0 = manager.Objects[Object.Value].RelativePositionOf(pos0);
+			Pos0 = manager.Objects[Object.Value] -> RelativePositionOf(pos0);
 			Arrow.Allocate(1);
 			Arrow_Test.Allocate(10);
 			(*Arrow).Col = ColorF4(1, 1, 1);
@@ -183,14 +183,14 @@ void Change(Point2D pos1, Physics2D::Manager & manager)
 	Pos1 = pos1;
 	(void)manager;
 	(*Arrow).Size = 0.0f;
-	(*Arrow).Pos0 = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
+	(*Arrow).Pos0 = manager.Objects[Object.Value] -> AbsolutePositionOf(Pos0);
 	(*Arrow).Pos1 = Pos1;
 }
 void Update(float timeDelta, Physics2D::Manager & manager, bool is_paused)
 {
 	if (!Is) { return; }
 
-	Point2D absolute = manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
+	Point2D absolute = manager.Objects[Object.Value] -> AbsolutePositionOf(Pos0);
 	Ray2D drag = Ray2D(absolute, (Pos1 - absolute));
 
 //	TestTorque(timeDelta, manager, drag, is_paused);
@@ -217,8 +217,8 @@ void RankLengths(unsigned int count, float values[], unsigned int ranks[])
 
 void TestTorque(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool is_paused)
 {
-	Physics2D::ObjectTorqueData data = Physics2D::ApplyTorque(timeDelta, manager.Objects[Object.Value], drag, 1.0f, !is_paused);
-	return; /*
+	Physics2D::ObjectTorqueData data = Physics2D::ApplyTorque(timeDelta, *manager.Objects[Object.Value], drag, 1.0f, !is_paused);
+
 	Arrow_Test[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 	Arrow_Test[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 0.5f), 16.0f, data.Drag);
 
@@ -240,11 +240,11 @@ void TestTorque(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool 
 		};
 		Arrow_Test[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), sizes[ranks[0]], data.Torque);
 		Arrow_Test[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.ChangeRot);
-	}*/
+	}
 }
 void TestForce(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool is_paused)
 {
-	Physics2D::ObjectForceData data = Physics2D::ApplyForce(timeDelta, manager.Objects[Object.Value], drag, 10.0f, !is_paused);
+	Physics2D::ObjectForceData data = Physics2D::ApplyForce(timeDelta, *(manager.Objects[Object.Value]), drag, 10.0f, !is_paused);
 
 	Arrow_Test[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 	Arrow_Test[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 24.0f, data.Drag);
@@ -277,8 +277,9 @@ SDrag Drag;
 
 void CheckMomentOfInertia(float timeDelta, Point2D pos)
 {
+	return;
 	if (!Object_Selected.IsValid()) { return; }
-	Physics2D::ObjectMomentOfIntertiaData data = Physics2D::CheckMomentOfIntertia(timeDelta, Physics2D_Manager.Objects[Object_Selected.Value], pos);
+	Physics2D::ObjectMomentOfIntertiaData data = Physics2D::CheckMomentOfIntertia(timeDelta, *Physics2D_Manager.Objects[Object_Selected.Value], pos);
 
 	Arrow2D::Object arrows(4);
 	arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
@@ -304,11 +305,11 @@ void Make()
 
 
 
-	unsigned int wall = 0;
-	Physics2D_Manager.MainInstances[wall].Buffer_PolyGon.Create();
+	Physics2D::InstanceManager & wall = Physics2D_Manager.MainInstances[0];
+	wall.Buffer_PolyGon.Create();
 	{
 		float thickness = 0.1f;
-		PolyGon & poly_gon = *(Physics2D_Manager.MainInstances[wall].PolyGon);
+		PolyGon & poly_gon = *(wall.PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1, 0), ColorF4(1, 1, 1)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1, 0), ColorF4(1, 1, 1)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1 - thickness, -thickness), ColorF4(0, 0, 0)));
@@ -316,43 +317,56 @@ void Make()
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
+	wall.Manager = &Physics2D_Manager;
 
-	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[wall], Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true));
-	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[wall], Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees( 90))), true));
-	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[wall], Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), true));
-	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[wall], Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees(270))), true));
+	//Physics2D::Object obj(wall, Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true);
+	// have a flag to keep after Object gets deleted
+	// that would just call the Constructor without doing anything with it
+	// have a static function called "Physics2D::Construct"
+	// that creates Objects that dont get deleted
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(wall, Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(wall, Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees( 90))), true));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(wall, Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), true));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(wall, Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees(270))), true));
+
+	wall.MakeCurrent();
+	Physics2D::Object::Construct(Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true);
+	Physics2D::Object::Construct(Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees( 90))), true);
+	Physics2D::Object::Construct(Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), true);
+	Physics2D::Object::Construct(Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees(270))), true);
 
 
 
-	unsigned int obj0 = 1;
-	Physics2D_Manager.MainInstances[obj0].Buffer_PolyGon.Create();
+	Physics2D::InstanceManager & obj0 = Physics2D_Manager.MainInstances[1];
+	obj0.Buffer_PolyGon.Create();
 	{
-		PolyGon & poly_gon = *(Physics2D_Manager.MainInstances[obj0].PolyGon);
+		PolyGon & poly_gon = *(obj0.PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 	}
+	obj0.Manager = &Physics2D_Manager;
 
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(0.0f, 0.1f), Angle2D(Angle::Degrees(45))), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(0.0f, 0.1f), Angle2D(Angle::Degrees(45))), false));
 
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(0.0f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(0.0f, 0.0f), Angle2D()), false));
 
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
 
 //	Stuck in Wall. Bounces back "into" Wall every time it would get out.
 //	No Force pushing it out.
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj0], Trans2D(Point2D(-1.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(-1.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
 
 
 
-	unsigned int obj1 = 2;
-	Physics2D_Manager.MainInstances[obj1].Buffer_PolyGon.Create();
+	Physics2D::InstanceManager & obj1 = Physics2D_Manager.MainInstances[2];
+	obj1.Buffer_PolyGon.Create();
 	{
-		PolyGon & poly_gon = *(Physics2D_Manager.MainInstances[obj1].PolyGon);
+		PolyGon & poly_gon = *(obj1.PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, +0.1f), ColorF4(1, 0, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, -0.1f), ColorF4(0, 0, 1)));
@@ -360,16 +374,17 @@ void Make()
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
+	obj1.Manager = &Physics2D_Manager;
 
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj1], Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(Physics2D_Manager.MainInstances[obj1], Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj1, Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj1, Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
 
 
 
-	unsigned int obj2 = 3;
-	Physics2D_Manager.MainInstances[obj2].Buffer_PolyGon.Create();
+	Physics2D::InstanceManager & obj2 = Physics2D_Manager.MainInstances[3];
+	obj2.Buffer_PolyGon.Create();
 	{
-		PolyGon & poly_gon = *(Physics2D_Manager.MainInstances[obj2].PolyGon);
+		PolyGon & poly_gon = *(obj2.PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, -0.1f), ColorF4(0, 1, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 1)));
@@ -377,6 +392,7 @@ void Make()
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
+	obj2.Manager = &Physics2D_Manager;
 
 
 
@@ -609,9 +625,9 @@ void MouseClick(UserParameter::Mouse::Click params)
 		{
 			if (Object_Selected.IsValid())
 			{
-				Physics2D_Manager.Objects[Object_Selected.Value].Hide_WireFrame();
-				Physics2D_Manager.Objects[Object_Selected.Value].Hide_WireFrameBox();
-				Physics2D_Manager.Objects[Object_Selected.Value].Hide_Arrows();
+				Physics2D_Manager.Objects[Object_Selected.Value] -> Hide_WireFrame();
+				Physics2D_Manager.Objects[Object_Selected.Value] -> Hide_WireFrameBox();
+				Physics2D_Manager.Objects[Object_Selected.Value] -> Hide_Arrows();
 				std::cout << "UnSelect: " << Object_Selected << '\n';
 			}
 
@@ -619,9 +635,9 @@ void MouseClick(UserParameter::Mouse::Click params)
 
 			if (Object_Selected.IsValid())
 			{
-				Physics2D_Manager.Objects[Object_Selected.Value].Show_WireFrame();
-				Physics2D_Manager.Objects[Object_Selected.Value].Show_WireFrameBox();
-				Physics2D_Manager.Objects[Object_Selected.Value].Show_Arrows();
+				Physics2D_Manager.Objects[Object_Selected.Value] -> Show_WireFrame();
+				Physics2D_Manager.Objects[Object_Selected.Value] -> Show_WireFrameBox();
+				Physics2D_Manager.Objects[Object_Selected.Value] -> Show_Arrows();
 				std::cout << "UnSelect: " << Object_Selected << '\n';
 			}
 		}
@@ -649,13 +665,20 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 	{
 		if (params.Code == UserParameter::KeyBoard::Keys::Insert)
 		{
-			Physics2D_Manager.Objects.Insert(
+			/*Physics2D_Manager.Objects.Insert(
 				Physics2D::Object(
 					Physics2D_Manager.MainInstances[3],
 					Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()),
 					//Trans2D(Point2D(), Angle2D(Angle::Degrees(45))),
 					false
 				)
+			);*/
+
+			Physics2D_Manager.MainInstances[3].MakeCurrent();
+			Physics2D::Object::Construct(
+				Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()),
+				//Trans2D(Point2D(), Angle2D(Angle::Degrees(45))),
+				false
 			);
 		}
 		if (params.Code == UserParameter::KeyBoard::Keys::Delete)

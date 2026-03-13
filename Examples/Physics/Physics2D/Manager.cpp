@@ -5,6 +5,7 @@
 #include "FileInfo.hpp"
 
 #include "Miscellaneous/Container/Array.hpp"
+#include "Miscellaneous/Container/Fixed.hpp"
 
 #include "Graphics/Shader/Code.hpp"
 
@@ -82,12 +83,35 @@ void Physics2D::Manager::GraphicsUpdate()
 {
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		Objects[i].UpdateEntrys();
+		Objects[i] -> UpdateEntrys();
 	}
-	
+
 	for (unsigned int i = 0; i < MainInstances.Count(); i++)
 	{
 		MainInstances[i].UpdateInst();
+	}
+
+	for (unsigned int j = 0; j < MainInstances.Count(); j++)
+	{
+		unsigned int c = 0;
+		for (unsigned int i = 0; i < Objects.Count(); i++)
+		{
+			if (Objects[i] != nullptr && Objects[i] -> DrawPolyGon && Objects[i] -> InstanceManager == &MainInstances[j])
+			{
+				c++;
+			}
+		}
+
+		Container::Fixed<Physics2D::Inst::Data> data(c);
+		for (unsigned int i = 0; i < Objects.Count(); i++)
+		{
+			if (Objects[i] != nullptr && Objects[i] -> DrawPolyGon && Objects[i] -> InstanceManager == &MainInstances[j])
+			{
+				data.Insert(Objects[i] -> Data);
+			}
+		}
+
+		MainInstances[j].Buffer_PolyGon.Inst.Change(data);
 	}
 }
 
@@ -121,9 +145,9 @@ void Physics2D::Manager::UpdateGravity(float timeDelta)
 	Point2D GravityAccel = Gravity * timeDelta;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		if (!Objects[i].IsStatic)
+		if (!Objects[i] -> IsStatic)
 		{
-			Objects[i].Data.Vel.Pos += GravityAccel;
+			Objects[i] -> Data.Vel.Pos += GravityAccel;
 		}
 	}
 }
@@ -132,10 +156,10 @@ void Physics2D::Manager::UpdateAirResistance(float timeDelta)
 	float factor = 1.0f - (AirResistance * timeDelta);
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		if (!Objects[i].IsStatic)
+		if (!Objects[i] -> IsStatic)
 		{
-			Objects[i].Data.Vel.Pos *= factor;
-			Objects[i].Data.Vel.Rot *= factor;
+			Objects[i] -> Data.Vel.Pos *= factor;
+			Objects[i] -> Data.Vel.Rot *= factor;
 		}
 	}
 }
@@ -146,7 +170,7 @@ void Physics2D::Manager::UpdateCollision(float timeDelta)
 	{
 		for (unsigned int i1 = i0 + 1; i1 < Objects.Count(); i1++)
 		{
-			Physics2D::CollideLinear(Objects[i0], Objects[i1]); // good
+			Physics2D::CollideLinear(*Objects[i0], *Objects[i1]); // good
 			//Physics2D::CollideRotate(Objects[i0], Objects[i1]); // wack
 			//Physics2D::Collide(Objects[i0], Objects[i1]);
 		}
@@ -157,10 +181,10 @@ void Physics2D::Manager::UpdateOrientation(float timeDelta)
 {
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		if (!Objects[i].IsStatic)
+		if (!Objects[i] -> IsStatic)
 		{
-			Objects[i].Data.Now.Pos += (Objects[i].Data.Vel.Pos * timeDelta);
-			Objects[i].Data.Now.Rot += (Objects[i].Data.Vel.Rot * timeDelta);
+			Objects[i] -> Data.Now.Pos += (Objects[i] -> Data.Vel.Pos * timeDelta);
+			Objects[i] -> Data.Now.Rot += (Objects[i] -> Data.Vel.Rot * timeDelta);
 		}
 	}
 }
@@ -179,7 +203,7 @@ Undex Physics2D::Manager::FindObjectIndex(Point2D p) const
 {
 	for (Undex u; u.Value < Objects.Count(); u++)
 	{
-		if (Objects[u.Value].IsContaining(p))
+		if (Objects[u.Value] -> IsContaining(p))
 		{
 			return u;
 		}

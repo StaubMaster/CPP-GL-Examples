@@ -4,7 +4,8 @@
 //# include "Physics2D/InstanceManager.hpp"
 
 # include "Inst/Physics2D/Data.hpp"
-# include "Arrow2D/Inst/Data.hpp"
+//# include "Arrow2D/Inst/Data.hpp"
+# include "Arrow2D/Object.hpp"
 
 # include "Miscellaneous/EntryContainer/Entry.hpp"
 
@@ -19,19 +20,20 @@ struct InstanceManager;
 struct Object
 {
 	Physics2D::InstanceManager *	InstanceManager;
+	Physics2D::Inst::Data			Data;
+	Arrow2D::Object					Arrows;
 
-	EntryContainer::Entry<Physics2D::Inst::Data>	Data_PolyGon;
-	EntryContainer::Entry<Physics2D::Inst::Data>	Data_WireFrame;
-	EntryContainer::Entry<Physics2D::Inst::Data>	Data_WireFrameBox;
-	EntryContainer::Entry<Arrow2D::Inst::Data>		Data_Arrows;
+	bool	RemoveNextFrame;
 
-	Physics2D::Inst::Data	Data;
+	bool	DrawPolyGon;
+	bool	DrawWireFrame;
+	bool	DrawWireFrameBox;
 
 	bool	IsTangible;
 	bool	IsStatic;
 	float	Mass;
 
-	bool				IsValid() const;
+//	bool IsValid() const;
 	const ::PolyGon *	PolyGon() const;
 
 	public:
@@ -56,17 +58,21 @@ struct Object
 	Point2D	AbsolutePositionOf(Point2D p) const;
 	Point2D	AbsoluteVelocityOf(Point2D p) const;
 
-	~Object();
-	Object();
-	Object(const Object & other);
-	Object & operator=(const Object & other);
-
-	Object(Physics2D::InstanceManager & inst_manager, bool is_static);
-	Object(Physics2D::InstanceManager & inst_manager, Trans2D now, bool is_static);
-	Object(Physics2D::InstanceManager & inst_manager, Trans2D now, Trans2D vel, bool is_static);
-
 	public:
 	bool IsContaining(Point2D p) const;
+
+	~Object();
+	Object();
+	Object(const Object & other) ;
+	Object & operator=(const Object & other);
+
+//	Object(Physics2D::InstanceManager & inst_manager, bool is_static);
+//	Object(Physics2D::InstanceManager & inst_manager, Trans2D now, bool is_static);
+//	Object(Physics2D::InstanceManager & inst_manager, Trans2D now, Trans2D vel, bool is_static);
+
+	static Object & Construct(bool is_static);
+	static Object & Construct(Trans2D now, bool is_static);
+	static Object & Construct(Trans2D now, Trans2D vel, bool is_static);
 };
 };
 

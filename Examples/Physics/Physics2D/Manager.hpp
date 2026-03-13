@@ -27,14 +27,25 @@ namespace Physics2D
 {
 struct Manager
 {
+	static Manager * CurrentPointer;
+	static Manager & Current();
+	static bool CheckCurrent();
+	static void ClearCurrent();
+	bool IsCurrent() const;
+	void MakeCurrent();
+
+
+
 	Physics2D::Shaders::PolyGon		Shader_PolyGon;
 	Wire2D::Shader					Shader_WireFrame;
+
 	Container::Array<Physics2D::InstanceManager>	MainInstances;
 
 	::Arrow2D::Manager		Arrow;
 
-	Container::Binary<Physics2D::Object>	Objects;
-	
+//	Container::Binary<Physics2D::Object>	Objects;
+	Container::Binary<Physics2D::Object *>	Objects;
+
 	Point2D		Gravity;
 	float		AirResistance;
 

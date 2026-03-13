@@ -549,10 +549,6 @@ so each Point only has ((1/12)/8)
 so only (1/96), that is very small
 */
 
-/*
-
-*/
-
 Physics2D::ObjectMomentOfIntertiaData Physics2D::CheckMomentOfIntertia(float timeDelta, Object & obj, Point2D pos)
 {
 	(void)timeDelta;
