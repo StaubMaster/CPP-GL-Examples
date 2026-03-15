@@ -437,25 +437,6 @@ void Physics2D::Collide(
 
 
 
-/*
-⁺⁻¹²³
-Mass:	M	kg
-Length:	L	m
-Time:	T	s
-
-Velocity:				M ⁰ L⁺¹ T⁻¹		Length / Time
-Accelleration:			M ⁰ L⁺¹ T⁻²		Velocity / Time
-Force:					M⁺¹ L⁺¹ T⁻²		Accelleration * Mass
-Momentum:				M⁺¹ L⁺¹ T⁻¹		Velocity * Mass = Force * Time
-Impulse:				M⁺¹ L⁺¹ T⁻¹		Force * Time
-
-Angular_Velocity:		M ⁰ L ⁰ T⁻¹		Time
-Angular_Accelleration:	M ⁰ L ⁰ T⁻²		Time * Time
-Torque:					M⁺¹ L⁺² T⁻²		Force * Length
-Angular_Momentum:		M⁺¹ L⁺² T⁻¹		Torque * Time
-Moment_of_Inertia:		M⁺¹ L⁺² T ⁰		Torque / Angular_Accelleration = Angular_Momentum * Time
-
-*/
 
 /* figure out Moment of Inertia
 
@@ -549,6 +530,47 @@ so each Point only has ((1/12)/8)
 so only (1/96), that is very small
 */
 
+
+
+#include "DataInclude.hpp"
+#include "DataShow.hpp"
+#include "Miscellaneous/Container/Binary.hpp"
+
+struct PointMass
+{
+	Point2D Point;
+	float Mass;
+
+	~PointMass() { }
+	PointMass() { }
+	PointMass(Point2D p, float m)
+		: Point(p)
+		, Mass(m)
+	{ }
+
+	static Matrix3x3 InertiaTensor(const Container::Member<PointMass> & pm)
+	{
+		Matrix3x3 I;
+		for (unsigned int y = 0; y < 3; y++)
+		{
+			for (unsigned int x = 0; x < 3; x++)
+			{
+				float sum = 0.0f;
+				for (unsigned int n = 0; n < pm.Count(); n++)
+				{
+					Point3D rel(pm[n].Point.X, pm[n].Point.Y, 0.0f);
+					float rel_[3] { rel.X, rel.Y, rel.Z };
+					float val = -(rel_[x] * rel_[y]);
+					if (x == y) { val += rel.length2(); }
+					sum += val * pm[n].Mass;
+				}
+				I.Data[x][y] = sum;
+			}
+		}
+		return I;
+	}
+};
+
 Physics2D::ObjectMomentOfIntertiaData Physics2D::CheckMomentOfIntertia(float timeDelta, Object & obj, Point2D pos)
 {
 	(void)timeDelta;
@@ -560,7 +582,7 @@ Physics2D::ObjectMomentOfIntertiaData Physics2D::CheckMomentOfIntertia(float tim
 	float m = obj.Mass;
 	Point2D r = pos - obj.Data.Now.Pos;
 	float ω = obj.Data.Vel.Rot.Ang.ToRadians();
-	Point2D v = Point2D::cross(ω, r); // ?
+	Point2D v = Point2D::cross(ω, r);
 	Point2D p = v * m;
 	float L1 = Point2D::cross(r, p);
 	float I = L1 / ω;
@@ -581,6 +603,87 @@ Physics2D::ObjectMomentOfIntertiaData Physics2D::CheckMomentOfIntertia(float tim
 
 	return data;
 }
+
+Physics2D::ObjectData Physics2D::CalculateObjectData(Object & obj)
+{
+	ObjectData data;
+
+	Container::Binary<PointMass> PointMasses;
+	float m = obj.Mass / obj.CornerCount();
+	for (unsigned int i = 0; i < obj.CornerCount(); i++)
+	{
+		PointMasses.Insert(PointMass(obj.CornerFromIndex(i), m));
+	}
+
+	{
+		Point2D MassPosSum;
+		float MassSum = 0.0f;
+		for (unsigned int i = 0; i < PointMasses.Count(); i++)
+		{
+			MassPosSum += PointMasses[i].Point * PointMasses[i].Mass;
+			MassSum += PointMasses[i].Mass;
+		}
+		data.CenterOfMass = MassPosSum / MassSum;
+	}
+
+	data.AngularPosition = obj.Data.Now.Rot.Ang.ToRadians();
+	data.AngularVelocity = obj.Data.Vel.Rot.Ang.ToRadians();
+
+	data.AngularVelocityLength = sqrt(data.AngularVelocity * data.AngularVelocity);
+	if (data.AngularVelocityLength != 0.0f)
+	{
+		data.AngularVelocityNormal = data.AngularVelocity / data.AngularVelocityLength;
+	}
+	else
+	{
+		data.AngularVelocityNormal = 0.0f;
+	}
+
+	data.MomentOfInertia = 0.0f;
+	for (unsigned int i = 0; i < PointMasses.Count(); i++)
+	{
+		data.MomentOfInertia += PointMasses[i].Mass * PointMasses[i].Point.length2();
+	}
+
+	data.AngularMomentum = data.MomentOfInertia * data.AngularVelocity;
+//	std::cout << "AngularMomentum: " << data.AngularMomentum << '\n';
+
+//	{
+//		Matrix3x3 InertiaTensor = PointMass::InertiaTensor(PointMasses);
+//		std::cout << "InertiaTensor:\n";
+//		std::cout << "  [ " << InertiaTensor.Data[0][0] << " , " << InertiaTensor.Data[1][0] << " , " << InertiaTensor.Data[2][0] << " ]\n";
+//		std::cout << "  [ " << InertiaTensor.Data[0][1] << " , " << InertiaTensor.Data[1][1] << " , " << InertiaTensor.Data[2][1] << " ]\n";
+//		std::cout << "  [ " << InertiaTensor.Data[0][2] << " , " << InertiaTensor.Data[1][2] << " , " << InertiaTensor.Data[2][2] << " ]\n";
+//		Point3D PlaneAsix(0, 0, 1);
+//	}
+
+//	std::cout << '\n';
+	return data;
+}
+Physics2D::ObjectContactForceData Physics2D::CalculateObjectContactForceData(Object & obj, Ray2D force)
+{
+	ObjectContactForceData data;
+
+	data.Contact = force.Pos - obj.AbsolutePositionOf(Point2D());
+//	data.Mass = obj.Mass;
+	// this is incorrect ?
+	// this cannot be done ?
+	// so no momentum
+
+	data.Force = force.Dir;
+	float dot = Point2D::dot(data.Force, data.Contact);
+	data.ForcePos = (data.Contact * ((dot / data.Contact.length2())));
+	data.ForceRot = data.Force - data.ForcePos;
+
+	data.Torque = Point2D::cross(data.Contact, data.ForceRot);
+
+//	data.MomentOfInertia = data.Mass * data.Contact.length2();
+//	data.AngularMomentum = data.MomentOfInertia * obj.Data.Vel.Rot.Ang.ToRadians();
+
+	return data;
+}
+
+
 
 Physics2D::ObjectTorqueData Physics2D::ApplyTorque(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change)
 {
@@ -616,45 +719,77 @@ Physics2D::ObjectTorqueData Physics2D::ApplyTorque(float timeDelta, Object & obj
 
 	return data;
 }
+
+
+
+/* how to change ?
+use Position and Velocity
+calculate current Torque or Force or whatever
+add new Value
+then uncalculate to new Velocity
+*/
+
 Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change)
 {
 	(void)scalar;
-
+	(void)timeDelta;
 	ObjectForceData data;
-	data.Drag = drag;
 
-	Point2D center = obj.AbsolutePositionOf(Point2D());
-	data.Contact = Line2D(center, drag.Pos);
+	Point2D Center = obj.AbsolutePositionOf(Point2D());
+	Point2D Origin = drag.Pos;
+	data.Contact = Line2D(Center, Origin);
 
-	Point2D RelativeContact = drag.Pos - center;
-	float RelativeContactDistance2 = RelativeContact.length2();
+	ObjectContactForceData contact_data = CalculateObjectContactForceData(obj, drag);
+	std::cout << "Contact : " << contact_data.Contact << '\n';
+//	std::cout << "Mass    : " << contact_data.Mass << '\n';
+	std::cout << "Force     : " << contact_data.Force << '\n';
+	std::cout << "ForcePos  : " << contact_data.ForcePos << '\n';
+	std::cout << "ForceRot  : " << contact_data.ForceRot << '\n';
+	std::cout << "Torque            : " << contact_data.Torque << " gm2/s2\n";
+//	std::cout << "Moment of Inertia : " << contact_data.MomentOfInertia << '\n';
+//	std::cout << "Angular Momentum  : " << contact_data.AngularMomentum << '\n';
+	std::cout << '\n';
 
-	Point2D Force = drag.Dir;
-	float dot = Point2D::dot(Force, RelativeContact);
+	data.Force = Ray2D(Origin, contact_data.Force);
+	data.ForcePos = Ray2D(Origin, contact_data.ForcePos);
+	data.ForceRot = Ray2D(Origin, contact_data.ForceRot);
+	data.Torque = Ray2D(Center, Point2D(0, contact_data.Torque));
 
-	Point2D ForcePos = (RelativeContact * ((dot / RelativeContactDistance2)));
-	Point2D ForceRot = Force - ForcePos;
-	data.ForcePos = Ray2D(drag.Pos, ForcePos);
-	data.ForceRot = Ray2D(drag.Pos, ForceRot);
+	ObjectData object_data = CalculateObjectData(obj);
+	std::cout << "Center of Mass : " << object_data.CenterOfMass << '\n';
+	std::cout << "Angular Position        : " << object_data.AngularPosition << " m/m\n";
+	std::cout << "Angular Velocity        : " << object_data.AngularVelocity << " m/ms\n";
+	std::cout << "Angular Velocity Length : " << object_data.AngularVelocityLength << '\n';
+	std::cout << "Angular Velocity Normal : " << object_data.AngularVelocityNormal << '\n';
+	std::cout << "Moment of Inertia       : " << object_data.MomentOfInertia << " gm2\n";
+	std::cout << "Angular Momentum        : " << object_data.AngularMomentum << " gm2/s\n";
+	std::cout << '\n';
 
-	float Torque = Point2D::cross(RelativeContact, ForceRot);
-	data.Torque = Ray2D(center, Point2D(0, Torque));
+	float AngularAcceleration = contact_data.Torque / object_data.MomentOfInertia;
+	std::cout << "Angular Acceleration    : " << AngularAcceleration << " m/ms2\n";
 
-	float MomentOfInertia = obj.Mass / RelativeContactDistance2;
+/* linear Force
+	from Contact in Force Direction. seems wrong
+	from Contact in Perpendicular Force Direction. seems wrong
+	from Center of Mass in Force Direction ?
+	maybe some Dot product stuff
+*/
 
-	Point2D ChangePos = Force * timeDelta;
-	data.ChangePos = Ray2D(center, ChangePos);
+//	Point2D LinearAcceleration = contact_data.Force / obj.Mass;
+//	Point2D LinearAcceleration = contact_data.ForcePos / obj.Mass;
 
-	float ChangeRot = (Torque * MomentOfInertia) * timeDelta;
-	data.ChangeRot = Ray2D(center, Point2D(0, ChangeRot));
+//	Point2D ChangePos = LinearAcceleration * timeDelta;
+//	data.ChangePos = Ray2D(Center, ChangePos);
+
+	float ChangeRot = AngularAcceleration * timeDelta;
+	data.ChangeRot = Ray2D(Center, Point2D(0, ChangeRot));
 
 	if (change)
 	{
-		//if (!obj.IsStatic) { obj.Data.Vel.Pos += ChangePos; }
+//		if (!obj.IsStatic) { obj.Data.Vel.Pos += ChangePos; }
 		if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians(ChangeRot); }
 		if (obj.IsStatic) { obj.Data.Vel = Trans2D(); }
 	}
 
-//	std::cout << '\n';
 	return data;
 }

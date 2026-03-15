@@ -83,6 +83,36 @@ namespace Physics2D
 	};
 	ObjectMomentOfIntertiaData CheckMomentOfIntertia(float timeDelta, Object & obj, Point2D pos);
 
+	struct ObjectData
+	{
+		Point2D	CenterOfMass;
+
+		float	AngularPosition;
+		float	AngularVelocity;
+
+		float	AngularVelocityLength;
+		float	AngularVelocityNormal;
+
+		float	MomentOfInertia;
+		float	AngularMomentum;
+	};
+	ObjectData CalculateObjectData(Object & obj);
+
+	struct ObjectContactForceData
+	{
+		Point2D		Contact;
+//		float		Mass;
+
+		Point2D		Force;
+		Point2D		ForcePos;
+		Point2D		ForceRot;
+
+		float	Torque;
+//		float	MomentOfInertia;
+//		float	AngularMomentum;
+	};
+	ObjectContactForceData CalculateObjectContactForceData(Object & obj, Ray2D force);
+
 	struct ObjectTorqueData
 	{
 		Ray2D Drag;
@@ -99,9 +129,9 @@ namespace Physics2D
 
 	struct ObjectForceData
 	{
-		Ray2D Drag;
 		Line2D Contact;
 
+		Ray2D Force;
 		Ray2D ForcePos;
 		Ray2D ForceRot;
 

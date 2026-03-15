@@ -121,10 +121,11 @@ Point2D Physics2D::Object::RelativePositionOf(Point2D p) const { return Data.Now
 Point2D Physics2D::Object::AbsolutePositionOf(Point2D p) const { return Data.Now * p; }
 Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
 {
-	Point2D perp = p.perpendicular0().normalize();
-	perp = Data.Now.Rot * perp;
-	perp = perp * (Data.Vel.Rot.Ang.ToRadians() * p.length());
-	return Data.Vel.Pos - perp;
+	return Point2D::cross(Data.Vel.Rot.Ang.ToRadians(), (Data.Now.Rot * p)) + Data.Vel.Pos;
+//	Point2D perp = p.perpendicular0().normalize();
+//	perp = Data.Now.Rot * perp;
+//	perp = perp * (Data.Vel.Rot.Ang.ToRadians() * p.length());
+//	return Data.Vel.Pos - perp;
 }
 
 

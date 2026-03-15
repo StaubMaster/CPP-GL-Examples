@@ -62,14 +62,6 @@
 
 
 
-/* Torque Test
-	use Mouse to set the point to apply Force
-	Force is perpendicular to the Distance from the Center
-	use Draw Destination to figure out Force Direction
-	use Distance to figure out Force Strength
-	
-*/
-
 struct MainContext
 {
 DirectoryInfo ImageDir;
@@ -247,8 +239,8 @@ void TestForce(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool i
 	Physics2D::ObjectForceData data = Physics2D::ApplyForce(timeDelta, *(manager.Objects[Object.Value]), drag, 10.0f, !is_paused);
 
 	Arrow_Test[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
-	Arrow_Test[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 24.0f, data.Drag);
 
+	Arrow_Test[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 24.0f, data.Force);
 	Arrow_Test[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 16.0f, data.ForcePos);
 	Arrow_Test[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 16.0f, data.ForceRot);
 
@@ -318,16 +310,6 @@ void Make()
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
 	wall.Manager = &Physics2D_Manager;
-
-	//Physics2D::Object obj(wall, Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true);
-	// have a flag to keep after Object gets deleted
-	// that would just call the Constructor without doing anything with it
-	// have a static function called "Physics2D::Construct"
-	// that creates Objects that dont get deleted
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(wall, Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(wall, Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees( 90))), true));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(wall, Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), true));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(wall, Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees(270))), true));
 
 	wall.MakeCurrent();
 	Physics2D::Object::Construct(Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true);

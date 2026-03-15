@@ -132,12 +132,17 @@ void Physics2D::InstanceManager::UpdateMain()
 			col.B = 1.0f - col.B;
 			WireFrame -> Insert_Corner(PolyGon -> Corners[i].Pos, col);
 		}
-		for (unsigned int i = 0; i < PolyGon -> Sides.Count(); i++)
+		/*for (unsigned int i = 0; i < PolyGon -> Sides.Count(); i++)
 		{
 			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner0.Udx, PolyGon -> Sides[i].Corner1.Udx);
 			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner1.Udx, PolyGon -> Sides[i].Corner2.Udx);
 			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner2.Udx, PolyGon -> Sides[i].Corner0.Udx);
+		}*/
+		for (unsigned int i = 1; i < PolyGon -> Corners.Count(); i++)
+		{
+			WireFrame -> Insert_Side(i - 1, i - 0);
 		}
+		WireFrame -> Insert_Side(PolyGon -> Corners.Count() - 1, 0);
 		Buffer_WireFrame.Main.Change(WireFrame -> Corners);
 		Buffer_WireFrame.Elem.Change(WireFrame -> Sides, 2);
 	}

@@ -1,0 +1,48 @@
+
+𝑛 : number of Mass Points
+𝐑 : Center
+𝐕 : absolute linear Velocity
+𝛚𝜔 : absolute angular Velocity
+
+
+𝐫   : absolute Position
+𝚫𝐫𝑟 : relative Position
+𝐯   : absolute Velocity of 𝚫𝐫
+
+𝚫𝐫[i] = 𝐫[i] - 𝐑
+𝐯[i] = 𝛚 × 𝚫𝐫[i] + 𝐕
+
+
+𝐞 : normal of 𝚫𝐫
+𝐤 : normal of angular Velocity
+𝐭 : ?
+
+𝐞[i] = 𝚫𝐫[i] / 𝚫𝑟[i]
+𝐤 = 𝛚[i] / 𝜔[i]
+𝐭[i] = 𝐤 × 𝐞[i]
+
+
+𝐋 : angular Momentum
+
+𝐋 = ∑(i=0..𝑛) { m[i] * 𝚫𝐫[i] × 𝐯[i] }
+𝐋 = ∑(i=0..𝑛) { m[i] * 𝚫𝐫[i] * 𝐞[i] × (𝛚 * 𝚫𝐫[i] * 𝐭[i] + 𝐕) }
+𝐋 = (∑(i=0..𝑛) { n[i] * 𝚫𝐫[i]^2 }) * 𝛚 * 𝐤 + (∑(i=0..𝑛) { n[i] * 𝚫𝐫[i] * 𝐞[i] }) × 𝐕
+
+
+𝐂 : Center of Mass
+
+𝚫𝐫[i] * 𝐞[i] = 𝐫[i] - 𝐂
+∑(i=0..𝑛) { m[i] * 𝚫𝐫[i] * 𝐞[i] } = 0
+
+
+𝐼𝐂 : Moment of Inertia
+
+𝐼𝐂 = ∑(i=0..𝑛) { m[i] * 𝚫𝐫[i]^2 }
+
+
+𝐋 = 𝐼𝐂 * 𝜔 * 𝐤
+
+𝐋 = 𝐼 * 𝜔
+𝛕 = 𝐼 * α
+
+

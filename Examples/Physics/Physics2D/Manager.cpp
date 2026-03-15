@@ -93,25 +93,35 @@ void Physics2D::Manager::GraphicsUpdate()
 
 	for (unsigned int j = 0; j < MainInstances.Count(); j++)
 	{
-		unsigned int c = 0;
+		unsigned int Count_PolyGon = 0;
+		unsigned int Count_WireFrame = 0;
+		unsigned int Count_WireFrameBox = 0;
 		for (unsigned int i = 0; i < Objects.Count(); i++)
 		{
-			if (Objects[i] != nullptr && Objects[i] -> DrawPolyGon && Objects[i] -> InstanceManager == &MainInstances[j])
+			if (Objects[i] != nullptr && Objects[i] -> InstanceManager == &MainInstances[j])
 			{
-				c++;
+				if (Objects[i] -> DrawPolyGon) { Count_PolyGon++; }
+				if (Objects[i] -> DrawWireFrame) { Count_WireFrame++; }
+				if (Objects[i] -> DrawWireFrameBox) { Count_WireFrameBox++; }
 			}
 		}
 
-		Container::Fixed<Physics2D::Inst::Data> data(c);
+		Container::Fixed<Physics2D::Inst::Data> Data_PolyGon(Count_PolyGon);
+		Container::Fixed<Physics2D::Inst::Data> Data_WireFrame(Count_WireFrame);
+		Container::Fixed<Physics2D::Inst::Data> Data_WireFrameBox(Count_WireFrameBox);
 		for (unsigned int i = 0; i < Objects.Count(); i++)
 		{
-			if (Objects[i] != nullptr && Objects[i] -> DrawPolyGon && Objects[i] -> InstanceManager == &MainInstances[j])
+			if (Objects[i] != nullptr && Objects[i] -> InstanceManager == &MainInstances[j])
 			{
-				data.Insert(Objects[i] -> Data);
+				if (Objects[i] -> DrawPolyGon) { Data_PolyGon.Insert(Objects[i] -> Data); }
+				if (Objects[i] -> DrawWireFrame) { Data_WireFrame.Insert(Objects[i] -> Data); }
+				if (Objects[i] -> DrawWireFrameBox) { Data_WireFrameBox.Insert(Objects[i] -> Data); }
 			}
 		}
 
-		MainInstances[j].Buffer_PolyGon.Inst.Change(data);
+		MainInstances[j].Buffer_PolyGon.Inst.Change(Data_PolyGon);
+		MainInstances[j].Buffer_WireFrame.Inst.Change(Data_WireFrame);
+		MainInstances[j].Buffer_WireFrameBox.Inst.Change(Data_WireFrameBox);
 	}
 }
 
