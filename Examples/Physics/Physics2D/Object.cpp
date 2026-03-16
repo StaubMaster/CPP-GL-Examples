@@ -22,17 +22,24 @@ void Physics2D::Object::UpdateEntrys()
 	{
 		Point2D now = Data.Now.Pos;
 		Point2D vel = Data.Vel.Pos;
-		//Data_Arrows[0] = Arrow2D::Inst::Data(now, now + vel, 12.0f, ColorF4(0.5f, 0.5f, 1.0f));
+
+		unsigned int idx = 0;
+		Arrows[idx] = Arrow2D::Inst::Data(now, now + vel, 16.0f, ColorF4(0.0f, 0.5f, 0.0f)); idx++;
+
 		for (unsigned int j = 0; j < CornerCount(); j++)
 		{
 			Point2D p = CornerFromIndex(j);
 			Point2D now = AbsolutePositionOf(p);
 			Point2D vel = AbsoluteVelocityOf(p);
-			Arrows[1 + (j * 2 + 0)] = Arrow2D::Inst::Data(now, now + vel, 12.0f, ColorF4(0.5f, 1.0f, 0.5f));
+			//Arrows[1 + (j * 2 + 0)] = Arrow2D::Inst::Data(now, now + vel, 12.0f, ColorF4(0.5f, 1.0f, 0.5f)); idx++;
 			vel -= Data.Vel.Pos;
-			Arrows[1 + (j * 2 + 1)] = Arrow2D::Inst::Data(now, now + vel, 12.0f, ColorF4(1.0f, 0.5f, 0.5f));
+			Arrows[idx] = Arrow2D::Inst::Data(now, now + vel, 16.0f, ColorF4(0.0f, 0.5f, 0.0f)); idx++;
 		}
-		Arrows[1 + CornerCount() * 2] = Arrow2D::Inst::Data(now, now + InstanceManager -> Manager -> Gravity, 24.0f, ColorF4(0.0f, 0.5f, 0.0f));
+
+		Point2D gravity = InstanceManager -> Manager -> Gravity;
+		if (now.Y > 0.0f) { gravity.Y = -(InstanceManager -> Manager -> GravityToY); }
+		if (now.Y < 0.0f) { gravity.Y = +(InstanceManager -> Manager -> GravityToY); }
+		Arrows[idx] = Arrow2D::Inst::Data(now, now + gravity, 12.0f, ColorF4(0.5f, 0.0f, 0.0f)); idx++;
 	}
 }
 
@@ -72,7 +79,11 @@ void Physics2D::Object::Show_Arrows()
 	}*/
 	if (!Arrows.Is())
 	{
-		Arrows.Allocate(1 + CornerCount() * 2 + 1);
+		Arrows.Allocate(
+			1				// Center Move Vel
+			+ CornerCount()	// Corner Spin Vel
+			+ 1		// Gravity
+			);
 	}
 }
 

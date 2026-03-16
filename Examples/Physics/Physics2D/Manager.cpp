@@ -28,6 +28,7 @@ Physics2D::Manager::Manager()
 
 	, Gravity()
 	, AirResistance(0.0f)
+	, GravityToY(0.0f)
 {
 	Arrow.MakeCurrent();
 }
@@ -152,12 +153,16 @@ void Physics2D::Manager::Draw()
 
 void Physics2D::Manager::UpdateGravity(float timeDelta)
 {
-	Point2D GravityAccel = Gravity * timeDelta;
+	Point2D Gravity_Accel = Gravity * timeDelta;
+	float GravityToY_Accel = GravityToY * timeDelta;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		if (!Objects[i] -> IsStatic)
+		Physics2D::Object & obj = *Objects[i];
+		if (!obj.IsStatic)
 		{
-			Objects[i] -> Data.Vel.Pos += GravityAccel;
+			obj.Data.Vel.Pos += Gravity_Accel;
+			if (obj.Data.Now.Pos.Y > 0.0f) { obj.Data.Vel.Pos.Y -= GravityToY_Accel; }
+			if (obj.Data.Now.Pos.Y < 0.0f) { obj.Data.Vel.Pos.Y += GravityToY_Accel; }
 		}
 	}
 }
@@ -166,10 +171,11 @@ void Physics2D::Manager::UpdateAirResistance(float timeDelta)
 	float factor = 1.0f - (AirResistance * timeDelta);
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		if (!Objects[i] -> IsStatic)
+		Physics2D::Object & obj = *Objects[i];
+		if (!obj.IsStatic)
 		{
-			Objects[i] -> Data.Vel.Pos *= factor;
-			Objects[i] -> Data.Vel.Rot *= factor;
+			obj.Data.Vel.Pos *= factor;
+			obj.Data.Vel.Rot *= factor;
 		}
 	}
 }

@@ -60,9 +60,9 @@ struct InteractionObjectApplyForce : public SceneInteractionBase
 			{
 				Arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 
-				Arrows[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 24.0f, data.Force);
-				Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 16.0f, data.ForcePos);
-				Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 16.0f, data.ForceRot);
+				Arrows[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 24.0f, data.Force);
+				Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
+				Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
 				{
 					float values[2]
 					{
@@ -76,8 +76,8 @@ struct InteractionObjectApplyForce : public SceneInteractionBase
 						20.0f,
 						16.0f,
 					};
-					Arrows[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), sizes[ranks[0]], data.Torque);
-					Arrows[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.ChangeRot);
+					Arrows[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[0]], data.Torque);
+					Arrows[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 1.0f), sizes[ranks[1]], data.ChangeRot);
 				}
 				Arrows[6] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), 16.0f, data.ChangePos);
 			}

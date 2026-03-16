@@ -158,6 +158,7 @@ void Make()
 {
 //	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
 //	Physics2D_Manager.AirResistance = 0.1f;
+//	Physics2D_Manager.GravityToY = 1.0f;
 
 	InteractionObjectMove.Show();
 	InteractionObjectSpin.Show();
@@ -499,14 +500,13 @@ void MouseClick(UserParameter::Mouse::Click params)
 
 	if (params.Action.IsPress())
 	{
-		/*if (params.Code == UserParameter::Mouse::Button::MouseL)
+		if (params.Code == UserParameter::Mouse::Button::MouseL)
 		{
 			if (SceneData.Selected.IsValid())
 			{
 				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrame();
 				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrameBox();
 				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_Arrows();
-				std::cout << "UnSelect: " << SceneData.Selected << '\n';
 			}
 
 			SceneData.Selected = SceneData.Hovering;
@@ -516,16 +516,8 @@ void MouseClick(UserParameter::Mouse::Click params)
 				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrame();
 				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrameBox();
 				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_Arrows();
-				std::cout << "UnSelect: " << SceneData.Selected << '\n';
 			}
-		}*/
-	}
-	if (params.Action.IsRelease())
-	{
-		/*if (Drag.FollowMouse)
-		{
-			Drag.End();
-		}*/
+		}
 	}
 }
 void MouseDrag(UserParameter::Mouse::Drag params)

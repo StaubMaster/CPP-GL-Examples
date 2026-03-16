@@ -1,0 +1,21 @@
+
+use Numbers to change "Tool"
+use Tab to see current "Tool"
+
+Change Now
+Change Vel
+Apply Force
+
+
+
+Velocity (Absolute/Relative) Yellow ?
+purple
+
+Gravity Green
+
+Acceleration / Force (change of Velocity)
+"Input"		Current Momentum	Blue / Light Blue
+"Change"	Changing Force		Green
+"Output"	Result Momentum		Red / Orange
+
+

@@ -49,6 +49,8 @@ struct Manager
 	Point2D		Gravity;
 	float		AirResistance;
 
+	float	GravityToY;
+
 	~Manager();
 	Manager();
 
