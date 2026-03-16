@@ -1,0 +1,8 @@
+
+Undex
+	convert to bool
+	convert unsigned int
+
+Angle2D::FromPoint
+	aTan2 Parameters are in the wrong order
+	does not give a full 360 degree Angle

@@ -1,27 +1,32 @@
 
+// C++
 #include <iostream>
 #include <sstream>
 #include <exception>
 #include <string>
 
+// Stuff
 #include "OpenGL.hpp"
 #include "Debug.hpp"
 
+// Data
 #include "DataInclude.hpp"
 #include "DataShow.hpp"
 #include "ValueType/Intersect.hpp"
 
+// Window and User
 #include "Window.hpp"
 #include "Function/Object.hpp"
 #include "UserParameter/KeyBoardInclude.hpp"
 #include "UserParameter/MouseInclude.hpp"
 
+// File
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"
 #include "Image.hpp"
 
 
-
+// Container
 #include "Graphics/Shader/Code.hpp"
 #include "Miscellaneous/Container/Array.hpp"
 #include "Miscellaneous/Container/Binary.hpp"
@@ -29,6 +34,7 @@
 
 
 
+// PolyGon
 #include "Physics2D/Shaders/PolyGon.hpp"
 #include "PolyGon/Graphics/Data.hpp"
 #include "Inst/Physics2D/Data.hpp"
@@ -36,29 +42,41 @@
 #include "PolyGon/PolyGon.hpp"
 #include "PolyGon/Data.hpp"
 
-
-
+// Physics
 #include "Physics2D/Collision.hpp"
 #include "Physics2D/Manager.hpp"
 #include "Physics2D/InstanceManager.hpp"
 #include "Physics2D/Object.hpp"
 
+// Arrow
 #include "Arrow2D/Manager.hpp"
 #include "Arrow2D/Shader.hpp"
 #include "Arrow2D/Main/Data.hpp"
 #include "Arrow2D/Inst/Data.hpp"
 #include "Arrow2D/Object.hpp"
 
+// WireFrame
 #include "WireFrame2D/WireFrame2D.hpp"
 #include "WireFrame2D/Manager.hpp"
 
+// Multiform
 #include "Graphics/MultiformsInclude.hpp"
 #include "Graphics/Multiform/Trans2D.hpp"
 #include "Graphics/Multiform/Float.hpp"
 
+// BitMap
 #include "FileFormat/BitMap/BitMap.hpp"
 
+// Math
 #include <math.h>
+
+// Interaction
+#include "SceneInteraction/Data.hpp"
+#include "SceneInteraction/Base.hpp"
+
+#include "SceneInteraction/Move.hpp"
+#include "SceneInteraction/Spin.hpp"
+#include "SceneInteraction/Force.hpp"
 
 
 
@@ -72,11 +90,16 @@ DirectoryInfo TextDir;
 Window	window;
 View2D	view;
 
-bool Paused;
-
 Multiform::DisplaySize			Multiform_DisplaySize;
 Multiform::Trans2D				Multiform_View;
 Multiform::Float				Multiform_Scale;
+
+Physics2D::Manager	Physics2D_Manager;
+
+::SceneInteractionData	SceneData;
+::InteractionObjectMove	InteractionObjectMove;
+::InteractionObjectSpin	InteractionObjectSpin;
+::InteractionObjectApplyForce	InteractionObjectApplyForce;
 
 MainContext()
 	: ImageDir("../../media/Images")
@@ -85,10 +108,11 @@ MainContext()
 	, TextDir("../../media/Text")
 	, window()
 	, view(View2D::Default())
-	, Paused(true)
 	, Multiform_DisplaySize("DisplaySize")
 	, Multiform_View("View")
 	, Multiform_Scale("Scale")
+	, Physics2D_Manager()
+	, SceneData(Physics2D_Manager)
 {
 	Physics2D_Manager.InitExternal(ShaderDir);
 
@@ -101,177 +125,21 @@ MainContext()
 	Multiform_View.FindUniforms(shaders);
 	Multiform_Scale.FindUniforms(shaders);
 
-	Object_Selected = Undex::Invalid();
-	Object_Hovering = Undex::Invalid();
+	SceneData.Selected = Undex::Invalid();
+	SceneData.Hovering = Undex::Invalid();
 }
 ~MainContext()
 {
 	Physics2D_Manager.Dispose();
 }
 
-Physics2D::Manager	Physics2D_Manager;
-
-Undex	Object_Selected;
-Undex	Object_Hovering;
-
-
-
-struct SDrag
-{
-bool Is = false;
-bool FollowMouse = true;
-
-Undex Object;
-Point2D Pos0;
-Point2D Pos1;
-Arrow2D::Object Arrow;
-Arrow2D::Object Arrow_Test;
-
-/* Drag
-	currently changes Linear Velocity when Drag is done
-	just apply Force/Impulse while Drag is active
-*/
-void Begin(Point2D pos0, Physics2D::Manager & manager)
-{
-	if (!Is)
-	{
-		Object = manager.FindObjectIndex(pos0);
-		if (Object.IsValid())
-		{
-			Pos0 = manager.Objects[Object.Value] -> RelativePositionOf(pos0);
-			Arrow.Allocate(1);
-			Arrow_Test.Allocate(10);
-			(*Arrow).Col = ColorF4(1, 1, 1);
-			(*Arrow).Size = 20.0f;
-			Is = true;
-		}
-	}
-}
-void Move(Point2D pos1)
-{
-	if (Is)
-	{
-		Pos1 = pos1;
-		(*Arrow).Pos1 = Pos1;
-	}
-}
-void End()
-{
-	if (Is)
-	{
-		/*if (Object_Selected.IsValid())
-		{
-			Point2D rel = Pos1 - Physics2D_Manager.Objects[Object.Value].AbsolutePositionOf(Pos0);
-			Physics2D_Manager.Objects[Object_Selected.Value].Data.Vel.Pos += rel;
-		}*/
-		Is = false;
-		Arrow.Dispose();
-		Arrow_Test.Dispose();
-	}
-}
-void Change(Point2D pos1, Physics2D::Manager & manager)
-{
-	if (!Is) { return; }
-	Pos1 = pos1;
-	(void)manager;
-	(*Arrow).Size = 0.0f;
-	(*Arrow).Pos0 = manager.Objects[Object.Value] -> AbsolutePositionOf(Pos0);
-	(*Arrow).Pos1 = Pos1;
-}
-void Update(float timeDelta, Physics2D::Manager & manager, bool is_paused)
-{
-	if (!Is) { return; }
-
-	Point2D absolute = manager.Objects[Object.Value] -> AbsolutePositionOf(Pos0);
-	Ray2D drag = Ray2D(absolute, (Pos1 - absolute));
-
-//	TestTorque(timeDelta, manager, drag, is_paused);
-	TestForce(timeDelta, manager, drag, is_paused);
-}
-
-void RankLengths(unsigned int count, float values[], unsigned int ranks[])
-{
-	for (unsigned int j = 0; j < count; j++)
-	{
-		ranks[j] = 0;
-		for (unsigned int i = 0; i < count; i++)
-		{
-			if (i != j)
-			{
-				if (values[j] < values[i])
-				{
-					ranks[j]++;
-				}
-			}
-		}
-	}
-}
-
-void TestTorque(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool is_paused)
-{
-	Physics2D::ObjectTorqueData data = Physics2D::ApplyTorque(timeDelta, *manager.Objects[Object.Value], drag, 1.0f, !is_paused);
-
-	Arrow_Test[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
-	Arrow_Test[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 0.5f), 16.0f, data.Drag);
-
-	Arrow_Test[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForcePos);
-	Arrow_Test[3] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, data.ForceRot);
-
-	{
-		float values[2]
-		{
-			data.Torque.Dir.length2(),
-			data.ChangeRot.Dir.length2(),
-		};
-		unsigned int ranks[2];
-		RankLengths(2, values, ranks);
-		float sizes[2]
-		{
-			20.0f,
-			16.0f,
-		};
-		Arrow_Test[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), sizes[ranks[0]], data.Torque);
-		Arrow_Test[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.ChangeRot);
-	}
-}
-void TestForce(float timeDelta, Physics2D::Manager & manager, Ray2D drag, bool is_paused)
-{
-	Physics2D::ObjectForceData data = Physics2D::ApplyForce(timeDelta, *(manager.Objects[Object.Value]), drag, 10.0f, !is_paused);
-
-	Arrow_Test[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
-
-	Arrow_Test[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 24.0f, data.Force);
-	Arrow_Test[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 16.0f, data.ForcePos);
-	Arrow_Test[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 16.0f, data.ForceRot);
-
-	{
-		float values[2]
-		{
-			data.Torque.Dir.length2(),
-			data.ChangeRot.Dir.length2(),
-		};
-		unsigned int ranks[2];
-		RankLengths(2, values, ranks);
-		float sizes[2]
-		{
-			20.0f,
-			16.0f,
-		};
-		Arrow_Test[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), sizes[ranks[0]], data.Torque);
-		Arrow_Test[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[1]], data.ChangeRot);
-	}
-	Arrow_Test[6] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), 16.0f, data.ChangePos);
-}
-};
-SDrag Drag;
-
 
 
 void CheckMomentOfInertia(float timeDelta, Point2D pos)
 {
 	return;
-	if (!Object_Selected.IsValid()) { return; }
-	Physics2D::ObjectMomentOfIntertiaData data = Physics2D::CheckMomentOfIntertia(timeDelta, *Physics2D_Manager.Objects[Object_Selected.Value], pos);
+	if (!SceneData.Selected.IsValid()) { return; }
+	Physics2D::ObjectMomentOfIntertiaData data = Physics2D::CheckMomentOfIntertia(timeDelta, *Physics2D_Manager.Objects[SceneData.Selected.Value], pos);
 
 	Arrow2D::Object arrows(4);
 	arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
@@ -290,6 +158,10 @@ void Make()
 {
 //	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
 //	Physics2D_Manager.AirResistance = 0.1f;
+
+	InteractionObjectMove.Show();
+	InteractionObjectSpin.Show();
+	InteractionObjectApplyForce.Show();
 
 
 
@@ -502,7 +374,6 @@ void Draw()
 
 void Update(double timeDelta, bool is_paused)
 {
-	Drag.Update(timeDelta, Physics2D_Manager, is_paused);
 	if (!is_paused)
 	{
 		Physics2D_Manager.Update(timeDelta);
@@ -511,53 +382,39 @@ void Update(double timeDelta, bool is_paused)
 
 void Frame(double timeDelta)
 {
+	float WantedFramesPerSecond = 60.0f;
+	float WantedFrameTime = 1.0f / WantedFramesPerSecond;
+	// rename timeDelta to FrameTime
+	// make a struct with other Frame Data ?
+	// put all the WindowSize and Input stuff in there ?
+	if (timeDelta > WantedFrameTime) { timeDelta = WantedFrameTime; }
+	SceneData.TimeDelta = timeDelta;
+
 	UpdateView(timeDelta);
 
+	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Space.Flags].IsPress()) { SceneData.IsRunning = !SceneData.IsRunning; }
+	SceneData.IsSimulating = SceneData.IsRunning;
+	if (!SceneData.IsSimulating)
 	{
-		Point2D cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
-		Object_Hovering = Physics2D_Manager.FindObjectIndex(cursor);
-
-		CheckMomentOfInertia(timeDelta, cursor);
-
-		if (Drag.FollowMouse)
-		{
-			Drag.Change(cursor, Physics2D_Manager);
-		}
+		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::O.Flags].IsDown())
+		{ SceneData.IsSimulating = true; }
+		else if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::I.Flags].IsPress())
+		{ SceneData.IsSimulating = true; }
 	}
 
-	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::K.Flags].IsPress())
 	{
-		if (Drag.FollowMouse)
-		{
-			Drag.FollowMouse = false;
-		}
-		else
-		{
-			Drag.FollowMouse = true;
-			Drag.End();
-		}
+		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
+		SceneData.Hovering = Physics2D_Manager.FindObjectIndex(SceneData.Cursor);
+
+		CheckMomentOfInertia(SceneData.TimeDelta, SceneData.Cursor);
+
+		InteractionObjectMove.Update(SceneData);
+		InteractionObjectSpin.Update(SceneData);
+		InteractionObjectApplyForce.Update(SceneData);
 	}
 
-
-
 	{
-		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::P.Flags].IsPress()) { Paused = !Paused; }
-		if (Paused)
-		{
-			if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::O.Flags].IsDown())
-			{
-				Update(1.0f / 60.0f, false);
-			}
-			else if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::I.Flags].IsPress())
-			{
-				Update(1.0f / 60.0f, false);
-			}
-			else
-			{
-				Update(1.0f / 60.0f, true);
-			}
-		}
-		else
+		if (SceneData.IsSimulating)
 		{
 			Update(timeDelta, false);
 		}
@@ -601,48 +458,89 @@ void MouseScroll(UserParameter::Mouse::Scroll params)
 }
 void MouseClick(UserParameter::Mouse::Click params)
 {
-	if (params.Action.IsPress())
+	// Select / Select Box
+	// View Move / Spin
+
+	if (!params.Mods.IsControl())
 	{
 		if (params.Code == UserParameter::Mouse::Button::MouseL)
 		{
-			if (Object_Selected.IsValid())
+			if (params.Action.IsPress())
 			{
-				Physics2D_Manager.Objects[Object_Selected.Value] -> Hide_WireFrame();
-				Physics2D_Manager.Objects[Object_Selected.Value] -> Hide_WireFrameBox();
-				Physics2D_Manager.Objects[Object_Selected.Value] -> Hide_Arrows();
-				std::cout << "UnSelect: " << Object_Selected << '\n';
+				InteractionObjectMove.Start(SceneData);
 			}
-
-			Object_Selected = Object_Hovering;
-
-			if (Object_Selected.IsValid())
+		}
+		if (params.Code == UserParameter::Mouse::Button::MouseR)
+		{
+			if (params.Action.IsPress())
 			{
-				Physics2D_Manager.Objects[Object_Selected.Value] -> Show_WireFrame();
-				Physics2D_Manager.Objects[Object_Selected.Value] -> Show_WireFrameBox();
-				Physics2D_Manager.Objects[Object_Selected.Value] -> Show_Arrows();
-				std::cout << "UnSelect: " << Object_Selected << '\n';
+				InteractionObjectSpin.Start(SceneData);
 			}
 		}
 	}
+
+	if (params.Mods.IsControl())
+	{
+		if (params.Code == UserParameter::Mouse::Button::MouseL)
+		{
+			if (params.Action.IsPress())
+			{
+				InteractionObjectApplyForce.Start(SceneData);
+			}
+		}
+	}
+
 	if (params.Action.IsRelease())
 	{
-		if (Drag.FollowMouse)
+		InteractionObjectMove.End(SceneData);
+		InteractionObjectSpin.End(SceneData);
+		InteractionObjectApplyForce.End(SceneData);
+	}
+
+	if (params.Action.IsPress())
+	{
+		/*if (params.Code == UserParameter::Mouse::Button::MouseL)
+		{
+			if (SceneData.Selected.IsValid())
+			{
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrame();
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrameBox();
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_Arrows();
+				std::cout << "UnSelect: " << SceneData.Selected << '\n';
+			}
+
+			SceneData.Selected = SceneData.Hovering;
+
+			if (SceneData.Selected.IsValid())
+			{
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrame();
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrameBox();
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_Arrows();
+				std::cout << "UnSelect: " << SceneData.Selected << '\n';
+			}
+		}*/
+	}
+	if (params.Action.IsRelease())
+	{
+		/*if (Drag.FollowMouse)
 		{
 			Drag.End();
-		}
+		}*/
 	}
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
-	if (Drag.FollowMouse)
+	(void)params;
+	/*if (Drag.FollowMouse)
 	{
 		Drag.Begin(view * window.Size.Convert(params.Origin), Physics2D_Manager);
 		Drag.Move(view * window.Size.Convert(params.Position));
-	}
+	}*/
 }
 
 void KeyBoardKey(UserParameter::KeyBoard::Key params)
 {
+	// when use this vs check in Framge ?
 	if (params.Action.IsPress())
 	{
 		if (params.Code == UserParameter::KeyBoard::Keys::Insert)
@@ -667,18 +565,24 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 		{
 			try
 			{
-				if (Object_Selected.IsValid())
+				if (SceneData.Selected.IsValid())
 				{
-					std::cout << "Delete: " << Object_Selected << '\n';
-					Physics2D_Manager.Objects.Remove(Object_Selected.Value);
-					Object_Selected = Undex::Invalid();
-					Drag.End();
+					std::cout << "Delete: " << SceneData.Selected << '\n';
+					Physics2D_Manager.Objects.Remove(SceneData.Selected.Value);
+					SceneData.Selected = Undex::Invalid();
 				}
 			}
 			catch (std::exception & e)
 			{
-				std::cerr << "Failed to Delete Object " << Object_Selected << ": " << e.what() << '\n';
+				std::cerr << "Failed to Delete Object " << SceneData.Selected << ": " << e.what() << '\n';
 			}
+		}
+
+		if (params.Code == UserParameter::KeyBoard::Keys::Escape)
+		{
+			InteractionObjectMove.Escape(SceneData);
+			InteractionObjectSpin.Escape(SceneData);
+			InteractionObjectApplyForce.Escape(SceneData);
 		}
 	}
 }
