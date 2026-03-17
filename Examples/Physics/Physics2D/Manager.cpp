@@ -158,11 +158,13 @@ void Physics2D::Manager::UpdateGravity(float timeDelta)
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		Physics2D::Object & obj = *Objects[i];
+		Trans2D & now = obj.Data.Now;
+		Trans2D & vel = obj.Data.Vel;
 		if (!obj.IsStatic)
 		{
-			obj.Data.Vel.Pos += Gravity_Accel;
-			if (obj.Data.Now.Pos.Y > 0.0f) { obj.Data.Vel.Pos.Y -= GravityToY_Accel; }
-			if (obj.Data.Now.Pos.Y < 0.0f) { obj.Data.Vel.Pos.Y += GravityToY_Accel; }
+			vel.Pos += Gravity_Accel;
+			if (now.Pos.Y > 0.0f) { vel.Pos.Y -= GravityToY_Accel; }
+			if (now.Pos.Y < 0.0f) { vel.Pos.Y += GravityToY_Accel; }
 		}
 	}
 }
@@ -172,10 +174,11 @@ void Physics2D::Manager::UpdateAirResistance(float timeDelta)
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		Physics2D::Object & obj = *Objects[i];
+		Trans2D & vel = obj.Data.Vel;
 		if (!obj.IsStatic)
 		{
-			obj.Data.Vel.Pos *= factor;
-			obj.Data.Vel.Rot *= factor;
+			vel.Pos *= factor;
+			vel.Rot *= factor;
 		}
 	}
 }
@@ -193,14 +196,21 @@ void Physics2D::Manager::UpdateCollision(float timeDelta)
 	}
 	(void)timeDelta;
 }
-void Physics2D::Manager::UpdateOrientation(float timeDelta)
+void Physics2D::Manager::UpdateTransformation(float timeDelta)
 {
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		if (!Objects[i] -> IsStatic)
+		Physics2D::Object & obj = *Objects[i];
+		Trans2D & now = obj.Data.Now;
+		Trans2D & vel = obj.Data.Vel;
+		if (!obj.IsStatic)
 		{
-			Objects[i] -> Data.Now.Pos += (Objects[i] -> Data.Vel.Pos * timeDelta);
-			Objects[i] -> Data.Now.Rot += (Objects[i] -> Data.Vel.Rot * timeDelta);
+			now.Pos += (vel.Pos * timeDelta);
+			now.Rot += (vel.Rot * timeDelta);
+		}
+		else
+		{
+			vel = Trans2D();
 		}
 	}
 }
@@ -210,7 +220,7 @@ void Physics2D::Manager::Update(float timeDelta)
 	UpdateGravity(timeDelta);
 
 	UpdateCollision(timeDelta);
-	UpdateOrientation(timeDelta);
+	UpdateTransformation(timeDelta);
 }
 
 

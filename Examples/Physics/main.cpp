@@ -78,6 +78,9 @@
 #include "SceneInteraction/Spin.hpp"
 #include "SceneInteraction/Force.hpp"
 
+// Other
+#include "Arrow2D/RankLengths.hpp"
+
 
 
 struct MainContext
@@ -150,6 +153,68 @@ void CheckMomentOfInertia(float timeDelta, Point2D pos)
 
 
 
+struct ObjectForce
+{
+::Undex	Undex0;
+Point2D	Point0;
+Point2D	Point1;
+
+ObjectForce()
+	: Undex0(Undex::Invalid())
+{ }
+
+void Update(SceneInteractionData & SceneData)
+{
+	if (Undex0.IsValid())
+	{
+	Ray2D drag;
+	drag.Pos = SceneData.Manager.Objects[Undex0.Value] -> AbsolutePositionOf(Point0);
+	drag.Dir = Point1 - drag.Pos;
+
+	Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.TimeDelta, *(SceneData.Manager.Objects[Undex0.Value]), drag, 10.0f, SceneData.IsSimulating);
+
+	if (Arrows.Is())
+	{
+		Arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
+
+		Arrows[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 24.0f, data.Force);
+		Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
+		Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
+		{
+			float values[2]
+			{
+				data.Torque.Dir.length2(),
+				data.ChangeRot.Dir.length2(),
+			};
+			unsigned int ranks[2];
+			::RankLengths(2, values, ranks);
+			float sizes[2]
+			{
+				20.0f,
+				16.0f,
+			};
+			//Arrows[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[0]], data.Torque);
+			Arrows[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), sizes[ranks[1]], data.ChangeRot);
+		}
+		Arrows[6] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangePos);
+	}
+	}
+}
+
+Arrow2D::Object	Arrows;
+void Show()
+{
+	Arrows.Allocate(7);
+}
+void Hide()
+{
+	Arrows.Dispose();
+}
+};
+MainContext::ObjectForce	ObjectForce;
+
+
+
 /* PolyGon
 	Lines that define the Edge of the PolyGon
 	Triangles that are used for Drawing
@@ -157,12 +222,14 @@ void CheckMomentOfInertia(float timeDelta, Point2D pos)
 void Make()
 {
 //	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
-//	Physics2D_Manager.AirResistance = 0.1f;
-//	Physics2D_Manager.GravityToY = 1.0f;
+	Physics2D_Manager.AirResistance = 0.1f;
+	Physics2D_Manager.GravityToY = 1.0f;
 
 	InteractionObjectMove.Show();
 	InteractionObjectSpin.Show();
 	InteractionObjectApplyForce.Show();
+
+	ObjectForce.Show();
 
 
 
@@ -412,6 +479,7 @@ void Frame(double timeDelta)
 		InteractionObjectMove.Update(SceneData);
 		InteractionObjectSpin.Update(SceneData);
 		InteractionObjectApplyForce.Update(SceneData);
+		ObjectForce.Update(SceneData);
 	}
 
 	{
@@ -537,21 +605,13 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 	{
 		if (params.Code == UserParameter::KeyBoard::Keys::Insert)
 		{
-			/*Physics2D_Manager.Objects.Insert(
-				Physics2D::Object(
-					Physics2D_Manager.MainInstances[3],
-					Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()),
-					//Trans2D(Point2D(), Angle2D(Angle::Degrees(45))),
-					false
-				)
-			);*/
-
 			Physics2D_Manager.MainInstances[3].MakeCurrent();
-			Physics2D::Object::Construct(
+			Physics2D::Object & obj = Physics2D::Object::Construct(
 				Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()),
-				//Trans2D(Point2D(), Angle2D(Angle::Degrees(45))),
+				Trans2D(Point2D(), Angle2D()),
 				false
 			);
+			obj.Mass = 1.0f;
 		}
 		if (params.Code == UserParameter::KeyBoard::Keys::Delete)
 		{
@@ -575,6 +635,24 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 			InteractionObjectMove.Escape(SceneData);
 			InteractionObjectSpin.Escape(SceneData);
 			InteractionObjectApplyForce.Escape(SceneData);
+		}
+		if (params.Code == UserParameter::KeyBoard::Keys::R)
+		{
+			if (!ObjectForce.Undex0.IsValid())
+			{
+				if (InteractionObjectApplyForce.Undex.IsValid())
+				{
+					ObjectForce.Undex0 = InteractionObjectApplyForce.Undex;
+					ObjectForce.Point0 = InteractionObjectApplyForce.Contact;
+					ObjectForce.Point1 = SceneData.Cursor;
+					ObjectForce.Show();
+				}
+			}
+			else
+			{
+				ObjectForce.Undex0 = Undex::Invalid();
+				ObjectForce.Hide();
+			}
 		}
 	}
 }

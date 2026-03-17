@@ -15,9 +15,6 @@ const ::PolyGon * Physics2D::Object::PolyGon() const { return (InstanceManager -
 
 void Physics2D::Object::UpdateEntrys()
 {
-//	if (Data_PolyGon.Is()) { (*Data_PolyGon) = Data; }
-//	if (Data_WireFrame.Is()) { (*Data_WireFrame) = Data; }
-//	if (Data_WireFrameBox.Is()) { (*Data_WireFrameBox) = Data; }
 	if (Arrows.Is())
 	{
 		Point2D now = Data.Now.Pos;
@@ -33,8 +30,10 @@ void Physics2D::Object::UpdateEntrys()
 			Point2D vel = AbsoluteVelocityOf(p);
 			//Arrows[1 + (j * 2 + 0)] = Arrow2D::Inst::Data(now, now + vel, 12.0f, ColorF4(0.5f, 1.0f, 0.5f)); idx++;
 			vel -= Data.Vel.Pos;
-			Arrows[idx] = Arrow2D::Inst::Data(now, now + vel, 16.0f, ColorF4(0.0f, 0.5f, 0.0f)); idx++;
+			//Arrows[idx] = Arrow2D::Inst::Data(now, now + vel, 16.0f, ColorF4(0.0f, 0.5f, 0.0f)); idx++;
 		}
+		vel = Point2D(0, Data.Vel.Rot.Ang.ToRadians());
+		Arrows[idx] = Arrow2D::Inst::Data(now, now + vel, 16.0f, ColorF4(0.0f, 0.5f, 0.0f)); idx++;
 
 		Point2D gravity = InstanceManager -> Manager -> Gravity;
 		if (now.Y > 0.0f) { gravity.Y = -(InstanceManager -> Manager -> GravityToY); }
@@ -81,7 +80,8 @@ void Physics2D::Object::Show_Arrows()
 	{
 		Arrows.Allocate(
 			1				// Center Move Vel
-			+ CornerCount()	// Corner Spin Vel
+			+ 1				// Center Spin Vel
+		//	+ CornerCount()	// Corner Spin Vel
 			+ 1		// Gravity
 			);
 	}

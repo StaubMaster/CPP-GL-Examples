@@ -768,27 +768,21 @@ Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, 
 	float AngularAcceleration = contact_data.Torque / object_data.MomentOfInertia;
 	std::cout << "Angular Acceleration    : " << AngularAcceleration << " m/ms2\n";
 
-/* linear Force
-	from Contact in Force Direction. seems wrong
-	from Contact in Perpendicular Force Direction. seems wrong
-	from Center of Mass in Force Direction ?
-	maybe some Dot product stuff
-*/
+	Point2D LinearAcceleration = contact_data.Force / obj.Mass;
 
-//	Point2D LinearAcceleration = contact_data.Force / obj.Mass;
-//	Point2D LinearAcceleration = contact_data.ForcePos / obj.Mass;
+	Point2D ChangePos = LinearAcceleration;
+	data.ChangePos = Ray2D(Center, ChangePos);
 
-//	Point2D ChangePos = LinearAcceleration * timeDelta;
-//	data.ChangePos = Ray2D(Center, ChangePos);
-
-	float ChangeRot = AngularAcceleration * timeDelta;
+	float ChangeRot = AngularAcceleration;
 	data.ChangeRot = Ray2D(Center, Point2D(0, ChangeRot));
 
 	if (change)
 	{
-//		if (!obj.IsStatic) { obj.Data.Vel.Pos += ChangePos; }
-		if (!obj.IsStatic) { obj.Data.Vel.Rot += Angle::Radians(ChangeRot); }
-		if (obj.IsStatic) { obj.Data.Vel = Trans2D(); }
+		if (!obj.IsStatic)
+		{
+			obj.Data.Vel.Pos += ChangePos * timeDelta;
+			obj.Data.Vel.Rot += Angle::Radians(ChangeRot * timeDelta);
+		}
 	}
 
 	return data;

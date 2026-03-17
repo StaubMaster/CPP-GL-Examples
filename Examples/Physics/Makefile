@@ -27,6 +27,8 @@ FILES_SRC := \
 	Arrow2D/Data.cpp \
 	Arrow2D/Object.cpp \
 \
+	Arrow2D/RankLengths.cpp \
+\
 	WireFrame2D/Main/Buffer.cpp \
 	WireFrame2D/Shader.cpp \
 	WireFrame2D/Manager.cpp \
@@ -45,6 +47,12 @@ FILES_SRC := \
 	Physics2D/Manager.cpp \
 	Physics2D/Object.cpp \
 	Physics2D/Collision.cpp \
+\
+	SceneInteraction/Data.cpp \
+	SceneInteraction/Base.cpp \
+	SceneInteraction/Move.cpp \
+	SceneInteraction/Spin.cpp \
+	SceneInteraction/Force.cpp \
 \
 	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)

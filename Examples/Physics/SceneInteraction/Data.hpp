@@ -1,3 +1,5 @@
+#ifndef  SCENE_INTERACTION_DATA_HPP
+# define SCENE_INTERACTION_DATA_HPP
 
 # include "Physics2D/Manager.hpp"
 # include "ValueType/Undex.hpp"
@@ -13,13 +15,7 @@ struct SceneInteractionData
 	bool					IsRunning;
 	bool					IsSimulating;
 
-	SceneInteractionData(Physics2D::Manager & manager)
-		: Manager(manager)
-		, Selected(Undex::Invalid())
-		, Hovering(Undex::Invalid())
-		, Cursor()
-		, TimeDelta(0.0f)
-		, IsRunning(false)
-		, IsSimulating(false)
-	{ }
+	SceneInteractionData(Physics2D::Manager & manager);
 };
+
+#endif

@@ -78,7 +78,7 @@ struct Manager
 	void UpdateAirResistance(float timeDelta);
 
 	void UpdateCollision(float timeDelta);
-	void UpdateOrientation(float timeDelta);
+	void UpdateTransformation(float timeDelta);
 	void Update(float timeDelta);
 
 
