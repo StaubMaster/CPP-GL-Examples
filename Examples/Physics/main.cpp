@@ -138,21 +138,6 @@ MainContext()
 
 
 
-void CheckMomentOfInertia(float timeDelta, Point2D pos)
-{
-	return;
-	if (!SceneData.Selected.IsValid()) { return; }
-	Physics2D::ObjectMomentOfIntertiaData data = Physics2D::CheckMomentOfIntertia(timeDelta, *Physics2D_Manager.Objects[SceneData.Selected.Value], pos);
-
-	Arrow2D::Object arrows(4);
-	arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
-	arrows[1] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityPos);
-	arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, data.VelocityRot);
-	arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.CenterOfMass);
-}
-
-
-
 struct ObjectForce
 {
 ::Undex	Undex0;
@@ -167,44 +152,30 @@ void Update(SceneInteractionData & SceneData)
 {
 	if (Undex0.IsValid())
 	{
-	Ray2D drag;
-	drag.Pos = SceneData.Manager.Objects[Undex0.Value] -> AbsolutePositionOf(Point0);
-	drag.Dir = Point1 - drag.Pos;
+		Ray2D drag;
+		drag.Pos = SceneData.Manager.Objects[Undex0.Value] -> AbsolutePositionOf(Point0);
+		drag.Dir = Point1 - drag.Pos;
 
-	Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.TimeDelta, *(SceneData.Manager.Objects[Undex0.Value]), drag, 10.0f, SceneData.IsSimulating);
+		Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.TimeDelta, *(SceneData.Manager.Objects[Undex0.Value]), drag, 10.0f, SceneData.IsSimulating);
 
-	if (Arrows.Is())
-	{
-		Arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
-
-		Arrows[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 24.0f, data.Force);
-		Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
-		Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
+		if (Arrows.Is())
 		{
-			float values[2]
-			{
-				data.Torque.Dir.length2(),
-				data.ChangeRot.Dir.length2(),
-			};
-			unsigned int ranks[2];
-			::RankLengths(2, values, ranks);
-			float sizes[2]
-			{
-				20.0f,
-				16.0f,
-			};
-			//Arrows[ranks[0] + 4] = Arrow2D::Inst::Data(ColorF4(0.5f, 1.0f, 0.5f), sizes[ranks[0]], data.Torque);
-			Arrows[ranks[1] + 4] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), sizes[ranks[1]], data.ChangeRot);
+			Arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
+
+			Arrows[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.Force);
+			Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
+			Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
+
+			Arrows[4] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangePos);
+			Arrows[5] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangeRot);
 		}
-		Arrows[6] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangePos);
-	}
 	}
 }
 
 Arrow2D::Object	Arrows;
 void Show()
 {
-	Arrows.Allocate(7);
+	Arrows.Allocate(6);
 }
 void Hide()
 {
@@ -222,8 +193,8 @@ MainContext::ObjectForce	ObjectForce;
 void Make()
 {
 //	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
-	Physics2D_Manager.AirResistance = 0.1f;
-	Physics2D_Manager.GravityToY = 1.0f;
+//	Physics2D_Manager.AirResistance = 0.1f;
+//	Physics2D_Manager.GravityToY = 1.0f;
 
 	InteractionObjectMove.Show();
 	InteractionObjectSpin.Show();
@@ -473,8 +444,6 @@ void Frame(double timeDelta)
 	{
 		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
 		SceneData.Hovering = Physics2D_Manager.FindObjectIndex(SceneData.Cursor);
-
-		CheckMomentOfInertia(SceneData.TimeDelta, SceneData.Cursor);
 
 		InteractionObjectMove.Update(SceneData);
 		InteractionObjectSpin.Update(SceneData);

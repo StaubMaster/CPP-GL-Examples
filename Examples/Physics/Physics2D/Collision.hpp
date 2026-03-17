@@ -72,60 +72,46 @@ namespace Physics2D
 		Object & obj1
 	);
 
-	struct ObjectMomentOfIntertiaData
-	{
-		Line2D Contact;
 
-		Ray2D VelocityPos;
-		Ray2D VelocityRot;
 
-		Line2D CenterOfMass;
-	};
-	ObjectMomentOfIntertiaData CheckMomentOfIntertia(float timeDelta, Object & obj, Point2D pos);
+/* (put this stuff somewhere else at some point)
+	Constant (stays the same as long as the PolyGon dosent change)
+		Mass
+		Area ?
+		Density ?
+		Center of Mass
+		Moment of Inertia
+	Moving (changes as Velocity changes)
+		Linear Velocity
+		Linear Momentum
+		Angular Velocity
+		Angular Momentum
+*/
 
 	struct ObjectData
 	{
 		Point2D	CenterOfMass;
-
-		float	AngularPosition;
-		float	AngularVelocity;
-
-		float	AngularVelocityLength;
-		float	AngularVelocityNormal;
-
 		float	MomentOfInertia;
-		float	AngularMomentum;
+
+		float	LinVel;
+		float	LinMom;
+
+		float	AngVel;
+		float	AngMom;
 	};
 	ObjectData CalculateObjectData(Object & obj);
 
 	struct ObjectContactForceData
 	{
 		Point2D		Contact;
-//		float		Mass;
 
 		Point2D		Force;
 		Point2D		ForcePos;
 		Point2D		ForceRot;
 
 		float	Torque;
-//		float	MomentOfInertia;
-//		float	AngularMomentum;
 	};
 	ObjectContactForceData CalculateObjectContactForceData(Object & obj, Ray2D force);
-
-	struct ObjectTorqueData
-	{
-		Ray2D Drag;
-		Line2D Contact;
-
-		Ray2D ForcePos;
-		Ray2D ForceRot;
-
-		Ray2D Torque;
-
-		Ray2D ChangeRot;
-	};
-	ObjectTorqueData ApplyTorque(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change);
 
 	struct ObjectForceData
 	{
@@ -135,20 +121,8 @@ namespace Physics2D
 		Ray2D ForcePos;
 		Ray2D ForceRot;
 
-		Ray2D Torque;
-
 		Ray2D ChangePos;
 		Ray2D ChangeRot;
-
-//		Point2D Center;
-//
-//		Point2D Contact;
-//		Point2D Direction;
-//		Point2D Normal;
-//
-//		Point2D Perp;
-//
-//		Point2D Impulse;
 	};
 	ObjectForceData ApplyForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change);
 };
