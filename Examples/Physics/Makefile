@@ -49,6 +49,7 @@ FILES_SRC := \
 	Physics2D/PointMass2D.cpp \
 	Physics2D/Collision.cpp \
 \
+	SceneInteraction/Grid2D.cpp \
 	SceneInteraction/Data.cpp \
 	SceneInteraction/Base.cpp \
 	SceneInteraction/Move.cpp \

@@ -1,4 +1,5 @@
 #include "SceneInteraction/Move.hpp"
+#include "Grid2D.hpp"
 
 
 
@@ -38,7 +39,7 @@ void InteractionObjectMove::Start(SceneInteractionData & SceneData)
 	{
 		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		Origin = now.Pos;
-		Offset = SceneData.Cursor - now.Pos;
+		Offset = SceneData.Cursor - Origin;
 	}
 }
 void InteractionObjectMove::Change(SceneInteractionData & SceneData)
@@ -46,6 +47,9 @@ void InteractionObjectMove::Change(SceneInteractionData & SceneData)
 	if (Object.IsValid())
 	{
 		Target = SceneData.Cursor - Offset;
+
+		Grid2D grid(0.1f, 15.0f);
+		Target = grid.Align(Target);
 	}
 }
 void InteractionObjectMove::Update(SceneInteractionData & SceneData)

@@ -1,4 +1,5 @@
 #include "SceneInteraction/Spin.hpp"
+#include "Grid2D.hpp"
 
 
 
@@ -38,7 +39,7 @@ void InteractionObjectSpin::Start(SceneInteractionData & SceneData)
 		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		Point2D rel = SceneData.Cursor - now.Pos;
 		Origin = now.Rot;
-		Offset = Origin - Angle2D::FromPoint2D(rel);
+		Offset = Angle2D::FromPoint2D(rel) - Origin;
 	}
 }
 void InteractionObjectSpin::Change(SceneInteractionData & SceneData)
@@ -47,7 +48,10 @@ void InteractionObjectSpin::Change(SceneInteractionData & SceneData)
 	{
 		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		Point2D rel = SceneData.Cursor - now.Pos;
-		Target = Angle2D::FromPoint2D(rel);
+		Target = Offset + Angle2D::FromPoint2D(rel);
+
+		Grid2D grid(0.1f, 15.0f);
+		Target = grid.Align(Target);
 	}
 }
 void InteractionObjectSpin::Update(SceneInteractionData & SceneData)
@@ -55,12 +59,12 @@ void InteractionObjectSpin::Update(SceneInteractionData & SceneData)
 	if (Object.IsValid())
 	{
 		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
-		now.Rot = Target + Offset;
+		now.Rot = Target;
 		if (Arrows.Is())
 		{
 			float len = (SceneData.Cursor - now.Pos).length();
 			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Ray2D(now.Pos, (Origin - Offset) * Point2D(len, 0)));
-			Arrows[1] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Ray2D(now.Pos, (Target) * Point2D(len, 0)));
+			Arrows[1] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Ray2D(now.Pos, (Target - Offset) * Point2D(len, 0)));
 		}
 	}
 }
