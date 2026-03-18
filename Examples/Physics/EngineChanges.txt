@@ -12,3 +12,11 @@ Textures:
 	make it so the "Implementations" like TextureArray2D just hide / delete unwanted Functionality
 	also make changing Parameters better
 	just some Enums would be best
+
+Buffer::Attribute
+Attributes dont need to be bound every Frame
+Bind them once when Buffer is made, or after Attributes have been set
+Attributes should be set first, like uniforms
+so just expect that
+
+

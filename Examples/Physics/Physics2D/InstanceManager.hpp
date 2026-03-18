@@ -23,13 +23,8 @@ namespace Physics2D
 {
 struct Manager;
 
-//	Rename to MainManager ?
-//	or 
 struct InstanceManager
 {
-	// this is copy Pasted, make a Template for it
-	// I am not sure how Templates would Behave with this
-	// it would be mostly static so it shouldnt matter
 	static InstanceManager * CurrentPointer;
 	static InstanceManager & Current();
 	static bool CheckCurrent();
@@ -45,10 +40,6 @@ struct InstanceManager
 	::WireFrame2D *	WireFrame;
 	::WireFrame2D *	WireFrameBox;
 
-//	::EntryContainer::Binary<Physics2D::Inst::Data> *		Instances_PolyGon;
-//	::EntryContainer::Binary<Physics2D::Inst::Data> *		Instances_WireFrame;
-//	::EntryContainer::Binary<Physics2D::Inst::Data> *		Instances_WireFrameBox;
-
 	::BufferArray::MainInst<PolyGonGraphics::Buffer, Physics2D::Inst::Buffer>							Buffer_PolyGon;
 	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Physics2D::Inst::Buffer>	Buffer_WireFrame;
 	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Physics2D::Inst::Buffer>	Buffer_WireFrameBox;
@@ -59,6 +50,7 @@ struct InstanceManager
 	InstanceManager & operator=(const InstanceManager & other);
 
 	void Dispose();
+	void Changed();
 
 	void InitExternal();
 	void InitInternal();

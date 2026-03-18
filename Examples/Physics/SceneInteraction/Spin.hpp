@@ -2,18 +2,23 @@
 # define SCENE_INTERACTION_SPIN_HPP
 
 # include "SceneInteraction/Base.hpp"
+# include "ValueType/Undex.hpp"
 # include "ValueType/Angle2D.hpp"
 
 struct InteractionObjectSpin : public SceneInteractionBase
 {
-	Angle2D	Origin;
+	Undex	Object;
 	Angle2D	Offset;
+
+	Angle2D	Origin;
+	Angle2D	Target;
 
 	InteractionObjectSpin();
 
 	void Escape(SceneInteractionData & SceneData) override;
-
 	void Start(SceneInteractionData & SceneData) override;
+	void End(SceneInteractionData & SceneData) override;
+	void Change(SceneInteractionData & SceneData) override;
 	void Update(SceneInteractionData & SceneData) override;
 
 	void Show() override;

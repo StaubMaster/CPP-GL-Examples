@@ -1,4 +1,6 @@
 #include "Physics2D/InstanceManager.hpp"
+#include "Physics2D/Manager.hpp"
+#include "Physics2D/Object.hpp"
 
 #include "PolyGon/Data.hpp"
 #include "ValueType/AxisBox2D.hpp"
@@ -26,9 +28,6 @@ Physics2D::InstanceManager::InstanceManager()
 	, PolyGon(new ::PolyGon())
 	, WireFrame(new ::WireFrame2D())
 	, WireFrameBox(new ::WireFrame2D())
-//	, Instances_PolyGon(new EntryContainer::Binary<Physics2D::Inst::Data>())
-//	, Instances_WireFrame(new EntryContainer::Binary<Physics2D::Inst::Data>())
-//	, Instances_WireFrameBox(new EntryContainer::Binary<Physics2D::Inst::Data>())
 	, Buffer_PolyGon(GL::DrawMode::Triangles)
 	, Buffer_WireFrame(GL::DrawMode::Lines)
 	, Buffer_WireFrameBox(GL::DrawMode::Lines)
@@ -38,9 +37,6 @@ Physics2D::InstanceManager::InstanceManager(const InstanceManager & other)
 	, PolyGon(other.PolyGon)
 	, WireFrame(other.WireFrame)
 	, WireFrameBox(other.WireFrameBox)
-//	, Instances_PolyGon(other.Instances_PolyGon)
-//	, Instances_WireFrame(other.Instances_WireFrame)
-//	, Instances_WireFrameBox(other.Instances_WireFrameBox)
 	, Buffer_PolyGon(other.Buffer_PolyGon)
 	, Buffer_WireFrame(other.Buffer_WireFrame)
 	, Buffer_WireFrameBox(other.Buffer_WireFrameBox)
@@ -51,9 +47,6 @@ Physics2D::InstanceManager & Physics2D::InstanceManager::operator=(const Instanc
 	PolyGon = other.PolyGon;
 	WireFrame = other.WireFrame;
 	WireFrameBox = other.WireFrameBox;
-//	Instances_PolyGon = other.Instances_PolyGon;
-//	Instances_WireFrame = other.Instances_WireFrame;
-//	Instances_WireFrameBox = other.Instances_WireFrameBox;
 	Buffer_PolyGon = other.Buffer_PolyGon;
 	Buffer_WireFrame = other.Buffer_WireFrame;
 	Buffer_WireFrameBox = other.Buffer_WireFrameBox;
@@ -67,10 +60,46 @@ void Physics2D::InstanceManager::Dispose()
 	delete PolyGon;
 	delete WireFrame;
 	delete WireFrameBox;
+}
+void Physics2D::InstanceManager::Changed()
+{
+	{
+		WireFrame -> Clear();
+		ColorF4 col;
+		for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
+		{
+			col = PolyGon -> Corners[i].Col;
+			col.R = 1.0f - col.R;
+			col.G = 1.0f - col.G;
+			col.B = 1.0f - col.B;
+			WireFrame -> Insert_Corner(PolyGon -> Corners[i].Pos, col);
+		}
+		/*for (unsigned int i = 0; i < PolyGon -> Sides.Count(); i++)
+		{
+			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner0.Udx, PolyGon -> Sides[i].Corner1.Udx);
+			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner1.Udx, PolyGon -> Sides[i].Corner2.Udx);
+			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner2.Udx, PolyGon -> Sides[i].Corner0.Udx);
+		}*/
 
-//	delete Instances_PolyGon;
-//	delete Instances_WireFrame;
-//	delete Instances_WireFrameBox;
+		for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
+		{
+			if (i == 0)
+			{
+				WireFrame -> Insert_Side(PolyGon -> Corners.Count() - 1, 0);
+			}
+			else
+			{
+				WireFrame -> Insert_Side(i - 1, i - 0);
+			}
+		}
+	}
+	{
+		AxisBox2D box = PolyGon -> ToAxisBox();
+		box.Min -= 0.01f;
+		box.Max += 0.01f;
+		WireFrameBox -> Clear();
+		WireFrameBox -> Insert_Box(box, ColorF4());
+	}
 }
 
 
@@ -122,51 +151,49 @@ void Physics2D::InstanceManager::UpdateMain()
 		data.Delete();
 	}
 	{
-		WireFrame -> Clear();
-		ColorF4 col;
-		for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
-		{
-			col = PolyGon -> Corners[i].Col;
-			col.R = 1.0f - col.R;
-			col.G = 1.0f - col.G;
-			col.B = 1.0f - col.B;
-			WireFrame -> Insert_Corner(PolyGon -> Corners[i].Pos, col);
-		}
-		/*for (unsigned int i = 0; i < PolyGon -> Sides.Count(); i++)
-		{
-			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner0.Udx, PolyGon -> Sides[i].Corner1.Udx);
-			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner1.Udx, PolyGon -> Sides[i].Corner2.Udx);
-			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner2.Udx, PolyGon -> Sides[i].Corner0.Udx);
-		}*/
-		for (unsigned int i = 1; i < PolyGon -> Corners.Count(); i++)
-		{
-			WireFrame -> Insert_Side(i - 1, i - 0);
-		}
-		WireFrame -> Insert_Side(PolyGon -> Corners.Count() - 1, 0);
 		Buffer_WireFrame.Main.Change(WireFrame -> Corners);
 		Buffer_WireFrame.Elem.Change(WireFrame -> Sides, 2);
 	}
 	{
-		AxisBox2D box = PolyGon -> ToAxisBox();
-		box.Min -= 0.01f;
-		box.Max += 0.01f;
-		WireFrameBox -> Clear();
-		WireFrameBox -> Insert_Box(box, ColorF4());
 		Buffer_WireFrameBox.Main.Change(WireFrameBox -> Corners);
 		Buffer_WireFrameBox.Elem.Change(WireFrameBox -> Sides, 2);
 	}
 }
 void Physics2D::InstanceManager::UpdateInst()
 {
-//	Buffer_PolyGon.Inst.Change(*Instances);
-//	Buffer_WireFrame.Inst.Change(*Instances);
-//	Buffer_WireFrameBox.Inst.Change(*Instances);
+	Container::Binary<Physics2D::Object*> & Objects = Manager -> Objects;
 
-//	Instances_PolyGon -> CompactHere();
-//	Instances_WireFrame -> CompactHere();
-//	Instances_WireFrameBox -> CompactHere();
+	unsigned int Count_PolyGon = 0;
+	unsigned int Count_WireFrame = 0;
+	unsigned int Count_WireFrameBox = 0;
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (Objects[i] == nullptr) { continue; }
+		Physics2D::Object & obj = *Objects[i];
+		if (obj.InstanceManager == this)
+		{
+			if (obj.DrawPolyGon) { Count_PolyGon++; }
+			if (obj.DrawWireFrame) { Count_WireFrame++; }
+			if (obj.DrawWireFrameBox) { Count_WireFrameBox++; }
+		}
+	}
 
-//	Buffer_PolyGon.Inst.Change(*Instances_PolyGon);
-//	Buffer_WireFrame.Inst.Change(*Instances_WireFrame);
-//	Buffer_WireFrameBox.Inst.Change(*Instances_WireFrameBox);
+	Container::Fixed<Physics2D::Inst::Data> Data_PolyGon(Count_PolyGon);
+	Container::Fixed<Physics2D::Inst::Data> Data_WireFrame(Count_WireFrame);
+	Container::Fixed<Physics2D::Inst::Data> Data_WireFrameBox(Count_WireFrameBox);
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (Objects[i] == nullptr) { continue; }
+		Physics2D::Object & obj = *Objects[i];
+		if (obj.InstanceManager == this)
+		{
+			if (obj.DrawPolyGon) { Data_PolyGon.Insert(obj.Data); }
+			if (obj.DrawWireFrame) { Data_WireFrame.Insert(obj.Data); }
+			if (obj.DrawWireFrameBox) { Data_WireFrameBox.Insert(obj.Data); }
+		}
+	}
+
+	Buffer_PolyGon.Inst.Change(Data_PolyGon);
+	Buffer_WireFrame.Inst.Change(Data_WireFrame);
+	Buffer_WireFrameBox.Inst.Change(Data_WireFrameBox);
 }

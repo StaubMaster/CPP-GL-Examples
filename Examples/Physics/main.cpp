@@ -102,7 +102,8 @@ Physics2D::Manager	Physics2D_Manager;
 ::SceneInteractionData	SceneData;
 ::InteractionObjectMove	InteractionObjectMove;
 ::InteractionObjectSpin	InteractionObjectSpin;
-::InteractionObjectApplyForce	InteractionObjectApplyForce;
+::InteractionObjectDrag	InteractionObjectApplyForce;
+::InteractionObjectDrag	InteractionObjectApplyForceUnbound;
 
 MainContext()
 	: ImageDir("../../media/Images")
@@ -138,59 +139,10 @@ MainContext()
 
 
 
-struct ObjectForce
-{
-::Undex	Undex0;
-Point2D	Point0;
-Point2D	Point1;
-
-ObjectForce()
-	: Undex0(Undex::Invalid())
-{ }
-
-void Update(SceneInteractionData & SceneData)
-{
-	if (Undex0.IsValid())
-	{
-		Ray2D drag;
-		drag.Pos = SceneData.Manager.Objects[Undex0.Value] -> AbsolutePositionOf(Point0);
-		drag.Dir = Point1 - drag.Pos;
-
-		Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.TimeDelta, *(SceneData.Manager.Objects[Undex0.Value]), drag, 10.0f, SceneData.IsSimulating);
-
-		if (Arrows.Is())
-		{
-			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.Drag);
-			Arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
-
-			//Arrows[2] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.Force);
-			//Arrows[3] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ForcePos);
-			//Arrows[4] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ForceRot);
-
-			//Arrows[5] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ChangePos);
-			//Arrows[6] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ChangeRot);
-		}
-	}
-}
-
-Arrow2D::Object	Arrows;
-void Show()
-{
-	Arrows.Allocate(7);
-}
-void Hide()
-{
-	Arrows.Dispose();
-}
-};
-MainContext::ObjectForce	ObjectForce;
+//::ObjectForce	ObjectForce;
 
 
 
-/* PolyGon
-	Lines that define the Edge of the PolyGon
-	Triangles that are used for Drawing
-*/
 void Make()
 {
 //	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
@@ -201,7 +153,7 @@ void Make()
 	InteractionObjectSpin.Show();
 	InteractionObjectApplyForce.Show();
 
-	ObjectForce.Show();
+	InteractionObjectApplyForceUnbound.Show();
 
 
 
@@ -292,6 +244,7 @@ void Make()
 
 	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
 	{
+		Physics2D_Manager.MainInstances[i].Changed();
 		Physics2D_Manager.MainInstances[i].Manager = &Physics2D_Manager;
 		Physics2D_Manager.MainInstances[i].InitExternal();
 		Physics2D_Manager.MainInstances[i].GraphicsCreate();
@@ -446,10 +399,14 @@ void Frame(double timeDelta)
 		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
 		SceneData.Hovering = Physics2D_Manager.FindObjectIndex(SceneData.Cursor);
 
+		InteractionObjectMove.Change(SceneData);
+		InteractionObjectSpin.Change(SceneData);
+		InteractionObjectApplyForce.Change(SceneData);
+
 		InteractionObjectMove.Update(SceneData);
 		InteractionObjectSpin.Update(SceneData);
 		InteractionObjectApplyForce.Update(SceneData);
-		ObjectForce.Update(SceneData);
+		InteractionObjectApplyForceUnbound.Update(SceneData);
 	}
 
 	{
@@ -603,20 +560,19 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 		}
 		if (params.Code == UserParameter::KeyBoard::Keys::R)
 		{
-			if (!ObjectForce.Undex0.IsValid())
+			if (!InteractionObjectApplyForceUnbound.Object.IsValid())
 			{
-				if (InteractionObjectApplyForce.Undex.IsValid())
+				if (InteractionObjectApplyForce.Object.IsValid())
 				{
-					ObjectForce.Undex0 = InteractionObjectApplyForce.Undex;
-					ObjectForce.Point0 = InteractionObjectApplyForce.Contact;
-					ObjectForce.Point1 = SceneData.Cursor;
-					ObjectForce.Show();
+					InteractionObjectApplyForceUnbound.Object = InteractionObjectApplyForce.Object;
+					InteractionObjectApplyForceUnbound.Offset = InteractionObjectApplyForce.Offset;
+					InteractionObjectApplyForceUnbound.Target = InteractionObjectApplyForce.Target;
+					InteractionObjectApplyForce.End(SceneData);
 				}
 			}
 			else
 			{
-				ObjectForce.Undex0 = Undex::Invalid();
-				ObjectForce.Hide();
+				InteractionObjectApplyForceUnbound.End(SceneData);
 			}
 		}
 	}

@@ -4,44 +4,65 @@
 
 InteractionObjectSpin::InteractionObjectSpin()
 	: SceneInteractionBase()
+	, Object(Undex::Invalid())
 { }
+
+
 
 void InteractionObjectSpin::Escape(SceneInteractionData & SceneData)
 {
-	if (Undex.IsValid())
+	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Undex.Value] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
 		now.Rot = Origin;
 		End(SceneData);
 	}
 }
-
+void InteractionObjectSpin::End(SceneInteractionData & SceneData)
+{
+	(void)SceneData;
+	if (Object.IsValid())
+	{
+		Object = Undex::Invalid();
+		for (unsigned int i = 0; i < Arrows.Count(); i++)
+		{
+			Arrows[i] = Arrow2D::Inst::Data();
+		}
+	}
+}
 void InteractionObjectSpin::Start(SceneInteractionData & SceneData)
 {
-	Undex = SceneData.Hovering;
-	if (Undex.IsValid())
+	Object = SceneData.Hovering;
+	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Undex.Value] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
 		Point2D rel = SceneData.Cursor - now.Pos;
 		rel = Point2D(rel.Y, rel.X);
 		Origin = now.Rot;
-		Offset = now.Rot - Angle2D::FromPoint2D(rel);
+		Offset = Origin - Angle2D::FromPoint2D(rel);
+	}
+}
+void InteractionObjectSpin::Change(SceneInteractionData & SceneData)
+{
+	if (Object.IsValid())
+	{
+		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+		Point2D rel = SceneData.Cursor - now.Pos;
+		rel = Point2D(rel.Y, rel.X); // Engine coords are backwards
+		Target = Angle2D::FromPoint2D(rel);
 	}
 }
 void InteractionObjectSpin::Update(SceneInteractionData & SceneData)
 {
-	if (Undex.IsValid())
+	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Undex.Value] -> Data.Now;
-		Point2D rel = SceneData.Cursor - now.Pos;
-		rel = Point2D(rel.Y, rel.X);
-		now.Rot = Offset + Angle2D::FromPoint2D(rel);
+		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+		now.Rot = Target + Offset;
 		if (Arrows.Is())
 		{
-			rel = Point2D(rel.Y, rel.X);
-			Trans2D & now = SceneData.Manager.Objects[Undex.Value] -> Data.Now;
-			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Ray2D(now.Pos, rel));
-			Arrows[1] = Arrow2D::Inst::Data(ColorF4(1, 0, 1), 16.0f, Ray2D(now.Pos, Origin * Point2D(rel.length(), 0)));
+			float len = (SceneData.Cursor - now.Pos).length();
+			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Ray2D(now.Pos, (Origin - Offset) * Point2D(len, 0)));
+			Arrows[1] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Ray2D(now.Pos, (Target) * Point2D(len, 0)));
 		}
 	}
 }

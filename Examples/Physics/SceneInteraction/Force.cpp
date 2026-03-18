@@ -1,50 +1,73 @@
 #include "SceneInteraction/Force.hpp"
 #include "Arrow2D/RankLengths.hpp"
+#include "Physics2D/Collision.hpp"
 
 
 
-InteractionObjectApplyForce::InteractionObjectApplyForce()
+InteractionObjectDrag::InteractionObjectDrag()
 	: SceneInteractionBase()
+	, Object(Undex::Invalid())
 { }
 
-void InteractionObjectApplyForce::Escape(SceneInteractionData & SceneData)
+
+
+void InteractionObjectDrag::Escape(SceneInteractionData & SceneData)
 {
 	(void)SceneData;
 }
-
-void InteractionObjectApplyForce::Start(SceneInteractionData & SceneData)
+void InteractionObjectDrag::End(SceneInteractionData & SceneData)
 {
-	Undex = SceneData.Hovering;
-	if (Undex.IsValid())
+	(void)SceneData;
+	if (Object.IsValid())
 	{
-		Contact = SceneData.Manager.Objects[Undex.Value] -> RelativePositionOf(SceneData.Cursor);
+		Object = Undex::Invalid();
+		for (unsigned int i = 0; i < Arrows.Count(); i++)
+		{
+			Arrows[i] = Arrow2D::Inst::Data();
+		}
 	}
 }
-void InteractionObjectApplyForce::Update(SceneInteractionData & SceneData)
+void InteractionObjectDrag::Start(SceneInteractionData & SceneData)
 {
-	if (Undex.IsValid())
+	Object = SceneData.Hovering;
+	if (Object.IsValid())
+	{
+		Offset = SceneData.Manager.Objects[Object.Value] -> RelativePositionOf(SceneData.Cursor);
+	}
+}
+void InteractionObjectDrag::Change(SceneInteractionData & SceneData)
+{
+	if (Object.IsValid())
+	{
+		Target = SceneData.Cursor;
+	}
+}
+void InteractionObjectDrag::Update(SceneInteractionData & SceneData)
+{
+	if (Object.IsValid())
 	{
 		Ray2D drag;
-		drag.Pos = SceneData.Manager.Objects[Undex.Value] -> AbsolutePositionOf(Contact);
-		drag.Dir = SceneData.Cursor - drag.Pos;
+		drag.Pos = SceneData.Manager.Objects[Object.Value] -> AbsolutePositionOf(Offset);
+		drag.Dir = Target - drag.Pos;
 
-		Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.TimeDelta, *(SceneData.Manager.Objects[Undex.Value]), drag, 10.0f, SceneData.IsSimulating);
+		Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.TimeDelta, *(SceneData.Manager.Objects[Object.Value]), drag, 10.0f, SceneData.IsSimulating);
 
 		if (Arrows.Is())
 		{
-			Arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
+			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.Drag);
+			Arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 
-			Arrows[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 24.0f, data.Force);
-			Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
-			Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
+			Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 24.0f, data.Force);
+			Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
+			Arrows[4] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
 
-			Arrows[4] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangeRot);
-			Arrows[5] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangePos);
+			Arrows[5] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangeRot);
+			Arrows[6] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangePos);
 		}
 	}
 }
 
-void InteractionObjectApplyForce::Show()
+void InteractionObjectDrag::Show()
 {
-	Arrows.Allocate(6);
+	Arrows.Allocate(7);
 }
