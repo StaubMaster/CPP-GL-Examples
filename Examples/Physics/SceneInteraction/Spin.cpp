@@ -13,7 +13,7 @@ void InteractionObjectSpin::Escape(SceneInteractionData & SceneData)
 {
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		now.Rot = Origin;
 		End(SceneData);
 	}
@@ -35,9 +35,8 @@ void InteractionObjectSpin::Start(SceneInteractionData & SceneData)
 	Object = SceneData.Hovering;
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		Point2D rel = SceneData.Cursor - now.Pos;
-		rel = Point2D(rel.Y, rel.X);
 		Origin = now.Rot;
 		Offset = Origin - Angle2D::FromPoint2D(rel);
 	}
@@ -46,9 +45,8 @@ void InteractionObjectSpin::Change(SceneInteractionData & SceneData)
 {
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		Point2D rel = SceneData.Cursor - now.Pos;
-		rel = Point2D(rel.Y, rel.X); // Engine coords are backwards
 		Target = Angle2D::FromPoint2D(rel);
 	}
 }
@@ -56,7 +54,7 @@ void InteractionObjectSpin::Update(SceneInteractionData & SceneData)
 {
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		now.Rot = Target + Offset;
 		if (Arrows.Is())
 		{

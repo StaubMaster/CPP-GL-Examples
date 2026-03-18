@@ -32,7 +32,7 @@ void InteractionObjectDrag::Start(SceneInteractionData & SceneData)
 	Object = SceneData.Hovering;
 	if (Object.IsValid())
 	{
-		Offset = SceneData.Manager.Objects[Object.Value] -> RelativePositionOf(SceneData.Cursor);
+		Offset = SceneData.Manager.Objects[Object] -> RelativePositionOf(SceneData.Cursor);
 	}
 }
 void InteractionObjectDrag::Change(SceneInteractionData & SceneData)
@@ -47,17 +47,17 @@ void InteractionObjectDrag::Update(SceneInteractionData & SceneData)
 	if (Object.IsValid())
 	{
 		Ray2D drag;
-		drag.Pos = SceneData.Manager.Objects[Object.Value] -> AbsolutePositionOf(Offset);
+		drag.Pos = SceneData.Manager.Objects[Object] -> AbsolutePositionOf(Offset);
 		drag.Dir = Target - drag.Pos;
 
-		Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.TimeDelta, *(SceneData.Manager.Objects[Object.Value]), drag, 10.0f, SceneData.IsSimulating);
+		Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.TimeDelta, *(SceneData.Manager.Objects[Object]), drag, 10.0f, SceneData.IsSimulating);
 
 		if (Arrows.Is())
 		{
 			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.Drag);
 			Arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 
-			Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 24.0f, data.Force);
+			Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.Force);
 			Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
 			Arrows[4] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
 

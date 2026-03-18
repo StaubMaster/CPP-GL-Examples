@@ -13,7 +13,7 @@ void InteractionObjectMove::Escape(SceneInteractionData & SceneData)
 {
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		now.Pos = Origin;
 		End(SceneData);
 	}
@@ -36,7 +36,7 @@ void InteractionObjectMove::Start(SceneInteractionData & SceneData)
 	Object = SceneData.Hovering;
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		Origin = now.Pos;
 		Offset = SceneData.Cursor - now.Pos;
 	}
@@ -52,11 +52,11 @@ void InteractionObjectMove::Update(SceneInteractionData & SceneData)
 {
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 		now.Pos = Target;
 		if (Arrows.Is())
 		{
-			Trans2D & now = SceneData.Manager.Objects[Object.Value] -> Data.Now;
+			Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
 			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Ray2D(now.Pos, Offset));
 			Arrows[1] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Line2D(Origin, now.Pos));
 		}

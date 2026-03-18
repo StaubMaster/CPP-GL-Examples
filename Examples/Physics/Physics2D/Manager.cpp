@@ -196,7 +196,7 @@ Undex Physics2D::Manager::FindObjectIndex(Point2D p) const
 {
 	for (Undex u; u.Value < Objects.Count(); u++)
 	{
-		if (Objects[u.Value] -> IsContaining(p))
+		if (Objects[u] -> IsContaining(p))
 		{
 			return u;
 		}

@@ -126,7 +126,20 @@ void Physics2D::InstanceManager::InitExternal()
 	}
 }
 void Physics2D::InstanceManager::InitInternal()
-{ }
+{
+	{
+		Buffer_PolyGon.Main.ChangeAttributeBinding();
+		Buffer_PolyGon.Inst.ChangeAttributeBinding();
+	}
+	{
+		Buffer_WireFrame.Main.ChangeAttributeBinding();
+		Buffer_WireFrame.Inst.ChangeAttributeBinding();
+	}
+	{
+		Buffer_WireFrameBox.Main.ChangeAttributeBinding();
+		Buffer_WireFrameBox.Inst.ChangeAttributeBinding();
+	}
+}
 
 void Physics2D::InstanceManager::GraphicsCreate()
 {

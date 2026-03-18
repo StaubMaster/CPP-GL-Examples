@@ -463,18 +463,18 @@ void MouseClick(UserParameter::Mouse::Click params)
 		{
 			if (SceneData.Selected.IsValid())
 			{
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrame();
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrameBox();
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_Arrows();
+				Physics2D_Manager.Objects[SceneData.Selected] -> Hide_WireFrame();
+				Physics2D_Manager.Objects[SceneData.Selected] -> Hide_WireFrameBox();
+				Physics2D_Manager.Objects[SceneData.Selected] -> Hide_Arrows();
 			}
 
 			SceneData.Selected = SceneData.Hovering;
 
 			if (SceneData.Selected.IsValid())
 			{
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrame();
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrameBox();
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_Arrows();
+				Physics2D_Manager.Objects[SceneData.Selected] -> Show_WireFrame();
+				Physics2D_Manager.Objects[SceneData.Selected] -> Show_WireFrameBox();
+				Physics2D_Manager.Objects[SceneData.Selected] -> Show_Arrows();
 			}
 		}
 	}
