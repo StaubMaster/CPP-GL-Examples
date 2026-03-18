@@ -1,0 +1,27 @@
+still dont really have a good Name for these
+
+basically
+Main:		the stuff in the Buffer with Divisor 0
+Instance:	the stuff in the Buffer with Divisor 1
+
+MainInstance:		a collection of Main and Instances into one Object
+GeneralInstance:	a collection of the same Instance data but differnt Main data
+	I have never used this term, but the Idea
+
+
+
+do these still exist with the new Implementation ?
+Main:		holds the Main Data an the Buffers
+Instances:	holds Instance Data an an Index of its Main
+
+the Instance Data get sorted into their Buffers based on their Index
+as well as other stuff, like if they even want to be drawn
+
+the old Implementation had everything presorted into EntryContainers
+but the new one just goes over everything in a for loop
+it does this multiple times for each Main
+once counting and once assinging
+this could be improved to only do when needed
+but a for loop is fast so it dosent really matter ?
+
+

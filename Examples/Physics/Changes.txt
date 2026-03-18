@@ -1,0 +1,29 @@
+
+View:
+	Middle Mouse Drag to Move
+	right now Zoom doubles / Halves
+	make it more gradual
+
+UI:
+	reading from the Console is sometimes difficult
+	especially on Windows
+	at least get the Text stuff to show Object Data
+	maybe also some Toggles for what to show
+
+	but Text kind of sucks right now ?
+	first improve that
+
+	make all UI stuff work with the static Current Manager
+	so that dosent need to be passed around all the time
+	but for UI I only ever use 1 currently
+	so it shouldnt cause any problems
+
+	the only problem is allways settign it up in the beginning
+	and then deleting it properly at the end
+	but that is mostly EntryContainers
+	and Arrows work without
+	so make AI also work without
+
+	also the main problem with Text is that it pixelates
+	which is probably because the texture uses nearest
+	instead, use linear ?

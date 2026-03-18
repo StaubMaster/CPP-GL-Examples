@@ -54,8 +54,28 @@ struct Object
 
 	Point2D	CornerFromIndex(unsigned int idx) const;
 
+	/* RelativePositionOf
+		Parameters:
+			Absolute Position
+		Return:
+			Relative Position
+	*/
 	Point2D	RelativePositionOf(Point2D p) const;
+
+	/* AbsolutePositionOf
+		Parameters:
+			Relative Position
+		Return:
+			Absolute Position
+	*/
 	Point2D	AbsolutePositionOf(Point2D p) const;
+
+	/* AbsoluteVelocityOf
+		Parameters:
+			Relative Position
+		Return:
+			Absolute Velocity
+	*/
 	Point2D	AbsoluteVelocityOf(Point2D p) const;
 
 	public:

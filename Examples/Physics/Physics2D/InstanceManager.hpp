@@ -23,8 +23,13 @@ namespace Physics2D
 {
 struct Manager;
 
+//	Rename to MainManager ?
+//	or 
 struct InstanceManager
 {
+	// this is copy Pasted, make a Template for it
+	// I am not sure how Templates would Behave with this
+	// it would be mostly static so it shouldnt matter
 	static InstanceManager * CurrentPointer;
 	static InstanceManager & Current();
 	static bool CheckCurrent();

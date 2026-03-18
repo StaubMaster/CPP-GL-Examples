@@ -1,8 +1,0 @@
-
-allow Creating / Deleting objects
-
-Dragging to change Vel
-
-
-
-show Contact stuff when paused

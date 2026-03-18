@@ -46,6 +46,7 @@ FILES_SRC := \
 	Physics2D/InstanceManager.cpp \
 	Physics2D/Manager.cpp \
 	Physics2D/Object.cpp \
+	Physics2D/PointMass2D.cpp \
 	Physics2D/Collision.cpp \
 \
 	SceneInteraction/Data.cpp \

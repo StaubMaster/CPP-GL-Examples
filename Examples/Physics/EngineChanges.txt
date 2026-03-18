@@ -6,3 +6,9 @@ Undex
 Angle2D::FromPoint
 	aTan2 Parameters are in the wrong order
 	does not give a full 360 degree Angle
+
+Textures:
+	maybe put everything into the Base
+	make it so the "Implementations" like TextureArray2D just hide / delete unwanted Functionality
+	also make changing Parameters better
+	just some Enums would be best

@@ -535,41 +535,7 @@ so only (1/96), that is very small
 #include "DataInclude.hpp"
 #include "DataShow.hpp"
 #include "Miscellaneous/Container/Binary.hpp"
-
-struct PointMass
-{
-	Point2D Point;
-	float Mass;
-
-	~PointMass() { }
-	PointMass() { }
-	PointMass(Point2D p, float m)
-		: Point(p)
-		, Mass(m)
-	{ }
-
-	static Matrix3x3 InertiaTensor(const Container::Member<PointMass> & pm)
-	{
-		Matrix3x3 I;
-		for (unsigned int y = 0; y < 3; y++)
-		{
-			for (unsigned int x = 0; x < 3; x++)
-			{
-				float sum = 0.0f;
-				for (unsigned int n = 0; n < pm.Count(); n++)
-				{
-					Point3D rel(pm[n].Point.X, pm[n].Point.Y, 0.0f);
-					float rel_[3] { rel.X, rel.Y, rel.Z };
-					float val = -(rel_[x] * rel_[y]);
-					if (x == y) { val += rel.length2(); }
-					sum += val * pm[n].Mass;
-				}
-				I.Data[x][y] = sum;
-			}
-		}
-		return I;
-	}
-};
+#include "PointMass2D.hpp"
 
 
 
@@ -577,31 +543,17 @@ Physics2D::ObjectData Physics2D::CalculateObjectData(Object & obj)
 {
 	ObjectData data;
 
-	Container::Binary<PointMass> PointMasses;
+	Container::Binary<PointMass2D> PointMasses;
 	float m = obj.Mass / obj.CornerCount();
 	for (unsigned int i = 0; i < obj.CornerCount(); i++)
 	{
-		PointMasses.Insert(PointMass(obj.CornerFromIndex(i), m));
+		PointMasses.Insert(PointMass2D(obj.CornerFromIndex(i), m));
 	}
 
-	{
-		Point2D MassPosSum;
-		float MassSum = 0.0f;
-		for (unsigned int i = 0; i < PointMasses.Count(); i++)
-		{
-			MassPosSum += PointMasses[i].Point * PointMasses[i].Mass;
-			MassSum += PointMasses[i].Mass;
-		}
-		data.CenterOfMass = MassPosSum / MassSum;
-	}
-
-	{
-		data.MomentOfInertia = 0.0f;
-		for (unsigned int i = 0; i < PointMasses.Count(); i++)
-		{
-			data.MomentOfInertia += PointMasses[i].Mass * PointMasses[i].Point.length2();
-		}
-	}
+	data.Area = PointMass2D::Area(PointMasses);
+	data.CenterOfMass = PointMass2D::CenterOfMass(PointMasses);
+	data.MomentOfInertia = PointMass2D::MomentOfInertia(PointMasses);
+	data.InertiaTensor = PointMass2D::InertiaTensor(PointMasses);
 
 	{
 		data.LinVel = obj.Data.Now.Pos.length();
@@ -610,41 +562,23 @@ Physics2D::ObjectData Physics2D::CalculateObjectData(Object & obj)
 
 	{
 		data.AngVel = obj.Data.Vel.Rot.Ang.ToRadians();
-		
-		/*data.AngVelLen = sqrt(data.AngVel * data.AngVel);
-		if (data.AngVelLen != 0.0f)
-		{
-			data.AngVelDir = data.AngVel / data.AngVelLen;
-		}
-		else
-		{
-			data.AngVelDir = 0.0f;
-		}*/
-
 		data.AngMom = data.AngVel * data.MomentOfInertia;
 	}
-
-//	std::cout << "AngularMomentum: " << data.AngularMomentum << '\n';
-//	{
-//		Matrix3x3 InertiaTensor = PointMass::InertiaTensor(PointMasses);
-//		std::cout << "InertiaTensor:\n";
-//		std::cout << "  [ " << InertiaTensor.Data[0][0] << " , " << InertiaTensor.Data[1][0] << " , " << InertiaTensor.Data[2][0] << " ]\n";
-//		std::cout << "  [ " << InertiaTensor.Data[0][1] << " , " << InertiaTensor.Data[1][1] << " , " << InertiaTensor.Data[2][1] << " ]\n";
-//		std::cout << "  [ " << InertiaTensor.Data[0][2] << " , " << InertiaTensor.Data[1][2] << " , " << InertiaTensor.Data[2][2] << " ]\n";
-//		Point3D PlaneAsix(0, 0, 1);
-//	}
-//	std::cout << '\n';
 
 	return data;
 }
 
-Physics2D::ObjectContactForceData Physics2D::CalculateObjectContactForceData(Object & obj, Ray2D force)
+Physics2D::ObjectDragData Physics2D::CalculateObjectDragData(Object & obj, Ray2D drag)
 {
-	ObjectContactForceData data;
+	ObjectDragData data;
 
-	data.Contact = force.Pos - obj.AbsolutePositionOf(Point2D());
+	data.Contact = drag.Pos - obj.AbsolutePositionOf(Point2D());
 
-	data.Force = force.Dir;
+	// subtract the speed of the Contact
+	{
+		Point2D vel = obj.AbsoluteVelocityOf(obj.RelativePositionOf(drag.Pos));
+		data.Force = drag.Dir - vel;
+	}
 
 	float dot = Point2D::dot(data.Force, data.Contact);
 	data.ForcePos = (data.Contact * ((dot / data.Contact.length2())));
@@ -661,23 +595,40 @@ Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, 
 {
 	(void)scalar;
 	ObjectForceData data;
+	data.Drag = drag;
 
 	Point2D Center = obj.AbsolutePositionOf(Point2D());
 	Point2D Origin = drag.Pos;
 	data.Contact = Line2D(Center, Origin);
 
 	ObjectData object_data = CalculateObjectData(obj);
-	std::cout << "Mass              : " << obj.Mass << " kg\n";
-	std::cout << "Center of Mass    : " << object_data.CenterOfMass << "\n";
+	std::cout << "Area              : " << object_data.Area << " dm^2\n";
+	std::cout << "Mass              : " << object_data.CenterOfMass.Mass << " kg\n";
+	std::cout << "Density           : " << (object_data.CenterOfMass.Mass / object_data.Area) << " kg/dm^2\n";
+	std::cout << "Center of Mass    : " << object_data.CenterOfMass.Point << "\n";
 	std::cout << "Moment of Inertia : " << object_data.MomentOfInertia << " kg*dm^2\n";
+	std::cout << "Inertia Tensor : kg*dm^2\n";
+	{
+		for (unsigned int y = 0; y < 3; y++)
+		{
+			std::cout << " [ ";
+			for (unsigned int x = 0; x < 3; x++)
+			{
+				if (x != 0) { std::cout << " , "; }
+				std::cout << object_data.InertiaTensor.Data[x][y];
+			}
+			std::cout << " ]\n";
+		}
+	}
 	std::cout << '\n';
+
 	std::cout << "Linear Velocity  : " << object_data.LinVel << " dm/s\n";
 	std::cout << "Linear Momentum  : " << object_data.LinMom << " kg*dm/s\n";
 	std::cout << "Angular Velocity : " << object_data.AngVel << " dm/dm*s\n";
 	std::cout << "Angular Momentum : " << object_data.AngMom << " kg*dm^2/s\n";
 	std::cout << '\n';
 
-	ObjectContactForceData contact_data = CalculateObjectContactForceData(obj, drag);
+	ObjectDragData contact_data = CalculateObjectDragData(obj, drag);
 	std::cout << "Contact  : " << contact_data.Contact.length() << " dm\n";
 	std::cout << "Force    : " << contact_data.Force.length() << " kg*dm/s^2\n";
 	std::cout << "ForcePos : " << contact_data.ForcePos.length() << " kg*dm/s^2\n";
@@ -703,7 +654,7 @@ Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, 
 	{
 		if (!obj.IsStatic)
 		{
-			//obj.Data.Vel.Pos += LinearAcceleration * timeDelta;
+			obj.Data.Vel.Pos += LinearAcceleration * timeDelta;
 			obj.Data.Vel.Rot += Angle::Radians(AngularAcceleration * timeDelta);
 		}
 	}

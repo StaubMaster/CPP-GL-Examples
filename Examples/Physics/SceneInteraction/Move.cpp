@@ -18,6 +18,7 @@ void InteractionObjectMove::Escape(SceneInteractionData & SceneData)
 
 void InteractionObjectMove::Start(SceneInteractionData & SceneData)
 {
+	if (Undex.IsValid()) { return; }
 	Undex = SceneData.Hovering;
 	if (Undex.IsValid())
 	{

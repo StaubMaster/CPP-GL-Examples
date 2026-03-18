@@ -160,14 +160,15 @@ void Update(SceneInteractionData & SceneData)
 
 		if (Arrows.Is())
 		{
-			Arrows[0] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
+			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.Drag);
+			Arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 
-			Arrows[1] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.Force);
-			Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
-			Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
+			//Arrows[2] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.Force);
+			//Arrows[3] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ForcePos);
+			//Arrows[4] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ForceRot);
 
-			Arrows[4] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangePos);
-			Arrows[5] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangeRot);
+			//Arrows[5] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ChangePos);
+			//Arrows[6] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ChangeRot);
 		}
 	}
 }
@@ -175,7 +176,7 @@ void Update(SceneInteractionData & SceneData)
 Arrow2D::Object	Arrows;
 void Show()
 {
-	Arrows.Allocate(6);
+	Arrows.Allocate(7);
 }
 void Hide()
 {
@@ -194,7 +195,7 @@ void Make()
 {
 //	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
 //	Physics2D_Manager.AirResistance = 0.1f;
-//	Physics2D_Manager.GravityToY = 1.0f;
+	Physics2D_Manager.GravityToY = 1.0f;
 
 	InteractionObjectMove.Show();
 	InteractionObjectSpin.Show();
@@ -279,11 +280,11 @@ void Make()
 	{
 		PolyGon & poly_gon = *(obj2.PolyGon);
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, -0.1f), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 1)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1.0f, +0.1f), ColorF4(0, 1, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
-		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
+		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(0), PolyGon::SideCorner(3)));
 	}
 	obj2.Manager = &Physics2D_Manager;
 
@@ -499,6 +500,28 @@ void MouseClick(UserParameter::Mouse::Click params)
 	// Select / Select Box
 	// View Move / Spin
 
+	if (params.Action.IsPress())
+	{
+		if (params.Code == UserParameter::Mouse::Button::MouseL)
+		{
+			if (SceneData.Selected.IsValid())
+			{
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrame();
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrameBox();
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_Arrows();
+			}
+
+			SceneData.Selected = SceneData.Hovering;
+
+			if (SceneData.Selected.IsValid())
+			{
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrame();
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrameBox();
+				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_Arrows();
+			}
+		}
+	}
+
 	if (!params.Mods.IsControl())
 	{
 		if (params.Code == UserParameter::Mouse::Button::MouseL)
@@ -534,37 +557,10 @@ void MouseClick(UserParameter::Mouse::Click params)
 		InteractionObjectSpin.End(SceneData);
 		InteractionObjectApplyForce.End(SceneData);
 	}
-
-	if (params.Action.IsPress())
-	{
-		if (params.Code == UserParameter::Mouse::Button::MouseL)
-		{
-			if (SceneData.Selected.IsValid())
-			{
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrame();
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_WireFrameBox();
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Hide_Arrows();
-			}
-
-			SceneData.Selected = SceneData.Hovering;
-
-			if (SceneData.Selected.IsValid())
-			{
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrame();
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_WireFrameBox();
-				Physics2D_Manager.Objects[SceneData.Selected.Value] -> Show_Arrows();
-			}
-		}
-	}
 }
 void MouseDrag(UserParameter::Mouse::Drag params)
 {
 	(void)params;
-	/*if (Drag.FollowMouse)
-	{
-		Drag.Begin(view * window.Size.Convert(params.Origin), Physics2D_Manager);
-		Drag.Move(view * window.Size.Convert(params.Position));
-	}*/
 }
 
 void KeyBoardKey(UserParameter::KeyBoard::Key params)

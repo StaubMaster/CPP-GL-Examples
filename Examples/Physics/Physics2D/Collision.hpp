@@ -2,11 +2,14 @@
 # define PHYSICS_2D_COLLISION_HPP
 
 # include "Physics2D/Object.hpp"
+# include "Physics2D/PointMass2D.hpp"
 
 # include "ValueType/AxisBox1D.hpp"
 
 # include "ValueType/Point2D.hpp"
 # include "ValueType/Ray2D.hpp"
+
+# include "ValueType/Matrix3x3.hpp"
 
 namespace Physics2D
 {
@@ -90,9 +93,13 @@ namespace Physics2D
 
 	struct ObjectData
 	{
-		Point2D	CenterOfMass;
-		float	MomentOfInertia;
+		// Object Main
+		float		Area;
+		PointMass2D	CenterOfMass;
+		float		MomentOfInertia;
+		Matrix3x3	InertiaTensor;
 
+		// Object Instance
 		float	LinVel;
 		float	LinMom;
 
@@ -101,7 +108,7 @@ namespace Physics2D
 	};
 	ObjectData CalculateObjectData(Object & obj);
 
-	struct ObjectContactForceData
+	struct ObjectDragData
 	{
 		Point2D		Contact;
 
@@ -111,10 +118,11 @@ namespace Physics2D
 
 		float	Torque;
 	};
-	ObjectContactForceData CalculateObjectContactForceData(Object & obj, Ray2D force);
+	ObjectDragData CalculateObjectDragData(Object & obj, Ray2D drag);
 
 	struct ObjectForceData
 	{
+		Ray2D Drag;
 		Line2D Contact;
 
 		Ray2D Force;
