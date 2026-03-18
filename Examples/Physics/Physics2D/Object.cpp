@@ -7,9 +7,21 @@
 
 
 
+Physics2D::IntrinsicData & Physics2D::Object::IntData() const { return (InstanceManager -> IntData); }
+
 //bool Physics2D::Object::IsValid() const { return (InstanceManager != nullptr); }
 //const ::PolyGon * Physics2D::Object::PolyGon() const { if (IsValid()) { return (InstanceManager -> PolyGon); } return nullptr; }
 const ::PolyGon * Physics2D::Object::PolyGon() const { return (InstanceManager -> PolyGon); }
+
+
+
+void Physics2D::Object::Update()
+{
+	ExtData.LinVel = Data.Vel.Pos.length();
+	ExtData.AngVel = Data.Vel.Rot.Ang.ToRadians();
+	ExtData.LinMom = ExtData.LinVel * (InstanceManager -> IntData.Mass);
+	ExtData.AngMom = ExtData.AngVel * (InstanceManager -> IntData.MomentOfInertia);
+}
 
 
 
@@ -159,7 +171,6 @@ Physics2D::Object::Object()
 	, DrawWireFrameBox(false)
 	, IsTangible(true)
 	, IsStatic(true)
-	, Mass(0.0f)
 { }
 Physics2D::Object::Object(const Object & other)
 	: InstanceManager(other.InstanceManager)
@@ -169,13 +180,13 @@ Physics2D::Object::Object(const Object & other)
 //	, Data_Arrows(other.Data_Arrows)
 	, Data(other.Data)
 	, Arrows(other.Arrows)
+	, ExtData(other.ExtData)
 	, RemoveNextFrame(other.RemoveNextFrame)
 	, DrawPolyGon(other.DrawPolyGon)
 	, DrawWireFrame(other.DrawWireFrame)
 	, DrawWireFrameBox(other.DrawWireFrameBox)
 	, IsTangible(other.IsTangible)
 	, IsStatic(other.IsStatic)
-	, Mass(other.Mass)
 { }
 Physics2D::Object & Physics2D::Object::operator=(const Object & other)
 {
@@ -186,13 +197,13 @@ Physics2D::Object & Physics2D::Object::operator=(const Object & other)
 //	Data_Arrows = other.Data_Arrows;
 	Data = other.Data;
 	Arrows = other.Arrows;
+	ExtData = other.ExtData;
 	RemoveNextFrame = other.RemoveNextFrame;
 	DrawPolyGon = other.DrawPolyGon;
 	DrawWireFrame = other.DrawWireFrame;
 	DrawWireFrameBox = other.DrawWireFrameBox;
 	IsTangible = other.IsTangible;
 	IsStatic = other.IsStatic;
-	Mass = other.Mass;
 	return *this;
 }
 
@@ -242,7 +253,6 @@ Physics2D::Object & Physics2D::Object::Construct(bool is_static)
 	obj -> InstanceManager = &Physics2D::InstanceManager::Current();
 	obj -> DrawPolyGon = true;
 	obj -> IsStatic = is_static;
-	obj -> Mass = 1.0f;
 	obj -> InstanceManager -> Manager -> Objects.Insert(obj);
 	return *obj;
 }
@@ -253,7 +263,6 @@ Physics2D::Object & Physics2D::Object::Construct(Trans2D now, bool is_static)
 	obj -> Data.Now = now;
 	obj -> DrawPolyGon = true;
 	obj -> IsStatic = is_static;
-	obj -> Mass = 1.0f;
 	obj -> InstanceManager -> Manager -> Objects.Insert(obj);
 	return *obj;
 }
@@ -265,7 +274,6 @@ Physics2D::Object & Physics2D::Object::Construct(Trans2D now, Trans2D vel, bool 
 	obj -> Data.Vel = vel;
 	obj -> DrawPolyGon = true;
 	obj -> IsStatic = is_static;
-	obj -> Mass = 1.0f;
 	obj -> InstanceManager -> Manager -> Objects.Insert(obj);
 	return *obj;
 }

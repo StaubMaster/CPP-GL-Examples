@@ -1,0 +1,4 @@
+
+	Middle Mouse Drag to Move
+	right now Zoom doubles / Halves
+	make it more gradual

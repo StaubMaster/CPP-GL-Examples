@@ -6,6 +6,9 @@
 
 #include "DataShow.hpp"
 
+#include "IntrinsicData.hpp"
+#include "ExtrinsicData.hpp"
+
 #include <cmath>
 
 
@@ -233,8 +236,8 @@ void Physics2D::CollideLinear(
 
 	float MassInverse0 = 0;
 	float MassInverse1 = 0;
-	if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.Mass; }
-	if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.Mass; }
+	if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.IntData().Mass; }
+	if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.IntData().Mass; }
 	float MassInverseSum = MassInverse0 + MassInverse1;
 
 
@@ -246,8 +249,8 @@ void Physics2D::CollideLinear(
 	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum);
 	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
 
-	if (!obj0.IsStatic) { obj0.Data.Vel.Pos -= normal * (ImpulseFactor / obj0.Mass); }
-	if (!obj1.IsStatic) { obj1.Data.Vel.Pos += normal * (ImpulseFactor / obj1.Mass); }
+	if (!obj0.IsStatic) { obj0.Data.Vel.Pos -= normal * (ImpulseFactor / obj0.IntData().Mass); }
+	if (!obj1.IsStatic) { obj1.Data.Vel.Pos += normal * (ImpulseFactor / obj1.IntData().Mass); }
 
 	if (obj0.IsStatic) { obj0.Data.Vel = Trans2D(); }
 	if (obj1.IsStatic) { obj1.Data.Vel = Trans2D(); }
@@ -285,8 +288,8 @@ void Physics2D::CollideRotate(
 
 	float MassInverse0 = 0;
 	float MassInverse1 = 0;
-	if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.Mass; }
-	if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.Mass; }
+	if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.IntData().Mass; }
+	if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.IntData().Mass; }
 	float MassInverseSum = MassInverse0 + MassInverse1;
 
 
@@ -329,8 +332,8 @@ void Physics2D::CollideRotate(
 	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
 	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
 
-	if (!obj0.IsStatic) { obj0.Data.Vel.Pos -= normal * (ImpulseFactor / obj0.Mass); }
-	if (!obj1.IsStatic) { obj1.Data.Vel.Pos += normal * (ImpulseFactor / obj1.Mass); }
+	if (!obj0.IsStatic) { obj0.Data.Vel.Pos -= normal * (ImpulseFactor / obj0.IntData().Mass); }
+	if (!obj1.IsStatic) { obj1.Data.Vel.Pos += normal * (ImpulseFactor / obj1.IntData().Mass); }
 
 //	My Angle Spinning is "the wrong way". positive should be counter-clockwise, mine is clockwise
 	if (!obj0.IsStatic) { obj0.Data.Vel.Rot += Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
@@ -375,8 +378,8 @@ void Physics2D::Collide(
 
 	float MassInverse0 = 0;
 	float MassInverse1 = 0;
-	if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.Mass; }
-	if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.Mass; }
+	if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.IntData().Mass; }
+	if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.IntData().Mass; }
 	float MassInverseSum = MassInverse0 + MassInverse1;
 
 
@@ -422,8 +425,8 @@ void Physics2D::Collide(
 	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
 	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
 
-	if (!obj0.IsStatic) { obj0.Data.Vel.Pos -= contact_data.Normal * (ImpulseFactor / obj0.Mass); }
-	if (!obj1.IsStatic) { obj1.Data.Vel.Pos += contact_data.Normal * (ImpulseFactor / obj1.Mass); }
+	if (!obj0.IsStatic) { obj0.Data.Vel.Pos -= contact_data.Normal * (ImpulseFactor / obj0.IntData().Mass); }
+	if (!obj1.IsStatic) { obj1.Data.Vel.Pos += contact_data.Normal * (ImpulseFactor / obj1.IntData().Mass); }
 
 	if (!obj0.IsStatic) { obj0.Data.Vel.Rot += Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
 	if (!obj1.IsStatic) { obj1.Data.Vel.Rot -= Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
@@ -532,41 +535,7 @@ so only (1/96), that is very small
 
 
 
-#include "DataInclude.hpp"
-#include "DataShow.hpp"
-#include "Miscellaneous/Container/Binary.hpp"
-#include "PointMass2D.hpp"
 
-
-
-Physics2D::ObjectData Physics2D::CalculateObjectData(Object & obj)
-{
-	ObjectData data;
-
-	Container::Binary<PointMass2D> PointMasses;
-	float m = obj.Mass / obj.CornerCount();
-	for (unsigned int i = 0; i < obj.CornerCount(); i++)
-	{
-		PointMasses.Insert(PointMass2D(obj.CornerFromIndex(i), m));
-	}
-
-	data.Area = PointMass2D::Area(PointMasses);
-	data.CenterOfMass = PointMass2D::CenterOfMass(PointMasses);
-	data.MomentOfInertia = PointMass2D::MomentOfInertia(PointMasses);
-	data.InertiaTensor = PointMass2D::InertiaTensor(PointMasses);
-
-	{
-		data.LinVel = obj.Data.Now.Pos.length();
-		data.LinMom = data.LinVel * obj.Mass;
-	}
-
-	{
-		data.AngVel = obj.Data.Vel.Rot.Ang.ToRadians();
-		data.AngMom = data.AngVel * data.MomentOfInertia;
-	}
-
-	return data;
-}
 
 Physics2D::ObjectDragData Physics2D::CalculateObjectDragData(Object & obj, Ray2D drag)
 {
@@ -601,12 +570,14 @@ Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, 
 	Point2D Origin = drag.Pos;
 	data.Contact = Line2D(Center, Origin);
 
-	ObjectData object_data = CalculateObjectData(obj);
-	std::cout << "Area              : " << object_data.Area << " dm^2\n";
-	std::cout << "Mass              : " << object_data.CenterOfMass.Mass << " kg\n";
-	std::cout << "Density           : " << (object_data.CenterOfMass.Mass / object_data.Area) << " kg/dm^2\n";
-	std::cout << "Center of Mass    : " << object_data.CenterOfMass.Point << "\n";
-	std::cout << "Moment of Inertia : " << object_data.MomentOfInertia << " kg*dm^2\n";
+	IntrinsicData & int_data = obj.IntData();
+	ExtrinsicData & ext_data = obj.ExtData;
+
+	std::cout << "Area              : " << int_data.Area << " dm^2\n";
+	std::cout << "Mass              : " << int_data.Mass << " kg\n";
+	std::cout << "Density           : " << (int_data.Mass / int_data.Area) << " kg/dm^2\n";
+	std::cout << "Center of Mass    : " << int_data.CenterOfMass << "\n";
+	std::cout << "Moment of Inertia : " << int_data.MomentOfInertia << " kg*dm^2\n";
 	std::cout << "Inertia Tensor : kg*dm^2\n";
 	{
 		for (unsigned int y = 0; y < 3; y++)
@@ -615,17 +586,17 @@ Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, 
 			for (unsigned int x = 0; x < 3; x++)
 			{
 				if (x != 0) { std::cout << " , "; }
-				std::cout << object_data.InertiaTensor.Data[x][y];
+				std::cout << int_data.InertiaTensor.Data[x][y];
 			}
 			std::cout << " ]\n";
 		}
 	}
 	std::cout << '\n';
 
-	std::cout << "Linear Velocity  : " << object_data.LinVel << " dm/s\n";
-	std::cout << "Linear Momentum  : " << object_data.LinMom << " kg*dm/s\n";
-	std::cout << "Angular Velocity : " << object_data.AngVel << " dm/dm*s\n";
-	std::cout << "Angular Momentum : " << object_data.AngMom << " kg*dm^2/s\n";
+	std::cout << "Linear Velocity  : " << ext_data.LinVel << " dm/s\n";
+	std::cout << "Linear Momentum  : " << ext_data.LinMom << " kg*dm/s\n";
+	std::cout << "Angular Velocity : " << ext_data.AngVel << " dm/dm*s\n";
+	std::cout << "Angular Momentum : " << ext_data.AngMom << " kg*dm^2/s\n";
 	std::cout << '\n';
 
 	ObjectDragData contact_data = CalculateObjectDragData(obj, drag);
@@ -640,8 +611,8 @@ Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, 
 	data.ForcePos = Ray2D(Origin, contact_data.ForcePos);
 	data.ForceRot = Ray2D(Origin, contact_data.ForceRot);
 
-	Point2D LinearAcceleration = contact_data.Force / obj.Mass;
-	float AngularAcceleration = contact_data.Torque / object_data.MomentOfInertia;
+	Point2D LinearAcceleration = contact_data.Force / int_data.Mass;
+	float AngularAcceleration = contact_data.Torque / int_data.MomentOfInertia;
 
 	std::cout << "Linear Acceleration  : " << LinearAcceleration.length() << " dm/s^2\n";
 	std::cout << "Angular Acceleration : " << AngularAcceleration << " dm/dm*s^2\n";

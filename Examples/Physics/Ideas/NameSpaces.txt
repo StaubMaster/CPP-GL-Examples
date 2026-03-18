@@ -1,0 +1,14 @@
+
+I think using this many NameSpaces
+especially nested ones arent good ?
+
+lots of things can be put into the same
+like all of the Engine Graphics stuff
+
+maybe just put into a Graphics NameSpaces
+or just dont ?
+
+
+
+Uniforms need to be in a NameSpace to differentiate from ValueType
+or maybe prefix with Uni... ?

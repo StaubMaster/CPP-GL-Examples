@@ -1,0 +1,13 @@
+
+thinking aboud adding Prefixes
+
+Gemeral:
+m...	Member (Data and Functions ?)
+s...	Static (Data and Functions ?)
+c...	Const
+
+Data or Functions (when ambiguous)
+mv...	Member Variable
+mf...	Member Function
+sv...	Static Variable
+sf...	Static Function

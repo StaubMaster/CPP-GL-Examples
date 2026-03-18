@@ -183,6 +183,11 @@ void Physics2D::Manager::UpdateTransformation(float timeDelta)
 }
 void Physics2D::Manager::Update(float timeDelta)
 {
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		Objects[i] -> Update();
+	}
+
 	UpdateAirResistance(timeDelta);
 	UpdateGravity(timeDelta);
 

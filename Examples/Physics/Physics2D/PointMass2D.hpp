@@ -18,11 +18,11 @@ struct PointMass2D
 	PointMass2D(const PointMass2D & other);
 	PointMass2D & operator=(const PointMass2D & other);
 
-	static float Area(const Container::Member<PointMass2D> point_masses);
+	static float Area(const Container::Member<PointMass2D> & point_masses);
 
-	static PointMass2D CenterOfMass(const Container::Member<PointMass2D> point_masses);
+	static PointMass2D CenterOfMass(const Container::Member<PointMass2D> & point_masses);
 
-	static float MomentOfInertia(const Container::Member<PointMass2D> point_masses);
+	static float MomentOfInertia(const Container::Member<PointMass2D> & point_masses);
 
 	static Matrix3x3 InertiaTensor(const Container::Member<PointMass2D> & point_masses);
 };

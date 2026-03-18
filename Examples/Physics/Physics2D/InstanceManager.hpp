@@ -17,6 +17,11 @@
 # include "WireFrame2D/WireFrame2D.hpp"
 # include "WireFrame2D/Main/Buffer.hpp"
 
+# include "Miscellaneous/Container/Binary.hpp"
+# include "PointMass2D.hpp"
+
+# include "IntrinsicData.hpp"
+
 
 
 namespace Physics2D
@@ -36,13 +41,16 @@ struct InstanceManager
 
 	::Physics2D::Manager *	Manager;
 
-	::PolyGon *		PolyGon;
-	::WireFrame2D *	WireFrame;
-	::WireFrame2D *	WireFrameBox;
+	::PolyGon *			PolyGon;
+	::WireFrame2D *		WireFrame;
+	::WireFrame2D *		WireFrameBox;
+	Container::Binary<PointMass2D> *	PointMasses;
 
 	::BufferArray::MainInst<PolyGonGraphics::Buffer, Physics2D::Inst::Buffer>							Buffer_PolyGon;
 	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Physics2D::Inst::Buffer>	Buffer_WireFrame;
 	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Physics2D::Inst::Buffer>	Buffer_WireFrameBox;
+
+	IntrinsicData	IntData;
 
 	~InstanceManager();
 	InstanceManager();

@@ -533,7 +533,7 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 				Trans2D(Point2D(), Angle2D()),
 				false
 			);
-			obj.Mass = 1.0f;
+			(void)obj;
 		}
 		if (params.Code == UserParameter::KeyBoard::Keys::Delete)
 		{

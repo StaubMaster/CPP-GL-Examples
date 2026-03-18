@@ -11,6 +11,9 @@
 
 # include "ValueType/Trans2D.hpp"
 
+# include "ExtrinsicData.hpp"
+# include "IntrinsicData.hpp"
+
 class PolyGon;
 
 namespace Physics2D
@@ -23,6 +26,10 @@ struct Object
 	Physics2D::Inst::Data			Data;
 	Arrow2D::Object					Arrows;
 
+	ExtrinsicData		ExtData;
+	IntrinsicData &		IntData() const;
+	// make Intrinsic a Member ?, Mass and Scale might change for Objects compared to their Main
+
 	bool	RemoveNextFrame;
 
 	bool	DrawPolyGon;
@@ -31,10 +38,12 @@ struct Object
 
 	bool	IsTangible;
 	bool	IsStatic;
-	float	Mass;
 
 //	bool IsValid() const;
 	const ::PolyGon *	PolyGon() const;
+
+	public:
+	void	Update();
 
 	public:
 	void	UpdateEntrys();

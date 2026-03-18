@@ -91,23 +91,6 @@ namespace Physics2D
 		Angular Momentum
 */
 
-	struct ObjectData
-	{
-		// Object Main
-		float		Area;
-		PointMass2D	CenterOfMass;
-		float		MomentOfInertia;
-		Matrix3x3	InertiaTensor;
-
-		// Object Instance
-		float	LinVel;
-		float	LinMom;
-
-		float	AngVel;
-		float	AngMom;
-	};
-	ObjectData CalculateObjectData(Object & obj);
-
 	struct ObjectDragData
 	{
 		Point2D		Contact;

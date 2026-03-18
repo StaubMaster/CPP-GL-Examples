@@ -1,10 +1,4 @@
 
-View:
-	Middle Mouse Drag to Move
-	right now Zoom doubles / Halves
-	make it more gradual
-
-UI:
 	reading from the Console is sometimes difficult
 	especially on Windows
 	at least get the Text stuff to show Object Data

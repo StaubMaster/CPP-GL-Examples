@@ -28,10 +28,13 @@ Physics2D::InstanceManager::InstanceManager()
 	, PolyGon(new ::PolyGon())
 	, WireFrame(new ::WireFrame2D())
 	, WireFrameBox(new ::WireFrame2D())
+	, PointMasses(new Container::Binary<PointMass2D>())
 	, Buffer_PolyGon(GL::DrawMode::Triangles)
 	, Buffer_WireFrame(GL::DrawMode::Lines)
 	, Buffer_WireFrameBox(GL::DrawMode::Lines)
-{ }
+{
+	IntData.Mass = 1.0f;
+}
 Physics2D::InstanceManager::InstanceManager(const InstanceManager & other)
 	: Manager(other.Manager)
 	, PolyGon(other.PolyGon)
@@ -40,6 +43,7 @@ Physics2D::InstanceManager::InstanceManager(const InstanceManager & other)
 	, Buffer_PolyGon(other.Buffer_PolyGon)
 	, Buffer_WireFrame(other.Buffer_WireFrame)
 	, Buffer_WireFrameBox(other.Buffer_WireFrameBox)
+	, IntData(other.IntData)
 { }
 Physics2D::InstanceManager & Physics2D::InstanceManager::operator=(const InstanceManager & other)
 {
@@ -50,6 +54,7 @@ Physics2D::InstanceManager & Physics2D::InstanceManager::operator=(const Instanc
 	Buffer_PolyGon = other.Buffer_PolyGon;
 	Buffer_WireFrame = other.Buffer_WireFrame;
 	Buffer_WireFrameBox = other.Buffer_WireFrameBox;
+	IntData = other.IntData;
 	return *this;
 }
 
@@ -60,6 +65,7 @@ void Physics2D::InstanceManager::Dispose()
 	delete PolyGon;
 	delete WireFrame;
 	delete WireFrameBox;
+	delete PointMasses;
 }
 void Physics2D::InstanceManager::Changed()
 {
@@ -99,6 +105,18 @@ void Physics2D::InstanceManager::Changed()
 		box.Max += 0.01f;
 		WireFrameBox -> Clear();
 		WireFrameBox -> Insert_Box(box, ColorF4());
+	}
+	{
+		PointMasses -> Clear();
+		float m = IntData.Mass / (PolyGon -> Corners.Count());
+		for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
+		{
+			PointMasses -> Insert(PointMass2D(PolyGon -> Corners[i].Pos, m));
+		}
+		IntData.Area = PointMass2D::Area(*PointMasses);
+		IntData.CenterOfMass = PointMass2D::CenterOfMass(*PointMasses).Point;
+		IntData.MomentOfInertia = PointMass2D::MomentOfInertia(*PointMasses);
+		IntData.InertiaTensor = PointMass2D::InertiaTensor(*PointMasses);
 	}
 }
 

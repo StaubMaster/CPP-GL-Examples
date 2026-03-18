@@ -25,7 +25,7 @@ PointMass2D & PointMass2D::operator=(const PointMass2D & other)
 
 
 
-float PointMass2D::Area(const Container::Member<PointMass2D> point_masses)
+float PointMass2D::Area(const Container::Member<PointMass2D> & point_masses)
 {
 	float Area = 0.0f;
 	for (unsigned int i = 0; i < point_masses.Count(); i++)
@@ -47,7 +47,7 @@ float PointMass2D::Area(const Container::Member<PointMass2D> point_masses)
 	return Area;
 }
 
-PointMass2D PointMass2D::CenterOfMass(const Container::Member<PointMass2D> point_masses)
+PointMass2D PointMass2D::CenterOfMass(const Container::Member<PointMass2D> & point_masses)
 {
 	Point2D MassPosSum;
 	float MassSum = 0.0f;
@@ -59,7 +59,7 @@ PointMass2D PointMass2D::CenterOfMass(const Container::Member<PointMass2D> point
 	return PointMass2D(MassPosSum / MassSum, MassSum);
 }
 
-float PointMass2D::MomentOfInertia(const Container::Member<PointMass2D> point_masses)
+float PointMass2D::MomentOfInertia(const Container::Member<PointMass2D> & point_masses)
 {
 	float MomentOfInertia = 0.0f;
 	for (unsigned int i = 0; i < point_masses.Count(); i++)
