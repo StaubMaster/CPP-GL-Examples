@@ -54,18 +54,20 @@ struct InstanceManager
 	InstanceManager();
 	InstanceManager(const InstanceManager & other);
 	InstanceManager & operator=(const InstanceManager & other);
-
 	void Dispose();
+
 	void Changed();
 
-	void InitExternal();
-	void InitInternal();
+
+
+	void GraphicsInitExternal();
+	void GraphicsInitInternal();
 
 	void GraphicsCreate();
 	void GraphicsDelete();
 
-	void UpdateMain();
-	void UpdateInst();
+	void GraphicsUpdateMain();
+	void GraphicsUpdateInst();
 };
 };
 

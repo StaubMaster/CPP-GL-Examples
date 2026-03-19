@@ -38,15 +38,18 @@ struct Manager
 
 	void Dispose();
 
-	void InitExternal(const DirectoryInfo & ShaderDir);
-	void InitInternal(const DirectoryInfo & ImageDir);
+
+
+	void GraphicsInitExternal(const DirectoryInfo & ShaderDir);
+	void GraphicsInitInternal(const DirectoryInfo & ImageDir);
 
 	void GraphicsCreate();
 	void GraphicsDelete();
 //	void GraphicsUpdate();
 
-	void Main_Default();
-	void Inst_Update();
+	void GraphicsUpdateMain();
+	void GraphicsUpdateInst();
+
 	void Draw();
 };
 };

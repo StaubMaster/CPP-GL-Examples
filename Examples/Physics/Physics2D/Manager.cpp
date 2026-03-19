@@ -36,14 +36,14 @@ Physics2D::Manager::Manager()
 //Physics2D::Manager::Manager(const Manager & other);
 //Physics2D::Manager & Physics2D::Manager::operator=(const Manager & other);
 
-
-
 void Physics2D::Manager::Dispose()
 { }
 
 
 
-void Physics2D::Manager::InitExternal(const DirectoryInfo & ShaderDir)
+
+
+void Physics2D::Manager::GraphicsInitExternal(const DirectoryInfo & ShaderDir)
 {
 	{
 		Container::Array<::Shader::Code> code({
@@ -59,11 +59,11 @@ void Physics2D::Manager::InitExternal(const DirectoryInfo & ShaderDir)
 		});
 		Shader_WireFrame.Change(code);
 	}
-	Arrow.InitExternal(ShaderDir);
+	Arrow.GraphicsInitExternal(ShaderDir);
 }
-void Physics2D::Manager::InitInternal(const DirectoryInfo & ImageDir)
+void Physics2D::Manager::GraphicsInitInternal(const DirectoryInfo & ImageDir)
 {
-	Arrow.InitInternal(ImageDir);
+	Arrow.GraphicsInitInternal(ImageDir);
 }
 
 
@@ -84,12 +84,12 @@ void Physics2D::Manager::GraphicsUpdate()
 {
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		Objects[i] -> UpdateEntrys();
+		Objects[i] -> GraphicsUpdate();
 	}
 
 	for (unsigned int i = 0; i < MainInstances.Count(); i++)
 	{
-		MainInstances[i].UpdateInst();
+		MainInstances[i].GraphicsUpdateInst();
 	}
 }
 
@@ -118,40 +118,52 @@ void Physics2D::Manager::Draw()
 
 
 
+
+
 void Physics2D::Manager::UpdateGravity(float timeDelta)
 {
-	Point2D Gravity_Accel = Gravity * timeDelta;
-	float GravityToY_Accel = GravityToY * timeDelta;
+	(void)timeDelta;
+	//Point2D Gravity_Accel = Gravity * timeDelta;
+	//float GravityToY_Accel = GravityToY * timeDelta;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		Physics2D::Object & obj = *Objects[i];
-		Trans2D & now = obj.Data.Now;
-		Trans2D & vel = obj.Data.Vel;
+		Trans2D & now = obj.ExtData.Now;
+		//Trans2D & vel = obj.ExtData.Vel;
+		Trans2D & acl = obj.ExtData.Acl;
 		if (!obj.IsStatic)
 		{
-			vel.Pos += Gravity_Accel;
-			if (now.Pos.Y > 0.0f) { vel.Pos.Y -= GravityToY_Accel; }
-			if (now.Pos.Y < 0.0f) { vel.Pos.Y += GravityToY_Accel; }
+			//vel.Pos += Gravity_Accel;
+			//if (now.Pos.Y > 0.0f) { vel.Pos.Y -= GravityToY_Accel; }
+			//if (now.Pos.Y < 0.0f) { vel.Pos.Y += GravityToY_Accel; }
+			acl.Pos += Gravity;
+			if (now.Pos.Y > 0.0f) { acl.Pos.Y -= GravityToY; }
+			if (now.Pos.Y < 0.0f) { acl.Pos.Y += GravityToY; }
 		}
 	}
 }
 void Physics2D::Manager::UpdateAirResistance(float timeDelta)
 {
-	float factor = 1.0f - (AirResistance * timeDelta);
+	(void)timeDelta;
+	//float factor = 1.0f - (AirResistance * timeDelta);
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		Physics2D::Object & obj = *Objects[i];
-		Trans2D & vel = obj.Data.Vel;
+		Trans2D & vel = obj.ExtData.Vel;
+		Trans2D & acl = obj.ExtData.Acl;
 		if (!obj.IsStatic)
 		{
-			vel.Pos *= factor;
-			vel.Rot *= factor;
+			//vel.Pos *= factor;
+			//vel.Rot *= factor;
+			acl.Pos -= vel.Pos * AirResistance;
+			acl.Rot -= vel.Rot * AirResistance;
 		}
 	}
 }
 
 void Physics2D::Manager::UpdateCollision(float timeDelta)
 {
+	(void)timeDelta;
 	for (unsigned int i0 = 0; i0 < Objects.Count(); i0++)
 	{
 		for (unsigned int i1 = i0 + 1; i1 < Objects.Count(); i1++)
@@ -161,19 +173,19 @@ void Physics2D::Manager::UpdateCollision(float timeDelta)
 			//Physics2D::Collide(Objects[i0], Objects[i1]);
 		}
 	}
-	(void)timeDelta;
 }
 void Physics2D::Manager::UpdateTransformation(float timeDelta)
 {
+	(void)timeDelta;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		Physics2D::Object & obj = *Objects[i];
-		Trans2D & now = obj.Data.Now;
-		Trans2D & vel = obj.Data.Vel;
+		//Trans2D & now = obj.ExtData.Now;
+		Trans2D & vel = obj.ExtData.Vel;
 		if (!obj.IsStatic)
 		{
-			now.Pos += (vel.Pos * timeDelta);
-			now.Rot += (vel.Rot * timeDelta);
+			//now.Pos += (vel.Pos * timeDelta);
+			//now.Rot += (vel.Rot * timeDelta);
 		}
 		else
 		{
@@ -185,14 +197,14 @@ void Physics2D::Manager::Update(float timeDelta)
 {
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		Objects[i] -> Update();
+		Objects[i] -> Update(timeDelta);
 	}
 
 	UpdateAirResistance(timeDelta);
 	UpdateGravity(timeDelta);
 
-	UpdateCollision(timeDelta);
-	UpdateTransformation(timeDelta);
+	//UpdateCollision(timeDelta);
+	//UpdateTransformation(timeDelta);
 }
 
 

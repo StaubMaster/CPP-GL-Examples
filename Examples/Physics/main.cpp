@@ -118,7 +118,7 @@ MainContext()
 	, Physics2D_Manager()
 	, SceneData(Physics2D_Manager)
 {
-	Physics2D_Manager.InitExternal(ShaderDir);
+	Physics2D_Manager.GraphicsInitExternal(ShaderDir);
 
 	Container::Array<Shader::Base *> shaders({
 		&Physics2D_Manager.Shader_PolyGon,
@@ -246,10 +246,10 @@ void Make()
 	{
 		Physics2D_Manager.MainInstances[i].Changed();
 		Physics2D_Manager.MainInstances[i].Manager = &Physics2D_Manager;
-		Physics2D_Manager.MainInstances[i].InitExternal();
+		Physics2D_Manager.MainInstances[i].GraphicsInitExternal();
 		Physics2D_Manager.MainInstances[i].GraphicsCreate();
-		Physics2D_Manager.MainInstances[i].InitInternal();
-		Physics2D_Manager.MainInstances[i].UpdateMain();
+		Physics2D_Manager.MainInstances[i].GraphicsInitInternal();
+		Physics2D_Manager.MainInstances[i].GraphicsUpdateMain();
 	}
 }
 
@@ -258,9 +258,8 @@ void Make()
 void Init()
 {
 	Physics2D_Manager.GraphicsCreate();
-
-	Physics2D_Manager.InitInternal(ImageDir);
-	Physics2D_Manager.Arrow.Main_Default();
+	Physics2D_Manager.GraphicsInitInternal(ImageDir);
+	Physics2D_Manager.Arrow.GraphicsUpdateMain();
 
 	Make();
 
@@ -365,14 +364,6 @@ void Draw()
 	Physics2D_Manager.Draw();
 }
 
-void Update(double timeDelta, bool is_paused)
-{
-	if (!is_paused)
-	{
-		Physics2D_Manager.Update(timeDelta);
-	}
-}
-
 void Frame(double timeDelta)
 {
 	// wanted
@@ -405,23 +396,35 @@ void Frame(double timeDelta)
 		InteractionObjectMove.Change(SceneData);
 		InteractionObjectSpin.Change(SceneData);
 		InteractionObjectApplyForce.Change(SceneData);
-
-		InteractionObjectMove.Update(SceneData);
-		InteractionObjectSpin.Update(SceneData);
-		InteractionObjectApplyForce.Update(SceneData);
-		InteractionObjectApplyForceUnbound.Update(SceneData);
 	}
 
 	{
 		if (SceneData.IsSimulating)
 		{
-			Update(timeDelta, false);
+			Physics2D_Manager.Update(timeDelta);
 		}
+		else
+		{
+			Physics2D_Manager.Update(0.0f);
+		}
+
+		InteractionObjectMove.Update(SceneData);
+		InteractionObjectSpin.Update(SceneData);
+		InteractionObjectApplyForce.Update(SceneData);
+		InteractionObjectApplyForceUnbound.Update(SceneData);
 
 		Physics2D_Manager.GraphicsUpdate();
 	}
 
 
+
+	if (SceneData.Selected)
+	{
+		Physics2D::Object & obj = *Physics2D_Manager.Objects[SceneData.Selected];
+		obj.ExtData.Calculate(obj.IntData);
+		std::cout << obj.IntData;
+		std::cout << obj.ExtData;
+	}
 
 	Draw();
 

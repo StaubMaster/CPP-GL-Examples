@@ -57,8 +57,6 @@ Physics2D::InstanceManager & Physics2D::InstanceManager::operator=(const Instanc
 	return *this;
 }
 
-
-
 void Physics2D::InstanceManager::Dispose()
 {
 	delete PolyGon;
@@ -114,7 +112,7 @@ void Physics2D::InstanceManager::Changed()
 
 
 
-void Physics2D::InstanceManager::InitExternal()
+void Physics2D::InstanceManager::GraphicsInitExternal()
 {
 	{
 		Buffer_PolyGon.Main.Pos.Change(0);
@@ -135,7 +133,7 @@ void Physics2D::InstanceManager::InitExternal()
 		Buffer_WireFrameBox.Inst.Now.Rot.Change(3, 4);
 	}
 }
-void Physics2D::InstanceManager::InitInternal()
+void Physics2D::InstanceManager::GraphicsInitInternal()
 {
 	{
 		Buffer_PolyGon.Main.ChangeAttributeBinding();
@@ -164,9 +162,7 @@ void Physics2D::InstanceManager::GraphicsDelete()
 	Buffer_WireFrameBox.Delete();
 }
 
-
-
-void Physics2D::InstanceManager::UpdateMain()
+void Physics2D::InstanceManager::GraphicsUpdateMain()
 {
 	{
 		Container::Pointer<PolyGonGraphics::Data> data = PolyGon -> ToMainData();
@@ -182,7 +178,7 @@ void Physics2D::InstanceManager::UpdateMain()
 		Buffer_WireFrameBox.Elem.Change(WireFrameBox -> Sides, 2);
 	}
 }
-void Physics2D::InstanceManager::UpdateInst()
+void Physics2D::InstanceManager::GraphicsUpdateInst()
 {
 	Container::Binary<Physics2D::Object*> & Objects = Manager -> Objects;
 
@@ -210,9 +206,12 @@ void Physics2D::InstanceManager::UpdateInst()
 		Physics2D::Object & obj = *Objects[i];
 		if (obj.InstanceManager == this)
 		{
-			if (obj.DrawPolyGon) { Data_PolyGon.Insert(obj.Data); }
-			if (obj.DrawWireFrame) { Data_WireFrame.Insert(obj.Data); }
-			if (obj.DrawWireFrameBox) { Data_WireFrameBox.Insert(obj.Data); }
+			//if (obj.DrawPolyGon) { Data_PolyGon.Insert(obj.Data); }
+			//if (obj.DrawWireFrame) { Data_WireFrame.Insert(obj.Data); }
+			//if (obj.DrawWireFrameBox) { Data_WireFrameBox.Insert(obj.Data); }
+			if (obj.DrawPolyGon) { Data_PolyGon.Insert(Inst::Data(obj.ExtData.Now)); }
+			if (obj.DrawWireFrame) { Data_WireFrame.Insert(Inst::Data(obj.ExtData.Now)); }
+			if (obj.DrawWireFrameBox) { Data_WireFrameBox.Insert(Inst::Data(obj.ExtData.Now)); }
 		}
 	}
 

@@ -35,14 +35,14 @@ Arrow2D::Manager::Manager()
 	, Instances()
 { }
 
-
-
 void Arrow2D::Manager::Dispose()
 { }
 
 
 
-void Arrow2D::Manager::InitExternal(const DirectoryInfo & ShaderDir)
+
+
+void Arrow2D::Manager::GraphicsInitExternal(const DirectoryInfo & ShaderDir)
 {
 	{
 		Container::Array<::Shader::Code> code({
@@ -60,7 +60,7 @@ void Arrow2D::Manager::InitExternal(const DirectoryInfo & ShaderDir)
 		Buffer.Inst.Col.Change(5);
 	}
 }
-void Arrow2D::Manager::InitInternal(const DirectoryInfo & ImageDir)
+void Arrow2D::Manager::GraphicsInitInternal(const DirectoryInfo & ImageDir)
 {
 	{
 		Buffer.Main.ChangeAttributeBinding();
@@ -92,7 +92,7 @@ void Arrow2D::Manager::GraphicsDelete()
 
 
 
-void Arrow2D::Manager::Main_Default()
+void Arrow2D::Manager::GraphicsUpdateMain()
 {
 	AxisBox2D	Pos;
 	AxisBox2D	Tex;
@@ -128,7 +128,7 @@ void Arrow2D::Manager::Main_Default()
 
 	Buffer.Main.Change(data);
 }
-void Arrow2D::Manager::Inst_Update()
+void Arrow2D::Manager::GraphicsUpdateInst()
 {
 	// Count Instances to Display
 	unsigned int c = 0;
@@ -172,7 +172,7 @@ void Arrow2D::Manager::Inst_Update()
 }
 void Arrow2D::Manager::Draw()
 {
-	Inst_Update();
+	GraphicsUpdateInst();
 	Shader.Bind();
 	Texture.Bind();
 	Buffer.Draw();

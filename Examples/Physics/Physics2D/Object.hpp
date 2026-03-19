@@ -23,44 +23,23 @@ struct InstanceManager;
 struct Object
 {
 	Physics2D::InstanceManager *	InstanceManager;
-	Physics2D::Inst::Data			Data;
-	Arrow2D::Object					Arrows;
-
+	bool	RemoveNextFrame;
+	
+//	Physics2D::Inst::Data			Data; // is this extrinsic ?
+	// i think current Data.Vel should be part of Extrinsic ?
+	// maybe Position too ?
 	IntrinsicData		IntData;
 	ExtrinsicData		ExtData;
 
-	bool	RemoveNextFrame;
-
-	bool	DrawPolyGon;
-	bool	DrawWireFrame;
-	bool	DrawWireFrameBox;
-
-	bool	IsTangible;
-	bool	IsStatic;
-
-	const ::PolyGon &	PolyGon() const;
+	bool	IsTangible;	// Interacts
+	bool	IsStatic;	// Changes
 
 	public:
-	void	Update();
+	void	Update(float timeDelta);
+
+
 
 	public:
-	void	UpdateEntrys();
-
-	void	Show_PolyGon();
-	void	Show_WireFrame();
-	void	Show_WireFrameBox();
-	void	Show_Arrows();
-
-	void	Hide_PolyGon();
-	void	Hide_WireFrame();
-	void	Hide_WireFrameBox();
-	void	Hide_Arrows();
-
-	unsigned int	CornerCount() const;
-	unsigned int	SideCount() const;
-
-	Point2D	CornerFromIndex(unsigned int idx) const;
-
 	/* RelativePositionOf
 		Parameters:
 			Absolute Position
@@ -85,17 +64,42 @@ struct Object
 	*/
 	Point2D	AbsoluteVelocityOf(Point2D p) const;
 
+
+
+	// PolyGon Stuff
+	const ::PolyGon &	PolyGon() const;
+	unsigned int		CornerCount() const;
+	unsigned int		SideCount() const;
+	Point2D				CornerFromIndex(unsigned int idx) const;
+	bool				IsContaining(Point2D p) const;
+
+
+
+	// Graphics
+	bool	DrawPolyGon;
+	bool	DrawWireFrame;
+	bool	DrawWireFrameBox;
+	Arrow2D::Object	Arrows;
+
 	public:
-	bool IsContaining(Point2D p) const;
+	void	GraphicsUpdate();
+
+	void	Show_PolyGon();
+	void	Show_WireFrame();
+	void	Show_WireFrameBox();
+	void	Show_Arrows();
+
+	void	Hide_PolyGon();
+	void	Hide_WireFrame();
+	void	Hide_WireFrameBox();
+	void	Hide_Arrows();
+
+
 
 	~Object();
 	Object();
 	Object(const Object & other) ;
 	Object & operator=(const Object & other);
-
-//	Object(Physics2D::InstanceManager & inst_manager, bool is_static);
-//	Object(Physics2D::InstanceManager & inst_manager, Trans2D now, bool is_static);
-//	Object(Physics2D::InstanceManager & inst_manager, Trans2D now, Trans2D vel, bool is_static);
 
 	static Object & Construct(bool is_static);
 	static Object & Construct(Trans2D now, bool is_static);

@@ -14,7 +14,7 @@ void InteractionObjectSpin::Escape(SceneInteractionData & SceneData)
 {
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> ExtData.Now;
 		now.Rot = Origin;
 		End(SceneData);
 	}
@@ -36,7 +36,7 @@ void InteractionObjectSpin::Start(SceneInteractionData & SceneData)
 	Object = SceneData.Hovering;
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> ExtData.Now;
 		Point2D rel = SceneData.Cursor - now.Pos;
 		Origin = now.Rot;
 		Offset = Angle2D::FromPoint2D(rel) - Origin;
@@ -46,7 +46,7 @@ void InteractionObjectSpin::Change(SceneInteractionData & SceneData)
 {
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> ExtData.Now;
 		Point2D rel = SceneData.Cursor - now.Pos;
 		Target = Offset + Angle2D::FromPoint2D(rel);
 
@@ -58,7 +58,7 @@ void InteractionObjectSpin::Update(SceneInteractionData & SceneData)
 {
 	if (Object.IsValid())
 	{
-		Trans2D & now = SceneData.Manager.Objects[Object] -> Data.Now;
+		Trans2D & now = SceneData.Manager.Objects[Object] -> ExtData.Now;
 		now.Rot = Target;
 		if (Arrows.Is())
 		{
