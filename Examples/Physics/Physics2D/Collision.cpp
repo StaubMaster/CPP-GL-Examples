@@ -345,10 +345,8 @@ void Physics2D::CollideRotate(
 	std::cout << '\n';
 }
 
-/* Collision:
-	get Contact Points
-	calculate AbsVel at Contact Point
-	use that for all this stuff ?
+/*
+
 */
 void Physics2D::Collide(
 	Object & obj0,

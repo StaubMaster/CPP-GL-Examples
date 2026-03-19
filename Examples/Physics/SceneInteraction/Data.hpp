@@ -4,6 +4,7 @@
 # include "Physics2D/Manager.hpp"
 # include "ValueType/Undex.hpp"
 # include "ValueType/Point2D.hpp"
+# include "FrameTime.hpp"
 
 struct SceneInteractionData
 {
@@ -11,7 +12,7 @@ struct SceneInteractionData
 	Undex					Selected;
 	Undex					Hovering;
 	Point2D					Cursor;
-	float					TimeDelta;
+	::FrameTime				FrameTime;
 	bool					IsRunning;
 	bool					IsSimulating;
 

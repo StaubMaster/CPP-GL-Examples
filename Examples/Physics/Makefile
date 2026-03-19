@@ -57,6 +57,7 @@ FILES_SRC := \
 	SceneInteraction/Spin.cpp \
 	SceneInteraction/Force.cpp \
 \
+	FrameTime.cpp \
 	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 

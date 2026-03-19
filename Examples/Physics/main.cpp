@@ -80,6 +80,7 @@
 
 // Other
 #include "Arrow2D/RankLengths.hpp"
+#include "FrameTime.hpp"
 
 
 
@@ -286,7 +287,7 @@ void Free()
 
 
 
-void UpdateView(float timeDelta)
+void UpdateView(FrameTime frame_time)
 {
 	//if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
 	/*if (window.MouseManager.CursorModeIsLocked())
@@ -309,7 +310,7 @@ void UpdateView(float timeDelta)
 
 		//if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { move2D *= 30; }
 		//trans.Rot = Angle2D(Angle::Radians(move3D.Y * 0.5f));
-		view.Change(trans, timeDelta);
+		view.Change(trans, frame_time.Delta);
 	}
 	Multiform_View.ChangeData(view.Trans);
 	Multiform_Scale.ChangeData(view.Scale);
@@ -366,18 +367,11 @@ void Draw()
 
 void Frame(double timeDelta)
 {
-	// wanted
-	// actual
+	FrameTime frame_time(60.0f);
+	frame_time.Update(timeDelta);
+	SceneData.FrameTime.Update(timeDelta);
 
-	float WantedFramesPerSecond = 60.0f;
-	float WantedFrameTime = 1.0f / WantedFramesPerSecond;
-	// rename timeDelta to FrameTime
-	// make a struct with other Frame Data ?
-	// put all the WindowSize and Input stuff in there ?
-	if (timeDelta > WantedFrameTime) { timeDelta = WantedFrameTime; }
-	SceneData.TimeDelta = timeDelta;
-
-	UpdateView(timeDelta);
+	UpdateView(frame_time);
 
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Space.Flags].IsPress()) { SceneData.IsRunning = !SceneData.IsRunning; }
 	SceneData.IsSimulating = SceneData.IsRunning;
@@ -421,7 +415,7 @@ void Frame(double timeDelta)
 	if (SceneData.Selected)
 	{
 		Physics2D::Object & obj = *Physics2D_Manager.Objects[SceneData.Selected];
-		obj.ExtData.Calculate(obj.IntData);
+		obj.ExtData.Update(obj.IntData);
 		std::cout << obj.IntData;
 		std::cout << obj.ExtData;
 	}

@@ -7,7 +7,7 @@ SceneInteractionData::SceneInteractionData(Physics2D::Manager & manager)
 	, Selected(Undex::Invalid())
 	, Hovering(Undex::Invalid())
 	, Cursor()
-	, TimeDelta(0.0f)
+	, FrameTime(60.0f)
 	, IsRunning(false)
 	, IsSimulating(false)
 { }

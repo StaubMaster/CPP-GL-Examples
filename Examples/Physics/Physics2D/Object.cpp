@@ -10,7 +10,8 @@
 void Physics2D::Object::Update(float timeDelta)
 {
 	ExtData.Update(timeDelta);
-	ExtData.Calculate(IntData);
+	ExtData.Update(IntData);
+	ExtData.Zero();
 }
 
 

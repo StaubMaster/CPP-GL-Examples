@@ -14,7 +14,7 @@ v		M ⁰ L⁺¹ T⁻¹		Velocity						Length / Time
 a		M ⁰ L⁺¹ T⁻²		Accelleration					Velocity / Time
 F		M⁺¹ L⁺¹ T⁻²		Force							Accelleration * Mass
 p		M⁺¹ L⁺¹ T⁻¹		Momentum						Velocity * Mass = Force * Time
-p		M⁺¹ L⁺¹ T⁻¹		Impulse							Force * Time
+J		M⁺¹ L⁺¹ T⁻¹		Impulse							Force * Time
 
 Angular:
 θ		M ⁰ L ⁰ T ⁰		Position
@@ -23,5 +23,10 @@ Angular:
 L		M⁺¹ L⁺² T⁻¹		Momentum						Torque * Time
 τ		M⁺¹ L⁺² T⁻²		Torque							Force * Length
 I		M⁺¹ L⁺² T ⁰		Moment_of_Inertia				Torque / Angular_Accelleration = Angular_Momentum * Time
+
+
+Operators:
+∙	Dot Product
+×	Cross Product
 
 

@@ -3,15 +3,20 @@
 
 
 
-void Physics2D::ExtrinsicData::Calculate(const IntrinsicData & int_data)
-{
-	LinVel = Vel.Pos.length();
-	LinMom = LinVel * (int_data.Mass);
-	LinAcl = Acl.Pos.length();
 
-	AngVel = Vel.Rot.Ang.ToRadians();
-	AngMom = AngVel * (int_data.MomentOfInertia);
-	AngAcl = Acl.Rot.Ang.ToRadians();
+void Physics2D::ExtrinsicData::Zero()
+{
+	Acl.Pos = Point2D();
+	Acl.Rot = Angle2D();
+}
+
+void Physics2D::ExtrinsicData::Change(Point2D change)
+{
+	Acl.Pos += change;
+}
+void Physics2D::ExtrinsicData::Change(Angle2D change)
+{
+	Acl.Rot += change;
 }
 
 void Physics2D::ExtrinsicData::Update(float timeDelta)
@@ -21,9 +26,16 @@ void Physics2D::ExtrinsicData::Update(float timeDelta)
 
 	Now.Pos += Vel.Pos * timeDelta;
 	Now.Rot += Vel.Rot * timeDelta;
+}
+void Physics2D::ExtrinsicData::Update(const IntrinsicData & int_data)
+{
+	LinVel = Vel.Pos.length();
+	LinMom = LinVel * (int_data.Mass);
+	LinAcl = Acl.Pos.length();
 
-	Acl.Pos = Point2D();
-	Acl.Rot = Angle2D();
+	AngVel = Vel.Rot.Ang.ToRadians();
+	AngMom = AngVel * (int_data.MomentOfInertia);
+	AngAcl = Acl.Rot.Ang.ToRadians();
 }
 
 

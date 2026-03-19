@@ -25,9 +25,6 @@ struct Object
 	Physics2D::InstanceManager *	InstanceManager;
 	bool	RemoveNextFrame;
 	
-//	Physics2D::Inst::Data			Data; // is this extrinsic ?
-	// i think current Data.Vel should be part of Extrinsic ?
-	// maybe Position too ?
 	IntrinsicData		IntData;
 	ExtrinsicData		ExtData;
 

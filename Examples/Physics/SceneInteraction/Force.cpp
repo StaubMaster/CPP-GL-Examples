@@ -50,7 +50,7 @@ void InteractionObjectDrag::Update(SceneInteractionData & SceneData)
 		drag.Pos = SceneData.Manager.Objects[Object] -> AbsolutePositionOf(Offset);
 		drag.Dir = Target - drag.Pos;
 
-		Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.TimeDelta, *(SceneData.Manager.Objects[Object]), drag, 10.0f, SceneData.IsSimulating);
+		Physics2D::ObjectForceData data = Physics2D::ApplyForce(SceneData.FrameTime.Delta, *(SceneData.Manager.Objects[Object]), drag, 10.0f, SceneData.IsSimulating);
 
 		if (Arrows.Is())
 		{

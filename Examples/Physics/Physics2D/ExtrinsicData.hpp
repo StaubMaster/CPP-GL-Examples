@@ -22,9 +22,13 @@ struct ExtrinsicData
 	float	AngMom;
 	float	AngAcl;
 
-	void Calculate(const IntrinsicData & int_data);
+	void Zero();
+
+	void Change(Point2D change);
+	void Change(Angle2D change);
 
 	void Update(float timeDelta);
+	void Update(const IntrinsicData & int_data);
 };
 };
 
