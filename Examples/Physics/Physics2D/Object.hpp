@@ -38,8 +38,7 @@ struct Object
 	bool	IsTangible;
 	bool	IsStatic;
 
-//	bool IsValid() const;
-	const ::PolyGon *	PolyGon() const;
+	const ::PolyGon &	PolyGon() const;
 
 	public:
 	void	Update();

@@ -573,37 +573,11 @@ Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, 
 	ExtrinsicData & ext_data = obj.ExtData;
 	data.Contact = Line2D(Center, obj.AbsolutePositionOf(int_data.CenterOfMass));
 
-	std::cout << "Mass              : " << int_data.Mass << " kg\n";
-	std::cout << "Area              : " << int_data.Area << " dm^2\n";
-	std::cout << "Density           : " << (int_data.Mass / int_data.Area) << " kg/dm^2\n";
-	std::cout << "Center of Mass    : " << int_data.CenterOfMass << "\n";
-	std::cout << "Moment of Inertia : " << int_data.MomentOfInertia << " kg*dm^2\n";
-	//std::cout << "Inertia Tensor : kg*dm^2\n";
-	// put this into DataShow
-	/*{
-		for (unsigned int y = 0; y < 3; y++)
-		{
-			std::cout << " [ ";
-			for (unsigned int x = 0; x < 3; x++)
-			{
-				if (x != 0) { std::cout << " , "; }
-				std::cout << int_data.InertiaTensor.Data[x][y];
-			}
-			std::cout << " ]\n";
-		}
-	}*/
-	std::cout << "Box C Moment of Inertia : " << int_data.BoxCMomentOfInertia << " kg*dm^2\n";
-	std::cout << "Box W Moment of Inertia : " << int_data.BoxWMomentOfInertia << " kg*dm^2\n";
-	std::cout << "Box H Moment of Inertia : " << int_data.BoxHMomentOfInertia << " kg*dm^2\n";
-	std::cout << '\n';
-
-	std::cout << "Linear Velocity  : " << ext_data.LinVel << " dm/s\n";
-	std::cout << "Linear Momentum  : " << ext_data.LinMom << " kg*dm/s\n";
-	std::cout << "Angular Velocity : " << ext_data.AngVel << " dm/dm*s\n";
-	std::cout << "Angular Momentum : " << ext_data.AngMom << " kg*dm^2/s\n";
-	std::cout << '\n';
+	std::cout << int_data;
+	std::cout << ext_data;
 
 	ObjectDragData contact_data = CalculateObjectDragData(obj, drag, scalar);
+	std::cout << "Contact:\n";
 	std::cout << "Contact  : " << contact_data.Contact.length() << " dm\n";
 	std::cout << "Force    : " << contact_data.Force.length() << " kg*dm/s^2\n";
 	std::cout << "ForcePos : " << contact_data.ForcePos.length() << " kg*dm/s^2\n";

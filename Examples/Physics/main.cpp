@@ -375,6 +375,9 @@ void Update(double timeDelta, bool is_paused)
 
 void Frame(double timeDelta)
 {
+	// wanted
+	// actual
+
 	float WantedFramesPerSecond = 60.0f;
 	float WantedFrameTime = 1.0f / WantedFramesPerSecond;
 	// rename timeDelta to FrameTime

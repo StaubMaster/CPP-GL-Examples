@@ -15,10 +15,7 @@ const ::PolyGon * Physics2D::Object::PolyGon() const { return (InstanceManager -
 
 void Physics2D::Object::Update()
 {
-	ExtData.LinVel = Data.Vel.Pos.length();
-	ExtData.AngVel = Data.Vel.Rot.Ang.ToRadians();
-	ExtData.LinMom = ExtData.LinVel * (InstanceManager -> IntData.Mass);
-	ExtData.AngMom = ExtData.AngVel * (InstanceManager -> IntData.MomentOfInertia);
+	ExtData.Calculate(InstanceManager -> IntData, Data.Vel);
 }
 
 
