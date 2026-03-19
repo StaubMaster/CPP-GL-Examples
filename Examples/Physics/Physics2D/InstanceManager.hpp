@@ -18,7 +18,6 @@
 # include "WireFrame2D/Main/Buffer.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
-# include "PointMass2D.hpp"
 
 # include "IntrinsicData.hpp"
 
@@ -44,7 +43,6 @@ struct InstanceManager
 	::PolyGon *			PolyGon;
 	::WireFrame2D *		WireFrame;
 	::WireFrame2D *		WireFrameBox;
-	Container::Binary<PointMass2D> *	PointMasses;
 
 	::BufferArray::MainInst<PolyGonGraphics::Buffer, Physics2D::Inst::Buffer>							Buffer_PolyGon;
 	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Physics2D::Inst::Buffer>	Buffer_WireFrame;

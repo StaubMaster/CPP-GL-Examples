@@ -28,7 +28,6 @@ Physics2D::InstanceManager::InstanceManager()
 	, PolyGon(new ::PolyGon())
 	, WireFrame(new ::WireFrame2D())
 	, WireFrameBox(new ::WireFrame2D())
-	, PointMasses(new Container::Binary<PointMass2D>())
 	, Buffer_PolyGon(GL::DrawMode::Triangles)
 	, Buffer_WireFrame(GL::DrawMode::Lines)
 	, Buffer_WireFrameBox(GL::DrawMode::Lines)
@@ -65,8 +64,91 @@ void Physics2D::InstanceManager::Dispose()
 	delete PolyGon;
 	delete WireFrame;
 	delete WireFrameBox;
-	delete PointMasses;
 }
+
+
+
+static void Calculate_Area(const PolyGon & polygon, Physics2D::IntrinsicData & IntData)
+{
+	unsigned int n = polygon.Corners.Count();
+	IntData.Area = 0.0f;
+	for (unsigned int i = 0; i < n; i++)
+	{
+		Point2D p0;
+		Point2D p1;
+		if (i == 0)
+		{
+			p0 = polygon.Corners[n - 1].Pos;
+			p1 = polygon.Corners[0 - 0].Pos;
+		}
+		else
+		{
+			p0 = polygon.Corners[i - 1].Pos;
+			p1 = polygon.Corners[i - 0].Pos;
+		}
+		float area = Point2D::cross(p0, p1);
+		IntData.Area += area;
+	}
+	IntData.Area *= (1.0 / 2.0f);
+}
+static void Calculate_CenterOfMass(const PolyGon & polygon, Physics2D::IntrinsicData & IntData)
+{
+	unsigned int n = polygon.Corners.Count();
+	IntData.CenterOfMass = Point2D();
+	for (unsigned int i = 0; i < n; i++)
+	{
+		Point2D p0;
+		Point2D p1;
+		if (i == 0)
+		{
+			p0 = polygon.Corners[n - 1].Pos;
+			p1 = polygon.Corners[0 - 0].Pos;
+		}
+		else
+		{
+			p0 = polygon.Corners[i - 1].Pos;
+			p1 = polygon.Corners[i - 0].Pos;
+		}
+		float area = Point2D::cross(p0, p1);
+		IntData.CenterOfMass += (p0 + p1) * area;
+	}
+	IntData.CenterOfMass *= (1.0 / (6.0f * IntData.Area));
+}
+static void Calculate_MomentOfInertia(const PolyGon & polygon, Physics2D::IntrinsicData & IntData)
+{
+	unsigned int n = polygon.Corners.Count();
+	/* Moment of Inertia of Triangle
+		I = (1/6) * m * ((P ∙ P) + (P ∙ Q) + (Q ∙ Q))
+		m = ρ * A
+		A = (1/2) * (P × Q)
+	*/
+	IntData.MomentOfInertia = 0.0f;
+	for (unsigned int i = 0; i < n; i++)
+	{
+		Point2D p0;
+		Point2D p1;
+		if (i == 0)
+		{
+			p0 = polygon.Corners[n - 1].Pos;
+			p1 = polygon.Corners[0 - 0].Pos;
+		}
+		else
+		{
+			p0 = polygon.Corners[i - 1].Pos;
+			p1 = polygon.Corners[i - 0].Pos;
+		}
+		//p0 = p0 - IntData.CenterOfMass;
+		//p1 = p1 - IntData.CenterOfMass;
+		float area = Point2D::cross(p0, p1);
+		float moment_of_inertia_of_triangle = 0.0f;
+		moment_of_inertia_of_triangle += Point2D::dot(p0, p0);
+		moment_of_inertia_of_triangle += Point2D::dot(p0, p1);
+		moment_of_inertia_of_triangle += Point2D::dot(p1, p1);
+		IntData.MomentOfInertia += area * moment_of_inertia_of_triangle;
+	}
+	IntData.MomentOfInertia *= ((IntData.Mass / IntData.Area) / 12.0f);
+}
+
 void Physics2D::InstanceManager::Changed()
 {
 	{
@@ -107,16 +189,23 @@ void Physics2D::InstanceManager::Changed()
 		WireFrameBox -> Insert_Box(box, ColorF4());
 	}
 	{
-		PointMasses -> Clear();
-		float m = IntData.Mass / (PolyGon -> Corners.Count());
-		for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
+		Calculate_Area(*PolyGon, IntData);
+		Calculate_CenterOfMass(*PolyGon, IntData);
+		Calculate_MomentOfInertia(*PolyGon, IntData);
+
 		{
-			PointMasses -> Insert(PointMass2D(PolyGon -> Corners[i].Pos, m));
+			AxisBox2D box = PolyGon -> ToAxisBox();
+			Point2D size = box.Size();
+			// Box Center
+			// Ic = (1/12) * m * (w^2 + h^2)
+			IntData.BoxCMomentOfInertia = (IntData.Mass / 12.0f) * ((size.X * size.X) + (size.Y * size.Y));
+			// Box Side W Middle
+			// Ic = (1/12) * m * (w^2 + 4 * h^2)
+			IntData.BoxWMomentOfInertia = (IntData.Mass / 12.0f) * ((size.X * size.X) + 4 * (size.Y * size.Y));
+			// Box Side H Middle
+			// Ic = (1/12) * m * (4 * w^2 + h^2)
+			IntData.BoxHMomentOfInertia = (IntData.Mass / 12.0f) * (4 * (size.X * size.X) + (size.Y * size.Y));
 		}
-		IntData.Area = PointMass2D::Area(*PointMasses);
-		IntData.CenterOfMass = PointMass2D::CenterOfMass(*PointMasses).Point;
-		IntData.MomentOfInertia = PointMass2D::MomentOfInertia(*PointMasses);
-		IntData.InertiaTensor = PointMass2D::InertiaTensor(*PointMasses);
 	}
 }
 

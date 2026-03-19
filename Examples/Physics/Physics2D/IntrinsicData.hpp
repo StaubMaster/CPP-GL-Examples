@@ -13,7 +13,10 @@ struct IntrinsicData
 	float		Area;
 	Point2D		CenterOfMass;
 	float		MomentOfInertia;
-	Matrix3x3	InertiaTensor;
+
+	float		BoxCMomentOfInertia;
+	float		BoxWMomentOfInertia;
+	float		BoxHMomentOfInertia;
 };
 };
 

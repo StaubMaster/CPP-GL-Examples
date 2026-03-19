@@ -26,9 +26,8 @@ struct Object
 	Physics2D::Inst::Data			Data;
 	Arrow2D::Object					Arrows;
 
+	IntrinsicData		IntData;
 	ExtrinsicData		ExtData;
-	IntrinsicData &		IntData() const;
-	// make Intrinsic a Member ?, Mass and Scale might change for Objects compared to their Main
 
 	bool	RemoveNextFrame;
 

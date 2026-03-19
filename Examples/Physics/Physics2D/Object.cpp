@@ -7,8 +7,6 @@
 
 
 
-Physics2D::IntrinsicData & Physics2D::Object::IntData() const { return (InstanceManager -> IntData); }
-
 //bool Physics2D::Object::IsValid() const { return (InstanceManager != nullptr); }
 //const ::PolyGon * Physics2D::Object::PolyGon() const { if (IsValid()) { return (InstanceManager -> PolyGon); } return nullptr; }
 const ::PolyGon * Physics2D::Object::PolyGon() const { return (InstanceManager -> PolyGon); }
@@ -165,6 +163,8 @@ Physics2D::Object::Object()
 //	, Data_Arrows()
 	, Data()
 	, Arrows()
+	, IntData()
+	, ExtData()
 	, RemoveNextFrame(false)
 	, DrawPolyGon(false)
 	, DrawWireFrame(false)
@@ -180,6 +180,7 @@ Physics2D::Object::Object(const Object & other)
 //	, Data_Arrows(other.Data_Arrows)
 	, Data(other.Data)
 	, Arrows(other.Arrows)
+	, IntData(other.IntData)
 	, ExtData(other.ExtData)
 	, RemoveNextFrame(other.RemoveNextFrame)
 	, DrawPolyGon(other.DrawPolyGon)
@@ -197,6 +198,7 @@ Physics2D::Object & Physics2D::Object::operator=(const Object & other)
 //	Data_Arrows = other.Data_Arrows;
 	Data = other.Data;
 	Arrows = other.Arrows;
+	IntData = other.IntData;
 	ExtData = other.ExtData;
 	RemoveNextFrame = other.RemoveNextFrame;
 	DrawPolyGon = other.DrawPolyGon;
@@ -254,6 +256,7 @@ Physics2D::Object & Physics2D::Object::Construct(bool is_static)
 	obj -> DrawPolyGon = true;
 	obj -> IsStatic = is_static;
 	obj -> InstanceManager -> Manager -> Objects.Insert(obj);
+	obj -> IntData = obj -> InstanceManager -> IntData;
 	return *obj;
 }
 Physics2D::Object & Physics2D::Object::Construct(Trans2D now, bool is_static)
@@ -264,6 +267,7 @@ Physics2D::Object & Physics2D::Object::Construct(Trans2D now, bool is_static)
 	obj -> DrawPolyGon = true;
 	obj -> IsStatic = is_static;
 	obj -> InstanceManager -> Manager -> Objects.Insert(obj);
+	obj -> IntData = obj -> InstanceManager -> IntData;
 	return *obj;
 }
 Physics2D::Object & Physics2D::Object::Construct(Trans2D now, Trans2D vel, bool is_static)
@@ -275,5 +279,6 @@ Physics2D::Object & Physics2D::Object::Construct(Trans2D now, Trans2D vel, bool 
 	obj -> DrawPolyGon = true;
 	obj -> IsStatic = is_static;
 	obj -> InstanceManager -> Manager -> Objects.Insert(obj);
+	obj -> IntData = obj -> InstanceManager -> IntData;
 	return *obj;
 }

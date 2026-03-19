@@ -2,7 +2,6 @@
 # define PHYSICS_2D_COLLISION_HPP
 
 # include "Physics2D/Object.hpp"
-# include "Physics2D/PointMass2D.hpp"
 
 # include "ValueType/AxisBox1D.hpp"
 
@@ -75,22 +74,6 @@ namespace Physics2D
 		Object & obj1
 	);
 
-
-
-/* (put this stuff somewhere else at some point)
-	Constant (stays the same as long as the PolyGon dosent change)
-		Mass
-		Area ?
-		Density ?
-		Center of Mass
-		Moment of Inertia
-	Moving (changes as Velocity changes)
-		Linear Velocity
-		Linear Momentum
-		Angular Velocity
-		Angular Momentum
-*/
-
 	struct ObjectDragData
 	{
 		Point2D		Contact;
@@ -101,7 +84,7 @@ namespace Physics2D
 
 		float	Torque;
 	};
-	ObjectDragData CalculateObjectDragData(Object & obj, Ray2D drag);
+	ObjectDragData CalculateObjectDragData(Object & obj, Ray2D drag, float scalar);
 
 	struct ObjectForceData
 	{

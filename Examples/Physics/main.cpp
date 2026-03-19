@@ -147,7 +147,7 @@ void Make()
 {
 //	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
 //	Physics2D_Manager.AirResistance = 0.1f;
-	Physics2D_Manager.GravityToY = 1.0f;
+	Physics2D_Manager.GravityToY = 10.0f;
 
 	InteractionObjectMove.Show();
 	InteractionObjectSpin.Show();

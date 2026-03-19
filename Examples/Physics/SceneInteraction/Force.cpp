@@ -57,12 +57,22 @@ void InteractionObjectDrag::Update(SceneInteractionData & SceneData)
 			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1.0f, 1.0f, 1.0f), 16.0f, data.Drag);
 			Arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.0f), 16.0f, data.Contact);
 
-			Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.Force);
-			Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
-			Arrows[4] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
-
-			Arrows[5] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangeRot);
-			Arrows[6] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangePos);
+			if (SceneData.Selected == Object)
+			{
+				Arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.Force);
+				Arrows[3] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForcePos);
+				Arrows[4] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, data.ForceRot);
+				
+				Arrows[5] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangeRot);
+				Arrows[6] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, data.ChangePos);
+			}
+			else
+			{
+				for (unsigned int i = 2; i < Arrows.Count(); i++)
+				{
+					Arrows[i] = Arrow2D::Inst::Data();
+				}
+			}
 		}
 	}
 }
