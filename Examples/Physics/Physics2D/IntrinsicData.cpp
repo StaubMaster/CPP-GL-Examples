@@ -27,6 +27,7 @@ void Physics2D::IntrinsicData::Calculate_Area(const PolyGon &polygon)
 		Area += area;
 	}
 	Area *= (1.0 / 2.0f);
+	Mass = Area * Density;
 }
 void Physics2D::IntrinsicData::Calculate_CenterOfMass(const PolyGon & polygon)
 {
@@ -112,9 +113,9 @@ void Physics2D::IntrinsicData::Calculate(const PolyGon & polygon)
 std::ostream & operator<<(std::ostream & s, const Physics2D::IntrinsicData & data)
 {
 	s << "Intrinsic:\n";
-	s << "Mass              : " << data.Mass << " kg\n";
-	s << "Area              : " << data.Area << " dm^2\n";
-	s << "Density           : " << (data.Mass / data.Area) << " kg/dm^2\n";
+	s << "Mass    : " << data.Mass << " kg\n";
+	s << "Area    : " << data.Area << " dm^2\n";
+	s << "Density : " << data.Density << " kg/dm^2\n";
 	s << "Center of Mass    : " << data.CenterOfMass << "\n";
 	s << "Moment of Inertia : " << data.MomentOfInertia << " kg*dm^2\n";
 	s << "Box C Moment of Inertia : " << data.BoxCMomentOfInertia << " kg*dm^2\n";

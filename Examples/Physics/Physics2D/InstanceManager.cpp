@@ -32,7 +32,7 @@ Physics2D::InstanceManager::InstanceManager()
 	, Buffer_WireFrame(GL::DrawMode::Lines)
 	, Buffer_WireFrameBox(GL::DrawMode::Lines)
 {
-	IntData.Mass = 1.0f;
+	IntData.Density = 1.0f;
 }
 Physics2D::InstanceManager::InstanceManager(const InstanceManager & other)
 	: Manager(other.Manager)

@@ -9,7 +9,10 @@
 
 void Physics2D::Object::Update(float timeDelta)
 {
-	ExtData.Update(timeDelta);
+	if (!IsStatic)
+	{
+		ExtData.Update(timeDelta);
+	}
 	ExtData.Update(IntData);
 	ExtData.Zero();
 }

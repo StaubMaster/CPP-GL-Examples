@@ -163,14 +163,13 @@ void Physics2D::Manager::UpdateAirResistance(float timeDelta)
 
 void Physics2D::Manager::UpdateCollision(float timeDelta)
 {
-	(void)timeDelta;
 	for (unsigned int i0 = 0; i0 < Objects.Count(); i0++)
 	{
 		for (unsigned int i1 = i0 + 1; i1 < Objects.Count(); i1++)
 		{
-			Physics2D::CollideLinear(*Objects[i0], *Objects[i1]); // good
-			//Physics2D::CollideRotate(Objects[i0], Objects[i1]); // wack
-			//Physics2D::Collide(Objects[i0], Objects[i1]);
+			//Physics2D::CollideLinear(*Objects[i0], *Objects[i1]); // good
+			//Physics2D::CollideRotate(*Objects[i0], *Objects[i1]); // wack
+			Physics2D::Collide(*Objects[i0], *Objects[i1], timeDelta);
 		}
 	}
 }
@@ -203,7 +202,7 @@ void Physics2D::Manager::Update(float timeDelta)
 	UpdateAirResistance(timeDelta);
 	UpdateGravity(timeDelta);
 
-	//UpdateCollision(timeDelta);
+	UpdateCollision(timeDelta);
 	//UpdateTransformation(timeDelta);
 }
 

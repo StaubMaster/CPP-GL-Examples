@@ -50,8 +50,8 @@ void InteractionObjectSpin::Change(SceneInteractionData & SceneData)
 		Point2D rel = SceneData.Cursor - now.Pos;
 		Target = Offset + Angle2D::FromPoint2D(rel);
 
-		Grid2D grid(0.1f, 15.0f);
-		Target = grid.Align(Target);
+		//Grid2D grid(0.1f, 15.0f);
+		//Target = grid.Align(Target);
 	}
 }
 void InteractionObjectSpin::Update(SceneInteractionData & SceneData)

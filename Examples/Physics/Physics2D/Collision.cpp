@@ -72,7 +72,8 @@ Physics2D::PolyGonContactData::~PolyGonContactData() { }
 Physics2D::PolyGonContactData::PolyGonContactData()
 	: Valid(false)
 	, Normal()
-	, Contact()
+	, Position()
+	, Velocity()
 	, Distance(INFINITY)
 	, Contact0Udx(0xFFFFFFFF)
 	, Contact1Udx(0xFFFFFFFF)
@@ -81,7 +82,8 @@ Physics2D::PolyGonContactData::PolyGonContactData()
 Physics2D::PolyGonContactData::PolyGonContactData(const PolyGonContactData & other)
 	: Valid(other.Valid)
 	, Normal(other.Normal)
-	, Contact(other.Contact)
+	, Position(other.Position)
+	, Velocity(other.Velocity)
 	, Distance(other.Distance)
 	, Contact0Udx(other.Contact0Udx)
 	, Contact1Udx(other.Contact1Udx)
@@ -90,7 +92,8 @@ Physics2D::PolyGonContactData & Physics2D::PolyGonContactData::operator=(const P
 {
 	Valid = other.Valid;
 	Normal = other.Normal;
-	Contact = other.Contact;
+	Position = other.Position;
+	Velocity = other.Velocity;
 	Distance = other.Distance;
 	Contact0Udx = other.Contact0Udx;
 	Contact1Udx = other.Contact1Udx;
@@ -166,19 +169,19 @@ Physics2D::PolyGonContactData Physics2D::PolyGonContactData::CheckContact(
 		n = (pos1 - pos0).perpendicular0().normalize();
 		temp = CheckContact(obj0, obj1, n, time);
 		if (!temp.Valid) { return ret; }
-		temp.Contact = obj1.CornerFromIndex(temp.Contact1Udx);
+		temp.Position = obj1.CornerFromIndex(temp.Contact1Udx);
 		if (data.Compare(temp)) { data = temp; }
 
 		n = (pos2 - pos1).perpendicular0().normalize();
 		temp = CheckContact(obj0, obj1, n, time);
 		if (!temp.Valid) { return ret; }
-		temp.Contact = obj1.CornerFromIndex(temp.Contact1Udx);
+		temp.Position = obj1.CornerFromIndex(temp.Contact1Udx);
 		if (data.Compare(temp)) { data = temp; }
 
 		n = (pos0 - pos2).perpendicular0().normalize();
 		temp = CheckContact(obj0, obj1, n, time);
 		if (!temp.Valid) { return ret; }
-		temp.Contact = obj1.CornerFromIndex(temp.Contact1Udx);
+		temp.Position = obj1.CornerFromIndex(temp.Contact1Udx);
 		if (data.Compare(temp)) { data = temp; }
 	}
 
@@ -191,23 +194,24 @@ Physics2D::PolyGonContactData Physics2D::PolyGonContactData::CheckContact(
 		n = (pos1 - pos0).perpendicular0().normalize();
 		temp = CheckContact(obj0, obj1, n, time);
 		if (!temp.Valid) { return ret; }
-		temp.Contact = obj0.CornerFromIndex(temp.Contact0Udx);
+		temp.Position = obj0.CornerFromIndex(temp.Contact0Udx);
 		if (data.Compare(temp)) { data = temp; }
 
 		n = (pos2 - pos1).perpendicular0().normalize();
 		temp = CheckContact(obj0, obj1, n, time);
 		if (!temp.Valid) { return ret; }
-		temp.Contact = obj0.CornerFromIndex(temp.Contact0Udx);
+		temp.Position = obj0.CornerFromIndex(temp.Contact0Udx);
 		if (data.Compare(temp)) { data = temp; }
 
 		n = (pos0 - pos2).perpendicular0().normalize();
 		temp = CheckContact(obj0, obj1, n, time);
 		if (!temp.Valid) { return ret; }
-		temp.Contact = obj0.CornerFromIndex(temp.Contact0Udx);
+		temp.Position = obj0.CornerFromIndex(temp.Contact0Udx);
 		if (data.Compare(temp)) { data = temp; }
 	}
 
 	ret = data;
+	ret.Velocity = obj1.ExtData.Vel.Pos - obj0.ExtData.Vel.Pos;
 	return ret;
 }
 
@@ -215,7 +219,7 @@ Physics2D::PolyGonContactData Physics2D::PolyGonContactData::CheckContact(
 
 
 
-void Physics2D::CollideLinear(
+/*void Physics2D::CollideLinear(
 	Object & obj0,
 	Object & obj1
 )
@@ -256,9 +260,9 @@ void Physics2D::CollideLinear(
 	if (obj1.IsStatic) { obj1.ExtData.Vel = Trans2D(); }
 
 	std::cout << '\n';
-}
+}*/
 
-void Physics2D::CollideRotate(
+/*void Physics2D::CollideRotate(
 	Object & obj0,
 	Object & obj1
 )
@@ -343,194 +347,130 @@ void Physics2D::CollideRotate(
 	if (obj1.IsStatic) { obj1.ExtData.Vel = Trans2D(); }
 
 	std::cout << '\n';
-}
+}*/
 
-/*
 
-*/
+
 void Physics2D::Collide(
 	Object & obj0,
-	Object & obj1
+	Object & obj1,
+	float timeDelta
 )
 {
 	if (obj0.IsStatic && obj1.IsStatic) { return; }
 
-	// Currently only handles one Contact. Should handle all Contacts
-	// also should calculate exact time of contact ?
 	Physics2D::PolyGonContactData contact_data = Physics2D::PolyGonContactData::CheckContact(obj0, obj1, 1.0f);
 	if (!contact_data.Valid) { return; }
 
-	//Point2D Contact0 = obj0.AbsolutePositionOf(obj0.CornerFromIndex(contact_data.Contact0Udx));
-	//Point2D Contact1 = obj1.AbsolutePositionOf(obj1.CornerFromIndex(contact_data.Contact1Udx));
-
-	//Point2D ContactVel0 = obj0.AbsoluteVelocityOf(obj0.CornerFromIndex(contact_data.Contact0Udx));
-	//Point2D ContactVel1 = obj1.AbsoluteVelocityOf(obj0.CornerFromIndex(contact_data.Contact0Udx));
-	
-	Point2D ContactVel0 = obj0.AbsoluteVelocityOf(contact_data.Contact);
-	Point2D ContactVel1 = obj1.AbsoluteVelocityOf(contact_data.Contact);
-
-	Point2D RelativeContact0 = contact_data.Contact - obj0.ExtData.Now.Pos;
-	Point2D RelativeContact1 = contact_data.Contact - obj1.ExtData.Now.Pos;
-
-
-
-	float MassInverse0 = 0;
-	float MassInverse1 = 0;
+	// IsStatic assumes and infinite Mass to Inverse Mass is 0
+	float MassInverse0 = 0.0f;
+	float MassInverse1 = 0.0f;
 	if (!obj0.IsStatic) { MassInverse0 = 1 / obj0.IntData.Mass; }
 	if (!obj1.IsStatic) { MassInverse1 = 1 / obj1.IntData.Mass; }
 	float MassInverseSum = MassInverse0 + MassInverse1;
 
+	float MomentOfInertiaInverse0 = 0.0f;
+	float MomentOfInertiaInverse1 = 0.0f;
+	if (!obj0.IsStatic) { MomentOfInertiaInverse0 = 1 / obj0.IntData.MomentOfInertia; }
+	if (!obj1.IsStatic) { MomentOfInertiaInverse1 = 1 / obj1.IntData.MomentOfInertia; }
 
+//	Point2D Contact0 = obj0.AbsolutePositionOf(obj0.CornerFromIndex(contact_data.Contact0Udx));
+//	Point2D Contact1 = obj1.AbsolutePositionOf(obj1.CornerFromIndex(contact_data.Contact1Udx));
 
-	Point3D normal_3D(contact_data.Normal.X, contact_data.Normal.Y, 0);
-	Point3D RelativeContact0_3D(RelativeContact0.X, RelativeContact0.Y, 0);
-	Point3D RelativeContact1_3D(RelativeContact1.X, RelativeContact1.Y, 0);
+	Point2D RelativeContact0 = contact_data.Position - obj0.ExtData.Now.Pos;
+	Point2D RelativeContact1 = contact_data.Position - obj1.ExtData.Now.Pos;
 
-	Point3D ContactNormal0_3D = Point3D::cross(RelativeContact0_3D, normal_3D);
-	Point3D ContactNormal1_3D = Point3D::cross(RelativeContact1_3D, normal_3D);
-	Point3D ContactPerpendicular0_3D = Point3D::cross(ContactNormal0_3D, RelativeContact0_3D);
-	Point3D ContactPerpendicular1_3D = Point3D::cross(ContactNormal1_3D, RelativeContact1_3D);
-	Point3D ContactPerpendicularSum_3D = ContactPerpendicular0_3D + ContactPerpendicular1_3D;
+//	contact_data.Velocity = contact_data.Velocity * timeDelta;
+	float NormalVelFactor = Point2D::dot(contact_data.Velocity, contact_data.Normal);
 
-	float InertiaFactorSum = Point2D::dot(Point2D(ContactPerpendicularSum_3D.X, ContactPerpendicularSum_3D.Y), contact_data.Normal);
+//	Point3D normal_3D(contact_data.Normal.X, contact_data.Normal.Y, 0);
+//	Point3D RelativeContact0_3D(RelativeContact0.X, RelativeContact0.Y, 0);
+//	Point3D RelativeContact1_3D(RelativeContact1.X, RelativeContact1.Y, 0);
+//
+//	Point3D ContactNormal0_3D = Point3D::cross(RelativeContact0_3D, normal_3D);
+//	Point3D ContactNormal1_3D = Point3D::cross(RelativeContact1_3D, normal_3D);
+//	Point3D ContactPerpendicular0_3D = Point3D::cross(ContactNormal0_3D, RelativeContact0_3D);
+//	Point3D ContactPerpendicular1_3D = Point3D::cross(ContactNormal1_3D, RelativeContact1_3D);
+//	Point3D ContactPerpendicularSum_3D = ContactPerpendicular0_3D + ContactPerpendicular1_3D;
+//
+//	float InertiaFactorSum = Point2D::dot(Point2D(ContactPerpendicularSum_3D.X, ContactPerpendicularSum_3D.Y), contact_data.Normal);
 
+	float ContactAxis0 = Point2D::cross(RelativeContact0, contact_data.Normal);
+	float ContactAxis1 = Point2D::cross(RelativeContact1, contact_data.Normal);
+	Point2D ContactMomentOfInertia0 = Point2D::cross(ContactAxis0 * MomentOfInertiaInverse0, RelativeContact0);
+	Point2D ContactMomentOfInertia1 = Point2D::cross(ContactAxis1 * MomentOfInertiaInverse1, RelativeContact1);
+	Point2D ContactMomentOfInertiaSum = ContactMomentOfInertia0 + ContactMomentOfInertia1;
 
+	float MomentOfInertiaSum = Point2D::dot(ContactMomentOfInertiaSum, contact_data.Normal);
 
+//	std::cout << "RelativeContact0: " << RelativeContact0 << ' ' << RelativeContact0.length() << '\n';
+//	std::cout << "RelativeContact1: " << RelativeContact1 << ' ' << RelativeContact1.length() << '\n';
+//	std::cout << "ContactPerpendicular0: " << ContactPerpendicular0 << ' ' << ContactPerpendicular0.length() << '\n';
+//	std::cout << "ContactPerpendicular1: " << ContactPerpendicular1 << ' ' << ContactPerpendicular1.length() << '\n';
+//	std::cout << "ContactPerpendicularSum: " << ContactPerpendicularSum << ' ' << ContactPerpendicularSum.length() << '\n';
+//	std::cout << '\n';
+
+	std::cout << "IsStatic[0] " << obj0.IsStatic << '\n';
+	std::cout << "IsStatic[1] " << obj1.IsStatic << '\n';
+	std::cout << "Inverse Linear Mass [0]  : " << (MassInverse0) << '\n';
+	std::cout << "Inverse Linear Mass [1]  : " << (MassInverse1) << '\n';
+	std::cout << "Inverse Angular Mass [0] : " << (MomentOfInertiaInverse0) << '\n';
+	std::cout << "Inverse Angular Mass [1] : " << (MomentOfInertiaInverse1) << '\n';
 	std::cout << '\n';
-	std::cout << "normal_3D: " << normal_3D << ' ' << normal_3D.length() << '\n';
-	std::cout << "RelativeContact0_3D: " << RelativeContact0_3D << ' ' << RelativeContact0_3D.length() << '\n';
-	std::cout << "RelativeContact1_3D: " << RelativeContact1_3D << ' ' << RelativeContact1_3D.length() << '\n';
-	std::cout << "ContactPerpendicular0_3D: " << ContactPerpendicular0_3D << ' ' << ContactPerpendicular0_3D.length() << '\n';
-	std::cout << "ContactPerpendicular1_3D: " << ContactPerpendicular1_3D << ' ' << ContactPerpendicular1_3D.length() << '\n';
-	std::cout << "ContactPerpendicularSum_3D: " << ContactPerpendicularSum_3D << ' ' << ContactPerpendicularSum_3D.length() << '\n';
+
+	std::cout << "Contact Position : " << contact_data.Position << " dm\n";
+	std::cout << "Contact Velocity : " << contact_data.Velocity << " dm/s\n";
+	std::cout << "Contact Normal   : " << contact_data.Normal << ' ' << contact_data.Normal.length() << '\n';
 	std::cout << '\n';
 
+	std::cout << "NormalVelFactor  : " << NormalVelFactor << '\n';
+	std::cout << "Contact Axis [0] : " << ContactAxis0 << '\n';
+	std::cout << "Contact Axis [1] : " << ContactAxis1 << '\n';
+	std::cout << "Contact Moment of Inertia [0] : " << ContactMomentOfInertia0 << '\n';
+	std::cout << "Contact Moment of Inertia [1] : " << ContactMomentOfInertia1 << '\n';
+	std::cout << "Contact Moment of Inertia Sum : " << ContactMomentOfInertiaSum << '\n';
+	std::cout << '\n';
 
+	std::cout << "MassInverseSum     : " << MassInverseSum << " /kg\n";
+	std::cout << "MomentOfInertiaSum : " << MomentOfInertiaSum << " dm/dm\n";
+	std::cout << '\n';
+//	MomentOfInertiaSum = 0.0f;
 
 	float e = 1.0f;
-	Point2D vel_rel = ContactVel1 - ContactVel0;
-	float NormalVelFactor = Point2D::dot(vel_rel, contact_data.Normal);
+	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + MomentOfInertiaSum);
 
-	std::cout << "Contact          : " << contact_data.Contact << '\n';
-	std::cout << "Normal           : " << contact_data.Normal << '\n';
+	std::cout << "MassInverseSum     : " << MassInverseSum << " /kg\n";
+	std::cout << "MomentOfInertiaSum : " << MomentOfInertiaSum << "\n";
+	std::cout << "ImpulseFactor      : " << ImpulseFactor << " kg*dm/s\n";
+	std::cout << '\n';
 
-	std::cout << "vel_rel          : " << vel_rel << '\n';
-	std::cout << "NormalVelFactor  : " << NormalVelFactor << '\n';
-	std::cout << "MassInverseSum   : " << MassInverseSum << '\n';
-	std::cout << "InertiaFactorSum : " << InertiaFactorSum << '\n';
+	Point2D ChangePos0 = contact_data.Normal * (ImpulseFactor * MassInverse0);
+	Point2D ChangePos1 = contact_data.Normal * (ImpulseFactor * MassInverse1);
+	Angle2D ChangeRot0 = Angle2D(Angle::Radians(ContactAxis0 * (ImpulseFactor * MomentOfInertiaInverse0)));
+	Angle2D ChangeRot1 = Angle2D(Angle::Radians(ContactAxis1 * (ImpulseFactor * MomentOfInertiaInverse1)));
 
-	InertiaFactorSum = 0;
-	float ImpulseFactor = (-(1.0f + e) * NormalVelFactor) / (MassInverseSum + InertiaFactorSum);
-	std::cout << "ImpulseFactor " << ImpulseFactor << '\n';
+	std::cout << "ChangePos[0] " << ChangePos0 << " dm/s^2\n";
+	std::cout << "ChangePos[1] " << ChangePos1 << " dm/s^2\n";
+	std::cout << "ChangeRot[0] " << ChangeRot0 << " dm/dm*s^2\n";
+	std::cout << "ChangeRot[1] " << ChangeRot1 << " dm/dm*s^2\n";
+//	std::cout << "Velocity[0] " << obj0.ExtData.Vel.Pos << " dm/s\n";
+//	std::cout << "Velocity[1] " << obj1.ExtData.Vel.Pos << " dm/s\n";
+	std::cout << '\n';
 
-	if (!obj0.IsStatic) { obj0.ExtData.Vel.Pos -= contact_data.Normal * (ImpulseFactor / obj0.IntData.Mass); }
-	if (!obj1.IsStatic) { obj1.ExtData.Vel.Pos += contact_data.Normal * (ImpulseFactor / obj1.IntData.Mass); }
-
-	if (!obj0.IsStatic) { obj0.ExtData.Vel.Rot += Angle::Radians((ContactNormal0_3D * ImpulseFactor).length()); }
-	if (!obj1.IsStatic) { obj1.ExtData.Vel.Rot -= Angle::Radians((ContactNormal1_3D * ImpulseFactor).length()); }
-
+	if (obj0.IsStatic && obj1.IsStatic)
+	{
+	}
+	else if (obj0.IsStatic != obj1.IsStatic)
+	{
+		if (!obj0.IsStatic) { obj0.ExtData.Vel.Pos -= ChangePos0 * 2; }
+		if (!obj1.IsStatic) { obj1.ExtData.Vel.Pos += ChangePos1 * 2; }
+		if (!obj0.IsStatic) { obj0.ExtData.Vel.Rot -= ChangeRot0 * 2; }
+		if (!obj1.IsStatic) { obj1.ExtData.Vel.Rot += ChangeRot1 * 2; }
+	}
 	if (obj0.IsStatic) { obj0.ExtData.Vel = Trans2D(); }
 	if (obj1.IsStatic) { obj1.ExtData.Vel = Trans2D(); }
-
-	std::cout << '\n';
+	(void)timeDelta;
 }
-
-
-
-
-
-/* figure out Moment of Inertia
-
-m : Partical Mass
-r : Partical Position
-v : linear Velocity
-p : linear Momentum
-ω : angular Velocity
-L : angular Momentum
-I : Moment of Intertia
-
-L = I * ω
-L = r x p
-p = m * v
-
-m is allways the full mass of the Object
-since it is Rigid ?
-
-I = L / ω
-ω is known
-L = r x p
-r is known
-p = m * v
-m is known
-v = |r| * ω ?
-
-Orbital Angular Momentum in case of Circel:
-I = |r| * |r| * m
-ω = |v| / |r|
-L = (|r| * |r| * m) % (|v| / |r|)
-L = |r| * m * |v|
-|v| = |r| * ω
-
-L = |r| * m * |r| * ω
-*/
-
-/* Problem
-I think the problem is treating the Mass of a Perticle
-like the Mass of the Object
-*/
-
-/* Moment of Inertia shows how Inertia Tensor is calculated
-I = [3, 3]
-
-N : Number of Point Masses
-m : Point Mass
-r : Vector to Point Mass
-i : { 0 1 2 } as { x y z } for r.i
-j : { 0 1 2 } as { x y z } for r.j
-
-I[i, j] = sum(k 0 to N) { m[k] * ( |r[k]|^2 * (i == j) - (r.i * r.j)) }
-
-Diagonal Elements:
-Ixx = sum(k 0 to N) { m[k] * (y[k]^2 + z[k]^2) }
-Iyy = sum(k 0 to N) { m[k] * (z[k]^2 + x[k]^2) }
-Izz = sum(k 0 to N) { m[k] * (x[k]^2 + y[k]^2) }
-
-Off Diagonal Elements:
-Ixy = Iyx = -sum(k 0 to N) { m[k] * (x[k] * y[k]) }
-Izx = Ixz = -sum(k 0 to N) { m[k] * (z[k] * x[k]) }
-Iyz = Izy = -sum(k 0 to N) { m[k] * (y[k] * z[k]) }
-
-Ixx is Moment of Inertia around X-Axis when rotated around X-Axis
-Ixy is Moment of Inertia around Y-Axis when rotated around Y-Axis
-*/
-
-/* Moment of Inertia vs Inertia Tensor
-I think the Inertia Tensor is constant per Object
-while the Moment of Inertia changes depending on the Axis of Rotation
-*/
-
-/* full Mass per Point Mass ?
-for a Cuboid (w, h, d)
-I = [
-	[ (1/12) * m * (h^2 + d^2) 0 0 ]
-	[ 0 (1/12) * m * (d^2 + w^2) 0 ]
-	[ 0 0 (1/12) * m * (w^2 + h^2) ]
-]
-the Loop just multiplys stuff
-this gives each Point (1/12) of the full Mass
-since there are 8 Points, that gives (8/12) ?
-where is the rest ? in the Middle ?
-how is this calculated
-
-Mass should be uniform
-so each Point should have the same
-but then with 8 Points each should have (1/8) of the Mass
-
-(1/12) comes as a Sum of all Points
-so each Point only has ((1/12)/8)
-so only (1/96), that is very small
-*/
-
 
 
 

@@ -35,8 +35,11 @@ namespace Physics2D
 	struct PolyGonContactData
 	{
 		bool			Valid;
+
 		Point2D			Normal;
-		Point2D			Contact;
+		Point2D			Position;
+		Point2D			Velocity;
+
 		float			Distance;
 		unsigned int	Contact0Udx;
 		unsigned int	Contact1Udx;
@@ -61,17 +64,18 @@ namespace Physics2D
 		);
 	};
 
-	void CollideLinear(
+	/*void CollideLinear(
 		Object & obj0,
 		Object & obj1
-	);
-	void CollideRotate(
+	);*/
+	/*void CollideRotate(
 		Object & obj0,
 		Object & obj1
-	);
+	);*/
 	void Collide(
 		Object & obj0,
-		Object & obj1
+		Object & obj1,
+		float timeDelta
 	);
 
 	struct ObjectDragData

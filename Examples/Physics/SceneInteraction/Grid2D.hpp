@@ -4,6 +4,12 @@
 # include "ValueType/Point2D.hpp"
 # include "ValueType/Angle2D.hpp"
 
+/*
+change Grid based on Zoom
+use Shift when Mobving to not align to Grid
+use Numbers to change "Tool"
+*/
+
 struct Grid2D
 {
 	float	Lin;

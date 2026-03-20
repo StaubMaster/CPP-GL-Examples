@@ -13,6 +13,7 @@ struct IntrinsicData
 {
 	float		Mass;
 	float		Area;
+	float		Density;
 	Point2D		CenterOfMass;
 	float		MomentOfInertia;
 
