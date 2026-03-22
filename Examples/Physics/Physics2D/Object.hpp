@@ -67,8 +67,12 @@ struct Object
 	const ::PolyGon &	PolyGon() const;
 	unsigned int		CornerCount() const;
 	unsigned int		SideCount() const;
-	Point2D				CornerFromIndex(unsigned int idx) const;
+
 	bool				IsContaining(Point2D p) const;
+
+	Point2D		RelativePositionOfIndex(unsigned int idx) const;
+	Point2D		AbsolutePositionOfIndex(unsigned int idx) const;
+	Point2D		AbsoluteVelocityOfIndex(unsigned int idx) const;
 
 
 

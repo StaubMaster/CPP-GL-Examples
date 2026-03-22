@@ -167,43 +167,37 @@ void Physics2D::Manager::UpdateCollision(float timeDelta)
 	{
 		for (unsigned int i1 = i0 + 1; i1 < Objects.Count(); i1++)
 		{
-			//Physics2D::CollideLinear(*Objects[i0], *Objects[i1]); // good
-			//Physics2D::CollideRotate(*Objects[i0], *Objects[i1]); // wack
 			Physics2D::Collide(*Objects[i0], *Objects[i1], timeDelta);
 		}
 	}
 }
-void Physics2D::Manager::UpdateTransformation(float timeDelta)
-{
-	(void)timeDelta;
-	for (unsigned int i = 0; i < Objects.Count(); i++)
-	{
-		Physics2D::Object & obj = *Objects[i];
-		//Trans2D & now = obj.ExtData.Now;
-		Trans2D & vel = obj.ExtData.Vel;
-		if (!obj.IsStatic)
-		{
-			//now.Pos += (vel.Pos * timeDelta);
-			//now.Rot += (vel.Rot * timeDelta);
-		}
-		else
-		{
-			vel = Trans2D();
-		}
-	}
-}
+
 void Physics2D::Manager::Update(float timeDelta)
 {
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		Objects[i] -> Update(timeDelta);
+		Physics2D::Object & obj = *Objects[i];
+		if (!obj.IsStatic)
+		{
+			obj.Update(timeDelta);
+		}
+		else
+		{
+			obj.ExtData.Vel = Trans2D();
+		}
+		obj.ExtData.Zero();
 	}
 
 	UpdateAirResistance(timeDelta);
 	UpdateGravity(timeDelta);
 
 	UpdateCollision(timeDelta);
-	//UpdateTransformation(timeDelta);
+
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		Physics2D::Object & obj = *Objects[i];
+		obj.ExtData.Update(obj.IntData);
+	}
 }
 
 

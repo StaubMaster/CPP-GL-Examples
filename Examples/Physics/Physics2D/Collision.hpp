@@ -12,97 +12,86 @@
 
 namespace Physics2D
 {
-	struct PolyGonProjectionData
+namespace Collision
+{
+struct ContactData
+{
+	bool			Valid;
+	unsigned int	Undex0;
+	unsigned int	Undex1;
+
+	Point2D			Normal;
+	Point2D			Position;
+	float			Distance;
+
+	~ContactData();
+	ContactData();
+	ContactData(const ContactData & other);
+	ContactData & operator=(const ContactData & other);
+
+	bool Compare(const ContactData & other) const;
+	void Consider(const ContactData & other);
+
+	static Point2D CalculateNormal(const Object & obj, unsigned int idx);
+
+	static ContactData CheckContact(
+		const Object & obj0,
+		const Object & obj1,
+		Point2D normal,
+		float timeDelta
+	);
+	static ContactData CheckContact(
+		const Object & obj0,
+		const Object & obj1,
+		float timeDelta
+	);
+
+	struct ResolveData
 	{
-		AxisBox1D		Box;
-		unsigned int	MinUdx;
-		unsigned int	MaxUdx;
-
-		~PolyGonProjectionData();
-		PolyGonProjectionData();
-
-		PolyGonProjectionData(const PolyGonProjectionData & other);
-		PolyGonProjectionData & operator=(const PolyGonProjectionData & other);
-
-		void Consider(float val, unsigned int idx);
-
-		static PolyGonProjectionData Project(
-			const Object & obj,
-			Point2D normal
-		);
+		Point2D	Pos0;
+		Point2D	Pos1;
+		Angle2D	Rot0;
+		Angle2D	Rot1;
 	};
-
-	struct PolyGonContactData
-	{
-		bool			Valid;
-
-		Point2D			Normal;
-		Point2D			Position;
-		Point2D			Velocity;
-
-		float			Distance;
-		unsigned int	Contact0Udx;
-		unsigned int	Contact1Udx;
-
-		~PolyGonContactData();
-		PolyGonContactData();
-		PolyGonContactData(const PolyGonContactData & other);
-		PolyGonContactData & operator=(const PolyGonContactData & other);
-
-		bool Compare(const PolyGonContactData & other) const;
-
-		static PolyGonContactData CheckContact(
-			const Object & obj0,
-			const Object & obj1,
-			Point2D normal,
-			float time
-		);
-		static PolyGonContactData CheckContact(
-			const Object & obj0,
-			const Object & obj1,
-			float time
-		);
-	};
-
-	/*void CollideLinear(
-		Object & obj0,
-		Object & obj1
-	);*/
-	/*void CollideRotate(
-		Object & obj0,
-		Object & obj1
-	);*/
-	void Collide(
+	ResolveData Resolve(
 		Object & obj0,
 		Object & obj1,
 		float timeDelta
 	);
+};
+};
 
-	struct ObjectDragData
-	{
-		Point2D		Contact;
+void Collide(
+	Object & obj0,
+	Object & obj1,
+	float timeDelta
+);
 
-		Point2D		Force;
-		Point2D		ForcePos;
-		Point2D		ForceRot;
+struct ObjectDragData
+{
+	Point2D		Contact;
 
-		float	Torque;
-	};
-	ObjectDragData CalculateObjectDragData(Object & obj, Ray2D drag, float scalar);
+	Point2D		Force;
+	Point2D		ForcePos;
+	Point2D		ForceRot;
 
-	struct ObjectForceData
-	{
-		Ray2D Drag;
-		Line2D Contact;
+	float	Torque;
+};
+ObjectDragData CalculateObjectDragData(Object & obj, Ray2D drag, float scalar);
 
-		Ray2D Force;
-		Ray2D ForcePos;
-		Ray2D ForceRot;
+struct ObjectForceData
+{
+	Ray2D Drag;
+	Line2D Contact;
 
-		Ray2D ChangePos;
-		Ray2D ChangeRot;
-	};
-	ObjectForceData ApplyForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change);
+	Ray2D Force;
+	Ray2D ForcePos;
+	Ray2D ForceRot;
+
+	Ray2D ChangePos;
+	Ray2D ChangeRot;
+};
+ObjectForceData ApplyForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change);
 };
 
 #endif

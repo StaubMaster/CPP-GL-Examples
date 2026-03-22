@@ -38,9 +38,11 @@ unsigned int Physics2D::Object::CornerCount() const { return (PolyGon().Corners.
 
 unsigned int Physics2D::Object::SideCount() const { return (PolyGon().Sides.Count()); }
 
-Point2D Physics2D::Object::CornerFromIndex(unsigned int idx) const { return PolyGon().Corners[idx].Pos; }
-
 bool Physics2D::Object::IsContaining(Point2D p) const { return PolyGon().IsContaining(RelativePositionOf(p)); }
+
+Point2D Physics2D::Object::RelativePositionOfIndex(unsigned int idx) const { return PolyGon().Corners[idx].Pos; }
+Point2D Physics2D::Object::AbsolutePositionOfIndex(unsigned int idx) const { return AbsolutePositionOf(RelativePositionOfIndex(idx)); }
+Point2D Physics2D::Object::AbsoluteVelocityOfIndex(unsigned int idx) const { return AbsoluteVelocityOf(RelativePositionOfIndex(idx)); }
 
 
 

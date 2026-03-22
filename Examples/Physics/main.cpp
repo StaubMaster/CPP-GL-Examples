@@ -146,10 +146,10 @@ MainContext()
 
 void Make()
 {
-//	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
-//	Physics2D_Manager.AirResistance = 0.1f;
-//	Physics2D_Manager.GravityToY = 10.0f;
-	Physics2D_Manager.GravityToY = 1.0f;
+	//	Physics2D_Manager.AirResistance = 0.1f;
+	//	Physics2D_Manager.GravityToY = 10.0f;
+	//	Physics2D_Manager.GravityToY = 1.0f;
+	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
 
 
 
@@ -168,12 +168,13 @@ void Make()
 	Physics2D::InstanceManager & wall = Physics2D_Manager.MainInstances[0];
 	wall.Buffer_PolyGon.Create();
 	{
-		float thickness = 0.1f;
+		float thickness0 = 1.0f;
+		float thickness1 = 0.1f;
 		PolyGon & poly_gon = *(wall.PolyGon);
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1, 0), ColorF4(1, 1, 1)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1, 0), ColorF4(1, 1, 1)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1 - thickness, -thickness), ColorF4(0, 0, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1 + thickness, -thickness), ColorF4(0, 0, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-thickness0, 0), ColorF4(1, 1, 1)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+thickness0, 0), ColorF4(1, 1, 1)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-thickness0 - thickness1, -thickness1), ColorF4(0, 0, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+thickness0 + thickness1, -thickness1), ColorF4(0, 0, 0)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
 	}
@@ -193,13 +194,14 @@ void Make()
 	Physics2D::InstanceManager & obj1 = Physics2D_Manager.MainInstances[2];
 	obj1.Buffer_PolyGon.Create();
 	{
+		float size = 0.1f;
 		PolyGon & poly_gon = *(obj1.PolyGon);
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, +0.1f), ColorF4(1, 0, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, -0.1f), ColorF4(0, 0, 1)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, +0.1f), ColorF4(0, 1, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-size, -size), ColorF4(0, 1, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+size, -size), ColorF4(0, 0, 1)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+size, +size), ColorF4(0, 1, 0)));
+		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-size, +size), ColorF4(1, 0, 0)));
 		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
-		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
+		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(0), PolyGon::SideCorner(3)));
 	}
 	obj1.Manager = &Physics2D_Manager;
 
@@ -207,6 +209,10 @@ void Make()
 	obj2.Buffer_PolyGon.Create();
 	{
 		PolyGon & poly_gon = *(obj2.PolyGon);
+		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.5f, -0.025f), ColorF4(0, 1, 0)));
+		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.5f, -0.025f), ColorF4(0, 0, 1)));
+		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.5f, +0.025f), ColorF4(0, 1, 0)));
+		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.5f, +0.025f), ColorF4(1, 0, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, -0.1f), ColorF4(0, 1, 0)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 1)));
 		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1.0f, +0.1f), ColorF4(0, 1, 0)));
@@ -228,12 +234,22 @@ void Make()
 
 
 
-	wall.MakeCurrent();
-	Physics2D::Object::Construct(Trans2D(Point2D( 0, -1), Angle2D(Angle::Degrees(  0))), true);
-	Physics2D::Object::Construct(Trans2D(Point2D(+1,  0), Angle2D(Angle::Degrees( 90))), true);
-	Physics2D::Object::Construct(Trans2D(Point2D( 0, +1), Angle2D(Angle::Degrees(180))), true);
-	Physics2D::Object::Construct(Trans2D(Point2D(-1,  0), Angle2D(Angle::Degrees(270))), true);
+	{
+		wall.MakeCurrent();
+		float thickness0 = 1.0f;
+		//Physics2D::Object::Construct(Trans2D(Point2D(0, -thickness0), Angle2D(Angle::Degrees(  0))), true);
+		//Physics2D::Object::Construct(Trans2D(Point2D(+thickness0, 0), Angle2D(Angle::Degrees( 90))), true);
+		//Physics2D::Object::Construct(Trans2D(Point2D(0, +thickness0), Angle2D(Angle::Degrees(180))), true);
+		//Physics2D::Object::Construct(Trans2D(Point2D(-thickness0, 0), Angle2D(Angle::Degrees(270))), true);
+		(void)thickness0;
+	}
 
+	{
+		obj2.MakeCurrent();
+		//Physics2D::Object::Construct(Trans2D(), Trans2D(Point2D(), Angle2D(Angle::Degrees(90))), false);
+		Physics2D::Object::Construct(Trans2D(Point2D(0, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(), true);
+		Physics2D::Object::Construct(Trans2D(Point2D(0, 0.5f), Angle2D(Angle::Degrees(15))), Trans2D(), false);
+	}
 
 
 //	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(0.0f, 0.1f), Angle2D(Angle::Degrees(45))), false));
@@ -528,7 +544,7 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 	{
 		if (params.Code == UserParameter::KeyBoard::Keys::Insert)
 		{
-			Physics2D_Manager.MainInstances[3].MakeCurrent();
+			Physics2D_Manager.MainInstances[2].MakeCurrent();
 			Physics2D::Object & obj = Physics2D::Object::Construct(
 				Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()),
 				Trans2D(Point2D(), Angle2D()),
@@ -543,6 +559,7 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 				if (SceneData.Selected.IsValid())
 				{
 					std::cout << "Delete: " << SceneData.Selected << '\n';
+					delete Physics2D_Manager.Objects[SceneData.Selected.Value];
 					Physics2D_Manager.Objects.Remove(SceneData.Selected.Value);
 					SceneData.Selected = Undex::Invalid();
 				}
