@@ -1,0 +1,55 @@
+
+Angles:
+	can be represented in different ways
+
+Rotation Matrix:
+	currently used for shaders
+	could be combined with Position and Scaling as well
+	could also include other distortions ?
+
+Euler Angles:
+	a sequance if Rotations
+	currently Angle3D
+	internally stores a Rotation Matrix
+	the Matrix is used for actual calculations
+	store Matrix seperatly ?
+	turn Matrix back in to Euler Angles ?
+
+Euler Axis:
+	currently not explicitly used
+	would just be a Point
+	implicitly used in 2D
+	a Axis around which a object rotates
+	the length of the axis is how much it rotates
+	could be directly turned into Rotation Matrix
+
+Euler Angles <-> Euler Axis ?
+
+Changes:
+	PointN:
+		rename to VectorN ?
+	AngleN:
+		rename to EulerAngleN
+		store the order of Rotations ?
+		I only need EulerAngle3D ?
+		just use a float for 2D ?
+		make EulerAngle2D a wrapper for a float, for ease of use
+	TransN:
+		internally store VectorN
+		internally store EulerAngleN
+		internally store VectorN for stretching ?
+		can be turned directly into a Transformation Matrix
+	also:
+		all objects that store TransN should also store Transformation Matrix
+		TransN is only really there to see the Components
+		or should TransN store the Matrix ?
+		no:
+			right now AngleN stores the Matrix,
+			but if TransN also Stores the Matrix
+			then that would be redundand
+			so if something else changes the Transformation Matrix
+			then the one int TransN would be redundand
+		but:
+			what if I just want to rotate, then the one in AngleN would be useful
+			just manually rotate, this would be slow, but it shouldnt happen that often ?
+			except Collision uses pure Rotation ?

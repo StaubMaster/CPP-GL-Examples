@@ -167,7 +167,8 @@ void Physics2D::Manager::UpdateCollision(float timeDelta)
 	{
 		for (unsigned int i1 = i0 + 1; i1 < Objects.Count(); i1++)
 		{
-			Physics2D::Collide(*Objects[i0], *Objects[i1], timeDelta);
+			//Physics2D::Collide(*Objects[i0], *Objects[i1], timeDelta);
+			Physics2D::Seperate(*Objects[i0], *Objects[i1], timeDelta);
 		}
 	}
 }

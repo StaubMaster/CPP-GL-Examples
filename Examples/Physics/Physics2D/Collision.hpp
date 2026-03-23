@@ -32,8 +32,6 @@ struct ContactData
 	bool Compare(const ContactData & other) const;
 	void Consider(const ContactData & other);
 
-	static Point2D CalculateNormal(const Object & obj, unsigned int idx);
-
 	static ContactData CheckContact(
 		const Object & obj0,
 		const Object & obj1,
@@ -67,19 +65,42 @@ void Collide(
 	float timeDelta
 );
 
-struct ObjectDragData
-{
-	Point2D		Contact;
+void Seperate(
+	Object & obj0,
+	Object & obj1,
+	float timeDelta
+);
 
-	Point2D		Force;
-	Point2D		ForcePos;
-	Point2D		ForceRot;
 
-	float	Torque;
-};
-ObjectDragData CalculateObjectDragData(Object & obj, Ray2D drag, float scalar);
 
 struct ObjectForceData
+{
+	Point2D		Contact;	// the Relative Position of where the Force is applied
+	Point2D		Force;		// Direction and Magniture of the Force
+
+	Point2D		ForcePos;
+	Point2D		ForceRot;
+	float		Torque;
+
+	~ObjectForceData();
+	ObjectForceData();
+
+	void	Calculate(Point2D contact, Point2D force);
+	void	Calculate(Object & obj, Point2D contact, Point2D force);
+
+	ObjectForceData(Point2D contact, Point2D force);
+	ObjectForceData(Object & obj, Point2D contact, Point2D force);
+
+	void	Apply(Object & obj);
+};
+
+Point2D DragObjectForce(
+	Object & obj,
+	Ray2D drag,
+	float scalar
+);
+
+struct ObjectDragForceData
 {
 	Ray2D Drag;
 	Line2D Contact;
@@ -91,7 +112,13 @@ struct ObjectForceData
 	Ray2D ChangePos;
 	Ray2D ChangeRot;
 };
-ObjectForceData ApplyForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change);
+ObjectDragForceData ApplyDragForce(
+	float timeDelta,
+	Object & obj,
+	Ray2D drag,
+	float scalar,
+	bool change
+);
 };
 
 #endif

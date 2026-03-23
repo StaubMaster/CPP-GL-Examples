@@ -1,0 +1,71 @@
+
+I dont currently calculate the exact time of Collision Contact
+and I only resolve one Contact per Collision
+
+this results in Objects sometimes being stuch inside of eachother
+objects can also just be spawned insidef of eachother
+
+how to seperate ?
+in other games
+
+if Object (A) is stuck inside Object (B)
+but Object (B) is not such in side Object (A)
+then they seperate
+
+if both Object are stuck inside of eachother,
+then the juggle and stay stuck ?
+
+
+Example(1)
+
+    #---# (A)
+    |   |
+    |   |
+#---|---|---#
+|   #---#   |
+#-----------# (B)
+
+(A) is "inside of" (B)
+(B) is overlapping with, but not "inside of" (A)
+seperating Forece between their Centers of Mass ?
+
+
+
+Example(2)
+
+    #---# (A)
+    |   |
+#---|---|---#
+|   |   |   |
+#---|---|---# (B)
+    |   |
+    #---#
+
+(A) and (B) are stuck together
+
+
+
+how to tell apart Example(1) and Example(2) ?
+if one Object has Corners inside the other, then Example(1)
+if they overlap, but neigher has a Corner inside of the other, then Example(2)
+
+I dont think this should be explicit behaviour,
+
+Collision response based on Edge Intersection ?
+figure out all the Edge Point, and apply a force away from the center of mass ?
+
+        #-------#
+        |       |
+        |       |
+        |       |
+        |   C   |
+        |       |
+#-------+-------+-------# +
+|       |       |       | | Impulse ?
+|       #-------#       | |
+|           C           | C
+|                       |
+|                       |
+#-----------------------#
+
+

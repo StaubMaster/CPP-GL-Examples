@@ -2,6 +2,7 @@
 #include "Physics2D/Collision/ObjectProjection.hpp"
 #include "PolyGon/Data.hpp"
 
+#include "ValueType/Intersect.hpp"
 #include "ValueType/Point3D.hpp"
 #include "ValueType/Trans2D.hpp"
 
@@ -73,23 +74,6 @@ void Physics2D::Collision::ContactData::Consider(const ContactData & other)
 	}
 }
 
-Point2D Physics2D::Collision::ContactData::CalculateNormal(const Object & obj, unsigned int idx)
-{
-	Point2D p0;
-	Point2D p1;
-	if (idx == 0)
-	{
-		p0 = obj.AbsolutePositionOfIndex(obj.CornerCount() - 1);
-		p1 = obj.AbsolutePositionOfIndex(idx - 0);
-	}
-	else
-	{
-		p0 = obj.AbsolutePositionOfIndex(idx - 1);
-		p1 = obj.AbsolutePositionOfIndex(idx - 0);
-	}
-	return (p1 - p0).perpendicular0().normalize();
-}
-
 
 
 Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContact(
@@ -133,7 +117,7 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContac
 
 	for (unsigned int i = 0; i < obj0.CornerCount(); i++)
 	{
-		n = CalculateNormal(obj0, i);
+		n = obj0.EdgeNormalOfIndex(i);
 		temp = CheckContact(obj0, obj1, n, timeDelta);
 		if (!temp.Valid) { return ret; }
 		temp.Position = obj1.AbsolutePositionOfIndex(temp.Undex1);
@@ -142,7 +126,7 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContac
 
 	for (unsigned int i = 0; i < obj1.CornerCount(); i++)
 	{
-		n = CalculateNormal(obj1, i);
+		n = obj1.EdgeNormalOfIndex(i);
 		temp = CheckContact(obj0, obj1, n, timeDelta);
 		if (!temp.Valid) { return ret; }
 		temp.Position = obj0.AbsolutePositionOfIndex(temp.Undex0);
@@ -317,14 +301,116 @@ void Physics2D::Collide(
 	(void)timeDelta;
 }
 
-
-
-Physics2D::ObjectDragData Physics2D::CalculateObjectDragData(Object & obj, Ray2D drag, float scalar)
+void Physics2D::Seperate(
+	Object & obj0,
+	Object & obj1,
+	float timeDelta
+)
 {
-	ObjectDragData data;
+	if (obj0.IsStatic && obj1.IsStatic) { return; }
 
-	data.Contact = drag.Pos - obj.AbsolutePositionOf(Point2D());
+	Physics2D::Collision::ContactData contact_data = Physics2D::Collision::ContactData::CheckContact(obj0, obj1, 1.0f);
+	if (!contact_data.Valid) { return; }
 
+	unsigned int IntersektCount = 0;
+	Line2D edge0;
+	Line2D edge1;
+
+	for (unsigned int i0 = 0; i0 < obj0.CornerCount(); i0++)
+	{
+		edge0 = obj0.EdgeOfIndex(i0);
+		for (unsigned int i1 = 0; i1 < obj0.CornerCount(); i1++)
+		{
+			edge1 = obj1.EdgeOfIndex(i1);
+			if (IsIntersecting(edge0, edge1))
+			{
+				IntersektCount++;
+			}
+		}
+	}
+
+	Point2D inter;
+	for (unsigned int i0 = 0; i0 < obj0.CornerCount(); i0++)
+	{
+		edge0 = obj0.EdgeOfIndex(i0);
+		for (unsigned int i1 = 0; i1 < obj0.CornerCount(); i1++)
+		{
+			edge1 = obj1.EdgeOfIndex(i1);
+			if (Intersection(edge0, edge1, inter))
+			{
+/* apply Force from inter to both Centers ?
+how much Force ?
+something relating to Mass ?
+what if one Object is Static, then its Mass is assumed to be Infinite
+so its Mass Inverse is 0, how to use Mass Inverse ?
+also the Distance from the Intersection also plays a roll
+and the Angle ?
+just have a general Apply Impulse/Force funciton
+what does the current one do ?
+the current one does a Drag
+I dont want that, but it wants that
+*/
+				Ray2D force0_ray(inter, obj0.ExtData.Now.Pos - inter);
+				Ray2D force1_ray(inter, obj1.ExtData.Now.Pos - inter);
+				ObjectForceData force0(obj0, force0_ray.Pos, force0_ray.Dir);
+				ObjectForceData force1(obj1, force1_ray.Pos, force1_ray.Dir);
+				force0.Apply(obj0);
+				force1.Apply(obj1);
+
+				Arrow2D::Object arrows(4);
+				arrows[0] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, force0_ray);
+				arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, force1_ray);
+				arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, Ray2D(inter, obj0.EdgeNormalOfIndex(i0)));
+				arrows[3] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.5f), 16.0f, Ray2D(inter, obj1.EdgeNormalOfIndex(i1)));
+			}
+		}
+	}
+
+	(void)timeDelta;
+}
+
+
+
+
+
+Physics2D::ObjectForceData::~ObjectForceData() { }
+Physics2D::ObjectForceData::ObjectForceData()
+{ }
+
+void Physics2D::ObjectForceData::Calculate(Point2D contact, Point2D force)
+{
+	Contact = contact;
+	Force = force;
+
+	float dot = Point2D::dot(Force, Contact);
+	ForcePos = (Contact * ((dot / Contact.length2())));
+	ForceRot = Force - ForcePos;
+	Torque = Point2D::cross(Contact, ForceRot);
+}
+void Physics2D::ObjectForceData::Calculate(Object & obj, Point2D contact, Point2D force)
+{
+	Calculate(contact - obj.ExtData.Now.Pos, force);
+}
+
+Physics2D::ObjectForceData::ObjectForceData(Point2D contact, Point2D force)
+{
+	Calculate(contact, force);
+}
+Physics2D::ObjectForceData::ObjectForceData(Object & obj, Point2D contact, Point2D force)
+{
+	Calculate(obj, contact, force);
+}
+
+void Physics2D::ObjectForceData::Apply(Object & obj)
+{
+	obj.ExtData.Acl.Pos += Force / obj.IntData.Mass;
+	obj.ExtData.Acl.Rot += Angle2D(Angle::Radians(Torque / obj.IntData.MomentOfInertia));
+}
+
+
+
+Point2D Physics2D::DragObjectForce(Object & obj, Ray2D drag, float scalar)
+{
 	// subtract the speed of the Contact
 	/*{
 		Point2D vel = obj.AbsoluteVelocityOf(obj.RelativePositionOf(drag.Pos));
@@ -337,79 +423,40 @@ Physics2D::ObjectDragData Physics2D::CalculateObjectDragData(Object & obj, Ray2D
 	// decrease Force if Velocity goes in the same Direction
 	// this is probably easy
 	{
-		Point2D force = obj.AbsoluteVelocityOf(obj.RelativePositionOf(drag.Pos)) * obj.IntData.Mass;
+		Point2D momentum = obj.AbsoluteVelocityOf(obj.RelativePositionOf(drag.Pos)) * obj.IntData.Mass;
 		//Point2D force = obj.ExtData.Vel.Pos * obj.IntData.Mass;
-		data.Force = (drag.Dir - force) * scalar;
+		return (drag.Dir - momentum) * scalar;
 	}
 	// this works better
 	// but hight scalar makes things janky
-
-	float dot = Point2D::dot(data.Force, data.Contact);
-	data.ForcePos = (data.Contact * ((dot / data.Contact.length2())));
-	data.ForceRot = data.Force - data.ForcePos;
-
-	data.Torque = Point2D::cross(data.Contact, data.ForceRot);
-
-	return data;
 }
 
-
-
-Physics2D::ObjectForceData Physics2D::ApplyForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change)
+Physics2D::ObjectDragForceData Physics2D::ApplyDragForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change)
 {
-	ObjectForceData data;
+	ObjectDragForceData data;
 	data.Drag = drag;
 
-	Point2D Center = obj.AbsolutePositionOf(Point2D());
+	Point2D Center = obj.ExtData.Now.Pos;
 	Point2D Origin = drag.Pos;
 	data.Contact = Line2D(Center, Origin);
+//	data.Contact = Line2D(Center, obj.AbsolutePositionOf(obj.IntData.CenterOfMass));
 
-	IntrinsicData & int_data = obj.IntData;
-	ExtrinsicData & ext_data = obj.ExtData;
-	data.Contact = Line2D(Center, obj.AbsolutePositionOf(int_data.CenterOfMass));
+	ObjectForceData force_data(obj, drag.Pos, DragObjectForce(obj, drag, scalar));
 
-	//std::cout << int_data;
-	//std::cout << ext_data;
-
-	ObjectDragData contact_data = CalculateObjectDragData(obj, drag, scalar);
-	std::cout << "Contact:\n";
-	std::cout << "Contact  : " << contact_data.Contact.length() << " dm\n";
-	std::cout << "Force    : " << contact_data.Force.length() << " kg*dm/s^2\n";
-	std::cout << "ForcePos : " << contact_data.ForcePos.length() << " kg*dm/s^2\n";
-	std::cout << "ForceRot : " << contact_data.ForceRot.length() << " kg*dm/s^2\n";
-	std::cout << "Torque   : " << contact_data.Torque << " kg*dm^2/s^2\n";
+	std::cout << "ObjectForceData:\n";
+	std::cout << "Contact  : " << force_data.Contact.length() << " dm\n";
+	std::cout << "Force    : " << force_data.Force.length() << " kg*dm/s^2\n";
+	std::cout << "ForcePos : " << force_data.ForcePos.length() << " kg*dm/s^2\n";
+	std::cout << "ForceRot : " << force_data.ForceRot.length() << " kg*dm/s^2\n";
+	std::cout << "Torque   : " << force_data.Torque << " kg*dm^2/s^2\n";
 	std::cout << '\n';
 
-	//data.Force = Ray2D(Origin, contact_data.Force);
-	//data.ForcePos = Ray2D(Origin, contact_data.ForcePos);
-	//data.ForceRot = Ray2D(Origin, contact_data.ForceRot);
+	force_data.Apply(obj);
 
-	//Point2D LinearAcceleration = contact_data.Force / int_data.Mass;
-	//float AngularAcceleration = contact_data.Torque / int_data.MomentOfInertia;
-
-	//std::cout << "Linear Acceleration  : " << LinearAcceleration.length() << " dm/s^2\n";
-	//std::cout << "Angular Acceleration : " << AngularAcceleration << " dm/dm*s^2\n";
-	//std::cout << "Linear Acceleration  : " << ext_data.Acl.Pos.length() << " dm/s^2\n";
-	//std::cout << "Angular Acceleration : " << ext_data.Acl.Rot.Ang.ToRadians() << " dm/dm*s^2\n";
-	//std::cout << '\n';
-
-	//data.ChangePos = Ray2D(Center, LinearAcceleration);
-	//data.ChangeRot = Ray2D(Center, Point2D(0, AngularAcceleration));
-	//data.ChangePos = Ray2D(Center, ext_data.Acl.Pos);
-	//data.ChangeRot = Ray2D(Center, Point2D(0, ext_data.Acl.Rot.Ang.ToRadians()));
-
-	ext_data.Acl.Pos += contact_data.Force / int_data.Mass;
-	ext_data.Acl.Rot += Angle2D(Angle::Radians(contact_data.Torque / int_data.MomentOfInertia));
-
-	if (change)
-	{
-		(void)timeDelta;
-		/*if (!obj.IsStatic)
-		{
-			obj.ExtData.Vel.Pos += LinearAcceleration * timeDelta;
-			obj.ExtData.Vel.Rot += Angle::Radians(AngularAcceleration * timeDelta);
-		}*/
-	}
+	(void)timeDelta;
+	(void)change;
 
 	return data;
 }
+
+

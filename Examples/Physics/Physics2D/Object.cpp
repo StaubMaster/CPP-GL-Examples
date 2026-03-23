@@ -44,6 +44,29 @@ Point2D Physics2D::Object::RelativePositionOfIndex(unsigned int idx) const { ret
 Point2D Physics2D::Object::AbsolutePositionOfIndex(unsigned int idx) const { return AbsolutePositionOf(RelativePositionOfIndex(idx)); }
 Point2D Physics2D::Object::AbsoluteVelocityOfIndex(unsigned int idx) const { return AbsoluteVelocityOf(RelativePositionOfIndex(idx)); }
 
+Line2D Physics2D::Object::EdgeOfIndex(unsigned int idx) const
+{
+	if (idx == 0)
+	{
+		return Line2D(
+			AbsolutePositionOfIndex(CornerCount() - 1),
+			AbsolutePositionOfIndex(idx - 0)
+		);
+	}
+	else
+	{
+		return Line2D(
+			AbsolutePositionOfIndex(idx - 1),
+			AbsolutePositionOfIndex(idx - 0)
+		);
+	}
+}
+Point2D Physics2D::Object::EdgeNormalOfIndex(unsigned int idx) const
+{
+	Line2D line = EdgeOfIndex(idx);
+	return (line.Pos1 - line.Pos0).perpendicular0().normalize();
+}
+
 
 
 
