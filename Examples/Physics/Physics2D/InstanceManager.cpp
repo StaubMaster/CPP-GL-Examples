@@ -197,9 +197,9 @@ void Physics2D::InstanceManager::GraphicsUpdateInst()
 		}
 	}
 
-	Container::Fixed<Physics2D::Inst::Data> Data_PolyGon(Count_PolyGon);
-	Container::Fixed<Physics2D::Inst::Data> Data_WireFrame(Count_WireFrame);
-	Container::Fixed<Physics2D::Inst::Data> Data_WireFrameBox(Count_WireFrameBox);
+	Container::Fixed<Trans2D> Data_PolyGon(Count_PolyGon);
+	Container::Fixed<Trans2D> Data_WireFrame(Count_WireFrame);
+	Container::Fixed<Trans2D> Data_WireFrameBox(Count_WireFrameBox);
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (Objects[i] == nullptr) { continue; }
@@ -209,9 +209,9 @@ void Physics2D::InstanceManager::GraphicsUpdateInst()
 			//if (obj.DrawPolyGon) { Data_PolyGon.Insert(obj.Data); }
 			//if (obj.DrawWireFrame) { Data_WireFrame.Insert(obj.Data); }
 			//if (obj.DrawWireFrameBox) { Data_WireFrameBox.Insert(obj.Data); }
-			if (obj.DrawPolyGon) { Data_PolyGon.Insert(Inst::Data(obj.ExtData.Now)); }
-			if (obj.DrawWireFrame) { Data_WireFrame.Insert(Inst::Data(obj.ExtData.Now)); }
-			if (obj.DrawWireFrameBox) { Data_WireFrameBox.Insert(Inst::Data(obj.ExtData.Now)); }
+			if (obj.DrawPolyGon) { Data_PolyGon.Insert(obj.ExtData.Now); }
+			if (obj.DrawWireFrame) { Data_WireFrame.Insert(obj.ExtData.Now); }
+			if (obj.DrawWireFrameBox) { Data_WireFrameBox.Insert(obj.ExtData.Now); }
 		}
 	}
 

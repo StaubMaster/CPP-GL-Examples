@@ -3,8 +3,7 @@
 
 //# include "Physics2D/InstanceManager.hpp"
 
-# include "Inst/Physics2D/Data.hpp"
-//# include "Arrow2D/Inst/Data.hpp"
+# include "ValueType/Trans2D.hpp"
 # include "Arrow2D/Object.hpp"
 
 # include "Miscellaneous/EntryContainer/Entry.hpp"

@@ -3,7 +3,7 @@
 
 # include "Graphics/Buffer/MainElemInst.hpp"
 # include "WireFrame2D/Main/Buffer.hpp"
-# include "Inst/Physics2D/Buffer.hpp"
+# include "Graphics2D/Inst/Buffer.hpp"
 
 # include "OpenGLTypes.hpp"
 
@@ -12,7 +12,7 @@ namespace Wire2D
 typedef BufferArray::MainElemInst<
 	Wire2D::Main::Buffer,
 	Wire2D::Elem::Buffer,
-	Physics2D::Inst::Buffer
+	Graphics2D::Inst::Buffer
 > Buffer;
 
 /*class Buffer : public ::BufferArray::MainElemInst<

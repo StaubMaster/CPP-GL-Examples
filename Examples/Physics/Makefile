@@ -29,13 +29,12 @@ FILES_SRC := \
 \
 	Arrow2D/RankLengths.cpp \
 \
+	Graphics2D/Inst/Buffer.cpp \
+\
 	WireFrame2D/Main/Buffer.cpp \
 	WireFrame2D/Shader.cpp \
 	WireFrame2D/Manager.cpp \
 	WireFrame2D/WireFrame2D.cpp \
-\
-	Inst/Physics2D/Data.cpp \
-	Inst/Physics2D/Buffer.cpp \
 \
 	PolyGon/PolyGon.cpp \
 	PolyGon/Data.cpp \
@@ -124,3 +123,15 @@ include $(OTHER_DIR)/other.mk
 
 REPOS_DIR := $(BASE_DIR)/repos/
 include $(REPOS_DIR)/repos.mk
+
+################################################################
+
+logs_make:
+	@mkdir -p logs/
+
+logs_clean:
+	@$(REMOVER) logs/
+
+.PHONY: logs_make logs_clean
+
+################################################################
