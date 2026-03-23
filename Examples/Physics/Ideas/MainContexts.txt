@@ -1,0 +1,32 @@
+
+MainContextBase
+{
+	Window
+	UI ?
+}
+
+MainContext2D : MainContextBase
+{
+	View2D
+	Physics2D::Manager ?
+	or make a more general 2D Object Graphics Manager
+	probably
+}
+
+MainContext3D : MainContextBase
+{
+	View3D
+	Lights ?
+}
+
+
+
+make these for the previous ones
+so they are more general
+then make a Selector ?
+I am really just distracting myself from a Distraction from a Distraction from a Distraction
+should I stop doing that ?
+at some point, yes
+probably
+
+

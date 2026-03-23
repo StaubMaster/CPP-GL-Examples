@@ -362,6 +362,11 @@ I dont want that, but it wants that
 				arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, force1_ray);
 				arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, Ray2D(inter, obj0.EdgeNormalOfIndex(i0)));
 				arrows[3] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.5f), 16.0f, Ray2D(inter, obj1.EdgeNormalOfIndex(i1)));
+/*
+for the Force, figure out the potential Energy that both objects have
+calculate the potential Energy to all Edges and choose the smallest
+potential Energy repends on Elasticity ? ignore for now
+*/
 			}
 		}
 	}
