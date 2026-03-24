@@ -2,7 +2,6 @@
 #include "Physics2D/Manager.hpp"
 #include "Physics2D/Object.hpp"
 
-#include "PolyGon/Data.hpp"
 #include "ValueType/AxisBox2D.hpp"
 #include "DataShow.hpp"
 
@@ -21,11 +20,11 @@ void Physics2D::InstanceManager::MakeCurrent() { Physics2D::InstanceManager::Cur
 
 
 
-Physics2D::InstanceManager::~InstanceManager()
-{ }
+Physics2D::InstanceManager::~InstanceManager() { }
 Physics2D::InstanceManager::InstanceManager()
 	: Manager(nullptr)
-	, PolyGon(new ::PolyGon())
+	, PolyGon(new ::PolyGon::Object())
+	, PolyGonBox(new ::PolyGon::Object())
 	, WireFrame(new ::WireFrame2D())
 	, WireFrameBox(new ::WireFrame2D())
 	, Buffer_PolyGon(GL::DrawMode::Triangles)
@@ -37,6 +36,7 @@ Physics2D::InstanceManager::InstanceManager()
 Physics2D::InstanceManager::InstanceManager(const InstanceManager & other)
 	: Manager(other.Manager)
 	, PolyGon(other.PolyGon)
+	, PolyGonBox(other.PolyGonBox)
 	, WireFrame(other.WireFrame)
 	, WireFrameBox(other.WireFrameBox)
 	, Buffer_PolyGon(other.Buffer_PolyGon)
@@ -48,6 +48,7 @@ Physics2D::InstanceManager & Physics2D::InstanceManager::operator=(const Instanc
 {
 	Manager = other.Manager;
 	PolyGon = other.PolyGon;
+	PolyGonBox = other.PolyGonBox;
 	WireFrame = other.WireFrame;
 	WireFrameBox = other.WireFrameBox;
 	Buffer_PolyGon = other.Buffer_PolyGon;
@@ -60,6 +61,7 @@ Physics2D::InstanceManager & Physics2D::InstanceManager::operator=(const Instanc
 void Physics2D::InstanceManager::Dispose()
 {
 	delete PolyGon;
+	delete PolyGonBox;
 	delete WireFrame;
 	delete WireFrameBox;
 }
@@ -69,24 +71,19 @@ void Physics2D::InstanceManager::Dispose()
 void Physics2D::InstanceManager::Changed()
 {
 	{
-		WireFrame -> Clear();
-		ColorF4 col;
-		for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
+		//WireFrame -> Clear();
+		//ColorF4 col;
+
+		/*for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
 		{
 			col = PolyGon -> Corners[i].Col;
 			col.R = 1.0f - col.R;
 			col.G = 1.0f - col.G;
 			col.B = 1.0f - col.B;
 			WireFrame -> Insert_Corner(PolyGon -> Corners[i].Pos, col);
-		}
-		/*for (unsigned int i = 0; i < PolyGon -> Sides.Count(); i++)
-		{
-			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner0.Udx, PolyGon -> Sides[i].Corner1.Udx);
-			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner1.Udx, PolyGon -> Sides[i].Corner2.Udx);
-			WireFrame -> Insert_Side(PolyGon -> Sides[i].Corner2.Udx, PolyGon -> Sides[i].Corner0.Udx);
 		}*/
 
-		for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
+		/*for (unsigned int i = 0; i < PolyGon -> Corners.Count(); i++)
 		{
 			if (i == 0)
 			{
@@ -96,14 +93,22 @@ void Physics2D::InstanceManager::Changed()
 			{
 				WireFrame -> Insert_Side(i - 1, i - 0);
 			}
-		}
+		}*/
 	}
 	{
 		AxisBox2D box = PolyGon -> ToAxisBox();
 		box.Min -= 0.01f;
 		box.Max += 0.01f;
-		WireFrameBox -> Clear();
-		WireFrameBox -> Insert_Box(box, ColorF4());
+
+		//WireFrameBox -> Clear();
+		//WireFrameBox -> Insert_Box(box, ColorF4());
+
+		ColorF4 col(1, 1, 1);
+		PolyGonBox -> Clear();
+		PolyGonBox -> NewCorner(Point2D(box.Min.X, box.Min.Y), col);
+		PolyGonBox -> NewCorner(Point2D(box.Max.X, box.Min.Y), col);
+		PolyGonBox -> NewCorner(Point2D(box.Max.X, box.Max.Y), col);
+		PolyGonBox -> NewCorner(Point2D(box.Min.X, box.Max.Y), col);
 	}
 	{
 		IntData.Calculate(*PolyGon);
@@ -165,17 +170,22 @@ void Physics2D::InstanceManager::GraphicsDelete()
 void Physics2D::InstanceManager::GraphicsUpdateMain()
 {
 	{
-		Container::Pointer<PolyGonGraphics::Data> data = PolyGon -> ToMainData();
+		Container::Pointer<PolyGon::Full::Data> data = PolyGon -> ToFullData();
 		Buffer_PolyGon.Main.Change(data);
 		data.Delete();
 	}
 	{
-		Buffer_WireFrame.Main.Change(WireFrame -> Corners);
-		Buffer_WireFrame.Elem.Change(WireFrame -> Sides, 2);
+		// Corner Color should be inverted
+		Buffer_WireFrame.Main.Change(PolyGon -> Corners);
+		Buffer_WireFrame.Elem.Change(PolyGon -> Edges, 2);
+		//Buffer_WireFrame.Main.Change(WireFrame -> Corners);
+		//Buffer_WireFrame.Elem.Change(WireFrame -> Sides, 2);
 	}
 	{
-		Buffer_WireFrameBox.Main.Change(WireFrameBox -> Corners);
-		Buffer_WireFrameBox.Elem.Change(WireFrameBox -> Sides, 2);
+		Buffer_WireFrameBox.Main.Change(PolyGonBox -> Corners);
+		Buffer_WireFrameBox.Elem.Change(PolyGonBox -> Edges, 2);
+		//Buffer_WireFrameBox.Main.Change(WireFrameBox -> Corners);
+		//Buffer_WireFrameBox.Elem.Change(WireFrameBox -> Sides, 2);
 	}
 }
 void Physics2D::InstanceManager::GraphicsUpdateInst()

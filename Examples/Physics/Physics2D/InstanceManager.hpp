@@ -8,14 +8,14 @@
 # include "Graphics/Buffer/MainInst.hpp"
 # include "Graphics/Buffer/MainElemInst.hpp"
 
-# include "Graphics2D/Inst/Buffer.hpp"
+# include "Inst2D/Buffer.hpp"
 # include "ValueType/Trans2D.hpp"
 
-# include "PolyGon/PolyGon.hpp"
+# include "PolyGon/Object.hpp"
 # include "PolyGon/Graphics/Buffer.hpp"
 
 # include "WireFrame2D/WireFrame2D.hpp"
-# include "WireFrame2D/Main/Buffer.hpp"
+# include "Graphics2D/Wire/Buffer.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
 
@@ -40,13 +40,14 @@ struct InstanceManager
 
 	::Physics2D::Manager *	Manager;
 
-	::PolyGon *			PolyGon;
+	::PolyGon::Object *	PolyGon;
+	::PolyGon::Object *	PolyGonBox;
 	::WireFrame2D *		WireFrame;
 	::WireFrame2D *		WireFrameBox;
 
-	::BufferArray::MainInst<PolyGonGraphics::Buffer, Graphics2D::Inst::Buffer>							Buffer_PolyGon;
-	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Graphics2D::Inst::Buffer>	Buffer_WireFrame;
-	::BufferArray::MainElemInst<Wire2D::Main::Buffer, Wire2D::Elem::Buffer, Graphics2D::Inst::Buffer>	Buffer_WireFrameBox;
+	::PolyGon::Buffer																								Buffer_PolyGon;
+	::BufferArray::MainElemInst<Graphics2D::Wire::Main::Buffer, Graphics2D::Wire::Elem::Buffer, Inst2D::Buffer>		Buffer_WireFrame;
+	::BufferArray::MainElemInst<Graphics2D::Wire::Main::Buffer, Graphics2D::Wire::Elem::Buffer, Inst2D::Buffer>		Buffer_WireFrameBox;
 
 	IntrinsicData	IntData;
 

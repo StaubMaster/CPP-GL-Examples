@@ -1,0 +1,61 @@
+
+Basic 2D Instance
+	maybe have Data for clarity
+	of just make it be a typedef ?
+
+Basic 2D Full
+Basic 2D Wire
+
+combine ?
+
+PolyGon
+{
+	Container<>	Corns
+	Container<>	Edges
+	Container<>	Sides
+}
+
+dont need Edges ?
+Edges are just a loop of Corners
+so just follow the Corners ?
+
+or maybe have explicit Edges ?
+would there be explicit Edges in 3D ?
+no. and in 2D some of the Triangles are gonna be inside
+I dont want to make an algorythm to figure out where the edges are
+
+so just use the Corners
+for now
+
+Corner
+{
+	Point2D	Pos
+	ColorF4	Col ?
+};
+Side
+{
+	unsigned int Undex0;
+	unsigned int Undex1;
+	unsigned int Undex2;
+	maybe Texture ?
+};
+
+Side Textures can be different per Corner
+so I also need
+
+SideCorner
+{
+	unsigned int Udx;
+	Texture Coord
+};
+Side
+{
+	SideCorner Corner0
+	SideCorner Corner1
+	SideCorner Corner2
+	maybe Texture ?
+};
+
+but then the Edges could also have explicit colors
+so i would need Edge structs as well
+keep things simple for now

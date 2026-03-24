@@ -13,5 +13,5 @@ out vec4 Pixel;
 
 void main()
 {
-	Pixel = fs_inn.Col;
+	Pixel = vec4(1, 1, 1, 1) - fs_inn.Col;
 }

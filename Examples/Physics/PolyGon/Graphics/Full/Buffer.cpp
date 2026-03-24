@@ -1,11 +1,11 @@
-#include "PolyGon/Graphics/Buffer.hpp"
-#include "PolyGon/Graphics/Data.hpp"
+#include "PolyGon/Graphics/Full/Buffer.hpp"
+#include "PolyGon/Graphics/Full/Data.hpp"
 
 #include "OpenGL.hpp"
 
 
 
-PolyGonGraphics::Buffer::Buffer(BufferArray::Base & buffer_array)
+PolyGon::Full::Buffer::Buffer(BufferArray::Base & buffer_array)
 	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
 	, Pos()
 	, Col()

@@ -1,14 +1,14 @@
-#ifndef  WIRE_2D_MAIN_BUFFER_HPP
-# define WIRE_2D_MAIN_BUFFER_HPP
+#ifndef  GRAPHICS_2D_WIRE_BUFFER_HPP
+# define GRAPHICS_2D_WIRE_BUFFER_HPP
 
 # include "Graphics/Buffer/Attribute.hpp"
 # include "Graphics/Buffer/Element.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
 # include "Graphics/Attribute/ColorF4.hpp"
 
-namespace BufferArray { class Base; };
-
-namespace Wire2D
+namespace Graphics2D
+{
+namespace Wire
 {
 namespace Main
 {
@@ -29,6 +29,7 @@ class Buffer : public ::Buffer::Element
 	public:
 	~Buffer();
 	Buffer(BufferArray::Base & buffer_array);
+};
 };
 };
 };

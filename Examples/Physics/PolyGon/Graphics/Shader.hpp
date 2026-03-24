@@ -1,10 +1,10 @@
-#ifndef  WIRE_2D_SHADER_HPP
-# define WIRE_2D_SHADER_HPP
+#ifndef  POLYGON_GRAPHICS_SHADER_HPP
+# define POLYGON_GRAPHICS_SHADER_HPP
 
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/UniformsInclude.hpp"
 
-namespace Wire2D
+namespace PolyGon
 {
 class Shader : public ::Shader::Base
 {
@@ -13,6 +13,7 @@ class Shader : public ::Shader::Base
 	Uniform::Trans2D			View;
 	Uniform::Float				Scale;
 	public:
+	~Shader();
 	Shader();
 };
 };

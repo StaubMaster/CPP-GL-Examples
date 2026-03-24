@@ -29,19 +29,18 @@ FILES_SRC := \
 \
 	Arrow2D/RankLengths.cpp \
 \
-	Graphics2D/Inst/Buffer.cpp \
+	Inst2D/Buffer.cpp \
 \
-	WireFrame2D/Main/Buffer.cpp \
-	WireFrame2D/Shader.cpp \
-	WireFrame2D/Manager.cpp \
+	PolyGon/Object.cpp \
+	PolyGon/Graphics/Full/Data.cpp \
+	PolyGon/Graphics/Full/Buffer.cpp \
+	PolyGon/Graphics/Shader.cpp \
+\
 	WireFrame2D/WireFrame2D.cpp \
 \
-	PolyGon/PolyGon.cpp \
-	PolyGon/Data.cpp \
-	PolyGon/Graphics/Data.cpp \
-	PolyGon/Graphics/Buffer.cpp \
+	Graphics2D/Wire/Buffer.cpp \
+	Graphics2D/Wire/Shader.cpp \
 \
-	Physics2D/Shaders/PolyGon.cpp \
 	Physics2D/InstanceManager.cpp \
 	Physics2D/Manager.cpp \
 	Physics2D/IntrinsicData.cpp \

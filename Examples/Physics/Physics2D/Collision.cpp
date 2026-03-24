@@ -1,6 +1,5 @@
 #include "Physics2D/Collision.hpp"
 #include "Physics2D/Collision/ObjectProjection.hpp"
-#include "PolyGon/Data.hpp"
 
 #include "ValueType/Intersect.hpp"
 #include "ValueType/Point3D.hpp"

@@ -2,8 +2,7 @@
 #include "Physics2D/InstanceManager.hpp"
 #include "Physics2D/Manager.hpp"
 
-#include "PolyGon/PolyGon.hpp"
-#include "PolyGon/Data.hpp"
+#include "PolyGon/Object.hpp"
 
 
 
@@ -32,11 +31,11 @@ Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
 
 
 
-const ::PolyGon & Physics2D::Object::PolyGon() const { return *(InstanceManager -> PolyGon); }
+const ::PolyGon::Object & Physics2D::Object::PolyGon() const { return *(InstanceManager -> PolyGon); }
 
 unsigned int Physics2D::Object::CornerCount() const { return (PolyGon().Corners.Count()); }
 
-unsigned int Physics2D::Object::SideCount() const { return (PolyGon().Sides.Count()); }
+unsigned int Physics2D::Object::SideCount() const { return (PolyGon().Faces.Count()); }
 
 bool Physics2D::Object::IsContaining(Point2D p) const { return PolyGon().IsContaining(RelativePositionOf(p)); }
 

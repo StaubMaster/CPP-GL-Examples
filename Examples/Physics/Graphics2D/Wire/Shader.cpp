@@ -1,8 +1,8 @@
-#include "WireFrame2D/Shader.hpp"
+#include "Graphics2D/Wire/Shader.hpp"
 
 
 
-Wire2D::Shader::Shader()
+Graphics2D::Wire::Shader::Shader()
 	: ::Shader::Base()
 	, DisplaySize(*this,"DisplaySize")
 	, View(*this,"View")

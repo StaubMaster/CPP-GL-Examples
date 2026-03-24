@@ -1,10 +1,12 @@
-#ifndef  POLYGON_GRAPHICS_DATA_HPP
-# define POLYGON_GRAPHICS_DATA_HPP
+#ifndef  POLYGON_GRAPHICS_FULL_DATA_HPP
+# define POLYGON_GRAPHICS_FULL_DATA_HPP
 
 # include "ValueType/Point2D.hpp"
 # include "ValueType/ColorF4.hpp"
 
-namespace PolyGonGraphics
+namespace PolyGon
+{
+namespace Full
 {
 struct Data
 {
@@ -13,6 +15,7 @@ struct Data
 	Data();
 	Data(Point2D pos);
 	Data(Point2D pos, ColorF4 col);
+};
 };
 };
 

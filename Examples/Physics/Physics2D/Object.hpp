@@ -13,7 +13,7 @@
 # include "ExtrinsicData.hpp"
 # include "IntrinsicData.hpp"
 
-class PolyGon;
+namespace PolyGon { class Object; }
 
 namespace Physics2D
 {
@@ -63,9 +63,9 @@ struct Object
 
 
 	// PolyGon Stuff
-	const ::PolyGon &	PolyGon() const;
-	unsigned int		CornerCount() const;
-	unsigned int		SideCount() const;
+	const ::PolyGon::Object &	PolyGon() const;
+	unsigned int				CornerCount() const;
+	unsigned int				SideCount() const;
 
 	bool				IsContaining(Point2D p) const;
 

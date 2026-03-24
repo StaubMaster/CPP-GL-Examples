@@ -40,7 +40,6 @@ class WireFrame2D
 	void Clear();
 
 	public:
-	void Insert_Corner(Point2D pos);
 	void Insert_Corner(Point2D pos, ColorF4 col);
 	void Insert_Side(unsigned int udx0, unsigned int udx1);
 

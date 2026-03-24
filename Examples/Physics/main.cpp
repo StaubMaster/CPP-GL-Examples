@@ -35,12 +35,10 @@
 
 
 // PolyGon
-#include "Physics2D/Shaders/PolyGon.hpp"
-#include "PolyGon/Graphics/Data.hpp"
-//# include "Inst/Physics2D/Data.hpp"
+#include "PolyGon/Graphics/Shader.hpp"
+#include "PolyGon/Graphics/Full/Data.hpp"
 
-#include "PolyGon/PolyGon.hpp"
-#include "PolyGon/Data.hpp"
+#include "PolyGon/Object.hpp"
 
 // Physics
 #include "Physics2D/Collision.hpp"
@@ -57,7 +55,7 @@
 
 // WireFrame
 #include "WireFrame2D/WireFrame2D.hpp"
-#include "WireFrame2D/Manager.hpp"
+//#include "WireFrame2D/Manager.hpp"
 
 // Multiform
 #include "Graphics/MultiformsInclude.hpp"
@@ -170,24 +168,24 @@ void Make()
 	{
 		float thickness0 = 1.0f;
 		float thickness1 = 0.1f;
-		PolyGon & poly_gon = *(wall.PolyGon);
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-thickness0, 0), ColorF4(1, 1, 1)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+thickness0, 0), ColorF4(1, 1, 1)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-thickness0 - thickness1, -thickness1), ColorF4(0, 0, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+thickness0 + thickness1, -thickness1), ColorF4(0, 0, 0)));
-		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
-		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(1), PolyGon::SideCorner(3)));
+		PolyGon::Object & poly_gon = *(wall.PolyGon);
+		poly_gon.NewCorner(Point2D(-thickness0, 0), ColorF4(1, 1, 1));
+		poly_gon.NewCorner(Point2D(+thickness0, 0), ColorF4(1, 1, 1));
+		poly_gon.NewCorner(Point2D(-thickness0 - thickness1, -thickness1), ColorF4(0, 0, 0));
+		poly_gon.NewCorner(Point2D(+thickness0 + thickness1, -thickness1), ColorF4(0, 0, 0));
+		poly_gon.NewFace(0, 1, 2);
+		poly_gon.NewFace(2, 1, 3);
 	}
 	wall.Manager = &Physics2D_Manager;
 
 	Physics2D::InstanceManager & obj0 = Physics2D_Manager.MainInstances[1];
 	obj0.Buffer_PolyGon.Create();
 	{
-		PolyGon & poly_gon = *(obj0.PolyGon);
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1)));
-		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
+		PolyGon::Object & poly_gon = *(obj0.PolyGon);
+		poly_gon.NewCorner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0));
+		poly_gon.NewCorner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0));
+		poly_gon.NewCorner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1));
+		poly_gon.NewFace(0, 1, 2);
 	}
 	obj0.Manager = &Physics2D_Manager;
 
@@ -195,30 +193,30 @@ void Make()
 	obj1.Buffer_PolyGon.Create();
 	{
 		float size = 0.1f;
-		PolyGon & poly_gon = *(obj1.PolyGon);
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-size, -size), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+size, -size), ColorF4(0, 0, 1)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+size, +size), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-size, +size), ColorF4(1, 0, 0)));
-		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
-		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(0), PolyGon::SideCorner(3)));
+		PolyGon::Object & poly_gon = *(obj1.PolyGon);
+		poly_gon.NewCorner(Point2D(-size, -size), ColorF4(0, 1, 0));
+		poly_gon.NewCorner(Point2D(+size, -size), ColorF4(0, 0, 1));
+		poly_gon.NewCorner(Point2D(+size, +size), ColorF4(0, 1, 0));
+		poly_gon.NewCorner(Point2D(-size, +size), ColorF4(1, 0, 0));
+		poly_gon.NewFace(0, 1, 2);
+		poly_gon.NewFace(2, 0, 3);
 	}
 	obj1.Manager = &Physics2D_Manager;
 
 	Physics2D::InstanceManager & obj2 = Physics2D_Manager.MainInstances[3];
 	obj2.Buffer_PolyGon.Create();
 	{
-		PolyGon & poly_gon = *(obj2.PolyGon);
-		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.5f, -0.025f), ColorF4(0, 1, 0)));
-		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.5f, -0.025f), ColorF4(0, 0, 1)));
-		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+0.5f, +0.025f), ColorF4(0, 1, 0)));
-		//poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-0.5f, +0.025f), ColorF4(1, 0, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, -0.1f), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 1)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(+1.0f, +0.1f), ColorF4(0, 1, 0)));
-		poly_gon.Corners.Insert(PolyGon::Corner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0)));
-		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(0), PolyGon::SideCorner(1), PolyGon::SideCorner(2)));
-		poly_gon.Sides.Insert(PolyGon::Side(PolyGon::SideCorner(2), PolyGon::SideCorner(0), PolyGon::SideCorner(3)));
+		PolyGon::Object & poly_gon = *(obj2.PolyGon);
+		//poly_gon.NewCorner(Point2D(-0.5f, -0.025f), ColorF4(0, 1, 0));
+		//poly_gon.NewCorner(Point2D(+0.5f, -0.025f), ColorF4(0, 0, 1));
+		//poly_gon.NewCorner(Point2D(+0.5f, +0.025f), ColorF4(0, 1, 0));
+		//poly_gon.NewCorner(Point2D(-0.5f, +0.025f), ColorF4(1, 0, 0));
+		poly_gon.NewCorner(Point2D(-1.0f, -0.1f), ColorF4(0, 1, 0));
+		poly_gon.NewCorner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 1));
+		poly_gon.NewCorner(Point2D(+1.0f, +0.1f), ColorF4(0, 1, 0));
+		poly_gon.NewCorner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0));
+		poly_gon.NewFace(0, 1, 2);
+		poly_gon.NewFace(2, 0, 3);
 	}
 	obj2.Manager = &Physics2D_Manager;
 

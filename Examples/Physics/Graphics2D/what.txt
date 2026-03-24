@@ -1,0 +1,14 @@
+
+seperating Object and Object Graphics fully is bad ?
+
+maybe seperate into
+	Logical Object
+	Graphical Object
+the both know eachother
+but store only their own stuff
+
+of just seperate within the object
+
+
+
+dont have seperate Graphics Manager for all Objects ?

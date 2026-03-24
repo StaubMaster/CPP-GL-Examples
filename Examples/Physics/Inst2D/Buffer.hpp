@@ -1,12 +1,10 @@
-#ifndef  GRAPHICS_2D_INST_BUFFER_HPP
-# define GRAPHICS_2D_INST_BUFFER_HPP
+#ifndef  INST_2D_BUFFER_HPP
+# define INST_2D_BUFFER_HPP
 
 # include "Graphics/Buffer/Attribute.hpp"
 # include "Graphics/Attribute/Trans2D.hpp"
 
-namespace Graphics2D
-{
-namespace Inst
+namespace Inst2D
 {
 class Buffer : public ::Buffer::Attribute
 {
@@ -14,7 +12,6 @@ class Buffer : public ::Buffer::Attribute
 	::Attribute::Trans2D	Now;
 	public:
 	Buffer(BufferArray::Base & buffer_array);
-};
 };
 };
 
