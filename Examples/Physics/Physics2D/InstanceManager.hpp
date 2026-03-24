@@ -25,6 +25,14 @@ namespace Physics2D
 {
 struct Manager;
 
+// this dosent manage instances anymore
+// its just the main data of a Object
+
+// ObjectMain
+// ObjectTemplate
+// ObjectPattern
+// Object
+
 struct InstanceManager
 {
 	static InstanceManager * CurrentPointer;

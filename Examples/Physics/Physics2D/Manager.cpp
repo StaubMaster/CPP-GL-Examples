@@ -47,15 +47,15 @@ void Physics2D::Manager::GraphicsInitExternal(const DirectoryInfo & ShaderDir)
 {
 	{
 		Container::Array<::Shader::Code> code({
-			::Shader::Code(ShaderDir.File("Physics/2D.vert")),
-			::Shader::Code(ShaderDir.File("Physics/2D.frag")),
+			::Shader::Code(ShaderDir.File("2D/Full.vert")),
+			::Shader::Code(ShaderDir.File("2D/Basic.frag")),
 		});
 		Shader_PolyGon.Change(code);
 	}
 	{
 		Container::Array<::Shader::Code> code({
-			::Shader::Code(ShaderDir.File("Wire/2D.vert")),
-			::Shader::Code(ShaderDir.File("Wire/2D.frag")),
+			::Shader::Code(ShaderDir.File("2D/Wire.vert")),
+			::Shader::Code(ShaderDir.File("2D/Basic.frag")),
 		});
 		Shader_WireFrame.Change(code);
 	}

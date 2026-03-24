@@ -2,9 +2,8 @@
 
 
 
-in Vert
-{
-	vec4	Col;
+in Vert {
+	vec4 Col;
 } fs_inn;
 
 out vec4 Pixel;
@@ -13,5 +12,5 @@ out vec4 Pixel;
 
 void main()
 {
-	Pixel = vec4(1, 1, 1, 1) - fs_inn.Col;
+	Pixel = fs_inn.Col;
 }

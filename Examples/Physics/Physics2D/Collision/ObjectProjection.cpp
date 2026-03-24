@@ -79,34 +79,42 @@ Physics2D::Collision::ObjectProjectionOverlap & Physics2D::Collision::ObjectProj
 	return *this;
 }
 
+
+
+Physics2D::Collision::ObjectProjectionOverlap Physics2D::Collision::ObjectProjectionOverlap::Overlap(
+	ObjectProjection proj0,
+	ObjectProjection proj1
+)
+{
+	ObjectProjectionOverlap data;
+	if (proj0.Box.Intersekt(proj1.Box))
+	{
+		float diff0 = proj0.Box.Max - proj1.Box.Min;
+		float diff1 = proj0.Box.Min - proj1.Box.Max;
+		if (fabs(diff0) < fabs(diff1))
+		{
+			data.Distance = diff0;
+			data.Undex0 = proj0.MaxUdx;
+			data.Undex1 = proj1.MinUdx;
+		}
+		else
+		{
+			data.Distance = diff1;
+			data.Undex0 = proj0.MinUdx;
+			data.Undex1 = proj1.MaxUdx;
+		}
+		data.Valid = true;
+	}
+	return data;
+}
 Physics2D::Collision::ObjectProjectionOverlap Physics2D::Collision::ObjectProjectionOverlap::Overlap(
 	Point2D normal
 	, const Object & obj0
 	, const Object & obj1
 )
 {
-	ObjectProjectionOverlap data;
-
-	Collision::ObjectProjection projection0 = Collision::ObjectProjection::Project(normal, obj0);
-	Collision::ObjectProjection projection1 = Collision::ObjectProjection::Project(normal, obj1);
-
-	if (projection0.Box.Intersekt(projection1.Box))
-	{
-		float diff0 = projection0.Box.Max - projection1.Box.Min;
-		float diff1 = projection0.Box.Min - projection1.Box.Max;
-		if (fabs(diff0) < fabs(diff1))
-		{
-			data.Distance = diff0;
-			data.Undex0 = projection0.MaxUdx;
-			data.Undex1 = projection1.MinUdx;
-		}
-		else
-		{
-			data.Distance = diff1;
-			data.Undex0 = projection0.MinUdx;
-			data.Undex1 = projection1.MaxUdx;
-		}
-		data.Valid = true;
-	}
-	return data;
+	return Overlap(
+		Collision::ObjectProjection::Project(normal, obj0),
+		Collision::ObjectProjection::Project(normal, obj1)
+	);
 }

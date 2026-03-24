@@ -55,5 +55,5 @@ void main()
 
 	gl_Position = vec4(pos, 0, 1);
 
-	vs_out.Col = VCol;
+	vs_out.Col = vec4(vec3(1, 1, 1) - VCol.rgb, VCol.a);
 }

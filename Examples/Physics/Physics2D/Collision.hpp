@@ -10,54 +10,10 @@
 
 # include "ValueType/Matrix3x3.hpp"
 
+
+
 namespace Physics2D
 {
-namespace Collision
-{
-struct ContactData
-{
-	bool			Valid;
-	unsigned int	Undex0;
-	unsigned int	Undex1;
-
-	Point2D			Normal;
-	Point2D			Position;
-	float			Distance;
-
-	~ContactData();
-	ContactData();
-	ContactData(const ContactData & other);
-	ContactData & operator=(const ContactData & other);
-
-	bool Compare(const ContactData & other) const;
-	void Consider(const ContactData & other);
-
-	static ContactData CheckContact(
-		const Object & obj0,
-		const Object & obj1,
-		Point2D normal,
-		float timeDelta
-	);
-	static ContactData CheckContact(
-		const Object & obj0,
-		const Object & obj1,
-		float timeDelta
-	);
-
-	struct ResolveData
-	{
-		Point2D	Pos0;
-		Point2D	Pos1;
-		Angle2D	Rot0;
-		Angle2D	Rot1;
-	};
-	ResolveData Resolve(
-		Object & obj0,
-		Object & obj1,
-		float timeDelta
-	);
-};
-};
 
 void Collide(
 	Object & obj0,

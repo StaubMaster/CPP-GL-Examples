@@ -38,6 +38,7 @@ struct ObjectProjectionOverlap
 	ObjectProjectionOverlap(const ObjectProjectionOverlap & other);
 	ObjectProjectionOverlap & operator=(const ObjectProjectionOverlap & other);
 
+	static ObjectProjectionOverlap Overlap(ObjectProjection proj0, ObjectProjection proj1);
 	static ObjectProjectionOverlap Overlap(Point2D normal, const Object & obj0, const Object & ob1);
 };
 };

@@ -46,6 +46,8 @@ FILES_SRC := \
 	Physics2D/ExtrinsicData.cpp \
 	Physics2D/Object.cpp \
 	Physics2D/Collision/ObjectProjection.cpp \
+	Physics2D/Collision/Contact.cpp \
+	Physics2D/Collision/Resolve.cpp \
 	Physics2D/Collision.cpp \
 \
 	SceneInteraction/Grid2D.cpp \
