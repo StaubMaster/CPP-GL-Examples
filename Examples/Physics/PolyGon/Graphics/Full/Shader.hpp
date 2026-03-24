@@ -1,10 +1,12 @@
-#ifndef  POLYGON_GRAPHICS_SHADER_HPP
-# define POLYGON_GRAPHICS_SHADER_HPP
+#ifndef  POLYGON_GRAPHICS_FULL_SHADER_HPP
+# define POLYGON_GRAPHICS_FULL_SHADER_HPP
 
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/UniformsInclude.hpp"
 
 namespace PolyGon
+{
+namespace Full
 {
 class Shader : public ::Shader::Base
 {
@@ -15,6 +17,7 @@ class Shader : public ::Shader::Base
 	public:
 	~Shader();
 	Shader();
+};
 };
 };
 

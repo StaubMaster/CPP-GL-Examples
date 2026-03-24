@@ -107,9 +107,9 @@ AxisBox2D PolyGon::Object::ToAxisBox() const
 	}
 	return box;
 }
-Container::Pointer<PolyGon::Full::Data> PolyGon::Object::ToFullData() const
+Container::Pointer<PolyGon::Full::Main::Data> PolyGon::Object::ToFullData() const
 {
-	Container::Pointer<PolyGon::Full::Data> data(Faces.Count() * 3);
+	Container::Pointer<PolyGon::Full::Main::Data> data(Faces.Count() * 3);
 
 	for (unsigned int f = 0; f < Faces.Count(); f++)
 	{

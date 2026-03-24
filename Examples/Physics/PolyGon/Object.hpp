@@ -3,7 +3,7 @@
 
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Container/Pointer.hpp"
-# include "PolyGon/Graphics/Full/Data.hpp"
+# include "PolyGon/Graphics/Full/Main/Data.hpp"
 
 struct Ray2D;
 struct AxisBox2D;
@@ -54,7 +54,7 @@ class Object
 	void NewFace(unsigned int c0, unsigned int c1, unsigned int c2);
 
 	AxisBox2D ToAxisBox() const;
-	Container::Pointer<PolyGon::Full::Data>	ToFullData() const;
+	Container::Pointer<PolyGon::Full::Main::Data>	ToFullData() const;
 
 	public:
 	unsigned int SumIntersections(Ray2D ray) const;

@@ -32,14 +32,13 @@ FILES_SRC := \
 	Inst2D/Buffer.cpp \
 \
 	PolyGon/Object.cpp \
-	PolyGon/Graphics/Full/Data.cpp \
-	PolyGon/Graphics/Full/Buffer.cpp \
-	PolyGon/Graphics/Shader.cpp \
 \
-	WireFrame2D/WireFrame2D.cpp \
+	PolyGon/Graphics/Full/Main/Data.cpp \
+	PolyGon/Graphics/Full/Main/Buffer.cpp \
+	PolyGon/Graphics/Full/Shader.cpp \
 \
-	Graphics2D/Wire/Buffer.cpp \
-	Graphics2D/Wire/Shader.cpp \
+	PolyGon/Graphics/Wire/Main/Buffer.cpp \
+	PolyGon/Graphics/Wire/Shader.cpp \
 \
 	Physics2D/InstanceManager.cpp \
 	Physics2D/Manager.cpp \

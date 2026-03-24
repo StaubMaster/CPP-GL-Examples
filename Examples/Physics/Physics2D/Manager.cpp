@@ -100,17 +100,17 @@ void Physics2D::Manager::Draw()
 	Shader_PolyGon.Bind();
 	for (unsigned int i = 0; i < MainInstances.Count(); i++)
 	{
-		MainInstances[i].Buffer_PolyGon.Draw();
+		MainInstances[i].Buffer_PolyGon_Full.Draw();
 	}
 
 	Shader_WireFrame.Bind();
 	for (unsigned int i = 0; i < MainInstances.Count(); i++)
 	{
-		MainInstances[i].Buffer_WireFrame.Draw();
+		MainInstances[i].Buffer_PolyGon_Wire.Draw();
 	}
 	for (unsigned int i = 0; i < MainInstances.Count(); i++)
 	{
-		MainInstances[i].Buffer_WireFrameBox.Draw();
+		MainInstances[i].Buffer_Bound.Draw();
 	}
 
 	Arrow.Draw();

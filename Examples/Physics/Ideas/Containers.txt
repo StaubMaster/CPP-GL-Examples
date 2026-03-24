@@ -1,0 +1,65 @@
+again
+
+
+
+make them Count how many others know about them
+assign should allways copy the pointer, not the data
+only explicit copy should copy the data
+
+assign should also count how many times it is "known"
+and delete once the last one "forgets"
+
+this is what some smart pointers do
+but cpp likes to use iteratos which i dont like
+
+
+
+
+
+void copy
+
+when Copying, it calls the Types Assign operator
+this can be slow
+
+instead, copy the raw data directly
+when deleting the old, make sure to not call the destructors
+so void delete somehow
+
+also, maybe void allocate ?
+this can cause byte missalignment, figure out how to fix that
+
+that way, when the container changes size, none of the objects know about it
+because they shouldnt
+
+pointers to the objects get broken anyway
+
+
+
+actually deleting
+when a object is added to the container
+the constructor is called outside
+inside the container, it just assigns
+
+here assign should be used, instead of void copy ?
+maybe have a VoidInsert variant
+
+if I never call the constructors
+then the Data Array never gets initialized properly ?
+c++ just does that
+
+also when items are inserted, they are assigned
+so it dosent matter
+
+also, currently, removing just assigns down
+to fill the gap, which also might now call any destructors
+
+so that dosent matter as well
+
+
+
+I currently only have a few objects, that so something
+in their default constructors
+its mostly just checking the Current whatever Manager
+
+
+

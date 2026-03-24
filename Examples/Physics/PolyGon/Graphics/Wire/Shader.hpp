@@ -1,10 +1,10 @@
-#ifndef  GRAPHICS_2D_WIRE_SHADER_HPP
-# define GRAPHICS_2D_WIRE_SHADER_HPP
+#ifndef  POLYGON_GRAPHICS_WIRE_SHADER_HPP
+# define POLYGON_GRAPHICS_WIRE_SHADER_HPP
 
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/UniformsInclude.hpp"
 
-namespace Graphics2D
+namespace PolyGon
 {
 namespace Wire
 {

@@ -10,14 +10,14 @@
 # include "Physics2D/InstanceManager.hpp"
 # include "Physics2D/Object.hpp"
 
-# include "PolyGon/Graphics/Shader.hpp"
-# include "Graphics2D/Wire/Shader.hpp"
+# include "PolyGon/Graphics/Full/Shader.hpp"
+# include "PolyGon/Graphics/Wire/Shader.hpp"
 
 # include "Arrow2D/Manager.hpp"
 
-#include "ValueType/Undex.hpp"
-#include "ValueType/View2D.hpp"
-#include "ValueType/Point2D.hpp"
+# include "ValueType/Undex.hpp"
+# include "ValueType/View2D.hpp"
+# include "ValueType/Point2D.hpp"
 
 
 
@@ -36,8 +36,8 @@ struct Manager
 
 
 
-	PolyGon::Shader		Shader_PolyGon;
-	Graphics2D::Wire::Shader		Shader_WireFrame;
+	PolyGon::Full::Shader		Shader_PolyGon;
+	PolyGon::Wire::Shader		Shader_WireFrame;
 
 	Container::Array<Physics2D::InstanceManager>	MainInstances;
 

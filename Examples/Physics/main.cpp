@@ -35,8 +35,8 @@
 
 
 // PolyGon
-#include "PolyGon/Graphics/Shader.hpp"
-#include "PolyGon/Graphics/Full/Data.hpp"
+#include "PolyGon/Graphics/Full/Shader.hpp"
+#include "PolyGon/Graphics/Full/Main/Data.hpp"
 
 #include "PolyGon/Object.hpp"
 
@@ -54,7 +54,7 @@
 #include "Arrow2D/Object.hpp"
 
 // WireFrame
-#include "WireFrame2D/WireFrame2D.hpp"
+//#include "WireFrame2D/WireFrame2D.hpp"
 //#include "WireFrame2D/Manager.hpp"
 
 // Multiform
@@ -164,7 +164,6 @@ void Make()
 
 
 	Physics2D::InstanceManager & wall = Physics2D_Manager.MainInstances[0];
-	wall.Buffer_PolyGon.Create();
 	{
 		float thickness0 = 1.0f;
 		float thickness1 = 0.1f;
@@ -179,7 +178,6 @@ void Make()
 	wall.Manager = &Physics2D_Manager;
 
 	Physics2D::InstanceManager & obj0 = Physics2D_Manager.MainInstances[1];
-	obj0.Buffer_PolyGon.Create();
 	{
 		PolyGon::Object & poly_gon = *(obj0.PolyGon);
 		poly_gon.NewCorner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0));
@@ -190,7 +188,6 @@ void Make()
 	obj0.Manager = &Physics2D_Manager;
 
 	Physics2D::InstanceManager & obj1 = Physics2D_Manager.MainInstances[2];
-	obj1.Buffer_PolyGon.Create();
 	{
 		float size = 0.1f;
 		PolyGon::Object & poly_gon = *(obj1.PolyGon);
@@ -204,7 +201,6 @@ void Make()
 	obj1.Manager = &Physics2D_Manager;
 
 	Physics2D::InstanceManager & obj2 = Physics2D_Manager.MainInstances[3];
-	obj2.Buffer_PolyGon.Create();
 	{
 		PolyGon::Object & poly_gon = *(obj2.PolyGon);
 		//poly_gon.NewCorner(Point2D(-0.5f, -0.025f), ColorF4(0, 1, 0));

@@ -24,36 +24,30 @@ Physics2D::InstanceManager::~InstanceManager() { }
 Physics2D::InstanceManager::InstanceManager()
 	: Manager(nullptr)
 	, PolyGon(new ::PolyGon::Object())
-	, PolyGonBox(new ::PolyGon::Object())
-	, WireFrame(new ::WireFrame2D())
-	, WireFrameBox(new ::WireFrame2D())
-	, Buffer_PolyGon(GL::DrawMode::Triangles)
-	, Buffer_WireFrame(GL::DrawMode::Lines)
-	, Buffer_WireFrameBox(GL::DrawMode::Lines)
+	, Bound(new ::PolyGon::Object())
+	, Buffer_PolyGon_Full(GL::DrawMode::Triangles)
+	, Buffer_PolyGon_Wire(GL::DrawMode::Lines)
+	, Buffer_Bound(GL::DrawMode::Lines)
 {
 	IntData.Density = 1.0f;
 }
 Physics2D::InstanceManager::InstanceManager(const InstanceManager & other)
 	: Manager(other.Manager)
 	, PolyGon(other.PolyGon)
-	, PolyGonBox(other.PolyGonBox)
-	, WireFrame(other.WireFrame)
-	, WireFrameBox(other.WireFrameBox)
-	, Buffer_PolyGon(other.Buffer_PolyGon)
-	, Buffer_WireFrame(other.Buffer_WireFrame)
-	, Buffer_WireFrameBox(other.Buffer_WireFrameBox)
+	, Bound(other.Bound)
+	, Buffer_PolyGon_Full(other.Buffer_PolyGon_Full)
+	, Buffer_PolyGon_Wire(other.Buffer_PolyGon_Wire)
+	, Buffer_Bound(other.Buffer_Bound)
 	, IntData(other.IntData)
 { }
 Physics2D::InstanceManager & Physics2D::InstanceManager::operator=(const InstanceManager & other)
 {
 	Manager = other.Manager;
 	PolyGon = other.PolyGon;
-	PolyGonBox = other.PolyGonBox;
-	WireFrame = other.WireFrame;
-	WireFrameBox = other.WireFrameBox;
-	Buffer_PolyGon = other.Buffer_PolyGon;
-	Buffer_WireFrame = other.Buffer_WireFrame;
-	Buffer_WireFrameBox = other.Buffer_WireFrameBox;
+	Bound = other.Bound;
+	Buffer_PolyGon_Full = other.Buffer_PolyGon_Full;
+	Buffer_PolyGon_Wire = other.Buffer_PolyGon_Wire;
+	Buffer_Bound = other.Buffer_Bound;
 	IntData = other.IntData;
 	return *this;
 }
@@ -61,9 +55,7 @@ Physics2D::InstanceManager & Physics2D::InstanceManager::operator=(const Instanc
 void Physics2D::InstanceManager::Dispose()
 {
 	delete PolyGon;
-	delete PolyGonBox;
-	delete WireFrame;
-	delete WireFrameBox;
+	delete Bound;
 }
 
 
@@ -104,11 +96,11 @@ void Physics2D::InstanceManager::Changed()
 		//WireFrameBox -> Insert_Box(box, ColorF4());
 
 		ColorF4 col(1, 1, 1);
-		PolyGonBox -> Clear();
-		PolyGonBox -> NewCorner(Point2D(box.Min.X, box.Min.Y), col);
-		PolyGonBox -> NewCorner(Point2D(box.Max.X, box.Min.Y), col);
-		PolyGonBox -> NewCorner(Point2D(box.Max.X, box.Max.Y), col);
-		PolyGonBox -> NewCorner(Point2D(box.Min.X, box.Max.Y), col);
+		Bound -> Clear();
+		Bound -> NewCorner(Point2D(box.Min.X, box.Min.Y), col);
+		Bound -> NewCorner(Point2D(box.Max.X, box.Min.Y), col);
+		Bound -> NewCorner(Point2D(box.Max.X, box.Max.Y), col);
+		Bound -> NewCorner(Point2D(box.Min.X, box.Max.Y), col);
 	}
 	{
 		IntData.Calculate(*PolyGon);
@@ -120,72 +112,72 @@ void Physics2D::InstanceManager::Changed()
 void Physics2D::InstanceManager::GraphicsInitExternal()
 {
 	{
-		Buffer_PolyGon.Main.Pos.Change(0);
-		Buffer_PolyGon.Main.Col.Change(1);
-		Buffer_PolyGon.Inst.Now.Pos.Change(2);
-		Buffer_PolyGon.Inst.Now.Rot.Change(3, 4);
+		Buffer_PolyGon_Full.Main.Pos.Change(0);
+		Buffer_PolyGon_Full.Main.Col.Change(1);
+		Buffer_PolyGon_Full.Inst.Now.Pos.Change(2);
+		Buffer_PolyGon_Full.Inst.Now.Rot.Change(3, 4);
 	}
 	{
-		Buffer_WireFrame.Main.Pos.Change(0);
-		Buffer_WireFrame.Main.Col.Change(1);
-		Buffer_WireFrame.Inst.Now.Pos.Change(2);
-		Buffer_WireFrame.Inst.Now.Rot.Change(3, 4);
+		Buffer_PolyGon_Wire.Main.Pos.Change(0);
+		Buffer_PolyGon_Wire.Main.Col.Change(1);
+		Buffer_PolyGon_Wire.Inst.Now.Pos.Change(2);
+		Buffer_PolyGon_Wire.Inst.Now.Rot.Change(3, 4);
 	}
 	{
-		Buffer_WireFrameBox.Main.Pos.Change(0);
-		Buffer_WireFrameBox.Main.Col.Change(1);
-		Buffer_WireFrameBox.Inst.Now.Pos.Change(2);
-		Buffer_WireFrameBox.Inst.Now.Rot.Change(3, 4);
+		Buffer_Bound.Main.Pos.Change(0);
+		Buffer_Bound.Main.Col.Change(1);
+		Buffer_Bound.Inst.Now.Pos.Change(2);
+		Buffer_Bound.Inst.Now.Rot.Change(3, 4);
 	}
 }
 void Physics2D::InstanceManager::GraphicsInitInternal()
 {
 	{
-		Buffer_PolyGon.Main.ChangeAttributeBinding();
-		Buffer_PolyGon.Inst.ChangeAttributeBinding();
+		Buffer_PolyGon_Full.Main.ChangeAttributeBinding();
+		Buffer_PolyGon_Full.Inst.ChangeAttributeBinding();
 	}
 	{
-		Buffer_WireFrame.Main.ChangeAttributeBinding();
-		Buffer_WireFrame.Inst.ChangeAttributeBinding();
+		Buffer_PolyGon_Wire.Main.ChangeAttributeBinding();
+		Buffer_PolyGon_Wire.Inst.ChangeAttributeBinding();
 	}
 	{
-		Buffer_WireFrameBox.Main.ChangeAttributeBinding();
-		Buffer_WireFrameBox.Inst.ChangeAttributeBinding();
+		Buffer_Bound.Main.ChangeAttributeBinding();
+		Buffer_Bound.Inst.ChangeAttributeBinding();
 	}
 }
 
 void Physics2D::InstanceManager::GraphicsCreate()
 {
-	Buffer_PolyGon.Create();
-	Buffer_WireFrame.Create();
-	Buffer_WireFrameBox.Create();
+	Buffer_PolyGon_Full.Create();
+	Buffer_PolyGon_Wire.Create();
+	Buffer_Bound.Create();
 }
 void Physics2D::InstanceManager::GraphicsDelete()
 {
-	Buffer_PolyGon.Delete();
-	Buffer_WireFrame.Delete();
-	Buffer_WireFrameBox.Delete();
+	Buffer_PolyGon_Full.Delete();
+	Buffer_PolyGon_Wire.Delete();
+	Buffer_Bound.Delete();
 }
 
 void Physics2D::InstanceManager::GraphicsUpdateMain()
 {
 	{
-		Container::Pointer<PolyGon::Full::Data> data = PolyGon -> ToFullData();
-		Buffer_PolyGon.Main.Change(data);
+		Container::Pointer<PolyGon::Full::Main::Data> data = PolyGon -> ToFullData();
+		Buffer_PolyGon_Full.Main.Change(data);
 		data.Delete();
 	}
 	{
 		// Corner Color should be inverted
-		Buffer_WireFrame.Main.Change(PolyGon -> Corners);
-		Buffer_WireFrame.Elem.Change(PolyGon -> Edges, 2);
-		//Buffer_WireFrame.Main.Change(WireFrame -> Corners);
-		//Buffer_WireFrame.Elem.Change(WireFrame -> Sides, 2);
+		Buffer_PolyGon_Wire.Main.Change(PolyGon -> Corners);
+		Buffer_PolyGon_Wire.Elem.Change(PolyGon -> Edges, 2);
+		//Buffer_PolyGon_Wire.Main.Change(WireFrame -> Corners);
+		//Buffer_PolyGon_Wire.Elem.Change(WireFrame -> Sides, 2);
 	}
 	{
-		Buffer_WireFrameBox.Main.Change(PolyGonBox -> Corners);
-		Buffer_WireFrameBox.Elem.Change(PolyGonBox -> Edges, 2);
-		//Buffer_WireFrameBox.Main.Change(WireFrameBox -> Corners);
-		//Buffer_WireFrameBox.Elem.Change(WireFrameBox -> Sides, 2);
+		Buffer_Bound.Main.Change(Bound -> Corners);
+		Buffer_Bound.Elem.Change(Bound -> Edges, 2);
+		//Buffer_Bound.Main.Change(WireFrameBox -> Corners);
+		//Buffer_Bound.Elem.Change(WireFrameBox -> Sides, 2);
 	}
 }
 void Physics2D::InstanceManager::GraphicsUpdateInst()
@@ -225,7 +217,7 @@ void Physics2D::InstanceManager::GraphicsUpdateInst()
 		}
 	}
 
-	Buffer_PolyGon.Inst.Change(Data_PolyGon);
-	Buffer_WireFrame.Inst.Change(Data_WireFrame);
-	Buffer_WireFrameBox.Inst.Change(Data_WireFrameBox);
+	Buffer_PolyGon_Full.Inst.Change(Data_PolyGon);
+	Buffer_PolyGon_Wire.Inst.Change(Data_WireFrame);
+	Buffer_Bound.Inst.Change(Data_WireFrameBox);
 }

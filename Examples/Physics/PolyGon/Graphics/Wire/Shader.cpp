@@ -1,8 +1,8 @@
-#include "Graphics2D/Wire/Shader.hpp"
+#include "PolyGon/Graphics/Wire/Shader.hpp"
 
 
 
-Graphics2D::Wire::Shader::Shader()
+PolyGon::Wire::Shader::Shader()
 	: ::Shader::Base()
 	, DisplaySize(*this,"DisplaySize")
 	, View(*this,"View")

@@ -1,12 +1,12 @@
-#ifndef  GRAPHICS_2D_WIRE_BUFFER_HPP
-# define GRAPHICS_2D_WIRE_BUFFER_HPP
+#ifndef  POLYGON_GRAPHICS_WIRE_MAIN_BUFFER_HPP
+# define POLYGON_GRAPHICS_WIRE_MAIN_BUFFER_HPP
 
 # include "Graphics/Buffer/Attribute.hpp"
 # include "Graphics/Buffer/Element.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
 # include "Graphics/Attribute/ColorF4.hpp"
 
-namespace Graphics2D
+namespace PolyGon
 {
 namespace Wire
 {

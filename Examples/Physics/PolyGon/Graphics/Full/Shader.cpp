@@ -1,10 +1,10 @@
-#include "PolyGon/Graphics/Shader.hpp"
+#include "PolyGon/Graphics/Full/Shader.hpp"
 
 
 
-PolyGon::Shader::~Shader()
+PolyGon::Full::Shader::~Shader()
 { }
-PolyGon::Shader::Shader()
+PolyGon::Full::Shader::Shader()
 	: ::Shader::Base()
 	, DisplaySize(*this, "DisplaySize")
 	, View(*this, "View")
