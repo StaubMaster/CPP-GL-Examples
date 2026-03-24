@@ -3,7 +3,6 @@
 
 # include "Miscellaneous/EntryContainer/Binary.hpp"
 # include "Miscellaneous/Container/Binary.hpp"
-# include "Miscellaneous/Container/Array.hpp"
 
 # include "Graphics/Texture/Array2D.hpp"
 
@@ -39,7 +38,7 @@ struct Manager
 	PolyGon::Full::Shader		Shader_PolyGon;
 	PolyGon::Wire::Shader		Shader_WireFrame;
 
-	Container::Array<Physics2D::InstanceManager>	MainInstances;
+	Container::Binary<Physics2D::InstanceManager>	MainInstances;
 
 	::Arrow2D::Manager		Arrow;
 

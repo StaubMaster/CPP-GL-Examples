@@ -159,11 +159,10 @@ void Make()
 
 
 
-	Physics2D_Manager.MainInstances.Allocate(4, 4);
+	unsigned int idx;
 
-
-
-	Physics2D::InstanceManager & wall = Physics2D_Manager.MainInstances[0];
+	idx = Physics2D_Manager.MainInstances.Insert(Physics2D::InstanceManager()).Offset;
+	Physics2D::InstanceManager & wall = Physics2D_Manager.MainInstances[idx];
 	{
 		float thickness0 = 1.0f;
 		float thickness1 = 0.1f;
@@ -177,7 +176,8 @@ void Make()
 	}
 	wall.Manager = &Physics2D_Manager;
 
-	Physics2D::InstanceManager & obj0 = Physics2D_Manager.MainInstances[1];
+	idx = Physics2D_Manager.MainInstances.Insert(Physics2D::InstanceManager()).Offset;
+	Physics2D::InstanceManager & obj0 = Physics2D_Manager.MainInstances[idx];
 	{
 		PolyGon::Object & poly_gon = *(obj0.PolyGon);
 		poly_gon.NewCorner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0));
@@ -187,7 +187,8 @@ void Make()
 	}
 	obj0.Manager = &Physics2D_Manager;
 
-	Physics2D::InstanceManager & obj1 = Physics2D_Manager.MainInstances[2];
+	idx = Physics2D_Manager.MainInstances.Insert(Physics2D::InstanceManager()).Offset;
+	Physics2D::InstanceManager & obj1 = Physics2D_Manager.MainInstances[idx];
 	{
 		float size = 0.1f;
 		PolyGon::Object & poly_gon = *(obj1.PolyGon);
@@ -200,7 +201,8 @@ void Make()
 	}
 	obj1.Manager = &Physics2D_Manager;
 
-	Physics2D::InstanceManager & obj2 = Physics2D_Manager.MainInstances[3];
+	idx = Physics2D_Manager.MainInstances.Insert(Physics2D::InstanceManager()).Offset;
+	Physics2D::InstanceManager & obj2 = Physics2D_Manager.MainInstances[idx];
 	{
 		PolyGon::Object & poly_gon = *(obj2.PolyGon);
 		//poly_gon.NewCorner(Point2D(-0.5f, -0.025f), ColorF4(0, 1, 0));
