@@ -12,18 +12,24 @@ namespace Inst
 {
 struct Data
 {
-	Point2D		Pos0;
-	Point2D		Pos1;
+	Point2D		Origin;
+	Point2D		Target;
 	float		Size;
-	ColorF4		Col;
+	ColorF4		Color;
+
+	~Data();
 	Data();
-	Data(Point2D pos0, Point2D pos1);
-	Data(Point2D pos0, Point2D pos1, float size);
-	Data(Point2D pos0, Point2D pos1, float size, ColorF4 col);
-	
-	Data(ColorF4 col, float size, Point2D pos0, Point2D pos1);
-	Data(ColorF4 col, float size, Line2D line);
-	Data(ColorF4 col, float size, Ray2D ray);
+
+	Data(ColorF4 color, float size, Point2D origin, Point2D target);
+	Data(ColorF4 color, float size, Line2D line);
+	Data(ColorF4 color, float size, Ray2D ray);
+
+	Data & operator=(const float & size);
+	Data & operator=(const ColorF4 & color);
+	Data & operator=(const Line2D & line);
+	Data & operator=(const Ray2D & ray);
+
+	void Clear();
 };
 };
 };

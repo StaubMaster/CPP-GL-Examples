@@ -149,8 +149,6 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 	float timeDelta
 )
 {
-	(void)timeDelta;
-
 	ResolveData data;
 	ResolveData temp;
 	unsigned int n = contact.Projections.Count();

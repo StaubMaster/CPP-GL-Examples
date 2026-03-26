@@ -100,10 +100,10 @@ void Physics2D::Object::GraphicsUpdate()
 		Trans2D & acl = ExtData.Acl;
 		unsigned int idx = 0;
 
-		Arrows[idx] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 0.0f), 16.0f, Ray2D(origin, vel.Pos)); idx++;
-		Arrows[idx] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 0.0f), 16.0f, Ray2D(origin, Point2D(0, vel.Rot.Ang.ToRadians()))); idx++;
-		Arrows[idx] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.5f), 16.0f, Ray2D(origin, acl.Pos)); idx++;
-		Arrows[idx] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.5f), 16.0f, Ray2D(origin, Point2D(0, acl.Rot.Ang.ToRadians()))); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.5f, 0.0f)) = Ray2D(origin, vel.Pos); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.5f, 0.0f)) = Ray2D(origin, Point2D(0, vel.Rot.Ang.ToRadians())); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.0f, 0.5f)) = Ray2D(origin, acl.Pos); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.0f, 0.5f)) = Ray2D(origin, Point2D(0, acl.Rot.Ang.ToRadians())); idx++;
 
 		//Point2D gravity = InstanceManager -> Manager -> Gravity;
 		//if (now.Pos.Y > 0.0f) { gravity.Y = -(InstanceManager -> Manager -> GravityToY); }

@@ -65,20 +65,16 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::Project(
 	}
 	data.Valid = (data.Projections.Count() != 0);
 
-	if (data.Valid && Projection::DebugShow)
+	if (Projection::DebugShow)
 	{
 		Arrow2D::Object normal_arrow(1);
-		normal_arrow[0] = Arrow2D::Inst::Data(ColorF4(0, 1, 0), 16.0f, Ray2D(origin, normal));
+		(normal_arrow[0] = ColorF4(0, 1, 0)) = Ray2D(origin, normal);
 
 		Arrow2D::Object projection_arrows(data.Projections.Count());
 		for (unsigned int i = 0; i < data.Projections.Count(); i++)
 		{
 			Projection & proj = data.Projections[i];
-			projection_arrows[i] = Arrow2D::Inst::Data(
-				ColorF4(0, 0.5f, 0), 16.0f, Line2D(
-				proj.Position,
-				origin + (normal * proj.Distance)
-			));
+			(projection_arrows[i] = ColorF4(0, 0.5f, 0)) = Line2D(proj.Position, origin + (normal * proj.Distance));
 		}
 	}
 
@@ -151,17 +147,15 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::Contact(
 	float timeDelta
 )
 {
-	(void)timeDelta;
-
-	ContactData	ret;
 	ContactData	data;
+	ContactData	temp;
 
-	bool all_contact_0 = Contact(data, obj0, obj1, timeDelta);
-	bool all_contact_1 = Contact(data, obj1, obj0, timeDelta);
+	bool all_contact_0 = Contact(temp, obj0, obj1, timeDelta);
+	bool all_contact_1 = Contact(temp, obj1, obj0, timeDelta);
 
 	if (all_contact_0 && all_contact_1)
 	{
-		ret = data;
+		data = temp;
 	}
-	return ret;
+	return data;
 }

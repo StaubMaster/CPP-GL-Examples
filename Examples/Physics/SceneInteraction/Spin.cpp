@@ -27,7 +27,7 @@ void InteractionObjectSpin::End(SceneInteractionData & SceneData)
 		Object = Undex::Invalid();
 		for (unsigned int i = 0; i < Arrows.Count(); i++)
 		{
-			Arrows[i] = Arrow2D::Inst::Data();
+			Arrows[i].Clear();
 		}
 	}
 }
@@ -63,8 +63,8 @@ void InteractionObjectSpin::Update(SceneInteractionData & SceneData)
 		if (Arrows.Is())
 		{
 			float len = (SceneData.Cursor - now.Pos).length();
-			Arrows[0] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Ray2D(now.Pos, (Origin - Offset) * Point2D(len, 0)));
-			Arrows[1] = Arrow2D::Inst::Data(ColorF4(1, 1, 1), 16.0f, Ray2D(now.Pos, (Target - Offset) * Point2D(len, 0)));
+			(Arrows[0] = ColorF4(1, 1, 1)) = Ray2D(now.Pos, (Origin - Offset) * Point2D(len, 0));
+			(Arrows[1] = ColorF4(1, 1, 1)) = Ray2D(now.Pos, (Target - Offset) * Point2D(len, 0));
 		}
 	}
 }

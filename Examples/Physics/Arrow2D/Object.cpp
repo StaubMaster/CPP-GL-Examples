@@ -44,3 +44,20 @@ void Arrow2D::Object::Allocate(unsigned int count)
 	Data = new Arrow2D::Data(count);
 	Arrow2D::Manager::Current().Instances.Insert(Data);
 }
+
+
+
+void Arrow2D::Object::Show()
+{
+	if (Data != nullptr)
+	{
+		Data -> DisplayThisFrame = true;
+	}
+}
+void Arrow2D::Object::Hide()
+{
+	if (Data != nullptr)
+	{
+		Data -> DisplayThisFrame = false;
+	}
+}
