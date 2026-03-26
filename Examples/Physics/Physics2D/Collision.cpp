@@ -29,11 +29,17 @@ void Physics2D::Collide(
 	if (!contact_data.Valid) { return; }
 
 	Collision::ResolveData resolve_data = Collision::Resolve(contact_data, obj0, obj1, timeDelta);
-	std::cout << "Resolve.Pos[0] " << resolve_data.Pos0 << " dm/s^2\n";
-	std::cout << "Resolve.Pos[1] " << resolve_data.Pos1 << " dm/s^2\n";
-	std::cout << "Resolve.Rot[0] " << resolve_data.Rot0 << " dm/dm*s^2\n";
-	std::cout << "Resolve.Rot[1] " << resolve_data.Rot1 << " dm/dm*s^2\n";
-	std::cout << '\n';
+
+	//std::cout << "Resolve.Pos[0] " << resolve_data.Pos0 << " dm/s^2\n";
+	//std::cout << "Resolve.Pos[1] " << resolve_data.Pos1 << " dm/s^2\n";
+	//std::cout << "Resolve.Rot[0] " << resolve_data.Rot0 << " dm/dm*s^2\n";
+	//std::cout << "Resolve.Rot[1] " << resolve_data.Rot1 << " dm/dm*s^2\n";
+	//std::cout << '\n';
+
+	Arrow2D::Object arrows(3);
+	arrows[0] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, Line2D(obj0.ExtData.Now.Pos, contact_data.Position));
+	arrows[1] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, Line2D(obj1.ExtData.Now.Pos, contact_data.Position));
+	arrows[2] = Arrow2D::Inst::Data(ColorF4(0, 1, 0), 16.0f, Ray2D(contact_data.Position, contact_data.Normal));
 
 	if (timeDelta != 0.0f)
 	{
@@ -103,11 +109,11 @@ I dont want that, but it wants that
 				force0.Apply(obj0);
 				force1.Apply(obj1);
 
-				Arrow2D::Object arrows(4);
-				arrows[0] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, force0_ray);
-				arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, force1_ray);
-				arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, Ray2D(inter, obj0.EdgeNormalOfIndex(i0)));
-				arrows[3] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.5f), 16.0f, Ray2D(inter, obj1.EdgeNormalOfIndex(i1)));
+				//Arrow2D::Object arrows(4);
+				//arrows[0] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, force0_ray);
+				//arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, force1_ray);
+				//arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, Ray2D(inter, obj0.EdgeNormalOfIndex(i0)));
+				//arrows[3] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.5f), 16.0f, Ray2D(inter, obj1.EdgeNormalOfIndex(i1)));
 /*
 for the Force, figure out the potential Energy that both objects have
 calculate the potential Energy to all Edges and choose the smallest

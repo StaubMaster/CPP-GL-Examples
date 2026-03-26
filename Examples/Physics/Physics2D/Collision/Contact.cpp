@@ -107,4 +107,3 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContac
 	ret = data;
 	return ret;
 }
-

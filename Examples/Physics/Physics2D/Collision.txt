@@ -1,0 +1,24 @@
+
+Problem:
+things getting stuck inside of eachother
+
+Solution:
+apply a Force to seperate Objects that are inside of eachother
+the normal Collision system uses Velocity and works against this
+
+also, how to determine "stuck" vs "colliding" ?
+
+
+
+Problem:
+multiple Contacts
+
+if there are multiple Contacts
+then the forces should be devided between them ?
+
+
+
+how to Identify Contacts ?
+right now it just uses the Corner that has the larges overlap along an Edge Normal
+
+

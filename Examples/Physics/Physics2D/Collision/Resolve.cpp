@@ -23,13 +23,13 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 
 	Point2D Velocity = VelAbs1 - VelAbs0;
 
-	{
+	/*{
 		Arrow2D::Object arrows(4);
 		arrows[0] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, Line2D(obj0.ExtData.Now.Pos, contact.Position));
 		arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.5f), 16.0f, Line2D(obj1.ExtData.Now.Pos, contact.Position));
 		arrows[2] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.5f), 16.0f, Ray2D(contact.Position, obj0.AbsoluteVelocityOf(contact.Position)));
 		arrows[3] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.5f, 1.0f), 16.0f, Ray2D(contact.Position, obj1.AbsoluteVelocityOf(contact.Position)));
-	}
+	}*/
 
 	// IsStatic assumes and infinite Mass to Inverse Mass is 0
 	float MassInverse0 = 0.0f;
