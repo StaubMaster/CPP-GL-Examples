@@ -1,5 +1,5 @@
 #include "Physics2D/Collision.hpp"
-#include "Physics2D/Collision/ObjectProjection.hpp"
+#include "Physics2D/Collision/Projection.hpp"
 #include "Physics2D/Collision/Contact.hpp"
 #include "Physics2D/Collision/Resolve.hpp"
 

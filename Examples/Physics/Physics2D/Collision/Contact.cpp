@@ -1,5 +1,4 @@
 #include "Physics2D/Collision/Contact.hpp"
-#include "Physics2D/Collision/ObjectProjection.hpp"
 
 #include <cmath>
 
@@ -10,23 +9,17 @@
 Physics2D::Collision::ContactData::~ContactData() { }
 Physics2D::Collision::ContactData::ContactData()
 	: Valid(false)
-	, Normal()
-	, Position()
-	, Distance(INFINITY)
+	, Data()
 { }
 
 Physics2D::Collision::ContactData::ContactData(const ContactData & other)
 	: Valid(other.Valid)
-	, Normal(other.Normal)
-	, Position(other.Position)
-	, Distance(other.Distance)
+	, Data(other.Data)
 { }
 Physics2D::Collision::ContactData & Physics2D::Collision::ContactData::operator=(const ContactData & other)
 {
 	Valid = other.Valid;
-	Normal = other.Normal;
-	Position = other.Position;
-	Distance = other.Distance;
+	Data = other.Data;
 	return *this;
 }
 
@@ -36,7 +29,7 @@ bool Physics2D::Collision::ContactData::Compare(const ContactData & other) const
 {
 	if (!other.Valid) { return false; }
 	if (!Valid) { return true; }
-	return (fabs(other.Distance) < fabs(Distance));
+	return (fabs(other.Data.Limit) < fabs(Data.Limit));
 }
 void Physics2D::Collision::ContactData::Consider(const ContactData & other)
 {
@@ -58,31 +51,30 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContac
 	(void)timeDelta;
 
 	ContactData data;
-	ObjectProjection projection = ObjectProjection::Project(origin, normal, obj);
+	//Collision::Projection projection = Projection::Project(origin, normal, obj);
+	Collision::ProjectionData projection = ProjectionData::Project(origin, normal, obj);
 
-	Arrow2D::Object arrows(2);
+	/*Arrow2D::Object arrows(2);
 	arrows[0] = Arrow2D::Inst::Data(ColorF4(1, 0, 0), 16.0f, Line2D(
 		obj.ExtData.Now.Pos,
-		obj.AbsolutePositionOfIndex(projection.Undex)
+		projection.Position
 	));
 	arrows[1] = Arrow2D::Inst::Data(ColorF4(0, 0.25f, 0), 16.0f, Ray2D(
 		origin,
 		normal * projection.Distance
-	));
+	));*/
 
-	if (!ObjectProjection::DebugShow)
+	/*if (!Projection::DebugShow)
 	{
 		arrows.Data -> DisplayThisFrame = false;
-	}
+	}*/
 
-	if (projection.Distance <= 0.0f)
+	//if (projection.Distance <= 0.0f)
+	if (projection.Projections.Count() != 0)
 	{
-		arrows[0].Col = ColorF4(0, 0, 1);
+		//arrows[0].Col = ColorF4(0, 0, 1);
 
-		data.Normal = normal;
-
-		data.Distance = projection.Distance;
-		data.Position = obj.AbsolutePositionOfIndex(projection.Undex);
+		data.Data = projection;
 
 		data.Valid = true;
 	}
@@ -112,10 +104,10 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContac
 		o = (edge.Pos0 + edge.Pos1) / 2;
 		n = obj0.EdgeNormalOfIndex(i);
 
-		ObjectProjection::DebugShow = (&obj0 == ObjectProjection::DebugObject && i == ObjectProjection::DebugEdgeUndex);
-		if (ObjectProjection::DebugShow)
+		Projection::DebugShow = (&obj0 == Projection::DebugObject && i == Projection::DebugEdgeUndex);
+		if (Projection::DebugShow)
 		{
-			ObjectProjection::DebugOrigin = o;
+			Projection::DebugOrigin = o;
 		}
 
 		temp = CheckContact(o, n, obj1, timeDelta);
@@ -134,10 +126,10 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContac
 		o = (edge.Pos0 + edge.Pos1) / 2;
 		n = obj1.EdgeNormalOfIndex(i);
 
-		ObjectProjection::DebugShow = (&obj1 == ObjectProjection::DebugObject && i == ObjectProjection::DebugEdgeUndex);
-		if (ObjectProjection::DebugShow)
+		Projection::DebugShow = (&obj1 == Projection::DebugObject && i == Projection::DebugEdgeUndex);
+		if (Projection::DebugShow)
 		{
-			ObjectProjection::DebugOrigin = o;
+			Projection::DebugOrigin = o;
 		}
 
 		temp = CheckContact(o, n, obj0, timeDelta);

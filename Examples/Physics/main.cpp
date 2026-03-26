@@ -79,7 +79,7 @@
 // Other
 #include "Arrow2D/RankLengths.hpp"
 #include "FrameTime.hpp"
-#include "Physics2D/Collision/ObjectProjection.hpp"
+#include "Physics2D/Collision/Projection.hpp"
 
 
 
@@ -399,21 +399,21 @@ void Frame(double timeDelta)
 
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::KeyPadAdd.Flags].IsPress())
 	{
-		Physics2D::Collision::ObjectProjection::DebugEdgeUndex++;
+		Physics2D::Collision::Projection::DebugEdgeUndex++;
 	}
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::KeyPadSub.Flags].IsPress())
 	{
-		Physics2D::Collision::ObjectProjection::DebugEdgeUndex--;
+		Physics2D::Collision::Projection::DebugEdgeUndex--;
 	}
 	if (SceneData.Selected)
 	{
-		Physics2D::Collision::ObjectProjection::DebugObject = Physics2D_Manager.Objects[SceneData.Selected];
+		Physics2D::Collision::Projection::DebugObject = Physics2D_Manager.Objects[SceneData.Selected];
 	}
 	else
 	{
-		Physics2D::Collision::ObjectProjection::DebugObject = nullptr;
+		Physics2D::Collision::Projection::DebugObject = nullptr;
 	}
-	//std::cout << "Index: " << Physics2D::Collision::ObjectProjection::DebugEdgeUndex << '\n';
+	//std::cout << "EdgeUnddx: " << Physics2D::Collision::Projection::DebugEdgeUndex << '\n';
 
 	{
 		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());

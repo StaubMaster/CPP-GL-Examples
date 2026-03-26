@@ -3,6 +3,8 @@
 
 # include "Physics2D/Object.hpp"
 
+# include "Physics2D/Collision/Projection.hpp"
+
 # include "ValueType/AxisBox1D.hpp"
 
 # include "ValueType/Point2D.hpp"
@@ -16,11 +18,8 @@ namespace Collision
 {
 struct ContactData
 {
-	bool			Valid;
-
-	Point2D			Normal;
-	Point2D			Position;
-	float			Distance;
+	bool						Valid;
+	Collision::ProjectionData	Data;
 
 	~ContactData();
 	ContactData();

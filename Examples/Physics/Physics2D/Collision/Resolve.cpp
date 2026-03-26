@@ -13,14 +13,16 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 {
 	(void)timeDelta;
 
+	Projection & projection = contact.Data.Projections[0];
+
 	//Point2D PosRel0 = obj0.RelativePositionOfIndex(contact.Undex0);
 	//Point2D PosAbs0 = obj0.AbsolutePositionOf(PosRel0);
-	Point2D PosAbs0 = contact.Position;
+	Point2D PosAbs0 = projection.Position;
 	Point2D VelAbs0 = obj0.AbsoluteVelocityOf(PosAbs0);
 
 	//Point2D PosRel1 = obj1.RelativePositionOfIndex(contact.Undex1);
 	//Point2D PosAbs1 = obj1.AbsolutePositionOf(PosRel1);
-	Point2D PosAbs1 = contact.Position;
+	Point2D PosAbs1 = projection.Position;
 	Point2D VelAbs1 = obj1.AbsoluteVelocityOf(PosAbs1);
 
 	Point2D Velocity = VelAbs1 - VelAbs0;
@@ -48,13 +50,13 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 //	Point2D Contact0 = obj0.AbsolutePositionOf(obj0.CornerFromIndex(contact_data.Contact0Udx));
 //	Point2D Contact1 = obj1.AbsolutePositionOf(obj1.CornerFromIndex(contact_data.Contact1Udx));
 
-	Point2D RelativeContact0 = contact.Position - obj0.ExtData.Now.Pos;
-	Point2D RelativeContact1 = contact.Position - obj1.ExtData.Now.Pos;
+	Point2D RelativeContact0 = projection.Position - obj0.ExtData.Now.Pos;
+	Point2D RelativeContact1 = projection.Position - obj1.ExtData.Now.Pos;
 	//Point2D RelativeContact0 = contact_data.Contact0.PosAbs - obj0.ExtData.Now.Pos;
 	//Point2D RelativeContact1 = contact_data.Contact1.PosAbs - obj1.ExtData.Now.Pos;
 
 	//contact_data.Velocity = contact_data.Velocity * timeDelta;
-	float NormalVelFactor = Point2D::dot(Velocity, contact.Normal);
+	float NormalVelFactor = Point2D::dot(Velocity, projection.Normal);
 
 //	Point3D normal_3D(contact_data.Normal.X, contact_data.Normal.Y, 0);
 //	Point3D RelativeContact0_3D(RelativeContact0.X, RelativeContact0.Y, 0);
@@ -68,13 +70,13 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 //
 //	float InertiaFactorSum = Point2D::dot(Point2D(ContactPerpendicularSum_3D.X, ContactPerpendicularSum_3D.Y), contact_data.Normal);
 
-	float ContactAxis0 = Point2D::cross(RelativeContact0, contact.Normal);
-	float ContactAxis1 = Point2D::cross(RelativeContact1, contact.Normal);
+	float ContactAxis0 = Point2D::cross(RelativeContact0, projection.Normal);
+	float ContactAxis1 = Point2D::cross(RelativeContact1, projection.Normal);
 	Point2D ContactMomentOfInertia0 = Point2D::cross(ContactAxis0 * MomentOfInertiaInverse0, RelativeContact0);
 	Point2D ContactMomentOfInertia1 = Point2D::cross(ContactAxis1 * MomentOfInertiaInverse1, RelativeContact1);
 	Point2D ContactMomentOfInertiaSum = ContactMomentOfInertia0 + ContactMomentOfInertia1;
 
-	float MomentOfInertiaSum = Point2D::dot(ContactMomentOfInertiaSum, contact.Normal);
+	float MomentOfInertiaSum = Point2D::dot(ContactMomentOfInertiaSum, projection.Normal);
 
 //	std::cout << "RelativeContact0: " << RelativeContact0 << ' ' << RelativeContact0.length() << '\n';
 //	std::cout << "RelativeContact1: " << RelativeContact1 << ' ' << RelativeContact1.length() << '\n';
@@ -107,7 +109,7 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 
 	//std::cout << "Contact Position : " << contact_data.Position << " dm\n";
 	//std::cout << "Contact Velocity : " << contact_data.Velocity << " dm/s\n";
-	std::cout << "Contact Normal   : " << contact.Normal << ' ' << contact.Normal.length() << '\n';
+	std::cout << "Contact Normal   : " << projection.Normal << ' ' << projection.Normal.length() << '\n';
 	std::cout << '\n';
 
 	std::cout << "NormalVelFactor  : " << NormalVelFactor << '\n';
@@ -132,8 +134,8 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 	std::cout << '\n';
 
 	ResolveData data;
-	data.Pos0 = contact.Normal * (ImpulseFactor * MassInverse0);
-	data.Pos1 = contact.Normal * (ImpulseFactor * MassInverse1);
+	data.Pos0 = projection.Normal * (ImpulseFactor * MassInverse0);
+	data.Pos1 = projection.Normal * (ImpulseFactor * MassInverse1);
 	data.Rot0 = Angle2D(Angle::Radians(ContactAxis0 * (ImpulseFactor * MomentOfInertiaInverse0)));
 	data.Rot1 = Angle2D(Angle::Radians(ContactAxis1 * (ImpulseFactor * MomentOfInertiaInverse1)));
 	return data;
