@@ -399,13 +399,21 @@ void Frame(double timeDelta)
 
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::KeyPadAdd.Flags].IsPress())
 	{
-		Physics2D::Collision::ObjectProjection::DebugIndex++;
+		Physics2D::Collision::ObjectProjection::DebugEdgeUndex++;
 	}
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::KeyPadSub.Flags].IsPress())
 	{
-		Physics2D::Collision::ObjectProjection::DebugIndex--;
+		Physics2D::Collision::ObjectProjection::DebugEdgeUndex--;
 	}
-	std::cout << "Index: " << Physics2D::Collision::ObjectProjection::DebugIndex << '\n';
+	if (SceneData.Selected)
+	{
+		Physics2D::Collision::ObjectProjection::DebugObject = Physics2D_Manager.Objects[SceneData.Selected];
+	}
+	else
+	{
+		Physics2D::Collision::ObjectProjection::DebugObject = nullptr;
+	}
+	//std::cout << "Index: " << Physics2D::Collision::ObjectProjection::DebugEdgeUndex << '\n';
 
 	{
 		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());

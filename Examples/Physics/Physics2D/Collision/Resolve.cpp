@@ -13,12 +13,14 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 {
 	(void)timeDelta;
 
-	Point2D PosRel0 = obj0.RelativePositionOfIndex(contact.Undex0);
-	Point2D PosAbs0 = obj0.AbsolutePositionOf(PosRel0);
+	//Point2D PosRel0 = obj0.RelativePositionOfIndex(contact.Undex0);
+	//Point2D PosAbs0 = obj0.AbsolutePositionOf(PosRel0);
+	Point2D PosAbs0 = contact.Position;
 	Point2D VelAbs0 = obj0.AbsoluteVelocityOf(PosAbs0);
 
-	Point2D PosRel1 = obj1.RelativePositionOfIndex(contact.Undex1);
-	Point2D PosAbs1 = obj1.AbsolutePositionOf(PosRel1);
+	//Point2D PosRel1 = obj1.RelativePositionOfIndex(contact.Undex1);
+	//Point2D PosAbs1 = obj1.AbsolutePositionOf(PosRel1);
+	Point2D PosAbs1 = contact.Position;
 	Point2D VelAbs1 = obj1.AbsoluteVelocityOf(PosAbs1);
 
 	Point2D Velocity = VelAbs1 - VelAbs0;
@@ -89,19 +91,19 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 	std::cout << "Inverse Angular Mass [1] : " << (MomentOfInertiaInverse1) << '\n';
 	std::cout << '\n';
 
-	std::cout << "Contact [0] : \n" << contact.Undex0 << '\n';
+	//std::cout << "Contact [0] : \n" << contact.Undex0 << '\n';
 	//std::cout << "Position Relative : " << contact_data.Contact0.PosRel << '\n';
 	//std::cout << "Position Absolute : " << contact_data.Contact0.PosAbs << '\n';
 	////std::cout << "Velocity Relative : " << contact_data.Contact0.VelRel << '\n';
 	//std::cout << "Velocity Absolute : " << contact_data.Contact0.VelAbs << '\n';
-	std::cout << '\n';
+	//std::cout << '\n';
 
-	std::cout << "Contact [1] : \n" << contact.Undex1 << '\n';
+	//std::cout << "Contact [1] : \n" << contact.Undex1 << '\n';
 	//std::cout << "Position Relative : " << contact_data.Contact1.PosRel << '\n';
 	//std::cout << "Position Absolute : " << contact_data.Contact1.PosAbs << '\n';
 	////std::cout << "Velocity Relative : " << contact_data.Contact1.VelRel << '\n';
 	//std::cout << "Velocity Absolute : " << contact_data.Contact1.VelAbs << '\n';
-	std::cout << '\n';
+	//std::cout << '\n';
 
 	//std::cout << "Contact Position : " << contact_data.Position << " dm\n";
 	//std::cout << "Contact Velocity : " << contact_data.Velocity << " dm/s\n";

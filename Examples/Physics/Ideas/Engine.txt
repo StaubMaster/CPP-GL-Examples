@@ -53,3 +53,17 @@ Changes:
 			what if I just want to rotate, then the one in AngleN would be useful
 			just manually rotate, this would be slow, but it shouldnt happen that often ?
 			except Collision uses pure Rotation ?
+
+
+
+Ray2D
+	Normal()
+	Ray2D(Line2D)
+
+Line2D
+	Normal()
+	Differance()
+	Length()
+	Reverse()
+	Line2D(Ray2D)
+	Middle()

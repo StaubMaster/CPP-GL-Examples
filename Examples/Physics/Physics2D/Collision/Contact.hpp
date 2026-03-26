@@ -17,8 +17,6 @@ namespace Collision
 struct ContactData
 {
 	bool			Valid;
-	unsigned int	Undex0;
-	unsigned int	Undex1;
 
 	Point2D			Normal;
 	Point2D			Position;
@@ -38,12 +36,7 @@ struct ContactData
 		const Object & obj,
 		float timeDelta
 	);
-	static ContactData CheckContact(
-		const Object & obj0,
-		const Object & obj1,
-		Point2D normal,
-		float timeDelta
-	);
+
 	static ContactData CheckContact(
 		const Object & obj0,
 		const Object & obj1,
