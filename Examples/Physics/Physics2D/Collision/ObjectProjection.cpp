@@ -1,6 +1,14 @@
 #include "Physics2D/Collision/ObjectProjection.hpp"
 #include <math.h>
 
+#include "Arrow2D/Object.hpp"
+
+
+
+unsigned int Physics2D::Collision::ObjectProjection::DebugIndex = 0xFFFFFFFF;
+bool Physics2D::Collision::ObjectProjection::DebugShow = false;
+Point2D Physics2D::Collision::ObjectProjection::DebugOrigin;
+
 
 
 Physics2D::Collision::ObjectProjection::~ObjectProjection() { }
@@ -38,20 +46,60 @@ void Physics2D::Collision::ObjectProjection::Consider(float val, unsigned int id
 }
 
 Physics2D::Collision::ObjectProjection Physics2D::Collision::ObjectProjection::Project(
-	Point2D normal
-	, const Object & obj
+	Point2D normal,
+	const Object & obj
 )
 {
 	ObjectProjection data;
+
+	Arrow2D::Object normal_arrow(1);
+	normal_arrow[0] = Arrow2D::Inst::Data(ColorF4(0, 1, 0), 16.0f, Ray2D(DebugOrigin, normal));
+
+	Arrow2D::Object corners(obj.CornerCount());
 	for (unsigned int i = 0; i < obj.CornerCount(); i++)
 	{
-		Point2D	pos = obj.AbsolutePositionOfIndex((i));
-		float dot = Point2D::dot(normal, pos);
+		Point2D	pos = obj.AbsolutePositionOfIndex(i);
+		float dot = Point2D::dot(normal, pos - DebugOrigin);
 		data.Consider(dot, i);
+		corners[i] = Arrow2D::Inst::Data(ColorF4(1, 0, 1), 16.0f, Line2D(pos, DebugOrigin + (normal * dot)));
 	}
+
+	if (!DebugShow)
+	{
+		normal_arrow.Data -> DisplayThisFrame = false;
+		corners.Data -> DisplayThisFrame = false;
+	}
+
 	return data;
 }
+Physics2D::Collision::ObjectProjection Physics2D::Collision::ObjectProjection::Project(
+	Point2D origin,
+	Point2D normal,
+	const Object & obj
+)
+{
+	ObjectProjection data;
 
+	Arrow2D::Object normal_arrow(1);
+	normal_arrow[0] = Arrow2D::Inst::Data(ColorF4(0, 1, 0), 16.0f, Ray2D(origin, normal));
+
+	Arrow2D::Object corners(obj.CornerCount());
+	for (unsigned int i = 0; i < obj.CornerCount(); i++)
+	{
+		Point2D	pos = obj.AbsolutePositionOfIndex(i);
+		float dot = Point2D::dot(normal, pos - origin);
+		data.Consider(dot, i);
+		corners[i] = Arrow2D::Inst::Data(ColorF4(0, 0.5f, 0), 16.0f, Line2D(pos, origin + (normal * dot)));
+	}
+
+	if (!DebugShow)
+	{
+		normal_arrow.Data -> DisplayThisFrame = false;
+		corners.Data -> DisplayThisFrame = false;
+	}
+
+	return data;
+}
 
 
 
@@ -80,6 +128,12 @@ Physics2D::Collision::ObjectProjectionOverlap & Physics2D::Collision::ObjectProj
 }
 
 
+/*
+this only works with convex PolyGons
+so the Edge being used for the Normal us the outer most Edge of that PolyGon
+so it dosent need to be projected, I just need to know where the Edge is, on the normal
+*/
+
 
 Physics2D::Collision::ObjectProjectionOverlap Physics2D::Collision::ObjectProjectionOverlap::Overlap(
 	ObjectProjection proj0,
@@ -107,6 +161,7 @@ Physics2D::Collision::ObjectProjectionOverlap Physics2D::Collision::ObjectProjec
 	}
 	return data;
 }
+
 Physics2D::Collision::ObjectProjectionOverlap Physics2D::Collision::ObjectProjectionOverlap::Overlap(
 	Point2D normal
 	, const Object & obj0

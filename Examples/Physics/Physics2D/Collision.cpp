@@ -36,10 +36,10 @@ void Physics2D::Collide(
 	//std::cout << "Resolve.Rot[1] " << resolve_data.Rot1 << " dm/dm*s^2\n";
 	//std::cout << '\n';
 
-	Arrow2D::Object arrows(3);
-	arrows[0] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, Line2D(obj0.ExtData.Now.Pos, contact_data.Position));
-	arrows[1] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, Line2D(obj1.ExtData.Now.Pos, contact_data.Position));
-	arrows[2] = Arrow2D::Inst::Data(ColorF4(0, 1, 0), 16.0f, Ray2D(contact_data.Position, contact_data.Normal));
+	//Arrow2D::Object arrows(3);
+	//arrows[0] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, Line2D(obj0.ExtData.Now.Pos, contact_data.Position));
+	//arrows[1] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, Line2D(obj1.ExtData.Now.Pos, contact_data.Position));
+	//arrows[2] = Arrow2D::Inst::Data(ColorF4(0, 1, 0), 16.0f, Ray2D(contact_data.Position, contact_data.Normal));
 
 	if (timeDelta != 0.0f)
 	{

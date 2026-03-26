@@ -33,6 +33,12 @@ struct ContactData
 	void Consider(const ContactData & other);
 
 	static ContactData CheckContact(
+		Point2D origin,
+		Point2D normal,
+		const Object & obj,
+		float timeDelta
+	);
+	static ContactData CheckContact(
 		const Object & obj0,
 		const Object & obj1,
 		Point2D normal,

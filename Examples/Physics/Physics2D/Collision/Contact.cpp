@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#include "DataShow.hpp"
+
 
 
 Physics2D::Collision::ContactData::~ContactData() { }
@@ -53,6 +55,47 @@ void Physics2D::Collision::ContactData::Consider(const ContactData & other)
 
 
 Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContact(
+	Point2D origin,
+	Point2D normal,
+	const Object & obj,
+	float timeDelta
+)
+{
+	(void)timeDelta;
+	ContactData data;
+	ObjectProjection projection = ObjectProjection::Project(origin, normal, obj);
+
+	Arrow2D::Object arrows(2);
+	arrows[0] = Arrow2D::Inst::Data(ColorF4(1, 0, 0), 16.0f, Line2D(
+		obj.ExtData.Now.Pos,
+		obj.AbsolutePositionOfIndex(projection.MinUdx)
+	));
+	arrows[1] = Arrow2D::Inst::Data(ColorF4(0, 0.25f, 0), 16.0f, Ray2D(
+		origin,
+		normal * projection.Box.Min
+	));
+
+	if (!ObjectProjection::DebugShow)
+	{
+		arrows.Data -> DisplayThisFrame = false;
+	}
+
+	if (projection.Box.Min <= 0.0f)
+	{
+		arrows[0].Col = ColorF4(0, 0, 1);
+
+		data.Normal = normal;
+
+		data.Distance = projection.Box.Min;
+		data.Undex0 = projection.MinUdx;
+		data.Undex1 = projection.MinUdx;
+
+		data.Valid = true;
+	}
+
+	return data;
+}
+Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContact(
 	const Object & obj0,
 	const Object & obj1,
 	Point2D normal,
@@ -84,26 +127,75 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::CheckContac
 	ContactData	ret;
 	ContactData	data;
 	ContactData	temp;
+	Line2D		edge;
+	Point2D		o;
 	Point2D		n;
 
+	unsigned int contact_count_0 = obj0.CornerCount();
 	for (unsigned int i = 0; i < obj0.CornerCount(); i++)
 	{
+		edge = obj0.EdgeOfIndex(i);
+		o = (edge.Pos0 + edge.Pos1) / 2;
 		n = obj0.EdgeNormalOfIndex(i);
-		temp = CheckContact(obj0, obj1, n, timeDelta);
-		if (!temp.Valid) { return ret; }
-		temp.Position = obj1.AbsolutePositionOfIndex(temp.Undex1);
-		data.Consider(temp);
+		
+		ObjectProjection::DebugShow = (i == ObjectProjection::DebugIndex);
+		if (ObjectProjection::DebugShow)
+		{
+			ObjectProjection::DebugOrigin = o;
+		}
+
+		temp = CheckContact(o, n, obj1, timeDelta);
+		//ObjectProjection::DebugShow = false;
+		//temp = CheckContact(obj0, obj1, n, timeDelta);
+
+		if (temp.Valid)
+		{
+			contact_count_0--;
+			temp.Position = obj1.AbsolutePositionOfIndex(temp.Undex1);
+			data.Consider(temp);
+		}
 	}
 
-	for (unsigned int i = 0; i < obj1.CornerCount(); i++)
+	unsigned int contact_count_1 = obj1.CornerCount();
+	/*for (unsigned int i = 0; i < obj1.CornerCount(); i++)
 	{
 		n = obj1.EdgeNormalOfIndex(i);
 		temp = CheckContact(obj0, obj1, n, timeDelta);
 		if (!temp.Valid) { return ret; }
-		temp.Position = obj0.AbsolutePositionOfIndex(temp.Undex0);
-		data.Consider(temp);
+		if (temp.Valid)
+		{
+			contact_count_1--;
+			temp.Position = obj0.AbsolutePositionOfIndex(temp.Undex0);
+			data.Consider(temp);
+		}
+	}*/
+	for (unsigned int i = 0; i < obj1.CornerCount(); i++)
+	{
+		edge = obj1.EdgeOfIndex(i);
+		o = (edge.Pos0 + edge.Pos1) / 2;
+		n = obj1.EdgeNormalOfIndex(i);
+
+		ObjectProjection::DebugShow = (i == (ObjectProjection::DebugIndex - obj0.CornerCount()));
+		if (ObjectProjection::DebugShow)
+		{
+			ObjectProjection::DebugOrigin = o;
+		}
+
+		temp = CheckContact(o, n, obj0, timeDelta);
+		//ObjectProjection::DebugShow = false;
+		//temp = CheckContact(obj0, obj1, n, timeDelta);
+
+		if (temp.Valid)
+		{
+			contact_count_1--;
+			temp.Position = obj0.AbsolutePositionOfIndex(temp.Undex0);
+			data.Consider(temp);
+		}
 	}
 
-	ret = data;
+	if (contact_count_0 == 0 && contact_count_1 == 0)
+	{
+		ret = data;
+	}
 	return ret;
 }

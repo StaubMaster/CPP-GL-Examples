@@ -79,6 +79,7 @@
 // Other
 #include "Arrow2D/RankLengths.hpp"
 #include "FrameTime.hpp"
+#include "Physics2D/Collision/ObjectProjection.hpp"
 
 
 
@@ -395,6 +396,16 @@ void Frame(double timeDelta)
 		else if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::I.Flags].IsPress())
 		{ SceneData.IsSimulating = true; }
 	}
+
+	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::KeyPadAdd.Flags].IsPress())
+	{
+		Physics2D::Collision::ObjectProjection::DebugIndex++;
+	}
+	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::KeyPadSub.Flags].IsPress())
+	{
+		Physics2D::Collision::ObjectProjection::DebugIndex--;
+	}
+	std::cout << "Index: " << Physics2D::Collision::ObjectProjection::DebugIndex << '\n';
 
 	{
 		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());

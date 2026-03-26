@@ -11,6 +11,13 @@ namespace Collision
 {
 struct ObjectProjection
 {
+	static unsigned int DebugIndex;
+	static bool DebugShow;
+	static Point2D DebugOrigin;
+
+//	float	Distance;
+//	float	Undex;
+
 	AxisBox1D		Box;
 	unsigned int	MinUdx;
 	unsigned int	MaxUdx;
@@ -23,7 +30,15 @@ struct ObjectProjection
 
 	void Consider(float val, unsigned int idx);
 
-	static ObjectProjection Project(Point2D normal, const Object & obj);
+	static ObjectProjection Project(
+		Point2D normal,
+		const Object & obj
+	);
+	static ObjectProjection Project(
+		Point2D origin,
+		Point2D normal,
+		const Object & obj
+	);
 };
 struct ObjectProjectionOverlap
 {
