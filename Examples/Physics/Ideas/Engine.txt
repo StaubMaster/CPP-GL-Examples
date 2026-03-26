@@ -56,20 +56,6 @@ Changes:
 
 
 
-Ray2D
-	Normal()
-	Ray2D(Line2D)
-
-Line2D
-	Normal()
-	Differance()
-	Length()
-	Reverse()
-	Line2D(Ray2D)
-	Middle()
-
-
-
 Container::Block
 	takes a Block size (1024)
 	then allocates in Blocks

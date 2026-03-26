@@ -60,11 +60,6 @@ Line2D Physics2D::Object::EdgeOfIndex(unsigned int idx) const
 		);
 	}
 }
-Point2D Physics2D::Object::EdgeNormalOfIndex(unsigned int idx) const
-{
-	Line2D line = EdgeOfIndex(idx);
-	return (line.Pos1 - line.Pos0).perpendicular0().normalize();
-}
 
 
 

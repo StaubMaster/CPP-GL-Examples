@@ -118,8 +118,8 @@ bool Physics2D::Collision::ContactData::Contact(
 	for (unsigned int i = 0; i < edges.CornerCount(); i++)
 	{
 		edge = edges.EdgeOfIndex(i);
-		origin = (edge.Pos0 + edge.Pos1) / 2;
-		normal = edges.EdgeNormalOfIndex(i);
+		origin = edge.Middle();
+		normal = edge.Normal();
 
 		Projection::DebugShow = (&edges == Projection::DebugObject && i == Projection::DebugEdgeUndex);
 		if (Projection::DebugShow)

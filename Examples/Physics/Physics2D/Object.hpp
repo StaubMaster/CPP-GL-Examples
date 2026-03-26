@@ -78,11 +78,6 @@ struct Object
 		undefiend if idx >= Corners.Count
 	*/
 	Line2D		EdgeOfIndex(unsigned int idx) const;
-	/* Edge from [idx - 1] to [idx - 0]
-		undefined if Corners.Count < 2
-		undefiend if idx >= Corners.Count
-	*/
-	Point2D		EdgeNormalOfIndex(unsigned int idx) const;
 
 
 
