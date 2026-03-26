@@ -10,6 +10,7 @@
 
 # include "ValueType/Matrix3x3.hpp"
 
+# include "Physics2D/Collision/Projection.hpp"
 # include "Physics2D/Collision/Contact.hpp"
 
 namespace Physics2D
@@ -24,6 +25,14 @@ struct ResolveData
 	Angle2D	Rot0;
 	Angle2D	Rot1;
 };
+
+ResolveData Resolve(
+	Point2D normal,
+	Projection & projection,
+	Object & obj0,
+	Object & obj1,
+	float timeDelta
+);
 
 ResolveData Resolve(
 	ContactData & contact,

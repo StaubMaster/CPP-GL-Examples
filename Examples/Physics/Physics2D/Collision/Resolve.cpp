@@ -5,15 +5,14 @@
 
 
 Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
-	ContactData & contact,
+	Point2D normal,
+	Projection & projection,
 	Object & obj0,
 	Object & obj1,
 	float timeDelta
 )
 {
 	(void)timeDelta;
-
-	Projection & projection = contact.Projections[0];
 
 	//Point2D PosRel0 = obj0.RelativePositionOfIndex(contact.Undex0);
 	//Point2D PosAbs0 = obj0.AbsolutePositionOf(PosRel0);
@@ -56,7 +55,7 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 	//Point2D RelativeContact1 = contact_data.Contact1.PosAbs - obj1.ExtData.Now.Pos;
 
 	//contact_data.Velocity = contact_data.Velocity * timeDelta;
-	float NormalVelFactor = Point2D::dot(Velocity, contact.Normal);
+	float NormalVelFactor = Point2D::dot(Velocity, normal);
 
 //	Point3D normal_3D(contact_data.Normal.X, contact_data.Normal.Y, 0);
 //	Point3D RelativeContact0_3D(RelativeContact0.X, RelativeContact0.Y, 0);
@@ -70,13 +69,13 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 //
 //	float InertiaFactorSum = Point2D::dot(Point2D(ContactPerpendicularSum_3D.X, ContactPerpendicularSum_3D.Y), contact_data.Normal);
 
-	float ContactAxis0 = Point2D::cross(RelativeContact0, contact.Normal);
-	float ContactAxis1 = Point2D::cross(RelativeContact1, contact.Normal);
+	float ContactAxis0 = Point2D::cross(RelativeContact0, normal);
+	float ContactAxis1 = Point2D::cross(RelativeContact1, normal);
 	Point2D ContactMomentOfInertia0 = Point2D::cross(ContactAxis0 * MomentOfInertiaInverse0, RelativeContact0);
 	Point2D ContactMomentOfInertia1 = Point2D::cross(ContactAxis1 * MomentOfInertiaInverse1, RelativeContact1);
 	Point2D ContactMomentOfInertiaSum = ContactMomentOfInertia0 + ContactMomentOfInertia1;
 
-	float MomentOfInertiaSum = Point2D::dot(ContactMomentOfInertiaSum, contact.Normal);
+	float MomentOfInertiaSum = Point2D::dot(ContactMomentOfInertiaSum, normal);
 
 //	std::cout << "RelativeContact0: " << RelativeContact0 << ' ' << RelativeContact0.length() << '\n';
 //	std::cout << "RelativeContact1: " << RelativeContact1 << ' ' << RelativeContact1.length() << '\n';
@@ -109,7 +108,7 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 
 	//std::cout << "Contact Position : " << contact_data.Position << " dm\n";
 	//std::cout << "Contact Velocity : " << contact_data.Velocity << " dm/s\n";
-	std::cout << "Contact Normal   : " << contact.Normal << ' ' << contact.Normal.length() << '\n';
+	std::cout << "Contact Normal   : " << normal << ' ' << normal.length() << '\n';
 	std::cout << '\n';
 
 	std::cout << "NormalVelFactor  : " << NormalVelFactor << '\n';
@@ -134,10 +133,32 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 	std::cout << '\n';
 
 	ResolveData data;
-	data.Pos0 = contact.Normal * (ImpulseFactor * MassInverse0);
-	data.Pos1 = contact.Normal * (ImpulseFactor * MassInverse1);
+	data.Pos0 = normal * (ImpulseFactor * MassInverse0);
+	data.Pos1 = normal * (ImpulseFactor * MassInverse1);
 	data.Rot0 = Angle2D(Angle::Radians(ContactAxis0 * (ImpulseFactor * MomentOfInertiaInverse0)));
 	data.Rot1 = Angle2D(Angle::Radians(ContactAxis1 * (ImpulseFactor * MomentOfInertiaInverse1)));
 	return data;
 }
 
+
+
+Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
+	ContactData & contact,
+	Object & obj0,
+	Object & obj1,
+	float timeDelta
+)
+{
+	(void)timeDelta;
+
+	ResolveData data;
+	//ResolveData temp;
+
+	//unsigned int n = contact.Projections.Count();
+
+	
+
+	data = Resolve(contact.Normal, contact.Projections[0], obj0, obj1, timeDelta);
+
+	return data;
+}

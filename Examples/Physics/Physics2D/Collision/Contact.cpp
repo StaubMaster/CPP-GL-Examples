@@ -115,23 +115,23 @@ bool Physics2D::Collision::ContactData::Contact(
 	ContactData	temp;
 
 	Line2D		edge;
-	Point2D		o;
-	Point2D		n;
+	Point2D		origin;
+	Point2D		normal;
 
 	unsigned int non_contact_count = edges.CornerCount();
 	for (unsigned int i = 0; i < edges.CornerCount(); i++)
 	{
 		edge = edges.EdgeOfIndex(i);
-		o = (edge.Pos0 + edge.Pos1) / 2;
-		n = edges.EdgeNormalOfIndex(i);
+		origin = (edge.Pos0 + edge.Pos1) / 2;
+		normal = edges.EdgeNormalOfIndex(i);
 
 		Projection::DebugShow = (&edges == Projection::DebugObject && i == Projection::DebugEdgeUndex);
 		if (Projection::DebugShow)
 		{
-			Projection::DebugOrigin = o;
+			Projection::DebugOrigin = origin;
 		}
 
-		temp = Project(o, n, contacts);
+		temp = Project(origin, normal, contacts);
 
 		if (temp.Valid)
 		{
