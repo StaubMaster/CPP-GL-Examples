@@ -25,7 +25,7 @@ void Physics2D::Collide(
 {
 	if (obj0.IsStatic && obj1.IsStatic) { return; }
 
-	Collision::ContactData contact_data = Collision::ContactData::CheckContact(obj0, obj1, 1.0f);
+	Collision::ContactData contact_data = Collision::ContactData::Contact(obj0, obj1, 1.0f);
 	if (!contact_data.Valid) { return; }
 
 	Collision::ResolveData resolve_data = Collision::Resolve(contact_data, obj0, obj1, timeDelta);
@@ -61,7 +61,7 @@ void Physics2D::Seperate(
 {
 	if (obj0.IsStatic && obj1.IsStatic) { return; }
 
-	Physics2D::Collision::ContactData contact_data = Physics2D::Collision::ContactData::CheckContact(obj0, obj1, 1.0f);
+	Physics2D::Collision::ContactData contact_data = Physics2D::Collision::ContactData::Contact(obj0, obj1, 1.0f);
 	if (!contact_data.Valid) { return; }
 
 	unsigned int IntersektCount = 0;

@@ -413,7 +413,7 @@ void Frame(double timeDelta)
 	{
 		Physics2D::Collision::Projection::DebugObject = nullptr;
 	}
-	//std::cout << "EdgeUnddx: " << Physics2D::Collision::Projection::DebugEdgeUndex << '\n';
+	std::cout << "EdgeUnddx: " << Physics2D::Collision::Projection::DebugEdgeUndex << '\n';
 
 	{
 		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());

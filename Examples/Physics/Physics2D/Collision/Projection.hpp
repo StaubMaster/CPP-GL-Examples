@@ -18,7 +18,6 @@ struct Projection
 
 
 
-	Point2D			Normal;
 	Point2D			Position;
 	float			Distance;
 
@@ -28,41 +27,10 @@ struct Projection
 	Projection(const Projection & other);
 	Projection & operator=(const Projection & other);
 
-	void Consider(const Projection & other);
-
 	static Projection Project(
 		Point2D origin,
 		Point2D normal,
 		Point2D point
-	);
-
-	static Projection Project(
-		Point2D origin,
-		Point2D normal,
-		const Object & obj
-	);
-};
-// make ContactData like this
-struct ProjectionData
-{
-	Point2D		Normal;
-	float		Limit;
-	float		Sum;
-
-	Container::Binary<Projection>	Projections;
-
-	~ProjectionData();
-	ProjectionData();
-
-	ProjectionData(const ProjectionData & other);
-	ProjectionData & operator=(const ProjectionData & other);
-
-	void Consider(const Projection & projection);
-
-	static ProjectionData Project(
-		Point2D origin,
-		Point2D normal,
-		const Object & obj
 	);
 };
 };
