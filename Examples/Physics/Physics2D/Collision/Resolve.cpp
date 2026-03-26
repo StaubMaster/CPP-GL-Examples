@@ -152,13 +152,18 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 	(void)timeDelta;
 
 	ResolveData data;
-	//ResolveData temp;
+	ResolveData temp;
+	unsigned int n = contact.Projections.Count();
 
-	//unsigned int n = contact.Projections.Count();
+	for (unsigned int i = 0; i < n; i++)
+	{
+		temp = Resolve(contact.Normal, contact.Projections[i], obj0, obj1, timeDelta);
 
-	
-
-	data = Resolve(contact.Normal, contact.Projections[0], obj0, obj1, timeDelta);
+		data.Pos0 += temp.Pos0 / n;
+		data.Pos1 += temp.Pos1 / n;
+		data.Rot0 += temp.Rot0 / n;
+		data.Rot1 += temp.Rot1 / n;
+	}
 
 	return data;
 }

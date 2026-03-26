@@ -397,6 +397,14 @@ void Frame(double timeDelta)
 		{ SceneData.IsSimulating = true; }
 	}
 
+	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Home.Flags].IsPress())
+	{
+		if (SceneData.Selected)
+		{
+			Physics2D_Manager.Objects[SceneData.Selected] -> ExtData.Vel = Trans2D();
+		}
+	}
+
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::KeyPadAdd.Flags].IsPress())
 	{
 		Physics2D::Collision::Projection::DebugEdgeUndex++;
@@ -413,7 +421,6 @@ void Frame(double timeDelta)
 	{
 		Physics2D::Collision::Projection::DebugObject = nullptr;
 	}
-	std::cout << "EdgeUnddx: " << Physics2D::Collision::Projection::DebugEdgeUndex << '\n';
 
 	{
 		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
