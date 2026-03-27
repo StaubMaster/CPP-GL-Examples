@@ -85,6 +85,35 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::Project(
 
 
 
+/* deciding contact
+
+	0-------1
+	|  [A]  |
+	|		|
+	|		|
+	|		|
+	|		|
+	|	0---|-----------1
+	|	|	|			|
+	3---|---2		[B] |
+		|				|
+		3---------------2
+
+in this case, it decides that eighter
+	[A] { 2 , 3 }
+or
+	[B] { 3 , 0 }
+are Contacts
+but [A] { 3 } and [B] { 3 } are not Contacs
+as they are outside
+
+instead, [A] { 0 } and [B] { 2 } are both Contacts
+that should be resolved
+even though they are along different normals
+
+is this correct ?
+*/
+
 bool Physics2D::Collision::ContactData::Compare(const ContactData & other) const
 {
 	if (!other.Valid) { return false; }

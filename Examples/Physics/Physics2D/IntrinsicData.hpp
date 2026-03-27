@@ -16,6 +16,7 @@ struct IntrinsicData
 	float		Density;
 	Point2D		CenterOfMass;
 	float		MomentOfInertia;
+	float		Restitution;
 
 	float		BoxCMomentOfInertia;
 	float		BoxWMomentOfInertia;

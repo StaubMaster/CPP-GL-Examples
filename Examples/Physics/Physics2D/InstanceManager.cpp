@@ -30,6 +30,7 @@ Physics2D::InstanceManager::InstanceManager()
 	, Buffer_Bound(GL::DrawMode::Lines)
 {
 	IntData.Density = 1.0f;
+	IntData.Restitution = 1.0f;
 }
 Physics2D::InstanceManager::InstanceManager(const InstanceManager & other)
 	: Manager(other.Manager)

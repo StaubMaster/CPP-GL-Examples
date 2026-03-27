@@ -246,6 +246,7 @@ void Make()
 		//Physics2D::Object::Construct(Trans2D(), Trans2D(Point2D(), Angle2D(Angle::Degrees(90))), false);
 		Physics2D::Object::Construct(Trans2D(Point2D(0, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(), true);
 		Physics2D::Object::Construct(Trans2D(Point2D(0, 0.5f), Angle2D(Angle::Degrees(15))), Trans2D(), false);
+		//Physics2D::Object::Construct(Trans2D(Point2D(0, 1.5f), Angle2D(Angle::Degrees(90))), Trans2D(), false);
 	}
 
 
