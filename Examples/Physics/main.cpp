@@ -329,8 +329,8 @@ void GridTest()
 		buffer.Inst.Size.Change(2);
 	}
 
-	unsigned int n = 8;
-	Grid2D grid(0.1f * n, 15.0f);
+	unsigned int n = 8; // Cells per Section
+	Grid2D & grid = SceneData.Grid;
 
 	shader.Create();
 	buffer.Create();
@@ -401,8 +401,8 @@ void GridTest()
 	data.Insert(temp);
 
 	Point2D pos(
-		floor(view.Trans.Pos.X / grid.Lin) * grid.Lin,
-		floor(view.Trans.Pos.Y / grid.Lin) * grid.Lin
+		floor(view.Trans.Pos.X / (grid.Lin * n)) * (grid.Lin * n),
+		floor(view.Trans.Pos.Y / (grid.Lin * n)) * (grid.Lin * n)
 	);
 
 	float k = 1;
@@ -410,9 +410,9 @@ void GridTest()
 	{
 		for (int x = +k; x >= -k; x--)
 		{
-			temp.Pos.X = pos.X + (x * grid.Lin);
-			temp.Pos.Y = pos.Y + (y * grid.Lin);
-			temp.Size = grid.Lin;
+			temp.Pos.X = pos.X + (x * grid.Lin * n);
+			temp.Pos.Y = pos.Y + (y * grid.Lin * n);
+			temp.Size = grid.Lin * n;
 			data.Insert(temp);
 		}
 	}

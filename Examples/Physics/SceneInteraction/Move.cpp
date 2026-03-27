@@ -47,9 +47,7 @@ void InteractionObjectMove::Change(SceneInteractionData & SceneData)
 	if (Object.IsValid())
 	{
 		Target = SceneData.Cursor - Offset;
-
-		Grid2D grid(0.1f, 15.0f);
-		Target = grid.Align(Target);
+		Target = SceneData.Grid.Align(Target);
 	}
 }
 void InteractionObjectMove::Update(SceneInteractionData & SceneData)

@@ -4,6 +4,7 @@
 # include "Physics2D/Manager.hpp"
 # include "ValueType/Undex.hpp"
 # include "ValueType/Point2D.hpp"
+# include "Grid2D/Grid2D.hpp"
 # include "FrameTime.hpp"
 
 struct SceneInteractionData
@@ -12,6 +13,7 @@ struct SceneInteractionData
 	Undex					Selected;
 	Undex					Hovering;
 	Point2D					Cursor;
+	Grid2D					Grid;
 	::FrameTime				FrameTime;
 	bool					IsRunning;
 	bool					IsSimulating;
