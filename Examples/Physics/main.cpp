@@ -329,6 +329,9 @@ void GridTest()
 		buffer.Inst.Size.Change(2);
 	}
 
+	unsigned int n = 8;
+	Grid2D grid(0.1f * n, 15.0f);
+
 	shader.Create();
 	buffer.Create();
 	buffer.Main.ChangeAttributeBinding();
@@ -336,37 +339,28 @@ void GridTest()
 	{
 		buffer.Bind();
 		{
-unsigned int n = 8;
 {
 	Container::Binary<Grid2DGraphics::Main::Data> data;
 	Grid2DGraphics::Main::Data temp;
 	for (unsigned int i = 0; i <= n; i++)
 	{
-		float t0 = ((float)i) / n;
-		float t1 = 1.0f - t0;
-		float f = (t1 * -1.0f) + (t0 * +1.0f);
-		temp.Pos = Point2D(-1.0f, f); data.Insert(temp);
+		float t = ((float)i) / n;
+		temp.Pos = Point2D(0, t); data.Insert(temp);
 	}
 	for (unsigned int i = 0; i <= n; i++)
 	{
-		float t0 = ((float)i) / n;
-		float t1 = 1.0f - t0;
-		float f = (t1 * -1.0f) + (t0 * +1.0f);
-		temp.Pos = Point2D(+1.0f, f); data.Insert(temp);
+		float t = ((float)i) / n;
+		temp.Pos = Point2D(1, t); data.Insert(temp);
 	}
 	for (unsigned int i = 0; i <= n; i++)
 	{
-		float t0 = ((float)i) / n;
-		float t1 = 1.0f - t0;
-		float f = (t1 * -1.0f) + (t0 * +1.0f);
-		temp.Pos = Point2D(f, -1.0f); data.Insert(temp);
+		float t = ((float)i) / n;
+		temp.Pos = Point2D(t, 0); data.Insert(temp);
 	}
 	for (unsigned int i = 0; i <= n; i++)
 	{
-		float t0 = ((float)i) / n;
-		float t1 = 1.0f - t0;
-		float f = (t1 * -1.0f) + (t0 * +1.0f);
-		temp.Pos = Point2D(f, +1.0f); data.Insert(temp);
+		float t = ((float)i) / n;
+		temp.Pos = Point2D(t, 1); data.Insert(temp);
 	}
 	buffer.Main.Change(data);
 }
@@ -388,10 +382,41 @@ unsigned int n = 8;
 	buffer.Elem.Change(data);
 }
 {
+/* these are grid Sections
+	the grid has a float Scale
+	aligh the grid Sections with that Scale
+	relative to the Origin
+*/
+
 	Container::Binary<Grid2DGraphics::Inst::Data> data;
 	Grid2DGraphics::Inst::Data temp;
-	temp.Pos = Point2D(0, 0); data.Insert(temp);
-	temp.Pos = Point2D(-3, 0); data.Insert(temp);
+
+	temp.Pos.X = view.Trans.Pos.X;
+	temp.Pos.Y = view.Trans.Pos.Y;
+	temp.Size = 0.25f;
+	data.Insert(temp);
+	temp.Pos.X = view.Trans.Pos.X - 0.25f;
+	temp.Pos.Y = view.Trans.Pos.Y - 0.25f;
+	temp.Size = 0.25f;
+	data.Insert(temp);
+
+	Point2D pos(
+		floor(view.Trans.Pos.X / grid.Lin) * grid.Lin,
+		floor(view.Trans.Pos.Y / grid.Lin) * grid.Lin
+	);
+
+	float k = 1;
+	for (int y = +k; y >= -k; y--)
+	{
+		for (int x = +k; x >= -k; x--)
+		{
+			temp.Pos.X = pos.X + (x * grid.Lin);
+			temp.Pos.Y = pos.Y + (y * grid.Lin);
+			temp.Size = grid.Lin;
+			data.Insert(temp);
+		}
+	}
+
 	buffer.Inst.Change(data);
 }
 		}
@@ -484,6 +509,7 @@ void ScreenShot()
 void Draw()
 {
 	Physics2D_Manager.Draw();
+	GridTest();
 }
 
 void Frame(double timeDelta)
@@ -493,8 +519,6 @@ void Frame(double timeDelta)
 	SceneData.FrameTime.Update(timeDelta);
 
 	UpdateView(frame_time);
-
-	GridTest();
 
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Space.Flags].IsPress()) { SceneData.IsRunning = !SceneData.IsRunning; }
 	SceneData.IsSimulating = SceneData.IsRunning;

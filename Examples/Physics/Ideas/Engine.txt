@@ -64,3 +64,14 @@ Container::Block
 	this is similar to Binary
 	but Binary reallocates less, the more it has
 
+
+Point
+	Round()			round all values
+	RoundPositive()	round positive (ceiling)
+	RoundNegative()	round negative (floor)
+
+	Round(float)	round based on a value (round(val / param)) * param
+	RoundPls(float)	
+	RoundMns(float)	
+
+	normalize() with length 0 should not NaN
