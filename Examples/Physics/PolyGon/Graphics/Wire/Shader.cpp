@@ -2,7 +2,7 @@
 
 
 
-PolyGon::Wire::Shader::Shader()
+PolyGonWire::Shader::Shader()
 	: ::Shader::Base()
 	, DisplaySize(*this,"DisplaySize")
 	, View(*this,"View")

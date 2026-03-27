@@ -5,7 +5,7 @@
 
 
 
-PolyGon::Full::Main::Buffer::Buffer(BufferArray::Base & buffer_array)
+PolyGonFull::Main::Buffer::Buffer(BufferArray::Base & buffer_array)
 	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
 	, Pos()
 	, Col()

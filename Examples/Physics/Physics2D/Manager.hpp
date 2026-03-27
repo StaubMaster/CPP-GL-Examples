@@ -35,8 +35,8 @@ struct Manager
 
 
 
-	PolyGon::Full::Shader		Shader_PolyGon;
-	PolyGon::Wire::Shader		Shader_WireFrame;
+	PolyGonFull::Shader		Shader_PolyGon;
+	PolyGonWire::Shader		Shader_WireFrame;
 
 	Container::Binary<Physics2D::InstanceManager>	MainInstances;
 

@@ -26,17 +26,17 @@ FILES_SRC := \
 	Arrow2D/Manager.cpp \
 	Arrow2D/Data.cpp \
 	Arrow2D/Object.cpp \
-\
+	\
 	Arrow2D/RankLengths.cpp \
 \
 	Inst2D/Buffer.cpp \
 \
-	PolyGon/Object.cpp \
-\
+	PolyGon/PolyGon.cpp \
+	\
 	PolyGon/Graphics/Full/Main/Data.cpp \
 	PolyGon/Graphics/Full/Main/Buffer.cpp \
 	PolyGon/Graphics/Full/Shader.cpp \
-\
+	\
 	PolyGon/Graphics/Wire/Main/Buffer.cpp \
 	PolyGon/Graphics/Wire/Shader.cpp \
 \
@@ -50,7 +50,8 @@ FILES_SRC := \
 	Physics2D/Collision/Resolve.cpp \
 	Physics2D/Collision.cpp \
 \
-	SceneInteraction/Grid2D.cpp \
+	Grid2D/Grid2D.cpp \
+\
 	SceneInteraction/Data.cpp \
 	SceneInteraction/Base.cpp \
 	SceneInteraction/Move.cpp \

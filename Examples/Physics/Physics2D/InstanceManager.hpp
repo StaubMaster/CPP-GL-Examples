@@ -11,7 +11,7 @@
 # include "Inst2D/Buffer.hpp"
 # include "ValueType/Trans2D.hpp"
 
-# include "PolyGon/Object.hpp"
+# include "PolyGon/PolyGon.hpp"
 # include "PolyGon/Graphics/Full/Buffer.hpp"
 # include "PolyGon/Graphics/Wire/Buffer.hpp"
 
@@ -46,12 +46,12 @@ struct InstanceManager
 
 	::Physics2D::Manager *	Manager;
 
-	::PolyGon::Object *	PolyGon;
-	::PolyGon::Object *	Bound;
+	::PolyGon *	PolyGon;
+	::PolyGon *	Bound;
 
-	::PolyGon::Full::Buffer		Buffer_PolyGon_Full;
-	::PolyGon::Wire::Buffer		Buffer_PolyGon_Wire;
-	::PolyGon::Wire::Buffer		Buffer_Bound;
+	::PolyGonFull::Buffer	Buffer_PolyGon_Full;
+	::PolyGonWire::Buffer	Buffer_PolyGon_Wire;
+	::PolyGonWire::Buffer	Buffer_Bound;
 
 	IntrinsicData	IntData;
 

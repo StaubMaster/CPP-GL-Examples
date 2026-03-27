@@ -5,9 +5,7 @@
 # include "Graphics/Attribute/Point2D.hpp"
 # include "Graphics/Attribute/ColorF4.hpp"
 
-namespace PolyGon
-{
-namespace Full
+namespace PolyGonFull
 {
 namespace Main
 {
@@ -18,7 +16,6 @@ class Buffer : public ::Buffer::Attribute
 	::Attribute::ColorF4	Col;
 	public:
 	Buffer(BufferArray::Base & buffer_array);
-};
 };
 };
 };

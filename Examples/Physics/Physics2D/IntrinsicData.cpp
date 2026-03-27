@@ -1,10 +1,10 @@
 #include "Physics2D/IntrinsicData.hpp"
-#include "PolyGon/Object.hpp"
+#include "PolyGon/PolyGon.hpp"
 #include "ValueType/AxisBox2D.hpp"
 
 
 
-void Physics2D::IntrinsicData::Calculate_Area(const PolyGon::Object &polygon)
+void Physics2D::IntrinsicData::Calculate_Area(const PolyGon & polygon)
 {
 	unsigned int n = polygon.Corners.Count();
 	Area = 0.0f;
@@ -28,7 +28,7 @@ void Physics2D::IntrinsicData::Calculate_Area(const PolyGon::Object &polygon)
 	Area *= (1.0 / 2.0f);
 	Mass = Area * Density;
 }
-void Physics2D::IntrinsicData::Calculate_CenterOfMass(const PolyGon::Object & polygon)
+void Physics2D::IntrinsicData::Calculate_CenterOfMass(const PolyGon & polygon)
 {
 	unsigned int n = polygon.Corners.Count();
 	CenterOfMass = Point2D();
@@ -51,7 +51,7 @@ void Physics2D::IntrinsicData::Calculate_CenterOfMass(const PolyGon::Object & po
 	}
 	CenterOfMass *= (1.0 / (6.0f * Area));
 }
-void Physics2D::IntrinsicData::Calculate_MomentOfInertia(const PolyGon::Object & polygon)
+void Physics2D::IntrinsicData::Calculate_MomentOfInertia(const PolyGon & polygon)
 {
 	unsigned int n = polygon.Corners.Count();
 	/* Moment of Inertia of Triangle
@@ -86,7 +86,7 @@ void Physics2D::IntrinsicData::Calculate_MomentOfInertia(const PolyGon::Object &
 	MomentOfInertia *= ((Mass / Area) / 12.0f);
 }
 
-void Physics2D::IntrinsicData::Calculate(const PolyGon::Object & polygon)
+void Physics2D::IntrinsicData::Calculate(const PolyGon & polygon)
 {
 	Calculate_Area(polygon);
 	Calculate_CenterOfMass(polygon);

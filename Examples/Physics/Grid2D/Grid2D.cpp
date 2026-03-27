@@ -1,4 +1,4 @@
-#include "SceneInteraction/Grid2D.hpp"
+#include "Grid2D/Grid2D.hpp"
 #include <math.h>
 
 

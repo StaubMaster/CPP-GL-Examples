@@ -4,9 +4,7 @@
 # include "ValueType/Point2D.hpp"
 # include "ValueType/ColorF4.hpp"
 
-namespace PolyGon
-{
-namespace Full
+namespace PolyGonFull
 {
 namespace Main
 {
@@ -17,7 +15,6 @@ struct Data
 	Data();
 	Data(Point2D pos);
 	Data(Point2D pos, ColorF4 col);
-};
 };
 };
 };

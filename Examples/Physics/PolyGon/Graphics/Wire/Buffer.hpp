@@ -7,16 +7,13 @@
 
 # include "OpenGLTypes.hpp"
 
-namespace PolyGon
-{
-namespace Wire
+namespace PolyGonWire
 {
 typedef ::BufferArray::MainElemInst<
-	PolyGon::Wire::Main::Buffer,
-	PolyGon::Wire::Elem::Buffer,
+	PolyGonWire::Main::Buffer,
+	PolyGonWire::Elem::Buffer,
 	Inst2D::Buffer
 > Buffer;
-};
 };
 
 #endif

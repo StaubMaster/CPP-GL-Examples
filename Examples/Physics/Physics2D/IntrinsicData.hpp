@@ -5,7 +5,7 @@
 # include "ValueType/Angle2D.hpp"
 # include "ValueType/Matrix3x3.hpp"
 
-namespace PolyGon { class Object; }
+class PolyGon;
 
 namespace Physics2D
 {
@@ -22,11 +22,11 @@ struct IntrinsicData
 	float		BoxWMomentOfInertia;
 	float		BoxHMomentOfInertia;
 
-	void Calculate_Area(const PolyGon::Object & polygon);
-	void Calculate_CenterOfMass(const PolyGon::Object & polygon);
-	void Calculate_MomentOfInertia(const PolyGon::Object & polygon);
+	void Calculate_Area(const PolyGon & polygon);
+	void Calculate_CenterOfMass(const PolyGon & polygon);
+	void Calculate_MomentOfInertia(const PolyGon & polygon);
 
-	void Calculate(const PolyGon::Object & polygon);
+	void Calculate(const PolyGon & polygon);
 };
 };
 

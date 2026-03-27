@@ -7,15 +7,12 @@
 
 # include "OpenGLTypes.hpp"
 
-namespace PolyGon
-{
-namespace Full
+namespace PolyGonFull
 {
 typedef ::BufferArray::MainInst<
-	PolyGon::Full::Main::Buffer,
+	PolyGonFull::Main::Buffer,
 	Inst2D::Buffer
 > Buffer;
-};
 };
 
 #endif

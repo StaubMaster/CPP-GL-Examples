@@ -1,4 +1,4 @@
-#include "PolyGon/Object.hpp"
+#include "PolyGon/PolyGon.hpp"
 
 #include "ValueType/Ray2D.hpp"
 #include "ValueType/Line2D.hpp"
@@ -7,28 +7,28 @@
 
 
 
-PolyGon::Object::Corner::Corner()
+PolyGon::Corner::Corner()
 	: Pos()
 	, Col()
 { }
-PolyGon::Object::Corner::Corner(Point2D pos)
+PolyGon::Corner::Corner(Point2D pos)
 	: Pos(pos)
 	, Col()
 { }
-PolyGon::Object::Corner::Corner(Point2D pos, ColorF4 col)
+PolyGon::Corner::Corner(Point2D pos, ColorF4 col)
 	: Pos(pos)
 	, Col(col)
 { }
 
 
 
-bool PolyGon::Object::Face::Check(unsigned int count) const
+bool PolyGon::Face::Check(unsigned int count) const
 {
 	return (udx[0] < count &&
 			udx[1] < count &&
 			udx[2] < count);
 }
-PolyGon::Object::Face::Face()
+PolyGon::Face::Face()
 	: udx
 	{
 		0xFFFFFFFF,
@@ -36,25 +36,25 @@ PolyGon::Object::Face::Face()
 		0xFFFFFFFF,
 	}
 { }
-PolyGon::Object::Face::Face(unsigned int u0, unsigned int u1, unsigned int u2)
+PolyGon::Face::Face(unsigned int u0, unsigned int u1, unsigned int u2)
 	: udx{ u0, u1, u2 }
 { }
 
 
 
-bool PolyGon::Object::Edge::Check(unsigned int count) const
+bool PolyGon::Edge::Check(unsigned int count) const
 {
 	return (udx[0] < count &&
 			udx[1] < count);
 }
-PolyGon::Object::Edge::Edge()
+PolyGon::Edge::Edge()
 	: udx
 	{
 		0xFFFFFFFF,
 		0xFFFFFFFF,
 	}
 { }
-PolyGon::Object::Edge::Edge(unsigned int u0, unsigned int u1)
+PolyGon::Edge::Edge(unsigned int u0, unsigned int u1)
 	: udx{ u0, u1 }
 { }
 
@@ -62,23 +62,23 @@ PolyGon::Object::Edge::Edge(unsigned int u0, unsigned int u1)
 
 
 
-PolyGon::Object::Object()
+PolyGon::PolyGon()
 	: Corners()
 	, Faces()
 	, Edges()
 { }
-PolyGon::Object::~Object()
+PolyGon::~PolyGon()
 { }
 
 
 
-void PolyGon::Object::Clear()
+void PolyGon::Clear()
 {
 	Corners.Clear();
 	Faces.Clear();
 	Edges.Clear();
 }
-void PolyGon::Object::NewCorner(Point2D pos, ColorF4 col)
+void PolyGon::NewCorner(Point2D pos, ColorF4 col)
 {
 	unsigned int c_idx = Corners.Count();
 	Corners.Insert(Corner(pos, col));
@@ -91,14 +91,14 @@ void PolyGon::Object::NewCorner(Point2D pos, ColorF4 col)
 	}
 	Edges.Insert(Edge(c_idx, 0));
 }
-void PolyGon::Object::NewFace(unsigned int c0, unsigned int c1, unsigned int c2)
+void PolyGon::NewFace(unsigned int c0, unsigned int c1, unsigned int c2)
 {
 	Faces.Insert(Face(c0, c1, c2));
 }
 
 
 
-AxisBox2D PolyGon::Object::ToAxisBox() const
+AxisBox2D PolyGon::ToAxisBox() const
 {
 	AxisBox2D box;
 	for (unsigned int i = 0; i < Corners.Count(); i++)
@@ -107,9 +107,9 @@ AxisBox2D PolyGon::Object::ToAxisBox() const
 	}
 	return box;
 }
-Container::Pointer<PolyGon::Full::Main::Data> PolyGon::Object::ToFullData() const
+Container::Pointer<PolyGonFull::Main::Data> PolyGon::ToFullData() const
 {
-	Container::Pointer<PolyGon::Full::Main::Data> data(Faces.Count() * 3);
+	Container::Pointer<PolyGonFull::Main::Data> data(Faces.Count() * 3);
 
 	for (unsigned int f = 0; f < Faces.Count(); f++)
 	{
@@ -138,7 +138,7 @@ Container::Pointer<PolyGon::Full::Main::Data> PolyGon::Object::ToFullData() cons
 
 
 
-unsigned int PolyGon::Object::SumIntersections(Ray2D ray) const
+unsigned int PolyGon::SumIntersections(Ray2D ray) const
 {
 	unsigned int sum = 0;
 	for (unsigned int f = 0; f < Faces.Count(); f++)
@@ -157,7 +157,7 @@ unsigned int PolyGon::Object::SumIntersections(Ray2D ray) const
 	}
 	return sum;
 }
-bool PolyGon::Object::IsContaining(Point2D p) const
+bool PolyGon::IsContaining(Point2D p) const
 {
 	return ((SumIntersections(Ray2D(p, Point2D(1, 0))) % 2) != 0);
 }

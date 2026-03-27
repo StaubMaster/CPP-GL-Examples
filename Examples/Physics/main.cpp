@@ -38,7 +38,7 @@
 #include "PolyGon/Graphics/Full/Shader.hpp"
 #include "PolyGon/Graphics/Full/Main/Data.hpp"
 
-#include "PolyGon/Object.hpp"
+#include "PolyGon/PolyGon.hpp"
 
 // Physics
 #include "Physics2D/Collision.hpp"
@@ -167,24 +167,24 @@ void Make()
 	{
 		float thickness0 = 1.0f;
 		float thickness1 = 0.1f;
-		PolyGon::Object & poly_gon = *(wall.PolyGon);
-		poly_gon.NewCorner(Point2D(-thickness0, 0), ColorF4(1, 1, 1));
-		poly_gon.NewCorner(Point2D(+thickness0, 0), ColorF4(1, 1, 1));
-		poly_gon.NewCorner(Point2D(-thickness0 - thickness1, -thickness1), ColorF4(0, 0, 0));
-		poly_gon.NewCorner(Point2D(+thickness0 + thickness1, -thickness1), ColorF4(0, 0, 0));
-		poly_gon.NewFace(0, 1, 2);
-		poly_gon.NewFace(2, 1, 3);
+		PolyGon & polygon = *(wall.PolyGon);
+		polygon.NewCorner(Point2D(-thickness0, 0), ColorF4(1, 1, 1));
+		polygon.NewCorner(Point2D(+thickness0, 0), ColorF4(1, 1, 1));
+		polygon.NewCorner(Point2D(-thickness0 - thickness1, -thickness1), ColorF4(0, 0, 0));
+		polygon.NewCorner(Point2D(+thickness0 + thickness1, -thickness1), ColorF4(0, 0, 0));
+		polygon.NewFace(0, 1, 2);
+		polygon.NewFace(2, 1, 3);
 	}
 	wall.Manager = &Physics2D_Manager;
 
 	idx = Physics2D_Manager.MainInstances.Insert(Physics2D::InstanceManager()).Offset;
 	Physics2D::InstanceManager & obj0 = Physics2D_Manager.MainInstances[idx];
 	{
-		PolyGon::Object & poly_gon = *(obj0.PolyGon);
-		poly_gon.NewCorner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0));
-		poly_gon.NewCorner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0));
-		poly_gon.NewCorner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1));
-		poly_gon.NewFace(0, 1, 2);
+		PolyGon & polygon = *(obj0.PolyGon);
+		polygon.NewCorner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0));
+		polygon.NewCorner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0));
+		polygon.NewCorner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1));
+		polygon.NewFace(0, 1, 2);
 	}
 	obj0.Manager = &Physics2D_Manager;
 
@@ -192,30 +192,30 @@ void Make()
 	Physics2D::InstanceManager & obj1 = Physics2D_Manager.MainInstances[idx];
 	{
 		float size = 0.1f;
-		PolyGon::Object & poly_gon = *(obj1.PolyGon);
-		poly_gon.NewCorner(Point2D(-size, -size), ColorF4(0, 1, 0));
-		poly_gon.NewCorner(Point2D(+size, -size), ColorF4(0, 0, 1));
-		poly_gon.NewCorner(Point2D(+size, +size), ColorF4(0, 1, 0));
-		poly_gon.NewCorner(Point2D(-size, +size), ColorF4(1, 0, 0));
-		poly_gon.NewFace(0, 1, 2);
-		poly_gon.NewFace(2, 0, 3);
+		PolyGon & polygon = *(obj1.PolyGon);
+		polygon.NewCorner(Point2D(-size, -size), ColorF4(0, 1, 0));
+		polygon.NewCorner(Point2D(+size, -size), ColorF4(0, 0, 1));
+		polygon.NewCorner(Point2D(+size, +size), ColorF4(0, 1, 0));
+		polygon.NewCorner(Point2D(-size, +size), ColorF4(1, 0, 0));
+		polygon.NewFace(0, 1, 2);
+		polygon.NewFace(2, 0, 3);
 	}
 	obj1.Manager = &Physics2D_Manager;
 
 	idx = Physics2D_Manager.MainInstances.Insert(Physics2D::InstanceManager()).Offset;
 	Physics2D::InstanceManager & obj2 = Physics2D_Manager.MainInstances[idx];
 	{
-		PolyGon::Object & poly_gon = *(obj2.PolyGon);
-		//poly_gon.NewCorner(Point2D(-0.5f, -0.025f), ColorF4(0, 1, 0));
-		//poly_gon.NewCorner(Point2D(+0.5f, -0.025f), ColorF4(0, 0, 1));
-		//poly_gon.NewCorner(Point2D(+0.5f, +0.025f), ColorF4(0, 1, 0));
-		//poly_gon.NewCorner(Point2D(-0.5f, +0.025f), ColorF4(1, 0, 0));
-		poly_gon.NewCorner(Point2D(-1.0f, -0.1f), ColorF4(0, 1, 0));
-		poly_gon.NewCorner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 1));
-		poly_gon.NewCorner(Point2D(+1.0f, +0.1f), ColorF4(0, 1, 0));
-		poly_gon.NewCorner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0));
-		poly_gon.NewFace(0, 1, 2);
-		poly_gon.NewFace(2, 0, 3);
+		PolyGon & polygon = *(obj2.PolyGon);
+		//polygon.NewCorner(Point2D(-0.5f, -0.025f), ColorF4(0, 1, 0));
+		//polygon.NewCorner(Point2D(+0.5f, -0.025f), ColorF4(0, 0, 1));
+		//polygon.NewCorner(Point2D(+0.5f, +0.025f), ColorF4(0, 1, 0));
+		//polygon.NewCorner(Point2D(-0.5f, +0.025f), ColorF4(1, 0, 0));
+		polygon.NewCorner(Point2D(-1.0f, -0.1f), ColorF4(0, 1, 0));
+		polygon.NewCorner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 1));
+		polygon.NewCorner(Point2D(+1.0f, +0.1f), ColorF4(0, 1, 0));
+		polygon.NewCorner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0));
+		polygon.NewFace(0, 1, 2);
+		polygon.NewFace(2, 0, 3);
 	}
 	obj2.Manager = &Physics2D_Manager;
 

@@ -6,9 +6,7 @@
 # include "Graphics/Attribute/Point2D.hpp"
 # include "Graphics/Attribute/ColorF4.hpp"
 
-namespace PolyGon
-{
-namespace Wire
+namespace PolyGonWire
 {
 namespace Main
 {
@@ -29,7 +27,6 @@ class Buffer : public ::Buffer::Element
 	public:
 	~Buffer();
 	Buffer(BufferArray::Base & buffer_array);
-};
 };
 };
 };

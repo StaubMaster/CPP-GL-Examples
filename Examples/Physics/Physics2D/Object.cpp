@@ -2,7 +2,7 @@
 #include "Physics2D/InstanceManager.hpp"
 #include "Physics2D/Manager.hpp"
 
-#include "PolyGon/Object.hpp"
+#include "PolyGon/PolyGon.hpp"
 
 
 
@@ -31,7 +31,7 @@ Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
 
 
 
-const ::PolyGon::Object & Physics2D::Object::PolyGon() const { return *(InstanceManager -> PolyGon); }
+const ::PolyGon & Physics2D::Object::PolyGon() const { return *(InstanceManager -> PolyGon); }
 
 unsigned int Physics2D::Object::CornerCount() const { return (PolyGon().Corners.Count()); }
 

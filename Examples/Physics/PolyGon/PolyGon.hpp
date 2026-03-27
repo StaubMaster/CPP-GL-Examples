@@ -1,5 +1,5 @@
-#ifndef  POLYGON_OBJECT_HPP
-# define POLYGON_OBJECT_HPP
+#ifndef  POLYGON_HPP
+# define POLYGON_HPP
 
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Container/Pointer.hpp"
@@ -8,9 +8,7 @@
 struct Ray2D;
 struct AxisBox2D;
 
-namespace PolyGon
-{
-class Object
+class PolyGon
 {
 	public:
 	struct Corner
@@ -42,11 +40,11 @@ class Object
 	Container::Binary<Edge>			Edges;
 
 	public:
-	~Object();
-	Object();
+	~PolyGon();
+	PolyGon();
 
-	Object(const Object & other) = delete;
-	Object & operator=(const Object & other) = delete;
+	PolyGon(const PolyGon & other) = delete;
+	PolyGon & operator=(const PolyGon & other) = delete;
 
 	public:
 	void Clear();
@@ -54,12 +52,11 @@ class Object
 	void NewFace(unsigned int c0, unsigned int c1, unsigned int c2);
 
 	AxisBox2D ToAxisBox() const;
-	Container::Pointer<PolyGon::Full::Main::Data>	ToFullData() const;
+	Container::Pointer<PolyGonFull::Main::Data>	ToFullData() const;
 
 	public:
 	unsigned int SumIntersections(Ray2D ray) const;
 	bool IsContaining(Point2D p) const;
-};
 };
 
 #endif

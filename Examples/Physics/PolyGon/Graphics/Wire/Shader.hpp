@@ -4,9 +4,7 @@
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/UniformsInclude.hpp"
 
-namespace PolyGon
-{
-namespace Wire
+namespace PolyGonWire
 {
 class Shader : public ::Shader::Base
 {
@@ -16,7 +14,6 @@ class Shader : public ::Shader::Base
 	Uniform::Float				Scale;
 	public:
 	Shader();
-};
 };
 };
 
