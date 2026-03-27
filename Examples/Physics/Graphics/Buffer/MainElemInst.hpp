@@ -26,11 +26,11 @@ class MainElemInst : public BufferArray::Base
 
 	public:
 	virtual ~MainElemInst() { }
-	MainElemInst(GL::DrawMode mode)
+	MainElemInst(GL::DrawMode mode, unsigned int elem_per_type)
 		: BufferArray::Base()
 		, Mode(mode)
 		, Main(*this)
-		, Elem(*this)
+		, Elem(*this, elem_per_type)
 		, Inst(*this)
 	{
 		Buffers.Allocate(3);

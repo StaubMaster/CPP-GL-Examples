@@ -19,10 +19,11 @@ void Buffer::Element::LogInfo(bool self) const
 }
 
 Buffer::Element::~Element() { }
-Buffer::Element::Element(::BufferArray::Base & buffer_array, GL::BufferDataUsage usage, GL::DrawIndexType index_type)
+Buffer::Element::Element(::BufferArray::Base & buffer_array, GL::BufferDataUsage usage, GL::DrawIndexType index_type, unsigned int elem_per_type)
 	: Buffer::Base(buffer_array, GL::BufferTarget::ElementArrayBuffer)
 	, Usage(usage)
 	, IndexType(index_type)
+	, ElemPerType(elem_per_type)
 	, DrawCount(0)
 { }
 
@@ -30,6 +31,7 @@ Buffer::Element::Element(const Element & other)
 	: Buffer::Base(other)
 	, Usage(other.Usage)
 	, IndexType(other.IndexType)
+	, ElemPerType(other.ElemPerType)
 	, DrawCount(other.DrawCount)
 { }
 Buffer::Element & Buffer::Element::operator=(const Element & other)
@@ -37,6 +39,7 @@ Buffer::Element & Buffer::Element::operator=(const Element & other)
 	Base::operator=(other);
 	Usage = other.Usage;
 	IndexType = other.IndexType;
+	ElemPerType = other.ElemPerType;
 	DrawCount = other.DrawCount;
 	return *this;
 }
@@ -46,12 +49,5 @@ void Buffer::Element::Change(const Container::Void & data)
 	Bind();
 	GL::BufferData(Target, data.VoidCount(), data.VoidData(), Usage);
 
-	DrawCount = data.Count();
-}
-void Buffer::Element::Change(const Container::Void & data, unsigned int multi)
-{
-	Bind();
-	GL::BufferData(Target, data.VoidCount(), data.VoidData(), Usage);
-
-	DrawCount = data.Count() * multi;
+	DrawCount = data.Count() * ElemPerType;
 }

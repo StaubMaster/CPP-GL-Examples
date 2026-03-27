@@ -76,6 +76,17 @@
 #include "SceneInteraction/Spin.hpp"
 #include "SceneInteraction/Force.hpp"
 
+// Grid
+# include "Grid2D/Grid2D.hpp"
+# include "Grid2D/Graphics/Main/Data.hpp"
+# include "Grid2D/Graphics/Main/Buffer.hpp"
+# include "Grid2D/Graphics/Elem/Data.hpp"
+# include "Grid2D/Graphics/Elem/Buffer.hpp"
+# include "Grid2D/Graphics/Inst/Data.hpp"
+# include "Grid2D/Graphics/Inst/Buffer.hpp"
+# include "Grid2D/Graphics/Buffer.hpp"
+# include "Grid2D/Graphics/Shader.hpp"
+
 // Other
 #include "Arrow2D/RankLengths.hpp"
 #include "FrameTime.hpp"
@@ -301,6 +312,101 @@ void Free()
 }
 
 
+void GridTest()
+{
+	Grid2DGraphics::Shader shader;
+	{
+		Container::Array<::Shader::Code> code({
+			::Shader::Code(ShaderDir.File("Grid2D/Grid2D.vert")),
+			::Shader::Code(ShaderDir.File("Grid2D/Basic.frag")),
+		});
+		shader.Change(code);
+	}
+	Grid2DGraphics::Buffer buffer(GL::DrawMode::Lines, 2);
+	{
+		buffer.Main.Pos.Change(0);
+		buffer.Inst.Pos.Change(1);
+		buffer.Inst.Size.Change(2);
+	}
+
+	shader.Create();
+	buffer.Create();
+	buffer.Main.ChangeAttributeBinding();
+	buffer.Inst.ChangeAttributeBinding();
+	{
+		buffer.Bind();
+		{
+unsigned int n = 8;
+{
+	Container::Binary<Grid2DGraphics::Main::Data> data;
+	Grid2DGraphics::Main::Data temp;
+	for (unsigned int i = 0; i <= n; i++)
+	{
+		float t0 = ((float)i) / n;
+		float t1 = 1.0f - t0;
+		float f = (t1 * -1.0f) + (t0 * +1.0f);
+		temp.Pos = Point2D(-1.0f, f); data.Insert(temp);
+	}
+	for (unsigned int i = 0; i <= n; i++)
+	{
+		float t0 = ((float)i) / n;
+		float t1 = 1.0f - t0;
+		float f = (t1 * -1.0f) + (t0 * +1.0f);
+		temp.Pos = Point2D(+1.0f, f); data.Insert(temp);
+	}
+	for (unsigned int i = 0; i <= n; i++)
+	{
+		float t0 = ((float)i) / n;
+		float t1 = 1.0f - t0;
+		float f = (t1 * -1.0f) + (t0 * +1.0f);
+		temp.Pos = Point2D(f, -1.0f); data.Insert(temp);
+	}
+	for (unsigned int i = 0; i <= n; i++)
+	{
+		float t0 = ((float)i) / n;
+		float t1 = 1.0f - t0;
+		float f = (t1 * -1.0f) + (t0 * +1.0f);
+		temp.Pos = Point2D(f, +1.0f); data.Insert(temp);
+	}
+	buffer.Main.Change(data);
+}
+{
+	Container::Binary<Grid2DGraphics::Elem::Data> data;
+	Grid2DGraphics::Elem::Data temp;
+	for (unsigned int i = 0; i <= n; i++)
+	{
+		temp.udx[0] = i + (0 * n) + 0;
+		temp.udx[1] = i + (1 * n) + 1;
+		data.Insert(temp);
+	}
+	for (unsigned int i = 0; i <= n; i++)
+	{
+		temp.udx[0] = i + (2 * n) + 1;
+		temp.udx[1] = i + (3 * n) + 2;
+		data.Insert(temp);
+	}
+	buffer.Elem.Change(data);
+}
+{
+	Container::Binary<Grid2DGraphics::Inst::Data> data;
+	Grid2DGraphics::Inst::Data temp;
+	temp.Pos = Point2D(0, 0); data.Insert(temp);
+	temp.Pos = Point2D(-3, 0); data.Insert(temp);
+	buffer.Inst.Change(data);
+}
+		}
+
+		shader.Bind();
+		shader.DisplaySize.Put(window.Size);
+		shader.View.Put(view.Trans);
+		shader.Scale.Put(view.Scale);
+
+		buffer.Draw();
+	}
+	shader.Delete();
+	buffer.Delete();
+}
+
 
 void UpdateView(FrameTime frame_time)
 {
@@ -387,6 +493,8 @@ void Frame(double timeDelta)
 	SceneData.FrameTime.Update(timeDelta);
 
 	UpdateView(frame_time);
+
+	GridTest();
 
 	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Space.Flags].IsPress()) { SceneData.IsRunning = !SceneData.IsRunning; }
 	SceneData.IsSimulating = SceneData.IsRunning;

@@ -26,8 +26,8 @@ Physics2D::InstanceManager::InstanceManager()
 	, PolyGon(new ::PolyGon())
 	, Bound(new ::PolyGon())
 	, Buffer_PolyGon_Full(GL::DrawMode::Triangles)
-	, Buffer_PolyGon_Wire(GL::DrawMode::Lines)
-	, Buffer_Bound(GL::DrawMode::Lines)
+	, Buffer_PolyGon_Wire(GL::DrawMode::Lines, 2)
+	, Buffer_Bound(GL::DrawMode::Lines, 2)
 {
 	IntData.Density = 1.0f;
 	IntData.Restitution = 1.0f;
@@ -142,11 +142,11 @@ void Physics2D::InstanceManager::GraphicsUpdateMain()
 	{
 		// Corner Color should be inverted
 		Buffer_PolyGon_Wire.Main.Change(PolyGon -> Corners);
-		Buffer_PolyGon_Wire.Elem.Change(PolyGon -> Edges, 2);
+		Buffer_PolyGon_Wire.Elem.Change(PolyGon -> Edges);
 	}
 	{
 		Buffer_Bound.Main.Change(Bound -> Corners);
-		Buffer_Bound.Elem.Change(Bound -> Edges, 2);
+		Buffer_Bound.Elem.Change(Bound -> Edges);
 	}
 }
 void Physics2D::InstanceManager::GraphicsUpdateInst()

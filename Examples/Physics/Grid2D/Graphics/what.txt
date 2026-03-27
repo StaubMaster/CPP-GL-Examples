@@ -1,0 +1,17 @@
+
+Grid
+
+Mains are Points along the Edges of the Grid
+Elements are Lies connecting those Points
+
+Instances are
+	Positions of the Centers of the Grids
+	Size of the Grids
+		should Position be like Indexes for the Size
+	Thickness of the Lines (maybe)
+
+
+
+Grid should be Absolute
+so reverse View transformation
+like all the others

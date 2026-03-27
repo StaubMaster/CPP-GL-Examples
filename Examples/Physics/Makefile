@@ -38,6 +38,7 @@ FILES_SRC := \
 	PolyGon/Graphics/Full/Shader.cpp \
 	\
 	PolyGon/Graphics/Wire/Main/Buffer.cpp \
+	PolyGon/Graphics/Wire/Elem/Buffer.cpp \
 	PolyGon/Graphics/Wire/Shader.cpp \
 \
 	Physics2D/InstanceManager.cpp \
@@ -51,6 +52,14 @@ FILES_SRC := \
 	Physics2D/Collision.cpp \
 \
 	Grid2D/Grid2D.cpp \
+	\
+	Grid2D/Graphics/Main/Data.cpp \
+	Grid2D/Graphics/Elem/Data.cpp \
+	Grid2D/Graphics/Inst/Data.cpp \
+	Grid2D/Graphics/Main/Buffer.cpp \
+	Grid2D/Graphics/Elem/Buffer.cpp \
+	Grid2D/Graphics/Inst/Buffer.cpp \
+	Grid2D/Graphics/Shader.cpp \
 \
 	SceneInteraction/Data.cpp \
 	SceneInteraction/Base.cpp \

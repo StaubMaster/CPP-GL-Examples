@@ -3,9 +3,8 @@
 
 # include "Graphics/Buffer/MainElemInst.hpp"
 # include "PolyGon/Graphics/Wire/Main/Buffer.hpp"
+# include "PolyGon/Graphics/Wire/Elem/Buffer.hpp"
 # include "Inst2D/Buffer.hpp"
-
-# include "OpenGLTypes.hpp"
 
 namespace PolyGonWire
 {

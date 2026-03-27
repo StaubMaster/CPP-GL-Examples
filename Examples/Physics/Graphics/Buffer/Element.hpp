@@ -14,6 +14,7 @@ class Element : public Base
 	public:
 	GL::BufferDataUsage		Usage;
 	GL::DrawIndexType		IndexType;
+	unsigned int			ElemPerType;
 	unsigned int			DrawCount;
 
 	public:
@@ -21,14 +22,13 @@ class Element : public Base
 
 	public:
 	virtual ~Element();
-	Element(::BufferArray::Base & buffer_array, GL::BufferDataUsage usage, GL::DrawIndexType index_type);
+	Element(::BufferArray::Base & buffer_array, GL::BufferDataUsage usage, GL::DrawIndexType index_type, unsigned int elem_per_type);
 
 	Element(const Element & other);
 	Element & operator=(const Element & other);
 
 	public:
 	void Change(const Container::Void & data);
-	void Change(const Container::Void & data, unsigned int multi);
 };
 };
 

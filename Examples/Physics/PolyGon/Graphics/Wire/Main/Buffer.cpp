@@ -14,10 +14,3 @@ PolyGonWire::Main::Buffer::Buffer(BufferArray::Base & buffer_array)
 	Attributes.Insert(&Pos);
 	Attributes.Insert(&Col);
 }
-
-
-
-PolyGonWire::Elem::Buffer::~Buffer() { }
-PolyGonWire::Elem::Buffer::Buffer(BufferArray::Base & buffer_array)
-	: ::Buffer::Element(buffer_array, GL::BufferDataUsage::StaticDraw, GL::DrawIndexType::UnsignedInt)
-{ }
