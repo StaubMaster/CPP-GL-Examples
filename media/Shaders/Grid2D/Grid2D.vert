@@ -51,5 +51,6 @@ void main()
 
 	gl_Position = vec4(pos, 0, 1);
 
-	vs_out.Col = vec4(0.375, 0.375, 0.375, 1);
+	vs_out.Col = vec4(0, 0, 0, 1);
+	//vs_out.Col = vec4(0.375, 0.375, 0.375, 1);
 }

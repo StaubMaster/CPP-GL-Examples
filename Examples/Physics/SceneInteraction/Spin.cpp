@@ -49,7 +49,7 @@ void InteractionObjectSpin::Change(SceneInteractionData & SceneData)
 		Trans2D & now = SceneData.Manager.Objects[Object] -> ExtData.Now;
 		Point2D rel = SceneData.Cursor - now.Pos;
 		Target = Offset + Angle2D::FromPoint2D(rel);
-		//Target = SceneData.Grid.Align(Target);
+		Target = SceneData.Grid.Align(Target);
 	}
 }
 void InteractionObjectSpin::Update(SceneInteractionData & SceneData)

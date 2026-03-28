@@ -12,12 +12,15 @@ use Numbers to change "Tool"
 
 struct Grid2D
 {
+	unsigned int LinSections;
+	unsigned int AngSections;
+
 	float	Lin;
 	float	Ang;
 
 	~Grid2D();
 	Grid2D();
-	Grid2D(float lin, float ang);
+	Grid2D(unsigned lin, unsigned ang);
 
 	Point2D		Align(Point2D p) const;
 	Angle2D		Align(Angle2D a) const;

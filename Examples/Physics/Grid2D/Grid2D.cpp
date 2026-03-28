@@ -5,12 +5,16 @@
 
 Grid2D::~Grid2D() { }
 Grid2D::Grid2D()
-	: Lin(1.0f)
+	: LinSections(1)
+	, AngSections(1)
+	, Lin(1.0f)
 	, Ang(1.0f)
 { }
-Grid2D::Grid2D(float lin, float ang)
-	: Lin(lin)
-	, Ang(ang)
+Grid2D::Grid2D(unsigned lin, unsigned ang)
+	: LinSections(lin)
+	, AngSections(ang)
+	, Lin(1.0f / lin)
+	, Ang(360.0f / ang)
 { }
 
 

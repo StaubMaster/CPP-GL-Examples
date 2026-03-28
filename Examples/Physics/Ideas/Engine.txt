@@ -65,6 +65,7 @@ Container::Block
 	but Binary reallocates less, the more it has
 
 
+
 Point
 	Round()			round all values
 	RoundPositive()	round positive (ceiling)
@@ -75,3 +76,29 @@ Point
 	RoundMns(float)	
 
 	normalize() with length 0 should not NaN
+
+Angle
+	also Round() functions
+	take Angle isntead of float due to Rad vs Deg
+
+Angle and Trans operators
+	currently to rotate an Angle with a Point
+	it would make more sense to multiply a Point with a Angle
+	same for Trans
+
+
+
+Graphics stuff
+	.Create()
+	.Delete()
+		take bool for if it should Log
+		otherwise, only Log Errors, like Shader not Compiling
+
+Attribute Buffer
+	currently, there is a function to set Attributes
+	set them when .Change() is called
+	do Attributes know their Buffer ?
+	they need to Bind it to change the Attributes
+	they currently dont know
+	but Uniforms know, and use a Binary Container
+	do the same in Attribute Buffer

@@ -96,6 +96,10 @@
 
 struct MainContext
 {
+/* only 1 MediaDirectory
+they should know where to find their stuff
+or just give them a hard coded subDirectory
+*/
 DirectoryInfo ImageDir;
 DirectoryInfo ShaderDir;
 DirectoryInfo PolyHedraDir;
@@ -312,6 +316,8 @@ void Free()
 }
 
 
+
+// turn this into another "Manager"
 void GridTest()
 {
 	Grid2DGraphics::Shader shader;
@@ -329,7 +335,6 @@ void GridTest()
 		buffer.Inst.Size.Change(2);
 	}
 
-	unsigned int n = 8; // Cells per Section
 	Grid2D & grid = SceneData.Grid;
 
 	shader.Create();
@@ -337,29 +342,34 @@ void GridTest()
 	buffer.Main.ChangeAttributeBinding();
 	buffer.Inst.ChangeAttributeBinding();
 	{
+		shader.Bind();
+		shader.DisplaySize.Put(window.Size);
+		shader.View.Put(view.Trans);
+		shader.Scale.Put(view.Scale);
+
 		buffer.Bind();
 		{
 {
 	Container::Binary<Grid2DGraphics::Main::Data> data;
 	Grid2DGraphics::Main::Data temp;
-	for (unsigned int i = 0; i <= n; i++)
+	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
-		float t = ((float)i) / n;
+		float t = ((float)i) / grid.LinSections;
 		temp.Pos = Point2D(0, t); data.Insert(temp);
 	}
-	for (unsigned int i = 0; i <= n; i++)
+	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
-		float t = ((float)i) / n;
+		float t = ((float)i) / grid.LinSections;
 		temp.Pos = Point2D(1, t); data.Insert(temp);
 	}
-	for (unsigned int i = 0; i <= n; i++)
+	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
-		float t = ((float)i) / n;
+		float t = ((float)i) / grid.LinSections;
 		temp.Pos = Point2D(t, 0); data.Insert(temp);
 	}
-	for (unsigned int i = 0; i <= n; i++)
+	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
-		float t = ((float)i) / n;
+		float t = ((float)i) / grid.LinSections;
 		temp.Pos = Point2D(t, 1); data.Insert(temp);
 	}
 	buffer.Main.Change(data);
@@ -367,16 +377,16 @@ void GridTest()
 {
 	Container::Binary<Grid2DGraphics::Elem::Data> data;
 	Grid2DGraphics::Elem::Data temp;
-	for (unsigned int i = 0; i <= n; i++)
+	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
-		temp.udx[0] = i + (0 * n) + 0;
-		temp.udx[1] = i + (1 * n) + 1;
+		temp.udx[0] = i + (0 * grid.LinSections) + 0;
+		temp.udx[1] = i + (1 * grid.LinSections) + 1;
 		data.Insert(temp);
 	}
-	for (unsigned int i = 0; i <= n; i++)
+	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
-		temp.udx[0] = i + (2 * n) + 1;
-		temp.udx[1] = i + (3 * n) + 2;
+		temp.udx[0] = i + (2 * grid.LinSections) + 1;
+		temp.udx[1] = i + (3 * grid.LinSections) + 2;
 		data.Insert(temp);
 	}
 	buffer.Elem.Change(data);
@@ -391,28 +401,19 @@ void GridTest()
 	Container::Binary<Grid2DGraphics::Inst::Data> data;
 	Grid2DGraphics::Inst::Data temp;
 
-	temp.Pos.X = view.Trans.Pos.X;
-	temp.Pos.Y = view.Trans.Pos.Y;
-	temp.Size = 0.25f;
-	data.Insert(temp);
-	temp.Pos.X = view.Trans.Pos.X - 0.25f;
-	temp.Pos.Y = view.Trans.Pos.Y - 0.25f;
-	temp.Size = 0.25f;
-	data.Insert(temp);
-
 	Point2D pos(
-		floor(view.Trans.Pos.X / (grid.Lin * n)) * (grid.Lin * n),
-		floor(view.Trans.Pos.Y / (grid.Lin * n)) * (grid.Lin * n)
+		floor(view.Trans.Pos.X / (grid.Lin * grid.LinSections)) * (grid.Lin * grid.LinSections),
+		floor(view.Trans.Pos.Y / (grid.Lin * grid.LinSections)) * (grid.Lin * grid.LinSections)
 	);
 
-	float k = 1;
+	float k = 2;
 	for (int y = +k; y >= -k; y--)
 	{
 		for (int x = +k; x >= -k; x--)
 		{
-			temp.Pos.X = pos.X + (x * grid.Lin * n);
-			temp.Pos.Y = pos.Y + (y * grid.Lin * n);
-			temp.Size = grid.Lin * n;
+			temp.Pos.X = pos.X + (x * grid.Lin * grid.LinSections);
+			temp.Pos.Y = pos.Y + (y * grid.Lin * grid.LinSections);
+			temp.Size = grid.Lin * grid.LinSections;
 			data.Insert(temp);
 		}
 	}
@@ -421,11 +422,54 @@ void GridTest()
 }
 		}
 
-		shader.Bind();
-		shader.DisplaySize.Put(window.Size);
-		shader.View.Put(view.Trans);
-		shader.Scale.Put(view.Scale);
+		buffer.Draw();
 
+		{
+{
+	Container::Binary<Grid2DGraphics::Main::Data> data;
+	Grid2DGraphics::Main::Data temp;
+	temp.Pos = Point2D(); data.Insert(temp);
+	for (unsigned int i = 0; i < grid.AngSections; i++)
+	{
+		temp.Pos = Angle2D(Angle::Section(grid.AngSections) * i) * Point2D(1, 0);
+		data.Insert(temp);
+	}
+	buffer.Main.Change(data);
+}
+{
+	Container::Binary<Grid2DGraphics::Elem::Data> data;
+	Grid2DGraphics::Elem::Data temp;
+	for (unsigned int i = 0; i < grid.AngSections; i++)
+	{
+		temp.udx[0] = 0;
+		temp.udx[1] = i + 1;
+		data.Insert(temp);
+		if (i == 0)
+		{
+			temp.udx[0] = grid.AngSections;
+			temp.udx[1] = i + 1;
+		}
+		else
+		{
+			temp.udx[0] = i + 0;
+			temp.udx[1] = i + 1;
+		}
+		data.Insert(temp);
+	}
+	buffer.Elem.Change(data);
+}
+{
+	Container::Binary<Grid2DGraphics::Inst::Data> data;
+	Grid2DGraphics::Inst::Data temp;
+	if (SceneData.Selected)
+	{
+		temp.Pos = Physics2D_Manager.Objects[SceneData.Selected] -> ExtData.Now.Pos;
+		temp.Size = view.Scale * 0.5f;
+		data.Insert(temp);
+	}
+	buffer.Inst.Change(data);
+}
+		}
 		buffer.Draw();
 	}
 	shader.Delete();
