@@ -68,6 +68,7 @@ FILES_SRC := \
 	SceneInteraction/Force.cpp \
 \
 	FrameTime.cpp \
+	MainContext2D.cpp \
 	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 

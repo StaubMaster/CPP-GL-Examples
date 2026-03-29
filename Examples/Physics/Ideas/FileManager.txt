@@ -1,0 +1,3 @@
+
+DirectoryInfo	DirectoryInfo.Child(const char *)
+DirectoryInfo	DirectoryInfo.Directory(const char *)	no code, but should be that same as .Child()

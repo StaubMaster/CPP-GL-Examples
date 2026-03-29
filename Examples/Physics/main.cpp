@@ -94,24 +94,11 @@
 
 
 
-struct MainContext
+// MainContext
+#include "MainContext2D.hpp"
+
+struct MainContext : public MainContext2D
 {
-/* only 1 MediaDirectory
-they should know where to find their stuff
-or just give them a hard coded subDirectory
-*/
-DirectoryInfo ImageDir;
-DirectoryInfo ShaderDir;
-DirectoryInfo PolyHedraDir;
-DirectoryInfo TextDir;
-
-Window	window;
-View2D	view;
-
-Multiform::DisplaySize			Multiform_DisplaySize;
-Multiform::Trans2D				Multiform_View;
-Multiform::Float				Multiform_Scale;
-
 Physics2D::Manager	Physics2D_Manager;
 
 ::SceneInteractionData	SceneData;
@@ -121,21 +108,13 @@ Physics2D::Manager	Physics2D_Manager;
 ::InteractionObjectDrag	InteractionObjectApplyForceUnbound;
 
 MainContext()
-	: ImageDir("../../media/Images")
-	, ShaderDir("../../media/Shaders")
-	, PolyHedraDir("../../media/YMT")
-	, TextDir("../../media/Text")
-	, window()
-	, view(View2D::Default())
-	, Multiform_DisplaySize("DisplaySize")
-	, Multiform_View("View")
-	, Multiform_Scale("Scale")
+	: MainContext2D()
 	, Physics2D_Manager()
 	, SceneData(Physics2D_Manager)
 {
 	Physics2D_Manager.GraphicsInitExternal(ShaderDir);
 
-	Container::Array<Shader::Base *> shaders({
+	Container::Array<Shader::Base*> shaders({
 		&Physics2D_Manager.Shader_PolyGon,
 		&Physics2D_Manager.Shader_WireFrame,
 		&Physics2D_Manager.Arrow.Shader,
@@ -158,7 +137,7 @@ MainContext()
 
 
 
-void Make()
+void Make() override
 {
 	//	Physics2D_Manager.AirResistance = 0.1f;
 	//	Physics2D_Manager.GravityToY = 10.0f;
@@ -286,7 +265,7 @@ void Make()
 
 
 
-void Init()
+void Init() override
 {
 	Physics2D_Manager.GraphicsCreate();
 	Physics2D_Manager.GraphicsInitInternal(ImageDir);
@@ -301,7 +280,7 @@ void Init()
 	//CheckMomentOfInertia_Arrows.Allocate(Arrow2D::Manager::Current().Instances, 10);
 	//CheckMomentOfInertia_Arrows.Allocate(10);
 }
-void Free()
+void Free() override
 {
 	//CheckMomentOfInertia_Arrows.Dispose();
 
@@ -476,36 +455,6 @@ void GridTest()
 	buffer.Delete();
 }
 
-
-void UpdateView(FrameTime frame_time)
-{
-	//if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
-	/*if (window.MouseManager.CursorModeIsLocked())
-	{
-		Trans3D trans = window.MoveSpinFromKeysCursor();
-		if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 30; }
-		trans.Pos *= 2;
-		trans.Rot.X *= view.FOV.ToDegrees() * 0.005f;
-		trans.Rot.Y *= view.FOV.ToDegrees() * 0.005f;
-		trans.Rot.Z *= view.FOV.ToDegrees() * 0.005f;
-		view.TransformFlatX(trans, timeDelta);
-	}*/
-	{
-		Trans2D trans;
-		Point3D move3D = window.MoveFromKeys();
-		trans.Pos = Point2D(move3D.X, move3D.Z) * 2.0f * view.Scale;
-
-		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Q.Flags].IsDown()) { trans.Rot.Ang += Angle::Degrees(45); }
-		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::E.Flags].IsDown()) { trans.Rot.Ang -= Angle::Degrees(45); }
-
-		//if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { move2D *= 30; }
-		//trans.Rot = Angle2D(Angle::Radians(move3D.Y * 0.5f));
-		view.Change(trans, frame_time.Delta);
-	}
-	Multiform_View.ChangeData(view.Trans);
-	Multiform_Scale.ChangeData(view.Scale);
-}
-
 void ScreenShot()
 {
 /*
@@ -556,7 +505,7 @@ void Draw()
 	GridTest();
 }
 
-void Frame(double timeDelta)
+void Frame(double timeDelta) override
 {
 	FrameTime frame_time(60.0f);
 	frame_time.Update(timeDelta);
@@ -599,6 +548,7 @@ void Frame(double timeDelta)
 		Physics2D::Collision::Projection::DebugObject = nullptr;
 	}
 
+
 	{
 		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
 		SceneData.Hovering = Physics2D_Manager.FindObjectIndex(SceneData.Cursor);
@@ -626,8 +576,6 @@ void Frame(double timeDelta)
 		Physics2D_Manager.GraphicsUpdate();
 	}
 
-
-
 	/*if (SceneData.Selected)
 	{
 		Physics2D::Object & obj = *Physics2D_Manager.Objects[SceneData.Selected];
@@ -644,34 +592,13 @@ void Frame(double timeDelta)
 	}
 }
 
-void Resize(const DisplaySize & Size)
+void MouseScroll(UserParameter::Mouse::Scroll params) override
 {
-	Multiform_DisplaySize.ChangeData(Size);
+	UpdateViewZoom(params);
 }
-
-void MouseScroll(UserParameter::Mouse::Scroll params)
+void MouseClick(UserParameter::Mouse::Click params) override
 {
-	// put this stuff into view ?
-	// make a function for view to spin around cursor / point ?
-
-	Point2D cursor_rel = window.Size.Convert(window.MouseManager.CursorPosition());
-	Point2D cursor_abs = view * cursor_rel;
-
-	if (params.Y < 0.0f) { while (params.Y < 0.0f) { view.Scale *= 2; params.Y++; } }
-	if (params.Y > 0.0f) { while (params.Y > 0.0f) { view.Scale /= 2; params.Y--; } }
-	
-	#define ZOOM_MIN 1.0 / (1 << 6)
-	#define ZOOM_MAX 1.0 * (1 << 6)
-
-	if (view.Scale <= ZOOM_MIN) { view.Scale = ZOOM_MIN; }
-	if (view.Scale >= ZOOM_MAX) { view.Scale = ZOOM_MAX; }
-
-	view.Trans.Pos = cursor_abs - (view.Trans.Rot * (cursor_rel * view.Scale));
-}
-void MouseClick(UserParameter::Mouse::Click params)
-{
-	// Select / Select Box
-	// View Move / Spin
+	UpdateViewDrag(params);
 
 	if (params.Action.IsPress())
 	{
@@ -731,12 +658,12 @@ void MouseClick(UserParameter::Mouse::Click params)
 		InteractionObjectApplyForce.End(SceneData);
 	}
 }
-void MouseDrag(UserParameter::Mouse::Drag params)
+void MouseDrag(UserParameter::Mouse::Drag params) override
 {
-	(void)params;
+	UpdateViewDrag(params);
 }
 
-void KeyBoardKey(UserParameter::KeyBoard::Key params)
+void KeyBoardKey(UserParameter::KeyBoard::Key params) override
 {
 	// when use this vs check in Framge ?
 	if (params.Action.IsPress())
@@ -794,32 +721,6 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params)
 		}
 	}
 }
-
-
-
-int Main()
-{
-	window.InitCallBack.Change<MainContext>(this, &MainContext::Init);
-	window.FreeCallBack.Change<MainContext>(this, &MainContext::Free);
-	window.FrameCallBack.Change<MainContext>(this, &MainContext::Frame);
-	window.ResizeCallBack.Change<MainContext>(this, &MainContext::Resize);
-
-	window.MouseManager.CallbackScroll.Change(this, &MainContext::MouseScroll);
-	window.MouseManager.CallbackClick.Change(this, &MainContext::MouseClick);
-	window.MouseManager.CallbackDrag.Change(this, &MainContext::MouseDrag);
-
-	window.KeyBoardManager.KeyCallBack.Change(this, &MainContext::KeyBoardKey);
-
-	view.Scale = 1.0f;
-
-	window.Create();
-	Debug::Log << "<<<< Run Window" << Debug::Done;
-	window.Run();
-	Debug::Log << ">>>> Run Window" << Debug::Done;
-	window.Delete();
-
-	return 0;
-}
 };
 
 
@@ -836,7 +737,8 @@ int main(int argc, char * argv[])
 		try
 		{
 			MainContext context;
-			ret = context.Main();
+			//ret = context.Main();
+			ret = context.Run();
 			std::cout << "MainContext done\n";
 		}
 		catch (std::exception & ex)

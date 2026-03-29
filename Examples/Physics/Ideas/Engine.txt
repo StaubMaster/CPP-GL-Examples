@@ -102,3 +102,84 @@ Attribute Buffer
 	they currently dont know
 	but Uniforms know, and use a Binary Container
 	do the same in Attribute Buffer
+
+
+
+View2D
+	turn View into Matrix
+	use Matrix for Uniform
+
+
+
+FunctionPointer
+	rename .Change() to .Assign()
+	maybe operator=
+	the functions requires a template, 
+	so operator= wont work
+
+
+
+UserParameter
+	UserParameter::KeyBoard::Keys:: is long
+	change to just Keys
+	same with MouseButtons
+	also, KeyManager should be able to Index Keys / MouseButtons directly
+
+	make enums for Keys and MouseButtons so they can be converted to strings
+
+my	UserParameter::Mouse::Scroll params
+C#	MouseScrollEvent
+C#	MouseScrollEventArgs e
+	Mouse::Scroll params
+
+	params vs args vs e ?
+
+Mouse::Scroll params.Code is 0
+
+rename UserParameter to just User ?
+
+
+
+Drag
+	Parameters
+	should give Status
+		Start
+		During
+		End
+
+
+
+Transform
+Angle Trans View
+	right now, Transformation is done with operator * and /
+	but those are vagua
+	what would be better names ? (preferably short)
+
+	refular
+	reverse
+
+	normal
+	forward
+	backward
+
+	multiply
+	divide
+
+	Transform is the correct word
+	Transform
+	Transpose
+
+a Matrix cannot be "reversed"
+and cannot be used to "un-transform"
+
+if I want to View-transform backwards
+I have to use the components in reverse, and create a new Matrix
+
+for View, just have the function describe what it does ?
+	RelativeToAbsolute
+	AbsoluteToRelative
+
+	ToAbsolute
+	ToRelative
+
+
