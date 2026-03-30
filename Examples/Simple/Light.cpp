@@ -39,26 +39,35 @@
 //#include "DirectoryInfo.hpp"
 #include "Image.hpp"
 
+#include "Graphics/Buffer/MainInst.hpp"
+
 
 
 struct MainContext : public MainContext3D
 {
+PolyHedra_Simple3D::Shader			TestShader;
+//PolyHedra_Simple3D::BufferArray		TestBuffer;
+::BufferArray::MainInst<
+	PolyHedra_Main::Buffer,
+	Simple3D::Buffer
+> TestBuffer;
+
+::PolyHedra * PH;
+
+
+
 ~MainContext()
 { }
 MainContext()
 	: MainContext3D()
+	, TestShader()
+	, TestBuffer(GL::DrawMode::Triangles)
+	, PH(nullptr)
 { }
 
 
 
-PolyHedra_Simple3D::Shader			TestShader;
-PolyHedra_Simple3D::BufferArray		TestBuffer;
-
-PolyHedra * PH;
-
-
-
-void InitShaders()
+void InitExternal()
 {
 	{
 		Container::Array<Shader::Code> code({
@@ -67,14 +76,28 @@ void InitShaders()
 		});
 		TestShader.Change(code);
 	}
-	TestShader.Create();
-	TestShader.Bind();
-	TestShader.Depth.Put(view.Depth);
-	TestShader.FOV.Put(view.FOV);
+	{
+		TestBuffer.Main.Position.Change(0);
+		TestBuffer.Inst.Point.Change(3);
+	}
 }
-void FreeShaders()
+void InitInternal()
+{
+	{
+		TestBuffer.Main.ChangeAttributeBinding();
+		TestBuffer.Inst.ChangeAttributeBinding();
+	}
+}
+
+void GraphicsCreate()
+{
+	TestShader.Create();
+	TestBuffer.Create();
+}
+void GraphicsDelete()
 {
 	TestShader.Delete();
+	TestBuffer.Delete();
 }
 
 
@@ -86,27 +109,24 @@ void Make() override
 
 void Init() override
 {
-	window.DefaultColor = ColorF4(0.0f, 0.0f, 0.0f);
+	window.DefaultColor = ColorF4(0.5f, 0.0f, 0.0f);
 	view.Depth.Color = window.DefaultColor;
 	//view.Trans = Trans3D(Point3D(0, 10, -65), Angle3D());
-	view.Trans = Trans3D(Point3D(0, 10, -20), Angle3D());
 
 	std::cout << "Init 0\n";
 
-	InitShaders();
+	InitExternal();
+	GraphicsCreate();
+	InitInternal();
 
 	{
-		TestBuffer.Create();
+		TestShader.Bind();
+		TestShader.Depth.Put(view.Depth);
+		TestShader.FOV.Put(view.FOV);
+	}
 
+	{
 		PH = PolyHedra::Generate::HexaHedron();
-
-		TestBuffer.Main.Position.Change(0);
-		//TestBuffer.Main.Normal.Change(1);
-		//TestBuffer.Main.Texture.Change(2);
-		
-		TestBuffer.Inst.Point.Change(3);
-		//TestBuffer.Inst.Trans.Pos.Change(3);
-		//TestBuffer.Inst.Trans.Rot.Change(4, 5, 6);
 
 		//Container::Pointer<PolyHedra_Main::Data> data = PH -> ToMainData();
 		//TestBuffer.Main.Change(data);
@@ -119,17 +139,11 @@ void Free() override
 {
 	std::cout << "Free 0\n";
 
-	TestBuffer.Delete();
-
-	FreeShaders();
+	GraphicsDelete();
 
 	std::cout << "Free 1\n";
 }
 
-void Update(double timeDelta)
-{
-	(void)timeDelta;
-}
 void Frame(double timeDelta)
 {
 	//if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
@@ -155,17 +169,16 @@ void Frame(double timeDelta)
 		Container::Binary<PolyHedra_Main::Data> data;
 		PolyHedra_Main::Data temp;
 
-		temp.Position = Point3D(0.25, 0.25, 0); data.Insert(temp);
-		temp.Position = Point3D(0.75, 0.25, 0); data.Insert(temp);
-		temp.Position = Point3D(0.25, 0.75, 0); data.Insert(temp);
+		temp.Position = Point3D(0.25f, 0.25f, 0); data.Insert(temp);
+		temp.Position = Point3D(0.75f, 0.25f, 0); data.Insert(temp);
+		temp.Position = Point3D(0.25f, 0.75f, 0); data.Insert(temp);
 
-		temp.Position = Point3D(0.75, 0.25, 0); data.Insert(temp);
-		temp.Position = Point3D(0.25, 0.75, 0); data.Insert(temp);
-		temp.Position = Point3D(0.75, 0.25, 0); data.Insert(temp);
+		temp.Position = Point3D(0.75f, 0.25f, 0); data.Insert(temp);
+		temp.Position = Point3D(0.25f, 0.75f, 0); data.Insert(temp);
+		temp.Position = Point3D(0.75f, 0.75f, 0); data.Insert(temp);
 
 		TestBuffer.Bind();
 		TestBuffer.Main.Change(data);
-		TestBuffer.Main.ChangeAttributeBinding();
 	}
 
 	{
@@ -175,7 +188,6 @@ void Frame(double timeDelta)
 
 		TestBuffer.Bind();
 		TestBuffer.Inst.Change(data);
-		TestBuffer.Inst.ChangeAttributeBinding();
 	}
 
 	TestBuffer.LogInfo();
