@@ -43,9 +43,12 @@ virtual void Free() = 0;
 
 // Update View Move Spin
 void UpdateView(FrameTime frame_time);
-void UpdateViewZoom(UserParameter::Mouse::Scroll params);
-void UpdateViewDrag(UserParameter::Mouse::Click params);
-void UpdateViewDrag(UserParameter::Mouse::Drag params);
+//void UpdateViewZoom(UserParameter::Mouse::Scroll params);
+//void UpdateViewDrag(UserParameter::Mouse::Click params);
+//void UpdateViewDrag(UserParameter::Mouse::Drag params);
+void UpdateViewZoom(ScrollArgs args);
+void UpdateViewDrag(ClickArgs args);
+void UpdateViewDrag(DragArgs args);
 
 
 
@@ -58,10 +61,14 @@ virtual void Frame(double timeDelta) = 0;
 
 void Resize(const DisplaySize & Size);
 
-virtual void MouseScroll(UserParameter::Mouse::Scroll params) = 0;
-virtual void MouseClick(UserParameter::Mouse::Click params) = 0;
-virtual void MouseDrag(UserParameter::Mouse::Drag params) = 0;
-virtual void KeyBoardKey(UserParameter::KeyBoard::Key params) = 0;
+//virtual void MouseScroll(UserParameter::Mouse::Scroll params) = 0;
+//virtual void MouseClick(UserParameter::Mouse::Click params) = 0;
+//virtual void MouseDrag(UserParameter::Mouse::Drag params) = 0;
+//virtual void KeyBoardKey(UserParameter::KeyBoard::Key params) = 0;
+virtual void MouseScroll(ScrollArgs args) = 0;
+virtual void MouseClick(ClickArgs args) = 0;
+virtual void MouseDrag(DragArgs args) = 0;
+virtual void KeyBoardKey(KeyArgs args) = 0;
 
 int Run();
 };

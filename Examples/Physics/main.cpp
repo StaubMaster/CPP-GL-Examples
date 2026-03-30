@@ -513,17 +513,17 @@ void Frame(double timeDelta) override
 
 	UpdateView(frame_time);
 
-	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Space.Flags].IsPress()) { SceneData.IsRunning = !SceneData.IsRunning; }
+	if (window.KeyBoardManager[Keys::Space].State == State::Press) { SceneData.IsRunning = !SceneData.IsRunning; }
 	SceneData.IsSimulating = SceneData.IsRunning;
 	if (!SceneData.IsSimulating)
 	{
-		if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::O.Flags].IsDown())
+		if (window.KeyBoardManager[Keys::O].State == State::Down)
 		{ SceneData.IsSimulating = true; }
-		else if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::I.Flags].IsPress())
+		else if (window.KeyBoardManager[Keys::I].State == State::Press)
 		{ SceneData.IsSimulating = true; }
 	}
 
-	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Home.Flags].IsPress())
+	if (window.KeyBoardManager[Keys::Home].State == State::Press)
 	{
 		if (SceneData.Selected)
 		{
@@ -531,11 +531,11 @@ void Frame(double timeDelta) override
 		}
 	}
 
-	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::KeyPadAdd.Flags].IsPress())
+	if (window.KeyBoardManager[Keys::NumPadAdd].State == State::Press)
 	{
 		Physics2D::Collision::Projection::DebugEdgeUndex++;
 	}
-	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::KeyPadSub.Flags].IsPress())
+	if (window.KeyBoardManager[Keys::NumPadSub].State == State::Press)
 	{
 		Physics2D::Collision::Projection::DebugEdgeUndex--;
 	}
@@ -586,23 +586,23 @@ void Frame(double timeDelta) override
 
 	Draw();
 
-	if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::F12.Flags].IsPress())
+	if (window.KeyBoardManager[Keys::F12].State == State::Press)
 	{
 		ScreenShot();
 	}
 }
 
-void MouseScroll(UserParameter::Mouse::Scroll params) override
+void MouseScroll(ScrollArgs args) override
 {
-	UpdateViewZoom(params);
+	UpdateViewZoom(args);
 }
-void MouseClick(UserParameter::Mouse::Click params) override
+void MouseClick(ClickArgs params) override
 {
 	UpdateViewDrag(params);
 
-	if (params.Action.IsPress())
+	if (params.Action == Action::Press)
 	{
-		if (params.Code == UserParameter::Mouse::Button::MouseL)
+		if (params.Button == MouseButtons::MouseL)
 		{
 			if (SceneData.Selected.IsValid())
 			{
@@ -622,53 +622,55 @@ void MouseClick(UserParameter::Mouse::Click params) override
 		}
 	}
 
-	if (!params.Mods.IsControl())
+	//if (!params.Mods.IsControl())
+	if ((params.Mods & Modifier::Control) == Modifier::Control)
 	{
-		if (params.Code == UserParameter::Mouse::Button::MouseL)
+		if (params.Button == MouseButtons::MouseL)
 		{
-			if (params.Action.IsPress())
+			if (params.Action == Action::Press)
 			{
 				InteractionObjectMove.Start(SceneData);
 			}
 		}
-		if (params.Code == UserParameter::Mouse::Button::MouseR)
+		if (params.Button == MouseButtons::MouseR)
 		{
-			if (params.Action.IsPress())
+			if (params.Action == Action::Press)
 			{
 				InteractionObjectSpin.Start(SceneData);
 			}
 		}
 	}
 
-	if (params.Mods.IsControl())
+	//if (params.Mods.IsControl())
+	if (params.Mods == Modifier::Control)
 	{
-		if (params.Code == UserParameter::Mouse::Button::MouseL)
+		if (params.Button == MouseButtons::MouseL)
 		{
-			if (params.Action.IsPress())
+			if (params.Action == Action::Press)
 			{
 				InteractionObjectApplyForce.Start(SceneData);
 			}
 		}
 	}
 
-	if (params.Action.IsRelease())
+	if (params.Action == Action::Release)
 	{
 		InteractionObjectMove.End(SceneData);
 		InteractionObjectSpin.End(SceneData);
 		InteractionObjectApplyForce.End(SceneData);
 	}
 }
-void MouseDrag(UserParameter::Mouse::Drag params) override
+void MouseDrag(DragArgs args) override
 {
-	UpdateViewDrag(params);
+	UpdateViewDrag(args);
 }
 
-void KeyBoardKey(UserParameter::KeyBoard::Key params) override
+void KeyBoardKey(KeyArgs args) override
 {
 	// when use this vs check in Framge ?
-	if (params.Action.IsPress())
+	if (args.Action == Action::Press)
 	{
-		if (params.Code == UserParameter::KeyBoard::Keys::Insert)
+		if (args.Key == Keys::Insert)
 		{
 			Physics2D_Manager.MainInstances[2].MakeCurrent();
 			Physics2D::Object & obj = Physics2D::Object::Construct(
@@ -678,7 +680,7 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params) override
 			);
 			(void)obj;
 		}
-		if (params.Code == UserParameter::KeyBoard::Keys::Delete)
+		if (args.Key == Keys::Delete)
 		{
 			try
 			{
@@ -696,13 +698,13 @@ void KeyBoardKey(UserParameter::KeyBoard::Key params) override
 			}
 		}
 
-		if (params.Code == UserParameter::KeyBoard::Keys::Escape)
+		if (args.Key == Keys::Escape)
 		{
 			InteractionObjectMove.Escape(SceneData);
 			InteractionObjectSpin.Escape(SceneData);
 			InteractionObjectApplyForce.Escape(SceneData);
 		}
-		if (params.Code == UserParameter::KeyBoard::Keys::R)
+		if (args.Key == Keys::R)
 		{
 			if (!InteractionObjectApplyForceUnbound.Object.IsValid())
 			{
