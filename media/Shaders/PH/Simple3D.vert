@@ -47,11 +47,6 @@ layout(location = 2) in vec3 VTex;
 
 layout(location = 3) in vec3 IPos;
 layout(location = 4) in mat3 IRot;
-/*
-	this also uses Locations 5 and 6
-	but using something with those locations dosent give an error
-	very odd
-*/
 
 
 
@@ -87,8 +82,10 @@ void main()
 {
 	vs_out.Original = VPos;
 //	vs_out.Absolute = (vs_out.Original * (IRot)) + IPos;
+
 	vs_out.Absolute = (vs_out.Original * transpose(IRot)) + IPos;
 	vs_out.Relative = (vs_out.Absolute - View.Pos) * View.Rot;
+
 
 	gl_Position = proj(vs_out.Relative);
 
