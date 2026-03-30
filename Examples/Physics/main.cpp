@@ -1,4 +1,8 @@
 
+// main
+#include "../main.hpp"
+#include "../MainContext2D.hpp"
+
 // C++
 #include <iostream>
 #include <sstream>
@@ -93,9 +97,6 @@
 #include "Physics2D/Collision/Projection.hpp"
 
 
-
-// MainContext
-#include "MainContext2D.hpp"
 
 struct MainContext : public MainContext2D
 {
@@ -600,7 +601,8 @@ void MouseClick(ClickArgs params) override
 {
 	if (params.Action == Action::Press)
 	{
-		if (params.Button == MouseButtons::MouseL)
+		if (params.Button == MouseButtons::MouseL ||
+			params.Button == MouseButtons::MouseR)
 		{
 			if (SceneData.Selected.IsValid())
 			{
@@ -620,8 +622,7 @@ void MouseClick(ClickArgs params) override
 		}
 	}
 
-	//if (!params.Mods.IsControl())
-	if ((params.Mods & Modifier::Control) == Modifier::Control)
+	if ((params.Mods & Modifier::Control) != Modifier::Control)
 	{
 		if (params.Button == MouseButtons::MouseL)
 		{
@@ -639,8 +640,7 @@ void MouseClick(ClickArgs params) override
 		}
 	}
 
-	//if (params.Mods.IsControl())
-	if (params.Mods == Modifier::Control)
+	if ((params.Mods & Modifier::Control) == Modifier::Control)
 	{
 		if (params.Button == MouseButtons::MouseL)
 		{
@@ -725,7 +725,13 @@ void KeyBoardKey(KeyArgs args) override
 
 
 
-int main(int argc, char * argv[])
+int run()
+{
+	MainContext context;
+	return context.Run();
+}
+
+/*int main(int argc, char * argv[])
 {
 	std::cout << "int main() ...\n";
 	int ret = -1;
@@ -737,7 +743,6 @@ int main(int argc, char * argv[])
 		try
 		{
 			MainContext context;
-			//ret = context.Main();
 			ret = context.Run();
 			std::cout << "MainContext done\n";
 		}
@@ -749,4 +754,4 @@ int main(int argc, char * argv[])
 	glfwTerminate();
 	Debug::Log << "main() return " << ret << Debug::Done;
 	return ret;
-}
+}*/

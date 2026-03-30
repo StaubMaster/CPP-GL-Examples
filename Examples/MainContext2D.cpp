@@ -33,8 +33,6 @@ void MainContext2D::UpdateView(FrameTime frame_time)
 		Trans2D trans;
 		Point3D move3D = window.MoveFromKeys();
 		trans.Pos = Point2D(move3D.X, move3D.Z) * 2.0f * view.Scale;
-		//if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::Q.Flags].IsDown()) { trans.Rot.Ang += Angle::Degrees(45); }
-		//if (window.KeyBoardManager.Keys[UserParameter::KeyBoard::Keys::E.Flags].IsDown()) { trans.Rot.Ang -= Angle::Degrees(45); }
 		if (window.KeyBoardManager[Keys::Q].State == State::Down) { trans.Rot.Ang += Angle::Degrees(45); }
 		if (window.KeyBoardManager[Keys::E].State == State::Down) { trans.Rot.Ang -= Angle::Degrees(45); }
 		view.Change(trans, frame_time.Delta);
@@ -63,7 +61,7 @@ Point2D DragAnchorRelative;
 Point2D DragAnchorAbsolute;
 void MainContext2D::UpdateViewDrag(DragArgs args)
 {	
-	if (args.Button == MouseButtons::MouseL)
+	if (args.Button == MouseButtons::MouseM)
 	{
 		if (args.Action == Action::Press)
 		{
@@ -93,14 +91,10 @@ int MainContext2D::Run()
 	window.FrameCallBack.Change<MainContext2D>(this, &MainContext2D::Frame);
 	window.ResizeCallBack.Change<MainContext2D>(this, &MainContext2D::Resize);
 
-	//window.MouseManager.CallbackScroll.Change(this, &MainContext2D::MouseScroll);
-	//window.MouseManager.CallbackClick.Change(this, &MainContext2D::MouseClick);
-	//window.MouseManager.CallbackDrag.Change(this, &MainContext2D::MouseDrag);
 	window.MouseManager.Callback_ScrollEvent.Change(this, &MainContext2D::MouseScroll);
 	window.MouseManager.Callback_ClickEvent.Change(this, &MainContext2D::MouseClick);
 	window.MouseManager.Callback_DragEvent.Change(this, &MainContext2D::MouseDrag);
 
-	//window.KeyBoardManager.KeyCallBack.Change(this, &MainContext2D::KeyBoardKey);
 	window.KeyBoardManager.CallBack_KeyEvent.Change(this, &MainContext2D::KeyBoardKey);
 
 	view.Scale = 1.0f;

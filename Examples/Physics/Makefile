@@ -15,6 +15,9 @@ FANCY_NAME := Physics
 ################################################################
 
 FILES_SRC := \
+	../main.cpp \
+	../MainContext2D.cpp \
+\
 	Graphics/Buffer/Element.cpp \
 \
 	Arrow2D/Main/Data.cpp \
@@ -68,7 +71,6 @@ FILES_SRC := \
 	SceneInteraction/Force.cpp \
 \
 	FrameTime.cpp \
-	MainContext2D.cpp \
 	main.cpp
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
@@ -141,7 +143,8 @@ logs_make:
 	@mkdir -p logs/
 
 logs_clean:
-	@$(REMOVER) logs/
+	@rm -r logs/
+	@$(MAKE) -s logs_make
 
 .PHONY: logs_make logs_clean
 
