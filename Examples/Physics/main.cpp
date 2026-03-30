@@ -1,6 +1,7 @@
 
 // main
 #include "../main.hpp"
+#include "../FrameTime.hpp"
 #include "../MainContext2D.hpp"
 
 // C++
@@ -93,7 +94,6 @@
 
 // Other
 #include "Arrow2D/RankLengths.hpp"
-#include "FrameTime.hpp"
 #include "Physics2D/Collision/Projection.hpp"
 
 
@@ -108,6 +108,10 @@ Physics2D::Manager	Physics2D_Manager;
 ::InteractionObjectDrag	InteractionObjectApplyForce;
 ::InteractionObjectDrag	InteractionObjectApplyForceUnbound;
 
+~MainContext()
+{
+	Physics2D_Manager.Dispose();
+}
 MainContext()
 	: MainContext2D()
 	, Physics2D_Manager()
@@ -126,10 +130,6 @@ MainContext()
 
 	SceneData.Selected = Undex::Invalid();
 	SceneData.Hovering = Undex::Invalid();
-}
-~MainContext()
-{
-	Physics2D_Manager.Dispose();
 }
 
 
@@ -597,12 +597,12 @@ void MouseScroll(ScrollArgs args) override
 {
 	UpdateViewZoom(args);
 }
-void MouseClick(ClickArgs params) override
+void MouseClick(ClickArgs args) override
 {
-	if (params.Action == Action::Press)
+	if (args.Action == Action::Press)
 	{
-		if (params.Button == MouseButtons::MouseL ||
-			params.Button == MouseButtons::MouseR)
+		if (args.Button == MouseButtons::MouseL ||
+			args.Button == MouseButtons::MouseR)
 		{
 			if (SceneData.Selected.IsValid())
 			{
@@ -622,36 +622,36 @@ void MouseClick(ClickArgs params) override
 		}
 	}
 
-	if ((params.Mods & Modifier::Control) != Modifier::Control)
+	if ((args.Mods & Modifier::Control) != Modifier::Control)
 	{
-		if (params.Button == MouseButtons::MouseL)
+		if (args.Button == MouseButtons::MouseL)
 		{
-			if (params.Action == Action::Press)
+			if (args.Action == Action::Press)
 			{
 				InteractionObjectMove.Start(SceneData);
 			}
 		}
-		if (params.Button == MouseButtons::MouseR)
+		if (args.Button == MouseButtons::MouseR)
 		{
-			if (params.Action == Action::Press)
+			if (args.Action == Action::Press)
 			{
 				InteractionObjectSpin.Start(SceneData);
 			}
 		}
 	}
 
-	if ((params.Mods & Modifier::Control) == Modifier::Control)
+	if ((args.Mods & Modifier::Control) == Modifier::Control)
 	{
-		if (params.Button == MouseButtons::MouseL)
+		if (args.Button == MouseButtons::MouseL)
 		{
-			if (params.Action == Action::Press)
+			if (args.Action == Action::Press)
 			{
 				InteractionObjectApplyForce.Start(SceneData);
 			}
 		}
 	}
 
-	if (params.Action == Action::Release)
+	if (args.Action == Action::Release)
 	{
 		InteractionObjectMove.End(SceneData);
 		InteractionObjectSpin.End(SceneData);

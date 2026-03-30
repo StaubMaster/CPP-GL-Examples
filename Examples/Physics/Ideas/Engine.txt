@@ -86,6 +86,11 @@ Angle and Trans operators
 	it would make more sense to multiply a Point with a Angle
 	same for Trans
 
+AngleN
+	give Degree variant
+	make refular n float constructor private
+	make Radian function
+
 
 
 Graphics stuff

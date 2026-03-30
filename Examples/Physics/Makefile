@@ -16,6 +16,7 @@ FANCY_NAME := Physics
 
 FILES_SRC := \
 	../main.cpp \
+	../FrameTime.cpp \
 	../MainContext2D.cpp \
 \
 	Graphics/Buffer/Element.cpp \
@@ -70,8 +71,8 @@ FILES_SRC := \
 	SceneInteraction/Spin.cpp \
 	SceneInteraction/Force.cpp \
 \
-	FrameTime.cpp \
-	main.cpp
+	main.cpp \
+
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 ################################################################

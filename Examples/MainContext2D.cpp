@@ -6,8 +6,6 @@
 #include "DataShow.hpp"
 #include "Debug.hpp"
 
-#include "Arrow2D/Object.hpp"
-
 
 
 MainContext2D::~MainContext2D() { }
@@ -96,8 +94,6 @@ int MainContext2D::Run()
 	window.MouseManager.Callback_DragEvent.Change(this, &MainContext2D::MouseDrag);
 
 	window.KeyBoardManager.CallBack_KeyEvent.Change(this, &MainContext2D::KeyBoardKey);
-
-	view.Scale = 1.0f;
 
 	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;
