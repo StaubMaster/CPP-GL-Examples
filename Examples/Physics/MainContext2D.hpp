@@ -43,11 +43,7 @@ virtual void Free() = 0;
 
 // Update View Move Spin
 void UpdateView(FrameTime frame_time);
-//void UpdateViewZoom(UserParameter::Mouse::Scroll params);
-//void UpdateViewDrag(UserParameter::Mouse::Click params);
-//void UpdateViewDrag(UserParameter::Mouse::Drag params);
 void UpdateViewZoom(ScrollArgs args);
-void UpdateViewDrag(ClickArgs args);
 void UpdateViewDrag(DragArgs args);
 
 

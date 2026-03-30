@@ -598,8 +598,6 @@ void MouseScroll(ScrollArgs args) override
 }
 void MouseClick(ClickArgs params) override
 {
-	UpdateViewDrag(params);
-
 	if (params.Action == Action::Press)
 	{
 		if (params.Button == MouseButtons::MouseL)

@@ -61,8 +61,8 @@ void MainContext2D::UpdateViewZoom(ScrollArgs args)
 
 Point2D DragAnchorRelative;
 Point2D DragAnchorAbsolute;
-void MainContext2D::UpdateViewDrag(ClickArgs args)
-{
+void MainContext2D::UpdateViewDrag(DragArgs args)
+{	
 	if (args.Button == MouseButtons::MouseL)
 	{
 		if (args.Action == Action::Press)
@@ -70,20 +70,12 @@ void MainContext2D::UpdateViewDrag(ClickArgs args)
 			DragAnchorRelative = window.Size.Convert(args.Position);
 			DragAnchorAbsolute = view * DragAnchorRelative;
 		}
-	}
-}
-void MainContext2D::UpdateViewDrag(DragArgs args)
-{
-	std::cout << "args: " << args.Button << '\n';
-	std::cout << "args: " << MouseButtons::MouseL << '\n';
-	std::cout << "args: " << MouseButtons::MouseR << '\n';
-	std::cout << "args: " << MouseButtons::MouseM << '\n';
-	std::cout << '\n';
 
-	if (args.Button == MouseButtons::MouseL)
-	{
-		Point2D target_rel = window.Size.Convert(args.Position);
-		view.Trans.Pos = DragAnchorAbsolute - (view.Trans.Rot * (target_rel * view.Scale));
+		if (args.Action == Action::Repeat)
+		{
+			Point2D target_rel = window.Size.Convert(args.Position);
+			view.Trans.Pos = DragAnchorAbsolute - (view.Trans.Rot * (target_rel * view.Scale));
+		}
 	}
 }
 
