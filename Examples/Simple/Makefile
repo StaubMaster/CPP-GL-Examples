@@ -24,7 +24,7 @@ FILES_SRC := \
 	PolyHedra/Graphics/Full/Main/Buffer.cpp \
 	PolyHedra/Graphics/Full/Shader.cpp \
 \
-	Light.cpp \
+	main.cpp \
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 

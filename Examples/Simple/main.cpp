@@ -48,8 +48,42 @@
 
 struct MainContext : public MainContext3D
 {
-PolyHedraFull::Shader	PolyHedraFullShader;
-PolyHedraFull::Buffer	PolyHedraFullBuffer;
+struct PolyHedraTransBuffer
+{
+	::PolyHedra *				PolyHedra;
+	::PolyHedraFull::Buffer		Buffer;
+
+	~PolyHedraTransBuffer()
+	{ }
+	PolyHedraTransBuffer()
+		: PolyHedra(nullptr)
+		, Buffer(GL::DrawMode::Triangles)
+	{ }
+	PolyHedraTransBuffer(::PolyHedra * polyhedra)
+		: PolyHedra(polyhedra)
+		, Buffer(GL::DrawMode::Triangles)
+	{ }
+};
+struct PolyHedraTransObject
+{
+	::PolyHedra *	PolyHedra;
+	Trans3D			Data;
+
+	~PolyHedraTransObject()
+	{ }
+	PolyHedraTransObject()
+		: PolyHedra(nullptr)
+		, Data()
+	{ }
+	PolyHedraTransObject(::PolyHedra * polyhedra, Trans3D data)
+		: PolyHedra(polyhedra)
+		, Data(data)
+	{ }
+};
+
+PolyHedraFull::Shader					PolyHedraFullShader;
+Container::Binary<PolyHedraTransBuffer>	PolyHedraBuffers;
+Container::Binary<PolyHedraTransObject>	PolyHedraTransObjects;
 
 
 
@@ -58,7 +92,8 @@ PolyHedraFull::Buffer	PolyHedraFullBuffer;
 MainContext()
 	: MainContext3D()
 	, PolyHedraFullShader()
-	, PolyHedraFullBuffer(GL::DrawMode::Triangles)
+	, PolyHedraBuffers()
+	, PolyHedraTransObjects()
 { }
 
 
@@ -203,13 +238,11 @@ void GraphicsCreate()
 {
 	LightShader.Create();
 	PolyHedraFullShader.Create();
-	PolyHedraFullBuffer.Create();
 }
 void GraphicsDelete()
 {
 	LightShader.Delete();
 	PolyHedraFullShader.Delete();
-	PolyHedraFullBuffer.Delete();
 }
 
 void InitExternal()
@@ -228,13 +261,6 @@ void InitExternal()
 		});
 		PolyHedraFullShader.Change(code);
 	}
-	{
-		PolyHedraFullBuffer.Main.Position.Change(0);
-		PolyHedraFullBuffer.Main.Normal.Change(1);
-		PolyHedraFullBuffer.Main.Texture.Change(2);
-		PolyHedraFullBuffer.Inst.Data.Pos.Change(3);
-		PolyHedraFullBuffer.Inst.Data.Rot.Change(4, 5, 6);
-	}
 }
 void InitInternal()
 {
@@ -248,10 +274,6 @@ void InitInternal()
 		PolyHedraFullShader.Bind();
 		PolyHedraFullShader.Depth.Put(view.Depth);
 		PolyHedraFullShader.FOV.Put(view.FOV);
-	}
-	{
-		PolyHedraFullBuffer.Main.ChangeAttributeBinding();
-		PolyHedraFullBuffer.Inst.ChangeAttributeBinding();
 	}
 }
 
@@ -309,6 +331,7 @@ unsigned int FancyInsert(const char * polyhedra_file_path)
 {
 	unsigned int idx = FancyPolyHedras.Count();
 	FancyPolyHedras.Insert(PolyHedra::Load(PolyHedraDir.File(polyhedra_file_path)));
+	PolyHedraBuffers.Insert(PolyHedraTransBuffer(PolyHedra::Load(PolyHedraDir.File(polyhedra_file_path))));
 	return idx;
 }
 void FancyInsert(unsigned int ph_idx, Point3D pos, Angle3D rot)
@@ -318,6 +341,9 @@ void FancyInsert(unsigned int ph_idx, Point3D pos, Angle3D rot)
 	Entrys.Insert(PolyHedra_3D_Manager.Place(FancyPolyHedras[ph_idx], 1));
 	(*(Entrys[idx])).Trans = Trans3D(pos, rot);
 	//(*(Entrys[idx])).Trans.Rot.CalcBack();
+
+	PolyHedraTransObjects.Insert(PolyHedraTransObject(FancyPolyHedras[ph_idx], Trans3D(pos, rot)));
+	//PolyHedraTransObjects.Insert(PolyHedraTransObject(PolyHedraBuffers[ph_idx].PolyHedra, Trans3D(pos, rot)));
 }
 void Fancify()
 {
@@ -412,16 +438,6 @@ void Init() override
 	{
 		PH = PolyHedra::Generate::HexaHedron();
 		PolyHedra_3D_Manager.Insert(PH);
-		Container::Pointer<PolyHedra_Main::Data> data0 = PH -> ToMainData();
-		Container::Array<PolyHedraFull::Main::Data> data1(data0.Count());
-		for (unsigned int i = 0; i < data1.Count(); i++)
-		{
-			data1[i].Position = data0[i].Position;
-			data1[i].Normal = data0[i].Normal;
-			data1[i].Texture = data0[i].Texture;
-		}
-		PolyHedraFullBuffer.Main.Change(data1);
-		data0.Clear();
 	}
 
 	AddInstances();
@@ -450,7 +466,28 @@ void Init() override
 
 	for (unsigned int i = 0; i < PolyHedra_3D_Manager.MultiplePolyHedra.Count(); i++)
 	{
-		PolyHedra_3D_Manager.MultiplePolyHedra[i] -> _Buffer.LogInfo();
+		PolyHedraBuffers.Insert(PolyHedraTransBuffer());
+		//PolyHedraBuffers[i].PolyHedra = PolyHedra_3D_Manager.MultiplePolyHedra[i] -> _PolyHedra;
+
+		PolyHedraBuffers[i].Buffer.Main.Position.Change(0);
+		PolyHedraBuffers[i].Buffer.Main.Normal.Change(1);
+		PolyHedraBuffers[i].Buffer.Main.Texture.Change(2);
+		PolyHedraBuffers[i].Buffer.Inst.Data.Pos.Change(3);
+		PolyHedraBuffers[i].Buffer.Inst.Data.Rot.Change(4, 5, 6);
+		PolyHedraBuffers[i].Buffer.Create();
+		PolyHedraBuffers[i].Buffer.Main.ChangeAttributeBinding();
+		PolyHedraBuffers[i].Buffer.Inst.ChangeAttributeBinding();
+
+		Container::Pointer<PolyHedra_Main::Data> data0 = PolyHedra_3D_Manager.MultiplePolyHedra[i] -> _PolyHedra -> ToMainData();
+		Container::Array<PolyHedraFull::Main::Data> data1(data0.Count());
+		for (unsigned int i = 0; i < data1.Count(); i++)
+		{
+			data1[i].Position = data0[i].Position;
+			data1[i].Normal = data0[i].Normal;
+			data1[i].Texture = data0[i].Texture;
+		}
+		PolyHedraBuffers[i].Buffer.Main.Change(data1);
+		data0.Clear();
 	}
 
 	std::cout << "Init 1\n";
@@ -470,6 +507,11 @@ void Free() override
 	}
 
 	PolyHedra_3D_Manager.Dispose();
+
+	for (unsigned int i = 0; i < PolyHedraBuffers.Count(); i++)
+	{
+		PolyHedraBuffers[i].Buffer.Delete();
+	}
 
 	GraphicsDelete();
 
@@ -544,25 +586,40 @@ void Frame(double timeDelta)
 	(Entrys[0])[0].Trans.Rot.X += Angle::Radians(0.01f);
 	(Entrys[0])[0].Trans.Rot.CalcMatrix();
 
-	PolyHedra_3D_Manager.Draw();
-	/*PH0_Instances -> Update().Draw();
-	for (unsigned int i = 0; i < FancyPolyHedraInstances.Count(); i++)
+	//PolyHedra_3D_Manager.Draw();
+
+	/*for (unsigned int i = 0; i < PolyHedra_3D_Manager.MultiplePolyHedra.Count(); i++)
 	{
-		FancyPolyHedraInstances[i] -> Update().Draw();
+		Container::Binary<Trans3D> data;
+		for (unsigned int j = 0; j < PolyHedra_3D_Manager.MultiplePolyHedra[i] -> _Instances.Count(); j++)
+		{
+			data.Insert(PolyHedra_3D_Manager.MultiplePolyHedra[i] -> _Instances[j].Trans);
+		}
+		PolyHedraBuffers[i].Buffer.Inst.Change(data);
 	}*/
 
+	for (unsigned int i = 0; i < PolyHedraBuffers.Count(); i++)
 	{
-		PolyHedraFullShader.Bind();
-		PolyHedraFullShader.View.Put(view.Trans);
-		PolyHedraFullShader.FOV.Put(view.FOV);
-
-		PolyHedraFullBuffer.Bind();
+		PolyHedra * polyhedra = PolyHedraBuffers[i].PolyHedra;
+		Container::Binary<Trans3D> data;
+		for (unsigned int j = 0; j < PolyHedraTransObjects.Count(); j++)
 		{
-			Container::Binary<Trans3D> data;
-			data.Insert(Trans3D(Point3D(0, 20, 0), Angle3D()));
-			PolyHedraFullBuffer.Inst.Change(data);
+			if (PolyHedraTransObjects[j].PolyHedra == polyhedra)
+			{
+				data.Insert(PolyHedraTransObjects[j].Data);
+			}
 		}
-		PolyHedraFullBuffer.Draw();
+		PolyHedraBuffers[i].Buffer.Inst.Change(data);
+	}
+
+	{
+		//PolyHedraFullShader.Bind();
+		//PolyHedraFullShader.View.Put(view.Trans);
+		//PolyHedraFullShader.FOV.Put(view.FOV);
+		for (unsigned int i = 0; i < PolyHedraBuffers.Count(); i++)
+		{
+			PolyHedraBuffers[i].Buffer.Draw();
+		}
 	}
 }
 
