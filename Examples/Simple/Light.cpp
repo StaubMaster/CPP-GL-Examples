@@ -39,14 +39,26 @@
 //#include "DirectoryInfo.hpp"
 #include "Image.hpp"
 
+// PolyHedra
+#include "PolyHedra/Graphics/Full/Shader.hpp"
+#include "PolyHedra/Graphics/Full/Buffer.hpp"
+#include "PolyHedra/Graphics/Full/Main/Data.hpp"
+
 
 
 struct MainContext : public MainContext3D
 {
+PolyHedraFull::Shader	PolyHedraFullShader;
+PolyHedraFull::Buffer	PolyHedraFullBuffer;
+
+
+
 ~MainContext()
 { }
 MainContext()
 	: MainContext3D()
+	, PolyHedraFullShader()
+	, PolyHedraFullBuffer(GL::DrawMode::Triangles)
 { }
 
 
@@ -190,10 +202,14 @@ Container::Binary<PolyHedra *> FancyPolyHedras;
 void GraphicsCreate()
 {
 	LightShader.Create();
+	PolyHedraFullShader.Create();
+	PolyHedraFullBuffer.Create();
 }
 void GraphicsDelete()
 {
 	LightShader.Delete();
+	PolyHedraFullShader.Delete();
+	PolyHedraFullBuffer.Delete();
 }
 
 void InitExternal()
@@ -202,9 +218,22 @@ void InitExternal()
 		Container::Array<Shader::Code> code({
 			Shader::Code(ShaderDir.File("PH/Simple3D.vert")),
 			Shader::Code(ShaderDir.File("PH/UniLight4.frag")),
-			//Shader::Code(ShaderDir.File("PH/Full.frag")),
 		});
 		LightShader.Change(code);
+	}
+	{
+		Container::Array<Shader::Code> code({
+			Shader::Code(ShaderDir.File("PH/Simple3D.vert")),
+			Shader::Code(ShaderDir.File("PH/Full.frag")),
+		});
+		PolyHedraFullShader.Change(code);
+	}
+	{
+		PolyHedraFullBuffer.Main.Position.Change(0);
+		PolyHedraFullBuffer.Main.Normal.Change(1);
+		PolyHedraFullBuffer.Main.Texture.Change(2);
+		PolyHedraFullBuffer.Inst.Data.Pos.Change(3);
+		PolyHedraFullBuffer.Inst.Data.Rot.Change(4, 5, 6);
 	}
 }
 void InitInternal()
@@ -214,6 +243,15 @@ void InitInternal()
 		LightShader.Depth.Put(view.Depth);
 		LightShader.FOV.Put(view.FOV);
 		PolyHedra_3D_Manager.DefaultShaderToUse = &LightShader;
+	}
+	{
+		PolyHedraFullShader.Bind();
+		PolyHedraFullShader.Depth.Put(view.Depth);
+		PolyHedraFullShader.FOV.Put(view.FOV);
+	}
+	{
+		PolyHedraFullBuffer.Main.ChangeAttributeBinding();
+		PolyHedraFullBuffer.Inst.ChangeAttributeBinding();
 	}
 }
 
@@ -374,6 +412,16 @@ void Init() override
 	{
 		PH = PolyHedra::Generate::HexaHedron();
 		PolyHedra_3D_Manager.Insert(PH);
+		Container::Pointer<PolyHedra_Main::Data> data0 = PH -> ToMainData();
+		Container::Array<PolyHedraFull::Main::Data> data1(data0.Count());
+		for (unsigned int i = 0; i < data1.Count(); i++)
+		{
+			data1[i].Position = data0[i].Position;
+			data1[i].Normal = data0[i].Normal;
+			data1[i].Texture = data0[i].Texture;
+		}
+		PolyHedraFullBuffer.Main.Change(data1);
+		data0.Clear();
 	}
 
 	AddInstances();
@@ -502,6 +550,20 @@ void Frame(double timeDelta)
 	{
 		FancyPolyHedraInstances[i] -> Update().Draw();
 	}*/
+
+	{
+		PolyHedraFullShader.Bind();
+		PolyHedraFullShader.View.Put(view.Trans);
+		PolyHedraFullShader.FOV.Put(view.FOV);
+
+		PolyHedraFullBuffer.Bind();
+		{
+			Container::Binary<Trans3D> data;
+			data.Insert(Trans3D(Point3D(0, 20, 0), Angle3D()));
+			PolyHedraFullBuffer.Inst.Change(data);
+		}
+		PolyHedraFullBuffer.Draw();
+	}
 }
 
 
@@ -510,6 +572,10 @@ void Resize(const DisplaySize & WindowSize)
 {
 	LightShader.Bind();
 	LightShader.DisplaySize.Put(WindowSize);
+
+	PolyHedraFullShader.Bind();
+	PolyHedraFullShader.DisplaySize.Put(WindowSize);
+
 	//Multi_WindowSize -> ChangeData(WindowSize);
 }
 

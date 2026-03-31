@@ -1,0 +1,18 @@
+#ifndef  INSTANCE_BUFFER_TRANS_3D_HPP
+# define INSTANCE_BUFFER_TRANS_3D_HPP
+
+# include "Graphics/Buffer/Attribute.hpp"
+# include "Graphics/Attribute/Trans3D.hpp"
+
+namespace Instance
+{
+class BufferTrans3D : public ::Buffer::Attribute
+{
+	public:
+	::Attribute::Trans3D	Data;
+	public:
+	BufferTrans3D(BufferArray::Base & buffer_array);
+};
+};
+
+#endif
