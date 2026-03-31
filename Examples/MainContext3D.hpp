@@ -47,7 +47,7 @@ void UpdateView(FrameTime frame_time);
 
 virtual void Frame(double timeDelta) = 0;
 
-void Resize(const DisplaySize & Size);
+virtual void Resize(const DisplaySize & Size);
 
 virtual void MouseScroll(ScrollArgs args) = 0;
 virtual void MouseClick(ClickArgs args) = 0;

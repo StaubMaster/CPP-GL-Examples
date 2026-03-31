@@ -43,14 +43,6 @@
 
 struct MainContext : public MainContext3D
 {
-~MainContext()
-{ }
-MainContext()
-	: MainContext3D()
-{ }
-
-
-
 struct SpotLightEntry
 {
 	Point3D		Position;
@@ -146,34 +138,59 @@ class CLightShader : public PolyHedra_Simple3D::Shader
 	{ }
 };
 
+
+
 CLightShader LightShader;
 
 PolyHedra_Simple3D::BufferArray		TestBuffer;
 
 PolyHedra * PH;
 
+~MainContext()
+{ }
+MainContext()
+	: MainContext3D()
+	, LightShader()
+	, TestBuffer()
+	, PH(nullptr)
+{ }
 
 
-void InitShaders()
+
+void InitExternal()
 {
 	{
 		Container::Array<Shader::Code> code({
 			Shader::Code(ShaderDir.File("PH/Simple3D.vert")),
 			Shader::Code(ShaderDir.File("PH/Direct.frag")),
 		});
-		//code.Insert(Shader::Code(ShaderDir.File("PH_Full.frag")));
 		LightShader.Change(code);
-		//code.Dispose();
 	}
-	LightShader.Create();
-	LightShader.Bind();
-	LightShader.Depth.Put(view.Depth);
-	LightShader.FOV.Put(view.FOV);
-	//PolyHedra_3D_Manager.DefaultShaderToUse = &LightShader;
+	{
+		TestBuffer.Main.Position.Change(0);
+		TestBuffer.Main.Normal.Change(1);
+		TestBuffer.Main.Texture.Change(2);
+		TestBuffer.Inst.Trans.Pos.Change(3);
+		TestBuffer.Inst.Trans.Rot.Change(4, 5, 6);
+	}
 }
-void FreeShaders()
+void InitInternal()
+{
+	{
+		TestBuffer.Main.ChangeAttributeBinding();
+		TestBuffer.Inst.ChangeAttributeBinding();
+	}
+}
+
+void GraphicsCreate()
+{
+	LightShader.Create();
+	TestBuffer.Create();
+}
+void GraphicsDelete()
 {
 	LightShader.Delete();
+	TestBuffer.Delete();
 }
 
 
@@ -189,18 +206,22 @@ void Init() override
 
 	std::cout << "Init 0\n";
 
-	InitShaders();
+	InitExternal();
+	GraphicsCreate();
+	InitInternal();
+
+	GL::Disable(GL::Capability::CullFace);
+	GL::Disable(GL::Capability::DepthTest);
+
+	{
+		LightShader.Bind();
+		LightShader.Depth.Put(view.Depth);
+		LightShader.FOV.Put(view.FOV);
+	}
 
 	{
 		PH = PolyHedra::Generate::HexaHedron();
 		//PolyHedra_3D_Manager.Insert(PH);
-		TestBuffer.Main.Position.Change(0);
-		TestBuffer.Main.Normal.Change(1);
-		TestBuffer.Main.Texture.Change(2);
-		TestBuffer.Inst.Trans.Pos.Change(3);
-		TestBuffer.Inst.Trans.Rot.Change(4, 5, 6);
-
-		TestBuffer.Create();
 		Container::Pointer<PolyHedra_Main::Data> data = PH -> ToMainData();
 		TestBuffer.Main.Change(data);
 		data.Clear();
@@ -220,26 +241,22 @@ void Free() override
 
 	//PolyHedra_3D_Manager.Dispose();
 
-	TestBuffer.Delete();
-
-	FreeShaders();
+	GraphicsDelete();
 
 	std::cout << "Free 1\n";
 
 	MainFree();
 }
 
-void Update(double timeDelta)
-{
-	(void)timeDelta;
-}
 void Frame(double timeDelta)
 {
 	//if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
 	//if (window.KeyBoardManager[Keys::Tab].State == State::Press) { window.MouseManager.CursorModeToggle(); }
-	/*if (window.MouseManager.CursorModeIsLocked())
+	//if (window.MouseManager.CursorModeIsLocked())
 	{
-		Trans3D trans = window.MoveSpinFromKeysCursor();
+		//Trans3D trans = window.MoveSpinFromKeysCursor();
+		Trans3D trans;
+		trans.Pos = window.MoveFromKeys();
 		//if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 10; }
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { trans.Pos *= 10; }
 		trans.Pos *= 2;
@@ -247,8 +264,10 @@ void Frame(double timeDelta)
 		trans.Rot.Y *= view.FOV * 0.005f;
 		trans.Rot.Z *= view.FOV * 0.005f;
 		view.TransformFlatX(trans, timeDelta);
-	}*/
+	}
 	(void)timeDelta;
+
+	std::cout << "view: " << view.Trans.Pos << '\n';
 
 	LightShader.Bind();
 	LightShader.View.Put(view.Trans);
@@ -256,7 +275,6 @@ void Frame(double timeDelta)
 	//Light_Spot.Pos = ViewTrans.Pos;
 	//Light_Spot.Dir = ViewTrans.Rot.rotate(Point3D(0, 0, 1));
 
-	//if (window.KeyBoardManager.Keys[GLFW_KEY_1].IsPress())
 	if (window.KeyBoardManager[Keys::D1].State == State::Press)
 	{
 		if (Light_Ambient.Intensity == 0.0f)
@@ -264,7 +282,6 @@ void Frame(double timeDelta)
 		else
 		{ Light_Ambient.Intensity = 0.0f; }
 	}
-	//if (window.KeyBoardManager.Keys[GLFW_KEY_2].IsPress())
 	if (window.KeyBoardManager[Keys::D2].State == State::Press)
 	{
 		if (Light_Solar.Base.Intensity == 0.0f)
@@ -272,9 +289,6 @@ void Frame(double timeDelta)
 		else
 		{ Light_Solar.Base.Intensity = 0.0f; }
 	}
-	//if (window.KeyBoardManager.Keys[GLFW_KEY_3].IsPress()) { Light_Spot_Entry_Array[0].Toggle(); }
-	//if (window.KeyBoardManager.Keys[GLFW_KEY_4].IsPress()) { Light_Spot_Entry_Array[1].Toggle(); }
-	//if (window.KeyBoardManager.Keys[GLFW_KEY_5].IsPress()) { Light_Spot_Entry_Array[2].Toggle(); }
 	if (window.KeyBoardManager[Keys::D3].State == State::Press) { Light_Spot_Entry_Array[0].Toggle(); }
 	if (window.KeyBoardManager[Keys::D4].State == State::Press) { Light_Spot_Entry_Array[1].Toggle(); }
 	if (window.KeyBoardManager[Keys::D5].State == State::Press) { Light_Spot_Entry_Array[2].Toggle(); }

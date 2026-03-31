@@ -8,11 +8,16 @@ struct Trans3D
 	mat3 Rot;
 };
 
-struct WindowBufferSize2D
+struct PixelSize
 {
-	vec2 WindowSize;
-	vec2 BufferSize;
+	vec2 Full;
+	vec2 Half;
+};
+struct sDisplaySize
+{
 	vec2 Ratio;
+	PixelSize Window;
+	PixelSize Buffer;
 };
 
 struct RangeData
@@ -31,7 +36,7 @@ struct DepthData
 
 
 
-uniform WindowBufferSize2D WindowSize;
+uniform sDisplaySize DisplaySize;
 
 uniform Trans3D View;
 
@@ -72,8 +77,8 @@ vec4 proj(in vec3 p_inn)
 	p_out.z = p_inn.z * Depth.Factors[5] - Depth.Factors[6];
 	p_out.w = p_inn.z;
 
-	p_out.x = p_out.x * WindowSize.Ratio.x;
-	p_out.y = p_out.y * WindowSize.Ratio.y;
+	p_out.x = p_out.x * DisplaySize.Ratio.x;
+	p_out.y = p_out.y * DisplaySize.Ratio.y;
 
 	return p_out;
 }
@@ -81,11 +86,9 @@ vec4 proj(in vec3 p_inn)
 void main()
 {
 	vs_out.Original = VPos;
-//	vs_out.Absolute = (vs_out.Original * (IRot)) + IPos;
-
-	vs_out.Absolute = (vs_out.Original * transpose(IRot)) + IPos;
+	vs_out.Absolute = (vs_out.Original * (IRot)) + IPos;
+//	vs_out.Absolute = (vs_out.Original * transpose(IRot)) + IPos;
 	vs_out.Relative = (vs_out.Absolute - View.Pos) * View.Rot;
-
 
 	gl_Position = proj(vs_out.Relative);
 
