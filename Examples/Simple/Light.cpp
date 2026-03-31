@@ -162,7 +162,7 @@ class CLightShader : public PolyHedra_Simple3D::Shader
 	Uniform::LightBase								Light_Ambient;
 	Uniform::LightSolar								Light_Solar;
 	Uniform::GArray<Uniform::LightSpot, LightSpot>	Light_Spot_Array;
-	Uniform::UInt1									Light_Spot_Count;
+	Uniform::UInt									Light_Spot_Count;
 
 	public:
 	CLightShader()
@@ -490,41 +490,11 @@ void Frame(double timeDelta)
 		}
 	}
 
-	// !!! needs to be fixed
-	//LightShader.Light_Spot_Count.PutData(&Light_Spot_Count);
+	LightShader.Light_Spot_Count.Put(Light_Spot_Count);
 
 	(Entrys[0])[0].Trans.Pos = Point3D(0, 10, 0);
 	(Entrys[0])[0].Trans.Rot.X += Angle::Radians(0.01f);
 	(Entrys[0])[0].Trans.Rot.CalcMatrix();
-
-	//std::cout << "multi: " << PolyHedra_3D_Manager.MultiplePolyHedra.Count() << '\n';
-	/*for (unsigned int i = 0; i < PolyHedra_3D_Manager.MultiplePolyHedra.Count(); i++)
-	{
-		std::cout << "single: " << (PolyHedra_3D_Manager.MultiplePolyHedra[i] -> _Instances.Count()) << '\n';
-	}*/
-	/*for (unsigned int i = 0; i < PolyHedra_3D_Manager.MultiplePolyHedra.Count(); i++)
-	{
-		for (unsigned int j = 0; j < (PolyHedra_3D_Manager.MultiplePolyHedra[i] -> _Instances.Count()); j++)
-		{
-			std::cout << (PolyHedra_3D_Manager.MultiplePolyHedra[i] -> _Instances[j].Trans) << '\n';
-		}
-	}*/
-	//std::cout << '\n';
-
-	/*for (unsigned int i = 0; i < PolyHedra_3D_Manager.MultiplePolyHedra.Count(); i++)
-	{
-		PolyHedra * polyhedra = PolyHedra_3D_Manager.MultiplePolyHedra[i] -> _PolyHedra;
-		std::cout << "polyhedra: " << (polyhedra -> Corners.Count()) << ' ' << (polyhedra -> Faces.Count()) << '\n';
-		for (unsigned int j = 0; j < (polyhedra -> Corners.Count()); j++)
-		{
-			std::cout << (polyhedra -> Corners[j].Position) << " | " << (polyhedra -> Corners[j].Normal) << '\n';
-		}
-		for (unsigned int j = 0; j < (polyhedra -> Faces.Count()); j++)
-		{
-			std::cout << (polyhedra -> Faces[j].Corner0.Udx) << " | " << (polyhedra -> Faces[j].Corner1.Udx) << " | " << (polyhedra -> Faces[j].Corner2.Udx) << " | " << (polyhedra -> Faces[j].Normal) << '\n';
-		}
-	}*/
-	//std::cout << '\n';
 
 	PolyHedra_3D_Manager.Draw();
 	/*PH0_Instances -> Update().Draw();
