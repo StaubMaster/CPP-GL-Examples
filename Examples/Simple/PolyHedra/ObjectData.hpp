@@ -8,7 +8,10 @@ class PolyHedra;
 struct PolyHedraObjectData
 {
 	::PolyHedra *	PolyHedra;
-	Trans3D			Data;
+	Trans3D			Trans;
+
+	bool	Remove;	// Remove this Frame
+	bool	Draw;	// Draw this Frame
 
 	~PolyHedraObjectData();
 	PolyHedraObjectData();
@@ -16,7 +19,7 @@ struct PolyHedraObjectData
 	PolyHedraObjectData & operator=(const PolyHedraObjectData & other);
 
 	PolyHedraObjectData(::PolyHedra * polyhedra);
-	PolyHedraObjectData(::PolyHedra * polyhedra, Trans3D data);
+	PolyHedraObjectData(::PolyHedra * polyhedra, Trans3D trans);
 };
 
 #endif

@@ -14,8 +14,20 @@ class DirectoryInfo;
 
 struct PolyHedraManager
 {
-	Container::Binary<PolyHedraInstanceManager>	InstanceManagers;
+	static PolyHedraManager * CurrentPointer;
+	static PolyHedraManager & Current();
+	static bool CheckCurrent();
+	static void ClearCurrent();
+	bool IsCurrent() const;
+	void MakeCurrent();
+
+
+
+//	Container::Binary<PolyHedraObjectData>		Objects;
+	Container::Binary<PolyHedraObjectData*>		ObjectDatas;
+
 	PolyHedraFull::Shader						FullShader;
+	Container::Binary<PolyHedraInstanceManager>	InstanceManagers;
 
 	~PolyHedraManager();
 	PolyHedraManager();
@@ -28,15 +40,21 @@ struct PolyHedraManager
 	void	InitExternal(DirectoryInfo & media_dir);
 	void	InitInternal();
 
-	Undex				Find(::PolyHedra * polyhedra);
-	Undex				Place(::PolyHedra * polyhedra);
+	unsigned int	FindPolyHedra(::PolyHedra * polyhedra);
+	unsigned int	PlacePolyHedra(::PolyHedra * polyhedra);
 
-	PolyHedraObjectData	Place(Undex polyhedra_undex, Trans3D data);
-	PolyHedraObjectData	Place(::PolyHedra * polyhedra, Trans3D data);
+	PolyHedraObjectData *	PlaceObject(unsigned int polyhedra, Trans3D trans);
+	PolyHedraObjectData *	PlaceObject(::PolyHedra * polyhedra, Trans3D trans);
+	PolyHedraObjectData *	CopyObject(const PolyHedraObjectData * obj);
+
+	PolyHedraObjectData		Place(unsigned int polyhedra, Trans3D trans);
+	PolyHedraObjectData		Place(::PolyHedra * polyhedra, Trans3D trans);
 
 	void	ClearInstances();
 	void	PlaceInstance(const PolyHedraObjectData & obj);
 	void	PlaceInstance(const Container::Member<PolyHedraObjectData> & objs);
+
+	void	Update();
 	void	Draw();
 };
 

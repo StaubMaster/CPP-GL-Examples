@@ -7,11 +7,26 @@
 
 
 
+
+
+PolyHedraManager * PolyHedraManager::CurrentPointer = nullptr;
+PolyHedraManager & PolyHedraManager::Current() { return *CurrentPointer; }
+bool PolyHedraManager::CheckCurrent() { return (PolyHedraManager::CurrentPointer != nullptr); }
+void PolyHedraManager::ClearCurrent() { PolyHedraManager::CurrentPointer = nullptr; }
+bool PolyHedraManager::IsCurrent() const { return (PolyHedraManager::CurrentPointer == this); }
+void PolyHedraManager::MakeCurrent() { PolyHedraManager::CurrentPointer = this; }
+
+
+
+
+
 PolyHedraManager::~PolyHedraManager()
 { }
 PolyHedraManager::PolyHedraManager()
-	: InstanceManagers()
+//	: Objects()
+	: ObjectDatas()
 	, FullShader()
+	, InstanceManagers()
 { }
 
 
@@ -57,36 +72,57 @@ void PolyHedraManager::InitInternal()
 
 
 
-Undex PolyHedraManager::Find(::PolyHedra * polyhedra)
+unsigned int PolyHedraManager::FindPolyHedra(::PolyHedra * polyhedra)
 {
 	for (unsigned int i = 0; i < InstanceManagers.Count(); i++)
 	{
 		if (InstanceManagers[i].PolyHedra == polyhedra)
 		{
-			return Undex(i);
+			return i;
 		}
 	}
-	return Undex::Invalid();
+	return 0xFFFFFFFF;
 }
-Undex PolyHedraManager::Place(::PolyHedra * polyhedra)
+unsigned int PolyHedraManager::PlacePolyHedra(::PolyHedra * polyhedra)
 {
-	Undex u(InstanceManagers.Count());
+	unsigned int idx = InstanceManagers.Count();
 	InstanceManagers.Insert(PolyHedraInstanceManager(polyhedra));
-	return u;
+	return idx;
 }
 
-PolyHedraObjectData PolyHedraManager::Place(Undex polyhedra_undex, Trans3D data)
+PolyHedraObjectData * PolyHedraManager::PlaceObject(unsigned int polyhedra, Trans3D trans)
 {
-	return PolyHedraObjectData(InstanceManagers[polyhedra_undex].PolyHedra, data);
+	PolyHedraObjectData * obj = new PolyHedraObjectData(InstanceManagers[polyhedra].PolyHedra, trans);
+	ObjectDatas.Insert(obj);
+	return obj;
 }
-PolyHedraObjectData PolyHedraManager::Place(::PolyHedra * polyhedra, Trans3D data)
+PolyHedraObjectData * PolyHedraManager::PlaceObject(::PolyHedra * polyhedra, Trans3D trans)
 {
-	Undex u = Find(polyhedra);
-	if (!u.IsValid())
+	unsigned int idx = FindPolyHedra(polyhedra);
+	if (idx == 0xFFFFFFFF)
 	{
-		u = Place(polyhedra);
+		idx = PlacePolyHedra(polyhedra);
 	}
-	return Place(u, data);
+	return PlaceObject(idx, trans);
+}
+PolyHedraObjectData * PolyHedraManager::CopyObject(const PolyHedraObjectData * obj)
+{
+	if (obj == nullptr) { return nullptr; }
+	return PlaceObject(obj -> PolyHedra, obj -> Trans);
+}
+
+PolyHedraObjectData PolyHedraManager::Place(unsigned int polyhedra, Trans3D trans)
+{
+	return PolyHedraObjectData(InstanceManagers[polyhedra].PolyHedra, trans);
+}
+PolyHedraObjectData PolyHedraManager::Place(::PolyHedra * polyhedra, Trans3D trans)
+{
+	unsigned int idx = FindPolyHedra(polyhedra);
+	if (idx == 0xFFFFFFFF)
+	{
+		idx = PlacePolyHedra(polyhedra);
+	}
+	return Place(idx, trans);
 }
 
 
@@ -110,6 +146,29 @@ void PolyHedraManager::PlaceInstance(const Container::Member<PolyHedraObjectData
 	for (unsigned int i = 0; i < InstanceManagers.Count(); i++)
 	{
 		InstanceManagers[i].Place(objs);
+	}
+}
+
+
+
+void PolyHedraManager::Update()
+{
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		if (ObjectDatas[i] != nullptr)
+		{
+			PolyHedraObjectData & obj = *ObjectDatas[i];
+			if (obj.Draw)
+			{
+				PlaceInstance(obj);
+			}
+			if (obj.Remove)
+			{
+				ObjectDatas.Remove(i);
+				delete &obj;
+				i--;
+			}
+		}
 	}
 }
 void PolyHedraManager::Draw()

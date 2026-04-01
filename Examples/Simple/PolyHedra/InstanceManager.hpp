@@ -12,6 +12,8 @@ struct PolyHedraObjectData;
 struct PolyHedraInstanceManager
 {
 	::PolyHedra *				PolyHedra;
+	bool						PolyHedraChanged;
+
 	::PolyHedraFull::Buffer		Buffer;
 	Container::Binary<Trans3D>	Instances;
 
@@ -21,6 +23,9 @@ struct PolyHedraInstanceManager
 	PolyHedraInstanceManager & operator=(const PolyHedraInstanceManager & other);
 
 	PolyHedraInstanceManager(::PolyHedra * polyhedra);
+	void	Change(::PolyHedra * polyhedra);
+
+
 
 	void	GraphicsCreate();
 	void	GraphicsDelete();
@@ -28,9 +33,13 @@ struct PolyHedraInstanceManager
 	void	InitExternal();
 	void	InitInternal();
 
+
+
 	void	UpdateBufferMain();
 	void	UpdateBufferInst();
 	void	Draw();
+
+
 
 	void	Clear();
 	void	Place(const PolyHedraObjectData & obj);

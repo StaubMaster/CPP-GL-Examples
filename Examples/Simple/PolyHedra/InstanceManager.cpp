@@ -31,9 +31,15 @@ PolyHedraInstanceManager & PolyHedraInstanceManager::operator=(const PolyHedraIn
 
 PolyHedraInstanceManager::PolyHedraInstanceManager(::PolyHedra * polyhedra)
 	: PolyHedra(polyhedra)
+	, PolyHedraChanged(true)
 	, Buffer(GL::DrawMode::Triangles)
 	, Instances()
 { }
+void PolyHedraInstanceManager::Change(::PolyHedra * polyhedra)
+{
+	PolyHedra = polyhedra;
+	PolyHedraChanged = true;
+}
 
 
 
@@ -83,6 +89,12 @@ void PolyHedraInstanceManager::UpdateBufferInst()
 }
 void PolyHedraInstanceManager::Draw()
 {
+	if (PolyHedraChanged)
+	{
+		UpdateBufferMain();
+		PolyHedraChanged = false;
+	}
+	UpdateBufferInst();
 	Buffer.Draw();
 }
 
@@ -96,7 +108,7 @@ void PolyHedraInstanceManager::Place(const PolyHedraObjectData & obj)
 {
 	if (obj.PolyHedra == PolyHedra)
 	{
-		Instances.Insert(obj.Data);
+		Instances.Insert(obj.Trans);
 	}
 }
 void PolyHedraInstanceManager::Place(const Container::Member<PolyHedraObjectData> & objs)
