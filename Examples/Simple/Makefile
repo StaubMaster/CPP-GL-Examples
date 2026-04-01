@@ -23,6 +23,8 @@ FILES_SRC := \
 \
 	PolyHedra/Graphics/Full/Main/Buffer.cpp \
 	PolyHedra/Graphics/Full/Shader.cpp \
+	PolyHedra/ObjectData.cpp \
+	PolyHedra/InstanceManager.cpp \
 \
 	main.cpp \
 
