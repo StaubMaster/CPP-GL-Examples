@@ -19,17 +19,13 @@
 struct MainContext3D
 {
 DirectoryInfo MediaDirectory;
-DirectoryInfo ImageDir;
-DirectoryInfo ShaderDir;
-DirectoryInfo PolyHedraDir;
-DirectoryInfo TextDir;
 
 Window	window;
 Multiform::DisplaySize	Multiform_DisplaySize;
 
 View3D	view;
 //Multiform::Trans3D		Multiform_View;
-//Multiform::Angle		Multiform_Scale;
+//Multiform::Angle			Multiform_Scale;
 
 virtual ~MainContext3D();
 MainContext3D();
