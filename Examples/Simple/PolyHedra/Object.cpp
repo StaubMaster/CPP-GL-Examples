@@ -36,17 +36,34 @@ PolyHedraObject & PolyHedraObject::operator=(const PolyHedraObject & other)
 
 
 
+
+
 PolyHedraObject::PolyHedraObject(unsigned int polyhedra)
 	: Data(PolyHedraManager::Current().PlaceObject(polyhedra, Trans3D()))
 { }
 PolyHedraObject::PolyHedraObject(unsigned int polyhedra, Trans3D trans)
 	: Data(PolyHedraManager::Current().PlaceObject(polyhedra, trans))
 { }
+PolyHedraObject::PolyHedraObject(unsigned int polyhedra, Point3D pos, Angle3D ang)
+	: Data(PolyHedraManager::Current().PlaceObject(polyhedra, Trans3D(pos, ang)))
+{ }
+PolyHedraObject::PolyHedraObject(unsigned int polyhedra, Point3D pos)
+	: Data(PolyHedraManager::Current().PlaceObject(polyhedra, Trans3D(pos, Angle3D())))
+{ }
+
+
+
 PolyHedraObject::PolyHedraObject(::PolyHedra * polyhedra)
 	: Data(PolyHedraManager::Current().PlaceObject(polyhedra, Trans3D()))
 { }
 PolyHedraObject::PolyHedraObject(::PolyHedra * polyhedra, Trans3D trans)
 	: Data(PolyHedraManager::Current().PlaceObject(polyhedra, trans))
+{ }
+PolyHedraObject::PolyHedraObject(::PolyHedra * polyhedra, Point3D pos, Angle3D ang)
+	: Data(PolyHedraManager::Current().PlaceObject(polyhedra, Trans3D(pos, ang)))
+{ }
+PolyHedraObject::PolyHedraObject(::PolyHedra * polyhedra, Point3D pos)
+	: Data(PolyHedraManager::Current().PlaceObject(polyhedra, Trans3D(pos, Angle3D())))
 { }
 
 

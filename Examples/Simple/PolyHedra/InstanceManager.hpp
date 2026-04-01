@@ -2,6 +2,7 @@
 # define POLYHEDRA_INSTANCE_MANAGER_HPP
 
 # include "PolyHedra/Graphics/Full/Buffer.hpp"
+# include "Graphics/Texture/Array2D.hpp"
 
 # include "ValueType/Trans3D.hpp"
 # include "Miscellaneous/Container/Binary.hpp"
@@ -14,7 +15,9 @@ struct PolyHedraInstanceManager
 	::PolyHedra *				PolyHedra;
 	bool						PolyHedraChanged;
 
-	::PolyHedraFull::Buffer		Buffer;
+	Texture::Array2D			Texture;
+
+	::PolyHedraFull::Buffer		BufferFull;
 	Container::Binary<Trans3D>	Instances;
 
 	~PolyHedraInstanceManager();
@@ -37,7 +40,7 @@ struct PolyHedraInstanceManager
 
 	void	UpdateBufferMain();
 	void	UpdateBufferInst();
-	void	Draw();
+	void	DrawFull();
 
 
 

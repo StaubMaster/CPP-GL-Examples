@@ -7,24 +7,29 @@
 #include "PolyHedra/Graphics/Full/Main/Data.hpp"
 #include "Miscellaneous/Container/Array.hpp"
 
+#include "PolyHedra/Skin/Skin2DA.hpp"
+
 
 
 PolyHedraInstanceManager::~PolyHedraInstanceManager()
 { }
 PolyHedraInstanceManager::PolyHedraInstanceManager()
 	: PolyHedra(nullptr)
-	, Buffer(GL::DrawMode::Triangles)
+	, PolyHedraChanged(false)
+	, BufferFull(GL::DrawMode::Triangles)
 	, Instances()
 { }
 PolyHedraInstanceManager::PolyHedraInstanceManager(const PolyHedraInstanceManager & other)
 	: PolyHedra(other.PolyHedra)
-	, Buffer(other.Buffer)
+	, PolyHedraChanged(other.PolyHedraChanged)
+	, BufferFull(other.BufferFull)
 	, Instances()
 { }
 PolyHedraInstanceManager & PolyHedraInstanceManager::operator=(const PolyHedraInstanceManager & other)
 {
 	PolyHedra = other.PolyHedra;
-	Buffer = other.Buffer;
+	PolyHedraChanged = other.PolyHedraChanged;
+	BufferFull = other.BufferFull;
 	Instances.Clear();
 	return *this;
 }
@@ -32,7 +37,7 @@ PolyHedraInstanceManager & PolyHedraInstanceManager::operator=(const PolyHedraIn
 PolyHedraInstanceManager::PolyHedraInstanceManager(::PolyHedra * polyhedra)
 	: PolyHedra(polyhedra)
 	, PolyHedraChanged(true)
-	, Buffer(GL::DrawMode::Triangles)
+	, BufferFull(GL::DrawMode::Triangles)
 	, Instances()
 { }
 void PolyHedraInstanceManager::Change(::PolyHedra * polyhedra)
@@ -45,25 +50,25 @@ void PolyHedraInstanceManager::Change(::PolyHedra * polyhedra)
 
 void PolyHedraInstanceManager::GraphicsCreate()
 {
-	Buffer.Create();
+	BufferFull.Create();
 }
 void PolyHedraInstanceManager::GraphicsDelete()
 {
-	Buffer.Delete();
+	BufferFull.Delete();
 }
 
 void PolyHedraInstanceManager::InitExternal()
 {
-	Buffer.Main.Position.Change(0);
-	Buffer.Main.Normal.Change(1);
-	Buffer.Main.Texture.Change(2);
-	Buffer.Inst.Data.Pos.Change(3);
-	Buffer.Inst.Data.Rot.Change(4, 5, 6);
+	BufferFull.Main.Position.Change(0);
+	BufferFull.Main.Normal.Change(1);
+	BufferFull.Main.Texture.Change(2);
+	BufferFull.Inst.Data.Pos.Change(3);
+	BufferFull.Inst.Data.Rot.Change(4, 5, 6);
 }
 void PolyHedraInstanceManager::InitInternal()
 {
-	Buffer.Main.ChangeAttributeBinding();
-	Buffer.Inst.ChangeAttributeBinding();
+	BufferFull.Main.ChangeAttributeBinding();
+	BufferFull.Inst.ChangeAttributeBinding();
 }
 
 
@@ -80,14 +85,28 @@ void PolyHedraInstanceManager::UpdateBufferMain()
 		data1[i].Normal = data0[i].Normal;
 		data1[i].Texture = data0[i].Texture;
 	}
-	Buffer.Main.Change(data1);
+	BufferFull.Main.Change(data1);
 	data0.Clear();
+
+	if (PolyHedra -> Skin != NULL)
+	{
+		//_Texture = _PolyHedra -> Skin -> ToTexture();
+		Skin2DA * skin = (Skin2DA*)(PolyHedra -> Skin);
+		//skin -> ToTexture(Buffer.Texture);
+		skin -> ToTexture(Texture);
+	}
+	else
+	{
+		//_Texture = NULL;
+		//Buffer.Texture.Delete();
+		Texture.Delete();
+	}
 }
 void PolyHedraInstanceManager::UpdateBufferInst()
 {
-	Buffer.Inst.Change(Instances);
+	BufferFull.Inst.Change(Instances);
 }
-void PolyHedraInstanceManager::Draw()
+void PolyHedraInstanceManager::DrawFull()
 {
 	if (PolyHedraChanged)
 	{
@@ -95,7 +114,8 @@ void PolyHedraInstanceManager::Draw()
 		PolyHedraChanged = false;
 	}
 	UpdateBufferInst();
-	Buffer.Draw();
+	Texture.Bind();
+	BufferFull.Draw();
 }
 
 

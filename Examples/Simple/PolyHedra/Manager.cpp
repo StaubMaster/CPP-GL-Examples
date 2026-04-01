@@ -23,9 +23,9 @@ void PolyHedraManager::MakeCurrent() { PolyHedraManager::CurrentPointer = this; 
 PolyHedraManager::~PolyHedraManager()
 { }
 PolyHedraManager::PolyHedraManager()
-//	: Objects()
 	: ObjectDatas()
-	, FullShader()
+	, ShaderFullDefault()
+	, ShaderFullOther(nullptr)
 	, InstanceManagers()
 { }
 
@@ -33,7 +33,7 @@ PolyHedraManager::PolyHedraManager()
 
 void PolyHedraManager::GraphicsCreate()
 {
-	FullShader.Create();
+	ShaderFullDefault.Create();
 	for (unsigned int i = 0; i < InstanceManagers.Count(); i++)
 	{
 		InstanceManagers[i].GraphicsCreate();
@@ -41,7 +41,7 @@ void PolyHedraManager::GraphicsCreate()
 }
 void PolyHedraManager::GraphicsDelete()
 {
-	FullShader.Delete();
+	ShaderFullDefault.Delete();
 	for (unsigned int i = 0; i < InstanceManagers.Count(); i++)
 	{
 		InstanceManagers[i].GraphicsDelete();
@@ -55,7 +55,7 @@ void PolyHedraManager::InitExternal(DirectoryInfo & media_dir)
 			Shader::Code(media_dir.File("Shaders/PH/Simple3D.vert")),
 			Shader::Code(media_dir.File("Shaders/PH/Full.frag")),
 		});
-		FullShader.Change(code);
+		ShaderFullDefault.Change(code);
 	}
 	for (unsigned int i = 0; i < InstanceManagers.Count(); i++)
 	{
@@ -111,20 +111,6 @@ PolyHedraObjectData * PolyHedraManager::CopyObject(const PolyHedraObjectData * o
 	return PlaceObject(obj -> PolyHedra, obj -> Trans);
 }
 
-PolyHedraObjectData PolyHedraManager::Place(unsigned int polyhedra, Trans3D trans)
-{
-	return PolyHedraObjectData(InstanceManagers[polyhedra].PolyHedra, trans);
-}
-PolyHedraObjectData PolyHedraManager::Place(::PolyHedra * polyhedra, Trans3D trans)
-{
-	unsigned int idx = FindPolyHedra(polyhedra);
-	if (idx == 0xFFFFFFFF)
-	{
-		idx = PlacePolyHedra(polyhedra);
-	}
-	return Place(idx, trans);
-}
-
 
 
 void PolyHedraManager::ClearInstances()
@@ -141,18 +127,12 @@ void PolyHedraManager::PlaceInstance(const PolyHedraObjectData & obj)
 		InstanceManagers[i].Place(obj);
 	}
 }
-void PolyHedraManager::PlaceInstance(const Container::Member<PolyHedraObjectData> & objs)
-{
-	for (unsigned int i = 0; i < InstanceManagers.Count(); i++)
-	{
-		InstanceManagers[i].Place(objs);
-	}
-}
 
 
 
 void PolyHedraManager::Update()
 {
+	ClearInstances();
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
 		if (ObjectDatas[i] != nullptr)
@@ -173,8 +153,16 @@ void PolyHedraManager::Update()
 }
 void PolyHedraManager::Draw()
 {
+	if (ShaderFullOther == nullptr)
+	{
+		ShaderFullDefault.Bind();
+	}
+	else
+	{
+		ShaderFullOther -> Bind();
+	}
 	for (unsigned int i = 0; i < InstanceManagers.Count(); i++)
 	{
-		InstanceManagers[i].Draw();
+		InstanceManagers[i].DrawFull();
 	}
 }

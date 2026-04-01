@@ -23,10 +23,11 @@ struct PolyHedraManager
 
 
 
-//	Container::Binary<PolyHedraObjectData>		Objects;
 	Container::Binary<PolyHedraObjectData*>		ObjectDatas;
 
-	PolyHedraFull::Shader						FullShader;
+	PolyHedraFull::Shader						ShaderFullDefault;
+	PolyHedraFull::Shader *						ShaderFullOther;
+
 	Container::Binary<PolyHedraInstanceManager>	InstanceManagers;
 
 	~PolyHedraManager();
@@ -47,13 +48,8 @@ struct PolyHedraManager
 	PolyHedraObjectData *	PlaceObject(::PolyHedra * polyhedra, Trans3D trans);
 	PolyHedraObjectData *	CopyObject(const PolyHedraObjectData * obj);
 
-	PolyHedraObjectData		Place(unsigned int polyhedra, Trans3D trans);
-	PolyHedraObjectData		Place(::PolyHedra * polyhedra, Trans3D trans);
-
 	void	ClearInstances();
 	void	PlaceInstance(const PolyHedraObjectData & obj);
-	void	PlaceInstance(const Container::Member<PolyHedraObjectData> & objs);
-
 	void	Update();
 	void	Draw();
 };

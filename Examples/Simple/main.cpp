@@ -168,7 +168,7 @@ void LightsFree()
 
 
 
-class CLightShader : public PolyHedra_Simple3D::Shader
+class CLightShader : public PolyHedraFull::Shader
 {
 	public:
 	Uniform::LightBase								Light_Ambient;
@@ -178,11 +178,11 @@ class CLightShader : public PolyHedra_Simple3D::Shader
 
 	public:
 	CLightShader()
-		: PolyHedra_Simple3D::Shader(),
-		Light_Ambient(*this, "Ambient"),
-		Light_Solar(*this, "Solar"),
-		Light_Spot_Array(Light_Spot_Limit, *this, "SpotArr"),
-		Light_Spot_Count(*this, "SpotCount")
+		: PolyHedraFull::Shader()
+		, Light_Ambient(*this, "Ambient")
+		, Light_Solar(*this, "Solar")
+		, Light_Spot_Array(Light_Spot_Limit, *this, "SpotArr")
+		, Light_Spot_Count(*this, "SpotCount")
 	{ }
 	~CLightShader()
 	{ }
@@ -213,6 +213,7 @@ void InitExternal()
 		LightShader.Change(code);
 	}
 	PolyHedraManager.InitExternal(MediaDirectory);
+	PolyHedraManager.ShaderFullOther = &LightShader;
 }
 void InitInternal()
 {
@@ -222,17 +223,19 @@ void InitInternal()
 		LightShader.FOV.Put(view.FOV);
 	}
 	{
-		PolyHedraManager.FullShader.Bind();
-		PolyHedraManager.FullShader.Depth.Put(view.Depth);
-		PolyHedraManager.FullShader.FOV.Put(view.FOV);
+		PolyHedraManager.ShaderFullDefault.Bind();
+		PolyHedraManager.ShaderFullDefault.Depth.Put(view.Depth);
+		PolyHedraManager.ShaderFullDefault.FOV.Put(view.FOV);
 	}
 	PolyHedraManager.InitInternal();
 }
 
 
 
-void AddInstances()
+void RandomCubes()
 {
+	PolyHedra * polyhedra = PolyHedra::Generate::HexaHedron();
+
 	int Range_Size1 = 0x1FF;
 	int Range_SizeH = 0x0FF;
 	int j_len = 16;
@@ -252,8 +255,7 @@ void AddInstances()
 
 		for (int i = 0; i < i_len; i++)
 		{
-			//PolyHedraManager.Objects.Insert(PolyHedraManager.Place((unsigned int)0, Trans3D(
-			Objects.Insert(PolyHedraObject((unsigned int)0, Trans3D(
+			Objects.Insert(PolyHedraObject(polyhedra, Trans3D(
 				center + Point3D(
 					(std::rand() & Range_Size1) - Range_SizeH,
 					(std::rand() & Range_Size1) - Range_SizeH,
@@ -264,78 +266,67 @@ void AddInstances()
 	}
 }
 
-unsigned int FancyInsert(const char * polyhedra_file_path)
-{
-	PolyHedra * polyhedra = PolyHedra::Load(PolyHedraDir.File(polyhedra_file_path));
-	return PolyHedraManager.PlacePolyHedra(polyhedra);
-}
-void FancyInsert(unsigned int ph_idx, Point3D pos, Angle3D rot)
-{
-	Objects.Insert(PolyHedraObject(ph_idx, Trans3D(pos, rot)));
-}
 void Fancify()
 {
-	unsigned int idx_stage =				FancyInsert("Light/Stage.polyhedra.ymt");
-	unsigned int idx_stage_light =			FancyInsert("Light/Stage_Light.polyhedra.ymt");
-	unsigned int idx_stage_light_holder =	FancyInsert("Light/Stage_Light_Holder.polyhedra.ymt");
-	unsigned int idx_truss =				FancyInsert("Light/Truss_Square40cm_Len200cm.polyhedra.ymt");
-	unsigned int idx_truss_cube =			FancyInsert("Light/Truss_Cube40cm.polyhedra.ymt");
-	unsigned int idx_chair =				FancyInsert("Light/Chair.polyhedra.ymt");
+	PolyHedra * stage =					PolyHedra::Load(PolyHedraDir.File("Light/Stage.polyhedra.ymt"));
+	PolyHedra * stage_light =			PolyHedra::Load(PolyHedraDir.File("Light/Stage_Light.polyhedra.ymt"));
+	PolyHedra * stage_light_holder =	PolyHedra::Load(PolyHedraDir.File("Light/Stage_Light_Holder.polyhedra.ymt"));
+	PolyHedra * truss =					PolyHedra::Load(PolyHedraDir.File("Light/Truss_Square40cm_Len200cm.polyhedra.ymt"));
+	PolyHedra * truss_cube =			PolyHedra::Load(PolyHedraDir.File("Light/Truss_Cube40cm.polyhedra.ymt"));
+	PolyHedra * chair =					PolyHedra::Load(PolyHedraDir.File("Light/Chair.polyhedra.ymt"));
 
-	FancyInsert(idx_stage, Point3D(0, 0, 0), Angle3D());
+	Objects.Insert(PolyHedraObject(stage, Point3D(0, 0, 0)));
 
-	FancyInsert(idx_truss, Point3D(-32, 10, -22), Angle3D(Angle(), Angle::Degrees(90), Angle()));
-	FancyInsert(idx_truss, Point3D(-32, 30, -22), Angle3D(Angle(), Angle::Degrees(90), Angle()));
-	FancyInsert(idx_truss_cube, Point3D(-32, 42, -22), Angle3D());
+	Objects.Insert(PolyHedraObject(truss, Point3D(-32, 10, -22), Angle3D(Angle(), Angle::Degrees(90), Angle())));
+	Objects.Insert(PolyHedraObject(truss, Point3D(-32, 30, -22), Angle3D(Angle(), Angle::Degrees(90), Angle())));
+	Objects.Insert(PolyHedraObject(truss_cube, Point3D(-32, 42, -22)));
 
-	FancyInsert(idx_truss, Point3D(+32, 10, -22), Angle3D(Angle(), Angle::Degrees(90), Angle()));
-	FancyInsert(idx_truss, Point3D(+32, 30, -22), Angle3D(Angle(), Angle::Degrees(90), Angle()));
-	FancyInsert(idx_truss_cube, Point3D(+32, 42 + 5, -22), Angle3D());
+	Objects.Insert(PolyHedraObject(truss, Point3D(+32, 10, -22), Angle3D(Angle(), Angle::Degrees(90), Angle())));
+	Objects.Insert(PolyHedraObject(truss, Point3D(+32, 30, -22), Angle3D(Angle(), Angle::Degrees(90), Angle())));
+	Objects.Insert(PolyHedraObject(truss_cube, Point3D(+32, 42 + 5, -22)));
 
-	FancyInsert(idx_truss, Point3D(-20, 42, -22), Angle3D(Angle::Degrees(90), Angle(), Angle()));
-	FancyInsert(idx_truss, Point3D(  0, 42, -22), Angle3D(Angle::Degrees(90), Angle(), Angle()));
-	FancyInsert(idx_truss, Point3D(+20, 42, -22), Angle3D(Angle::Degrees(90), Angle(), Angle()));
+	Objects.Insert(PolyHedraObject(truss, Point3D(-20, 42, -22), Angle3D(Angle::Degrees(90), Angle(), Angle())));
+	Objects.Insert(PolyHedraObject(truss, Point3D(  0, 42, -22), Angle3D(Angle::Degrees(90), Angle(), Angle())));
+	Objects.Insert(PolyHedraObject(truss, Point3D(+20, 42, -22), Angle3D(Angle::Degrees(90), Angle(), Angle())));
 
-	FancyInsert(idx_truss, Point3D(-32, 42, -10), Angle3D());
-	FancyInsert(idx_truss, Point3D(+32, 42, -10), Angle3D());
-	FancyInsert(idx_truss, Point3D(-32, 42, +10), Angle3D());
-	FancyInsert(idx_truss, Point3D(+32, 42, +10), Angle3D());
+	Objects.Insert(PolyHedraObject(truss, Point3D(-32, 42, -10)));
+	Objects.Insert(PolyHedraObject(truss, Point3D(+32, 42, -10)));
+	Objects.Insert(PolyHedraObject(truss, Point3D(-32, 42, +10)));
+	Objects.Insert(PolyHedraObject(truss, Point3D(+32, 42, +10)));
 
-	FancyInsert(idx_truss, Point3D(-32, 10, +22), Angle3D(Angle(), Angle::Degrees(90), Angle()));
-	FancyInsert(idx_truss, Point3D(-32, 30, +22), Angle3D(Angle(), Angle::Degrees(90), Angle()));
-	FancyInsert(idx_truss_cube, Point3D(-32, 42, +22), Angle3D());
+	Objects.Insert(PolyHedraObject(truss, Point3D(-32, 10, +22), Angle3D(Angle(), Angle::Degrees(90), Angle())));
+	Objects.Insert(PolyHedraObject(truss, Point3D(-32, 30, +22), Angle3D(Angle(), Angle::Degrees(90), Angle())));
+	Objects.Insert(PolyHedraObject(truss_cube, Point3D(-32, 42, +22)));
 
-	FancyInsert(idx_truss, Point3D(+32, 10, +22), Angle3D(Angle(), Angle::Degrees(90), Angle()));
-	FancyInsert(idx_truss, Point3D(+32, 30, +22), Angle3D(Angle(), Angle::Degrees(90), Angle()));
-	FancyInsert(idx_truss_cube, Point3D(+32, 42, +22), Angle3D());
+	Objects.Insert(PolyHedraObject(truss, Point3D(+32, 10, +22), Angle3D(Angle(), Angle::Degrees(90), Angle())));
+	Objects.Insert(PolyHedraObject(truss, Point3D(+32, 30, +22), Angle3D(Angle(), Angle::Degrees(90), Angle())));
+	Objects.Insert(PolyHedraObject(truss_cube, Point3D(+32, 42, +22)));
 
-	FancyInsert(idx_truss, Point3D(-20, 42, +22), Angle3D(Angle::Degrees(90), Angle(), Angle()));
-	FancyInsert(idx_truss, Point3D(  0, 42, +22), Angle3D(Angle::Degrees(90), Angle(), Angle()));
-	FancyInsert(idx_truss, Point3D(+20, 42, +22), Angle3D(Angle::Degrees(90), Angle(), Angle()));
+	Objects.Insert(PolyHedraObject(truss, Point3D(-20, 42, +22), Angle3D(Angle::Degrees(90), Angle(), Angle())));
+	Objects.Insert(PolyHedraObject(truss, Point3D(  0, 42, +22), Angle3D(Angle::Degrees(90), Angle(), Angle())));
+	Objects.Insert(PolyHedraObject(truss, Point3D(+20, 42, +22), Angle3D(Angle::Degrees(90), Angle(), Angle())));
 
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
-		//Light_Spot_Entry_Array[i].EntryLight = PolyHedraManager.Place(idx_stage_light, Trans3D());
-		//Light_Spot_Entry_Array[i].EntryHolder = PolyHedraManager.Place(idx_stage_light_holder, Trans3D());
-		Light_Spot_Entry_Array[i].EntryLight = PolyHedraObject(idx_stage_light, Trans3D());
-		Light_Spot_Entry_Array[i].EntryHolder = PolyHedraObject(idx_stage_light_holder, Trans3D());
+		Light_Spot_Entry_Array[i].EntryLight = PolyHedraObject(stage_light);
+		Light_Spot_Entry_Array[i].EntryHolder = PolyHedraObject(stage_light_holder);
 	}
 
 	for (int y = 0; y < 5; y++)
 	{
 		for (int x = -5; x <= +5; x++)
 		{
-			FancyInsert(idx_chair, Point3D(x * +5.0f, (y * 2.0f), (y * -7.5f) -50), Angle3D());
+			Objects.Insert(PolyHedraObject(chair, Trans3D(Point3D(x * +5.0f, (y * 2.0f), (y * -7.5f) -50), Angle3D())));
 		}
 	}
 
 	for (int i = 0; i < 10; i++)
 	{
-		FancyInsert(idx_chair, Point3D(-50, i, -40), Angle3D(Angle::Degrees(90), Angle(), Angle()));
+		Objects.Insert(PolyHedraObject(chair, Trans3D(Point3D(-50, i, -40), Angle3D(Angle::Degrees(90), Angle(), Angle()))));
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		FancyInsert(idx_chair, Point3D(-50, i, -45), Angle3D(Angle::Degrees(90), Angle(), Angle()));
+		Objects.Insert(PolyHedraObject(chair, Trans3D(Point3D(-50, i, -45), Angle3D(Angle::Degrees(90), Angle(), Angle()))));
 	}
 }
 
@@ -345,7 +336,7 @@ void Make() override { }
 
 void Init() override
 {
-	window.DefaultColor = ColorF4(0.75f, 0.0f, 0.0f);
+	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
 	view.Depth.Color = window.DefaultColor;
 	view.Trans = Trans3D(Point3D(0, 10, -65), Angle3D());
 
@@ -353,13 +344,7 @@ void Init() override
 
 	LightsInit();
 
-	{
-		PolyHedra * polyhedra = PolyHedra::Generate::HexaHedron();
-		unsigned int idx = PolyHedraManager.PlacePolyHedra(polyhedra);
-		std::cout << "PolyHedra " << idx << '\n';
-		AddInstances();
-	}
-
+	RandomCubes();
 	Fancify();
 
 	InitExternal();
@@ -442,9 +427,6 @@ void Frame(double timeDelta)
 
 	LightShader.Light_Spot_Count.Put(Light_Spot_Count);
 
-	//PolyHedraManager.Objects[0].Trans.Pos = Point3D(0, 10, 0);
-	//PolyHedraManager.Objects[0].Trans.Rot.X += Angle::Radians(0.01f);
-	//PolyHedraManager.Objects[0].Trans.Rot.CalcMatrix();
 	Objects[0].Trans().Pos = Point3D(0, 10, 0);
 	Objects[0].Trans().Rot.X += Angle::Radians(0.01f);
 	Objects[0].Trans().Rot.CalcMatrix();
@@ -452,26 +434,11 @@ void Frame(double timeDelta)
 
 
 	PolyHedraManager.ClearInstances();
-	/*PolyHedraManager.PlaceInstance(PolyHedraManager.Objects);
-	for (unsigned int j = 0; j < Light_Spot_Limit; j++)
-	{
-		PolyHedraManager.PlaceInstance(Light_Spot_Entry_Array[j].EntryLight);
-		PolyHedraManager.PlaceInstance(Light_Spot_Entry_Array[j].EntryHolder);
-	}*/
-	
-	{
-		PolyHedraObject obj0(2);
-		obj0.Trans().Pos = Point3D(0, 20, 0);
-
-		PolyHedraObject obj1 = obj0;
-		obj1.Trans().Pos = Point3D(0, 30, 0);
-	}
-
 	PolyHedraManager.Update();
 	{
-		PolyHedraManager.FullShader.Bind();
-		PolyHedraManager.FullShader.View.Put(view.Trans);
-		PolyHedraManager.FullShader.FOV.Put(view.FOV);
+		PolyHedraManager.ShaderFullDefault.Bind();
+		PolyHedraManager.ShaderFullDefault.View.Put(view.Trans);
+		PolyHedraManager.ShaderFullDefault.FOV.Put(view.FOV);
 		PolyHedraManager.Draw();
 	}
 }
@@ -486,8 +453,8 @@ void Resize(const DisplaySize & WindowSize)
 	//PolyHedraFullShader.Bind();
 	//PolyHedraFullShader.DisplaySize.Put(WindowSize);
 
-	PolyHedraManager.FullShader.Bind();
-	PolyHedraManager.FullShader.DisplaySize.Put(WindowSize);
+	PolyHedraManager.ShaderFullDefault.Bind();
+	PolyHedraManager.ShaderFullDefault.DisplaySize.Put(WindowSize);
 }
 
 void MouseScroll(ScrollArgs args) override { (void)args; }
