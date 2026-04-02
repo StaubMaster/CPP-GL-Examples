@@ -50,8 +50,9 @@ layout(location = 0) in vec3 VPos;
 layout(location = 1) in vec3 VNorm;
 layout(location = 2) in vec3 VTex;
 
-layout(location = 3) in vec3 IPos;
-layout(location = 4) in mat3 IRot;
+//layout(location = 3) in vec3 IPos;
+//layout(location = 4) in mat3 IRot;
+layout(location = 3) in mat4 IMat;
 
 
 
@@ -87,15 +88,11 @@ void main()
 {
 	vs_out.Original = VPos;
 
-//	vs_out.Absolute = (vs_out.Original * (IRot)) + IPos;
-//	vs_out.Absolute = (vs_out.Original * transpose(IRot)) + IPos;
-	vs_out.Absolute = (vs_out.Original) + IPos;
-
+	vs_out.Absolute = (vec4(vs_out.Original, 1) * IMat).xyz;
 	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
-
 	gl_Position = proj(vs_out.Relative);
 
 //	vs_out.Normal = -(VNorm * (IRot));
-	vs_out.Normal = -(VNorm * transpose(IRot));
+//	vs_out.Normal = -(VNorm * transpose(IRot));
 	vs_out.Tex = VTex;
 }

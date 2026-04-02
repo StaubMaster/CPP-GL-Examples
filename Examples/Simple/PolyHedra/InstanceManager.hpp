@@ -5,6 +5,7 @@
 # include "Graphics/Texture/Array2D.hpp"
 
 # include "ValueType/Trans3D.hpp"
+# include "ValueType/Matrix4x4.hpp"
 # include "Miscellaneous/Container/Binary.hpp"
 
 class PolyHedra;
@@ -18,7 +19,8 @@ struct PolyHedraInstanceManager
 	Texture::Array2D			Texture;
 
 	::PolyHedraFull::Buffer		BufferFull;
-	Container::Binary<Trans3D>	Instances;
+	//Container::Binary<Trans3D>	Instances;
+	Container::Binary<Matrix4x4>	Instances;
 
 	~PolyHedraInstanceManager();
 	PolyHedraInstanceManager();
