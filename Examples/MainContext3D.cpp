@@ -24,11 +24,9 @@ void MainContext3D::UpdateView(FrameTime frame_time)
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		Trans3D trans = window.MoveSpinFromKeysCursor();
-		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { trans.Pos *= 10; }
-		trans.Pos *= 2;
-		trans.Rot.X *= view.FOV * 0.05f;
-		trans.Rot.Y *= view.FOV * 0.05f;
-		trans.Rot.Z *= view.FOV * 0.05f;
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { trans.Position *= 10; }
+		trans.Position *= 2;
+		trans.Rotation *= view.FOV.ToRadians() * 0.05f;
 		view.TransformFlatX(trans, frame_time.Delta);
 	}
 }

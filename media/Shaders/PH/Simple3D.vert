@@ -38,7 +38,7 @@ struct DepthData
 
 uniform sDisplaySize DisplaySize;
 
-uniform Trans3D View;
+uniform mat4 View;
 
 uniform DepthData Depth;
 
@@ -86,9 +86,12 @@ vec4 proj(in vec3 p_inn)
 void main()
 {
 	vs_out.Original = VPos;
+
 //	vs_out.Absolute = (vs_out.Original * (IRot)) + IPos;
-	vs_out.Absolute = (vs_out.Original * transpose(IRot)) + IPos;
-	vs_out.Relative = (vs_out.Absolute - View.Pos) * View.Rot;
+//	vs_out.Absolute = (vs_out.Original * transpose(IRot)) + IPos;
+	vs_out.Absolute = (vs_out.Original) + IPos;
+
+	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
 
 	gl_Position = proj(vs_out.Relative);
 

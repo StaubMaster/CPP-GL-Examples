@@ -3,6 +3,7 @@
 
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/UniformsInclude.hpp"
+# include "Graphics/Uniform/Matrix4x4.hpp"
 
 namespace PolyHedraFull
 {
@@ -10,7 +11,7 @@ class Shader : public ::Shader::Base
 {
 	public:
 	Uniform::DisplaySize		DisplaySize;
-	Uniform::Trans3D			View;
+	Uniform::Matrix4x4			View;
 	Uniform::Depth				Depth;
 	Uniform::Angle				FOV;
 	public:

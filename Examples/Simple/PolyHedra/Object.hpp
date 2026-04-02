@@ -21,12 +21,12 @@ struct PolyHedraObject
 
 	PolyHedraObject(unsigned int polyhedra);
 	PolyHedraObject(unsigned int polyhedra, Trans3D trans);
-	PolyHedraObject(unsigned int polyhedra, Point3D pos, Angle3D ang);
+	PolyHedraObject(unsigned int polyhedra, Point3D pos, EulerAngle3D ang);
 	PolyHedraObject(unsigned int polyhedra, Point3D pos);
 
 	PolyHedraObject(::PolyHedra * polyhedra);
 	PolyHedraObject(::PolyHedra * polyhedra, Trans3D trans);
-	PolyHedraObject(::PolyHedra * polyhedra, Point3D pos, Angle3D ang);
+	PolyHedraObject(::PolyHedra * polyhedra, Point3D pos, EulerAngle3D ang);
 	PolyHedraObject(::PolyHedra * polyhedra, Point3D pos);
 
 	void	Delete();
