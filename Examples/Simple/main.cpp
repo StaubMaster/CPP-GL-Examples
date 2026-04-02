@@ -208,8 +208,8 @@ void InitExternal()
 	{
 		Container::Array<Shader::Code> code({
 			Shader::Code(MediaDirectory.File("Shaders/PH/Simple3D.vert")),
-			//Shader::Code(MediaDirectory.File("Shaders/PH/UniLight4.frag")),
-			Shader::Code(MediaDirectory.File("Shaders/PH/Direct.frag")),
+			Shader::Code(MediaDirectory.File("Shaders/PH/UniLight4.frag")),
+			//Shader::Code(MediaDirectory.File("Shaders/PH/Direct.frag")),
 		});
 		LightShader.Change(code);
 	}
@@ -311,9 +311,9 @@ void Fancify()
 	Objects.Insert(PolyHedraObject(truss,      Point3D(+w1, h1, -d1), EulerAngle3D::Degrees(0, 90, 0)));
 	Objects.Insert(PolyHedraObject(truss_cube, Point3D(+w1, h2, -d1)));
 
-	Objects.Insert(PolyHedraObject(truss,      Point3D(-w0, h2, -d1), EulerAngle3D::Degrees(90, 0, 0)));
-	Objects.Insert(PolyHedraObject(truss,      Point3D(  0, h2, -d1), EulerAngle3D::Degrees(90, 0, 0)));
-	Objects.Insert(PolyHedraObject(truss,      Point3D(+w0, h2, -d1), EulerAngle3D::Degrees(90, 0, 0)));
+	Objects.Insert(PolyHedraObject(truss,      Point3D(-w0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90)));
+	Objects.Insert(PolyHedraObject(truss,      Point3D(  0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90)));
+	Objects.Insert(PolyHedraObject(truss,      Point3D(+w0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90)));
 
 	Objects.Insert(PolyHedraObject(truss,      Point3D(-w1, h2, -d0)));
 	Objects.Insert(PolyHedraObject(truss,      Point3D(+w1, h2, -d0)));
@@ -328,9 +328,9 @@ void Fancify()
 	Objects.Insert(PolyHedraObject(truss,      Point3D(+w1, h1, +d1), EulerAngle3D::Degrees(0, 90, 0)));
 	Objects.Insert(PolyHedraObject(truss_cube, Point3D(+w1, h2, +d1)));
 
-	Objects.Insert(PolyHedraObject(truss,      Point3D(-w0, h2, +d1), EulerAngle3D::Degrees(90, 0, 0)));
-	Objects.Insert(PolyHedraObject(truss,      Point3D(  0, h2, +d1), EulerAngle3D::Degrees(90, 0, 0)));
-	Objects.Insert(PolyHedraObject(truss,      Point3D(+w0, h2, +d1), EulerAngle3D::Degrees(90, 0, 0)));
+	Objects.Insert(PolyHedraObject(truss,      Point3D(-w0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90)));
+	Objects.Insert(PolyHedraObject(truss,      Point3D(  0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90)));
+	Objects.Insert(PolyHedraObject(truss,      Point3D(+w0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90)));
 
 	for (int y = 0; y < 5; y++)
 	{
@@ -342,11 +342,11 @@ void Fancify()
 
 	for (int i = 0; i < 10; i++)
 	{
-		Objects.Insert(PolyHedraObject(chair, Trans3D(Point3D(-50, i, -40), EulerAngle3D::Degrees(90, 0, 0))));
+		Objects.Insert(PolyHedraObject(chair, Trans3D(Point3D(-50, i, -40), EulerAngle3D::Degrees(0, 0, 90))));
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		Objects.Insert(PolyHedraObject(chair, Trans3D(Point3D(-50, i, -45), EulerAngle3D::Degrees(90, 0, 0))));
+		Objects.Insert(PolyHedraObject(chair, Trans3D(Point3D(-50, i, -45), EulerAngle3D::Degrees(0, 0, 90))));
 	}
 }
 
@@ -389,6 +389,9 @@ void Free() override
 
 void Frame(double timeDelta)
 {
+	static float frameSum = 0;
+	frameSum += timeDelta;
+
 	FrameTime frame_time(60);
 	frame_time.Update(timeDelta);
 	UpdateView(frame_time);
@@ -398,6 +401,18 @@ void Frame(double timeDelta)
 	LightShader.FOV.Put(view.FOV);
 	//Light_Spot.Pos = ViewTrans.Pos;
 	//Light_Spot.Dir = ViewTrans.Rot.rotate(Point3D(0, 0, 1));
+
+	{
+		PolyHedraObject obj(5);
+		Point3D center(0, 30, 0);
+		Angle a = Angle::Radians(frameSum);
+
+		Point3D rel = Point3D(a.Sin() * 10, (a * 2).Sin(), a.Cos() * 10);
+		EulerAngle3D rot;
+
+		obj.Trans().Position = pos + center;
+		obj.Trans().Rotation = rot
+	}
 
 	if (window.KeyBoardManager[Keys::D1].State == State::Press)
 	{

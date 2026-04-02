@@ -62,9 +62,8 @@ void PolyHedraInstanceManager::InitExternal()
 	BufferFull.Main.Position.Change(0);
 	BufferFull.Main.Normal.Change(1);
 	BufferFull.Main.Texture.Change(2);
-	//BufferFull.Inst.Data.Pos.Change(3);
-	//BufferFull.Inst.Data.Rot.Change(4, 5, 6);
-	BufferFull.Inst.Data.Change(3, 4, 5, 6);
+	BufferFull.Inst.Trans.Change(3, 4, 5, 6);
+	BufferFull.Inst.Normal.Change(7, 8, 9, 10);
 }
 void PolyHedraInstanceManager::InitInternal()
 {
@@ -83,7 +82,7 @@ void PolyHedraInstanceManager::UpdateBufferMain()
 	for (unsigned int i = 0; i < data1.Count(); i++)
 	{
 		data1[i].Position = data0[i].Position;
-		data1[i].Normal = data0[i].Normal;
+		data1[i].Normal = -data0[i].Normal;
 		data1[i].Texture = data0[i].Texture;
 	}
 	BufferFull.Main.Change(data1);
@@ -129,7 +128,7 @@ void PolyHedraInstanceManager::Place(const PolyHedraObjectData & obj)
 {
 	if (obj.PolyHedra == PolyHedra)
 	{
-		Instances.Insert(obj.Trans.ToMatrixForward());
+		Instances.Insert(Instance::Basic3D::Data(obj.Trans));
 	}
 }
 void PolyHedraInstanceManager::Place(const Container::Member<PolyHedraObjectData> & objs)

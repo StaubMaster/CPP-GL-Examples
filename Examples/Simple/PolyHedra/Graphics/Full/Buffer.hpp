@@ -3,7 +3,7 @@
 
 # include "Graphics/Buffer/MainInst.hpp"
 # include "PolyHedra/Graphics/Full/Main/Buffer.hpp"
-# include "Instance/BufferTrans3D.hpp"
+# include "Instance/Basic3D/Buffer.hpp"
 
 # include "OpenGLTypes.hpp"
 
@@ -11,7 +11,7 @@ namespace PolyHedraFull
 {
 typedef ::BufferArray::MainInst<
 	PolyHedraFull::Main::Buffer,
-	Instance::BufferTrans3D
+	Instance::Basic3D::Buffer
 > Buffer;
 };
 

@@ -19,7 +19,8 @@ FILES_SRC := \
 	../FrameTime.cpp \
 	../MainContext3D.cpp \
 \
-	Instance/BufferTrans3D.cpp \
+	Instance/Basic3D/Buffer.cpp \
+	Instance/Basic3D/Data.cpp \
 \
 	PolyHedra/Graphics/Full/Main/Buffer.cpp \
 	PolyHedra/Graphics/Full/Shader.cpp \
