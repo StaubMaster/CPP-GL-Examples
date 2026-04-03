@@ -27,7 +27,7 @@ void MainContext3D::UpdateView(FrameTime frame_time)
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { trans.Position *= 10; }
 		trans.Position *= 2;
 		trans.Rotation *= view.FOV.ToRadians() * 0.05f;
-		view.TransformFlatX(trans, frame_time.Delta);
+		view.ChangeFlatX(trans, frame_time.Delta);
 	}
 }
 
@@ -40,16 +40,16 @@ void MainContext3D::Resize(const DisplaySize & Size)
 
 int MainContext3D::Run()
 {
-	window.InitCallBack.Change<MainContext3D>(this, &MainContext3D::Init);
-	window.FreeCallBack.Change<MainContext3D>(this, &MainContext3D::Free);
-	window.FrameCallBack.Change<MainContext3D>(this, &MainContext3D::Frame);
-	window.ResizeCallBack.Change<MainContext3D>(this, &MainContext3D::Resize);
+	window.InitCallBack.Assign<MainContext3D>(this, &MainContext3D::Init);
+	window.FreeCallBack.Assign<MainContext3D>(this, &MainContext3D::Free);
+	window.FrameCallBack.Assign<MainContext3D>(this, &MainContext3D::Frame);
+	window.ResizeCallBack.Assign<MainContext3D>(this, &MainContext3D::Resize);
 
-	window.MouseManager.Callback_ScrollEvent.Change(this, &MainContext3D::MouseScroll);
-	window.MouseManager.Callback_ClickEvent.Change(this, &MainContext3D::MouseClick);
-	window.MouseManager.Callback_DragEvent.Change(this, &MainContext3D::MouseDrag);
+	window.MouseManager.Callback_ScrollEvent.Assign(this, &MainContext3D::MouseScroll);
+	window.MouseManager.Callback_ClickEvent.Assign(this, &MainContext3D::MouseClick);
+	window.MouseManager.Callback_DragEvent.Assign(this, &MainContext3D::MouseDrag);
 
-	window.KeyBoardManager.CallBack_KeyEvent.Change(this, &MainContext3D::KeyBoardKey);
+	window.KeyBoardManager.CallBack_KeyEvent.Assign(this, &MainContext3D::KeyBoardKey);
 
 	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;

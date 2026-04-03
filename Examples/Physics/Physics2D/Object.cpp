@@ -18,8 +18,8 @@ void Physics2D::Object::Update(float timeDelta)
 
 
 
-Point2D Physics2D::Object::RelativePositionOf(Point2D p) const { return ExtData.Now / p; }
-Point2D Physics2D::Object::AbsolutePositionOf(Point2D p) const { return ExtData.Now * p; }
+Point2D Physics2D::Object::RelativePositionOf(Point2D p) const { return ExtData.Now.reverse(p); }
+Point2D Physics2D::Object::AbsolutePositionOf(Point2D p) const { return ExtData.Now.forward(p); }
 Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
 {
 	return Point2D::cross(ExtData.Vel.Rot.Ang.ToRadians(), (ExtData.Now.Rot * p)) + ExtData.Vel.Pos;

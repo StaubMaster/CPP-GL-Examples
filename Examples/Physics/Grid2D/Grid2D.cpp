@@ -30,7 +30,7 @@ Point2D Grid2D::Align(Point2D p) const
 Angle2D Grid2D::Align(Angle2D a) const
 {
 	a /= Ang;
-	a.Ang.FromDegrees(roundf(a.Ang.ToDegrees()));
+	a.Ang = Angle::Degrees(roundf(a.Ang.ToDegrees()));
 	a *= Ang;
 	a.CalcMatrix();
 	return a;

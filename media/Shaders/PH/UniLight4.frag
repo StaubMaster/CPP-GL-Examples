@@ -126,7 +126,6 @@ void main()
 	col = col * light_factor;
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
-	//col = vec3(1.0 - depth_factor);		//	Depth
-	//col = abs(normalize(fs_inn.Normal));	//	Normals
+	//col = vec4(abs(normalize(fs_inn.Normal)), 1);
 	Color = vec4(col.rgb, 1.0);
 }

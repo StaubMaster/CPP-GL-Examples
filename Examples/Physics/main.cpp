@@ -551,7 +551,7 @@ void Frame(double timeDelta) override
 
 
 	{
-		SceneData.Cursor = view * window.Size.Convert(window.MouseManager.CursorPosition());
+		SceneData.Cursor = view.forward(window.Size.Convert(window.MouseManager.CursorPosition()));
 		SceneData.Hovering = Physics2D_Manager.FindObjectIndex(SceneData.Cursor);
 
 		InteractionObjectMove.Change(SceneData);
@@ -672,7 +672,7 @@ void KeyBoardKey(KeyArgs args) override
 		{
 			Physics2D_Manager.MainInstances[2].MakeCurrent();
 			Physics2D::Object & obj = Physics2D::Object::Construct(
-				Trans2D(view * window.Size.Convert(window.MouseManager.CursorPosition()), Angle2D()),
+				Trans2D(view.forward(window.Size.Convert(window.MouseManager.CursorPosition())), Angle2D()),
 				Trans2D(Point2D(), Angle2D()),
 				false
 			);

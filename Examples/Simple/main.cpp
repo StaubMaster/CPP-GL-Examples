@@ -21,8 +21,6 @@
 // PolyHedra
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
-#include "PolyHedra/Simple3D/ManagerMulti.hpp"
-#include "PolyHedra/Simple3D/ManagerSingle.hpp"
 #include "PolyHedra/Template.hpp"
 #include "PolyHedra/Data.hpp"
 
@@ -92,20 +90,19 @@ struct SpotLightEntry
 	}
 	void Update()
 	{
-		Angle3D angle = Angle3D::FromPoint3D(Target - Position);
+		EulerAngle3D angle =EulerAngle3D::PointToZ(Target - Position);
 
 		if (Light != NULL)
 		{
-			//Light -> Pos = Position + angle.rotate(Point3D(0, 0, 3));
-			Light -> Pos = Position + (Point3D(0, 0, 3) * angle.Mat);
+			Light -> Pos = Position + angle.forward(Point3D(0, 0, 3));
 			Light -> Dir = (Target - Position).normalize();
 		}
 
 		EntryLight.Trans().Position = Position;
-		EntryLight.Trans().Rotation = EulerAngle3D(angle.Z, angle.X, angle.Y);
+		EntryLight.Trans().Rotation = angle;
 
 		EntryHolder.Trans().Position = Position;
-		EntryHolder.Trans().Rotation = EulerAngle3D(angle.X, Angle(), Angle());
+		EntryHolder.Trans().Rotation = EulerAngle3D(Angle(), Angle(), angle.Y2);
 	}
 
 	void Toggle()
@@ -402,18 +399,6 @@ void Frame(double timeDelta)
 	//Light_Spot.Pos = ViewTrans.Pos;
 	//Light_Spot.Dir = ViewTrans.Rot.rotate(Point3D(0, 0, 1));
 
-	{
-		PolyHedraObject obj(5);
-		Point3D center(0, 30, 0);
-		Angle a = Angle::Radians(frameSum);
-
-		Point3D rel = Point3D(a.Sin() * 10, (a * 2).Sin(), a.Cos() * 10);
-		EulerAngle3D rot;
-
-		obj.Trans().Position = pos + center;
-		obj.Trans().Rotation = rot
-	}
-
 	if (window.KeyBoardManager[Keys::D1].State == State::Press)
 	{
 		if (Light_Ambient.Intensity == 0.0f)
@@ -451,9 +436,8 @@ void Frame(double timeDelta)
 
 	LightShader.Light_Spot_Count.Put(Light_Spot_Count);
 
-	//Objects[0].Trans().Position = Point3D(0, 10, 0);
-	//Objects[0].Trans().Rotation.X1 += Angle::Radians(0.01f);
-	//Objects[0].Trans().Rotation.CalcMatrix();
+	Objects[0].Trans().Position = Point3D(0, 10, 0);
+	Objects[0].Trans().Rotation.Y2 += Angle::Radians(0.01f);
 
 
 

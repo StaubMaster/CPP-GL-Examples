@@ -19,16 +19,6 @@ FILES_SRC := \
 	../FrameTime.cpp \
 	../MainContext3D.cpp \
 \
-	Instance/Basic3D/Buffer.cpp \
-	Instance/Basic3D/Data.cpp \
-\
-	PolyHedra/Graphics/Full/Main/Buffer.cpp \
-	PolyHedra/Graphics/Full/Shader.cpp \
-	PolyHedra/InstanceManager.cpp \
-	PolyHedra/ObjectData.cpp \
-	PolyHedra/Manager.cpp \
-	PolyHedra/Object.cpp \
-\
 	main.cpp \
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)

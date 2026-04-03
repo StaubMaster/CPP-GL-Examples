@@ -41,7 +41,7 @@ void MainContext2D::UpdateView(FrameTime frame_time)
 void MainContext2D::UpdateViewZoom(ScrollArgs args)
 {
 	Point2D cursor_rel = window.Size.Convert(window.MouseManager.CursorPosition());
-	Point2D cursor_abs = view * cursor_rel;
+	Point2D cursor_abs = view.forward(cursor_rel);
 
 	if (args.Y < 0.0f) { while (args.Y < 0.0f) { view.Scale *= 2; args.Y++; } }
 	if (args.Y > 0.0f) { while (args.Y > 0.0f) { view.Scale /= 2; args.Y--; } }
@@ -64,7 +64,7 @@ void MainContext2D::UpdateViewDrag(DragArgs args)
 		if (args.Action == Action::Press)
 		{
 			DragAnchorRelative = window.Size.Convert(args.Position);
-			DragAnchorAbsolute = view * DragAnchorRelative;
+			DragAnchorAbsolute = view.forward(DragAnchorRelative);
 		}
 
 		if (args.Action == Action::Repeat)
