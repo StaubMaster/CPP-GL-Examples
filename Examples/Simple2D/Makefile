@@ -1,5 +1,5 @@
 
-NAME := Physics.exe
+NAME := Simple2D.exe
 
 #COMPILER := c++ -std=c++11
 COMPILER := g++ -g -std=c++11
@@ -10,7 +10,7 @@ REMOVER := rm -f
 
 BASE_DIR := ../../
 include $(BASE_DIR)fancy.mk
-FANCY_NAME := Physics
+FANCY_NAME := Simple2D
 
 ################################################################
 
@@ -24,21 +24,7 @@ FILES_SRC := \
 	../FrameTime.cpp \
 	../MainContext2D.cpp \
 \
-	Graphics/Buffer/Element.cpp \
-\
-	Arrow2D/Main/Data.cpp \
-	Arrow2D/Main/Buffer.cpp \
-	Arrow2D/Inst/Data.cpp \
-	Arrow2D/Inst/Buffer.cpp \
-	Arrow2D/Buffer.cpp \
-	Arrow2D/Shader.cpp \
-	Arrow2D/Manager.cpp \
-	Arrow2D/Data.cpp \
-	Arrow2D/Object.cpp \
-	\
-	Arrow2D/RankLengths.cpp \
-\
-	Inst2D/Buffer.cpp \
+	$(OUTSIDE_SRC)/Graphics/Buffer/Element.cpp \
 \
 	$(OUTSIDE_SRC)/PolyGon/PolyGon.cpp \
 	\
@@ -54,32 +40,6 @@ FILES_SRC := \
 	$(OUTSIDE_SRC)/PolyGon/ObjectData.cpp \
 	$(OUTSIDE_SRC)/PolyGon/Manager.cpp \
 	$(OUTSIDE_SRC)/PolyGon/Object.cpp \
-\
-	Physics2D/InstanceManager.cpp \
-	Physics2D/Manager.cpp \
-	Physics2D/IntrinsicData.cpp \
-	Physics2D/ExtrinsicData.cpp \
-	Physics2D/Object.cpp \
-	Physics2D/Collision/Projection.cpp \
-	Physics2D/Collision/Contact.cpp \
-	Physics2D/Collision/Resolve.cpp \
-	Physics2D/Collision.cpp \
-\
-	Grid2D/Grid2D.cpp \
-	\
-	Grid2D/Graphics/Main/Data.cpp \
-	Grid2D/Graphics/Elem/Data.cpp \
-	Grid2D/Graphics/Inst/Data.cpp \
-	Grid2D/Graphics/Main/Buffer.cpp \
-	Grid2D/Graphics/Elem/Buffer.cpp \
-	Grid2D/Graphics/Inst/Buffer.cpp \
-	Grid2D/Graphics/Shader.cpp \
-\
-	SceneInteraction/Data.cpp \
-	SceneInteraction/Base.cpp \
-	SceneInteraction/Move.cpp \
-	SceneInteraction/Spin.cpp \
-	SceneInteraction/Force.cpp \
 \
 	main.cpp \
 
@@ -134,7 +94,7 @@ $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 ################################################################
 
 LIBRARYS = 
-INCLUDES = . ../_include
+INCLUDES = . $(OUTSIDE_DIR)/_include
 ARGUMENTS = 
 
 ARGS_LIBRARYS = $(foreach library, $(LIBRARYS),$(library))

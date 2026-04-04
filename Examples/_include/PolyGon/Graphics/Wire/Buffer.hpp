@@ -4,14 +4,14 @@
 # include "Graphics/Buffer/MainElemInst.hpp"
 # include "PolyGon/Graphics/Wire/Main/Buffer.hpp"
 # include "PolyGon/Graphics/Wire/Elem/Buffer.hpp"
-# include "Inst2D/Buffer.hpp"
+# include "Instance/Basic2D/Buffer.hpp"
 
 namespace PolyGonWire
 {
 typedef ::BufferArray::MainElemInst<
 	PolyGonWire::Main::Buffer,
 	PolyGonWire::Elem::Buffer,
-	Inst2D::Buffer
+	Instance::Basic2D::Buffer
 > Buffer;
 };
 

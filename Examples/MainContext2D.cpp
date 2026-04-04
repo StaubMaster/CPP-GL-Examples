@@ -84,16 +84,16 @@ void MainContext2D::Resize(const DisplaySize & Size)
 
 int MainContext2D::Run()
 {
-	window.InitCallBack.Change<MainContext2D>(this, &MainContext2D::Init);
-	window.FreeCallBack.Change<MainContext2D>(this, &MainContext2D::Free);
-	window.FrameCallBack.Change<MainContext2D>(this, &MainContext2D::Frame);
-	window.ResizeCallBack.Change<MainContext2D>(this, &MainContext2D::Resize);
+	window.InitCallBack.Assign<MainContext2D>(this, &MainContext2D::Init);
+	window.FreeCallBack.Assign<MainContext2D>(this, &MainContext2D::Free);
+	window.FrameCallBack.Assign<MainContext2D>(this, &MainContext2D::Frame);
+	window.ResizeCallBack.Assign<MainContext2D>(this, &MainContext2D::Resize);
 
-	window.MouseManager.Callback_ScrollEvent.Change(this, &MainContext2D::MouseScroll);
-	window.MouseManager.Callback_ClickEvent.Change(this, &MainContext2D::MouseClick);
-	window.MouseManager.Callback_DragEvent.Change(this, &MainContext2D::MouseDrag);
+	window.MouseManager.Callback_ScrollEvent.Assign(this, &MainContext2D::MouseScroll);
+	window.MouseManager.Callback_ClickEvent.Assign(this, &MainContext2D::MouseClick);
+	window.MouseManager.Callback_DragEvent.Assign(this, &MainContext2D::MouseDrag);
 
-	window.KeyBoardManager.CallBack_KeyEvent.Change(this, &MainContext2D::KeyBoardKey);
+	window.KeyBoardManager.CallBack_KeyEvent.Assign(this, &MainContext2D::KeyBoardKey);
 
 	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;

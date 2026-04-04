@@ -3,7 +3,7 @@
 
 # include "Graphics/Buffer/MainInst.hpp"
 # include "PolyGon/Graphics/Full/Main/Buffer.hpp"
-# include "Inst2D/Buffer.hpp"
+# include "Instance/Basic2D/Buffer.hpp"
 
 # include "OpenGLTypes.hpp"
 
@@ -11,7 +11,7 @@ namespace PolyGonFull
 {
 typedef ::BufferArray::MainInst<
 	PolyGonFull::Main::Buffer,
-	Inst2D::Buffer
+	Instance::Basic2D::Buffer
 > Buffer;
 };
 

@@ -71,7 +71,7 @@ out vec4 Color;
 vec4 CalcLightFactor()
 {
 	vec4 ambient_factor = Ambient.Intensity * Ambient.Color;
-	vec4 solar_factor = Solar.Base.Intensity * Solar.Base.Color * dot(Solar.Direction, normalize(fs_inn.Normal));
+	vec4 solar_factor = Solar.Base.Intensity * Solar.Base.Color * dot(Solar.Direction, normalize(-fs_inn.Normal));
 
 	vec4 spot_factor[SpotLimit];
 	for (uint i = uint(0); i < SpotCount; i++)
@@ -81,7 +81,7 @@ vec4 CalcLightFactor()
 		spot_dot = dot(spot_rel, SpotArr[i].Direction);
 		spot_dot = (spot_dot - SpotArr[i].Range.Min) / SpotArr[i].Range.Len;
 		spot_dot = min(1.0, max(0.0, spot_dot));
-		spot_dot = spot_dot * dot(spot_rel, normalize(fs_inn.Normal));
+		spot_dot = spot_dot * dot(spot_rel, normalize(-fs_inn.Normal));
 		spot_dot = min(1.0, max(0.0, spot_dot));
 		spot_factor[i] = SpotArr[i].Base.Intensity * SpotArr[i].Base.Color * spot_dot;
 	}

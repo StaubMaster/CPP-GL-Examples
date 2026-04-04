@@ -28,6 +28,9 @@ class Element : public Base
 	Element & operator=(const Element & other);
 
 	public:
+	void Init() override;
+
+	public:
 	void Change(const Container::Void & data);
 };
 };

@@ -1,16 +1,18 @@
-#ifndef  POLYGON_FULL_SHADER_HPP
-# define POLYGON_FULL_SHADER_HPP
+#ifndef  POLYGON_GRAPHICS_WIRE_SHADER_HPP
+# define POLYGON_GRAPHICS_WIRE_SHADER_HPP
 
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/UniformsInclude.hpp"
+# include "Graphics/Uniform/Matrix3x3.hpp"
 
-namespace PolyGonFull
+namespace PolyGonWire
 {
 class Shader : public ::Shader::Base
 {
 	public:
 	Uniform::DisplaySize		DisplaySize;
-	Uniform::Trans2D			View;
+//	Uniform::Trans2D			View;
+	Uniform::Matrix3x3			View;
 	Uniform::Float				Scale;
 	public:
 	~Shader();

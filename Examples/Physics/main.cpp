@@ -21,23 +21,18 @@
 
 // Window and User
 #include "Window.hpp"
-#include "Function/Object.hpp"
-#include "UserParameter/KeyBoardInclude.hpp"
-#include "UserParameter/MouseInclude.hpp"
+#include "Miscellaneous/Function/Object.hpp"
 
 // File
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"
 #include "Image.hpp"
 
-
 // Container
 #include "Graphics/Shader/Code.hpp"
 #include "Miscellaneous/Container/Array.hpp"
 #include "Miscellaneous/Container/Binary.hpp"
 #include "Miscellaneous/EntryContainer/Binary.hpp"
-
-
 
 // PolyGon
 #include "PolyGon/Graphics/Full/Shader.hpp"
@@ -96,7 +91,9 @@
 #include "Arrow2D/RankLengths.hpp"
 #include "Physics2D/Collision/Projection.hpp"
 
-
+// PolyGon
+#include "PolyGon/Manager.hpp"
+#include "PolyGon/Object.hpp"
 
 struct MainContext : public MainContext2D
 {
@@ -134,7 +131,7 @@ MainContext()
 
 
 
-//::ObjectForce	ObjectForce;
+::PolyGonManager	PolyGonManager;
 
 
 
@@ -211,6 +208,8 @@ void Make() override
 		polygon.NewCorner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0));
 		polygon.NewFace(0, 1, 2);
 		polygon.NewFace(2, 0, 3);
+
+		PolyGonManager.PlacePolyGon(&polygon);
 	}
 	obj2.Manager = &Physics2D_Manager;
 
@@ -319,8 +318,8 @@ void GridTest()
 
 	shader.Create();
 	buffer.Create();
-	buffer.Main.ChangeAttributeBinding();
-	buffer.Inst.ChangeAttributeBinding();
+	buffer.Main.Init();
+	buffer.Inst.Init();
 	{
 		shader.Bind();
 		shader.DisplaySize.Put(window.Size);

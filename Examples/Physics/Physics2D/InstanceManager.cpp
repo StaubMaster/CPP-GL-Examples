@@ -106,16 +106,16 @@ void Physics2D::InstanceManager::GraphicsInitExternal()
 void Physics2D::InstanceManager::GraphicsInitInternal()
 {
 	{
-		Buffer_PolyGon_Full.Main.ChangeAttributeBinding();
-		Buffer_PolyGon_Full.Inst.ChangeAttributeBinding();
+		Buffer_PolyGon_Full.Main.Init();
+		Buffer_PolyGon_Full.Inst.Init();
 	}
 	{
-		Buffer_PolyGon_Wire.Main.ChangeAttributeBinding();
-		Buffer_PolyGon_Wire.Inst.ChangeAttributeBinding();
+		Buffer_PolyGon_Wire.Main.Init();
+		Buffer_PolyGon_Wire.Inst.Init();
 	}
 	{
-		Buffer_Bound.Main.ChangeAttributeBinding();
-		Buffer_Bound.Inst.ChangeAttributeBinding();
+		Buffer_Bound.Main.Init();
+		Buffer_Bound.Inst.Init();
 	}
 }
 

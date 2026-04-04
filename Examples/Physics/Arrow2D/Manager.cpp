@@ -63,8 +63,8 @@ void Arrow2D::Manager::GraphicsInitExternal(const DirectoryInfo & ShaderDir)
 void Arrow2D::Manager::GraphicsInitInternal(const DirectoryInfo & ImageDir)
 {
 	{
-		Buffer.Main.ChangeAttributeBinding();
-		Buffer.Inst.ChangeAttributeBinding();
+		Buffer.Main.Init();
+		Buffer.Inst.Init();
 	}
 	{
 		Texture.Bind();

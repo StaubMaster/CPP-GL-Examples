@@ -4,9 +4,7 @@
 # include "DirectoryInfo.hpp"
 
 # include "Window.hpp"
-# include "Function/Object.hpp"
-# include "UserParameter/KeyBoardInclude.hpp"
-# include "UserParameter/MouseInclude.hpp"
+# include "Miscellaneous/Function/Object.hpp"
 
 # include "FrameTime.hpp"
 

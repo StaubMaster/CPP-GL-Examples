@@ -44,6 +44,8 @@ Buffer::Element & Buffer::Element::operator=(const Element & other)
 	return *this;
 }
 
+void Buffer::Element::Init() { }
+
 void Buffer::Element::Change(const Container::Void & data)
 {
 	Bind();
