@@ -1,7 +1,6 @@
 
 // main
 #include "../main.hpp"
-#include "../FrameTime.hpp"
 #include "../MainContext2D.hpp"
 
 // C++

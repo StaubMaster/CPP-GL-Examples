@@ -21,10 +21,7 @@ OUTSIDE_SRC := $(OUTSIDE_DIR)/_src/
 
 FILES_SRC := \
 	../main.cpp \
-	../FrameTime.cpp \
 	../MainContext2D.cpp \
-\
-	$(OUTSIDE_SRC)/Graphics/Buffer/Element.cpp \
 \
 	Arrow2D/Main/Data.cpp \
 	Arrow2D/Main/Buffer.cpp \
@@ -37,21 +34,6 @@ FILES_SRC := \
 	Arrow2D/Object.cpp \
 	\
 	Arrow2D/RankLengths.cpp \
-\
-	$(OUTSIDE_SRC)/PolyGon/PolyGon.cpp \
-	\
-	$(OUTSIDE_SRC)/PolyGon/Graphics/Full/Main/Data.cpp \
-	$(OUTSIDE_SRC)/PolyGon/Graphics/Full/Main/Buffer.cpp \
-	$(OUTSIDE_SRC)/PolyGon/Graphics/Full/Shader.cpp \
-	\
-	$(OUTSIDE_SRC)/PolyGon/Graphics/Wire/Main/Buffer.cpp \
-	$(OUTSIDE_SRC)/PolyGon/Graphics/Wire/Elem/Buffer.cpp \
-	$(OUTSIDE_SRC)/PolyGon/Graphics/Wire/Shader.cpp \
-	\
-	$(OUTSIDE_SRC)/PolyGon/InstanceManager.cpp \
-	$(OUTSIDE_SRC)/PolyGon/ObjectData.cpp \
-	$(OUTSIDE_SRC)/PolyGon/Manager.cpp \
-	$(OUTSIDE_SRC)/PolyGon/Object.cpp \
 \
 	Physics2D/InstanceManager.cpp \
 	Physics2D/Manager.cpp \
