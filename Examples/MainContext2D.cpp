@@ -1,4 +1,5 @@
 #include "MainContext2D.hpp"
+#include "Miscellaneous/Function/Object.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -6,23 +7,43 @@
 #include "DataShow.hpp"
 #include "Debug.hpp"
 
+#include "ValueType/Matrix3x3.hpp"
+#include "ValueType/Point3D.hpp"
+
 
 
 MainContext2D::~MainContext2D() { }
 MainContext2D::MainContext2D()
 	: MediaDirectory("../../media/")
-	, ImageDir(MediaDirectory.Child("Images"))
-	, ShaderDir(MediaDirectory.Child("Shaders"))
-	, PolyHedraDir(MediaDirectory.Child("YMT"))
-	, TextDir(MediaDirectory.Child("Text"))
 	, window()
 	, Multiform_DisplaySize("DisplaySize")
 	, view(View2D::Default())
 	, Multiform_View("View")
 	, Multiform_Scale("Scale")
-{ }
+	, PolyGonManager()
+{
+	PolyGonManager.MakeCurrent();
+}
 
-
+void MainContext2D::mMake()
+{
+	GL::Disable(GL::Capability::DepthTest);
+	GL::Disable(GL::Capability::CullFace);
+	Make();
+}
+void MainContext2D::mInit()
+{
+	mMake();
+	PolyGonManager.InitExternal(MediaDirectory);
+	PolyGonManager.GraphicsCreate();
+	PolyGonManager.InitInternal();
+	Init();
+}
+void MainContext2D::mFree()
+{
+	Free();
+	PolyGonManager.GraphicsDelete();
+}
 
 // Update View Move Spin
 void MainContext2D::UpdateView(FrameTime frame_time)
@@ -77,6 +98,37 @@ void MainContext2D::UpdateViewDrag(DragArgs args)
 
 
 
+void MainContext2D::mDraw()
+{
+	PolyGonManager.ClearInstances();
+	PolyGonManager.Update();
+	{
+		PolyGonManager.ShaderFullDefault.Bind();
+		PolyGonManager.ShaderFullDefault.DisplaySize.Put(window.Size);
+		PolyGonManager.ShaderFullDefault.View.Put(Matrix3x3::TransformReverse(view.Trans));
+		PolyGonManager.ShaderFullDefault.Scale.Put(view.Scale);
+		PolyGonManager.DrawFull();
+	}
+	{
+		PolyGonManager.ShaderWireDefault.Bind();
+		PolyGonManager.ShaderWireDefault.DisplaySize.Put(window.Size);
+		PolyGonManager.ShaderWireDefault.View.Put(Matrix3x3::TransformReverse(view.Trans));
+		PolyGonManager.ShaderWireDefault.Scale.Put(view.Scale);
+		PolyGonManager.DrawWire();
+	}
+}
+void MainContext2D::mFrame(double timeDelta)
+{
+	FrameTime frame_time(60);
+	frame_time.Update(timeDelta);
+
+	UpdateView(frame_time);
+
+	Frame(frame_time);
+}
+
+
+
 void MainContext2D::Resize(const DisplaySize & Size)
 {
 	Multiform_DisplaySize.ChangeData(Size);
@@ -84,9 +136,9 @@ void MainContext2D::Resize(const DisplaySize & Size)
 
 int MainContext2D::Run()
 {
-	window.InitCallBack.Assign<MainContext2D>(this, &MainContext2D::Init);
-	window.FreeCallBack.Assign<MainContext2D>(this, &MainContext2D::Free);
-	window.FrameCallBack.Assign<MainContext2D>(this, &MainContext2D::Frame);
+	window.InitCallBack.Assign<MainContext2D>(this, &MainContext2D::mInit);
+	window.FreeCallBack.Assign<MainContext2D>(this, &MainContext2D::mFree);
+	window.FrameCallBack.Assign<MainContext2D>(this, &MainContext2D::mFrame);
 	window.ResizeCallBack.Assign<MainContext2D>(this, &MainContext2D::Resize);
 
 	window.MouseManager.Callback_ScrollEvent.Assign(this, &MainContext2D::MouseScroll);

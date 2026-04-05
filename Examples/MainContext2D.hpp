@@ -4,23 +4,21 @@
 # include "DirectoryInfo.hpp"
 
 # include "Window.hpp"
-# include "Miscellaneous/Function/Object.hpp"
 
 # include "FrameTime.hpp"
 
-# include "Graphics/MultiformsInclude.hpp"
+# include "Graphics/Multiform/DisplaySize.hpp"
 # include "Graphics/Multiform/Trans2D.hpp"
+//# include "Graphics/Multiform/
 # include "Graphics/Multiform/Float.hpp"
 
 # include "ValueType/View2D.hpp"
 
+# include "PolyGon/Manager.hpp"
+
 struct MainContext2D
 {
 DirectoryInfo MediaDirectory;
-DirectoryInfo ImageDir;
-DirectoryInfo ShaderDir;
-DirectoryInfo PolyHedraDir;
-DirectoryInfo TextDir;
 
 Window	window;
 Multiform::DisplaySize	Multiform_DisplaySize;
@@ -29,11 +27,16 @@ View2D	view;
 Multiform::Trans2D		Multiform_View;
 Multiform::Float		Multiform_Scale;
 
+::PolyGonManager	PolyGonManager;
+
 virtual ~MainContext2D();
 MainContext2D();
 
-virtual void Make() = 0;
+void mMake();
+void mInit();
+void mFree();
 
+virtual void Make() = 0;
 virtual void Init() = 0;
 virtual void Free() = 0;
 
@@ -46,19 +49,15 @@ void UpdateViewDrag(DragArgs args);
 
 
 
-/* Frame
-	Change (Input)
-	Update
-	Draw (Output)
-*/
-virtual void Frame(double timeDelta) = 0;
+void mDraw();
+void mFrame(double timeDelta);
+
+virtual void Frame(FrameTime frame_time) = 0;
+
+
 
 void Resize(const DisplaySize & Size);
 
-//virtual void MouseScroll(UserParameter::Mouse::Scroll params) = 0;
-//virtual void MouseClick(UserParameter::Mouse::Click params) = 0;
-//virtual void MouseDrag(UserParameter::Mouse::Drag params) = 0;
-//virtual void KeyBoardKey(UserParameter::KeyBoard::Key params) = 0;
 virtual void MouseScroll(ScrollArgs args) = 0;
 virtual void MouseClick(ClickArgs args) = 0;
 virtual void MouseDrag(DragArgs args) = 0;

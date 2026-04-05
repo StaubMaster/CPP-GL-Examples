@@ -97,7 +97,6 @@
 
 struct MainContext : public MainContext2D
 {
-::PolyGonManager		PolyGonManager;
 ::Physics2D::Manager	Physics2D_Manager;
 ::Arrow2D::Manager		Arrow_Manager;
 
@@ -113,12 +112,10 @@ struct MainContext : public MainContext2D
 }
 MainContext()
 	: MainContext2D()
-	, PolyGonManager()
 	, Physics2D_Manager()
 	, Arrow_Manager()
 	, SceneData(Physics2D_Manager)
 {
-	PolyGonManager.MakeCurrent();
 	Arrow_Manager.MakeCurrent();
 
 	Container::Array<Shader::Base*> shaders({
@@ -271,24 +268,13 @@ void Make() override
 
 void Init() override
 {
-	Make();
-
-	Arrow_Manager.GraphicsInitExternal(ShaderDir);
+	Arrow_Manager.GraphicsInitExternal(MediaDirectory.Child("Shaders"));
 	Arrow_Manager.GraphicsCreate();
-	Arrow_Manager.GraphicsInitInternal(ImageDir);
+	Arrow_Manager.GraphicsInitInternal(MediaDirectory.Child("Images"));
 	Arrow_Manager.GraphicsUpdateMain();
-
-	PolyGonManager.InitExternal(MediaDirectory);
-	PolyGonManager.GraphicsCreate();
-	PolyGonManager.InitInternal();
-
-	GL::Disable(GL::Capability::DepthTest);
-	GL::Disable(GL::Capability::CullFace);
 }
 void Free() override
 {
-	PolyGonManager.GraphicsDelete();
-
 	Arrow_Manager.GraphicsDelete();
 
 	Physics2D_Manager.Objects.Clear();
@@ -306,8 +292,8 @@ void GridTest()
 	Grid2DGraphics::Shader shader;
 	{
 		Container::Array<::Shader::Code> code({
-			::Shader::Code(ShaderDir.File("Grid2D/Grid2D.vert")),
-			::Shader::Code(ShaderDir.File("Grid2D/Basic.frag")),
+			::Shader::Code(MediaDirectory.File("Shaders/Grid2D/Grid2D.vert")),
+			::Shader::Code(MediaDirectory.File("Shaders/Grid2D/Basic.frag")),
 		});
 		shader.Change(code);
 	}
@@ -499,43 +485,20 @@ void ScreenShot()
 	std::string file_name = "ScreenShots/" + Debug::TimeStampFileName() + ".bmp";
 	std::cout << "ScreenShot: " << file_name << ' ' << img.W() << 'x' << img.H() << '\n';
 
-	BitMap::Save(ImageDir.File(file_name.c_str()), img);
+	BitMap::Save(MediaDirectory.Child("Images").File(file_name.c_str()), img);
 	img.Dispose();
 }
 
 void Draw()
 {
-	PolyGonManager.ClearInstances();
-	PolyGonManager.Update();
-
-	{
-		PolyGonManager.ShaderFullDefault.Bind();
-		PolyGonManager.ShaderFullDefault.DisplaySize.Put(window.Size);
-		PolyGonManager.ShaderFullDefault.View.Put(Matrix3x3::TransformReverse(view.Trans));
-		PolyGonManager.ShaderFullDefault.Scale.Put(view.Scale);
-		PolyGonManager.DrawFull();
-	}
-	{
-		PolyGonManager.ShaderWireDefault.Bind();
-		PolyGonManager.ShaderWireDefault.DisplaySize.Put(window.Size);
-		PolyGonManager.ShaderWireDefault.View.Put(Matrix3x3::TransformReverse(view.Trans));
-		PolyGonManager.ShaderWireDefault.Scale.Put(view.Scale);
-		PolyGonManager.DrawWire();
-	}
-
+	mDraw();
 	//Physics2D_Manager.Draw();
 	Arrow_Manager.Draw();
 	GridTest();
 }
 
-void Frame(double timeDelta) override
+void Frame(FrameTime frame_time) override
 {
-	FrameTime frame_time(60.0f);
-	frame_time.Update(timeDelta);
-	SceneData.FrameTime.Update(timeDelta);
-
-	UpdateView(frame_time);
-
 	if (window.KeyBoardManager[Keys::Space].State == State::Press) { SceneData.IsRunning = !SceneData.IsRunning; }
 	SceneData.IsSimulating = SceneData.IsRunning;
 	if (!SceneData.IsSimulating)
@@ -571,7 +534,6 @@ void Frame(double timeDelta) override
 		Physics2D::Collision::Projection::DebugObject = nullptr;
 	}
 
-
 	{
 		SceneData.Cursor = view.forward(window.Size.Convert(window.MouseManager.CursorPosition()));
 		SceneData.Hovering = Physics2D_Manager.FindObjectIndex(SceneData.Cursor);
@@ -584,7 +546,7 @@ void Frame(double timeDelta) override
 	{
 		if (SceneData.IsSimulating)
 		{
-			Physics2D_Manager.Update(timeDelta);
+			Physics2D_Manager.Update(frame_time.Delta);
 		}
 		else
 		{

@@ -18,16 +18,11 @@
 
 struct MainContext : public MainContext2D
 {
-::PolyGonManager	PolyGonManager;
-
 ~MainContext()
 { }
 MainContext()
 	: MainContext2D()
-	, PolyGonManager()
-{
-	PolyGonManager.MakeCurrent();
-}
+{ }
 
 
 
@@ -46,35 +41,21 @@ void Make() override
 	}
 }
 
-void Init() override
+void Init() override { }
+void Free() override { }
+
+
+
+void Frame(FrameTime frame_time) override
 {
-	Make();
-
-	PolyGonManager.InitExternal(MediaDirectory);
-	PolyGonManager.GraphicsCreate();
-	PolyGonManager.InitInternal();
-}
-void Free() override
-{
-	PolyGonManager.GraphicsDelete();
-}
-
-
-
-void Frame(double timeDelta) override
-{
-	FrameTime frame_time(60);
-	frame_time.Update(timeDelta);
-
-	UpdateView(frame_time);
+	(void)frame_time;
 
 	{
 		PolyGonObject obj((unsigned int)0);
 		obj.Trans() = Trans2D(Point2D(0, 0));
 		obj.ShowWire();
-		obj.HideFull();
 	}
-	
+
 	{
 		PolyGonObject obj((unsigned int)0);
 		obj.Trans() = Trans2D(Point2D(0.5f, 0.5f), Angle::Degrees(45));
@@ -82,22 +63,7 @@ void Frame(double timeDelta) override
 		obj.HideFull();
 	}
 
-	PolyGonManager.ClearInstances();
-	PolyGonManager.Update();
-	{
-		PolyGonManager.ShaderFullDefault.Bind();
-		PolyGonManager.ShaderFullDefault.DisplaySize.Put(window.Size);
-		PolyGonManager.ShaderFullDefault.View.Put(Matrix3x3::TransformReverse(view.Trans));
-		PolyGonManager.ShaderFullDefault.Scale.Put(view.Scale);
-		PolyGonManager.DrawFull();
-	}
-	{
-		PolyGonManager.ShaderWireDefault.Bind();
-		PolyGonManager.ShaderWireDefault.DisplaySize.Put(window.Size);
-		PolyGonManager.ShaderWireDefault.View.Put(Matrix3x3::TransformReverse(view.Trans));
-		PolyGonManager.ShaderWireDefault.Scale.Put(view.Scale);
-		PolyGonManager.DrawWire();
-	}
+	mDraw();
 }
 
 
