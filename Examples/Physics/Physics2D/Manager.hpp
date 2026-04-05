@@ -35,12 +35,7 @@ struct Manager
 
 
 
-	PolyGonFull::Shader		Shader_PolyGon;
-	PolyGonWire::Shader		Shader_WireFrame;
-
 	Container::Binary<Physics2D::InstanceManager>	MainInstances;
-
-	::Arrow2D::Manager		Arrow;
 
 	Container::Binary<Physics2D::Object *>	Objects;
 
@@ -59,18 +54,7 @@ struct Manager
 
 
 
-	void GraphicsInitExternal(const DirectoryInfo & ShaderDir);
-	void GraphicsInitInternal(const DirectoryInfo & ImageDir);
-
-	void GraphicsCreate();
-	void GraphicsDelete();
 	void GraphicsUpdate();
-
-//	void Arrow_Main_Default();
-//	void Arrow_Inst_Update();
-//	void Arrow_Draw();
-
-	void Draw();
 
 
 

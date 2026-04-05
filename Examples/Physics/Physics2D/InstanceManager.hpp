@@ -25,14 +25,6 @@ namespace Physics2D
 {
 struct Manager;
 
-// this dosent manage instances anymore
-// its just the main data of a Object
-
-// ObjectMain
-// ObjectTemplate
-// ObjectPattern
-// Object
-
 struct InstanceManager
 {
 	static InstanceManager * CurrentPointer;
@@ -49,10 +41,6 @@ struct InstanceManager
 	::PolyGon *	PolyGon;
 	::PolyGon *	Bound;
 
-	::PolyGonFull::Buffer	Buffer_PolyGon_Full;
-	::PolyGonWire::Buffer	Buffer_PolyGon_Wire;
-	::PolyGonWire::Buffer	Buffer_Bound;
-
 	IntrinsicData	IntData;
 
 	~InstanceManager();
@@ -62,17 +50,6 @@ struct InstanceManager
 	void Dispose();
 
 	void Changed();
-
-
-
-	void GraphicsInitExternal();
-	void GraphicsInitInternal();
-
-	void GraphicsCreate();
-	void GraphicsDelete();
-
-	void GraphicsUpdateMain();
-	void GraphicsUpdateInst();
 };
 };
 

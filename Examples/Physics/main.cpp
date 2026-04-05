@@ -92,12 +92,14 @@
 #include "Physics2D/Collision/Projection.hpp"
 
 // PolyGon
+#include "PolyGon/PolyGon.hpp"
 #include "PolyGon/Manager.hpp"
-#include "PolyGon/Object.hpp"
 
 struct MainContext : public MainContext2D
 {
-Physics2D::Manager	Physics2D_Manager;
+::PolyGonManager		PolyGonManager;
+::Physics2D::Manager	Physics2D_Manager;
+::Arrow2D::Manager		Arrow_Manager;
 
 ::SceneInteractionData	SceneData;
 ::InteractionObjectMove	InteractionObjectMove;
@@ -111,15 +113,19 @@ Physics2D::Manager	Physics2D_Manager;
 }
 MainContext()
 	: MainContext2D()
+	, PolyGonManager()
 	, Physics2D_Manager()
+	, Arrow_Manager()
 	, SceneData(Physics2D_Manager)
 {
-	Physics2D_Manager.GraphicsInitExternal(ShaderDir);
+	PolyGonManager.MakeCurrent();
+	Arrow_Manager.MakeCurrent();
 
 	Container::Array<Shader::Base*> shaders({
-		&Physics2D_Manager.Shader_PolyGon,
-		&Physics2D_Manager.Shader_WireFrame,
-		&Physics2D_Manager.Arrow.Shader,
+		//&Physics2D_Manager.Shader_PolyGon,
+		//&Physics2D_Manager.Shader_WireFrame,
+		//&Physics2D_Manager.Arrow.Shader,
+		&Arrow_Manager.Shader,
 	});
 	Multiform_DisplaySize.FindUniforms(shaders);
 	Multiform_View.FindUniforms(shaders);
@@ -128,10 +134,6 @@ MainContext()
 	SceneData.Selected = Undex::Invalid();
 	SceneData.Hovering = Undex::Invalid();
 }
-
-
-
-::PolyGonManager	PolyGonManager;
 
 
 
@@ -166,6 +168,8 @@ void Make() override
 		polygon.NewCorner(Point2D(+thickness0 + thickness1, -thickness1), ColorF4(0, 0, 0));
 		polygon.NewFace(0, 1, 2);
 		polygon.NewFace(2, 1, 3);
+		PolyGonManager.PlacePolyGon(wall.PolyGon);
+		PolyGonManager.PlacePolyGon(wall.Bound);
 	}
 	wall.Manager = &Physics2D_Manager;
 
@@ -177,6 +181,8 @@ void Make() override
 		polygon.NewCorner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0));
 		polygon.NewCorner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1));
 		polygon.NewFace(0, 1, 2);
+		PolyGonManager.PlacePolyGon(obj0.PolyGon);
+		PolyGonManager.PlacePolyGon(obj0.Bound);
 	}
 	obj0.Manager = &Physics2D_Manager;
 
@@ -191,6 +197,8 @@ void Make() override
 		polygon.NewCorner(Point2D(-size, +size), ColorF4(1, 0, 0));
 		polygon.NewFace(0, 1, 2);
 		polygon.NewFace(2, 0, 3);
+		PolyGonManager.PlacePolyGon(obj1.PolyGon);
+		PolyGonManager.PlacePolyGon(obj1.Bound);
 	}
 	obj1.Manager = &Physics2D_Manager;
 
@@ -208,8 +216,8 @@ void Make() override
 		polygon.NewCorner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0));
 		polygon.NewFace(0, 1, 2);
 		polygon.NewFace(2, 0, 3);
-
-		PolyGonManager.PlacePolyGon(&polygon);
+		PolyGonManager.PlacePolyGon(obj2.PolyGon);
+		PolyGonManager.PlacePolyGon(obj2.Bound);
 	}
 	obj2.Manager = &Physics2D_Manager;
 
@@ -217,10 +225,6 @@ void Make() override
 	{
 		Physics2D_Manager.MainInstances[i].Changed();
 		Physics2D_Manager.MainInstances[i].Manager = &Physics2D_Manager;
-		Physics2D_Manager.MainInstances[i].GraphicsInitExternal();
-		Physics2D_Manager.MainInstances[i].GraphicsCreate();
-		Physics2D_Manager.MainInstances[i].GraphicsInitInternal();
-		Physics2D_Manager.MainInstances[i].GraphicsUpdateMain();
 	}
 
 
@@ -267,31 +271,31 @@ void Make() override
 
 void Init() override
 {
-	Physics2D_Manager.GraphicsCreate();
-	Physics2D_Manager.GraphicsInitInternal(ImageDir);
-	Physics2D_Manager.Arrow.GraphicsUpdateMain();
-
 	Make();
+
+	Arrow_Manager.GraphicsInitExternal(ShaderDir);
+	Arrow_Manager.GraphicsCreate();
+	Arrow_Manager.GraphicsInitInternal(ImageDir);
+	Arrow_Manager.GraphicsUpdateMain();
+
+	PolyGonManager.InitExternal(MediaDirectory);
+	PolyGonManager.GraphicsCreate();
+	PolyGonManager.InitInternal();
 
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
-
-	//CheckMomentOfInertia_Arrows.Allocate(Physics2D_Manager.Arrow.Instances, 10);
-	//CheckMomentOfInertia_Arrows.Allocate(Arrow2D::Manager::Current().Instances, 10);
-	//CheckMomentOfInertia_Arrows.Allocate(10);
 }
 void Free() override
 {
-	//CheckMomentOfInertia_Arrows.Dispose();
+	PolyGonManager.GraphicsDelete();
+
+	Arrow_Manager.GraphicsDelete();
 
 	Physics2D_Manager.Objects.Clear();
 	for (unsigned int i = 0; i < Physics2D_Manager.MainInstances.Count(); i++)
 	{
-		Physics2D_Manager.MainInstances[i].GraphicsDelete();
 		Physics2D_Manager.MainInstances[i].Dispose();
 	}
-
-	Physics2D_Manager.GraphicsDelete();
 }
 
 
@@ -501,7 +505,26 @@ void ScreenShot()
 
 void Draw()
 {
-	Physics2D_Manager.Draw();
+	PolyGonManager.ClearInstances();
+	PolyGonManager.Update();
+
+	{
+		PolyGonManager.ShaderFullDefault.Bind();
+		PolyGonManager.ShaderFullDefault.DisplaySize.Put(window.Size);
+		PolyGonManager.ShaderFullDefault.View.Put(Matrix3x3::TransformReverse(view.Trans));
+		PolyGonManager.ShaderFullDefault.Scale.Put(view.Scale);
+		PolyGonManager.DrawFull();
+	}
+	{
+		PolyGonManager.ShaderWireDefault.Bind();
+		PolyGonManager.ShaderWireDefault.DisplaySize.Put(window.Size);
+		PolyGonManager.ShaderWireDefault.View.Put(Matrix3x3::TransformReverse(view.Trans));
+		PolyGonManager.ShaderWireDefault.Scale.Put(view.Scale);
+		PolyGonManager.DrawWire();
+	}
+
+	//Physics2D_Manager.Draw();
+	Arrow_Manager.Draw();
 	GridTest();
 }
 
@@ -729,28 +752,3 @@ int run()
 	MainContext context;
 	return context.Run();
 }
-
-/*int main(int argc, char * argv[])
-{
-	std::cout << "int main() ...\n";
-	int ret = -1;
-	Debug::NewFileInDir(DirectoryInfo("./logs/"));
-	if (argc > 0)	{ Debug::Log << argv[0] << Debug::Done; }
-	else			{ Debug::Log << "NoName" << Debug::Done; }
-	if (glfwInit() == 0) { std::cout << "GLFW Init Failed\n"; return -1; }
-	{
-		try
-		{
-			MainContext context;
-			ret = context.Run();
-			std::cout << "MainContext done\n";
-		}
-		catch (std::exception & ex)
-		{ Debug::Log << "Error: " << ex.what() << Debug::Done; }
-		catch (...)
-		{ Debug::Log << "Error: " << "Unknown" << Debug::Done; }
-	}
-	glfwTerminate();
-	Debug::Log << "main() return " << ret << Debug::Done;
-	return ret;
-}*/

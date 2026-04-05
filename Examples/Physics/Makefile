@@ -24,7 +24,7 @@ FILES_SRC := \
 	../FrameTime.cpp \
 	../MainContext2D.cpp \
 \
-	Graphics/Buffer/Element.cpp \
+	$(OUTSIDE_SRC)/Graphics/Buffer/Element.cpp \
 \
 	Arrow2D/Main/Data.cpp \
 	Arrow2D/Main/Buffer.cpp \
@@ -37,8 +37,6 @@ FILES_SRC := \
 	Arrow2D/Object.cpp \
 	\
 	Arrow2D/RankLengths.cpp \
-\
-	Inst2D/Buffer.cpp \
 \
 	$(OUTSIDE_SRC)/PolyGon/PolyGon.cpp \
 	\

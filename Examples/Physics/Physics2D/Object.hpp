@@ -6,6 +6,8 @@
 # include "ValueType/Trans2D.hpp"
 # include "Arrow2D/Object.hpp"
 
+# include "PolyGon/Object.hpp"
+
 # include "Miscellaneous/EntryContainer/Entry.hpp"
 
 # include "ValueType/Trans2D.hpp"
@@ -22,13 +24,15 @@ struct InstanceManager;
 struct Object
 {
 	Physics2D::InstanceManager *	InstanceManager;
+	::PolyGonObject					PolyGonObject;
+	::PolyGonObject					BoundObject;
 	bool	RemoveNextFrame;
-	
+
 	IntrinsicData		IntData;
 	ExtrinsicData		ExtData;
 
-	bool	IsTangible;	// Interacts
-	bool	IsStatic;	// Changes
+	bool	IsTangible;		// Interacts
+	bool	IsStatic;		// Changes
 
 	public:
 	void	Update(float timeDelta);
@@ -82,9 +86,9 @@ struct Object
 
 
 	// Graphics
-	bool	DrawPolyGon;
-	bool	DrawWireFrame;
-	bool	DrawWireFrameBox;
+//	bool	DrawPolyGon;
+//	bool	DrawWireFrame;
+//	bool	DrawWireFrameBox;
 	Arrow2D::Object	Arrows;
 
 	public:

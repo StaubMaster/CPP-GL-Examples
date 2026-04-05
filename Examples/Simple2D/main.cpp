@@ -15,7 +15,6 @@
 #include "PolyGon/PolyGon.hpp"
 #include "PolyGon/Manager.hpp"
 #include "PolyGon/Object.hpp"
-#include "PolyGon/ObjectData.hpp"
 
 struct MainContext : public MainContext2D
 {
@@ -34,7 +33,6 @@ MainContext()
 
 void Make() override
 {
-	window.DefaultColor = ColorF4(0, 0, 0);
 	{
 		PolyGon * polygon = new PolyGon();
 		polygon -> NewCorner(Point2D(-1.0f, -0.1f), ColorF4(0, 0, 0));

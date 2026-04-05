@@ -23,10 +23,6 @@ Point2D Physics2D::Object::AbsolutePositionOf(Point2D p) const { return ExtData.
 Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
 {
 	return Point2D::cross(ExtData.Vel.Rot.Ang.ToRadians(), (ExtData.Now.Rot * p)) + ExtData.Vel.Pos;
-//	Point2D perp = p.perpendicular0().normalize();
-//	perp = Data.Now.Rot * perp;
-//	perp = perp * (Data.Vel.Rot.Ang.ToRadians() * p.length());
-//	return Data.Vel.Pos - perp;
 }
 
 
@@ -67,6 +63,10 @@ Line2D Physics2D::Object::EdgeOfIndex(unsigned int idx) const
 
 void Physics2D::Object::GraphicsUpdate()
 {
+
+	PolyGonObject.Trans() = ExtData.Now;
+	BoundObject.Trans() = ExtData.Now;
+
 	// Store Forces individually ?
 	if (Arrows.Is())
 	{
@@ -109,9 +109,9 @@ void Physics2D::Object::GraphicsUpdate()
 
 
 
-void Physics2D::Object::Show_PolyGon() { DrawPolyGon = true; }
-void Physics2D::Object::Show_WireFrame() { DrawWireFrame = true; }
-void Physics2D::Object::Show_WireFrameBox() { DrawWireFrameBox = true; }
+void Physics2D::Object::Show_PolyGon()		{ PolyGonObject.ShowFull(); }
+void Physics2D::Object::Show_WireFrame()	{ PolyGonObject.ShowWire(); }
+void Physics2D::Object::Show_WireFrameBox()	{ BoundObject.ShowWire(); }
 void Physics2D::Object::Show_Arrows()
 {
 	if (!Arrows.Is())
@@ -126,9 +126,9 @@ void Physics2D::Object::Show_Arrows()
 	}
 }
 
-void Physics2D::Object::Hide_PolyGon() { DrawPolyGon = false; }
-void Physics2D::Object::Hide_WireFrame() { DrawWireFrame = false; }
-void Physics2D::Object::Hide_WireFrameBox() { DrawWireFrameBox = false; }
+void Physics2D::Object::Hide_PolyGon()		{ PolyGonObject.HideFull(); }
+void Physics2D::Object::Hide_WireFrame()	{ PolyGonObject.HideWire(); }
+void Physics2D::Object::Hide_WireFrameBox()	{ BoundObject.HideWire(); }
 void Physics2D::Object::Hide_Arrows()
 {
 	if (Arrows.Is())
@@ -145,39 +145,36 @@ Physics2D::Object::~Object()
 { }
 Physics2D::Object::Object()
 	: InstanceManager(nullptr)
+	, PolyGonObject()
+	, BoundObject()
 	, RemoveNextFrame(false)
 	, IntData()
 	, ExtData()
 	, IsTangible(true)
 	, IsStatic(true)
-	, DrawPolyGon(false)
-	, DrawWireFrame(false)
-	, DrawWireFrameBox(false)
 	, Arrows()
 { }
 Physics2D::Object::Object(const Object & other)
 	: InstanceManager(other.InstanceManager)
+	, PolyGonObject(other.PolyGonObject)
+	, BoundObject(other.BoundObject)
 	, RemoveNextFrame(other.RemoveNextFrame)
 	, IntData(other.IntData)
 	, ExtData(other.ExtData)
 	, IsTangible(other.IsTangible)
 	, IsStatic(other.IsStatic)
-	, DrawPolyGon(other.DrawPolyGon)
-	, DrawWireFrame(other.DrawWireFrame)
-	, DrawWireFrameBox(other.DrawWireFrameBox)
 	, Arrows(other.Arrows)
 { }
 Physics2D::Object & Physics2D::Object::operator=(const Object & other)
 {
 	InstanceManager = other.InstanceManager;
+	PolyGonObject = other.PolyGonObject;
+	BoundObject = other.BoundObject;
 	RemoveNextFrame = other.RemoveNextFrame;
 	IntData = other.IntData;
 	ExtData = other.ExtData;
 	IsTangible = other.IsTangible;
 	IsStatic = other.IsStatic;
-	DrawPolyGon = other.DrawPolyGon;
-	DrawWireFrame = other.DrawWireFrame;
-	DrawWireFrameBox = other.DrawWireFrameBox;
 	Arrows = other.Arrows;
 	return *this;
 }
@@ -191,7 +188,8 @@ Physics2D::Object & Physics2D::Object::Construct(bool is_static)
 	obj -> InstanceManager -> Manager -> Objects.Insert(obj);
 	obj -> IntData = obj -> InstanceManager -> IntData;
 	obj -> IsStatic = is_static;
-	obj -> DrawPolyGon = true;
+	obj -> PolyGonObject.Create(obj -> InstanceManager -> PolyGon);
+	obj -> BoundObject.Create(obj -> InstanceManager -> Bound);
 	return *obj;
 }
 Physics2D::Object & Physics2D::Object::Construct(Trans2D now, bool is_static)
@@ -202,7 +200,8 @@ Physics2D::Object & Physics2D::Object::Construct(Trans2D now, bool is_static)
 	obj -> IntData = obj -> InstanceManager -> IntData;
 	obj -> ExtData.Now = now;
 	obj -> IsStatic = is_static;
-	obj -> DrawPolyGon = true;
+	obj -> PolyGonObject.Create(obj -> InstanceManager -> PolyGon);
+	obj -> BoundObject.Create(obj -> InstanceManager -> Bound);
 	return *obj;
 }
 Physics2D::Object & Physics2D::Object::Construct(Trans2D now, Trans2D vel, bool is_static)
@@ -214,6 +213,7 @@ Physics2D::Object & Physics2D::Object::Construct(Trans2D now, Trans2D vel, bool 
 	obj -> ExtData.Now = now;
 	obj -> ExtData.Vel = vel;
 	obj -> IsStatic = is_static;
-	obj -> DrawPolyGon = true;
+	obj -> PolyGonObject.Create(obj -> InstanceManager -> PolyGon);
+	obj -> BoundObject.Create(obj -> InstanceManager -> Bound);
 	return *obj;
 }

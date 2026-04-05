@@ -11,6 +11,8 @@ struct PolyGonObject
 	PolyGonObjectData *	Data;
 
 	bool			Is() const;
+	::PolyGon *		PolyGon() const;
+
 	const Trans2D &	Trans() const;
 	Trans2D &		Trans();
 

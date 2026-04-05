@@ -15,105 +15,29 @@
 
 
 
-Physics2D::Manager::~Manager()
-{ }
+Physics2D::Manager::~Manager() { }
 Physics2D::Manager::Manager()
-	: Shader_PolyGon()
-	, Shader_WireFrame()
-	, MainInstances()
-
-	, Arrow()
+	: MainInstances()
 
 	, Objects()
 
 	, Gravity()
 	, AirResistance(0.0f)
 	, GravityToY(0.0f)
-{
-	Arrow.MakeCurrent();
-}
-
-//Physics2D::Manager::Manager(const Manager & other);
-//Physics2D::Manager & Physics2D::Manager::operator=(const Manager & other);
-
-void Physics2D::Manager::Dispose()
 { }
 
+void Physics2D::Manager::Dispose() { }
 
 
 
 
-void Physics2D::Manager::GraphicsInitExternal(const DirectoryInfo & ShaderDir)
-{
-	{
-		Container::Array<::Shader::Code> code({
-			::Shader::Code(ShaderDir.File("2D/Full.vert")),
-			::Shader::Code(ShaderDir.File("2D/Basic.frag")),
-		});
-		Shader_PolyGon.Change(code);
-	}
-	{
-		Container::Array<::Shader::Code> code({
-			::Shader::Code(ShaderDir.File("2D/Wire.vert")),
-			::Shader::Code(ShaderDir.File("2D/Basic.frag")),
-		});
-		Shader_WireFrame.Change(code);
-	}
-	Arrow.GraphicsInitExternal(ShaderDir);
-}
-void Physics2D::Manager::GraphicsInitInternal(const DirectoryInfo & ImageDir)
-{
-	Arrow.GraphicsInitInternal(ImageDir);
-}
 
-
-
-void Physics2D::Manager::GraphicsCreate()
-{
-	Shader_PolyGon.Create();
-	Shader_WireFrame.Create(),
-	Arrow.GraphicsCreate();
-}
-void Physics2D::Manager::GraphicsDelete()
-{
-	Shader_PolyGon.Delete();
-	Shader_WireFrame.Delete();
-	Arrow.GraphicsDelete();
-}
 void Physics2D::Manager::GraphicsUpdate()
 {
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		Objects[i] -> GraphicsUpdate();
 	}
-
-	for (unsigned int i = 0; i < MainInstances.Count(); i++)
-	{
-		MainInstances[i].GraphicsUpdateInst();
-	}
-}
-
-
-
-void Physics2D::Manager::Draw()
-{
-	Shader_PolyGon.Bind();
-	for (unsigned int i = 0; i < MainInstances.Count(); i++)
-	{
-		MainInstances[i].Buffer_PolyGon_Full.Draw();
-	}
-
-	Shader_WireFrame.Bind();
-	for (unsigned int i = 0; i < MainInstances.Count(); i++)
-	{
-		MainInstances[i].Buffer_PolyGon_Wire.Draw();
-	}
-	for (unsigned int i = 0; i < MainInstances.Count(); i++)
-	{
-		MainInstances[i].Buffer_Bound.Draw();
-	}
-
-	Arrow.Draw();
 }
 
 

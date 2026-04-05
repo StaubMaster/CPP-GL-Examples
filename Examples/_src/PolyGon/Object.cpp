@@ -4,9 +4,11 @@
 
 
 
-bool			PolyGonObject::Is() const { return (Data != nullptr); }
-const Trans2D &	PolyGonObject::Trans() const { return (Data -> Trans); }
-Trans2D &		PolyGonObject::Trans() { return (Data -> Trans); }
+bool				PolyGonObject::Is() const { return (Data != nullptr); }
+::PolyGon *			PolyGonObject::PolyGon() const { return (Data -> PolyGon); }
+
+const Trans2D &		PolyGonObject::Trans() const { return (Data -> Trans); }
+Trans2D &			PolyGonObject::Trans() { return (Data -> Trans); }
 
 
 
@@ -90,11 +92,17 @@ void PolyGonObject::Delete()
 		Data = nullptr;
 	}
 }
-/*void PolyGonObject::Create(unsigned int PolyGon)
+void PolyGonObject::Create(unsigned int PolyGon)
 {
-	(void)PolyGon;
-}*/
-/*void PolyGonObject::Create(::PolyGon * PolyGon)
+	if (Data == nullptr)
+	{
+		Data = PolyGonManager::Current().PlaceObject(PolyGon, Trans2D());
+	}
+}
+void PolyGonObject::Create(::PolyGon * PolyGon)
 {
-	(void)PolyGon;
-}*/
+	if (Data == nullptr)
+	{
+		Data = PolyGonManager::Current().PlaceObject(PolyGon, Trans2D());
+	}
+}
