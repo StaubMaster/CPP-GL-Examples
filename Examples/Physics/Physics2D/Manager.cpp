@@ -18,7 +18,6 @@
 Physics2D::Manager::~Manager() { }
 Physics2D::Manager::Manager()
 	: MainInstances()
-
 	, Objects()
 
 	, Gravity()

@@ -1,22 +1,6 @@
 #ifndef  PHYSICS_2D_INSTANCES_MANAGER_HPP
 # define PHYSICS_2D_INSTANCES_MANAGER_HPP
 
-//# include "Physics2D/Manager.hpp"
-
-# include "Miscellaneous/EntryContainer/Binary.hpp"
-
-# include "Graphics/Buffer/MainInst.hpp"
-# include "Graphics/Buffer/MainElemInst.hpp"
-
-# include "Inst2D/Buffer.hpp"
-# include "ValueType/Trans2D.hpp"
-
-# include "PolyGon/PolyGon.hpp"
-# include "PolyGon/Graphics/Full/Buffer.hpp"
-# include "PolyGon/Graphics/Wire/Buffer.hpp"
-
-# include "Miscellaneous/Container/Binary.hpp"
-
 # include "IntrinsicData.hpp"
 
 

@@ -1,22 +1,10 @@
 #ifndef  PHYSICS_2D_MANAGER_HPP
 # define PHYSICS_2D_MANAGER_HPP
 
-# include "Miscellaneous/EntryContainer/Binary.hpp"
 # include "Miscellaneous/Container/Binary.hpp"
-
-# include "Graphics/Texture/Array2D.hpp"
 
 # include "Physics2D/InstanceManager.hpp"
 # include "Physics2D/Object.hpp"
-
-# include "PolyGon/Graphics/Full/Shader.hpp"
-# include "PolyGon/Graphics/Wire/Shader.hpp"
-
-# include "Arrow2D/Manager.hpp"
-
-# include "ValueType/Undex.hpp"
-# include "ValueType/View2D.hpp"
-# include "ValueType/Point2D.hpp"
 
 
 
