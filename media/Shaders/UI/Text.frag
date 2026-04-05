@@ -2,14 +2,6 @@
 
 
 
-struct SizeRatio2D
-{
-	vec2 Size;
-	vec2 Ratio;
-};
-
-uniform SizeRatio2D ViewPortSizeRatio;
-
 uniform sampler2DArray texture0;
 
 
@@ -21,7 +13,9 @@ in UI_Text
 	vec2	BoundMax;
 } fs_inn;
 
-out vec4 Pixel;
+
+
+out vec4 Color;
 
 
 
@@ -34,11 +28,10 @@ void main()
 	//if (col.g >= 128) { discard; }
 	//if (col.b >= 128) { discard; }
 
-	if (gl_FragCoord.x >= fs_inn.BoundMin.x &&
-		gl_FragCoord.x <= fs_inn.BoundMax.x &&
-		gl_FragCoord.y >= fs_inn.BoundMin.y &&
-		gl_FragCoord.y <= fs_inn.BoundMax.y)
-	{ Pixel = col; }
-	else { discard; }
-
+//	if (gl_FragCoord.x >= fs_inn.BoundMin.x &&
+//		gl_FragCoord.x <= fs_inn.BoundMax.x &&
+//		gl_FragCoord.y >= fs_inn.BoundMin.y &&
+//		gl_FragCoord.y <= fs_inn.BoundMax.y)
+//	{ Color = col; }
+//	else { discard; }
 }

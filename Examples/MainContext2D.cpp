@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "DataShow.hpp"
+#include "ValueTypeShow.hpp"
 #include "Debug.hpp"
 
 #include "ValueType/Matrix3x3.hpp"
@@ -52,8 +52,8 @@ void MainContext2D::UpdateView(FrameTime frame_time)
 		Trans2D trans;
 		Point3D move3D = window.MoveFromKeys();
 		trans.Pos = Point2D(move3D.X, move3D.Z) * 2.0f * view.Scale;
-		if (window.KeyBoardManager[Keys::Q].State == State::Down) { trans.Rot.Ang += Angle::Degrees(45); }
-		if (window.KeyBoardManager[Keys::E].State == State::Down) { trans.Rot.Ang -= Angle::Degrees(45); }
+		if (window.KeyBoardManager[Keys::Q].State == State::Down) { trans.Rot += Angle::Degrees(45); }
+		if (window.KeyBoardManager[Keys::E].State == State::Down) { trans.Rot -= Angle::Degrees(45); }
 		view.Change(trans, frame_time.Delta);
 	}
 	Multiform_View.ChangeData(view.Trans);
@@ -73,7 +73,7 @@ void MainContext2D::UpdateViewZoom(ScrollArgs args)
 	if (view.Scale <= ZOOM_MIN) { view.Scale = ZOOM_MIN; }
 	if (view.Scale >= ZOOM_MAX) { view.Scale = ZOOM_MAX; }
 
-	view.Trans.Pos = cursor_abs - (view.Trans.Rot * (cursor_rel * view.Scale));
+	view.Trans.Pos = cursor_abs - (view.Trans.Rot.forward(cursor_rel * view.Scale));
 }
 
 Point2D DragAnchorRelative;
@@ -91,7 +91,7 @@ void MainContext2D::UpdateViewDrag(DragArgs args)
 		if (args.Action == Action::Repeat)
 		{
 			Point2D target_rel = window.Size.Convert(args.Position);
-			view.Trans.Pos = DragAnchorAbsolute - (view.Trans.Rot * (target_rel * view.Scale));
+			view.Trans.Pos = DragAnchorAbsolute - (view.Trans.Rot.forward(target_rel * view.Scale));
 		}
 	}
 }

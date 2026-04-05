@@ -2,14 +2,19 @@
 
 
 
-struct DisplaySize
+struct PixelSize
 {
-	vec2 WindowSize;
-	vec2 BufferSize;
+	vec2 Full;
+	vec2 Half;
+};
+struct sDisplaySize
+{
 	vec2 Ratio;
+	PixelSize Window;
+	PixelSize Buffer;
 };
 
-uniform DisplaySize WindowSize;
+uniform sDisplaySize DisplaySize;
 
 const vec2 PalletSize = vec2(20, 20);
 
@@ -24,6 +29,8 @@ layout(location = 3) in vec2 Inst_PalletMax;
 
 layout(location = 4) in vec2 Inst_BoundMin;
 layout(location = 5) in vec2 Inst_BoundMax;
+
+
 
 out UI_Text
 {
@@ -42,7 +49,7 @@ void main()
 	vec2 Center = Inst_Pos;
 	vec2 SizeHalf = PalletSize / 2;
 	vec2 pos = (main_pos * SizeHalf) + Center;
-	vec2 pos_normal = ((pos / WindowSize.BufferSize) * 2) - 1;
+	vec2 pos_normal = ((pos / DisplaySize.Buffer.Full) * 2) - 1;
 	pos_normal.y = -pos_normal.y;
 
 	gl_Position = vec4(pos_normal, 0.01, 1);
@@ -51,8 +58,11 @@ void main()
 	vec2 pallet_t1 = vec2(1, 1) - pallet_t0;
 	vs_out.PalletPos = (Inst_PalletMin * pallet_t0) + (Inst_PalletMax * pallet_t1);
 
-	vs_out.BoundMin.x = Inst_BoundMin.x;
-	vs_out.BoundMin.y = WindowSize.BufferSize.y - Inst_BoundMax.y;
-	vs_out.BoundMax.x = Inst_BoundMax.x;
-	vs_out.BoundMax.y = WindowSize.BufferSize.y - Inst_BoundMin.y;
+	vs_out.BoundMin = vec2(-1, -1);
+	vs_out.BoundMax = vec2(+1, +1);
+
+//	vs_out.BoundMin.x = Inst_BoundMin.x;
+//	vs_out.BoundMin.y = DisplaySize.Buffer.Full.y - Inst_BoundMax.y;
+//	vs_out.BoundMax.x = Inst_BoundMax.x;
+//	vs_out.BoundMax.y = DisplaySize.Buffer.Full.y - Inst_BoundMin.y;
 }

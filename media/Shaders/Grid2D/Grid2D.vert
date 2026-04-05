@@ -23,7 +23,8 @@ struct sDisplaySize
 
 
 uniform sDisplaySize DisplaySize;
-uniform Trans2D View;
+//uniform Trans2D View;
+uniform mat3 View;
 uniform float Scale;
 
 
@@ -45,7 +46,7 @@ void main()
 {
 	vec2 pos = VPos;
 	pos = (pos * ISize) + IPos;
-	pos = (pos - View.Pos) * transpose(View.Rot);
+	pos = (vec3(pos, 1) * View).xy;
 	pos = pos * DisplaySize.Ratio;
 	pos = pos / Scale;
 

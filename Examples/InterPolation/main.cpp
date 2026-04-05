@@ -13,6 +13,7 @@
 #include "Graphics/UniformsInclude.hpp"
 #include "Graphics/MultiformsInclude.hpp"
 
+// PolyHedra
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/Simple3D/ManagerMulti.hpp"
@@ -24,6 +25,7 @@
 #include "UserParameter/KeyBoardInclude.hpp"
 #include "UserParameter/MouseInclude.hpp"
 
+// FileManager
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"
 #include "Image.hpp"
@@ -38,17 +40,20 @@ make Wheels Spin based on Wheel Radius ?
 assamble other things correctly
 */
 
+// Spline
 #include "Spline/Factors.hpp"
 #include "Spline/SplineNode3D.hpp"
 #include "Spline/SplineSegment3D.hpp"
 #include "Spline/SplineCurve3D.hpp"
 #include "Spline/SplineObject.hpp"
 
+// UI
 #include "UI/Control/Base/Manager.hpp"
 #include "UI/Text/Manager.hpp"
 #include "UI/Text/Font/Font.hpp"
 #include "SplineSegment3DControl.hpp"
 
+// Spline
 #include "Spline/ChainNeighbours3D.hpp"
 #include "Spline/CubicSpline3D.hpp"
 #include "Spline/CubicSplineCurve3D.hpp"

@@ -16,7 +16,7 @@ include ../../fancy.mk
 DIR_SRC := ./
 DIR_OBJ := ./
 
-FILES_SRC := \
+#FILES_SRC := \
 	$(DIR_SRC)/Anchor1D.cpp \
 	$(DIR_SRC)/Anchor2D.cpp \
 \
@@ -40,7 +40,16 @@ FILES_SRC := \
 	$(DIR_SRC)/Text/Manager.cpp \
 	$(DIR_SRC)/Text/Font/Font.cpp \
 	$(DIR_SRC)/Text/Font/Template.cpp \
-	$(DIR_SRC)/Text/Font/Parsing.cpp
+	$(DIR_SRC)/Text/Font/Parsing.cpp \
+
+FILES_SRC := \
+	$(DIR_SRC)/Text/Data.cpp \
+	$(DIR_SRC)/Text/Buffer.cpp \
+	$(DIR_SRC)/Text/Shader.cpp \
+	$(DIR_SRC)/Text/Manager.cpp \
+	$(DIR_SRC)/Text/Font/Font.cpp \
+	$(DIR_SRC)/Text/Font/Template.cpp \
+	$(DIR_SRC)/Text/Font/Parsing.cpp \
 
 FILES_OBJ := $(FILES_SRC:$(DIR_SRC)%=$(DIR_OBJ)%)
 FILES_OBJ := $(FILES_OBJ:.cpp=.o)

@@ -1,7 +1,7 @@
 #ifndef  UI_TEXT_DATA
 # define UI_TEXT_DATA
 
-# include "DataInclude.hpp"
+# include "ValueTypeInclude.hpp"
 
 /*	for now:
 Main is just a small Box where the Texture gets drawn ?

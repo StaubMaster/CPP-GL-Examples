@@ -15,7 +15,9 @@ FANCY_NAME := UserInterface
 
 
 FILES_SRC := \
-	$(UI_DIR)/Anchor.cpp \
+	main.cpp
+
+#	$(UI_DIR)/Anchor.cpp \
 \
 	$(UI_DIR)/Control/Base/Data.cpp \
 	$(UI_DIR)/Control/Base/Buffer.cpp \
@@ -117,10 +119,8 @@ arguments: repos_clone
 
 ################################################################
 
+OTHER_DIR := $(BASE_DIR)/other/
+include $(OTHER_DIR)/other.mk
 
-
-REPOS_DIR := $(BASE_DIR)other/
-include $(BASE_DIR)repos.mk
-include $(BASE_DIR)other/Engine.mk
-include $(BASE_DIR)other/FileManager.mk
-include $(BASE_DIR)other/OpenGL.mk
+REPOS_DIR := $(BASE_DIR)/repos/
+include $(REPOS_DIR)/repos.mk

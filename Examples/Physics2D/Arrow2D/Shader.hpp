@@ -1,0 +1,22 @@
+#ifndef  ARROW_2D_SHADER_HPP
+# define ARROW_2D_SHADER_HPP
+
+# include "Graphics/Shader/Base.hpp"
+# include "Graphics/UniformsInclude.hpp"
+# include "Graphics/Uniform/Matrix3x3.hpp"
+
+namespace Arrow2D
+{
+class Shader : public ::Shader::Base
+{
+	public:
+	Uniform::DisplaySize		DisplaySize;
+//	Uniform::Trans2D			View;
+	Uniform::Matrix3x3			View;
+	Uniform::Float				Scale;
+	public:
+	Shader();
+};
+};
+
+#endif

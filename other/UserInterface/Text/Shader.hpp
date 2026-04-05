@@ -25,7 +25,7 @@ namespace Text
 class TextShader : public Shader::Base
 {
 	public:
-	Uniform::WindowBufferSize2D WindowSize;
+	Uniform::DisplaySize	DisplaySize;
 
 	public:
 	TextShader();

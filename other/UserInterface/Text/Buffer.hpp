@@ -21,6 +21,7 @@ class Main_Buffer : public ::Buffer::Attribute
 	::Attribute::Point2D	Pos;
 	public:
 	Main_Buffer(
+		::BufferArray::Base & buffer_array,
 		unsigned int indexPos
 	);
 };
@@ -35,6 +36,7 @@ class Inst_Buffer : public ::Buffer::Attribute
 	::Attribute::Point2D	BoundMax;
 	public:
 	Inst_Buffer(
+		::BufferArray::Base & buffer_array,
 		unsigned int indexPos,
 		unsigned int indexPalletMin,
 		unsigned int indexPalletMax,
