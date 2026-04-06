@@ -3,16 +3,6 @@
 
 # include "ValueTypeInclude.hpp"
 
-/*	for now:
-Main is just a small Box where the Texture gets drawn ?
-Inst is the Texture Coords and Letter Pos / Size ?
-*/
-
-/*	in the future:
-have a seperate Main for every Character ?
-and then use Instances for the Position / Scaling ?
-*/
-
 namespace UI
 {
 

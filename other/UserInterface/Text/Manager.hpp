@@ -22,14 +22,14 @@ namespace Text
 class Manager
 {
 	public:
-	UI::Text::TextShader Shader;
-	UI::Text::BufferArray BufferArray;
+	UI::Text::Shader	Shader;
+	UI::Text::Buffer	Buffer;
 
 	Container::Binary<UI::Text::Main_Data>		Main_Data_Container;
 	EntryContainer::Binary<UI::Text::Inst_Data>	Inst_Data_Container;
 
-	UI::Text::Font * TextFont;
-	Texture::Array2D Pallet_Texture;
+	UI::Text::Font *	TextFont;
+	Texture::Array2D	Pallet_Texture;
 
 	public:
 	Manager();

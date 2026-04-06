@@ -44,9 +44,10 @@ void Make() override
 void Init() override
 {
 	Make();
-	PolyHedraManager.InitExternal(MediaDirectory);
+
+	PolyHedraManager.InitExternal(MediaDirectory); // do this outside ? so in MainContext ?
 	PolyHedraManager.GraphicsCreate();
-	PolyHedraManager.InitInternal();
+	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
 }
 void Free() override
 {
@@ -82,7 +83,7 @@ void Frame(double timeDelta) override
 	}
 
 	PolyHedraManager.ClearInstances();
-	PolyHedraManager.Update();
+	PolyHedraManager.UpdateInstances();
 	if (ShowFull)
 	{
 		PolyHedraManager.ShaderFullDefault.Bind();

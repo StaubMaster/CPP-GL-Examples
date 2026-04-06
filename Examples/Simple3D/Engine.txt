@@ -1,0 +1,17 @@
+
+PolyGon / PolyHedra Manager
+
+
+
+InstanceManager should automatically Create Graphics if Manager already has them
+so have flag to indicate that
+
+also then there are no Graphics, and then they are created, then Main and Inst need to be changed as well
+
+InitInternal should by done by Create automatically
+
+InitExternal should be done inside Buffer
+
+
+
+

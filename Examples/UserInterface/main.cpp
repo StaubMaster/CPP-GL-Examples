@@ -1,17 +1,20 @@
-
+// C++
+#include <string>
+#include <sstream>
 #include <iostream>
 
+// General
 #include "Debug.hpp"
-
 #include "Window.hpp"
 #include "Miscellaneous/Function/Object.hpp"
+#include "ValueTypeShow.hpp"
 
+// FileManager
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"
 #include "Image.hpp"
 
-#include "ValueTypeShow.hpp"
-
+// 
 #include "Miscellaneous/Container/Fixed.hpp"
 
 #include "Graphics/Shader/Code.hpp"
@@ -30,16 +33,11 @@
 
 
 
-//#include "UI/Anchor.hpp"
-
+// UI
 #include "Control/Base/Manager.hpp"
 #include "ControlsInclude.hpp"
 
 #include "Text/Manager.hpp"
-
-#include <string>
-#include <sstream>
-#include <iostream>
 
 
 
@@ -78,7 +76,7 @@ void Text_Make()
 		UI_Text_Manager.Shader.Change(code);
 	}
 	UI_Text_Manager.Shader.Create();
-	UI_Text_Manager.BufferArray.Create();
+	UI_Text_Manager.Buffer.Create();
 
 	{
 		UI_Text_Manager.TextFont = UI::Text::Font::Parse(TextDir.File("Font0.atlas"));
@@ -92,8 +90,8 @@ void Text_Make()
 		TextEntry.Allocate(UI_Text_Manager.Inst_Data_Container, 16 * 8);
 	}
 
-	UI_Text_Manager.BufferArray.Main.Init();
-	UI_Text_Manager.BufferArray.Inst.Init();
+	UI_Text_Manager.Buffer.Main.Init();
+	UI_Text_Manager.Buffer.Inst.Init();
 }
 
 
@@ -388,6 +386,8 @@ void UI_Make_Example()
 	form -> ChildInsert(text);
 	Example_TextBox_2 = text;
 }
+
+
 
 void UI_Make()
 {

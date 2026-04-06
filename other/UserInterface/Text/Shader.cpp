@@ -7,9 +7,9 @@
 
 
 
-UI::Text::TextShader::~TextShader() { }
+UI::Text::Shader::~Shader() { }
 
-UI::Text::TextShader::TextShader()
+UI::Text::Shader::Shader()
 	: Shader::Base()
 	, DisplaySize(*this, "DisplaySize")
 { }

@@ -17,20 +17,13 @@ namespace UI
 namespace Text
 {
 
-/*	cannot change name from TextShader to Shader because compiler gets confused
-	thinks that Shader namespace is meant
-	change Shader::Base to Graphics::Shader::Base ?
-	put all Graphics stuff into Graphics namespace
-*/
-class TextShader : public Shader::Base
+class Shader : public ::Shader::Base
 {
 	public:
 	Uniform::DisplaySize	DisplaySize;
-
 	public:
-	TextShader();
-	//TextShader(const DirectoryInfo & dir);
-	~TextShader();
+	~Shader();
+	Shader();
 };
 
 };

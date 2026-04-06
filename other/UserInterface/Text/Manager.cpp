@@ -15,7 +15,7 @@
 
 UI::Text::Manager::Manager() :
 	Shader(),
-	BufferArray(),
+	Buffer(),
 	Main_Data_Container(),
 	Inst_Data_Container()
 {
@@ -47,7 +47,7 @@ UI::Text::Manager::~Manager()
 {
 	std::cout << "  ----  " << "UI::Text::Manager::~Manager()" << '\n';
 
-	BufferArray.Delete();
+	Buffer.Delete();
 	Shader.Delete();
 
 	Pallet_Texture.Delete();
@@ -63,13 +63,13 @@ void UI::Text::Manager::Draw()
 		Inst_Data_Container.CompactHere();
 	}
 
-	BufferArray.Bind();
-	BufferArray.Main.Change(Main_Data_Container);
-	BufferArray.Inst.Change(Inst_Data_Container);
+	Buffer.Bind();
+	Buffer.Main.Change(Main_Data_Container);
+	Buffer.Inst.Change(Inst_Data_Container);
 
 	Shader.Bind();
 	Pallet_Texture.Bind();
-	BufferArray.Bind();
+	Buffer.Bind();
 
-	BufferArray.Draw();
+	Buffer.Draw();
 }

@@ -17,44 +17,33 @@ namespace Text
 
 class Main_Buffer : public ::Buffer::Attribute
 {
-	private:
+	public:
 	::Attribute::Point2D	Pos;
 	public:
-	Main_Buffer(
-		::BufferArray::Base & buffer_array,
-		unsigned int indexPos
-	);
+	Main_Buffer(::BufferArray::Base & buffer_array);
 };
 
 class Inst_Buffer : public ::Buffer::Attribute
 {
-	private:
+	public:
 	::Attribute::Point2D	Pos;
 	::Attribute::Point2D	PalletMin;
 	::Attribute::Point2D	PalletMax;
 	::Attribute::Point2D	BoundMin;
 	::Attribute::Point2D	BoundMax;
 	public:
-	Inst_Buffer(
-		::BufferArray::Base & buffer_array,
-		unsigned int indexPos,
-		unsigned int indexPalletMin,
-		unsigned int indexPalletMax,
-		unsigned int indexBoundMin,
-		unsigned int indexBoundMax
-	);
+	Inst_Buffer(::BufferArray::Base & buffer_array);
 };
 
-class BufferArray : public ::BufferArray::Base
+class Buffer : public ::BufferArray::Base
 {
 	public:
 	Main_Buffer		Main;
 	Inst_Buffer		Inst;
 	GL::DrawMode	DrawMode;
-
 	public:
-	BufferArray();
-
+	~Buffer();
+	Buffer();
 	public:
 	void Draw();
 };
