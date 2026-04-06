@@ -51,8 +51,8 @@ class TextBox : public Base
 	void UpdateBoxRelay() override;
 
 	public:
-	void RelayKey(UserParameter::KeyBoard::Key params) override;
-	void RelayText(UserParameter::KeyBoard::Text params) override;
+	void RelayKey(KeyArgs params) override;
+	void RelayText(TextArgs params) override;
 };
 };
 };

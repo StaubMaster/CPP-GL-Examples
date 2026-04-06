@@ -8,8 +8,8 @@
 
 
 UI::Control::Shader::Shader()
-	: Shader::Base(),
-	WindowSize(Uniform::NameShader("WindowSize", *this))
+	: Shader::Base()
+	, DisplaySize(*this, "DisplaySize")
 { }
 /*UI::Control::Shader::Shader(const DirectoryInfo & dir)
 	: Shader::Base(

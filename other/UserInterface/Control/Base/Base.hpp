@@ -5,12 +5,10 @@
 
 #include "Anchor2D.hpp"
 
-#include "UserParameter/MouseDeclare.hpp"
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
 
-#include "UserParameter/KeyBoard/Key.hpp"
-#include "UserParameter/KeyBoard/Text.hpp"
-
-#include "DataInclude.hpp"
+#include "ValueTypeInclude.hpp"
 
 #include "Miscellaneous/Container/Binary.hpp"
 #include "Miscellaneous/EntryContainer/Binary.hpp"
@@ -137,11 +135,11 @@ class Base
 	//	Relay User
 	public:
 	virtual void RelayHover(unsigned char type);
-	virtual void RelayClick(UserParameter::Mouse::Click params);
-	virtual void RelayScroll(UserParameter::Mouse::Scroll params);
-	virtual void RelayCursorDrag(UserParameter::Mouse::Drag params);
-	virtual void RelayKey(UserParameter::KeyBoard::Key params);
-	virtual void RelayText(UserParameter::KeyBoard::Text params);
+	virtual void RelayClick(ClickArgs args);
+	virtual void RelayScroll(ScrollArgs args);
+	virtual void RelayCursorDrag(DragArgs args);
+	virtual void RelayKey(KeyArgs args);
+	virtual void RelayText(TextArgs args);
 };
 };
 };

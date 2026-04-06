@@ -1,6 +1,7 @@
 #include "Slider.hpp"
 #include "Base/Manager.hpp"
-#include "UserParameter/MouseInclude.hpp"
+
+#include "User/MouseArgs.hpp"
 
 
 
@@ -38,7 +39,7 @@ void UI::Control::Slider::SetValue(float val)
 	SliderChanged = true;
 	ValueChangedFunc(Value);
 }
-void UI::Control::Slider::ChangeValue(UserParameter::Mouse::Position mouse_pos)
+void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 {
 	if (!_Interactible) { return; }
 
@@ -46,7 +47,8 @@ void UI::Control::Slider::ChangeValue(UserParameter::Mouse::Position mouse_pos)
 	float slider_pos_min = AnchorBox.Min.X + slider_size_half;
 	float slider_pos_max = AnchorBox.Max.X - slider_size_half;
 
-	float slider_value = mouse_pos.Absolute.X;
+	//float slider_value = mouse_pos.Absolute.X;
+	float slider_value = mouse_pos.Buffer.Corner.X;
 	slider_value -= slider_pos_min;
 	slider_value /= (slider_pos_max - slider_pos_min);
 	slider_value *= (ValueMax - ValueMin);
@@ -113,14 +115,14 @@ void UI::Control::Slider::UpdateBoxRelay()
 
 
 
-void UI::Control::Slider::RelayClick(UserParameter::Mouse::Click params)
+void UI::Control::Slider::RelayClick(ClickArgs params)
 {
-	if (params.Action.IsPress())
+	if (params.Action == Action::Press)
 	{
 		ChangeValue(params.Position);
 	}
 }
-void UI::Control::Slider::RelayCursorDrag(UserParameter::Mouse::Drag params)
+void UI::Control::Slider::RelayCursorDrag(DragArgs params)
 {
 	ChangeValue(params.Position);
 }

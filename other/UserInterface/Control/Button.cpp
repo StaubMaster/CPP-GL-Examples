@@ -1,5 +1,6 @@
 #include "Button.hpp"
-#include "UserParameter/MouseInclude.hpp"
+
+#include "User/MouseArgs.hpp"
 
 
 
@@ -12,14 +13,14 @@ UI::Control::Button::Button() : Base()
 	ColorDefault = ColorF4(0.625f, 0.625f, 0.625f);
 	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
 
-	ClickFunc = NULL;
+	ClickFunc = nullptr;
 }
 UI::Control::Button::~Button()
 { }
 
 
 
-void UI::Control::Button::RelayClick(UserParameter::Mouse::Click params)
+void UI::Control::Button::RelayClick(ClickArgs params)
 {
 	if (!_Interactible) { return; }
 

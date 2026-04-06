@@ -28,10 +28,11 @@ void main()
 	//if (col.g >= 128) { discard; }
 	//if (col.b >= 128) { discard; }
 
-//	if (gl_FragCoord.x >= fs_inn.BoundMin.x &&
-//		gl_FragCoord.x <= fs_inn.BoundMax.x &&
-//		gl_FragCoord.y >= fs_inn.BoundMin.y &&
-//		gl_FragCoord.y <= fs_inn.BoundMax.y)
-//	{ Color = col; }
-//	else { discard; }
+	if (gl_FragCoord.x >= fs_inn.BoundMin.x &&
+		gl_FragCoord.x <= fs_inn.BoundMax.x &&
+		gl_FragCoord.y >= fs_inn.BoundMin.y &&
+		gl_FragCoord.y <= fs_inn.BoundMax.y)
+	{ Color = col; } else { discard; }
+
+	//Color = col;
 }

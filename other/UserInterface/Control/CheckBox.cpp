@@ -1,6 +1,7 @@
 #include "CheckBox.hpp"
 #include "Base/Manager.hpp"
-#include "UserParameter/MouseInclude.hpp"
+
+#include "User/MouseArgs.hpp"
 
 
 
@@ -65,11 +66,11 @@ void UI::Control::CheckBox::RelayHover(unsigned char type)
 
 
 
-void UI::Control::CheckBox::RelayClick(UserParameter::Mouse::Click params)
+void UI::Control::CheckBox::RelayClick(ClickArgs params)
 {
 	if (!_Interactible) { return; }
 
-	if (params.Action.IsPress() || params.Action.IsRepeat())
+	if (params.Action == Action::Press || params.Action == Action::Release)
 	{
 		Checked = !Checked;
 		ColorChanged = true;

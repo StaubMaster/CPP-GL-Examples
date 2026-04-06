@@ -20,7 +20,7 @@ namespace Control
 class Shader : public ::Shader::Base
 {
 	public:
-	Uniform::WindowBufferSize2D WindowSize;
+	Uniform::DisplaySize	DisplaySize;
 
 	public:
 	Shader();

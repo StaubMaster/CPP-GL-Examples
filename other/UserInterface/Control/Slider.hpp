@@ -2,7 +2,7 @@
 # define UI_CONTROL_SLIDER_HPP
 
 # include "Base/Base.hpp"
-# include "Function/Pointer.hpp"
+# include "Miscellaneous/Function/Pointer.hpp"
 
 
 
@@ -43,7 +43,7 @@ class Slider : public Base
 	float GetValue();
 	void SetValue(float val);
 	private:
-	void ChangeValue(UserParameter::Mouse::Position mouse_pos);
+	void ChangeValue(DisplayPosition mouse_pos);
 
 	public:
 	void UpdateEntrysRelay() override;
@@ -51,8 +51,8 @@ class Slider : public Base
 	void RemoveDrawingEntryRelay() override;
 	void UpdateBoxRelay() override;
 
-	void RelayClick(UserParameter::Mouse::Click params) override;
-	void RelayCursorDrag(UserParameter::Mouse::Drag params) override;
+	void RelayClick(ClickArgs params) override;
+	void RelayCursorDrag(DragArgs params) override;
 };
 
 };

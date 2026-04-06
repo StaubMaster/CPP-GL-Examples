@@ -123,11 +123,11 @@ void UI::Control::TextBox::UpdateBoxRelay()
 
 
 
-void UI::Control::TextBox::RelayKey(UserParameter::KeyBoard::Key params)
+void UI::Control::TextBox::RelayKey(KeyArgs params)
 {
 	if (!_Interactible || ReadOnly) { return; }
 
-	if (params.Code == GLFW_KEY_BACKSPACE && (params.Action.IsPress() || params.Action.IsRepeat()))
+	if (params.Key == Keys::Backspace && (params.Action == Action::Press || params.Action == Action::Repeat))
 	{
 		if (Text.length() > 0)
 		{
@@ -136,7 +136,7 @@ void UI::Control::TextBox::RelayKey(UserParameter::KeyBoard::Key params)
 		}
 	}
 }
-void UI::Control::TextBox::RelayText(UserParameter::KeyBoard::Text params)
+void UI::Control::TextBox::RelayText(TextArgs params)
 {
 	if (!_Interactible || ReadOnly) { return; }
 

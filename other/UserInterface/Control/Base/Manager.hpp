@@ -7,12 +7,10 @@
 
 #include "Control/Window.hpp"
 
-#include "Display/WindowBufferSize2D.hpp"
+#include "Display/DisplaySize.hpp"
 
-#include "UserParameter/MouseDeclare.hpp"
-
-#include "UserParameter/KeyBoard/Key.hpp"
-#include "UserParameter/KeyBoard/Text.hpp"
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
 
 #include "Miscellaneous/Container/Binary.hpp"
 #include "Miscellaneous/EntryContainer/Binary.hpp"
@@ -35,7 +33,8 @@ class Manager
 	Container::Binary<Control::Main_Data> Main_Data_Container;
 	EntryContainer::Binary<Control::Inst_Data> Inst_Data_Container;
 
-	WindowBufferSize2D WindowSize;
+//	WindowBufferSize2D WindowSize;
+	DisplaySize WindowSize;
 
 	UI::Control::Window Window;
 
@@ -48,15 +47,15 @@ class Manager
 
 	void Draw();
 
-	void UpdateSize(const WindowBufferSize2D & window_size);
+	void UpdateSize(const DisplaySize & window_size);
 	void UpdateMouse(Point2D mouse);
 
-	void RelayClick(UserParameter::Mouse::Click params);
-	void RelayScroll(UserParameter::Mouse::Scroll params);
-	void RelayCursorDrag(UserParameter::Mouse::Drag params);
+	void RelayClick(ClickArgs args);
+	void RelayScroll(ScrollArgs args);
+	void RelayCursorDrag(DragArgs args);
 
-	void RelayKey(UserParameter::KeyBoard::Key params);
-	void RelayText(UserParameter::KeyBoard::Text params);
+	void RelayKey(KeyArgs args);
+	void RelayText(TextArgs args);
 };
 
 };

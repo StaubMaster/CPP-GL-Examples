@@ -7,6 +7,7 @@
 #include "Graphics/Attribute/Base/Base.hpp"
 #include "Graphics/Attribute/Point2D.hpp"
 #include "Graphics/Attribute/ColorF4.hpp"
+#include "Graphics/Attribute/Base/Float1.hpp"
 
 
 
@@ -22,6 +23,7 @@ class Main_Buffer : public ::Buffer::Attribute
 	::Attribute::Point2D	Pos;
 	public:
 	Main_Buffer(
+		::BufferArray::Base & buffer_array,
 		unsigned int indexPos
 	);
 };
@@ -31,10 +33,11 @@ class Inst_Buffer : public Buffer::Attribute
 	private:
 	::Attribute::Point2D	Min;
 	::Attribute::Point2D	Max;
-	::Attribute::FloatN		Layer;
+	::Attribute::Float1		Layer;
 	::Attribute::ColorF4	Col;
 	public:
 	Inst_Buffer(
+		::BufferArray::Base & buffer_array,
 		unsigned int indexMin,
 		unsigned int indexMax,
 		unsigned int indexLayer,

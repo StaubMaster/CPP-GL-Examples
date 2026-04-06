@@ -1,11 +1,12 @@
 #include "Manager.hpp"
-#include "UserParameter/MouseInclude.hpp"
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
 #include "../Window.hpp"
 
 #include "Graphics/Shader/Code.hpp"
 #include "DirectoryInfo.hpp"
 
-#include "DataInclude.hpp"
+#include "ValueTypeInclude.hpp"
 
 #include <iostream>
 
@@ -64,10 +65,10 @@ void UI::Control::Manager::Draw()
 }
 
 
-void UI::Control::Manager::UpdateSize(const WindowBufferSize2D & window_size)
+void UI::Control::Manager::UpdateSize(const DisplaySize & window_size)
 {
 	WindowSize = window_size;
-	Window.UpdateWindowSize(WindowSize.WindowSize);
+	Window.UpdateWindowSize(WindowSize.Buffer.Full);
 }
 void UI::Control::Manager::UpdateMouse(Point2D mouse)
 {
@@ -86,7 +87,7 @@ void UI::Control::Manager::UpdateMouse(Point2D mouse)
 
 
 
-void UI::Control::Manager::RelayClick(UserParameter::Mouse::Click params)
+void UI::Control::Manager::RelayClick(ClickArgs params)
 {
 	if (Hovering != NULL)
 	{
@@ -94,28 +95,28 @@ void UI::Control::Manager::RelayClick(UserParameter::Mouse::Click params)
 	}
 	Selected = Hovering;
 }
-void UI::Control::Manager::RelayScroll(UserParameter::Mouse::Scroll params)
+void UI::Control::Manager::RelayScroll(ScrollArgs params)
 {
 	if (Selected != NULL)
 	{
 		Selected -> RelayScroll(params);
 	}
 }
-void UI::Control::Manager::RelayCursorDrag(UserParameter::Mouse::Drag params)
+void UI::Control::Manager::RelayCursorDrag(DragArgs params)
 {
 	if (Selected != NULL)
 	{
 		Selected -> RelayCursorDrag(params);
 	}
 }
-void UI::Control::Manager::RelayKey(UserParameter::KeyBoard::Key params)
+void UI::Control::Manager::RelayKey(KeyArgs params)
 {
 	if (Selected != NULL)
 	{
 		Selected -> RelayKey(params);
 	}
 }
-void UI::Control::Manager::RelayText(UserParameter::KeyBoard::Text params)
+void UI::Control::Manager::RelayText(TextArgs params)
 {
 	if (Selected != NULL)
 	{

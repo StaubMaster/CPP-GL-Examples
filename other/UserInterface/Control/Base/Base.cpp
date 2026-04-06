@@ -1,6 +1,7 @@
 #include "Base.hpp"
 #include "Manager.hpp"
-#include "UserParameter/MouseInclude.hpp"
+
+#include "User/MouseArgs.hpp"
 
 
 
@@ -264,23 +265,23 @@ void UI::Control::Base::RelayHover(unsigned char type)
 {
 	(void)type;
 }
-void UI::Control::Base::RelayClick(UserParameter::Mouse::Click params)
+void UI::Control::Base::RelayClick(ClickArgs params)
 {
 	(void)params;
 }
-void UI::Control::Base::RelayScroll(UserParameter::Mouse::Scroll params)
+void UI::Control::Base::RelayScroll(ScrollArgs params)
 {
 	(void)params;
 }
-void UI::Control::Base::RelayCursorDrag(UserParameter::Mouse::Drag params)
+void UI::Control::Base::RelayCursorDrag(DragArgs params)
 {
 	(void)params;
 }
-void UI::Control::Base::RelayKey(UserParameter::KeyBoard::Key params)
+void UI::Control::Base::RelayKey(KeyArgs params)
 {
 	(void)params;
 }
-void UI::Control::Base::RelayText(UserParameter::KeyBoard::Text params)
+void UI::Control::Base::RelayText(TextArgs params)
 {
 	(void)params;
 }

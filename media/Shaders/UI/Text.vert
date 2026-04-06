@@ -16,6 +16,7 @@ struct sDisplaySize
 
 uniform sDisplaySize DisplaySize;
 
+//const vec2 PalletSize = vec2(32, 32);
 const vec2 PalletSize = vec2(20, 20);
 
 
@@ -58,11 +59,11 @@ void main()
 	vec2 pallet_t1 = vec2(1, 1) - pallet_t0;
 	vs_out.PalletPos = (Inst_PalletMin * pallet_t0) + (Inst_PalletMax * pallet_t1);
 
-	vs_out.BoundMin = vec2(-1, -1);
-	vs_out.BoundMax = vec2(+1, +1);
+	//vs_out.BoundMin = Inst_BoundMin;
+	//vs_out.BoundMax = Inst_BoundMax;
 
-//	vs_out.BoundMin.x = Inst_BoundMin.x;
-//	vs_out.BoundMin.y = DisplaySize.Buffer.Full.y - Inst_BoundMax.y;
-//	vs_out.BoundMax.x = Inst_BoundMax.x;
-//	vs_out.BoundMax.y = DisplaySize.Buffer.Full.y - Inst_BoundMin.y;
+	vs_out.BoundMin.x = Inst_BoundMin.x;
+	vs_out.BoundMin.y = DisplaySize.Buffer.Full.y - Inst_BoundMax.y;
+	vs_out.BoundMax.x = Inst_BoundMax.x;
+	vs_out.BoundMax.y = DisplaySize.Buffer.Full.y - Inst_BoundMin.y;
 }

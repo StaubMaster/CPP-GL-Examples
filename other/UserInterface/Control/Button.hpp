@@ -2,7 +2,7 @@
 # define UI_CONTROL_BUTTON_HPP
 
 # include "Base/Base.hpp"
-# include "Function/Pointer.hpp"
+# include "Miscellaneous/Function/Pointer.hpp"
 
 
 
@@ -15,14 +15,14 @@ namespace Control
 class Button : public Base
 {
 	public:
-	FunctionPointer<UserParameter::Mouse::Click>	ClickFunc;
+	FunctionPointer<ClickArgs>	ClickFunc;
 
 	public:
 	Button();
 	~Button();
 
 	public:
-	void RelayClick(UserParameter::Mouse::Click params) override;
+	void RelayClick(ClickArgs args) override;
 };
 
 };

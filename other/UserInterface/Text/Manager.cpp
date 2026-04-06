@@ -56,9 +56,6 @@ UI::Text::Manager::~Manager()
 
 
 
-#include <iostream>
-#include "ValueTypeShow.hpp"
-
 void UI::Text::Manager::Draw()
 {
 	if (!Inst_Data_Container.IsCompact())
@@ -70,35 +67,9 @@ void UI::Text::Manager::Draw()
 	BufferArray.Main.Change(Main_Data_Container);
 	BufferArray.Inst.Change(Inst_Data_Container);
 
-	{
-		std::cout << "Main Count: " << Main_Data_Container.Count() << '\n';
-		for (unsigned int i = 0; i < Main_Data_Container.Count(); i++)
-		{
-			UI::Text::Main_Data & data = Main_Data_Container[i];
-			std::cout << data.Pos << '\n';
-		}
-		std::cout << '\n';
-	}
-
-	{
-		std::cout << "Inst Count: " << Inst_Data_Container.Count() << '\n';
-		/*for (unsigned int i = 0; i < Inst_Data_Container.Count(); i++)
-		{
-			UI::Text::Inst_Data & data = Inst_Data_Container[i];
-			std::cout << "Pos: " << data.Pos << '\n';
-			std::cout << "Pallet: " << data.Pallet << '\n';
-			std::cout << "Bound: " << data.Bound << '\n';
-		}*/
-		std::cout << '\n';
-	}
-
 	Shader.Bind();
 	Pallet_Texture.Bind();
 	BufferArray.Bind();
-
-	std::cout << "Text Draw " << BufferArray.Main.DrawCount << ' ' << BufferArray.Inst.DrawCount << '\n';
-	std::cout << "Text Draw " << BufferArray.DrawMode << '\n';
-	std::cout << '\n';
 
 	BufferArray.Draw();
 }

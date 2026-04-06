@@ -2,7 +2,7 @@
 # define UI_CONTROL_CHECKBOX_HPP
 
 # include "Base/Base.hpp"
-# include "Function/Pointer.hpp"
+# include "Miscellaneous/Function/Pointer.hpp"
 
 
 
@@ -15,7 +15,7 @@ namespace Control
 class CheckBox : public Base
 {
 	public:
-	FunctionPointer<UserParameter::Mouse::Click>	ClickFunc;
+	FunctionPointer<ClickArgs>	ClickFunc;
 
 	private:
 	bool Checked;
@@ -39,7 +39,7 @@ class CheckBox : public Base
 	void RelayHover(unsigned char type) override;
 
 	public:
-	void RelayClick(UserParameter::Mouse::Click params) override;
+	void RelayClick(ClickArgs params) override;
 };
 
 };

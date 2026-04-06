@@ -6,42 +6,50 @@
 
 
 UI::Control::Main_Buffer::Main_Buffer(
+	::BufferArray::Base & buffer_array,
 	unsigned int indexPos
-) :
-	::Buffer::Attribute(GL::BufferTarget::ArrayBuffer, GL::BufferDataUsage::StaticDraw, sizeof(Main_Data)),
-	Pos(0, sizeof(Main_Data), indexPos)
+)	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Main_Data))
+	, Pos()
 {
 	Attributes.Allocate(1);
 	Attributes.Insert(&Pos);
+
+	Pos.Change(indexPos);
 }
 
 
 
 UI::Control::Inst_Buffer::Inst_Buffer(
+	::BufferArray::Base & buffer_array,
 	unsigned int indexMin,
 	unsigned int indexMax,
 	unsigned int indexLayer,
 	unsigned int indexCol
-) :
-	::Buffer::Attribute(GL::BufferTarget::ArrayBuffer, GL::BufferDataUsage::StreamDraw, sizeof(Inst_Data)),
-	Min(1, sizeof(Inst_Data), indexMin),
-	Max(1, sizeof(Inst_Data), indexMax),
-	Layer(1, sizeof(Inst_Data), indexLayer),
-	Col(1, sizeof(Inst_Data), indexCol)
+)	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
+	, Min()
+	, Max()
+	, Layer()
+	, Col()
 {
 	Attributes.Allocate(4);
 	Attributes.Insert(&Min);
 	Attributes.Insert(&Max);
 	Attributes.Insert(&Layer);
 	Attributes.Insert(&Col);
+
+	Min.Change(indexMin);
+	Max.Change(indexMax);
+	Layer.Change(indexLayer);
+	Col.Change(indexCol);
 }
 
 
 
-UI::Control::BufferArray::BufferArray() :
-	Main(0),
-	Inst(1, 2, 3, 4),
-	DrawMode(GL::DrawMode::Triangles)
+UI::Control::BufferArray::BufferArray()
+	: ::BufferArray::Base()
+	, Main(*this, 0)
+	, Inst(*this, 1, 2, 3, 4)
+	, DrawMode(GL::DrawMode::Triangles)
 {
 	Buffers.Allocate(2);
 	Buffers.Insert(&Main);
