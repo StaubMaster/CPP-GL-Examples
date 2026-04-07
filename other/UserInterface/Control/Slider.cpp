@@ -70,12 +70,12 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 void UI::Control::Slider::UpdateEntrysRelay()
 {
-	if (SliderEntry.Is())
+	if (SliderObject.Is())
 	{
 		if (SliderChanged)
 		{
-			(*SliderEntry).Min.Y = AnchorBox.Min.Y;
-			(*SliderEntry).Max.Y = AnchorBox.Max.Y;
+			SliderObject.Box().Min.Y = AnchorBox.Min.Y;
+			SliderObject.Box().Max.Y = AnchorBox.Max.Y;
 
 			float slider_size_half = SliderSize / 2;
 			float slider_min = AnchorBox.Min.X + slider_size_half;
@@ -84,8 +84,8 @@ void UI::Control::Slider::UpdateEntrysRelay()
 			float slider_normal = (Value - ValueMin) / (ValueMax - ValueMin);
 			float slider_value = (slider_normal * (slider_max - slider_min)) + slider_min;
 			
-			(*SliderEntry).Min.X = slider_value - slider_size_half;
-			(*SliderEntry).Max.X = slider_value + slider_size_half;
+			SliderObject.Box().Min.X = slider_value - slider_size_half;
+			SliderObject.Box().Max.X = slider_value + slider_size_half;
 			
 			SliderChanged = false;
 		}
@@ -93,19 +93,19 @@ void UI::Control::Slider::UpdateEntrysRelay()
 }
 void UI::Control::Slider::InsertDrawingEntryRelay()
 {
-	if (!SliderEntry.Is() && ControlManager != NULL)
+	if (!SliderObject.Is() && ControlManager != NULL)
 	{
-		SliderEntry.Allocate(ControlManager -> Inst_Data_Container, 1);
-		(*SliderEntry).Col = ColorF4(0.5f, 0.5f, 0.5f);
-		(*SliderEntry).Layer = Layer - 0.01f;
+		SliderObject.Create();
+		SliderObject.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+		SliderObject.Layer() = Layer - 0.01f;
 		SliderChanged = true;
 	}
 }
 void UI::Control::Slider::RemoveDrawingEntryRelay()
 {
-	if (SliderEntry.Is() || ControlManager == NULL)
+	if (SliderObject.Is() || ControlManager == NULL)
 	{
-		SliderEntry.Dispose();
+		SliderObject.Delete();
 	}
 }
 void UI::Control::Slider::UpdateBoxRelay()

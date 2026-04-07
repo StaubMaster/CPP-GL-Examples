@@ -46,16 +46,16 @@ void UI::Control::CheckBox::UpdateEntryColorRelay()
 	if (ControlManager -> Hovering != this)
 	{
 		if (!Checked)
-		{ (*ControlEntry).Col = ColorDefault; }
+		{ ControlObject.Color() = ColorDefault; }
 		else
-		{ (*ControlEntry).Col = ColorChecked; }
+		{ ControlObject.Color() = ColorChecked; }
 	}
 	else
 	{
 		if (!Checked)
-		{ (*ControlEntry).Col = ColorHover; }
+		{ ControlObject.Color() = ColorHover; }
 		else
-		{ (*ControlEntry).Col = ColorCheckedHover; }
+		{ ControlObject.Color() = ColorCheckedHover; }
 	}
 }
 void UI::Control::CheckBox::RelayHover(unsigned char type)

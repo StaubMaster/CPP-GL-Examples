@@ -8,7 +8,7 @@
 UI::Control::Base::Base() :
 	ControlManager(NULL),
 	TextManager(NULL),
-	ControlEntry(),
+	ControlObject(),
 	Parent(NULL),
 	Children(),
 	Layer(0.0f),
@@ -85,7 +85,7 @@ void UI::Control::Base::ChangeManager(UI::Text::Manager * manager)
 
 void UI::Control::Base::UpdateEntrys()
 {
-	if (ControlEntry.Is())
+	if (ControlObject.Is())
 	{
 		if (AnchorBoxChanged)
 		{
@@ -168,10 +168,10 @@ void UI::Control::Base::UpdateDrawable()
 }
 void UI::Control::Base::InsertDrawingEntry()
 {
-	if (!ControlEntry.Is() && ControlManager != NULL)
+	if (!ControlObject.Is() && ControlManager != NULL)
 	{
-		ControlEntry.Allocate(ControlManager -> Inst_Data_Container, 1);
-		(*ControlEntry).Layer = Layer;
+		ControlObject.Create();
+		ControlObject.Layer() = Layer;
 		AnchorBoxChanged = true;
 		ColorChanged = true;
 	}
@@ -179,9 +179,9 @@ void UI::Control::Base::InsertDrawingEntry()
 }
 void UI::Control::Base::RemoveDrawingEntry()
 {
-	if (ControlEntry.Is() || ControlManager == NULL)
+	if (ControlObject.Is() || ControlManager == NULL)
 	{
-		ControlEntry.Dispose();
+		ControlObject.Delete();
 	}
 	RemoveDrawingEntryRelay();
 }
@@ -241,16 +241,15 @@ void UI::Control::Base::HoverLeave()
 
 void UI::Control::Base::UpdateEntryAnchorBoxRelay()
 {
-	(*ControlEntry).Min = AnchorBox.Min;
-	(*ControlEntry).Max = AnchorBox.Max;
+	ControlObject.Box() = AnchorBox;
 	AnchorBoxChanged = false;
 }
 void UI::Control::Base::UpdateEntryColorRelay()
 {
 	if (ControlManager -> Hovering != this)
-	{ (*ControlEntry).Col = ColorDefault; }
+	{ ControlObject.Color() = ColorDefault; }
 	else
-	{ (*ControlEntry).Col = ColorHover; }
+	{ ControlObject.Color() = ColorHover; }
 	ColorChanged = false;
 }
 void UI::Control::Base::UpdateEntrysRelay() { }

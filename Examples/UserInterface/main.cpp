@@ -411,13 +411,6 @@ void InitRun()
 
 	UI_Make();
 
-	/*{
-		UI::Control::Form * form = new UI::Control::Form();
-		form -> Anchor.X.AnchorBoth(320 - 20, 320 - 20);
-		form -> Anchor.Y.AnchorBoth(240 - 20, 240 - 20);
-		UI_Control_Manager.Window.ChildInsert(form);
-	}*/
-
 	std::cout << "Init done\n";
 }
 void FreeRun()

@@ -35,7 +35,6 @@ UI::Control::Manager::~Manager()
 UI::Control::Manager::Manager()
 	: Shader()
 	, Buffer()
-	, Inst_Data_Container()
 	, WindowSize()
 	, Window()
 	, Hovering(nullptr)
@@ -117,12 +116,6 @@ void UI::Control::Manager::GraphicsMain()
 }
 void UI::Control::Manager::GraphicsInst()
 {
-	if (!Inst_Data_Container.IsCompact())
-	{
-		Inst_Data_Container.CompactHere();
-	}
-	Buffer.Inst.Change(Inst_Data_Container);
-
 	Instances.Clear();
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{

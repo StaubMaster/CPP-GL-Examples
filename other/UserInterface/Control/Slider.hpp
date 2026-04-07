@@ -20,7 +20,7 @@ namespace Control
 class Slider : public Base
 {
 	private:
-	EntryContainer::Entry<Control::Inst_Data> SliderEntry;
+	Object		SliderObject;
 
 	bool SliderChanged;
 	float SliderSize;	//NubSize

@@ -11,7 +11,8 @@
 #include "ValueType/_Include.hpp"
 
 #include "Miscellaneous/Container/Binary.hpp"
-#include "Miscellaneous/EntryContainer/Binary.hpp"
+
+#include "Object.hpp"
 
 #include "AnchorEnum.hpp"
 
@@ -28,7 +29,7 @@ class Base
 	UI::Text::Manager *	TextManager;
 
 	protected:
-	EntryContainer::Entry<Control::Inst_Data> ControlEntry;
+	Object		ControlObject;
 
 	protected:
 	Base * Parent;

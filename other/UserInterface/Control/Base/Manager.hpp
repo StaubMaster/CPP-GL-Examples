@@ -13,7 +13,6 @@
 #include "User/KeyBoardArgs.hpp"
 
 #include "Miscellaneous/Container/Binary.hpp"
-#include "Miscellaneous/EntryContainer/Binary.hpp"
 
 
 
@@ -43,8 +42,6 @@ class Manager
 	public:
 	UI::Control::Shader		Shader;
 	UI::Control::Buffer		Buffer;
-
-	EntryContainer::Binary<Control::Inst_Data> Inst_Data_Container;
 
 	Container::Binary<ObjectData*>			ObjectDatas;
 	Container::Binary<Control::Inst_Data>	Instances;
@@ -87,16 +84,17 @@ class Manager
 
 	public:
 	void	Draw();
+	
+	void	UpdateSize(const DisplaySize & window_size);
+	void	UpdateMouse(Point2D mouse);
 
-	void UpdateSize(const DisplaySize & window_size);
-	void UpdateMouse(Point2D mouse);
+	public:
+	void	RelayClick(ClickArgs args);
+	void	RelayScroll(ScrollArgs args);
+	void	RelayCursorDrag(DragArgs args);
 
-	void RelayClick(ClickArgs args);
-	void RelayScroll(ScrollArgs args);
-	void RelayCursorDrag(DragArgs args);
-
-	void RelayKey(KeyArgs args);
-	void RelayText(TextArgs args);
+	void	RelayKey(KeyArgs args);
+	void	RelayText(TextArgs args);
 };
 
 };
