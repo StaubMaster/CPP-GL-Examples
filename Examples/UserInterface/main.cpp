@@ -38,6 +38,7 @@
 #include "ControlsInclude.hpp"
 
 #include "Text/Manager.hpp"
+#include "Text/Object.hpp"
 #include "Text/ObjectData.hpp"
 
 
@@ -60,7 +61,9 @@ MainContext()
 	, window()
 	, UI_Text_Manager()
 	, UI_Control_Manager()
-{ }
+{
+	UI_Text_Manager.MakeCurrent();
+}
 ~MainContext()
 { }
 
@@ -537,20 +540,21 @@ void ShowText(const char * text)
 }
 void ShowAlphabet()
 {
-	UI::Text::ObjectData * obj = UI_Text_Manager.PlaceObject();
-	obj -> Pos = window.Size.Buffer.Half;
-	obj -> Bound = AxisBox2D(Point2D(), window.Size.Buffer.Full);
-	obj -> Remove = true;
+	UI::Text::Object obj;
+	obj.Create();
 
-	obj -> AlignmentX = UI::Text::Alignment::Max;
-	obj -> AlignmentY = UI::Text::Alignment::Min;
+	obj.Pos() = window.Size.Buffer.Half;
+	obj.Bound() = AxisBox2D(Point2D(), window.Size.Buffer.Full);
 
-	obj -> Text = "0123456789\n";
-	obj -> Text += "abcdefghijklm\n";
-	obj -> Text += "nopqrstuvwxyz\n";
-	obj -> Text += "ABCDEFGHIJKLM\n";
-	obj -> Text += "NOPQRSTUVWXYZ\n";
-	obj -> Text += "<>";
+	obj.Data -> AlignmentX = UI::Text::Alignment::Min;
+	obj.Data -> AlignmentY = UI::Text::Alignment::Min;
+
+	obj.String() = "0123456789\n";
+	obj.String() += "abcdefghijklm\n";
+	obj.String() += "nopqrstuvwxyz\n";
+	obj.String() += "ABCDEFGHIJKLM\n";
+	obj.String() += "NOPQRSTUVWXYZ\n";
+	obj.String() += "<>";
 }
 /*void ShowAllCharacters()
 {
@@ -581,7 +585,7 @@ void Frame(double timeDelta)
 	//ShowAllCharacters();
 
 	UI_Frame();
-	
+
 	UI_Text_Manager.Draw();
 }
 

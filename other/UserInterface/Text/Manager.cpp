@@ -14,6 +14,19 @@
 
 
 
+
+
+UI::Text::Manager * UI::Text::Manager::CurrentPointer = nullptr;
+UI::Text::Manager & UI::Text::Manager::Current() { return *CurrentPointer; }
+bool UI::Text::Manager::CheckCurrent() { return (UI::Text::Manager::CurrentPointer != nullptr); }
+void UI::Text::Manager::ClearCurrent() { UI::Text::Manager::CurrentPointer = nullptr; }
+bool UI::Text::Manager::IsCurrent() const { return (UI::Text::Manager::CurrentPointer == this); }
+void UI::Text::Manager::MakeCurrent() { UI::Text::Manager::CurrentPointer = this; }
+
+
+
+
+
 UI::Text::Manager::~Manager()
 {
 	std::cout << "  ----  " << "UI::Text::Manager::~Manager()" << '\n';

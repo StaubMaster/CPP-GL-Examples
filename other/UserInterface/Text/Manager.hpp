@@ -22,6 +22,7 @@ struct ObjectData;
 
 class Manager
 {
+	public:
 	static Manager * CurrentPointer;
 	static Manager & Current();
 	static bool CheckCurrent();
