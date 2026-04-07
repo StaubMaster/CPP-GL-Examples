@@ -1,7 +1,7 @@
 #ifndef  UI_TEXT_DATA
 # define UI_TEXT_DATA
 
-# include "ValueTypeInclude.hpp"
+# include "ValueType/_Include.hpp"
 
 namespace UI
 {

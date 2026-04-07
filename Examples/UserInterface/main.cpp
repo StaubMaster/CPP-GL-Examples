@@ -7,7 +7,7 @@
 #include "Debug.hpp"
 #include "Window.hpp"
 #include "Miscellaneous/Function/Object.hpp"
-#include "ValueTypeShow.hpp"
+#include "ValueType/_Show.hpp"
 
 // FileManager
 #include "DirectoryInfo.hpp"
@@ -26,8 +26,8 @@
 #include "Graphics/Attribute/Point2D.hpp"
 #include "Graphics/Attribute/ColorF4.hpp"
 
-#include "Graphics/UniformsInclude.hpp"
-#include "Graphics/MultiformsInclude.hpp"
+#include "Graphics/Uniform/_Include.hpp"
+#include "Graphics/Multiform/_Include.hpp"
 
 #include "Graphics/Texture/Array2D.hpp"
 
@@ -38,6 +38,7 @@
 #include "ControlsInclude.hpp"
 
 #include "Text/Manager.hpp"
+#include "Text/ObjectData.hpp"
 
 
 
@@ -65,8 +66,6 @@ MainContext()
 
 
 
-EntryContainer::Entry<UI::Text::Inst_Data> TextEntry;
-
 void Text_Make()
 {
 	{
@@ -75,8 +74,6 @@ void Text_Make()
 		code.Insert(::Shader::Code(ShaderDir.File("UI/Text.frag")));
 		UI_Text_Manager.Shader.Change(code);
 	}
-	UI_Text_Manager.Shader.Create();
-	UI_Text_Manager.Buffer.Create();
 
 	{
 		UI_Text_Manager.TextFont = UI::Text::Font::Parse(TextDir.File("Font0.atlas"));
@@ -85,10 +82,7 @@ void Text_Make()
 		UI_Text_Manager.Pallet_Texture.Assign(UI_Text_Manager.TextFont -> AtlasTexture);
 		UI_Text_Manager.Pallet_Texture.FilterMin(Texture::Base::FilterMinType::Linear);
 	}
-
-	{
-		TextEntry.Allocate(UI_Text_Manager.Inst_Data_Container, 16 * 8);
-	}
+	UI_Text_Manager.GraphicsCreate();
 
 	UI_Text_Manager.Buffer.Main.Init();
 	UI_Text_Manager.Buffer.Inst.Init();
@@ -513,6 +507,12 @@ void InitRun()
 //	Multi_WindowSize -> FindUniforms(shaders);
 
 	UI_Make();
+	{
+		UI::Control::Form * form = new UI::Control::Form();
+		form -> Anchor.X.AnchorBoth(320 - 20, 320 - 20);
+		form -> Anchor.Y.AnchorBoth(240 - 20, 240 - 20);
+		UI_Control_Manager.Window.ChildInsert(form);
+	}
 
 	std::cout << "Init done\n";
 }
@@ -529,27 +529,30 @@ void FreeRun()
 
 void ShowText(const char * text)
 {
-	std::string Text = text;
-	//Point2D CharacterSize = Point2D(32, 32);
-	Point2D CharacterSize = Point2D(20, 20);
-	Point2D center = window.Size.Buffer.Half;
-
-	for (unsigned int i = 0; i < TextEntry.Length(); i++)
-	{
-		//TextEntry[i].Pos = Point2D((min.X + (CharacterSize.X * 0.5f)) + (i * CharacterSize.X), center.Y);
-		TextEntry[i].Pos = Point2D((center.X + (CharacterSize.X * 0.5f)) + (i * CharacterSize.X), center.Y);
-		//if (UI_Text_Manager != NULL)
-		{
-			if (i < Text.length())
-			{ TextEntry[i].Pallet = UI_Text_Manager.TextFont -> CharacterBoxFromCode(Text[i]); }
-			else
-			{ TextEntry[i].Pallet = UI_Text_Manager.TextFont -> CharacterBoxFromCode('\0'); }
-		}
-		//TextEntry[i].Bound = AnchorBox;
-		TextEntry[i].Bound = AxisBox2D(Point2D(), window.Size.Buffer.Full);
-	}
+	UI::Text::ObjectData * obj = UI_Text_Manager.PlaceObject();
+	obj -> Text = text;
+	obj -> Pos = window.Size.Buffer.Half;
+	obj -> Bound = AxisBox2D(Point2D(), window.Size.Buffer.Full);
+	obj -> Remove = true;
 }
-void ShowAllCharacters()
+void ShowAlphabet()
+{
+	UI::Text::ObjectData * obj = UI_Text_Manager.PlaceObject();
+	obj -> Pos = window.Size.Buffer.Half;
+	obj -> Bound = AxisBox2D(Point2D(), window.Size.Buffer.Full);
+	obj -> Remove = true;
+
+	obj -> AlignmentX = UI::Text::Alignment::Max;
+	obj -> AlignmentY = UI::Text::Alignment::Min;
+
+	obj -> Text = "0123456789\n";
+	obj -> Text += "abcdefghijklm\n";
+	obj -> Text += "nopqrstuvwxyz\n";
+	obj -> Text += "ABCDEFGHIJKLM\n";
+	obj -> Text += "NOPQRSTUVWXYZ\n";
+	obj -> Text += "<>";
+}
+/*void ShowAllCharacters()
 {
 	//Point2D CharacterSize = Point2D(32, 32);
 	Point2D CharacterSize = Point2D(20, 20);
@@ -567,13 +570,14 @@ void ShowAllCharacters()
 			i++;
 		}
 	}
-}
+}*/
 
 void Frame(double timeDelta)
 {
 	(void)timeDelta;
 
-	ShowText("test Text");
+	//ShowText("test asd Text");
+	ShowAlphabet();
 	//ShowAllCharacters();
 
 	UI_Frame();

@@ -38,6 +38,7 @@ FILES_SRC := \
 	$(DIR_SRC)/Text/Buffer.cpp \
 	$(DIR_SRC)/Text/Shader.cpp \
 	$(DIR_SRC)/Text/Manager.cpp \
+	$(DIR_SRC)/Text/ObjectData.cpp \
 	$(DIR_SRC)/Text/Font/Font.cpp \
 	$(DIR_SRC)/Text/Font/Template.cpp \
 	$(DIR_SRC)/Text/Font/Parsing.cpp \
