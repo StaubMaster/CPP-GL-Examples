@@ -9,7 +9,6 @@
 #include "ValueType/_Show.hpp"
 
 #include "Miscellaneous/Function/Object.hpp"
-#include "Miscellaneous/Container/Fixed.hpp"
 #include "Miscellaneous/Container/Array.hpp"
 
 // FileManager
@@ -391,31 +390,35 @@ void UI_Init()
 {
 	std::cout << "Control Init ...\n";
 
-//	UI_Control_Manager = new UI::Control::Manager(ShaderDir);
-//	UI_Text_Manager = new UI::Text::Manager(ShaderDir, TextDir);
-//	UI_Control_Manager -> UpdateSize(window.Size);
-
 	{
-		Container::Fixed<::Shader::Code> code(2);
-		code.Insert(::Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")));
-		code.Insert(::Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")));
+		Container::Array<Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")),
+		});
 		UI_Control_Manager.Shader.Change(code);
 	}
-	UI_Control_Manager.Shader.Create();
-	UI_Control_Manager.BufferArray.Create();
+	{
+		UI_Control_Manager.Buffer.Main.Pos.Change(0);
+		UI_Control_Manager.Buffer.Inst.Min.Change(1);
+		UI_Control_Manager.Buffer.Inst.Max.Change(2);
+		UI_Control_Manager.Buffer.Inst.Layer.Change(3);
+		UI_Control_Manager.Buffer.Inst.Col.Change(4);
+	}
+
+	UI_Control_Manager.GraphicsCreate();
+
 	UI_Control_Manager.UpdateSize(window.Size);
 
 	UI_Control_Manager.Window.ChangeManager(&UI_Control_Manager);
 	UI_Control_Manager.Window.ChangeManager(&UI_Text_Manager);
-
-	UI_Control_Manager.BufferArray.Main.Init();
-	UI_Control_Manager.BufferArray.Inst.Init();
 
 	std::cout << "Control Init done\n";
 }
 void UI_Free()
 {
 	std::cout << "Control Free ...\n";
+
+	UI_Control_Manager.GraphicsDelete();
 
 	std::cout << "Control Free done\n";
 }
@@ -572,6 +575,22 @@ void ShowAlphabet()
 
 void Frame(double timeDelta)
 {
+	{
+		UI::Text::Object obj;
+		obj.Create();
+
+		obj.Pos().X = window.Size.Window.Full.X - 20;
+		obj.Pos().Y = 0 + 20;
+		obj.Bound() = AxisBox2D(Point2D(), window.Size.Buffer.Full);
+		obj.AlignmentX() = UI::Text::Alignment::Max;
+		obj.AlignmentY() = UI::Text::Alignment::Min;
+
+		std::stringstream ss;
+		ss << timeDelta;
+		ss << '\n';
+		ss << ((int)(1.0 / timeDelta));
+		obj.String() = ss.str();
+	}
 	(void)timeDelta;
 
 	//ShowText("test asd Text");

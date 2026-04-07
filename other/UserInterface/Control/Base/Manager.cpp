@@ -10,28 +10,19 @@
 
 #include <iostream>
 
-//#include "OpenGL/Errors.hpp"
-//#include "Debug.hpp"
-//#include "DataShow.hpp"
 
 
-
-UI::Control::Manager::Manager() :
-	Shader(),
-	BufferArray(),
-	Main_Data_Container(),
-	Inst_Data_Container(),
-	WindowSize(),
-	Window()
+UI::Control::Manager::Manager()
+	: Shader()
+	, Buffer()
+	, Inst_Data_Container()
+	, WindowSize()
+	, Window()
+	, GraphicsExist(false)
+	, GraphicsNeedInit(false)
+	, GraphicsNeedMain(false)
 {
 	std::cout << "  ++++  " << "UI::Control::Manager::Manager()" << "\n";
-
-	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, -1)));
-	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
-	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(+1, -1)));
-	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(+1, -1)));
-	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
-	Main_Data_Container.Insert(UI::Control::Main_Data(Point2D(+1, +1)));
 
 	Window.Show();
 
@@ -41,27 +32,78 @@ UI::Control::Manager::Manager() :
 UI::Control::Manager::~Manager()
 {
 	std::cout << "  ----  " << "UI::Control::Manager::~Manager()" << "\n";
+}
 
-	BufferArray.Delete();
+
+
+void UI::Control::Manager::GraphicsCreate()
+{
+	if (GraphicsExist) { return; }
+
+	Buffer.Create();
+	Shader.Create();
+
+	GraphicsExist = true;
+
+	GraphicsNeedInit = true;
+	GraphicsNeedMain = true;
+}
+void UI::Control::Manager::GraphicsDelete()
+{
+	if (!GraphicsExist) { return; }
+
+	Buffer.Delete();
 	Shader.Delete();
+
+	GraphicsExist = false;
+}
+
+void UI::Control::Manager::GraphicsInit()
+{
+	if (!(GraphicsNeedInit && GraphicsExist)) { return; }
+
+	Buffer.Main.Init();
+	Buffer.Inst.Init();
+
+	GraphicsNeedInit = false;
+}
+void UI::Control::Manager::GraphicsMain()
+{
+	if (!(GraphicsNeedMain && GraphicsExist)) { return; }
+
+	Container::Binary<Control::Main_Data> data;
+
+	data.Insert(UI::Control::Main_Data(Point2D(-1, -1)));
+	data.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
+	data.Insert(UI::Control::Main_Data(Point2D(+1, -1)));
+	data.Insert(UI::Control::Main_Data(Point2D(+1, -1)));
+	data.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
+	data.Insert(UI::Control::Main_Data(Point2D(+1, +1)));
+
+	Buffer.Main.Change(data);
+
+	GraphicsNeedMain = false;
+}
+void UI::Control::Manager::GraphicsInst()
+{
+	if (!Inst_Data_Container.IsCompact())
+	{
+		Inst_Data_Container.CompactHere();
+	}
+	Buffer.Inst.Change(Inst_Data_Container);
 }
 
 
 
 void UI::Control::Manager::Draw()
 {
-	if (!Inst_Data_Container.IsCompact())
-	{
-		Inst_Data_Container.CompactHere();
-	}
-
-	BufferArray.Bind();
-	BufferArray.Main.Change(Main_Data_Container);
-	BufferArray.Inst.Change(Inst_Data_Container);
+	GraphicsInit();
+	GraphicsMain();
+	GraphicsInst();
 
 	Shader.Bind();
-	BufferArray.Bind();
-	BufferArray.Draw();
+	Buffer.Bind();
+	Buffer.Draw();
 }
 
 
@@ -87,39 +129,39 @@ void UI::Control::Manager::UpdateMouse(Point2D mouse)
 
 
 
-void UI::Control::Manager::RelayClick(ClickArgs params)
+void UI::Control::Manager::RelayClick(ClickArgs args)
 {
 	if (Hovering != NULL)
 	{
-		Hovering -> RelayClick(params);
+		Hovering -> RelayClick(args);
 	}
 	Selected = Hovering;
 }
-void UI::Control::Manager::RelayScroll(ScrollArgs params)
+void UI::Control::Manager::RelayScroll(ScrollArgs args)
 {
 	if (Selected != NULL)
 	{
-		Selected -> RelayScroll(params);
+		Selected -> RelayScroll(args);
 	}
 }
-void UI::Control::Manager::RelayCursorDrag(DragArgs params)
+void UI::Control::Manager::RelayCursorDrag(DragArgs args)
 {
 	if (Selected != NULL)
 	{
-		Selected -> RelayCursorDrag(params);
+		Selected -> RelayCursorDrag(args);
 	}
 }
-void UI::Control::Manager::RelayKey(KeyArgs params)
+void UI::Control::Manager::RelayKey(KeyArgs args)
 {
 	if (Selected != NULL)
 	{
-		Selected -> RelayKey(params);
+		Selected -> RelayKey(args);
 	}
 }
-void UI::Control::Manager::RelayText(TextArgs params)
+void UI::Control::Manager::RelayText(TextArgs args)
 {
 	if (Selected != NULL)
 	{
-		Selected -> RelayText(params);
+		Selected -> RelayText(args);
 	}
 }

@@ -5,27 +5,20 @@
 
 
 
-UI::Control::Main_Buffer::Main_Buffer(
-	::BufferArray::Base & buffer_array,
-	unsigned int indexPos
-)	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Main_Data))
+UI::Control::Main_Buffer::~Main_Buffer() { }
+UI::Control::Main_Buffer::Main_Buffer(::BufferArray::Base & buffer_array)
+	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Main_Data))
 	, Pos()
 {
 	Attributes.Allocate(1);
 	Attributes.Insert(&Pos);
-
-	Pos.Change(indexPos);
 }
 
 
 
-UI::Control::Inst_Buffer::Inst_Buffer(
-	::BufferArray::Base & buffer_array,
-	unsigned int indexMin,
-	unsigned int indexMax,
-	unsigned int indexLayer,
-	unsigned int indexCol
-)	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
+UI::Control::Inst_Buffer::~Inst_Buffer() { }
+UI::Control::Inst_Buffer::Inst_Buffer(::BufferArray::Base & buffer_array)
+	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
 	, Min()
 	, Max()
 	, Layer()
@@ -36,26 +29,22 @@ UI::Control::Inst_Buffer::Inst_Buffer(
 	Attributes.Insert(&Max);
 	Attributes.Insert(&Layer);
 	Attributes.Insert(&Col);
-
-	Min.Change(indexMin);
-	Max.Change(indexMax);
-	Layer.Change(indexLayer);
-	Col.Change(indexCol);
 }
 
 
 
-UI::Control::BufferArray::BufferArray()
+UI::Control::Buffer::~Buffer() { }
+UI::Control::Buffer::Buffer()
 	: ::BufferArray::Base()
-	, Main(*this, 0)
-	, Inst(*this, 1, 2, 3, 4)
+	, Main(*this)
+	, Inst(*this)
 	, DrawMode(GL::DrawMode::Triangles)
 {
 	Buffers.Allocate(2);
 	Buffers.Insert(&Main);
 	Buffers.Insert(&Inst);
 }
-void UI::Control::BufferArray::Draw()
+void UI::Control::Buffer::Draw()
 {
 	Bind();
 	GL::DrawArraysInstanced(DrawMode, 0, Main.DrawCount, Inst.DrawCount);

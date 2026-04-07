@@ -28,12 +28,10 @@ class Manager
 {
 	public:
 	UI::Control::Shader Shader;
-	UI::Control::BufferArray BufferArray;
+	UI::Control::Buffer Buffer;
 
-	Container::Binary<Control::Main_Data> Main_Data_Container;
 	EntryContainer::Binary<Control::Inst_Data> Inst_Data_Container;
 
-//	WindowBufferSize2D WindowSize;
 	DisplaySize WindowSize;
 
 	UI::Control::Window Window;
@@ -42,9 +40,26 @@ class Manager
 	Base * Selected;
 
 	public:
-	Manager();
 	~Manager();
+	Manager();
+	Manager(const Manager & other) = delete;
+	Manager & operator=(const Manager & other) = delete;
 
+	private:
+	bool	GraphicsExist;
+	public:
+	void	GraphicsCreate();
+	void	GraphicsDelete();
+
+	private:
+	bool	GraphicsNeedInit;
+	bool	GraphicsNeedMain;
+	private:
+	void	GraphicsInit();
+	void	GraphicsMain();
+	void	GraphicsInst();
+
+	public:
 	void Draw();
 
 	void UpdateSize(const DisplaySize & window_size);
