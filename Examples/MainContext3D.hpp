@@ -8,9 +8,7 @@
 
 # include "FrameTime.hpp"
 
-# include "Graphics/MultiformsInclude.hpp"
-//# include "Graphics/Multiform/Trans3D.hpp"
-//# include "Graphics/Multiform/Angle.hpp"
+# include "Graphics/Multiform/_Include.hpp"
 
 # include "ValueType/View3D.hpp"
 
