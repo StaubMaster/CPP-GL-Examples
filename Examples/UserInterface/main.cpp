@@ -575,7 +575,7 @@ void ShowAlphabet()
 
 void Frame(double timeDelta)
 {
-	{
+	/*{
 		UI::Text::Object obj;
 		obj.Create();
 
@@ -590,7 +590,7 @@ void Frame(double timeDelta)
 		ss << '\n';
 		ss << ((int)(1.0 / timeDelta));
 		obj.String() = ss.str();
-	}
+	}*/
 	(void)timeDelta;
 
 	//ShowText("test asd Text");
