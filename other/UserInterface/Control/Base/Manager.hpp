@@ -24,26 +24,49 @@ namespace Control
 {
 class Base;
 
+struct ObjectData;
+
 class Manager
 {
 	public:
-	UI::Control::Shader Shader;
-	UI::Control::Buffer Buffer;
+	static Manager * CurrentPointer;
+	static Manager & Current();
+	static bool CheckCurrent();
+	static void ClearCurrent();
+	bool IsCurrent() const;
+	void MakeCurrent();
+
+
+
+
+
+	public:
+	UI::Control::Shader		Shader;
+	UI::Control::Buffer		Buffer;
 
 	EntryContainer::Binary<Control::Inst_Data> Inst_Data_Container;
 
-	DisplaySize WindowSize;
+	Container::Binary<ObjectData*>			ObjectDatas;
+	Container::Binary<Control::Inst_Data>	Instances;
 
-	UI::Control::Window Window;
+	DisplaySize		WindowSize;
 
-	Base * Hovering;
-	Base * Selected;
+	UI::Control::Window		Window;
+
+	Base *	Hovering;
+	Base *	Selected;
 
 	public:
 	~Manager();
 	Manager();
 	Manager(const Manager & other) = delete;
 	Manager & operator=(const Manager & other) = delete;
+
+	public:
+	ObjectData *	PlaceObject();
+	ObjectData *	CopyObject(const ObjectData * obj);
+	// give these functions static Variants that return if no Current
+	// else they do the stuff with current
 
 	private:
 	bool	GraphicsExist;
@@ -59,8 +82,11 @@ class Manager
 	void	GraphicsMain();
 	void	GraphicsInst();
 
+	private:
+	void			PlaceInstance(const ObjectData & obj);
+
 	public:
-	void Draw();
+	void	Draw();
 
 	void UpdateSize(const DisplaySize & window_size);
 	void UpdateMouse(Point2D mouse);

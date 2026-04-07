@@ -1,4 +1,6 @@
 #include "Manager.hpp"
+#include "ObjectData.hpp"
+
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "../Window.hpp"
@@ -8,16 +10,36 @@
 
 #include "ValueType/_Include.hpp"
 
+#include "ValueType/_Show.hpp"
 #include <iostream>
 
 
 
+
+
+UI::Control::Manager * UI::Control::Manager::CurrentPointer = nullptr;
+UI::Control::Manager & UI::Control::Manager::Current() { return *CurrentPointer; }
+bool UI::Control::Manager::CheckCurrent() { return (UI::Control::Manager::CurrentPointer != nullptr); }
+void UI::Control::Manager::ClearCurrent() { UI::Control::Manager::CurrentPointer = nullptr; }
+bool UI::Control::Manager::IsCurrent() const { return (UI::Control::Manager::CurrentPointer == this); }
+void UI::Control::Manager::MakeCurrent() { UI::Control::Manager::CurrentPointer = this; }
+
+
+
+
+
+UI::Control::Manager::~Manager()
+{
+	std::cout << "  ----  " << "UI::Control::Manager::~Manager()" << "\n";
+}
 UI::Control::Manager::Manager()
 	: Shader()
 	, Buffer()
 	, Inst_Data_Container()
 	, WindowSize()
 	, Window()
+	, Hovering(nullptr)
+	, Selected(nullptr)
 	, GraphicsExist(false)
 	, GraphicsNeedInit(false)
 	, GraphicsNeedMain(false)
@@ -25,13 +47,22 @@ UI::Control::Manager::Manager()
 	std::cout << "  ++++  " << "UI::Control::Manager::Manager()" << "\n";
 
 	Window.Show();
-
-	Hovering = NULL;
-	Selected = NULL;
 }
-UI::Control::Manager::~Manager()
+
+
+
+UI::Control::ObjectData * UI::Control::Manager::PlaceObject()
 {
-	std::cout << "  ----  " << "UI::Control::Manager::~Manager()" << "\n";
+	ObjectData * obj = new ObjectData();
+	ObjectDatas.Insert(obj);
+	return obj;
+}
+UI::Control::ObjectData * UI::Control::Manager::CopyObject(const ObjectData * obj)
+{
+	if (obj == nullptr) { return nullptr; }
+	ObjectData * ret = PlaceObject();
+	*ret = *obj;
+	return ret;
 }
 
 
@@ -91,6 +122,36 @@ void UI::Control::Manager::GraphicsInst()
 		Inst_Data_Container.CompactHere();
 	}
 	Buffer.Inst.Change(Inst_Data_Container);
+
+	Instances.Clear();
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		if (ObjectDatas[i] != nullptr)
+		{
+			ObjectData & obj = *ObjectDatas[i];
+			if (obj.Display)
+			{
+				PlaceInstance(obj);
+			}
+			if (obj.Remove)
+			{
+				ObjectDatas.Remove(i);
+				delete &obj;
+				i--;
+			}
+		}
+	}
+	Buffer.Inst.Change(Instances);
+}
+
+void UI::Control::Manager::PlaceInstance(const ObjectData & obj)
+{
+	Inst_Data data;
+	data.Min = obj.Box.Min;
+	data.Max = obj.Box.Max;
+	data.Layer = obj.Layer;
+	data.Col = obj.Color;
+	Instances.Insert(data);
 }
 
 
@@ -107,6 +168,7 @@ void UI::Control::Manager::Draw()
 }
 
 
+
 void UI::Control::Manager::UpdateSize(const DisplaySize & window_size)
 {
 	WindowSize = window_size;
@@ -118,11 +180,11 @@ void UI::Control::Manager::UpdateMouse(Point2D mouse)
 
 	if (control != Hovering)
 	{
-		if (Hovering != NULL) { Hovering -> HoverLeave(); }
+		if (Hovering != nullptr) { Hovering -> HoverLeave(); }
 		Hovering = control;
-		if (Hovering != NULL) { Hovering -> HoverEnter(); }
+		if (Hovering != nullptr) { Hovering -> HoverEnter(); }
 	}
-	if (Hovering != NULL) { /* Hover Over */ }
+	if (Hovering != nullptr) { /* Hover Over */ }
 }
 
 
@@ -131,7 +193,7 @@ void UI::Control::Manager::UpdateMouse(Point2D mouse)
 
 void UI::Control::Manager::RelayClick(ClickArgs args)
 {
-	if (Hovering != NULL)
+	if (Hovering != nullptr)
 	{
 		Hovering -> RelayClick(args);
 	}
@@ -139,28 +201,28 @@ void UI::Control::Manager::RelayClick(ClickArgs args)
 }
 void UI::Control::Manager::RelayScroll(ScrollArgs args)
 {
-	if (Selected != NULL)
+	if (Selected != nullptr)
 	{
 		Selected -> RelayScroll(args);
 	}
 }
 void UI::Control::Manager::RelayCursorDrag(DragArgs args)
 {
-	if (Selected != NULL)
+	if (Selected != nullptr)
 	{
 		Selected -> RelayCursorDrag(args);
 	}
 }
 void UI::Control::Manager::RelayKey(KeyArgs args)
 {
-	if (Selected != NULL)
+	if (Selected != nullptr)
 	{
 		Selected -> RelayKey(args);
 	}
 }
 void UI::Control::Manager::RelayText(TextArgs args)
 {
-	if (Selected != NULL)
+	if (Selected != nullptr)
 	{
 		Selected -> RelayText(args);
 	}

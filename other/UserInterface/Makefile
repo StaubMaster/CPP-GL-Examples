@@ -24,6 +24,8 @@ FILES_SRC := \
 	$(DIR_SRC)/Control/Base/Buffer.cpp \
 	$(DIR_SRC)/Control/Base/Shader.cpp \
 	$(DIR_SRC)/Control/Base/Manager.cpp \
+	$(DIR_SRC)/Control/Base/ObjectData.cpp \
+	$(DIR_SRC)/Control/Base/Object.cpp \
 	$(DIR_SRC)/Control/Base/Base.cpp \
 \
 	$(DIR_SRC)/Control/Window.cpp \
