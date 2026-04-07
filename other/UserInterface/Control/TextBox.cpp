@@ -49,7 +49,16 @@ void UI::Control::TextBox::PutCharactersEntrys()
 	Point2D min = AnchorBox.Min;
 	Point2D max = AnchorBox.Max;
 	Point2D center = (max + min) / 2;
-	for (unsigned int i = 0; i < TextEntry.Length(); i++)
+
+	if (TextObject.Is())
+	{
+		TextObject.String() = Text;
+		TextObject.Pos().X = min.X + ((max.Y - min.Y) * 0.5f);
+		TextObject.Pos().Y = center.Y;
+		TextObject.Bound() = AnchorBox;
+	}
+
+	/*for (unsigned int i = 0; i < TextEntry.Length(); i++)
 	{
 		TextEntry[i].Pos = Point2D((min.X + (CharacterSize.X * 0.5f)) + (i * CharacterSize.X), center.Y);
 		if (TextManager != NULL)
@@ -60,7 +69,7 @@ void UI::Control::TextBox::PutCharactersEntrys()
 			{ TextEntry[i].Pallet = TextManager -> TextFont -> CharacterBoxFromCode('\0'); }
 		}
 		TextEntry[i].Bound = AnchorBox;
-	}
+	}*/
 }
 
 
@@ -79,13 +88,15 @@ void UI::Control::TextBox::SetText(std::string text)
 
 void UI::Control::TextBox::UpdateEntrysRelay()
 {
-	if (TextEntry.Is() && TextManager != NULL)
+	if (TextObject.Is() && TextManager != NULL)
 	{
 		if (CharacterCountLimitChanged)
 		{
-			TextEntry.Dispose();
-			TextManager -> Inst_Data_Container.CompactHere();
-			TextEntry.Allocate(TextManager -> Inst_Data_Container, CharacterCountLimit);
+			//TextObject.Delete();
+			////TextManager -> Inst_Data_Container.CompactHere();
+			////TextEntry.Allocate(TextManager -> Inst_Data_Container, CharacterCountLimit);
+			//TextObject.Create();
+
 			TextChanged = true;
 			CharacterCountLimitChanged = false;
 		}
@@ -98,23 +109,24 @@ void UI::Control::TextBox::UpdateEntrysRelay()
 }
 void UI::Control::TextBox::InsertDrawingEntryRelay()
 {
-	if (!TextEntry.Is() && TextManager != NULL)
+	if (!TextObject.Is() && TextManager != NULL)
 	{
 		CalcCharacterCount();
-		TextEntry.Allocate(TextManager -> Inst_Data_Container, CharacterCountLimit);
+		TextObject.Create();
+		//TextEntry.Allocate(TextManager -> Inst_Data_Container, CharacterCountLimit);
 	}
 }
 void UI::Control::TextBox::RemoveDrawingEntryRelay()
 {
-	if (TextEntry.Is() || TextManager == NULL)
+	if (TextObject.Is() || TextManager == NULL)
 	{
-		TextEntry.Dispose();
+		TextObject.Delete();
 	}
 }
 
 void UI::Control::TextBox::UpdateBoxRelay()
 {
-	if (TextEntry.Is())
+	if (TextObject.Is())
 	{
 		CalcCharacterCount();
 		TextChanged = true;

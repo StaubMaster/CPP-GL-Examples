@@ -23,6 +23,9 @@ struct ObjectData
 	Alignment		AlignmentX;
 	Alignment		AlignmentY;
 
+	// Character Alignment
+	// Character Size
+
 	Point2D		Pos;
 	AxisBox2D	Bound;
 

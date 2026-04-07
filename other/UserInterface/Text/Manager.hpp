@@ -41,9 +41,6 @@ class Manager
 	Container::Binary<UI::Text::ObjectData*>	ObjectDatas;
 	Container::Binary<UI::Text::Inst_Data>		Instances;
 
-	Container::Binary<UI::Text::Main_Data>			Main_Data_Container;
-	EntryContainer::Binary<UI::Text::Inst_Data>		Inst_Data_Container;
-
 	UI::Text::Font *	TextFont;
 	Texture::Array2D	Pallet_Texture;
 

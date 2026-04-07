@@ -2,9 +2,7 @@
 # define UI_CONTROL_TEXTBOX_HPP
 
 #include "Base/Base.hpp"
-#include "../Text/Data.hpp"
-
-#include "Miscellaneous/EntryContainer/Entry.hpp"
+#include "../Text/Object.hpp"
 
 #include <string>
 
@@ -15,7 +13,7 @@ namespace Control
 class TextBox : public Base
 {
 	private:
-	EntryContainer::Entry<UI::Text::Inst_Data> TextEntry;
+	Text::Object	TextObject;
 
 	Point2D			CharacterSize;
 	Point2D			CharacterCountLimit2D;

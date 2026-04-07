@@ -581,7 +581,7 @@ void Frame(double timeDelta)
 	(void)timeDelta;
 
 	//ShowText("test asd Text");
-	ShowAlphabet();
+	//ShowAlphabet();
 	//ShowAllCharacters();
 
 	UI_Frame();

@@ -34,20 +34,15 @@ UI::Text::Manager::~Manager()
 	Pallet_Texture.Delete();
 	delete TextFont;
 }
-UI::Text::Manager::Manager() :
-	Shader(),
-	Buffer(),
-	Main_Data_Container(),
-	Inst_Data_Container()
+UI::Text::Manager::Manager()
+	: Shader()
+	, Buffer()
+	, ObjectDatas()
+	, Instances()
+	, TextFont(nullptr)
+	, Pallet_Texture()
 {
 	std::cout << "  ++++  " << "UI::Text::Manager::Manager()" << '\n';
-
-	Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, -1)));
-	Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
-	Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
-	Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
-	Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
-	Main_Data_Container.Insert(UI::Text::Main_Data(Point2D(+1, +1)));
 }
 
 
@@ -233,14 +228,6 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 
 void UI::Text::Manager::Draw()
 {
-//	if (!Inst_Data_Container.IsCompact())
-//	{
-//		Inst_Data_Container.CompactHere();
-//	}
-//	Buffer.Bind();
-//	Buffer.Main.Change(Main_Data_Container);
-//	Buffer.Inst.Change(Inst_Data_Container);
-
 	GraphicsInit();
 	GraphicsMain();
 	GraphicsInst();
