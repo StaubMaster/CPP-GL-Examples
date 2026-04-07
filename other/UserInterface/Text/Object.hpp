@@ -1,6 +1,8 @@
 #ifndef  UI_TEXT_OBJECT_HPP
 # define UI_TEXT_OBJECT_HPP
 
+# include "Alignment.hpp"
+
 # include "ValueType/Point2D.hpp"
 # include "ValueType/AxisBox2D.hpp"
 # include "string"
@@ -16,14 +18,17 @@ struct Object
 	ObjectData * Data;
 
 	bool			Is() const;
-	std::string &	String() const;
+	std::string &	String();
 	
-	Point2D &		Pos() const;
-	AxisBox2D &		Bound() const;
+	Alignment &		AlignmentX();
+	Alignment &		AlignmentY();
+
+	Point2D &		Pos();
+	AxisBox2D &		Bound();
 
 	bool	Visibility() const;
-	void	Hide() const;
-	void	Full() const;
+	void	Hide();
+	void	Full();
 
 	~Object();
 	Object();

@@ -4,10 +4,13 @@
 #include <iostream>
 
 // General
-#include "Debug.hpp"
 #include "Window.hpp"
-#include "Miscellaneous/Function/Object.hpp"
+#include "Debug.hpp"
 #include "ValueType/_Show.hpp"
+
+#include "Miscellaneous/Function/Object.hpp"
+#include "Miscellaneous/Container/Fixed.hpp"
+#include "Miscellaneous/Container/Array.hpp"
 
 // FileManager
 #include "DirectoryInfo.hpp"
@@ -15,8 +18,6 @@
 #include "Image.hpp"
 
 // 
-#include "Miscellaneous/Container/Fixed.hpp"
-
 #include "Graphics/Shader/Code.hpp"
 #include "Graphics/Shader/Base.hpp"
 
@@ -39,15 +40,12 @@
 
 #include "Text/Manager.hpp"
 #include "Text/Object.hpp"
-#include "Text/ObjectData.hpp"
 
 
 
 struct MainContext
 {
-DirectoryInfo ShaderDir;
-DirectoryInfo ImageDir;
-DirectoryInfo TextDir;
+DirectoryInfo MediaDirectory;
 
 Window window;
 
@@ -55,9 +53,7 @@ UI::Text::Manager UI_Text_Manager;
 UI::Control::Manager UI_Control_Manager;
 
 MainContext()
-	: ShaderDir("../../media/Shaders")
-	, ImageDir("../../media/Images")
-	, TextDir("../../media/Text")
+	: MediaDirectory("../../media")
 	, window()
 	, UI_Text_Manager()
 	, UI_Control_Manager()
@@ -72,23 +68,18 @@ MainContext()
 void Text_Make()
 {
 	{
-		Container::Fixed<::Shader::Code> code(2);
-		code.Insert(::Shader::Code(ShaderDir.File("UI/Text.vert")));
-		code.Insert(::Shader::Code(ShaderDir.File("UI/Text.frag")));
+		Container::Array<Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/UI/Text.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/UI/Text.frag")),
+		});
 		UI_Text_Manager.Shader.Change(code);
 	}
 
 	{
-		UI_Text_Manager.TextFont = UI::Text::Font::Parse(TextDir.File("Font0.atlas"));
-		UI_Text_Manager.Pallet_Texture.Create();
-		UI_Text_Manager.Pallet_Texture.Bind();
-		UI_Text_Manager.Pallet_Texture.Assign(UI_Text_Manager.TextFont -> AtlasTexture);
-		UI_Text_Manager.Pallet_Texture.FilterMin(Texture::Base::FilterMinType::Linear);
+		UI_Text_Manager.TextFont = UI::Text::Font::Parse(
+			MediaDirectory.File("Text/Font0.atlas")
+		);
 	}
-	UI_Text_Manager.GraphicsCreate();
-
-	UI_Text_Manager.Buffer.Main.Init();
-	UI_Text_Manager.Buffer.Inst.Init();
 }
 
 
@@ -406,8 +397,8 @@ void UI_Init()
 
 	{
 		Container::Fixed<::Shader::Code> code(2);
-		code.Insert(::Shader::Code(ShaderDir.File("UI/Control.vert")));
-		code.Insert(::Shader::Code(ShaderDir.File("UI/Control.frag")));
+		code.Insert(::Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")));
+		code.Insert(::Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")));
 		UI_Control_Manager.Shader.Change(code);
 	}
 	UI_Control_Manager.Shader.Create();
@@ -498,6 +489,8 @@ void InitRun()
 
 	Text_Make();
 
+	UI_Text_Manager.GraphicsCreate();
+
 	std::cout << "Init ...\n";
 
 	UI_Init();
@@ -525,6 +518,8 @@ void FreeRun()
 
 //	delete Multi_WindowSize;
 
+	UI_Text_Manager.GraphicsDelete();
+
 	UI_Free();
 
 	std::cout << "Free done\n";
@@ -532,11 +527,10 @@ void FreeRun()
 
 void ShowText(const char * text)
 {
-	UI::Text::ObjectData * obj = UI_Text_Manager.PlaceObject();
-	obj -> Text = text;
-	obj -> Pos = window.Size.Buffer.Half;
-	obj -> Bound = AxisBox2D(Point2D(), window.Size.Buffer.Full);
-	obj -> Remove = true;
+	UI::Text::Object obj;
+	obj.String() = text;
+	obj.Pos() = window.Size.Buffer.Half;
+	obj.Bound() = AxisBox2D(Point2D(), window.Size.Buffer.Full);
 }
 void ShowAlphabet()
 {
@@ -546,8 +540,8 @@ void ShowAlphabet()
 	obj.Pos() = window.Size.Buffer.Half;
 	obj.Bound() = AxisBox2D(Point2D(), window.Size.Buffer.Full);
 
-	obj.Data -> AlignmentX = UI::Text::Alignment::Min;
-	obj.Data -> AlignmentY = UI::Text::Alignment::Min;
+	obj.AlignmentX() = UI::Text::Alignment::Min;
+	obj.AlignmentY() = UI::Text::Alignment::Min;
 
 	obj.String() = "0123456789\n";
 	obj.String() += "abcdefghijklm\n";

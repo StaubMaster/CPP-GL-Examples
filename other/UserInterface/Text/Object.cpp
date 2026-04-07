@@ -5,14 +5,17 @@
 
 
 bool			UI::Text::Object::Is() const { return (Data != nullptr); }
-std::string &	UI::Text::Object::String() const { return (Data -> Text); }
+std::string &	UI::Text::Object::String() { return (Data -> Text); }
 
-Point2D &		UI::Text::Object::Pos() const { return (Data -> Pos); }
-AxisBox2D &		UI::Text::Object::Bound() const { return (Data -> Bound); }
+UI::Text::Alignment &		UI::Text::Object::AlignmentX() { return (Data -> AlignmentX); }
+UI::Text::Alignment &		UI::Text::Object::AlignmentY() { return (Data -> AlignmentY); }
+
+Point2D &		UI::Text::Object::Pos() { return (Data -> Pos); }
+AxisBox2D &		UI::Text::Object::Bound() { return (Data -> Bound); }
 
 bool UI::Text::Object::Visibility() const { return (Data -> Display); }
-void UI::Text::Object::Hide() const { (Data -> Display) = false; }
-void UI::Text::Object::Full() const { (Data -> Display) = true; }
+void UI::Text::Object::Hide() { (Data -> Display) = false; }
+void UI::Text::Object::Full() { (Data -> Display) = true; }
 
 
 

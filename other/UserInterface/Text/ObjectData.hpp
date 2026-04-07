@@ -1,6 +1,8 @@
 #ifndef  UI_TEXT_OBJECT_DATA_HPP
 # define UI_TEXT_OBJECT_DATA_HPP
 
+# include "Alignment.hpp"
+
 # include "ValueType/Point2D.hpp"
 # include "ValueType/AxisBox2D.hpp"
 
@@ -10,13 +12,6 @@ namespace UI
 {
 namespace Text
 {
-enum class Alignment
-{
-	Min,
-	Mid,
-	Max,
-};
-
 struct ObjectData
 {
 	std::string		Text;

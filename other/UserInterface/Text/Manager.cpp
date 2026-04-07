@@ -30,8 +30,6 @@ void UI::Text::Manager::MakeCurrent() { UI::Text::Manager::CurrentPointer = this
 UI::Text::Manager::~Manager()
 {
 	std::cout << "  ----  " << "UI::Text::Manager::~Manager()" << '\n';
-
-	Pallet_Texture.Delete();
 	delete TextFont;
 }
 UI::Text::Manager::Manager()
@@ -41,6 +39,9 @@ UI::Text::Manager::Manager()
 	, Instances()
 	, TextFont(nullptr)
 	, Pallet_Texture()
+	, GraphicsExist(false)
+	, GraphicsNeedInit(false)
+	, GraphicsNeedMain(false)
 {
 	std::cout << "  ++++  " << "UI::Text::Manager::Manager()" << '\n';
 }
@@ -63,32 +64,58 @@ UI::Text::ObjectData * UI::Text::Manager::CopyObject(const ObjectData * obj)
 
 void UI::Text::Manager::GraphicsCreate()
 {
-	Shader.Create();
-	Buffer.Create();
+	if (!GraphicsExist)
+	{
+		Shader.Create();
+		Buffer.Create();
+		Pallet_Texture.Create();
+		GraphicsExist = true;
+		GraphicsNeedInit = true;
+		GraphicsNeedMain = true;
+	}
 }
 void UI::Text::Manager::GraphicsDelete()
 {
-	Buffer.Delete();
-	Shader.Delete();
+	if (GraphicsExist)
+	{
+		Buffer.Delete();
+		Shader.Delete();
+		Pallet_Texture.Delete();
+		GraphicsExist = false;
+	}
 }
 
 
 
 void UI::Text::Manager::GraphicsInit()
 {
+	if (!(GraphicsNeedInit && GraphicsExist)) { return; }
+
 	Buffer.Main.Init();
 	Buffer.Inst.Init();
+
+	Pallet_Texture.Bind();
+	Pallet_Texture.Assign(TextFont -> AtlasTexture);
+	Pallet_Texture.FilterMin(Texture::Base::FilterMinType::Linear);
+
+	GraphicsNeedInit = false;
 }
 void UI::Text::Manager::GraphicsMain()
 {
+	if (!(GraphicsNeedMain && GraphicsExist)) { return; }
+
 	Container::Binary<UI::Text::Main_Data> data;
+
 	data.Insert(UI::Text::Main_Data(Point2D(-1, -1)));
 	data.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
 	data.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
 	data.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
 	data.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
 	data.Insert(UI::Text::Main_Data(Point2D(+1, +1)));
+
 	Buffer.Main.Change(data);
+
+	GraphicsNeedMain = false;
 }
 void UI::Text::Manager::GraphicsInst()
 {
