@@ -17,6 +17,8 @@
 #include "PolyHedra/Manager.hpp"
 #include "PolyHedra/Object.hpp"
 
+
+
 struct MainContext : public MainContext3D
 {
 ::PolyHedraManager		PolyHedraManager;

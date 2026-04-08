@@ -49,37 +49,65 @@ DirectoryInfo MediaDirectory;
 
 Window window;
 
-UI::Text::Manager UI_Text_Manager;
-UI::Control::Manager UI_Control_Manager;
+UI::Text::Manager		TextManager;
+UI::Control::Manager	ControlManager;
 
 ~MainContext()
 { }
 MainContext()
 	: MediaDirectory("../../media")
 	, window()
-	, UI_Text_Manager()
-	, UI_Control_Manager()
+	, TextManager()
+	, ControlManager()
 {
-	UI_Text_Manager.MakeCurrent();
-	UI_Control_Manager.MakeCurrent();
+	TextManager.MakeCurrent();
+	ControlManager.MakeCurrent();
 }
 
 
 
-void Text_Make()
+void TextInit()
 {
 	{
 		Container::Array<Shader::Code> code({
 			Shader::Code(MediaDirectory.File("Shaders/UI/Text.vert")),
 			Shader::Code(MediaDirectory.File("Shaders/UI/Text.frag")),
 		});
-		UI_Text_Manager.Shader.Change(code);
+		TextManager.Shader.Change(code);
 	}
-
 	{
-		UI_Text_Manager.TextFont = UI::Text::Font::Parse(
+		TextManager.Buffer.Main.Pos.Change(0);
+		TextManager.Buffer.Inst.Pos.Change(1);
+		TextManager.Buffer.Inst.PalletMin.Change(2);
+		TextManager.Buffer.Inst.PalletMax.Change(3);
+		TextManager.Buffer.Inst.BoundMin.Change(4);
+		TextManager.Buffer.Inst.BoundMax.Change(5);
+	}
+	{
+		TextManager.TextFont = UI::Text::Font::Parse(
 			MediaDirectory.File("Text/Font0.atlas")
 		);
+	}
+}
+void ControlsInit()
+{
+	{
+		Container::Array<Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")),
+		});
+		ControlManager.Shader.Change(code);
+	}
+	{
+		ControlManager.Buffer.Main.Pos.Change(0);
+		ControlManager.Buffer.Inst.Min.Change(1);
+		ControlManager.Buffer.Inst.Max.Change(2);
+		ControlManager.Buffer.Inst.Layer.Change(3);
+		ControlManager.Buffer.Inst.Col.Change(4);
+	}
+	{
+		ControlManager.Window.ChangeManager(&ControlManager);
+		ControlManager.Window.ChangeManager(&TextManager);
 	}
 }
 
@@ -98,14 +126,14 @@ void UI_Make_Toggles()
 	text_box = new UI::Control::TextBox();
 	text_box -> Anchor.X.AnchorBoth(0, 0);
 	text_box -> Anchor.Y.AnchorMin(0);
-	UI_Control_Manager.Window.ChildInsert(text_box);
+	ControlManager.Window.ChildInsert(text_box);
 
 	h = text_box -> Anchor.Y.GetMinSize();
 
 	form = new UI::Control::Form();
 	form -> Anchor.X.AnchorMin(0, 60);
 	form -> Anchor.Y.AnchorMin(h, 360);
-	UI_Control_Manager.Window.ChildInsert(form);
+	ControlManager.Window.ChildInsert(form);
 
 	h = 0.0f;
 
@@ -139,7 +167,7 @@ void UI_Make_Settings()
 	form = new UI::Control::Form();
 	form -> Anchor.X.AnchorMax(0, 240);
 	form -> Anchor.Y.AnchorMax(0, 360);
-	UI_Control_Manager.Window.ChildInsert(form);
+	ControlManager.Window.ChildInsert(form);
 	form -> Hide();
 	Settings_Form = form;
 
@@ -148,6 +176,7 @@ void UI_Make_Settings()
 	text_box = new UI::Control::TextBox();
 	text_box -> Anchor.X.AnchorBoth(0, 0);
 	text_box -> Anchor.Y.AnchorMax(h);
+	text_box -> SetText("0");
 	form -> ChildInsert(text_box);
 	Settings_TextBox_ColorR = text_box;
 
@@ -156,6 +185,7 @@ void UI_Make_Settings()
 	text_box = new UI::Control::TextBox();
 	text_box -> Anchor.X.AnchorBoth(0, 0);
 	text_box -> Anchor.Y.AnchorMax(h);
+	text_box -> SetText("0");
 	form -> ChildInsert(text_box);
 	Settings_TextBox_ColorG = text_box;
 
@@ -164,6 +194,7 @@ void UI_Make_Settings()
 	text_box = new UI::Control::TextBox();
 	text_box -> Anchor.X.AnchorBoth(0, 0);
 	text_box -> Anchor.Y.AnchorMax(h);
+	text_box -> SetText("0");
 	form -> ChildInsert(text_box);
 	Settings_TextBox_ColorB = text_box;
 
@@ -212,7 +243,7 @@ void UI_Make_Example()
 	UI::Control::CheckBox * check_box;
 
 	form = new UI::Control::Form();
-	UI_Control_Manager.Window.ChildInsert(form);
+	ControlManager.Window.ChildInsert(form);
 	form -> Hide();
 	Example_Form = form;
 
@@ -287,64 +318,6 @@ void UI_Make_Example()
 
 
 
-void UI_Make()
-{
-	std::cout << "UI Make ...\n";
-
-	UI_Make_Toggles();
-	UI_Make_Settings();
-	UI_Make_Example();
-
-	std::cout << "UI Make done\n";
-}
-void UI_Init()
-{
-	std::cout << "Control Init ...\n";
-
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")),
-		});
-		UI_Control_Manager.Shader.Change(code);
-	}
-	{
-		UI_Control_Manager.Buffer.Main.Pos.Change(0);
-		UI_Control_Manager.Buffer.Inst.Min.Change(1);
-		UI_Control_Manager.Buffer.Inst.Max.Change(2);
-		UI_Control_Manager.Buffer.Inst.Layer.Change(3);
-		UI_Control_Manager.Buffer.Inst.Col.Change(4);
-	}
-
-	UI_Control_Manager.GraphicsCreate();
-
-	UI_Control_Manager.UpdateSize(window.Size);
-
-	UI_Control_Manager.Window.ChangeManager(&UI_Control_Manager);
-	UI_Control_Manager.Window.ChangeManager(&UI_Text_Manager);
-
-	std::cout << "Control Init done\n";
-}
-void UI_Free()
-{
-	std::cout << "Control Free ...\n";
-
-	UI_Control_Manager.GraphicsDelete();
-
-	std::cout << "Control Free done\n";
-}
-void UI_Frame()
-{
-	Point2D mouse = window.MouseManager.CursorPosition().Buffer.Corner;
-
-	UI_Control_Manager.UpdateMouse(mouse);
-	UI_Control_Manager.Window.UpdateEntrys();
-	UI_Control_Manager.UpdateSize(window.Size);
-
-	UI_Control_Manager.Shader.DisplaySize.Put(window.Size);
-	UI_Control_Manager.Draw();
-}
-
 void click0(ClickArgs params)
 {
 	if (params.Action == Action::Press)
@@ -401,25 +374,26 @@ void InitRun()
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 
-	Text_Make();
-
-	UI_Text_Manager.GraphicsCreate();
-
 	std::cout << "Init ...\n";
 
-	UI_Init();
+	TextInit();
+	ControlsInit();
 
-	UI_Make();
+	TextManager.GraphicsCreate();
+	ControlManager.GraphicsCreate();
 
 	std::cout << "Init done\n";
+
+	UI_Make_Toggles();
+	UI_Make_Settings();
+	UI_Make_Example();
 }
 void FreeRun()
 {
 	std::cout << "Free ...\n";
 
-	UI_Text_Manager.GraphicsDelete();
-
-	UI_Free();
+	TextManager.GraphicsDelete();
+	ControlManager.GraphicsDelete();
 
 	std::cout << "Free done\n";
 }
@@ -482,28 +456,30 @@ void Frame(double timeDelta)
 	//ShowAlphabet();
 	//ShowAllCharacters();
 
-	UI_Frame();
-
-	UI_Text_Manager.Draw();
+	{
+		Point2D mouse = window.MouseManager.CursorPosition().Buffer.Corner;
+		ControlManager.UpdateMouse(mouse);
+		ControlManager.Window.UpdateEntrys();
+		ControlManager.Draw();
+	}
+	TextManager.Draw();
 }
 
 
 
 void Resize(const ::DisplaySize & DisplaySize)
 {
-	(void)DisplaySize;
+	TextManager.Shader.DisplaySize.Put(DisplaySize);
 
-	UI_Text_Manager.Shader.DisplaySize.Put(DisplaySize);
-	
-//	Multi_WindowSize -> ChangeData(WindowSize);
-//	UI_Control_Manager -> UpdateSize(WindowSize);
+	ControlManager.UpdateSize(DisplaySize);
+	ControlManager.Shader.DisplaySize.Put(DisplaySize);
 }
 
 void ClickFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		UI_Control_Manager.RelayClick(args);
+		ControlManager.RelayClick(args);
 	}
 }
 void ScrollFunc(ScrollArgs args)
@@ -518,16 +494,16 @@ void MoveFunc(MoveArgs args)
 }
 void DragFunc(DragArgs args)
 {
-	UI_Control_Manager.RelayCursorDrag(args);
+	ControlManager.RelayCursorDrag(args);
 }
 
 void KeyFunc(KeyArgs args)
 {
-	UI_Control_Manager.RelayKey(args);
+	ControlManager.RelayKey(args);
 }
 void TextFunc(TextArgs args)
 {
-	UI_Control_Manager.RelayText(args);
+	ControlManager.RelayText(args);
 }
 
 

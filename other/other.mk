@@ -38,6 +38,6 @@ other_fclean:
 ################################################################
 
 include $(OTHER_DIR)/UserInterface.mk
-#include $(OTHER_DIR)/InterPolation.mk
+include $(OTHER_DIR)/InterPolation.mk
 
 ################################################################

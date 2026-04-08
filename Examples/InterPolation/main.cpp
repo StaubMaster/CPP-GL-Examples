@@ -4,26 +4,29 @@
 #include "OpenGL.hpp"
 #include "Debug.hpp"
 
-#include "DataInclude.hpp"
-#include "DataShow.hpp"
+// Value Types
+#include "ValueType/_Include.hpp"
+#include "ValueType/_Show.hpp"
 
+// Graphics
 #include "Graphics/Shader/Code.hpp"
 #include "Graphics/Shader/Base.hpp"
 
-#include "Graphics/UniformsInclude.hpp"
-#include "Graphics/MultiformsInclude.hpp"
+#include "Graphics/Uniform/_Include.hpp"
+#include "Graphics/Multiform/_Include.hpp"
 
 // PolyHedra
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
-#include "PolyHedra/Simple3D/ManagerMulti.hpp"
-#include "PolyHedra/Main/Data.hpp"
+#include "PolyHedra/Manager.hpp"
+#include "PolyHedra/Object.hpp"
 
+// General
 #include "Window.hpp"
-#include "ValueType/View.hpp"
-#include "Function/Object.hpp"
-#include "UserParameter/KeyBoardInclude.hpp"
-#include "UserParameter/MouseInclude.hpp"
+#include "FrameTime.hpp"
+#include "Miscellaneous/Function/Object.hpp"
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
 
 // FileManager
 #include "DirectoryInfo.hpp"
@@ -41,102 +44,169 @@ assamble other things correctly
 */
 
 // Spline
-#include "Spline/Factors.hpp"
-#include "Spline/SplineNode3D.hpp"
-#include "Spline/SplineSegment3D.hpp"
-#include "Spline/SplineCurve3D.hpp"
-#include "Spline/SplineObject.hpp"
+#include "Factors.hpp"
+#include "SplineNode3D.hpp"
+#include "SplineSegment3D.hpp"
+#include "SplineCurve3D.hpp"
+#include "SplineObject.hpp"
 
 // UI
-#include "UI/Control/Base/Manager.hpp"
-#include "UI/Text/Manager.hpp"
-#include "UI/Text/Font/Font.hpp"
+#include "Control/Base/Manager.hpp"
+#include "Text/Manager.hpp"
+#include "Text/Font/Font.hpp"
 #include "SplineSegment3DControl.hpp"
 
 // Spline
-#include "Spline/ChainNeighbours3D.hpp"
-#include "Spline/CubicSpline3D.hpp"
-#include "Spline/CubicSplineCurve3D.hpp"
+#include "ChainNeighbours3D.hpp"
+#include "CubicSpline3D.hpp"
+#include "CubicSplineCurve3D.hpp"
 
 
 
 struct MainContext
 {
+DirectoryInfo MediaDirectory;
 DirectoryInfo ImageDir;
 DirectoryInfo ShaderDir;
 DirectoryInfo PolyHedraDir;
 DirectoryInfo TextDir;
 
 Window	window;
-View	view;
+View3D	view;
 
-MainContext() :
-	ImageDir("../../media/Images"),
-	ShaderDir("../../media/Shaders"),
-	PolyHedraDir("../../media/YMT/Spline"),
-	TextDir("../../media/Text"),
-	window(),
-	view()
-{ }
+::PolyHedraManager		PolyHedraManager;
+UI::Text::Manager		TextManager;
+UI::Control::Manager	ControlManager;
+
+MainContext()
+	: MediaDirectory("../../media")
+	, ImageDir("../../media/Images")
+	, ShaderDir("../../media/Shaders")
+	, PolyHedraDir("../../media/YMT/Spline")
+	, TextDir("../../media/Text")
+	, window()
+	, view()
+	, PolyHedraManager()
+	, TextManager()
+	, ControlManager()
+{
+	PolyHedraManager.MakeCurrent();
+	TextManager.MakeCurrent();
+	ControlManager.MakeCurrent();
+}
 ~MainContext()
 { }
 
 
 
-UI::Control::Manager UI_Control_Manager;
-UI::Text::Manager UI_Text_Manager;
-
-PolyHedra_Simple3D::ManagerMulti PolyHedra_3D_Manager;
-
 void InitGraphics()
 {
-	{
-		Container::Fixed<Shader::Code> code(2);
-		code.Insert(Shader::Code(ShaderDir.File("PH/Simple3D.vert")));
-		code.Insert(Shader::Code(ShaderDir.File("PH/Full.frag")));
-		PolyHedra_3D_Manager.DefaultShader.Change(code);
-		code.Clear();
-	}
-	PolyHedra_3D_Manager.DefaultShader.Create();
-	PolyHedra_3D_Manager.DefaultShader.Bind();
-	PolyHedra_3D_Manager.DefaultShader.Depth.Put(view.Depth);
-	PolyHedra_3D_Manager.DefaultShader.FOV.Put(view.FOV);
+	PolyHedraManager.InitExternal(MediaDirectory); // do this outside ? so in MainContext ?
+	PolyHedraManager.GraphicsCreate();
+	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
 
 	{
-		Container::Fixed<::Shader::Code> code(2);
-		code.Insert(::Shader::Code(ShaderDir.File("UI/Control.vert")));
-		code.Insert(::Shader::Code(ShaderDir.File("UI/Control.frag")));
-		UI_Control_Manager.Shader.Change(code);
+		Container::Array<Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/UI/Text.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/UI/Text.frag")),
+		});
+		TextManager.Shader.Change(code);
 	}
-	UI_Control_Manager.Shader.Create();
-	UI_Control_Manager.BufferArray.Create();
-	UI_Control_Manager.UpdateSize(window.Size);
+	{
+		TextManager.Buffer.Main.Pos.Change(0);
+		TextManager.Buffer.Inst.Pos.Change(1);
+		TextManager.Buffer.Inst.PalletMin.Change(2);
+		TextManager.Buffer.Inst.PalletMax.Change(3);
+		TextManager.Buffer.Inst.BoundMin.Change(4);
+		TextManager.Buffer.Inst.BoundMax.Change(5);
+	}
+	{
+		TextManager.TextFont = UI::Text::Font::Parse(
+			MediaDirectory.File("Text/Font0.atlas")
+		);
+	}
 
 	{
-		Container::Fixed<::Shader::Code> code(2);
-		code.Insert(::Shader::Code(ShaderDir.File("UI/Text.vert")));
-		code.Insert(::Shader::Code(ShaderDir.File("UI/Text.frag")));
-		UI_Text_Manager.Shader.Change(code);
+		Container::Array<Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")),
+		});
+		ControlManager.Shader.Change(code);
 	}
-	UI_Text_Manager.Shader.Create();
-	UI_Text_Manager.BufferArray.Create();
-
 	{
-		UI_Text_Manager.TextFont = UI::Text::Font::Parse(TextDir.File("Font0.atlas"));
-		UI_Text_Manager.Pallet_Texture.Create();
-		UI_Text_Manager.Pallet_Texture.Bind();
-		UI_Text_Manager.Pallet_Texture.Assign(UI_Text_Manager.TextFont -> AtlasTexture);
+		ControlManager.Buffer.Main.Pos.Change(0);
+		ControlManager.Buffer.Inst.Min.Change(1);
+		ControlManager.Buffer.Inst.Max.Change(2);
+		ControlManager.Buffer.Inst.Layer.Change(3);
+		ControlManager.Buffer.Inst.Col.Change(4);
 	}
-	UI_Control_Manager.Window.ChangeManager(&UI_Control_Manager);
-	UI_Control_Manager.Window.ChangeManager(&UI_Text_Manager);
+	{
+		ControlManager.Window.ChangeManager(&ControlManager);
+		ControlManager.Window.ChangeManager(&TextManager);
+	}
 
-	window.KeyBoardManager.KeyCallBack.Change(&UI_Control_Manager, &UI::Control::Manager::RelayKey);
-	window.KeyBoardManager.TextCallBack.Change(&UI_Control_Manager, &UI::Control::Manager::RelayText);
-	window.MouseManager.CallbackClick.Change(&UI_Control_Manager, &UI::Control::Manager::RelayClick);
-	window.MouseManager.CallbackDrag.Change(&UI_Control_Manager, &UI::Control::Manager::RelayCursorDrag);
+	TextManager.GraphicsCreate();
+	ControlManager.GraphicsCreate();
+
+	window.KeyBoardManager.CallBack_KeyEvent.Assign(&ControlManager, &UI::Control::Manager::RelayKey);
+	window.KeyBoardManager.CallBack_TextEvent.Assign(&ControlManager, &UI::Control::Manager::RelayText);
+	window.MouseManager.Callback_ClickEvent.Assign(&ControlManager, &UI::Control::Manager::RelayClick);
+	window.MouseManager.Callback_DragEvent.Assign(&ControlManager, &UI::Control::Manager::RelayCursorDrag);
 }
 void FreeGraphics()
-{ }
+{
+	PolyHedraManager.GraphicsDelete();
+	TextManager.GraphicsDelete();
+	ControlManager.GraphicsDelete();
+}
+
+struct PolyHedraObjectArray
+{
+	unsigned int		Count;
+	PolyHedraObject *	Array;
+
+	PolyHedraObject &	operator[](unsigned int i)
+	{
+		return Array[i];
+	}
+
+	~PolyHedraObjectArray()
+	{
+		delete[] Array;
+	}
+	PolyHedraObjectArray()
+		: Count(0)
+		, Array(nullptr)
+	{ }
+	PolyHedraObjectArray(const PolyHedraObjectArray & other) = delete;
+	PolyHedraObjectArray & operator=(const PolyHedraObjectArray & other) = delete;
+
+	void Create(PolyHedra * polyhedra, unsigned int count)
+	{
+		Count = count;
+		Array = new PolyHedraObject[Count];
+		for (unsigned int i = 0; i < Count; i++)
+		{
+			Array[i].Create(polyhedra);
+		}
+	}
+	void Create(unsigned int polyhedra, unsigned int count)
+	{
+		Count = count;
+		Array = new PolyHedraObject[Count];
+		for (unsigned int i = 0; i < Count; i++)
+		{
+			Array[i].Create(polyhedra);
+		}
+	}
+
+	void Delete()
+	{
+		delete[] Array;
+		Array = nullptr;
+		Count = 0;
+	}
+};
 
 
 
@@ -146,8 +216,10 @@ void FreeGraphics()
 SplineCurve3D * Test_Spline;
 Container::Binary<SplineObject> Test_Spline_Entrys;
 //Container::Binary<EntryContainer::Entry<Simple3D::Data>> Test_Path_Instance_Entrys;
-EntryContainer::Entry<Simple3D::Data> Test_Path_Instance_Entrys;
-EntryContainer::Entry<Simple3D::Data> Test_Node_Instance_Entrys;
+//EntryContainer::Entry<Simple3D::Data> Test_Path_Instance_Entrys;
+//EntryContainer::Entry<Simple3D::Data> Test_Node_Instance_Entrys;
+PolyHedraObjectArray Test_Path_Instance_Entrys;
+PolyHedraObjectArray Test_Node_Instance_Entrys;
 
 
 
@@ -173,32 +245,32 @@ void TestSpline_Init()
 		Test_Spline = new SplineCurve3D(nodes, 6, true, 0, 0, 0);
 	}
 
-	Test_Node_Instance_Entrys = PolyHedra_3D_Manager.Place(PolyHedra::Generate::HexaHedron(1.0f), (Test_Spline -> SegmentCount) * 2);
+	Test_Node_Instance_Entrys.Create(PolyHedra::Generate::HexaHedron(1.0f), (Test_Spline -> SegmentCount) * 2);
 	for (unsigned int i = 0; i < Test_Spline -> SegmentCount; i++)
 	{
-		Test_Node_Instance_Entrys[i * 2 + 0].Trans.Pos = Test_Spline -> Segments[i].Node0.Pos;
-		Test_Node_Instance_Entrys[i * 2 + 1].Trans.Pos = Test_Spline -> Segments[i].Node1.Pos;
+		Test_Node_Instance_Entrys[i * 2 + 0].Trans().Position = Test_Spline -> Segments[i].Node0.Pos;
+		Test_Node_Instance_Entrys[i * 2 + 1].Trans().Position = Test_Spline -> Segments[i].Node1.Pos;
 	}
 
-	Test_Path_Instance_Entrys = PolyHedra_3D_Manager.Place(PolyHedra::Generate::ConeC(8, 0.5f, 2.0f), 96);
-	for (unsigned int i = 0; i < Test_Path_Instance_Entrys.Length(); i++)
+	Test_Path_Instance_Entrys.Create(PolyHedra::Generate::ConeC(8, 0.5f, 2.0f), 96);
+	for (unsigned int i = 0; i < Test_Path_Instance_Entrys.Count; i++)
 	{
-		Test_Spline_Entrys.Insert(SplineObject(i, (((float)i) / Test_Path_Instance_Entrys.Length()) * Test_Spline -> SegmentCount));
+		Test_Spline_Entrys.Insert(SplineObject(i, (((float)i) / Test_Path_Instance_Entrys.Count) * Test_Spline -> SegmentCount));
 	}
 }
 void TestSpline_Free()
 {
-	Test_Path_Instance_Entrys.Dispose();
-	Test_Node_Instance_Entrys.Dispose();
+	Test_Path_Instance_Entrys.Delete();
+	Test_Node_Instance_Entrys.Delete();
 }
 void TestSpline_Update(float timeDelta)
 {
-	for (unsigned int i = 0; i < Test_Path_Instance_Entrys.Length(); i++)
+	for (unsigned int i = 0; i < Test_Path_Instance_Entrys.Count; i++)
 	{
 		SplineNode3D node = Test_Spline -> Interpolate0(Test_Spline_Entrys[i].SplineValue);
 
-		Test_Path_Instance_Entrys[i].Trans.Pos = node.Pos;
-		Test_Path_Instance_Entrys[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
+		Test_Path_Instance_Entrys[i].Trans().Position = node.Pos;
+		Test_Path_Instance_Entrys[i].Trans().Rotation = EulerAngle3D::PointToZ(node.Dir);
 		//Test_Path_Instance_Entrys[i].Trans.Rot.CalcBack();
 
 		Test_Spline_Entrys[i].SplineValue += 0.1f * timeDelta;
@@ -217,9 +289,12 @@ Container::Binary<SplineObject> Train_Rail_Spline_Entrys;
 float Train_Spline_Value;
 float Train_WheelSpin;
 
-EntryContainer::Entry<Simple3D::Data> Train_Node_Instance_Entrys;
-EntryContainer::Entry<Simple3D::Data> Train_Rail_Instance_Entry;
-EntryContainer::Entry<Simple3D::Data> Train_Wheel_Instance_Entry;
+//EntryContainer::Entry<Simple3D::Data> Train_Node_Instance_Entrys;
+//EntryContainer::Entry<Simple3D::Data> Train_Rail_Instance_Entry;
+//EntryContainer::Entry<Simple3D::Data> Train_Wheel_Instance_Entry;
+PolyHedraObjectArray Train_Node_Instance_Entrys;
+PolyHedraObjectArray Train_Rail_Instance_Entry;
+PolyHedraObjectArray Train_Wheel_Instance_Entry;
 
 void TrainSpline_Init()
 {
@@ -266,21 +341,21 @@ void TrainSpline_Init()
 		Train_Spline -> FiniteDifference();
 	}
 
-	Train_Node_Instance_Entrys = PolyHedra_3D_Manager.Place(PolyHedra::Generate::HexaHedron(2.0f), Train_Spline -> Nodes.Count());
-	for (unsigned int i = 0; i < Train_Node_Instance_Entrys.Length(); i++)
+	Train_Node_Instance_Entrys.Create(PolyHedra::Generate::HexaHedron(2.0f), Train_Spline -> Nodes.Count());
+	for (unsigned int i = 0; i < Train_Node_Instance_Entrys.Count; i++)
 	{
-		Train_Node_Instance_Entrys[i].Trans.Pos = Train_Spline -> Nodes[i];
+		Train_Node_Instance_Entrys[i].Trans().Position = Train_Spline -> Nodes[i];
 	}
 
-	unsigned int idx_axis =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Achse.polyhedra")));
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Halter.polyhedra")));	//	Faces wrong way
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Rahmen.polyhedra")));	//	Faces Wrong way
-	unsigned int idx_rail =	PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Gleis_Seg.polyhedra")));				//	Faces Wrong way
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Schienen_Seg.polyhedra")));			//	Faces Wrong way
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Flach.polyhedra")));			//	Faces Wrong way, some Geometry Wrong
-							PolyHedra_3D_Manager.Insert(PolyHedra::Load(PolyHedraDir.File("Wagen_Tief.polyhedra")));			//	Faces Wrong way, some Geometry Wrong
+	unsigned int idx_axis =	PolyHedraManager.PlacePolyHedra(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Achse.polyhedra")));
+							PolyHedraManager.PlacePolyHedra(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Halter.polyhedra")));	//	Faces wrong way
+							PolyHedraManager.PlacePolyHedra(PolyHedra::Load(PolyHedraDir.File("Drehgestell_Rahmen.polyhedra")));	//	Faces Wrong way
+	unsigned int idx_rail =	PolyHedraManager.PlacePolyHedra(PolyHedra::Load(PolyHedraDir.File("Gleis_Seg.polyhedra")));				//	Faces Wrong way
+							PolyHedraManager.PlacePolyHedra(PolyHedra::Load(PolyHedraDir.File("Schienen_Seg.polyhedra")));			//	Faces Wrong way
+							PolyHedraManager.PlacePolyHedra(PolyHedra::Load(PolyHedraDir.File("Wagen_Flach.polyhedra")));			//	Faces Wrong way, some Geometry Wrong
+							PolyHedraManager.PlacePolyHedra(PolyHedra::Load(PolyHedraDir.File("Wagen_Tief.polyhedra")));			//	Faces Wrong way, some Geometry Wrong
 
-	Train_Rail_Instance_Entry = PolyHedra_3D_Manager.Place(idx_rail, 64);
+	Train_Rail_Instance_Entry.Create(idx_rail, 64);
 	//Train_Rail_Instance_Entry = PolyHedra_3D_Manager.Place(idx_rail, 128);
 	/*for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Length(); i++)
 	{
@@ -293,29 +368,29 @@ void TrainSpline_Init()
 		//Train_Rail_Instance_Entry[i].Trans.Rot.CalcBack();
 	}*/
 
-	Train_Wheel_Instance_Entry = PolyHedra_3D_Manager.Place(idx_axis, 2);
+	Train_Wheel_Instance_Entry.Create(idx_axis, 1);
 }
 void TrainSpline_Free()
 {
-	Train_Rail_Instance_Entry.Dispose();
-	Train_Wheel_Instance_Entry.Dispose();
+	Train_Rail_Instance_Entry.Delete();
+	Train_Wheel_Instance_Entry.Delete();
 }
 void TrainSpline_Update(float timeDelta)
 {
 	Train_Spline -> KochanekBartels(TCB);
 
-	for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Length(); i++)
+	for (unsigned int i = 0; i < Train_Rail_Instance_Entry.Count; i++)
 	{
 		float t = i;
-		t = t / (Train_Rail_Instance_Entry.Length());
+		t = t / (Train_Rail_Instance_Entry.Count);
 		//t = t * (Train_Spline -> SegmentCount);
 		t = t * (Train_Spline -> Segments.Count());
 		//SplineNode3D node = Train_Spline -> InterpolateKochanekBartels(t);
 		SplineNode3D node;
 		node.Pos = Train_Spline -> InterPolatePos(t);
 		node.Dir = Train_Spline -> InterPolateDir(t);
-		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
-		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
+		Train_Rail_Instance_Entry[i].Trans().Position = node.Pos;
+		Train_Rail_Instance_Entry[i].Trans().Rotation = EulerAngle3D::PointToZ(node.Dir);
 	}
 
 	{
@@ -323,11 +398,10 @@ void TrainSpline_Update(float timeDelta)
 		SplineNode3D node;
 		node.Pos = Train_Spline -> InterPolatePos(Train_Spline_Value);
 		node.Dir = Train_Spline -> InterPolateDir(Train_Spline_Value);
-		Angle3D a = Angle3D::FromPoint3D(node.Dir);
-		(*Train_Wheel_Instance_Entry).Trans.Pos = node.Pos + a.rotateBack(Point3D(0, 6, 0));
-		(*Train_Wheel_Instance_Entry).Trans.Rot = a;
-		(*Train_Wheel_Instance_Entry).Trans.Rot.Y -= Angle::Radians(Train_WheelSpin);
-		(*Train_Wheel_Instance_Entry).Trans.Rot.CalcMatrix();
+		EulerAngle3D a = EulerAngle3D::PointToZ(node.Dir);
+		Train_Wheel_Instance_Entry[0].Trans().Position = node.Pos + a.reverse(Point3D(0, 6, 0));
+		Train_Wheel_Instance_Entry[0].Trans().Rotation = a;
+		Train_Wheel_Instance_Entry[0].Trans().Rotation.X1 += Angle::Radians(Train_WheelSpin);
 	}
 
 	Train_Spline_Value += 0.01f * timeDelta;
@@ -339,7 +413,7 @@ void TrainSpline_Update(float timeDelta)
 void MakeRun()
 {
 	SplineSegment3D_Control = new UI::Control::SplineSegment3D();
-	UI_Control_Manager.Window.ChildInsert(SplineSegment3D_Control);
+	ControlManager.Window.ChildInsert(SplineSegment3D_Control);
 }
 
 void InitRun()
@@ -360,57 +434,76 @@ void FreeRun()
 	FreeGraphics();
 }
 
-void Frame(double timeDelta)
+void UpdateView(FrameTime frame_time)
 {
-	if (window.KeyBoardManager.Keys[GLFW_KEY_TAB].IsPress()) { window.MouseManager.CursorModeToggle(); }
+	if (window.KeyBoardManager[Keys::Tab].State == State::Press) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		Trans3D trans = window.MoveSpinFromKeysCursor();
-		if (window.KeyBoardManager.Keys[GLFW_KEY_LEFT_CONTROL].IsDown()) { trans.Pos *= 30; }
-		trans.Pos *= 2;
-		trans.Rot.X *= view.FOV.ToDegrees() * 0.005f;
-		trans.Rot.Y *= view.FOV.ToDegrees() * 0.005f;
-		trans.Rot.Z *= view.FOV.ToDegrees() * 0.005f;
-		view.TransformFlatX(trans, timeDelta);
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { trans.Position *= 10; }
+		trans.Position *= 2;
+		trans.Rotation *= view.FOV.ToRadians() * 0.05f;
+		view.ChangeFlatX(trans, frame_time.Delta);
 	}
+}
+
+void Frame(double timeDelta)
+{
+	FrameTime frame_time(60);
+	frame_time.Update(timeDelta);
+	UpdateView(frame_time);
 
 	TestSpline_Update(timeDelta);
 	TrainSpline_Update(timeDelta);
 
-	PolyHedra_3D_Manager.DefaultShader.Bind();
-	PolyHedra_3D_Manager.DefaultShader.View.Put(view.Trans);
-	PolyHedra_3D_Manager.Draw();
+	PolyHedraManager.ClearInstances();
+	PolyHedraManager.UpdateInstances();
+	{
+		PolyHedraManager.ShaderFullDefault.Bind();
+		PolyHedraManager.ShaderFullDefault.DisplaySize.Put(window.Size);
+		PolyHedraManager.ShaderFullDefault.Depth.Put(view.Depth);
+		PolyHedraManager.ShaderFullDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
+		PolyHedraManager.ShaderFullDefault.FOV.Put(view.FOV);
+		PolyHedraManager.DrawFull();
+	}
+	{
+		PolyHedraManager.ShaderWireDefault.Bind();
+		PolyHedraManager.ShaderWireDefault.DisplaySize.Put(window.Size);
+		PolyHedraManager.ShaderWireDefault.Depth.Put(view.Depth);
+		PolyHedraManager.ShaderWireDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
+		PolyHedraManager.ShaderWireDefault.FOV.Put(view.FOV);
+		PolyHedraManager.DrawWire();
+	}
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
-	Point2D mouse = window.MouseManager.CursorPixelPosition().Absolute;
-	UI_Control_Manager.UpdateMouse(mouse);
-	UI_Control_Manager.Window.UpdateEntrys();
-	UI_Control_Manager.Draw();
-	UI_Text_Manager.Draw();
+	{
+		Point2D mouse = window.MouseManager.CursorPosition().Buffer.Corner;
+		ControlManager.UpdateMouse(mouse);
+		ControlManager.Window.UpdateEntrys();
+		ControlManager.Draw();
+	}
+	TextManager.Draw();
 }
 
-void Resize(const WindowBufferSize2D & WindowSize)
+void Resize(const DisplaySize & DisplaySize)
 {
-	PolyHedra_3D_Manager.DefaultShader.Bind();
-	PolyHedra_3D_Manager.DefaultShader.WindowSize.Put(WindowSize);
+	PolyHedraManager.ShaderFullDefault.DisplaySize.Put(DisplaySize);
+	PolyHedraManager.ShaderWireDefault.DisplaySize.Put(DisplaySize);
 
-	UI_Control_Manager.Shader.Bind();
-	UI_Control_Manager.Shader.WindowSize.Put(WindowSize);
+	TextManager.Shader.DisplaySize.Put(DisplaySize);
 
-	UI_Text_Manager.Shader.Bind();
-	UI_Text_Manager.Shader.WindowSize.Put(WindowSize);
-
-	UI_Control_Manager.UpdateSize(WindowSize);
+	ControlManager.UpdateSize(DisplaySize);
+	ControlManager.Shader.DisplaySize.Put(DisplaySize);
 }
 
 
 
 int Main()
 {
-	window.InitCallBack.Change<MainContext>(this, &MainContext::InitRun);
-	window.FreeCallBack.Change<MainContext>(this, &MainContext::FreeRun);
-	window.FrameCallBack.Change<MainContext>(this, &MainContext::Frame);
-	window.ResizeCallBack.Change<MainContext>(this, &MainContext::Resize);
+	window.InitCallBack.Assign<MainContext>(this, &MainContext::InitRun);
+	window.FreeCallBack.Assign<MainContext>(this, &MainContext::FreeRun);
+	window.FrameCallBack.Assign<MainContext>(this, &MainContext::Frame);
+	window.ResizeCallBack.Assign<MainContext>(this, &MainContext::Resize);
 
 	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;

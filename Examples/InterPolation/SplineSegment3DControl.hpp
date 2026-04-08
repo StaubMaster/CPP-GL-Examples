@@ -1,12 +1,12 @@
 #ifndef  SPLINE_SEGMENT_3D_CONTROL_HPP
 # define SPLINE_SEGMENT_3D_CONTROL_HPP
 
-# include "Spline/SplineSegment3D.hpp"
-# include "Spline/CubicSpline3D.hpp"
+# include "SplineSegment3D.hpp"
+# include "CubicSpline3D.hpp"
 
-# include "UI/ControlsInclude.hpp"
-# include "UserParameter/MouseDeclare.hpp"
-# include "Function/Object.hpp"
+# include "ControlsInclude.hpp"
+# include "User/MouseArgs.hpp"
+# include "Miscellaneous/Function/Object.hpp"
 
 namespace UI
 {
@@ -44,8 +44,8 @@ class SplineSegment3D : public GroupBox
 	void T_Slider_CallBack_Func(float val);
 	void B_Slider_CallBack_Func(float val);
 	void C_Slider_CallBack_Func(float val);
-	void Prev_Button_CallBack_Func(UserParameter::Mouse::Click params);
-	void Next_Button_CallBack_Func(UserParameter::Mouse::Click params);
+	void Prev_Button_CallBack_Func(ClickArgs params);
+	void Next_Button_CallBack_Func(ClickArgs params);
 };
 };
 };

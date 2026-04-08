@@ -17,32 +17,6 @@ FANCY_NAME := UserInterface
 FILES_SRC := \
 	main.cpp
 
-#	$(UI_DIR)/Anchor.cpp \
-\
-	$(UI_DIR)/Control/Base/Data.cpp \
-	$(UI_DIR)/Control/Base/Buffer.cpp \
-	$(UI_DIR)/Control/Base/Shader.cpp \
-	$(UI_DIR)/Control/Base/Manager.cpp \
-	$(UI_DIR)/Control/Base/Base.cpp \
-\
-	$(UI_DIR)/Control/Window.cpp \
-	$(UI_DIR)/Control/Form.cpp \
-	$(UI_DIR)/Control/GroupBox.cpp \
-	$(UI_DIR)/Control/Button.cpp \
-	$(UI_DIR)/Control/TextBox.cpp \
-	$(UI_DIR)/Control/Slider.cpp \
-	$(UI_DIR)/Control/CheckBox.cpp \
-\
-	$(UI_DIR)/Text/Data.cpp \
-	$(UI_DIR)/Text/Buffer.cpp \
-	$(UI_DIR)/Text/Shader.cpp \
-	$(UI_DIR)/Text/Manager.cpp \
-	$(UI_DIR)/Text/Font/Font.cpp \
-	$(UI_DIR)/Text/Font/Template.cpp \
-	$(UI_DIR)/Text/Font/Parsing.cpp \
-\
-	main.cpp
-
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 

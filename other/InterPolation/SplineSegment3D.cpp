@@ -2,7 +2,7 @@
 #include "Factors.hpp"
 #include "ValueType/LInter.hpp"
 
-#include "DataShow.hpp"
+#include "ValueType/_Show.hpp"
 #include <iostream>
 
 
@@ -45,7 +45,6 @@ try using these ?
 
 it worked ??
 but where did I get those first factors ?
-
 */
 Factors<float> Factors_T_Something(float t)
 {

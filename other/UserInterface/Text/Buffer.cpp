@@ -44,13 +44,6 @@ UI::Text::Buffer::Buffer()
 	Buffers.Allocate(2);
 	Buffers.Insert(&Main);
 	Buffers.Insert(&Inst);
-
-	Main.Pos.Change(0);
-	Inst.Pos.Change(1);
-	Inst.PalletMin.Change(2);
-	Inst.PalletMax.Change(3);
-	Inst.BoundMin.Change(4);
-	Inst.BoundMax.Change(5);
 }
 void UI::Text::Buffer::Draw()
 {

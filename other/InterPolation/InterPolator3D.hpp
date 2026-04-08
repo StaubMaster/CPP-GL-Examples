@@ -1,7 +1,7 @@
 #ifndef  INTERPOLATOR_3D_HPP
 # define INTERPOLATOR_3D_HPP
 
-# include "DataDeclare.hpp"
+# include "ValueType/_Declare.hpp"
 
 class InterPolator3D
 {

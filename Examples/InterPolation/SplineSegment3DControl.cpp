@@ -1,6 +1,6 @@
 #include "SplineSegment3DControl.hpp"
 
-#include "UserParameter/MouseInclude.hpp"
+#include "User/MouseArgs.hpp"
 
 #include <iostream>
 
@@ -82,11 +82,11 @@ UI::Control::SplineSegment3D::SplineSegment3D() :
 	Next_Text.ReadOnly = true;
 	Prev_Text.ReadOnly = true;
 
-	T_Slider.ValueChangedFunc.Change(this, &UI::Control::SplineSegment3D::SplineSegment3D::T_Slider_CallBack_Func);
-	C_Slider.ValueChangedFunc.Change(this, &UI::Control::SplineSegment3D::SplineSegment3D::C_Slider_CallBack_Func);
-	B_Slider.ValueChangedFunc.Change(this, &UI::Control::SplineSegment3D::SplineSegment3D::B_Slider_CallBack_Func);
-	Next_Button.ClickFunc.Change(this, &UI::Control::SplineSegment3D::SplineSegment3D::Next_Button_CallBack_Func);
-	Prev_Button.ClickFunc.Change(this, &UI::Control::SplineSegment3D::SplineSegment3D::Prev_Button_CallBack_Func);
+	T_Slider.ValueChangedFunc.Assign(this, &UI::Control::SplineSegment3D::SplineSegment3D::T_Slider_CallBack_Func);
+	C_Slider.ValueChangedFunc.Assign(this, &UI::Control::SplineSegment3D::SplineSegment3D::C_Slider_CallBack_Func);
+	B_Slider.ValueChangedFunc.Assign(this, &UI::Control::SplineSegment3D::SplineSegment3D::B_Slider_CallBack_Func);
+	Next_Button.ClickFunc.Assign(this, &UI::Control::SplineSegment3D::SplineSegment3D::Next_Button_CallBack_Func);
+	Prev_Button.ClickFunc.Assign(this, &UI::Control::SplineSegment3D::SplineSegment3D::Prev_Button_CallBack_Func);
 
 	ChildInsert(&T_Slider);
 	ChildInsert(&T_Text);
@@ -151,9 +151,9 @@ void UI::Control::SplineSegment3D::B_Slider_CallBack_Func(float val)
 //	if (Object != NULL) { Object -> B = val; }
 	if (TCB != NULL) { TCB -> T = val; }
 }
-void UI::Control::SplineSegment3D::Prev_Button_CallBack_Func(UserParameter::Mouse::Click params)
+void UI::Control::SplineSegment3D::Prev_Button_CallBack_Func(ClickArgs params)
 {
-	if (params.Action.IsPress())
+	if (params.Action == Action::Press)
 	{
 		/*if (Object -> Prev != NULL)
 		{
@@ -161,9 +161,9 @@ void UI::Control::SplineSegment3D::Prev_Button_CallBack_Func(UserParameter::Mous
 		}*/
 	}
 }
-void UI::Control::SplineSegment3D::Next_Button_CallBack_Func(UserParameter::Mouse::Click params)
+void UI::Control::SplineSegment3D::Next_Button_CallBack_Func(ClickArgs params)
 {
-	if (params.Action.IsPress())
+	if (params.Action == Action::Press)
 	{
 		/*if (Object -> Next != NULL)
 		{
