@@ -217,127 +217,140 @@ void TestRandom()
 
 
 
+struct PlaneValue
+{
+	bool	Known;
+	float	Value;
+	PlaneValue()
+		: Known(false)
+		, Value(0.0f)
+	{ }
+	ColorF4 ToColor() const
+	{
+		if (Value > 0.0f) { return ColorF4(+Value, 0, 0); }
+		if (Value < 0.0f) { return ColorF4(0, 0, -Value); }
+		return ColorF4(0, 0, 0);
+	}
+};
 struct PlaneNeighbours
 {
 	Plane * plane00;
 	Plane * plane01;
 	Plane * plane10;
 	Plane * plane11;
+
+	PlaneValue FromPlane00(unsigned int udx) const
+	{
+		PlaneValue val;
+		if (plane00 != nullptr)
+		{
+			val.Value = (*plane00).Heights[udx];
+			val.Known = true;
+		}
+		return val;
+	}
+	PlaneValue FromPlane01(unsigned int udx) const
+	{
+		PlaneValue val;
+		if (plane01 != nullptr)
+		{
+			val.Value = (*plane01).Heights[udx];
+			val.Known = true;
+		}
+		return val;
+	}
+	PlaneValue FromPlane10(unsigned int udx) const
+	{
+		PlaneValue val;
+		if (plane10 != nullptr)
+		{
+			val.Value = (*plane10).Heights[udx];
+			val.Known = true;
+		}
+		return val;
+	}
+	PlaneValue FromPlane11(unsigned int udx) const
+	{
+		PlaneValue val;
+		if (plane11 != nullptr)
+		{
+			val.Value = (*plane11).Heights[udx];
+			val.Known = true;
+		}
+		return val;
+	}
 };
 
-PlaneGraphics::MainData PlaneMainData(const Plane & plane, Undex2D u)
-{
-	PlaneGraphics::MainData data;
-
-	float val = plane.Heights[u.X + (u.Y * PLANE_CELL_PER_SIDE)];
-
-	if (val == 0.0f) { data.Col = ColorF4(0, 0, 0); }
-	if (val > 0.0f) { data.Col = ColorF4(+val, 0, 0); }
-	if (val < 0.0f) { data.Col = ColorF4(0, 0, -val); }
-
-	data.Pos.X = u.X * PLANE_SCALE;
-	data.Pos.Y = val;
-	data.Pos.Z = u.Y * PLANE_SCALE;
-
-	return data;
-}
 void PlaneToBuffer(const PlaneNeighbours & planes, PlaneGraphics::Buffer & buffer)
 {
 	{
 		Container::Binary<PlaneGraphics::MainData> data;
-		unsigned int edges_per_side = PLANE_CELL_PER_SIDE - 1;
+		Undex2D size(PLANE_CELL_PER_SIDE, PLANE_CELL_PER_SIDE);
 		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA ; i++)
 		{
-			Undex2D u(i % PLANE_CELL_PER_SIDE, i / PLANE_CELL_PER_SIDE);
+			Undex2D u = size.ConvertX(i);
+			Undex2D u0 = Undex2D(u.X + 0, u.Y + 0) % size;
+			Undex2D u1 = Undex2D(u.X + 1, u.Y + 1) % size;
+			Bool2D comp = u0 < u1;
+
+			unsigned int udxs[4];
+			udxs[0b00] = size.ConvertX(Undex2D(u0.X, u0.Y));
+			udxs[0b01] = size.ConvertX(Undex2D(u1.X, u0.Y));
+			udxs[0b10] = size.ConvertX(Undex2D(u0.X, u1.Y));
+			udxs[0b11] = size.ConvertX(Undex2D(u1.X, u1.Y));
 
 			PlaneGraphics::MainData temp[4];
-			bool have[4] = { false, false, false, false };
+			temp[0b00].Pos = Point3D((u.X + 0) * PLANE_SCALE, 0.0f, (u.Y + 0) * PLANE_SCALE);
+			temp[0b01].Pos = Point3D((u.X + 1) * PLANE_SCALE, 0.0f, (u.Y + 0) * PLANE_SCALE);
+			temp[0b10].Pos = Point3D((u.X + 0) * PLANE_SCALE, 0.0f, (u.Y + 1) * PLANE_SCALE);
+			temp[0b11].Pos = Point3D((u.X + 1) * PLANE_SCALE, 0.0f, (u.Y + 1) * PLANE_SCALE);
 
-			if (u.X != edges_per_side && u.Y != edges_per_side)
+			PlaneValue vals[4];
+
+			if (comp.GetX() && comp.GetY())
 			{
-				if (planes.plane00 != nullptr)
-				{
-					temp[0b00] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y));
-					have[0b00] = true;
-					temp[0b01] = PlaneMainData(*planes.plane00, Undex2D(u.X + 1, u.Y));
-					have[0b01] = true;
-					temp[0b10] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y + 1));
-					have[0b10] = true;
-					temp[0b11] = PlaneMainData(*planes.plane00, Undex2D(u.X + 1, u.Y + 1));
-					have[0b11] = true;
-				}
+				vals[0b00] = planes.FromPlane00(udxs[0b00]);
+				vals[0b01] = planes.FromPlane00(udxs[0b01]);
+				vals[0b10] = planes.FromPlane00(udxs[0b10]);
+				vals[0b11] = planes.FromPlane00(udxs[0b11]);
 			}
 
-			if (u.X == edges_per_side && u.Y != edges_per_side)
+			if (!comp.GetX() && comp.GetY())
 			{
-				if (planes.plane00 != nullptr)
-				{
-					temp[0b00] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y));
-					have[0b00] = true;
-					temp[0b10] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y + 1));
-					have[0b10] = true;
-				}
-				if (planes.plane01 != nullptr)
-				{
-					temp[0b01] = PlaneMainData(*planes.plane01, Undex2D(0, u.Y));
-					temp[0b01].Pos.X += PLANE_CELL_PER_SIDE * PLANE_SCALE;
-					have[0b01] = true;
-					temp[0b11] = PlaneMainData(*planes.plane01, Undex2D(0, u.Y + 1));
-					temp[0b11].Pos.X += PLANE_CELL_PER_SIDE * PLANE_SCALE;
-					have[0b11] = true;
-				}
+				vals[0b00] = planes.FromPlane00(udxs[0b00]);
+				vals[0b01] = planes.FromPlane01(udxs[0b01]);
+				vals[0b10] = planes.FromPlane00(udxs[0b10]);
+				vals[0b11] = planes.FromPlane01(udxs[0b11]);
 			}
 
-			if (u.X != edges_per_side && u.Y == edges_per_side)
+			if (comp.GetX() && !comp.GetY())
 			{
-				if (planes.plane00 != nullptr)
-				{
-					temp[0b00] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y));
-					have[0b00] = true;
-					temp[0b01] = PlaneMainData(*planes.plane00, Undex2D(u.X + 1, u.Y));
-					have[0b01] = true;
-				}
-				if (planes.plane10 != nullptr)
-				{
-					temp[0b10] = PlaneMainData(*planes.plane10, Undex2D(u.X, 0));
-					temp[0b10].Pos.Z += PLANE_CELL_PER_SIDE * PLANE_SCALE;
-					have[0b10] = true;
-					temp[0b11] = PlaneMainData(*planes.plane10, Undex2D(u.X + 1, 0));
-					temp[0b11].Pos.Z += PLANE_CELL_PER_SIDE * PLANE_SCALE;
-					have[0b11] = true;
-				}
+				vals[0b00] = planes.FromPlane00(udxs[0b00]);
+				vals[0b01] = planes.FromPlane00(udxs[0b01]);
+				vals[0b10] = planes.FromPlane10(udxs[0b10]);
+				vals[0b11] = planes.FromPlane10(udxs[0b11]);
 			}
 
-			if (u.X == edges_per_side && u.Y == edges_per_side)
+			if (!comp.GetX() && !comp.GetY())
 			{
-				if (planes.plane00 != nullptr)
-				{
-					temp[0b00] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y));
-					have[0b00] = true;
-				}
-				if (planes.plane01 != nullptr)
-				{
-					temp[0b01] = PlaneMainData(*planes.plane01, Undex2D(0, u.Y));
-					temp[0b01].Pos.X += PLANE_CELL_PER_SIDE * PLANE_SCALE;
-					have[0b01] = true;
-				}
-				if (planes.plane10 != nullptr)
-				{
-					temp[0b10] = PlaneMainData(*planes.plane10, Undex2D(u.X, 0));
-					temp[0b10].Pos.Z += PLANE_CELL_PER_SIDE * PLANE_SCALE;
-					have[0b10] = true;
-				}
-				if (planes.plane11 != nullptr)
-				{
-					temp[0b11] = PlaneMainData(*planes.plane11, Undex2D(0, 0));
-					temp[0b11].Pos.X += PLANE_CELL_PER_SIDE * PLANE_SCALE;
-					temp[0b11].Pos.Z += PLANE_CELL_PER_SIDE * PLANE_SCALE;
-					have[0b11] = true;
-				}
+				vals[0b00] = planes.FromPlane00(udxs[0b00]);
+				vals[0b01] = planes.FromPlane01(udxs[0b01]);
+				vals[0b10] = planes.FromPlane10(udxs[0b10]);
+				vals[0b11] = planes.FromPlane11(udxs[0b11]);
 			}
 
-			if (have[0b00] && have[0b01] && have[0b10]) { data.Insert(temp[0b00]); data.Insert(temp[0b10]); data.Insert(temp[0b01]); }
-			if (have[0b10] && have[0b01] && have[0b11]) { data.Insert(temp[0b01]); data.Insert(temp[0b10]); data.Insert(temp[0b11]); }
+			temp[0b00].Pos.Y = vals[0b00].Value;
+			temp[0b01].Pos.Y = vals[0b01].Value;
+			temp[0b10].Pos.Y = vals[0b10].Value;
+			temp[0b11].Pos.Y = vals[0b11].Value;
+
+			temp[0b00].Col = vals[0b00].ToColor();
+			temp[0b01].Col = vals[0b01].ToColor();
+			temp[0b10].Col = vals[0b10].ToColor();
+			temp[0b11].Col = vals[0b11].ToColor();
+
+			if (vals[0b00].Known && vals[0b01].Known && vals[0b10].Known) { data.Insert(temp[0b00]); data.Insert(temp[0b10]); data.Insert(temp[0b01]); }
+			if (vals[0b10].Known && vals[0b01].Known && vals[0b11].Known) { data.Insert(temp[0b01]); data.Insert(temp[0b10]); data.Insert(temp[0b11]); }
 		}
 		buffer.Main.Change(data);
 	}
@@ -372,9 +385,10 @@ void PlanesGraphicsCreate()
 		Plane_Buffers[i].Inst.Init();
 	}
 
+	Undex2D size(PLANES_PER_SIDE, PLANES_PER_SIDE);
 	for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
 	{
-		Undex2D u(i % PLANES_PER_SIDE, i / PLANES_PER_SIDE);
+		Undex2D u = size.ConvertX(i);
 		PlaneNeighbours planes;
 		planes.plane00 = &Planes[i];
 		if (u.X != (PLANES_PER_SIDE - 1)) { planes.plane01 = &Planes[(u.X + 1) + ((u.Y + 0) * PLANES_PER_SIDE)]; } else { planes.plane01 = nullptr; }
@@ -429,7 +443,7 @@ void Make() override
 		Perlin0_Nodes.Create(cone, c);
 		for (unsigned int i = 0; i < c; i++)
 		{
-			Undex2D u(i % Perlin0.Count.X, i / Perlin0.Count.X);
+			Undex2D u = Perlin0.Count.ConvertX(i);
 			Point2D p2 = Perlin0.Data[i];
 			Point3D p3(p2.X, 0, p2.Y);
 			Perlin0_Nodes[i].Trans().Position = Point3D(u.X * size_half, 0.0f, u.Y * size_half);
@@ -437,9 +451,10 @@ void Make() override
 		}
 	}
 	{
+		Undex2D size(PLANES_PER_SIDE, PLANES_PER_SIDE);
 		for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
 		{
-			Undex2D u(i % PLANES_PER_SIDE, i / PLANES_PER_SIDE);
+			Undex2D u = size.ConvertX(i);
 			Planes[i].Pos = Point2D(u.X, u.Y);
 			Planes[i].Generate(Perlin0);
 		}
@@ -451,7 +466,7 @@ void Make() override
 
 		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA * Perlin0.Count.X * Perlin0.Count.Y; i++)
 		{
-			Undex2D u(i % (PLANE_CELL_PER_SIDE * Perlin0.Count.X), i / (PLANE_CELL_PER_SIDE * Perlin0.Count.X));
+			Undex2D u = count.ConvertX(i);
 			Point2D p = Point2D(u.X, u.Y) * PLANE_SCALE;
 
 			float val = 0.0f;

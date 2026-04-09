@@ -21,9 +21,6 @@ struct Plane
 	Plane(const Plane & other) = delete;
 	Plane & operator=(const Plane & other) = delete;
 
-	Point2D Pos2At(Undex2D u) const;
-	Point3D Pos3At(Undex2D u) const;
-
 	void Generate(const Perlin2D & noise);
 };
 
