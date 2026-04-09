@@ -224,10 +224,7 @@ struct PlaneNeighbours
 	Plane * plane10;
 	Plane * plane11;
 };
-/*
-Main Positions are Absolute
-Inst Positions have be 0 to be placed correctly
-*/
+
 PlaneGraphics::MainData PlaneMainData(const Plane & plane, Undex2D u)
 {
 	PlaneGraphics::MainData data;
@@ -238,9 +235,9 @@ PlaneGraphics::MainData PlaneMainData(const Plane & plane, Undex2D u)
 	if (val > 0.0f) { data.Col = ColorF4(+val, 0, 0); }
 	if (val < 0.0f) { data.Col = ColorF4(0, 0, -val); }
 
-	data.Pos.X = ((plane.Pos.X * (PLANE_CELL_PER_SIDE)) + u.X) * PLANE_SCALE;
+	data.Pos.X = u.X * PLANE_SCALE;
 	data.Pos.Y = val;
-	data.Pos.Z = ((plane.Pos.Y * (PLANE_CELL_PER_SIDE)) + u.Y) * PLANE_SCALE;
+	data.Pos.Z = u.Y * PLANE_SCALE;
 
 	return data;
 }
@@ -283,8 +280,10 @@ void PlaneToBuffer(const PlaneNeighbours & planes, PlaneGraphics::Buffer & buffe
 				if (planes.plane01 != nullptr)
 				{
 					temp[0b01] = PlaneMainData(*planes.plane01, Undex2D(0, u.Y));
+					temp[0b01].Pos.X += PLANE_CELL_PER_SIDE * PLANE_SCALE;
 					have[0b01] = true;
 					temp[0b11] = PlaneMainData(*planes.plane01, Undex2D(0, u.Y + 1));
+					temp[0b11].Pos.X += PLANE_CELL_PER_SIDE * PLANE_SCALE;
 					have[0b11] = true;
 				}
 			}
@@ -300,9 +299,11 @@ void PlaneToBuffer(const PlaneNeighbours & planes, PlaneGraphics::Buffer & buffe
 				}
 				if (planes.plane10 != nullptr)
 				{
-					temp[0b10] = PlaneMainData(*planes.plane10, Undex2D(u.X + 0, 0));
+					temp[0b10] = PlaneMainData(*planes.plane10, Undex2D(u.X, 0));
+					temp[0b10].Pos.Z += PLANE_CELL_PER_SIDE * PLANE_SCALE;
 					have[0b10] = true;
 					temp[0b11] = PlaneMainData(*planes.plane10, Undex2D(u.X + 1, 0));
+					temp[0b11].Pos.Z += PLANE_CELL_PER_SIDE * PLANE_SCALE;
 					have[0b11] = true;
 				}
 			}
@@ -317,16 +318,20 @@ void PlaneToBuffer(const PlaneNeighbours & planes, PlaneGraphics::Buffer & buffe
 				if (planes.plane01 != nullptr)
 				{
 					temp[0b01] = PlaneMainData(*planes.plane01, Undex2D(0, u.Y));
+					temp[0b01].Pos.X += PLANE_CELL_PER_SIDE * PLANE_SCALE;
 					have[0b01] = true;
 				}
 				if (planes.plane10 != nullptr)
 				{
 					temp[0b10] = PlaneMainData(*planes.plane10, Undex2D(u.X, 0));
+					temp[0b10].Pos.Z += PLANE_CELL_PER_SIDE * PLANE_SCALE;
 					have[0b10] = true;
 				}
 				if (planes.plane11 != nullptr)
 				{
 					temp[0b11] = PlaneMainData(*planes.plane11, Undex2D(0, 0));
+					temp[0b11].Pos.X += PLANE_CELL_PER_SIDE * PLANE_SCALE;
+					temp[0b11].Pos.Z += PLANE_CELL_PER_SIDE * PLANE_SCALE;
 					have[0b11] = true;
 				}
 			}
@@ -339,9 +344,9 @@ void PlaneToBuffer(const PlaneNeighbours & planes, PlaneGraphics::Buffer & buffe
 	{
 		Container::Binary<PlaneGraphics::InstData> data;
 		PlaneGraphics::InstData temp;
-		temp.Pos.X = 0;
+		temp.Pos.X = (*planes.plane00).Pos.X * PLANE_CELL_PER_SIDE * PLANE_SCALE;
 		temp.Pos.Y = 0;
-		temp.Pos.Z = 0;
+		temp.Pos.Z = (*planes.plane00).Pos.Y * PLANE_CELL_PER_SIDE * PLANE_SCALE;
 		data.Insert(temp);
 		buffer.Inst.Change(data);
 	}
@@ -449,7 +454,11 @@ void Make() override
 			Undex2D u(i % (PLANE_CELL_PER_SIDE * Perlin0.Count.X), i / (PLANE_CELL_PER_SIDE * Perlin0.Count.X));
 			Point2D p = Point2D(u.X, u.Y) * PLANE_SCALE;
 
-			float val = Perlin0.Calculate(p * 1) / 1;
+			float val = 0.0f;
+			val += Perlin0.Calculate(p * 1) / 1;
+			val += Perlin0.Calculate(p * 2) / 2;
+			val += Perlin0.Calculate(p * 4) / 4;
+			val += Perlin0.Calculate(p * 8) / 8;
 
 			ColorU4 col;
 			if (val == 0.0f)	{ col = ColorU4(); }
@@ -479,7 +488,7 @@ void Make() override
 			p.Y = p.Y * Perlin0.Count.Y;
 			Perlin0.Calculate(p);
 		}
-		std::cout << box << '\n';
+		std::cout << "range: " << box << '\n';
 		std::cout << '\n';
 	}
 	Perlin2D::DebugShow();
