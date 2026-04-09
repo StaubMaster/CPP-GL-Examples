@@ -1,0 +1,31 @@
+
+better Elements
+
+Corner[]
+{
+	Pos, Normal
+}
+
+Face[]
+{
+	Index, Normal, Texture
+}
+
+create MainData
+
+in Elem, Index should be the first thing
+
+Main
+{
+	Corner[Index]
+	Face - Index
+}
+create a new Main Object
+made of the Corner Data at Index, and everything else from Face
+
+
+
+Data for whole Face and Corner in Face
+
+
+

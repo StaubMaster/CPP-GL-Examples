@@ -18,6 +18,7 @@ FILES_SRC := \
 	../main.cpp \
 	../MainContext3D.cpp \
 \
+	Random.cpp \
 	Perlin2D.cpp \
 	main.cpp \
 

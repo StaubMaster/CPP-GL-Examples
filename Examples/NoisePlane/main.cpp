@@ -19,6 +19,7 @@
 #include "PolyHedra/Data.hpp"
 
 // Perlin
+#include "Random.hpp"
 #include "Perlin2D.hpp"
 
 
@@ -75,9 +76,12 @@ struct MainContext : public MainContext3D
 {
 ::PolyHedraManager		PolyHedraManager;
 
-unsigned int			CellCount;
-unsigned int			SegmentCount;
-float					Plane_Scale;
+# define PLANE_SCALE 0.125
+# define PLANE_CELL_PER_SIDE 8
+# define PLANE_CELL_PER_AREA PLANE_CELL_PER_SIDE * PLANE_CELL_PER_SIDE
+
+# define PERLIN_NODES_PER_SIDE 8
+# define PERLIN_NODES_PER_AREA PERLIN_NODES_PER_SIDE * PERLIN_NODES_PER_SIDE
 
 Perlin2D				Perlin0;
 PolyHedraObjectArray	Perlin0_Nodes;
@@ -91,10 +95,7 @@ PolyHedraObject			Image_Object;
 MainContext()
 	: MainContext3D()
 	, PolyHedraManager()
-	, CellCount(16)
-	, SegmentCount(16)
-	, Plane_Scale(0.125f)
-	, Perlin0(Perlin2D::Random(Undex2D(CellCount, CellCount)))
+	, Perlin0(Perlin2D::Random(Undex2D(PERLIN_NODES_PER_SIDE, PERLIN_NODES_PER_SIDE)))
 	, Perlin0_Nodes()
 	, Plane_Cubes()
 {
@@ -118,14 +119,151 @@ void ShowBase16(unsigned int val)
 	c[8] = '\0';
 	std::cout << c;
 }
-#include <cstdlib>
+void CountBits(unsigned int val)
+{
+	unsigned char bit0 = 0;
+	unsigned char bit1 = 0;
+	for (unsigned int i = 0; i < 32; i++)
+	{
+		if ((val >> i) & 1)
+		{
+			bit1++;
+		}
+		else
+		{
+			bit0++;
+		}
+	}
+//	std::cout << ((int)bit0) << ' ' << ((int)bit1) << '\n';
+
+	if (bit0 == 16 && bit1 == 16)
+	{
+		ShowBase16(val);
+		std::cout << '\n';
+	}
+}
+struct Distribution
+{
+	const unsigned int count = 0x80;
+	const unsigned int mask = 0x7F;
+
+	unsigned int Counts[0x80];
+	Distribution()
+	{
+		Clear();
+	}
+	void Clear()
+	{
+		for (unsigned int i = 0; i < count; i++)
+		{
+			Counts[i] = 0;
+		}
+	}
+	void Consider(unsigned int val)
+	{
+		Counts[val & mask]++;
+	}
+	void Show(unsigned int check)
+	{
+		for (unsigned int i = 0; i < count; i++)
+		{
+			if ((i & 0xF) == 0)
+			{
+				std::cout << ' ';
+			}
+
+			if (Counts[i] > check)
+			{
+				std::cout << '#';
+			}
+			else
+			{
+				std::cout << '|';
+			}
+		}
+	}
+};
+void TestRandom()
+{
+	unsigned int val = 0;
+	ShowBase16(val);
+	std::cout << '\n';
+
+	Distribution Dis;
+
+	for (unsigned int i = 0; i < 100; i++)
+	{
+		Dis.Consider(val);
+
+		val = Random::Mutilate(val);
+		//CountBits(val);
+		ShowBase16(val);
+		std::cout << '\n';
+	}
+	std::cout << '\n';
+
+	for (unsigned int j = 16; j <= 16; j--)
+	{
+		unsigned int comp = (j << 0);
+		ShowBase16(comp);
+		std::cout << ' ';
+		Dis.Show(comp);
+		std::cout << '\n';
+	}
+}
+
+
+struct Plane
+{
+	float		Heights[PLANE_CELL_PER_AREA];
+	Point2D		Pos;
+	Plane()
+	{
+		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA; i++)
+		{
+			Heights[i] = 0.0f;
+		}
+	}
+
+	Point2D Pos2At(Undex2D u)
+	{
+		return Point2D(
+			((Pos.X * PLANE_CELL_PER_SIDE) + u.X) * PLANE_SCALE,
+			((Pos.Y * PLANE_CELL_PER_SIDE) + u.Y) * PLANE_SCALE
+		);
+	}
+	Point3D Pos3At(Undex2D u)
+	{
+		return Point3D(
+			((Pos.X * PLANE_CELL_PER_SIDE) + u.X) * PLANE_SCALE,
+			Heights[u.X + (u.Y * PLANE_CELL_PER_SIDE)],
+			((Pos.Y * PLANE_CELL_PER_SIDE) + u.Y) * PLANE_SCALE
+		);
+	}
+
+	void Generate(const Perlin2D & noise)
+	{
+		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA; i++)
+		{
+			Undex2D u(i % PLANE_CELL_PER_SIDE, i / PLANE_CELL_PER_SIDE);
+			Point2D p = Pos2At(u);
+			float val = 0.0f;
+			val += noise.Calculate(p * 1) / 1;
+			//val += noise.Calculate(p * 2) / 2;
+			//val += noise.Calculate(p * 4) / 4;
+			//val += noise.Calculate(p * 8) / 8;
+			Heights[i] = val;
+		}
+	}
+};
+
 
 void Make() override
 {
 	window.DefaultColor = ColorF4(0, 0, 0);
 
-	PolyHedra * cone = PolyHedra::Generate::ConeC(4, 0.25f * Plane_Scale, 4.0f * Plane_Scale);
-	PolyHedra * cube = PolyHedra::Generate::HexaHedron(0.5f);
+	PolyHedra * cone = PolyHedra::Generate::ConeC(4, 0.25f * PLANE_SCALE, 4.0f * PLANE_SCALE);
+	PolyHedra * cube = PolyHedra::Generate::HexaHedron(0.5f * PLANE_SCALE);
 	{
 		for (unsigned int i = 0; i < cube -> Corners.Count(); i++)
 		{
@@ -137,7 +275,7 @@ void Make() override
 		PolyHedraManager.PlacePolyHedra(cube);
 	}
 	{
-		float size_half = SegmentCount * Plane_Scale;
+		float size_half = PLANE_CELL_PER_SIDE * PLANE_SCALE;
 		unsigned int c = Perlin0.Count.X * Perlin0.Count.Y;
 
 		Perlin0_Nodes.Create(cone, c);
@@ -151,25 +289,40 @@ void Make() override
 		}
 	}
 	{
-		Undex2D count(CellCount * SegmentCount, CellCount * SegmentCount);
+		Plane plane[4 * 4];
+		for (unsigned int i = 0; i < 4 * 4; i++)
+		{
+			Undex2D u(i % 4, i / 4);
+			plane[i].Pos = Point2D(u.X, u.Y);
+			plane[i].Generate(Perlin0);
+		}
+
+		Plane_Cubes.Create(cube, PLANE_CELL_PER_AREA * 4 * 4);
+		for (unsigned int p = 0; p < 4 * 4; p++)
+		{
+			for (unsigned int i = 0; i < PLANE_CELL_PER_AREA; i++)
+			{
+				Undex2D u(i % PLANE_CELL_PER_SIDE, i / PLANE_CELL_PER_SIDE);
+				Plane_Cubes[(p * PLANE_CELL_PER_AREA) + i].Trans().Position = plane[p].Pos3At(u);
+				Plane_Cubes[(p * PLANE_CELL_PER_AREA) + i].HideFull();
+			}
+		}
+
+		float size_half = PERLIN_NODES_PER_SIDE * (PLANE_CELL_PER_SIDE / 2) * PLANE_SCALE;
+		Undex2D count(PLANE_CELL_PER_SIDE * PERLIN_NODES_PER_SIDE, PLANE_CELL_PER_SIDE * PERLIN_NODES_PER_SIDE);
 		Image img(count);
 
-		float size_half = SegmentCount * (CellCount / 2) * Plane_Scale;
-		unsigned int c = count.X * count.Y;
-
-		//Plane_Cubes.Create(cube, c);
-		for (unsigned int i = 0; i < c; i++)
+		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA * PERLIN_NODES_PER_AREA; i++)
 		{
-			Undex2D u(i % count.X, i / count.X);
-			Point2D p(u.X, u.Y);
-			float f = Perlin0.Calculate(p / SegmentCount) * 1;
+			Undex2D u(i % (PLANE_CELL_PER_SIDE * PERLIN_NODES_PER_SIDE), i / (PLANE_CELL_PER_SIDE * PERLIN_NODES_PER_SIDE));
+			Point2D p = Point2D(u.X, u.Y) * PLANE_SCALE;
 
-			//Plane_Cubes[i].Trans().Position = Point3D(p.X, f, p.Y);
+			float val = Perlin0.Calculate(p * 1) / 1;
 
 			ColorU4 col;
-			if (f == 0.0f)	{ col = ColorU4(); }
-			if (f > 0.0f)	{ col = ColorU4(+f * 255, 0, 0); }
-			if (f < 0.0f)	{ col = ColorU4(0, 0, -f * 255); }
+			if (val == 0.0f)	{ col = ColorU4(); }
+			if (val > 0.0f)		{ col = ColorU4(+val * 255, 0, 0); }
+			if (val < 0.0f)		{ col = ColorU4(0, 0, -val * 255); }
 
 			u.Y = (count.Y - u.Y) - 1;
 			img.Pixel(u) = col;
@@ -187,8 +340,8 @@ void Make() override
 		AxisBox2D box;
 		for (unsigned int i = 0; i < 100000; i++)
 		{
-			p.X = Perlin2D::RandomFloat01();
-			p.Y = Perlin2D::RandomFloat01();
+			p.X = Random::Float01In();
+			p.Y = Random::Float01In();
 			box.Consider(p);
 			p.X = p.X * Perlin0.Count.X;
 			p.Y = p.Y * Perlin0.Count.Y;
@@ -198,6 +351,7 @@ void Make() override
 		std::cout << '\n';
 	}
 	Perlin2D::DebugShow();
+	//TestRandom();
 }
 
 void Init() override
@@ -218,6 +372,9 @@ void Free() override
 bool ShowFull = true;
 bool ShowWire = false;
 
+bool ShowPlane = false;
+bool ShowArrows = true;
+
 void Frame(double timeDelta) override
 {
 	FrameTime frame_time(60);
@@ -228,11 +385,41 @@ void Frame(double timeDelta) override
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }
 	if (window.KeyBoardManager[Keys::D3].State == State::Press)
 	{
-		PolyHedra * polyhedra = PolyHedraManager.InstanceManagers[0].PolyHedra;
-		delete polyhedra;
-
-		polyhedra = PolyHedra::Load(MediaDirectory.File("YMT/Light/Chair.polyhedra"));;
-		PolyHedraManager.InstanceManagers[0].Change(polyhedra);
+		ShowArrows = !ShowArrows;
+		for (unsigned int i = 0; i < Perlin0_Nodes.Count; i++)
+		{
+			if (ShowArrows)
+			{
+				Perlin0_Nodes[i].ShowFull();
+			}
+			else
+			{
+				Perlin0_Nodes[i].HideFull();
+			}
+		}
+	}
+	if (window.KeyBoardManager[Keys::D4].State == State::Press)
+	{
+		ShowPlane = !ShowPlane;
+		for (unsigned int i = 0; i < Plane_Cubes.Count; i++)
+		{
+			if (ShowPlane)
+			{
+				Plane_Cubes[i].ShowFull();
+			}
+			else
+			{
+				Plane_Cubes[i].HideFull();
+			}
+		}
+		if (ShowPlane)
+		{
+			Image_Object.HideFull();
+		}
+		else
+		{
+			Image_Object.ShowFull();
+		}
 	}
 
 	PolyHedraManager.ClearInstances();

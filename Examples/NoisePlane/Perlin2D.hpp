@@ -1,4 +1,4 @@
-#ifndef PERLIN_2D_HPP
+#ifndef  PERLIN_2D_HPP
 # define PERLIN_2D_HPP
 
 # include "ValueType/Undex2D.hpp"
@@ -6,9 +6,6 @@
 
 struct Perlin2D
 {
-	static unsigned int		RandomUInt32();
-	static float			RandomFloat01();
-
 	Undex2D		Count;
 	Point2D *	Data;
 

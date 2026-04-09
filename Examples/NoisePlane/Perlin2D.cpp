@@ -1,24 +1,7 @@
 #include "Perlin2D.hpp"
+#include "Random.hpp"
 #include "ValueType/UndexLoop2D.hpp"
-
 #include "ValueType/Angle.hpp"
-#include <cstdlib>
-
-
-
-// rand() return [ 0x0000 to 0x7FFF ]
-// make my own that can return the full 64 Bits ?
-unsigned int Perlin2D::RandomUInt32()
-{
-	unsigned int r = rand();
-	r = r ^ (rand() << 7);
-	r = r ^ (rand() << 14);
-	r = r ^ (rand() << 21);
-	r = r ^ (rand() << 24);
-	r = r ^ (rand() << 28);
-	return r;
-}
-float Perlin2D::RandomFloat01() { return ((float)(RandomUInt32() & 0x7FFFFFFF)) / 0x80000000; }
 
 
 
@@ -66,7 +49,7 @@ Perlin2D Perlin2D::Random(Undex2D count)
 	unsigned int c = perlin.Count.X * perlin.Count.Y;
 	for (unsigned int i = 0; i < c; i++)
 	{
-		Angle a = Angle::Degrees(RandomFloat01() * 360.0f);
+		Angle a = Angle::Degrees(Random::Float01In() * 360.0f);
 		perlin.Data[i] = a.forward(Point2D(1, 0));
 	}
 	return perlin;
