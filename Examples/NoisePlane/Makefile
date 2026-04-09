@@ -20,6 +20,8 @@ FILES_SRC := \
 \
 	Random.cpp \
 	Perlin2D.cpp \
+	Plane.cpp \
+	PlaneGraphics.cpp \
 	main.cpp \
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)

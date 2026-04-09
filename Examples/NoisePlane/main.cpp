@@ -18,9 +18,15 @@
 #include "Image.hpp"
 #include "PolyHedra/Data.hpp"
 
+// Graphics
+#include "Graphics/Shader/Code.hpp"
+#include "Miscellaneous/Container/Array.hpp"
+
 // Perlin
 #include "Random.hpp"
 #include "Perlin2D.hpp"
+#include "Plane.hpp"
+#include "PlaneGraphics.hpp"
 
 
 
@@ -76,28 +82,25 @@ struct MainContext : public MainContext3D
 {
 ::PolyHedraManager		PolyHedraManager;
 
-# define PLANE_SCALE 0.125
-# define PLANE_CELL_PER_SIDE 8
-# define PLANE_CELL_PER_AREA PLANE_CELL_PER_SIDE * PLANE_CELL_PER_SIDE
-
-# define PERLIN_NODES_PER_SIDE 8
-# define PERLIN_NODES_PER_AREA PERLIN_NODES_PER_SIDE * PERLIN_NODES_PER_SIDE
-
 Perlin2D				Perlin0;
 PolyHedraObjectArray	Perlin0_Nodes;
 
-PolyHedraObjectArray	Plane_Cubes;
-
 PolyHedraObject			Image_Object;
+
+# define PLANES_PER_SIDE 8
+# define PLANES_PER_AREA PLANES_PER_SIDE * PLANES_PER_SIDE
+Plane					Planes[PLANES_PER_AREA];
+
+PlaneGraphics::Shader	Plane_Shader;
+PlaneGraphics::Buffer	Plane_Buffers[PLANES_PER_AREA];
 
 ~MainContext()
 { }
 MainContext()
 	: MainContext3D()
 	, PolyHedraManager()
-	, Perlin0(Perlin2D::Random(Undex2D(PERLIN_NODES_PER_SIDE, PERLIN_NODES_PER_SIDE)))
+	, Perlin0(Perlin2D::Random(Undex2D(8, 8)))
 	, Perlin0_Nodes()
-	, Plane_Cubes()
 {
 	PolyHedraManager.MakeCurrent();
 }
@@ -213,54 +216,194 @@ void TestRandom()
 }
 
 
-struct Plane
+
+struct PlaneNeighbours
 {
-	float		Heights[PLANE_CELL_PER_AREA];
-	Point2D		Pos;
-	Plane()
-	{
-		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA; i++)
-		{
-			Heights[i] = 0.0f;
-		}
-	}
+	Plane * plane00;
+	Plane * plane01;
+	Plane * plane10;
+	Plane * plane11;
+};
+/*
+Main Positions are Absolute
+Inst Positions have be 0 to be placed correctly
+*/
+PlaneGraphics::MainData PlaneMainData(const Plane & plane, Undex2D u)
+{
+	PlaneGraphics::MainData data;
 
-	Point2D Pos2At(Undex2D u)
-	{
-		return Point2D(
-			((Pos.X * PLANE_CELL_PER_SIDE) + u.X) * PLANE_SCALE,
-			((Pos.Y * PLANE_CELL_PER_SIDE) + u.Y) * PLANE_SCALE
-		);
-	}
-	Point3D Pos3At(Undex2D u)
-	{
-		return Point3D(
-			((Pos.X * PLANE_CELL_PER_SIDE) + u.X) * PLANE_SCALE,
-			Heights[u.X + (u.Y * PLANE_CELL_PER_SIDE)],
-			((Pos.Y * PLANE_CELL_PER_SIDE) + u.Y) * PLANE_SCALE
-		);
-	}
+	float val = plane.Heights[u.X + (u.Y * PLANE_CELL_PER_SIDE)];
 
-	void Generate(const Perlin2D & noise)
+	if (val == 0.0f) { data.Col = ColorF4(0, 0, 0); }
+	if (val > 0.0f) { data.Col = ColorF4(+val, 0, 0); }
+	if (val < 0.0f) { data.Col = ColorF4(0, 0, -val); }
+
+	data.Pos.X = ((plane.Pos.X * (PLANE_CELL_PER_SIDE)) + u.X) * PLANE_SCALE;
+	data.Pos.Y = val;
+	data.Pos.Z = ((plane.Pos.Y * (PLANE_CELL_PER_SIDE)) + u.Y) * PLANE_SCALE;
+
+	return data;
+}
+void PlaneToBuffer(const PlaneNeighbours & planes, PlaneGraphics::Buffer & buffer)
+{
 	{
-		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA; i++)
+		Container::Binary<PlaneGraphics::MainData> data;
+		unsigned int edges_per_side = PLANE_CELL_PER_SIDE - 1;
+		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA ; i++)
 		{
 			Undex2D u(i % PLANE_CELL_PER_SIDE, i / PLANE_CELL_PER_SIDE);
-			Point2D p = Pos2At(u);
-			float val = 0.0f;
-			val += noise.Calculate(p * 1) / 1;
-			//val += noise.Calculate(p * 2) / 2;
-			//val += noise.Calculate(p * 4) / 4;
-			//val += noise.Calculate(p * 8) / 8;
-			Heights[i] = val;
+
+			PlaneGraphics::MainData temp[4];
+			bool have[4] = { false, false, false, false };
+
+			if (u.X != edges_per_side && u.Y != edges_per_side)
+			{
+				if (planes.plane00 != nullptr)
+				{
+					temp[0b00] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y));
+					have[0b00] = true;
+					temp[0b01] = PlaneMainData(*planes.plane00, Undex2D(u.X + 1, u.Y));
+					have[0b01] = true;
+					temp[0b10] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y + 1));
+					have[0b10] = true;
+					temp[0b11] = PlaneMainData(*planes.plane00, Undex2D(u.X + 1, u.Y + 1));
+					have[0b11] = true;
+				}
+			}
+
+			if (u.X == edges_per_side && u.Y != edges_per_side)
+			{
+				if (planes.plane00 != nullptr)
+				{
+					temp[0b00] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y));
+					have[0b00] = true;
+					temp[0b10] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y + 1));
+					have[0b10] = true;
+				}
+				if (planes.plane01 != nullptr)
+				{
+					temp[0b01] = PlaneMainData(*planes.plane01, Undex2D(0, u.Y));
+					have[0b01] = true;
+					temp[0b11] = PlaneMainData(*planes.plane01, Undex2D(0, u.Y + 1));
+					have[0b11] = true;
+				}
+			}
+
+			if (u.X != edges_per_side && u.Y == edges_per_side)
+			{
+				if (planes.plane00 != nullptr)
+				{
+					temp[0b00] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y));
+					have[0b00] = true;
+					temp[0b01] = PlaneMainData(*planes.plane00, Undex2D(u.X + 1, u.Y));
+					have[0b01] = true;
+				}
+				if (planes.plane10 != nullptr)
+				{
+					temp[0b10] = PlaneMainData(*planes.plane10, Undex2D(u.X + 0, 0));
+					have[0b10] = true;
+					temp[0b11] = PlaneMainData(*planes.plane10, Undex2D(u.X + 1, 0));
+					have[0b11] = true;
+				}
+			}
+
+			if (u.X == edges_per_side && u.Y == edges_per_side)
+			{
+				if (planes.plane00 != nullptr)
+				{
+					temp[0b00] = PlaneMainData(*planes.plane00, Undex2D(u.X, u.Y));
+					have[0b00] = true;
+				}
+				if (planes.plane01 != nullptr)
+				{
+					temp[0b01] = PlaneMainData(*planes.plane01, Undex2D(0, u.Y));
+					have[0b01] = true;
+				}
+				if (planes.plane10 != nullptr)
+				{
+					temp[0b10] = PlaneMainData(*planes.plane10, Undex2D(u.X, 0));
+					have[0b10] = true;
+				}
+				if (planes.plane11 != nullptr)
+				{
+					temp[0b11] = PlaneMainData(*planes.plane11, Undex2D(0, 0));
+					have[0b11] = true;
+				}
+			}
+
+			if (have[0b00] && have[0b01] && have[0b10]) { data.Insert(temp[0b00]); data.Insert(temp[0b10]); data.Insert(temp[0b01]); }
+			if (have[0b10] && have[0b01] && have[0b11]) { data.Insert(temp[0b01]); data.Insert(temp[0b10]); data.Insert(temp[0b11]); }
 		}
+		buffer.Main.Change(data);
 	}
-};
+	{
+		Container::Binary<PlaneGraphics::InstData> data;
+		PlaneGraphics::InstData temp;
+		temp.Pos.X = 0;
+		temp.Pos.Y = 0;
+		temp.Pos.Z = 0;
+		data.Insert(temp);
+		buffer.Inst.Change(data);
+	}
+}
+
+void PlanesGraphicsCreate()
+{
+	{
+		Container::Array<::Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.frag")),
+		});
+		Plane_Shader.Change(code);
+		Plane_Shader.Create();
+	}
+	for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
+	{
+		Plane_Buffers[i].Main.Pos.Change(0);
+		Plane_Buffers[i].Main.Col.Change(1);
+		Plane_Buffers[i].Inst.Pos.Change(2);
+		Plane_Buffers[i].Create();
+		Plane_Buffers[i].Main.Init();
+		Plane_Buffers[i].Inst.Init();
+	}
+
+	for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
+	{
+		Undex2D u(i % PLANES_PER_SIDE, i / PLANES_PER_SIDE);
+		PlaneNeighbours planes;
+		planes.plane00 = &Planes[i];
+		if (u.X != (PLANES_PER_SIDE - 1)) { planes.plane01 = &Planes[(u.X + 1) + ((u.Y + 0) * PLANES_PER_SIDE)]; } else { planes.plane01 = nullptr; }
+		if (u.Y != (PLANES_PER_SIDE - 1)) { planes.plane10 = &Planes[(u.X + 0) + ((u.Y + 1) * PLANES_PER_SIDE)]; } else { planes.plane10 = nullptr; }
+		if (u.X != (PLANES_PER_SIDE - 1) && u.Y != (PLANES_PER_SIDE - 1)) { planes.plane11 = &Planes[(u.X + 1) + ((u.Y + 1) * PLANES_PER_SIDE)]; } else { planes.plane11 = nullptr; }
+		PlaneToBuffer(planes, Plane_Buffers[i]);
+	}
+}
+void PlanesGraphicsDelete()
+{
+	Plane_Shader.Delete();
+	for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
+	{
+		Plane_Buffers[i].Delete();
+	}
+}
+void PlanesDraw()
+{
+	Plane_Shader.Bind();
+	Plane_Shader.DisplaySize.Put(window.Size);
+	Plane_Shader.Depth.Put(view.Depth);
+	Plane_Shader.View.Put(Matrix4x4::TransformReverse(view.Trans));
+	Plane_Shader.FOV.Put(view.FOV);
+	for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
+	{
+		Plane_Buffers[i].Draw();
+	}
+}
+
 
 
 void Make() override
 {
-	window.DefaultColor = ColorF4(0, 0, 0);
+	window.DefaultColor = ColorF4(1, 1, 1);
 
 	PolyHedra * cone = PolyHedra::Generate::ConeC(4, 0.25f * PLANE_SCALE, 4.0f * PLANE_SCALE);
 	PolyHedra * cube = PolyHedra::Generate::HexaHedron(0.5f * PLANE_SCALE);
@@ -289,32 +432,21 @@ void Make() override
 		}
 	}
 	{
-		Plane plane[4 * 4];
-		for (unsigned int i = 0; i < 4 * 4; i++)
+		for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
 		{
-			Undex2D u(i % 4, i / 4);
-			plane[i].Pos = Point2D(u.X, u.Y);
-			plane[i].Generate(Perlin0);
+			Undex2D u(i % PLANES_PER_SIDE, i / PLANES_PER_SIDE);
+			Planes[i].Pos = Point2D(u.X, u.Y);
+			Planes[i].Generate(Perlin0);
 		}
 
-		Plane_Cubes.Create(cube, PLANE_CELL_PER_AREA * 4 * 4);
-		for (unsigned int p = 0; p < 4 * 4; p++)
-		{
-			for (unsigned int i = 0; i < PLANE_CELL_PER_AREA; i++)
-			{
-				Undex2D u(i % PLANE_CELL_PER_SIDE, i / PLANE_CELL_PER_SIDE);
-				Plane_Cubes[(p * PLANE_CELL_PER_AREA) + i].Trans().Position = plane[p].Pos3At(u);
-				Plane_Cubes[(p * PLANE_CELL_PER_AREA) + i].HideFull();
-			}
-		}
+		float size_half = Perlin0.Count.X * (PLANE_CELL_PER_SIDE / 2) * PLANE_SCALE;
 
-		float size_half = PERLIN_NODES_PER_SIDE * (PLANE_CELL_PER_SIDE / 2) * PLANE_SCALE;
-		Undex2D count(PLANE_CELL_PER_SIDE * PERLIN_NODES_PER_SIDE, PLANE_CELL_PER_SIDE * PERLIN_NODES_PER_SIDE);
+		Undex2D count(PLANE_CELL_PER_SIDE * Perlin0.Count.X, PLANE_CELL_PER_SIDE * Perlin0.Count.Y);
 		Image img(count);
 
-		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA * PERLIN_NODES_PER_AREA; i++)
+		for (unsigned int i = 0; i < PLANE_CELL_PER_AREA * Perlin0.Count.X * Perlin0.Count.Y; i++)
 		{
-			Undex2D u(i % (PLANE_CELL_PER_SIDE * PERLIN_NODES_PER_SIDE), i / (PLANE_CELL_PER_SIDE * PERLIN_NODES_PER_SIDE));
+			Undex2D u(i % (PLANE_CELL_PER_SIDE * Perlin0.Count.X), i / (PLANE_CELL_PER_SIDE * Perlin0.Count.X));
 			Point2D p = Point2D(u.X, u.Y) * PLANE_SCALE;
 
 			float val = Perlin0.Calculate(p * 1) / 1;
@@ -361,9 +493,13 @@ void Init() override
 	PolyHedraManager.InitExternal(MediaDirectory); // do this outside ? so in MainContext ?
 	PolyHedraManager.GraphicsCreate();
 	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
+
+	PlanesGraphicsCreate();
 }
 void Free() override
 {
+	PlanesGraphicsDelete();
+
 	PolyHedraManager.GraphicsDelete();
 }
 
@@ -401,17 +537,6 @@ void Frame(double timeDelta) override
 	if (window.KeyBoardManager[Keys::D4].State == State::Press)
 	{
 		ShowPlane = !ShowPlane;
-		for (unsigned int i = 0; i < Plane_Cubes.Count; i++)
-		{
-			if (ShowPlane)
-			{
-				Plane_Cubes[i].ShowFull();
-			}
-			else
-			{
-				Plane_Cubes[i].HideFull();
-			}
-		}
 		if (ShowPlane)
 		{
 			Image_Object.HideFull();
@@ -424,9 +549,6 @@ void Frame(double timeDelta) override
 
 	PolyHedraManager.ClearInstances();
 	PolyHedraManager.UpdateInstances();
-	{
-		//std::cout << "PolyHedraManager.ObjectDatas.Count(): " << PolyHedraManager.ObjectDatas.Count() << '\n';
-	}
 	if (ShowFull)
 	{
 		PolyHedraManager.ShaderFullDefault.Bind();
@@ -444,6 +566,11 @@ void Frame(double timeDelta) override
 		PolyHedraManager.ShaderWireDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
 		PolyHedraManager.ShaderWireDefault.FOV.Put(view.FOV);
 		PolyHedraManager.DrawWire();
+	}
+
+	if (ShowPlane)
+	{
+		PlanesDraw();
 	}
 }
 
