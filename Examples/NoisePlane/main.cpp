@@ -87,7 +87,8 @@ PolyHedraObjectArray	Perlin0_Nodes;
 
 PolyHedraObject			Image_Object;
 
-# define PLANES_PER_SIDE 8
+//# define PLANES_PER_SIDE 8
+# define PLANES_PER_SIDE 32
 # define PLANES_PER_AREA PLANES_PER_SIDE * PLANES_PER_SIDE
 Plane					Planes[PLANES_PER_AREA];
 
@@ -299,12 +300,6 @@ void PlaneToBuffer(const PlaneNeighbours & planes, PlaneGraphics::Buffer & buffe
 			udxs[0b10] = size.ConvertX(Undex2D(u0.X, u1.Y));
 			udxs[0b11] = size.ConvertX(Undex2D(u1.X, u1.Y));
 
-			PlaneGraphics::MainData temp[4];
-			temp[0b00].Pos = Point3D((u.X + 0) * PLANE_SCALE, 0.0f, (u.Y + 0) * PLANE_SCALE);
-			temp[0b01].Pos = Point3D((u.X + 1) * PLANE_SCALE, 0.0f, (u.Y + 0) * PLANE_SCALE);
-			temp[0b10].Pos = Point3D((u.X + 0) * PLANE_SCALE, 0.0f, (u.Y + 1) * PLANE_SCALE);
-			temp[0b11].Pos = Point3D((u.X + 1) * PLANE_SCALE, 0.0f, (u.Y + 1) * PLANE_SCALE);
-
 			PlaneValue vals[4];
 
 			if (comp.GetX() && comp.GetY())
@@ -339,10 +334,12 @@ void PlaneToBuffer(const PlaneNeighbours & planes, PlaneGraphics::Buffer & buffe
 				vals[0b11] = planes.FromPlane11(udxs[0b11]);
 			}
 
-			temp[0b00].Pos.Y = vals[0b00].Value;
-			temp[0b01].Pos.Y = vals[0b01].Value;
-			temp[0b10].Pos.Y = vals[0b10].Value;
-			temp[0b11].Pos.Y = vals[0b11].Value;
+			PlaneGraphics::MainData temp[4];
+
+			temp[0b00].Pos = Point3D((u.X + 0) * PLANE_SCALE, vals[0b00].Value, (u.Y + 0) * PLANE_SCALE);
+			temp[0b01].Pos = Point3D((u.X + 1) * PLANE_SCALE, vals[0b01].Value, (u.Y + 0) * PLANE_SCALE);
+			temp[0b10].Pos = Point3D((u.X + 0) * PLANE_SCALE, vals[0b10].Value, (u.Y + 1) * PLANE_SCALE);
+			temp[0b11].Pos = Point3D((u.X + 1) * PLANE_SCALE, vals[0b11].Value, (u.Y + 1) * PLANE_SCALE);
 
 			temp[0b00].Col = vals[0b00].ToColor();
 			temp[0b01].Col = vals[0b01].ToColor();
