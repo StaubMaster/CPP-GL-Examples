@@ -2,19 +2,20 @@
 # define PLANE_HPP
 
 # define PLANE_SCALE 0.0625
-# define PLANE_CELL_PER_SIDE 16
-# define PLANE_CELL_PER_AREA PLANE_CELL_PER_SIDE * PLANE_CELL_PER_SIDE
+# define PLANE_VALUES_PER_SIDE 16
+# define PLANE_VALUES_PER_AREA PLANE_VALUES_PER_SIDE * PLANE_VALUES_PER_SIDE
 
-# include "ValueType/Point2D.hpp"
-# include "ValueType/Point3D.hpp"
 # include "ValueType/Undex2D.hpp"
 
 struct Perlin2D;
 
 struct Plane
 {
-	float		Heights[PLANE_CELL_PER_AREA];
-	Point2D		Pos; // Plane Scale
+	float		Values[PLANE_VALUES_PER_AREA];
+	Undex2D		Undex;
+
+	float &			operator[](Undex2D udx);
+	const float &	operator[](Undex2D udx) const;
 
 	~Plane();
 	Plane();

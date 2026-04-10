@@ -22,6 +22,7 @@ FILES_SRC := \
 	Perlin2D.cpp \
 	Plane.cpp \
 	PlaneGraphics.cpp \
+	PlaneManager.cpp \
 	main.cpp \
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)

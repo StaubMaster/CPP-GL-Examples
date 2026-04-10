@@ -7,9 +7,9 @@ Plane::~Plane() { }
 
 Plane::Plane()
 {
-	for (unsigned int i = 0; i < PLANE_CELL_PER_AREA; i++)
+	for (unsigned int i = 0; i < PLANE_VALUES_PER_AREA; i++)
 	{
-		Heights[i] = 0.0f;
+		Values[i] = 0.0f;
 	}
 }
 
@@ -17,9 +17,9 @@ Plane::Plane()
 
 void Plane::Generate(const Perlin2D & noise)
 {
-	Undex2D size(PLANE_CELL_PER_SIDE, PLANE_CELL_PER_SIDE);
-	Point2D pos = Pos * PLANE_CELL_PER_SIDE;
-	for (unsigned int i = 0; i < PLANE_CELL_PER_AREA; i++)
+	Undex2D size(PLANE_VALUES_PER_SIDE, PLANE_VALUES_PER_SIDE);
+	Point2D pos = Point2D(Undex.X, Undex.Y) * PLANE_VALUES_PER_SIDE;
+	for (unsigned int i = 0; i < PLANE_VALUES_PER_AREA; i++)
 	{
 		Undex2D u = size.ConvertX(i);
 		Point2D p(
@@ -31,6 +31,6 @@ void Plane::Generate(const Perlin2D & noise)
 		val += noise.Calculate(p * 2) / 2;
 		val += noise.Calculate(p * 4) / 4;
 		val += noise.Calculate(p * 8) / 8;
-		Heights[i] = val;
+		Values[i] = val;
 	}
 }
