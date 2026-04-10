@@ -217,6 +217,10 @@ void TestRandom()
 
 
 
+void PlanesGenertate()
+{
+	PlaneManager.GenerateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
+}
 void PlanesGraphicsCreate()
 {
 	{
@@ -226,11 +230,13 @@ void PlanesGraphicsCreate()
 		});
 		PlaneManager.Shader.Change(code);
 	}
-	for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
 	{
-		PlaneManager.Buffers[i].Main.Pos.Change(0);
-		PlaneManager.Buffers[i].Main.Col.Change(1);
-		PlaneManager.Buffers[i].Inst.Pos.Change(2);
+		for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
+		{
+			PlaneManager.Planes[i].Buffer.Main.Pos.Change(0);
+			PlaneManager.Planes[i].Buffer.Main.Col.Change(1);
+			PlaneManager.Planes[i].Buffer.Inst.Pos.Change(2);
+		}
 	}
 
 	PlaneManager.GraphicsCreate();
@@ -251,10 +257,8 @@ void PlanesDraw()
 	PlaneManager.Draw();
 }
 
-void MakePlanes()
-{
-	PlaneManager.PlanesGenerate(Perlin0);
-}
+
+
 void MakePerlinNoiseArrows()
 {
 	PolyHedra * cone = PolyHedra::Generate::ConeC(4, 0.25f * PLANE_SCALE, 4.0f * PLANE_SCALE);
@@ -310,7 +314,7 @@ void MakeNoiseImage()
 void Make() override
 {
 	window.DefaultColor = ColorF4(1, 1, 1);
-	MakePlanes();
+	PlanesGenertate();
 	//MakePerlinNoiseArrows();
 	//MakeNoiseImage();
 	{
@@ -319,7 +323,7 @@ void Make() override
 		PolyHedra * picture = PolyHedra::Generate::DuoHedra(img);
 		delete picture;
 	}
-	Perlin2D::DebugShow();
+	//Perlin2D::DebugShow();
 	//TestRandom();
 }
 

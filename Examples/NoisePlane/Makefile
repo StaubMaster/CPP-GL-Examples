@@ -21,6 +21,8 @@ FILES_SRC := \
 	Random.cpp \
 	Perlin2D.cpp \
 	Plane.cpp \
+	PlaneValue.cpp \
+	PlaneNeighbours.cpp \
 	PlaneGraphics.cpp \
 	PlaneManager.cpp \
 	main.cpp \

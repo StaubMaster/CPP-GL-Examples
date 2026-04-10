@@ -4,44 +4,28 @@
 # include "Perlin2D.hpp"
 # include "Plane.hpp"
 # include "PlaneGraphics.hpp"
+# include "PlaneNeighbours.hpp"
 
-# include "ValueType/ColorF4.hpp"
-
-struct PlaneValue
-{
-	bool	Known;
-	float	Value;
-	// Position ?
-
-	~PlaneValue();
-	PlaneValue();
-	PlaneValue(const PlaneValue & other);
-	PlaneValue & operator=(const PlaneValue & other);
-
-	ColorF4		ToColor() const;
-};
-
-struct PlaneNeighbours
-{
-	// should each chunk store its neightours ?
-//	Plane *		Planes[9];
-	Plane *		Planes[4];
-
-	~PlaneNeighbours();
-	PlaneNeighbours();
-	PlaneNeighbours(const PlaneNeighbours & other);
-	PlaneNeighbours & operator=(const PlaneNeighbours & other);
-
-	PlaneValue	Value(unsigned int plane_idx, unsigned int tile_idx) const;
-};
-
-# define PLANES_PER_SIDE 32
+# define PLANES_PER_SIDE 8
 # define PLANES_PER_AREA PLANES_PER_SIDE * PLANES_PER_SIDE
+
+/*
+Plane Undex2D should be Index2D
+then make them generate around View (Point)
+*/
+
+/* Values to Tiles
+right now the Planes are made of Values
+which are connected into Tiles, with the Values being the Corners
+change it so the Value is the Center of a Tile ?
+this whould require knowing all Neighbours, not just positive
+
+store Neighbours int Planes ?
+*/
 
 struct PlaneManager
 {
 	PlaneGraphics::Shader	Shader;
-	PlaneGraphics::Buffer	Buffers[PLANES_PER_AREA];
 
 	Plane		Planes[PLANES_PER_AREA];
 
@@ -50,15 +34,17 @@ struct PlaneManager
 	PlaneManager(const PlaneManager & other) = delete;
 	PlaneManager & operator=(const PlaneManager & other) = delete;
 
-	void	PlanesGenerate(const Perlin2D & noise);
-	void	PlanesToBuffers();
+	void	GenerateAround(const Perlin2D & noise, Point2D pos);
 
-	PlaneNeighbours		NeighboursAround(Undex2D udx);
-	static void			PlaneToMainBuffer(const PlaneNeighbours & neighbours, PlaneGraphics::MainBuffer & buffer);
+	void				PlanesToBuffers();
+	void				UpdateNeighboursAround(Plane & plane);
+
+	void	Update();
 
 	bool	GraphicsExist;
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+
 	void	Draw();
 };
 
