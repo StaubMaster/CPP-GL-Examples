@@ -6,8 +6,7 @@
 # include "PlaneGraphics.hpp"
 # include "PlaneNeighbours.hpp"
 
-# define PLANES_PER_SIDE 8
-# define PLANES_PER_AREA PLANES_PER_SIDE * PLANES_PER_SIDE
+# include "Miscellaneous/Container/Binary.hpp"
 
 /*
 Plane Undex2D should be Index2D
@@ -25,19 +24,21 @@ store Neighbours int Planes ?
 
 struct PlaneManager
 {
-	PlaneGraphics::Shader	Shader;
-
-	Plane		Planes[PLANES_PER_AREA];
+	PlaneGraphics::Shader		Shader;
+	Container::Binary<Plane*>	Planes;
 
 	~PlaneManager();
 	PlaneManager();
 	PlaneManager(const PlaneManager & other) = delete;
 	PlaneManager & operator=(const PlaneManager & other) = delete;
 
+	unsigned int	FindPlaneUndex(Plane * plane) const;
+	unsigned int	FindPlaneUndex(Undex2D udx) const;
+	Plane *			FindPlaneOrNull(Undex2D udx) const;
+
 	void	GenerateAround(const Perlin2D & noise, Point2D pos);
 
-	void				PlanesToBuffers();
-	void				UpdateNeighboursAround(Plane & plane);
+	void	UpdateNeighboursAround(Plane & plane);
 
 	void	Update();
 

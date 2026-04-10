@@ -1,7 +1,7 @@
 
 UndexN
-
-to / from 1D Undex
+IndexN
+Point Index Undex Conversion (Constructors/Assignment)
 
 
 

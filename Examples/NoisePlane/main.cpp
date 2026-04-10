@@ -217,10 +217,6 @@ void TestRandom()
 
 
 
-void PlanesGenertate()
-{
-	PlaneManager.GenerateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
-}
 void PlanesGraphicsCreate()
 {
 	{
@@ -230,18 +226,8 @@ void PlanesGraphicsCreate()
 		});
 		PlaneManager.Shader.Change(code);
 	}
-	{
-		for (unsigned int i = 0; i < PLANES_PER_AREA; i++)
-		{
-			PlaneManager.Planes[i].Buffer.Main.Pos.Change(0);
-			PlaneManager.Planes[i].Buffer.Main.Col.Change(1);
-			PlaneManager.Planes[i].Buffer.Inst.Pos.Change(2);
-		}
-	}
 
 	PlaneManager.GraphicsCreate();
-
-	PlaneManager.PlanesToBuffers();
 }
 void PlanesGraphicsDelete()
 {
@@ -314,7 +300,10 @@ void MakeNoiseImage()
 void Make() override
 {
 	window.DefaultColor = ColorF4(1, 1, 1);
-	PlanesGenertate();
+//	view.Trans.Position = Point3D(1, 0, 1);
+
+	PlaneManager.GenerateAround(Perlin0, Point2D(0, 0));
+
 	//MakePerlinNoiseArrows();
 	//MakeNoiseImage();
 	{
@@ -357,6 +346,8 @@ void Frame(double timeDelta) override
 	FrameTime frame_time(60);
 	frame_time.Update(timeDelta);
 	UpdateView(frame_time);
+
+	PlaneManager.GenerateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { ShowFull = !ShowFull; }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }
