@@ -37,7 +37,8 @@ struct PlaneManager
 	Plane *			FindPlaneOrNull(Undex2D udx) const;
 
 	void	GenerateAround(const Perlin2D & noise, Point2D pos);
-
+	
+	void	Generate(const Perlin2D & noise, Undex2D udx);
 	void	UpdateNeighboursAround(Plane & plane);
 
 	void	Update();

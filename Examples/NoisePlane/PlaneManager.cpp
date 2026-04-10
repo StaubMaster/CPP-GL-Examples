@@ -1,6 +1,8 @@
 #include "PlaneManager.hpp"
 
 #include "ValueType/Bool2D.hpp"
+#include "ValueType/UndexBox2D.hpp"
+#include "ValueType/UndexLoop2D.hpp"
 
 
 
@@ -10,6 +12,8 @@ PlaneManager::PlaneManager()
 	, Planes()
 	, GraphicsExist(false)
 { }
+
+
 
 unsigned int PlaneManager::FindPlaneUndex(Plane * plane) const
 {
@@ -45,12 +49,27 @@ Plane * PlaneManager::FindPlaneOrNull(Undex2D udx) const
 	return nullptr;
 }
 
+
+
 void PlaneManager::GenerateAround(const Perlin2D & noise, Point2D pos)
 {
 	if (pos.X < 0 || pos.Y < 0) { return; }
 	Point2D r = (pos / (PLANE_VALUES_PER_SIDE * PLANE_SCALE)).roundF();
 	Undex2D udx(r.X, r.Y);
 
+	unsigned int size = 5;
+	UndexBox2D box(udx - Undex2D(size, size), udx + Undex2D(size, size));
+	if (box.Min.X > box.Max.X) { box.Min.X = 0; }
+	if (box.Min.Y > box.Max.Y) { box.Min.Y = 0; }
+
+	UndexLoop2D loop(box.Min, box.Max);
+	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		Generate(noise, u);
+	}
+}
+void PlaneManager::Generate(const Perlin2D & noise, Undex2D udx)
+{
 	Plane * plane = FindPlaneOrNull(udx);
 	if (plane == nullptr)
 	{
@@ -132,6 +151,8 @@ void PlaneManager::GraphicsDelete()
 
 	GraphicsExist = false;
 }
+
+#include <iostream>
 void PlaneManager::Draw()
 {
 	if (!GraphicsExist) { return; }
@@ -140,5 +161,16 @@ void PlaneManager::Draw()
 	for (unsigned int i = 0; i < Planes.Count(); i++)
 	{
 		(*Planes[i]).Draw();
+	}
+
+	{
+		std::cout << "Planes: " << Planes.Count() << '\n';
+		unsigned long long memory = (Planes.Count() * PLANE_VALUES_PER_AREA * sizeof(float));
+		std::cout << "Memory: " << memory << " B\n";
+		memory = memory / 1000;
+		std::cout << "Memory: " << memory << " kB\n";
+		memory = memory / 1000;
+		std::cout << "Memory: " << memory << " MB\n";
+		std::cout << '\n';
 	}
 }
