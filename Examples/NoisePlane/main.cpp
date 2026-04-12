@@ -315,8 +315,7 @@ void VoxelDraw()
 
 void Make() override
 {
-	window.DefaultColor = ColorF4(1, 1, 1);
-//	view.Trans.Position = Point3D(1, 0, 1);
+//	window.DefaultColor = ColorF4(1, 1, 1);
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -417,11 +416,9 @@ void Frame(double timeDelta) override
 
 		unsigned int count_planes = PlaneManager.Planes.Count();
 		unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
-
 		unsigned long long planes_memory0 = count_tiles * sizeof(float);
 		unsigned long long planes_memory1 = planes_memory0 / 1000;
 		unsigned long long planes_memory2 = planes_memory1 / 1000;
-
 		ss << "ShouldGenerate:" << PlaneManager.ShouldGenerate << '\n';
 		ss << "Count Planes:" << count_planes << '\n';
 		ss << "Count Tiles:" << count_tiles << '\n';
@@ -432,17 +429,29 @@ void Frame(double timeDelta) override
 
 		unsigned int count_chunks = ChunkManager.Chunks.Count();
 		unsigned int count_voxels = count_chunks * CHUNK_VALUES_PER_VOLM;
-
 		unsigned long long chunks_memory0 = count_voxels * sizeof(float);
 		unsigned long long chunks_memory1 = chunks_memory0 / 1000;
 		unsigned long long chunks_memory2 = chunks_memory1 / 1000;
-
 		ss << "ShouldGenerate:" << ChunkManager.ShouldGenerate << '\n';
 		ss << "Count Chunks:" << count_chunks << '\n';
 		ss << "Count Voxels:" << count_voxels << '\n';
 		ss << "Memory:" << chunks_memory0 << "B\n";
 		ss << "Memory:" << chunks_memory1 << "kB\n";
 		ss << "Memory:" << chunks_memory2 << "MB\n";
+		ss << '\n';
+
+		unsigned long long main_count = 0;
+		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
+		{
+			main_count += ChunkManager.Chunks[i] -> MainCount;
+		}
+		unsigned long long main_memory0 = main_count * sizeof(ChunkGraphics::MainData);
+		unsigned long long main_memory1 = main_memory0 / 1000;
+		unsigned long long main_memory2 = main_memory1 / 1000;
+		ss << "Main Count:" << main_count << '\n';
+		ss << "Memory:" << main_memory0 << "B\n";
+		ss << "Memory:" << main_memory1 << "kB\n";
+		ss << "Memory:" << main_memory2 << "MB\n";
 		ss << '\n';
 
 		UI::Text::Object text; text.Create();

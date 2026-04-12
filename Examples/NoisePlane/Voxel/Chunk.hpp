@@ -30,6 +30,7 @@ struct Chunk
 
 
 
+	unsigned int			MainCount;
 	ChunkGraphics::Buffer	Buffer;
 
 	bool	GraphicsExist;

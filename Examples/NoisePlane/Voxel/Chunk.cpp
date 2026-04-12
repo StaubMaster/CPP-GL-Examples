@@ -19,6 +19,7 @@ Chunk::Chunk()
 	: Values()
 	, Index()
 	, IsGenerated(false)
+	, MainCount(0)
 	, Buffer()
 	, GraphicsExist(false)
 	, BufferNeedsInit(false)
@@ -112,19 +113,12 @@ void Chunk::GraphicsDelete()
 static ColorF4 UndexToColor(Undex3D u)
 {
 	ColorF4 col;
-	if (((u.X % 2) == (u.Z % 2)) == ((u.Y % 2) == 0))
-	{
-		col = ColorF4(0.75f, 0.75f, 0.75f);
-	}
-	else
-	{
-		col = ColorF4(0.25f, 0.25f, 0.25f);
-	}
+	col.R = (u.X % 2);
+	col.G = (u.Y % 2);
+	col.B = (u.Z % 2);
 	return col;
 }
 
-#include <iostream>
-#include "ValueType/_Show.hpp"
 void Chunk::UpdateMainBuffer()
 {
 	if (!GraphicsExist) { return; }
@@ -191,77 +185,10 @@ void Chunk::UpdateMainBuffer()
 					data.Insert(temp[0b100]); data.Insert(temp[0b101]); data.Insert(temp[0b110]);
 					data.Insert(temp[0b110]); data.Insert(temp[0b101]); data.Insert(temp[0b111]);
 				}
-
-				//{ data.Insert(temp[0b000]); data.Insert(temp[0b010]); data.Insert(temp[0b001]); }
-				//{ data.Insert(temp[0b001]); data.Insert(temp[0b010]); data.Insert(temp[0b011]); }
-				//{ data.Insert(temp[0b100]); data.Insert(temp[0b101]); data.Insert(temp[0b110]); }
-				//{ data.Insert(temp[0b110]); data.Insert(temp[0b101]); data.Insert(temp[0b111]); }
 			}
 		}
 
-		std::cout << "count " << data.Count() << '\n';
-		/*for (unsigned int i = 0; i < data.Count(); i++)
-		{
-			std::cout << data[i].Pos << '\n';
-		}*/
-		std::cout << '\n';
-
-		/*Undex2D size(CHUNK_VALUES_PER_SIDE, CHUNK_VALUES_PER_SIDE);
-		UndexLoop2D loop(Undex2D(), size);
-		for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-		{
-			Undex2D u0 = Undex2D(u.X + 0, u.Y + 0) % size;
-			Undex2D u1 = Undex2D(u.X + 1, u.Y + 1) % size;
-			Bool2D comp = u0 < u1;
-
-			unsigned int udxs[4];
-			udxs[0b00] = size.Convert(Undex2D(u0.X, u0.Y));
-			udxs[0b01] = size.Convert(Undex2D(u1.X, u0.Y));
-			udxs[0b10] = size.Convert(Undex2D(u0.X, u1.Y));
-			udxs[0b11] = size.Convert(Undex2D(u1.X, u1.Y));
-
-			ChunkValue vals[4];
-
-			if (comp.GetX() && comp.GetY())
-			{
-				vals[0b00] = Neighbours.Value(0b00, udxs[0b00]);
-				vals[0b01] = Neighbours.Value(0b00, udxs[0b01]);
-				vals[0b10] = Neighbours.Value(0b00, udxs[0b10]);
-				vals[0b11] = Neighbours.Value(0b00, udxs[0b11]);
-			}
-
-			ChunkGraphics::MainData temp[4];
-
-			temp[0b00].Pos = Point3D((u.X + 0) * CHUNK_SCALE, vals[0b00].Value, (u.Y + 0) * CHUNK_SCALE);
-			temp[0b01].Pos = Point3D((u.X + 1) * CHUNK_SCALE, vals[0b01].Value, (u.Y + 0) * CHUNK_SCALE);
-			temp[0b10].Pos = Point3D((u.X + 0) * CHUNK_SCALE, vals[0b10].Value, (u.Y + 1) * CHUNK_SCALE);
-			temp[0b11].Pos = Point3D((u.X + 1) * CHUNK_SCALE, vals[0b11].Value, (u.Y + 1) * CHUNK_SCALE);
-
-			temp[0b00].Col = vals[0b00].ToColor();
-			temp[0b01].Col = vals[0b01].ToColor();
-			temp[0b10].Col = vals[0b10].ToColor();
-			temp[0b11].Col = vals[0b11].ToColor();
-
-			{
-				float factor = 0.5f;
-				if ((u.X % 2) == (u.Y % 2))
-				{
-					factor = factor - 0.125f;
-				}
-				else
-				{
-					factor = factor + 0.125f;
-				}
-				ColorF4 col(factor, factor, factor);
-				temp[0b00].Col = col;
-				temp[0b01].Col = col;
-				temp[0b10].Col = col;
-				temp[0b11].Col = col;
-			}
-
-			if (vals[0b00].Known && vals[0b01].Known && vals[0b10].Known) { data.Insert(temp[0b00]); data.Insert(temp[0b10]); data.Insert(temp[0b01]); }
-			if (vals[0b10].Known && vals[0b01].Known && vals[0b11].Known) { data.Insert(temp[0b01]); data.Insert(temp[0b10]); data.Insert(temp[0b11]); }
-		}*/
+		MainCount = data.Count();
 
 		Buffer.Main.Change(data);
 	}

@@ -2,7 +2,7 @@
 
 #include "ValueType/Bool3.hpp"
 #include "ValueType/BoxI3.hpp"
-#include "ValueType/LoopI2.hpp"
+#include "ValueType/LoopI3.hpp"
 
 //#include "ValueType/UndexBox2D.hpp"
 //#include "ValueType/UndexLoop2D.hpp"
@@ -67,15 +67,14 @@ void ChunkManager::UpdateAround(const Perlin2D & noise, VectorF3 pos)
 {
 	VectorF3 r = (pos / (CHUNK_VALUES_PER_SIDE * CHUNK_SCALE)).roundF();
 	VectorI3 idx(r);
-	Generate(noise, idx);
 
-	/*unsigned int size = 1;
-	BoxI2 box(idx - VectorI2(size), idx + VectorI2(size));
-	LoopI2 loop(box.Min, box.Max);
-	for (VectorI2 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+	VectorI3 size(2);
+	BoxI3 box(idx - size, idx + size);
+	LoopI3 loop(box.Min, box.Max);
+	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		Generate(noise, i);
-	}*/
+	}
 }
 
 void ChunkManager::Generate(const Perlin2D & noise, VectorI3 idx)
