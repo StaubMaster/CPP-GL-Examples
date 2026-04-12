@@ -23,10 +23,10 @@ void main()
 {
 	vec4 col = texture(texture0, vec3(fs_inn.PalletPos, 0));
 
-	//if (col.a == 0) { discard; }
-	//if (col.r >= 128) { discard; }
-	//if (col.g >= 128) { discard; }
-	//if (col.b >= 128) { discard; }
+	if (col.a == 0) { discard; }
+	if (col.r >= 0.5) { discard; }
+	if (col.g >= 0.5) { discard; }
+	if (col.b >= 0.5) { discard; }
 
 	if (gl_FragCoord.x >= fs_inn.BoundMin.x &&
 		gl_FragCoord.x <= fs_inn.BoundMax.x &&

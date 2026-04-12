@@ -220,9 +220,13 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 	UI::Text::Inst_Data data;
 	for (unsigned int i = 0; i < obj.Text.length(); i++)
 	{
+		if (obj.Text[i] == ' ')
+		{
+			line_idx++;
+			continue;;
+		}
 		if (obj.Text[i] == '\n')
 		{
-			rel.X = 0;
 			rel.Y += 1;
 			line_idx = 0;
 			line_len = LineLength(obj.Text.c_str(), i + 1);
