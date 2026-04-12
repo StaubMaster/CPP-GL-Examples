@@ -469,20 +469,23 @@ void Frame(double timeDelta) override
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	{
-		unsigned int count = PlaneManager.Planes.Count();
-		unsigned long long memory0 = (count * PLANE_VALUES_PER_AREA * sizeof(float));
+		unsigned int count_planes = PlaneManager.Planes.Count();
+		unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
+
+		unsigned long long memory0 = count_tiles * sizeof(float);
 		unsigned long long memory1 = memory0 / 1000;
 		unsigned long long memory2 = memory1 / 1000;
 
 		std::stringstream ss;
-		ss << "Frame_Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
-		ss << "Frame_D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
-		ss << "Planes:" << count << '\n';
-		ss << "Memory:" << memory0 << "_B\n";
-		ss << "Memory:" << memory1 << "_kB\n";
-		ss << "Memory:" << memory2 << "_MB\n";
-
+		ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
+		ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
+		ss << '\n';
 		ss << "ShouldGenerate:" << PlaneManager.ShouldGenerate << '\n';
+		ss << "Count Planes: " << count_planes << '\n';
+		ss << "Count Tiles:" << count_tiles << '\n';
+		ss << "Memory:" << memory0 << "B\n";
+		ss << "Memory:" << memory1 << "kB\n";
+		ss << "Memory:" << memory2 << "MB\n";
 
 		UI::Text::Object text; text.Create();
 		text.Pos().X = 10;

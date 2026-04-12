@@ -49,7 +49,6 @@ void Plane::Generate(const Perlin2D & noise)
 		val += noise.Calculate(p * 2) / 2;
 		val += noise.Calculate(p * 4) / 4;
 		val += noise.Calculate(p * 8) / 8;
-		if (val > 1.0f) { val = 1.0f; }
 		Values[size.Convert(u)] = val;
 	}
 
@@ -157,6 +156,23 @@ void Plane::UpdateMainBuffer()
 			temp[0b01].Col = vals[0b01].ToColor();
 			temp[0b10].Col = vals[0b10].ToColor();
 			temp[0b11].Col = vals[0b11].ToColor();
+
+			{
+				float factor = 0.5f;
+				if ((u.X % 2) == (u.Y % 2))
+				{
+					factor = factor - 0.125f;
+				}
+				else
+				{
+					factor = factor + 0.125f;
+				}
+				ColorF4 col(factor, factor, factor);
+				temp[0b00].Col = col;
+				temp[0b01].Col = col;
+				temp[0b10].Col = col;
+				temp[0b11].Col = col;
+			}
 
 			if (vals[0b00].Known && vals[0b01].Known && vals[0b10].Known) { data.Insert(temp[0b00]); data.Insert(temp[0b10]); data.Insert(temp[0b01]); }
 			if (vals[0b10].Known && vals[0b01].Known && vals[0b11].Known) { data.Insert(temp[0b01]); data.Insert(temp[0b10]); data.Insert(temp[0b11]); }
