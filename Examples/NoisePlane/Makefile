@@ -27,6 +27,9 @@ FILES_SRC := \
 	PlaneManager.cpp \
 	main.cpp \
 
+#FILES_SRC := \
+	_TemplateTest_main.cpp \
+
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 ################################################################

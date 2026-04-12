@@ -5,6 +5,7 @@
 
 // Debug
 #include <iostream>
+#include <sstream>
 #include "Debug.hpp"
 #include "ValueType/_Show.hpp"
 #include "ValueType/_Include.hpp"
@@ -32,6 +33,10 @@
 #include "Plane.hpp"
 #include "PlaneGraphics.hpp"
 #include "PlaneManager.hpp"
+
+// Text
+#include "Text/Manager.hpp"
+#include "Text/Object.hpp"
 
 
 
@@ -86,23 +91,57 @@ struct PolyHedraObjectArray
 struct MainContext : public MainContext3D
 {
 ::PolyHedraManager		PolyHedraManager;
+UI::Text::Manager		TextManager;
+::PlaneManager			PlaneManager;
 
 Perlin2D				Perlin0;
+
 PolyHedraObjectArray	Perlin0_Nodes;
-
 PolyHedraObject			Image_Object;
-
-::PlaneManager			PlaneManager;
 
 ~MainContext()
 { }
 MainContext()
 	: MainContext3D()
 	, PolyHedraManager()
+	, TextManager()
+	, PlaneManager()
 	, Perlin0(Perlin2D::Random(Undex2D(8, 8)))
 	, Perlin0_Nodes()
 {
 	PolyHedraManager.MakeCurrent();
+	TextManager.MakeCurrent();
+}
+
+
+
+void TextMake()
+{
+	{
+		Container::Array<Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/UI/Text.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/UI/Text.frag")),
+		});
+		TextManager.Shader.Change(code);
+	}
+	{
+		TextManager.Buffer.Main.Pos.Change(0);
+		TextManager.Buffer.Inst.Pos.Change(1);
+		TextManager.Buffer.Inst.PalletMin.Change(2);
+		TextManager.Buffer.Inst.PalletMax.Change(3);
+		TextManager.Buffer.Inst.BoundMin.Change(4);
+		TextManager.Buffer.Inst.BoundMax.Change(5);
+	}
+	{
+		TextManager.TextFont = UI::Text::Font::Parse(
+			MediaDirectory.File("Text/Font0.atlas")
+		);
+	}
+}
+void TextDraw()
+{
+	TextManager.Shader.DisplaySize.Put(window.Size);
+	TextManager.Draw();
 }
 
 
@@ -302,8 +341,6 @@ void Make() override
 	window.DefaultColor = ColorF4(1, 1, 1);
 //	view.Trans.Position = Point3D(1, 0, 1);
 
-	PlaneManager.GenerateAround(Perlin0, Point2D(0, 0));
-
 	//MakePerlinNoiseArrows();
 	//MakeNoiseImage();
 	{
@@ -312,7 +349,7 @@ void Make() override
 		PolyHedra * picture = PolyHedra::Generate::DuoHedra(img);
 		delete picture;
 	}
-	//Perlin2D::DebugShow();
+	Perlin2D::DebugShow();
 	//TestRandom();
 }
 
@@ -320,17 +357,21 @@ void Init() override
 {
 	Make();
 
+	TextMake();
+
 	PolyHedraManager.InitExternal(MediaDirectory); // do this outside ? so in MainContext ?
 	PolyHedraManager.GraphicsCreate();
 	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
+
+	TextManager.GraphicsCreate();
 
 	PlanesGraphicsCreate();
 }
 void Free() override
 {
-	PlanesGraphicsDelete();
-
 	PolyHedraManager.GraphicsDelete();
+	TextManager.GraphicsDelete();
+	PlanesGraphicsDelete();
 }
 
 
@@ -343,11 +384,11 @@ bool ShowArrows = false;
 
 void Frame(double timeDelta) override
 {
-	FrameTime frame_time(60);
+	FrameTime frame_time(64);
 	frame_time.Update(timeDelta);
 	UpdateView(frame_time);
 
-	PlaneManager.GenerateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
+	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { ShowFull = !ShowFull; }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }
@@ -384,6 +425,10 @@ void Frame(double timeDelta) override
 			}
 		}
 	}
+	if (window.KeyBoardManager[Keys::F5].State == State::Press)
+	{
+		PlaneManager.Clear();
+	}
 
 	PolyHedraManager.ClearInstances();
 	PolyHedraManager.UpdateInstances();
@@ -410,6 +455,30 @@ void Frame(double timeDelta) override
 	{
 		PlanesDraw();
 	}
+
+	GL::Clear(GL::ClearMask::DepthBufferBit);
+	{
+		unsigned int count = PlaneManager.Planes.Count();
+		unsigned long long memory0 = (count * PLANE_VALUES_PER_AREA * sizeof(float));
+		unsigned long long memory1 = memory0 / 1000;
+		unsigned long long memory2 = memory1 / 1000;
+
+		std::stringstream ss;
+		ss << "Frame_Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
+		ss << "Frame_D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
+		ss << "Planes:" << count << '\n';
+		ss << "Memory:" << memory0 << "_B\n";
+		ss << "Memory:" << memory1 << "_kB\n";
+		ss << "Memory:" << memory2 << "_MB\n";
+
+		UI::Text::Object text; text.Create();
+		text.Pos().X = 10;
+		text.Pos().Y = 10;
+		text.Bound().Min = Point2D();
+		text.Bound().Max = window.Size.Buffer.Full;
+		text.String() = ss.str();
+	}
+	TextDraw();
 }
 
 

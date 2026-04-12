@@ -2,6 +2,7 @@
 #include "Perlin2D.hpp"
 
 #include "ValueType/Bool2D.hpp"
+#include "ValueType/UndexLoop2D.hpp"
 #include "Miscellaneous/Container/Binary.hpp"
 
 
@@ -30,11 +31,12 @@ void Plane::Generate(const Perlin2D & noise)
 {
 	if (IsGenerated) { return; }
 
-	Undex2D size(PLANE_VALUES_PER_SIDE, PLANE_VALUES_PER_SIDE);
 	Point2D pos = Point2D(Undex.X, Undex.Y) * PLANE_VALUES_PER_SIDE;
-	for (unsigned int i = 0; i < PLANE_VALUES_PER_AREA; i++)
+
+	Undex2D size(PLANE_VALUES_PER_SIDE, PLANE_VALUES_PER_SIDE);
+	UndexLoop2D loop(Undex2D(), size);
+	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
-		Undex2D u = size.ConvertX(i);
 		Point2D p(
 			(pos.X + u.X) * PLANE_SCALE,
 			(pos.Y + u.Y) * PLANE_SCALE
@@ -44,7 +46,7 @@ void Plane::Generate(const Perlin2D & noise)
 		val += noise.Calculate(p * 2) / 2;
 		val += noise.Calculate(p * 4) / 4;
 		val += noise.Calculate(p * 8) / 8;
-		Values[i] = val;
+		Values[size.ConvertX(u)] = val;
 	}
 
 	IsGenerated = true;
@@ -91,10 +93,11 @@ void Plane::UpdateMainBuffer()
 
 	{
 		Container::Binary<PlaneGraphics::MainData> data;
+
 		Undex2D size(PLANE_VALUES_PER_SIDE, PLANE_VALUES_PER_SIDE);
-		for (unsigned int i = 0; i < PLANE_VALUES_PER_AREA; i++)
+		UndexLoop2D loop(Undex2D(), size);
+		for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
-			Undex2D u = size.ConvertX(i);
 			Undex2D u0 = Undex2D(u.X + 0, u.Y + 0) % size;
 			Undex2D u1 = Undex2D(u.X + 1, u.Y + 1) % size;
 			Bool2D comp = u0 < u1;

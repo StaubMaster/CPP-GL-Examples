@@ -22,6 +22,12 @@ this whould require knowing all Neighbours, not just positive
 store Neighbours int Planes ?
 */
 
+/*
+	when "making" Planes
+	start with the closest first, then go outward
+	when too many are rendered, remove all and start over.
+*/
+
 struct PlaneManager
 {
 	PlaneGraphics::Shader		Shader;
@@ -36,12 +42,11 @@ struct PlaneManager
 	unsigned int	FindPlaneUndex(Undex2D udx) const;
 	Plane *			FindPlaneOrNull(Undex2D udx) const;
 
-	void	GenerateAround(const Perlin2D & noise, Point2D pos);
-	
-	void	Generate(const Perlin2D & noise, Undex2D udx);
-	void	UpdateNeighboursAround(Plane & plane);
+	void	Clear();
+	void	UpdateAround(const Perlin2D & noise, Point2D pos);
 
-	void	Update();
+	void	Generate(const Perlin2D & noise, Undex2D udx);
+	void	NeighbourInsert(Plane & plane);
 
 	bool	GraphicsExist;
 	void	GraphicsCreate();

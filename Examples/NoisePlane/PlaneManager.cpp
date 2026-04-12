@@ -51,7 +51,15 @@ Plane * PlaneManager::FindPlaneOrNull(Undex2D udx) const
 
 
 
-void PlaneManager::GenerateAround(const Perlin2D & noise, Point2D pos)
+void PlaneManager::Clear()
+{
+	for (unsigned int i = 0; i < Planes.Count(); i++)
+	{
+		delete Planes[i];
+	}
+	Planes.Clear();
+}
+void PlaneManager::UpdateAround(const Perlin2D & noise, Point2D pos)
 {
 	if (pos.X < 0 || pos.Y < 0) { return; }
 	Point2D r = (pos / (PLANE_VALUES_PER_SIDE * PLANE_SCALE)).roundF();
@@ -68,6 +76,7 @@ void PlaneManager::GenerateAround(const Perlin2D & noise, Point2D pos)
 		Generate(noise, u);
 	}
 }
+
 void PlaneManager::Generate(const Perlin2D & noise, Undex2D udx)
 {
 	Plane * plane = FindPlaneOrNull(udx);
@@ -78,7 +87,7 @@ void PlaneManager::Generate(const Perlin2D & noise, Undex2D udx)
 		plane -> Generate(noise);
 
 		Planes.Insert(plane);
-		UpdateNeighboursAround(*plane);
+		NeighbourInsert(*plane);
 
 		plane -> Buffer.Main.Pos.Change(0);
 		plane -> Buffer.Main.Col.Change(1);
@@ -90,7 +99,7 @@ void PlaneManager::Generate(const Perlin2D & noise, Undex2D udx)
 	}
 }
 
-void PlaneManager::UpdateNeighboursAround(Plane & plane)
+void PlaneManager::NeighbourInsert(Plane & plane)
 {
 	{
 		Plane * planes[4];
@@ -152,7 +161,6 @@ void PlaneManager::GraphicsDelete()
 	GraphicsExist = false;
 }
 
-#include <iostream>
 void PlaneManager::Draw()
 {
 	if (!GraphicsExist) { return; }
@@ -161,16 +169,5 @@ void PlaneManager::Draw()
 	for (unsigned int i = 0; i < Planes.Count(); i++)
 	{
 		(*Planes[i]).Draw();
-	}
-
-	{
-		std::cout << "Planes: " << Planes.Count() << '\n';
-		unsigned long long memory = (Planes.Count() * PLANE_VALUES_PER_AREA * sizeof(float));
-		std::cout << "Memory: " << memory << " B\n";
-		memory = memory / 1000;
-		std::cout << "Memory: " << memory << " kB\n";
-		memory = memory / 1000;
-		std::cout << "Memory: " << memory << " MB\n";
-		std::cout << '\n';
 	}
 }

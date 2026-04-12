@@ -3,7 +3,9 @@
 
 # include "Anchor1D.hpp"
 
-struct AxisBox2D;
+//struct AxisBox2D;
+struct BoxF2;
+typedef BoxF2 AxisBox2D;
 
 struct Anchor2D
 {
