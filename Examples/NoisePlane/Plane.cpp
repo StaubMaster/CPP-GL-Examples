@@ -42,11 +42,14 @@ void Plane::Generate(const Perlin2D & noise)
 			(pos.Y + u.Y) * PLANE_SCALE
 		);
 		float val = 0.0f;
+		val += noise.Calculate(p / 8) * 8;
+		val += noise.Calculate(p / 4) * 4;
+		val += noise.Calculate(p / 2) * 2;
 		val += noise.Calculate(p);
-		//val += noise.Calculate(p * 1) / 1;
-		//val += noise.Calculate(p * 2) / 2;
-		//val += noise.Calculate(p * 4) / 4;
-		//val += noise.Calculate(p * 8) / 8;
+		val += noise.Calculate(p * 2) / 2;
+		val += noise.Calculate(p * 4) / 4;
+		val += noise.Calculate(p * 8) / 8;
+		if (val > 1.0f) { val = 1.0f; }
 		Values[size.Convert(u)] = val;
 	}
 

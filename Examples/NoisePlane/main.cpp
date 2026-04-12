@@ -441,22 +441,6 @@ void Frame(double timeDelta) override
 		PlaneManager.Clear();
 	}
 
-	{
-		Point2D pos = Point2D(view.Trans.Position.X, view.Trans.Position.Z);
-		float val = Perlin0.Calculate(pos * PLANE_VALUES_PER_SIDE * PLANE_SCALE);
-
-		CubeObject.Trans().Position.X = pos.X;
-		CubeObject.Trans().Position.Y = val;
-		CubeObject.Trans().Position.Z = pos.Y;
-
-		if (window.KeyBoardManager[Keys::Q].State == State::Press)
-		{
-			Perlin2D::DebugChange(true);
-			Perlin0.Calculate(pos * PLANE_SCALE);
-			Perlin2D::DebugChange(false);
-		}
-	}
-
 	PolyHedraManager.ClearInstances();
 	PolyHedraManager.UpdateInstances();
 	if (ShowFull)

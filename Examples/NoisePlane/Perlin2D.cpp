@@ -1,5 +1,7 @@
 #include "Perlin2D.hpp"
 #include "Random.hpp"
+
+#include "ValueType/VectorI2.hpp"
 #include "ValueType/UndexLoop2D.hpp"
 #include "ValueType/Angle.hpp"
 
@@ -108,22 +110,24 @@ void Perlin2D::DebugShow()
 
 float Perlin2D::Calculate(Point2D pos) const
 {
-	int x = pos.X;
-	int y = pos.Y;
+	VectorF2 posF = pos.roundF();
+	VectorI2 posI(posF.X, posF.Y);
 
-	int X0 = ((x % Count.X) + Count.X) % Count.X;
-	int Y0 = ((y % Count.Y) + Count.Y) % Count.Y;
+	VectorI2 i0;
+	i0.X = ((posI.X % Count.X) + Count.X) % Count.X;
+	i0.Y = ((posI.Y % Count.Y) + Count.Y) % Count.Y;
 
-	int X1 = (X0 + 1) % Count.X;
-	int Y1 = (Y0 + 1) % Count.Y;
+	VectorI2 i1;
+	i1.X = (i0.X + 1) % Count.X;
+	i1.Y = (i0.Y + 1) % Count.Y;
 
-	Point2D rel(pos.X - x, pos.Y - y);
+	Point2D rel(pos.X - posI.X, pos.Y - posI.Y);
 
 	Point2D dirs[4];
-	dirs[0b00] = Data[X0 + (Y0 * Count.X)];
-	dirs[0b01] = Data[X1 + (Y0 * Count.X)];
-	dirs[0b10] = Data[X0 + (Y1 * Count.X)];
-	dirs[0b11] = Data[X1 + (Y1 * Count.X)];
+	dirs[0b00] = Data[i0.X + (i0.Y * Count.X)];
+	dirs[0b01] = Data[i1.X + (i0.Y * Count.X)];
+	dirs[0b10] = Data[i0.X + (i1.Y * Count.X)];
+	dirs[0b11] = Data[i1.X + (i1.Y * Count.X)];
 
 	Point2D rels[4];
 	rels[0b00] = Point2D(rel.X - 0, rel.Y - 0);
@@ -147,9 +151,9 @@ float Perlin2D::Calculate(Point2D pos) const
 	{
 		std::cout << Count << '\n';
 		std::cout << "posF " << pos << '\n';
-		std::cout << "posI " << x << ' ' << y << '\n';
-		std::cout << "udx0 " << X0 << ' ' << Y0 << '\n';
-		std::cout << "udx1 " << X1 << ' ' << Y1 << '\n';
+		std::cout << "posI " << posI << '\n';
+		std::cout << "udx0 " << i0 << '\n';
+		std::cout << "udx1 " << i1 << '\n';
 		std::cout << "rel " << rel << '\n';
 		std::cout << "dot00 " << dots[0b00] << '\n';
 		std::cout << "dot01 " << dots[0b01] << '\n';
