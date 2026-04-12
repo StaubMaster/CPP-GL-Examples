@@ -66,12 +66,16 @@ Undex2D Perlin2D::Normalize(Point2D node) const
 	return Undex2D(x, y);
 }
 
-#include <iostream>
-#include "ValueType/_Show.hpp"
 static float lerp(float val0, float val1, float t)
 {
 	return (val0 * (1.0f - t)) + (val1 * (t - 0.0f));
 }
+
+#include <iostream>
+#include "ValueType/_Show.hpp"
+
+static bool DebugStatus = false;
+void Perlin2D::DebugChange(bool status) { DebugStatus = status; }
 
 #include "ValueType/AxisBox1D.hpp"
 #include "ValueType/AxisBox2D.hpp"
@@ -138,6 +142,22 @@ float Perlin2D::Calculate(Point2D pos) const
 	float dot0 = lerp(dots[0b00], dots[0b01], rel.X);
 	float dot1 = lerp(dots[0b10], dots[0b11], rel.X);
 	float dot = lerp(dot0, dot1, rel.Y);
+
+	if (DebugStatus)
+	{
+		std::cout << Count << '\n';
+		std::cout << "posF " << pos << '\n';
+		std::cout << "posI " << x << ' ' << y << '\n';
+		std::cout << "udx0 " << X0 << ' ' << Y0 << '\n';
+		std::cout << "udx1 " << X1 << ' ' << Y1 << '\n';
+		std::cout << "rel " << rel << '\n';
+		std::cout << "dot00 " << dots[0b00] << '\n';
+		std::cout << "dot01 " << dots[0b01] << '\n';
+		std::cout << "dot10 " << dots[0b10] << '\n';
+		std::cout << "dot11 " << dots[0b11] << '\n';
+		std::cout << "dot " << dot << '\n';
+		std::cout << '\n';
+	}
 
 	/*if ((rand() & 0xFF) == 0)
 	{

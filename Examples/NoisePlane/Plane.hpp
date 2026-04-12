@@ -5,7 +5,9 @@
 # define PLANE_VALUES_PER_SIDE 16
 # define PLANE_VALUES_PER_AREA PLANE_VALUES_PER_SIDE * PLANE_VALUES_PER_SIDE
 
-# include "ValueType/Undex2D.hpp"
+# include "ValueType/VectorI2.hpp"
+# include "ValueType/VectorU2.hpp"
+
 # include "PlaneGraphics.hpp"
 # include "PlaneNeighbours.hpp"
 
@@ -14,11 +16,11 @@ struct Perlin2D;
 struct Plane
 {
 	float				Values[PLANE_VALUES_PER_AREA];
-	Undex2D				Undex;
+	VectorI2			Index;
 	PlaneNeighbours		Neighbours;
 
-	float &			operator[](Undex2D udx);
-	const float &	operator[](Undex2D udx) const;
+	float &			operator[](VectorU2 udx);
+	const float &	operator[](VectorU2 udx) const;
 
 	~Plane();
 	Plane();

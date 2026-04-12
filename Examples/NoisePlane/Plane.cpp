@@ -11,7 +11,7 @@ Plane::~Plane() { }
 
 Plane::Plane()
 	: Values()
-	, Undex()
+	, Index()
 	, IsGenerated(false)
 	, Buffer()
 	, GraphicsExist(false)
@@ -31,7 +31,7 @@ void Plane::Generate(const Perlin2D & noise)
 {
 	if (IsGenerated) { return; }
 
-	Point2D pos = Point2D(Undex.X, Undex.Y) * PLANE_VALUES_PER_SIDE;
+	Point2D pos = Point2D(Index.X, Index.Y) * PLANE_VALUES_PER_SIDE;
 
 	Undex2D size(PLANE_VALUES_PER_SIDE, PLANE_VALUES_PER_SIDE);
 	UndexLoop2D loop(Undex2D(), size);
@@ -42,11 +42,12 @@ void Plane::Generate(const Perlin2D & noise)
 			(pos.Y + u.Y) * PLANE_SCALE
 		);
 		float val = 0.0f;
-		val += noise.Calculate(p * 1) / 1;
-		val += noise.Calculate(p * 2) / 2;
-		val += noise.Calculate(p * 4) / 4;
-		val += noise.Calculate(p * 8) / 8;
-		Values[size.ConvertX(u)] = val;
+		val += noise.Calculate(p);
+		//val += noise.Calculate(p * 1) / 1;
+		//val += noise.Calculate(p * 2) / 2;
+		//val += noise.Calculate(p * 4) / 4;
+		//val += noise.Calculate(p * 8) / 8;
+		Values[size.Convert(u)] = val;
 	}
 
 	IsGenerated = true;
@@ -103,10 +104,10 @@ void Plane::UpdateMainBuffer()
 			Bool2D comp = u0 < u1;
 
 			unsigned int udxs[4];
-			udxs[0b00] = size.ConvertX(Undex2D(u0.X, u0.Y));
-			udxs[0b01] = size.ConvertX(Undex2D(u1.X, u0.Y));
-			udxs[0b10] = size.ConvertX(Undex2D(u0.X, u1.Y));
-			udxs[0b11] = size.ConvertX(Undex2D(u1.X, u1.Y));
+			udxs[0b00] = size.Convert(Undex2D(u0.X, u0.Y));
+			udxs[0b01] = size.Convert(Undex2D(u1.X, u0.Y));
+			udxs[0b10] = size.Convert(Undex2D(u0.X, u1.Y));
+			udxs[0b11] = size.Convert(Undex2D(u1.X, u1.Y));
 
 			PlaneValue vals[4];
 
@@ -171,9 +172,9 @@ void Plane::UpdateInstBuffer()
 		Container::Binary<PlaneGraphics::InstData> data;
 		
 		PlaneGraphics::InstData temp;
-		temp.Pos.X = Undex.X * PLANE_VALUES_PER_SIDE * PLANE_SCALE;
+		temp.Pos.X = Index.X * PLANE_VALUES_PER_SIDE * PLANE_SCALE;
 		temp.Pos.Y = 0;
-		temp.Pos.Z = Undex.Y * PLANE_VALUES_PER_SIDE * PLANE_SCALE;
+		temp.Pos.Z = Index.Y * PLANE_VALUES_PER_SIDE * PLANE_SCALE;
 		data.Insert(temp);
 		
 		Buffer.Inst.Change(data);

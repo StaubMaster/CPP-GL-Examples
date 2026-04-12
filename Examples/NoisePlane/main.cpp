@@ -95,6 +95,7 @@ UI::Text::Manager		TextManager;
 ::PlaneManager			PlaneManager;
 
 Perlin2D				Perlin0;
+PolyHedraObject			CubeObject;
 
 PolyHedraObjectArray	Perlin0_Nodes;
 PolyHedraObject			Image_Object;
@@ -295,7 +296,7 @@ void MakePerlinNoiseArrows()
 	Perlin0_Nodes.Create(cone, c);
 	for (unsigned int i = 0; i < c; i++)
 	{
-		Undex2D u = Perlin0.Count.ConvertX(i);
+		Undex2D u = Perlin0.Count.Convert(i);
 		Point2D p2 = Perlin0.Data[i];
 		Point3D p3(p2.X, 0, p2.Y);
 		Perlin0_Nodes[i].Trans().Position = Point3D(u.X * size_half, 0.0f, u.Y * size_half);
@@ -311,7 +312,7 @@ void MakeNoiseImage()
 
 	for (unsigned int i = 0; i < PLANE_VALUES_PER_AREA * Perlin0.Count.X * Perlin0.Count.Y; i++)
 	{
-		Undex2D u = count.ConvertX(i);
+		Undex2D u = count.Convert(i);
 		Point2D p = Point2D(u.X, u.Y) * PLANE_SCALE;
 
 		float val = 0.0f;
@@ -341,6 +342,11 @@ void Make() override
 	window.DefaultColor = ColorF4(1, 1, 1);
 //	view.Trans.Position = Point3D(1, 0, 1);
 
+	{
+		PolyHedra * cube = PolyHedra::Generate::HexaHedron(1 / 16.0f);
+		PolyHedraManager.PlacePolyHedra(cube);
+		CubeObject.Create(cube);
+	}
 	//MakePerlinNoiseArrows();
 	//MakeNoiseImage();
 	{
@@ -349,7 +355,7 @@ void Make() override
 		PolyHedra * picture = PolyHedra::Generate::DuoHedra(img);
 		delete picture;
 	}
-	Perlin2D::DebugShow();
+	//Perlin2D::DebugShow();
 	//TestRandom();
 }
 
@@ -425,9 +431,30 @@ void Frame(double timeDelta) override
 			}
 		}
 	}
+
+	if (window.KeyBoardManager[Keys::F4].State == State::Press)
+	{
+		PlaneManager.ShouldGenerate = !PlaneManager.ShouldGenerate;
+	}
 	if (window.KeyBoardManager[Keys::F5].State == State::Press)
 	{
 		PlaneManager.Clear();
+	}
+
+	{
+		Point2D pos = Point2D(view.Trans.Position.X, view.Trans.Position.Z);
+		float val = Perlin0.Calculate(pos * PLANE_VALUES_PER_SIDE * PLANE_SCALE);
+
+		CubeObject.Trans().Position.X = pos.X;
+		CubeObject.Trans().Position.Y = val;
+		CubeObject.Trans().Position.Z = pos.Y;
+
+		if (window.KeyBoardManager[Keys::Q].State == State::Press)
+		{
+			Perlin2D::DebugChange(true);
+			Perlin0.Calculate(pos * PLANE_SCALE);
+			Perlin2D::DebugChange(false);
+		}
 	}
 
 	PolyHedraManager.ClearInstances();
@@ -470,6 +497,8 @@ void Frame(double timeDelta) override
 		ss << "Memory:" << memory0 << "_B\n";
 		ss << "Memory:" << memory1 << "_kB\n";
 		ss << "Memory:" << memory2 << "_MB\n";
+
+		ss << "ShouldGenerate:" << PlaneManager.ShouldGenerate << '\n';
 
 		UI::Text::Object text; text.Create();
 		text.Pos().X = 10;

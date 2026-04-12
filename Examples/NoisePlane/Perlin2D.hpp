@@ -22,6 +22,7 @@ struct Perlin2D
 
 	float	Calculate(Point2D pos) const;
 
+	static void		DebugChange(bool status);
 	static void		DebugClear();
 	static void		DebugShow();
 };

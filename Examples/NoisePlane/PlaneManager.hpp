@@ -6,6 +6,8 @@
 # include "PlaneGraphics.hpp"
 # include "PlaneNeighbours.hpp"
 
+# include "ValueType/VectorI2.hpp"
+
 # include "Miscellaneous/Container/Binary.hpp"
 
 /*
@@ -39,13 +41,14 @@ struct PlaneManager
 	PlaneManager & operator=(const PlaneManager & other) = delete;
 
 	unsigned int	FindPlaneUndex(Plane * plane) const;
-	unsigned int	FindPlaneUndex(Undex2D udx) const;
-	Plane *			FindPlaneOrNull(Undex2D udx) const;
+	unsigned int	FindPlaneUndex(VectorI2 idx) const;
+	Plane *			FindPlaneOrNull(VectorI2 idx) const;
 
 	void	Clear();
 	void	UpdateAround(const Perlin2D & noise, Point2D pos);
 
-	void	Generate(const Perlin2D & noise, Undex2D udx);
+	bool	ShouldGenerate;
+	void	Generate(const Perlin2D & noise, VectorI2 idx);
 	void	NeighbourInsert(Plane & plane);
 
 	bool	GraphicsExist;
