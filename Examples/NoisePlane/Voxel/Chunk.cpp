@@ -109,6 +109,20 @@ void Chunk::GraphicsDelete()
 
 
 
+static ColorF4 UndexToColor(Undex3D u)
+{
+	ColorF4 col;
+	if (((u.X % 2) == (u.Z % 2)) == ((u.Y % 2) == 0))
+	{
+		col = ColorF4(0.75f, 0.75f, 0.75f);
+	}
+	else
+	{
+		col = ColorF4(0.25f, 0.25f, 0.25f);
+	}
+	return col;
+}
+
 #include <iostream>
 #include "ValueType/_Show.hpp"
 void Chunk::UpdateMainBuffer()
@@ -125,35 +139,63 @@ void Chunk::UpdateMainBuffer()
 		UndexLoop3D loop(Undex3D(), edge);
 		for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
-			Undex3D u0 = Undex3D(u.X + 0, u.Y + 0, u.Z + 0) % size;
-			Undex3D u1 = Undex3D(u.X + 1, u.Y + 1, u.Z + 1) % size;
+			Undex3D u0 = Undex3D(u.X + 0, u.Y + 0, u.Z + 0);
+			Undex3D u1 = Undex3D(u.X + 1, u.Y + 1, u.Z + 1);
+
 			ChunkGraphics::MainData temp[8];
-			temp[0b000].Pos = Point3D(u.X + 0, u.Y + 0, u.Z + 0) * CHUNK_SCALE;
-			temp[0b001].Pos = Point3D(u.X + 1, u.Y + 0, u.Z + 0) * CHUNK_SCALE;
-			temp[0b010].Pos = Point3D(u.X + 0, u.Y + 1, u.Z + 0) * CHUNK_SCALE;
-			temp[0b011].Pos = Point3D(u.X + 1, u.Y + 1, u.Z + 0) * CHUNK_SCALE;
-			temp[0b100].Pos = Point3D(u.X + 0, u.Y + 0, u.Z + 1) * CHUNK_SCALE;
-			temp[0b101].Pos = Point3D(u.X + 1, u.Y + 0, u.Z + 1) * CHUNK_SCALE;
-			temp[0b110].Pos = Point3D(u.X + 0, u.Y + 1, u.Z + 1) * CHUNK_SCALE;
-			temp[0b111].Pos = Point3D(u.X + 1, u.Y + 1, u.Z + 1) * CHUNK_SCALE;
+			temp[0b000].Pos = Point3D(u0.X, u0.Y, u0.Z) * CHUNK_SCALE;
+			temp[0b001].Pos = Point3D(u1.X, u0.Y, u0.Z) * CHUNK_SCALE;
+			temp[0b010].Pos = Point3D(u0.X, u1.Y, u0.Z) * CHUNK_SCALE;
+			temp[0b011].Pos = Point3D(u1.X, u1.Y, u0.Z) * CHUNK_SCALE;
+			temp[0b100].Pos = Point3D(u0.X, u0.Y, u1.Z) * CHUNK_SCALE;
+			temp[0b101].Pos = Point3D(u1.X, u0.Y, u1.Z) * CHUNK_SCALE;
+			temp[0b110].Pos = Point3D(u0.X, u1.Y, u1.Z) * CHUNK_SCALE;
+			temp[0b111].Pos = Point3D(u1.X, u1.Y, u1.Z) * CHUNK_SCALE;
+
+			ColorF4 col = UndexToColor(u);
+			for (unsigned int i = 0; i < 8; i++) { temp[i].Col = col; }
+
+			u0 = u0 % size;
+			u1 = u1 % size;
+
+			if (Values[size.Convert(u)] != 0)
 			{
-				ColorF4 col;
-				if (((u.X % 2) == (u.Z % 2)) == ((u.Y % 2) == 0))
+				if ((u.X != 0) && (Values[size.Convert(Undex3D(u.X - 1, u.Y, u.Z))] == 0))
 				{
-					col = ColorF4(0.75f, 0.75f, 0.75f);
+					data.Insert(temp[0b000]); data.Insert(temp[0b100]); data.Insert(temp[0b010]);
+					data.Insert(temp[0b010]); data.Insert(temp[0b100]); data.Insert(temp[0b110]);
 				}
-				else
+				if ((u.Y != 0) && (Values[size.Convert(Undex3D(u.X, u.Y - 1, u.Z))] == 0))
 				{
-					col = ColorF4(0.25f, 0.25f, 0.25f);
+					data.Insert(temp[0b000]); data.Insert(temp[0b001]); data.Insert(temp[0b100]);
+					data.Insert(temp[0b100]); data.Insert(temp[0b001]); data.Insert(temp[0b101]);
 				}
-				for (unsigned int i = 0; i < 8; i++) { temp[i].Col = col; }
-			}
-			if (Values[size.Convert(u)])
-			{
-				{ data.Insert(temp[0b000]); data.Insert(temp[0b010]); data.Insert(temp[0b001]); }
-				{ data.Insert(temp[0b001]); data.Insert(temp[0b010]); data.Insert(temp[0b011]); }
-				{ data.Insert(temp[0b100]); data.Insert(temp[0b101]); data.Insert(temp[0b110]); }
-				{ data.Insert(temp[0b110]); data.Insert(temp[0b101]); data.Insert(temp[0b111]); }
+				if ((u.Z != 0) && (Values[size.Convert(Undex3D(u.X, u.Y, u.Z - 1))] == 0))
+				{
+					data.Insert(temp[0b000]); data.Insert(temp[0b010]); data.Insert(temp[0b001]);
+					data.Insert(temp[0b001]); data.Insert(temp[0b010]); data.Insert(temp[0b011]);
+				}
+
+				if ((u.X != CHUNK_VALUES_PER_SIDE - 1) && (Values[size.Convert(Undex3D(u.X + 1, u.Y, u.Z))] == 0))
+				{
+					data.Insert(temp[0b001]); data.Insert(temp[0b011]); data.Insert(temp[0b101]);
+					data.Insert(temp[0b101]); data.Insert(temp[0b011]); data.Insert(temp[0b111]);
+				}
+				if ((u.Y != CHUNK_VALUES_PER_SIDE - 1) && (Values[size.Convert(Undex3D(u.X, u.Y + 1, u.Z))] == 0))
+				{
+					data.Insert(temp[0b010]); data.Insert(temp[0b110]); data.Insert(temp[0b011]);
+					data.Insert(temp[0b011]); data.Insert(temp[0b110]); data.Insert(temp[0b111]);
+				}
+				if ((u.Z != CHUNK_VALUES_PER_SIDE - 1) && (Values[size.Convert(Undex3D(u.X, u.Y, u.Z + 1))] == 0))
+				{
+					data.Insert(temp[0b100]); data.Insert(temp[0b101]); data.Insert(temp[0b110]);
+					data.Insert(temp[0b110]); data.Insert(temp[0b101]); data.Insert(temp[0b111]);
+				}
+
+				//{ data.Insert(temp[0b000]); data.Insert(temp[0b010]); data.Insert(temp[0b001]); }
+				//{ data.Insert(temp[0b001]); data.Insert(temp[0b010]); data.Insert(temp[0b011]); }
+				//{ data.Insert(temp[0b100]); data.Insert(temp[0b101]); data.Insert(temp[0b110]); }
+				//{ data.Insert(temp[0b110]); data.Insert(temp[0b101]); data.Insert(temp[0b111]); }
 			}
 		}
 
