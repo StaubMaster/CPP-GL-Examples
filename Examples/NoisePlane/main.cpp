@@ -23,20 +23,25 @@
 #include "Graphics/Shader/Code.hpp"
 #include "Miscellaneous/Container/Array.hpp"
 
+// Text
+#include "Text/Manager.hpp"
+#include "Text/Object.hpp"
+
 // Random
 #include "Random.hpp"
 
 // Perlin
-#include "Perlin2D.hpp"
+#include "Noise/Perlin2D.hpp"
 
 // Plane
-#include "Plane.hpp"
-#include "PlaneGraphics.hpp"
-#include "PlaneManager.hpp"
+#include "Plane/Plane.hpp"
+#include "Plane/PlaneGraphics.hpp"
+#include "Plane/PlaneManager.hpp"
 
-// Text
-#include "Text/Manager.hpp"
-#include "Text/Object.hpp"
+// Voxel
+#include "Voxel/Chunk.hpp"
+#include "Voxel/ChunkGraphics.hpp"
+#include "Voxel/ChunkManager.hpp"
 
 
 
@@ -93,12 +98,9 @@ struct MainContext : public MainContext3D
 ::PolyHedraManager		PolyHedraManager;
 UI::Text::Manager		TextManager;
 ::PlaneManager			PlaneManager;
+::ChunkManager			ChunkManager;
 
 Perlin2D				Perlin0;
-PolyHedraObject			CubeObject;
-
-PolyHedraObjectArray	Perlin0_Nodes;
-PolyHedraObject			Image_Object;
 
 ~MainContext()
 { }
@@ -107,8 +109,8 @@ MainContext()
 	, PolyHedraManager()
 	, TextManager()
 	, PlaneManager()
+	, ChunkManager()
 	, Perlin0(Perlin2D::Random(Undex2D(8, 8)))
-	, Perlin0_Nodes()
 {
 	PolyHedraManager.MakeCurrent();
 	TextManager.MakeCurrent();
@@ -283,72 +285,39 @@ void PlanesDraw()
 	PlaneManager.Draw();
 }
 
-
-
-void MakePerlinNoiseArrows()
+void VoxelGraphicsCreate()
 {
-	PolyHedra * cone = PolyHedra::Generate::ConeC(4, 0.25f * PLANE_SCALE, 4.0f * PLANE_SCALE);
-	PolyHedraManager.PlacePolyHedra(cone);
-
-	float size_half = PLANE_VALUES_PER_SIDE * PLANE_SCALE;
-	unsigned int c = Perlin0.Count.X * Perlin0.Count.Y;
-
-	Perlin0_Nodes.Create(cone, c);
-	for (unsigned int i = 0; i < c; i++)
 	{
-		Undex2D u = Perlin0.Count.Convert(i);
-		Point2D p2 = Perlin0.Data[i];
-		Point3D p3(p2.X, 0, p2.Y);
-		Perlin0_Nodes[i].Trans().Position = Point3D(u.X * size_half, 0.0f, u.Y * size_half);
-		Perlin0_Nodes[i].Trans().Rotation = EulerAngle3D::PointToZ(p3);
-	}
-}
-void MakeNoiseImage()
-{
-	float size_half = Perlin0.Count.X * (PLANE_VALUES_PER_SIDE / 2) * PLANE_SCALE;
-
-	Undex2D count(PLANE_VALUES_PER_SIDE * Perlin0.Count.X, PLANE_VALUES_PER_SIDE * Perlin0.Count.Y);
-	Image img(count);
-
-	for (unsigned int i = 0; i < PLANE_VALUES_PER_AREA * Perlin0.Count.X * Perlin0.Count.Y; i++)
-	{
-		Undex2D u = count.Convert(i);
-		Point2D p = Point2D(u.X, u.Y) * PLANE_SCALE;
-
-		float val = 0.0f;
-		val += Perlin0.Calculate(p * 1) / 1;
-		val += Perlin0.Calculate(p * 2) / 2;
-		val += Perlin0.Calculate(p * 4) / 4;
-		val += Perlin0.Calculate(p * 8) / 8;
-
-		ColorU4 col;
-		if (val == 0.0f)	{ col = ColorU4(); }
-		if (val > 0.0f)		{ col = ColorU4(+val * 255, 0, 0); }
-		if (val < 0.0f)		{ col = ColorU4(0, 0, -val * 255); }
-
-		u.Y = (count.Y - u.Y) - 1;
-		img.Pixel(u) = col;
+		Container::Array<::Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.frag")),
+		});
+		ChunkManager.Shader.Change(code);
 	}
 
-	PolyHedra * picture = PolyHedra::Generate::DuoHedra(img, size_half);
-	PolyHedraManager.PlacePolyHedra(picture);
-	Image_Object.Create(picture);
-	Image_Object.Trans().Position = Point3D(size_half, 0, size_half);
-	Image_Object.Trans().Rotation = EulerAngle3D::Degrees(0, 90, 0);
+	ChunkManager.GraphicsCreate();
 }
+void VoxelGraphicsDelete()
+{
+	ChunkManager.GraphicsCreate();
+}
+void VoxelDraw()
+{
+	ChunkManager.Shader.Bind();
+	ChunkManager.Shader.DisplaySize.Put(window.Size);
+	ChunkManager.Shader.Depth.Put(view.Depth);
+	ChunkManager.Shader.View.Put(Matrix4x4::TransformReverse(view.Trans));
+	ChunkManager.Shader.FOV.Put(view.FOV);
+	ChunkManager.Draw();
+}
+
+
 
 void Make() override
 {
 	window.DefaultColor = ColorF4(1, 1, 1);
 //	view.Trans.Position = Point3D(1, 0, 1);
 
-	{
-		PolyHedra * cube = PolyHedra::Generate::HexaHedron(1 / 16.0f);
-		PolyHedraManager.PlacePolyHedra(cube);
-		CubeObject.Create(cube);
-	}
-	//MakePerlinNoiseArrows();
-	//MakeNoiseImage();
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
 		Image img(Undex2D(1, 1));
@@ -372,12 +341,14 @@ void Init() override
 	TextManager.GraphicsCreate();
 
 	PlanesGraphicsCreate();
+	VoxelGraphicsCreate();
 }
 void Free() override
 {
 	PolyHedraManager.GraphicsDelete();
 	TextManager.GraphicsDelete();
 	PlanesGraphicsDelete();
+	VoxelGraphicsDelete();
 }
 
 
@@ -385,8 +356,8 @@ void Free() override
 bool ShowFull = true;
 bool ShowWire = false;
 
-bool ShowPlane = true;
-bool ShowArrows = false;
+bool ShowTiles = true;
+bool ShowVoxels = true;
 
 void Frame(double timeDelta) override
 {
@@ -395,50 +366,22 @@ void Frame(double timeDelta) override
 	UpdateView(frame_time);
 
 	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
+	ChunkManager.UpdateAround(Perlin0, view.Trans.Position);
 
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { ShowFull = !ShowFull; }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }
-	if (window.KeyBoardManager[Keys::D3].State == State::Press)
-	{
-		ShowArrows = !ShowArrows;
-		for (unsigned int i = 0; i < Perlin0_Nodes.Count; i++)
-		{
-			if (Perlin0_Nodes[i].Is())
-			{
-				if (ShowArrows)
-				{
-					Perlin0_Nodes[i].ShowFull();
-				}
-				else
-				{
-					Perlin0_Nodes[i].HideFull();
-				}
-			}
-		}
-	}
-	if (window.KeyBoardManager[Keys::D4].State == State::Press)
-	{
-		ShowPlane = !ShowPlane;
-		if (Image_Object.Is())
-		{
-			if (ShowPlane)
-			{
-				Image_Object.HideFull();
-			}
-			else
-			{
-				Image_Object.ShowFull();
-			}
-		}
-	}
+	if (window.KeyBoardManager[Keys::D3].State == State::Press) { ShowTiles = !ShowTiles; }
+	if (window.KeyBoardManager[Keys::D4].State == State::Press) { ShowVoxels = !ShowVoxels; }
 
 	if (window.KeyBoardManager[Keys::F4].State == State::Press)
 	{
 		PlaneManager.ShouldGenerate = !PlaneManager.ShouldGenerate;
+		ChunkManager.ShouldGenerate = !ChunkManager.ShouldGenerate;
 	}
 	if (window.KeyBoardManager[Keys::F5].State == State::Press)
 	{
 		PlaneManager.Clear();
+		ChunkManager.Clear();
 	}
 
 	PolyHedraManager.ClearInstances();
@@ -462,30 +405,45 @@ void Frame(double timeDelta) override
 		PolyHedraManager.DrawWire();
 	}
 
-	if (ShowPlane)
-	{
-		PlanesDraw();
-	}
+	if (ShowTiles) { PlanesDraw(); }
+	if (ShowVoxels) { VoxelDraw(); }
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	{
-		unsigned int count_planes = PlaneManager.Planes.Count();
-		unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
-
-		unsigned long long memory0 = count_tiles * sizeof(float);
-		unsigned long long memory1 = memory0 / 1000;
-		unsigned long long memory2 = memory1 / 1000;
-
 		std::stringstream ss;
 		ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
 		ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
 		ss << '\n';
+
+		unsigned int count_planes = PlaneManager.Planes.Count();
+		unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
+
+		unsigned long long planes_memory0 = count_tiles * sizeof(float);
+		unsigned long long planes_memory1 = planes_memory0 / 1000;
+		unsigned long long planes_memory2 = planes_memory1 / 1000;
+
 		ss << "ShouldGenerate:" << PlaneManager.ShouldGenerate << '\n';
-		ss << "Count Planes: " << count_planes << '\n';
+		ss << "Count Planes:" << count_planes << '\n';
 		ss << "Count Tiles:" << count_tiles << '\n';
-		ss << "Memory:" << memory0 << "B\n";
-		ss << "Memory:" << memory1 << "kB\n";
-		ss << "Memory:" << memory2 << "MB\n";
+		ss << "Memory:" << planes_memory0 << "B\n";
+		ss << "Memory:" << planes_memory1 << "kB\n";
+		ss << "Memory:" << planes_memory2 << "MB\n";
+		ss << '\n';
+
+		unsigned int count_chunks = ChunkManager.Chunks.Count();
+		unsigned int count_voxels = count_chunks * CHUNK_VALUES_PER_VOLM;
+
+		unsigned long long chunks_memory0 = count_voxels * sizeof(float);
+		unsigned long long chunks_memory1 = chunks_memory0 / 1000;
+		unsigned long long chunks_memory2 = chunks_memory1 / 1000;
+
+		ss << "ShouldGenerate:" << ChunkManager.ShouldGenerate << '\n';
+		ss << "Count Chunks:" << count_chunks << '\n';
+		ss << "Count Voxels:" << count_voxels << '\n';
+		ss << "Memory:" << chunks_memory0 << "B\n";
+		ss << "Memory:" << chunks_memory1 << "kB\n";
+		ss << "Memory:" << chunks_memory2 << "MB\n";
+		ss << '\n';
 
 		UI::Text::Object text; text.Create();
 		text.Pos().X = 10;

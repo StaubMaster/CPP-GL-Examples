@@ -1,5 +1,5 @@
 #include "Plane.hpp"
-#include "Perlin2D.hpp"
+#include "Noise/Perlin2D.hpp"
 
 #include "ValueType/Bool2D.hpp"
 #include "ValueType/UndexLoop2D.hpp"
@@ -8,7 +8,6 @@
 
 
 Plane::~Plane() { }
-
 Plane::Plane()
 	: Values()
 	, Index()

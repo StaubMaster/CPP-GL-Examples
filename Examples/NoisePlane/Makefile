@@ -19,12 +19,18 @@ FILES_SRC := \
 	../MainContext3D.cpp \
 \
 	Random.cpp \
-	Perlin2D.cpp \
-	Plane.cpp \
-	PlaneValue.cpp \
-	PlaneNeighbours.cpp \
-	PlaneGraphics.cpp \
-	PlaneManager.cpp \
+	Noise/Perlin2D.cpp \
+\
+	Plane/Plane.cpp \
+	Plane/PlaneValue.cpp \
+	Plane/PlaneNeighbours.cpp \
+	Plane/PlaneGraphics.cpp \
+	Plane/PlaneManager.cpp \
+\
+	Voxel/Chunk.cpp \
+	Voxel/ChunkGraphics.cpp \
+	Voxel/ChunkManager.cpp \
+\
 	main.cpp \
 
 #FILES_SRC := \

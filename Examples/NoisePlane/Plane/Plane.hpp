@@ -19,8 +19,8 @@ struct Plane
 	VectorI2			Index;
 	PlaneNeighbours		Neighbours;
 
-	float &			operator[](VectorU2 udx);
-	const float &	operator[](VectorU2 udx) const;
+//	float &			operator[](VectorU2 udx);
+//	const float &	operator[](VectorU2 udx) const;
 
 	~Plane();
 	Plane();
