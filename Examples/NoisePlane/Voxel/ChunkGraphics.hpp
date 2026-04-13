@@ -23,6 +23,10 @@ namespace ChunkGraphics
 	{
 		Point3D		Pos;
 	};
+	struct VoxelData
+	{
+		MainData	Data[8];
+	};
 	struct MainBuffer : public ::Buffer::Attribute
 	{
 		::Attribute::Point3D	Pos;

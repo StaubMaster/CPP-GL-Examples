@@ -1,8 +1,2 @@
 
-UndexN
-IndexN
-Point Index Undex Conversion (Constructors/Assignment)
-
-
-
 make better PolyHedra for simple Texture

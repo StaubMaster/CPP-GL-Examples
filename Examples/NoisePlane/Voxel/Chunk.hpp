@@ -6,19 +6,23 @@
 # define CHUNK_VALUES_PER_SIDE 16
 # define CHUNK_VALUES_PER_VOLM CHUNK_VALUES_PER_SIDE * CHUNK_VALUES_PER_SIDE * CHUNK_VALUES_PER_SIDE
 
-# include "ValueType/VectorI3.hpp"
-# include "ValueType/VectorU3.hpp"
-
+# include "Voxel.hpp"
 # include "ChunkGraphics.hpp"
 # include "ChunkNeighbours.hpp"
+
+# include "ValueType/VectorI3.hpp"
+# include "ValueType/VectorU3.hpp"
 
 struct Perlin2D;
 
 struct Chunk
 {
-	float				Values[CHUNK_VALUES_PER_VOLM];
+	Voxel				Voxels[CHUNK_VALUES_PER_VOLM];
 	VectorI3			Index;
 	ChunkNeighbours		Neighbours;
+
+	Voxel &			operator[](VectorU3 udx);
+	const Voxel &	operator[](VectorU3 udx) const;
 
 	~Chunk();
 	Chunk();

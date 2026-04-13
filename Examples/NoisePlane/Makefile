@@ -27,6 +27,7 @@ FILES_SRC := \
 	Plane/PlaneGraphics.cpp \
 	Plane/PlaneManager.cpp \
 \
+	Voxel/Voxel.cpp \
 	Voxel/Chunk.cpp \
 	Voxel/ChunkValue.cpp \
 	Voxel/ChunkNeighbours.cpp \

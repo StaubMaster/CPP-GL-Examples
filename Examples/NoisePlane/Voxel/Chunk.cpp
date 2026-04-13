@@ -15,9 +15,14 @@
 
 
 
+Voxel &			Chunk::operator[](VectorU3 udx)			{ return Voxels[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)]; }
+const Voxel &	Chunk::operator[](VectorU3 udx) const	{ return Voxels[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)]; }
+
+
+
 Chunk::~Chunk() { }
 Chunk::Chunk()
-	: Values()
+	: Voxels()
 	, Index()
 	, IsGenerated(false)
 	, MainCount(0)
@@ -26,12 +31,7 @@ Chunk::Chunk()
 	, BufferNeedsInit(false)
 	, MainBufferNeedsData(false)
 	, InstBufferNeedsData(false)
-{
-	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
-	{
-		Values[i] = 0.0f;
-	}
-}
+{ }
 
 
 
@@ -65,11 +65,11 @@ void Chunk::Generate(const Perlin2D & noise)
 			Undex3D u3(u.X, i, u.Y);
 			if (i > val)
 			{
-				Values[size3.Convert(u3)] = 0;
+				Voxels[size3.Convert(u3)].Value = 0;
 			}
 			else
 			{
-				Values[size3.Convert(u3)] = 1;
+				Voxels[size3.Convert(u3)].Value = 1;
 			}
 		}
 	}
@@ -111,24 +111,17 @@ void Chunk::GraphicsDelete()
 
 
 
-static ColorF4 UndexToColor(Undex3D u)
-{
-	ColorF4 col;
-	col.R = (u.X % 2);
-	col.G = (u.Y % 2);
-	col.B = (u.Z % 2);
-	return col;
-}
-static void DataQuad(Container::Binary<ChunkGraphics::MainData> & data, ChunkGraphics::MainData temp[8],
+static void DataQuad(Container::Binary<ChunkGraphics::MainData> & data,
+	ChunkGraphics::VoxelData voxel_data,
 	unsigned char idx00, unsigned char idx01, unsigned char idx10, unsigned char idx11)
 {
-	data.Insert(temp[idx00]);
-	data.Insert(temp[idx10]);
-	data.Insert(temp[idx01]);
+	data.Insert(voxel_data.Data[idx00]);
+	data.Insert(voxel_data.Data[idx10]);
+	data.Insert(voxel_data.Data[idx01]);
 
-	data.Insert(temp[idx01]);
-	data.Insert(temp[idx10]);
-	data.Insert(temp[idx11]);
+	data.Insert(voxel_data.Data[idx01]);
+	data.Insert(voxel_data.Data[idx10]);
+	data.Insert(voxel_data.Data[idx11]);
 }
 
 void Chunk::UpdateMainBuffer()
@@ -140,27 +133,16 @@ void Chunk::UpdateMainBuffer()
 		Container::Binary<ChunkGraphics::MainData> data;
 
 		Undex3D size(CHUNK_VALUES_PER_SIDE);
-		Undex3D edge(CHUNK_VALUES_PER_SIDE - 1);
 		UndexLoop3D loop(Undex3D(), size);
 		for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
-			if (Values[size.Convert(u)] == 0)
+			Voxel & voxel = Voxels[size.Convert(u)];
+			if (!voxel.IsSolid())
 			{
 				continue;
 			}
 
-			ChunkGraphics::MainData temp[8];
-			temp[0b000].Pos = Point3D(u.X + 0, u.Y + 0, u.Z + 0) * CHUNK_SCALE;
-			temp[0b001].Pos = Point3D(u.X + 1, u.Y + 0, u.Z + 0) * CHUNK_SCALE;
-			temp[0b010].Pos = Point3D(u.X + 0, u.Y + 1, u.Z + 0) * CHUNK_SCALE;
-			temp[0b011].Pos = Point3D(u.X + 1, u.Y + 1, u.Z + 0) * CHUNK_SCALE;
-			temp[0b100].Pos = Point3D(u.X + 0, u.Y + 0, u.Z + 1) * CHUNK_SCALE;
-			temp[0b101].Pos = Point3D(u.X + 1, u.Y + 0, u.Z + 1) * CHUNK_SCALE;
-			temp[0b110].Pos = Point3D(u.X + 0, u.Y + 1, u.Z + 1) * CHUNK_SCALE;
-			temp[0b111].Pos = Point3D(u.X + 1, u.Y + 1, u.Z + 1) * CHUNK_SCALE;
-
-			ColorF4 col = UndexToColor(u);
-			for (unsigned int i = 0; i < 8; i++) { temp[i].Col = col; }
+			ChunkGraphics::VoxelData voxel_data = voxel.ToGraphics(u);
 
 			ChunkValue nextX = Neighbours.Value(AxisDirection::NextX, u);
 			ChunkValue nextY = Neighbours.Value(AxisDirection::NextY, u);
@@ -170,13 +152,13 @@ void Chunk::UpdateMainBuffer()
 			ChunkValue prevY = Neighbours.Value(AxisDirection::PrevY, u);
 			ChunkValue prevZ = Neighbours.Value(AxisDirection::PrevZ, u);
 
-			if (prevX.Check(0.0f)) { DataQuad(data, temp, 0b000, 0b010, 0b100, 0b110); }
-			if (prevY.Check(0.0f)) { DataQuad(data, temp, 0b000, 0b010, 0b001, 0b101); }
-			if (prevZ.Check(0.0f)) { DataQuad(data, temp, 0b000, 0b001, 0b010, 0b011); }
+			if (!prevX.IsSolid()) { DataQuad(data, voxel_data, 0b000, 0b010, 0b100, 0b110); }
+			if (!prevY.IsSolid()) { DataQuad(data, voxel_data, 0b000, 0b100, 0b001, 0b101); }
+			if (!prevZ.IsSolid()) { DataQuad(data, voxel_data, 0b000, 0b001, 0b010, 0b011); }
 
-			if (nextX.Check(0.0f)) { DataQuad(data, temp, 0b001, 0b101, 0b011, 0b111); }
-			if (nextY.Check(0.0f)) { DataQuad(data, temp, 0b010, 0b011, 0b110, 0b111); }
-			if (nextZ.Check(0.0f)) { DataQuad(data, temp, 0b100, 0b110, 0b101, 0b111); }
+			if (!nextX.IsSolid()) { DataQuad(data, voxel_data, 0b001, 0b101, 0b011, 0b111); }
+			if (!nextY.IsSolid()) { DataQuad(data, voxel_data, 0b010, 0b011, 0b110, 0b111); }
+			if (!nextZ.IsSolid()) { DataQuad(data, voxel_data, 0b100, 0b110, 0b101, 0b111); }
 		}
 
 		MainCount = data.Count();

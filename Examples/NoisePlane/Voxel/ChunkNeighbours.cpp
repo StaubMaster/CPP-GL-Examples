@@ -85,22 +85,7 @@ ChunkValue ChunkNeighbours::Value(AxisDirection dir, VectorU3 udx) const
 	ChunkValue val;
 	if (chunk != nullptr)
 	{
-		val.Change((*chunk).Values[
-			VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)
-		]);
+		val.Change((*chunk)[udx]);
 	}
-	return val;
-}
-
-ChunkValue ChunkNeighbours::Value(AxisDirection dir, unsigned int voxel) const
-{
-	ChunkValue val;
-	if (dir == AxisDirection::Here  && Here  != nullptr) { val.Change((*Here).Values[voxel]); }
-	if (dir == AxisDirection::NextX && NextX != nullptr) { val.Change((*NextX).Values[voxel]); }
-	if (dir == AxisDirection::NextY && NextY != nullptr) { val.Change((*NextY).Values[voxel]); }
-	if (dir == AxisDirection::NextZ && NextZ != nullptr) { val.Change((*NextZ).Values[voxel]); }
-	if (dir == AxisDirection::PrevX && PrevX != nullptr) { val.Change((*PrevX).Values[voxel]); }
-	if (dir == AxisDirection::PrevY && PrevY != nullptr) { val.Change((*PrevY).Values[voxel]); }
-	if (dir == AxisDirection::PrevZ && PrevZ != nullptr) { val.Change((*PrevZ).Values[voxel]); }
 	return val;
 }

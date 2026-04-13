@@ -4,9 +4,6 @@
 #include "ValueType/BoxI3.hpp"
 #include "ValueType/LoopI3.hpp"
 
-//#include "ValueType/UndexBox2D.hpp"
-//#include "ValueType/UndexLoop2D.hpp"
-
 
 
 ChunkManager::~ChunkManager() { }

@@ -5,7 +5,7 @@
 ChunkValue::~ChunkValue() { }
 ChunkValue::ChunkValue()
 	: Known(false)
-	, Value(0.0f)
+	, Value()
 { }
 ChunkValue::ChunkValue(const ChunkValue & other)
 	: Known(other.Known)
@@ -18,15 +18,15 @@ ChunkValue & ChunkValue::operator=(const ChunkValue & other)
 	return *this;
 }
 
-bool ChunkValue::Check(float val) const
+bool ChunkValue::IsSolid() const
 {
 	if (Known)
 	{
-		return (Value == val);
+		return (Value.IsSolid());
 	}
-	return false;
+	return true;
 }
-void ChunkValue::Change(float val)
+void ChunkValue::Change(Voxel val)
 {
 	Known = true;
 	Value = val;
