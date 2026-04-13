@@ -5,6 +5,8 @@
 
 #include "Noise/Perlin2D.hpp"
 
+#include "ValueType/BoxI3.hpp"
+
 #include "ValueType/Bool3.hpp"
 #include "ValueType/VectorU3.hpp"
 
@@ -47,6 +49,8 @@ void Chunk::Generate(const Perlin2D & noise)
 
 	Point3D pos = Point3D(Index) * CHUNK_VALUES_PER_SIDE;
 
+	BoxI3 box(VectorI3(-1, -1, -1), VectorI3(+1, +1, +1));
+
 	UndexLoop2D loop(Undex2D(), size2);
 	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
@@ -71,6 +75,16 @@ void Chunk::Generate(const Perlin2D & noise)
 				Voxels[size3.Convert(u3)].Value = 0;
 			}
 			else
+			{
+				Voxels[size3.Convert(u3)].Value = 1;
+			}
+
+			Bool3 b = box.IntersectInclusive(VectorI3((pos.X + u.X), (pos.Y + i), (pos.Z + u.Y)));
+			int b2 = 0;
+			if (b.GetX()) { b2++; }
+			if (b.GetY()) { b2++; }
+			if (b.GetZ()) { b2++; }
+			if (b2 >= 2)
 			{
 				Voxels[size3.Convert(u3)].Value = 1;
 			}
