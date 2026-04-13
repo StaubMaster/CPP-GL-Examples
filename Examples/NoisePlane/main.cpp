@@ -296,7 +296,12 @@ void VoxelGraphicsCreate()
 	ChunkManager.GraphicsCreate();
 	{
 		ChunkManager.Texture.Bind();
-		ChunkManager.Texture.Assign(MediaDirectory.File("Images/OrientationCorners.png"));
+		Container::Array<FileInfo> files({
+			MediaDirectory.File("Images/OrientationCorners.png"),
+			MediaDirectory.File("Images/fancy_GreenDirt.png"),
+			MediaDirectory.File("Images/Wood.png"),
+		});
+		ChunkManager.Texture.Assign(128, 64, files);
 	}
 }
 void VoxelGraphicsDelete()

@@ -7,7 +7,7 @@
 
 struct Voxel
 {
-	float	Value;
+	unsigned int	Value;
 
 	~Voxel();
 	Voxel();
