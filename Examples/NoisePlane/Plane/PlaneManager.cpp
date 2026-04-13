@@ -65,7 +65,7 @@ void PlaneManager::Clear()
 }
 void PlaneManager::UpdateAround(const Perlin2D & noise, Point2D pos)
 {
-	Point2D r = (pos / (PLANE_VALUES_PER_SIDE * PLANE_SCALE)).roundF();
+	Point2D r = (pos / (float)(PLANE_VALUES_PER_SIDE * PLANE_SCALE)).roundF();
 	VectorI2 idx(r);
 
 	unsigned int size = 5;

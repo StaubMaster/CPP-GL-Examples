@@ -47,7 +47,7 @@ void Chunk::Generate(const Perlin2D & noise)
 	Undex2D size2(CHUNK_VALUES_PER_SIDE);
 	Undex3D size3(CHUNK_VALUES_PER_SIDE);
 
-	Point3D pos = Point3D(Index) * CHUNK_VALUES_PER_SIDE;
+	Point3D pos = Index * CHUNK_VALUES_PER_SIDE;
 
 	BoxI3 box(VectorI3(-1, -1, -1), VectorI3(+1, +1, +1));
 
@@ -55,18 +55,18 @@ void Chunk::Generate(const Perlin2D & noise)
 	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
 		Point2D p(
-			(pos.X + u.X) * CHUNK_SCALE,
-			(pos.Z + u.Y) * CHUNK_SCALE
+			pos.X + u.X,
+			pos.Z + u.Y
 		);
 		float val = 0.0f;
+		val += noise.Calculate(p / 32) * 32;
+		val += noise.Calculate(p / 16) * 16;
 		val += noise.Calculate(p / 8) * 8;
 		val += noise.Calculate(p / 4) * 4;
 		val += noise.Calculate(p / 2) * 2;
-		val += noise.Calculate(p);
-		val += noise.Calculate(p * 2) / 2;
-		val += noise.Calculate(p * 4) / 4;
-		val += noise.Calculate(p * 8) / 8;
-		val = (val / CHUNK_SCALE) - pos.Y;
+		val += noise.Calculate(p / 1) * 1;
+		val = val - pos.Y;
+
 		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
 		{
 			Undex3D u3(u.X, i, u.Y);
@@ -171,13 +171,13 @@ void Chunk::UpdateMainBuffer()
 			ChunkValue prevY = Neighbours.Value(AxisDirection::PrevY, u);
 			ChunkValue prevZ = Neighbours.Value(AxisDirection::PrevZ, u);
 
-			if (!prevX.IsSolid()) { DataQuad(data, cube.Face[0]); }
-			if (!prevY.IsSolid()) { DataQuad(data, cube.Face[1]); }
-			if (!prevZ.IsSolid()) { DataQuad(data, cube.Face[2]); }
+			if (!prevX.IsSolid()) { DataQuad(data, cube.PrevX); }
+			if (!prevY.IsSolid()) { DataQuad(data, cube.PrevY); }
+			if (!prevZ.IsSolid()) { DataQuad(data, cube.PrevZ); }
 
-			if (!nextX.IsSolid()) { DataQuad(data, cube.Face[3]); }
-			if (!nextY.IsSolid()) { DataQuad(data, cube.Face[4]); }
-			if (!nextZ.IsSolid()) { DataQuad(data, cube.Face[5]); }
+			if (!nextX.IsSolid()) { DataQuad(data, cube.NextX); }
+			if (!nextY.IsSolid()) { DataQuad(data, cube.NextY); }
+			if (!nextZ.IsSolid()) { DataQuad(data, cube.NextZ); }
 		}
 
 		MainCount = data.Count();
@@ -196,9 +196,7 @@ void Chunk::UpdateInstBuffer()
 		Container::Binary<VoxelGraphics::InstData> data;
 
 		VoxelGraphics::InstData temp;
-		temp.Pos.X = Index.X * CHUNK_VALUES_PER_SIDE * CHUNK_SCALE;
-		temp.Pos.Y = Index.Y * CHUNK_VALUES_PER_SIDE * CHUNK_SCALE;
-		temp.Pos.Z = Index.Z * CHUNK_VALUES_PER_SIDE * CHUNK_SCALE;
+		temp.Pos = Index * CHUNK_VALUES_PER_SIDE;
 		data.Insert(temp);
 
 		Buffer.Inst.Change(data);

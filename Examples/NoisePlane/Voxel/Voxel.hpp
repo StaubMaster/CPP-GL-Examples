@@ -1,8 +1,6 @@
 #ifndef  VOXEL_HPP
 # define VOXEL_HPP
 
-# define VOXEL_SCALE 0.0625
-
 # include "Graphics/Voxel.hpp"
 
 struct Voxel

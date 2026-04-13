@@ -11,7 +11,12 @@ namespace VoxelGraphics
 	};
 	struct VoxelCube
 	{
-		VoxelFace	Face[6];
+		VoxelFace	NextX;
+		VoxelFace	NextY;
+		VoxelFace	NextZ;
+		VoxelFace	PrevX;
+		VoxelFace	PrevY;
+		VoxelFace	PrevZ;
 	};
 };
 

@@ -1,8 +1,7 @@
 
+make PolyHedra more like PolyGon
+remove PolyHedra::Template
+
 make better PolyHedra for simple Texture
 
 make better Textures Wrapper
-
-
-BoolN
-	count how many true and false

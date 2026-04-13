@@ -62,8 +62,7 @@ void ChunkManager::Clear()
 }
 void ChunkManager::UpdateAround(const Perlin2D & noise, VectorF3 pos)
 {
-	VectorF3 r = (pos / (CHUNK_VALUES_PER_SIDE * CHUNK_SCALE)).roundF();
-	VectorI3 idx(r);
+	VectorI3 idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 
 	VectorI3 size(2);
 	BoxI3 box(idx - size, idx + size);

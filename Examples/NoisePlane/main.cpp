@@ -15,13 +15,15 @@
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/Manager.hpp"
 #include "PolyHedra/Object.hpp"
-
-#include "Image.hpp"
 #include "PolyHedra/Data.hpp"
 
 // Graphics
 #include "Graphics/Shader/Code.hpp"
 #include "Miscellaneous/Container/Array.hpp"
+#include "Graphics/Multiform/_Include.hpp"
+
+// FileManager
+#include "Image.hpp"
 
 // Text
 #include "Text/Manager.hpp"
@@ -41,6 +43,8 @@
 // Voxel
 #include "Voxel/Chunk.hpp"
 #include "Voxel/ChunkManager.hpp"
+
+#include "ValueType/LoopI3.hpp"
 
 
 
@@ -99,6 +103,9 @@ UI::Text::Manager		TextManager;
 ::PlaneManager			PlaneManager;
 ::ChunkManager			ChunkManager;
 
+//::Multiform::DisplaySize	Multiform_DisplaySize;
+//::Multiform::Depth			Multiform_Depth;
+
 Perlin2D				Perlin0;
 
 ~MainContext()
@@ -113,6 +120,7 @@ MainContext()
 {
 	PolyHedraManager.MakeCurrent();
 	TextManager.MakeCurrent();
+	
 }
 
 
@@ -274,15 +282,6 @@ void PlanesGraphicsDelete()
 {
 	PlaneManager.GraphicsDelete();
 }
-void PlanesDraw()
-{
-	PlaneManager.Shader.Bind();
-	PlaneManager.Shader.DisplaySize.Put(window.Size);
-	PlaneManager.Shader.Depth.Put(view.Depth);
-	PlaneManager.Shader.View.Put(Matrix4x4::TransformReverse(view.Trans));
-	PlaneManager.Shader.FOV.Put(view.FOV);
-	PlaneManager.Draw();
-}
 
 void VoxelGraphicsCreate()
 {
@@ -308,27 +307,80 @@ void VoxelGraphicsDelete()
 {
 	ChunkManager.GraphicsCreate();
 }
-void VoxelDraw()
-{
-	ChunkManager.Shader.Bind();
-	ChunkManager.Shader.DisplaySize.Put(window.Size);
-	ChunkManager.Shader.Depth.Put(view.Depth);
-	ChunkManager.Shader.View.Put(Matrix4x4::TransformReverse(view.Trans));
-	ChunkManager.Shader.FOV.Put(view.FOV);
-	ChunkManager.Draw();
-}
 
 
+
+PolyHedra * VoxelCube;
+PolyHedra * VoxelChunkCube;
 
 void Make() override
 {
 //	window.DefaultColor = ColorF4(1, 1, 1);
+	view.Depth.Factors.ChangeFar(50.0f);
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
 		Image img(Undex2D(1, 1));
 		PolyHedra * picture = PolyHedra::Generate::DuoHedra(img);
 		delete picture;
+	}
+	{
+		VoxelCube = new PolyHedra();
+
+		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 0, 0))); // 000
+		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 0, 0))); // 001
+		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 1, 0))); // 010
+		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 1, 0))); // 011
+		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 0, 1))); // 100
+		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 0, 1))); // 101
+		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 1, 1))); // 110
+		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 1, 1))); // 111
+
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b001));
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b010, 0b011));
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b100, 0b101));
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b110, 0b111));
+
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b010));
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b001, 0b011));
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b100, 0b110));
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b101, 0b111));
+
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b100));
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b001, 0b101));
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b010, 0b110));
+		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b011, 0b111));
+
+		PolyHedraManager.PlacePolyHedra(VoxelCube);
+	}
+	{
+		VoxelChunkCube = new PolyHedra();
+
+		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 0, 0) * (float)CHUNK_VALUES_PER_SIDE)); // 000
+		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 0, 0) * (float)CHUNK_VALUES_PER_SIDE)); // 001
+		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 1, 0) * (float)CHUNK_VALUES_PER_SIDE)); // 010
+		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 1, 0) * (float)CHUNK_VALUES_PER_SIDE)); // 011
+		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 0, 1) * (float)CHUNK_VALUES_PER_SIDE)); // 100
+		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 0, 1) * (float)CHUNK_VALUES_PER_SIDE)); // 101
+		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 1, 1) * (float)CHUNK_VALUES_PER_SIDE)); // 110
+		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 1, 1) * (float)CHUNK_VALUES_PER_SIDE)); // 111
+
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b001));
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b010, 0b011));
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b100, 0b101));
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b110, 0b111));
+
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b010));
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b001, 0b011));
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b100, 0b110));
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b101, 0b111));
+
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b100));
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b001, 0b101));
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b010, 0b110));
+		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b011, 0b111));
+
+		PolyHedraManager.PlacePolyHedra(VoxelChunkCube);
 	}
 	//Perlin2D::DebugShow();
 	//TestRandom();
@@ -370,6 +422,7 @@ void Frame(double timeDelta) override
 	FrameTime frame_time(64);
 	frame_time.Update(timeDelta);
 	UpdateView(frame_time);
+	Matrix4x4 view_mat = Matrix4x4::TransformReverse(view.Trans);
 
 	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 	ChunkManager.UpdateAround(Perlin0, view.Trans.Position);
@@ -390,6 +443,32 @@ void Frame(double timeDelta) override
 		ChunkManager.Clear();
 	}
 
+	{
+		unsigned int n = ChunkManager.Chunks.Count();
+		PolyHedraObject chunk_boxes[n];
+		for (unsigned int i = 0; i < n; i++)
+		{
+			chunk_boxes[i].Create(VoxelChunkCube);
+			chunk_boxes[i].Trans().Position = (ChunkManager.Chunks[i] -> Index) * CHUNK_VALUES_PER_SIDE;
+			chunk_boxes[i].ShowWire();
+		}
+	}
+	{
+		VectorI3 center = view.Trans.Position;
+		LoopI3 loop(center - VectorI3(2), center + VectorI3(2));
+		std::cout << loop.Range << '\n';
+		PolyHedraObject voxel_boxes[loop.Range.Size().Product()];
+		unsigned int j = 0;
+		// get Voxel from absolute Index
+		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+		{
+			voxel_boxes[j].Create(VoxelCube);
+			voxel_boxes[j].Trans().Position = i;
+			voxel_boxes[j].ShowWire();
+			j++;
+		}
+	}
+
 	PolyHedraManager.ClearInstances();
 	PolyHedraManager.UpdateInstances();
 	if (ShowFull)
@@ -397,7 +476,7 @@ void Frame(double timeDelta) override
 		PolyHedraManager.ShaderFullDefault.Bind();
 		PolyHedraManager.ShaderFullDefault.DisplaySize.Put(window.Size);
 		PolyHedraManager.ShaderFullDefault.Depth.Put(view.Depth);
-		PolyHedraManager.ShaderFullDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
+		PolyHedraManager.ShaderFullDefault.View.Put(view_mat);
 		PolyHedraManager.ShaderFullDefault.FOV.Put(view.FOV);
 		PolyHedraManager.DrawFull();
 	}
@@ -406,62 +485,95 @@ void Frame(double timeDelta) override
 		PolyHedraManager.ShaderWireDefault.Bind();
 		PolyHedraManager.ShaderWireDefault.DisplaySize.Put(window.Size);
 		PolyHedraManager.ShaderWireDefault.Depth.Put(view.Depth);
-		PolyHedraManager.ShaderWireDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
+		PolyHedraManager.ShaderWireDefault.View.Put(view_mat);
 		PolyHedraManager.ShaderWireDefault.FOV.Put(view.FOV);
 		PolyHedraManager.DrawWire();
 	}
-
-	if (ShowTiles) { PlanesDraw(); }
-	if (ShowVoxels) { VoxelDraw(); }
+	if (ShowTiles)
+	{
+		PlaneManager.Shader.Bind();
+		PlaneManager.Shader.DisplaySize.Put(window.Size);
+		PlaneManager.Shader.Depth.Put(view.Depth);
+		PlaneManager.Shader.View.Put(view_mat);
+		PlaneManager.Shader.FOV.Put(view.FOV);
+		PlaneManager.Draw();
+	}
+	if (ShowVoxels)
+	{
+		ChunkManager.Shader.Bind();
+		ChunkManager.Shader.DisplaySize.Put(window.Size);
+		ChunkManager.Shader.Depth.Put(view.Depth);
+		ChunkManager.Shader.View.Put(view_mat);
+		ChunkManager.Shader.FOV.Put(view.FOV);
+		ChunkManager.Draw();
+	}
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	{
 		std::stringstream ss;
-		ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
-		ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
-		ss << "View " << view.Trans.Position << '\n';
-		ss << '\n';
-
-		unsigned int count_planes = PlaneManager.Planes.Count();
-		unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
-		ss << "ShouldGenerate:" << PlaneManager.ShouldGenerate << '\n';
-		ss << "Planes|Tiles:" << count_planes << '|' << count_tiles << '\n';
 		{
+			ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
+			ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
+			ss << "View " << view.Trans.Position << '\n';
+			ss << '\n';
+		}
+
+		{
+			unsigned int count = PolyHedraManager.InstanceManagers.Count();
+			unsigned int all_count = PolyHedraManager.ObjectDatas.Count();
+			unsigned int full_count = 0;
+			unsigned int wire_count = 0;
+			for (unsigned int i = 0; i < count; i++)
+			{
+				full_count += PolyHedraManager.InstanceManagers[i].InstancesFull.Count();
+				wire_count += PolyHedraManager.InstanceManagers[i].InstancesWire.Count();
+			}
+			ss << "PolyHedra:" << PolyHedraManager.InstanceManagers.Count() << '|' << all_count << '\n';
+			ss << "Full|Wire:" << ShowFull << '|' << ShowWire << '\n';
+			ss << "Full|Wire:" << full_count << '|' << wire_count << '\n';
+			ss << '\n';
+		}
+
+		{
+			unsigned int count_planes = PlaneManager.Planes.Count();
+			unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
+			ss << "ShouldGenerate:" << PlaneManager.ShouldGenerate << '\n';
+			ss << "Planes|Tiles:" << count_planes << '|' << count_tiles << '\n';
 			unsigned long long memory = count_tiles * sizeof(float);
 			const char * factor = "B";
 			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
 			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
 			ss << "Memory:" << memory << factor << "\n";
+			ss << '\n';
 		}
-		ss << '\n';
-
-		unsigned int count_chunks = ChunkManager.Chunks.Count();
-		unsigned int count_voxels = count_chunks * CHUNK_VALUES_PER_VOLM;
-		ss << "ShouldGenerate:" << ChunkManager.ShouldGenerate << '\n';
-		ss << "Chunks|Voxels:" << count_chunks << '|' << count_voxels << '\n';
+		
 		{
+			unsigned int count_chunks = ChunkManager.Chunks.Count();
+			unsigned int count_voxels = count_chunks * CHUNK_VALUES_PER_VOLM;
+			ss << "ShouldGenerate:" << ChunkManager.ShouldGenerate << '\n';
+			ss << "Chunks|Voxels:" << count_chunks << '|' << count_voxels << '\n';
 			unsigned long long memory = count_voxels * sizeof(float);
 			const char * factor = "B";
 			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
 			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
 			ss << "Memory:" << memory << factor << "\n";
+			ss << '\n';
 		}
-		ss << '\n';
 
-		unsigned long long main_count = 0;
-		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
 		{
-			main_count += ChunkManager.Chunks[i] -> MainCount;
-		}
-		ss << "Main Count:" << main_count << '\n';
-		{
+			unsigned long long main_count = 0;
+			for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
+			{
+				main_count += ChunkManager.Chunks[i] -> MainCount;
+			}
+			ss << "Main Count:" << main_count << '\n';
 			unsigned long long memory = main_count * sizeof(VoxelGraphics::MainData);
 			const char * factor = "B";
 			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
 			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
 			ss << "Memory:" << memory << factor << "\n";
+			ss << '\n';
 		}
-		ss << '\n';
 
 		UI::Text::Object text; text.Create();
 		text.Pos().X = 10;
