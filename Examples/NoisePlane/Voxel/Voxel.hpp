@@ -17,7 +17,7 @@ struct Voxel
 
 	bool	IsSolid() const;
 
-	VoxelGraphics::VoxelData	ToGraphics(VectorU3 u) const;
+	VoxelGraphics::VoxelCube	ToGraphics(VectorU3 u) const;
 };
 
 #endif

@@ -26,30 +26,49 @@ bool Voxel::IsSolid() const
 
 
 
-static ColorF4 UndexToColor(VectorU3 u)
+VoxelGraphics::VoxelCube Voxel::ToGraphics(VectorU3 u) const
 {
-	ColorF4 col;
-	col.R = (u.X % 2);
-	col.G = (u.Y % 2);
-	col.B = (u.Z % 2);
-	return col;
-}
+	Point3D pos[8];
+	pos[0b000] = Point3D(u.X + 0, u.Y + 0, u.Z + 0) * VOXEL_SCALE;
+	pos[0b001] = Point3D(u.X + 1, u.Y + 0, u.Z + 0) * VOXEL_SCALE;
+	pos[0b010] = Point3D(u.X + 0, u.Y + 1, u.Z + 0) * VOXEL_SCALE;
+	pos[0b011] = Point3D(u.X + 1, u.Y + 1, u.Z + 0) * VOXEL_SCALE;
+	pos[0b100] = Point3D(u.X + 0, u.Y + 0, u.Z + 1) * VOXEL_SCALE;
+	pos[0b101] = Point3D(u.X + 1, u.Y + 0, u.Z + 1) * VOXEL_SCALE;
+	pos[0b110] = Point3D(u.X + 0, u.Y + 1, u.Z + 1) * VOXEL_SCALE;
+	pos[0b111] = Point3D(u.X + 1, u.Y + 1, u.Z + 1) * VOXEL_SCALE;
 
-VoxelGraphics::VoxelData Voxel::ToGraphics(VectorU3 u) const
-{
-	VoxelGraphics::VoxelData data;
+	VoxelGraphics::VoxelCube data;
 
-	data.Data[0b000].Pos = Point3D(u.X + 0, u.Y + 0, u.Z + 0) * VOXEL_SCALE;
-	data.Data[0b001].Pos = Point3D(u.X + 1, u.Y + 0, u.Z + 0) * VOXEL_SCALE;
-	data.Data[0b010].Pos = Point3D(u.X + 0, u.Y + 1, u.Z + 0) * VOXEL_SCALE;
-	data.Data[0b011].Pos = Point3D(u.X + 1, u.Y + 1, u.Z + 0) * VOXEL_SCALE;
-	data.Data[0b100].Pos = Point3D(u.X + 0, u.Y + 0, u.Z + 1) * VOXEL_SCALE;
-	data.Data[0b101].Pos = Point3D(u.X + 1, u.Y + 0, u.Z + 1) * VOXEL_SCALE;
-	data.Data[0b110].Pos = Point3D(u.X + 0, u.Y + 1, u.Z + 1) * VOXEL_SCALE;
-	data.Data[0b111].Pos = Point3D(u.X + 1, u.Y + 1, u.Z + 1) * VOXEL_SCALE;
+	data.Face[0].Corn[0b00].Pos = pos[0b000]; data.Face[0].Corn[0b00].Tex = Point3D(0.00f, 0.0f, 0);
+	data.Face[0].Corn[0b01].Pos = pos[0b010]; data.Face[0].Corn[0b01].Tex = Point3D(0.25f, 0.0f, 0);
+	data.Face[0].Corn[0b10].Pos = pos[0b100]; data.Face[0].Corn[0b10].Tex = Point3D(0.00f, 0.5f, 0);
+	data.Face[0].Corn[0b11].Pos = pos[0b110]; data.Face[0].Corn[0b11].Tex = Point3D(0.25f, 0.5f, 0);
 
-	ColorF4 col = UndexToColor(u);
-	for (unsigned int i = 0; i < 8; i++) { data.Data[i].Col = col; }
+	data.Face[1].Corn[0b00].Pos = pos[0b000]; data.Face[1].Corn[0b00].Tex = Point3D(0.25f, 0.0f, 0);
+	data.Face[1].Corn[0b01].Pos = pos[0b100]; data.Face[1].Corn[0b01].Tex = Point3D(0.50f, 0.0f, 0);
+	data.Face[1].Corn[0b10].Pos = pos[0b001]; data.Face[1].Corn[0b10].Tex = Point3D(0.25f, 0.5f, 0);
+	data.Face[1].Corn[0b11].Pos = pos[0b101]; data.Face[1].Corn[0b11].Tex = Point3D(0.50f, 0.5f, 0);
+
+	data.Face[2].Corn[0b00].Pos = pos[0b000]; data.Face[2].Corn[0b00].Tex = Point3D(0.50f, 0.0f, 0);
+	data.Face[2].Corn[0b01].Pos = pos[0b001]; data.Face[2].Corn[0b01].Tex = Point3D(0.75f, 0.0f, 0);
+	data.Face[2].Corn[0b10].Pos = pos[0b010]; data.Face[2].Corn[0b10].Tex = Point3D(0.50f, 0.5f, 0);
+	data.Face[2].Corn[0b11].Pos = pos[0b011]; data.Face[2].Corn[0b11].Tex = Point3D(0.75f, 0.5f, 0);
+
+	data.Face[3].Corn[0b00].Pos = pos[0b001]; data.Face[3].Corn[0b00].Tex = Point3D(0.00f, 0.5f, 0);
+	data.Face[3].Corn[0b10].Pos = pos[0b011]; data.Face[3].Corn[0b01].Tex = Point3D(0.00f, 1.0f, 0);
+	data.Face[3].Corn[0b01].Pos = pos[0b101]; data.Face[3].Corn[0b10].Tex = Point3D(0.25f, 0.5f, 0);
+	data.Face[3].Corn[0b11].Pos = pos[0b111]; data.Face[3].Corn[0b11].Tex = Point3D(0.25f, 1.0f, 0);
+
+	data.Face[4].Corn[0b00].Pos = pos[0b010]; data.Face[4].Corn[0b00].Tex = Point3D(0.25f, 0.5f, 0);
+	data.Face[4].Corn[0b10].Pos = pos[0b110]; data.Face[4].Corn[0b01].Tex = Point3D(0.25f, 1.0f, 0);
+	data.Face[4].Corn[0b01].Pos = pos[0b011]; data.Face[4].Corn[0b10].Tex = Point3D(0.50f, 0.5f, 0);
+	data.Face[4].Corn[0b11].Pos = pos[0b111]; data.Face[4].Corn[0b11].Tex = Point3D(0.50f, 1.0f, 0);
+
+	data.Face[5].Corn[0b00].Pos = pos[0b100]; data.Face[5].Corn[0b00].Tex = Point3D(0.50f, 0.5f, 0);
+	data.Face[5].Corn[0b10].Pos = pos[0b101]; data.Face[5].Corn[0b01].Tex = Point3D(0.50f, 1.0f, 0);
+	data.Face[5].Corn[0b01].Pos = pos[0b110]; data.Face[5].Corn[0b10].Tex = Point3D(0.75f, 0.5f, 0);
+	data.Face[5].Corn[0b11].Pos = pos[0b111]; data.Face[5].Corn[0b11].Tex = Point3D(0.75f, 1.0f, 0);
 
 	return data;
 }

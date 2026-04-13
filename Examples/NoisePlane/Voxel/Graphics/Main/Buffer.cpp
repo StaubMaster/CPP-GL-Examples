@@ -7,9 +7,9 @@ VoxelGraphics::MainBuffer::~MainBuffer() { }
 VoxelGraphics::MainBuffer::MainBuffer(::BufferArray::Base & buffer_array)
 	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainData))
 	, Pos()
-	, Col()
+	, Tex()
 {
 	Attributes.Allocate(2);
 	Attributes.Insert(&Pos);
-	Attributes.Insert(&Col);
+	Attributes.Insert(&Tex);
 }

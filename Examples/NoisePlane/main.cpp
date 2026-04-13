@@ -288,13 +288,16 @@ void VoxelGraphicsCreate()
 {
 	{
 		Container::Array<::Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.frag")),
+			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
 		});
 		ChunkManager.Shader.Change(code);
 	}
-
 	ChunkManager.GraphicsCreate();
+	{
+		ChunkManager.Texture.Bind();
+		ChunkManager.Texture.Assign(MediaDirectory.File("Images/OrientationCorners.png"));
+	}
 }
 void VoxelGraphicsDelete()
 {
@@ -411,6 +414,7 @@ void Frame(double timeDelta) override
 		std::stringstream ss;
 		ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
 		ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
+		ss << "View " << view.Trans.Position << '\n';
 		ss << '\n';
 
 		unsigned int count_planes = PlaneManager.Planes.Count();

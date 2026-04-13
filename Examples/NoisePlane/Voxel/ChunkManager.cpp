@@ -89,7 +89,7 @@ void ChunkManager::Generate(const Perlin2D & noise, VectorI3 idx)
 		NeighbourInsert(*chunk);
 
 		chunk -> Buffer.Main.Pos.Change(0);
-		chunk -> Buffer.Main.Col.Change(1);
+		chunk -> Buffer.Main.Tex.Change(1);
 		chunk -> Buffer.Inst.Pos.Change(2);
 		if (GraphicsExist)
 		{
@@ -136,6 +136,7 @@ void ChunkManager::GraphicsCreate()
 	if (GraphicsExist) { return; }
 
 	Shader.Create();
+	Texture.Create();
 	for (unsigned int i = 0; i < Chunks.Count(); i++)
 	{
 		(*Chunks[i]).GraphicsCreate();
@@ -148,6 +149,7 @@ void ChunkManager::GraphicsDelete()
 	if (!GraphicsExist) { return; }
 
 	Shader.Delete();
+	Texture.Delete();
 	for (unsigned int i = 0; i < Chunks.Count(); i++)
 	{
 		(*Chunks[i]).GraphicsDelete();
@@ -161,6 +163,7 @@ void ChunkManager::Draw()
 	if (!GraphicsExist) { return; }
 
 	Shader.Bind();
+	Texture.Bind();
 	for (unsigned int i = 0; i < Chunks.Count(); i++)
 	{
 		(*Chunks[i]).Draw();

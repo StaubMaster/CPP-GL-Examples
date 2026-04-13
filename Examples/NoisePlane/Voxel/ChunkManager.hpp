@@ -5,15 +5,17 @@
 
 # include "Chunk.hpp"
 # include "Graphics/Shader.hpp"
-//# include "ChunkNeighbours.hpp"
 
 # include "ValueType/VectorI3.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
 
+# include "Graphics/Texture/Array2D.hpp"
+
 struct ChunkManager
 {
 	VoxelGraphics::Shader		Shader;
+	Texture::Array2D			Texture;
 	Container::Binary<Chunk*>	Chunks;
 
 	~ChunkManager();

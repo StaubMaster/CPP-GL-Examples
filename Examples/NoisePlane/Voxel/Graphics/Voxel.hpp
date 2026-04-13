@@ -5,9 +5,13 @@
 
 namespace VoxelGraphics
 {
-	struct VoxelData
+	struct VoxelFace
 	{
-		MainData	Data[8];
+		MainData	Corn[4];
+	};
+	struct VoxelCube
+	{
+		VoxelFace	Face[6];
 	};
 };
 

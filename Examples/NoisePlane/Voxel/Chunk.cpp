@@ -114,17 +114,15 @@ void Chunk::GraphicsDelete()
 
 
 
-static void DataQuad(Container::Binary<VoxelGraphics::MainData> & data,
-	VoxelGraphics::VoxelData voxel_data,
-	unsigned char idx00, unsigned char idx01, unsigned char idx10, unsigned char idx11)
+static void DataQuad(Container::Binary<VoxelGraphics::MainData> & data, VoxelGraphics::VoxelFace face)
 {
-	data.Insert(voxel_data.Data[idx00]);
-	data.Insert(voxel_data.Data[idx10]);
-	data.Insert(voxel_data.Data[idx01]);
+	data.Insert(face.Corn[0b00]);
+	data.Insert(face.Corn[0b10]);
+	data.Insert(face.Corn[0b01]);
 
-	data.Insert(voxel_data.Data[idx01]);
-	data.Insert(voxel_data.Data[idx10]);
-	data.Insert(voxel_data.Data[idx11]);
+	data.Insert(face.Corn[0b01]);
+	data.Insert(face.Corn[0b10]);
+	data.Insert(face.Corn[0b11]);
 }
 
 void Chunk::UpdateMainBuffer()
@@ -145,7 +143,7 @@ void Chunk::UpdateMainBuffer()
 				continue;
 			}
 
-			VoxelGraphics::VoxelData voxel_data = voxel.ToGraphics(u);
+			VoxelGraphics::VoxelCube cube = voxel.ToGraphics(u);
 
 			ChunkValue nextX = Neighbours.Value(AxisDirection::NextX, u);
 			ChunkValue nextY = Neighbours.Value(AxisDirection::NextY, u);
@@ -155,13 +153,13 @@ void Chunk::UpdateMainBuffer()
 			ChunkValue prevY = Neighbours.Value(AxisDirection::PrevY, u);
 			ChunkValue prevZ = Neighbours.Value(AxisDirection::PrevZ, u);
 
-			if (!prevX.IsSolid()) { DataQuad(data, voxel_data, 0b000, 0b010, 0b100, 0b110); }
-			if (!prevY.IsSolid()) { DataQuad(data, voxel_data, 0b000, 0b100, 0b001, 0b101); }
-			if (!prevZ.IsSolid()) { DataQuad(data, voxel_data, 0b000, 0b001, 0b010, 0b011); }
+			if (!prevX.IsSolid()) { DataQuad(data, cube.Face[0]); }
+			if (!prevY.IsSolid()) { DataQuad(data, cube.Face[1]); }
+			if (!prevZ.IsSolid()) { DataQuad(data, cube.Face[2]); }
 
-			if (!nextX.IsSolid()) { DataQuad(data, voxel_data, 0b001, 0b101, 0b011, 0b111); }
-			if (!nextY.IsSolid()) { DataQuad(data, voxel_data, 0b010, 0b011, 0b110, 0b111); }
-			if (!nextZ.IsSolid()) { DataQuad(data, voxel_data, 0b100, 0b110, 0b101, 0b111); }
+			if (!nextX.IsSolid()) { DataQuad(data, cube.Face[3]); }
+			if (!nextY.IsSolid()) { DataQuad(data, cube.Face[4]); }
+			if (!nextZ.IsSolid()) { DataQuad(data, cube.Face[5]); }
 		}
 
 		MainCount = data.Count();
