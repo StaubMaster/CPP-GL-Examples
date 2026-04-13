@@ -34,7 +34,8 @@ struct ChunkNeighbours
 	ChunkNeighbours(const ChunkNeighbours & other);
 	ChunkNeighbours & operator=(const ChunkNeighbours & other);
 
-	ChunkValue	Value(AxisDirection dir, VectorU3 voxel3, unsigned int voxel) const;
+	ChunkValue	Value(AxisDirection dir, VectorU3 udx) const;
+	ChunkValue	Value(AxisDirection dir, unsigned int voxel) const;
 };
 
 #endif

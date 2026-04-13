@@ -7,7 +7,6 @@
 struct ChunkValue
 {
 	bool		Known;
-	VectorU3	Undex;
 	float		Value;
 
 	~ChunkValue();
@@ -15,8 +14,8 @@ struct ChunkValue
 	ChunkValue(const ChunkValue & other);
 	ChunkValue & operator=(const ChunkValue & other);
 
-	void		Change(VectorU3 udx, float val);
-	ColorF4		ToColor() const;
+	bool	Check(float val) const;
+	void	Change(float val);
 };
 
 #endif

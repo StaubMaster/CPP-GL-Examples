@@ -119,6 +119,17 @@ static ColorF4 UndexToColor(Undex3D u)
 	col.B = (u.Z % 2);
 	return col;
 }
+static void DataQuad(Container::Binary<ChunkGraphics::MainData> & data, ChunkGraphics::MainData temp[8],
+	unsigned char idx00, unsigned char idx01, unsigned char idx10, unsigned char idx11)
+{
+	data.Insert(temp[idx00]);
+	data.Insert(temp[idx10]);
+	data.Insert(temp[idx01]);
+
+	data.Insert(temp[idx01]);
+	data.Insert(temp[idx10]);
+	data.Insert(temp[idx11]);
+}
 
 void Chunk::UpdateMainBuffer()
 {
@@ -133,126 +144,39 @@ void Chunk::UpdateMainBuffer()
 		UndexLoop3D loop(Undex3D(), size);
 		for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
-			Undex3D u0 = Undex3D(u.X + 0, u.Y + 0, u.Z + 0);
-			Undex3D u1 = Undex3D(u.X + 1, u.Y + 1, u.Z + 1);
+			if (Values[size.Convert(u)] == 0)
+			{
+				continue;
+			}
 
 			ChunkGraphics::MainData temp[8];
-			temp[0b000].Pos = Point3D(u0.X, u0.Y, u0.Z) * CHUNK_SCALE;
-			temp[0b001].Pos = Point3D(u1.X, u0.Y, u0.Z) * CHUNK_SCALE;
-			temp[0b010].Pos = Point3D(u0.X, u1.Y, u0.Z) * CHUNK_SCALE;
-			temp[0b011].Pos = Point3D(u1.X, u1.Y, u0.Z) * CHUNK_SCALE;
-			temp[0b100].Pos = Point3D(u0.X, u0.Y, u1.Z) * CHUNK_SCALE;
-			temp[0b101].Pos = Point3D(u1.X, u0.Y, u1.Z) * CHUNK_SCALE;
-			temp[0b110].Pos = Point3D(u0.X, u1.Y, u1.Z) * CHUNK_SCALE;
-			temp[0b111].Pos = Point3D(u1.X, u1.Y, u1.Z) * CHUNK_SCALE;
+			temp[0b000].Pos = Point3D(u.X + 0, u.Y + 0, u.Z + 0) * CHUNK_SCALE;
+			temp[0b001].Pos = Point3D(u.X + 1, u.Y + 0, u.Z + 0) * CHUNK_SCALE;
+			temp[0b010].Pos = Point3D(u.X + 0, u.Y + 1, u.Z + 0) * CHUNK_SCALE;
+			temp[0b011].Pos = Point3D(u.X + 1, u.Y + 1, u.Z + 0) * CHUNK_SCALE;
+			temp[0b100].Pos = Point3D(u.X + 0, u.Y + 0, u.Z + 1) * CHUNK_SCALE;
+			temp[0b101].Pos = Point3D(u.X + 1, u.Y + 0, u.Z + 1) * CHUNK_SCALE;
+			temp[0b110].Pos = Point3D(u.X + 0, u.Y + 1, u.Z + 1) * CHUNK_SCALE;
+			temp[0b111].Pos = Point3D(u.X + 1, u.Y + 1, u.Z + 1) * CHUNK_SCALE;
 
 			ColorF4 col = UndexToColor(u);
 			for (unsigned int i = 0; i < 8; i++) { temp[i].Col = col; }
 
-			u0 = u0 % size;
-			u1 = u1 % size;
+			ChunkValue nextX = Neighbours.Value(AxisDirection::NextX, u);
+			ChunkValue nextY = Neighbours.Value(AxisDirection::NextY, u);
+			ChunkValue nextZ = Neighbours.Value(AxisDirection::NextZ, u);
 
-			ChunkValue nextX;
-			ChunkValue nextY;
-			ChunkValue nextZ;
-			ChunkValue prevX;
-			ChunkValue prevY;
-			ChunkValue prevZ;
+			ChunkValue prevX = Neighbours.Value(AxisDirection::PrevX, u);
+			ChunkValue prevY = Neighbours.Value(AxisDirection::PrevY, u);
+			ChunkValue prevZ = Neighbours.Value(AxisDirection::PrevZ, u);
 
-			{
-				AxisDirection dir;
-				VectorU3 udx3 = u;
-				if (u.X != edge.X)
-				{ dir = AxisDirection::Here; udx3.X = u.X + 1; }
-				else
-				{ dir = AxisDirection::NextX; udx3.X = 0; }
-				nextX = Neighbours.Value(dir, udx3, size.Convert(udx3));
-			}
+			if (prevX.Check(0.0f)) { DataQuad(data, temp, 0b000, 0b010, 0b100, 0b110); }
+			if (prevY.Check(0.0f)) { DataQuad(data, temp, 0b000, 0b010, 0b001, 0b101); }
+			if (prevZ.Check(0.0f)) { DataQuad(data, temp, 0b000, 0b001, 0b010, 0b011); }
 
-			{
-				AxisDirection dir;
-				VectorU3 udx3 = u;
-				if (u.Y != edge.Y)
-				{ dir = AxisDirection::Here; udx3.Y = u.Y + 1; }
-				else
-				{ dir = AxisDirection::NextY; udx3.Y = 0; }
-				nextY = Neighbours.Value(dir, udx3, size.Convert(udx3));
-			}
-
-			{
-				AxisDirection dir;
-				VectorU3 udx3 = u;
-				if (u.Z != edge.Z)
-				{ dir = AxisDirection::Here; udx3.Z = u.Z + 1; }
-				else
-				{ dir = AxisDirection::NextZ; udx3.Z = 0; }
-				nextZ = Neighbours.Value(dir, udx3, size.Convert(udx3));
-			}
-
-			{
-				AxisDirection dir;
-				VectorU3 udx3 = u;
-				if (u.X != 0)
-				{ dir = AxisDirection::Here; udx3.X = u.X - 1; }
-				else
-				{ dir = AxisDirection::PrevX; udx3.X = edge.X; }
-				prevX = Neighbours.Value(dir, udx3, size.Convert(udx3));
-			}
-
-			{
-				AxisDirection dir;
-				VectorU3 udx3 = u;
-				if (u.Y != 0)
-				{ dir = AxisDirection::Here; udx3.Y = u.Y - 1; }
-				else
-				{ dir = AxisDirection::PrevY; udx3.Y = edge.Y; }
-				prevY = Neighbours.Value(dir, udx3, size.Convert(udx3));
-			}
-
-			{
-				AxisDirection dir;
-				VectorU3 udx3 = u;
-				if (u.Z != 0)
-				{ dir = AxisDirection::Here; udx3.Z = u.Z - 1; }
-				else
-				{ dir = AxisDirection::PrevZ; udx3.Z = edge.Z; }
-				prevZ = Neighbours.Value(dir, udx3, size.Convert(udx3));
-			}
-
-			if (Values[size.Convert(u)] != 0)
-			{
-				if (prevX.Known && prevX.Value == 0)
-				{
-					data.Insert(temp[0b000]); data.Insert(temp[0b100]); data.Insert(temp[0b010]);
-					data.Insert(temp[0b010]); data.Insert(temp[0b100]); data.Insert(temp[0b110]);
-				}
-				if (prevY.Known && prevY.Value == 0)
-				{
-					data.Insert(temp[0b000]); data.Insert(temp[0b001]); data.Insert(temp[0b100]);
-					data.Insert(temp[0b100]); data.Insert(temp[0b001]); data.Insert(temp[0b101]);
-				}
-				if (prevZ.Known && prevZ.Value == 0)
-				{
-					data.Insert(temp[0b000]); data.Insert(temp[0b010]); data.Insert(temp[0b001]);
-					data.Insert(temp[0b001]); data.Insert(temp[0b010]); data.Insert(temp[0b011]);
-				}
-
-				if (nextX.Known && nextX.Value == 0)
-				{
-					data.Insert(temp[0b001]); data.Insert(temp[0b011]); data.Insert(temp[0b101]);
-					data.Insert(temp[0b101]); data.Insert(temp[0b011]); data.Insert(temp[0b111]);
-				}
-				if (nextY.Known && nextY.Value == 0)
-				{
-					data.Insert(temp[0b010]); data.Insert(temp[0b110]); data.Insert(temp[0b011]);
-					data.Insert(temp[0b011]); data.Insert(temp[0b110]); data.Insert(temp[0b111]);
-				}
-				if (nextZ.Known && nextZ.Value == 0)
-				{
-					data.Insert(temp[0b100]); data.Insert(temp[0b101]); data.Insert(temp[0b110]);
-					data.Insert(temp[0b110]); data.Insert(temp[0b101]); data.Insert(temp[0b111]);
-				}
-			}
+			if (nextX.Check(0.0f)) { DataQuad(data, temp, 0b001, 0b101, 0b011, 0b111); }
+			if (nextY.Check(0.0f)) { DataQuad(data, temp, 0b010, 0b011, 0b110, 0b111); }
+			if (nextZ.Check(0.0f)) { DataQuad(data, temp, 0b100, 0b110, 0b101, 0b111); }
 		}
 
 		MainCount = data.Count();
