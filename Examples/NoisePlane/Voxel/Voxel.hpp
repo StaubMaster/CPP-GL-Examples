@@ -3,7 +3,7 @@
 
 # define VOXEL_SCALE 0.0625
 
-# include "ChunkGraphics.hpp"
+# include "Graphics/Voxel.hpp"
 
 struct Voxel
 {
@@ -17,7 +17,7 @@ struct Voxel
 
 	bool	IsSolid() const;
 
-	ChunkGraphics::VoxelData	ToGraphics(VectorU3 u) const;
+	VoxelGraphics::VoxelData	ToGraphics(VectorU3 u) const;
 };
 
 #endif

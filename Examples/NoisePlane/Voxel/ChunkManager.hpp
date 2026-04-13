@@ -4,7 +4,7 @@
 # include "Noise/Perlin2D.hpp"
 
 # include "Chunk.hpp"
-# include "ChunkGraphics.hpp"
+# include "Graphics/Shader.hpp"
 //# include "ChunkNeighbours.hpp"
 
 # include "ValueType/VectorI3.hpp"
@@ -13,7 +13,7 @@
 
 struct ChunkManager
 {
-	ChunkGraphics::Shader		Shader;
+	VoxelGraphics::Shader		Shader;
 	Container::Binary<Chunk*>	Chunks;
 
 	~ChunkManager();

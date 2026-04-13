@@ -7,7 +7,7 @@
 # define CHUNK_VALUES_PER_VOLM CHUNK_VALUES_PER_SIDE * CHUNK_VALUES_PER_SIDE * CHUNK_VALUES_PER_SIDE
 
 # include "Voxel.hpp"
-# include "ChunkGraphics.hpp"
+# include "Graphics/Buffer.hpp"
 # include "ChunkNeighbours.hpp"
 
 # include "ValueType/VectorI3.hpp"
@@ -35,7 +35,7 @@ struct Chunk
 
 
 	unsigned int			MainCount;
-	ChunkGraphics::Buffer	Buffer;
+	VoxelGraphics::Buffer	Buffer;
 
 	bool	GraphicsExist;
 	void	GraphicsCreate();

@@ -35,9 +35,9 @@ static ColorF4 UndexToColor(VectorU3 u)
 	return col;
 }
 
-ChunkGraphics::VoxelData Voxel::ToGraphics(VectorU3 u) const
+VoxelGraphics::VoxelData Voxel::ToGraphics(VectorU3 u) const
 {
-	ChunkGraphics::VoxelData data;
+	VoxelGraphics::VoxelData data;
 
 	data.Data[0b000].Pos = Point3D(u.X + 0, u.Y + 0, u.Z + 0) * VOXEL_SCALE;
 	data.Data[0b001].Pos = Point3D(u.X + 1, u.Y + 0, u.Z + 0) * VOXEL_SCALE;

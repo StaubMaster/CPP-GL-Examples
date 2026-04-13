@@ -27,11 +27,18 @@ FILES_SRC := \
 	Plane/PlaneGraphics.cpp \
 	Plane/PlaneManager.cpp \
 \
+	Voxel/Graphics/Voxel.cpp \
+	Voxel/Graphics/Main/Data.cpp \
+	Voxel/Graphics/Main/Buffer.cpp \
+	Voxel/Graphics/Inst/Data.cpp \
+	Voxel/Graphics/Inst/Buffer.cpp \
+	Voxel/Graphics/Buffer.cpp \
+	Voxel/Graphics/Shader.cpp \
+	\
 	Voxel/Voxel.cpp \
 	Voxel/Chunk.cpp \
 	Voxel/ChunkValue.cpp \
 	Voxel/ChunkNeighbours.cpp \
-	Voxel/ChunkGraphics.cpp \
 	Voxel/ChunkManager.cpp \
 \
 	main.cpp \

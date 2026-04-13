@@ -1,5 +1,8 @@
 #include "Chunk.hpp"
 #include "ChunkValue.hpp"
+
+#include "Graphics/Inst/Data.hpp"
+
 #include "Noise/Perlin2D.hpp"
 
 #include "ValueType/Bool3.hpp"
@@ -111,8 +114,8 @@ void Chunk::GraphicsDelete()
 
 
 
-static void DataQuad(Container::Binary<ChunkGraphics::MainData> & data,
-	ChunkGraphics::VoxelData voxel_data,
+static void DataQuad(Container::Binary<VoxelGraphics::MainData> & data,
+	VoxelGraphics::VoxelData voxel_data,
 	unsigned char idx00, unsigned char idx01, unsigned char idx10, unsigned char idx11)
 {
 	data.Insert(voxel_data.Data[idx00]);
@@ -130,7 +133,7 @@ void Chunk::UpdateMainBuffer()
 	if (!MainBufferNeedsData) { return; }
 
 	{
-		Container::Binary<ChunkGraphics::MainData> data;
+		Container::Binary<VoxelGraphics::MainData> data;
 
 		Undex3D size(CHUNK_VALUES_PER_SIDE);
 		UndexLoop3D loop(Undex3D(), size);
@@ -142,7 +145,7 @@ void Chunk::UpdateMainBuffer()
 				continue;
 			}
 
-			ChunkGraphics::VoxelData voxel_data = voxel.ToGraphics(u);
+			VoxelGraphics::VoxelData voxel_data = voxel.ToGraphics(u);
 
 			ChunkValue nextX = Neighbours.Value(AxisDirection::NextX, u);
 			ChunkValue nextY = Neighbours.Value(AxisDirection::NextY, u);
@@ -174,9 +177,9 @@ void Chunk::UpdateInstBuffer()
 	if (!InstBufferNeedsData) { return; }
 
 	{
-		Container::Binary<ChunkGraphics::InstData> data;
+		Container::Binary<VoxelGraphics::InstData> data;
 
-		ChunkGraphics::InstData temp;
+		VoxelGraphics::InstData temp;
 		temp.Pos.X = Index.X * CHUNK_VALUES_PER_SIDE * CHUNK_SCALE;
 		temp.Pos.Y = Index.Y * CHUNK_VALUES_PER_SIDE * CHUNK_SCALE;
 		temp.Pos.Z = Index.Z * CHUNK_VALUES_PER_SIDE * CHUNK_SCALE;

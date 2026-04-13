@@ -40,7 +40,6 @@
 
 // Voxel
 #include "Voxel/Chunk.hpp"
-#include "Voxel/ChunkGraphics.hpp"
 #include "Voxel/ChunkManager.hpp"
 
 
@@ -447,7 +446,7 @@ void Frame(double timeDelta) override
 		}
 		ss << "Main Count:" << main_count << '\n';
 		{
-			unsigned long long memory = main_count * sizeof(ChunkGraphics::MainData);
+			unsigned long long memory = main_count * sizeof(VoxelGraphics::MainData);
 			const char * factor = "B";
 			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
 			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
