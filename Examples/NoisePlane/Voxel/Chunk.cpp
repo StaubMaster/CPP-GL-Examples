@@ -1,4 +1,5 @@
 #include "Chunk.hpp"
+#include "ChunkValue.hpp"
 #include "Noise/Perlin2D.hpp"
 
 #include "ValueType/Bool3.hpp"
@@ -127,10 +128,9 @@ void Chunk::UpdateMainBuffer()
 	{
 		Container::Binary<ChunkGraphics::MainData> data;
 
-		// if voxel now empty. show 1 face to test for now
 		Undex3D size(CHUNK_VALUES_PER_SIDE);
 		Undex3D edge(CHUNK_VALUES_PER_SIDE - 1);
-		UndexLoop3D loop(Undex3D(), edge);
+		UndexLoop3D loop(Undex3D(), size);
 		for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
 			Undex3D u0 = Undex3D(u.X + 0, u.Y + 0, u.Z + 0);
@@ -152,35 +152,102 @@ void Chunk::UpdateMainBuffer()
 			u0 = u0 % size;
 			u1 = u1 % size;
 
+			ChunkValue nextX;
+			ChunkValue nextY;
+			ChunkValue nextZ;
+			ChunkValue prevX;
+			ChunkValue prevY;
+			ChunkValue prevZ;
+
+			{
+				AxisDirection dir;
+				VectorU3 udx3 = u;
+				if (u.X != edge.X)
+				{ dir = AxisDirection::Here; udx3.X = u.X + 1; }
+				else
+				{ dir = AxisDirection::NextX; udx3.X = 0; }
+				nextX = Neighbours.Value(dir, udx3, size.Convert(udx3));
+			}
+
+			{
+				AxisDirection dir;
+				VectorU3 udx3 = u;
+				if (u.Y != edge.Y)
+				{ dir = AxisDirection::Here; udx3.Y = u.Y + 1; }
+				else
+				{ dir = AxisDirection::NextY; udx3.Y = 0; }
+				nextY = Neighbours.Value(dir, udx3, size.Convert(udx3));
+			}
+
+			{
+				AxisDirection dir;
+				VectorU3 udx3 = u;
+				if (u.Z != edge.Z)
+				{ dir = AxisDirection::Here; udx3.Z = u.Z + 1; }
+				else
+				{ dir = AxisDirection::NextZ; udx3.Z = 0; }
+				nextZ = Neighbours.Value(dir, udx3, size.Convert(udx3));
+			}
+
+			{
+				AxisDirection dir;
+				VectorU3 udx3 = u;
+				if (u.X != 0)
+				{ dir = AxisDirection::Here; udx3.X = u.X - 1; }
+				else
+				{ dir = AxisDirection::PrevX; udx3.X = edge.X; }
+				prevX = Neighbours.Value(dir, udx3, size.Convert(udx3));
+			}
+
+			{
+				AxisDirection dir;
+				VectorU3 udx3 = u;
+				if (u.Y != 0)
+				{ dir = AxisDirection::Here; udx3.Y = u.Y - 1; }
+				else
+				{ dir = AxisDirection::PrevY; udx3.Y = edge.Y; }
+				prevY = Neighbours.Value(dir, udx3, size.Convert(udx3));
+			}
+
+			{
+				AxisDirection dir;
+				VectorU3 udx3 = u;
+				if (u.Z != 0)
+				{ dir = AxisDirection::Here; udx3.Z = u.Z - 1; }
+				else
+				{ dir = AxisDirection::PrevZ; udx3.Z = edge.Z; }
+				prevZ = Neighbours.Value(dir, udx3, size.Convert(udx3));
+			}
+
 			if (Values[size.Convert(u)] != 0)
 			{
-				if ((u.X != 0) && (Values[size.Convert(Undex3D(u.X - 1, u.Y, u.Z))] == 0))
+				if (prevX.Known && prevX.Value == 0)
 				{
 					data.Insert(temp[0b000]); data.Insert(temp[0b100]); data.Insert(temp[0b010]);
 					data.Insert(temp[0b010]); data.Insert(temp[0b100]); data.Insert(temp[0b110]);
 				}
-				if ((u.Y != 0) && (Values[size.Convert(Undex3D(u.X, u.Y - 1, u.Z))] == 0))
+				if (prevY.Known && prevY.Value == 0)
 				{
 					data.Insert(temp[0b000]); data.Insert(temp[0b001]); data.Insert(temp[0b100]);
 					data.Insert(temp[0b100]); data.Insert(temp[0b001]); data.Insert(temp[0b101]);
 				}
-				if ((u.Z != 0) && (Values[size.Convert(Undex3D(u.X, u.Y, u.Z - 1))] == 0))
+				if (prevZ.Known && prevZ.Value == 0)
 				{
 					data.Insert(temp[0b000]); data.Insert(temp[0b010]); data.Insert(temp[0b001]);
 					data.Insert(temp[0b001]); data.Insert(temp[0b010]); data.Insert(temp[0b011]);
 				}
 
-				if ((u.X != CHUNK_VALUES_PER_SIDE - 1) && (Values[size.Convert(Undex3D(u.X + 1, u.Y, u.Z))] == 0))
+				if (nextX.Known && nextX.Value == 0)
 				{
 					data.Insert(temp[0b001]); data.Insert(temp[0b011]); data.Insert(temp[0b101]);
 					data.Insert(temp[0b101]); data.Insert(temp[0b011]); data.Insert(temp[0b111]);
 				}
-				if ((u.Y != CHUNK_VALUES_PER_SIDE - 1) && (Values[size.Convert(Undex3D(u.X, u.Y + 1, u.Z))] == 0))
+				if (nextY.Known && nextY.Value == 0)
 				{
 					data.Insert(temp[0b010]); data.Insert(temp[0b110]); data.Insert(temp[0b011]);
 					data.Insert(temp[0b011]); data.Insert(temp[0b110]); data.Insert(temp[0b111]);
 				}
-				if ((u.Z != CHUNK_VALUES_PER_SIDE - 1) && (Values[size.Convert(Undex3D(u.X, u.Y, u.Z + 1))] == 0))
+				if (nextZ.Known && nextZ.Value == 0)
 				{
 					data.Insert(temp[0b100]); data.Insert(temp[0b101]); data.Insert(temp[0b110]);
 					data.Insert(temp[0b110]); data.Insert(temp[0b101]); data.Insert(temp[0b111]);

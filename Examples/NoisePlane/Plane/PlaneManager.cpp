@@ -104,18 +104,12 @@ void PlaneManager::Generate(const Perlin2D & noise, VectorI2 idx)
 
 void PlaneManager::NeighbourInsert(Plane & plane)
 {
+	PlaneNeighbours & neighbours = plane.Neighbours;
 	{
-		Plane * planes[4];
-
-		planes[0b00] = FindPlaneOrNull(VectorI2(plane.Index.X + 0, plane.Index.Y + 0));
-		planes[0b01] = FindPlaneOrNull(VectorI2(plane.Index.X + 1, plane.Index.Y + 0));
-		planes[0b10] = FindPlaneOrNull(VectorI2(plane.Index.X + 0, plane.Index.Y + 1));
-		planes[0b11] = FindPlaneOrNull(VectorI2(plane.Index.X + 1, plane.Index.Y + 1));
-
-		if (planes[0b00] != nullptr) { plane.Neighbours.Planes[0b00] = planes[0b00]; }
-		if (planes[0b01] != nullptr) { plane.Neighbours.Planes[0b01] = planes[0b01]; }
-		if (planes[0b10] != nullptr) { plane.Neighbours.Planes[0b10] = planes[0b10]; }
-		if (planes[0b11] != nullptr) { plane.Neighbours.Planes[0b11] = planes[0b11]; }
+		neighbours.Planes[0b00] = FindPlaneOrNull(VectorI2(plane.Index.X + 0, plane.Index.Y + 0));
+		neighbours.Planes[0b01] = FindPlaneOrNull(VectorI2(plane.Index.X + 1, plane.Index.Y + 0));
+		neighbours.Planes[0b10] = FindPlaneOrNull(VectorI2(plane.Index.X + 0, plane.Index.Y + 1));
+		neighbours.Planes[0b11] = FindPlaneOrNull(VectorI2(plane.Index.X + 1, plane.Index.Y + 1));
 	}
 	{
 		Plane * planes[4];

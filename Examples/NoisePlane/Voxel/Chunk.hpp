@@ -10,7 +10,7 @@
 # include "ValueType/VectorU3.hpp"
 
 # include "ChunkGraphics.hpp"
-//# include "ChunkNeighbours.hpp"
+# include "ChunkNeighbours.hpp"
 
 struct Perlin2D;
 
@@ -18,7 +18,7 @@ struct Chunk
 {
 	float				Values[CHUNK_VALUES_PER_VOLM];
 	VectorI3			Index;
-//	ChunkNeighbours		Neighbours;
+	ChunkNeighbours		Neighbours;
 
 	~Chunk();
 	Chunk();

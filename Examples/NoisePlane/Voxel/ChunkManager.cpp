@@ -89,8 +89,7 @@ void ChunkManager::Generate(const Perlin2D & noise, VectorI3 idx)
 		chunk -> Generate(noise);
 
 		Chunks.Insert(chunk);
-		//NeighbourInsert(*chunk);
-		chunk -> MainBufferNeedsData = true;
+		NeighbourInsert(*chunk);
 
 		chunk -> Buffer.Main.Pos.Change(0);
 		chunk -> Buffer.Main.Col.Change(1);
@@ -102,40 +101,36 @@ void ChunkManager::Generate(const Perlin2D & noise, VectorI3 idx)
 	}
 }
 
-/*void ChunkManager::NeighbourInsert(Chunk & Chunk)
+void ChunkManager::NeighbourInsert(Chunk & chunk)
 {
+	ChunkNeighbours & neighbours = chunk.Neighbours;
+	neighbours.Here = &chunk;
 	{
-		Chunk * Chunks[4];
-
-		Chunks[0b00] = FindChunkOrNull(VectorI2(Chunk.Index.X + 0, Chunk.Index.Y + 0));
-		Chunks[0b01] = FindChunkOrNull(VectorI2(Chunk.Index.X + 1, Chunk.Index.Y + 0));
-		Chunks[0b10] = FindChunkOrNull(VectorI2(Chunk.Index.X + 0, Chunk.Index.Y + 1));
-		Chunks[0b11] = FindChunkOrNull(VectorI2(Chunk.Index.X + 1, Chunk.Index.Y + 1));
-
-		if (Chunks[0b00] != nullptr) { Chunk.Neighbours.Chunks[0b00] = Chunks[0b00]; }
-		if (Chunks[0b01] != nullptr) { Chunk.Neighbours.Chunks[0b01] = Chunks[0b01]; }
-		if (Chunks[0b10] != nullptr) { Chunk.Neighbours.Chunks[0b10] = Chunks[0b10]; }
-		if (Chunks[0b11] != nullptr) { Chunk.Neighbours.Chunks[0b11] = Chunks[0b11]; }
+		neighbours.NextX = FindChunkOrNull(VectorI3(chunk.Index.X + 1, chunk.Index.Y, chunk.Index.Z));
+		neighbours.NextY = FindChunkOrNull(VectorI3(chunk.Index.X, chunk.Index.Y + 1, chunk.Index.Z));
+		neighbours.NextZ = FindChunkOrNull(VectorI3(chunk.Index.X, chunk.Index.Y, chunk.Index.Z + 1));
+		neighbours.PrevX = FindChunkOrNull(VectorI3(chunk.Index.X - 1, chunk.Index.Y, chunk.Index.Z));
+		neighbours.PrevY = FindChunkOrNull(VectorI3(chunk.Index.X, chunk.Index.Y - 1, chunk.Index.Z));
+		neighbours.PrevZ = FindChunkOrNull(VectorI3(chunk.Index.X, chunk.Index.Y, chunk.Index.Z - 1));
 	}
 	{
-		Chunk * Chunks[4];
-
-		Chunks[0b00] = FindChunkOrNull(VectorI2(Chunk.Index.X - 0, Chunk.Index.Y - 0));
-		Chunks[0b01] = FindChunkOrNull(VectorI2(Chunk.Index.X - 1, Chunk.Index.Y - 0));
-		Chunks[0b10] = FindChunkOrNull(VectorI2(Chunk.Index.X - 0, Chunk.Index.Y - 1));
-		Chunks[0b11] = FindChunkOrNull(VectorI2(Chunk.Index.X - 1, Chunk.Index.Y - 1));
-
-		if (Chunks[0b00] != nullptr) { Chunks[0b00] -> Neighbours.Chunks[0b00] = &Chunk; }
-		if (Chunks[0b01] != nullptr) { Chunks[0b01] -> Neighbours.Chunks[0b01] = &Chunk; }
-		if (Chunks[0b10] != nullptr) { Chunks[0b10] -> Neighbours.Chunks[0b10] = &Chunk; }
-		if (Chunks[0b11] != nullptr) { Chunks[0b11] -> Neighbours.Chunks[0b11] = &Chunk; }
-
-		if (Chunks[0b00] != nullptr) { Chunks[0b00] -> MainBufferNeedsData = true; }
-		if (Chunks[0b01] != nullptr) { Chunks[0b01] -> MainBufferNeedsData = true; }
-		if (Chunks[0b10] != nullptr) { Chunks[0b10] -> MainBufferNeedsData = true; }
-		if (Chunks[0b11] != nullptr) { Chunks[0b11] -> MainBufferNeedsData = true; }
+		if (neighbours.NextX != nullptr) { neighbours.NextX -> Neighbours.PrevX = &chunk; }
+		if (neighbours.NextY != nullptr) { neighbours.NextY -> Neighbours.PrevY = &chunk; }
+		if (neighbours.NextZ != nullptr) { neighbours.NextZ -> Neighbours.PrevZ = &chunk; }
+		if (neighbours.PrevX != nullptr) { neighbours.PrevX -> Neighbours.NextX = &chunk; }
+		if (neighbours.PrevY != nullptr) { neighbours.PrevY -> Neighbours.NextY = &chunk; }
+		if (neighbours.PrevZ != nullptr) { neighbours.PrevZ -> Neighbours.NextZ = &chunk; }
 	}
-}*/
+	{
+		if (neighbours.Here  != nullptr) { neighbours.Here  -> MainBufferNeedsData = true; }
+		if (neighbours.NextX != nullptr) { neighbours.NextX -> MainBufferNeedsData = true; }
+		if (neighbours.NextY != nullptr) { neighbours.NextY -> MainBufferNeedsData = true; }
+		if (neighbours.NextZ != nullptr) { neighbours.NextZ -> MainBufferNeedsData = true; }
+		if (neighbours.PrevX != nullptr) { neighbours.PrevX -> MainBufferNeedsData = true; }
+		if (neighbours.PrevY != nullptr) { neighbours.PrevY -> MainBufferNeedsData = true; }
+		if (neighbours.PrevZ != nullptr) { neighbours.PrevZ -> MainBufferNeedsData = true; }
+	}
+}
 
 
 

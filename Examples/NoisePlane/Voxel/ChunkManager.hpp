@@ -30,7 +30,7 @@ struct ChunkManager
 
 	bool	ShouldGenerate;
 	void	Generate(const Perlin2D & noise, VectorI3 idx);
-//	void	NeighbourInsert(Chunk & chunk);
+	void	NeighbourInsert(Chunk & chunk);
 
 	bool	GraphicsExist;
 	void	GraphicsCreate();
