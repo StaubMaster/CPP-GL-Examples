@@ -19,3 +19,18 @@ same with Attributes and Multiforms
 
 LoopTN
 	.Size() returns Size. depends on Exclusion
+
+VectorN
+	Largest
+	Closest
+	Smallest
+	Farthest
+		return BoolN
+
+Min, Max function
+
+BoxN
+	CenterTo()
+	MinTo()
+	MaxTo()
+		change this or return ?

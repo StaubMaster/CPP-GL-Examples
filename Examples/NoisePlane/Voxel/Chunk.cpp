@@ -82,7 +82,7 @@ void Chunk::Generate(const Perlin2D & noise)
 				Voxels[size3.Convert(u3)].Value = 3;
 			}
 
-			Bool3 b = box.IntersectInclusive(VectorI3((pos.X + u.X), (pos.Y + i), (pos.Z + u.Y)));
+			Bool3 b = box.IntersectVecInclusive(VectorI3((pos.X + u.X), (pos.Y + i), (pos.Z + u.Y)));
 			int b2 = 0;
 			if (b.GetX()) { b2++; }
 			if (b.GetY()) { b2++; }

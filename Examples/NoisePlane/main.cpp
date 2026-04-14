@@ -322,6 +322,39 @@ void VoxelGraphicsDelete()
 PolyHedra * VoxelCube;
 PolyHedra * VoxelChunkCube;
 
+BoxF3 ViewBox = BoxF3(
+	VectorF3(-0.4f, -0.4f, -0.4f),
+	VectorF3(+0.4f, +0.4f, +0.4f)
+);
+PolyHedra * ViewBoxCube;
+
+void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
+{
+	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Min.Y, box.Min.Z))); // 000
+	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Max.X, box.Min.Y, box.Min.Z))); // 001
+	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Max.Y, box.Min.Z))); // 010
+	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Max.X, box.Max.Y, box.Min.Z))); // 011
+	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Min.Y, box.Max.Z))); // 100
+	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Max.X, box.Min.Y, box.Max.Z))); // 101
+	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Max.Y, box.Max.Z))); // 110
+	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Max.X, box.Max.Y, box.Max.Z))); // 111
+
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b001));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b011));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b100, 0b101));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b110, 0b111));
+
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b010));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b001, 0b011));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b100, 0b110));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b101, 0b111));
+
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b100));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b001, 0b101));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b110));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
+}
+
 void Make() override
 {
 //	window.DefaultColor = ColorF4(1, 1, 1);
@@ -337,61 +370,18 @@ void Make() override
 	}
 	{
 		VoxelCube = new PolyHedra();
-
-		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 0, 0))); // 000
-		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 0, 0))); // 001
-		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 1, 0))); // 010
-		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 1, 0))); // 011
-		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 0, 1))); // 100
-		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 0, 1))); // 101
-		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 1, 1))); // 110
-		VoxelCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 1, 1))); // 111
-
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b001));
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b010, 0b011));
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b100, 0b101));
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b110, 0b111));
-
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b010));
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b001, 0b011));
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b100, 0b110));
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b101, 0b111));
-
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b100));
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b001, 0b101));
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b010, 0b110));
-		VoxelCube -> Edges.Insert(PolyHedra::Edge(0b011, 0b111));
-
+		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
 		PolyHedraManager.PlacePolyHedra(VoxelCube);
 	}
 	{
 		VoxelChunkCube = new PolyHedra();
-
-		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 0, 0) * (float)CHUNK_VALUES_PER_SIDE)); // 000
-		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 0, 0) * (float)CHUNK_VALUES_PER_SIDE)); // 001
-		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 1, 0) * (float)CHUNK_VALUES_PER_SIDE)); // 010
-		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 1, 0) * (float)CHUNK_VALUES_PER_SIDE)); // 011
-		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 0, 1) * (float)CHUNK_VALUES_PER_SIDE)); // 100
-		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 0, 1) * (float)CHUNK_VALUES_PER_SIDE)); // 101
-		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(0, 1, 1) * (float)CHUNK_VALUES_PER_SIDE)); // 110
-		VoxelChunkCube -> Corners.Insert(PolyHedra::Corner(Point3D(1, 1, 1) * (float)CHUNK_VALUES_PER_SIDE)); // 111
-
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b001));
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b010, 0b011));
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b100, 0b101));
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b110, 0b111));
-
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b010));
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b001, 0b011));
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b100, 0b110));
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b101, 0b111));
-
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b000, 0b100));
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b001, 0b101));
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b010, 0b110));
-		VoxelChunkCube -> Edges.Insert(PolyHedra::Edge(0b011, 0b111));
-
+		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(), VectorF3(CHUNK_VALUES_PER_SIDE)));
 		PolyHedraManager.PlacePolyHedra(VoxelChunkCube);
+	}
+	{
+		ViewBoxCube = new PolyHedra();
+		PolyHedraBoxEdges(*ViewBoxCube, ViewBox);
+		PolyHedraManager.PlacePolyHedra(ViewBoxCube);
 	}
 	//Perlin2D::DebugShow();
 	//TestRandom();
@@ -430,12 +420,158 @@ bool ShowText = true;
 bool ShowTiles = true;
 bool ShowVoxels = true;
 
+/* Collision
+do as part of View Update
+Calculate Movement Direction
+
+check for collision with current Position
+
+move Box in that direction.
+for all boxes not currently colliding
+	check for collision.
+	if collision
+		get collision normal
+		remove normal part. so only perpendicular remains
+
+keep doing until all Boxes in area are checked
+
+add result to current position
+
+have a way to turn off collision, for testing
+
+*/
+
+VectorF3 Absolute(VectorF3 vec)
+{
+	if (vec.X < 0) { vec.X = -vec.X; }
+	if (vec.Y < 0) { vec.Y = -vec.Y; }
+	if (vec.Z < 0) { vec.Z = -vec.Z; }
+	return vec;
+}
+
+bool IgnoreCollision = true;
+bool ViewBack = false;
+
+void UpdateViewColliding(FrameTime frame_time)
+{
+	Trans3D change;
+
+	// Input
+	if (window.KeyBoardManager[Keys::Tab].State == State::Press) { window.MouseManager.CursorModeToggle(); }
+	if (window.MouseManager.CursorModeIsLocked())
+	{
+		change = window.MoveSpinFromKeysCursor();
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 10; }
+		change.Position *= 2;
+		change.Rotation *= view.FOV.ToRadians() * 0.05f;
+		{
+			EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
+			change.Position = e.forward(change.Position);
+		}
+	}
+
+	change.Position *= frame_time.Delta;
+	change.Rotation *= frame_time.Delta;
+
+	{
+		PolyHedraObject view_box_obj(ViewBoxCube);
+		view_box_obj.Trans().Position = view.Trans.Position;
+		view_box_obj.ShowWire();
+	}
+
+	if (!IgnoreCollision)
+	{
+		BoxF3 view_box_old = ViewBox + view.Trans.Position;
+		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
+		int size = 2;
+		VectorI3 center = view.Trans.Position.roundF();
+		LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
+		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+		{
+			Voxel * voxel = ChunkManager[i];
+			if (voxel != nullptr && (voxel -> IsSolid()))
+			{
+				{
+					PolyHedraObject voxel_obj(p);
+					voxel_obj.Trans().Position = i;
+					voxel_obj.ShowWire();
+				}
+				BoxI3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
+				if (view_box_old.IntersectBoxInclusive(voxel_box).All(true))
+				{
+					continue;
+				}
+
+				VectorF3 vel;
+				vel.X = change.Position.X;
+				{
+					BoxF3 view_box_new = view_box_old + vel;
+					if (view_box_new.IntersectBoxInclusive(voxel_box).All(true)) { vel.X = 0.0f; }
+				}
+				vel.Y = change.Position.Y;
+				{
+					BoxF3 view_box_new = view_box_old + vel;
+					if (view_box_new.IntersectBoxInclusive(voxel_box).All(true)) { vel.Y = 0.0f; }
+				}
+				vel.Z = change.Position.Z;
+				{
+					BoxF3 view_box_new = view_box_old + vel;
+					if (view_box_new.IntersectBoxInclusive(voxel_box).All(true)) { vel.Z = 0.0f; }
+				}
+				change.Position = vel;
+
+				/*if (!(voxel_box.IntersectBoxInclusive(view_box_old).All(true)) && voxel_box.IntersectBoxInclusive(view_box_new).All(true))
+				{
+					BoxF3 inner = view_box_new.InnerBox(voxel_box);
+					if (inner.IsNormal().All(true))
+					{
+						VectorF3 vel_abs = Absolute(view.Trans.Position);
+						VectorI3 ranks;
+						{
+							float * rI = (float*)&vel_abs;
+							int * rO = (int*)&ranks;
+							for (unsigned int r0 = 0; r0 < 3; r0++)
+							{
+								for (unsigned int r1 = 0; r1 < 3; r1++)
+								{
+									if (rI[r0] > rI[r1]) { rO[r0]++; }
+								}
+							}
+						}
+						VectorF3 normal;
+						if (ranks.X == 2) { if (view.Trans.Position.X > 0) { normal.X = -1; } else { normal.X = +1; } }
+						if (ranks.Y == 2) { if (view.Trans.Position.Y > 0) { normal.Y = -1; } else { normal.Y = +1; } }
+						if (ranks.Z == 2) { if (view.Trans.Position.Z > 0) { normal.Z = -1; } else { normal.Z = +1; } }
+						if (normal.length2() != 0)
+						{
+							float dot = normal.dot(change.Position);
+							VectorF3 normal_change = normal * (dot / normal.length()); // normalize normal before this ?
+							change.Position = change.Position - normal_change;
+						}
+					}
+				}*/
+			}
+		}
+	}
+
+	view.Trans.Position += change.Position;
+	view.Trans.Rotation += change.Rotation;
+	view.Trans.Rotation.X1.clampPI();
+}
+
 void Frame(double timeDelta) override
 {
 	FrameTime frame_time(64);
 	frame_time.Update(timeDelta);
-	UpdateView(frame_time);
-	Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
+	UpdateViewColliding(frame_time);
+	if (!ViewBack)
+	{
+		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
+	}
+	else
+	{
+		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 10)), view.Trans.Rotation)));
+	}
 
 	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 	ChunkManager.UpdateAround(Perlin0, view.Trans.Position);
@@ -446,6 +582,8 @@ void Frame(double timeDelta) override
 	if (window.KeyBoardManager[Keys::D4].State == State::Press) { ShowTiles = !ShowTiles; }
 	if (window.KeyBoardManager[Keys::D5].State == State::Press) { ShowVoxels = !ShowVoxels; }
 
+	if (window.KeyBoardManager[Keys::F2].State == State::Press) { IgnoreCollision = !IgnoreCollision; }
+	if (window.KeyBoardManager[Keys::F3].State == State::Press) { ViewBack = !ViewBack; }
 	if (window.KeyBoardManager[Keys::F4].State == State::Press)
 	{
 		PlaneManager.ShouldGenerate = !PlaneManager.ShouldGenerate;
@@ -466,24 +604,6 @@ void Frame(double timeDelta) override
 			chunk_box.Create(VoxelChunkCube);
 			chunk_box.Trans().Position = (ChunkManager.Chunks[i] -> Index) * CHUNK_VALUES_PER_SIDE;
 			chunk_box.ShowWire();
-		}
-	}
-	// Voxel Boxes
-	{
-		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
-		int size = 2;
-		VectorI3 center = view.Trans.Position.roundF();
-		LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
-		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-		{
-			Voxel * voxel = ChunkManager[i];
-			if (voxel != nullptr && (voxel -> IsSolid()))
-			{
-				PolyHedraObject voxel_box(p);
-				voxel_box.Create(VoxelCube);
-				voxel_box.Trans().Position = i;
-				voxel_box.ShowWire();
-			}
 		}
 	}
 
@@ -536,6 +656,7 @@ void Frame(double timeDelta) override
 			ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
 			ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
 			ss << "View " << view.Trans.Position << '\n';
+			ss << "IgnoreCollision " << IgnoreCollision << '\n';
 			ss << '\n';
 		}
 

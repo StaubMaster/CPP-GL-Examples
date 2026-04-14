@@ -83,7 +83,7 @@ Voxel * ChunkNeighbours::Value(AxisDirection dir, VectorU3 udx) const
 		{ chunk = PrevZ; udx.Z = CHUNK_VALUES_PER_SIDE - 1; }
 	}
 
-	Voxel * val;
+	Voxel * val = nullptr;
 	if (chunk != nullptr)
 	{
 		val = &(*chunk)[udx];
