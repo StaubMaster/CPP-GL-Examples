@@ -23,7 +23,8 @@
 #      default is Size of Texture Size
 #      
 
-Image Font0.png
+#Image Font0.png
+Image Font1.png
 
 Scale 16 8
 

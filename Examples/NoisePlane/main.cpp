@@ -448,6 +448,30 @@ VectorF3 Absolute(VectorF3 vec)
 	if (vec.Z < 0) { vec.Z = -vec.Z; }
 	return vec;
 }
+VectorI3 RankAbs(VectorF3 vec)
+{
+	float * vI = (float*)&vec;
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		if (vI[i] < 0) { vI[i] = -vI[i]; }
+	}
+	VectorI3 ret;
+	int * vO = (int*)&ret;
+	for (unsigned int i0 = 0; i0 < 3; i0++)
+	{
+		for (unsigned int i1 = 0; i1 < 3; i1++)
+		{
+			if (i0 != i1)
+			{
+				if (vI[i0] > vI[i1])
+				{
+					vO[i0]++;
+				}
+			}
+		}
+	}
+	return ret;
+}
 
 bool IgnoreCollision = true;
 bool ViewBack = false;
@@ -502,54 +526,57 @@ void UpdateViewColliding(FrameTime frame_time)
 					continue;
 				}
 
-				VectorF3 vel;
-				vel.X = change.Position.X;
 				{
-					BoxF3 view_box_new = view_box_old + vel;
-					if (view_box_new.IntersectBoxInclusive(voxel_box).All(true)) { vel.X = 0.0f; }
-				}
-				vel.Y = change.Position.Y;
-				{
-					BoxF3 view_box_new = view_box_old + vel;
-					if (view_box_new.IntersectBoxInclusive(voxel_box).All(true)) { vel.Y = 0.0f; }
-				}
-				vel.Z = change.Position.Z;
-				{
-					BoxF3 view_box_new = view_box_old + vel;
-					if (view_box_new.IntersectBoxInclusive(voxel_box).All(true)) { vel.Z = 0.0f; }
-				}
-				change.Position = vel;
-
-				/*if (!(voxel_box.IntersectBoxInclusive(view_box_old).All(true)) && voxel_box.IntersectBoxInclusive(view_box_new).All(true))
-				{
-					BoxF3 inner = view_box_new.InnerBox(voxel_box);
-					if (inner.IsNormal().All(true))
+					BoxF3 view_box_new = view_box_old + change.Position;
+					if (view_box_new.IntersectBoxInclusive(voxel_box).All(true))
 					{
-						VectorF3 vel_abs = Absolute(view.Trans.Position);
-						VectorI3 ranks;
-						{
-							float * rI = (float*)&vel_abs;
-							int * rO = (int*)&ranks;
-							for (unsigned int r0 = 0; r0 < 3; r0++)
-							{
-								for (unsigned int r1 = 0; r1 < 3; r1++)
-								{
-									if (rI[r0] > rI[r1]) { rO[r0]++; }
-								}
-							}
-						}
+						// turn into function. Collision between a moving and a non-moving Box
+						// also make one for where both move. that would return 2 t for both Boxes
+
+						VectorF3 & vel = change.Position;
+						std::cout << "vel " << vel << '\n';
+
+						VectorF3 pos0;
+						std::cout << "pos0";
+						if (vel.X > 0.0f) { pos0.X = view_box_old.Max.X; std::cout << " Max"; } else { pos0.X = view_box_old.Min.X; std::cout << " Min"; }
+						if (vel.Y > 0.0f) { pos0.Y = view_box_old.Max.Y; std::cout << " Max"; } else { pos0.Y = view_box_old.Min.Y; std::cout << " Min"; }
+						if (vel.Z > 0.0f) { pos0.Z = view_box_old.Max.Z; std::cout << " Max"; } else { pos0.Z = view_box_old.Min.Z; std::cout << " Min"; }
+						std::cout << '\n';
+
+						VectorF3 pos1;
+						std::cout << "pos1";
+						if (vel.X > 0.0f) { pos1.X = voxel_box.Min.X; std::cout << " Min"; } else { pos1.X = voxel_box.Max.X; std::cout << " Max"; }
+						if (vel.Y > 0.0f) { pos1.Y = voxel_box.Min.Y; std::cout << " Min"; } else { pos1.Y = voxel_box.Max.Y; std::cout << " Max"; }
+						if (vel.Z > 0.0f) { pos1.Z = voxel_box.Min.Z; std::cout << " Min"; } else { pos1.Z = voxel_box.Max.Z; std::cout << " Max"; }
+						std::cout << '\n';
+
+						std::cout << "pos0 " << pos0 << '\n';
+						std::cout << "pos1 " << pos1 << '\n';
+
+						// pos0 + vel * t = pos1
+						// (pos1 - pos0) / vel = t
+						VectorF3 t = (pos1 - pos0) / vel;
+						std::cout << "t " << t << '\n';
+						// which happens first ?
+
+						VectorI3 ranks = RankAbs(t);
+						std::cout << "ranks " << ranks << '\n';
+
 						VectorF3 normal;
-						if (ranks.X == 2) { if (view.Trans.Position.X > 0) { normal.X = -1; } else { normal.X = +1; } }
-						if (ranks.Y == 2) { if (view.Trans.Position.Y > 0) { normal.Y = -1; } else { normal.Y = +1; } }
-						if (ranks.Z == 2) { if (view.Trans.Position.Z > 0) { normal.Z = -1; } else { normal.Z = +1; } }
-						if (normal.length2() != 0)
+						     if (ranks.X == 0) { if (vel.X > 0.0f) { normal.X = +1; } else { normal.X = -1; } }
+						else if (ranks.Y == 0) { if (vel.Y > 0.0f) { normal.Y = +1; } else { normal.Y = -1; } }
+						else if (ranks.Z == 0) { if (vel.Z > 0.0f) { normal.Z = +1; } else { normal.Z = -1; } }
+						// normal direction based on vel
+						std::cout << "normal " << normal << '\n';
+
+						if (normal.length2() != 0) // check for lenght == 1
 						{
-							float dot = normal.dot(change.Position);
-							VectorF3 normal_change = normal * (dot / normal.length()); // normalize normal before this ?
-							change.Position = change.Position - normal_change;
+							float dot = normal.dot(vel);
+							VectorF3 normal_vel = normal * (dot / normal.length()); // normalize normal before this ?
+							vel = vel - normal_vel;
 						}
 					}
-				}*/
+				}
 			}
 		}
 	}
@@ -640,23 +667,48 @@ void Frame(double timeDelta) override
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	{
-		/*
-			FrameTime
-
-			Position
-				View
-				Chunk Voxel(relative)
-				Voxel(absolute)
-
-			Render/Buffer Data/Memory
-		*/
-
 		std::stringstream ss;
+
 		{
 			ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
 			ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
+			ss << '\n';
+		}
+
+		{
+			ss << "0123456789+-* /=<>" << '\n';
+			ss << "()[]{}#~'\"_|&" << '\n';
+			ss << "ABCDEFGHIJKLM" << '\n';
+			ss << "NOPQRSTUVWXYZ" << '\n';
+			ss << "abcdefghijklm" << '\n';
+			ss << "nopqrstuvwxyz" << '\n';
+			ss << ".,:;!?" << '\n';
+			ss << '\n';
+		}
+
+		{
+			ss << "[1] " << "PolyHedra Full:" << (ShowFull ? "Show" : "Hide") << '\n';
+			ss << "[2] " << "PolyHedra Wire:" << (ShowWire ? "Show" : "Hide") << '\n';
+			ss << "[3] " << "Text:" << (ShowText ? "Show" : "Hide") << '\n';
+			ss << "[4] " << "TilePlanes:" << (ShowTiles ? "Show" : "Hide") << '\n';
+			ss << "[5] " << "VoxelChunks:" << (ShowVoxels ? "Show" : "Hide") << '\n';
+			ss << '\n';
+			ss << "[F2] " << "IgnoreCollision:" << (IgnoreCollision ? "true" : "false") << '\n';
+			ss << "[F3] " << "ViewBack:" << (ViewBack ? "true" : "false") << '\n';
+			ss << "[F4] " << "Planes.ShouldGenerate:" << (PlaneManager.ShouldGenerate ? "true" : "false") << '\n';
+			ss << "[F4] " << "Chunks.ShouldGenerate:" << (ChunkManager.ShouldGenerate ? "true" : "false") << '\n';
+			ss << "[F5] " << "Clear Planes" << '\n';
+			ss << "[F5] " << "Clear Chunks" << '\n';
+			ss << '\n';
+		}
+
+		// put all the control stuff together
+
+		{
 			ss << "View " << view.Trans.Position << '\n';
-			ss << "IgnoreCollision " << IgnoreCollision << '\n';
+			VectorI3 chunk_idx = (view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF();
+			VectorU3 voxel_idx = VectorI3(view.Trans.Position.roundF()) - (chunk_idx * CHUNK_VALUES_PER_SIDE);
+			ss << "Voxel " << chunk_idx << ' ' << voxel_idx << '\n';
 			ss << '\n';
 		}
 
@@ -670,17 +722,16 @@ void Frame(double timeDelta) override
 				full_count += PolyHedraManager.InstanceManagers[i].InstancesFull.Count();
 				wire_count += PolyHedraManager.InstanceManagers[i].InstancesWire.Count();
 			}
-			ss << "PolyHedra:" << PolyHedraManager.InstanceManagers.Count() << '|' << all_count << '\n';
-			ss << "Full|Wire:" << ShowFull << '|' << ShowWire << '\n';
-			ss << "Full|Wire:" << full_count << '|' << wire_count << '\n';
+			ss << "PolyHedra " << PolyHedraManager.InstanceManagers.Count() << '|' << all_count << '\n';
+			ss << "[1] Full " << (ShowFull ? "Show" : "Hide") << ' ' << full_count << '\n';
+			ss << "[2] Wire " << (ShowWire ? "Show" : "Hide") << ' ' << wire_count << '\n';
 			ss << '\n';
 		}
 
 		{
 			unsigned int count_planes = PlaneManager.Planes.Count();
 			unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
-			ss << "ShouldGenerate:" << PlaneManager.ShouldGenerate << '\n';
-			ss << "Planes|Tiles:" << count_planes << '|' << count_tiles << '\n';
+			ss << "[4] Planes|Tiles:" << (ShowTiles ? "Show" : "Hide") << ' ' << count_planes << '|' << count_tiles << '\n';
 			unsigned long long memory = count_tiles * sizeof(float);
 			const char * factor = "B";
 			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
@@ -688,12 +739,11 @@ void Frame(double timeDelta) override
 			ss << "Memory:" << memory << factor << "\n";
 			ss << '\n';
 		}
-		
+
 		{
 			unsigned int count_chunks = ChunkManager.Chunks.Count();
 			unsigned int count_voxels = count_chunks * CHUNK_VALUES_PER_VOLM;
-			ss << "ShouldGenerate:" << ChunkManager.ShouldGenerate << '\n';
-			ss << "Chunks|Voxels:" << count_chunks << '|' << count_voxels << '\n';
+			ss << "[5] Chunks|Voxels:" << (ShowVoxels ? "Show" : "Hide") << ' ' << count_chunks << '|' << count_voxels << '\n';
 			unsigned long long memory = count_voxels * sizeof(float);
 			const char * factor = "B";
 			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
