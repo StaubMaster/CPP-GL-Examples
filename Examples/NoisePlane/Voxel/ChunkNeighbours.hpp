@@ -1,8 +1,8 @@
 #ifndef  CHUNK_NEIGHBOURS_HPP
 # define CHUNK_NEIGHBOURS_HPP
 
-# include "ChunkValue.hpp"
-
+struct VectorU3;
+struct Voxel;
 struct Chunk;
 
 enum class AxisDirection
@@ -34,7 +34,7 @@ struct ChunkNeighbours
 	ChunkNeighbours(const ChunkNeighbours & other);
 	ChunkNeighbours & operator=(const ChunkNeighbours & other);
 
-	ChunkValue	Value(AxisDirection dir, VectorU3 udx) const;
+	Voxel *		Value(AxisDirection dir, VectorU3 udx) const;
 };
 
 #endif

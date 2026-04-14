@@ -3,7 +3,6 @@
 
 # include "Noise/Perlin2D.hpp"
 
-# include "Chunk.hpp"
 # include "Graphics/Shader.hpp"
 
 # include "ValueType/VectorI3.hpp"
@@ -11,6 +10,9 @@
 # include "Miscellaneous/Container/Binary.hpp"
 
 # include "Graphics/Texture/Array2D.hpp"
+
+struct Voxel;
+struct Chunk;
 
 struct ChunkManager
 {
@@ -22,6 +24,10 @@ struct ChunkManager
 	ChunkManager();
 	ChunkManager(const ChunkManager & other) = delete;
 	ChunkManager & operator=(const ChunkManager & other) = delete;
+
+	// rename to FindVoxelOrNull ?
+			Voxel *	operator[](VectorI3 idx);
+	const	Voxel *	operator[](VectorI3 idx) const;
 
 	unsigned int	FindChunkUndex(Chunk * chunk) const;
 	unsigned int	FindChunkUndex(VectorI3 idx) const;

@@ -1,4 +1,5 @@
 #include "ChunkNeighbours.hpp"
+#include "Voxel.hpp"
 #include "Chunk.hpp"
 
 
@@ -34,7 +35,7 @@ ChunkNeighbours & ChunkNeighbours::operator=(const ChunkNeighbours & other)
 	return *this;
 }
 
-ChunkValue ChunkNeighbours::Value(AxisDirection dir, VectorU3 udx) const
+Voxel * ChunkNeighbours::Value(AxisDirection dir, VectorU3 udx) const
 {
 	Chunk * chunk = nullptr;
 
@@ -82,10 +83,10 @@ ChunkValue ChunkNeighbours::Value(AxisDirection dir, VectorU3 udx) const
 		{ chunk = PrevZ; udx.Z = CHUNK_VALUES_PER_SIDE - 1; }
 	}
 
-	ChunkValue val;
+	Voxel * val;
 	if (chunk != nullptr)
 	{
-		val.Change((*chunk)[udx]);
+		val = &(*chunk)[udx];
 	}
 	return val;
 }

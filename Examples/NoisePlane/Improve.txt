@@ -12,3 +12,12 @@ make the chunks no generate all at once
 
 
 Voxel rotation
+
+
+
+
+
+make smaller text
+make better font
+
+organize Shaders

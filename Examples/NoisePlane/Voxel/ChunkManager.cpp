@@ -1,4 +1,6 @@
 #include "ChunkManager.hpp"
+#include "Chunk.hpp"
+#include "Voxel.hpp"
 
 #include "ValueType/Bool3.hpp"
 #include "ValueType/BoxI3.hpp"
@@ -13,6 +15,19 @@ ChunkManager::ChunkManager()
 	, ShouldGenerate(true)
 	, GraphicsExist(false)
 { }
+
+
+
+Voxel * ChunkManager::operator[](VectorI3 idx)
+{
+	VectorI3 chunk_idx = (VectorF3(idx) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
+	VectorU3 voxel_idx = idx - (chunk_idx * CHUNK_VALUES_PER_SIDE);
+
+	Chunk * chunk = FindChunkOrNull(chunk_idx);
+	if (chunk == nullptr) { return nullptr; }
+	return &(*chunk)[voxel_idx];
+}
+//const Voxel * ChunkManager::operator[](VectorI3 voxel) const;
 
 
 

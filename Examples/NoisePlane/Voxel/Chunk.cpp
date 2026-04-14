@@ -1,5 +1,4 @@
 #include "Chunk.hpp"
-#include "ChunkValue.hpp"
 
 #include "Graphics/Inst/Data.hpp"
 
@@ -163,21 +162,21 @@ void Chunk::UpdateMainBuffer()
 
 			VoxelGraphics::VoxelCube cube = voxel.ToGraphics(u);
 
-			ChunkValue nextX = Neighbours.Value(AxisDirection::NextX, u);
-			ChunkValue nextY = Neighbours.Value(AxisDirection::NextY, u);
-			ChunkValue nextZ = Neighbours.Value(AxisDirection::NextZ, u);
+			Voxel * nextX = Neighbours.Value(AxisDirection::NextX, u);
+			Voxel * nextY = Neighbours.Value(AxisDirection::NextY, u);
+			Voxel * nextZ = Neighbours.Value(AxisDirection::NextZ, u);
 
-			ChunkValue prevX = Neighbours.Value(AxisDirection::PrevX, u);
-			ChunkValue prevY = Neighbours.Value(AxisDirection::PrevY, u);
-			ChunkValue prevZ = Neighbours.Value(AxisDirection::PrevZ, u);
+			Voxel * prevX = Neighbours.Value(AxisDirection::PrevX, u);
+			Voxel * prevY = Neighbours.Value(AxisDirection::PrevY, u);
+			Voxel * prevZ = Neighbours.Value(AxisDirection::PrevZ, u);
 
-			if (!prevX.IsSolid()) { DataQuad(data, cube.PrevX); }
-			if (!prevY.IsSolid()) { DataQuad(data, cube.PrevY); }
-			if (!prevZ.IsSolid()) { DataQuad(data, cube.PrevZ); }
+			if (prevX != nullptr && !(prevX -> IsSolid())) { DataQuad(data, cube.PrevX); }
+			if (prevY != nullptr && !(prevY -> IsSolid())) { DataQuad(data, cube.PrevY); }
+			if (prevZ != nullptr && !(prevZ -> IsSolid())) { DataQuad(data, cube.PrevZ); }
 
-			if (!nextX.IsSolid()) { DataQuad(data, cube.NextX); }
-			if (!nextY.IsSolid()) { DataQuad(data, cube.NextY); }
-			if (!nextZ.IsSolid()) { DataQuad(data, cube.NextZ); }
+			if (nextX != nullptr && !(nextX -> IsSolid())) { DataQuad(data, cube.NextX); }
+			if (nextY != nullptr && !(nextY -> IsSolid())) { DataQuad(data, cube.NextY); }
+			if (nextZ != nullptr && !(nextZ -> IsSolid())) { DataQuad(data, cube.NextZ); }
 		}
 
 		MainCount = data.Count();

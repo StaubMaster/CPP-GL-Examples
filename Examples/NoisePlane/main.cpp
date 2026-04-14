@@ -103,10 +103,11 @@ UI::Text::Manager		TextManager;
 ::PlaneManager			PlaneManager;
 ::ChunkManager			ChunkManager;
 
-//::Multiform::DisplaySize	Multiform_DisplaySize;
-//::Multiform::Depth			Multiform_Depth;
-
 Perlin2D				Perlin0;
+
+::Multiform::Matrix4x4		Multiform_View;
+::Multiform::Depth			Multiform_Depth;
+::Multiform::Angle			Multiform_FOV;
 
 ~MainContext()
 { }
@@ -117,10 +118,23 @@ MainContext()
 	, PlaneManager()
 	, ChunkManager()
 	, Perlin0(Perlin2D::Random(Undex2D(8, 8)))
+	, Multiform_View("View")
+	, Multiform_Depth("Depth")
+	, Multiform_FOV("FOV")
 {
 	PolyHedraManager.MakeCurrent();
 	TextManager.MakeCurrent();
-	
+	Container::Array<Shader::Base*> shaders({
+		&PolyHedraManager.ShaderFullDefault,
+		&PolyHedraManager.ShaderWireDefault,
+		&TextManager.Shader,
+		&PlaneManager.Shader,
+		&ChunkManager.Shader,
+	});
+	Multiform_DisplaySize.FindUniforms(shaders);
+	Multiform_View.FindUniforms(shaders);
+	Multiform_Depth.FindUniforms(shaders);
+	Multiform_FOV.FindUniforms(shaders);
 }
 
 
@@ -147,11 +161,6 @@ void TextMake()
 			MediaDirectory.File("Text/Font0.atlas")
 		);
 	}
-}
-void TextDraw()
-{
-	TextManager.Shader.DisplaySize.Put(window.Size);
-	TextManager.Draw();
 }
 
 
@@ -317,6 +326,8 @@ void Make() override
 {
 //	window.DefaultColor = ColorF4(1, 1, 1);
 	view.Depth.Factors.ChangeFar(50.0f);
+	Multiform_Depth.ChangeData(view.Depth);
+	Multiform_FOV.ChangeData(view.FOV);
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -414,6 +425,8 @@ void Free() override
 bool ShowFull = true;
 bool ShowWire = false;
 
+bool ShowText = true;
+
 bool ShowTiles = true;
 bool ShowVoxels = true;
 
@@ -422,15 +435,16 @@ void Frame(double timeDelta) override
 	FrameTime frame_time(64);
 	frame_time.Update(timeDelta);
 	UpdateView(frame_time);
-	Matrix4x4 view_mat = Matrix4x4::TransformReverse(view.Trans);
+	Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
 
 	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 	ChunkManager.UpdateAround(Perlin0, view.Trans.Position);
 
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { ShowFull = !ShowFull; }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }
-	if (window.KeyBoardManager[Keys::D3].State == State::Press) { ShowTiles = !ShowTiles; }
-	if (window.KeyBoardManager[Keys::D4].State == State::Press) { ShowVoxels = !ShowVoxels; }
+	if (window.KeyBoardManager[Keys::D3].State == State::Press) { ShowText = !ShowText; }
+	if (window.KeyBoardManager[Keys::D4].State == State::Press) { ShowTiles = !ShowTiles; }
+	if (window.KeyBoardManager[Keys::D5].State == State::Press) { ShowVoxels = !ShowVoxels; }
 
 	if (window.KeyBoardManager[Keys::F4].State == State::Press)
 	{
@@ -443,29 +457,33 @@ void Frame(double timeDelta) override
 		ChunkManager.Clear();
 	}
 
+	// Chunk Boxes
 	{
-		unsigned int n = ChunkManager.Chunks.Count();
-		PolyHedraObject chunk_boxes[n];
-		for (unsigned int i = 0; i < n; i++)
+		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
+		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
 		{
-			chunk_boxes[i].Create(VoxelChunkCube);
-			chunk_boxes[i].Trans().Position = (ChunkManager.Chunks[i] -> Index) * CHUNK_VALUES_PER_SIDE;
-			chunk_boxes[i].ShowWire();
+			PolyHedraObject chunk_box(p);
+			chunk_box.Create(VoxelChunkCube);
+			chunk_box.Trans().Position = (ChunkManager.Chunks[i] -> Index) * CHUNK_VALUES_PER_SIDE;
+			chunk_box.ShowWire();
 		}
 	}
+	// Voxel Boxes
 	{
-		VectorI3 center = view.Trans.Position;
-		LoopI3 loop(center - VectorI3(2), center + VectorI3(2));
-		std::cout << loop.Range << '\n';
-		PolyHedraObject voxel_boxes[loop.Range.Size().Product()];
-		unsigned int j = 0;
-		// get Voxel from absolute Index
+		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
+		int size = 2;
+		VectorI3 center = view.Trans.Position.roundF();
+		LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
 		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 		{
-			voxel_boxes[j].Create(VoxelCube);
-			voxel_boxes[j].Trans().Position = i;
-			voxel_boxes[j].ShowWire();
-			j++;
+			Voxel * voxel = ChunkManager[i];
+			if (voxel != nullptr && (voxel -> IsSolid()))
+			{
+				PolyHedraObject voxel_box(p);
+				voxel_box.Create(VoxelCube);
+				voxel_box.Trans().Position = i;
+				voxel_box.ShowWire();
+			}
 		}
 	}
 
@@ -474,42 +492,45 @@ void Frame(double timeDelta) override
 	if (ShowFull)
 	{
 		PolyHedraManager.ShaderFullDefault.Bind();
-		PolyHedraManager.ShaderFullDefault.DisplaySize.Put(window.Size);
 		PolyHedraManager.ShaderFullDefault.Depth.Put(view.Depth);
-		PolyHedraManager.ShaderFullDefault.View.Put(view_mat);
 		PolyHedraManager.ShaderFullDefault.FOV.Put(view.FOV);
 		PolyHedraManager.DrawFull();
 	}
 	if (ShowWire)
 	{
 		PolyHedraManager.ShaderWireDefault.Bind();
-		PolyHedraManager.ShaderWireDefault.DisplaySize.Put(window.Size);
 		PolyHedraManager.ShaderWireDefault.Depth.Put(view.Depth);
-		PolyHedraManager.ShaderWireDefault.View.Put(view_mat);
 		PolyHedraManager.ShaderWireDefault.FOV.Put(view.FOV);
 		PolyHedraManager.DrawWire();
 	}
 	if (ShowTiles)
 	{
 		PlaneManager.Shader.Bind();
-		PlaneManager.Shader.DisplaySize.Put(window.Size);
 		PlaneManager.Shader.Depth.Put(view.Depth);
-		PlaneManager.Shader.View.Put(view_mat);
 		PlaneManager.Shader.FOV.Put(view.FOV);
 		PlaneManager.Draw();
 	}
 	if (ShowVoxels)
 	{
 		ChunkManager.Shader.Bind();
-		ChunkManager.Shader.DisplaySize.Put(window.Size);
 		ChunkManager.Shader.Depth.Put(view.Depth);
-		ChunkManager.Shader.View.Put(view_mat);
 		ChunkManager.Shader.FOV.Put(view.FOV);
 		ChunkManager.Draw();
 	}
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	{
+		/*
+			FrameTime
+
+			Position
+				View
+				Chunk Voxel(relative)
+				Voxel(absolute)
+
+			Render/Buffer Data/Memory
+		*/
+
 		std::stringstream ss;
 		{
 			ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
@@ -582,7 +603,10 @@ void Frame(double timeDelta) override
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.String() = ss.str();
 	}
-	TextDraw();
+	if (ShowText)
+	{
+		TextManager.Draw();
+	}
 }
 
 

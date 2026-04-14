@@ -28,6 +28,8 @@ void main()
 	if (col.g >= 0.5) { discard; }
 	if (col.b >= 0.5) { discard; }
 
+	col = vec4(1, 1, 1, 1);
+
 	if (gl_FragCoord.x >= fs_inn.BoundMin.x &&
 		gl_FragCoord.x <= fs_inn.BoundMax.x &&
 		gl_FragCoord.y >= fs_inn.BoundMin.y &&

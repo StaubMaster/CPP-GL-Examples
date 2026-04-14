@@ -5,3 +5,17 @@ remove PolyHedra::Template
 make better PolyHedra for simple Texture
 
 make better Textures Wrapper
+
+
+
+make Multiforms better
+reorganize Uniforms. some stuff is no longer used and inconsistent
+
+Uniforms for more Base types
+all Vector and Matrixes ?
+same with Attributes and Multiforms
+
+
+
+LoopTN
+	.Size() returns Size. depends on Exclusion
