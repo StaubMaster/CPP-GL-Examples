@@ -359,6 +359,7 @@ void Make() override
 {
 //	window.DefaultColor = ColorF4(1, 1, 1);
 //	view.Depth.Factors.ChangeFar(50.0f);
+	view.Trans.Position = VectorF3(0, 7, 7);
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -421,26 +422,10 @@ bool ShowText = true;
 bool ShowTiles = true;
 bool ShowVoxels = true;
 
-/* Collision
-do as part of View Update
-Calculate Movement Direction
+bool IgnoreCollision = true;
+bool ViewBack = false;
 
-check for collision with current Position
 
-move Box in that direction.
-for all boxes not currently colliding
-	check for collision.
-	if collision
-		get collision normal
-		remove normal part. so only perpendicular remains
-
-keep doing until all Boxes in area are checked
-
-add result to current position
-
-have a way to turn off collision, for testing
-
-*/
 
 VectorF3 VectorAbsolute(VectorF3 vec)
 {
@@ -478,9 +463,6 @@ VectorI3 VectorAxisRank(VectorF3 vec)
 	return ret;
 }
 
-bool IgnoreCollision = true;
-bool ViewBack = false;
-
 VectorF3 BoxCollision(BoxF3 box0, VectorF3 vel0, BoxF3 box1)
 {
 	VectorF3 pos0;
@@ -496,6 +478,18 @@ VectorF3 BoxCollision(BoxF3 box0, VectorF3 vel0, BoxF3 box1)
 	return (pos1 - pos0) / vel0;
 }
 
+/*
+Gravity
+if Ignore Collision. Gravity = 0
+Gravity ++
+
+if normal points up (opposite Gravity) (dot < 0)
+remove that part of Graviy (Gravity = 0)
+*/
+
+VectorF3	GravityForce = VectorF3(0, -1.0f, 0);
+VectorF3	GravityVel;
+
 void UpdateViewColliding(FrameTime frame_time)
 {
 	Trans3D change;
@@ -504,17 +498,14 @@ void UpdateViewColliding(FrameTime frame_time)
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		change = window.MoveSpinFromKeysCursor();
-		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 100; }
-		change.Position *= 2;
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 10; }
+		change.Position *= 20;
 		change.Rotation *= view.FOV.ToRadians() * 0.05f;
 		{
 			EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
 			change.Position = e.forward(change.Position);
 		}
 	}
-
-	change.Position *= frame_time.Delta;
-	change.Rotation *= frame_time.Delta;
 
 	if (!IgnoreCollision)
 	{
@@ -527,12 +518,14 @@ void UpdateViewColliding(FrameTime frame_time)
 		BoxF3 view_box_old = ViewBox + view.Trans.Position;
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
 
+		//change.Position *= frame_time.Delta;
+
 		int size = 1;
 		VectorI3 center = view.Trans.Position.roundF();
 		LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
 		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 		{
-			Voxel * voxel = ChunkManager[i];
+			const Voxel * voxel = ChunkManager[i];
 			if (voxel != nullptr && (voxel -> IsSolid()))
 			{
 				PolyHedraObject voxel_obj(p);
@@ -542,63 +535,83 @@ void UpdateViewColliding(FrameTime frame_time)
 		}
 
 		float limit_t = 1.0f;
+		//limit_t *= frame_time.Delta;
+
 		VectorF3 vel_sum;
 		for (unsigned int l = 0; l < 4; l++)
 		{
-		VectorI3	collision_idx;
-		Bool3		collision_axis;
-		float		collision_axis_t;
-		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-		{
-			Voxel * voxel = ChunkManager[i];
-			if (voxel != nullptr && (voxel -> IsSolid()))
+			VectorI3	collision_idx;
+			Bool3		collision_axis;
+			float		collision_axis_t;
+			for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 			{
-				BoxI3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
-				if (view_box_old.IntersectBoxInclusive(voxel_box).All(true)) { continue; }
+				const Voxel * voxel = ChunkManager[i];
+				if (voxel != nullptr && (voxel -> IsSolid()))
 				{
-					BoxF3 view_box_new = view_box_old + change.Position;
-					if (view_box_new.IntersectBoxInclusive(voxel_box).All(true))
+					BoxI3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
+					if (view_box_old.IntersectBoxInclusive(voxel_box).All(true)) { continue; }
 					{
-						VectorF3 & vel = change.Position;
-						VectorF3 t = BoxCollision(view_box_old, vel, BoxF3(voxel_box.Min, voxel_box.Max));
-						if (t.X < 0.0f) { t.X = 0.0f / 0.0f; }
-						if (t.Y < 0.0f) { t.Y = 0.0f / 0.0f; }
-						if (t.Z < 0.0f) { t.Z = 0.0f / 0.0f; }
-						Bool3 axis;
-						float axis_t;
-						VectorI3 ranks = VectorAxisRank(t);
-						     if (ranks.X == 0) { axis.SetX(true); axis_t = t.X; t = VectorF3(t.X, 0, 0); }
-						else if (ranks.Y == 0) { axis.SetY(true); axis_t = t.Y; t = VectorF3(0, t.Y, 0); }
-						else if (ranks.Z == 0) { axis.SetZ(true); axis_t = t.Z; t = VectorF3(0, 0, t.Z); }
-						if (collision_axis.All(false) || axis_t < collision_axis_t)
+						// when not multiplying by timeDelta, it goes through in a single frame
+						//BoxF3 view_box_new = view_box_old + change.Position;
+						//if (view_box_new.IntersectBoxInclusive(voxel_box).All(true))
 						{
-							collision_idx = i;
-							collision_axis = axis;
-							collision_axis_t = axis_t;
+							VectorF3 & vel = change.Position;
+							VectorF3 t = BoxCollision(view_box_old, vel, BoxF3(voxel_box.Min, voxel_box.Max));
+							if (t.X < 0.0f) { t.X = 0.0f / 0.0f; }
+							if (t.Y < 0.0f) { t.Y = 0.0f / 0.0f; }
+							if (t.Z < 0.0f) { t.Z = 0.0f / 0.0f; }
+							Bool3 axis;
+							float axis_t;
+							VectorI3 ranks = VectorAxisRank(t);
+							     if (ranks.X == 0) { axis.SetX(true); axis_t = t.X; t = VectorF3(t.X, 0, 0); }
+							else if (ranks.Y == 0) { axis.SetY(true); axis_t = t.Y; t = VectorF3(0, t.Y, 0); }
+							else if (ranks.Z == 0) { axis.SetZ(true); axis_t = t.Z; t = VectorF3(0, 0, t.Z); }
+							if (collision_axis.All(false) || axis_t < collision_axis_t)
+							{
+								collision_idx = i;
+								collision_axis = axis;
+								collision_axis_t = axis_t;
+							}
 						}
 					}
 				}
 			}
-		}
-		if (collision_axis.Any(true) && collision_axis_t <= limit_t)
-		{
-			collision_axis_t -= 0.01f; // else if stops for one frame and then t = 0 the next frame and it moves through ?
-			VectorF3 & vel = change.Position;
-			VectorF3 normal;
-			if (collision_axis.GetX()) { if (vel.X > 0.0f) { normal.X = -1; } else { normal.X = +1; } }
-			if (collision_axis.GetY()) { if (vel.Y > 0.0f) { normal.Y = -1; } else { normal.Y = +1; } }
-			if (collision_axis.GetZ()) { if (vel.Z > 0.0f) { normal.Z = -1; } else { normal.Z = +1; } }
-			if (normal.length2() == 1)
+			if (collision_axis.Any(true))
 			{
-				vel_sum += vel * collision_axis_t;
-				limit_t -= collision_axis_t;
-				float dot = normal.dot(vel);
-				vel = vel - (normal * dot);
+				std::cout << "t " << collision_axis_t << '|' << limit_t << ' ' << collision_axis << '\n';
 			}
-		}
-		else { break; }
+			if (collision_axis.Any(true) && collision_axis_t <= limit_t)
+			{
+				float e = 0.01f;
+				//e *= frame_time.Delta;
+				e = 0.0f;
+				collision_axis_t -= e; // else if stops for one frame and then t = 0 the next frame and it moves through ?
+				VectorF3 & vel = change.Position;
+				VectorF3 normal;
+				if (collision_axis.GetX()) { if (vel.X > 0.0f) { normal.X = -1; } else { normal.X = +1; } }
+				if (collision_axis.GetY()) { if (vel.Y > 0.0f) { normal.Y = -1; } else { normal.Y = +1; } }
+				if (collision_axis.GetZ()) { if (vel.Z > 0.0f) { normal.Z = -1; } else { normal.Z = +1; } }
+				if (normal.length2() == 1)
+				{
+					vel_sum += vel * collision_axis_t;
+					limit_t -= collision_axis_t;
+					{
+						float dot = normal.dot(vel);
+						vel = vel - (normal * dot);
+					}
+					/*{
+						float dot = normal.dot(GravityVel);
+						GravityVel = GravityVel - (normal * dot);
+					}*/
+				}
+			}
+			else { break; }
 		}
 
+		if (limit_t != 1.0f)
+		{
+			std::cout << "t " << limit_t << '\n';
+		}
 		if (limit_t > 0.0f)
 		{
 			VectorF3 & vel = change.Position;
@@ -606,7 +619,14 @@ void UpdateViewColliding(FrameTime frame_time)
 		}
 
 		change.Position = vel_sum;
+		change.Position *= frame_time.Delta;
 	}
+	else
+	{
+		change.Position *= frame_time.Delta;
+	}
+
+	change.Rotation *= frame_time.Delta;
 
 	view.Trans.Position += change.Position;
 	view.Trans.Rotation += change.Rotation;
@@ -638,10 +658,24 @@ std::string Memory1000ToString(unsigned long long memory)
 	return ss.str();
 }
 
-void Frame(double timeDelta) override
+void Draw()
 {
-	FrameTime frame_time(64);
-	frame_time.Update(timeDelta);
+	PolyHedraManager.ClearInstances();
+	PolyHedraManager.UpdateInstances();
+	if (ShowFull) { PolyHedraManager.DrawFull(); }
+	if (ShowWire) { PolyHedraManager.DrawWire(); }
+	if (ShowTiles) { PlaneManager.Draw(); }
+	if (ShowVoxels) { ChunkManager.Draw(); }
+
+	GL::Clear(GL::ClearMask::DepthBufferBit);
+	if (ShowText)
+	{
+		TextManager.Draw();
+	}
+}
+
+void Update(FrameTime frame_time)
+{
 	UpdateViewColliding(frame_time);
 	if (!ViewBack)
 	{
@@ -654,9 +688,15 @@ void Frame(double timeDelta) override
 
 	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 
-	ChunkManager.RemoveAround(view.Trans.Position, 5);
-	ChunkManager.InsertAround(view.Trans.Position, 4);
+	ChunkManager.RemoveAround(view.Trans.Position, 3);
+	ChunkManager.InsertAround(view.Trans.Position, 2);
 	ChunkManager.GenerateAround(Perlin0, view.Trans.Position, 2, 1);
+}
+
+void Frame(double timeDelta) override
+{
+	FrameTime frame_time(64);
+	frame_time.Update(timeDelta);
 
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { ShowFull = !ShowFull; }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }
@@ -677,6 +717,8 @@ void Frame(double timeDelta) override
 		ChunkManager.Clear();
 	}
 
+	Update(frame_time);
+
 	if (ShowWire)
 	{
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
@@ -689,14 +731,6 @@ void Frame(double timeDelta) override
 		}
 	}
 
-	PolyHedraManager.ClearInstances();
-	PolyHedraManager.UpdateInstances();
-	if (ShowFull) { PolyHedraManager.DrawFull(); }
-	if (ShowWire) { PolyHedraManager.DrawWire(); }
-	if (ShowTiles) { PlaneManager.Draw(); }
-	if (ShowVoxels) { ChunkManager.Draw(); }
-
-	GL::Clear(GL::ClearMask::DepthBufferBit);
 	{
 		std::stringstream ss;
 
@@ -706,16 +740,16 @@ void Frame(double timeDelta) override
 			ss << '\n';
 		}
 
-		/*{
+		{
 			ss << "0123456789+-* /=<>" << '\n';
-			ss << "()[]{}#~'\"_|&" << '\n';
+			ss << "()[]{}#~'\"_|&%$" << '\n';
 			ss << "ABCDEFGHIJKLM" << '\n';
 			ss << "NOPQRSTUVWXYZ" << '\n';
 			ss << "abcdefghijklm" << '\n';
 			ss << "nopqrstuvwxyz" << '\n';
 			ss << ".,:;!?" << '\n';
 			ss << '\n';
-		}*/
+		}
 
 		/*{
 			ss << "[1] " << "PolyHedra Full:" << (ShowFull ? "Show" : "Hide") << '\n';
@@ -806,10 +840,8 @@ void Frame(double timeDelta) override
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.String() = ss.str();
 	}
-	if (ShowText)
-	{
-		TextManager.Draw();
-	}
+
+	Draw();
 }
 
 

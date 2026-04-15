@@ -25,9 +25,7 @@ struct ChunkManager
 	ChunkManager(const ChunkManager & other) = delete;
 	ChunkManager & operator=(const ChunkManager & other) = delete;
 
-	// rename to FindVoxelOrNull ?
-			Voxel *	operator[](VectorI3 idx);
-	const	Voxel *	operator[](VectorI3 idx) const;
+	const Voxel *	operator[](VectorI3 idx) const;
 
 	unsigned int	FindChunkUndex(Chunk * chunk) const;
 	unsigned int	FindChunkUndex(VectorI3 idx) const;

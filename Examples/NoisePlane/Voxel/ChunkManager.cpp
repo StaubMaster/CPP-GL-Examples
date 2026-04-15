@@ -18,16 +18,24 @@ ChunkManager::ChunkManager()
 
 
 
-Voxel * ChunkManager::operator[](VectorI3 idx)
+const Voxel * ChunkManager::operator[](VectorI3 idx) const
 {
 	VectorI3 chunk_idx = (VectorF3(idx) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
 	VectorU3 voxel_idx = idx - (chunk_idx * CHUNK_VALUES_PER_SIDE);
 
 	Chunk * chunk = FindChunkOrNull(chunk_idx);
 	if (chunk == nullptr) { return nullptr; }
-	return &(*chunk)[voxel_idx];
+	if (chunk -> Data == nullptr) { return nullptr; }
+	if (chunk -> ChunkType == ChunkType::Filled)
+	{
+		return &(*chunk)[voxel_idx];
+	}
+	if (chunk -> ChunkType == ChunkType::Empty)
+	{
+		return (*chunk).Data;
+	}
+	return nullptr;
 }
-//const Voxel * ChunkManager::operator[](VectorI3 voxel) const;
 
 
 
@@ -120,8 +128,8 @@ void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 
 	for (unsigned int i = 0; i < Chunks.Count(); i++)
 	{
+		if (Chunks[i] == nullptr) { continue; }
 		Chunk & chunk = *Chunks[i];
-		if ((&chunk) == nullptr) { continue; }
 		if (chunk_box.IntersectVecInclusive(chunk.Index).All(true)) { continue; }
 		RemoveChunk(i);
 	}
@@ -147,8 +155,8 @@ void ChunkManager::GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned
 		float dist;
 		for (unsigned int i = 0; i < Chunks.Count(); i++)
 		{
+			if (Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *Chunks[i];
-			if ((&chunk) == nullptr) { continue; }
 			if (chunk.ChunkType != ChunkType::UnGenerated) { continue; }
 			if (!chunk_box.IntersectVecInclusive(chunk.Index).All(true)) { continue; }
 			VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
