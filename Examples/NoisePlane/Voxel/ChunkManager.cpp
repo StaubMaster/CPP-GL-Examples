@@ -71,6 +71,8 @@ void ChunkManager::Clear()
 {
 	for (unsigned int i = 0; i < Chunks.Count(); i++)
 	{
+		Chunk & chunk = *Chunks[i];
+		chunk.GraphicsDelete();
 		delete Chunks[i];
 	}
 	Chunks.Clear();
@@ -78,10 +80,11 @@ void ChunkManager::Clear()
 
 void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 {
-	VectorI3 idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
+	if (!ShouldGenerate) { return; }
 
-	BoxI3 box(idx - (int)size, idx + (int)size);
-	LoopI3 loop(box.Min, box.Max);
+	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
+
+	LoopI3 loop(chunk_idx - (int)size, chunk_idx + (int)size);
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		InsertChunk(i);
@@ -110,18 +113,44 @@ void ChunkManager::InsertChunk(VectorI3 idx)
 	}
 }
 
-void ChunkManager::GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned int count)
+void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
+{
+	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
+	BoxI3 chunk_box(chunk_idx - (int)size, chunk_idx + (int)size);
+
+	for (unsigned int i = 0; i < Chunks.Count(); i++)
+	{
+		Chunk & chunk = *Chunks[i];
+		if ((&chunk) == nullptr) { continue; }
+		if (chunk_box.IntersectVecInclusive(chunk.Index).All(true)) { continue; }
+		RemoveChunk(i);
+	}
+}
+void ChunkManager::RemoveChunk(unsigned int idx)
+{
+	Chunk * chunk = Chunks[idx];
+	Chunks.Remove(idx);
+	chunk -> GraphicsDelete();
+	delete chunk;
+}
+
+void ChunkManager::GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned int size, unsigned int count)
 {
 	if (!ShouldGenerate) { return; }
+
+	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
+	BoxI3 chunk_box(chunk_idx - (int)size, chunk_idx + (int)size);
+
 	for (unsigned int c = 0; c < count; c++)
 	{
 		unsigned int idx = 0xFFFFFFFF;
 		float dist;
 		for (unsigned int i = 0; i < Chunks.Count(); i++)
 		{
-			if (Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *Chunks[i];
+			if ((&chunk) == nullptr) { continue; }
 			if (chunk.ChunkType != ChunkType::UnGenerated) { continue; }
+			if (!chunk_box.IntersectVecInclusive(chunk.Index).All(true)) { continue; }
 			VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
 			float d = rel.length2();
 			if (idx == 0xFFFFFFFF || d < dist)

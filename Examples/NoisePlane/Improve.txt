@@ -6,9 +6,17 @@ culling. check if chunkBox is visible. if not, dont Draw
 
 Voxel rotation
 
+PlaceVoxel
+ClearVoxel
 
 
 
+make Planes line up with Voxels more
+use Planes to "predict" far away Chunks
+
+
+
+clean up main
 
 make smaller text
 make better font

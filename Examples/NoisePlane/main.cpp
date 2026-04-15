@@ -654,8 +654,9 @@ void Frame(double timeDelta) override
 
 	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 
+	ChunkManager.RemoveAround(view.Trans.Position, 5);
 	ChunkManager.InsertAround(view.Trans.Position, 4);
-	ChunkManager.GenerateAround(Perlin0, view.Trans.Position, 1);
+	ChunkManager.GenerateAround(Perlin0, view.Trans.Position, 2, 1);
 
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { ShowFull = !ShowFull; }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }

@@ -38,8 +38,11 @@ struct ChunkManager
 	void	InsertAround(VectorF3 pos, unsigned int size);
 	void	InsertChunk(VectorI3 idx);
 
+	void	RemoveAround(VectorF3 pos, unsigned int size);
+	void	RemoveChunk(unsigned int idx);
+
 	bool	ShouldGenerate;
-	void	GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned int count);
+	void	GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned int size, unsigned int count);
 
 	void	NeighbourInsert(Chunk & chunk);
 
