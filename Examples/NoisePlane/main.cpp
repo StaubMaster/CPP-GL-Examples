@@ -358,9 +358,7 @@ void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 void Make() override
 {
 //	window.DefaultColor = ColorF4(1, 1, 1);
-	view.Depth.Factors.ChangeFar(50.0f);
-	Multiform_Depth.ChangeData(view.Depth);
-	Multiform_FOV.ChangeData(view.FOV);
+//	view.Depth.Factors.ChangeFar(50.0f);
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -401,6 +399,9 @@ void Init() override
 
 	PlanesGraphicsCreate();
 	VoxelGraphicsCreate();
+
+	Multiform_Depth.ChangeData(view.Depth);
+	Multiform_FOV.ChangeData(view.FOV);
 }
 void Free() override
 {
@@ -441,22 +442,26 @@ have a way to turn off collision, for testing
 
 */
 
-VectorF3 Absolute(VectorF3 vec)
+VectorF3 VectorAbsolute(VectorF3 vec)
 {
 	if (vec.X < 0) { vec.X = -vec.X; }
 	if (vec.Y < 0) { vec.Y = -vec.Y; }
 	if (vec.Z < 0) { vec.Z = -vec.Z; }
 	return vec;
 }
-VectorI3 RankAbs(VectorF3 vec)
+VectorI3 VectorAxisRank(VectorF3 vec)
 {
+	VectorI3 ret;
+
 	float * vI = (float*)&vec;
+	int * vO = (int*)&ret;
+
 	for (unsigned int i = 0; i < 3; i++)
 	{
+		if (!(vI[i] == vI[i])) { vO[i] = -1; }
 		if (vI[i] < 0) { vI[i] = -vI[i]; }
 	}
-	VectorI3 ret;
-	int * vO = (int*)&ret;
+
 	for (unsigned int i0 = 0; i0 < 3; i0++)
 	{
 		for (unsigned int i1 = 0; i1 < 3; i1++)
@@ -476,11 +481,25 @@ VectorI3 RankAbs(VectorF3 vec)
 bool IgnoreCollision = true;
 bool ViewBack = false;
 
+VectorF3 BoxCollision(BoxF3 box0, VectorF3 vel0, BoxF3 box1)
+{
+	VectorF3 pos0;
+	if (vel0.X > 0.0f) { pos0.X = box0.Max.X; } else { pos0.X = box0.Min.X; }
+	if (vel0.Y > 0.0f) { pos0.Y = box0.Max.Y; } else { pos0.Y = box0.Min.Y; }
+	if (vel0.Z > 0.0f) { pos0.Z = box0.Max.Z; } else { pos0.Z = box0.Min.Z; }
+
+	VectorF3 pos1;
+	if (vel0.X > 0.0f) { pos1.X = box1.Min.X; } else { pos1.X = box1.Max.X; }
+	if (vel0.Y > 0.0f) { pos1.Y = box1.Min.Y; } else { pos1.Y = box1.Max.Y; }
+	if (vel0.Z > 0.0f) { pos1.Z = box1.Min.Z; } else { pos1.Z = box1.Max.Z; }
+
+	return (pos1 - pos0) / vel0;
+}
+
 void UpdateViewColliding(FrameTime frame_time)
 {
 	Trans3D change;
 
-	// Input
 	if (window.KeyBoardManager[Keys::Tab].State == State::Press) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
@@ -494,20 +513,21 @@ void UpdateViewColliding(FrameTime frame_time)
 		}
 	}
 
-	change.Position *= frame_time.Delta;
-	change.Rotation *= frame_time.Delta;
-
 	{
 		PolyHedraObject view_box_obj(ViewBoxCube);
 		view_box_obj.Trans().Position = view.Trans.Position;
 		view_box_obj.ShowWire();
 	}
 
+	change.Position *= frame_time.Delta;
+	change.Rotation *= frame_time.Delta;
+
 	if (!IgnoreCollision)
 	{
 		BoxF3 view_box_old = ViewBox + view.Trans.Position;
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
-		int size = 2;
+
+		int size = 1;
 		VectorI3 center = view.Trans.Position.roundF();
 		LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
 		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
@@ -515,70 +535,77 @@ void UpdateViewColliding(FrameTime frame_time)
 			Voxel * voxel = ChunkManager[i];
 			if (voxel != nullptr && (voxel -> IsSolid()))
 			{
-				{
-					PolyHedraObject voxel_obj(p);
-					voxel_obj.Trans().Position = i;
-					voxel_obj.ShowWire();
-				}
-				BoxI3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
-				if (view_box_old.IntersectBoxInclusive(voxel_box).All(true))
-				{
-					continue;
-				}
+				PolyHedraObject voxel_obj(p);
+				voxel_obj.Trans().Position = i;
+				voxel_obj.ShowWire();
+			}
+		}
 
+		float limit_t = 1.0f;
+		VectorF3 vel_sum;
+		for (unsigned int l = 0; l < 4; l++)
+		{
+		VectorI3	collision_idx;
+		Bool3		collision_axis;
+		float		collision_axis_t;
+		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+		{
+			Voxel * voxel = ChunkManager[i];
+			if (voxel != nullptr && (voxel -> IsSolid()))
+			{
+				BoxI3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
+				if (view_box_old.IntersectBoxInclusive(voxel_box).All(true)) { continue; }
 				{
 					BoxF3 view_box_new = view_box_old + change.Position;
 					if (view_box_new.IntersectBoxInclusive(voxel_box).All(true))
 					{
-						// turn into function. Collision between a moving and a non-moving Box
-						// also make one for where both move. that would return 2 t for both Boxes
-
 						VectorF3 & vel = change.Position;
-						std::cout << "vel " << vel << '\n';
-
-						VectorF3 pos0;
-						std::cout << "pos0";
-						if (vel.X > 0.0f) { pos0.X = view_box_old.Max.X; std::cout << " Max"; } else { pos0.X = view_box_old.Min.X; std::cout << " Min"; }
-						if (vel.Y > 0.0f) { pos0.Y = view_box_old.Max.Y; std::cout << " Max"; } else { pos0.Y = view_box_old.Min.Y; std::cout << " Min"; }
-						if (vel.Z > 0.0f) { pos0.Z = view_box_old.Max.Z; std::cout << " Max"; } else { pos0.Z = view_box_old.Min.Z; std::cout << " Min"; }
-						std::cout << '\n';
-
-						VectorF3 pos1;
-						std::cout << "pos1";
-						if (vel.X > 0.0f) { pos1.X = voxel_box.Min.X; std::cout << " Min"; } else { pos1.X = voxel_box.Max.X; std::cout << " Max"; }
-						if (vel.Y > 0.0f) { pos1.Y = voxel_box.Min.Y; std::cout << " Min"; } else { pos1.Y = voxel_box.Max.Y; std::cout << " Max"; }
-						if (vel.Z > 0.0f) { pos1.Z = voxel_box.Min.Z; std::cout << " Min"; } else { pos1.Z = voxel_box.Max.Z; std::cout << " Max"; }
-						std::cout << '\n';
-
-						std::cout << "pos0 " << pos0 << '\n';
-						std::cout << "pos1 " << pos1 << '\n';
-
-						// pos0 + vel * t = pos1
-						// (pos1 - pos0) / vel = t
-						VectorF3 t = (pos1 - pos0) / vel;
-						std::cout << "t " << t << '\n';
-						// which happens first ?
-
-						VectorI3 ranks = RankAbs(t);
-						std::cout << "ranks " << ranks << '\n';
-
-						VectorF3 normal;
-						     if (ranks.X == 0) { if (vel.X > 0.0f) { normal.X = +1; } else { normal.X = -1; } }
-						else if (ranks.Y == 0) { if (vel.Y > 0.0f) { normal.Y = +1; } else { normal.Y = -1; } }
-						else if (ranks.Z == 0) { if (vel.Z > 0.0f) { normal.Z = +1; } else { normal.Z = -1; } }
-						// normal direction based on vel
-						std::cout << "normal " << normal << '\n';
-
-						if (normal.length2() != 0) // check for lenght == 1
+						VectorF3 t = BoxCollision(view_box_old, vel, BoxF3(voxel_box.Min, voxel_box.Max));
+						if (t.X < 0.0f) { t.X = 0.0f / 0.0f; }
+						if (t.Y < 0.0f) { t.Y = 0.0f / 0.0f; }
+						if (t.Z < 0.0f) { t.Z = 0.0f / 0.0f; }
+						Bool3 axis;
+						float axis_t;
+						VectorI3 ranks = VectorAxisRank(t);
+						     if (ranks.X == 0) { axis.SetX(true); axis_t = t.X; t = VectorF3(t.X, 0, 0); }
+						else if (ranks.Y == 0) { axis.SetY(true); axis_t = t.Y; t = VectorF3(0, t.Y, 0); }
+						else if (ranks.Z == 0) { axis.SetZ(true); axis_t = t.Z; t = VectorF3(0, 0, t.Z); }
+						if (collision_axis.All(false) || axis_t < collision_axis_t)
 						{
-							float dot = normal.dot(vel);
-							VectorF3 normal_vel = normal * (dot / normal.length()); // normalize normal before this ?
-							vel = vel - normal_vel;
+							collision_idx = i;
+							collision_axis = axis;
+							collision_axis_t = axis_t;
 						}
 					}
 				}
 			}
 		}
+		if (collision_axis.Any(true) && collision_axis_t <= limit_t)
+		{
+			collision_axis_t -= 0.01f; // else if stops for one frame and then t = 0 the next frame and it moves through ?
+			VectorF3 & vel = change.Position;
+			VectorF3 normal;
+			if (collision_axis.GetX()) { if (vel.X > 0.0f) { normal.X = -1; } else { normal.X = +1; } }
+			if (collision_axis.GetY()) { if (vel.Y > 0.0f) { normal.Y = -1; } else { normal.Y = +1; } }
+			if (collision_axis.GetZ()) { if (vel.Z > 0.0f) { normal.Z = -1; } else { normal.Z = +1; } }
+			if (normal.length2() == 1)
+			{
+				vel_sum += vel * collision_axis_t;
+				limit_t -= collision_axis_t;
+				float dot = normal.dot(vel);
+				vel = vel - (normal * dot);
+			}
+		}
+		else { break; }
+		}
+
+		if (limit_t > 0.0f)
+		{
+			VectorF3 & vel = change.Position;
+			vel_sum += vel * limit_t;
+		}
+
+		change.Position = vel_sum;
 	}
 
 	view.Trans.Position += change.Position;
@@ -636,34 +663,10 @@ void Frame(double timeDelta) override
 
 	PolyHedraManager.ClearInstances();
 	PolyHedraManager.UpdateInstances();
-	if (ShowFull)
-	{
-		PolyHedraManager.ShaderFullDefault.Bind();
-		PolyHedraManager.ShaderFullDefault.Depth.Put(view.Depth);
-		PolyHedraManager.ShaderFullDefault.FOV.Put(view.FOV);
-		PolyHedraManager.DrawFull();
-	}
-	if (ShowWire)
-	{
-		PolyHedraManager.ShaderWireDefault.Bind();
-		PolyHedraManager.ShaderWireDefault.Depth.Put(view.Depth);
-		PolyHedraManager.ShaderWireDefault.FOV.Put(view.FOV);
-		PolyHedraManager.DrawWire();
-	}
-	if (ShowTiles)
-	{
-		PlaneManager.Shader.Bind();
-		PlaneManager.Shader.Depth.Put(view.Depth);
-		PlaneManager.Shader.FOV.Put(view.FOV);
-		PlaneManager.Draw();
-	}
-	if (ShowVoxels)
-	{
-		ChunkManager.Shader.Bind();
-		ChunkManager.Shader.Depth.Put(view.Depth);
-		ChunkManager.Shader.FOV.Put(view.FOV);
-		ChunkManager.Draw();
-	}
+	if (ShowFull) { PolyHedraManager.DrawFull(); }
+	if (ShowWire) { PolyHedraManager.DrawWire(); }
+	if (ShowTiles) { PlaneManager.Draw(); }
+	if (ShowVoxels) { ChunkManager.Draw(); }
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	{
@@ -675,7 +678,7 @@ void Frame(double timeDelta) override
 			ss << '\n';
 		}
 
-		{
+		/*{
 			ss << "0123456789+-* /=<>" << '\n';
 			ss << "()[]{}#~'\"_|&" << '\n';
 			ss << "ABCDEFGHIJKLM" << '\n';
@@ -684,9 +687,9 @@ void Frame(double timeDelta) override
 			ss << "nopqrstuvwxyz" << '\n';
 			ss << ".,:;!?" << '\n';
 			ss << '\n';
-		}
+		}*/
 
-		{
+		/*{
 			ss << "[1] " << "PolyHedra Full:" << (ShowFull ? "Show" : "Hide") << '\n';
 			ss << "[2] " << "PolyHedra Wire:" << (ShowWire ? "Show" : "Hide") << '\n';
 			ss << "[3] " << "Text:" << (ShowText ? "Show" : "Hide") << '\n';
@@ -700,7 +703,7 @@ void Frame(double timeDelta) override
 			ss << "[F5] " << "Clear Planes" << '\n';
 			ss << "[F5] " << "Clear Chunks" << '\n';
 			ss << '\n';
-		}
+		}*/
 
 		// put all the control stuff together
 
@@ -722,33 +725,33 @@ void Frame(double timeDelta) override
 				full_count += PolyHedraManager.InstanceManagers[i].InstancesFull.Count();
 				wire_count += PolyHedraManager.InstanceManagers[i].InstancesWire.Count();
 			}
-			ss << "PolyHedra " << PolyHedraManager.InstanceManagers.Count() << '|' << all_count << '\n';
-			ss << "[1] Full " << (ShowFull ? "Show" : "Hide") << ' ' << full_count << '\n';
-			ss << "[2] Wire " << (ShowWire ? "Show" : "Hide") << ' ' << wire_count << '\n';
+			ss << "PolyHedra Main|Inst " << count << '|' << all_count << '\n';
+			ss << "Full|Wire" << ' ' << full_count << '|' << wire_count << '\n';
 			ss << '\n';
 		}
 
+		// Memory to String could be turned into a function
 		{
 			unsigned int count_planes = PlaneManager.Planes.Count();
 			unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
-			ss << "[4] Planes|Tiles:" << (ShowTiles ? "Show" : "Hide") << ' ' << count_planes << '|' << count_tiles << '\n';
+			ss << "Planes|Tiles:" << count_planes << '|' << count_tiles << ' ';
 			unsigned long long memory = count_tiles * sizeof(float);
 			const char * factor = "B";
 			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
 			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
-			ss << "Memory:" << memory << factor << "\n";
+			ss << '(' << memory << factor << ')' << '\n';
 			ss << '\n';
 		}
 
 		{
 			unsigned int count_chunks = ChunkManager.Chunks.Count();
 			unsigned int count_voxels = count_chunks * CHUNK_VALUES_PER_VOLM;
-			ss << "[5] Chunks|Voxels:" << (ShowVoxels ? "Show" : "Hide") << ' ' << count_chunks << '|' << count_voxels << '\n';
+			ss << "Chunks|Voxels:" << count_chunks << '|' << count_voxels << ' ';
 			unsigned long long memory = count_voxels * sizeof(float);
 			const char * factor = "B";
 			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
 			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
-			ss << "Memory:" << memory << factor << "\n";
+			ss << '(' << memory << factor << ')' << '\n';
 			ss << '\n';
 		}
 
@@ -758,12 +761,12 @@ void Frame(double timeDelta) override
 			{
 				main_count += ChunkManager.Chunks[i] -> MainCount;
 			}
-			ss << "Main Count:" << main_count << '\n';
+			ss << "Voxel BufferData:" << main_count << ' '; // Do I care about Vertex Count ?
 			unsigned long long memory = main_count * sizeof(VoxelGraphics::MainData);
 			const char * factor = "B";
 			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
 			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
-			ss << "Memory:" << memory << factor << "\n";
+			ss << '(' << memory << factor << ')' << '\n';
 			ss << '\n';
 		}
 

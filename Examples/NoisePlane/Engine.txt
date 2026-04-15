@@ -34,3 +34,12 @@ BoxN
 	MinTo()
 	MaxTo()
 		change this or return ?
+
+BoxN
+	convert to other Types
+
+name template Types better
+	VectorNType
+	Vector3Type
+	BoxReturnType
+	BoxOtherType
