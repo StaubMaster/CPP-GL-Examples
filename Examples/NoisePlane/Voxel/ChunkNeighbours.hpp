@@ -35,6 +35,10 @@ struct ChunkNeighbours
 	ChunkNeighbours & operator=(const ChunkNeighbours & other);
 
 	Voxel *		Value(AxisDirection dir, VectorU3 udx) const;
+
+	void	UpdateOthersHere();
+
+	void	UpdateBufferMain();
 };
 
 #endif

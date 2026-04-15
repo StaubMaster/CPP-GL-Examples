@@ -75,20 +75,19 @@ void ChunkManager::Clear()
 	}
 	Chunks.Clear();
 }
-void ChunkManager::UpdateAround(const Perlin2D & noise, VectorF3 pos)
+
+void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 {
 	VectorI3 idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 
-	VectorI3 size(2);
-	BoxI3 box(idx - size, idx + size);
+	BoxI3 box(idx - (int)size, idx + (int)size);
 	LoopI3 loop(box.Min, box.Max);
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
-		Generate(noise, i);
+		InsertChunk(i);
 	}
 }
-
-void ChunkManager::Generate(const Perlin2D & noise, VectorI3 idx)
+void ChunkManager::InsertChunk(VectorI3 idx)
 {
 	if (!ShouldGenerate) { return; }
 
@@ -97,7 +96,6 @@ void ChunkManager::Generate(const Perlin2D & noise, VectorI3 idx)
 	{
 		chunk = new Chunk();
 		chunk -> Index = idx;
-		chunk -> Generate(noise);
 
 		Chunks.Insert(chunk);
 		NeighbourInsert(*chunk);
@@ -109,6 +107,36 @@ void ChunkManager::Generate(const Perlin2D & noise, VectorI3 idx)
 		{
 			chunk -> GraphicsCreate();
 		}
+	}
+}
+
+void ChunkManager::GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned int count)
+{
+	if (!ShouldGenerate) { return; }
+	for (unsigned int c = 0; c < count; c++)
+	{
+		unsigned int idx = 0xFFFFFFFF;
+		float dist;
+		for (unsigned int i = 0; i < Chunks.Count(); i++)
+		{
+			if (Chunks[i] == nullptr) { continue; }
+			Chunk & chunk = *Chunks[i];
+			if (chunk.IsGenerated) { continue; }
+			VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
+			float d = rel.length2();
+			if (idx == 0xFFFFFFFF || d < dist)
+			{
+				dist = d;
+				idx = i;
+			}
+		}
+		if (idx != 0xFFFFFFFF)
+		{
+			Chunk & chunk = *Chunks[idx];
+			chunk.Generate(noise);
+			chunk.Neighbours.UpdateBufferMain();
+		}
+		else { break; } // return instead of break ?
 	}
 }
 
@@ -124,23 +152,7 @@ void ChunkManager::NeighbourInsert(Chunk & chunk)
 		neighbours.PrevY = FindChunkOrNull(VectorI3(chunk.Index.X, chunk.Index.Y - 1, chunk.Index.Z));
 		neighbours.PrevZ = FindChunkOrNull(VectorI3(chunk.Index.X, chunk.Index.Y, chunk.Index.Z - 1));
 	}
-	{
-		if (neighbours.NextX != nullptr) { neighbours.NextX -> Neighbours.PrevX = &chunk; }
-		if (neighbours.NextY != nullptr) { neighbours.NextY -> Neighbours.PrevY = &chunk; }
-		if (neighbours.NextZ != nullptr) { neighbours.NextZ -> Neighbours.PrevZ = &chunk; }
-		if (neighbours.PrevX != nullptr) { neighbours.PrevX -> Neighbours.NextX = &chunk; }
-		if (neighbours.PrevY != nullptr) { neighbours.PrevY -> Neighbours.NextY = &chunk; }
-		if (neighbours.PrevZ != nullptr) { neighbours.PrevZ -> Neighbours.NextZ = &chunk; }
-	}
-	{
-		if (neighbours.Here  != nullptr) { neighbours.Here  -> MainBufferNeedsData = true; }
-		if (neighbours.NextX != nullptr) { neighbours.NextX -> MainBufferNeedsData = true; }
-		if (neighbours.NextY != nullptr) { neighbours.NextY -> MainBufferNeedsData = true; }
-		if (neighbours.NextZ != nullptr) { neighbours.NextZ -> MainBufferNeedsData = true; }
-		if (neighbours.PrevX != nullptr) { neighbours.PrevX -> MainBufferNeedsData = true; }
-		if (neighbours.PrevY != nullptr) { neighbours.PrevY -> MainBufferNeedsData = true; }
-		if (neighbours.PrevZ != nullptr) { neighbours.PrevZ -> MainBufferNeedsData = true; }
-	}
+	neighbours.UpdateOthersHere();
 }
 
 

@@ -38,61 +38,73 @@ Chunk::Chunk()
 { }
 
 
+void Chunk::GenerateGrid()
+{
+	Undex3D size3(CHUNK_VALUES_PER_SIDE);
+
+	VectorI3 chunk_pos = Index * CHUNK_VALUES_PER_SIDE;
+
+	UndexLoop3D loop3(Undex3D(), size3);
+	for (Undex3D u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
+	{
+		VectorI3 voxel_idx = chunk_pos + u;
+		VectorF3 voxel_pos = voxel_idx;
+
+		VectorF3 grid_pos = voxel_pos.round(256);
+		VectorF3 grid_rel = voxel_pos - grid_pos;
+
+		if (grid_rel.length() < 4.0f) { Voxels[size3.Convert(u)].Value = 1; }
+		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { Voxels[size3.Convert(u)].Value = 1; }
+		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { Voxels[size3.Convert(u)].Value = 1; }
+		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { Voxels[size3.Convert(u)].Value = 1; }
+	}
+}
+void Chunk::GeneratePerlin(const Perlin2D & noise)
+{
+	Point3D p3 = Index * CHUNK_VALUES_PER_SIDE;
+	UndexLoop2D loop(Undex2D(), Undex2D(CHUNK_VALUES_PER_SIDE));
+	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		Point2D p2(
+			p3.X + u.X,
+			p3.Z + u.Y
+		);
+	
+		float val = 0.0f;
+		val += noise.Calculate(p2 / 32) * 32;
+		val += noise.Calculate(p2 / 16) * 16;
+		val += noise.Calculate(p2 / 8) * 8;
+		val += noise.Calculate(p2 / 4) * 4;
+		val += noise.Calculate(p2 / 2) * 2;
+		val += noise.Calculate(p2 / 1) * 1;
+		val = val - p3.Y;
+
+		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
+		{
+			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, Undex3D(u.X, i, u.Y));
+			if (i > val)
+			{
+				Voxels[voxel_u].Value = 0;
+			}
+			else if (val - i < 1)
+			{
+				Voxels[voxel_u].Value = 2;
+			}
+			else
+			{
+				Voxels[voxel_u].Value = 3;
+			}
+		}
+	}
+
+}
 
 void Chunk::Generate(const Perlin2D & noise)
 {
 	if (IsGenerated) { return; }
 
-	Undex2D size2(CHUNK_VALUES_PER_SIDE);
-	Undex3D size3(CHUNK_VALUES_PER_SIDE);
-
-	Point3D pos = Index * CHUNK_VALUES_PER_SIDE;
-
-	BoxI3 box(VectorI3(-1, -1, -1), VectorI3(+1, +1, +1));
-
-	UndexLoop2D loop(Undex2D(), size2);
-	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-	{
-		Point2D p(
-			pos.X + u.X,
-			pos.Z + u.Y
-		);
-		float val = 0.0f;
-		val += noise.Calculate(p / 32) * 32;
-		val += noise.Calculate(p / 16) * 16;
-		val += noise.Calculate(p / 8) * 8;
-		val += noise.Calculate(p / 4) * 4;
-		val += noise.Calculate(p / 2) * 2;
-		val += noise.Calculate(p / 1) * 1;
-		val = val - pos.Y;
-
-		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
-		{
-			Undex3D u3(u.X, i, u.Y);
-			if (i > val)
-			{
-				Voxels[size3.Convert(u3)].Value = 0;
-			}
-			else if (val - i < 1)
-			{
-				Voxels[size3.Convert(u3)].Value = 2;
-			}
-			else
-			{
-				Voxels[size3.Convert(u3)].Value = 3;
-			}
-
-			Bool3 b = box.IntersectVecInclusive(VectorI3((pos.X + u.X), (pos.Y + i), (pos.Z + u.Y)));
-			int b2 = 0;
-			if (b.GetX()) { b2++; }
-			if (b.GetY()) { b2++; }
-			if (b.GetZ()) { b2++; }
-			if (b2 >= 2)
-			{
-				Voxels[size3.Convert(u3)].Value = 1;
-			}
-		}
-	}
+	GeneratePerlin(noise);
+	GenerateGrid();
 
 	IsGenerated = true;
 

@@ -84,9 +84,30 @@ Voxel * ChunkNeighbours::Value(AxisDirection dir, VectorU3 udx) const
 	}
 
 	Voxel * val = nullptr;
-	if (chunk != nullptr)
+	if (chunk != nullptr && chunk -> IsGenerated)
 	{
 		val = &(*chunk)[udx];
 	}
 	return val;
+}
+
+void ChunkNeighbours::UpdateOthersHere()
+{
+	if (NextX != nullptr) { NextX -> Neighbours.PrevX = Here; }
+	if (NextY != nullptr) { NextY -> Neighbours.PrevY = Here; }
+	if (NextZ != nullptr) { NextZ -> Neighbours.PrevZ = Here; }
+	if (PrevX != nullptr) { PrevX -> Neighbours.NextX = Here; }
+	if (PrevY != nullptr) { PrevY -> Neighbours.NextY = Here; }
+	if (PrevZ != nullptr) { PrevZ -> Neighbours.NextZ = Here; }
+}
+
+void ChunkNeighbours::UpdateBufferMain()
+{
+	if (Here  != nullptr) { Here  -> MainBufferNeedsData = true; }
+	if (NextX != nullptr) { NextX -> MainBufferNeedsData = true; }
+	if (NextY != nullptr) { NextY -> MainBufferNeedsData = true; }
+	if (NextZ != nullptr) { NextZ -> MainBufferNeedsData = true; }
+	if (PrevX != nullptr) { PrevX -> MainBufferNeedsData = true; }
+	if (PrevY != nullptr) { PrevY -> MainBufferNeedsData = true; }
+	if (PrevZ != nullptr) { PrevZ -> MainBufferNeedsData = true; }
 }

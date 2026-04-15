@@ -34,10 +34,13 @@ struct ChunkManager
 	Chunk *			FindChunkOrNull(VectorI3 idx) const;
 
 	void	Clear();
-	void	UpdateAround(const Perlin2D & noise, VectorF3 pos);
+
+	void	InsertAround(VectorF3 pos, unsigned int size);
+	void	InsertChunk(VectorI3 idx);
 
 	bool	ShouldGenerate;
-	void	Generate(const Perlin2D & noise, VectorI3 idx);
+	void	GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned int count);
+
 	void	NeighbourInsert(Chunk & chunk);
 
 	bool	GraphicsExist;

@@ -504,7 +504,7 @@ void UpdateViewColliding(FrameTime frame_time)
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		change = window.MoveSpinFromKeysCursor();
-		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 10; }
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 100; }
 		change.Position *= 2;
 		change.Rotation *= view.FOV.ToRadians() * 0.05f;
 		{
@@ -513,17 +513,17 @@ void UpdateViewColliding(FrameTime frame_time)
 		}
 	}
 
-	{
-		PolyHedraObject view_box_obj(ViewBoxCube);
-		view_box_obj.Trans().Position = view.Trans.Position;
-		view_box_obj.ShowWire();
-	}
-
 	change.Position *= frame_time.Delta;
 	change.Rotation *= frame_time.Delta;
 
 	if (!IgnoreCollision)
 	{
+		{
+			PolyHedraObject view_box_obj(ViewBoxCube);
+			view_box_obj.Trans().Position = view.Trans.Position;
+			view_box_obj.ShowWire();
+		}
+
 		BoxF3 view_box_old = ViewBox + view.Trans.Position;
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
 
@@ -613,6 +613,31 @@ void UpdateViewColliding(FrameTime frame_time)
 	view.Trans.Rotation.X1.clampPI();
 }
 
+std::string Seperated1000(unsigned int count)
+{
+	unsigned int part[4];
+	part[0] = count % 1000; count = count / 1000;
+	part[1] = count % 1000; count = count / 1000;
+	part[2] = count % 1000; count = count / 1000;
+	part[3] = count % 1000; count = count / 1000;
+	std::stringstream ss;
+	if (part[3] != 0) { ss << part[3] << '.'; }
+	if (part[2] != 0) { ss << part[2] << '.'; }
+	if (part[1] != 0) { ss << part[1] << '.'; }
+	ss << part[0];
+	return ss.str();
+}
+std::string Memory1000ToString(unsigned long long memory)
+{
+	const char * factor = "B";
+	if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
+	if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
+	if (memory >= 1000) { memory = memory / 1000; factor = "GB"; }
+	std::stringstream ss;
+	ss << memory << factor;
+	return ss.str();
+}
+
 void Frame(double timeDelta) override
 {
 	FrameTime frame_time(64);
@@ -628,7 +653,9 @@ void Frame(double timeDelta) override
 	}
 
 	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
-	ChunkManager.UpdateAround(Perlin0, view.Trans.Position);
+
+	ChunkManager.InsertAround(view.Trans.Position, 4);
+	ChunkManager.GenerateAround(Perlin0, view.Trans.Position, 1);
 
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { ShowFull = !ShowFull; }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }
@@ -705,8 +732,6 @@ void Frame(double timeDelta) override
 			ss << '\n';
 		}*/
 
-		// put all the control stuff together
-
 		{
 			ss << "View " << view.Trans.Position << '\n';
 			VectorI3 chunk_idx = (view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF();
@@ -730,28 +755,24 @@ void Frame(double timeDelta) override
 			ss << '\n';
 		}
 
-		// Memory to String could be turned into a function
 		{
 			unsigned int count_planes = PlaneManager.Planes.Count();
 			unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
-			ss << "Planes|Tiles:" << count_planes << '|' << count_tiles << ' ';
-			unsigned long long memory = count_tiles * sizeof(float);
-			const char * factor = "B";
-			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
-			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
-			ss << '(' << memory << factor << ')' << '\n';
+			ss << "Planes|Tiles:" << count_planes << '|' << count_tiles;
+			ss << " (" << Memory1000ToString(count_tiles * sizeof(float)) << ")\n";
 			ss << '\n';
 		}
 
 		{
 			unsigned int count_chunks = ChunkManager.Chunks.Count();
 			unsigned int count_voxels = count_chunks * CHUNK_VALUES_PER_VOLM;
-			ss << "Chunks|Voxels:" << count_chunks << '|' << count_voxels << ' ';
-			unsigned long long memory = count_voxels * sizeof(float);
-			const char * factor = "B";
-			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
-			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
-			ss << '(' << memory << factor << ')' << '\n';
+			unsigned int ungenerated = 0;
+			for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
+			{
+				if (!(ChunkManager.Chunks[i] -> IsGenerated)) { ungenerated++; }
+			}
+			ss << "Chunks|Un|Voxels:" << count_chunks << '|' << ungenerated << '|' << Seperated1000(count_voxels) << ' ';
+			ss << " (" << Memory1000ToString(count_voxels * sizeof(float)) << ")\n";
 			ss << '\n';
 		}
 
@@ -761,12 +782,8 @@ void Frame(double timeDelta) override
 			{
 				main_count += ChunkManager.Chunks[i] -> MainCount;
 			}
-			ss << "Voxel BufferData:" << main_count << ' '; // Do I care about Vertex Count ?
-			unsigned long long memory = main_count * sizeof(VoxelGraphics::MainData);
-			const char * factor = "B";
-			if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
-			if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
-			ss << '(' << memory << factor << ')' << '\n';
+			ss << "Voxel BufferData:" << Seperated1000(main_count); // Do I care about Vertex Count ?
+			ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) << ")\n";
 			ss << '\n';
 		}
 

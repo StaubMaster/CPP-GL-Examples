@@ -1,13 +1,6 @@
 
-Boxes for showing Chunks
-and Voxels ?
-
-Collision
-
-
-
 reduce Lag
-make the chunks no generate all at once
+culling. check if chunkBox is visible. if not, dont Draw
 
 
 
