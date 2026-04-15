@@ -676,7 +676,7 @@ void Frame(double timeDelta) override
 		ChunkManager.Clear();
 	}
 
-	// Chunk Boxes
+	if (ShowWire)
 	{
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
@@ -764,15 +764,26 @@ void Frame(double timeDelta) override
 		}
 
 		{
-			unsigned int count_chunks = ChunkManager.Chunks.Count();
-			unsigned int count_voxels = count_chunks * CHUNK_VALUES_PER_VOLM;
-			unsigned int ungenerated = 0;
+			unsigned int chunks_t = ChunkManager.Chunks.Count(); // total
+			unsigned int chunks_u = 0; // ungenerated
+			unsigned int chunks_f = 0; // filled
+			unsigned int chunks_e = 0; // empty
+			unsigned int voxel_count = 0;
 			for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
 			{
-				if (!(ChunkManager.Chunks[i] -> IsGenerated)) { ungenerated++; }
+				Chunk & chunk = *ChunkManager.Chunks[i];
+				if (chunk.ChunkType == ChunkType::UnGenerated) { chunks_u++; }
+				if (chunk.ChunkType == ChunkType::Filled) { chunks_f++; voxel_count += CHUNK_VALUES_PER_VOLM; }
+				if (chunk.ChunkType == ChunkType::Empty) { chunks_e++; voxel_count += 1; }
 			}
-			ss << "Chunks|Un|Voxels:" << count_chunks << '|' << ungenerated << '|' << Seperated1000(count_voxels) << ' ';
-			ss << " (" << Memory1000ToString(count_voxels * sizeof(float)) << ")\n";
+			ss << "Chunks"
+			 << ':' << chunks_t << '['
+			 << 'U' << chunks_u << '|'
+			 << 'E' << chunks_e << '|'
+			 << 'F' << chunks_f << ']'
+			 << '\n';
+			ss << "Voxels:" << Seperated1000(voxel_count);
+			ss << " (" << Memory1000ToString(voxel_count * sizeof(Voxel)) << ")\n";
 			ss << '\n';
 		}
 

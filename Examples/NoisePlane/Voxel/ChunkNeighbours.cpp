@@ -84,9 +84,16 @@ Voxel * ChunkNeighbours::Value(AxisDirection dir, VectorU3 udx) const
 	}
 
 	Voxel * val = nullptr;
-	if (chunk != nullptr && chunk -> IsGenerated)
+	if (chunk != nullptr && chunk -> Data != nullptr)
 	{
-		val = &(*chunk)[udx];
+		if (chunk -> ChunkType == ChunkType::Filled)
+		{
+			val = &(*chunk)[udx];
+		}
+		if (chunk -> ChunkType == ChunkType::Empty)
+		{
+			val = (*chunk).Data;
+		}
 	}
 	return val;
 }

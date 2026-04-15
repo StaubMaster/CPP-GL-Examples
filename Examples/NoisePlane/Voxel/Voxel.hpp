@@ -5,7 +5,7 @@
 
 struct Voxel
 {
-	unsigned int	Value;
+	unsigned char	Value;
 
 	~Voxel();
 	Voxel();

@@ -121,7 +121,7 @@ void ChunkManager::GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned
 		{
 			if (Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *Chunks[i];
-			if (chunk.IsGenerated) { continue; }
+			if (chunk.ChunkType != ChunkType::UnGenerated) { continue; }
 			VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
 			float d = rel.length2();
 			if (idx == 0xFFFFFFFF || d < dist)

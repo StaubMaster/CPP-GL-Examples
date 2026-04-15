@@ -5,7 +5,7 @@
 
 Voxel::~Voxel() { }
 Voxel::Voxel()
-	: Value(0.0f)
+	: Value(0)
 { }
 
 Voxel::Voxel(const Voxel & other)
@@ -21,7 +21,7 @@ Voxel & Voxel::operator=(const Voxel & other)
 
 bool Voxel::IsSolid() const
 {
-	return (Value != 0.0f);
+	return (Value != 0);
 }
 
 

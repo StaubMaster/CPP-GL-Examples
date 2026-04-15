@@ -17,13 +17,23 @@ struct Perlin2D;
 // make Voxels also a Pointer (rename to Data)
 // add a Dispose Function and store everything as a non Pointer
 // 
-// when the Chunks is empty (all 0) delete Data
+// if the Chunks is empty (all 0) delete Data
+
+enum class ChunkType
+{
+	UnGenerated, // noDraw
+//	UnDecorated, // noDraw
+
+	Empty,
+	Filled,
+};
 
 struct Chunk
 {
-	Voxel				Voxels[CHUNK_VALUES_PER_VOLM];
+	Voxel *				Data;
 	VectorI3			Index;
 	ChunkNeighbours		Neighbours;
+	::ChunkType			ChunkType;
 
 	Voxel &			operator[](VectorU3 udx);
 	const Voxel &	operator[](VectorU3 udx) const;
@@ -32,8 +42,13 @@ struct Chunk
 	Chunk();
 	Chunk(const Chunk & other) = delete;
 	Chunk & operator=(const Chunk & other) = delete;
+	void	Dispose();
 
-	bool	IsGenerated;
+	// makeEmpty
+	// makeFull
+
+	void	GenerateTestRotation();
+
 	void	GenerateGrid();
 	void	GeneratePerlin(const Perlin2D & noise);
 	void	Generate(const Perlin2D & noise);
