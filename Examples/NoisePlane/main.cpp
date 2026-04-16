@@ -35,8 +35,9 @@
 // Random
 #include "Random.hpp"
 
-// Perlin
+// Noise
 #include "Noise/Perlin2D.hpp"
+#include "Noise/Perlin3D.hpp"
 
 // Plane
 #include "Plane/Plane.hpp"
@@ -106,7 +107,8 @@ UI::Text::Manager		TextManager;
 ::PlaneManager			PlaneManager;
 ::ChunkManager			ChunkManager;
 
-Perlin2D				Perlin0;
+Perlin2D				Perlin2;
+Perlin3D				Perlin3;
 
 ::Multiform::Matrix4x4		Multiform_View;
 ::Multiform::Depth			Multiform_Depth;
@@ -120,7 +122,8 @@ MainContext()
 	, TextManager()
 	, PlaneManager()
 	, ChunkManager()
-	, Perlin0(Perlin2D::Random(Undex2D(8, 8)))
+	, Perlin2(Perlin2D::Random(Undex2D(8, 8)))
+	, Perlin3(Perlin3D::Random(Undex3D(8, 8, 8)))
 	, Multiform_View("View")
 	, Multiform_Depth("Depth")
 	, Multiform_FOV("FOV")
@@ -326,7 +329,7 @@ PolyHedra * VoxelCube;
 PolyHedra * VoxelChunkCube;
 
 BoxF3 ViewBox = BoxF3(
-	VectorF3(-0.4f, -0.4f, -0.4f),
+	VectorF3(-0.4f, -1.2f, -0.4f),
 	VectorF3(+0.4f, +0.4f, +0.4f)
 );
 PolyHedra * ViewBoxCube;
@@ -701,11 +704,11 @@ void UpdateAroundView(FrameTime frame_time)
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 3)), view.Trans.Rotation)));
 	}
 
-	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
+	PlaneManager.UpdateAround(Perlin2, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 
-	ChunkManager.RemoveAround(view.Trans.Position, 3);
+	ChunkManager.RemoveAround(view.Trans.Position, 7);
 	ChunkManager.InsertAround(view.Trans.Position, 2);
-	ChunkManager.GenerateAround(Perlin0, view.Trans.Position, 2, 1);
+	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, 2, 1);
 }
 
 void Frame(double timeDelta) override

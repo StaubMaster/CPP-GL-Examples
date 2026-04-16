@@ -3,6 +3,7 @@
 #include "Graphics/Inst/Data.hpp"
 
 #include "Noise/Perlin2D.hpp"
+#include "Noise/Perlin3D.hpp"
 
 #include "ValueType/BoxI3.hpp"
 
@@ -78,7 +79,7 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 	UndexLoop2D loop(Undex2D(), Undex2D(CHUNK_VALUES_PER_SIDE));
 	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
-		Point2D p2(
+		VectorF2 p2(
 			p3.X + u.X,
 			p3.Z + u.Y
 		);
@@ -109,10 +110,34 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 			}
 		}
 	}
+}
+void Chunk::GeneratePerlin(const Perlin3D & noise)
+{
+	Point3D pos = Index * CHUNK_VALUES_PER_SIDE;
+	UndexLoop3D loop(Undex3D(), Undex3D(CHUNK_VALUES_PER_SIDE));
+	for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		VectorF3 p(
+			pos.X + u.X,
+			pos.Y + u.Y,
+			pos.Z + u.Z
+		);
 
+		float val = 0.0f;
+		val += noise.Calculate(p / 32.0f) / 32.0f;
+
+		if (val > 0.0f)
+		{
+			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Value = 1;
+		}
+		else
+		{
+			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Value = 0;
+		}
+	}
 }
 
-void Chunk::Generate(const Perlin2D & noise)
+void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 {
 	if (ChunkType != ChunkType::UnGenerated) { return; }
 
@@ -125,8 +150,11 @@ void Chunk::Generate(const Perlin2D & noise)
 		Data[i].Value = 0;
 	}
 
-	GeneratePerlin(noise);
-	GenerateGrid();
+	(void)noise2;
+	(void)noise3;
+	GeneratePerlin(noise3);
+//	GeneratePerlin(noise2);
+//	GenerateGrid();
 
 	bool empty = true;
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)

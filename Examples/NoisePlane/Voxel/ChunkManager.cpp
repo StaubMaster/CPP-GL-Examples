@@ -142,7 +142,7 @@ void ChunkManager::RemoveChunk(unsigned int idx)
 	delete chunk;
 }
 
-void ChunkManager::GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned int size, unsigned int count)
+void ChunkManager::GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3, VectorF3 pos, unsigned int size, unsigned int count)
 {
 	if (!ShouldGenerate) { return; }
 
@@ -170,7 +170,7 @@ void ChunkManager::GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned
 		if (idx != 0xFFFFFFFF)
 		{
 			Chunk & chunk = *Chunks[idx];
-			chunk.Generate(noise);
+			chunk.Generate(noise2, noise3);
 			chunk.Neighbours.UpdateBufferMain();
 		}
 		else { break; } // return instead of break ?

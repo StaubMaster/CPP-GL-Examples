@@ -12,6 +12,7 @@
 # include "ValueType/VectorU3.hpp"
 
 struct Perlin2D;
+struct Perlin3D;
 
 // chunks area already used via Pointer
 // make Voxels also a Pointer (rename to Data)
@@ -51,7 +52,8 @@ struct Chunk
 
 	void	GenerateGrid();
 	void	GeneratePerlin(const Perlin2D & noise);
-	void	Generate(const Perlin2D & noise);
+	void	GeneratePerlin(const Perlin3D & noise);
+	void	Generate(const Perlin2D & noise2, const Perlin3D & noise3);
 
 
 

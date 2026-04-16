@@ -17,9 +17,9 @@ Perlin2D::Perlin2D()
 { }
 Perlin2D::Perlin2D(const Perlin2D & other)
 	: Count(other.Count)
-	, Data(new Point2D[Count.X * Count.Y])
+	, Data(new VectorF2[Count.Product()])
 {
-	unsigned int c = Count.X * Count.Y;
+	unsigned int c = Count.Product();
 	for (unsigned int i = 0; i < c; i++)
 	{
 		Data[i] = other.Data[i];
@@ -29,9 +29,9 @@ Perlin2D & Perlin2D::operator=(const Perlin2D & other)
 {
 	delete[] Data;
 	Count = other.Count;
-	Data = new Point2D[Count.X * Count.Y];
+	Data = new VectorF2[Count.Product()];
 
-	unsigned int c = Count.X * Count.Y;
+	unsigned int c = Count.Product();
 	for (unsigned int i = 0; i < c; i++)
 	{
 		Data[i] = other.Data[i];
@@ -40,24 +40,24 @@ Perlin2D & Perlin2D::operator=(const Perlin2D & other)
 	return *this;
 }
 
-Perlin2D::Perlin2D(Undex2D count)
+Perlin2D::Perlin2D(VectorU2 count)
 	: Count(count)
-	, Data(new Point2D[Count.X * Count.Y])
+	, Data(new VectorF2[Count.Product()])
 { }
 
-Perlin2D Perlin2D::Random(Undex2D count)
+Perlin2D Perlin2D::Random(VectorU2 count)
 {
 	Perlin2D perlin(count);
-	unsigned int c = perlin.Count.X * perlin.Count.Y;
+	unsigned int c = perlin.Count.Product();
 	for (unsigned int i = 0; i < c; i++)
 	{
 		Angle a = Angle::Degrees(Random::Float01In() * 360.0f);
-		perlin.Data[i] = a.forward(Point2D(1, 0));
+		perlin.Data[i] = a.forward(VectorF2(0, 1));
 	}
 	return perlin;
 }
 
-Undex2D Perlin2D::Normalize(Point2D node) const
+VectorU2 Perlin2D::Normalize(VectorF2 node) const
 {
 	int x = node.X;
 	int y = node.Y;
@@ -65,7 +65,7 @@ Undex2D Perlin2D::Normalize(Point2D node) const
 	while (y < 0) { y += Count.Y; }
 	while (x >= (int)Count.X) { x -= Count.X; }
 	while (y >= (int)Count.Y) { y -= Count.Y; }
-	return Undex2D(x, y);
+	return VectorU2(x, y);
 }
 
 static float lerp(float val0, float val1, float t)
@@ -108,44 +108,37 @@ void Perlin2D::DebugShow()
 	std::cout << '\n';
 }
 
-float Perlin2D::Calculate(Point2D pos) const
+float Perlin2D::Calculate(VectorF2 pos) const
 {
 	VectorF2 posF = pos.roundF();
-	VectorI2 posI(posF.X, posF.Y);
+	VectorI2 posI = posF;
+	VectorF2 rel = pos - posI;
 
-	VectorI2 i0;
-	i0.X = ((posI.X % Count.X) + Count.X) % Count.X;
-	i0.Y = ((posI.Y % Count.Y) + Count.Y) % Count.Y;
+	VectorU2 i0 = ((posI % Count) + Count) % Count;
+	VectorU2 i1 = (i0 + VectorU2(1)) % Count;
 
-	VectorI2 i1;
-	i1.X = (i0.X + 1) % Count.X;
-	i1.Y = (i0.Y + 1) % Count.Y;
+	VectorF2 dirs[4];
+	dirs[0b00] = Data[Count.Convert(VectorU2(i0.X, i0.Y))];
+	dirs[0b01] = Data[Count.Convert(VectorU2(i1.X, i0.Y))];
+	dirs[0b10] = Data[Count.Convert(VectorU2(i0.X, i1.Y))];
+	dirs[0b11] = Data[Count.Convert(VectorU2(i1.X, i1.Y))];
 
-	Point2D rel(pos.X - posI.X, pos.Y - posI.Y);
-
-	Point2D dirs[4];
-	dirs[0b00] = Data[i0.X + (i0.Y * Count.X)];
-	dirs[0b01] = Data[i1.X + (i0.Y * Count.X)];
-	dirs[0b10] = Data[i0.X + (i1.Y * Count.X)];
-	dirs[0b11] = Data[i1.X + (i1.Y * Count.X)];
-
-	Point2D rels[4];
-	rels[0b00] = Point2D(rel.X - 0, rel.Y - 0);
-	rels[0b01] = Point2D(rel.X - 1, rel.Y - 0);
-	rels[0b10] = Point2D(rel.X - 0, rel.Y - 1);
-	rels[0b11] = Point2D(rel.X - 1, rel.Y - 1);
+	VectorF2 rels[4];
+	rels[0b00] = VectorF2(rel.X - 0, rel.Y - 0);
+	rels[0b01] = VectorF2(rel.X - 1, rel.Y - 0);
+	rels[0b10] = VectorF2(rel.X - 0, rel.Y - 1);
+	rels[0b11] = VectorF2(rel.X - 1, rel.Y - 1);
 
 	float dots[4];
-	dots[0b00] = Point2D::dot(dirs[0b00], rels[0b00]);
-	dots[0b01] = Point2D::dot(dirs[0b01], rels[0b01]);
-	dots[0b10] = Point2D::dot(dirs[0b10], rels[0b10]);
-	dots[0b11] = Point2D::dot(dirs[0b11], rels[0b11]);
+	dots[0b00] = VectorF2::dot(dirs[0b00], rels[0b00]);
+	dots[0b01] = VectorF2::dot(dirs[0b01], rels[0b01]);
+	dots[0b10] = VectorF2::dot(dirs[0b10], rels[0b10]);
+	dots[0b11] = VectorF2::dot(dirs[0b11], rels[0b11]);
 
-	//float sqrt2 = 1.41421356237f;
+	float dot_0 = lerp(dots[0b00], dots[0b10], rel.Y);
+	float dot_1 = lerp(dots[0b01], dots[0b11], rel.Y);
 
-	float dot0 = lerp(dots[0b00], dots[0b01], rel.X);
-	float dot1 = lerp(dots[0b10], dots[0b11], rel.X);
-	float dot = lerp(dot0, dot1, rel.Y);
+	float dot__ = lerp(dot_0, dot_1, rel.X);
 
 	if (DebugStatus)
 	{
@@ -159,7 +152,7 @@ float Perlin2D::Calculate(Point2D pos) const
 		std::cout << "dot01 " << dots[0b01] << '\n';
 		std::cout << "dot10 " << dots[0b10] << '\n';
 		std::cout << "dot11 " << dots[0b11] << '\n';
-		std::cout << "dot " << dot << '\n';
+		std::cout << "dot " << dot__ << '\n';
 		std::cout << '\n';
 	}
 
@@ -188,10 +181,10 @@ float Perlin2D::Calculate(Point2D pos) const
 		debug_dots[0b10].Consider(dots[0b10]);
 		debug_dots[0b11].Consider(dots[0b11]);
 
-		debug_dot0.Consider(dot0);
-		debug_dot1.Consider(dot1);
-		debug_dot.Consider(dot);
+		debug_dot0.Consider(dot_0);
+		debug_dot1.Consider(dot_1);
+		debug_dot.Consider(dot__);
 	}
 
-	return dot;
+	return dot__;
 }

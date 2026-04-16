@@ -2,6 +2,7 @@
 # define CHUNK_MANAGER_HPP
 
 # include "Noise/Perlin2D.hpp"
+# include "Noise/Perlin3D.hpp"
 
 # include "Graphics/Shader.hpp"
 
@@ -40,7 +41,7 @@ struct ChunkManager
 	void	RemoveChunk(unsigned int idx);
 
 	bool	ShouldGenerate;
-	void	GenerateAround(const Perlin2D & noise, VectorF3 pos, unsigned int size, unsigned int count);
+	void	GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3, VectorF3 pos, unsigned int size, unsigned int count);
 
 	void	NeighbourInsert(Chunk & chunk);
 

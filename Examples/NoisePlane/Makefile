@@ -20,6 +20,7 @@ FILES_SRC := \
 \
 	Random.cpp \
 	Noise/Perlin2D.cpp \
+	Noise/Perlin3D.cpp \
 \
 	Plane/Plane.cpp \
 	Plane/PlaneValue.cpp \

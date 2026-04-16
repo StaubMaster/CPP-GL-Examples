@@ -1,30 +1,26 @@
-#ifndef  PERLIN_2D_HPP
-# define PERLIN_2D_HPP
+#ifndef  PERLIN_3D_HPP
+# define PERLIN_3D_HPP
 
-# include "ValueType/Undex2D.hpp"
-# include "ValueType/Point2D.hpp"
+# include "ValueType/VectorU3.hpp"
+# include "ValueType/VectorF3.hpp"
 
-struct Perlin2D
+struct Perlin3D
 {
-	Undex2D		Count;
-	Point2D *	Data;
+	VectorU3	Count;
+	VectorF3 *	Data;
 
-	~Perlin2D();
-	Perlin2D();
-	Perlin2D(const Perlin2D & other);
-	Perlin2D & operator=(const Perlin2D & other);
+	~Perlin3D();
+	Perlin3D();
+	Perlin3D(const Perlin3D & other);
+	Perlin3D & operator=(const Perlin3D & other);
 	
-	Perlin2D(Undex2D count);
+	Perlin3D(VectorU3 count);
 
-	static Perlin2D		Random(Undex2D count);
+	static Perlin3D		Random(VectorU3 count);
 
-	Undex2D		Normalize(Point2D node) const;
+	VectorU3		Normalize(VectorF3 node) const;
 
-	float	Calculate(Point2D pos) const;
-
-	static void		DebugChange(bool status);
-	static void		DebugClear();
-	static void		DebugShow();
+	float	Calculate(VectorF3 pos) const;
 };
 
 #endif
