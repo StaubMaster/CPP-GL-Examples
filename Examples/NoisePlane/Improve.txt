@@ -2,12 +2,18 @@
 reduce Lag
 culling. check if chunkBox is visible. if not, dont Draw
 
+Generation and MainBufferData takes the most time
+I think the only way of fixing this multiThreading
+only one of the "writes" and the other "reads"
+so it should be easy enough
 
 
-Voxel rotation
 
 PlaceVoxel
 ClearVoxel
+
+Voxel rotation
+
 
 
 

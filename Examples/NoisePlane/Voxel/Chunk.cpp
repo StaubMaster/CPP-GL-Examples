@@ -128,7 +128,7 @@ void Chunk::GeneratePerlin(const Perlin3D & noise)
 
 		if (val > 0.0f)
 		{
-			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Value = 1;
+			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Value = 3;
 		}
 		else
 		{

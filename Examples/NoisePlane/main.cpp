@@ -313,7 +313,7 @@ void VoxelGraphicsCreate()
 		Container::Array<FileInfo> files({
 			MediaDirectory.File("Images/OrientationCorners.png"),
 			MediaDirectory.File("Images/fancy_GreenDirt.png"),
-			MediaDirectory.File("Images/Wood.png"),
+			MediaDirectory.File("Images/Gray6.png"),
 		});
 		ChunkManager.Texture.Assign(128, 64, files);
 	}
@@ -587,7 +587,7 @@ void UpdateViewColliding(FrameTime frame_time)
 	{
 		change = window.MoveSpinFromKeysCursor();
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 10; }
-		change.Position *= 20;
+		change.Position *= 2;
 		change.Rotation *= view.FOV.ToRadians() * 0.05f;
 		{
 			EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
@@ -606,7 +606,7 @@ void UpdateViewColliding(FrameTime frame_time)
 			view_box_obj.ShowWire();
 		}
 
-		int size = 1;
+		int size = 2;
 		VectorI3 center = view.Trans.Position.roundF();
 		LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
 
@@ -673,6 +673,12 @@ void UpdateViewColliding(FrameTime frame_time)
 		view.Trans.Position += change.Position;
 		view.Trans.Rotation += change.Rotation;
 		view.Trans.Rotation.X1.clampPI();
+
+		{
+			PolyHedraObject view_box_obj(ViewBoxCube);
+			view_box_obj.Trans().Position = view.Trans.Position;
+			view_box_obj.ShowWire();
+		}
 	}
 }
 
