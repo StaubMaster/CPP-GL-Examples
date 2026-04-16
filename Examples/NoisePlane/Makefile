@@ -40,6 +40,7 @@ FILES_SRC := \
 	Voxel/ChunkNeighbours.cpp \
 	Voxel/ChunkManager.cpp \
 \
+	UnitToString.cpp \
 	main.cpp \
 
 #FILES_SRC := \

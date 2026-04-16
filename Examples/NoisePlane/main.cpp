@@ -29,6 +29,9 @@
 #include "Text/Manager.hpp"
 #include "Text/Object.hpp"
 
+// Units
+#include "UnitToString.hpp"
+
 // Random
 #include "Random.hpp"
 
@@ -359,7 +362,8 @@ void Make() override
 {
 //	window.DefaultColor = ColorF4(1, 1, 1);
 //	view.Depth.Factors.ChangeFar(50.0f);
-	view.Trans.Position = VectorF3(0, 7, 7);
+	//view.Trans.Position = VectorF3(0, 7, 7);
+	view.Trans.Position = VectorF3(0, 2.5f, 7);
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -509,35 +513,36 @@ void UpdateViewColliding(FrameTime frame_time)
 
 	if (!IgnoreCollision)
 	{
+		int size = 1;
+		VectorI3 center = view.Trans.Position.roundF();
+		LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
+
 		{
 			PolyHedraObject view_box_obj(ViewBoxCube);
 			view_box_obj.Trans().Position = view.Trans.Position;
 			view_box_obj.ShowWire();
-		}
-
-		BoxF3 view_box_old = ViewBox + view.Trans.Position;
-		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
-
-		//change.Position *= frame_time.Delta;
-
-		int size = 1;
-		VectorI3 center = view.Trans.Position.roundF();
-		LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
-		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-		{
-			const Voxel * voxel = ChunkManager[i];
-			if (voxel != nullptr && (voxel -> IsSolid()))
+			unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
+			for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 			{
-				PolyHedraObject voxel_obj(p);
-				voxel_obj.Trans().Position = i;
-				voxel_obj.ShowWire();
+				const Voxel * voxel = ChunkManager[i];
+				if (voxel != nullptr && (voxel -> IsSolid()))
+				{
+					PolyHedraObject voxel_obj(p);
+					voxel_obj.Trans().Position = i;
+					voxel_obj.ShowWire();
+				}
 			}
 		}
 
+		BoxF3 view_box_old = ViewBox + view.Trans.Position;
+
+		VectorF3 rel;
+		//VectorF3 vel = change.Position;
+		VectorF3 vel = change.Position * frame_time.Delta;
+
 		float limit_t = 1.0f;
 		//limit_t *= frame_time.Delta;
-
-		VectorF3 vel_sum;
+		bool collision = false;
 		for (unsigned int l = 0; l < 4; l++)
 		{
 			VectorI3	collision_idx;
@@ -549,77 +554,140 @@ void UpdateViewColliding(FrameTime frame_time)
 				if (voxel != nullptr && (voxel -> IsSolid()))
 				{
 					BoxI3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
-					if (view_box_old.IntersectBoxInclusive(voxel_box).All(true)) { continue; }
+					if ((view_box_old).IntersectBoxInclusive(voxel_box).All(true)) { continue; }
 					{
-						// when not multiplying by timeDelta, it goes through in a single frame
-						//BoxF3 view_box_new = view_box_old + change.Position;
-						//if (view_box_new.IntersectBoxInclusive(voxel_box).All(true))
+						BoxF3 view_box_new = view_box_old + rel; // movement during this frame
+						VectorF3 t = BoxCollision(view_box_new, vel, BoxF3(voxel_box.Min, voxel_box.Max));
+						//std::cout << "t? " << t << '\n'; //
+						/*
+							box0 is above box1
+							vel is along X
+							boxes will collide along X
+							boxes will not collide along Y or Z
+							so no collision
+							how to code ?
+						*/
+						/*
+							get min and max t along all axis
+							if they all overlap at some point
+							then thats the collision
+							if 1 dosent overlap, then there is no collision
+						*/
+						/*
+							for each t
+							check for Intersection along other 2 Axis (make testing axis infinite ?)
+						*/
+						if (t.X < 0.0f) { t.X = 0.0f / 0.0f; }
+						if (t.Y < 0.0f) { t.Y = 0.0f / 0.0f; }
+						if (t.Z < 0.0f) { t.Z = 0.0f / 0.0f; }
+
+						if (t.X > 0.0f) // not NaN
 						{
-							VectorF3 & vel = change.Position;
-							VectorF3 t = BoxCollision(view_box_old, vel, BoxF3(voxel_box.Min, voxel_box.Max));
-							if (t.X < 0.0f) { t.X = 0.0f / 0.0f; }
-							if (t.Y < 0.0f) { t.Y = 0.0f / 0.0f; }
-							if (t.Z < 0.0f) { t.Z = 0.0f / 0.0f; }
-							Bool3 axis;
-							float axis_t;
-							VectorI3 ranks = VectorAxisRank(t);
-							     if (ranks.X == 0) { axis.SetX(true); axis_t = t.X; t = VectorF3(t.X, 0, 0); }
-							else if (ranks.Y == 0) { axis.SetY(true); axis_t = t.Y; t = VectorF3(0, t.Y, 0); }
-							else if (ranks.Z == 0) { axis.SetZ(true); axis_t = t.Z; t = VectorF3(0, 0, t.Z); }
-							if (collision_axis.All(false) || axis_t < collision_axis_t)
+							BoxF3 box = view_box_old + (rel + (vel * t.X));
+							box.Min.X = -1.0f/0.0f; // -Infinity
+							box.Max.X = +1.0f/0.0f; // +Infinity
+							if (!box.IntersectBoxInclusive(voxel_box).All(true))
 							{
-								collision_idx = i;
-								collision_axis = axis;
-								collision_axis_t = axis_t;
+								t.X = 0.0f / 0.0f; // no Collision
 							}
+						}
+						if (t.Y > 0.0f) // not NaN
+						{
+							BoxF3 box = view_box_old + (rel + (vel * t.Y));
+							box.Min.Y = -1.0f/0.0f; // -Infinity
+							box.Max.Y = +1.0f/0.0f; // +Infinity
+							if (!box.IntersectBoxInclusive(voxel_box).All(true))
+							{
+								t.Y = 0.0f / 0.0f; // no Collision
+							}
+						}
+						if (t.Z > 0.0f) // not NaN
+						{
+							BoxF3 box = view_box_old + (rel + (vel * t.Z));
+							box.Min.Z = -1.0f/0.0f; // -Infinity
+							box.Max.Z = +1.0f/0.0f; // +Infinity
+							if (!box.IntersectBoxInclusive(voxel_box).All(true))
+							{
+								t.Z = 0.0f / 0.0f; // no Collision
+							}
+						}
+
+						Bool3 axis;
+						float axis_t;
+						VectorI3 ranks = VectorAxisRank(t);
+						     if (ranks.X == 0) { axis.SetX(true); axis_t = t.X; t = VectorF3(t.X, 0, 0); }
+						else if (ranks.Y == 0) { axis.SetY(true); axis_t = t.Y; t = VectorF3(0, t.Y, 0); }
+						else if (ranks.Z == 0) { axis.SetZ(true); axis_t = t.Z; t = VectorF3(0, 0, t.Z); }
+						if (collision_axis.All(false) || axis_t < collision_axis_t)
+						{
+							collision_idx = i;
+							collision_axis = axis;
+							collision_axis_t = axis_t;
 						}
 					}
 				}
 			}
-			if (collision_axis.Any(true))
-			{
-				std::cout << "t " << collision_axis_t << '|' << limit_t << ' ' << collision_axis << '\n';
-			}
+
 			if (collision_axis.Any(true) && collision_axis_t <= limit_t)
 			{
+				collision = true;
+				std::cout << "t " << collision_axis_t << '(' << (collision_axis_t / frame_time.Delta) << ')' << '\n';
+				std::cout << "l " << limit_t << '(' << (limit_t / frame_time.Delta) << ')' << '\n';
+				std::cout << "a " << collision_axis << '\n';
+
 				float e = 0.01f;
 				//e *= frame_time.Delta;
 				e = 0.0f;
 				collision_axis_t -= e; // else if stops for one frame and then t = 0 the next frame and it moves through ?
-				VectorF3 & vel = change.Position;
+				std::cout << "t " << collision_axis_t << '(' << (collision_axis_t / frame_time.Delta) << ')' << '\n';
+
 				VectorF3 normal;
-				if (collision_axis.GetX()) { if (vel.X > 0.0f) { normal.X = -1; } else { normal.X = +1; } }
-				if (collision_axis.GetY()) { if (vel.Y > 0.0f) { normal.Y = -1; } else { normal.Y = +1; } }
-				if (collision_axis.GetZ()) { if (vel.Z > 0.0f) { normal.Z = -1; } else { normal.Z = +1; } }
-				if (normal.length2() == 1)
+				if (collision_axis.GetX()) { if (vel.X > 0.0f) { normal.X = -1.0f; } else { normal.X = +1.0f; } }
+				if (collision_axis.GetY()) { if (vel.Y > 0.0f) { normal.Y = -1.0f; } else { normal.Y = +1.0f; } }
+				if (collision_axis.GetZ()) { if (vel.Z > 0.0f) { normal.Z = -1.0f; } else { normal.Z = +1.0f; } }
+				if (normal.length2() == 1.0f)
 				{
-					vel_sum += vel * collision_axis_t;
+					rel += vel * collision_axis_t;
+					//rel += vel * collision_axis_t * frame_time.Delta;
 					limit_t -= collision_axis_t;
+					float dot = normal.dot(vel);
+					if (dot < 0.0f) // opposite
 					{
-						float dot = normal.dot(vel);
-						vel = vel - (normal * dot);
+						VectorF3 diff = (normal * dot);
+						VectorF3 dist = (normal * 0.01f);
+						std::cout << "p " << rel << '\n';
+						std::cout << "v " << vel << '\n';
+						std::cout << "d " << diff << '\n';
+						std::cout << "d " << dist << '\n';
+						std::cout << '\n';
+						vel = vel - diff;
+						rel = rel + dist;
 					}
-					/*{
-						float dot = normal.dot(GravityVel);
-						GravityVel = GravityVel - (normal * dot);
-					}*/
 				}
 			}
 			else { break; }
 		}
 
-		if (limit_t != 1.0f)
+		if (collision)
 		{
-			std::cout << "t " << limit_t << '\n';
+			std::cout << "l " << limit_t << '(' << (limit_t / frame_time.Delta) << ')' << '\n';
+			std::cout << "r " << rel << '\n';
+			std::cout << "v " << vel << '\n';
+			std::cout << '\n';
 		}
 		if (limit_t > 0.0f)
 		{
-			VectorF3 & vel = change.Position;
-			vel_sum += vel * limit_t;
+			rel += vel * limit_t;
+			//rel += vel * limit_t * frame_time.Delta;
 		}
 
-		change.Position = vel_sum;
-		change.Position *= frame_time.Delta;
+		if (collision)
+		{
+			std::cout << "r " << rel << '\n';
+			std::cout << "done\n";
+			std::cout << '\n';
+		}
+		change.Position = rel;
 	}
 	else
 	{
@@ -631,31 +699,6 @@ void UpdateViewColliding(FrameTime frame_time)
 	view.Trans.Position += change.Position;
 	view.Trans.Rotation += change.Rotation;
 	view.Trans.Rotation.X1.clampPI();
-}
-
-std::string Seperated1000(unsigned int count)
-{
-	unsigned int part[4];
-	part[0] = count % 1000; count = count / 1000;
-	part[1] = count % 1000; count = count / 1000;
-	part[2] = count % 1000; count = count / 1000;
-	part[3] = count % 1000; count = count / 1000;
-	std::stringstream ss;
-	if (part[3] != 0) { ss << part[3] << '.'; }
-	if (part[2] != 0) { ss << part[2] << '.'; }
-	if (part[1] != 0) { ss << part[1] << '.'; }
-	ss << part[0];
-	return ss.str();
-}
-std::string Memory1000ToString(unsigned long long memory)
-{
-	const char * factor = "B";
-	if (memory >= 1000) { memory = memory / 1000; factor = "kB"; }
-	if (memory >= 1000) { memory = memory / 1000; factor = "MB"; }
-	if (memory >= 1000) { memory = memory / 1000; factor = "GB"; }
-	std::stringstream ss;
-	ss << memory << factor;
-	return ss.str();
 }
 
 void Draw()
@@ -674,7 +717,7 @@ void Draw()
 	}
 }
 
-void Update(FrameTime frame_time)
+void UpdateAroundView(FrameTime frame_time)
 {
 	UpdateViewColliding(frame_time);
 	if (!ViewBack)
@@ -683,7 +726,7 @@ void Update(FrameTime frame_time)
 	}
 	else
 	{
-		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 10)), view.Trans.Rotation)));
+		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 3)), view.Trans.Rotation)));
 	}
 
 	PlaneManager.UpdateAround(Perlin0, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
@@ -717,7 +760,7 @@ void Frame(double timeDelta) override
 		ChunkManager.Clear();
 	}
 
-	Update(frame_time);
+	UpdateAroundView(frame_time);
 
 	if (ShowWire)
 	{
@@ -740,7 +783,7 @@ void Frame(double timeDelta) override
 			ss << '\n';
 		}
 
-		{
+		/*{
 			ss << "0123456789+-* /=<>" << '\n';
 			ss << "()[]{}#~'\"_|&%$" << '\n';
 			ss << "ABCDEFGHIJKLM" << '\n';
@@ -749,7 +792,7 @@ void Frame(double timeDelta) override
 			ss << "nopqrstuvwxyz" << '\n';
 			ss << ".,:;!?" << '\n';
 			ss << '\n';
-		}
+		}*/
 
 		/*{
 			ss << "[1] " << "PolyHedra Full:" << (ShowFull ? "Show" : "Hide") << '\n';
@@ -769,6 +812,7 @@ void Frame(double timeDelta) override
 
 		{
 			ss << "View " << view.Trans.Position << '\n';
+			ss << "Box " << (ViewBox + view.Trans.Position) << '\n';
 			VectorI3 chunk_idx = (view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF();
 			VectorU3 voxel_idx = VectorI3(view.Trans.Position.roundF()) - (chunk_idx * CHUNK_VALUES_PER_SIDE);
 			ss << "Voxel " << chunk_idx << ' ' << voxel_idx << '\n';
