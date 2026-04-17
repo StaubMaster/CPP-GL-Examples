@@ -610,7 +610,16 @@ void ViewRayFunction()
 		}
 		if (window.MouseManager[MouseButtons::MouseR].State == State::Press)
 		{
-			
+			if (side == AxisDirection::NextX) { idx.X += 1; }
+			if (side == AxisDirection::NextY) { idx.Y += 1; }
+			if (side == AxisDirection::NextZ) { idx.Z += 1; }
+			if (side == AxisDirection::PrevX) { idx.X -= 1; }
+			if (side == AxisDirection::PrevY) { idx.Y -= 1; }
+			if (side == AxisDirection::PrevZ) { idx.Z -= 1; }
+			Voxel voxel;
+			voxel.Value = 1;
+			ChunkManager.PlaneVoxel(idx, voxel);
+			(void)voxel;
 		}
 	}
 }

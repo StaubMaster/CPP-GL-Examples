@@ -14,8 +14,9 @@
 
 struct Voxel;
 struct Chunk;
-struct Ray3D;
+enum class AxisDirection;
 
+struct Ray3D;
 class PolyHedra;
 
 struct ChunkManager

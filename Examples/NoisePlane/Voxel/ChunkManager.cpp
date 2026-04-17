@@ -45,9 +45,9 @@ const Voxel * ChunkManager::FindVoxelOrNull(VectorI3 idx) const
 #include "ValueType/_Show.hpp"
 #include <math.h>
 #include "PolyHedra/Object.hpp"
-static PolyHedra *	VoxelBoxPolyHedra;
-static PolyHedra *	ChunkBoxPolyHedra;
-static PolyHedra *	ViewRayPolyHedra;
+//static PolyHedra *	VoxelBoxPolyHedra;
+//static PolyHedra *	ChunkBoxPolyHedra;
+//static PolyHedra *	ViewRayPolyHedra;
 /*static void ShowRay(Ray3D ray)
 {
 	PolyHedraObject obj(ViewRayPolyHedra);
@@ -252,9 +252,9 @@ static t_hit hit_ray(const ChunkManager & manager, Ray3D ray3D)
 
 bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisDirection & side) const
 {
-	::ViewRayPolyHedra = ViewRayPolyHedra;
-	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
-	::ChunkBoxPolyHedra = ChunkBoxPolyHedra;
+//	::ViewRayPolyHedra = ViewRayPolyHedra;
+//	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
+//	::ChunkBoxPolyHedra = ChunkBoxPolyHedra;
 
 	//std::cout << '\n';
 	//ShowRay(ray);
@@ -270,7 +270,7 @@ bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisDirection & sid
 //	if (hit.cardinal == AxisDirection::PrevZ) { normal = VectorF3(0, 0, -1); }
 	//ShowRay(Ray3D(hit.pos, normal));
 
-	std::cout << "hit " << hit.idx << '\n';
+	//std::cout << "hit " << hit.idx << '\n';
 	idx = hit.idx;
 	side = hit.cardinal;
 	return true;
@@ -307,7 +307,30 @@ bool ChunkManager::ClearVoxel(VectorI3 idx, Voxel & vox)
 	}
 	return false;
 }
-//bool ::PlaneVoxel(VectorI3 idx, Voxel & voxel);
+bool ChunkManager::PlaneVoxel(VectorI3 idx, Voxel & vox)
+{
+	VectorI3 chunk_idx = (VectorF3(idx) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
+	VectorU3 voxel_idx = idx - (chunk_idx * CHUNK_VALUES_PER_SIDE);
+
+	Chunk * chunk = FindChunkOrNull(chunk_idx);
+	if (chunk == nullptr) { return false; }
+	if (chunk -> Data == nullptr) { return false; }
+	if (chunk -> ChunkType == ChunkType::Filled)
+	{
+		Voxel & voxel = (*chunk)[voxel_idx];
+		if (voxel.Value != 0) { return false; }
+
+		voxel = vox;
+		vox.Value = 0;
+		(*chunk).Neighbours.UpdateBufferMain(); // only update effected
+		return true;
+	}
+	if (chunk -> ChunkType == ChunkType::Empty)
+	{
+		return false;
+	}
+	return false;
+}
 
 
 
