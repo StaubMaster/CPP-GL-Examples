@@ -14,6 +14,9 @@
 
 struct Voxel;
 struct Chunk;
+struct Ray3D;
+
+class PolyHedra;
 
 struct ChunkManager
 {
@@ -26,7 +29,14 @@ struct ChunkManager
 	ChunkManager(const ChunkManager & other) = delete;
 	ChunkManager & operator=(const ChunkManager & other) = delete;
 
-	const Voxel *	operator[](VectorI3 idx) const;
+	PolyHedra *	VoxelBoxPolyHedra;
+	PolyHedra *	ViewRayPolyHedra;
+
+	const Voxel *	FindVoxelOrNull(VectorI3 idx) const;
+	bool			FindVoxelIndex(Ray3D ray, VectorI3 & idx) const;
+
+	bool	ClearVoxel(VectorI3 idx, Voxel & vox);
+	bool	PlaneVoxel(VectorI3 idx, Voxel & vox);
 
 	unsigned int	FindChunkUndex(Chunk * chunk) const;
 	unsigned int	FindChunkUndex(VectorI3 idx) const;

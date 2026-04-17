@@ -43,3 +43,11 @@ name template Types better
 	Vector3Type
 	BoxReturnType
 	BoxOtherType
+
+
+
+PolyHedra Instance Manager
+	DisplayFull and DisplayWire default values
+
+PolyHedra Object Array
+

@@ -334,6 +334,8 @@ BoxF3 ViewBox = BoxF3(
 );
 PolyHedra * ViewBoxCube;
 
+PolyHedra * ViewRayPolyHedra;
+
 void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 {
 	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Min.Y, box.Min.Z))); // 000
@@ -366,7 +368,7 @@ void Make() override
 //	window.DefaultColor = ColorF4(1, 1, 1);
 //	view.Depth.Factors.ChangeFar(50.0f);
 	//view.Trans.Position = VectorF3(0, 7, 7);
-	view.Trans.Position = VectorF3(0, 2.5f, 7);
+	view.Trans.Position = VectorF3(0.5f, 2.5f, 7.5f);
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -378,6 +380,7 @@ void Make() override
 		VoxelCube = new PolyHedra();
 		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
 		PolyHedraManager.PlacePolyHedra(VoxelCube);
+		ChunkManager.VoxelBoxPolyHedra = VoxelCube;
 	}
 	{
 		VoxelChunkCube = new PolyHedra();
@@ -388,6 +391,11 @@ void Make() override
 		ViewBoxCube = new PolyHedra();
 		PolyHedraBoxEdges(*ViewBoxCube, ViewBox);
 		PolyHedraManager.PlacePolyHedra(ViewBoxCube);
+	}
+	{
+		ViewRayPolyHedra = PolyHedra::Generate::ConeC(8, 0.01f, 0.1f);
+		PolyHedraManager.PlacePolyHedra(ViewRayPolyHedra);
+		ChunkManager.ViewRayPolyHedra = ViewRayPolyHedra;
 	}
 	//Perlin2D::DebugShow();
 	//TestRandom();
@@ -557,7 +565,7 @@ TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, Loo
 	TimeBoxCollision collision;
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
-		const Voxel * voxel = ChunkManager[i];
+		const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
 		if (voxel != nullptr && (voxel -> IsSolid()))
 		{
 			BoxF3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
@@ -575,6 +583,37 @@ TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, Loo
 	return collision;
 }
 
+bool		ViewRaySync = true;
+Ray3D		ViewRay;
+void ViewRayFunction()
+{
+	/*{
+		PolyHedraObject obj(ViewRayPolyHedra);
+		obj.Trans().Position = ViewRay.Pos + ViewRay.Dir;
+		obj.Trans().Rotation = EulerAngle3D::PointToZ(ViewRay.Dir);
+	}*/
+	VectorI3 idx;
+	if (ChunkManager.FindVoxelIndex(ViewRay, idx))
+	{
+		PolyHedraObject voxel_box_obj(VoxelCube);
+		voxel_box_obj.Trans().Position = idx;
+		voxel_box_obj.ShowWire();
+	}
+
+	/*VectorI3 voxel_idx;
+	if (ChunkManager.FindVoxelIndex(ray, voxel_idx))
+	{
+		{
+			PolyHedraObject voxel_box_obj(VoxelCube);
+			voxel_box_obj.Trans().Position = voxel_idx;
+			voxel_box_obj.ShowWire();
+		}
+		//Voxel voxel;
+		//ChunkManager.ClearVoxel(voxel_idx, voxel);
+		//(void)voxel;
+	}*/
+}
+
 VectorF3	GravityForce = VectorF3(0, -0.1f, 0);
 VectorF3	ViewVel;
 
@@ -586,6 +625,7 @@ void UpdateViewColliding(FrameTime frame_time)
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		change = window.MoveSpinFromKeysCursor();
+		//change.Position = window.MoveFromKeys();
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 10; }
 		change.Position *= 2;
 		change.Rotation *= view.FOV.ToRadians() * 0.05f;
@@ -614,7 +654,7 @@ void UpdateViewColliding(FrameTime frame_time)
 			unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
 			for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 			{
-				const Voxel * voxel = ChunkManager[i];
+				const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
 				if (voxel != nullptr && (voxel -> IsSolid()))
 				{
 					PolyHedraObject voxel_obj(p);
@@ -674,11 +714,11 @@ void UpdateViewColliding(FrameTime frame_time)
 		view.Trans.Rotation += change.Rotation;
 		view.Trans.Rotation.X1.clampPI();
 
-		{
+		/*{
 			PolyHedraObject view_box_obj(ViewBoxCube);
 			view_box_obj.Trans().Position = view.Trans.Position;
 			view_box_obj.ShowWire();
-		}
+		}*/
 	}
 }
 
@@ -710,11 +750,21 @@ void UpdateAroundView(FrameTime frame_time)
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 3)), view.Trans.Rotation)));
 	}
 
-	PlaneManager.UpdateAround(Perlin2, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
-
 	ChunkManager.RemoveAround(view.Trans.Position, 7);
-	ChunkManager.InsertAround(view.Trans.Position, 2);
-	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, 2, 1);
+
+	if (ViewRaySync)
+	{
+		ViewRay.Pos = view.Trans.Position;
+		ViewRay.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
+		//ViewRay.Dir.Z = 0.0f;
+		//ViewRay.Dir = !ViewRay.Dir;
+	}
+	ViewRayFunction();
+
+	ChunkManager.InsertAround(view.Trans.Position, 5);
+	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, 5, 1);
+
+	PlaneManager.UpdateAround(Perlin2, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 }
 
 void Frame(double timeDelta) override
@@ -728,6 +778,7 @@ void Frame(double timeDelta) override
 	if (window.KeyBoardManager[Keys::D4].State == State::Press) { ShowTiles = !ShowTiles; }
 	if (window.KeyBoardManager[Keys::D5].State == State::Press) { ShowVoxels = !ShowVoxels; }
 
+	if (window.KeyBoardManager[Keys::F1].State == State::Press) { ViewRaySync = !ViewRaySync; }
 	if (window.KeyBoardManager[Keys::F2].State == State::Press) { IgnoreCollision = !IgnoreCollision; }
 	if (window.KeyBoardManager[Keys::F3].State == State::Press) { ViewBack = !ViewBack; }
 	if (window.KeyBoardManager[Keys::F4].State == State::Press)
@@ -743,7 +794,7 @@ void Frame(double timeDelta) override
 
 	UpdateAroundView(frame_time);
 
-	if (ShowWire)
+	/*if (ShowWire)
 	{
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
@@ -753,7 +804,7 @@ void Frame(double timeDelta) override
 			chunk_box.Trans().Position = (ChunkManager.Chunks[i] -> Index) * CHUNK_VALUES_PER_SIDE;
 			chunk_box.ShowWire();
 		}
-	}
+	}*/
 
 	{
 		std::stringstream ss;
