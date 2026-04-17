@@ -386,6 +386,7 @@ void Make() override
 		VoxelChunkCube = new PolyHedra();
 		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(), VectorF3(CHUNK_VALUES_PER_SIDE)));
 		PolyHedraManager.PlacePolyHedra(VoxelChunkCube);
+		ChunkManager.ChunkBoxPolyHedra = VoxelChunkCube;
 	}
 	{
 		ViewBoxCube = new PolyHedra();
@@ -593,25 +594,25 @@ void ViewRayFunction()
 		obj.Trans().Rotation = EulerAngle3D::PointToZ(ViewRay.Dir);
 	}*/
 	VectorI3 idx;
-	if (ChunkManager.FindVoxelIndex(ViewRay, idx))
-	{
-		PolyHedraObject voxel_box_obj(VoxelCube);
-		voxel_box_obj.Trans().Position = idx;
-		voxel_box_obj.ShowWire();
-	}
-
-	/*VectorI3 voxel_idx;
-	if (ChunkManager.FindVoxelIndex(ray, voxel_idx))
+	AxisDirection side;
+	if (ChunkManager.FindVoxelIndex(ViewRay, idx, side))
 	{
 		{
 			PolyHedraObject voxel_box_obj(VoxelCube);
-			voxel_box_obj.Trans().Position = voxel_idx;
+			voxel_box_obj.Trans().Position = idx;
 			voxel_box_obj.ShowWire();
 		}
-		//Voxel voxel;
-		//ChunkManager.ClearVoxel(voxel_idx, voxel);
-		//(void)voxel;
-	}*/
+		if (window.MouseManager[MouseButtons::MouseL].State == State::Press)
+		{
+			Voxel voxel;
+			ChunkManager.ClearVoxel(idx, voxel);
+			(void)voxel;
+		}
+		if (window.MouseManager[MouseButtons::MouseR].State == State::Press)
+		{
+			
+		}
+	}
 }
 
 VectorF3	GravityForce = VectorF3(0, -0.1f, 0);

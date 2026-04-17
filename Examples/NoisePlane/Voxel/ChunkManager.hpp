@@ -30,10 +30,11 @@ struct ChunkManager
 	ChunkManager & operator=(const ChunkManager & other) = delete;
 
 	PolyHedra *	VoxelBoxPolyHedra;
+	PolyHedra *	ChunkBoxPolyHedra;
 	PolyHedra *	ViewRayPolyHedra;
 
 	const Voxel *	FindVoxelOrNull(VectorI3 idx) const;
-	bool			FindVoxelIndex(Ray3D ray, VectorI3 & idx) const;
+	bool			FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisDirection & side) const;
 
 	bool	ClearVoxel(VectorI3 idx, Voxel & vox);
 	bool	PlaneVoxel(VectorI3 idx, Voxel & vox);
