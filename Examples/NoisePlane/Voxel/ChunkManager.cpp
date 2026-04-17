@@ -159,13 +159,11 @@ static t_hit	hit_ray(const Chunk & chunk, Ray3D ray3D)
 {
 	t_ray	ray;
 
-	ShowRay(ray3D);
 	ray = ray_init(ray3D);
 	while (ray.sum < 100)
 	{
-		ShowRay(Ray3D(ray.pos + (ray.dir * ray.sum), ray.dir));
-		ShowVoxel(ray.grid_idx);
-		std::cout << ray.grid_idx << '\n';
+		ShowRay(Ray3D(ray.pos + (ray.dir * ray.sum) + (chunk.Index * CHUNK_VALUES_PER_SIDE), ray.dir));
+		ShowVoxel(ray.grid_idx + (chunk.Index * CHUNK_VALUES_PER_SIDE));
 		if ((ray.side_sum.X < ray.side_sum.Y) && (ray.side_sum.X < ray.side_sum.Z))
 		{
 			ray.sum = ray.side_sum.X;
@@ -199,7 +197,7 @@ static t_hit	hit_ray(const Chunk & chunk, Ray3D ray3D)
 
 bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx) const
 {
-	VectorI3 chunk_idx = (VectorF3(idx) / (float)CHUNK_VALUES_PER_SIDE).roundF();
+	VectorI3 chunk_idx = (ray.Pos / (float)CHUNK_VALUES_PER_SIDE).roundF();
 	Chunk * chunk = FindChunkOrNull(chunk_idx);
 	if (chunk == nullptr) { return false; }
 	if (chunk -> Data == nullptr) { return false; }
@@ -207,7 +205,7 @@ bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx) const
 	::ViewRayPolyHedra = ViewRayPolyHedra;
 	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
 
-	std::cout << "check Hit " << chunk_idx << '\n';
+	ShowRay(ray);
 	t_hit hit = hit_ray(*chunk, Ray3D(ray.Pos - (chunk_idx * CHUNK_VALUES_PER_SIDE), ray.Dir));
 
 	if (hit.cardinal == AxisDirection::None) { return false; }
@@ -218,10 +216,12 @@ bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx) const
 	if (hit.cardinal == AxisDirection::PrevY) { normal = VectorF3(0, -1, 0); }
 	if (hit.cardinal == AxisDirection::NextZ) { normal = VectorF3(0, 0, +1); }
 	if (hit.cardinal == AxisDirection::PrevZ) { normal = VectorF3(0, 0, -1); }
+	hit.pos += (chunk_idx * CHUNK_VALUES_PER_SIDE);
 	ShowRay(Ray3D(hit.pos, normal));
 
 	VectorU3 voxel_idx = hit.idx;
 	return true;
+	(void)idx;
 }
 
 
