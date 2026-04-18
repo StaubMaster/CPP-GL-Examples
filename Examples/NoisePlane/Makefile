@@ -37,6 +37,7 @@ FILES_SRC := \
 	Voxel/Graphics/Shader.cpp \
 	\
 	Voxel/Voxel.cpp \
+	Voxel/VoxelTemplate.cpp \
 	Voxel/Chunk.cpp \
 	Voxel/ChunkNeighbours.cpp \
 	Voxel/ChunkManager.cpp \

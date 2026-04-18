@@ -178,7 +178,7 @@ static t_hit hit_ray(const Chunk & chunk, Ray3D ray3D)
 		if ((idx >= VectorI3(0)).Any(false)) { break; }
 		if ((idx < VectorI3(CHUNK_VALUES_PER_SIDE)).Any(false)) { break; }
 
-		ray.solid = chunk[idx].IsSolid();
+		ray.solid = (chunk[idx].Template != nullptr);
 		if (ray.solid) { break; }
 
 		if ((ray.side_sum.X < ray.side_sum.Y) && (ray.side_sum.X < ray.side_sum.Z))
@@ -250,7 +250,7 @@ static t_hit hit_ray(const ChunkManager & manager, Ray3D ray3D)
 	return (return_hit(ray));
 }
 
-bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisDirection & side) const
+bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisDirection & side, Ray3D & hit) const
 {
 //	::ViewRayPolyHedra = ViewRayPolyHedra;
 //	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
@@ -258,21 +258,22 @@ bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisDirection & sid
 
 	//std::cout << '\n';
 	//ShowRay(ray);
-	t_hit hit = hit_ray(*this, ray);
+	t_hit _hit = hit_ray(*this, ray);
 
-	if (hit.cardinal == AxisDirection::None) { return false; }
-//	VectorF3 normal;
-//	if (hit.cardinal == AxisDirection::NextX) { normal = VectorF3(+1, 0, 0); }
-//	if (hit.cardinal == AxisDirection::PrevX) { normal = VectorF3(-1, 0, 0); }
-//	if (hit.cardinal == AxisDirection::NextY) { normal = VectorF3(0, +1, 0); }
-//	if (hit.cardinal == AxisDirection::PrevY) { normal = VectorF3(0, -1, 0); }
-//	if (hit.cardinal == AxisDirection::NextZ) { normal = VectorF3(0, 0, +1); }
-//	if (hit.cardinal == AxisDirection::PrevZ) { normal = VectorF3(0, 0, -1); }
-	//ShowRay(Ray3D(hit.pos, normal));
+	if (_hit.cardinal == AxisDirection::None) { return false; }
+
+	hit.Pos = ray.Pos + (ray.Dir * _hit.dist);
+
+	if (_hit.cardinal == AxisDirection::NextX) { hit.Dir = VectorF3(+1, 0, 0); }
+	if (_hit.cardinal == AxisDirection::PrevX) { hit.Dir = VectorF3(-1, 0, 0); }
+	if (_hit.cardinal == AxisDirection::NextY) { hit.Dir = VectorF3(0, +1, 0); }
+	if (_hit.cardinal == AxisDirection::PrevY) { hit.Dir = VectorF3(0, -1, 0); }
+	if (_hit.cardinal == AxisDirection::NextZ) { hit.Dir = VectorF3(0, 0, +1); }
+	if (_hit.cardinal == AxisDirection::PrevZ) { hit.Dir = VectorF3(0, 0, -1); }
 
 	//std::cout << "hit " << hit.idx << '\n';
-	idx = hit.idx;
-	side = hit.cardinal;
+	idx = _hit.idx;
+	side = _hit.cardinal;
 	return true;
 
 	Chunk * chunk = nullptr;
@@ -294,10 +295,10 @@ bool ChunkManager::ClearVoxel(VectorI3 idx, Voxel & vox)
 	if (chunk -> ChunkType == ChunkType::Filled)
 	{
 		Voxel & voxel = (*chunk)[voxel_idx];
-		if (voxel.Value == 0) { return false; }
+		if (voxel.Template == nullptr) { return false; }
 
 		vox = voxel;
-		voxel.Value = 0;
+		voxel.Template = nullptr;
 		(*chunk).Neighbours.UpdateBufferMain(); // only update effected
 		return true;
 	}
@@ -318,10 +319,10 @@ bool ChunkManager::PlaneVoxel(VectorI3 idx, Voxel & vox)
 	if (chunk -> ChunkType == ChunkType::Filled)
 	{
 		Voxel & voxel = (*chunk)[voxel_idx];
-		if (voxel.Value != 0) { return false; }
+		if (voxel.Template != nullptr) { return false; }
 
 		voxel = vox;
-		vox.Value = 0;
+		vox.Template = nullptr;
 		(*chunk).Neighbours.UpdateBufferMain(); // only update effected
 		return true;
 	}

@@ -35,7 +35,9 @@ ChunkNeighbours & ChunkNeighbours::operator=(const ChunkNeighbours & other)
 	return *this;
 }
 
-Voxel * ChunkNeighbours::Value(AxisDirection dir, VectorU3 udx) const
+
+
+bool ChunkNeighbours::Visible(AxisDirection dir, VectorU3 udx) const
 {
 	Chunk * chunk = nullptr;
 
@@ -95,7 +97,20 @@ Voxel * ChunkNeighbours::Value(AxisDirection dir, VectorU3 udx) const
 			val = (*chunk).Data;
 		}
 	}
-	return val;
+
+	if (val == nullptr) { return false; }
+	if (val -> Template == nullptr) { return true; }
+
+	switch (dir)
+	{
+		case AxisDirection::PrevX: return !(val -> Template -> HideNextX);
+		case AxisDirection::PrevY: return !(val -> Template -> HideNextY);
+		case AxisDirection::PrevZ: return !(val -> Template -> HideNextZ);
+		case AxisDirection::NextX: return !(val -> Template -> HidePrevX);
+		case AxisDirection::NextY: return !(val -> Template -> HidePrevY);
+		case AxisDirection::NextZ: return !(val -> Template -> HidePrevZ);
+		default: return false;
+	}
 }
 
 void ChunkNeighbours::UpdateOthersHere()

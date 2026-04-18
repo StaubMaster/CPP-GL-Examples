@@ -5,19 +5,6 @@
 
 namespace VoxelGraphics
 {
-	struct VoxelFace
-	{
-		MainData	Corn[4];
-	};
-	struct VoxelCube
-	{
-		VoxelFace	NextX;
-		VoxelFace	NextY;
-		VoxelFace	NextZ;
-		VoxelFace	PrevX;
-		VoxelFace	PrevY;
-		VoxelFace	PrevZ;
-	};
 };
 
 #endif

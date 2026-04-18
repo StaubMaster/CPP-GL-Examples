@@ -312,10 +312,17 @@ void VoxelGraphicsCreate()
 		ChunkManager.Texture.Bind();
 		Container::Array<FileInfo> files({
 			MediaDirectory.File("Images/OrientationCorners.png"),
-			MediaDirectory.File("Images/fancy_GreenDirt.png"),
 			MediaDirectory.File("Images/Gray6.png"),
+			MediaDirectory.File("Images/fancy_GreenDirt.png"),
+			MediaDirectory.File("Images/fancy_RedWood.png"),
 		});
 		ChunkManager.Texture.Assign(128, 64, files);
+	}
+	{
+		VoxelTemplate::Orientation.InitCube(0);
+		VoxelTemplate::Gray.InitCube(1);
+		VoxelTemplate::Grass.InitCube(2);
+		VoxelTemplate::RedLog.InitCylinder(3);
 	}
 }
 void VoxelGraphicsDelete()
@@ -567,7 +574,7 @@ TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, Loo
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
-		if (voxel != nullptr && (voxel -> IsSolid()))
+		if (voxel != nullptr && voxel -> Template != nullptr)
 		{
 			BoxF3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
 			if (box.IntersectBoxInclusive(voxel_box).All(true)) { continue; }
@@ -588,20 +595,23 @@ bool		ViewRaySync = true;
 Ray3D		ViewRay;
 void ViewRayFunction()
 {
-	/*{
-		PolyHedraObject obj(ViewRayPolyHedra);
-		obj.Trans().Position = ViewRay.Pos + ViewRay.Dir;
-		obj.Trans().Rotation = EulerAngle3D::PointToZ(ViewRay.Dir);
-	}*/
 	VectorI3 idx;
 	AxisDirection side;
-	if (ChunkManager.FindVoxelIndex(ViewRay, idx, side))
+	Ray3D hit;
+	if (ChunkManager.FindVoxelIndex(ViewRay, idx, side, hit))
 	{
 		{
 			PolyHedraObject voxel_box_obj(VoxelCube);
 			voxel_box_obj.Trans().Position = idx;
 			voxel_box_obj.ShowWire();
 		}
+		{
+			PolyHedraObject voxel_dir_obj(ViewRayPolyHedra);
+			voxel_dir_obj.Trans().Position = hit.Pos;
+			voxel_dir_obj.Trans().Rotation = EulerAngle3D::PointToZ(hit.Dir);
+			voxel_dir_obj.ShowWire();
+		}
+
 		if (window.MouseManager[MouseButtons::MouseL].State == State::Press)
 		{
 			Voxel voxel;
@@ -617,7 +627,7 @@ void ViewRayFunction()
 			if (side == AxisDirection::PrevY) { idx.Y -= 1; }
 			if (side == AxisDirection::PrevZ) { idx.Z -= 1; }
 			Voxel voxel;
-			voxel.Value = 1;
+			voxel.Template = &VoxelTemplate::RedLog;
 			ChunkManager.PlaneVoxel(idx, voxel);
 			(void)voxel;
 		}
@@ -665,7 +675,7 @@ void UpdateViewColliding(FrameTime frame_time)
 			for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 			{
 				const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
-				if (voxel != nullptr && (voxel -> IsSolid()))
+				if (voxel != nullptr && voxel -> Template != nullptr)
 				{
 					PolyHedraObject voxel_obj(p);
 					voxel_obj.Trans().Position = i;
@@ -760,7 +770,7 @@ void UpdateAroundView(FrameTime frame_time)
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 3)), view.Trans.Rotation)));
 	}
 
-	ChunkManager.RemoveAround(view.Trans.Position, 7);
+	ChunkManager.RemoveAround(view.Trans.Position, 5);
 
 	if (ViewRaySync)
 	{
@@ -771,8 +781,8 @@ void UpdateAroundView(FrameTime frame_time)
 	}
 	ViewRayFunction();
 
-	ChunkManager.InsertAround(view.Trans.Position, 5);
-	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, 5, 1);
+	ChunkManager.InsertAround(view.Trans.Position, 2);
+	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, 2, 1);
 
 	PlaneManager.UpdateAround(Perlin2, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 }

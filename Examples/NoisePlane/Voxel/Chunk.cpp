@@ -67,15 +67,15 @@ void Chunk::GenerateGrid()
 		VectorF3 grid_pos = voxel_pos.round(256);
 		VectorF3 grid_rel = voxel_pos - grid_pos;
 
-		if (grid_rel.length() < 4.0f) { Data[size3.Convert(u)].Value = 1; }
-		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { Data[size3.Convert(u)].Value = 1; }
-		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { Data[size3.Convert(u)].Value = 1; }
-		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { Data[size3.Convert(u)].Value = 1; }
+		if (grid_rel.length() < 4.0f) { Data[size3.Convert(u)].Template = &VoxelTemplate::Orientation; }
+		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { Data[size3.Convert(u)].Template = &VoxelTemplate::Orientation; }
+		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { Data[size3.Convert(u)].Template = &VoxelTemplate::Orientation; }
+		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { Data[size3.Convert(u)].Template = &VoxelTemplate::Orientation; }
 	}
 }
 void Chunk::GeneratePerlin(const Perlin2D & noise)
 {
-	Point3D p3 = Index * CHUNK_VALUES_PER_SIDE;
+	VectorF3 p3 = Index * CHUNK_VALUES_PER_SIDE;
 	UndexLoop2D loop(Undex2D(), Undex2D(CHUNK_VALUES_PER_SIDE));
 	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
@@ -98,22 +98,22 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, Undex3D(u.X, i, u.Y));
 			if (i > val)
 			{
-				Data[voxel_u].Value = 0;
+				Data[voxel_u].Template = nullptr;
 			}
 			else if (val - i < 1)
 			{
-				Data[voxel_u].Value = 2;
+				Data[voxel_u].Template = &VoxelTemplate::Grass;
 			}
 			else
 			{
-				Data[voxel_u].Value = 3;
+				Data[voxel_u].Template = &VoxelTemplate::Gray;
 			}
 		}
 	}
 }
 void Chunk::GeneratePerlin(const Perlin3D & noise)
 {
-	Point3D pos = Index * CHUNK_VALUES_PER_SIDE;
+	VectorF3 pos = Index * CHUNK_VALUES_PER_SIDE;
 	UndexLoop3D loop(Undex3D(), Undex3D(CHUNK_VALUES_PER_SIDE));
 	for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
@@ -128,11 +128,11 @@ void Chunk::GeneratePerlin(const Perlin3D & noise)
 
 		if (val > 0.0f)
 		{
-			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Value = 3;
+			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Template = &VoxelTemplate::Gray;
 		}
 		else
 		{
-			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Value = 0;
+			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Template = nullptr;
 		}
 	}
 }
@@ -147,7 +147,7 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 	}
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
-		Data[i].Value = 0;
+		Data[i].Template = nullptr;
 	}
 
 	(void)noise2;
@@ -159,14 +159,14 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 	bool empty = true;
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
-		if (Data[i].Value != 0) { empty = false; break; }
+		if (Data[i].Template != nullptr) { empty = false; break; }
 	}
 	if (empty)
 	{
 		delete[] Data;
 		ChunkType = ChunkType::Empty;
 		Data = new Voxel();
-		Data -> Value = 0; // for returning
+		Data -> Template = nullptr;
 	}
 	else
 	{
@@ -208,7 +208,7 @@ void Chunk::GraphicsDelete()
 
 
 
-static void DataQuad(Container::Binary<VoxelGraphics::MainData> & data, VoxelGraphics::VoxelFace face)
+/*static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, VoxelGraphics::VoxelFace face)
 {
 	data.Insert(face.Corn[0b00]);
 	data.Insert(face.Corn[0b10]);
@@ -217,6 +217,16 @@ static void DataQuad(Container::Binary<VoxelGraphics::MainData> & data, VoxelGra
 	data.Insert(face.Corn[0b01]);
 	data.Insert(face.Corn[0b10]);
 	data.Insert(face.Corn[0b11]);
+}*/
+
+static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, const Container::Binary<VoxelGraphics::MainData> & face, VectorU3 u)
+{
+	for (unsigned int i = 0; i < face.Count(); i++)
+	{
+		VoxelGraphics::MainData v = face[i];
+		v.Pos += u;
+		data.Insert(v);
+	}
 }
 
 void Chunk::UpdateMainBuffer()
@@ -234,28 +244,15 @@ void Chunk::UpdateMainBuffer()
 			for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 			{
 				Voxel & voxel = Data[size.Convert(u)];
-				if (!voxel.IsSolid())
-				{
-					continue;
-				}
-
-				VoxelGraphics::VoxelCube cube = voxel.ToGraphics(u);
-
-				Voxel * nextX = Neighbours.Value(AxisDirection::NextX, u);
-				Voxel * nextY = Neighbours.Value(AxisDirection::NextY, u);
-				Voxel * nextZ = Neighbours.Value(AxisDirection::NextZ, u);
-
-				Voxel * prevX = Neighbours.Value(AxisDirection::PrevX, u);
-				Voxel * prevY = Neighbours.Value(AxisDirection::PrevY, u);
-				Voxel * prevZ = Neighbours.Value(AxisDirection::PrevZ, u);
-
-				if (prevX != nullptr && !(prevX -> IsSolid())) { DataQuad(data, cube.PrevX); }
-				if (prevY != nullptr && !(prevY -> IsSolid())) { DataQuad(data, cube.PrevY); }
-				if (prevZ != nullptr && !(prevZ -> IsSolid())) { DataQuad(data, cube.PrevZ); }
-
-				if (nextX != nullptr && !(nextX -> IsSolid())) { DataQuad(data, cube.NextX); }
-				if (nextY != nullptr && !(nextY -> IsSolid())) { DataQuad(data, cube.NextY); }
-				if (nextZ != nullptr && !(nextZ -> IsSolid())) { DataQuad(data, cube.NextZ); }
+				if (voxel.Template == nullptr) { continue; }
+				VoxelTemplate & voxel_template = *voxel.Template;
+				GraphicsData(data, voxel_template.Here, u);
+				if (Neighbours.Visible(AxisDirection::PrevX, u)) { GraphicsData(data, voxel_template.PrevX, u); }
+				if (Neighbours.Visible(AxisDirection::PrevY, u)) { GraphicsData(data, voxel_template.PrevY, u); }
+				if (Neighbours.Visible(AxisDirection::PrevZ, u)) { GraphicsData(data, voxel_template.PrevZ, u); }
+				if (Neighbours.Visible(AxisDirection::NextX, u)) { GraphicsData(data, voxel_template.NextX, u); }
+				if (Neighbours.Visible(AxisDirection::NextY, u)) { GraphicsData(data, voxel_template.NextY, u); }
+				if (Neighbours.Visible(AxisDirection::NextZ, u)) { GraphicsData(data, voxel_template.NextZ, u); }
 			}
 		}
 

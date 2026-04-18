@@ -1,14 +1,22 @@
 #ifndef  VOXEL_GRAPHICS_MAIN_DATA_HPP
 # define VOXEL_GRAPHICS_MAIN_DATA_HPP
 
-# include "ValueType/Point3D.hpp"
+# include "ValueType/VectorF3.hpp"
 
 namespace VoxelGraphics
 {
 	struct MainData
 	{
-		Point3D		Pos;
-		Point3D		Tex;
+		VectorF3		Pos;
+		VectorF3		Tex;
+
+		~MainData();
+		MainData();
+
+		MainData(const MainData & other);
+		MainData & operator=(const MainData & other);
+
+		MainData(VectorF3 pos, VectorF3 tex);
 	};
 };
 
