@@ -13,15 +13,19 @@ VoxelTemplate VoxelTemplate::RedLog;
 
 
 
-// need to know all Orientaions to know what Face goes to what Axis
-// 
-
-//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindPrevX(VoxelOrientation orientation) const;
-//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindPrevY(VoxelOrientation orientation) const;
-//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindPrevZ(VoxelOrientation orientation) const;
-//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindNextX(VoxelOrientation orientation) const;
-//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindNextY(VoxelOrientation orientation) const;
-//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindNextZ(VoxelOrientation orientation) const;
+const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::AxisData(Axis axis) const
+{
+	switch (axis)
+	{
+		case Axis::PrevX: return PrevX;
+		case Axis::PrevY: return PrevY;
+		case Axis::PrevZ: return PrevZ;
+		case Axis::NextX: return NextX;
+		case Axis::NextY: return NextY;
+		case Axis::NextZ: return NextZ;
+		default: return Here;
+	}
+}
 
 
 

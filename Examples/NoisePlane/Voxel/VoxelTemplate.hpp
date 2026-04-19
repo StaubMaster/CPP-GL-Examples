@@ -37,12 +37,7 @@ struct VoxelTemplate
 	Container::Binary<VoxelGraphics::MainData>	NextY;
 	Container::Binary<VoxelGraphics::MainData>	NextZ;
 
-	const Container::Binary<VoxelGraphics::MainData> &	FindPrevX(VoxelOrientation orientation) const;
-	const Container::Binary<VoxelGraphics::MainData> &	FindPrevY(VoxelOrientation orientation) const;
-	const Container::Binary<VoxelGraphics::MainData> &	FindPrevZ(VoxelOrientation orientation) const;
-	const Container::Binary<VoxelGraphics::MainData> &	FindNextX(VoxelOrientation orientation) const;
-	const Container::Binary<VoxelGraphics::MainData> &	FindNextY(VoxelOrientation orientation) const;
-	const Container::Binary<VoxelGraphics::MainData> &	FindNextZ(VoxelOrientation orientation) const;
+	const Container::Binary<VoxelGraphics::MainData> &	AxisData(Axis axis) const;
 
 	~VoxelTemplate();
 	VoxelTemplate();

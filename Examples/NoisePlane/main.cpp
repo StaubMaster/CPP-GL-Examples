@@ -675,8 +675,14 @@ void ViewRayFunction()
 				const Voxel * voxel = ChunkManager.FindVoxelOrNull(idx);
 				if (voxel != nullptr)
 				{
-					ss << (voxel -> Orientation.GetDiag()) << ":Diag\n";
-					ss << (voxel -> Orientation.GetFlip()) << ":Flip\n";
+					ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
+					ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
+					ss << (voxel -> Orientation.absolute(Axis::PrevX)) << " :PrevX\n";
+					ss << (voxel -> Orientation.absolute(Axis::PrevY)) << " :PrevY\n";
+					ss << (voxel -> Orientation.absolute(Axis::PrevZ)) << " :PrevZ\n";
+					ss << (voxel -> Orientation.absolute(Axis::NextX)) << " :NextX\n";
+					ss << (voxel -> Orientation.absolute(Axis::NextY)) << " :NextY\n";
+					ss << (voxel -> Orientation.absolute(Axis::NextZ)) << " :NextZ\n";
 					//ss << (voxel -> Orientation.Diag) << ":Diag\n";
 					//ss << (voxel -> Orientation.Flip) << ":Flip\n";
 					//ss << (voxel -> Orientation.Origin0) << ":Origin0\n";

@@ -1,7 +1,7 @@
 #ifndef  VoxelORIENTATION_HPP
 # define VoxelORIENTATION_HPP
 
-enum class Axis : unsigned char // 3 Bits
+enum class Axis : unsigned char
 {
 	Here  = 0b000,
 	PrevX = 0b001,
@@ -11,7 +11,7 @@ enum class Axis : unsigned char // 3 Bits
 	NextY = 0b101,
 	NextZ = 0b011,
 	None  = 0b111,
-};
+}; // 8 Values ; 3 Bits
 
 /*
 2 * 3 * 4
@@ -133,6 +133,61 @@ enum class Flip : unsigned char
 
 # include "ValueType/VectorF3.hpp"
 
+/*struct AxisPair
+{
+	::Axis	Prev;
+	::Axis	Next;
+	~AxisPair();
+	AxisPair();
+	AxisPair(::Axis prev, ::Axis next);
+	AxisPair(const AxisPair & other);
+	AxisPair & operator=(const AxisPair & other);
+	AxisPair operator+() const;
+	AxisPair operator-() const;
+	static AxisPair X();
+	static AxisPair Y();
+	static AxisPair Z();
+};*/
+/*struct AxisOrientation
+{
+	AxisPair	X;
+	AxisPair	Y;
+	AxisPair	Z;
+	~AxisOrientation();
+	AxisOrientation();
+	AxisOrientation(AxisPair x, AxisPair y, AxisPair z);
+	AxisOrientation(const AxisOrientation & other);
+	AxisOrientation & operator=(const AxisOrientation & other);
+	void make(::Diag diag, ::Flip flip);
+};*/
+/*static AxisOrientation AxisOrientations[24] =
+{
+	AxisOrientation(Diag::Here , Flip::None ), //  XYZ +++
+	AxisOrientation(Diag::Prev , Flip::None ), //  ZXY +++
+	AxisOrientation(Diag::Next , Flip::None ), //  YZX +++
+	AxisOrientation(Diag::Here , Flip::FlipX), //  XYZ +--
+	AxisOrientation(Diag::Prev , Flip::FlipX), //  ZXY +--
+	AxisOrientation(Diag::Next , Flip::FlipX), //  YZX +--
+	AxisOrientation(Diag::Here , Flip::FlipY), //  XYZ -+-
+	AxisOrientation(Diag::Prev , Flip::FlipY), //  ZXY -+-
+	AxisOrientation(Diag::Next , Flip::FlipY), //  YZX -+-
+	AxisOrientation(Diag::Here , Flip::FlipZ), //  XYZ --+
+	AxisOrientation(Diag::Prev , Flip::FlipZ), //  ZXY --+
+	AxisOrientation(Diag::Next , Flip::FlipZ), //  YZX --+
+	AxisOrientation(Diag::DiagX, Flip::None ), //  XZY ---
+	AxisOrientation(Diag::DiagY, Flip::None ), //  ZYX ---
+	AxisOrientation(Diag::DiagZ, Flip::None ), //  YXZ ---
+	AxisOrientation(Diag::DiagX, Flip::FlipX), //  XZY -++
+	AxisOrientation(Diag::DiagY, Flip::FlipX), //  ZYX -++
+	AxisOrientation(Diag::DiagZ, Flip::FlipX), //  YXZ -++
+	AxisOrientation(Diag::DiagX, Flip::FlipY), //  XZY +-+
+	AxisOrientation(Diag::DiagY, Flip::FlipY), //  ZYX +-+
+	AxisOrientation(Diag::DiagZ, Flip::FlipY), //  YXZ +-+
+	AxisOrientation(Diag::DiagX, Flip::FlipZ), //  XZY ++-
+	AxisOrientation(Diag::DiagY, Flip::FlipZ), //  ZYX ++-
+	AxisOrientation(Diag::DiagZ, Flip::FlipZ), //  YXZ ++-
+};*/
+
 struct VoxelOrientation
 {
 	private:
@@ -153,6 +208,8 @@ struct VoxelOrientation
 //	::Axis	Origin1;
 //	::Axis	Target1;
 
+
+
 	void	make(::Diag diag, ::Flip flip);
 	void	make(::Axis origin0, ::Axis target0, ::Axis origin1, ::Axis target1);
 /*
@@ -167,7 +224,8 @@ struct VoxelOrientation
 	VoxelOrientation(const VoxelOrientation & other);
 	VoxelOrientation & operator=(const VoxelOrientation & other);
 
-	VectorF3	orient(VectorF3 v) const;
+	VectorF3	absolute(VectorF3 v) const;
+	::Axis		absolute(Axis axis) const;
 };
 
 #endif

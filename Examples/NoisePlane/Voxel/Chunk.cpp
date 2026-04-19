@@ -392,7 +392,7 @@ static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, cons
 		for (unsigned int i = 0; i < face.Count(); i++)
 		{
 			VoxelGraphics::MainData v = face[i];
-			v.Pos = orientation.orient(v.Pos) + u;
+			v.Pos = orientation.absolute(v.Pos) + u;
 			data.Insert(v);
 		}
 	}
@@ -405,6 +405,12 @@ static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, cons
 			data.Insert(v);
 		}
 	}*/
+}
+
+static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, VoxelTemplate & voxel_template, VoxelOrientation & orientations, ChunkNeighbours & neighbours, Axis axis, VectorU3 u)
+{
+	if (!neighbours.Visible(orientations.absolute(axis), u)) { return; }
+	GraphicsData(data, voxel_template.AxisData(axis), orientations, u);
 }
 
 void Chunk::UpdateMainBuffer()
@@ -425,12 +431,18 @@ void Chunk::UpdateMainBuffer()
 				if (voxel.Template == nullptr) { continue; }
 				VoxelTemplate & voxel_template = *voxel.Template;
 				GraphicsData(data, voxel_template.Here, voxel.Orientation, u);
-				/*if (Neighbours.Visible(Axis::PrevX, u))*/ { GraphicsData(data, voxel_template.PrevX, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(Axis::PrevY, u))*/ { GraphicsData(data, voxel_template.PrevY, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(Axis::PrevZ, u))*/ { GraphicsData(data, voxel_template.PrevZ, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(Axis::NextX, u))*/ { GraphicsData(data, voxel_template.NextX, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(Axis::NextY, u))*/ { GraphicsData(data, voxel_template.NextY, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(Axis::NextZ, u))*/ { GraphicsData(data, voxel_template.NextZ, voxel.Orientation, u); }
+				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::PrevX, u);
+				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::PrevY, u);
+				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::PrevZ, u);
+				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::NextX, u);
+				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::NextY, u);
+				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::NextZ, u);
+				/*if (Neighbours.Visible(Axis::PrevX, u))*/ //{ GraphicsData(data, voxel_template.PrevX, voxel.Orientation, u); }
+				/*if (Neighbours.Visible(Axis::PrevY, u))*/ //{ GraphicsData(data, voxel_template.PrevY, voxel.Orientation, u); }
+				/*if (Neighbours.Visible(Axis::PrevZ, u))*/ //{ GraphicsData(data, voxel_template.PrevZ, voxel.Orientation, u); }
+				/*if (Neighbours.Visible(Axis::NextX, u))*/ //{ GraphicsData(data, voxel_template.NextX, voxel.Orientation, u); }
+				/*if (Neighbours.Visible(Axis::NextY, u))*/ //{ GraphicsData(data, voxel_template.NextY, voxel.Orientation, u); }
+				/*if (Neighbours.Visible(Axis::NextZ, u))*/ //{ GraphicsData(data, voxel_template.NextZ, voxel.Orientation, u); }
 			}
 		}
 

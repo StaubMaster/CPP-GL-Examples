@@ -2,11 +2,240 @@
 
 
 
+/*
+AxisPair::~AxisPair() { }
+AxisPair::AxisPair()
+	: Prev(::Axis::None)
+	, Next(::Axis::None)
+{ }
+AxisPair::AxisPair(::Axis prev, ::Axis next)
+	: Prev(prev)
+	, Next(next)
+{ }
+AxisPair::AxisPair(const AxisPair & other)
+	: Prev(other.Prev)
+	, Next(other.Next)
+{ }
+AxisPair & AxisPair::operator=(const AxisPair & other)
+{
+	Prev = other.Prev;
+	Next = other.Next;
+	return *this;
+}
+AxisPair AxisPair::operator+() const { return AxisPair(Prev, Next); }
+AxisPair AxisPair::operator-() const { return AxisPair(Next, Prev); }
+AxisPair AxisPair::X() { return AxisPair(::Axis::PrevX, ::Axis::NextX); }
+AxisPair AxisPair::Y() { return AxisPair(::Axis::PrevY, ::Axis::NextY); }
+AxisPair AxisPair::Z() { return AxisPair(::Axis::PrevZ, ::Axis::NextZ); }
+*/
+
+
+
+/*
+AxisOrientation::~AxisOrientation() { }
+AxisOrientation::AxisOrientation()
+	: X(AxisPair::X())
+	, Y(AxisPair::Y())
+	, Z(AxisPair::Z())
+{ }
+AxisOrientation::AxisOrientation(AxisPair x, AxisPair y, AxisPair z)
+	: X(x)
+	, Y(y)
+	, Z(z)
+{ }
+AxisOrientation::AxisOrientation(const AxisOrientation & other)
+	: X(other.X)
+	, Y(other.Y)
+	, Z(other.Z)
+{ }
+AxisOrientation & AxisOrientation::operator=(const AxisOrientation & other)
+{
+	X = other.X;
+	Y = other.Y;
+	Z = other.Z;
+	return *this;
+}
+void AxisOrientation::make(::Diag diag, ::Flip flip)
+{
+	switch (diag)
+	{
+		case Diag::Here : *this = AxisOrientation(+X, +Y, +Z); break;
+		case Diag::Prev : *this = AxisOrientation(+Z, +X, +Y); break;
+		case Diag::Next : *this = AxisOrientation(+Y, +Z, +X); break;
+		case Diag::DiagX: *this = AxisOrientation(-X, -Z, -Y); break;
+		case Diag::DiagY: *this = AxisOrientation(-Z, -Y, -X); break;
+		case Diag::DiagZ: *this = AxisOrientation(-Y, -X, -Z); break;
+	}
+
+	switch (flip)
+	{
+		case Flip::None : *this = AxisOrientation(+X, +Y, +Z); break;
+		case Flip::FlipX: *this = AxisOrientation(+X, -Y, -Z); break;
+		case Flip::FlipY: *this = AxisOrientation(-X, +Y, -Z); break;
+		case Flip::FlipZ: *this = AxisOrientation(-X, -Y, +Z); break;
+	}
+}
+*/
+
+
+
+/*
+Diag::Here : (+X, +Y, +Z)
+Diag::Prev : (+Z, +X, +Y)
+Diag::Next : (+Y, +Z, +X)
+Diag::DiagX: (-X, -Z, -Y)
+Diag::DiagY: (-Z, -Y, -X)
+Diag::DiagZ: (-Y, -X, -Z)
+*/
+static ::Axis OrientAxis(::Axis axis, ::Diag diag)
+{
+	if (axis == ::Axis::PrevX)
+	{
+		switch (diag)
+		{
+			case Diag::Here : return ::Axis::PrevX; break;
+			case Diag::Prev : return ::Axis::PrevY; break;
+			case Diag::Next : return ::Axis::PrevZ; break;
+			case Diag::DiagX: return ::Axis::NextX; break;
+			case Diag::DiagY: return ::Axis::NextZ; break;
+			case Diag::DiagZ: return ::Axis::NextY; break;
+		}
+	}
+	if (axis == ::Axis::PrevY)
+	{
+		switch (diag)
+		{
+			case Diag::Here : return ::Axis::PrevY; break;
+			case Diag::Prev : return ::Axis::PrevZ; break;
+			case Diag::Next : return ::Axis::PrevX; break;
+			case Diag::DiagX: return ::Axis::NextZ; break;
+			case Diag::DiagY: return ::Axis::NextY; break;
+			case Diag::DiagZ: return ::Axis::NextX; break;
+		}
+	}
+	if (axis == ::Axis::PrevZ)
+	{
+		switch (diag)
+		{
+			case Diag::Here : return ::Axis::PrevZ; break;
+			case Diag::Prev : return ::Axis::PrevX; break;
+			case Diag::Next : return ::Axis::PrevY; break;
+			case Diag::DiagX: return ::Axis::NextY; break;
+			case Diag::DiagY: return ::Axis::NextX; break;
+			case Diag::DiagZ: return ::Axis::NextZ; break;
+		}
+	}
+	if (axis == ::Axis::NextX)
+	{
+		switch (diag)
+		{
+			case Diag::Here : return ::Axis::NextX; break;
+			case Diag::Prev : return ::Axis::NextY; break;
+			case Diag::Next : return ::Axis::NextZ; break;
+			case Diag::DiagX: return ::Axis::PrevX; break;
+			case Diag::DiagY: return ::Axis::PrevZ; break;
+			case Diag::DiagZ: return ::Axis::PrevY; break;
+		}
+	}
+	if (axis == ::Axis::NextY)
+	{
+		switch (diag)
+		{
+			case Diag::Here : return ::Axis::NextY; break;
+			case Diag::Prev : return ::Axis::NextZ; break;
+			case Diag::Next : return ::Axis::NextX; break;
+			case Diag::DiagX: return ::Axis::PrevZ; break;
+			case Diag::DiagY: return ::Axis::PrevY; break;
+			case Diag::DiagZ: return ::Axis::PrevX; break;
+		}
+	}
+	if (axis == ::Axis::NextZ)
+	{
+		switch (diag)
+		{
+			case Diag::Here : return ::Axis::NextZ; break;
+			case Diag::Prev : return ::Axis::NextX; break;
+			case Diag::Next : return ::Axis::NextY; break;
+			case Diag::DiagX: return ::Axis::PrevY; break;
+			case Diag::DiagY: return ::Axis::PrevX; break;
+			case Diag::DiagZ: return ::Axis::PrevZ; break;
+		}
+	}
+	return axis;
+}
+
+/*
+Flip::None : (+X, +Y, +Z)
+Flip::FlipX: (+X, -Y, -Z)
+Flip::FlipY: (-X, +Y, -Z)
+Flip::FlipZ: (-X, -Y, +Z)
+*/
+static ::Axis OrientAxis(::Axis axis, ::Flip flip)
+{
+	if (flip == Flip::None)
+	{
+		switch (axis)
+		{
+			case Axis::PrevX: return ::Axis::PrevX;
+			case Axis::PrevY: return ::Axis::PrevY;
+			case Axis::PrevZ: return ::Axis::PrevZ;
+			case Axis::NextX: return ::Axis::NextX;
+			case Axis::NextY: return ::Axis::NextY;
+			case Axis::NextZ: return ::Axis::NextZ;
+			default: return axis;
+		}
+	}
+	if (flip == Flip::FlipX)
+	{
+		switch (axis)
+		{
+			case Axis::PrevX: return ::Axis::PrevX;
+			case Axis::PrevY: return ::Axis::NextY;
+			case Axis::PrevZ: return ::Axis::NextZ;
+			case Axis::NextX: return ::Axis::NextX;
+			case Axis::NextY: return ::Axis::PrevY;
+			case Axis::NextZ: return ::Axis::PrevZ;
+			default: return axis;
+		}
+	}
+	if (flip == Flip::FlipY)
+	{
+		switch (axis)
+		{
+			case Axis::PrevX: return ::Axis::NextX;
+			case Axis::PrevY: return ::Axis::PrevY;
+			case Axis::PrevZ: return ::Axis::NextZ;
+			case Axis::NextX: return ::Axis::PrevX;
+			case Axis::NextY: return ::Axis::NextY;
+			case Axis::NextZ: return ::Axis::PrevZ;
+			default: return axis;
+		}
+	}
+	if (flip == Flip::FlipZ)
+	{
+		switch (axis)
+		{
+			case Axis::PrevX: return ::Axis::NextX;
+			case Axis::PrevY: return ::Axis::NextY;
+			case Axis::PrevZ: return ::Axis::PrevZ;
+			case Axis::NextX: return ::Axis::PrevX;
+			case Axis::NextY: return ::Axis::PrevY;
+			case Axis::NextZ: return ::Axis::NextZ;
+			default: return axis;
+		}
+	}
+	return axis;
+}
+
+
+
 ::Diag VoxelOrientation::GetDiag() const { return (Diag)((Value & 0b00000111) >> 0); }
 ::Flip VoxelOrientation::GetFlip() const { return (Flip)((Value & 0b00011000) >> 3); }
 
 void VoxelOrientation::SetDiag(::Diag diag) { Value = (Value & (~0b00000111)) | (((unsigned char)diag) << 0); }
 void VoxelOrientation::SetFlip(::Flip flip) { Value = (Value & (~0b00011000)) | (((unsigned char)flip) << 3); }
+
+
 
 
 
@@ -261,7 +490,9 @@ FlipAxis "Invertes" 2 Axis
 FlipAxisX(+++) = +--
 */
 
-VectorF3 VoxelOrientation::orient(VectorF3 v) const
+
+
+VectorF3 VoxelOrientation::absolute(VectorF3 v) const
 {
 	//switch (Diag)
 	switch (GetDiag())
@@ -284,4 +515,10 @@ VectorF3 VoxelOrientation::orient(VectorF3 v) const
 	}
 
 	return v;
+}
+::Axis VoxelOrientation::absolute(Axis axis) const
+{
+	axis = ::OrientAxis(axis, GetDiag());
+	axis = ::OrientAxis(axis, GetFlip());
+	return axis;
 }
