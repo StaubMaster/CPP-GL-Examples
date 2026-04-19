@@ -1,6 +1,7 @@
 #include "ChunkNeighbours.hpp"
 #include "Voxel.hpp"
 #include "Chunk.hpp"
+#include "VoxelOrientation.hpp"
 
 
 
@@ -37,25 +38,25 @@ ChunkNeighbours & ChunkNeighbours::operator=(const ChunkNeighbours & other)
 
 
 
-bool ChunkNeighbours::Visible(AxisDirection dir, VectorU3 udx) const
+bool ChunkNeighbours::Visible(Axis dir, VectorU3 udx) const
 {
 	Chunk * chunk = nullptr;
 
-	if (dir == AxisDirection::NextX)
+	if (dir == Axis::NextX)
 	{
 		if (udx.X != CHUNK_VALUES_PER_SIDE - 1)
 		{ chunk = Here; udx.X++; }
 		else
 		{ chunk = NextX; udx.X = 0; }
 	}
-	if (dir == AxisDirection::NextY)
+	if (dir == Axis::NextY)
 	{
 		if (udx.Y != CHUNK_VALUES_PER_SIDE - 1)
 		{ chunk = Here; udx.Y++; }
 		else
 		{ chunk = NextY; udx.Y = 0; }
 	}
-	if (dir == AxisDirection::NextZ)
+	if (dir == Axis::NextZ)
 	{
 		if (udx.Z != CHUNK_VALUES_PER_SIDE - 1)
 		{ chunk = Here; udx.Z++; }
@@ -63,21 +64,21 @@ bool ChunkNeighbours::Visible(AxisDirection dir, VectorU3 udx) const
 		{ chunk = NextZ; udx.Z = 0; }
 	}
 
-	if (dir == AxisDirection::PrevX)
+	if (dir == Axis::PrevX)
 	{
 		if (udx.X != 0)
 		{ chunk = Here; udx.X--; }
 		else
 		{ chunk = PrevX; udx.X = CHUNK_VALUES_PER_SIDE - 1; }
 	}
-	if (dir == AxisDirection::PrevY)
+	if (dir == Axis::PrevY)
 	{
 		if (udx.Y != 0)
 		{ chunk = Here; udx.Y--; }
 		else
 		{ chunk = PrevY; udx.Y = CHUNK_VALUES_PER_SIDE - 1; }
 	}
-	if (dir == AxisDirection::PrevZ)
+	if (dir == Axis::PrevZ)
 	{
 		if (udx.Z != 0)
 		{ chunk = Here; udx.Z--; }
@@ -103,12 +104,12 @@ bool ChunkNeighbours::Visible(AxisDirection dir, VectorU3 udx) const
 
 	switch (dir)
 	{
-		case AxisDirection::PrevX: return !(val -> Template -> HideNextX);
-		case AxisDirection::PrevY: return !(val -> Template -> HideNextY);
-		case AxisDirection::PrevZ: return !(val -> Template -> HideNextZ);
-		case AxisDirection::NextX: return !(val -> Template -> HidePrevX);
-		case AxisDirection::NextY: return !(val -> Template -> HidePrevY);
-		case AxisDirection::NextZ: return !(val -> Template -> HidePrevZ);
+		case Axis::PrevX: return !(val -> Template -> HideNextX);
+		case Axis::PrevY: return !(val -> Template -> HideNextY);
+		case Axis::PrevZ: return !(val -> Template -> HideNextZ);
+		case Axis::NextX: return !(val -> Template -> HidePrevX);
+		case Axis::NextY: return !(val -> Template -> HidePrevY);
+		case Axis::NextZ: return !(val -> Template -> HidePrevZ);
 		default: return false;
 	}
 }

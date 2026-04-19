@@ -1,6 +1,7 @@
 #include "ChunkManager.hpp"
 #include "Chunk.hpp"
 #include "Voxel.hpp"
+#include "VoxelOrientation.hpp"
 
 #include "ValueType/Bool3.hpp"
 #include "ValueType/BoxI3.hpp"
@@ -74,7 +75,7 @@ struct t_hit
 	VectorF3	rel;
 	VectorI3	idx;
 	float		dist;
-	AxisDirection	cardinal;
+	Axis	cardinal;
 };
 struct t_ray
 {
@@ -86,10 +87,10 @@ struct t_ray
 	VectorI3	grid_idx;
 	float		sum;
 	bool		solid;
-	AxisDirection	cardinal_side_X;
-	AxisDirection	cardinal_side_Y;
-	AxisDirection	cardinal_side_Z;
-	AxisDirection	cardinal_dir;
+	Axis	cardinal_side_X;
+	Axis	cardinal_side_Y;
+	Axis	cardinal_side_Z;
+	Axis	cardinal_dir;
 };
 static t_ray ray_init_cardinal(t_ray ray)
 {
@@ -97,37 +98,37 @@ static t_ray ray_init_cardinal(t_ray ray)
 	{
 		ray.grid_dir.X = +1;
 		ray.side_sum.X = ((ray.grid_idx.X + 1) - ray.pos.X) * ray.side_len.X;
-		ray.cardinal_side_X = AxisDirection::PrevX;
+		ray.cardinal_side_X = Axis::PrevX;
 	}
 	else
 	{
 		ray.grid_dir.X = -1;
 		ray.side_sum.X = (ray.pos.X - ray.grid_idx.X) * ray.side_len.X;
-		ray.cardinal_side_X = AxisDirection::NextX;
+		ray.cardinal_side_X = Axis::NextX;
 	}
 	if (ray.dir.Y > 0)
 	{
 		ray.grid_dir.Y = +1;
 		ray.side_sum.Y = ((ray.grid_idx.Y + 1) - ray.pos.Y) * ray.side_len.Y;
-		ray.cardinal_side_Y = AxisDirection::PrevY;
+		ray.cardinal_side_Y = Axis::PrevY;
 	}
 	else
 	{
 		ray.grid_dir.Y = -1;
 		ray.side_sum.Y = (ray.pos.Y - ray.grid_idx.Y) * ray.side_len.Y;
-		ray.cardinal_side_Y = AxisDirection::NextY;
+		ray.cardinal_side_Y = Axis::NextY;
 	}
 	if (ray.dir.Z > 0)
 	{
 		ray.grid_dir.Z = +1;
 		ray.side_sum.Z = ((ray.grid_idx.Z + 1) - ray.pos.Z) * ray.side_len.Z;
-		ray.cardinal_side_Z = AxisDirection::PrevZ;
+		ray.cardinal_side_Z = Axis::PrevZ;
 	}
 	else
 	{
 		ray.grid_dir.Z = -1;
 		ray.side_sum.Z = (ray.pos.Z - ray.grid_idx.Z) * ray.side_len.Z;
-		ray.cardinal_side_Z = AxisDirection::NextZ;
+		ray.cardinal_side_Z = Axis::NextZ;
 	}
 	return (ray);
 }
@@ -158,7 +159,7 @@ static t_hit return_hit(t_ray ray)
 	hit.cardinal = ray.cardinal_dir;
 	if (!ray.solid)
 	{
-		hit.cardinal = AxisDirection::None;
+		hit.cardinal = Axis::None;
 	}
 	return (hit);
 }
@@ -221,7 +222,7 @@ static t_hit hit_ray(const ChunkManager & manager, Ray3D ray3D)
 		if (chunk -> ChunkType == ChunkType::Filled)
 		{
 			t_hit hit = hit_ray(*chunk, Ray3D(ray3D.Pos + (ray3D.Dir * (ray.sum * CHUNK_VALUES_PER_SIDE + 0.01f)), ray3D.Dir));
-			if (hit.cardinal != AxisDirection::None) { return hit; }
+			if (hit.cardinal != Axis::None) { return hit; }
 		}
 		else if (chunk -> ChunkType != ChunkType::Empty) { break; }
 
@@ -250,7 +251,7 @@ static t_hit hit_ray(const ChunkManager & manager, Ray3D ray3D)
 	return (return_hit(ray));
 }
 
-bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisDirection & side, Ray3D & hit) const
+bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx, Axis & side, Ray3D & hit) const
 {
 //	::ViewRayPolyHedra = ViewRayPolyHedra;
 //	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
@@ -260,16 +261,16 @@ bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisDirection & sid
 	//ShowRay(ray);
 	t_hit _hit = hit_ray(*this, ray);
 
-	if (_hit.cardinal == AxisDirection::None) { return false; }
+	if (_hit.cardinal == Axis::None) { return false; }
 
 	hit.Pos = ray.Pos + (ray.Dir * _hit.dist);
 
-	if (_hit.cardinal == AxisDirection::NextX) { hit.Dir = VectorF3(+1, 0, 0); }
-	if (_hit.cardinal == AxisDirection::PrevX) { hit.Dir = VectorF3(-1, 0, 0); }
-	if (_hit.cardinal == AxisDirection::NextY) { hit.Dir = VectorF3(0, +1, 0); }
-	if (_hit.cardinal == AxisDirection::PrevY) { hit.Dir = VectorF3(0, -1, 0); }
-	if (_hit.cardinal == AxisDirection::NextZ) { hit.Dir = VectorF3(0, 0, +1); }
-	if (_hit.cardinal == AxisDirection::PrevZ) { hit.Dir = VectorF3(0, 0, -1); }
+	if (_hit.cardinal == Axis::NextX) { hit.Dir = VectorF3(+1, 0, 0); }
+	if (_hit.cardinal == Axis::PrevX) { hit.Dir = VectorF3(-1, 0, 0); }
+	if (_hit.cardinal == Axis::NextY) { hit.Dir = VectorF3(0, +1, 0); }
+	if (_hit.cardinal == Axis::PrevY) { hit.Dir = VectorF3(0, -1, 0); }
+	if (_hit.cardinal == Axis::NextZ) { hit.Dir = VectorF3(0, 0, +1); }
+	if (_hit.cardinal == Axis::PrevZ) { hit.Dir = VectorF3(0, 0, -1); }
 
 	//std::cout << "hit " << hit.idx << '\n';
 	idx = _hit.idx;

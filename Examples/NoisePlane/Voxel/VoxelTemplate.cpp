@@ -4,11 +4,24 @@
 
 
 
-VoxelTemplate VoxelTemplate::Orientation;
-VoxelTemplate VoxelTemplate::Gray;
+VoxelTemplate VoxelTemplate::OrientationCube;
+VoxelTemplate VoxelTemplate::OrientationCylinder;
 
+VoxelTemplate VoxelTemplate::Gray;
 VoxelTemplate VoxelTemplate::Grass;
 VoxelTemplate VoxelTemplate::RedLog;
+
+
+
+// need to know all Orientaions to know what Face goes to what Axis
+// 
+
+//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindPrevX(VoxelOrientation orientation) const;
+//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindPrevY(VoxelOrientation orientation) const;
+//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindPrevZ(VoxelOrientation orientation) const;
+//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindNextX(VoxelOrientation orientation) const;
+//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindNextY(VoxelOrientation orientation) const;
+//const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::FindNextZ(VoxelOrientation orientation) const;
 
 
 
@@ -87,7 +100,7 @@ void VoxelTemplate::InitCylinder(unsigned int tex)
 	HideNextY = false;
 	HideNextZ = false;
 
-	float f___ = 0.2f;
+	float f___ = 0.3f;
 
 	VectorF3 pos[16];
 

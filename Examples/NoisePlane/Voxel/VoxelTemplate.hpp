@@ -2,16 +2,20 @@
 # define VOXEL_TEMPLATE_HPP
 
 # include "Graphics/Voxel.hpp"
+# include "VoxelOrientation.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
 
 struct VoxelTemplate
 {
-	static VoxelTemplate	Orientation;
+	static VoxelTemplate	OrientationCube;
+	static VoxelTemplate	OrientationCylinder;
+
 	static VoxelTemplate	Gray;
-	
 	static VoxelTemplate	Grass;
 	static VoxelTemplate	RedLog;
+
+
 
 	unsigned int	Texture;
 
@@ -33,11 +37,18 @@ struct VoxelTemplate
 	Container::Binary<VoxelGraphics::MainData>	NextY;
 	Container::Binary<VoxelGraphics::MainData>	NextZ;
 
+	const Container::Binary<VoxelGraphics::MainData> &	FindPrevX(VoxelOrientation orientation) const;
+	const Container::Binary<VoxelGraphics::MainData> &	FindPrevY(VoxelOrientation orientation) const;
+	const Container::Binary<VoxelGraphics::MainData> &	FindPrevZ(VoxelOrientation orientation) const;
+	const Container::Binary<VoxelGraphics::MainData> &	FindNextX(VoxelOrientation orientation) const;
+	const Container::Binary<VoxelGraphics::MainData> &	FindNextY(VoxelOrientation orientation) const;
+	const Container::Binary<VoxelGraphics::MainData> &	FindNextZ(VoxelOrientation orientation) const;
+
 	~VoxelTemplate();
 	VoxelTemplate();
 
-	VoxelTemplate(const VoxelTemplate & other);
-	VoxelTemplate & operator=(const VoxelTemplate & other);
+	VoxelTemplate(const VoxelTemplate & other) = delete;
+	VoxelTemplate & operator=(const VoxelTemplate & other) = delete;
 
 	void	InitCube(unsigned int tex);
 	void	InitCylinder(unsigned int tex);

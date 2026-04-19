@@ -2,11 +2,12 @@
 # define VOXEL_HPP
 
 # include "VoxelTemplate.hpp"
-# include "Graphics/Voxel.hpp"
+# include "VoxelOrientation.hpp"
 
 struct Voxel
 {
 	VoxelTemplate *		Template;
+	VoxelOrientation	Orientation;
 
 	~Voxel();
 	Voxel();

@@ -14,7 +14,7 @@
 
 struct Voxel;
 struct Chunk;
-enum class AxisDirection;
+enum class Axis : unsigned char;
 
 struct Ray3D;
 class PolyHedra;
@@ -35,7 +35,7 @@ struct ChunkManager
 	PolyHedra *	ViewRayPolyHedra;
 
 	const Voxel *	FindVoxelOrNull(VectorI3 idx) const;
-	bool			FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisDirection & side, Ray3D & hit) const;
+	bool			FindVoxelIndex(Ray3D ray, VectorI3 & idx, Axis & side, Ray3D & hit) const;
 
 	bool	ClearVoxel(VectorI3 idx, Voxel & vox);
 	bool	PlaneVoxel(VectorI3 idx, Voxel & vox);

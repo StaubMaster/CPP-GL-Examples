@@ -47,6 +47,7 @@
 // Voxel
 #include "Voxel/Chunk.hpp"
 #include "Voxel/ChunkManager.hpp"
+#include "Voxel/VoxelOrientation.hpp"
 
 #include "ValueType/LoopI3.hpp"
 
@@ -99,6 +100,49 @@ struct PolyHedraObjectArray
 		Count = 0;
 	}
 };
+
+std::ostream & operator<<(std::ostream & s, Axis axis)
+{
+	switch (axis)
+	{
+		case Axis::Here : s << "Here"; break;
+		case Axis::PrevX: s << "PrevX"; break;
+		case Axis::PrevY: s << "PrevY"; break;
+		case Axis::PrevZ: s << "PrevZ"; break;
+		case Axis::NextX: s << "NextX"; break;
+		case Axis::NextY: s << "NextY"; break;
+		case Axis::NextZ: s << "NextZ"; break;
+		case Axis::None : s << "None"; break;
+		default : s << "Axis:" << ((unsigned int)axis); break;
+	}
+	return s;
+}
+std::ostream & operator<<(std::ostream & s, Diag diag)
+{
+	switch (diag)
+	{
+		case Diag::Here : s << "Here"; break;
+		case Diag::Prev : s << "Prev"; break;
+		case Diag::Next : s << "Next"; break;
+		case Diag::DiagX: s << "DiagX"; break;
+		case Diag::DiagY: s << "DiagY"; break;
+		case Diag::DiagZ: s << "DiagZ"; break;
+		default : s << "Diag:" << ((unsigned int)diag); break;
+	}
+	return s;
+}
+std::ostream & operator<<(std::ostream & s, Flip flip)
+{
+	switch (flip)
+	{
+		case Flip::None : s << "None"; break;
+		case Flip::FlipX: s << "FlipX"; break;
+		case Flip::FlipY: s << "FlipY"; break;
+		case Flip::FlipZ: s << "FlipZ"; break;
+		default : s << "Flip:" << ((unsigned int)flip); break;
+	}
+	return s;
+}
 
 struct MainContext : public MainContext3D
 {
@@ -319,7 +363,8 @@ void VoxelGraphicsCreate()
 		ChunkManager.Texture.Assign(128, 64, files);
 	}
 	{
-		VoxelTemplate::Orientation.InitCube(0);
+		VoxelTemplate::OrientationCube.InitCube(0);
+		VoxelTemplate::OrientationCylinder.InitCylinder(0);
 		VoxelTemplate::Gray.InitCube(1);
 		VoxelTemplate::Grass.InitCube(2);
 		VoxelTemplate::RedLog.InitCylinder(3);
@@ -375,7 +420,8 @@ void Make() override
 //	window.DefaultColor = ColorF4(1, 1, 1);
 //	view.Depth.Factors.ChangeFar(50.0f);
 	//view.Trans.Position = VectorF3(0, 7, 7);
-	view.Trans.Position = VectorF3(0.5f, 2.5f, 7.5f);
+//	view.Trans.Position = VectorF3(0.5f, 2.5f, 7.5f);
+	view.Trans.Position = VectorF3(0.5f, 0.5f, 0.5f);
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -591,12 +637,14 @@ TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, Loo
 	return collision;
 }
 
+
+
 bool		ViewRaySync = true;
 Ray3D		ViewRay;
 void ViewRayFunction()
 {
 	VectorI3 idx;
-	AxisDirection side;
+	Axis side;
 	Ray3D hit;
 	if (ChunkManager.FindVoxelIndex(ViewRay, idx, side, hit))
 	{
@@ -605,31 +653,81 @@ void ViewRayFunction()
 			voxel_box_obj.Trans().Position = idx;
 			voxel_box_obj.ShowWire();
 		}
-		{
+		/*{
 			PolyHedraObject voxel_dir_obj(ViewRayPolyHedra);
 			voxel_dir_obj.Trans().Position = hit.Pos;
 			voxel_dir_obj.Trans().Rotation = EulerAngle3D::PointToZ(hit.Dir);
 			voxel_dir_obj.ShowWire();
+		}*/
+
+		{
+			VectorI3 chunk_idx = (VectorF3(idx) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
+			VectorU3 voxel_idx = idx - (chunk_idx * CHUNK_VALUES_PER_SIDE);
+
+			std::stringstream ss;
+
+			ss << "ViewRay\n";
+			ss << idx << '\n';
+			ss << chunk_idx << '\n';
+			ss << voxel_idx << '\n';
+
+			{
+				const Voxel * voxel = ChunkManager.FindVoxelOrNull(idx);
+				if (voxel != nullptr)
+				{
+					ss << (voxel -> Orientation.GetDiag()) << ":Diag\n";
+					ss << (voxel -> Orientation.GetFlip()) << ":Flip\n";
+					//ss << (voxel -> Orientation.Diag) << ":Diag\n";
+					//ss << (voxel -> Orientation.Flip) << ":Flip\n";
+					//ss << (voxel -> Orientation.Origin0) << ":Origin0\n";
+					//ss << (voxel -> Orientation.Target0) << ":Target0\n";
+					//ss << (voxel -> Orientation.Origin1) << ":Origin1\n";
+					//ss << (voxel -> Orientation.Target1) << ":Target1\n";
+				}
+				else
+				{
+					ss << "null";
+				}
+				ss << '\n';
+			}
+
+			UI::Text::Object text; text.Create();
+			text.Pos().X = window.Size.Buffer.Full.X - 10;
+			text.Pos().Y = 10;
+			text.AlignmentX() = UI::Text::Alignment::Max;
+			text.Bound().Min = Point2D();
+			text.Bound().Max = window.Size.Buffer.Full;
+			text.String() = ss.str();
 		}
 
 		if (window.MouseManager[MouseButtons::MouseL].State == State::Press)
 		{
 			Voxel voxel;
 			ChunkManager.ClearVoxel(idx, voxel);
-			(void)voxel;
 		}
 		if (window.MouseManager[MouseButtons::MouseR].State == State::Press)
 		{
-			if (side == AxisDirection::NextX) { idx.X += 1; }
-			if (side == AxisDirection::NextY) { idx.Y += 1; }
-			if (side == AxisDirection::NextZ) { idx.Z += 1; }
-			if (side == AxisDirection::PrevX) { idx.X -= 1; }
-			if (side == AxisDirection::PrevY) { idx.Y -= 1; }
-			if (side == AxisDirection::PrevZ) { idx.Z -= 1; }
+			if (side == Axis::NextX) { idx.X += 1; }
+			if (side == Axis::NextY) { idx.Y += 1; }
+			if (side == Axis::NextZ) { idx.Z += 1; }
+			if (side == Axis::PrevX) { idx.X -= 1; }
+			if (side == Axis::PrevY) { idx.Y -= 1; }
+			if (side == Axis::PrevZ) { idx.Z -= 1; }
+
 			Voxel voxel;
-			voxel.Template = &VoxelTemplate::RedLog;
+			voxel.Template = &VoxelTemplate::OrientationCylinder;
+			voxel.Orientation.make(Axis::PrevY, side, Axis::None, Axis::None);
 			ChunkManager.PlaneVoxel(idx, voxel);
-			(void)voxel;
+		}
+	}
+
+	if (window.KeyBoardManager[Keys::NumPadEnter].State == State::Press)
+	{
+		VectorI3 view_chunk_idx(view.Trans.Position.roundF() / (float)CHUNK_VALUES_PER_SIDE);
+		Chunk * view_chunk = ChunkManager.FindChunkOrNull(view_chunk_idx);
+		if (view_chunk != nullptr)
+		{
+			view_chunk -> GenerateTestRotation();
 		}
 	}
 }
@@ -865,7 +963,7 @@ void Frame(double timeDelta) override
 		{
 			ss << "View " << view.Trans.Position << '\n';
 			ss << "View " << ViewVel << '\n';
-			ss << "Box " << (ViewBox + view.Trans.Position) << '\n';
+			//ss << "Box " << (ViewBox + view.Trans.Position) << '\n';
 			VectorI3 chunk_idx = (view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF();
 			VectorU3 voxel_idx = VectorI3(view.Trans.Position.roundF()) - (chunk_idx * CHUNK_VALUES_PER_SIDE);
 			ss << "Voxel " << chunk_idx << ' ' << voxel_idx << '\n';
@@ -915,7 +1013,8 @@ void Frame(double timeDelta) override
 			 << 'F' << chunks_f << ']'
 			 << '\n';
 			ss << "Voxels:" << Seperated1000(voxel_count);
-			ss << " (" << Memory1000ToString(voxel_count * sizeof(Voxel)) << ")\n";
+			ss << " * " << Memory1000ToString(sizeof(Voxel));
+			ss << " = " << Memory1000ToString(voxel_count * sizeof(Voxel)) << '\n';
 			ss << '\n';
 		}
 
@@ -925,9 +1024,8 @@ void Frame(double timeDelta) override
 			{
 				main_count += ChunkManager.Chunks[i] -> MainCount;
 			}
-			ss << "Voxel BufferData:" << Seperated1000(main_count); // Do I care about Vertex Count ?
-			ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) << ")\n";
-			ss << '\n';
+			ss << "Voxel BufferData: " << Seperated1000(main_count);
+			ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) <<")\n";
 		}
 
 		UI::Text::Object text; text.Create();
