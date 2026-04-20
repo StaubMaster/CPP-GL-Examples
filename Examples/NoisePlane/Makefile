@@ -18,6 +18,8 @@ FILES_SRC := \
 	../main.cpp \
 	../MainContext3D.cpp \
 \
+	PolyHedraObjectArray.cpp \
+\
 	Random.cpp \
 	Noise/Perlin2D.cpp \
 	Noise/Perlin3D.cpp \
@@ -39,6 +41,7 @@ FILES_SRC := \
 	Voxel/Voxel.cpp \
 	Voxel/VoxelTemplate.cpp \
 	Voxel/VoxelOrientation.cpp \
+	Voxel/VoxelEnums.cpp \
 	Voxel/Chunk.cpp \
 	Voxel/ChunkNeighbours.cpp \
 	Voxel/ChunkManager.cpp \

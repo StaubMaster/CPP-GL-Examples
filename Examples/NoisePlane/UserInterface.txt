@@ -1,0 +1,48 @@
+
+clean up Managers in main
+
+
+
+Main
+{
+	[Continue] load Last save
+	[Play]
+	[Options]
+	[Terminate]
+}
+
+Play
+{
+	[New]
+	[Load]
+	[Back]
+}
+
+New
+{
+	[Generate]
+	[Orientation Test]
+	[Back]
+}
+
+Pause
+{
+	[Save]
+	[Options]
+	[Main Menu]
+}
+
+Options
+{
+	[FOV] Slider
+	[Depth] Slider
+	[Insert Distance] Slider
+	[Remove Distance] Slider
+	[Back]
+}
+
+Inventory
+{
+	Grid of Slots (like in old Voxel)
+	also need Items
+}

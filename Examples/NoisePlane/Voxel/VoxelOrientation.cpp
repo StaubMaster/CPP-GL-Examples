@@ -2,83 +2,6 @@
 
 
 
-/*AxisPair::~AxisPair() { }
-AxisPair::AxisPair()
-	: Prev(::Axis::None)
-	, Next(::Axis::None)
-{ }
-AxisPair::AxisPair(::Axis prev, ::Axis next)
-	: Prev(prev)
-	, Next(next)
-{ }
-AxisPair::AxisPair(const AxisPair & other)
-	: Prev(other.Prev)
-	, Next(other.Next)
-{ }
-AxisPair & AxisPair::operator=(const AxisPair & other)
-{
-	Prev = other.Prev;
-	Next = other.Next;
-	return *this;
-}
-AxisPair AxisPair::operator+() const { return AxisPair(Prev, Next); }
-AxisPair AxisPair::operator-() const { return AxisPair(Next, Prev); }
-AxisPair AxisPair::X() { return AxisPair(::Axis::PrevX, ::Axis::NextX); }
-AxisPair AxisPair::Y() { return AxisPair(::Axis::PrevY, ::Axis::NextY); }
-AxisPair AxisPair::Z() { return AxisPair(::Axis::PrevZ, ::Axis::NextZ); }
-*/
-
-
-
-/*AxisOrientation::~AxisOrientation() { }
-AxisOrientation::AxisOrientation()
-	: X(AxisPair::X())
-	, Y(AxisPair::Y())
-	, Z(AxisPair::Z())
-{ }
-AxisOrientation::AxisOrientation(AxisPair x, AxisPair y, AxisPair z)
-	: X(x)
-	, Y(y)
-	, Z(z)
-{ }
-AxisOrientation::AxisOrientation(const AxisOrientation & other)
-	: X(other.X)
-	, Y(other.Y)
-	, Z(other.Z)
-{ }
-AxisOrientation & AxisOrientation::operator=(const AxisOrientation & other)
-{
-	X = other.X;
-	Y = other.Y;
-	Z = other.Z;
-	return *this;
-}
-void AxisOrientation::make(::Diag diag, ::Flip flip)
-{
-	switch (diag)
-	{
-		case Diag::Here : *this = AxisOrientation(+X, +Y, +Z); break;
-		case Diag::Prev : *this = AxisOrientation(+Z, +X, +Y); break;
-		case Diag::Next : *this = AxisOrientation(+Y, +Z, +X); break;
-		case Diag::DiagX: *this = AxisOrientation(-X, -Z, -Y); break;
-		case Diag::DiagY: *this = AxisOrientation(-Z, -Y, -X); break;
-		case Diag::DiagZ: *this = AxisOrientation(-Y, -X, -Z); break;
-	}
-
-	switch (flip)
-	{
-		case Flip::None : *this = AxisOrientation(+X, +Y, +Z); break;
-		case Flip::FlipX: *this = AxisOrientation(+X, -Y, -Z); break;
-		case Flip::FlipY: *this = AxisOrientation(-X, +Y, -Z); break;
-		case Flip::FlipZ: *this = AxisOrientation(-X, -Y, +Z); break;
-	}
-}
-*/
-
-
-
-
-
 Diag VoxelOrientation::GetDiag() const { return (Diag)((Value & 0b00000111) >> 0); }
 Flip VoxelOrientation::GetFlip() const { return (Flip)((Value & 0b00011000) >> 3); }
 
@@ -87,116 +10,28 @@ void VoxelOrientation::SetFlip(Flip flip) { Value = (Value & (~0b00011000)) | ((
 
 
 
-
-
-//void VoxelOrientation::make(::Diag diag, ::Flip flip) { Diag = diag; Flip = flip; }
-void VoxelOrientation::make(Diag diag, Flip flip) { SetDiag(diag); SetFlip(flip); }
-
-
-
 VoxelOrientation::~VoxelOrientation() { }
 VoxelOrientation::VoxelOrientation()
-//	: Diag(Diag::Here)
-//	, Flip(Flip::None)
 	: Value(0)
 { }
 
 VoxelOrientation::VoxelOrientation(const VoxelOrientation & other)
-//	: Diag(other.Diag)
-//	, Flip(other.Flip)
 	: Value(other.Value)
 { }
 VoxelOrientation & VoxelOrientation::operator=(const VoxelOrientation & other)
 {
-//	Diag = other.Diag;
-//	Flip = other.Flip;
 	Value = other.Value;
 	return *this;
 }
 
 
 
-/*void VoxelOrientation::make(Axis origin0, Axis target0, Axis origin1, Axis target1)
+void VoxelOrientation::make(Diag diag, Flip flip) { SetDiag(diag); SetFlip(flip); }
+
+void VoxelOrientation::make(Axis origin, Axis target)
 {
-	(void)origin1;
-	(void)target1;
-	if (origin0 == Axis::PrevX)
-	{
-		if (target0 == Axis::PrevX)
-		{
-			if (origin1 == Axis::Here)
-			{
-				if (target1 == Axis::Here) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::Regular); }
-			}
-			if (origin1 == Axis::PrevY)
-			{
-				if (target1 == Axis::PrevY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::Regular); }
-				//if (target1 == Axis::PrevZ) { make(Vector3MixerSigns::KeepZ, Vector3MixerOrder::Prev, Vector3MixerReverse::ReverseZ); }
-				if (target1 == Axis::PrevZ) { make(Vector3MixerSigns::KeepZ, Vector3MixerOrder::Here, Vector3MixerReverse::ReverseX); }
-				//if (target1 == Axis::PrevZ) { make(Vector3MixerSigns::KeepZ, Vector3MixerOrder::Next, Vector3MixerReverse::ReverseY); }
-				if (target1 == Axis::NextY) { make(Vector3MixerSigns::KeepX , Vector3MixerOrder::Here, Vector3MixerReverse::Regular); }
-				if (target1 == Axis::NextZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::Regular); }
-			}
-		}
-		if (target0 == Axis::PrevY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::PrevZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::NextX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::ReverseX); }
-		if (target0 == Axis::NextY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::ReverseX); }
-		if (target0 == Axis::NextZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::ReverseX); }
-	}
-	if (origin0 == Axis::PrevY)
-	{
-		if (target0 == Axis::PrevX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::PrevY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::PrevZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::NextX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::ReverseY); }
-		if (target0 == Axis::NextY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::ReverseY); }
-		if (target0 == Axis::NextZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::ReverseY); }
-	}
-	if (origin0 == Axis::PrevZ)
-	{
-		if (target0 == Axis::PrevX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::PrevY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::PrevZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::NextX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::ReverseZ); }
-		if (target0 == Axis::NextY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::ReverseZ); }
-		if (target0 == Axis::NextZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::ReverseZ); }
-	}
-	if (origin0 == Axis::NextX)
-	{
-		if (target0 == Axis::PrevX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::ReverseX); }
-		if (target0 == Axis::PrevY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::ReverseX); }
-		if (target0 == Axis::PrevZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::ReverseX); }
-		if (target0 == Axis::NextX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::NextY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::NextZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::Regular); }
-	}
-	if (origin0 == Axis::NextY)
-	{
-		if (target0 == Axis::PrevX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::ReverseY); }
-		if (target0 == Axis::PrevY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::ReverseY); }
-		if (target0 == Axis::PrevZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::ReverseY); }
-		if (target0 == Axis::NextX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::NextY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::NextZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::Regular); }
-	}
-	if (origin0 == Axis::NextZ)
-	{
-		if (target0 == Axis::PrevX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::ReverseZ); }
-		if (target0 == Axis::PrevY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::ReverseZ); }
-		if (target0 == Axis::PrevZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::ReverseZ); }
-		if (target0 == Axis::NextX) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Prev, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::NextY) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Next, Vector3MixerReverse::Regular); }
-		if (target0 == Axis::NextZ) { make(Vector3MixerSigns::Normal, Vector3MixerOrder::Here, Vector3MixerReverse::Regular); }
-	}
-}*/
-
-
-
-// try out every combination
-// make origin absolute or target relative
-// then check if it matches the other
-// check both
+	make(origin, target, Axis::None, Axis::None);
+}
 void VoxelOrientation::make(Axis origin0, Axis target0, Axis origin1, Axis target1)
 {
 	Diag diags[6] =
@@ -259,10 +94,6 @@ VectorF3 VoxelOrientation::absolute(VectorF3 v) const
 
 	return v;
 }
-
-
-
-
 
 Axis VoxelOrientation::absolute(Axis axis) const
 {

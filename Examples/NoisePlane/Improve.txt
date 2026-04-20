@@ -7,15 +7,65 @@ I think the only way of fixing this multiThreading
 only one of the "writes" and the other "reads"
 so it should be easy enough
 
-
+MultiThreading
+{
+Drawing (OpenGL)
+	Data to Buffers
+	Draw Buffers
+User Interface (updating)
+	input relys on GLFW
+	store input and only update in UI Thread
+general Updating
+}
 
 
 
 VoxelTemplate
+{
+
 better face Hiding
-right now only Full faces Hide
-Cylinder and Slop sides can also hide eachother
-depending on Orientation
+{
+  right now only Full faces Hide
+  Cylinder and Slop sides can also hide eachother
+  depending on Orientation
+}
+
+Transparancy
+{
+  full Transparancy is easy. just discard alpha 0
+  color Transparancy depends on distance
+}
+
+Connections
+{
+  Voxels that Connect to eachother
+  need different Models for each Connection ?
+  probably easier to have a different model for the Connecting part
+  so a Connection and a dead end
+  and it changes depending on if it connectes
+
+  Orientation is 5 Bits
+  make Connected Voxels not Orient ?
+  6 Bits needed of all Connections
+  first 2 Bits to indicate "Type"
+  0b00 Orientation
+  0b01 Connections
+
+what if I want a Fence to point to another Axis ?
+just dont do that ?
+
+have a seperate array for extra Data ?
+array of itmes of arbitrary size ? (why not store Voxels with arbitrary size ?)
+
+do other stuff first ?
+like reducing lag
+and UI
+}
+
+}
+
+
+
 
 
 

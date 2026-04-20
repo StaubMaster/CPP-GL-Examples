@@ -54,97 +54,6 @@
 
 
 
-struct PolyHedraObjectArray
-{
-	unsigned int		Count;
-	PolyHedraObject *	Array;
-
-	PolyHedraObject &	operator[](unsigned int i)
-	{
-		return Array[i];
-	}
-
-	~PolyHedraObjectArray()
-	{
-		delete[] Array;
-	}
-	PolyHedraObjectArray()
-		: Count(0)
-		, Array(nullptr)
-	{ }
-	PolyHedraObjectArray(const PolyHedraObjectArray & other) = delete;
-	PolyHedraObjectArray & operator=(const PolyHedraObjectArray & other) = delete;
-
-	void Create(PolyHedra * polyhedra, unsigned int count)
-	{
-		Count = count;
-		Array = new PolyHedraObject[Count];
-		for (unsigned int i = 0; i < Count; i++)
-		{
-			Array[i].Create(polyhedra);
-		}
-	}
-	void Create(unsigned int polyhedra, unsigned int count)
-	{
-		Count = count;
-		Array = new PolyHedraObject[Count];
-		for (unsigned int i = 0; i < Count; i++)
-		{
-			Array[i].Create(polyhedra);
-		}
-	}
-
-	void Delete()
-	{
-		delete[] Array;
-		Array = nullptr;
-		Count = 0;
-	}
-};
-
-std::ostream & operator<<(std::ostream & s, Axis axis)
-{
-	switch (axis)
-	{
-		case Axis::Here : s << "Here"; break;
-		case Axis::PrevX: s << "PrevX"; break;
-		case Axis::PrevY: s << "PrevY"; break;
-		case Axis::PrevZ: s << "PrevZ"; break;
-		case Axis::NextX: s << "NextX"; break;
-		case Axis::NextY: s << "NextY"; break;
-		case Axis::NextZ: s << "NextZ"; break;
-		case Axis::None : s << "None"; break;
-		default : s << "Axis:" << ((unsigned int)axis); break;
-	}
-	return s;
-}
-std::ostream & operator<<(std::ostream & s, Diag diag)
-{
-	switch (diag)
-	{
-		case Diag::Here : s << "Here"; break;
-		case Diag::Prev : s << "Prev"; break;
-		case Diag::Next : s << "Next"; break;
-		case Diag::DiagX: s << "DiagX"; break;
-		case Diag::DiagY: s << "DiagY"; break;
-		case Diag::DiagZ: s << "DiagZ"; break;
-		default : s << "Diag:" << ((unsigned int)diag); break;
-	}
-	return s;
-}
-std::ostream & operator<<(std::ostream & s, Flip flip)
-{
-	switch (flip)
-	{
-		case Flip::None : s << "None"; break;
-		case Flip::FlipX: s << "FlipX"; break;
-		case Flip::FlipY: s << "FlipY"; break;
-		case Flip::FlipZ: s << "FlipZ"; break;
-		default : s << "Flip:" << ((unsigned int)flip); break;
-	}
-	return s;
-}
-
 struct MainContext : public MainContext3D
 {
 ::PolyHedraManager		PolyHedraManager;
@@ -190,195 +99,6 @@ MainContext()
 
 
 
-void TextMake()
-{
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/UI/Text.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/UI/Text.frag")),
-		});
-		TextManager.Shader.Change(code);
-	}
-	{
-		TextManager.Buffer.Main.Pos.Change(0);
-		TextManager.Buffer.Inst.Pos.Change(1);
-		TextManager.Buffer.Inst.PalletMin.Change(2);
-		TextManager.Buffer.Inst.PalletMax.Change(3);
-		TextManager.Buffer.Inst.BoundMin.Change(4);
-		TextManager.Buffer.Inst.BoundMax.Change(5);
-	}
-	{
-		TextManager.TextFont = UI::Text::Font::Parse(
-			MediaDirectory.File("Text/Font0.atlas")
-		);
-	}
-}
-
-
-
-void ShowBase16(unsigned int val)
-{
-	const char * hex = "0123456789ABCDEF";
-	char c[9];
-	c[0] = hex[(val >> 28) & 0xF];
-	c[1] = hex[(val >> 24) & 0xF];
-	c[2] = hex[(val >> 20) & 0xF];
-	c[3] = hex[(val >> 16) & 0xF];
-	c[4] = hex[(val >> 12) & 0xF];
-	c[5] = hex[(val >> 8) & 0xF];
-	c[6] = hex[(val >> 4) & 0xF];
-	c[7] = hex[(val) & 0xF];
-	c[8] = '\0';
-	std::cout << c;
-}
-void CountBits(unsigned int val)
-{
-	unsigned char bit0 = 0;
-	unsigned char bit1 = 0;
-	for (unsigned int i = 0; i < 32; i++)
-	{
-		if ((val >> i) & 1)
-		{
-			bit1++;
-		}
-		else
-		{
-			bit0++;
-		}
-	}
-//	std::cout << ((int)bit0) << ' ' << ((int)bit1) << '\n';
-
-	if (bit0 == 16 && bit1 == 16)
-	{
-		ShowBase16(val);
-		std::cout << '\n';
-	}
-}
-struct Distribution
-{
-	const unsigned int count = 0x80;
-	const unsigned int mask = 0x7F;
-
-	unsigned int Counts[0x80];
-	Distribution()
-	{
-		Clear();
-	}
-	void Clear()
-	{
-		for (unsigned int i = 0; i < count; i++)
-		{
-			Counts[i] = 0;
-		}
-	}
-	void Consider(unsigned int val)
-	{
-		Counts[val & mask]++;
-	}
-	void Show(unsigned int check)
-	{
-		for (unsigned int i = 0; i < count; i++)
-		{
-			if ((i & 0xF) == 0)
-			{
-				std::cout << ' ';
-			}
-
-			if (Counts[i] > check)
-			{
-				std::cout << '#';
-			}
-			else
-			{
-				std::cout << '|';
-			}
-		}
-	}
-};
-void TestRandom()
-{
-	unsigned int val = 0;
-	ShowBase16(val);
-	std::cout << '\n';
-
-	Distribution Dis;
-
-	for (unsigned int i = 0; i < 100; i++)
-	{
-		Dis.Consider(val);
-
-		val = Random::Mutilate(val);
-		//CountBits(val);
-		ShowBase16(val);
-		std::cout << '\n';
-	}
-	std::cout << '\n';
-
-	for (unsigned int j = 16; j <= 16; j--)
-	{
-		unsigned int comp = (j << 0);
-		ShowBase16(comp);
-		std::cout << ' ';
-		Dis.Show(comp);
-		std::cout << '\n';
-	}
-}
-
-
-
-void PlanesGraphicsCreate()
-{
-	{
-		Container::Array<::Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.frag")),
-		});
-		PlaneManager.Shader.Change(code);
-	}
-
-	PlaneManager.GraphicsCreate();
-}
-void PlanesGraphicsDelete()
-{
-	PlaneManager.GraphicsDelete();
-}
-
-void VoxelGraphicsCreate()
-{
-	{
-		Container::Array<::Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
-		});
-		ChunkManager.Shader.Change(code);
-	}
-	ChunkManager.GraphicsCreate();
-	{
-		ChunkManager.Texture.Bind();
-		Container::Array<FileInfo> files({
-			MediaDirectory.File("Images/OrientationCorners.png"),
-			MediaDirectory.File("Images/Gray6.png"),
-			MediaDirectory.File("Images/fancy_GreenDirt.png"),
-			MediaDirectory.File("Images/fancy_RedWood.png"),
-		});
-		ChunkManager.Texture.Assign(128, 64, files);
-	}
-	{
-		VoxelTemplate::OrientationCube.InitCube(0);
-		VoxelTemplate::OrientationCylinder.InitCylinder(0);
-		VoxelTemplate::OrientationSlope.InitSlope(0);
-		VoxelTemplate::Gray.InitCube(1);
-		VoxelTemplate::Grass.InitCube(2);
-		VoxelTemplate::RedLog.InitCylinder(3);
-	}
-}
-void VoxelGraphicsDelete()
-{
-	ChunkManager.GraphicsCreate();
-}
-
-
-
 PolyHedra * VoxelCube;
 PolyHedra * VoxelChunkCube;
 
@@ -419,10 +139,6 @@ void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 
 void Make() override
 {
-//	window.DefaultColor = ColorF4(1, 1, 1);
-//	view.Depth.Factors.ChangeFar(50.0f);
-	//view.Trans.Position = VectorF3(0, 7, 7);
-//	view.Trans.Position = VectorF3(0.5f, 2.5f, 7.5f);
 	view.Trans.Position = VectorF3(0.5f, 0.5f, 0.5f);
 
 	{
@@ -431,6 +147,8 @@ void Make() override
 		PolyHedra * picture = PolyHedra::Generate::DuoHedra(img);
 		delete picture;
 	}
+
+	// 3 Cuboids. implement Scaling for Transformations
 	{
 		VoxelCube = new PolyHedra();
 		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
@@ -448,6 +166,7 @@ void Make() override
 		PolyHedraBoxEdges(*ViewBoxCube, ViewBox);
 		PolyHedraManager.PlacePolyHedra(ViewBoxCube);
 	}
+
 	{
 		ViewRayPolyHedra = PolyHedra::Generate::ConeC(8, 0.01f, 0.1f);
 		PolyHedraManager.PlacePolyHedra(ViewRayPolyHedra);
@@ -457,21 +176,83 @@ void Make() override
 	//TestRandom();
 }
 
+// hardcode Shaders into Managers
+// hardcode Attributes into Managers
+// "Template" for Attributes in Managers with InstanceManagers
+// also organize Shader Files
 void Init() override
 {
 	Make();
 
-	TextMake();
-
+	// PolyHedraManager
 	PolyHedraManager.InitExternal(MediaDirectory); // do this outside ? so in MainContext ?
 	PolyHedraManager.GraphicsCreate();
 	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
 
+	// TextManager
+	{
+		Container::Array<Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/UI/Text.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/UI/Text.frag")),
+		});
+		TextManager.Shader.Change(code);
+	}
+	{
+		TextManager.Buffer.Main.Pos.Change(0);
+		TextManager.Buffer.Inst.Pos.Change(1);
+		TextManager.Buffer.Inst.PalletMin.Change(2);
+		TextManager.Buffer.Inst.PalletMax.Change(3);
+		TextManager.Buffer.Inst.BoundMin.Change(4);
+		TextManager.Buffer.Inst.BoundMax.Change(5);
+	}
+	{
+		TextManager.TextFont = UI::Text::Font::Parse(
+			MediaDirectory.File("Text/Font0.atlas")
+		);
+	}
 	TextManager.GraphicsCreate();
 
-	PlanesGraphicsCreate();
-	VoxelGraphicsCreate();
+	// PlaneManager
+	{
+		Container::Array<::Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.frag")),
+		});
+		PlaneManager.Shader.Change(code);
+	}
+	PlaneManager.GraphicsCreate();
 
+	// ChunkManager
+	{
+		Container::Array<::Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
+		});
+		ChunkManager.Shader.Change(code);
+	}
+	ChunkManager.GraphicsCreate();
+	{
+		ChunkManager.Texture.Bind();
+		Container::Array<FileInfo> files({
+			MediaDirectory.File("Images/OrientationCorners.png"),
+			MediaDirectory.File("Images/Gray6.png"),
+			MediaDirectory.File("Images/fancy_GreenDirt.png"),
+			MediaDirectory.File("Images/fancy_RedWood.png"),
+		});
+		ChunkManager.Texture.Assign(128, 64, files);
+	}
+
+	// Voxels
+	{
+		VoxelTemplate::OrientationCube.InitCube(0);
+		VoxelTemplate::OrientationCylinder.InitCylinder(0);
+		VoxelTemplate::OrientationSlope.InitSlope(0);
+		VoxelTemplate::Gray.InitCube(1);
+		VoxelTemplate::Grass.InitCube(2);
+		VoxelTemplate::RedLog.InitCylinder(3);
+	}
+
+	// View
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
 }
@@ -479,12 +260,13 @@ void Free() override
 {
 	PolyHedraManager.GraphicsDelete();
 	TextManager.GraphicsDelete();
-	PlanesGraphicsDelete();
-	VoxelGraphicsDelete();
+	PlaneManager.GraphicsDelete();
+	ChunkManager.GraphicsCreate();
 }
 
 
 
+// Debug UI
 bool ShowFull = true;
 bool ShowWire = false;
 
@@ -498,6 +280,7 @@ bool ViewBack = false;
 
 
 
+// put these in VectorF
 static VectorF3 VectorAbsolute(VectorF3 vec)
 {
 	if (vec.X < 0) { vec.X = -vec.X; }
@@ -534,6 +317,7 @@ static VectorI3 VectorAxisRank(VectorF3 vec)
 	return ret;
 }
 
+// put into Box
 static VectorF3 BoxAxisCollision(BoxF3 box0, VectorF3 vel0, BoxF3 box1)
 {
 	VectorF3 pos0;
@@ -590,6 +374,7 @@ static VectorF3 BoxCollision(BoxF3 box0, VectorF3 vel0, BoxF3 box1)
 	return t;
 }
 
+// put into another File
 struct TimeBoxCollision
 {
 	float		Time;
@@ -615,7 +400,6 @@ struct TimeBoxCollision
 		}
 	}
 };
-
 TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, LoopI3 loop)
 {
 	TimeBoxCollision collision;
@@ -641,6 +425,9 @@ TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, Loo
 
 
 
+// signed Axis vs unsigned Axis
+// SAxis and UAsix
+// compare Axis
 static unsigned char AxisToAxis(Axis axis)
 {
 	switch (axis)
@@ -657,11 +444,19 @@ static unsigned char AxisToAxis(Axis axis)
 
 
 
+// Combine stuff
+// struct VoxelRayHit
+// struct VoxelView
 bool	ViewRaySync = true;
 Ray3D	ViewRay;
-VoxelTemplate *		PlaceTemplate = nullptr;
 void ViewRayFunction()
 {
+	if (ViewRaySync)
+	{
+		ViewRay.Pos = view.Trans.Position;
+		ViewRay.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
+	}
+
 	Axis look_axis_0 = Axis::None;
 	Axis look_axis_1 = Axis::None;
 	Axis look_axis_2 = Axis::None;
@@ -686,13 +481,6 @@ void ViewRayFunction()
 		ss << look_axis_1 << " :Look1\n";
 		ss << look_axis_2 << " :Look2\n";
 	}
-
-	if (PlaceTemplate == nullptr) { ss << "None"; }
-	else if (PlaceTemplate == &VoxelTemplate::OrientationCube) { ss << "OrientationCube"; }
-	else if (PlaceTemplate == &VoxelTemplate::OrientationCylinder) { ss << "OrientationCylinder"; }
-	else if (PlaceTemplate == &VoxelTemplate::OrientationSlope) { ss << "OrientationSlope"; }
-	else { ss << "Unknown"; }
-	ss << " :Template\n";
 
 	VectorI3 idx;
 	Axis place_axis_0;
@@ -789,38 +577,24 @@ void ViewRayFunction()
 		text.String() = ss.str();
 	}
 
-	if (window.KeyBoardManager[Keys::NumPadAdd].State == State::Press)
-	{
-		if (PlaceTemplate == nullptr) { PlaceTemplate = &VoxelTemplate::OrientationCube; }
-		else if (PlaceTemplate == &VoxelTemplate::OrientationCube) { PlaceTemplate = &VoxelTemplate::OrientationCylinder; }
-		else if (PlaceTemplate == &VoxelTemplate::OrientationCylinder) { PlaceTemplate = &VoxelTemplate::OrientationSlope; }
-		else if (PlaceTemplate == &VoxelTemplate::OrientationSlope) { PlaceTemplate = &VoxelTemplate::OrientationCube; }
-		else { PlaceTemplate = nullptr; }
-	}
-	if (window.KeyBoardManager[Keys::NumPadSub].State == State::Press)
-	{
-		if (PlaceTemplate == nullptr) { PlaceTemplate = &VoxelTemplate::OrientationCube; }
-		else if (PlaceTemplate == &VoxelTemplate::OrientationCube) { PlaceTemplate = &VoxelTemplate::OrientationSlope; }
-		else if (PlaceTemplate == &VoxelTemplate::OrientationCylinder) { PlaceTemplate = &VoxelTemplate::OrientationCube; }
-		else if (PlaceTemplate == &VoxelTemplate::OrientationSlope) { PlaceTemplate = &VoxelTemplate::OrientationCylinder; }
-		else { PlaceTemplate = nullptr; }
-	}
-
 	if (window.KeyBoardManager[Keys::NumPadEnter].State == State::Press)
 	{
+		// make a struct for VoxelIndex
+		// struct VoxelIndexAbs; VectorI3
+		// struct VoxelIndexRel; VectorI3 and VectorU3
+		// ChunkManager can convert between them
 		VectorI3 view_chunk_idx(view.Trans.Position.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 		Chunk * view_chunk = ChunkManager.FindChunkOrNull(view_chunk_idx);
 		if (view_chunk != nullptr)
 		{
 			view_chunk -> TestOrientation();
-			//view_chunk -> TestHouse();
 		}
 	}
 }
 
 VectorF3	GravityForce = VectorF3(0, -0.1f, 0);
+// make a BoxEntity for Colliding stuff
 VectorF3	ViewVel;
-
 void UpdateViewColliding(FrameTime frame_time)
 {
 	Trans3D change;
@@ -924,6 +698,15 @@ void UpdateViewColliding(FrameTime frame_time)
 			view_box_obj.ShowWire();
 		}*/
 	}
+
+	if (!ViewBack)
+	{
+		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
+	}
+	else
+	{
+		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 3)), view.Trans.Rotation)));
+	}
 }
 
 void Draw()
@@ -945,24 +728,9 @@ void Draw()
 void UpdateAroundView(FrameTime frame_time)
 {
 	UpdateViewColliding(frame_time);
-	if (!ViewBack)
-	{
-		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
-	}
-	else
-	{
-		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 3)), view.Trans.Rotation)));
-	}
 
 	ChunkManager.RemoveAround(view.Trans.Position, 5);
 
-	if (ViewRaySync)
-	{
-		ViewRay.Pos = view.Trans.Position;
-		ViewRay.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
-		//ViewRay.Dir.Z = 0.0f;
-		//ViewRay.Dir = !ViewRay.Dir;
-	}
 	ViewRayFunction();
 
 	ChunkManager.InsertAround(view.Trans.Position, 2);
@@ -971,6 +739,23 @@ void UpdateAroundView(FrameTime frame_time)
 	PlaneManager.UpdateAround(Perlin2, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 }
 
+/* Window
+Update()
+	should update stuff and Buffers
+	needs time
+	UpdateStuff()
+		Updates everything unrelated to OpenGL
+	UpdateBuffers()
+		Updates everything related to OpenGL
+	seperate so that UpdateStuff() could be put on a seperate Thread ?
+Frame()
+	should just Draw
+	dosent need time ?
+*/
+// make this use FrameTime
+// use FrameTime in Window
+// put FrameNumber into FrameTime ?
+// give a Window a way to stop Loop, just a bool should be fine
 void Frame(double timeDelta) override
 {
 	FrameTime frame_time(64);
@@ -1127,6 +912,7 @@ void Frame(double timeDelta) override
 
 
 
+// make these virtual and put them in Base
 void MouseScroll(ScrollArgs args) override { (void)args; }
 void MouseClick(ClickArgs args) override { (void)args; }
 void MouseDrag(DragArgs args) override { (void)args; }

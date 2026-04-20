@@ -4,6 +4,7 @@
 // rand() returns [ 0x0000 to 0x7FFF ]
 // make my own that returns full 32Bits
 
+// put this in Engine
 namespace Random
 {
 	// Testing Random Number Generation
