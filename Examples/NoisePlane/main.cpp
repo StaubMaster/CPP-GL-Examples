@@ -640,20 +640,64 @@ TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, Loo
 
 
 
+static unsigned char AxisToAxis(Axis axis)
+{
+	switch (axis)
+	{
+		case Axis::PrevX: return 0;
+		case Axis::NextX: return 0;
+		case Axis::PrevY: return 1;
+		case Axis::NextY: return 1;
+		case Axis::PrevZ: return 2;
+		case Axis::NextZ: return 2;
+		default: return 0xFF;
+	}
+}
+
+
+
 bool		ViewRaySync = true;
 Ray3D		ViewRay;
 void ViewRayFunction()
 {
-	VectorI3 idx;
-	Axis side;
-	Ray3D hit;
-	if (ChunkManager.FindVoxelIndex(ViewRay, idx, side, hit))
+	Axis look_axis_0 = Axis::None;
+	Axis look_axis_1 = Axis::None;
+	Axis look_axis_2 = Axis::None;
 	{
+		VectorI3 ranks = VectorAxisRank(ViewRay.Dir);
+		     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { look_axis_0 = Axis::NextX; } else { look_axis_0 = Axis::PrevX; } }
+		else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { look_axis_0 = Axis::NextY; } else { look_axis_0 = Axis::PrevY; } }
+		else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { look_axis_0 = Axis::NextZ; } else { look_axis_0 = Axis::PrevZ; } }
+		if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { look_axis_1 = Axis::NextX; } else { look_axis_1 = Axis::PrevX; } }
+		else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { look_axis_1 = Axis::NextY; } else { look_axis_1 = Axis::PrevY; } }
+		else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { look_axis_1 = Axis::NextZ; } else { look_axis_1 = Axis::PrevZ; } }
+		if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { look_axis_2 = Axis::NextX; } else { look_axis_2 = Axis::PrevX; } }
+		else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { look_axis_2 = Axis::NextY; } else { look_axis_2 = Axis::PrevY; } }
+		else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { look_axis_2 = Axis::NextZ; } else { look_axis_2 = Axis::PrevZ; } }
+		// what if same ranks ?
+	}
+
+	std::stringstream ss;
+	{
+		ss << "ViewRay\n";
+		ss << look_axis_0 << " :Look0\n";
+		ss << look_axis_1 << " :Look1\n";
+		ss << look_axis_2 << " :Look2\n";
+	}
+
+	VectorI3 idx;
+	Axis place_axis_0;
+	Axis place_axis_1;
+	Ray3D hit;
+	if (ChunkManager.FindVoxelIndex(ViewRay, idx, place_axis_0, hit))
+	{
+		// Voxel Indicator
 		{
 			PolyHedraObject voxel_box_obj(VoxelCube);
 			voxel_box_obj.Trans().Position = idx;
 			voxel_box_obj.ShowWire();
 		}
+		// Hit Indicator
 		/*{
 			PolyHedraObject voxel_dir_obj(ViewRayPolyHedra);
 			voxel_dir_obj.Trans().Position = hit.Pos;
@@ -661,29 +705,35 @@ void ViewRayFunction()
 			voxel_dir_obj.ShowWire();
 		}*/
 
+		// Side
+		{
+			unsigned char axis = AxisToAxis(place_axis_0);
+			if (axis == 0xFF) { place_axis_1 = Axis::None; }
+			else if (axis != AxisToAxis(look_axis_2)) { place_axis_1 = look_axis_2; }
+			else if (axis != AxisToAxis(look_axis_1)) { place_axis_1 = look_axis_1; }
+			else if (axis != AxisToAxis(look_axis_0)) { place_axis_1 = look_axis_0; }
+			else { place_axis_1 = Axis::None; }
+		}
+
+		// Text
 		{
 			VectorI3 chunk_idx = (VectorF3(idx) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
 			VectorU3 voxel_idx = idx - (chunk_idx * CHUNK_VALUES_PER_SIDE);
 
-			std::stringstream ss;
-
-			ss << "ViewRay\n";
 			ss << idx << '\n';
 			ss << chunk_idx << '\n';
 			ss << voxel_idx << '\n';
+			ss << place_axis_0 << " :Place0\n";
+			ss << place_axis_1 << " :Place1\n";
 
+			// Voxel Info
 			{
 				const Voxel * voxel = ChunkManager.FindVoxelOrNull(idx);
 				if (voxel != nullptr)
 				{
 					ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
 					ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
-					ss << (voxel -> Orientation.absolute(Axis::PrevX)) << " :PrevX\n";
-					ss << (voxel -> Orientation.absolute(Axis::PrevY)) << " :PrevY\n";
-					ss << (voxel -> Orientation.absolute(Axis::PrevZ)) << " :PrevZ\n";
-					ss << (voxel -> Orientation.absolute(Axis::NextX)) << " :NextX\n";
-					ss << (voxel -> Orientation.absolute(Axis::NextY)) << " :NextY\n";
-					ss << (voxel -> Orientation.absolute(Axis::NextZ)) << " :NextZ\n";
+
 					//ss << (voxel -> Orientation.Diag) << ":Diag\n";
 					//ss << (voxel -> Orientation.Flip) << ":Flip\n";
 					//ss << (voxel -> Orientation.Origin0) << ":Origin0\n";
@@ -697,14 +747,6 @@ void ViewRayFunction()
 				}
 				ss << '\n';
 			}
-
-			UI::Text::Object text; text.Create();
-			text.Pos().X = window.Size.Buffer.Full.X - 10;
-			text.Pos().Y = 10;
-			text.AlignmentX() = UI::Text::Alignment::Max;
-			text.Bound().Min = Point2D();
-			text.Bound().Max = window.Size.Buffer.Full;
-			text.String() = ss.str();
 		}
 
 		if (window.MouseManager[MouseButtons::MouseL].State == State::Press)
@@ -714,18 +756,28 @@ void ViewRayFunction()
 		}
 		if (window.MouseManager[MouseButtons::MouseR].State == State::Press)
 		{
-			if (side == Axis::NextX) { idx.X += 1; }
-			if (side == Axis::NextY) { idx.Y += 1; }
-			if (side == Axis::NextZ) { idx.Z += 1; }
-			if (side == Axis::PrevX) { idx.X -= 1; }
-			if (side == Axis::PrevY) { idx.Y -= 1; }
-			if (side == Axis::PrevZ) { idx.Z -= 1; }
+			if (place_axis_0 == Axis::NextX) { idx.X += 1; }
+			if (place_axis_0 == Axis::NextY) { idx.Y += 1; }
+			if (place_axis_0 == Axis::NextZ) { idx.Z += 1; }
+			if (place_axis_0 == Axis::PrevX) { idx.X -= 1; }
+			if (place_axis_0 == Axis::PrevY) { idx.Y -= 1; }
+			if (place_axis_0 == Axis::PrevZ) { idx.Z -= 1; }
 
 			Voxel voxel;
 			voxel.Template = &VoxelTemplate::OrientationSlope;
-			voxel.Orientation.make(Axis::NextY, side, Axis::None, Axis::None);
+			voxel.Orientation.make(Axis::NextY, place_axis_0, Axis::NextZ, place_axis_1);
 			ChunkManager.PlaneVoxel(idx, voxel);
 		}
+	}
+
+	{
+		UI::Text::Object text; text.Create();
+		text.Pos().X = window.Size.Buffer.Full.X - 10;
+		text.Pos().Y = 10;
+		text.AlignmentX() = UI::Text::Alignment::Max;
+		text.Bound().Min = Point2D();
+		text.Bound().Max = window.Size.Buffer.Full;
+		text.String() = ss.str();
 	}
 
 	if (window.KeyBoardManager[Keys::NumPadEnter].State == State::Press)

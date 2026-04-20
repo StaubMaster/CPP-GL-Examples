@@ -1,5 +1,5 @@
-#ifndef  VoxelORIENTATION_HPP
-# define VoxelORIENTATION_HPP
+#ifndef  VOXEL_ORIENTATION_HPP
+# define VOXEL_ORIENTATION_HPP
 
 enum class Axis : unsigned char
 {
@@ -152,7 +152,7 @@ struct VoxelOrientation
 
 
 	void	make(Diag diag, Flip flip);
-	void	make(Axis origin0, Axis target0, Axis origin1, Axis target1);
+	void	make(Axis origin0, Axis target0, Axis origin1, Axis target1); // make this a static function ?
 
 	~VoxelOrientation();
 	VoxelOrientation();
