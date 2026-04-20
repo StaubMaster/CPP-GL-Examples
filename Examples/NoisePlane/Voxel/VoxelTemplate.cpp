@@ -6,6 +6,7 @@
 
 VoxelTemplate VoxelTemplate::OrientationCube;
 VoxelTemplate VoxelTemplate::OrientationCylinder;
+VoxelTemplate VoxelTemplate::OrientationSlope;
 
 VoxelTemplate VoxelTemplate::Gray;
 VoxelTemplate VoxelTemplate::Grass;
@@ -199,4 +200,41 @@ void VoxelTemplate::InitCylinder(unsigned int tex)
 	NextY.Insert(nY[0x9]);
 	NextY.Insert(nY[0xB]);
 	NextY.Insert(nY[0xA]);
+}
+
+void VoxelTemplate::InitSlope(unsigned int tex)
+{
+	Texture = tex;
+
+	HidePrevX = false;
+	HidePrevY = true;
+	HidePrevZ = false;
+
+	HideNextX = false;
+	HideNextY = false;
+	HideNextZ = true;
+
+	VectorF3 pos[8];
+
+	pos[0b000] = VectorF3(0.0f, 0.0f, 0.0f);
+	pos[0b001] = VectorF3(1.0f, 0.0f, 0.0f);
+	pos[0b010] = VectorF3(0.0f, 1.0f, 0.0f);
+	pos[0b011] = VectorF3(1.0f, 1.0f, 0.0f);
+	pos[0b100] = VectorF3(0.0f, 0.0f, 1.0f);
+	pos[0b101] = VectorF3(1.0f, 0.0f, 1.0f);
+	pos[0b110] = VectorF3(0.0f, 1.0f, 1.0f);
+	pos[0b111] = VectorF3(1.0f, 1.0f, 1.0f);
+
+	Quad0(PrevY, pos[0b000], pos[0b100], pos[0b001], pos[0b101], BoxF2(VectorF2(0.25f, 0.0f), VectorF2(0.50f, 0.5f)), Texture);
+	Quad1(NextZ, pos[0b100], pos[0b110], pos[0b101], pos[0b111], BoxF2(VectorF2(0.50f, 0.5f), VectorF2(0.75f, 1.0f)), Texture);
+
+	PrevX.Insert(VoxelGraphics::MainData(pos[0b000], VectorF3(0.00f, 0.0f, tex)));
+	PrevX.Insert(VoxelGraphics::MainData(pos[0b100], VectorF3(0.00f, 0.5f, tex)));
+	PrevX.Insert(VoxelGraphics::MainData(pos[0b110], VectorF3(0.25f, 0.5f, tex)));
+
+	NextX.Insert(VoxelGraphics::MainData(pos[0b101], VectorF3(0.00f, 1.0f, tex)));
+	NextX.Insert(VoxelGraphics::MainData(pos[0b001], VectorF3(0.00f, 0.5f, tex)));
+	NextX.Insert(VoxelGraphics::MainData(pos[0b111], VectorF3(0.25f, 1.0f, tex)));
+
+	Quad0(Here, pos[0b000], pos[0b001], pos[0b110], pos[0b111], BoxF2(VectorF2(0.75f, 0.0f), VectorF2(1.00f, 1.0f)), Texture);
 }

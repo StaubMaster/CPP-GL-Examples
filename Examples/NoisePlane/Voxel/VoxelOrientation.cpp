@@ -79,18 +79,18 @@ void AxisOrientation::make(::Diag diag, ::Flip flip)
 
 
 
-::Diag VoxelOrientation::GetDiag() const { return (Diag)((Value & 0b00000111) >> 0); }
-::Flip VoxelOrientation::GetFlip() const { return (Flip)((Value & 0b00011000) >> 3); }
+Diag VoxelOrientation::GetDiag() const { return (Diag)((Value & 0b00000111) >> 0); }
+Flip VoxelOrientation::GetFlip() const { return (Flip)((Value & 0b00011000) >> 3); }
 
-void VoxelOrientation::SetDiag(::Diag diag) { Value = (Value & (~0b00000111)) | (((unsigned char)diag) << 0); }
-void VoxelOrientation::SetFlip(::Flip flip) { Value = (Value & (~0b00011000)) | (((unsigned char)flip) << 3); }
+void VoxelOrientation::SetDiag(Diag diag) { Value = (Value & (~0b00000111)) | (((unsigned char)diag) << 0); }
+void VoxelOrientation::SetFlip(Flip flip) { Value = (Value & (~0b00011000)) | (((unsigned char)flip) << 3); }
 
 
 
 
 
 //void VoxelOrientation::make(::Diag diag, ::Flip flip) { Diag = diag; Flip = flip; }
-void VoxelOrientation::make(::Diag diag, ::Flip flip) { SetDiag(diag); SetFlip(flip); }
+void VoxelOrientation::make(Diag diag, Flip flip) { SetDiag(diag); SetFlip(flip); }
 
 
 
@@ -284,16 +284,12 @@ VectorF3 VoxelOrientation::absolute(VectorF3 v) const
 	return v;
 }
 
+
+
+
+
 Axis VoxelOrientation::absolute(Axis axis) const
 {
-/*
-Diag::Here : (+X, +Y, +Z)
-Diag::Prev : (+Z, +X, +Y)
-Diag::Next : (+Y, +Z, +X)
-Diag::DiagX: (-X, -Z, -Y)
-Diag::DiagY: (-Z, -Y, -X)
-Diag::DiagZ: (-Y, -X, -Z)
-*/
 	switch (GetDiag())
 	{
 		case Diag::Here: switch (axis)
@@ -358,12 +354,118 @@ Diag::DiagZ: (-Y, -X, -Z)
 		} break;
 	}
 
-/*
-Flip::None : (+X, +Y, +Z)
-Flip::FlipX: (+X, -Y, -Z)
-Flip::FlipY: (-X, +Y, -Z)
-Flip::FlipZ: (-X, -Y, +Z)
-*/
+	switch (GetFlip())
+	{
+		case Flip::None: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::PrevX; break;
+			case Axis::PrevY: axis = Axis::PrevY; break;
+			case Axis::PrevZ: axis = Axis::PrevZ; break;
+			case Axis::NextX: axis = Axis::NextX; break;
+			case Axis::NextY: axis = Axis::NextY; break;
+			case Axis::NextZ: axis = Axis::NextZ; break;
+			default: break;
+		} break;
+		case Flip::FlipX: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::PrevX; break;
+			case Axis::PrevY: axis = Axis::NextY; break;
+			case Axis::PrevZ: axis = Axis::NextZ; break;
+			case Axis::NextX: axis = Axis::NextX; break;
+			case Axis::NextY: axis = Axis::PrevY; break;
+			case Axis::NextZ: axis = Axis::PrevZ; break;
+			default: break;
+		} break;
+		case Flip::FlipY: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::NextX; break;
+			case Axis::PrevY: axis = Axis::PrevY; break;
+			case Axis::PrevZ: axis = Axis::NextZ; break;
+			case Axis::NextX: axis = Axis::PrevX; break;
+			case Axis::NextY: axis = Axis::NextY; break;
+			case Axis::NextZ: axis = Axis::PrevZ; break;
+			default: break;
+		} break;
+		case Flip::FlipZ: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::NextX; break;
+			case Axis::PrevY: axis = Axis::NextY; break;
+			case Axis::PrevZ: axis = Axis::PrevZ; break;
+			case Axis::NextX: axis = Axis::PrevX; break;
+			case Axis::NextY: axis = Axis::PrevY; break;
+			case Axis::NextZ: axis = Axis::NextZ; break;
+			default: break;
+		} break;
+	}
+
+	return axis;
+}
+Axis VoxelOrientation::relative(Axis axis) const
+{
+	switch (GetDiag())
+	{
+		case Diag::Here: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::PrevX; break;
+			case Axis::PrevY: axis = Axis::PrevY; break;
+			case Axis::PrevZ: axis = Axis::PrevZ; break;
+			case Axis::NextX: axis = Axis::NextX; break;
+			case Axis::NextY: axis = Axis::NextY; break;
+			case Axis::NextZ: axis = Axis::NextZ; break;
+			default: break;
+		} break;
+		case Diag::Prev: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::PrevZ; break;
+			case Axis::PrevY: axis = Axis::PrevX; break;
+			case Axis::PrevZ: axis = Axis::PrevY; break;
+			case Axis::NextX: axis = Axis::NextZ; break;
+			case Axis::NextY: axis = Axis::NextX; break;
+			case Axis::NextZ: axis = Axis::NextY; break;
+			default: break;
+		} break;
+		case Diag::Next: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::PrevY; break;
+			case Axis::PrevY: axis = Axis::PrevZ; break;
+			case Axis::PrevZ: axis = Axis::PrevX; break;
+			case Axis::NextX: axis = Axis::NextY; break;
+			case Axis::NextY: axis = Axis::NextZ; break;
+			case Axis::NextZ: axis = Axis::NextX; break;
+			default: break;
+		} break;
+		case Diag::DiagX: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::NextX; break;
+			case Axis::PrevY: axis = Axis::NextZ; break;
+			case Axis::PrevZ: axis = Axis::NextY; break;
+			case Axis::NextX: axis = Axis::PrevX; break;
+			case Axis::NextY: axis = Axis::PrevZ; break;
+			case Axis::NextZ: axis = Axis::PrevY; break;
+			default: break;
+		} break;
+		case Diag::DiagY: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::NextZ; break;
+			case Axis::PrevY: axis = Axis::NextY; break;
+			case Axis::PrevZ: axis = Axis::NextX; break;
+			case Axis::NextX: axis = Axis::PrevZ; break;
+			case Axis::NextY: axis = Axis::PrevY; break;
+			case Axis::NextZ: axis = Axis::PrevX; break;
+			default: break;
+		} break;
+		case Diag::DiagZ: switch (axis)
+		{
+			case Axis::PrevX: axis = Axis::NextY; break;
+			case Axis::PrevY: axis = Axis::NextX; break;
+			case Axis::PrevZ: axis = Axis::NextZ; break;
+			case Axis::NextX: axis = Axis::PrevY; break;
+			case Axis::NextY: axis = Axis::PrevX; break;
+			case Axis::NextZ: axis = Axis::PrevZ; break;
+			default: break;
+		} break;
+	}
+
 	switch (GetFlip())
 	{
 		case Flip::None: switch (axis)

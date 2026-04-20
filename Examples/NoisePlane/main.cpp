@@ -365,6 +365,7 @@ void VoxelGraphicsCreate()
 	{
 		VoxelTemplate::OrientationCube.InitCube(0);
 		VoxelTemplate::OrientationCylinder.InitCylinder(0);
+		VoxelTemplate::OrientationSlope.InitSlope(0);
 		VoxelTemplate::Gray.InitCube(1);
 		VoxelTemplate::Grass.InitCube(2);
 		VoxelTemplate::RedLog.InitCylinder(3);
@@ -721,8 +722,8 @@ void ViewRayFunction()
 			if (side == Axis::PrevZ) { idx.Z -= 1; }
 
 			Voxel voxel;
-			voxel.Template = &VoxelTemplate::OrientationCube;
-			voxel.Orientation.make(Axis::PrevY, side, Axis::None, Axis::None);
+			voxel.Template = &VoxelTemplate::OrientationSlope;
+			voxel.Orientation.make(Axis::NextY, side, Axis::None, Axis::None);
 			ChunkManager.PlaneVoxel(idx, voxel);
 		}
 	}

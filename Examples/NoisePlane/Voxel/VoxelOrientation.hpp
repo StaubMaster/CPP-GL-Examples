@@ -22,6 +22,14 @@ enum class Diag : unsigned char
 	DiagY,
 	DiagZ,
 }; // 6 Values ; 3 Bits
+/*
+Diag::Here : (+X, +Y, +Z)
+Diag::Prev : (+Z, +X, +Y)
+Diag::Next : (+Y, +Z, +X)
+Diag::DiagX: (-X, -Z, -Y)
+Diag::DiagY: (-Z, -Y, -X)
+Diag::DiagZ: (-Y, -X, -Z)
+*/
 
 enum class Flip : unsigned char
 {
@@ -30,6 +38,12 @@ enum class Flip : unsigned char
 	FlipY,
 	FlipZ,
 }; // 4 Values ; 2 Bits
+/*
+Flip::None : (+X, +Y, +Z)
+Flip::FlipX: (+X, -Y, -Z)
+Flip::FlipY: (-X, +Y, -Z)
+Flip::FlipZ: (-X, -Y, +Z)
+*/
 
 /*
   Diag::Here   Flip::None   XYZ +++
@@ -147,7 +161,8 @@ struct VoxelOrientation
 	VoxelOrientation & operator=(const VoxelOrientation & other);
 
 	VectorF3	absolute(VectorF3 v) const;
-	::Axis		absolute(Axis axis) const;
+	Axis		absolute(Axis axis) const;
+	Axis		relative(Axis axis) const;
 };
 
 #endif

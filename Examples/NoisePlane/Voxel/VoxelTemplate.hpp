@@ -10,6 +10,7 @@ struct VoxelTemplate
 {
 	static VoxelTemplate	OrientationCube;
 	static VoxelTemplate	OrientationCylinder;
+	static VoxelTemplate	OrientationSlope;
 
 	static VoxelTemplate	Gray;
 	static VoxelTemplate	Grass;
@@ -47,6 +48,7 @@ struct VoxelTemplate
 
 	void	InitCube(unsigned int tex);
 	void	InitCylinder(unsigned int tex);
+	void	InitSlope(unsigned int tex);
 };
 
 #endif

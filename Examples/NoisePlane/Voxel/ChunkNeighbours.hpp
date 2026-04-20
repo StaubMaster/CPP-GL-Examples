@@ -24,7 +24,7 @@ struct ChunkNeighbours
 	ChunkNeighbours(const ChunkNeighbours & other);
 	ChunkNeighbours & operator=(const ChunkNeighbours & other);
 
-	bool		Visible(Axis dir, VectorU3 udx) const;
+	bool		Visible(Axis axis, VectorU3 udx) const;
 
 	void	UpdateOthersHere();
 

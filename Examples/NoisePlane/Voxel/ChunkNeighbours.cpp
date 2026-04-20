@@ -38,78 +38,46 @@ ChunkNeighbours & ChunkNeighbours::operator=(const ChunkNeighbours & other)
 
 
 
-bool ChunkNeighbours::Visible(Axis dir, VectorU3 udx) const
+bool ChunkNeighbours::Visible(Axis axis, VectorU3 udx) const
 {
+	unsigned int n = CHUNK_VALUES_PER_SIDE - 1;
+
 	Chunk * chunk = nullptr;
+	switch (axis)
+	{
+		case Axis::PrevX: if (udx.X != 0) { chunk = Here; udx.X--; } else { chunk = PrevX; udx.X = n; } break;
+		case Axis::PrevY: if (udx.Y != 0) { chunk = Here; udx.Y--; } else { chunk = PrevY; udx.Y = n; } break;
+		case Axis::PrevZ: if (udx.Z != 0) { chunk = Here; udx.Z--; } else { chunk = PrevZ; udx.Z = n; } break;
+		case Axis::NextX: if (udx.X != n) { chunk = Here; udx.X++; } else { chunk = NextX; udx.X = 0; } break;
+		case Axis::NextY: if (udx.Y != n) { chunk = Here; udx.Y++; } else { chunk = NextY; udx.Y = 0; } break;
+		case Axis::NextZ: if (udx.Z != n) { chunk = Here; udx.Z++; } else { chunk = NextZ; udx.Z = 0; } break;
+		default: break;
+	}
+	if (chunk == nullptr) { return false; }
 
-	if (dir == Axis::NextX)
-	{
-		if (udx.X != CHUNK_VALUES_PER_SIDE - 1)
-		{ chunk = Here; udx.X++; }
-		else
-		{ chunk = NextX; udx.X = 0; }
-	}
-	if (dir == Axis::NextY)
-	{
-		if (udx.Y != CHUNK_VALUES_PER_SIDE - 1)
-		{ chunk = Here; udx.Y++; }
-		else
-		{ chunk = NextY; udx.Y = 0; }
-	}
-	if (dir == Axis::NextZ)
-	{
-		if (udx.Z != CHUNK_VALUES_PER_SIDE - 1)
-		{ chunk = Here; udx.Z++; }
-		else
-		{ chunk = NextZ; udx.Z = 0; }
-	}
-
-	if (dir == Axis::PrevX)
-	{
-		if (udx.X != 0)
-		{ chunk = Here; udx.X--; }
-		else
-		{ chunk = PrevX; udx.X = CHUNK_VALUES_PER_SIDE - 1; }
-	}
-	if (dir == Axis::PrevY)
-	{
-		if (udx.Y != 0)
-		{ chunk = Here; udx.Y--; }
-		else
-		{ chunk = PrevY; udx.Y = CHUNK_VALUES_PER_SIDE - 1; }
-	}
-	if (dir == Axis::PrevZ)
-	{
-		if (udx.Z != 0)
-		{ chunk = Here; udx.Z--; }
-		else
-		{ chunk = PrevZ; udx.Z = CHUNK_VALUES_PER_SIDE - 1; }
-	}
-
-	Voxel * val = nullptr;
-	if (chunk != nullptr && chunk -> Data != nullptr)
+	Voxel * voxel = nullptr;
+	if (chunk -> Data != nullptr)
 	{
 		if (chunk -> ChunkType == ChunkType::Filled)
 		{
-			val = &(*chunk)[udx];
+			voxel = &(*chunk)[udx];
 		}
 		if (chunk -> ChunkType == ChunkType::Empty)
 		{
-			val = (*chunk).Data;
+			voxel = (*chunk).Data;
 		}
 	}
+	if (voxel == nullptr) { return false; }
+	if (voxel -> Template == nullptr) { return true; }
 
-	if (val == nullptr) { return false; }
-	if (val -> Template == nullptr) { return true; }
-
-	switch (dir)
+	switch (voxel -> Orientation.relative(axis))
 	{
-		case Axis::PrevX: return !(val -> Template -> HideNextX);
-		case Axis::PrevY: return !(val -> Template -> HideNextY);
-		case Axis::PrevZ: return !(val -> Template -> HideNextZ);
-		case Axis::NextX: return !(val -> Template -> HidePrevX);
-		case Axis::NextY: return !(val -> Template -> HidePrevY);
-		case Axis::NextZ: return !(val -> Template -> HidePrevZ);
+		case Axis::PrevX: return !(voxel -> Template -> HideNextX);
+		case Axis::PrevY: return !(voxel -> Template -> HideNextY);
+		case Axis::PrevZ: return !(voxel -> Template -> HideNextZ);
+		case Axis::NextX: return !(voxel -> Template -> HidePrevX);
+		case Axis::NextY: return !(voxel -> Template -> HidePrevY);
+		case Axis::NextZ: return !(voxel -> Template -> HidePrevZ);
 		default: return false;
 	}
 }
