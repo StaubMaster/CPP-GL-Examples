@@ -1,4 +1,5 @@
 #include "Chunk.hpp"
+#include "VoxelTemplate.hpp"
 
 #include "Graphics/Inst/Data.hpp"
 
@@ -53,26 +54,37 @@ Chunk::Chunk()
 
 
 
-/*static void TestOrientation(Chunk & chunk, VectorU3 u, Axis origin, Axis target)
+void Chunk::MakeEmpty()
 {
-	unsigned int i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
-	chunk.Data[i].Template = &VoxelTemplate::OrientationCube;
-	chunk.Data[i].Orientation.make(origin, target, Axis::None, Axis::None);
-}*/
-static void TestOrientation(Chunk & chunk, VectorU3 u, Axis origin0, Axis target0, Axis origin1, Axis target1)
-{
-	unsigned int i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
-	chunk.Data[i].Template = &VoxelTemplate::OrientationCube;
-	chunk.Data[i].Orientation.make(origin0, target0, origin1, target1);
+	if (ChunkType == ChunkType::Filled)
+	{
+		delete[] Data;
+		ChunkType = ChunkType::Empty;
+		Data = new Voxel();
+		Data -> Template = nullptr;
+	}
 }
-/*static void TestOrientation(Chunk & chunk, VectorU3 u, Diag diag, Flip flip)
+void Chunk::CheckEmpty()
 {
-	unsigned int i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
-	chunk.Data[i].Template = &VoxelTemplate::OrientationCube;
-	chunk.Data[i].Orientation.make(diag, flip);
-}*/
+	bool empty = true;
+	if (ChunkType == ChunkType::Filled)
+	{
+		for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
+		{
+			if (Data[i].Template != nullptr) { empty = false; break; }
+		}
+	}
+	if (empty)
+	{
+		MakeEmpty();
+	}
+	else
+	{
+		ChunkType = ChunkType::Filled;
+	}
+}
 
-void Chunk::GenerateTestRotation()
+void Chunk::FillNull()
 {
 	if (ChunkType == ChunkType::Empty)
 	{
@@ -91,133 +103,103 @@ void Chunk::GenerateTestRotation()
 		Data[i].Template = nullptr;
 		Data[i].Orientation = VoxelOrientation();
 	}
-
-//	0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
-//		#		#		#		|	|		#		#		#	
-//	#			#			#	|	|	#			#			#
-//	#		#		#		#	|	|	#		#		#		#
-
-//	Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3( 0,  0,  0))].Template = &VoxelTemplate::OrientationCube;
-//	Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(15, 15, 15))].Template = &VoxelTemplate::OrientationCube;
-
-
-
-//	TestOrientation(*this, VectorU3(0x0, 0x1, 0x0), Diag::Here, Flip::None); // XYZ +++
-//	TestOrientation(*this, VectorU3(0x3, 0x1, 0x0), Diag::Prev, Flip::None); // ZXY +++
-//	TestOrientation(*this, VectorU3(0x6, 0x1, 0x0), Diag::Next, Flip::None); // YZX +++
-//
-//	TestOrientation(*this, VectorU3(0x0, 0x1, 0x2), Diag::Here, Flip::FlipX); // XYZ +--
-//	TestOrientation(*this, VectorU3(0x3, 0x1, 0x2), Diag::Prev, Flip::FlipX); // ZXY +--
-//	TestOrientation(*this, VectorU3(0x6, 0x1, 0x2), Diag::Next, Flip::FlipX); // YZX +--
-//
-//	TestOrientation(*this, VectorU3(0x0, 0x1, 0x4), Diag::Here, Flip::FlipY); // XYZ -+-
-//	TestOrientation(*this, VectorU3(0x3, 0x1, 0x4), Diag::Prev, Flip::FlipY); // ZXY -+-
-//	TestOrientation(*this, VectorU3(0x6, 0x1, 0x4), Diag::Next, Flip::FlipY); // YZX -+-
-//
-//	TestOrientation(*this, VectorU3(0x0, 0x1, 0x6), Diag::Here, Flip::FlipZ); // XYZ --+
-//	TestOrientation(*this, VectorU3(0x3, 0x1, 0x6), Diag::Prev, Flip::FlipZ); // ZXY --+
-//	TestOrientation(*this, VectorU3(0x6, 0x1, 0x6), Diag::Next, Flip::FlipZ); // YZX --+
-//
-//
-//
-//	TestOrientation(*this, VectorU3(0x0, 0x1, 0x9), Diag::DiagX, Flip::None); // XZY ---
-//	TestOrientation(*this, VectorU3(0x3, 0x1, 0x9), Diag::DiagY, Flip::None); // ZYX ---
-//	TestOrientation(*this, VectorU3(0x6, 0x1, 0x9), Diag::DiagZ, Flip::None); // YXZ ---
-//
-//	TestOrientation(*this, VectorU3(0x0, 0x1, 0xB), Diag::DiagX, Flip::FlipX); // XZY -++
-//	TestOrientation(*this, VectorU3(0x3, 0x1, 0xB), Diag::DiagY, Flip::FlipX); // ZYX -++
-//	TestOrientation(*this, VectorU3(0x6, 0x1, 0xB), Diag::DiagZ, Flip::FlipX); // YXZ -++
-//
-//	TestOrientation(*this, VectorU3(0x0, 0x1, 0xD), Diag::DiagX, Flip::FlipY); // XZY +-+
-//	TestOrientation(*this, VectorU3(0x3, 0x1, 0xD), Diag::DiagY, Flip::FlipY); // ZYX +-+
-//	TestOrientation(*this, VectorU3(0x6, 0x1, 0xD), Diag::DiagZ, Flip::FlipY); // YXZ +-+
-//
-//	TestOrientation(*this, VectorU3(0x0, 0x1, 0xF), Diag::DiagX, Flip::FlipZ); // XZY ++-
-//	TestOrientation(*this, VectorU3(0x3, 0x1, 0xF), Diag::DiagY, Flip::FlipZ); // ZYX ++-
-//	TestOrientation(*this, VectorU3(0x6, 0x1, 0xF), Diag::DiagZ, Flip::FlipZ); // YXZ ++-
-
-
-
-//	TestOrientation(*this, VectorU3(0x0, 0x6, 0x1), Axis::PrevX, Axis::PrevX, Axis::PrevY, Axis::PrevY);
-//	TestOrientation(*this, VectorU3(0x2, 0x6, 0x1), Axis::PrevX, Axis::PrevX, Axis::PrevY, Axis::PrevZ);
-//	TestOrientation(*this, VectorU3(0x4, 0x6, 0x1), Axis::PrevX, Axis::PrevX, Axis::PrevY, Axis::NextY);
-//	TestOrientation(*this, VectorU3(0x6, 0x6, 0x1), Axis::PrevX, Axis::PrevX, Axis::PrevY, Axis::NextZ);
-//	TestOrientation(*this, VectorU3(0x9, 0x6, 0x1), Axis::PrevX, Axis::PrevX, Axis::PrevZ, Axis::PrevY);
-//	TestOrientation(*this, VectorU3(0xB, 0x6, 0x1), Axis::PrevX, Axis::PrevX, Axis::PrevZ, Axis::PrevZ);
-//	TestOrientation(*this, VectorU3(0xD, 0x6, 0x1), Axis::PrevX, Axis::PrevX, Axis::PrevZ, Axis::NextY);
-//	TestOrientation(*this, VectorU3(0xF, 0x6, 0x1), Axis::PrevX, Axis::PrevX, Axis::PrevZ, Axis::NextZ);
-//	TestOrientation(*this, VectorU3(0x0, 0x9, 0x1), Axis::PrevX, Axis::PrevX, Axis::NextY, Axis::PrevY);
-//	TestOrientation(*this, VectorU3(0x2, 0x9, 0x1), Axis::PrevX, Axis::PrevX, Axis::NextY, Axis::PrevZ);
-//	TestOrientation(*this, VectorU3(0x4, 0x9, 0x1), Axis::PrevX, Axis::PrevX, Axis::NextY, Axis::NextY);
-//	TestOrientation(*this, VectorU3(0x6, 0x9, 0x1), Axis::PrevX, Axis::PrevX, Axis::NextY, Axis::NextZ);
-//	TestOrientation(*this, VectorU3(0x9, 0x9, 0x1), Axis::PrevX, Axis::PrevX, Axis::NextZ, Axis::PrevY);
-//	TestOrientation(*this, VectorU3(0xB, 0x9, 0x1), Axis::PrevX, Axis::PrevX, Axis::NextZ, Axis::PrevZ);
-//	TestOrientation(*this, VectorU3(0xD, 0x9, 0x1), Axis::PrevX, Axis::PrevX, Axis::NextZ, Axis::NextY);
-//	TestOrientation(*this, VectorU3(0xF, 0x9, 0x1), Axis::PrevX, Axis::PrevX, Axis::NextZ, Axis::NextZ);
-
-//	TestOrientation(*this, VectorU3(0x0, 0x6, 0x1), Axis::PrevX, Axis::PrevZ, Axis::PrevY, Axis::PrevX);
-//	TestOrientation(*this, VectorU3(0x2, 0x6, 0x1), Axis::PrevX, Axis::PrevZ, Axis::PrevY, Axis::PrevZ);
-//	TestOrientation(*this, VectorU3(0x4, 0x6, 0x1), Axis::PrevX, Axis::PrevZ, Axis::PrevY, Axis::NextX);
-//	TestOrientation(*this, VectorU3(0x6, 0x6, 0x1), Axis::PrevX, Axis::PrevZ, Axis::PrevY, Axis::NextZ);
-//	TestOrientation(*this, VectorU3(0x9, 0x6, 0x1), Axis::PrevX, Axis::PrevZ, Axis::PrevZ, Axis::PrevX);
-//	TestOrientation(*this, VectorU3(0xB, 0x6, 0x1), Axis::PrevX, Axis::PrevZ, Axis::PrevZ, Axis::PrevZ);
-//	TestOrientation(*this, VectorU3(0xD, 0x6, 0x1), Axis::PrevX, Axis::PrevZ, Axis::PrevZ, Axis::NextX);
-//	TestOrientation(*this, VectorU3(0xF, 0x6, 0x1), Axis::PrevX, Axis::PrevZ, Axis::PrevZ, Axis::NextZ);
-//	TestOrientation(*this, VectorU3(0x0, 0x9, 0x1), Axis::PrevX, Axis::PrevZ, Axis::NextY, Axis::PrevX);
-//	TestOrientation(*this, VectorU3(0x2, 0x9, 0x1), Axis::PrevX, Axis::PrevZ, Axis::NextY, Axis::PrevZ);
-//	TestOrientation(*this, VectorU3(0x4, 0x9, 0x1), Axis::PrevX, Axis::PrevZ, Axis::NextY, Axis::NextX);
-//	TestOrientation(*this, VectorU3(0x6, 0x9, 0x1), Axis::PrevX, Axis::PrevZ, Axis::NextY, Axis::NextZ);
-//	TestOrientation(*this, VectorU3(0x9, 0x9, 0x1), Axis::PrevX, Axis::PrevZ, Axis::NextZ, Axis::PrevX);
-//	TestOrientation(*this, VectorU3(0xB, 0x9, 0x1), Axis::PrevX, Axis::PrevZ, Axis::NextZ, Axis::PrevZ);
-//	TestOrientation(*this, VectorU3(0xD, 0x9, 0x1), Axis::PrevX, Axis::PrevZ, Axis::NextZ, Axis::NextX);
-//	TestOrientation(*this, VectorU3(0xF, 0x9, 0x1), Axis::PrevX, Axis::PrevZ, Axis::NextZ, Axis::NextZ);
-
-
-
-	TestOrientation(*this, VectorU3(0x1, 0x1, 0x1), Axis::PrevX, Axis::PrevX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x3, 0x1, 0x1), Axis::PrevX, Axis::PrevY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x5, 0x1, 0x1), Axis::PrevX, Axis::PrevZ, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xA, 0x1, 0x1), Axis::PrevX, Axis::NextX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xC, 0x1, 0x1), Axis::PrevX, Axis::NextY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xE, 0x1, 0x1), Axis::PrevX, Axis::NextZ, Axis::None, Axis::None);
-
-	TestOrientation(*this, VectorU3(0x1, 0x1, 0x3), Axis::PrevY, Axis::PrevX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x3, 0x1, 0x3), Axis::PrevY, Axis::PrevY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x5, 0x1, 0x3), Axis::PrevY, Axis::PrevZ, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xA, 0x1, 0x3), Axis::PrevY, Axis::NextX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xC, 0x1, 0x3), Axis::PrevY, Axis::NextY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xE, 0x1, 0x3), Axis::PrevY, Axis::NextZ, Axis::None, Axis::None);
-
-	TestOrientation(*this, VectorU3(0x1, 0x1, 0x5), Axis::PrevZ, Axis::PrevX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x3, 0x1, 0x5), Axis::PrevZ, Axis::PrevY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x5, 0x1, 0x5), Axis::PrevZ, Axis::PrevZ, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xA, 0x1, 0x5), Axis::PrevZ, Axis::NextX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xC, 0x1, 0x5), Axis::PrevZ, Axis::NextY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xE, 0x1, 0x5), Axis::PrevZ, Axis::NextZ, Axis::None, Axis::None);
-
-
-
-	TestOrientation(*this, VectorU3(0x1, 0x1, 0xA), Axis::NextX, Axis::PrevX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x3, 0x1, 0xA), Axis::NextX, Axis::PrevY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x5, 0x1, 0xA), Axis::NextX, Axis::PrevZ, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xA, 0x1, 0xA), Axis::NextX, Axis::NextX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xC, 0x1, 0xA), Axis::NextX, Axis::NextY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xE, 0x1, 0xA), Axis::NextX, Axis::NextZ, Axis::None, Axis::None);
-
-	TestOrientation(*this, VectorU3(0x1, 0x1, 0xC), Axis::NextY, Axis::PrevX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x3, 0x1, 0xC), Axis::NextY, Axis::PrevY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x5, 0x1, 0xC), Axis::NextY, Axis::PrevZ, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xA, 0x1, 0xC), Axis::NextY, Axis::NextX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xC, 0x1, 0xC), Axis::NextY, Axis::NextY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xE, 0x1, 0xC), Axis::NextY, Axis::NextZ, Axis::None, Axis::None);
-
-	TestOrientation(*this, VectorU3(0x1, 0x1, 0xE), Axis::NextZ, Axis::PrevX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x3, 0x1, 0xE), Axis::NextZ, Axis::PrevY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0x5, 0x1, 0xE), Axis::NextZ, Axis::PrevZ, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xA, 0x1, 0xE), Axis::NextZ, Axis::NextX, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xC, 0x1, 0xE), Axis::NextZ, Axis::NextY, Axis::None, Axis::None);
-	TestOrientation(*this, VectorU3(0xE, 0x1, 0xE), Axis::NextZ, Axis::NextZ, Axis::None, Axis::None);
 }
+
+
+
+static void TestOrientation(Chunk & chunk, const VoxelTemplate & voxel_template, Diag diag, Flip flip, VectorU3 u)
+{
+	unsigned int i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
+	chunk.Data[i].Template = &voxel_template;
+	chunk.Data[i].Orientation.make(diag, flip);
+}
+static void TestOrientation(Chunk & chunk, const VoxelTemplate & voxel_template, unsigned int y)
+{
+	Diag diags[6] =
+	{
+		Diag::Here,
+		Diag::Prev,
+		Diag::Next,
+		Diag::DiagX,
+		Diag::DiagY,
+		Diag::DiagZ,
+	};
+	Flip flips[4] = 
+	{
+		Flip::None,
+		Flip::FlipX,
+		Flip::FlipY,
+		Flip::FlipZ,
+	};
+
+	unsigned int uX[6] { 0x0, 0x3, 0x6, 0x9, 0xC, 0xF };
+	unsigned int uZ[4] { 0x0, 0x2, 0x4, 0x6 };
+
+	for (unsigned int f = 0; f < 4; f++)
+	{
+		for (unsigned int d = 0; d < 6; d++)
+		{
+			TestOrientation(chunk, voxel_template, diags[d], flips[f], VectorU3(uX[d], y, uZ[f]));
+		}
+	}
+}
+
+
+/*
+	0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
+		#		#		#		|	|		#		#		#	
+	#			#			#	|	|	#			#			#
+	#		#		#		#	|	|	#		#		#		#
+*/
+
+void Chunk::TestOrientation()
+{
+	FillNull();
+	::TestOrientation(*this, VoxelTemplate::OrientationCube, 0x0);
+	::TestOrientation(*this, VoxelTemplate::OrientationCylinder, 0x2);
+	::TestOrientation(*this, VoxelTemplate::OrientationSlope, 0x4);
+}
+void Chunk::TestHouse()
+{
+	FillNull();
+	unsigned int i;
+
+	for (unsigned int x = 0x5; x <= 0xA; x++)
+	{
+		for (unsigned int z = 0x3; z <= 0xC; z++)
+		{
+			i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(x, 0, z));
+			Data[i].Template = &VoxelTemplate::Grass;
+			Data[i].Orientation.make(Diag::Here, Flip::None);
+		}
+	}
+
+	for (unsigned int y = 0x1; y <= 0x4; y++)
+	{
+		i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0x5, y, 0x3));
+		Data[i].Template = &VoxelTemplate::RedLog;
+		Data[i].Orientation.make(Diag::Here, Flip::None);
+		i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0xA, y, 0x3));
+		Data[i].Template = &VoxelTemplate::RedLog;
+		Data[i].Orientation.make(Diag::Here, Flip::None);
+		i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0x5, y, 0xC));
+		Data[i].Template = &VoxelTemplate::RedLog;
+		Data[i].Orientation.make(Diag::Here, Flip::None);
+		i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0xA, y, 0xC));
+		Data[i].Template = &VoxelTemplate::RedLog;
+		Data[i].Orientation.make(Diag::Here, Flip::None);
+		for (unsigned int z = 0x4; z <= 0xB; z++)
+		{
+			i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0x5, y, z));
+			Data[i].Template = &VoxelTemplate::RedLog;
+			Data[i].Orientation.make(Axis::NextY, Axis::NextZ, Axis::None, Axis::None);
+			i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0xA, y, z));
+			Data[i].Template = &VoxelTemplate::RedLog;
+			Data[i].Orientation.make(Axis::NextY, Axis::NextZ, Axis::None, Axis::None);
+		}
+	}
+}
+
 void Chunk::GenerateGrid()
 {
 	Undex3D size3(CHUNK_VALUES_PER_SIDE);
@@ -307,14 +289,7 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 {
 	if (ChunkType != ChunkType::UnGenerated) { return; }
 
-	if (Data == nullptr)
-	{
-		Data = new Voxel[CHUNK_VALUES_PER_VOLM];
-	}
-	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
-	{
-		Data[i].Template = nullptr;
-	}
+	FillNull();
 
 	(void)noise2;
 	(void)noise3;
@@ -322,22 +297,7 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 //	GeneratePerlin(noise2);
 //	GenerateGrid();
 
-	bool empty = true;
-	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
-	{
-		if (Data[i].Template != nullptr) { empty = false; break; }
-	}
-	if (empty)
-	{
-		delete[] Data;
-		ChunkType = ChunkType::Empty;
-		Data = new Voxel();
-		Data -> Template = nullptr;
-	}
-	else
-	{
-		ChunkType = ChunkType::Filled;
-	}
+	CheckEmpty();
 
 	if (GraphicsExist)
 	{
@@ -407,7 +367,7 @@ static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, cons
 	}*/
 }
 
-static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, VoxelTemplate & voxel_template, VoxelOrientation & orientations, ChunkNeighbours & neighbours, Axis axis, VectorU3 u)
+static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, const VoxelTemplate & voxel_template, VoxelOrientation & orientations, ChunkNeighbours & neighbours, Axis axis, VectorU3 u)
 {
 	if (!neighbours.Visible(orientations.absolute(axis), u)) { return; }
 	GraphicsData(data, voxel_template.AxisData(axis), orientations, u);
@@ -429,14 +389,14 @@ void Chunk::UpdateMainBuffer()
 			{
 				Voxel & voxel = Data[size.Convert(u)];
 				if (voxel.Template == nullptr) { continue; }
-				VoxelTemplate & voxel_template = *voxel.Template;
+				const VoxelTemplate & voxel_template = *voxel.Template;
 				GraphicsData(data, voxel_template.Here, voxel.Orientation, u);
-				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::PrevX, u);
-				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::PrevY, u);
-				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::PrevZ, u);
-				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::NextX, u);
-				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::NextY, u);
-				GraphicsData(data, voxel_template, voxel.Orientation, Neighbours, Axis::NextZ, u);
+				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, Axis::PrevX, u);
+				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, Axis::PrevY, u);
+				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, Axis::PrevZ, u);
+				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, Axis::NextX, u);
+				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, Axis::NextY, u);
+				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, Axis::NextZ, u);
 				/*if (Neighbours.Visible(Axis::PrevX, u))*/ //{ GraphicsData(data, voxel_template.PrevX, voxel.Orientation, u); }
 				/*if (Neighbours.Visible(Axis::PrevY, u))*/ //{ GraphicsData(data, voxel_template.PrevY, voxel.Orientation, u); }
 				/*if (Neighbours.Visible(Axis::PrevZ, u))*/ //{ GraphicsData(data, voxel_template.PrevZ, voxel.Orientation, u); }

@@ -6,6 +6,8 @@
 
 # include "Miscellaneous/Container/Binary.hpp"
 
+struct Voxel;
+
 struct VoxelTemplate
 {
 	static VoxelTemplate	OrientationCube;
@@ -28,6 +30,9 @@ struct VoxelTemplate
 	bool	HideNextY;
 	bool	HideNextZ;
 
+	Axis	OrientationAxis0;
+	Axis	OrientationAxis1;
+
 	Container::Binary<VoxelGraphics::MainData>	Here;
 
 	Container::Binary<VoxelGraphics::MainData>	PrevX;
@@ -39,6 +44,12 @@ struct VoxelTemplate
 	Container::Binary<VoxelGraphics::MainData>	NextZ;
 
 	const Container::Binary<VoxelGraphics::MainData> &	AxisData(Axis axis) const;
+
+	VoxelOrientation	Orient(Axis placeAxis0, Axis placeAxis1) const;
+
+	Voxel	ToVoxel(Axis placeAxis0, Axis placeAxis1) const;
+
+
 
 	~VoxelTemplate();
 	VoxelTemplate();

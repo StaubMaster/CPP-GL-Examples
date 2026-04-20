@@ -1,7 +1,8 @@
 #include "ChunkNeighbours.hpp"
-#include "Voxel.hpp"
 #include "Chunk.hpp"
+#include "Voxel.hpp"
 #include "VoxelOrientation.hpp"
+#include "VoxelTemplate.hpp"
 
 
 

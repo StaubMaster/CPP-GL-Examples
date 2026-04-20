@@ -48,6 +48,7 @@
 #include "Voxel/Chunk.hpp"
 #include "Voxel/ChunkManager.hpp"
 #include "Voxel/VoxelOrientation.hpp"
+#include "Voxel/VoxelTemplate.hpp"
 
 #include "ValueType/LoopI3.hpp"
 
@@ -656,8 +657,9 @@ static unsigned char AxisToAxis(Axis axis)
 
 
 
-bool		ViewRaySync = true;
-Ray3D		ViewRay;
+bool	ViewRaySync = true;
+Ray3D	ViewRay;
+VoxelTemplate *		PlaceTemplate = nullptr;
 void ViewRayFunction()
 {
 	Axis look_axis_0 = Axis::None;
@@ -684,6 +686,13 @@ void ViewRayFunction()
 		ss << look_axis_1 << " :Look1\n";
 		ss << look_axis_2 << " :Look2\n";
 	}
+
+	if (PlaceTemplate == nullptr) { ss << "None"; }
+	else if (PlaceTemplate == &VoxelTemplate::OrientationCube) { ss << "OrientationCube"; }
+	else if (PlaceTemplate == &VoxelTemplate::OrientationCylinder) { ss << "OrientationCylinder"; }
+	else if (PlaceTemplate == &VoxelTemplate::OrientationSlope) { ss << "OrientationSlope"; }
+	else { ss << "Unknown"; }
+	ss << " :Template\n";
 
 	VectorI3 idx;
 	Axis place_axis_0;
@@ -762,11 +771,11 @@ void ViewRayFunction()
 			if (place_axis_0 == Axis::PrevX) { idx.X -= 1; }
 			if (place_axis_0 == Axis::PrevY) { idx.Y -= 1; }
 			if (place_axis_0 == Axis::PrevZ) { idx.Z -= 1; }
-
-			Voxel voxel;
-			voxel.Template = &VoxelTemplate::OrientationSlope;
-			voxel.Orientation.make(Axis::NextY, place_axis_0, Axis::NextZ, place_axis_1);
-			ChunkManager.PlaneVoxel(idx, voxel);
+			if (PlaceTemplate != nullptr)
+			{
+				Voxel voxel = PlaceTemplate -> ToVoxel(place_axis_0, place_axis_1);
+				ChunkManager.PlaneVoxel(idx, voxel);
+			}
 		}
 	}
 
@@ -780,13 +789,31 @@ void ViewRayFunction()
 		text.String() = ss.str();
 	}
 
+	if (window.KeyBoardManager[Keys::NumPadAdd].State == State::Press)
+	{
+		if (PlaceTemplate == nullptr) { PlaceTemplate = &VoxelTemplate::OrientationCube; }
+		else if (PlaceTemplate == &VoxelTemplate::OrientationCube) { PlaceTemplate = &VoxelTemplate::OrientationCylinder; }
+		else if (PlaceTemplate == &VoxelTemplate::OrientationCylinder) { PlaceTemplate = &VoxelTemplate::OrientationSlope; }
+		else if (PlaceTemplate == &VoxelTemplate::OrientationSlope) { PlaceTemplate = &VoxelTemplate::OrientationCube; }
+		else { PlaceTemplate = nullptr; }
+	}
+	if (window.KeyBoardManager[Keys::NumPadSub].State == State::Press)
+	{
+		if (PlaceTemplate == nullptr) { PlaceTemplate = &VoxelTemplate::OrientationCube; }
+		else if (PlaceTemplate == &VoxelTemplate::OrientationCube) { PlaceTemplate = &VoxelTemplate::OrientationSlope; }
+		else if (PlaceTemplate == &VoxelTemplate::OrientationCylinder) { PlaceTemplate = &VoxelTemplate::OrientationCube; }
+		else if (PlaceTemplate == &VoxelTemplate::OrientationSlope) { PlaceTemplate = &VoxelTemplate::OrientationCylinder; }
+		else { PlaceTemplate = nullptr; }
+	}
+
 	if (window.KeyBoardManager[Keys::NumPadEnter].State == State::Press)
 	{
 		VectorI3 view_chunk_idx(view.Trans.Position.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 		Chunk * view_chunk = ChunkManager.FindChunkOrNull(view_chunk_idx);
 		if (view_chunk != nullptr)
 		{
-			view_chunk -> GenerateTestRotation();
+			view_chunk -> TestOrientation();
+			//view_chunk -> TestHouse();
 		}
 	}
 }

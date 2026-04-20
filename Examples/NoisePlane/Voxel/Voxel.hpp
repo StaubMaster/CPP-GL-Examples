@@ -1,13 +1,14 @@
 #ifndef  VOXEL_HPP
 # define VOXEL_HPP
 
-# include "VoxelTemplate.hpp"
 # include "VoxelOrientation.hpp"
+
+struct VoxelTemplate;
 
 struct Voxel
 {
-	VoxelTemplate *		Template;
-	VoxelOrientation	Orientation;
+	const VoxelTemplate *	Template;
+	VoxelOrientation		Orientation;
 
 	~Voxel();
 	Voxel();

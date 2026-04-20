@@ -1,4 +1,6 @@
 #include "VoxelTemplate.hpp"
+#include "VoxelOrientation.hpp"
+#include "Voxel.hpp"
 
 #include "ValueType/BoxF2.hpp"
 
@@ -27,12 +29,26 @@ const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::AxisData(Axis 
 		default: return Here;
 	}
 }
+VoxelOrientation VoxelTemplate::Orient(Axis placeAxis0, Axis placeAxis1) const
+{
+	VoxelOrientation orient;
+	orient.make(OrientationAxis0, placeAxis0, OrientationAxis1, placeAxis1);
+	return orient;
+}
+Voxel VoxelTemplate::ToVoxel(Axis placeAxis0, Axis placeAxis1) const
+{
+	Voxel voxel;
+	voxel.Template = this;
+	voxel.Orientation = Orient(placeAxis0, placeAxis1);
+	return voxel;
+}
 
 
 
 VoxelTemplate::~VoxelTemplate()
 { }
 VoxelTemplate::VoxelTemplate()
+
 { }
 
 //VoxelTemplate::VoxelTemplate(const VoxelTemplate & other);
@@ -73,6 +89,9 @@ void VoxelTemplate::InitCube(unsigned int tex)
 	HideNextY = true;
 	HideNextZ = true;
 
+	OrientationAxis0 = Axis::None;
+	OrientationAxis1 = Axis::None;
+
 	VectorF3 pos[8];
 
 	pos[0b000] = VectorF3(0.0f, 0.0f, 0.0f);
@@ -104,6 +123,9 @@ void VoxelTemplate::InitCylinder(unsigned int tex)
 	HideNextX = false;
 	HideNextY = false;
 	HideNextZ = false;
+
+	OrientationAxis0 = Axis::PrevY;
+	OrientationAxis1 = Axis::None;
 
 	float f___ = 0.3f;
 
@@ -213,6 +235,9 @@ void VoxelTemplate::InitSlope(unsigned int tex)
 	HideNextX = false;
 	HideNextY = false;
 	HideNextZ = true;
+
+	OrientationAxis0 = Axis::NextY;
+	OrientationAxis1 = Axis::NextZ;
 
 	VectorF3 pos[8];
 

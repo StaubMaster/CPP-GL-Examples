@@ -217,12 +217,15 @@ void VoxelOrientation::make(Axis origin0, Axis target0, Axis origin1, Axis targe
 	};
 	VoxelOrientation orient;
 
+	bool ignore0 = (origin0 == Axis::None || target0 == Axis::None);
+	bool ignore1 = (origin1 == Axis::None || target1 == Axis::None);
 	for (unsigned int f = 0; f < 4; f++)
 	{
 		for (unsigned int d = 0; d < 6; d++)
 		{
 			orient.make(diags[d], flips[f]);
-			if (orient.absolute(origin0) == target0 && orient.absolute(origin1) == target1)
+			if ((ignore0 || orient.absolute(origin0) == target0) &&
+				(ignore1 || orient.absolute(origin1) == target1))
 			{
 				*this = orient;
 				return;
@@ -230,69 +233,6 @@ void VoxelOrientation::make(Axis origin0, Axis target0, Axis origin1, Axis targe
 		}
 	}
 	*this = VoxelOrientation();
-
-//	Origin0 = origin0;
-//	Target0 = target0;
-//	Origin1 = origin1;
-//	Target1 = target1;
-	(void)origin1;
-	(void)target1;
-
-	/*if (origin0 == Axis::PrevX)
-	{
-		if (target0 == Axis::PrevX) { make(Diag::Here , Flip::None ); }
-		if (target0 == Axis::PrevY) { make(Diag::Prev , Flip::None ); }
-		if (target0 == Axis::PrevZ) { make(Diag::Next , Flip::None ); }
-		if (target0 == Axis::NextX) { make(Diag::DiagX, Flip::None ); }
-		if (target0 == Axis::NextY) { make(Diag::DiagZ, Flip::None ); }
-		if (target0 == Axis::NextZ) { make(Diag::DiagY, Flip::None ); }
-	}
-	if (origin0 == Axis::PrevY)
-	{
-		if (target0 == Axis::PrevX) { make(Diag::Next , Flip::None ); }
-		if (target0 == Axis::PrevY) { make(Diag::Here , Flip::None ); }
-		if (target0 == Axis::PrevZ) { make(Diag::Prev , Flip::None ); }
-		if (target0 == Axis::NextX) { make(Diag::DiagZ, Flip::None ); }
-		if (target0 == Axis::NextY) { make(Diag::DiagY, Flip::None ); }
-		if (target0 == Axis::NextZ) { make(Diag::DiagX, Flip::None ); }
-	}
-	if (origin0 == Axis::PrevZ)
-	{
-		if (target0 == Axis::PrevX) { make(Diag::Prev , Flip::None ); }
-		if (target0 == Axis::PrevY) { make(Diag::Next , Flip::None ); }
-		if (target0 == Axis::PrevZ) { make(Diag::Here , Flip::None ); }
-		if (target0 == Axis::NextX) { make(Diag::DiagY, Flip::None ); }
-		if (target0 == Axis::NextY) { make(Diag::DiagX, Flip::None ); }
-		if (target0 == Axis::NextZ) { make(Diag::DiagZ, Flip::None ); }
-	}
-
-	if (origin0 == Axis::NextX)
-	{
-		if (target0 == Axis::PrevX) { make(Diag::DiagX, Flip::None ); }
-		if (target0 == Axis::PrevY) { make(Diag::DiagZ, Flip::None ); }
-		if (target0 == Axis::PrevZ) { make(Diag::DiagY, Flip::None ); }
-		if (target0 == Axis::NextX) { make(Diag::Here , Flip::None ); }
-		if (target0 == Axis::NextY) { make(Diag::Prev , Flip::None ); }
-		if (target0 == Axis::NextZ) { make(Diag::Next , Flip::None ); }
-	}
-	if (origin0 == Axis::NextY)
-	{
-		if (target0 == Axis::PrevX) { make(Diag::DiagZ, Flip::None ); }
-		if (target0 == Axis::PrevY) { make(Diag::DiagY, Flip::None ); }
-		if (target0 == Axis::PrevZ) { make(Diag::DiagX, Flip::None ); }
-		if (target0 == Axis::NextX) { make(Diag::Next , Flip::None ); }
-		if (target0 == Axis::NextY) { make(Diag::Here , Flip::None ); }
-		if (target0 == Axis::NextZ) { make(Diag::Prev , Flip::None ); }
-	}
-	if (origin0 == Axis::NextZ)
-	{
-		if (target0 == Axis::PrevX) { make(Diag::DiagY, Flip::None ); }
-		if (target0 == Axis::PrevY) { make(Diag::DiagX, Flip::None ); }
-		if (target0 == Axis::PrevZ) { make(Diag::DiagZ, Flip::None ); }
-		if (target0 == Axis::NextX) { make(Diag::Prev , Flip::None ); }
-		if (target0 == Axis::NextY) { make(Diag::Next , Flip::None ); }
-		if (target0 == Axis::NextZ) { make(Diag::Here , Flip::None ); }
-	}*/
 }
 
 

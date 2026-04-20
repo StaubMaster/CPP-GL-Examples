@@ -9,10 +9,86 @@ so it should be easy enough
 
 
 
-PlaceVoxel
-ClearVoxel
 
-Voxel rotation
+
+VoxelTemplate
+better face Hiding
+right now only Full faces Hide
+Cylinder and Slop sides can also hide eachother
+depending on Orientation
+
+
+
+ChunkTypes are confusing
+
+
+
+Save/Load Chunk
+{
+how to Store Chunk ?
+just store Raw Data for Testing ?
+for Empty just store that it is Empty
+how to optimize ?
+{
+divide Chunk into 8 Sections
+if a Section is all the same, store that once ?
+what about Orientation ?
+mark unknown Orientation ?
+then Generate it ? it would have to be Generated
+if Section is not all the same
+divide into 8 smaller Sections
+repeat until done
+
+if a Section is not all the same
+try check for a common type (1/2 is the same)
+then store that as a "base"
+only do if this "base" is different from parent "base"
+
+how to store a Voxel
+{
+1 Byte for Orientation
+how many for Tempalte ?
+make Data a ByteStream
+store up to 127 Tempalte at beginning
+then use first bit 0 as Index into that
+if first bit 1, then interpred the next as Template Index ?
+
+if every Voxel is different, then all Tempaltes would need to be stored
+if only 2 are the same, then that is worth optimizing
+allways store all Template at the beginning
+
+ 8^3 =  512 =  9 Bits per Index
+16^3 = 4096 = 12 Bits per Index
+
+Orientation is 5 Bits
+ 8^3 = 14 Bits per Orientation + Index (2 Bytes. 2 Bits left)
+16^3 = 19 Bits per Orientation + Index (3 Bytes. 5 Bits left)
+
+
+
+
+}
+}
+}
+
+
+
+Inventory/UI
+{
+recreate from old VoxelEngine
+
+main Menu ?
+make a Save/Load/Generate/Test selection
+
+options ?
+change FOV
+GenerationDisntance
+
+make Debug Text better
+
+MAKE A CROSSHAIR
+}
+
 
 
 

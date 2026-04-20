@@ -45,10 +45,12 @@ struct Chunk
 	Chunk & operator=(const Chunk & other) = delete;
 	void	Dispose();
 
-	// makeEmpty
-	// makeFull
+	void	MakeEmpty();
+	void	CheckEmpty();
+	void	FillNull();
 
-	void	GenerateTestRotation();
+	void	TestOrientation();
+	void	TestHouse();
 
 	void	GenerateGrid();
 	void	GeneratePerlin(const Perlin2D & noise);
