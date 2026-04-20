@@ -721,7 +721,7 @@ void ViewRayFunction()
 			if (side == Axis::PrevZ) { idx.Z -= 1; }
 
 			Voxel voxel;
-			voxel.Template = &VoxelTemplate::OrientationCylinder;
+			voxel.Template = &VoxelTemplate::OrientationCube;
 			voxel.Orientation.make(Axis::PrevY, side, Axis::None, Axis::None);
 			ChunkManager.PlaneVoxel(idx, voxel);
 		}

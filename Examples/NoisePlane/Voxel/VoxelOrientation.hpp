@@ -13,79 +13,6 @@ enum class Axis : unsigned char
 	None  = 0b111,
 }; // 8 Values ; 3 Bits
 
-/*
-2 * 3 * 4
-2 * 2 * 6
-Diagonal: 3 (2 flips + 1)
-Spin: 10 (3 per Axis + 1)
-Flip Axis: 4 (1 per axis + 1)
-Flip Diag: 4 (1 per Diag + 1)
-*/
-
-/* where is each Axis ?
-
-XYZ
-XZY
-ZXY
-YXZ
-YZX
-ZYX
-
-+++
---+
--+-
-+--
-
-+X+Y+Z	+X-Y-Z	-X+Y-Z	-X-Y+Z
-+X+Z+Y	+X-Z-Y	-X+Z-Y	-X-Z+Y
-+Z+X+Y	+Z-X-Y	-Z+X-Y	-Z-X+Y
-+Y+X+Z	+Y-X-Z	-Y+X-Z	-Y-X+Z
-+Y+Z+X	+Y-Z-X	-Y+Z-X	-Y-Z+X
-+Z+Y+X	+Z-Y-X	-Z+Y-X	-Z-Y+X
-
-SpinDiag rotates Axis
-SpinDiagPrev(XYZ) = ZXY
-
-FlipDiag swaps 2 Axis
-FlipDiagX(XYZ) = XZY
-
-FlipAxis "Invertes" 2 Axis
-FlipAxisX(+++) = +--
-*/
-
-/*
-+X+Y+Z	None
-+Z+X+Y	SpinDiagPrev
-+Y+Z+X	SpinDiagNext
-+X+Z+Y	FlipDiagX
-+Z+Y+X	FlipDiagY
-+Y+X+Z	FlipDiagZ
-
-FlipAxisX
-+X-Y-Z
-+X-Z-Y
-+Z-X-Y
-+Y-X-Z
-+Y-Z-X
-+Z-Y-X
-
-FlipAxisY
--X+Y-Z
--X+Z-Y
--Z+X-Y
--Y+X-Z
--Y+Z-X
--Z+Y-X
-
-FlipAxisZ
--X-Y+Z
--X-Z+Y
--Z-X+Y
--Y-X+Z
--Y-Z+X
--Z-Y+X
-*/
-
 enum class Diag : unsigned char
 {
 	Here,
@@ -194,11 +121,11 @@ struct VoxelOrientation
 	unsigned char Value;
 	public:
 
-	::Diag	GetDiag() const;
-	::Flip	GetFlip() const;
+	Diag	GetDiag() const;
+	Flip	GetFlip() const;
 
-	void	SetDiag(::Diag diag);
-	void	SetFlip(::Flip flip);
+	void	SetDiag(Diag diag);
+	void	SetFlip(Flip flip);
 
 //	::Diag	Diag;
 //	::Flip	Flip;
@@ -210,13 +137,8 @@ struct VoxelOrientation
 
 
 
-	void	make(::Diag diag, ::Flip flip);
-	void	make(::Axis origin0, ::Axis target0, ::Axis origin1, ::Axis target1);
-/*
-	make a struct to store Axises
-	just loop what Orientations does
-	then Loop over those to find Orientations for Axises
-*/
+	void	make(Diag diag, Flip flip);
+	void	make(Axis origin0, Axis target0, Axis origin1, Axis target1);
 
 	~VoxelOrientation();
 	VoxelOrientation();
