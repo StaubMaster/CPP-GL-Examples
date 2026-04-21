@@ -56,72 +56,20 @@
 
 #include "ValueType/LoopI3.hpp"
 
-
+// Menus
+#include "Menus/Options.hpp"
+#include "Menus/Main.hpp"
 
 struct MainContext : public MainContext3D
 {
-
-struct OptionsMenu : public UI::Control::Form
-{
-	MainContext &	main;
-
-	UI::Control::TextBox	FOV_Name;
-	UI::Control::Slider		FOV_Slider;
-	UI::Control::TextBox	FOV_Value;
-
-	UI::Control::Button		ButtonBack;
-
-	~OptionsMenu() { }
-	OptionsMenu(MainContext & main)
-		: main(main)
-	{
-		MakeTransparent();
-
-		float x;
-		x = 0.0f;
-
-		FOV_Name.Anchor.X.AnchorMin(x, 100);
-		FOV_Name.Anchor.Y.AnchorMin(0);
-		FOV_Name.SetText("FOV");
-		ChildInsert(FOV_Name);
-
-		x = FOV_Name.Anchor.X.GetMinSize();
-
-		FOV_Slider.Anchor.X.AnchorMin(x, 200);
-		FOV_Slider.Anchor.Y.AnchorMin(0);
-		FOV_Slider.ValueMin = 20;
-		FOV_Slider.SetValue(90);
-		FOV_Slider.ValueMax = 160;
-		FOV_Slider.ValueChangedFunc.Assign(this, &OptionsMenu::FOV_Change);
-		ChildInsert(FOV_Slider);
-
-		x = FOV_Slider.Anchor.X.GetMinSize();
-
-		FOV_Value.Anchor.X.AnchorMin(x, 100);
-		FOV_Value.Anchor.Y.AnchorMin(0);
-		FOV_Value.SetText(std::to_string(90));
-		ChildInsert(FOV_Value);
-
-		ButtonBack.Anchor.X.AnchorMin(0);
-		ButtonBack.Anchor.Y.AnchorMax(0);
-		ChildInsert(ButtonBack);
-	}
-
-	void FOV_Change(float val)
-	{
-		main.view.FOV = Angle::Degrees(val);
-		main.Multiform_FOV.ChangeData(main.view.FOV);
-		FOV_Value.SetText(std::to_string(val));
-	}
-};
-
 ::PolyHedraManager		PolyHedraManager;
 UI::Control::Manager	ControlManager;
 UI::Text::Manager		TextManager;
 ::PlaneManager			PlaneManager;
 ::ChunkManager			ChunkManager;
 
-OptionsMenu				_OptionsMenu;
+::MainMenu				MainMenu;
+::OptionsMenu			OptionsMenu;
 
 Perlin2D				Perlin2;
 Perlin3D				Perlin3;
@@ -139,7 +87,7 @@ MainContext()
 	, TextManager()
 	, PlaneManager()
 	, ChunkManager()
-	, _OptionsMenu(*this)
+	, _OptionsMenu()
 	, Perlin2(Perlin2D::Random(Undex2D(8, 8)))
 	, Perlin3(Perlin3D::Random(Undex3D(8, 8, 8)))
 	, Multiform_View("View")
@@ -242,9 +190,25 @@ void Make() override
 	//TestRandom();
 }
 
+
+
+bool OptionsMenuIs;
+
 void MakeControls()
 {
-	ControlManager.Window.ChildInsert(_OptionsMenu);
+	{
+		OptionsMenuIs = false;
+		_OptionsMenu.FOV_Slider.ValueChangedFunc.Assign(this, &MainContext::FOV_Change);
+		_OptionsMenu.Hide();
+		ControlManager.Window.ChildInsert(_OptionsMenu);
+	}
+}
+
+void FOV_Change(float val)
+{
+	view.FOV = Angle::Degrees(val);
+	Multiform_FOV.ChangeData(view.FOV);
+	_OptionsMenu.FOV_Value.SetText(std::to_string(val));
 }
 
 
@@ -580,6 +544,8 @@ void ViewRayFunction()
 	}
 }
 
+
+
 VectorF3	GravityForce = VectorF3(0, -0.1f, 0);
 // make a BoxEntity for Colliding stuff
 VectorF3	ViewVel;
@@ -587,11 +553,9 @@ void UpdateViewColliding(FrameTime frame_time)
 {
 	Trans3D change;
 
-	if (window.KeyBoardManager[Keys::Tab].State == State::Press) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		change = window.MoveSpinFromKeysCursor();
-		//change.Position = window.MoveFromKeys();
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 10; }
 		change.Position *= 2;
 		change.Rotation *= view.FOV.ToRadians() * 0.05f;
@@ -739,6 +703,31 @@ void UpdateAroundView(FrameTime frame_time)
 
 void Frame(FrameTime frame_time) override
 {
+	if (!OptionsMenuIs)
+	{
+		if (window.KeyBoardManager[Keys::Escape].State == State::Press)
+		{
+			_OptionsMenu.Show();
+			OptionsMenuIs = true;
+			if (window.MouseManager.CursorModeIsLocked())
+			{
+				window.MouseManager.CursorModeFree();
+			}
+		}
+	}
+	else
+	{
+		if (window.KeyBoardManager[Keys::Escape].State == State::Press)
+		{
+			_OptionsMenu.Hide();
+			OptionsMenuIs = false;
+			if (!window.MouseManager.CursorModeIsLocked())
+			{
+				window.MouseManager.CursorModeLock();
+			}
+		}
+	}
+
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { ShowFull = !ShowFull; }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }
 	if (window.KeyBoardManager[Keys::D3].State == State::Press) { ShowText = !ShowText; }
@@ -759,7 +748,10 @@ void Frame(FrameTime frame_time) override
 		ChunkManager.Clear();
 	}
 
-	UpdateAroundView(frame_time);
+	if (!OptionsMenuIs)
+	{
+		UpdateAroundView(frame_time);
+	}
 
 	{
 		UI::Control::Object obj;

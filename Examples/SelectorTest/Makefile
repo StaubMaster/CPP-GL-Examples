@@ -1,5 +1,5 @@
 
-NAME := NoisePlane.exe
+NAME := SelectorTest.exe
 
 #COMPILER := c++ -std=c++11
 COMPILER := g++ -g -std=c++11
@@ -10,44 +10,12 @@ REMOVER := rm -f
 
 BASE_DIR := ../../
 include $(BASE_DIR)fancy.mk
-FANCY_NAME := NoisePlane
+FANCY_NAME := SelectorTest
 
 ################################################################
 
 FILES_SRC := \
-	../main.cpp \
-	../MainContext3D.cpp \
-\
-	Random.cpp \
-	Noise/Perlin2D.cpp \
-	Noise/Perlin3D.cpp \
-\
-	Plane/Plane.cpp \
-	Plane/PlaneValue.cpp \
-	Plane/PlaneNeighbours.cpp \
-	Plane/PlaneGraphics.cpp \
-	Plane/PlaneManager.cpp \
-\
-	Voxel/Graphics/Voxel.cpp \
-	Voxel/Graphics/Main/Data.cpp \
-	Voxel/Graphics/Main/Buffer.cpp \
-	Voxel/Graphics/Inst/Data.cpp \
-	Voxel/Graphics/Inst/Buffer.cpp \
-	Voxel/Graphics/Buffer.cpp \
-	Voxel/Graphics/Shader.cpp \
-	\
-	Voxel/Voxel.cpp \
-	Voxel/VoxelTemplate.cpp \
-	Voxel/VoxelOrientation.cpp \
-	Voxel/VoxelEnums.cpp \
-	Voxel/Chunk.cpp \
-	Voxel/ChunkNeighbours.cpp \
-	Voxel/ChunkManager.cpp \
-\
-	Menus/Main.cpp \
-	Menus/Options.cpp \
-\
-	UnitToString.cpp \
+	ContextBase.cpp \
 	main.cpp \
 
 #FILES_SRC := \

@@ -1,0 +1,69 @@
+
+MainContext should not have a Window ?
+
+make a BaseBaseContext thing
+that Contains the Window
+
+
+at the beginning. MainContext that shows the MainMenu/Selector
+
+when something is Pressed:
+	remember what to load
+	exit the current MainContext
+	load the new MainContext
+
+when a not BaseBaseContext is exited. go back to the BaseBaseContext (unless specified otherwise)
+when BaseBaseContext is exited. close Window
+
+
+
+
+
+
+
+main()
+{
+	create Window
+	ContextToUse = MainMenuContext
+	while(ContextToUse)
+	{
+		assign Window Callbacks
+		ContextToUse.Init()
+		while (ShouldLoop) { }
+		ContextToUse.Free()
+		clear Window Callbacks
+	}
+	delete Window
+}
+
+MainMenuContext
+{
+	Play()
+	{
+		ContextToUse = PlayContext
+		ShouldLoop = false
+	}
+	Quit()
+	{
+		ContextToUse = none
+		ShouldLoop = false
+	}
+}
+
+PlayContext
+{
+	Exit()
+	{
+		ContextToUse = MainMenuContext
+		ShouldLoop = false
+	}
+}
+
+
+
+
+
+Graphics should be created along with everything else ?
+should not have seperate Functions ?
+
+
