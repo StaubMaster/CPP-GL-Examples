@@ -29,6 +29,10 @@
 #include "Text/Manager.hpp"
 #include "Text/Object.hpp"
 
+// Controls
+#include "Control/Base/Manager.hpp"
+#include "ControlsInclude.hpp"
+
 // Units
 #include "UnitToString.hpp"
 
@@ -56,10 +60,68 @@
 
 struct MainContext : public MainContext3D
 {
+
+struct OptionsMenu : public UI::Control::Form
+{
+	MainContext &	main;
+
+	UI::Control::TextBox	FOV_Name;
+	UI::Control::Slider		FOV_Slider;
+	UI::Control::TextBox	FOV_Value;
+
+	UI::Control::Button		ButtonBack;
+
+	~OptionsMenu() { }
+	OptionsMenu(MainContext & main)
+		: main(main)
+	{
+		MakeTransparent();
+
+		float x;
+		x = 0.0f;
+
+		FOV_Name.Anchor.X.AnchorMin(x, 100);
+		FOV_Name.Anchor.Y.AnchorMin(0);
+		FOV_Name.SetText("FOV");
+		ChildInsert(FOV_Name);
+
+		x = FOV_Name.Anchor.X.GetMinSize();
+
+		FOV_Slider.Anchor.X.AnchorMin(x, 200);
+		FOV_Slider.Anchor.Y.AnchorMin(0);
+		FOV_Slider.ValueMin = 20;
+		FOV_Slider.SetValue(90);
+		FOV_Slider.ValueMax = 160;
+		FOV_Slider.ValueChangedFunc.Assign(this, &OptionsMenu::FOV_Change);
+		ChildInsert(FOV_Slider);
+
+		x = FOV_Slider.Anchor.X.GetMinSize();
+
+		FOV_Value.Anchor.X.AnchorMin(x, 100);
+		FOV_Value.Anchor.Y.AnchorMin(0);
+		FOV_Value.SetText(std::to_string(90));
+		ChildInsert(FOV_Value);
+
+		ButtonBack.Anchor.X.AnchorMin(0);
+		ButtonBack.Anchor.Y.AnchorMax(0);
+		ChildInsert(ButtonBack);
+	}
+
+	void FOV_Change(float val)
+	{
+		main.view.FOV = Angle::Degrees(val);
+		main.Multiform_FOV.ChangeData(main.view.FOV);
+		FOV_Value.SetText(std::to_string(val));
+	}
+};
+
 ::PolyHedraManager		PolyHedraManager;
+UI::Control::Manager	ControlManager;
 UI::Text::Manager		TextManager;
 ::PlaneManager			PlaneManager;
 ::ChunkManager			ChunkManager;
+
+OptionsMenu				_OptionsMenu;
 
 Perlin2D				Perlin2;
 Perlin3D				Perlin3;
@@ -73,9 +135,11 @@ Perlin3D				Perlin3;
 MainContext()
 	: MainContext3D()
 	, PolyHedraManager()
+	, ControlManager()
 	, TextManager()
 	, PlaneManager()
 	, ChunkManager()
+	, _OptionsMenu(*this)
 	, Perlin2(Perlin2D::Random(Undex2D(8, 8)))
 	, Perlin3(Perlin3D::Random(Undex3D(8, 8, 8)))
 	, Multiform_View("View")
@@ -83,10 +147,12 @@ MainContext()
 	, Multiform_FOV("FOV")
 {
 	PolyHedraManager.MakeCurrent();
+	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
 	Container::Array<Shader::Base*> shaders({
 		&PolyHedraManager.ShaderFullDefault,
 		&PolyHedraManager.ShaderWireDefault,
+		&ControlManager.Shader,
 		&TextManager.Shader,
 		&PlaneManager.Shader,
 		&ChunkManager.Shader,
@@ -176,6 +242,13 @@ void Make() override
 	//TestRandom();
 }
 
+void MakeControls()
+{
+	ControlManager.Window.ChildInsert(_OptionsMenu);
+}
+
+
+
 // hardcode Shaders into Managers
 // hardcode Attributes into Managers
 // "Template" for Attributes in Managers with InstanceManagers
@@ -187,6 +260,25 @@ void ChangeMedia()
 {
 	// PolyHedraManager
 	PolyHedraManager.InitExternal(MediaDirectory);
+
+	{
+		Container::Array<Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")),
+		});
+		ControlManager.Shader.Change(code);
+	}
+	{
+		ControlManager.Buffer.Main.Pos.Change(0);
+		ControlManager.Buffer.Inst.Min.Change(1);
+		ControlManager.Buffer.Inst.Max.Change(2);
+		ControlManager.Buffer.Inst.Layer.Change(3);
+		ControlManager.Buffer.Inst.Col.Change(4);
+	}
+	{
+		ControlManager.Window.ChangeManager(&ControlManager);
+		ControlManager.Window.ChangeManager(&TextManager);
+	}
 
 	// TextManager
 	TextManager.InitMedia(MediaDirectory);
@@ -217,7 +309,7 @@ void GraphicsCreate()
 {
 	PolyHedraManager.GraphicsCreate();
 	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
-
+	ControlManager.GraphicsCreate();
 	TextManager.GraphicsCreate();
 	PlaneManager.GraphicsCreate();
 	ChunkManager.GraphicsCreate();
@@ -235,6 +327,7 @@ void GraphicsCreate()
 void GraphicsDelete()
 {
 	PolyHedraManager.GraphicsDelete();
+	ControlManager.GraphicsDelete();
 	TextManager.GraphicsDelete();
 	PlaneManager.GraphicsDelete();
 	ChunkManager.GraphicsCreate();
@@ -257,6 +350,8 @@ void Init() override
 	}
 
 	GraphicsCreate();
+
+	MakeControls();
 
 	// View
 	Multiform_Depth.ChangeData(view.Depth);
@@ -460,7 +555,7 @@ void ViewRayFunction()
 		}
 	}
 
-	{
+	/*{
 		UI::Text::Object text; text.Create();
 		text.Pos().X = window.Size.Buffer.Full.X - 10;
 		text.Pos().Y = 10;
@@ -468,7 +563,7 @@ void ViewRayFunction()
 		text.Bound().Min = Point2D();
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.String() = ss.str();
-	}
+	}*/
 
 	if (window.KeyBoardManager[Keys::NumPadEnter].State == State::Press)
 	{
@@ -606,12 +701,22 @@ void Draw()
 {
 	PolyHedraManager.ClearInstances();
 	PolyHedraManager.UpdateInstances();
+	GL::Enable(GL::Capability::DepthTest);
+	GL::Enable(GL::Capability::CullFace);
 	if (ShowFull) { PolyHedraManager.DrawFull(); }
 	if (ShowWire) { PolyHedraManager.DrawWire(); }
 	if (ShowTiles) { PlaneManager.Draw(); }
 	if (ShowVoxels) { ChunkManager.Draw(); }
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
+	GL::Disable(GL::Capability::DepthTest);
+	GL::Disable(GL::Capability::CullFace);
+	{
+		ControlManager.UpdateSize(window.Size);
+		ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
+		ControlManager.Window.UpdateEntrys();
+		ControlManager.Draw();
+	}
 	if (ShowText)
 	{
 		TextManager.Draw();
@@ -656,6 +761,14 @@ void Frame(FrameTime frame_time) override
 
 	UpdateAroundView(frame_time);
 
+	{
+		UI::Control::Object obj;
+		obj.Create();
+		obj.Box().Min = window.Size.Buffer.Half - Point2D(1, 1);
+		obj.Box().Max = window.Size.Buffer.Half + Point2D(1, 1);
+		obj.Color() = ColorF4(1, 0, 1);
+	}
+
 	/*if (ShowWire)
 	{
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
@@ -677,32 +790,32 @@ void Frame(FrameTime frame_time) override
 			ss << '\n';
 		}
 
-		/*{
-			ss << "0123456789+-* /=<>" << '\n';
-			ss << "()[]{}#~'\"_|&%$" << '\n';
-			ss << "ABCDEFGHIJKLM" << '\n';
-			ss << "NOPQRSTUVWXYZ" << '\n';
-			ss << "abcdefghijklm" << '\n';
-			ss << "nopqrstuvwxyz" << '\n';
-			ss << ".,:;!?" << '\n';
-			ss << '\n';
-		}*/
+		//{
+		//	ss << "0123456789+-* /=<>" << '\n';
+		//	ss << "()[]{}#~'\"_|&%$" << '\n';
+		//	ss << "ABCDEFGHIJKLM" << '\n';
+		//	ss << "NOPQRSTUVWXYZ" << '\n';
+		//	ss << "abcdefghijklm" << '\n';
+		//	ss << "nopqrstuvwxyz" << '\n';
+		//	ss << ".,:;!?" << '\n';
+		//	ss << '\n';
+		//}
 
-		/*{
-			ss << "[1] " << "PolyHedra Full:" << (ShowFull ? "Show" : "Hide") << '\n';
-			ss << "[2] " << "PolyHedra Wire:" << (ShowWire ? "Show" : "Hide") << '\n';
-			ss << "[3] " << "Text:" << (ShowText ? "Show" : "Hide") << '\n';
-			ss << "[4] " << "TilePlanes:" << (ShowTiles ? "Show" : "Hide") << '\n';
-			ss << "[5] " << "VoxelChunks:" << (ShowVoxels ? "Show" : "Hide") << '\n';
-			ss << '\n';
-			ss << "[F2] " << "IgnoreCollision:" << (IgnoreCollision ? "true" : "false") << '\n';
-			ss << "[F3] " << "ViewBack:" << (ViewBack ? "true" : "false") << '\n';
-			ss << "[F4] " << "Planes.ShouldGenerate:" << (PlaneManager.ShouldGenerate ? "true" : "false") << '\n';
-			ss << "[F4] " << "Chunks.ShouldGenerate:" << (ChunkManager.ShouldGenerate ? "true" : "false") << '\n';
-			ss << "[F5] " << "Clear Planes" << '\n';
-			ss << "[F5] " << "Clear Chunks" << '\n';
-			ss << '\n';
-		}*/
+		//{
+		//	ss << "[1] " << "PolyHedra Full:" << (ShowFull ? "Show" : "Hide") << '\n';
+		//	ss << "[2] " << "PolyHedra Wire:" << (ShowWire ? "Show" : "Hide") << '\n';
+		//	ss << "[3] " << "Text:" << (ShowText ? "Show" : "Hide") << '\n';
+		//	ss << "[4] " << "TilePlanes:" << (ShowTiles ? "Show" : "Hide") << '\n';
+		//	ss << "[5] " << "VoxelChunks:" << (ShowVoxels ? "Show" : "Hide") << '\n';
+		//	ss << '\n';
+		//	ss << "[F2] " << "IgnoreCollision:" << (IgnoreCollision ? "true" : "false") << '\n';
+		//	ss << "[F3] " << "ViewBack:" << (ViewBack ? "true" : "false") << '\n';
+		//	ss << "[F4] " << "Planes.ShouldGenerate:" << (PlaneManager.ShouldGenerate ? "true" : "false") << '\n';
+		//	ss << "[F4] " << "Chunks.ShouldGenerate:" << (ChunkManager.ShouldGenerate ? "true" : "false") << '\n';
+		//	ss << "[F5] " << "Clear Planes" << '\n';
+		//	ss << "[F5] " << "Clear Chunks" << '\n';
+		//	ss << '\n';
+		//}
 
 		{
 			ss << "View " << view.Trans.Position << '\n';
@@ -772,12 +885,12 @@ void Frame(FrameTime frame_time) override
 			ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) <<")\n";
 		}
 
-		UI::Text::Object text; text.Create();
-		text.Pos().X = 10;
-		text.Pos().Y = 10;
-		text.Bound().Min = Point2D();
-		text.Bound().Max = window.Size.Buffer.Full;
-		text.String() = ss.str();
+		//UI::Text::Object text; text.Create();
+		//text.Pos().X = 10;
+		//text.Pos().Y = 10;
+		//text.Bound().Min = Point2D();
+		//text.Bound().Max = window.Size.Buffer.Full;
+		//text.String() = ss.str();
 	}
 
 	Draw();
@@ -787,8 +900,8 @@ void Frame(FrameTime frame_time) override
 
 // make these virtual and put them in Base
 void MouseScroll(ScrollArgs args) override { (void)args; }
-void MouseClick(ClickArgs args) override { (void)args; }
-void MouseDrag(DragArgs args) override { (void)args; }
+void MouseClick(ClickArgs args) override { ControlManager.RelayClick(args); }
+void MouseDrag(DragArgs args) override { ControlManager.RelayCursorDrag(args); }
 
 void KeyBoardKey(KeyArgs args) override { (void)args; }
 };

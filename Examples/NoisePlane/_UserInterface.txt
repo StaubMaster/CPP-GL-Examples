@@ -1,6 +1,8 @@
 
 clean up Managers in main
 
+Text Color
+
 
 
 Main
