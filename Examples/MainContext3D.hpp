@@ -6,8 +6,6 @@
 # include "Window.hpp"
 # include "Miscellaneous/Function/Object.hpp"
 
-# include "FrameTime.hpp"
-
 # include "Graphics/Multiform/_Include.hpp"
 
 # include "ValueType/View3D.hpp"
@@ -37,9 +35,8 @@ void UpdateView(FrameTime frame_time);
 
 
 
-virtual void Frame(double timeDelta) = 0;
-
-virtual void Resize(const DisplaySize & Size);
+virtual void Resize(DisplaySize display_size);
+virtual void Frame(FrameTime frame_time) = 0;
 
 virtual void MouseScroll(ScrollArgs args) = 0;
 virtual void MouseClick(ClickArgs args) = 0;

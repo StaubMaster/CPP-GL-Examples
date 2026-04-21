@@ -180,37 +180,19 @@ void Make() override
 // hardcode Attributes into Managers
 // "Template" for Attributes in Managers with InstanceManagers
 // also organize Shader Files
-void Init() override
+//
+// a lot of the managers are siminal with the bool flags and function names
+// make a Base ? to organize
+void ChangeMedia()
 {
-	Make();
-
 	// PolyHedraManager
-	PolyHedraManager.InitExternal(MediaDirectory); // do this outside ? so in MainContext ?
-	PolyHedraManager.GraphicsCreate();
-	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
+	PolyHedraManager.InitExternal(MediaDirectory);
 
 	// TextManager
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/UI/Text.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/UI/Text.frag")),
-		});
-		TextManager.Shader.Change(code);
-	}
-	{
-		TextManager.Buffer.Main.Pos.Change(0);
-		TextManager.Buffer.Inst.Pos.Change(1);
-		TextManager.Buffer.Inst.PalletMin.Change(2);
-		TextManager.Buffer.Inst.PalletMax.Change(3);
-		TextManager.Buffer.Inst.BoundMin.Change(4);
-		TextManager.Buffer.Inst.BoundMax.Change(5);
-	}
-	{
-		TextManager.TextFont = UI::Text::Font::Parse(
-			MediaDirectory.File("Text/Font0.atlas")
-		);
-	}
-	TextManager.GraphicsCreate();
+	TextManager.InitMedia(MediaDirectory);
+	TextManager.TextFont = UI::Text::Font::Parse(
+		MediaDirectory.File("Text/Font0.atlas")
+	);
 
 	// PlaneManager
 	{
@@ -220,7 +202,6 @@ void Init() override
 		});
 		PlaneManager.Shader.Change(code);
 	}
-	PlaneManager.GraphicsCreate();
 
 	// ChunkManager
 	{
@@ -230,6 +211,15 @@ void Init() override
 		});
 		ChunkManager.Shader.Change(code);
 	}
+}
+
+void GraphicsCreate()
+{
+	PolyHedraManager.GraphicsCreate();
+	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
+
+	TextManager.GraphicsCreate();
+	PlaneManager.GraphicsCreate();
 	ChunkManager.GraphicsCreate();
 	{
 		ChunkManager.Texture.Bind();
@@ -239,8 +229,22 @@ void Init() override
 			MediaDirectory.File("Images/fancy_GreenDirt.png"),
 			MediaDirectory.File("Images/fancy_RedWood.png"),
 		});
-		ChunkManager.Texture.Assign(128, 64, files);
+		ChunkManager.Texture.Assign(VectorU2(128, 64), files);
 	}
+}
+void GraphicsDelete()
+{
+	PolyHedraManager.GraphicsDelete();
+	TextManager.GraphicsDelete();
+	PlaneManager.GraphicsDelete();
+	ChunkManager.GraphicsCreate();
+}
+
+void Init() override
+{
+	Make();
+
+	ChangeMedia();
 
 	// Voxels
 	{
@@ -252,16 +256,15 @@ void Init() override
 		VoxelTemplate::RedLog.InitCylinder(3);
 	}
 
+	GraphicsCreate();
+
 	// View
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
 }
 void Free() override
 {
-	PolyHedraManager.GraphicsDelete();
-	TextManager.GraphicsDelete();
-	PlaneManager.GraphicsDelete();
-	ChunkManager.GraphicsCreate();
+	GraphicsDelete();
 }
 
 
@@ -280,100 +283,6 @@ bool ViewBack = false;
 
 
 
-// put these in VectorF
-static VectorF3 VectorAbsolute(VectorF3 vec)
-{
-	if (vec.X < 0) { vec.X = -vec.X; }
-	if (vec.Y < 0) { vec.Y = -vec.Y; }
-	if (vec.Z < 0) { vec.Z = -vec.Z; }
-	return vec;
-}
-static VectorI3 VectorAxisRank(VectorF3 vec)
-{
-	VectorI3 ret;
-
-	float * vI = (float*)&vec;
-	int * vO = (int*)&ret;
-
-	for (unsigned int i = 0; i < 3; i++)
-	{
-		if (!(vI[i] == vI[i])) { vO[i] = -1; }
-		if (vI[i] < 0) { vI[i] = -vI[i]; }
-	}
-
-	for (unsigned int i0 = 0; i0 < 3; i0++)
-	{
-		for (unsigned int i1 = 0; i1 < 3; i1++)
-		{
-			if (i0 != i1)
-			{
-				if (vI[i0] > vI[i1])
-				{
-					vO[i0]++;
-				}
-			}
-		}
-	}
-	return ret;
-}
-
-// put into Box
-static VectorF3 BoxAxisCollision(BoxF3 box0, VectorF3 vel0, BoxF3 box1)
-{
-	VectorF3 pos0;
-	if (vel0.X > 0.0f) { pos0.X = box0.Max.X; } else { pos0.X = box0.Min.X; }
-	if (vel0.Y > 0.0f) { pos0.Y = box0.Max.Y; } else { pos0.Y = box0.Min.Y; }
-	if (vel0.Z > 0.0f) { pos0.Z = box0.Max.Z; } else { pos0.Z = box0.Min.Z; }
-
-	VectorF3 pos1;
-	if (vel0.X > 0.0f) { pos1.X = box1.Min.X; } else { pos1.X = box1.Max.X; }
-	if (vel0.Y > 0.0f) { pos1.Y = box1.Min.Y; } else { pos1.Y = box1.Max.Y; }
-	if (vel0.Z > 0.0f) { pos1.Z = box1.Min.Z; } else { pos1.Z = box1.Max.Z; }
-
-	return (pos1 - pos0) / vel0;
-}
-static VectorF3 BoxCollision(BoxF3 box0, VectorF3 vel0, BoxF3 box1)
-{
-	VectorF3 t = BoxAxisCollision(box0, vel0, box1);
-
-	if (t.X < 0.0f) { t.X = 0.0f / 0.0f; }
-	if (t.Y < 0.0f) { t.Y = 0.0f / 0.0f; }
-	if (t.Z < 0.0f) { t.Z = 0.0f / 0.0f; }
-
-	if (t.X > 0.0f) // not NaN
-	{
-		BoxF3 box = box0 + (vel0 * t.X);
-		box.Min.X = -1.0f/0.0f; // -Infinity
-		box.Max.X = +1.0f/0.0f; // +Infinity
-		if (!box.IntersectBoxInclusive(box1).All(true))
-		{
-			t.X = 0.0f / 0.0f; // no Collision
-		}
-	}
-	if (t.Y > 0.0f) // not NaN
-	{
-		BoxF3 box = box0 + (vel0 * t.Y);
-		box.Min.Y = -1.0f/0.0f; // -Infinity
-		box.Max.Y = +1.0f/0.0f; // +Infinity
-		if (!box.IntersectBoxInclusive(box1).All(true))
-		{
-			t.Y = 0.0f / 0.0f; // no Collision
-		}
-	}
-	if (t.Z > 0.0f) // not NaN
-	{
-		BoxF3 box = box0 + (vel0 * t.Z);
-		box.Min.Z = -1.0f/0.0f; // -Infinity
-		box.Max.Z = +1.0f/0.0f; // +Infinity
-		if (!box.IntersectBoxInclusive(box1).All(true))
-		{
-			t.Z = 0.0f / 0.0f; // no Collision
-		}
-	}
-
-	return t;
-}
-
 // put into another File
 struct TimeBoxCollision
 {
@@ -388,7 +297,7 @@ struct TimeBoxCollision
 	{
 		float time;
 		VectorF3 normal;
-		VectorI3 ranks = VectorAxisRank(t);
+		VectorI3 ranks = t.abs().RankDimensions();
 		     if (ranks.X == 0) { time = t.X; normal = VectorF3(dir.X, 0, 0); }
 		else if (ranks.Y == 0) { time = t.Y; normal = VectorF3(0, dir.Y, 0); }
 		else if (ranks.Z == 0) { time = t.Z; normal = VectorF3(0, 0, dir.Z); }
@@ -411,7 +320,8 @@ TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, Loo
 			BoxF3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
 			if (box.IntersectBoxInclusive(voxel_box).All(true)) { continue; }
 			{
-				VectorF3 t = BoxCollision(box + off, vel, voxel_box);
+				//VectorF3 t = BoxCollision(box + off, vel, voxel_box);
+				VectorF3 t = BoxF3::CollisionTimePerAxisNaN(box + off, vel, voxel_box);
 				VectorF3 dir;
 				if (vel.X > 0.0f) { dir.X = +1.0f; } else { dir.X = -1.0f; }
 				if (vel.Y > 0.0f) { dir.Y = +1.0f; } else { dir.Y = -1.0f; }
@@ -421,25 +331,6 @@ TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, Loo
 		}
 	}
 	return collision;
-}
-
-
-
-// signed Axis vs unsigned Axis
-// SAxis and UAsix
-// compare Axis
-static unsigned char AxisToAxis(Axis axis)
-{
-	switch (axis)
-	{
-		case Axis::PrevX: return 0;
-		case Axis::NextX: return 0;
-		case Axis::PrevY: return 1;
-		case Axis::NextY: return 1;
-		case Axis::PrevZ: return 2;
-		case Axis::NextZ: return 2;
-		default: return 0xFF;
-	}
 }
 
 
@@ -457,20 +348,20 @@ void ViewRayFunction()
 		ViewRay.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
 	}
 
-	Axis look_axis_0 = Axis::None;
-	Axis look_axis_1 = Axis::None;
-	Axis look_axis_2 = Axis::None;
+	AxisRel look_axis_0 = AxisRel::None;
+	AxisRel look_axis_1 = AxisRel::None;
+	AxisRel look_axis_2 = AxisRel::None;
 	{
-		VectorI3 ranks = VectorAxisRank(ViewRay.Dir);
-		     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { look_axis_0 = Axis::NextX; } else { look_axis_0 = Axis::PrevX; } }
-		else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { look_axis_0 = Axis::NextY; } else { look_axis_0 = Axis::PrevY; } }
-		else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { look_axis_0 = Axis::NextZ; } else { look_axis_0 = Axis::PrevZ; } }
-		if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { look_axis_1 = Axis::NextX; } else { look_axis_1 = Axis::PrevX; } }
-		else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { look_axis_1 = Axis::NextY; } else { look_axis_1 = Axis::PrevY; } }
-		else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { look_axis_1 = Axis::NextZ; } else { look_axis_1 = Axis::PrevZ; } }
-		if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { look_axis_2 = Axis::NextX; } else { look_axis_2 = Axis::PrevX; } }
-		else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { look_axis_2 = Axis::NextY; } else { look_axis_2 = Axis::PrevY; } }
-		else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { look_axis_2 = Axis::NextZ; } else { look_axis_2 = Axis::PrevZ; } }
+		VectorI3 ranks = ViewRay.Dir.abs().RankDimensions();
+		     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { look_axis_0 = AxisRel::NextX; } else { look_axis_0 = AxisRel::PrevX; } }
+		else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { look_axis_0 = AxisRel::NextY; } else { look_axis_0 = AxisRel::PrevY; } }
+		else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { look_axis_0 = AxisRel::NextZ; } else { look_axis_0 = AxisRel::PrevZ; } }
+		if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { look_axis_1 = AxisRel::NextX; } else { look_axis_1 = AxisRel::PrevX; } }
+		else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { look_axis_1 = AxisRel::NextY; } else { look_axis_1 = AxisRel::PrevY; } }
+		else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { look_axis_1 = AxisRel::NextZ; } else { look_axis_1 = AxisRel::PrevZ; } }
+		if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { look_axis_2 = AxisRel::NextX; } else { look_axis_2 = AxisRel::PrevX; } }
+		else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { look_axis_2 = AxisRel::NextY; } else { look_axis_2 = AxisRel::PrevY; } }
+		else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { look_axis_2 = AxisRel::NextZ; } else { look_axis_2 = AxisRel::PrevZ; } }
 		// what if same ranks ?
 	}
 
@@ -483,8 +374,8 @@ void ViewRayFunction()
 	}
 
 	VectorI3 idx;
-	Axis place_axis_0;
-	Axis place_axis_1;
+	AxisRel place_axis_0;
+	AxisRel place_axis_1;
 	Ray3D hit;
 	if (ChunkManager.FindVoxelIndex(ViewRay, idx, place_axis_0, hit))
 	{
@@ -504,12 +395,12 @@ void ViewRayFunction()
 
 		// Side
 		{
-			unsigned char axis = AxisToAxis(place_axis_0);
-			if (axis == 0xFF) { place_axis_1 = Axis::None; }
-			else if (axis != AxisToAxis(look_axis_2)) { place_axis_1 = look_axis_2; }
-			else if (axis != AxisToAxis(look_axis_1)) { place_axis_1 = look_axis_1; }
-			else if (axis != AxisToAxis(look_axis_0)) { place_axis_1 = look_axis_0; }
-			else { place_axis_1 = Axis::None; }
+			AxisAbs axis = AxisRelToAxisAbs(place_axis_0);
+			if (axis == AxisAbs::None) { place_axis_1 = AxisRel::None; }
+			else if (axis != AxisRelToAxisAbs(look_axis_2)) { place_axis_1 = look_axis_2; }
+			else if (axis != AxisRelToAxisAbs(look_axis_1)) { place_axis_1 = look_axis_1; }
+			else if (axis != AxisRelToAxisAbs(look_axis_0)) { place_axis_1 = look_axis_0; }
+			else { place_axis_1 = AxisRel::None; }
 		}
 
 		// Text
@@ -553,17 +444,19 @@ void ViewRayFunction()
 		}
 		if (window.MouseManager[MouseButtons::MouseR].State == State::Press)
 		{
-			if (place_axis_0 == Axis::NextX) { idx.X += 1; }
-			if (place_axis_0 == Axis::NextY) { idx.Y += 1; }
-			if (place_axis_0 == Axis::NextZ) { idx.Z += 1; }
-			if (place_axis_0 == Axis::PrevX) { idx.X -= 1; }
-			if (place_axis_0 == Axis::PrevY) { idx.Y -= 1; }
-			if (place_axis_0 == Axis::PrevZ) { idx.Z -= 1; }
-			if (PlaceTemplate != nullptr)
+			if (place_axis_0 == AxisRel::NextX) { idx.X += 1; }
+			if (place_axis_0 == AxisRel::NextY) { idx.Y += 1; }
+			if (place_axis_0 == AxisRel::NextZ) { idx.Z += 1; }
+			if (place_axis_0 == AxisRel::PrevX) { idx.X -= 1; }
+			if (place_axis_0 == AxisRel::PrevY) { idx.Y -= 1; }
+			if (place_axis_0 == AxisRel::PrevZ) { idx.Z -= 1; }
+			/*if (PlaceTemplate != nullptr)
 			{
 				Voxel voxel = PlaceTemplate -> ToVoxel(place_axis_0, place_axis_1);
 				ChunkManager.PlaneVoxel(idx, voxel);
-			}
+			}*/
+			Voxel voxel = VoxelTemplate::OrientationCylinder.ToVoxel(place_axis_0, place_axis_1);
+			ChunkManager.PlaneVoxel(idx, voxel);
 		}
 	}
 
@@ -739,28 +632,8 @@ void UpdateAroundView(FrameTime frame_time)
 	PlaneManager.UpdateAround(Perlin2, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 }
 
-/* Window
-Update()
-	should update stuff and Buffers
-	needs time
-	UpdateStuff()
-		Updates everything unrelated to OpenGL
-	UpdateBuffers()
-		Updates everything related to OpenGL
-	seperate so that UpdateStuff() could be put on a seperate Thread ?
-Frame()
-	should just Draw
-	dosent need time ?
-*/
-// make this use FrameTime
-// use FrameTime in Window
-// put FrameNumber into FrameTime ?
-// give a Window a way to stop Loop, just a bool should be fine
-void Frame(double timeDelta) override
+void Frame(FrameTime frame_time) override
 {
-	FrameTime frame_time(64);
-	frame_time.Update(timeDelta);
-
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { ShowFull = !ShowFull; }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { ShowWire = !ShowWire; }
 	if (window.KeyBoardManager[Keys::D3].State == State::Press) { ShowText = !ShowText; }

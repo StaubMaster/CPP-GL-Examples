@@ -5,18 +5,30 @@
 
 
 
-enum class Axis : unsigned char
+enum class AxisAbs : unsigned char
 {
-	Here  = 0b000,
+	None = 0b00,
+	X    = 0b01,
+	Y    = 0b10,
+	Z    = 0b11,
+}; // 4 Values ; 2 Bits
+std::ostream & operator<<(std::ostream & s, AxisAbs axis);
+
+enum class AxisRel : unsigned char
+{
+	None  = 0b000,
 	PrevX = 0b001,
 	PrevY = 0b010,
 	PrevZ = 0b100,
 	NextX = 0b110,
 	NextY = 0b101,
 	NextZ = 0b011,
-	None  = 0b111,
 }; // 8 Values ; 3 Bits
-std::ostream & operator<<(std::ostream & s, Axis axis);
+std::ostream & operator<<(std::ostream & s, AxisRel axis);
+
+
+
+AxisAbs AxisRelToAxisAbs(AxisRel axis);
 
 
 

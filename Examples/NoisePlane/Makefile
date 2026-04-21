@@ -18,8 +18,6 @@ FILES_SRC := \
 	../main.cpp \
 	../MainContext3D.cpp \
 \
-	PolyHedraObjectArray.cpp \
-\
 	Random.cpp \
 	Noise/Perlin2D.cpp \
 	Noise/Perlin3D.cpp \

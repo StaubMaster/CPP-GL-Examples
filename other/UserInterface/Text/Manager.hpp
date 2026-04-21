@@ -54,6 +54,9 @@ class Manager
 	ObjectData *	PlaceObject();
 	ObjectData *	CopyObject(const ObjectData * obj);
 
+	public:
+	void	InitMedia(DirectoryInfo & media_dir);
+
 	private:
 	bool	GraphicsExist;
 	public:

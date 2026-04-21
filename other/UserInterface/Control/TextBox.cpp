@@ -48,7 +48,7 @@ void UI::Control::TextBox::PutCharactersEntrys()
 {
 	Point2D min = AnchorBox.Min;
 	Point2D max = AnchorBox.Max;
-	Point2D center = (max + min) / 2;
+	Point2D center = (max + min) / 2.0f;
 
 	if (TextObject.Is())
 	{

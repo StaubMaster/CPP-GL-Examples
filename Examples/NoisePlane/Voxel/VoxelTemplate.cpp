@@ -16,26 +16,26 @@ VoxelTemplate VoxelTemplate::RedLog;
 
 
 
-const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::AxisData(Axis axis) const
+const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::AxisData(AxisRel axis) const
 {
 	switch (axis)
 	{
-		case Axis::PrevX: return PrevX;
-		case Axis::PrevY: return PrevY;
-		case Axis::PrevZ: return PrevZ;
-		case Axis::NextX: return NextX;
-		case Axis::NextY: return NextY;
-		case Axis::NextZ: return NextZ;
+		case AxisRel::PrevX: return PrevX;
+		case AxisRel::PrevY: return PrevY;
+		case AxisRel::PrevZ: return PrevZ;
+		case AxisRel::NextX: return NextX;
+		case AxisRel::NextY: return NextY;
+		case AxisRel::NextZ: return NextZ;
 		default: return Here;
 	}
 }
-VoxelOrientation VoxelTemplate::Orient(Axis placeAxis0, Axis placeAxis1) const
+VoxelOrientation VoxelTemplate::Orient(AxisRel placeAxis0, AxisRel placeAxis1) const
 {
 	VoxelOrientation orient;
 	orient.make(OrientationAxis0, placeAxis0, OrientationAxis1, placeAxis1);
 	return orient;
 }
-Voxel VoxelTemplate::ToVoxel(Axis placeAxis0, Axis placeAxis1) const
+Voxel VoxelTemplate::ToVoxel(AxisRel placeAxis0, AxisRel placeAxis1) const
 {
 	Voxel voxel;
 	voxel.Template = this;
@@ -89,8 +89,8 @@ void VoxelTemplate::InitCube(unsigned int tex)
 	HideNextY = true;
 	HideNextZ = true;
 
-	OrientationAxis0 = Axis::None;
-	OrientationAxis1 = Axis::None;
+	OrientationAxis0 = AxisRel::None;
+	OrientationAxis1 = AxisRel::None;
 
 	VectorF3 pos[8];
 
@@ -124,8 +124,8 @@ void VoxelTemplate::InitCylinder(unsigned int tex)
 	HideNextY = false;
 	HideNextZ = false;
 
-	OrientationAxis0 = Axis::PrevY;
-	OrientationAxis1 = Axis::None;
+	OrientationAxis0 = AxisRel::PrevY;
+	OrientationAxis1 = AxisRel::None;
 
 	float f___ = 0.3f;
 
@@ -236,8 +236,8 @@ void VoxelTemplate::InitSlope(unsigned int tex)
 	HideNextY = false;
 	HideNextZ = true;
 
-	OrientationAxis0 = Axis::NextY;
-	OrientationAxis1 = Axis::NextZ;
+	OrientationAxis0 = AxisRel::NextY;
+	OrientationAxis1 = AxisRel::NextZ;
 
 	VectorF3 pos[8];
 

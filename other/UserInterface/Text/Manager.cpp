@@ -3,6 +3,7 @@
 
 #include "ValueType/_Include.hpp"
 
+#include "Miscellaneous/Container/Array.hpp"
 #include "Graphics/Shader/Code.hpp"
 
 #include "DirectoryInfo.hpp"
@@ -58,6 +59,27 @@ UI::Text::ObjectData * UI::Text::Manager::CopyObject(const ObjectData * obj)
 {
 	if (obj == nullptr) { return nullptr; }
 	return PlaceObject();
+}
+
+
+
+void UI::Text::Manager::InitMedia(DirectoryInfo & media_dir)
+{
+	{
+		Container::Array<::Shader::Code> code({
+			::Shader::Code(media_dir.File("Shaders/UI/Text.vert")),
+			::Shader::Code(media_dir.File("Shaders/UI/Text.frag")),
+		});
+		Shader.Change(code);
+	}
+	{
+		Buffer.Main.Pos.Change(0);
+		Buffer.Inst.Pos.Change(1);
+		Buffer.Inst.PalletMin.Change(2);
+		Buffer.Inst.PalletMax.Change(3);
+		Buffer.Inst.BoundMin.Change(4);
+		Buffer.Inst.BoundMax.Change(5);
+	}
 }
 
 

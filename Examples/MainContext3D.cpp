@@ -33,17 +33,17 @@ void MainContext3D::UpdateView(FrameTime frame_time)
 
 
 
-void MainContext3D::Resize(const DisplaySize & Size)
+void MainContext3D::Resize(DisplaySize display_size)
 {
-	Multiform_DisplaySize.ChangeData(Size);
+	Multiform_DisplaySize.ChangeData(display_size);
 }
 
 int MainContext3D::Run()
 {
-	window.InitCallBack.Assign<MainContext3D>(this, &MainContext3D::Init);
-	window.FreeCallBack.Assign<MainContext3D>(this, &MainContext3D::Free);
-	window.FrameCallBack.Assign<MainContext3D>(this, &MainContext3D::Frame);
-	window.ResizeCallBack.Assign<MainContext3D>(this, &MainContext3D::Resize);
+	window.CallBack_Init.Assign<MainContext3D>(this, &MainContext3D::Init);
+	window.CallBack_Free.Assign<MainContext3D>(this, &MainContext3D::Free);
+	window.CallBack_Resize.Assign<MainContext3D>(this, &MainContext3D::Resize);
+	window.CallBack_Frame.Assign<MainContext3D>(this, &MainContext3D::Frame);
 
 	window.MouseManager.Callback_ScrollEvent.Assign(this, &MainContext3D::MouseScroll);
 	window.MouseManager.Callback_ClickEvent.Assign(this, &MainContext3D::MouseClick);

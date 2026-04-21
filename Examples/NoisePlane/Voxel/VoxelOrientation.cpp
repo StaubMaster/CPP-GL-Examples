@@ -28,11 +28,11 @@ VoxelOrientation & VoxelOrientation::operator=(const VoxelOrientation & other)
 
 void VoxelOrientation::make(Diag diag, Flip flip) { SetDiag(diag); SetFlip(flip); }
 
-void VoxelOrientation::make(Axis origin, Axis target)
+void VoxelOrientation::make(AxisRel origin, AxisRel target)
 {
-	make(origin, target, Axis::None, Axis::None);
+	make(origin, target, AxisRel::None, AxisRel::None);
 }
-void VoxelOrientation::make(Axis origin0, Axis target0, Axis origin1, Axis target1)
+void VoxelOrientation::make(AxisRel origin0, AxisRel target0, AxisRel origin1, AxisRel target1)
 {
 	Diag diags[6] =
 	{
@@ -52,8 +52,8 @@ void VoxelOrientation::make(Axis origin0, Axis target0, Axis origin1, Axis targe
 	};
 	VoxelOrientation orient;
 
-	bool ignore0 = (origin0 == Axis::None || target0 == Axis::None);
-	bool ignore1 = (origin1 == Axis::None || target1 == Axis::None);
+	bool ignore0 = (origin0 == AxisRel::None || target0 == AxisRel::None);
+	bool ignore1 = (origin1 == AxisRel::None || target1 == AxisRel::None);
 	for (unsigned int f = 0; f < 4; f++)
 	{
 		for (unsigned int d = 0; d < 6; d++)
@@ -95,68 +95,68 @@ VectorF3 VoxelOrientation::absolute(VectorF3 v) const
 	return v;
 }
 
-Axis VoxelOrientation::absolute(Axis axis) const
+AxisRel VoxelOrientation::absolute(AxisRel axis) const
 {
 	switch (GetDiag())
 	{
 		case Diag::Here: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevX; break;
-			case Axis::PrevY: axis = Axis::PrevY; break;
-			case Axis::PrevZ: axis = Axis::PrevZ; break;
-			case Axis::NextX: axis = Axis::NextX; break;
-			case Axis::NextY: axis = Axis::NextY; break;
-			case Axis::NextZ: axis = Axis::NextZ; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevX; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevY; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextX: axis = AxisRel::NextX; break;
+			case AxisRel::NextY: axis = AxisRel::NextY; break;
+			case AxisRel::NextZ: axis = AxisRel::NextZ; break;
 			default: break;
 		} break;
 		case Diag::Prev: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevY; break;
-			case Axis::PrevY: axis = Axis::PrevZ; break;
-			case Axis::PrevZ: axis = Axis::PrevX; break;
-			case Axis::NextX: axis = Axis::NextY; break;
-			case Axis::NextY: axis = Axis::NextZ; break;
-			case Axis::NextZ: axis = Axis::NextX; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevY; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevZ; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevX; break;
+			case AxisRel::NextX: axis = AxisRel::NextY; break;
+			case AxisRel::NextY: axis = AxisRel::NextZ; break;
+			case AxisRel::NextZ: axis = AxisRel::NextX; break;
 			default: break;
 		} break;
 		case Diag::Next: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevZ; break;
-			case Axis::PrevY: axis = Axis::PrevX; break;
-			case Axis::PrevZ: axis = Axis::PrevY; break;
-			case Axis::NextX: axis = Axis::NextZ; break;
-			case Axis::NextY: axis = Axis::NextX; break;
-			case Axis::NextZ: axis = Axis::NextY; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevZ; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevX; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevY; break;
+			case AxisRel::NextX: axis = AxisRel::NextZ; break;
+			case AxisRel::NextY: axis = AxisRel::NextX; break;
+			case AxisRel::NextZ: axis = AxisRel::NextY; break;
 			default: break;
 		} break;
 		case Diag::DiagX: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextX; break;
-			case Axis::PrevY: axis = Axis::NextZ; break;
-			case Axis::PrevZ: axis = Axis::NextY; break;
-			case Axis::NextX: axis = Axis::PrevX; break;
-			case Axis::NextY: axis = Axis::PrevZ; break;
-			case Axis::NextZ: axis = Axis::PrevY; break;
+			case AxisRel::PrevX: axis = AxisRel::NextX; break;
+			case AxisRel::PrevY: axis = AxisRel::NextZ; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextY; break;
+			case AxisRel::NextX: axis = AxisRel::PrevX; break;
+			case AxisRel::NextY: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevY; break;
 			default: break;
 		} break;
 		case Diag::DiagY: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextZ; break;
-			case Axis::PrevY: axis = Axis::NextY; break;
-			case Axis::PrevZ: axis = Axis::NextX; break;
-			case Axis::NextX: axis = Axis::PrevZ; break;
-			case Axis::NextY: axis = Axis::PrevY; break;
-			case Axis::NextZ: axis = Axis::PrevX; break;
+			case AxisRel::PrevX: axis = AxisRel::NextZ; break;
+			case AxisRel::PrevY: axis = AxisRel::NextY; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextX; break;
+			case AxisRel::NextX: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextY: axis = AxisRel::PrevY; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevX; break;
 			default: break;
 		} break;
 		case Diag::DiagZ: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextY; break;
-			case Axis::PrevY: axis = Axis::NextX; break;
-			case Axis::PrevZ: axis = Axis::NextZ; break;
-			case Axis::NextX: axis = Axis::PrevY; break;
-			case Axis::NextY: axis = Axis::PrevX; break;
-			case Axis::NextZ: axis = Axis::PrevZ; break;
+			case AxisRel::PrevX: axis = AxisRel::NextY; break;
+			case AxisRel::PrevY: axis = AxisRel::NextX; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextZ; break;
+			case AxisRel::NextX: axis = AxisRel::PrevY; break;
+			case AxisRel::NextY: axis = AxisRel::PrevX; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevZ; break;
 			default: break;
 		} break;
 	}
@@ -165,90 +165,90 @@ Axis VoxelOrientation::absolute(Axis axis) const
 	{
 		case Flip::None: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevX; break;
-			case Axis::PrevY: axis = Axis::PrevY; break;
-			case Axis::PrevZ: axis = Axis::PrevZ; break;
-			case Axis::NextX: axis = Axis::NextX; break;
-			case Axis::NextY: axis = Axis::NextY; break;
-			case Axis::NextZ: axis = Axis::NextZ; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevX; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevY; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextX: axis = AxisRel::NextX; break;
+			case AxisRel::NextY: axis = AxisRel::NextY; break;
+			case AxisRel::NextZ: axis = AxisRel::NextZ; break;
 			default: break;
 		} break;
 		case Flip::FlipX: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevX; break;
-			case Axis::PrevY: axis = Axis::NextY; break;
-			case Axis::PrevZ: axis = Axis::NextZ; break;
-			case Axis::NextX: axis = Axis::NextX; break;
-			case Axis::NextY: axis = Axis::PrevY; break;
-			case Axis::NextZ: axis = Axis::PrevZ; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevX; break;
+			case AxisRel::PrevY: axis = AxisRel::NextY; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextZ; break;
+			case AxisRel::NextX: axis = AxisRel::NextX; break;
+			case AxisRel::NextY: axis = AxisRel::PrevY; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevZ; break;
 			default: break;
 		} break;
 		case Flip::FlipY: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextX; break;
-			case Axis::PrevY: axis = Axis::PrevY; break;
-			case Axis::PrevZ: axis = Axis::NextZ; break;
-			case Axis::NextX: axis = Axis::PrevX; break;
-			case Axis::NextY: axis = Axis::NextY; break;
-			case Axis::NextZ: axis = Axis::PrevZ; break;
+			case AxisRel::PrevX: axis = AxisRel::NextX; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevY; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextZ; break;
+			case AxisRel::NextX: axis = AxisRel::PrevX; break;
+			case AxisRel::NextY: axis = AxisRel::NextY; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevZ; break;
 			default: break;
 		} break;
 		case Flip::FlipZ: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextX; break;
-			case Axis::PrevY: axis = Axis::NextY; break;
-			case Axis::PrevZ: axis = Axis::PrevZ; break;
-			case Axis::NextX: axis = Axis::PrevX; break;
-			case Axis::NextY: axis = Axis::PrevY; break;
-			case Axis::NextZ: axis = Axis::NextZ; break;
+			case AxisRel::PrevX: axis = AxisRel::NextX; break;
+			case AxisRel::PrevY: axis = AxisRel::NextY; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextX: axis = AxisRel::PrevX; break;
+			case AxisRel::NextY: axis = AxisRel::PrevY; break;
+			case AxisRel::NextZ: axis = AxisRel::NextZ; break;
 			default: break;
 		} break;
 	}
 
 	return axis;
 }
-Axis VoxelOrientation::relative(Axis axis) const
+AxisRel VoxelOrientation::relative(AxisRel axis) const
 {
 	switch (GetFlip())
 	{
 		case Flip::None: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevX; break;
-			case Axis::PrevY: axis = Axis::PrevY; break;
-			case Axis::PrevZ: axis = Axis::PrevZ; break;
-			case Axis::NextX: axis = Axis::NextX; break;
-			case Axis::NextY: axis = Axis::NextY; break;
-			case Axis::NextZ: axis = Axis::NextZ; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevX; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevY; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextX: axis = AxisRel::NextX; break;
+			case AxisRel::NextY: axis = AxisRel::NextY; break;
+			case AxisRel::NextZ: axis = AxisRel::NextZ; break;
 			default: break;
 		} break;
 		case Flip::FlipX: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevX; break;
-			case Axis::PrevY: axis = Axis::NextY; break;
-			case Axis::PrevZ: axis = Axis::NextZ; break;
-			case Axis::NextX: axis = Axis::NextX; break;
-			case Axis::NextY: axis = Axis::PrevY; break;
-			case Axis::NextZ: axis = Axis::PrevZ; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevX; break;
+			case AxisRel::PrevY: axis = AxisRel::NextY; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextZ; break;
+			case AxisRel::NextX: axis = AxisRel::NextX; break;
+			case AxisRel::NextY: axis = AxisRel::PrevY; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevZ; break;
 			default: break;
 		} break;
 		case Flip::FlipY: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextX; break;
-			case Axis::PrevY: axis = Axis::PrevY; break;
-			case Axis::PrevZ: axis = Axis::NextZ; break;
-			case Axis::NextX: axis = Axis::PrevX; break;
-			case Axis::NextY: axis = Axis::NextY; break;
-			case Axis::NextZ: axis = Axis::PrevZ; break;
+			case AxisRel::PrevX: axis = AxisRel::NextX; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevY; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextZ; break;
+			case AxisRel::NextX: axis = AxisRel::PrevX; break;
+			case AxisRel::NextY: axis = AxisRel::NextY; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevZ; break;
 			default: break;
 		} break;
 		case Flip::FlipZ: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextX; break;
-			case Axis::PrevY: axis = Axis::NextY; break;
-			case Axis::PrevZ: axis = Axis::PrevZ; break;
-			case Axis::NextX: axis = Axis::PrevX; break;
-			case Axis::NextY: axis = Axis::PrevY; break;
-			case Axis::NextZ: axis = Axis::NextZ; break;
+			case AxisRel::PrevX: axis = AxisRel::NextX; break;
+			case AxisRel::PrevY: axis = AxisRel::NextY; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextX: axis = AxisRel::PrevX; break;
+			case AxisRel::NextY: axis = AxisRel::PrevY; break;
+			case AxisRel::NextZ: axis = AxisRel::NextZ; break;
 			default: break;
 		} break;
 	}
@@ -257,62 +257,62 @@ Axis VoxelOrientation::relative(Axis axis) const
 	{
 		case Diag::Here: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevX; break;
-			case Axis::PrevY: axis = Axis::PrevY; break;
-			case Axis::PrevZ: axis = Axis::PrevZ; break;
-			case Axis::NextX: axis = Axis::NextX; break;
-			case Axis::NextY: axis = Axis::NextY; break;
-			case Axis::NextZ: axis = Axis::NextZ; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevX; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevY; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextX: axis = AxisRel::NextX; break;
+			case AxisRel::NextY: axis = AxisRel::NextY; break;
+			case AxisRel::NextZ: axis = AxisRel::NextZ; break;
 			default: break;
 		} break;
 		case Diag::Prev: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevZ; break;
-			case Axis::PrevY: axis = Axis::PrevX; break;
-			case Axis::PrevZ: axis = Axis::PrevY; break;
-			case Axis::NextX: axis = Axis::NextZ; break;
-			case Axis::NextY: axis = Axis::NextX; break;
-			case Axis::NextZ: axis = Axis::NextY; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevZ; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevX; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevY; break;
+			case AxisRel::NextX: axis = AxisRel::NextZ; break;
+			case AxisRel::NextY: axis = AxisRel::NextX; break;
+			case AxisRel::NextZ: axis = AxisRel::NextY; break;
 			default: break;
 		} break;
 		case Diag::Next: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::PrevY; break;
-			case Axis::PrevY: axis = Axis::PrevZ; break;
-			case Axis::PrevZ: axis = Axis::PrevX; break;
-			case Axis::NextX: axis = Axis::NextY; break;
-			case Axis::NextY: axis = Axis::NextZ; break;
-			case Axis::NextZ: axis = Axis::NextX; break;
+			case AxisRel::PrevX: axis = AxisRel::PrevY; break;
+			case AxisRel::PrevY: axis = AxisRel::PrevZ; break;
+			case AxisRel::PrevZ: axis = AxisRel::PrevX; break;
+			case AxisRel::NextX: axis = AxisRel::NextY; break;
+			case AxisRel::NextY: axis = AxisRel::NextZ; break;
+			case AxisRel::NextZ: axis = AxisRel::NextX; break;
 			default: break;
 		} break;
 		case Diag::DiagX: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextX; break;
-			case Axis::PrevY: axis = Axis::NextZ; break;
-			case Axis::PrevZ: axis = Axis::NextY; break;
-			case Axis::NextX: axis = Axis::PrevX; break;
-			case Axis::NextY: axis = Axis::PrevZ; break;
-			case Axis::NextZ: axis = Axis::PrevY; break;
+			case AxisRel::PrevX: axis = AxisRel::NextX; break;
+			case AxisRel::PrevY: axis = AxisRel::NextZ; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextY; break;
+			case AxisRel::NextX: axis = AxisRel::PrevX; break;
+			case AxisRel::NextY: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevY; break;
 			default: break;
 		} break;
 		case Diag::DiagY: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextZ; break;
-			case Axis::PrevY: axis = Axis::NextY; break;
-			case Axis::PrevZ: axis = Axis::NextX; break;
-			case Axis::NextX: axis = Axis::PrevZ; break;
-			case Axis::NextY: axis = Axis::PrevY; break;
-			case Axis::NextZ: axis = Axis::PrevX; break;
+			case AxisRel::PrevX: axis = AxisRel::NextZ; break;
+			case AxisRel::PrevY: axis = AxisRel::NextY; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextX; break;
+			case AxisRel::NextX: axis = AxisRel::PrevZ; break;
+			case AxisRel::NextY: axis = AxisRel::PrevY; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevX; break;
 			default: break;
 		} break;
 		case Diag::DiagZ: switch (axis)
 		{
-			case Axis::PrevX: axis = Axis::NextY; break;
-			case Axis::PrevY: axis = Axis::NextX; break;
-			case Axis::PrevZ: axis = Axis::NextZ; break;
-			case Axis::NextX: axis = Axis::PrevY; break;
-			case Axis::NextY: axis = Axis::PrevX; break;
-			case Axis::NextZ: axis = Axis::PrevZ; break;
+			case AxisRel::PrevX: axis = AxisRel::NextY; break;
+			case AxisRel::PrevY: axis = AxisRel::NextX; break;
+			case AxisRel::PrevZ: axis = AxisRel::NextZ; break;
+			case AxisRel::NextX: axis = AxisRel::PrevY; break;
+			case AxisRel::NextY: axis = AxisRel::PrevX; break;
+			case AxisRel::NextZ: axis = AxisRel::PrevZ; break;
 			default: break;
 		} break;
 	}

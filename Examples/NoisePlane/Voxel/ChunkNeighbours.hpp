@@ -5,7 +5,7 @@ struct VectorU3;
 struct Voxel;
 struct Chunk;
 
-enum class Axis : unsigned char;
+enum class AxisRel : unsigned char;
 
 struct ChunkNeighbours
 {
@@ -24,7 +24,7 @@ struct ChunkNeighbours
 	ChunkNeighbours(const ChunkNeighbours & other);
 	ChunkNeighbours & operator=(const ChunkNeighbours & other);
 
-	bool		Visible(Axis axis, VectorU3 udx) const;
+	bool		Visible(AxisRel axis, VectorU3 udx) const;
 
 	void	UpdateOthersHere();
 

@@ -3,21 +3,49 @@
 
 
 
-std::ostream & operator<<(std::ostream & s, Axis axis)
+std::ostream & operator<<(std::ostream & s, AxisAbs axis)
 {
 	switch (axis)
 	{
-		case Axis::Here : s << "Here"; break;
-		case Axis::PrevX: s << "PrevX"; break;
-		case Axis::PrevY: s << "PrevY"; break;
-		case Axis::PrevZ: s << "PrevZ"; break;
-		case Axis::NextX: s << "NextX"; break;
-		case Axis::NextY: s << "NextY"; break;
-		case Axis::NextZ: s << "NextZ"; break;
-		case Axis::None : s << "None"; break;
-		default : s << "Axis:" << ((unsigned int)axis); break;
+		case AxisAbs::None : s << "None"; break;
+		case AxisAbs::X: s << "X"; break;
+		case AxisAbs::Y: s << "Y"; break;
+		case AxisAbs::Z: s << "Z"; break;
+		default : s << "AxisAbs:" << ((unsigned int)axis); break;
 	}
 	return s;
+}
+
+std::ostream & operator<<(std::ostream & s, AxisRel axis)
+{
+	switch (axis)
+	{
+		case AxisRel::None : s << "None"; break;
+		case AxisRel::PrevX: s << "PrevX"; break;
+		case AxisRel::PrevY: s << "PrevY"; break;
+		case AxisRel::PrevZ: s << "PrevZ"; break;
+		case AxisRel::NextX: s << "NextX"; break;
+		case AxisRel::NextY: s << "NextY"; break;
+		case AxisRel::NextZ: s << "NextZ"; break;
+		default : s << "AxisRel:" << ((unsigned int)axis); break;
+	}
+	return s;
+}
+
+
+
+AxisAbs AxisRelToAxisAbs(AxisRel axis)
+{
+	switch (axis)
+	{
+		case AxisRel::PrevX: return AxisAbs::X;
+		case AxisRel::NextX: return AxisAbs::X;
+		case AxisRel::PrevY: return AxisAbs::Y;
+		case AxisRel::NextY: return AxisAbs::Y;
+		case AxisRel::PrevZ: return AxisAbs::Z;
+		case AxisRel::NextZ: return AxisAbs::Z;
+		default: return AxisAbs::None;
+	}
 }
 
 

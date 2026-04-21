@@ -1,24 +1,7 @@
 
-make PolyHedra more like PolyGon
-remove PolyHedra::Template
-
 make better PolyHedra for simple Texture
 
-make better Textures Wrapper
 
-
-
-make Multiforms better
-reorganize Uniforms. some stuff is no longer used and inconsistent
-
-Uniforms for more Base types
-all Vector and Matrixes ?
-same with Attributes and Multiforms
-
-
-
-LoopTN
-	.Size() returns Size. depends on Exclusion
 
 VectorN
 	Largest
@@ -26,8 +9,6 @@ VectorN
 	Smallest
 	Farthest
 		return BoolN
-
-Min, Max function
 
 BoxN
 	CenterTo()
@@ -37,17 +18,3 @@ BoxN
 
 BoxN
 	convert to other Types
-
-name template Types better
-	VectorNType
-	Vector3Type
-	BoxReturnType
-	BoxOtherType
-
-
-
-PolyHedra Instance Manager
-	DisplayFull and DisplayWire default values
-
-PolyHedra Object Array
-

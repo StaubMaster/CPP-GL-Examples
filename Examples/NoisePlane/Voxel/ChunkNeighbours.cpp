@@ -39,19 +39,19 @@ ChunkNeighbours & ChunkNeighbours::operator=(const ChunkNeighbours & other)
 
 
 
-bool ChunkNeighbours::Visible(Axis axis, VectorU3 udx) const
+bool ChunkNeighbours::Visible(AxisRel axis, VectorU3 udx) const
 {
 	unsigned int n = CHUNK_VALUES_PER_SIDE - 1;
 
 	Chunk * chunk = nullptr;
 	switch (axis)
 	{
-		case Axis::PrevX: if (udx.X != 0) { chunk = Here; udx.X--; } else { chunk = PrevX; udx.X = n; } break;
-		case Axis::PrevY: if (udx.Y != 0) { chunk = Here; udx.Y--; } else { chunk = PrevY; udx.Y = n; } break;
-		case Axis::PrevZ: if (udx.Z != 0) { chunk = Here; udx.Z--; } else { chunk = PrevZ; udx.Z = n; } break;
-		case Axis::NextX: if (udx.X != n) { chunk = Here; udx.X++; } else { chunk = NextX; udx.X = 0; } break;
-		case Axis::NextY: if (udx.Y != n) { chunk = Here; udx.Y++; } else { chunk = NextY; udx.Y = 0; } break;
-		case Axis::NextZ: if (udx.Z != n) { chunk = Here; udx.Z++; } else { chunk = NextZ; udx.Z = 0; } break;
+		case AxisRel::PrevX: if (udx.X != 0) { chunk = Here; udx.X--; } else { chunk = PrevX; udx.X = n; } break;
+		case AxisRel::PrevY: if (udx.Y != 0) { chunk = Here; udx.Y--; } else { chunk = PrevY; udx.Y = n; } break;
+		case AxisRel::PrevZ: if (udx.Z != 0) { chunk = Here; udx.Z--; } else { chunk = PrevZ; udx.Z = n; } break;
+		case AxisRel::NextX: if (udx.X != n) { chunk = Here; udx.X++; } else { chunk = NextX; udx.X = 0; } break;
+		case AxisRel::NextY: if (udx.Y != n) { chunk = Here; udx.Y++; } else { chunk = NextY; udx.Y = 0; } break;
+		case AxisRel::NextZ: if (udx.Z != n) { chunk = Here; udx.Z++; } else { chunk = NextZ; udx.Z = 0; } break;
 		default: break;
 	}
 	if (chunk == nullptr) { return false; }
@@ -73,12 +73,12 @@ bool ChunkNeighbours::Visible(Axis axis, VectorU3 udx) const
 
 	switch (voxel -> Orientation.relative(axis))
 	{
-		case Axis::PrevX: return !(voxel -> Template -> HideNextX);
-		case Axis::PrevY: return !(voxel -> Template -> HideNextY);
-		case Axis::PrevZ: return !(voxel -> Template -> HideNextZ);
-		case Axis::NextX: return !(voxel -> Template -> HidePrevX);
-		case Axis::NextY: return !(voxel -> Template -> HidePrevY);
-		case Axis::NextZ: return !(voxel -> Template -> HidePrevZ);
+		case AxisRel::PrevX: return !(voxel -> Template -> HideNextX);
+		case AxisRel::PrevY: return !(voxel -> Template -> HideNextY);
+		case AxisRel::PrevZ: return !(voxel -> Template -> HideNextZ);
+		case AxisRel::NextX: return !(voxel -> Template -> HidePrevX);
+		case AxisRel::NextY: return !(voxel -> Template -> HidePrevY);
+		case AxisRel::NextZ: return !(voxel -> Template -> HidePrevZ);
 		default: return false;
 	}
 }
