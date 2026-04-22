@@ -9,9 +9,8 @@
 
 
 MainContext3D::~MainContext3D() { }
-MainContext3D::MainContext3D()
-	: MediaDirectory("../../media/")
-	, window()
+MainContext3D::MainContext3D(::Window & window)
+	: ContextBase(window)
 	, Multiform_DisplaySize("DisplaySize")
 	, view()
 { }
@@ -38,7 +37,7 @@ void MainContext3D::Resize(DisplaySize display_size)
 	Multiform_DisplaySize.ChangeData(display_size);
 }
 
-int MainContext3D::Run()
+/*int MainContext3D::Run()
 {
 	window.CallBack_Init.Assign<MainContext3D>(this, &MainContext3D::Init);
 	window.CallBack_Free.Assign<MainContext3D>(this, &MainContext3D::Free);
@@ -58,4 +57,4 @@ int MainContext3D::Run()
 	window.Delete();
 
 	return 0;
-}
+}*/

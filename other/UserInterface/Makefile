@@ -93,3 +93,6 @@ ARGS_INCLUDES = $(foreach include, $(INCLUDES),-I$(include))
 
 REPOS_DIR := ../../repos/
 include $(REPOS_DIR)/repos.mk
+include $(REPOS_DIR)/Engine.mk
+include $(REPOS_DIR)/FileManager.mk
+include $(REPOS_DIR)/OpenGL.mk

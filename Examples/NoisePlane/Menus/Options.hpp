@@ -15,7 +15,8 @@ struct OptionsMenu : public UI::Control::Form
 	~OptionsMenu();
 	OptionsMenu();
 
-	void FOV_Change(float val);
+	void	FOV_Change(float val);
+	void	BackFunc(ClickArgs args);
 };
 
 #endif

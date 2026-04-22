@@ -80,8 +80,8 @@ Perlin3D				Perlin3;
 
 ~MainContext()
 { }
-MainContext()
-	: MainContext3D()
+MainContext(::Window & window)
+	: MainContext3D(window)
 	, PolyHedraManager()
 	, ControlManager()
 	, TextManager()
@@ -197,9 +197,9 @@ bool OptionsMenuIs;
 void MakeControls()
 {
 	{
-		OptionsMenuIs = false;
+		OptionsMenuIs = true;
 		OptionsMenu.FOV_Slider.ValueChangedFunc.Assign(this, &MainContext::FOV_Change);
-		OptionsMenu.Hide();
+		OptionsMenu.Show();
 		ControlManager.Window.ChildInsert(OptionsMenu);
 	}
 }
@@ -900,8 +900,8 @@ void KeyBoardKey(KeyArgs args) override { (void)args; }
 
 
 
-int run()
+/*int run()
 {
 	MainContext context;
 	return context.Run();
-}
+}*/

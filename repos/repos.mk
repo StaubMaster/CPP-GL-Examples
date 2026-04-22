@@ -54,8 +54,8 @@ repos_rm:
 
 ################################################################
 
-include $(REPOS_DIR)/Engine.mk
-include $(REPOS_DIR)/FileManager.mk
-include $(REPOS_DIR)/OpenGL.mk
+#include $(REPOS_DIR)/Engine.mk
+#include $(REPOS_DIR)/FileManager.mk
+#include $(REPOS_DIR)/OpenGL.mk
 
 ################################################################

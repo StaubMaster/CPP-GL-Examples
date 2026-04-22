@@ -10,11 +10,13 @@
 
 # include "ValueType/View3D.hpp"
 
-struct MainContext3D
-{
-DirectoryInfo MediaDirectory;
+# include "SelectorTest/ContextBase.hpp"
 
-Window	window;
+struct MainContext3D : public ContextBase
+{
+//DirectoryInfo MediaDirectory;
+//Window	window;
+
 Multiform::DisplaySize	Multiform_DisplaySize;
 
 View3D	view;
@@ -22,7 +24,7 @@ View3D	view;
 //Multiform::Angle			Multiform_Scale;
 
 virtual ~MainContext3D();
-MainContext3D();
+MainContext3D(::Window & window);
 
 virtual void Make() = 0;
 
@@ -43,7 +45,7 @@ virtual void MouseClick(ClickArgs args) = 0;
 virtual void MouseDrag(DragArgs args) = 0;
 virtual void KeyBoardKey(KeyArgs args) = 0;
 
-int Run();
+//int Run();
 };
 
 #endif

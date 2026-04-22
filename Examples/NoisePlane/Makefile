@@ -15,7 +15,12 @@ FANCY_NAME := NoisePlane
 ################################################################
 
 FILES_SRC := \
-	../main.cpp \
+	../SelectorTest/ContextBase.cpp \
+	../SelectorTest/Context0.cpp \
+	../SelectorTest/Context0Menu.cpp \
+	../SelectorTest/Context1.cpp \
+	../SelectorTest/Context1Menu.cpp \
+	../SelectorTest/main.cpp \
 	../MainContext3D.cpp \
 \
 	Random.cpp \

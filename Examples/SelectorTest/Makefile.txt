@@ -1,0 +1,9 @@
+
+MakeFile Template for
+	Compiling into exe
+	Archiving into lib
+
+should each include everything ?
+or should each MakeFile specify what it wants
+
+specifyign isnt that much

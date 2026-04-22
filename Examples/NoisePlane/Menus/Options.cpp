@@ -34,5 +34,17 @@ OptionsMenu::OptionsMenu()
 
 	ButtonBack.Anchor.X.AnchorMin(0);
 	ButtonBack.Anchor.Y.AnchorMax(0);
+	ButtonBack.ClickFunc.Assign(this, &OptionsMenu::BackFunc);
 	ChildInsert(ButtonBack);
+}
+
+
+
+#include "../SelectorTest/main.hpp"
+void OptionsMenu::BackFunc(ClickArgs args)
+{
+	if (args.Action == Action::Press)
+	{
+		ChangeToContext0();
+	}
 }

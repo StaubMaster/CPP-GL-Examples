@@ -1,0 +1,14 @@
+
+standardize the MainContext stuff for all Examples
+make it so the Makefiles Compile into an Archive
+
+make a MainMakefile that assambles the Archives together
+{
+	if something changes about a fundamental element (like Value Types)
+	then everything needs to be recompiled
+	make it so inserting and removing stuff is easy
+	so you just need to comment out
+		1 line in the makefile
+		1 line that includes
+		1 line that dose something in the code
+}
