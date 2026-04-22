@@ -31,8 +31,6 @@ FILES_OBJ := $(addprefix $(DIR_OBJ)/,$(FILES:.cpp=.o))
 
 all:
 	@$(call fancyNameTargetEcho,$@)
-	@$(MAKE) -s repos_all
-	@$(MAKE) -s other_all
 	@$(MAKE) -s $(FILES_OBJ)
 	@$(MAKE) -s $(NAME)
 
@@ -60,8 +58,6 @@ $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 
 final:
 	@$(call fancyNameTargetEcho,$@)
-	@$(MAKE) -s repos_all
-	@$(MAKE) -s other_all
 	@$(MAKE) -s $(FILES_OBJ)
 	@$(call fancyNameCompilingEcho,$(NAME))
 	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $(NAME) $(LIBRARYS) $(ARGUMENTS)

@@ -7,17 +7,17 @@ struct Context0Menu : public UI::Control::Form
 {
 	UI::Control::TextBox	TitleText;
 
-	UI::Control::TextBox	QuitText;
 	UI::Control::Button		QuitButton;
+	UI::Control::TextBox	QuitText;
 
-	UI::Control::TextBox	Context0Text;
 	UI::Control::Button		Context0Button;
+	UI::Control::TextBox	Context0Text;
 
-	UI::Control::TextBox	Context1Text;
 	UI::Control::Button		Context1Button;
+	UI::Control::TextBox	Context1Text;
 
-	UI::Control::TextBox	ContextNoisePlaneText;
 	UI::Control::Button		ContextNoisePlaneButton;
+	UI::Control::TextBox	ContextNoisePlaneText;
 
 	~Context0Menu();
 	Context0Menu();

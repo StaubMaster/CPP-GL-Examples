@@ -2,6 +2,8 @@
 clean up Managers in main
 
 Text Color
+Text on Buttons
+Text on Sliders
 
 
 

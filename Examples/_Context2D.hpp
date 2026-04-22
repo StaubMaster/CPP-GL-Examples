@@ -16,7 +16,7 @@
 
 # include "PolyGon/Manager.hpp"
 
-struct MainContext2D
+struct Context2D : public ContextBase
 {
 DirectoryInfo MediaDirectory;
 
@@ -29,8 +29,8 @@ Multiform::Float		Multiform_Scale;
 
 ::PolyGonManager	PolyGonManager;
 
-virtual ~MainContext2D();
-MainContext2D();
+virtual ~Context2D();
+Context2D();
 
 void mMake();
 void mInit();

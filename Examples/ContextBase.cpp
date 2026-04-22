@@ -5,7 +5,7 @@
 // Contexts
 #include "Context0/Context0.hpp"
 #include "Context1/Context1.hpp"
-//#include "../NoisePlane/main.cpp"
+#include "../NoisePlane/main.cpp"
 
 
 
@@ -39,7 +39,7 @@ void ContextBase::ChangeToContext1()
 }
 void ContextBase::ChangeToNoisePlane()
 {
-//	Change(new MainContext());
+	Change(new ContextNoisePlane());
 }
 
 
@@ -49,7 +49,7 @@ void ContextBase::ChangeToNoisePlane()
 ContextBase::~ContextBase() { }
 ContextBase::ContextBase()
 	: window(*WindowPointer)
-	, MediaDirectory("../../media/")
+	, MediaDirectory("../media/")
 { }
 
 void ContextBase::Run()

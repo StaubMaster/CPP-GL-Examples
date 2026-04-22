@@ -10,9 +10,9 @@
 
 # include "ValueType/View3D.hpp"
 
-# include "SelectorTest/ContextBase.hpp"
+# include "ContextBase.hpp"
 
-struct MainContext3D : public ContextBase
+struct Context3D : public ContextBase
 {
 //DirectoryInfo MediaDirectory;
 //Window	window;
@@ -23,8 +23,8 @@ View3D	view;
 //Multiform::Trans3D		Multiform_View;
 //Multiform::Angle			Multiform_Scale;
 
-virtual ~MainContext3D();
-MainContext3D(::Window & window);
+virtual ~Context3D();
+Context3D();
 
 virtual void Make() = 0;
 

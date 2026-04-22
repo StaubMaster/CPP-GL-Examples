@@ -1,7 +1,7 @@
 #ifndef  PLANE_MANAGER_HPP
 # define PLANE_MANAGER_HPP
 
-# include "Noise/Perlin2D.hpp"
+# include "ValueGen/Perlin2D.hpp"
 # include "Plane.hpp"
 # include "PlaneGraphics.hpp"
 # include "PlaneNeighbours.hpp"

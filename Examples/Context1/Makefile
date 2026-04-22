@@ -1,16 +1,16 @@
 
-NAME := Context0.a
-FANCY_NAME := Context0
+NAME := Context1.a
+FANCY_NAME := Context1
 
 ################################################################
 
 FILES := \
-	Context0.cpp \
-	Context0Menu.cpp \
+	Context1.cpp \
+	Context1Menu.cpp \
 
 ################################################################
 
-BASE_DIR := ../../../
+BASE_DIR := ../../
 include ../BaseA.mk
 
 ################################################################

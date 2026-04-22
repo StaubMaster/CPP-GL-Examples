@@ -7,25 +7,25 @@ Context0Menu::~Context0Menu() { }
 Context0Menu::Context0Menu()
 	: UI::Control::Form()
 	, TitleText()
-	, QuitText()
 	, QuitButton()
-	, Context0Text()
+	, QuitText()
 	, Context0Button()
-	, Context1Text()
+	, Context0Text()
 	, Context1Button()
-	, ContextNoisePlaneText()
+	, Context1Text()
 	, ContextNoisePlaneButton()
+	, ContextNoisePlaneText()
 {
 	float x = 0.0f;
 	float y = 0.0f;
 
-	QuitText.Anchor.X.AnchorMin(0.0f, 200);
-	QuitText.Anchor.Y.AnchorMax(0.0f);
-	QuitText.SetText("Quit");
-	x = QuitText.Anchor.X.GetMinSize();
 	QuitButton.Anchor.X.AnchorMin(x);
 	QuitButton.Anchor.Y.AnchorMax(0.0f);
 	QuitButton.ClickFunc.Assign(this, &Context0Menu::QuitFunc);
+	x = QuitButton.Anchor.X.GetMinSize();
+	QuitText.Anchor.X.AnchorBoth(x, 0);
+	QuitText.Anchor.Y.AnchorMax(0.0f);
+	QuitText.SetText("Quit");
 
 	TitleText.Anchor.X.AnchorBoth(0, 0);
 	TitleText.Anchor.Y.AnchorMin(y);
@@ -34,8 +34,8 @@ Context0Menu::Context0Menu()
 
 	Context0Text.Anchor.X.AnchorMin(0.0f, 200);
 	Context0Text.Anchor.Y.AnchorMin(y);
-	x = Context0Text.Anchor.X.GetMinSize();
 	Context0Text.SetText("Context0");
+	x = Context0Text.Anchor.X.GetMinSize();
 	Context0Button.Anchor.X.AnchorMin(x);
 	Context0Button.Anchor.Y.AnchorMin(y);
 	Context0Button.ClickFunc.Assign(this, &Context0Menu::Context0Func);
@@ -43,8 +43,8 @@ Context0Menu::Context0Menu()
 
 	Context1Text.Anchor.X.AnchorMin(0.0f, 200);
 	Context1Text.Anchor.Y.AnchorMin(y);
-	x = Context1Text.Anchor.X.GetMinSize();
 	Context1Text.SetText("Context1");
+	x = Context1Text.Anchor.X.GetMinSize();
 	Context1Button.Anchor.X.AnchorMin(x);
 	Context1Button.Anchor.Y.AnchorMin(y);
 	Context1Button.ClickFunc.Assign(this, &Context0Menu::Context1Func);
@@ -52,8 +52,8 @@ Context0Menu::Context0Menu()
 
 	ContextNoisePlaneText.Anchor.X.AnchorMin(0.0f, 200);
 	ContextNoisePlaneText.Anchor.Y.AnchorMin(y);
-	x = ContextNoisePlaneText.Anchor.X.GetMinSize();
 	ContextNoisePlaneText.SetText("NoisePlane");
+	x = ContextNoisePlaneText.Anchor.X.GetMinSize();
 	ContextNoisePlaneButton.Anchor.X.AnchorMin(x);
 	ContextNoisePlaneButton.Anchor.Y.AnchorMin(y);
 	ContextNoisePlaneButton.ClickFunc.Assign(this, &Context0Menu::ContextNoisePlaneFunc);

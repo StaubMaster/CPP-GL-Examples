@@ -1,10 +1,10 @@
-#include "MainContext2D.hpp"
+#include "Context2D.hpp"
 #include "Miscellaneous/Function/Object.hpp"
 
 #include <iostream>
 #include <sstream>
 
-#include "ValueTypeShow.hpp"
+#include "ValueType/_Show.hpp"
 #include "Debug.hpp"
 
 #include "ValueType/Matrix3x3.hpp"
@@ -12,8 +12,8 @@
 
 
 
-MainContext2D::~MainContext2D() { }
-MainContext2D::MainContext2D()
+Context2D::~Context2D() { }
+Context2D::Context2D()
 	: MediaDirectory("../../media/")
 	, window()
 	, Multiform_DisplaySize("DisplaySize")
@@ -25,13 +25,13 @@ MainContext2D::MainContext2D()
 	PolyGonManager.MakeCurrent();
 }
 
-void MainContext2D::mMake()
+void Context2D::mMake()
 {
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 	Make();
 }
-void MainContext2D::mInit()
+void Context2D::mInit()
 {
 	mMake();
 	PolyGonManager.InitExternal(MediaDirectory);
@@ -39,14 +39,14 @@ void MainContext2D::mInit()
 	PolyGonManager.InitInternal();
 	Init();
 }
-void MainContext2D::mFree()
+void Context2D::mFree()
 {
 	Free();
 	PolyGonManager.GraphicsDelete();
 }
 
 // Update View Move Spin
-void MainContext2D::UpdateView(FrameTime frame_time)
+void Context2D::UpdateView(FrameTime frame_time)
 {
 	{
 		Trans2D trans;
@@ -59,7 +59,7 @@ void MainContext2D::UpdateView(FrameTime frame_time)
 	Multiform_View.ChangeData(view.Trans);
 	Multiform_Scale.ChangeData(view.Scale);
 }
-void MainContext2D::UpdateViewZoom(ScrollArgs args)
+void Context2D::UpdateViewZoom(ScrollArgs args)
 {
 	Point2D cursor_rel = window.Size.Convert(window.MouseManager.CursorPosition());
 	Point2D cursor_abs = view.forward(cursor_rel);
@@ -78,7 +78,7 @@ void MainContext2D::UpdateViewZoom(ScrollArgs args)
 
 Point2D DragAnchorRelative;
 Point2D DragAnchorAbsolute;
-void MainContext2D::UpdateViewDrag(DragArgs args)
+void Context2D::UpdateViewDrag(DragArgs args)
 {	
 	if (args.Button == MouseButtons::MouseM)
 	{
@@ -98,7 +98,7 @@ void MainContext2D::UpdateViewDrag(DragArgs args)
 
 
 
-void MainContext2D::mDraw()
+void Context2D::mDraw()
 {
 	PolyGonManager.ClearInstances();
 	PolyGonManager.Update();
@@ -117,7 +117,7 @@ void MainContext2D::mDraw()
 		PolyGonManager.DrawWire();
 	}
 }
-void MainContext2D::mFrame(double timeDelta)
+void Context2D::mFrame(double timeDelta)
 {
 	FrameTime frame_time(60);
 	frame_time.Update(timeDelta);
@@ -129,23 +129,23 @@ void MainContext2D::mFrame(double timeDelta)
 
 
 
-void MainContext2D::Resize(const DisplaySize & Size)
+void Context2D::Resize(const DisplaySize & Size)
 {
 	Multiform_DisplaySize.ChangeData(Size);
 }
 
-int MainContext2D::Run()
+int Context2D::Run()
 {
-	window.InitCallBack.Assign<MainContext2D>(this, &MainContext2D::mInit);
-	window.FreeCallBack.Assign<MainContext2D>(this, &MainContext2D::mFree);
-	window.FrameCallBack.Assign<MainContext2D>(this, &MainContext2D::mFrame);
-	window.ResizeCallBack.Assign<MainContext2D>(this, &MainContext2D::Resize);
+	window.InitCallBack.Assign<Context2D>(this, &Context2D::mInit);
+	window.FreeCallBack.Assign<Context2D>(this, &Context2D::mFree);
+	window.FrameCallBack.Assign<Context2D>(this, &Context2D::mFrame);
+	window.ResizeCallBack.Assign<Context2D>(this, &Context2D::Resize);
 
-	window.MouseManager.Callback_ScrollEvent.Assign(this, &MainContext2D::MouseScroll);
-	window.MouseManager.Callback_ClickEvent.Assign(this, &MainContext2D::MouseClick);
-	window.MouseManager.Callback_DragEvent.Assign(this, &MainContext2D::MouseDrag);
+	window.MouseManager.Callback_ScrollEvent.Assign(this, &Context2D::MouseScroll);
+	window.MouseManager.Callback_ClickEvent.Assign(this, &Context2D::MouseClick);
+	window.MouseManager.Callback_DragEvent.Assign(this, &Context2D::MouseDrag);
 
-	window.KeyBoardManager.CallBack_KeyEvent.Assign(this, &MainContext2D::KeyBoardKey);
+	window.KeyBoardManager.CallBack_KeyEvent.Assign(this, &Context2D::KeyBoardKey);
 
 	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;

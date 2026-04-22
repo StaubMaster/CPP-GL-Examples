@@ -12,3 +12,8 @@ make a MainMakefile that assambles the Archives together
 		1 line that includes
 		1 line that dose something in the code
 }
+
+
+
+Archives dont need to make Librarys
+only the Executable needs all the Librarys

@@ -1,7 +1,6 @@
 
 // main
-#include "../main.hpp"
-#include "../MainContext3D.hpp"
+#include "../ContextBase.hpp"
 
 // Debug
 #include <iostream>
@@ -9,6 +8,10 @@
 #include "Debug.hpp"
 #include "ValueType/_Show.hpp"
 #include "ValueType/_Include.hpp"
+
+// ValueType
+#include "ValueType/View3D.hpp"
+#include "ValueType/LoopI3.hpp"
 
 // PolyHedra
 #include "PolyHedra/PolyHedra.hpp"
@@ -36,12 +39,10 @@
 // Units
 #include "UnitToString.hpp"
 
-// Random
-#include "Random.hpp"
-
-// Noise
-#include "Noise/Perlin2D.hpp"
-#include "Noise/Perlin3D.hpp"
+// ValueGen
+#include "ValueGen/Random.hpp"
+#include "ValueGen/Perlin2D.hpp"
+#include "ValueGen/Perlin3D.hpp"
 
 // Plane
 #include "Plane/Plane.hpp"
@@ -54,14 +55,14 @@
 #include "Voxel/VoxelOrientation.hpp"
 #include "Voxel/VoxelTemplate.hpp"
 
-#include "ValueType/LoopI3.hpp"
-
 // Menus
 #include "Menus/Options.hpp"
 #include "Menus/Main.hpp"
 
-struct MainContext : public MainContext3D
+struct ContextNoisePlane : public ContextBase
 {
+View3D	view;
+
 ::PolyHedraManager		PolyHedraManager;
 UI::Control::Manager	ControlManager;
 UI::Text::Manager		TextManager;
@@ -74,14 +75,16 @@ UI::Text::Manager		TextManager;
 Perlin2D				Perlin2;
 Perlin3D				Perlin3;
 
+Multiform::DisplaySize		Multiform_DisplaySize;
 ::Multiform::Matrix4x4		Multiform_View;
 ::Multiform::Depth			Multiform_Depth;
 ::Multiform::Angle			Multiform_FOV;
 
-~MainContext()
+~ContextNoisePlane()
 { }
-MainContext(::Window & window)
-	: MainContext3D(window)
+ContextNoisePlane()
+	: ContextBase()
+	, view()
 	, PolyHedraManager()
 	, ControlManager()
 	, TextManager()
@@ -90,6 +93,7 @@ MainContext(::Window & window)
 	, OptionsMenu()
 	, Perlin2(Perlin2D::Random(Undex2D(8, 8)))
 	, Perlin3(Perlin3D::Random(Undex3D(8, 8, 8)))
+	, Multiform_DisplaySize("DisplaySize")
 	, Multiform_View("View")
 	, Multiform_Depth("Depth")
 	, Multiform_FOV("FOV")
@@ -151,7 +155,7 @@ void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
 }
 
-void Make() override
+void Make()
 {
 	view.Trans.Position = VectorF3(0.5f, 0.5f, 0.5f);
 
@@ -192,13 +196,27 @@ void Make() override
 
 
 
-bool OptionsMenuIs;
+bool			OptionsMenuIs;
+unsigned int	ChunkInsertRange = 3;
+unsigned int	ChunkRemoveRange = 5;
 
 void MakeControls()
 {
+	std::cerr << "MakeControls()\n";
 	{
 		OptionsMenuIs = true;
-		OptionsMenu.FOV_Slider.ValueChangedFunc.Assign(this, &MainContext::FOV_Change);
+		OptionsMenu.FOV_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::FOV_Change);
+		OptionsMenu.FOV_Slider.SetValue(view.FOV.ToDegrees());
+		std::cout << "FOV Value: " << OptionsMenu.FOV_Slider.GetValue() << '\n';
+
+		OptionsMenu.Chunk_Insert_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::Chunk_Insert_Change);
+		OptionsMenu.Chunk_Insert_Slider.SetValue(ChunkInsertRange);
+		OptionsMenu.Chunk_Insert_Value.SetText(std::to_string(ChunkInsertRange));
+
+		OptionsMenu.Chunk_Remove_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::Chunk_Remove_Change);
+		OptionsMenu.Chunk_Remove_Slider.SetValue(ChunkRemoveRange);
+		OptionsMenu.Chunk_Remove_Value.SetText(std::to_string(ChunkRemoveRange));
+
 		OptionsMenu.Show();
 		ControlManager.Window.ChildInsert(OptionsMenu);
 	}
@@ -208,7 +226,19 @@ void FOV_Change(float val)
 {
 	view.FOV = Angle::Degrees(val);
 	Multiform_FOV.ChangeData(view.FOV);
-	OptionsMenu.FOV_Value.SetText(std::to_string(val));
+
+	unsigned int v = val;
+	OptionsMenu.FOV_Value.SetText(std::to_string(v));
+}
+void Chunk_Insert_Change(float val)
+{
+	ChunkInsertRange = val;
+	OptionsMenu.Chunk_Insert_Value.SetText(std::to_string(ChunkInsertRange));
+}
+void Chunk_Remove_Change(float val)
+{
+	ChunkRemoveRange = val;
+	OptionsMenu.Chunk_Remove_Value.SetText(std::to_string(ChunkRemoveRange));
 }
 
 
@@ -379,7 +409,6 @@ TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, Loo
 			BoxF3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
 			if (box.IntersectBoxInclusive(voxel_box).All(true)) { continue; }
 			{
-				//VectorF3 t = BoxCollision(box + off, vel, voxel_box);
 				VectorF3 t = BoxF3::CollisionTimePerAxisNaN(box + off, vel, voxel_box);
 				VectorF3 dir;
 				if (vel.X > 0.0f) { dir.X = +1.0f; } else { dir.X = -1.0f; }
@@ -661,6 +690,8 @@ void UpdateViewColliding(FrameTime frame_time)
 	}
 }
 
+
+
 void Draw()
 {
 	PolyHedraManager.ClearInstances();
@@ -888,6 +919,11 @@ void Frame(FrameTime frame_time) override
 	Draw();
 }
 
+void Resize(DisplaySize display_size) override
+{
+	Multiform_DisplaySize.ChangeData(display_size);
+}
+
 
 
 // make these virtual and put them in Base
@@ -897,11 +933,3 @@ void MouseDrag(DragArgs args) override { ControlManager.RelayCursorDrag(args); }
 
 void KeyBoardKey(KeyArgs args) override { (void)args; }
 };
-
-
-
-/*int run()
-{
-	MainContext context;
-	return context.Run();
-}*/

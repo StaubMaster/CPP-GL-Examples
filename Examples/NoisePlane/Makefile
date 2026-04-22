@@ -1,9 +1,10 @@
 
-NAME := NoisePlane.exe
+NAME := NoisePlane.a
 
 #COMPILER := c++ -std=c++11
 COMPILER := g++ -g -std=c++11
 FLAGS := -Wall -Wextra -Werror
+ARCHIVER := ar -rcs
 REMOVER := rm -f
 
 ################################################################
@@ -15,18 +16,6 @@ FANCY_NAME := NoisePlane
 ################################################################
 
 FILES_SRC := \
-	../SelectorTest/ContextBase.cpp \
-	../SelectorTest/Context0.cpp \
-	../SelectorTest/Context0Menu.cpp \
-	../SelectorTest/Context1.cpp \
-	../SelectorTest/Context1Menu.cpp \
-	../SelectorTest/main.cpp \
-	../MainContext3D.cpp \
-\
-	Random.cpp \
-	Noise/Perlin2D.cpp \
-	Noise/Perlin3D.cpp \
-\
 	Plane/Plane.cpp \
 	Plane/PlaneValue.cpp \
 	Plane/PlaneNeighbours.cpp \
@@ -52,11 +41,7 @@ FILES_SRC := \
 	Menus/Main.cpp \
 	Menus/Options.cpp \
 \
-	UnitToString.cpp \
 	main.cpp \
-
-#FILES_SRC := \
-	_TemplateTest_main.cpp \
 
 FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
@@ -64,8 +49,6 @@ FILES_OBJ := $(FILES_SRC:.cpp=.o)
 
 all:
 	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(MAKE) -s repos_all
-	@$(MAKE) -s other_all
 	@$(MAKE) -s $(FILES_OBJ)
 	@$(MAKE) -s $(NAME)
 
@@ -85,9 +68,6 @@ re:
 
 exe:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@mkdir -p logs/
-	@$(MAKE) -s repos_all
-	@$(MAKE) -s other_all
 	@$(MAKE) -s $(FILES_OBJ)
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$(NAME))
 	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $(NAME) $(LIBRARYS) $(ARGUMENTS)
@@ -96,9 +76,9 @@ exe:
 
 $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@mkdir -p logs/
 	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
-	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
+	@$(ARCHIVER) $(NAME) $(FILES_OBJ)
+#	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
 
 ################################################################
 
@@ -109,7 +89,7 @@ $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 ################################################################
 
 LIBRARYS = 
-INCLUDES = . $(OUTSIDE_DIR)/_include
+INCLUDES = ./ ../ $(OUTSIDE_DIR)/_include
 ARGUMENTS = 
 
 ARGS_LIBRARYS = $(foreach library, $(LIBRARYS),$(library))
@@ -125,13 +105,10 @@ include $(REPOS_DIR)/repos.mk
 
 ################################################################
 
-logs_make:
-	@mkdir -p logs/
+include $(OTHER_DIR)/UserInterface.mk
 
-logs_clean:
-	@rm -r logs/
-	@$(MAKE) -s logs_make
-
-.PHONY: logs_make logs_clean
+include $(REPOS_DIR)/Engine.mk
+include $(REPOS_DIR)/FileManager.mk
+include $(REPOS_DIR)/OpenGL.mk
 
 ################################################################

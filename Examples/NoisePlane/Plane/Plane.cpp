@@ -1,5 +1,5 @@
 #include "Plane.hpp"
-#include "Noise/Perlin2D.hpp"
+#include "ValueGen/Perlin2D.hpp"
 
 #include "ValueType/Bool2D.hpp"
 #include "ValueType/UndexLoop2D.hpp"

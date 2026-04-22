@@ -10,6 +10,14 @@ struct OptionsMenu : public UI::Control::Form
 	UI::Control::Slider		FOV_Slider;
 	UI::Control::TextBox	FOV_Value;
 
+	UI::Control::TextBox	Chunk_Insert_Name;
+	UI::Control::Slider		Chunk_Insert_Slider;
+	UI::Control::TextBox	Chunk_Insert_Value;
+
+	UI::Control::TextBox	Chunk_Remove_Name;
+	UI::Control::Slider		Chunk_Remove_Slider;
+	UI::Control::TextBox	Chunk_Remove_Value;
+
 	UI::Control::Button		ButtonBack;
 
 	~OptionsMenu();
