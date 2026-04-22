@@ -87,7 +87,7 @@ MainContext()
 	, TextManager()
 	, PlaneManager()
 	, ChunkManager()
-	, _OptionsMenu()
+	, OptionsMenu()
 	, Perlin2(Perlin2D::Random(Undex2D(8, 8)))
 	, Perlin3(Perlin3D::Random(Undex3D(8, 8, 8)))
 	, Multiform_View("View")
@@ -198,9 +198,9 @@ void MakeControls()
 {
 	{
 		OptionsMenuIs = false;
-		_OptionsMenu.FOV_Slider.ValueChangedFunc.Assign(this, &MainContext::FOV_Change);
-		_OptionsMenu.Hide();
-		ControlManager.Window.ChildInsert(_OptionsMenu);
+		OptionsMenu.FOV_Slider.ValueChangedFunc.Assign(this, &MainContext::FOV_Change);
+		OptionsMenu.Hide();
+		ControlManager.Window.ChildInsert(OptionsMenu);
 	}
 }
 
@@ -208,7 +208,7 @@ void FOV_Change(float val)
 {
 	view.FOV = Angle::Degrees(val);
 	Multiform_FOV.ChangeData(view.FOV);
-	_OptionsMenu.FOV_Value.SetText(std::to_string(val));
+	OptionsMenu.FOV_Value.SetText(std::to_string(val));
 }
 
 
@@ -707,7 +707,7 @@ void Frame(FrameTime frame_time) override
 	{
 		if (window.KeyBoardManager[Keys::Escape].State == State::Press)
 		{
-			_OptionsMenu.Show();
+			OptionsMenu.Show();
 			OptionsMenuIs = true;
 			if (window.MouseManager.CursorModeIsLocked())
 			{
@@ -719,7 +719,7 @@ void Frame(FrameTime frame_time) override
 	{
 		if (window.KeyBoardManager[Keys::Escape].State == State::Press)
 		{
-			_OptionsMenu.Hide();
+			OptionsMenu.Hide();
 			OptionsMenuIs = false;
 			if (!window.MouseManager.CursorModeIsLocked())
 			{

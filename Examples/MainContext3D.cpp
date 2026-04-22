@@ -53,7 +53,7 @@ int MainContext3D::Run()
 
 	window.Create();
 	Debug::Log << "<<<< Run Window" << Debug::Done;
-	window.Run();
+	window.RunLoop();
 	Debug::Log << ">>>> Run Window" << Debug::Done;
 	window.Delete();
 
