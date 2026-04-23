@@ -5,7 +5,7 @@
 // Contexts
 #include "Context0/Context0.hpp"
 #include "Context1/Context1.hpp"
-#include "../NoisePlane/main.cpp"
+#include "NoisePlane/new.hpp"
 
 
 
@@ -39,7 +39,7 @@ void ContextBase::ChangeToContext1()
 }
 void ContextBase::ChangeToNoisePlane()
 {
-	Change(new ContextNoisePlane());
+	Change(newContextNoisePlane());
 }
 
 

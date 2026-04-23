@@ -15,7 +15,8 @@ FILES := \
 \
 	main.cpp \
 
-################################################################
+DIR_SRC := .
+DIR_OBJ := .
 
 LIBRARYS :=
 INCLUDES := .
@@ -23,14 +24,11 @@ ARGUMENTS :=
 
 ################################################################
 
+allall: all
+
 BASE_DIR := ../
 OTHER_DIR := $(BASE_DIR)/other/
 REPOS_DIR := $(BASE_DIR)/repos/
-
-################################################################
-
-allall: all
-
 include $(BASE_DIR)fancy.mk
 
 ################################################################
@@ -47,9 +45,6 @@ include $(REPOS_DIR)/OpenGL.mk
 
 ################################################################
 
-include $(OTHER_DIR)/other.mk
-include $(REPOS_DIR)/repos.mk
-
-include BaseC.mk
+include $(BASE_DIR)/MakefileCompiler.mk
 
 ################################################################

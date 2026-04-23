@@ -8,10 +8,21 @@ FILES := \
 	Context0.cpp \
 	Context0Menu.cpp \
 
+DIR_SRC := .
+DIR_OBJ := .
+
+LIBRARYS :=
+INCLUDES := . ..
+ARGUMENTS :=
+
 ################################################################
 
+allall: all
+
 BASE_DIR := ../../
-include ../BaseA.mk
+OTHER_DIR := $(BASE_DIR)/other/
+REPOS_DIR := $(BASE_DIR)/repos/
+include $(BASE_DIR)fancy.mk
 
 ################################################################
 
@@ -23,4 +34,6 @@ include $(REPOS_DIR)/OpenGL.mk
 
 ################################################################
 
-INCLUDES += . ../
+include $(BASE_DIR)/MakefileArchiver.mk
+
+################################################################

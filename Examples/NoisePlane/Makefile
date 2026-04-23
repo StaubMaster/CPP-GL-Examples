@@ -1,21 +1,10 @@
 
 NAME := NoisePlane.a
-
-#COMPILER := c++ -std=c++11
-COMPILER := g++ -g -std=c++11
-FLAGS := -Wall -Wextra -Werror
-ARCHIVER := ar -rcs
-REMOVER := rm -f
-
-################################################################
-
-BASE_DIR := ../../
-include $(BASE_DIR)fancy.mk
 FANCY_NAME := NoisePlane
 
 ################################################################
 
-FILES_SRC := \
+FILES := \
 	Plane/Plane.cpp \
 	Plane/PlaneValue.cpp \
 	Plane/PlaneNeighbours.cpp \
@@ -43,65 +32,21 @@ FILES_SRC := \
 \
 	main.cpp \
 
-FILES_OBJ := $(FILES_SRC:.cpp=.o)
+DIR_SRC := .
+DIR_OBJ := .
+
+LIBRARYS :=
+INCLUDES := . ..
+ARGUMENTS :=
 
 ################################################################
 
-all:
-	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(MAKE) -s $(FILES_OBJ)
-	@$(MAKE) -s $(NAME)
+allall: all
 
-clean:
-	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(REMOVER) $(FILES_OBJ)
-
-fclean:
-	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(MAKE) -s clean
-	@$(REMOVER) $(NAME)
-
-re:
-	$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(MAKE) -s fclean
-	@$(MAKE) -s all
-
-exe:
-	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(MAKE) -s $(FILES_OBJ)
-	@$(call fancyEcho,$(FANCY_NAME),Compiling,$(NAME))
-	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $(NAME) $(LIBRARYS) $(ARGUMENTS)
-
-.PHONY: all clean fclean re exe
-
-$(NAME) : $(FILES_OBJ) $(LIBRARYS)
-	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
-	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
-	@$(ARCHIVER) $(NAME) $(FILES_OBJ)
-#	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
-
-################################################################
-
-%.o : %.cpp
-	@$(call fancyEcho,$(FANCY_NAME),Compiling,$@)
-	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ -c $<
-
-################################################################
-
-LIBRARYS = 
-INCLUDES = ./ ../ $(OUTSIDE_DIR)/_include
-ARGUMENTS = 
-
-ARGS_LIBRARYS = $(foreach library, $(LIBRARYS),$(library))
-ARGS_INCLUDES = $(foreach include, $(INCLUDES),-I$(include))
-
-################################################################
-
+BASE_DIR := ../../
 OTHER_DIR := $(BASE_DIR)/other/
-include $(OTHER_DIR)/other.mk
-
 REPOS_DIR := $(BASE_DIR)/repos/
-include $(REPOS_DIR)/repos.mk
+include $(BASE_DIR)fancy.mk
 
 ################################################################
 
@@ -110,5 +55,9 @@ include $(OTHER_DIR)/UserInterface.mk
 include $(REPOS_DIR)/Engine.mk
 include $(REPOS_DIR)/FileManager.mk
 include $(REPOS_DIR)/OpenGL.mk
+
+################################################################
+
+include $(BASE_DIR)/MakefileArchiver.mk
 
 ################################################################

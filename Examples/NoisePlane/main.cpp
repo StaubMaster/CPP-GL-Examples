@@ -1,6 +1,4 @@
-
-// main
-#include "../ContextBase.hpp"
+#include "new.hpp"
 
 // Debug
 #include <iostream>
@@ -575,8 +573,8 @@ void ViewRayFunction()
 
 
 
-VectorF3	GravityForce = VectorF3(0, -0.1f, 0);
 // make a BoxEntity for Colliding stuff
+VectorF3	GravityForce = VectorF3(0, -0.1f, 0);
 VectorF3	ViewVel;
 void UpdateViewColliding(FrameTime frame_time)
 {
@@ -933,3 +931,8 @@ void MouseDrag(DragArgs args) override { ControlManager.RelayCursorDrag(args); }
 
 void KeyBoardKey(KeyArgs args) override { (void)args; }
 };
+
+ContextBase * newContextNoisePlane()
+{
+	return new ContextNoisePlane();
+}
