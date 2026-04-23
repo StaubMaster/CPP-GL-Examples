@@ -14,13 +14,15 @@ endif
 other_all:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(foreach other, $(OTHER_LIST), \
-		$(MAKE) -C $(other) -s all ; \
+		if [ -d $(other) ] ; then \
+			$(MAKE) -C $(other) -s all ; \
+		fi ; \
 	)
 
 other_clean:
 	@$(call fancyEcho,$(FANCY_NAME),Target,$@)
 	@$(foreach other, $(other_LIST), \
-		if [ -d $(other) ] ; OTHER_LIST \
+		if [ -d $(other) ] ; then \
 			$(MAKE) -C $(other) -s clean ; \
 		fi ; \
 	)

@@ -1,9 +1,11 @@
 
 ################################################################
 
-OTHER_LIST += Context0/
-LIBRARYS   += Context0/Context0.a
-INCLUDES   += Context0/
+CONTEXT0_DIR := ./Context0/
+
+OTHER_LIST += $(CONTEXT0_DIR)
+LIBRARYS   += $(CONTEXT0_DIR)Context0.a
+INCLUDES   += $(CONTEXT0_DIR)
 ARGUMENTS  += 
 
 ################################################################

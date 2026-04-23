@@ -17,8 +17,21 @@ FILES := \
 
 ################################################################
 
+LIBRARYS :=
+INCLUDES := .
+ARGUMENTS :=
+
+################################################################
+
 BASE_DIR := ../
-include BaseC.mk
+OTHER_DIR := $(BASE_DIR)/other/
+REPOS_DIR := $(BASE_DIR)/repos/
+
+################################################################
+
+allall: all
+
+include $(BASE_DIR)fancy.mk
 
 ################################################################
 
@@ -31,5 +44,12 @@ include $(OTHER_DIR)/UserInterface.mk
 include $(REPOS_DIR)/Engine.mk
 include $(REPOS_DIR)/FileManager.mk
 include $(REPOS_DIR)/OpenGL.mk
+
+################################################################
+
+include $(OTHER_DIR)/other.mk
+include $(REPOS_DIR)/repos.mk
+
+include BaseC.mk
 
 ################################################################

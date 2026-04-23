@@ -7,3 +7,19 @@ should each include everything ?
 or should each MakeFile specify what it wants
 
 specifyign isnt that much
+
+
+
+when a Library recompiles. also recompile Exe ?
+it dosent do that right now
+figure out why
+
+remember all Headers
+recompile if Headers change ?
+generally, just use change .cpp to .hpp
+except with tempalte Files
+
+tempalte Files are already .hpp
+just add those to the .hpp file Collection
+
+

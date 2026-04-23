@@ -15,15 +15,15 @@ OPENGL_LIBRARYS = $(OPENGL_DIR)/OpenGL.a
 OPENGL_INCLUDES = $(OPENGL_DIR)/include/
 
 ifeq ($(CheckOS), Windows)
-OPENGL_ARGUMENTS = -lglfw3 -lgdi32
+OPENGL_ARGUMENTS := -lglfw3 -lgdi32
 endif
 
 ifeq ($(CheckOS), Darwin)
-OPENGL_ARGUMENTS = -lglfw
+OPENGL_ARGUMENTS := -lglfw
 endif
 
 ifeq ($(CheckOS), Linux)
-OPENGL_ARGUMENTS = -lglfw
+OPENGL_ARGUMENTS := -lglfw
 endif
 
 LIBRARYS += $(OPENGL_LIBRARYS)

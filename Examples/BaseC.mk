@@ -6,10 +6,6 @@ REMOVER := rm -f
 
 ################################################################
 
-include $(BASE_DIR)fancy.mk
-
-################################################################
-
 DIR_SRC := .
 DIR_OBJ := .
 
@@ -49,15 +45,12 @@ re:
 	@$(MAKE) -s fclean
 	@$(MAKE) -s all
 
-.PHONY: all clean fclean re final
+.PHONY: all clean fclean re
 
 $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 	@$(MAKE) -s logs_make
 	@$(call fancyNameCompilingEcho,$@)
-#	@echo $(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
-#	@echo
-#	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
-	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $@ $(LIBRARYS) $(ARGUMENTS)
+	@$(COMPILER) $(FLAGS) $(addprefix -I,$(INCLUDES)) $(FILES_OBJ) -o $(NAME) $(LIBRARYS) $(ARGUMENTS)
 
 ################################################################
 
@@ -68,7 +61,7 @@ final:
 	@$(MAKE) -s other_all
 	@$(MAKE) -s $(FILES_OBJ)
 	@$(call fancyNameCompilingEcho,$(NAME))
-	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) $(FILES_OBJ) -o $(NAME) $(LIBRARYS) $(ARGUMENTS)
+	@$(COMPILER) $(FLAGS) $(addprefix -I,$(INCLUDES)) $(FILES_OBJ) -o $(NAME) $(LIBRARYS) $(ARGUMENTS)
 
 clean-final:
 	@$(call fancyNameTargetEcho,$@)
@@ -79,28 +72,24 @@ re-final:
 	@$(MAKE) -s clean-final
 	@$(MAKE) -s final
 
+.PHONY: final clean-final re-final
+
 ################################################################
 
 %.o : %.cpp
 	@$(call fancyNameCompilingEcho,$@)
-	@$(COMPILER) $(FLAGS) $(ARGS_INCLUDES) -o $@ -c $<
+	@$(COMPILER) $(FLAGS) $(addprefix -I,$(INCLUDES)) -o $@ -c $<
 
 ################################################################
 
-LIBRARYS := 
-INCLUDES := . $(OUTSIDE_DIR)/_include
-ARGUMENTS := 
-
-ARGS_LIBRARYS = $(foreach library, $(LIBRARYS),$(library))
-ARGS_INCLUDES = $(foreach include, $(INCLUDES),-I$(include))
+#LIBRARYS :=
+#INCLUDES :=
+#ARGUMENTS :=
 
 ################################################################
 
-OTHER_DIR := $(BASE_DIR)/other/
-include $(OTHER_DIR)/other.mk
-
-REPOS_DIR := $(BASE_DIR)/repos/
-include $(REPOS_DIR)/repos.mk
+#include $(OTHER_DIR)/other.mk
+#include $(REPOS_DIR)/repos.mk
 
 ################################################################
 
