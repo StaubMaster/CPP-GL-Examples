@@ -293,7 +293,7 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	(void)noise2;
 	(void)noise3;
-//	GeneratePerlin(noise3);
+	GeneratePerlin(noise3);
 //	GeneratePerlin(noise2);
 //	GenerateGrid();
 

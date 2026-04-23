@@ -115,18 +115,188 @@ ContextNoisePlane()
 
 
 
+// put into another File
+struct TimeBoxCollision
+{
+	float		Time;
+	VectorF3	Normal;
+
+	TimeBoxCollision()
+		: Time(0.0f/0.0f)
+		, Normal()
+	{ }
+	void Consider(VectorF3 t, VectorF3 dir)
+	{
+		float time;
+		VectorF3 normal;
+		VectorI3 ranks = t.abs().RankDimensions();
+		     if (ranks.X == 0) { time = t.X; normal = VectorF3(dir.X, 0, 0); }
+		else if (ranks.Y == 0) { time = t.Y; normal = VectorF3(0, dir.Y, 0); }
+		else if (ranks.Z == 0) { time = t.Z; normal = VectorF3(0, 0, dir.Z); }
+		else { return; }
+		if (Time != Time || Time > time)
+		{
+			Time = time;
+			Normal = normal;
+		}
+	}
+};
+
+// make a BoxEntity for Colliding stuff
+VectorF3 GravityForce = VectorF3(0, -0.1f, 0);
+struct BoxEntity
+{
+	::PolyHedra *	PolyHedra = nullptr;
+	BoxF3			Box;
+	VectorF3		Pos;
+	VectorF3		Vel;
+
+	TimeBoxCollision FindCollisionTime(::ChunkManager & manager, LoopI3 loop, VectorF3 off) const
+	{
+		TimeBoxCollision collision;
+		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+		{
+			const Voxel * voxel = manager.FindVoxelOrNull(i);
+			if (voxel != nullptr && voxel -> Template != nullptr)
+			{
+				BoxF3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
+				if ((Box + Pos).IntersectBoxInclusive(voxel_box).All(true)) { continue; }
+				{
+					VectorF3 t = BoxF3::CollisionTimePerAxisNaN(Box + Pos + off, Vel, voxel_box);
+					VectorF3 dir;
+					if (Vel.X > 0.0f) { dir.X = +1.0f; } else { dir.X = -1.0f; }
+					if (Vel.Y > 0.0f) { dir.Y = +1.0f; } else { dir.Y = -1.0f; }
+					if (Vel.Z > 0.0f) { dir.Z = +1.0f; } else { dir.Z = -1.0f; }
+					collision.Consider(t, -dir);
+				}
+			}
+		}
+		return collision;
+	}
+	void Collide(::ChunkManager & manager, LoopI3 loop)
+	{
+		BoxF3 view_box_old = Box + Pos;
+
+		VectorF3 rel;
+
+		float time_limit = 1.0f;
+		for (unsigned int l = 0; l < 4; l++)
+		{
+			TimeBoxCollision collision = FindCollisionTime(manager, loop, rel);
+			if (collision.Time <= time_limit)
+			{
+				rel += Vel * collision.Time;
+				time_limit -= collision.Time;
+				float dot = collision.Normal.dot(Vel);
+				if (dot < 0.0f)
+				{
+					Vel -= (collision.Normal * dot);
+					rel += (collision.Normal * 0.1f);
+				}
+			}
+			else { break; }
+		}
+		if (time_limit > 0.0f)
+		{
+			rel += Vel * time_limit;
+		}
+
+		//Pos += rel;
+		Pos += Vel;
+	}
+};
+void	DisplayBoxEntity(BoxEntity & entity)
+{
+	PolyHedraObject view_box_obj(entity.PolyHedra);
+	view_box_obj.Trans().Position = entity.Pos;
+	view_box_obj.ShowWire();
+}
+
+BoxEntity	ViewEntity;
+static void ShowCollisionVoxels(::ChunkManager & chunk_manager, LoopI3 loop, unsigned int p)
+{
+	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+	{
+		const Voxel * voxel = chunk_manager.FindVoxelOrNull(i);
+		if (voxel != nullptr && voxel -> Template != nullptr)
+		{
+			PolyHedraObject voxel_obj(p);
+			voxel_obj.Trans().Position = i;
+			voxel_obj.ShowWire();
+		}
+	}
+}
+void CollideViewBox(VectorF3 change)
+{
+	int size = 2;
+	VectorI3 center = ViewEntity.Pos.roundF();
+	LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
+
+	ShowCollisionVoxels(ChunkManager, loop, PolyHedraManager.FindPolyHedra(VoxelCube));
+
+	ViewEntity.Vel -= ViewEntity.Vel * 0.5f;
+	ViewEntity.Vel += change;
+	ViewEntity.Vel += GravityForce;
+
+	ViewEntity.Collide(ChunkManager, loop);
+}
+void UpdateViewColliding(FrameTime frame_time)
+{
+	Trans3D change;
+
+	if (window.MouseManager.CursorModeIsLocked())
+	{
+		change = window.MoveSpinFromKeysCursor();
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 10; }
+		change.Position *= 2;
+		change.Rotation *= view.FOV.ToRadians() * 0.05f;
+		{
+			EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
+			change.Position = e.forward(change.Position);
+		}
+	}
+
+	change.Position *= frame_time.Delta;
+	change.Rotation *= frame_time.Delta;
+
+	if (!IgnoreCollision)
+	{
+		DisplayBoxEntity(ViewEntity);
+		CollideViewBox(change.Position);
+		DisplayBoxEntity(ViewEntity);
+
+		view.Trans.Position = ViewEntity.Pos;
+		view.Trans.Rotation += change.Rotation;
+		view.Trans.Rotation.X1.clampPI();
+	}
+	else
+	{
+		view.Trans.Position += change.Position;
+		view.Trans.Rotation += change.Rotation;
+		view.Trans.Rotation.X1.clampPI();
+
+		ViewEntity.Pos = view.Trans.Position;
+		ViewEntity.Vel = VectorF3();
+	}
+
+	if (!ViewBack)
+	{
+		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
+	}
+	else
+	{
+		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 3)), view.Trans.Rotation)));
+	}
+}
+
+
+
 PolyHedra * VoxelCube;
 PolyHedra * VoxelChunkCube;
 
-BoxF3 ViewBox = BoxF3(
-	VectorF3(-0.4f, -1.2f, -0.4f),
-	VectorF3(+0.4f, +0.4f, +0.4f)
-);
-PolyHedra * ViewBoxCube;
-
 PolyHedra * ViewRayPolyHedra;
 
-void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
+static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 {
 	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Min.Y, box.Min.Z))); // 000
 	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Max.X, box.Min.Y, box.Min.Z))); // 001
@@ -156,6 +326,11 @@ void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 void Make()
 {
 	view.Trans.Position = VectorF3(0.5f, 0.5f, 0.5f);
+	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
+	ViewEntity.Box = BoxF3(
+		VectorF3(-0.4f, -1.2f, -0.4f),
+		VectorF3(+0.4f, +0.4f, +0.4f)
+	);
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -178,9 +353,9 @@ void Make()
 		ChunkManager.ChunkBoxPolyHedra = VoxelChunkCube;
 	}
 	{
-		ViewBoxCube = new PolyHedra();
-		PolyHedraBoxEdges(*ViewBoxCube, ViewBox);
-		PolyHedraManager.PlacePolyHedra(ViewBoxCube);
+		ViewEntity.PolyHedra = new PolyHedra();
+		PolyHedraBoxEdges(*ViewEntity.PolyHedra, ViewEntity.Box);
+		PolyHedraManager.PlacePolyHedra(ViewEntity.PolyHedra);
 	}
 
 	{
@@ -357,8 +532,10 @@ void Free() override
 
 
 // Debug UI
-bool ShowFull = true;
-bool ShowWire = false;
+bool ShowFull = true;  // put in PolyHedraManager
+bool ShowWire = false; // put in PolyhedraManager
+// optimize to just not create Instances when false
+// do the same with the others
 
 bool ShowText = true;
 
@@ -367,57 +544,6 @@ bool ShowVoxels = true;
 
 bool IgnoreCollision = true;
 bool ViewBack = false;
-
-
-
-// put into another File
-struct TimeBoxCollision
-{
-	float		Time;
-	VectorF3	Normal;
-
-	TimeBoxCollision()
-		: Time(0.0f/0.0f)
-		, Normal()
-	{ }
-	void Consider(VectorF3 t, VectorF3 dir)
-	{
-		float time;
-		VectorF3 normal;
-		VectorI3 ranks = t.abs().RankDimensions();
-		     if (ranks.X == 0) { time = t.X; normal = VectorF3(dir.X, 0, 0); }
-		else if (ranks.Y == 0) { time = t.Y; normal = VectorF3(0, dir.Y, 0); }
-		else if (ranks.Z == 0) { time = t.Z; normal = VectorF3(0, 0, dir.Z); }
-		else { return; }
-		if (Time != Time || Time > time)
-		{
-			Time = time;
-			Normal = normal;
-		}
-	}
-};
-TimeBoxCollision FindTimeBoxCollision(BoxF3 box, VectorF3 off, VectorF3 vel, LoopI3 loop)
-{
-	TimeBoxCollision collision;
-	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-	{
-		const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
-		if (voxel != nullptr && voxel -> Template != nullptr)
-		{
-			BoxF3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
-			if (box.IntersectBoxInclusive(voxel_box).All(true)) { continue; }
-			{
-				VectorF3 t = BoxF3::CollisionTimePerAxisNaN(box + off, vel, voxel_box);
-				VectorF3 dir;
-				if (vel.X > 0.0f) { dir.X = +1.0f; } else { dir.X = -1.0f; }
-				if (vel.Y > 0.0f) { dir.Y = +1.0f; } else { dir.Y = -1.0f; }
-				if (vel.Z > 0.0f) { dir.Z = +1.0f; } else { dir.Z = -1.0f; }
-				collision.Consider(t, -dir);
-			}
-		}
-	}
-	return collision;
-}
 
 
 
@@ -573,123 +699,6 @@ void ViewRayFunction()
 
 
 
-// make a BoxEntity for Colliding stuff
-VectorF3	GravityForce = VectorF3(0, -0.1f, 0);
-VectorF3	ViewVel;
-void UpdateViewColliding(FrameTime frame_time)
-{
-	Trans3D change;
-
-	if (window.MouseManager.CursorModeIsLocked())
-	{
-		change = window.MoveSpinFromKeysCursor();
-		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 10; }
-		change.Position *= 2;
-		change.Rotation *= view.FOV.ToRadians() * 0.05f;
-		{
-			EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
-			change.Position = e.forward(change.Position);
-		}
-	}
-
-	change.Position *= frame_time.Delta;
-	change.Rotation *= frame_time.Delta;
-
-	if (!IgnoreCollision)
-	{
-		{
-			PolyHedraObject view_box_obj(ViewBoxCube);
-			view_box_obj.Trans().Position = view.Trans.Position;
-			view_box_obj.ShowWire();
-		}
-
-		int size = 2;
-		VectorI3 center = view.Trans.Position.roundF();
-		LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
-
-		{
-			unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
-			for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-			{
-				const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
-				if (voxel != nullptr && voxel -> Template != nullptr)
-				{
-					PolyHedraObject voxel_obj(p);
-					voxel_obj.Trans().Position = i;
-					voxel_obj.ShowWire();
-				}
-			}
-		}
-
-		BoxF3 view_box_old = ViewBox + view.Trans.Position;
-		ViewVel -= ViewVel * 0.5f;
-		ViewVel += change.Position;
-		ViewVel += GravityForce;
-
-		VectorF3 rel;
-		//VectorF3 vel = change.Position;
-		VectorF3 & vel = ViewVel;
-
-		float time_limit = 1.0f;
-		for (unsigned int l = 0; l < 4; l++)
-		{
-			TimeBoxCollision collision = FindTimeBoxCollision(view_box_old, rel, vel, loop);
-			if (collision.Time <= time_limit)
-			{
-				rel += vel * collision.Time;
-				time_limit -= collision.Time;
-				float dot = collision.Normal.dot(vel);
-				if (dot < 0.0f)
-				{
-					vel -= (collision.Normal * dot);
-					rel += (collision.Normal * 0.01f);
-				}
-			}
-			else { break; }
-		}
-		if (time_limit > 0.0f)
-		{
-			rel += vel * time_limit;
-		}
-
-		//change.Position = rel;
-
-		view.Trans.Position += ViewVel;
-		view.Trans.Rotation += change.Rotation;
-		view.Trans.Rotation.X1.clampPI();
-
-		{
-			PolyHedraObject view_box_obj(ViewBoxCube);
-			view_box_obj.Trans().Position = view.Trans.Position;
-			view_box_obj.ShowWire();
-		}
-	}
-	else
-	{
-		ViewVel = VectorF3();
-		view.Trans.Position += change.Position;
-		view.Trans.Rotation += change.Rotation;
-		view.Trans.Rotation.X1.clampPI();
-
-		/*{
-			PolyHedraObject view_box_obj(ViewBoxCube);
-			view_box_obj.Trans().Position = view.Trans.Position;
-			view_box_obj.ShowWire();
-		}*/
-	}
-
-	if (!ViewBack)
-	{
-		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
-	}
-	else
-	{
-		Multiform_View.ChangeData(Matrix4x4::TransformReverse(Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, 3)), view.Trans.Rotation)));
-	}
-}
-
-
-
 void Draw()
 {
 	PolyHedraManager.ClearInstances();
@@ -720,12 +729,12 @@ void UpdateAroundView(FrameTime frame_time)
 {
 	UpdateViewColliding(frame_time);
 
-	ChunkManager.RemoveAround(view.Trans.Position, 5);
+	ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange);
 
 	ViewRayFunction();
 
-	ChunkManager.InsertAround(view.Trans.Position, 2);
-	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, 2, 1);
+	ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange);
+	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, ChunkInsertRange, 1);
 
 	PlaneManager.UpdateAround(Perlin2, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 }
@@ -840,7 +849,7 @@ void Frame(FrameTime frame_time) override
 
 		{
 			ss << "View " << view.Trans.Position << '\n';
-			ss << "View " << ViewVel << '\n';
+			ss << "View " << ViewEntity.Vel << '\n';
 			//ss << "Box " << (ViewBox + view.Trans.Position) << '\n';
 			VectorI3 chunk_idx = (view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF();
 			VectorU3 voxel_idx = VectorI3(view.Trans.Position.roundF()) - (chunk_idx * CHUNK_VALUES_PER_SIDE);
