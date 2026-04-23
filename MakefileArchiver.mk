@@ -55,7 +55,7 @@ re-final:
 ################################################################
 
 $(NAME) : $(FILES_OBJ)
-	@$(call fancyNameCompilingEcho,$@)
+	@$(call fancyNameArchivingEcho,$@)
 	@$(ARCHIVER) $(NAME) $(FILES_OBJ)
 
 %.o : %.cpp

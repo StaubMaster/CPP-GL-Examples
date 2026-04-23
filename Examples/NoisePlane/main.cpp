@@ -57,6 +57,9 @@
 #include "Menus/Options.hpp"
 #include "Menus/Main.hpp"
 
+// Math
+#include <math.h>
+
 struct ContextNoisePlane : public ContextBase
 {
 View3D	view;
@@ -115,6 +118,38 @@ ContextNoisePlane()
 
 
 
+struct PhysicsContext
+{
+	VectorF3	GravityDirection = VectorF3(0.0f, -1.0f, 0.0f);
+	float		GravityAcl = 0.0f; // dm/s*s
+
+	float	AirDensity = 0.1f; // kg/dm*dm*dm
+	float	AirDragCoefficient = 1.0f;
+
+	float	CalculateAirResistance(float vel, float mass, float area) const
+	{
+		float force = 0.5f * AirDensity * vel * vel * area * AirDragCoefficient;
+		return force / mass;
+	}
+	float	CalculateAirResistanceLimit(float mass, float area, float accel) const
+	{
+		return sqrt((2 * mass * accel) / (AirDensity * area * AirDragCoefficient));
+	}
+
+	float	CalculateTerminalVelocity(float mass, float area) const
+	{
+		return CalculateAirResistanceLimit(mass, area, GravityAcl);
+	}
+
+	VectorF3	CalculateVel(VectorF3 vel, float mass, float area) const
+	{
+		float vel_len;
+		vel = vel.normalize(vel_len);
+		return (GravityDirection * GravityAcl) - (vel * CalculateAirResistance(vel_len, mass, area));
+	}
+};
+ContextNoisePlane::PhysicsContext	PhysicsContext;
+
 // put into another File
 struct TimeBoxCollision
 {
@@ -143,7 +178,6 @@ struct TimeBoxCollision
 };
 
 // make a BoxEntity for Colliding stuff
-VectorF3 GravityForce = VectorF3(0, -0.1f, 0);
 struct BoxEntity
 {
 	::PolyHedra *	PolyHedra = nullptr;
@@ -212,6 +246,51 @@ void	DisplayBoxEntity(BoxEntity & entity)
 	view_box_obj.ShowWire();
 }
 
+
+
+
+
+bool	DragPause = false;
+bool	DragFrame;
+
+float	DragVel = 0.0f; // dm/s
+float	DragMass = 1.0f; // kg
+float	DragArea = 1.0f; // dm*dm
+
+void	DragForceTest()
+{
+	// [F10] Frame
+	// [F11] Pause
+	// [F12] Clear
+	if (window.KeyBoardManager[Keys::F12].State == State::Press) { DragVel = 0.0f; }
+	if (window.KeyBoardManager[Keys::F11].State == State::Press) { DragPause = !DragPause; }
+	DragFrame = DragPause;
+	if (window.KeyBoardManager[Keys::F10].State == State::Press) { DragFrame = true; }
+
+	std::stringstream ss;
+	ss << "[F12]Clear\n";
+	ss << "[F11]Pause " << DragPause << '\n';
+	ss << "[F10]Frame " << DragFrame << '\n';
+
+	float drag_accel = PhysicsContext.CalculateAirResistance(DragVel, DragMass, DragArea);
+
+	float vel = DragVel + PhysicsContext.GravityAcl - drag_accel;
+	ss << "Vel   " << DragVel << '\n';
+	ss << "Accel " << drag_accel << '\n';
+	ss << "Vel   " << vel << '\n';
+	ss << "Limit " << PhysicsContext.CalculateTerminalVelocity(DragMass, DragArea) << '\n';
+	ss << "Limit " << PhysicsContext.CalculateAirResistanceLimit(DragMass, DragArea, 2) << '\n';
+	ss << "Limit " << PhysicsContext.CalculateAirResistanceLimit(DragMass, DragArea, 20) << '\n';
+
+	if (DragFrame) { DragVel = vel; }
+
+	UI::Text::Object text; text.Create();
+	text.Pos() = window.Size.Buffer.Half;
+	text.Bound().Min = Point2D();
+	text.Bound().Max = window.Size.Buffer.Full;
+	text.String() = ss.str();
+}
+
 BoxEntity	ViewEntity;
 static void ShowCollisionVoxels(::ChunkManager & chunk_manager, LoopI3 loop, unsigned int p)
 {
@@ -232,12 +311,11 @@ void CollideViewBox(VectorF3 change)
 	VectorI3 center = ViewEntity.Pos.roundF();
 	LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
 
-	ShowCollisionVoxels(ChunkManager, loop, PolyHedraManager.FindPolyHedra(VoxelCube));
-
-	ViewEntity.Vel -= ViewEntity.Vel * 0.5f;
+	//ViewEntity.Vel -= ViewEntity.Vel * 0.5f;
 	ViewEntity.Vel += change;
-	ViewEntity.Vel += GravityForce;
+	//ViewEntity.Vel += GravityForce;
 
+	ShowCollisionVoxels(ChunkManager, loop, PolyHedraManager.FindPolyHedra(VoxelCube));
 	ViewEntity.Collide(ChunkManager, loop);
 }
 void UpdateViewColliding(FrameTime frame_time)
@@ -256,23 +334,22 @@ void UpdateViewColliding(FrameTime frame_time)
 		}
 	}
 
-	change.Position *= frame_time.Delta;
-	change.Rotation *= frame_time.Delta;
-
 	if (!IgnoreCollision)
 	{
+		change.Position += PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f);
+
 		DisplayBoxEntity(ViewEntity);
-		CollideViewBox(change.Position);
+		CollideViewBox(change.Position * frame_time.Delta);
 		DisplayBoxEntity(ViewEntity);
 
 		view.Trans.Position = ViewEntity.Pos;
-		view.Trans.Rotation += change.Rotation;
+		view.Trans.Rotation += change.Rotation * frame_time.Delta;
 		view.Trans.Rotation.X1.clampPI();
 	}
 	else
 	{
-		view.Trans.Position += change.Position;
-		view.Trans.Rotation += change.Rotation;
+		view.Trans.Position += change.Position * frame_time.Delta;
+		view.Trans.Rotation += change.Rotation * frame_time.Delta;
 		view.Trans.Rotation.X1.clampPI();
 
 		ViewEntity.Pos = view.Trans.Position;
@@ -291,10 +368,9 @@ void UpdateViewColliding(FrameTime frame_time)
 
 
 
-PolyHedra * VoxelCube;
-PolyHedra * VoxelChunkCube;
-
-PolyHedra * ViewRayPolyHedra;
+PolyHedra *		VoxelCube;
+PolyHedra *		VoxelChunkCube;
+PolyHedra *		ViewRayPolyHedra;
 
 static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 {
@@ -786,6 +862,7 @@ void Frame(FrameTime frame_time) override
 		ChunkManager.Clear();
 	}
 
+	DragForceTest();
 	if (!OptionsMenuIs)
 	{
 		UpdateAroundView(frame_time);
@@ -849,7 +926,7 @@ void Frame(FrameTime frame_time) override
 
 		{
 			ss << "View " << view.Trans.Position << '\n';
-			ss << "View " << ViewEntity.Vel << '\n';
+			ss << "View " << ViewEntity.Vel << ' ' << ViewEntity.Vel.length() << '\n';
 			//ss << "Box " << (ViewBox + view.Trans.Position) << '\n';
 			VectorI3 chunk_idx = (view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF();
 			VectorU3 voxel_idx = VectorI3(view.Trans.Position.roundF()) - (chunk_idx * CHUNK_VALUES_PER_SIDE);
@@ -915,12 +992,12 @@ void Frame(FrameTime frame_time) override
 			ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) <<")\n";
 		}
 
-		//UI::Text::Object text; text.Create();
-		//text.Pos().X = 10;
-		//text.Pos().Y = 10;
-		//text.Bound().Min = Point2D();
-		//text.Bound().Max = window.Size.Buffer.Full;
-		//text.String() = ss.str();
+		UI::Text::Object text; text.Create();
+		text.Pos().X = 10;
+		text.Pos().Y = 10;
+		text.Bound().Min = Point2D();
+		text.Bound().Max = window.Size.Buffer.Full;
+		text.String() = ss.str();
 	}
 
 	Draw();
