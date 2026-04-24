@@ -4,18 +4,14 @@
 # include "Base/Base.hpp"
 # include "Miscellaneous/Function/Pointer.hpp"
 
-
+# include "../Text/Object.hpp"
+# include <string>
 
 namespace UI
 {
 
 namespace Control
 {
-
-/*
-	go from min to max
-	slider position depends on slider size ?
-*/
 
 class Slider : public Base
 {
@@ -31,8 +27,16 @@ class Slider : public Base
 	float ValueMin;
 	float ValueMax;
 
+	private:
+	Text::Object	TextObject;
+	Point2D			CharacterSize;
+	Point2D			CharacterCountLimit2D;
+	unsigned int	CharacterCountLimit;
+	bool			CharacterCountLimitChanged;
+	std::string		Text;
+	bool			TextChanged;
+
 	public:
-	//void (*ValueChangedFunc)(float);
 	FunctionPointer<float>	ValueChangedFunc;
 
 	public:
@@ -44,6 +48,14 @@ class Slider : public Base
 	void SetValue(float val);
 	private:
 	void ChangeValue(DisplayPosition mouse_pos);
+
+	private:
+	void	CalcCharacterCount();
+	void	PutCharactersEntrys();
+
+	public:
+	std::string	GetText() const;
+	void		SetText(std::string text);
 
 	public:
 	void UpdateEntrysRelay() override;

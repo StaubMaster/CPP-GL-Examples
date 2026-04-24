@@ -219,8 +219,9 @@ struct BoxEntity
 				float dot = collision.Normal.dot(Vel);
 				if (dot < 0.0f)
 				{
-					Vel -= (collision.Normal * dot);
 					rel += (collision.Normal * 0.01f);
+					Vel -= (collision.Normal * dot);
+					Vel *= 0.9f;
 				}
 			}
 			else { break; }
@@ -279,14 +280,17 @@ void	DragForceTest()
 
 	if (DragFrame) { DragVel = vel; }
 
-	UI::Text::Object text; text.Create();
-	text.TextPosition() = window.Size.Buffer.Half;
-	text.Color() = ColorF4(1, 1, 1);
-	text.Bound().Min = Point2D();
-	text.Bound().Max = window.Size.Buffer.Full;
-	text.String() = ss.str();
+	//UI::Text::Object text; text.Create();
+	//text.TextPosition() = window.Size.Buffer.Half;
+	//text.Color() = ColorF4(1, 1, 1);
+	//text.Bound().Min = Point2D();
+	//text.Bound().Max = window.Size.Buffer.Full;
+	//text.String() = ss.str();
 }
 
+// more Friction when on the Ground
+// also when touching a Wall ?
+// Collision Velocity already gets removed, also decrease Perpendicular Velocity ?
 BoxEntity	ViewEntity;
 static void ShowCollisionVoxels(::ChunkManager & chunk_manager, LoopI3 loop, unsigned int p)
 {
@@ -444,11 +448,9 @@ void MakeControls()
 
 		OptionsMenu.Chunk_Insert_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::Chunk_Insert_Change);
 		OptionsMenu.Chunk_Insert_Slider.SetValue(ChunkInsertRange);
-		OptionsMenu.Chunk_Insert_Value.SetText(std::to_string(ChunkInsertRange));
 
 		OptionsMenu.Chunk_Remove_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::Chunk_Remove_Change);
 		OptionsMenu.Chunk_Remove_Slider.SetValue(ChunkRemoveRange);
-		OptionsMenu.Chunk_Remove_Value.SetText(std::to_string(ChunkRemoveRange));
 
 		OptionsMenu.Show();
 		ControlManager.Window.ChildInsert(OptionsMenu);
@@ -461,17 +463,17 @@ void FOV_Change(float val)
 	Multiform_FOV.ChangeData(view.FOV);
 
 	unsigned int v = val;
-	OptionsMenu.FOV_Value.SetText(std::to_string(v));
+	OptionsMenu.FOV_Slider.SetText("FOV:" + std::to_string(v));
 }
 void Chunk_Insert_Change(float val)
 {
 	ChunkInsertRange = val;
-	OptionsMenu.Chunk_Insert_Value.SetText(std::to_string(ChunkInsertRange));
+	OptionsMenu.Chunk_Insert_Slider.SetText("Insert:" + std::to_string(ChunkInsertRange));
 }
 void Chunk_Remove_Change(float val)
 {
 	ChunkRemoveRange = val;
-	OptionsMenu.Chunk_Remove_Value.SetText(std::to_string(ChunkRemoveRange));
+	OptionsMenu.Chunk_Remove_Slider.SetText("Remove:" + std::to_string(ChunkRemoveRange));
 }
 
 
@@ -976,13 +978,13 @@ void Frame(FrameTime frame_time) override
 			ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) <<")\n";
 		}
 
-		UI::Text::Object text; text.Create();
-		text.TextPosition().X = 10;
-		text.TextPosition().Y = 10;
-		text.Color() = ColorF4(1, 1, 1);
-		text.Bound().Min = Point2D();
-		text.Bound().Max = window.Size.Buffer.Full;
-		text.String() = ss.str();
+		//UI::Text::Object text; text.Create();
+		//text.TextPosition().X = 10;
+		//text.TextPosition().Y = 10;
+		//text.Color() = ColorF4(1, 1, 1);
+		//text.Bound().Min = Point2D();
+		//text.Bound().Max = window.Size.Buffer.Full;
+		//text.String() = ss.str();
 	}
 
 	Draw();

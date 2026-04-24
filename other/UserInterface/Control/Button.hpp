@@ -4,7 +4,8 @@
 # include "Base/Base.hpp"
 # include "Miscellaneous/Function/Pointer.hpp"
 
-
+# include "../Text/Object.hpp"
+# include <string>
 
 namespace UI
 {
@@ -14,6 +15,17 @@ namespace Control
 
 class Button : public Base
 {
+	private:
+	Text::Object	TextObject;
+
+	Point2D			CharacterSize;
+	Point2D			CharacterCountLimit2D;
+	unsigned int	CharacterCountLimit;
+	bool			CharacterCountLimitChanged;
+
+	std::string		Text;
+	bool			TextChanged;
+
 	public:
 	FunctionPointer<ClickArgs>	ClickFunc;
 
@@ -21,8 +33,22 @@ class Button : public Base
 	Button();
 	~Button();
 
+	private:
+	void	CalcCharacterCount();
+	void	PutCharactersEntrys();
+
 	public:
-	void RelayClick(ClickArgs args) override;
+	std::string	GetText() const;
+	void		SetText(std::string text);
+
+	public:
+	void	UpdateEntrysRelay() override;
+	void	InsertDrawingEntryRelay() override;
+	void	RemoveDrawingEntryRelay() override;
+	void	UpdateBoxRelay() override;
+
+	public:
+	void	RelayClick(ClickArgs args) override;
 };
 
 };

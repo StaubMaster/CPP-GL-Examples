@@ -15,7 +15,6 @@ UI::Control::TextBox::TextBox()
 	ColorDefault = ColorF4(1.0f, 1.0f, 1.0f);
 	ColorHover = ColorF4(0.875f, 0.875f, 0.875f);
 
-	CharacterSize = Point2D(20, 20);
 	CharacterCountLimit = 0;
 	CharacterCountLimitChanged = false;
 

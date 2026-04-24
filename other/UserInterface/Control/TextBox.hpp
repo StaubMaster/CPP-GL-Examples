@@ -2,8 +2,8 @@
 # define UI_CONTROL_TEXTBOX_HPP
 
 #include "Base/Base.hpp"
-#include "../Text/Object.hpp"
 
+#include "../Text/Object.hpp"
 #include <string>
 
 namespace UI
@@ -32,25 +32,25 @@ class TextBox : public Base
 	~TextBox();
 
 	private:
-	void ShowInfo() const;
+	void	ShowInfo() const;
 
 	private:
-	void CalcCharacterCount();
-	void PutCharactersEntrys();
+	void	CalcCharacterCount();
+	void	PutCharactersEntrys();
 
 	public:
-	std::string GetText() const;
-	void SetText(std::string text);
+	std::string	GetText() const;
+	void		SetText(std::string text);
 
 	public:
-	void UpdateEntrysRelay() override;
-	void InsertDrawingEntryRelay() override;
-	void RemoveDrawingEntryRelay() override;
-	void UpdateBoxRelay() override;
+	void	UpdateEntrysRelay() override;
+	void	InsertDrawingEntryRelay() override;
+	void	RemoveDrawingEntryRelay() override;
+	void	UpdateBoxRelay() override;
 
 	public:
-	void RelayKey(KeyArgs params) override;
-	void RelayText(TextArgs params) override;
+	void	RelayKey(KeyArgs params) override;
+	void	RelayText(TextArgs params) override;
 };
 };
 };

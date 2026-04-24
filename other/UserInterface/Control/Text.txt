@@ -1,0 +1,5 @@
+gave Text to Button and Slider
+just copied stuff from TextBox
+
+should put all the Text Managment stuff into a struct
+and then use then when something needs text

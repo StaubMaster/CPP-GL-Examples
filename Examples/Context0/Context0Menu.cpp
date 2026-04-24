@@ -8,78 +8,52 @@ Context0Menu::Context0Menu()
 	: UI::Control::Form()
 	, TitleText()
 	, QuitButton()
-	, QuitText()
 	, Context0Button()
-	, Context0Text()
 	, Context1Button()
-	, Context1Text()
 	, ContextNoisePlaneButton()
-	, ContextNoisePlaneText()
 	, ContextTestTextAlignmentButton()
-	, ContextTestTextAlignmentText()
 {
-	float x = 0.0f;
-	float y = 0.0f;
-
-	QuitButton.Anchor.X.AnchorMin(x);
+	QuitButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	QuitButton.Anchor.Y.AnchorMax(0.0f);
 	QuitButton.ClickFunc.Assign(this, &Context0Menu::QuitFunc);
-	x = QuitButton.Anchor.X.GetMinSize();
-	QuitText.Anchor.X.AnchorBoth(x, 0);
-	QuitText.Anchor.Y.AnchorMax(0.0f);
-	QuitText.SetText("Quit");
+	QuitButton.SetText("Quit");
 
-	TitleText.Anchor.X.AnchorBoth(0, 0);
+	float y = 0.0f;
+
+	TitleText.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	TitleText.Anchor.Y.AnchorMin(y);
 	TitleText.SetText("This is Context0");
 	y = TitleText.Anchor.Y.GetMinSize();
 
-	Context0Text.Anchor.X.AnchorMin(0.0f, 200);
-	Context0Text.Anchor.Y.AnchorMin(y);
-	Context0Text.SetText("Context0");
-	x = Context0Text.Anchor.X.GetMinSize();
-	Context0Button.Anchor.X.AnchorMin(x);
+	Context0Button.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	Context0Button.Anchor.Y.AnchorMin(y);
+	Context0Button.SetText("Context0");
 	Context0Button.ClickFunc.Assign(this, &Context0Menu::Context0Func);
-	y = Context0Text.Anchor.Y.GetMinSize();
+	y = Context0Button.Anchor.Y.GetMinSize();
 
-	Context1Text.Anchor.X.AnchorMin(0.0f, 200);
-	Context1Text.Anchor.Y.AnchorMin(y);
-	Context1Text.SetText("Context1");
-	x = Context1Text.Anchor.X.GetMinSize();
-	Context1Button.Anchor.X.AnchorMin(x);
+	Context1Button.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	Context1Button.Anchor.Y.AnchorMin(y);
+	Context1Button.SetText("Context1");
 	Context1Button.ClickFunc.Assign(this, &Context0Menu::Context1Func);
-	y = Context1Text.Anchor.Y.GetMinSize();
+	y = Context1Button.Anchor.Y.GetMinSize();
 
-	ContextNoisePlaneText.Anchor.X.AnchorMin(0.0f, 200);
-	ContextNoisePlaneText.Anchor.Y.AnchorMin(y);
-	ContextNoisePlaneText.SetText("NoisePlane");
-	x = ContextNoisePlaneText.Anchor.X.GetMinSize();
-	ContextNoisePlaneButton.Anchor.X.AnchorMin(x);
+	ContextNoisePlaneButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	ContextNoisePlaneButton.Anchor.Y.AnchorMin(y);
+	ContextNoisePlaneButton.SetText("NoisePlane");
 	ContextNoisePlaneButton.ClickFunc.Assign(this, &Context0Menu::ContextNoisePlaneFunc);
-	y = ContextNoisePlaneText.Anchor.Y.GetMinSize();
+	y = ContextNoisePlaneButton.Anchor.Y.GetMinSize();
 
-	ContextTestTextAlignmentText.Anchor.X.AnchorMin(0.0f, 300);
-	ContextTestTextAlignmentText.Anchor.Y.AnchorMin(y);
-	ContextTestTextAlignmentText.SetText("TestTextAlignment");
-	x = ContextTestTextAlignmentText.Anchor.X.GetMinSize();
-	ContextTestTextAlignmentButton.Anchor.X.AnchorMin(x);
+	ContextTestTextAlignmentButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	ContextTestTextAlignmentButton.Anchor.Y.AnchorMin(y);
+	ContextTestTextAlignmentButton.SetText("TestTextAlignment");
 	ContextTestTextAlignmentButton.ClickFunc.Assign(this, &Context0Menu::ContextTestTextAlignmentFunc);
-	y = ContextTestTextAlignmentText.Anchor.Y.GetMinSize();
+	y = ContextTestTextAlignmentButton.Anchor.Y.GetMinSize();
 
 	ChildInsert(TitleText);
-	ChildInsert(QuitText);
 	ChildInsert(QuitButton);
-	ChildInsert(Context0Text);
 	ChildInsert(Context0Button);
-	ChildInsert(Context1Text);
 	ChildInsert(Context1Button);
-	ChildInsert(ContextNoisePlaneText);
 	ChildInsert(ContextNoisePlaneButton);
-	ChildInsert(ContextTestTextAlignmentText);
 	ChildInsert(ContextTestTextAlignmentButton);
 }
 
