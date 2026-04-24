@@ -5,6 +5,7 @@
 
 # include "ValueType/Point2D.hpp"
 # include "ValueType/AxisBox2D.hpp"
+# include "ValueType/ColorF4.hpp"
 
 # include <string>
 
@@ -24,6 +25,7 @@ struct ObjectData
 	Alignment	CharacterAlignmentY;
 
 	AxisBox2D	Bound;
+	ColorF4		Color;
 
 	bool	Remove;
 	bool	Display;

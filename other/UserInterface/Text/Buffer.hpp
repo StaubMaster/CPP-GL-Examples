@@ -7,6 +7,7 @@
 # include "Graphics/Attribute/Base/Base.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
 # include "Graphics/Attribute/AxisBox2D.hpp"
+# include "Graphics/Attribute/ColorF4.hpp"
 
 
 
@@ -30,6 +31,7 @@ class Inst_Buffer : public ::Buffer::Attribute
 	::Attribute::Point2D	Pos;
 	::Attribute::AxisBox2D	Pallet;
 	::Attribute::AxisBox2D	Bound;
+	::Attribute::ColorF4	Color;
 	public:
 	Inst_Buffer(::BufferArray::Base & buffer_array);
 };

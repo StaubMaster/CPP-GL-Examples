@@ -281,6 +281,7 @@ void	DragForceTest()
 
 	UI::Text::Object text; text.Create();
 	text.TextPosition() = window.Size.Buffer.Half;
+	text.Color() = ColorF4(1, 1, 1);
 	text.Bound().Min = Point2D();
 	text.Bound().Max = window.Size.Buffer.Full;
 	text.String() = ss.str();
@@ -440,7 +441,6 @@ void MakeControls()
 		OptionsMenuIs = true;
 		OptionsMenu.FOV_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::FOV_Change);
 		OptionsMenu.FOV_Slider.SetValue(view.FOV.ToDegrees());
-		std::cout << "FOV Value: " << OptionsMenu.FOV_Slider.GetValue() << '\n';
 
 		OptionsMenu.Chunk_Insert_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::Chunk_Insert_Change);
 		OptionsMenu.Chunk_Insert_Slider.SetValue(ChunkInsertRange);
@@ -979,6 +979,7 @@ void Frame(FrameTime frame_time) override
 		UI::Text::Object text; text.Create();
 		text.TextPosition().X = 10;
 		text.TextPosition().Y = 10;
+		text.Color() = ColorF4(1, 1, 1);
 		text.Bound().Min = Point2D();
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.String() = ss.str();

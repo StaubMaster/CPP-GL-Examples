@@ -20,11 +20,13 @@ UI::Text::Inst_Buffer::Inst_Buffer(::BufferArray::Base & buffer_array)
 	, Pos()
 	, Pallet()
 	, Bound()
+	, Color()
 {
-	Attributes.Allocate(3);
+	Attributes.Allocate(4);
 	Attributes.Insert(&Pos);
 	Attributes.Insert(&Pallet);
 	Attributes.Insert(&Bound);
+	Attributes.Insert(&Color);
 }
 
 

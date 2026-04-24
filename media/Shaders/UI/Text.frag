@@ -11,6 +11,7 @@ in UI_Text
 	vec2	PalletPos;
 	vec2	BoundMin;
 	vec2	BoundMax;
+	vec4	Color;
 } fs_inn;
 
 
@@ -29,6 +30,7 @@ void main()
 	if (col.b >= 0.5) { discard; }
 
 //	col = vec4(1, 1, 1, 1);
+	col = col.a * fs_inn.Color;
 
 	if (gl_FragCoord.x >= fs_inn.BoundMin.x &&
 		gl_FragCoord.x <= fs_inn.BoundMax.x &&

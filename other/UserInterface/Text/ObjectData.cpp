@@ -10,9 +10,10 @@ UI::Text::ObjectData::ObjectData()
 	, TextAlignmentX(Alignment::Min)
 	, TextAlignmentY(Alignment::Min)
 	, CharacterSize(20.0f, 20.0f)
-	, CharacterAlignmentX(Alignment::Min)
-	, CharacterAlignmentY(Alignment::Min)
+	, CharacterAlignmentX(Alignment::Max)
+	, CharacterAlignmentY(Alignment::Max)
 	, Bound()
+	, Color()
 	, Remove(false)
 	, Display(true)
 { }
@@ -25,6 +26,7 @@ UI::Text::ObjectData::ObjectData(const ObjectData & other)
 	, CharacterAlignmentX(other.CharacterAlignmentX)
 	, CharacterAlignmentY(other.CharacterAlignmentY)
 	, Bound(other.Bound)
+	, Color(other.Color)
 	, Remove(other.Remove)
 	, Display(other.Display)
 { }
@@ -38,6 +40,7 @@ UI::Text::ObjectData & UI::Text::ObjectData::operator=(const ObjectData & other)
 	CharacterAlignmentX = other.CharacterAlignmentX;
 	CharacterAlignmentY = other.CharacterAlignmentY;
 	Bound = other.Bound;
+	Color = other.Color;
 	Remove = other.Remove;
 	Display = other.Display;
 	return *this;

@@ -5,6 +5,7 @@
 
 # include "ValueType/Point2D.hpp"
 # include "ValueType/AxisBox2D.hpp"
+# include "ValueType/ColorF4.hpp"
 # include "string"
 
 namespace UI
@@ -29,10 +30,21 @@ struct Object
 	Alignment &		CharacterAlignmentY();
 
 	AxisBox2D &		Bound();
+	ColorF4 &		Color();
 
 	bool	Visibility() const;
 	void	Hide();
 	void	Full();
+
+	void	AlignTopLeft();
+	void	AlignTopMiddle();
+	void	AlignTopRight();
+	void	AlignMiddleLeft();
+	void	AlignMiddleMiddle();
+	void	AlignMiddleRight();
+	void	AlignBottomLeft();
+	void	AlignBottomMiddle();
+	void	AlignBottomRight();
 
 	~Object();
 	Object();

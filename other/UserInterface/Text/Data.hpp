@@ -22,9 +22,11 @@ struct Inst_Data
 	Point2D		Pos;
 	AxisBox2D	Pallet;
 	AxisBox2D	Bound;
+	ColorF4		Color;
 
 	Inst_Data();
 	Inst_Data(Point2D pos, AxisBox2D pallet);
+	Inst_Data(Point2D pos, AxisBox2D pallet, ColorF4 color);
 };
 
 };

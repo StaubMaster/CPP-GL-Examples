@@ -31,6 +31,8 @@ layout(location = 3) in vec2 Inst_PalletMax;
 layout(location = 4) in vec2 Inst_BoundMin;
 layout(location = 5) in vec2 Inst_BoundMax;
 
+layout(location = 6) in vec4 Inst_Color;
+
 
 
 out UI_Text
@@ -38,6 +40,7 @@ out UI_Text
 	vec2	PalletPos;
 	vec2	BoundMin;
 	vec2	BoundMax;
+	vec4	Color;
 } vs_out;
 
 
@@ -66,4 +69,6 @@ void main()
 	vs_out.BoundMin.y = DisplaySize.Buffer.Full.y - Inst_BoundMax.y;
 	vs_out.BoundMax.x = Inst_BoundMax.x;
 	vs_out.BoundMax.y = DisplaySize.Buffer.Full.y - Inst_BoundMin.y;
+
+	vs_out.Color = Inst_Color;
 }

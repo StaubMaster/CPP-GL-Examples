@@ -79,6 +79,7 @@ void UI::Text::Manager::InitMedia(DirectoryInfo & media_dir)
 		Buffer.Inst.Pallet.Max.Change(3);
 		Buffer.Inst.Bound.Min.Change(4);
 		Buffer.Inst.Bound.Max.Change(5);
+		Buffer.Inst.Color.Change(6);
 	}
 }
 
@@ -245,6 +246,7 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 		data.Pos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
 		data.Pallet = TextFont -> CharacterBoxFromCode(obj.Text[i]);
 		data.Bound = obj.Bound;
+		data.Color = obj.Color;
 		Instances.Insert(data);
 	}
 }
