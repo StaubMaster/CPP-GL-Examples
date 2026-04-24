@@ -121,9 +121,9 @@ ContextNoisePlane()
 struct PhysicsContext
 {
 	VectorF3	GravityDirection = VectorF3(0.0f, -1.0f, 0.0f);
-	float		GravityAcl = 0.0f; // dm/s*s
+	float		GravityAcl = 1.0f;
 
-	float	AirDensity = 0.1f; // kg/dm*dm*dm
+	float	AirDensity = 0.001f;
 	float	AirDragCoefficient = 1.0f;
 
 	float	CalculateAirResistance(float vel, float mass, float area) const
@@ -195,25 +195,20 @@ struct BoxEntity
 			{
 				BoxF3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
 				if ((Box + Pos).IntersectBoxInclusive(voxel_box).All(true)) { continue; }
-				{
-					VectorF3 t = BoxF3::CollisionTimePerAxisNaN(Box + Pos + off, Vel, voxel_box);
-					VectorF3 dir;
-					if (Vel.X > 0.0f) { dir.X = +1.0f; } else { dir.X = -1.0f; }
-					if (Vel.Y > 0.0f) { dir.Y = +1.0f; } else { dir.Y = -1.0f; }
-					if (Vel.Z > 0.0f) { dir.Z = +1.0f; } else { dir.Z = -1.0f; }
-					collision.Consider(t, -dir);
-				}
+				VectorF3 t = BoxF3::CollisionTimePerAxisNaN(Box + Pos + off, Vel, voxel_box);
+				VectorF3 dir;
+				if (Vel.X > 0.0f) { dir.X = +1.0f; } else { dir.X = -1.0f; }
+				if (Vel.Y > 0.0f) { dir.Y = +1.0f; } else { dir.Y = -1.0f; }
+				if (Vel.Z > 0.0f) { dir.Z = +1.0f; } else { dir.Z = -1.0f; }
+				collision.Consider(t, -dir);
 			}
 		}
 		return collision;
 	}
-	void Collide(::ChunkManager & manager, LoopI3 loop)
+	void Collide(::ChunkManager & manager, LoopI3 loop, FrameTime frame_time)
 	{
-		BoxF3 view_box_old = Box + Pos;
-
 		VectorF3 rel;
-
-		float time_limit = 1.0f;
+		float time_limit = frame_time.Delta;
 		for (unsigned int l = 0; l < 4; l++)
 		{
 			TimeBoxCollision collision = FindCollisionTime(manager, loop, rel);
@@ -225,7 +220,7 @@ struct BoxEntity
 				if (dot < 0.0f)
 				{
 					Vel -= (collision.Normal * dot);
-					rel += (collision.Normal * 0.1f);
+					rel += (collision.Normal * 0.01f);
 				}
 			}
 			else { break; }
@@ -234,9 +229,7 @@ struct BoxEntity
 		{
 			rel += Vel * time_limit;
 		}
-
-		//Pos += rel;
-		Pos += Vel;
+		Pos += rel;
 	}
 };
 void	DisplayBoxEntity(BoxEntity & entity)
@@ -248,14 +241,16 @@ void	DisplayBoxEntity(BoxEntity & entity)
 
 
 
-
-
 bool	DragPause = false;
 bool	DragFrame;
 
-float	DragVel = 0.0f; // dm/s
-float	DragMass = 1.0f; // kg
-float	DragArea = 1.0f; // dm*dm
+float	DragVel = 0.0f;
+float	DragMass = 1.0f;
+float	DragArea = 1.0f;
+
+float	ViewSpeed = 0.5f;
+float	ViewFaster = 10.0f;
+float	ViewSpeedNoClip = 10.0f;
 
 void	DragForceTest()
 {
@@ -279,8 +274,8 @@ void	DragForceTest()
 	ss << "Accel " << drag_accel << '\n';
 	ss << "Vel   " << vel << '\n';
 	ss << "Limit " << PhysicsContext.CalculateTerminalVelocity(DragMass, DragArea) << '\n';
-	ss << "Limit " << PhysicsContext.CalculateAirResistanceLimit(DragMass, DragArea, 2) << '\n';
-	ss << "Limit " << PhysicsContext.CalculateAirResistanceLimit(DragMass, DragArea, 20) << '\n';
+	ss << "Limit " << PhysicsContext.CalculateAirResistanceLimit(DragMass, DragArea, ViewSpeed) << '\n';
+	ss << "Limit " << PhysicsContext.CalculateAirResistanceLimit(DragMass, DragArea, ViewSpeed * ViewFaster) << '\n';
 
 	if (DragFrame) { DragVel = vel; }
 
@@ -305,18 +300,13 @@ static void ShowCollisionVoxels(::ChunkManager & chunk_manager, LoopI3 loop, uns
 		}
 	}
 }
-void CollideViewBox(VectorF3 change)
+void CollideViewBox(FrameTime frame_time)
 {
 	int size = 2;
 	VectorI3 center = ViewEntity.Pos.roundF();
 	LoopI3 loop(center - VectorI3(size), Bool3(false), center + VectorI3(size), Bool3(false));
-
-	//ViewEntity.Vel -= ViewEntity.Vel * 0.5f;
-	ViewEntity.Vel += change;
-	//ViewEntity.Vel += GravityForce;
-
 	ShowCollisionVoxels(ChunkManager, loop, PolyHedraManager.FindPolyHedra(VoxelCube));
-	ViewEntity.Collide(ChunkManager, loop);
+	ViewEntity.Collide(ChunkManager, loop, frame_time);
 }
 void UpdateViewColliding(FrameTime frame_time)
 {
@@ -325,9 +315,9 @@ void UpdateViewColliding(FrameTime frame_time)
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		change = window.MoveSpinFromKeysCursor();
-		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= 10; }
-		change.Position *= 2;
+		change.Position *= ViewSpeed;
 		change.Rotation *= view.FOV.ToRadians() * 0.05f;
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFaster; }
 		{
 			EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
 			change.Position = e.forward(change.Position);
@@ -336,25 +326,19 @@ void UpdateViewColliding(FrameTime frame_time)
 
 	if (!IgnoreCollision)
 	{
-		change.Position += PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f);
-
+		ViewEntity.Vel += change.Position + PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f);
 		DisplayBoxEntity(ViewEntity);
-		CollideViewBox(change.Position * frame_time.Delta);
+		CollideViewBox(frame_time);
 		DisplayBoxEntity(ViewEntity);
-
-		view.Trans.Position = ViewEntity.Pos;
-		view.Trans.Rotation += change.Rotation * frame_time.Delta;
-		view.Trans.Rotation.X1.clampPI();
 	}
 	else
 	{
-		view.Trans.Position += change.Position * frame_time.Delta;
-		view.Trans.Rotation += change.Rotation * frame_time.Delta;
-		view.Trans.Rotation.X1.clampPI();
-
-		ViewEntity.Pos = view.Trans.Position;
-		ViewEntity.Vel = VectorF3();
+		ViewEntity.Vel = change.Position * ViewSpeedNoClip;
+		ViewEntity.Pos += ViewEntity.Vel * frame_time.Delta;
 	}
+	view.Trans.Position = ViewEntity.Pos;
+	view.Trans.Rotation += change.Rotation * frame_time.Delta;
+	view.Trans.Rotation.X1.clampPI();
 
 	if (!ViewBack)
 	{
