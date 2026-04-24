@@ -6,18 +6,24 @@ UI::Text::ObjectData::~ObjectData() { }
 
 UI::Text::ObjectData::ObjectData()
 	: Text()
-	, AlignmentX(Alignment::Min)
-	, AlignmentY(Alignment::Min)
-	, Pos()
+	, TextPosition()
+	, TextAlignmentX(Alignment::Min)
+	, TextAlignmentY(Alignment::Min)
+	, CharacterSize(20.0f, 20.0f)
+	, CharacterAlignmentX(Alignment::Min)
+	, CharacterAlignmentY(Alignment::Min)
 	, Bound()
 	, Remove(false)
 	, Display(true)
 { }
 UI::Text::ObjectData::ObjectData(const ObjectData & other)
 	: Text(other.Text)
-	, AlignmentX(other.AlignmentX)
-	, AlignmentY(other.AlignmentY)
-	, Pos(other.Pos)
+	, TextPosition(other.TextPosition)
+	, TextAlignmentX(other.TextAlignmentX)
+	, TextAlignmentY(other.TextAlignmentY)
+	, CharacterSize(other.CharacterSize)
+	, CharacterAlignmentX(other.CharacterAlignmentX)
+	, CharacterAlignmentY(other.CharacterAlignmentY)
 	, Bound(other.Bound)
 	, Remove(other.Remove)
 	, Display(other.Display)
@@ -25,9 +31,12 @@ UI::Text::ObjectData::ObjectData(const ObjectData & other)
 UI::Text::ObjectData & UI::Text::ObjectData::operator=(const ObjectData & other)
 {
 	Text = other.Text;
-	AlignmentX = other.AlignmentX;
-	AlignmentY = other.AlignmentY;
-	Pos = other.Pos;
+	TextPosition = other.TextPosition;
+	TextAlignmentX = other.TextAlignmentX;
+	TextAlignmentY = other.TextAlignmentY;
+	CharacterSize = other.CharacterSize;
+	CharacterAlignmentX = other.CharacterAlignmentX;
+	CharacterAlignmentY = other.CharacterAlignmentY;
 	Bound = other.Bound;
 	Remove = other.Remove;
 	Display = other.Display;

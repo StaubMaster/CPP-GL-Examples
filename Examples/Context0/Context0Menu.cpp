@@ -15,6 +15,8 @@ Context0Menu::Context0Menu()
 	, Context1Text()
 	, ContextNoisePlaneButton()
 	, ContextNoisePlaneText()
+	, ContextTestTextAlignmentButton()
+	, ContextTestTextAlignmentText()
 {
 	float x = 0.0f;
 	float y = 0.0f;
@@ -59,6 +61,15 @@ Context0Menu::Context0Menu()
 	ContextNoisePlaneButton.ClickFunc.Assign(this, &Context0Menu::ContextNoisePlaneFunc);
 	y = ContextNoisePlaneText.Anchor.Y.GetMinSize();
 
+	ContextTestTextAlignmentText.Anchor.X.AnchorMin(0.0f, 300);
+	ContextTestTextAlignmentText.Anchor.Y.AnchorMin(y);
+	ContextTestTextAlignmentText.SetText("TestTextAlignment");
+	x = ContextTestTextAlignmentText.Anchor.X.GetMinSize();
+	ContextTestTextAlignmentButton.Anchor.X.AnchorMin(x);
+	ContextTestTextAlignmentButton.Anchor.Y.AnchorMin(y);
+	ContextTestTextAlignmentButton.ClickFunc.Assign(this, &Context0Menu::ContextTestTextAlignmentFunc);
+	y = ContextTestTextAlignmentText.Anchor.Y.GetMinSize();
+
 	ChildInsert(TitleText);
 	ChildInsert(QuitText);
 	ChildInsert(QuitButton);
@@ -68,6 +79,8 @@ Context0Menu::Context0Menu()
 	ChildInsert(Context1Button);
 	ChildInsert(ContextNoisePlaneText);
 	ChildInsert(ContextNoisePlaneButton);
+	ChildInsert(ContextTestTextAlignmentText);
+	ChildInsert(ContextTestTextAlignmentButton);
 }
 
 void Context0Menu::QuitFunc(ClickArgs args)
@@ -96,5 +109,12 @@ void Context0Menu::ContextNoisePlaneFunc(ClickArgs args)
 	if (args.Action == Action::Press)
 	{
 		ContextBase::ChangeToNoisePlane();
+	}
+}
+void Context0Menu::ContextTestTextAlignmentFunc(ClickArgs args)
+{
+	if (args.Action == Action::Press)
+	{
+		ContextBase::ChangeToTestTextAlignment();
 	}
 }

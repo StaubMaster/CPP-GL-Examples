@@ -1,2 +1,7 @@
 
 make Debug log less
+
+rename Attributes and Uniforms to fit with new ValueType Names
+make Attributes and Uniforms for Vectors
+currently they are for float Arrays
+make seperate thing for those

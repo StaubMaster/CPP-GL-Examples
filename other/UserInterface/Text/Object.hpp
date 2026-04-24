@@ -19,11 +19,15 @@ struct Object
 
 	bool			Is() const;
 	std::string &	String();
-	
-	Alignment &		AlignmentX();
-	Alignment &		AlignmentY();
 
-	Point2D &		Pos();
+	Point2D &		TextPosition();
+	Alignment &		TextAlignmentX();
+	Alignment &		TextAlignmentY();
+
+	Point2D &		CharacterSize();
+	Alignment &		CharacterAlignmentX();
+	Alignment &		CharacterAlignmentY();
+
 	AxisBox2D &		Bound();
 
 	bool	Visibility() const;

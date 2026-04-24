@@ -21,6 +21,7 @@ struct ContextBase
 	static void		ChangeToContext0();
 	static void		ChangeToContext1();
 	static void		ChangeToNoisePlane();
+	static void		ChangeToTestTextAlignment();
 
 
 

@@ -18,17 +18,13 @@ UI::Text::Main_Buffer::Main_Buffer(::BufferArray::Base & buffer_array)
 UI::Text::Inst_Buffer::Inst_Buffer(::BufferArray::Base & buffer_array)
 	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
 	, Pos()
-	, PalletMin()
-	, PalletMax()
-	, BoundMin()
-	, BoundMax()
+	, Pallet()
+	, Bound()
 {
-	Attributes.Allocate(5);
+	Attributes.Allocate(3);
 	Attributes.Insert(&Pos);
-	Attributes.Insert(&PalletMin);
-	Attributes.Insert(&PalletMax);
-	Attributes.Insert(&BoundMin);
-	Attributes.Insert(&BoundMax);
+	Attributes.Insert(&Pallet);
+	Attributes.Insert(&Bound);
 }
 
 

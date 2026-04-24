@@ -75,10 +75,10 @@ void UI::Text::Manager::InitMedia(DirectoryInfo & media_dir)
 	{
 		Buffer.Main.Pos.Change(0);
 		Buffer.Inst.Pos.Change(1);
-		Buffer.Inst.PalletMin.Change(2);
-		Buffer.Inst.PalletMax.Change(3);
-		Buffer.Inst.BoundMin.Change(4);
-		Buffer.Inst.BoundMax.Change(5);
+		Buffer.Inst.Pallet.Min.Change(2);
+		Buffer.Inst.Pallet.Max.Change(3);
+		Buffer.Inst.Bound.Min.Change(4);
+		Buffer.Inst.Bound.Max.Change(5);
 	}
 }
 
@@ -162,34 +162,6 @@ void UI::Text::Manager::GraphicsInst()
 	Buffer.Inst.Change(Instances);
 }
 
-/* Text Alignment
-
-								Pos.X
-X Min								|########################
-X Mid					############|############
-X Max		########################|
-
-Y Min		###################
-			##########
-Y Mid		###############
-			###################
-Y Max		###########
-*/
-
-/* Character Alignment
-
-   Min Mid Max
-Min	0---1---2
-	|		|
-	|		|
-Mid	3	4	5
-	|		|
-	|		|
-Max	6---7---8
-
-move the Character / Text so that Pos is at Number n
-*/
-
 static unsigned int LineCount(const char * text)
 {
 	unsigned int count = 0;
@@ -219,24 +191,30 @@ static unsigned int LineLength(const char * text, unsigned int i)
 
 void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 {
-	Point2D CharacterSize = Point2D(20, 20);
-
 	unsigned int line_count = LineCount(obj.Text.c_str());
 	unsigned int line_idx = 0;
 	unsigned int line_len = LineLength(obj.Text.c_str(), 0);
 
-	Point2D rel;
-	if (obj.AlignmentY == Alignment::Min)
+	Point2D rel_chr;
+	switch (obj.CharacterAlignmentX)
 	{
-		rel.Y = 0;
+		case Alignment::Min: rel_chr.X = -0.5f; break;
+		case Alignment::Mid: rel_chr.X =  0.0f; break;
+		case Alignment::Max: rel_chr.X = +0.5f; break;
 	}
-	if (obj.AlignmentY == Alignment::Mid)
+	switch (obj.CharacterAlignmentY)
 	{
-		rel.Y = -(line_count * 0.5f);
+		case Alignment::Min: rel_chr.Y = -0.5f; break;
+		case Alignment::Mid: rel_chr.Y =  0.0f; break;
+		case Alignment::Max: rel_chr.Y = +0.5f; break;
 	}
-	if (obj.AlignmentY == Alignment::Max)
+
+	Point2D rel_txt;
+	switch (obj.TextAlignmentY)
 	{
-		rel.Y = -(line_count * 1.0f);
+		case Alignment::Min: rel_txt.Y = -(line_count * 0.0f); break;
+		case Alignment::Mid: rel_txt.Y = -(line_count * 0.5f); break;
+		case Alignment::Max: rel_txt.Y = -(line_count * 1.0f); break;
 	}
 
 	UI::Text::Inst_Data data;
@@ -249,28 +227,22 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 		}
 		if (obj.Text[i] == '\n')
 		{
-			rel.Y += 1;
+			rel_txt.Y += 1;
 			line_idx = 0;
 			line_len = LineLength(obj.Text.c_str(), i + 1);
 			continue;
 		}
 
-		if (obj.AlignmentX == Alignment::Min)
+		switch (obj.TextAlignmentX)
 		{
-			rel.X = (line_idx + 0.0f);
-		}
-		if (obj.AlignmentX == Alignment::Mid)
-		{
-			rel.X = (line_idx + 0.5f) - (line_len * 0.5f);
-		}
-		if (obj.AlignmentX == Alignment::Max)
-		{
-			rel.X = (line_idx + 1.0f) - (line_len * 1.0f);
+			case Alignment::Min: rel_txt.X = (line_idx + 0.0f) - (line_len * 0.0f); break;
+			case Alignment::Mid: rel_txt.X = (line_idx + 0.5f) - (line_len * 0.5f); break;
+			case Alignment::Max: rel_txt.X = (line_idx + 1.0f) - (line_len * 1.0f); break;
 		}
 
 		line_idx++;
 
-		data.Pos = obj.Pos + (CharacterSize * rel);
+		data.Pos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
 		data.Pallet = TextFont -> CharacterBoxFromCode(obj.Text[i]);
 		data.Bound = obj.Bound;
 		Instances.Insert(data);

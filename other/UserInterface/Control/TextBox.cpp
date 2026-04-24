@@ -53,8 +53,8 @@ void UI::Control::TextBox::PutCharactersEntrys()
 	if (TextObject.Is())
 	{
 		TextObject.String() = Text;
-		TextObject.Pos().X = min.X + ((max.Y - min.Y) * 0.5f);
-		TextObject.Pos().Y = center.Y;
+		TextObject.TextPosition().X = min.X + ((max.Y - min.Y) * 0.5f);
+		TextObject.TextPosition().Y = center.Y;
 		TextObject.Bound() = AnchorBox;
 	}
 

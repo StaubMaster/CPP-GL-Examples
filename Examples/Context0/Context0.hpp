@@ -1,5 +1,5 @@
-#ifndef  CONTEXT_0_BASE_HPP
-# define CONTEXT_0_BASE_HPP
+#ifndef  CONTEXT_0_HPP
+# define CONTEXT_0_HPP
 
 # include "ContextBase.hpp"
 # include "Context0Menu.hpp"

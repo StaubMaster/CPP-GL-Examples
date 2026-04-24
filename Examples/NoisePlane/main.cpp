@@ -280,7 +280,7 @@ void	DragForceTest()
 	if (DragFrame) { DragVel = vel; }
 
 	UI::Text::Object text; text.Create();
-	text.Pos() = window.Size.Buffer.Half;
+	text.TextPosition() = window.Size.Buffer.Half;
 	text.Bound().Min = Point2D();
 	text.Bound().Max = window.Size.Buffer.Full;
 	text.String() = ss.str();
@@ -977,8 +977,8 @@ void Frame(FrameTime frame_time) override
 		}
 
 		UI::Text::Object text; text.Create();
-		text.Pos().X = 10;
-		text.Pos().Y = 10;
+		text.TextPosition().X = 10;
+		text.TextPosition().Y = 10;
 		text.Bound().Min = Point2D();
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.String() = ss.str();

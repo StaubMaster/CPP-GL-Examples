@@ -1,23 +1,20 @@
-#ifndef  CONTEXT_1_HPP
-# define CONTEXT_1_HPP
+#ifndef  TEST_TEXT_ALIGNMENT_HPP
+# define TEST_TEXT_ALIGNMENT_HPP
 
 # include "ContextBase.hpp"
-# include "Context1Menu.hpp"
 
 # include "Control/Base/Manager.hpp"
 # include "ControlsInclude.hpp"
 
 # include "Text/Manager.hpp"
 
-struct Context1 : public ContextBase
+struct ContextTestTextAlignment : public ContextBase
 {
 UI::Control::Manager	ControlManager;
 UI::Text::Manager		TextManager;
 
-Context1Menu			Menu;
-
-~Context1();
-Context1();
+~ContextTestTextAlignment();
+ContextTestTextAlignment();
 
 void Make();
 

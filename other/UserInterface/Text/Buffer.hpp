@@ -6,6 +6,7 @@
 
 # include "Graphics/Attribute/Base/Base.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
+# include "Graphics/Attribute/AxisBox2D.hpp"
 
 
 
@@ -27,10 +28,8 @@ class Inst_Buffer : public ::Buffer::Attribute
 {
 	public:
 	::Attribute::Point2D	Pos;
-	::Attribute::Point2D	PalletMin;
-	::Attribute::Point2D	PalletMax;
-	::Attribute::Point2D	BoundMin;
-	::Attribute::Point2D	BoundMax;
+	::Attribute::AxisBox2D	Pallet;
+	::Attribute::AxisBox2D	Bound;
 	public:
 	Inst_Buffer(::BufferArray::Base & buffer_array);
 };

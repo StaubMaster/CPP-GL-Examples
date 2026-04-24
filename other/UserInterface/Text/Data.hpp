@@ -11,7 +11,7 @@ namespace Text
 
 struct Main_Data
 {
-	Point2D Pos;
+	Point2D	Pos;
 
 	Main_Data();
 	Main_Data(Point2D pos);
@@ -19,9 +19,9 @@ struct Main_Data
 
 struct Inst_Data
 {
-	Point2D Pos;
-	AxisBox2D Pallet;
-	AxisBox2D Bound;
+	Point2D		Pos;
+	AxisBox2D	Pallet;
+	AxisBox2D	Bound;
 
 	Inst_Data();
 	Inst_Data(Point2D pos, AxisBox2D pallet);

@@ -6,6 +6,7 @@
 #include "Context0/Context0.hpp"
 #include "Context1/Context1.hpp"
 #include "NoisePlane/new.hpp"
+#include "TestTextAlignment/TestTextAlignment.hpp"
 
 
 
@@ -40,6 +41,10 @@ void ContextBase::ChangeToContext1()
 void ContextBase::ChangeToNoisePlane()
 {
 	Change(newContextNoisePlane());
+}
+void ContextBase::ChangeToTestTextAlignment()
+{
+	Change(new ContextTestTextAlignment());
 }
 
 

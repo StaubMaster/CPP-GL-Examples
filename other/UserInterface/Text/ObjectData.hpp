@@ -15,13 +15,14 @@ namespace Text
 struct ObjectData
 {
 	std::string		Text;
-	Alignment		AlignmentX;
-	Alignment		AlignmentY;
+	Point2D			TextPosition;
+	Alignment		TextAlignmentX;
+	Alignment		TextAlignmentY;
 
-	// Character Alignment
-	// Character Size
+	Point2D		CharacterSize;
+	Alignment	CharacterAlignmentX;
+	Alignment	CharacterAlignmentY;
 
-	Point2D		Pos;
 	AxisBox2D	Bound;
 
 	bool	Remove;
