@@ -70,7 +70,8 @@ void UI::Control::CheckBox::RelayClick(ClickArgs params)
 {
 	if (!_Interactible) { return; }
 
-	if (params.Action == Action::Press || params.Action == Action::Release)
+	//if (params.Action == Action::Press || params.Action == Action::Release)
+	if (params.Action == Action::Press)
 	{
 		Checked = !Checked;
 		ColorChanged = true;

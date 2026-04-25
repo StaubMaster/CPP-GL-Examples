@@ -4,13 +4,13 @@ FANCY_NAME := NoisePlane
 
 ################################################################
 
+#	Plane/Plane.cpp \
+#	Plane/PlaneValue.cpp \
+#	Plane/PlaneNeighbours.cpp \
+#	Plane/PlaneGraphics.cpp \
+#	Plane/PlaneManager.cpp \
+
 FILES := \
-	Plane/Plane.cpp \
-	Plane/PlaneValue.cpp \
-	Plane/PlaneNeighbours.cpp \
-	Plane/PlaneGraphics.cpp \
-	Plane/PlaneManager.cpp \
-\
 	Voxel/Graphics/Voxel.cpp \
 	Voxel/Graphics/Main/Data.cpp \
 	Voxel/Graphics/Main/Buffer.cpp \
@@ -23,12 +23,18 @@ FILES := \
 	Voxel/VoxelTemplate.cpp \
 	Voxel/VoxelOrientation.cpp \
 	Voxel/VoxelEnums.cpp \
+	Voxel/VoxelIndex.cpp \
 	Voxel/Chunk.cpp \
 	Voxel/ChunkNeighbours.cpp \
 	Voxel/ChunkManager.cpp \
+	\
+	BoxEntity.cpp \
+\
+	GridCast/GridCast3D.cpp \
 \
 	Menus/Main.cpp \
 	Menus/Options.cpp \
+	Menus/Debug.cpp \
 \
 	main.cpp \
 

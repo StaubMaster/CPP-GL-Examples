@@ -58,7 +58,7 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 	slider_value += ValueMin;
 
 	slider_value /= ValueResolution;
-	slider_value = (int)slider_value;
+	slider_value = round(slider_value);
 	slider_value *= ValueResolution;
 
 	if (slider_value < ValueMin) { slider_value = ValueMin; }

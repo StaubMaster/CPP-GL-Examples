@@ -55,30 +55,20 @@ bool ChunkNeighbours::Visible(AxisRel axis, VectorU3 udx) const
 		default: break;
 	}
 	if (chunk == nullptr) { return false; }
+	if (!chunk -> Done()) { return false; }
 
-	Voxel * voxel = nullptr;
-	if (chunk -> Data != nullptr)
-	{
-		if (chunk -> ChunkType == ChunkType::Filled)
-		{
-			voxel = &(*chunk)[udx];
-		}
-		if (chunk -> ChunkType == ChunkType::Empty)
-		{
-			voxel = (*chunk).Data;
-		}
-	}
-	if (voxel == nullptr) { return false; }
-	if (voxel -> Template == nullptr) { return true; }
+	if (chunk -> Data == nullptr) { return true; }
+	Voxel & voxel = (*chunk)[udx];
+	if (voxel.Template == nullptr) { return true; }
 
-	switch (voxel -> Orientation.relative(axis))
+	switch (voxel.Orientation.relative(axis))
 	{
-		case AxisRel::PrevX: return !(voxel -> Template -> HideNextX);
-		case AxisRel::PrevY: return !(voxel -> Template -> HideNextY);
-		case AxisRel::PrevZ: return !(voxel -> Template -> HideNextZ);
-		case AxisRel::NextX: return !(voxel -> Template -> HidePrevX);
-		case AxisRel::NextY: return !(voxel -> Template -> HidePrevY);
-		case AxisRel::NextZ: return !(voxel -> Template -> HidePrevZ);
+		case AxisRel::PrevX: return !(voxel.Template -> HideNextX);
+		case AxisRel::PrevY: return !(voxel.Template -> HideNextY);
+		case AxisRel::PrevZ: return !(voxel.Template -> HideNextZ);
+		case AxisRel::NextX: return !(voxel.Template -> HidePrevX);
+		case AxisRel::NextY: return !(voxel.Template -> HidePrevY);
+		case AxisRel::NextZ: return !(voxel.Template -> HidePrevZ);
 		default: return false;
 	}
 }

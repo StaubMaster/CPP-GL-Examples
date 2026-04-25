@@ -23,6 +23,8 @@
 
 
 
+bool	Chunk::Done() const { return GenerationState == GenerationState::Generated; }
+
 Voxel &			Chunk::operator[](VectorU3 udx)			{ return Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)]; }
 const Voxel &	Chunk::operator[](VectorU3 udx) const	{ return Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)]; }
 
@@ -30,19 +32,12 @@ const Voxel &	Chunk::operator[](VectorU3 udx) const	{ return Data[VectorU3::Conv
 
 Chunk::~Chunk()
 {
-	if (ChunkType == ChunkType::Empty)
-	{
-		delete Data;
-	}
-	else
-	{
-		delete[] Data;
-	}
+	delete[] Data;
 }
 Chunk::Chunk()
 	: Data(nullptr)
 	, Index()
-	, ChunkType(ChunkType::UnGenerated)
+	, GenerationState(GenerationState::None)
 	, MainCount(0)
 	, Buffer()
 	, GraphicsExist(false)
@@ -54,55 +49,41 @@ Chunk::Chunk()
 
 
 
-void Chunk::MakeEmpty()
+bool Chunk::IsEmpty() const
 {
-	if (ChunkType == ChunkType::Filled)
-	{
-		delete[] Data;
-		ChunkType = ChunkType::Empty;
-		Data = new Voxel();
-		Data -> Template = nullptr;
-	}
+	return (Data == nullptr);
 }
-void Chunk::CheckEmpty()
+bool Chunk::IsNullOrEmpty() const
 {
-	bool empty = true;
-	if (ChunkType == ChunkType::Filled)
+	if (IsEmpty()) { return true; }
+	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
-		for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
+		if (Data[i].Template != nullptr)
 		{
-			if (Data[i].Template != nullptr) { empty = false; break; }
+			return false;
 		}
 	}
-	if (empty)
-	{
-		MakeEmpty();
-	}
-	else
-	{
-		ChunkType = ChunkType::Filled;
-	}
+	return true;
 }
-
-void Chunk::FillNull()
+void Chunk::MakeEmpty()
 {
-	if (ChunkType == ChunkType::Empty)
-	{
-		delete Data;
-		Data = nullptr;
-	}
-	if (Data == nullptr)
+	if (IsEmpty()) { return; }
+	delete[] Data;
+	Data = nullptr;
+	Neighbours.UpdateBufferMain();
+}
+void Chunk::MakeNull()
+{
+	if (IsEmpty())
 	{
 		Data = new Voxel[CHUNK_VALUES_PER_VOLM];
 	}
-	ChunkType = ChunkType::Filled;
-	Neighbours.UpdateBufferMain();
-
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
 		Data[i].Template = nullptr;
 		Data[i].Orientation = VoxelOrientation();
 	}
+	Neighbours.UpdateBufferMain();
 }
 
 
@@ -154,14 +135,14 @@ static void TestOrientation(Chunk & chunk, const VoxelTemplate & voxel_template,
 
 void Chunk::TestOrientation()
 {
-	FillNull();
+	MakeNull();
 	::TestOrientation(*this, VoxelTemplate::OrientationCube, 0x0);
 	::TestOrientation(*this, VoxelTemplate::OrientationCylinder, 0x2);
 	::TestOrientation(*this, VoxelTemplate::OrientationSlope, 0x4);
 }
 void Chunk::TestHouse()
 {
-	FillNull();
+	MakeNull();
 	unsigned int i;
 
 	for (unsigned int x = 0x5; x <= 0xA; x++)
@@ -231,14 +212,15 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 			p3.X + u.X,
 			p3.Z + u.Y
 		);
-	
+
 		float val = 0.0f;
-		val += noise.Calculate(p2 / 32.0f) * 32;
-		val += noise.Calculate(p2 / 16.0f) * 16;
-		val += noise.Calculate(p2 / 8.0f) * 8;
-		val += noise.Calculate(p2 / 4.0f) * 4;
-		val += noise.Calculate(p2 / 2.0f) * 2;
-		val += noise.Calculate(p2 / 1.0f) * 1;
+		val += noise.Calculate(p2 / 32.0f) * 8;
+		//val += noise.Calculate(p2 / 32.0f) * 32;
+		//val += noise.Calculate(p2 / 16.0f) * 16;
+		//val += noise.Calculate(p2 / 8.0f) * 8;
+		//val += noise.Calculate(p2 / 4.0f) * 4;
+		//val += noise.Calculate(p2 / 2.0f) * 2;
+		//val += noise.Calculate(p2 / 1.0f) * 1;
 		val = val - p3.Y;
 
 		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
@@ -287,9 +269,9 @@ void Chunk::GeneratePerlin(const Perlin3D & noise)
 
 void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 {
-	if (ChunkType != ChunkType::UnGenerated) { return; }
+	if (GenerationState != GenerationState::None) { return; }
 
-	FillNull();
+	MakeNull();
 
 	(void)noise2;
 	(void)noise3;
@@ -297,7 +279,10 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 	GeneratePerlin(noise2);
 //	GenerateGrid();
 
-	CheckEmpty();
+	GenerationState = GenerationState::Generated;
+//	GenerationState = GenerationState::Done;
+
+	if (IsNullOrEmpty()) { MakeEmpty(); }
 
 	if (GraphicsExist)
 	{
@@ -317,7 +302,7 @@ void Chunk::GraphicsCreate()
 
 	BufferNeedsInit = true;
 
-	if (ChunkType == ChunkType::Filled || ChunkType == ChunkType::Empty)
+	if (Done())
 	{
 		MainBufferNeedsData = true;
 	}
@@ -333,17 +318,6 @@ void Chunk::GraphicsDelete()
 }
 
 
-
-/*static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, VoxelGraphics::VoxelFace face)
-{
-	data.Insert(face.Corn[0b00]);
-	data.Insert(face.Corn[0b10]);
-	data.Insert(face.Corn[0b01]);
-
-	data.Insert(face.Corn[0b01]);
-	data.Insert(face.Corn[0b10]);
-	data.Insert(face.Corn[0b11]);
-}*/
 
 static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, const Container::Binary<VoxelGraphics::MainData> & face, VoxelOrientation & orientation, VectorU3 u)
 {
@@ -381,7 +355,7 @@ void Chunk::UpdateMainBuffer()
 	{
 		Container::Binary<VoxelGraphics::MainData> data;
 
-		if (ChunkType == ChunkType::Filled)
+		if (Done() && Data != nullptr)
 		{
 			Undex3D size(CHUNK_VALUES_PER_SIDE);
 			UndexLoop3D loop(Undex3D(), size);
@@ -397,12 +371,6 @@ void Chunk::UpdateMainBuffer()
 				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, AxisRel::NextX, u);
 				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, AxisRel::NextY, u);
 				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, AxisRel::NextZ, u);
-				/*if (Neighbours.Visible(AxisRel::PrevX, u))*/ //{ GraphicsData(data, voxel_template.PrevX, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(AxisRel::PrevY, u))*/ //{ GraphicsData(data, voxel_template.PrevY, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(AxisRel::PrevZ, u))*/ //{ GraphicsData(data, voxel_template.PrevZ, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(AxisRel::NextX, u))*/ //{ GraphicsData(data, voxel_template.NextX, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(AxisRel::NextY, u))*/ //{ GraphicsData(data, voxel_template.NextY, voxel.Orientation, u); }
-				/*if (Neighbours.Visible(AxisRel::NextZ, u))*/ //{ GraphicsData(data, voxel_template.NextZ, voxel.Orientation, u); }
 			}
 		}
 

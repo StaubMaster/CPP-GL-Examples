@@ -20,13 +20,21 @@ struct Perlin3D;
 // 
 // if the Chunks is empty (all 0) delete Data
 
-enum class ChunkType
-{
-	UnGenerated, // noDraw
-//	UnDecorated, // noDraw
+// States
+// UnGenerated
+// Done
+//  Empty
+//  Filled
 
-	Empty,
-	Filled,
+// not Done:	dont draw Faces that point here
+// Empty:		do draw Faces that point here
+
+enum class GenerationState
+{
+	None,
+	Generated,
+//	Decorated,
+//	Done,
 };
 
 struct Chunk
@@ -34,7 +42,9 @@ struct Chunk
 	Voxel *				Data;
 	VectorI3			Index;
 	ChunkNeighbours		Neighbours;
-	::ChunkType			ChunkType;
+	::GenerationState	GenerationState;
+
+	bool	Done() const;
 
 	Voxel &			operator[](VectorU3 udx);
 	const Voxel &	operator[](VectorU3 udx) const;
@@ -43,11 +53,12 @@ struct Chunk
 	Chunk();
 	Chunk(const Chunk & other) = delete;
 	Chunk & operator=(const Chunk & other) = delete;
-	void	Dispose();
+	//void	Dispose();
 
+	bool	IsEmpty() const;
+	bool	IsNullOrEmpty() const;
 	void	MakeEmpty();
-	void	CheckEmpty();
-	void	FillNull();
+	void	MakeNull();
 
 	void	TestOrientation();
 	void	TestHouse();

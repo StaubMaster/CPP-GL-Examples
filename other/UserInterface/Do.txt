@@ -1,0 +1,9 @@
+
+TextBox Button Slider all have Text, copy and pasted. should generalize that
+
+Label: shows Text, cannot be changed
+
+Graph: takes Points and connects them
+	would need its own Shader
+
+check Visibility

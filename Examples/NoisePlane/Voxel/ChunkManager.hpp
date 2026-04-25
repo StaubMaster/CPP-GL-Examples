@@ -12,12 +12,27 @@
 
 # include "Graphics/Texture/Array2D.hpp"
 
+//# include "GridCast/GridCast3D.hpp"
+
 struct Voxel;
 struct Chunk;
 enum class AxisRel : unsigned char;
+struct VoxelIndex;
 
 struct Ray3D;
 class PolyHedra;
+
+struct VoxelHit
+{
+	AxisRel		Side;
+	VectorI3	Index;
+	//VoxelIndex	Index;
+	VectorF3	Position;
+	VectorF3	Normal;
+
+	bool	Valid() const;
+	VoxelHit();
+};
 
 struct ChunkManager
 {
@@ -30,19 +45,26 @@ struct ChunkManager
 	ChunkManager(const ChunkManager & other) = delete;
 	ChunkManager & operator=(const ChunkManager & other) = delete;
 
-	PolyHedra *	VoxelBoxPolyHedra;
-	PolyHedra *	ChunkBoxPolyHedra;
-	PolyHedra *	ViewRayPolyHedra;
-
-	const Voxel *	FindVoxelOrNull(VectorI3 idx) const;
-	bool			FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisRel & side, Ray3D & hit) const;
-
-	bool	ClearVoxel(VectorI3 idx, Voxel & vox);
-	bool	PlaneVoxel(VectorI3 idx, Voxel & vox);
+	PolyHedra *	VoxelBoxPolyHedra = nullptr;
+	PolyHedra *	ChunkBoxPolyHedra = nullptr;
+	PolyHedra *	ViewRayPolyHedra = nullptr;
 
 	unsigned int	FindChunkUndex(Chunk * chunk) const;
 	unsigned int	FindChunkUndex(VectorI3 idx) const;
 	Chunk *			FindChunkOrNull(VectorI3 idx) const;
+
+	VoxelIndex		FindVoxelIndex(VoxelIndex idx) const;
+	VoxelIndex		FindVoxelIndex(VectorI3 idx) const;
+
+	const Voxel *	FindVoxelOrNull(VoxelIndex idx) const;
+	const Voxel *	FindVoxelOrNull(VectorI3 idx) const;
+
+	VoxelHit		HitVoxel(Ray3D ray) const;
+
+
+
+	bool	ClearVoxel(VoxelIndex idx, Voxel & vox);
+	bool	PlaceVoxel(VoxelIndex idx, Voxel & vox);
 
 	void	Clear();
 

@@ -2,12 +2,15 @@
 #include "Chunk.hpp"
 #include "Voxel.hpp"
 #include "VoxelOrientation.hpp"
+#include "VoxelIndex.hpp"
 
 #include "ValueType/Bool3.hpp"
 #include "ValueType/BoxI3.hpp"
 #include "ValueType/LoopI3.hpp"
 
 #include "ValueType/Ray3D.hpp"
+
+#include "GridCast/GridCast3D.hpp"
 
 
 
@@ -18,321 +21,6 @@ ChunkManager::ChunkManager()
 	, ShouldGenerate(true)
 	, GraphicsExist(false)
 { }
-
-
-
-const Voxel * ChunkManager::FindVoxelOrNull(VectorI3 idx) const
-{
-	VectorI3 chunk_idx = (VectorF3(idx) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
-	VectorU3 voxel_idx = idx - (chunk_idx * CHUNK_VALUES_PER_SIDE);
-
-	Chunk * chunk = FindChunkOrNull(chunk_idx);
-	if (chunk == nullptr) { return nullptr; }
-	if (chunk -> Data == nullptr) { return nullptr; }
-	if (chunk -> ChunkType == ChunkType::Filled)
-	{
-		return &(*chunk)[voxel_idx];
-	}
-	if (chunk -> ChunkType == ChunkType::Empty)
-	{
-		return (*chunk).Data;
-	}
-	return nullptr;
-}
-
-
-
-#include <iostream>
-#include "ValueType/_Show.hpp"
-#include <math.h>
-#include "PolyHedra/Object.hpp"
-//static PolyHedra *	VoxelBoxPolyHedra;
-//static PolyHedra *	ChunkBoxPolyHedra;
-//static PolyHedra *	ViewRayPolyHedra;
-/*static void ShowRay(Ray3D ray)
-{
-	PolyHedraObject obj(ViewRayPolyHedra);
-	obj.Trans().Position = ray.Pos;
-	obj.Trans().Rotation = EulerAngle3D::PointToZ(ray.Dir);
-}*/
-/*static void ShowVoxel(VectorI3 idx)
-{
-	PolyHedraObject obj(VoxelBoxPolyHedra);
-	obj.Trans().Position = idx;
-	obj.ShowWire();
-}*/
-/*static void ShowChunk(VectorI3 idx)
-{
-	PolyHedraObject obj(ChunkBoxPolyHedra);
-	obj.Trans().Position = idx * CHUNK_VALUES_PER_SIDE;
-	obj.ShowWire();
-}*/
-// put these into their own class / namespace
-// call generic function ?
-struct t_hit
-{
-	VectorF3	pos;
-	VectorF3	rel;
-	VectorI3	idx;
-	float		dist;
-	AxisRel		cardinal;
-};
-struct t_ray
-{
-	VectorF3	pos;
-	VectorF3	dir;
-	VectorF3	side_len;
-	VectorF3	side_sum;
-	VectorI3	grid_dir;
-	VectorI3	grid_idx;
-	float		sum;
-	bool		solid;
-	AxisRel		cardinal_side_X;
-	AxisRel		cardinal_side_Y;
-	AxisRel		cardinal_side_Z;
-	AxisRel		cardinal_dir;
-};
-static t_ray ray_init_cardinal(t_ray ray)
-{
-	if (ray.dir.X > 0)
-	{
-		ray.grid_dir.X = +1;
-		ray.side_sum.X = ((ray.grid_idx.X + 1) - ray.pos.X) * ray.side_len.X;
-		ray.cardinal_side_X = AxisRel::PrevX;
-	}
-	else
-	{
-		ray.grid_dir.X = -1;
-		ray.side_sum.X = (ray.pos.X - ray.grid_idx.X) * ray.side_len.X;
-		ray.cardinal_side_X = AxisRel::NextX;
-	}
-	if (ray.dir.Y > 0)
-	{
-		ray.grid_dir.Y = +1;
-		ray.side_sum.Y = ((ray.grid_idx.Y + 1) - ray.pos.Y) * ray.side_len.Y;
-		ray.cardinal_side_Y = AxisRel::PrevY;
-	}
-	else
-	{
-		ray.grid_dir.Y = -1;
-		ray.side_sum.Y = (ray.pos.Y - ray.grid_idx.Y) * ray.side_len.Y;
-		ray.cardinal_side_Y = AxisRel::NextY;
-	}
-	if (ray.dir.Z > 0)
-	{
-		ray.grid_dir.Z = +1;
-		ray.side_sum.Z = ((ray.grid_idx.Z + 1) - ray.pos.Z) * ray.side_len.Z;
-		ray.cardinal_side_Z = AxisRel::PrevZ;
-	}
-	else
-	{
-		ray.grid_dir.Z = -1;
-		ray.side_sum.Z = (ray.pos.Z - ray.grid_idx.Z) * ray.side_len.Z;
-		ray.cardinal_side_Z = AxisRel::NextZ;
-	}
-	return (ray);
-}
-static t_ray ray_init(Ray3D ray3D)
-{
-	t_ray	ray;
-
-	ray.pos = ray3D.Pos;
-	ray.dir = ray3D.Dir;
-	ray.grid_idx = ray3D.Pos.roundF();
-	ray3D.Dir = !ray3D.Dir;
-
-	ray.side_len.X = abs(1 / ray3D.Dir.X);
-	ray.side_len.Y = abs(1 / ray3D.Dir.Y);
-	ray.side_len.Z = abs(1 / ray3D.Dir.Z);
-
-	ray.sum = 0;
-	return (ray_init_cardinal(ray));
-}
-static t_hit return_hit(t_ray ray)
-{
-	t_hit	hit;
-
-	hit.dist = ray.sum;
-	hit.idx = ray.grid_idx;
-	hit.pos = ray.pos + (ray.dir * hit.dist);
-	hit.rel = hit.pos - hit.idx;
-	hit.cardinal = ray.cardinal_dir;
-	if (!ray.solid)
-	{
-		hit.cardinal = AxisRel::None;
-	}
-	return (hit);
-}
-static t_hit hit_ray(const Chunk & chunk, Ray3D ray3D)
-{
-	t_ray	ray;
-
-	//std::cout << "ray " << ray3D.Pos << ' ' << ray3D.Dir << '\n';
-	ray = ray_init(ray3D);
-	while (ray.sum < 100)
-	{
-		//ShowRay(Ray3D(ray.pos + (ray.dir * ray.sum), ray.dir));
-		//ShowVoxel(ray.grid_idx);
-
-		VectorI3 idx = ray.grid_idx - (chunk.Index * CHUNK_VALUES_PER_SIDE);
-		//std::cout << "voxel " << idx << '\n';
-		if ((idx >= VectorI3(0)).Any(false)) { break; }
-		if ((idx < VectorI3(CHUNK_VALUES_PER_SIDE)).Any(false)) { break; }
-
-		ray.solid = (chunk[idx].Template != nullptr);
-		if (ray.solid) { break; }
-
-		if ((ray.side_sum.X < ray.side_sum.Y) && (ray.side_sum.X < ray.side_sum.Z))
-		{
-			ray.sum = ray.side_sum.X;
-			ray.side_sum.X += ray.side_len.X;
-			ray.grid_idx.X += ray.grid_dir.X;
-			ray.cardinal_dir = ray.cardinal_side_X;
-		}
-		else if ((ray.side_sum.Y < ray.side_sum.Z) && (ray.side_sum.Y < ray.side_sum.X))
-		{
-			ray.sum = ray.side_sum.Y;
-			ray.side_sum.Y += ray.side_len.Y;
-			ray.grid_idx.Y += ray.grid_dir.Y;
-			ray.cardinal_dir = ray.cardinal_side_Y;
-		}
-		else
-		{
-			ray.sum = ray.side_sum.Z;
-			ray.side_sum.Z += ray.side_len.Z;
-			ray.grid_idx.Z += ray.grid_dir.Z;
-			ray.cardinal_dir = ray.cardinal_side_Z;
-		}
-	}
-	return (return_hit(ray));
-}
-static t_hit hit_ray(const ChunkManager & manager, Ray3D ray3D)
-{
-	t_ray	ray;
-
-	ray = ray_init(Ray3D(ray3D.Pos / (float)CHUNK_VALUES_PER_SIDE, ray3D.Dir / (float)CHUNK_VALUES_PER_SIDE));
-	while (ray.sum < 100)
-	{
-		//std::cout << "chunk " << ray.grid_idx << '\n';
-
-		//ShowChunk(ray.grid_idx);
-		Chunk * chunk = manager.FindChunkOrNull(ray.grid_idx);
-		if (chunk == nullptr) { break; }
-		if (chunk -> Data == nullptr) { break; }
-		if (chunk -> ChunkType == ChunkType::Filled)
-		{
-			t_hit hit = hit_ray(*chunk, Ray3D(ray3D.Pos + (ray3D.Dir * (ray.sum * CHUNK_VALUES_PER_SIDE + 0.01f)), ray3D.Dir));
-			if (hit.cardinal != AxisRel::None) { return hit; }
-		}
-		else if (chunk -> ChunkType != ChunkType::Empty) { break; }
-
-		if ((ray.side_sum.X < ray.side_sum.Y) && (ray.side_sum.X < ray.side_sum.Z))
-		{
-			ray.sum = ray.side_sum.X;
-			ray.side_sum.X += ray.side_len.X;
-			ray.grid_idx.X += ray.grid_dir.X;
-			ray.cardinal_dir = ray.cardinal_side_X;
-		}
-		else if ((ray.side_sum.Y < ray.side_sum.Z) && (ray.side_sum.Y < ray.side_sum.X))
-		{
-			ray.sum = ray.side_sum.Y;
-			ray.side_sum.Y += ray.side_len.Y;
-			ray.grid_idx.Y += ray.grid_dir.Y;
-			ray.cardinal_dir = ray.cardinal_side_Y;
-		}
-		else
-		{
-			ray.sum = ray.side_sum.Z;
-			ray.side_sum.Z += ray.side_len.Z;
-			ray.grid_idx.Z += ray.grid_dir.Z;
-			ray.cardinal_dir = ray.cardinal_side_Z;
-		}
-	}
-	return (return_hit(ray));
-}
-
-bool ChunkManager::FindVoxelIndex(Ray3D ray, VectorI3 & idx, AxisRel & side, Ray3D & hit) const
-{
-//	::ViewRayPolyHedra = ViewRayPolyHedra;
-//	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
-//	::ChunkBoxPolyHedra = ChunkBoxPolyHedra;
-
-	//std::cout << '\n';
-	//ShowRay(ray);
-	t_hit _hit = hit_ray(*this, ray);
-
-	if (_hit.cardinal == AxisRel::None) { return false; }
-
-	hit.Pos = ray.Pos + (ray.Dir * _hit.dist);
-
-	if (_hit.cardinal == AxisRel::NextX) { hit.Dir = VectorF3(+1, 0, 0); }
-	if (_hit.cardinal == AxisRel::PrevX) { hit.Dir = VectorF3(-1, 0, 0); }
-	if (_hit.cardinal == AxisRel::NextY) { hit.Dir = VectorF3(0, +1, 0); }
-	if (_hit.cardinal == AxisRel::PrevY) { hit.Dir = VectorF3(0, -1, 0); }
-	if (_hit.cardinal == AxisRel::NextZ) { hit.Dir = VectorF3(0, 0, +1); }
-	if (_hit.cardinal == AxisRel::PrevZ) { hit.Dir = VectorF3(0, 0, -1); }
-
-	//std::cout << "hit " << hit.idx << '\n';
-	idx = _hit.idx;
-	side = _hit.cardinal;
-	return true;
-
-	Chunk * chunk = nullptr;
-	hit_ray(*chunk, ray);
-	hit_ray(*this, ray);
-	return false;
-}
-
-
-
-bool ChunkManager::ClearVoxel(VectorI3 idx, Voxel & vox)
-{
-	VectorI3 chunk_idx = (VectorF3(idx) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
-	VectorU3 voxel_idx = idx - (chunk_idx * CHUNK_VALUES_PER_SIDE);
-
-	Chunk * chunk = FindChunkOrNull(chunk_idx);
-	if (chunk == nullptr) { return false; }
-	if (chunk -> Data == nullptr) { return false; }
-	if (chunk -> ChunkType == ChunkType::Filled)
-	{
-		Voxel & voxel = (*chunk)[voxel_idx];
-		if (voxel.Template == nullptr) { return false; }
-
-		vox = voxel;
-		voxel.Template = nullptr;
-		(*chunk).Neighbours.UpdateBufferMain(); // only update effected
-		return true;
-	}
-	if (chunk -> ChunkType == ChunkType::Empty)
-	{
-		return false;
-	}
-	return false;
-}
-bool ChunkManager::PlaneVoxel(VectorI3 idx, Voxel & vox)
-{
-	VectorI3 chunk_idx = (VectorF3(idx) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
-	VectorU3 voxel_idx = idx - (chunk_idx * CHUNK_VALUES_PER_SIDE);
-
-	Chunk * chunk = FindChunkOrNull(chunk_idx);
-	if (chunk == nullptr) { return false; }
-	if (chunk -> Data == nullptr) { return false; }
-	if (chunk -> ChunkType == ChunkType::Filled)
-	{
-		Voxel & voxel = (*chunk)[voxel_idx];
-		if (voxel.Template != nullptr) { return false; }
-
-		voxel = vox;
-		vox.Template = nullptr;
-		(*chunk).Neighbours.UpdateBufferMain(); // only update effected
-		return true;
-	}
-	if (chunk -> ChunkType == ChunkType::Empty)
-	{
-		return false;
-	}
-	return false;
-}
 
 
 
@@ -368,6 +56,174 @@ Chunk * ChunkManager::FindChunkOrNull(VectorI3 idx) const
 		}
 	}
 	return nullptr;
+}
+
+VoxelIndex ChunkManager::FindVoxelIndex(VoxelIndex idx) const
+{
+	idx.ChunkMan = FindChunkUndex(idx.Chunk);
+	return idx;
+}
+VoxelIndex ChunkManager::FindVoxelIndex(VectorI3 idx) const
+{
+	return FindVoxelIndex(VoxelIndex(idx));
+}
+
+const Voxel * ChunkManager::FindVoxelOrNull(VoxelIndex idx) const
+{
+	if (!idx.Valid()) { return nullptr; }
+	Chunk * chunk = Chunks[idx.ChunkMan];
+	if (chunk == nullptr) { return nullptr; }
+	if (!(chunk -> Done())) { return nullptr; }
+	if (chunk -> Data == nullptr) { return nullptr; }
+	return &(*chunk)[idx.Voxel];
+}
+const Voxel * ChunkManager::FindVoxelOrNull(VectorI3 idx) const
+{
+	return FindVoxelOrNull(FindVoxelIndex(idx));
+}
+
+
+
+#include <iostream>
+#include "ValueType/_Show.hpp"
+#include <math.h>
+#include "PolyHedra/Object.hpp"
+static PolyHedra *	ViewRayPolyHedra;
+static PolyHedra *	VoxelBoxPolyHedra;
+//static PolyHedra *	ChunkBoxPolyHedra;
+static void ShowRay(Ray3D ray)
+{
+	if (ViewRayPolyHedra == nullptr) { return; }
+	PolyHedraObject obj(ViewRayPolyHedra);
+	obj.Trans().Position = ray.Pos;
+	obj.Trans().Rotation = EulerAngle3D::PointToZ(ray.Dir);
+}
+static void ShowVoxel(VectorI3 idx)
+{
+	if (VoxelBoxPolyHedra == nullptr) { return; }
+	PolyHedraObject obj(VoxelBoxPolyHedra);
+	obj.Trans().Position = idx;
+	obj.ShowWire();
+}
+/*static void ShowChunk(VectorI3 idx)
+{
+	PolyHedraObject obj(ChunkBoxPolyHedra);
+	obj.Trans().Position = idx * CHUNK_VALUES_PER_SIDE;
+	obj.ShowWire();
+}*/
+
+static GridCast3D::Hit hit_ray(const Chunk & chunk, Ray3D ray3D, float limit)
+{
+	ShowRay(Ray3D(ray3D.Pos, ray3D.Dir));
+	BoxI3 box(VectorI3(-1), VectorI3(CHUNK_VALUES_PER_SIDE));
+	GridCast3D::Data data(ray3D, limit, 1.0f);
+	do
+	{
+		ShowRay(data.Ray());
+		ShowVoxel(data.Index());
+		VectorI3 idx = data.Index() - (chunk.Index * CHUNK_VALUES_PER_SIDE);
+		if (box.IntersectVecInclusive(idx).All(false)) { return GridCast3D::Hit(); }
+		if (box.IntersectVecExclusive(idx).All(true))
+		{
+			if (chunk[idx].Template != nullptr) { return GridCast3D::Hit(data); }
+		}
+	}
+	while (data.Iterate());
+	return GridCast3D::Hit();
+}
+static GridCast3D::Hit hit_ray(const ChunkManager & manager, Ray3D ray3D, float limit)
+{
+	GridCast3D::Data data(ray3D, limit, CHUNK_VALUES_PER_SIDE);
+	do
+	{
+		Chunk * chunk = manager.FindChunkOrNull(data.Index());
+		if (chunk == nullptr) { return GridCast3D::Hit(); }
+		if (!(chunk -> Done())) { return GridCast3D::Hit(); }
+		if (!(chunk -> IsEmpty()))
+		{
+			GridCast3D::Hit hit = hit_ray(*chunk, data.Ray(), data.Limit());
+			if (hit.cardinal != AxisRel::None) { return hit; }
+		}
+	}
+	while (data.Iterate());
+	return GridCast3D::Hit();
+}
+
+bool VoxelHit::Valid() const { return Side != AxisRel::None; }
+VoxelHit::VoxelHit()
+	: Side(AxisRel::None)
+{ }
+
+VoxelHit ChunkManager::HitVoxel(Ray3D ray) const
+{
+	::ViewRayPolyHedra = ViewRayPolyHedra;
+	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
+//	::ChunkBoxPolyHedra = ChunkBoxPolyHedra;
+
+	//ShowRay(ray);
+	GridCast3D::Hit _hit = hit_ray(*this, ray, 10.0f);
+
+	VoxelHit hit;
+	if (_hit.cardinal == AxisRel::None) { return hit; }
+
+	//hit.Position = ray.Pos + (ray.Dir * _hit.dist);
+	hit.Position = _hit.pos;
+
+	switch (_hit.cardinal)
+	{
+		case AxisRel::PrevX: hit.Normal = VectorF3(-1, 0, 0); break;
+		case AxisRel::PrevY: hit.Normal = VectorF3(0, -1, 0); break;
+		case AxisRel::PrevZ: hit.Normal = VectorF3(0, 0, -1); break;
+		case AxisRel::NextX: hit.Normal = VectorF3(+1, 0, 0); break;
+		case AxisRel::NextY: hit.Normal = VectorF3(0, +1, 0); break;
+		case AxisRel::NextZ: hit.Normal = VectorF3(0, 0, +1); break;
+		default: hit.Normal = VectorF3(0, 0, 0); break;
+	}
+
+	hit.Side = _hit.cardinal;
+	hit.Index = _hit.idx;
+	return hit;
+}
+
+
+
+bool ChunkManager::ClearVoxel(VoxelIndex idx, Voxel & vox)
+{
+	if (!idx.Valid()) { return false; }
+
+	Chunk & chunk = *Chunks[idx.ChunkMan];
+	if (!(chunk.Done())) { return false; }
+
+	if (chunk.IsEmpty()) { return false; }
+
+	Voxel & voxel = chunk[idx.Voxel];
+	if (voxel.Template == nullptr) { return false; }
+
+	vox = voxel;
+	voxel.Template = nullptr;
+
+	if (chunk.IsNullOrEmpty()) { chunk.MakeEmpty(); }
+
+	chunk.Neighbours.UpdateBufferMain(); // only update effected
+	return true;
+}
+bool ChunkManager::PlaceVoxel(VoxelIndex idx, Voxel & vox)
+{
+	if (!idx.Valid()) { return false; }
+
+	Chunk & chunk = *Chunks[idx.ChunkMan];
+	if (!(chunk.Done())) { return false; }
+
+	if (chunk.IsEmpty()) { chunk.MakeNull(); }
+
+	Voxel & voxel = chunk[idx.Voxel];
+	if (voxel.Template != nullptr) { return false; }
+
+	voxel = vox;
+	vox.Template = nullptr;
+
+	chunk.Neighbours.UpdateBufferMain(); // only update effected
+	return true;
 }
 
 
@@ -429,12 +285,13 @@ void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 		Chunk & chunk = *Chunks[i];
 		if (chunk_box.IntersectVecInclusive(chunk.Index).All(true)) { continue; }
 		RemoveChunk(i);
+		i--;
 	}
 }
 void ChunkManager::RemoveChunk(unsigned int idx)
 {
 	Chunk * chunk = Chunks[idx];
-	Chunks.Remove(idx);
+	Chunks.Remove(idx); // this might be slow. set to null and then remove all at once. maybe make Containers delete all items that match something
 	chunk -> GraphicsDelete();
 	delete chunk;
 }
@@ -454,7 +311,7 @@ void ChunkManager::GenerateAround(const Perlin2D & noise2, const Perlin3D & nois
 		{
 			if (Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *Chunks[i];
-			if (chunk.ChunkType != ChunkType::UnGenerated) { continue; }
+			if (chunk.Done()) { continue; }
 			if (!chunk_box.IntersectVecInclusive(chunk.Index).All(true)) { continue; }
 			VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
 			float d = rel.length2();

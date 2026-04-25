@@ -1,0 +1,19 @@
+
+
+
+Debug Toggles
+
+Graphics Info
+
+View Info
+	Pos Vel Dir
+Chunk Info
+	current
+Voxel Info
+	looking at
+
+General Info
+	how long does it take to generate a chunk
+	how long does it take to fill buffer for a chunk
+
+
