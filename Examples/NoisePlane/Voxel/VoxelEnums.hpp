@@ -23,6 +23,7 @@ enum class AxisRel : unsigned char
 	NextX = 0b110,
 	NextY = 0b101,
 	NextZ = 0b011,
+	Here  = 0b111,
 }; // 8 Values ; 3 Bits
 std::ostream & operator<<(std::ostream & s, AxisRel axis);
 

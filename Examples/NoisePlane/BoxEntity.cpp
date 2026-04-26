@@ -25,6 +25,41 @@ void VoxelBoxCollision::Consider(VectorF3 t, VectorF3 dir)
 
 
 
+CollisionSide::CollisionSide()
+	: None(true)
+	, PrevX(false)
+	, PrevY(false)
+	, PrevZ(false)
+	, NextX(false)
+	, NextY(false)
+	, NextZ(false)
+{ }
+void CollisionSide::Consider(AxisRel axis)
+{
+	switch (axis)
+	{
+		case AxisRel::PrevX: PrevX = true; None = false; break;
+		case AxisRel::PrevY: PrevY = true; None = false; break;
+		case AxisRel::PrevZ: PrevZ = true; None = false; break;
+		case AxisRel::NextX: NextX = true; None = false; break;
+		case AxisRel::NextY: NextY = true; None = false; break;
+		case AxisRel::NextZ: NextZ = true; None = false; break;
+		default: break;
+	}
+}
+void CollisionSide::Consider(CollisionSide other)
+{
+	None = None | other.None;
+	PrevX = PrevX | other.PrevX;
+	PrevY = PrevY | other.PrevY;
+	PrevZ = PrevZ | other.PrevZ;
+	NextX = NextX | other.NextX;
+	NextY = NextY | other.NextY;
+	NextZ = NextZ | other.NextZ;
+}
+
+
+
 VoxelBoxCollision BoxEntity::FindCollisionTime(::ChunkManager & manager, LoopI3 loop, BoxF3 box, VectorF3 off) const
 {
 	VoxelBoxCollision collision;
@@ -45,8 +80,9 @@ VoxelBoxCollision BoxEntity::FindCollisionTime(::ChunkManager & manager, LoopI3 
 	}
 	return collision;
 }
-void BoxEntity::Collide(::ChunkManager & manager, LoopI3 loop, FrameTime frame_time)
+CollisionSide BoxEntity::Collide(::ChunkManager & manager, LoopI3 loop, FrameTime frame_time)
 {
+	CollisionSide side;
 	VectorF3 rel;
 	float time_limit = frame_time.Delta;
 	for (unsigned int l = 0; l < 4; l++)
@@ -63,21 +99,31 @@ void BoxEntity::Collide(::ChunkManager & manager, LoopI3 loop, FrameTime frame_t
 				Vel -= (collision.Normal * dot);
 				Vel *= 0.9f;
 			}
+			if (collision.Normal.X > 0.0f) { side.Consider(AxisRel::PrevX); }
+			if (collision.Normal.Y > 0.0f) { side.Consider(AxisRel::PrevY); }
+			if (collision.Normal.Z > 0.0f) { side.Consider(AxisRel::PrevZ); }
+			if (collision.Normal.X < 0.0f) { side.Consider(AxisRel::NextX); }
+			if (collision.Normal.Y < 0.0f) { side.Consider(AxisRel::NextY); }
+			if (collision.Normal.Z < 0.0f) { side.Consider(AxisRel::NextZ); }
 		}
-		else { break; }
+		else
+		{
+			break;
+		}
 	}
 	if (time_limit > 0.0f)
 	{
 		rel += Vel * time_limit;
 	}
 	Pos += rel;
+	return side;
 }
-void BoxEntity::Collide(::ChunkManager & manager, FrameTime frame_time)
+CollisionSide BoxEntity::Collide(::ChunkManager & manager, FrameTime frame_time)
 {
 	BoxF3 box = Box + Pos;
 	box.Consider(Box.Min + Pos + (Vel * frame_time.Delta));
 	box.Consider(Box.Max + Pos + (Vel * frame_time.Delta));
 	box = box - VectorF3(0.5f);
 	LoopI3 loop(box.Min.round(), Bool3(false), box.Max.round(), Bool3(false));
-	Collide(manager, loop, frame_time);
+	return Collide(manager, loop, frame_time);
 }

@@ -14,9 +14,25 @@ struct VoxelBoxCollision
 {
 	float		Time;
 	VectorF3	Normal;
+	//AxisRel		Axis; // instread of Normal ?
 
 	VoxelBoxCollision();
 	void Consider(VectorF3 t, VectorF3 dir);
+};
+
+struct CollisionSide // could be compressed into a Byte
+{
+	bool	None; // all others are false
+	bool	PrevX;
+	bool	PrevY;
+	bool	PrevZ;
+	bool	NextX;
+	bool	NextY;
+	bool	NextZ;
+	//bool	Here; // currently inside of something ?
+	CollisionSide();
+	void	Consider(AxisRel axis);
+	void	Consider(CollisionSide other);
 };
 
 class PolyHedra;
@@ -29,9 +45,9 @@ struct BoxEntity
 	VectorF3		Pos;
 	VectorF3		Vel;
 
-	VoxelBoxCollision FindCollisionTime(::ChunkManager & manager, LoopI3 loop, BoxF3 box, VectorF3 off) const;
-	void Collide(::ChunkManager & manager, LoopI3 loop, FrameTime frame_time);
-	void Collide(::ChunkManager & manager, FrameTime frame_time);
+	VoxelBoxCollision	FindCollisionTime(::ChunkManager & manager, LoopI3 loop, BoxF3 box, VectorF3 off) const;
+	CollisionSide	Collide(::ChunkManager & manager, LoopI3 loop, FrameTime frame_time);
+	CollisionSide	Collide(::ChunkManager & manager, FrameTime frame_time);
 };
 
 #endif

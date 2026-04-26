@@ -57,7 +57,7 @@ bool ChunkNeighbours::Visible(AxisRel axis, VectorU3 udx) const
 	if (chunk == nullptr) { return false; }
 	if (!chunk -> Done()) { return false; }
 
-	if (chunk -> Data == nullptr) { return true; }
+	if (chunk -> IsEmpty()) { return true; }
 	Voxel & voxel = (*chunk)[udx];
 	if (voxel.Template == nullptr) { return true; }
 
@@ -85,11 +85,18 @@ void ChunkNeighbours::UpdateOthersHere()
 
 void ChunkNeighbours::UpdateBufferMain()
 {
-	if (Here  != nullptr) { Here  -> MainBufferNeedsData = true; }
-	if (NextX != nullptr) { NextX -> MainBufferNeedsData = true; }
-	if (NextY != nullptr) { NextY -> MainBufferNeedsData = true; }
-	if (NextZ != nullptr) { NextZ -> MainBufferNeedsData = true; }
-	if (PrevX != nullptr) { PrevX -> MainBufferNeedsData = true; }
-	if (PrevY != nullptr) { PrevY -> MainBufferNeedsData = true; }
-	if (PrevZ != nullptr) { PrevZ -> MainBufferNeedsData = true; }
+	//if (Here  != nullptr) { Here  -> MainBufferNeedsData = true; Here  -> MainBufferDataReady = false; }
+	//if (NextX != nullptr) { NextX -> MainBufferNeedsData = true; NextX -> MainBufferDataReady = false; }
+	//if (NextY != nullptr) { NextY -> MainBufferNeedsData = true; NextY -> MainBufferDataReady = false; }
+	//if (NextZ != nullptr) { NextZ -> MainBufferNeedsData = true; NextZ -> MainBufferDataReady = false; }
+	//if (PrevX != nullptr) { PrevX -> MainBufferNeedsData = true; PrevX -> MainBufferDataReady = false; }
+	//if (PrevY != nullptr) { PrevY -> MainBufferNeedsData = true; PrevY -> MainBufferDataReady = false; }
+	//if (PrevZ != nullptr) { PrevZ -> MainBufferNeedsData = true; PrevZ -> MainBufferDataReady = false; }
+	if (Here  != nullptr) { Here  -> MainBufferState = Chunk::BufferDataState::Needed; }
+	if (NextX != nullptr) { NextX -> MainBufferState = Chunk::BufferDataState::Needed; }
+	if (NextY != nullptr) { NextY -> MainBufferState = Chunk::BufferDataState::Needed; }
+	if (NextZ != nullptr) { NextZ -> MainBufferState = Chunk::BufferDataState::Needed; }
+	if (PrevX != nullptr) { PrevX -> MainBufferState = Chunk::BufferDataState::Needed; }
+	if (PrevY != nullptr) { PrevY -> MainBufferState = Chunk::BufferDataState::Needed; }
+	if (PrevZ != nullptr) { PrevZ -> MainBufferState = Chunk::BufferDataState::Needed; }
 }

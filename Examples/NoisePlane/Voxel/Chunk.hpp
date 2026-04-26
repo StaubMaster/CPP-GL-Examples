@@ -6,10 +6,13 @@
 
 # include "Voxel.hpp"
 # include "Graphics/Buffer.hpp"
+# include "Graphics/Main/Data.hpp"
 # include "ChunkNeighbours.hpp"
 
 # include "ValueType/VectorI3.hpp"
 # include "ValueType/VectorU3.hpp"
+
+#include "Miscellaneous/Container/Binary.hpp"
 
 struct Perlin2D;
 struct Perlin3D;
@@ -39,18 +42,20 @@ enum class GenerationState
 
 struct Chunk
 {
-	Voxel *				Data;
-	VectorI3			Index;
-	ChunkNeighbours		Neighbours;
-	::GenerationState	GenerationState;
+	public:		Voxel *				Data;
+	public:		VectorI3			Index;
+	public:		ChunkNeighbours		Neighbours;
+	public:		::GenerationState	GenerationState;
 
+	public:
 	bool	Done() const;
 
 	Voxel &			operator[](VectorU3 udx);
 	const Voxel &	operator[](VectorU3 udx) const;
 
 	~Chunk();
-	Chunk();
+	Chunk(VectorI3 idx, bool graphics_exist);
+	Chunk() = delete;
 	Chunk(const Chunk & other) = delete;
 	Chunk & operator=(const Chunk & other) = delete;
 	//void	Dispose();
@@ -70,17 +75,28 @@ struct Chunk
 
 
 
-	unsigned int			MainCount;
 	VoxelGraphics::Buffer	Buffer;
 
-	bool	GraphicsExist;
+	bool	GraphicsExist; // Buffer is the only thing ?
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 
-	bool	BufferNeedsInit;
+//	void	GraphicsUpdateBuffer();
+//	void	GraphicsUpdateData();
 
-	bool	MainBufferNeedsData;
-	void	UpdateMainBuffer();
+	bool	BufferNeedsInit; // split into Main and Inst. put into Buffer ?
+
+	enum class BufferDataState // put into Buffer
+	{
+		None,
+		Needed,
+		Ready,
+	};
+
+	BufferDataState	MainBufferState; // put into Buffer ?
+	Container::Binary<VoxelGraphics::MainData>	MainBufferData; // put into Buffer ?
+	void	GraphicsUpdateMainData();
+	void	GraphicsUpdateMainBuffer();
 
 	bool	InstBufferNeedsData;
 	void	UpdateInstBuffer();

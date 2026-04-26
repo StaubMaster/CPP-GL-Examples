@@ -19,7 +19,10 @@
 #include "ValueType/Undex3D.hpp"
 #include "ValueType/UndexLoop3D.hpp"
 
-#include "Miscellaneous/Container/Binary.hpp"
+
+
+#include <iostream>
+#include "ValueType/_Show.hpp"
 
 
 
@@ -32,19 +35,35 @@ const Voxel &	Chunk::operator[](VectorU3 udx) const	{ return Data[VectorU3::Conv
 
 Chunk::~Chunk()
 {
+	//std::cout << "  ----  Chunk: " << this << '\n';
 	delete[] Data;
+	if (GraphicsExist)
+	{
+		Buffer.Delete();
+	}
 }
-Chunk::Chunk()
+Chunk::Chunk(VectorI3 idx, bool graphics_exist)
 	: Data(nullptr)
-	, Index()
+	, Index(idx)
 	, GenerationState(GenerationState::None)
-	, MainCount(0)
 	, Buffer()
 	, GraphicsExist(false)
 	, BufferNeedsInit(false)
-	, MainBufferNeedsData(false)
+	, MainBufferState(BufferDataState::None)
 	, InstBufferNeedsData(false)
-{ }
+{
+	//std::cout << "  ++++  Chunk: " << this << '\n';
+	Buffer.Main.Pos.Change(0);
+	Buffer.Main.Tex.Change(1);
+	Buffer.Inst.Pos.Change(2);
+	if (graphics_exist)
+	{
+		Buffer.Create();
+		GraphicsExist = true;
+		BufferNeedsInit = true;
+		InstBufferNeedsData = true;
+	}
+}
 //void Chunk::Dispose() { }
 
 
@@ -90,9 +109,9 @@ void Chunk::MakeNull()
 
 static void TestOrientation(Chunk & chunk, const VoxelTemplate & voxel_template, Diag diag, Flip flip, VectorU3 u)
 {
-	unsigned int i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
-	chunk.Data[i].Template = &voxel_template;
-	chunk.Data[i].Orientation.make(diag, flip);
+	//unsigned int i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
+	chunk[u].Template = &voxel_template;
+	chunk[u].Orientation.make(diag, flip);
 }
 static void TestOrientation(Chunk & chunk, const VoxelTemplate & voxel_template, unsigned int y)
 {
@@ -232,7 +251,8 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 			}
 			else if (val - i < 1)
 			{
-				Data[voxel_u].Template = &VoxelTemplate::Grass;
+				//Data[voxel_u].Template = &VoxelTemplate::Grass;
+				Data[voxel_u].Template = &VoxelTemplate::ConcreteCube;
 			}
 			else
 			{
@@ -286,7 +306,7 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	if (GraphicsExist)
 	{
-		MainBufferNeedsData = true;
+		MainBufferState = BufferDataState::Needed;
 	}
 }
 
@@ -304,7 +324,7 @@ void Chunk::GraphicsCreate()
 
 	if (Done())
 	{
-		MainBufferNeedsData = true;
+		MainBufferState = BufferDataState::Needed;
 	}
 	InstBufferNeedsData = true;
 }
@@ -319,68 +339,68 @@ void Chunk::GraphicsDelete()
 
 
 
-static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, const Container::Binary<VoxelGraphics::MainData> & face, VoxelOrientation & orientation, VectorU3 u)
+static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, const Container::Binary<VoxelGraphics::MainData> & face, const VoxelOrientation & orientation, VectorU3 u)
 {
-	//if (orientation.oppo == Oppo::Regular)
+	for (unsigned int i = 0; i < face.Count(); i++)
 	{
-		for (unsigned int i = 0; i < face.Count(); i++)
+		VoxelGraphics::MainData v = face[i];
+		v.Pos = orientation.absolute(v.Pos) + u;
+		data.Insert(v);
+	}
+}
+
+static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, VectorU3 u, const Voxel & voxel, const ChunkNeighbours & neighbours, AxisRel axis)
+{
+	if (neighbours.Visible(voxel.Orientation.absolute(axis), u))
+	{
+		GraphicsData(data, voxel.Template -> AxisData(axis), voxel.Orientation, u);
+	}
+}
+
+void Chunk::GraphicsUpdateMainData()
+{
+	if (MainBufferState != BufferDataState::Needed) { return; }
+
+	//std::cout << "Done: " << Done() << '\n';
+	if (!Done()) { return; }
+
+	//std::cout << "Clear\n";
+	MainBufferData.Clear();
+
+	//std::cout << "IsEmpty: " << IsEmpty() << '\n';
+	if (!IsEmpty())
+	{
+		Undex3D size(CHUNK_VALUES_PER_SIDE);
+		UndexLoop3D loop(Undex3D(), size);
+		for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
-			VoxelGraphics::MainData v = face[i];
-			v.Pos = orientation.absolute(v.Pos) + u;
-			data.Insert(v);
+			const Voxel & voxel = Data[size.Convert(u)];
+			if (voxel.Template == nullptr) { continue; }
+			const VoxelTemplate & voxel_template = *voxel.Template;
+			GraphicsData(MainBufferData, voxel_template.Here, voxel.Orientation, u);
+			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::PrevX);
+			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::PrevY);
+			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::PrevZ);
+			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::NextX);
+			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::NextY);
+			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::NextZ);
 		}
 	}
-	//else
-	/*{
-		for (unsigned int i = face.Count() - 1; i < face.Count(); i--)
-		{
-			VoxelGraphics::MainData v = face[i];
-			v.Pos = orientation.orient(v.Pos) + u;
-			data.Insert(v);
-		}
-	}*/
+	MainBufferState = BufferDataState::Ready;
+	//std::cout << "MainBUfferData done\n";
 }
-
-static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, const VoxelTemplate & voxel_template, VoxelOrientation & orientations, ChunkNeighbours & neighbours, AxisRel axis, VectorU3 u)
-{
-	if (!neighbours.Visible(orientations.absolute(axis), u)) { return; }
-	GraphicsData(data, voxel_template.AxisData(axis), orientations, u);
-}
-
-void Chunk::UpdateMainBuffer()
+void Chunk::GraphicsUpdateMainBuffer()
 {
 	if (!GraphicsExist) { return; }
-	if (!MainBufferNeedsData) { return; }
 
-	{
-		Container::Binary<VoxelGraphics::MainData> data;
+	if (MainBufferState != BufferDataState::Ready) { return; }
 
-		if (Done() && Data != nullptr)
-		{
-			Undex3D size(CHUNK_VALUES_PER_SIDE);
-			UndexLoop3D loop(Undex3D(), size);
-			for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-			{
-				Voxel & voxel = Data[size.Convert(u)];
-				if (voxel.Template == nullptr) { continue; }
-				const VoxelTemplate & voxel_template = *voxel.Template;
-				GraphicsData(data, voxel_template.Here, voxel.Orientation, u);
-				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, AxisRel::PrevX, u);
-				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, AxisRel::PrevY, u);
-				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, AxisRel::PrevZ, u);
-				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, AxisRel::NextX, u);
-				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, AxisRel::NextY, u);
-				GraphicsData(data, *voxel.Template, voxel.Orientation, Neighbours, AxisRel::NextZ, u);
-			}
-		}
+	Buffer.Main.Change(MainBufferData);
+	MainBufferData.Clear();
 
-		MainCount = data.Count();
-
-		Buffer.Main.Change(data);
-	}
-
-	MainBufferNeedsData = false;
+	MainBufferState = BufferDataState::None;
 }
+
 void Chunk::UpdateInstBuffer()
 {
 	if (!GraphicsExist) { return; }
@@ -410,7 +430,7 @@ void Chunk::Draw()
 		Buffer.Main.Init();
 		BufferNeedsInit = false;
 	}
-	UpdateMainBuffer();
+	GraphicsUpdateMainBuffer();
 	UpdateInstBuffer();
 	Buffer.Draw();
 }

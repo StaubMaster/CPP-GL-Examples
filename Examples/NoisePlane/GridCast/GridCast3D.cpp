@@ -34,6 +34,8 @@ GridCast3D::Data::Data(Ray3D ray3D, float limit, float scale)
 	else			{ grid_dir.Z = -1; side_sum.Z = 0 - side_sum.Z; cardinal_side_Z = AxisRel::NextZ; }
 
 	side_sum *= side_len;
+
+	cardinal_dir = AxisRel::Here;
 }
 bool GridCast3D::Data::Iterate()
 {

@@ -18,6 +18,9 @@ struct VoxelTemplate
 	static VoxelTemplate	Grass;
 	static VoxelTemplate	RedLog;
 
+	static VoxelTemplate	ConcreteCube;
+	static VoxelTemplate	ConcreteCylinder;
+
 
 
 	unsigned int	Texture;

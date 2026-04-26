@@ -5,30 +5,100 @@
 
 
 
+bool UI::Control::Base::IsEnabled() const
+{
+	return _Enabled;
+}
+void UI::Control::Base::MakeEnabled()
+{
+	_Enabled = true;
+	//UpdateDrawable();
+}
+void UI::Control::Base::MakeDisabled()
+{
+	_Enabled = false;
+	//UpdateDrawable();
+}
+
+bool UI::Control::Base::IsVisible() const
+{
+	return _Visible;
+}
+void UI::Control::Base::Show()
+{
+	_Visible = true;
+	UpdateDrawable();
+}
+void UI::Control::Base::Hide()
+{
+	_Visible = false;
+	UpdateDrawable();
+}
+
+bool UI::Control::Base::IsTransparent() const
+{
+	return !_Opaque;
+}
+bool UI::Control::Base::IsOpaque() const
+{
+	return _Opaque;
+}
+void UI::Control::Base::MakeTransparent()
+{
+	_Opaque = false;
+	//RemoveDrawingEntry();
+	UpdateDrawable();
+}
+void UI::Control::Base::MakeOpaque()
+{
+	_Opaque = true;
+	//InsertDrawingEntry();
+	UpdateDrawable();
+}
+
+// this loops over all Parents.
+// cant imagine there being more then 10 Layers for the UI
+// and it only does a simple check
+// so this should be fine
+bool UI::Control::Base::Drawable() const
+{
+	if (Parent != nullptr)
+	{
+		return _Visible && (Parent -> Drawable());
+	}
+	else
+	{
+		return _Visible;
+	}
+}
+bool UI::Control::Base::Interactible() const
+{
+	return _Enabled && Drawable();
+}
+
+
+
 UI::Control::Base::Base() :
-	ControlManager(NULL),
-	TextManager(NULL),
+	ControlManager(nullptr),
+	TextManager(nullptr),
 	ControlObject(),
-	Parent(NULL),
+	Parent(nullptr),
 	Children(),
 	Layer(0.0f),
 	_Enabled(true),
 	_Visible(true),
 	_Opaque(true),
-	_Drawable(true),
-	_Interactible(true),
 	Anchor(
-		Anchor1D(
-			AnchorSize.X, AnchorDist.Min.X, AnchorDist.Max.X, AnchorNormal.X,
-			AnchorPadding.Min.X, AnchorPadding.Max.X
+		Anchor1D(AnchorSize.X, AnchorNormal.X
+			, AnchorDist.Min.X, AnchorDist.Max.X
+			, AnchorPadding.Min.X, AnchorPadding.Max.X
 		),
-		Anchor1D(
-			AnchorSize.Y, AnchorDist.Min.Y, AnchorDist.Max.Y, AnchorNormal.Y,
-			AnchorPadding.Min.Y, AnchorPadding.Max.Y
+		Anchor1D(AnchorSize.Y, AnchorNormal.Y
+			, AnchorDist.Min.Y, AnchorDist.Max.Y
+			, AnchorPadding.Min.Y, AnchorPadding.Max.Y
 		)
 	)
 {
-	//AnchorDist = AxisBox2D(Point2D(12, 12), Point2D(12, 12));
 	AnchorDist = AxisBox2D(Point2D(0, 0), Point2D(0, 0));
 
 	//float padding = 10;
@@ -107,58 +177,14 @@ void UI::Control::Base::UpdateEntrys()
 
 
 
-void UI::Control::Base::MakeEnabled()
-{
-	_Enabled = true;
-	_Interactible = _Enabled && _Drawable;
-	//UpdateDrawable();
-}
-void UI::Control::Base::MakeDisabled()
-{
-	_Enabled = false;
-	_Interactible = _Enabled && _Drawable;
-	//UpdateDrawable();
-}
-
-void UI::Control::Base::Show()
-{
-	_Visible = true;
-	UpdateDrawable();
-}
-void UI::Control::Base::Hide()
-{
-	_Visible = false;
-	UpdateDrawable();
-}
-
-void UI::Control::Base::MakeTransparent()
-{
-	_Opaque = false;
-	//RemoveDrawingEntry();
-	UpdateDrawable();
-}
-void UI::Control::Base::MakeOpaque()
-{
-	_Opaque = true;
-	//InsertDrawingEntry();
-	UpdateDrawable();
-}
-
 void UI::Control::Base::UpdateDrawable()
 {
-	if (Parent != NULL)
-	{ _Drawable = _Visible && (Parent -> _Drawable); }
-	else
-	{ _Drawable = _Visible; }
-
-	if (_Drawable && _Opaque)
+	if (Drawable() && _Opaque)
 	{ InsertDrawingEntry(); }
 	else
 	{ RemoveDrawingEntry(); }
 
-	_Interactible = _Enabled && _Drawable;
-
-	if (_Drawable)
+	if (Drawable())
 	{ UpdateBox(); }
 
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -168,7 +194,7 @@ void UI::Control::Base::UpdateDrawable()
 }
 void UI::Control::Base::InsertDrawingEntry()
 {
-	if (!ControlObject.Is() && ControlManager != NULL)
+	if (!ControlObject.Is() && ControlManager != nullptr)
 	{
 		ControlObject.Create();
 		ControlObject.Layer() = Layer;
@@ -179,7 +205,7 @@ void UI::Control::Base::InsertDrawingEntry()
 }
 void UI::Control::Base::RemoveDrawingEntry()
 {
-	if (ControlObject.Is() || ControlManager == NULL)
+	if (ControlObject.Is() || ControlManager == nullptr)
 	{
 		ControlObject.Delete();
 	}
@@ -190,7 +216,7 @@ void UI::Control::Base::RemoveDrawingEntry()
 
 void UI::Control::Base::UpdateBox()
 {
-	if (Parent != NULL)
+	if (Parent != nullptr)
 	{
 		AnchorBox = Anchor.Calculate(Parent -> AnchorBox);
 		AnchorBoxChanged = true;
@@ -206,24 +232,24 @@ void UI::Control::Base::UpdateBox()
 
 UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
 {
-	if (!_Visible) { return NULL; }
-	if (!_Enabled) { return NULL; }
+	if (!_Visible) { return nullptr; }
+	if (!_Enabled) { return nullptr; }
 	if (AnchorBox.Intersekt(mouse))
 	{
-		Base * control = NULL;
+		Base * control = nullptr;
 		for (unsigned int i = 0; i < Children.Count(); i++)
 		{
 			Base * c = Children[i] -> CheckHover(mouse);
-			if (c != NULL && (control == NULL || c -> Layer < control -> Layer))
+			if (c != nullptr && (control == nullptr || c -> Layer < control -> Layer))
 			{
 				control = c;
 			}
 		}
-		if (control != NULL)
+		if (control != nullptr)
 		{ return control; }
 		return this;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void UI::Control::Base::HoverEnter()

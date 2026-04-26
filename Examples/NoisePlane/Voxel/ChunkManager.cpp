@@ -18,7 +18,6 @@ ChunkManager::~ChunkManager() { }
 ChunkManager::ChunkManager()
 	: Shader()
 	, Chunks()
-	, ShouldGenerate(true)
 	, GraphicsExist(false)
 { }
 
@@ -74,7 +73,7 @@ const Voxel * ChunkManager::FindVoxelOrNull(VoxelIndex idx) const
 	Chunk * chunk = Chunks[idx.ChunkMan];
 	if (chunk == nullptr) { return nullptr; }
 	if (!(chunk -> Done())) { return nullptr; }
-	if (chunk -> Data == nullptr) { return nullptr; }
+	if (chunk -> IsEmpty()) { return nullptr; }
 	return &(*chunk)[idx.Voxel];
 }
 const Voxel * ChunkManager::FindVoxelOrNull(VectorI3 idx) const
@@ -207,6 +206,11 @@ bool ChunkManager::ClearVoxel(VoxelIndex idx, Voxel & vox)
 	chunk.Neighbours.UpdateBufferMain(); // only update effected
 	return true;
 }
+bool ChunkManager::ClearVoxel(VectorI3 idx, Voxel & vox)
+{
+	return ClearVoxel(FindVoxelIndex(idx), vox);
+}
+
 bool ChunkManager::PlaceVoxel(VoxelIndex idx, Voxel & vox)
 {
 	if (!idx.Valid()) { return false; }
@@ -225,6 +229,10 @@ bool ChunkManager::PlaceVoxel(VoxelIndex idx, Voxel & vox)
 	chunk.Neighbours.UpdateBufferMain(); // only update effected
 	return true;
 }
+bool ChunkManager::PlaceVoxel(VectorI3 idx, Voxel & vox)
+{
+	return PlaceVoxel(FindVoxelIndex(idx), vox);
+}
 
 
 
@@ -241,7 +249,7 @@ void ChunkManager::Clear()
 
 void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 {
-	if (!ShouldGenerate) { return; }
+	if (DontInsert) { return; }
 
 	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 
@@ -253,29 +261,31 @@ void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 }
 void ChunkManager::InsertChunk(VectorI3 idx)
 {
-	if (!ShouldGenerate) { return; }
+	if (DontInsert) { return; }
 
 	Chunk * chunk = FindChunkOrNull(idx);
 	if (chunk == nullptr)
 	{
-		chunk = new Chunk();
-		chunk -> Index = idx;
+		chunk = new Chunk(idx, GraphicsExist);
+		//chunk -> Index = idx;
 
 		Chunks.Insert(chunk);
 		NeighbourInsert(*chunk);
 
-		chunk -> Buffer.Main.Pos.Change(0);
+		/*chunk -> Buffer.Main.Pos.Change(0);
 		chunk -> Buffer.Main.Tex.Change(1);
 		chunk -> Buffer.Inst.Pos.Change(2);
 		if (GraphicsExist)
 		{
 			chunk -> GraphicsCreate();
-		}
+		}*/
 	}
 }
 
 void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 {
+	if (DontRemove) { return; }
+
 	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 	BoxI3 chunk_box(chunk_idx - (int)size, chunk_idx + (int)size);
 
@@ -290,15 +300,20 @@ void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 }
 void ChunkManager::RemoveChunk(unsigned int idx)
 {
+	if (DontRemove) { return; }
+
 	Chunk * chunk = Chunks[idx];
 	Chunks.Remove(idx); // this might be slow. set to null and then remove all at once. maybe make Containers delete all items that match something
-	chunk -> GraphicsDelete();
+	/*if (chunk != nullptr)
+	{
+		chunk -> GraphicsDelete();
+	}*/
 	delete chunk;
 }
 
 void ChunkManager::GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3, VectorF3 pos, unsigned int size, unsigned int count)
 {
-	if (!ShouldGenerate) { return; }
+	if (DontGenerate) { return; }
 
 	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 	BoxI3 chunk_box(chunk_idx - (int)size, chunk_idx + (int)size);
@@ -373,6 +388,52 @@ void ChunkManager::GraphicsDelete()
 	}
 
 	GraphicsExist = false;
+}
+
+void ChunkManager::GraphicsUpdateDataAround(VectorF3 pos, unsigned int count)
+{
+	if (!GraphicsExist) { return; }
+	for (unsigned int c = 0; c < count; c++)
+	{
+		//std::cout << "Iteration: " << c << '|' << count << '\n';
+		unsigned int idx = 0xFFFFFFFF;
+		float dist;
+		//std::cout << "Finding Candidate ...\n";
+		for (unsigned int i = 0; i < Chunks.Count(); i++)
+		{
+			//std::cout << "chunks[" << i << "]: " << Chunks[i] << '\n';
+			if (Chunks[i] == nullptr) { continue; }
+			//std::cout << "line:" << __LINE__ << '\n';
+			Chunk & chunk = *Chunks[i];
+			//std::cout << "line:" << __LINE__ << '\n';
+			if (chunk.MainBufferState != Chunk::BufferDataState::Needed) { continue; }
+			//std::cout << "line:" << __LINE__ << '\n';
+			VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
+			//std::cout << "line:" << __LINE__ << '\n';
+			float d = rel.length2();
+			if (idx == 0xFFFFFFFF || d < dist)
+			{
+				dist = d;
+				idx = i;
+			}
+			//std::cout << "line:" << __LINE__ << '\n';
+		}
+		if (idx != 0xFFFFFFFF)
+		{
+			//std::cout << "Found Candidate: " << idx << '\n';
+			Chunk & chunk = *Chunks[idx];
+			//std::cout << "Chunk: " << chunk.Index << '\n';
+			//std::cout << "Chunk: " << (chunk.Data) << '\n';
+			//std::cout << "Chunk: " << ((unsigned int)chunk.GenerationState) << '\n';
+			//std::cout << "Chunk: " << ((unsigned int)chunk.MainBufferState) << '\n';
+			chunk.GraphicsUpdateMainData();
+		}
+		else
+		{
+			//std::cout << "no Candidate found\n";
+			break;
+		}
+	}
 }
 
 void ChunkManager::Draw()

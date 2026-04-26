@@ -24,9 +24,10 @@ struct Anchor1D
 {
 	private:
 	float & Size;
+	float & NormalCenter;
+
 	float & MinDist;
 	float & MaxDist;
-	float & NormalCenter;
 
 	float & MinPadding;
 	float & MaxPadding;
@@ -34,7 +35,11 @@ struct Anchor1D
 	public:
 	AnchorType Anchor;
 
-	Anchor1D(float & size, float & min_dist, float & max_dist, float & normal_center, float & min_padding, float & max_padding);
+	Anchor1D(
+		float & size, float & normal_center
+		, float & min_dist, float & max_dist
+		, float & min_padding, float & max_padding
+	);
 
 /*
 	Stored			Calculated

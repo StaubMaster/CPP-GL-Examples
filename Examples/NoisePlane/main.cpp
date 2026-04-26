@@ -58,6 +58,7 @@
 
 // Menus
 #include "Menus/Main.hpp"
+#include "Menus/Pause.hpp"
 #include "Menus/Options.hpp"
 #include "Menus/Debug.hpp"
 
@@ -74,12 +75,13 @@ UI::Text::Manager		TextManager;
 //::PlaneManager			PlaneManager;
 ::ChunkManager			ChunkManager;
 
-::MainMenu				MainMenu;
-::OptionsMenu			OptionsMenu;
-::DebugMenu				DebugMenu;
+::MainMenu		MainMenu;
+::PauseMenu		PauseMenu;
+::OptionsMenu	OptionsMenu;
+::DebugMenu		DebugMenu;
 
-Perlin2D				Perlin2;
-Perlin3D				Perlin3;
+Perlin2D	Perlin2;
+Perlin3D	Perlin3;
 
 Multiform::DisplaySize		Multiform_DisplaySize;
 ::Multiform::Matrix4x4		Multiform_View;
@@ -96,6 +98,8 @@ ContextNoisePlane()
 	, TextManager()
 //	, PlaneManager()
 	, ChunkManager()
+	, MainMenu()
+	, PauseMenu()
 	, OptionsMenu()
 	, DebugMenu()
 	, Perlin2(Perlin2D::Random(Undex2D(8, 8)))
@@ -194,12 +198,19 @@ float	ViewSpeed = 0.5f;
 float	ViewFaster = 10.0f;
 float	ViewSpeedNoClip = 10.0f;
 
-BoxEntity	ViewEntity;
+BoxEntity		ViewEntity;
+CollisionSide	ViewCollisionSide;
+/*
+	know what axis collided
+	if PrevY had a Collision, then on the ground
+	is on the ground and space, then jump
+*/
 
 void UpdateViewColliding(FrameTime frame_time)
 {
 	Trans3D change;
 
+	// View Change
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		change = window.MoveSpinFromKeysCursor();
@@ -214,10 +225,20 @@ void UpdateViewColliding(FrameTime frame_time)
 
 	if (ViewBoxCollision)
 	{
+		if (change.Position.Y > 0.0f)
+		{
+			if (!ViewCollisionSide.PrevY)
+			{ change.Position.Y = 0.0f; }
+			else
+			{ change.Position.Y = 15.0f; }
+		}
+		// move faster when on the ground
+		// handle friction here ?
+
 		ViewEntity.Vel += change.Position + PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f);
 		DisplayBoxEntityVoxels(ViewEntity, frame_time);
 		DisplayBoxEntity(ViewEntity);
-		ViewEntity.Collide(ChunkManager, frame_time);
+		ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
 		DisplayBoxEntity(ViewEntity);
 	}
 	else
@@ -229,6 +250,7 @@ void UpdateViewColliding(FrameTime frame_time)
 	view.Trans.Rotation += change.Rotation * frame_time.Delta;
 	view.Trans.Rotation.X1.clampPI();
 
+	// View Matrix
 	if (ViewDistance == 0.0f)
 	{
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
@@ -245,6 +267,10 @@ bool	ViewRaySync = true;
 Ray3D	ViewRay;
 void ViewRayFunction()
 {
+	if (PauseMenu.Interactible() || OptionsMenu.Interactible()) { return; }
+	// check is any Control is being hovered
+	// cast Ray at mouse
+
 	if (ViewRaySync)
 	{
 		ViewRay.Pos = view.Trans.Position;
@@ -307,6 +333,8 @@ void ViewRayFunction()
 			else if (axis != AxisRelToAxisAbs(look_axis_0)) { place_axis_1 = look_axis_0; }
 			else { place_axis_1 = AxisRel::None; }
 		}
+		// determine place_axis_1 based on where on the face was clicked ?
+		// top of face orients to point to top and so on
 
 		// Text
 		{
@@ -346,20 +374,21 @@ void ViewRayFunction()
 			if (place_axis_0 == AxisRel::PrevX) { hit.Index.X -= 1; }
 			if (place_axis_0 == AxisRel::PrevY) { hit.Index.Y -= 1; }
 			if (place_axis_0 == AxisRel::PrevZ) { hit.Index.Z -= 1; }
-			Voxel voxel = VoxelTemplate::OrientationCylinder.ToVoxel(place_axis_0, place_axis_1);
+			Voxel voxel = VoxelTemplate::ConcreteCube.ToVoxel(place_axis_0, place_axis_1);
+			//Voxel voxel = VoxelTemplate::OrientationSlope.ToVoxel(place_axis_0, place_axis_1);
 			ChunkManager.PlaceVoxel(hit.Index, voxel);
 		}
 	}
 
-	/*{
+	{
 		UI::Text::Object text; text.Create();
-		text.Pos().X = window.Size.Buffer.Full.X - 10;
-		text.Pos().Y = 10;
-		text.AlignmentX() = UI::Text::Alignment::Max;
+		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
+		text.AlignTopRight(); // take DisplaySize
 		text.Bound().Min = Point2D();
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.String() = ss.str();
-	}*/
+		text.Color() = ColorF4(1, 1, 1);
+	}
 
 	if (window.KeyBoardManager[Keys::NumPadEnter].State == State::Press)
 	{
@@ -367,12 +396,36 @@ void ViewRayFunction()
 		// struct VoxelIndexAbs; VectorI3
 		// struct VoxelIndexRel; VectorI3 and VectorU3
 		// ChunkManager can convert between them
-		Chunk * view_chunk = ChunkManager.FindChunkOrNull(view.Trans.Position.roundF() / (float)CHUNK_VALUES_PER_SIDE);
+		Chunk * view_chunk = ChunkManager.FindChunkOrNull((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
 		if (view_chunk != nullptr)
 		{
 			view_chunk -> TestOrientation();
 		}
 	}
+}
+
+void UpdateAroundView(FrameTime frame_time)
+{
+	//std::cout << "UpdateAroundView ....\n";
+
+	//std::cout << "UpdateViewColliding\n";
+	UpdateViewColliding(frame_time);
+
+	//std::cout << "RemoveAround\n";
+	ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange);
+	//std::cout << "InsertAround\n";
+	ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange);
+	//std::cout << "GenerateAround\n";
+	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, ChunkInsertRange, 1);
+
+	//std::cout << "ViewRayFunction\n";
+	ViewRayFunction();
+
+	//std::cout << "GraphicsUpdateDataAround\n";
+	ChunkManager.GraphicsUpdateDataAround(view.Trans.Position, 1);
+
+	//std::cout << "UpdateAroundView done\n";
+	//std::cout << '\n';
 }
 
 
@@ -451,32 +504,39 @@ void Make()
 
 
 
-bool			DebugMenuIs;
-
-bool			OptionsMenuIs;
-unsigned int	ChunkInsertRange = 3;
-unsigned int	ChunkRemoveRange = 5;
+unsigned int	ChunkInsertRange;
+unsigned int	ChunkRemoveRange;
 
 void MakeControls()
 {
 	std::cerr << "MakeControls()\n";
 	{
-		OptionsMenuIs = true;
-		OptionsMenu.FOV_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::FOV_Change);
-		OptionsMenu.FOV_Slider.SetValue(view.FOV.ToDegrees());
+		PauseMenu.Continue.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Continue);
+		PauseMenu.Options.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Options);
+		PauseMenu.Debug.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Debug);
+		PauseMenu.Exit.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Exit);
 
-		OptionsMenu.Chunk_Insert_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::Chunk_Insert_Change);
-		OptionsMenu.Chunk_Insert_Slider.SetValue(ChunkInsertRange);
+		PauseMenu.Show();
+		ControlManager.Window.ChildInsert(PauseMenu);
+	}
+	{
+		OptionsMenu.FOV.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FOV);
+		OptionsMenu.FOV.SetValue(view.FOV.ToDegrees());
 
-		OptionsMenu.Chunk_Remove_Slider.ValueChangedFunc.Assign(this, &ContextNoisePlane::Chunk_Remove_Change);
-		OptionsMenu.Chunk_Remove_Slider.SetValue(ChunkRemoveRange);
+		ChunkInsertRange = 3;
+		OptionsMenu.ChunkInsert.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Insert);
+		OptionsMenu.ChunkInsert.SetValue(ChunkInsertRange);
 
-		OptionsMenu.Show();
+		ChunkRemoveRange = 5;
+		OptionsMenu.ChunkRemove.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
+		OptionsMenu.ChunkRemove.SetValue(ChunkRemoveRange);
+
+		OptionsMenu.Back.ClickFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Back);
+
+		OptionsMenu.Hide();
 		ControlManager.Window.ChildInsert(OptionsMenu);
 	}
 	{
-		DebugMenuIs = false;
-
 		DebugMenu.FPS.Check.Check(true);
 
 		DebugMenu.Hide();
@@ -484,23 +544,77 @@ void MakeControls()
 	}
 }
 
-void FOV_Change(float val)
+void PauseMenu_Continue(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	if (!PauseMenu.IsVisible())
+	{
+		PauseMenu.Show();
+	}
+	else
+	{
+		PauseMenu.Hide();
+	}
+}
+void PauseMenu_Options(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	if (!OptionsMenu.IsVisible())
+	{
+		OptionsMenu.Show();
+	}
+	if (PauseMenu.IsVisible())
+	{
+		PauseMenu.Hide();
+	}
+}
+void PauseMenu_Debug(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	if (DebugMenu.IsVisible())
+	{
+		DebugMenu.Hide();
+	}
+	else
+	{
+		DebugMenu.Show();
+	}
+}
+void PauseMenu_Exit(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	ContextBase::ChangeToContext0();
+}
+
+void OptionsMenu_FOV(float val)
 {
 	view.FOV = Angle::Degrees(val);
 	Multiform_FOV.ChangeData(view.FOV);
 
 	unsigned int v = val;
-	OptionsMenu.FOV_Slider.SetText("FOV:" + std::to_string(v));
+	OptionsMenu.FOV.SetText("FOV:" + std::to_string(v));
 }
-void Chunk_Insert_Change(float val)
+void OptionsMenu_Chunk_Insert(float val)
 {
 	ChunkInsertRange = val;
-	OptionsMenu.Chunk_Insert_Slider.SetText("Insert:" + std::to_string(ChunkInsertRange));
+	OptionsMenu.ChunkInsert.SetText("Insert:" + std::to_string(ChunkInsertRange));
 }
-void Chunk_Remove_Change(float val)
+void OptionsMenu_Chunk_Remove(float val)
 {
 	ChunkRemoveRange = val;
-	OptionsMenu.Chunk_Remove_Slider.SetText("Remove:" + std::to_string(ChunkRemoveRange));
+	OptionsMenu.ChunkRemove.SetText("Remove:" + std::to_string(ChunkRemoveRange));
+}
+void OptionsMenu_Back(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	if (OptionsMenu.IsVisible())
+	{
+		OptionsMenu.Hide();
+	}
+	if (!PauseMenu.IsVisible())
+	{
+		PauseMenu.Show();
+	}
 }
 
 
@@ -569,16 +683,6 @@ void GraphicsCreate()
 	TextManager.GraphicsCreate();
 	//PlaneManager.GraphicsCreate();
 	ChunkManager.GraphicsCreate();
-	{
-		ChunkManager.Texture.Bind();
-		Container::Array<FileInfo> files({
-			MediaDirectory.File("Images/OrientationCorners.png"),
-			MediaDirectory.File("Images/Gray6.png"),
-			MediaDirectory.File("Images/fancy_GreenDirt.png"),
-			MediaDirectory.File("Images/fancy_RedWood.png"),
-		});
-		ChunkManager.Texture.Assign(VectorU2(128, 64), files);
-	}
 }
 void GraphicsDelete()
 {
@@ -603,9 +707,23 @@ void Init() override
 		VoxelTemplate::Gray.InitCube(1);
 		VoxelTemplate::Grass.InitCube(2);
 		VoxelTemplate::RedLog.InitCylinder(3);
+		VoxelTemplate::ConcreteCube.InitCube(4);
+		VoxelTemplate::ConcreteCylinder.InitCylinder(4);
 	}
 
 	GraphicsCreate();
+
+	{
+		ChunkManager.Texture.Bind();
+		Container::Array<FileInfo> files({
+			MediaDirectory.File("Images/OrientationCorners.png"),	// 0
+			MediaDirectory.File("Images/Gray6.png"),				// 1
+			MediaDirectory.File("Images/fancy_GreenDirt.png"),		// 2
+			MediaDirectory.File("Images/fancy_RedWood.png"),		// 3
+			MediaDirectory.File("Images/ConcreteCube.png"),			// 4
+		});
+		ChunkManager.Texture.Assign(VectorU2(128, 64), files);
+	}
 
 	MakeControls();
 
@@ -629,7 +747,9 @@ void Draw()
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
 	//PlaneManager.Draw();
+	//std::cout << "line:" << __LINE__ << '\n';
 	ChunkManager.Draw();
+	//std::cout << "line:" << __LINE__ << '\n';
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
@@ -641,20 +761,6 @@ void Draw()
 		ControlManager.Draw();
 	}
 	TextManager.Draw();
-}
-
-void UpdateAroundView(FrameTime frame_time)
-{
-	UpdateViewColliding(frame_time);
-
-	ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange);
-
-	ViewRayFunction();
-
-	ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange);
-	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, ChunkInsertRange, 1);
-
-//	PlaneManager.UpdateAround(Perlin2, Point2D(view.Trans.Position.X, view.Trans.Position.Z));
 }
 
 typedef ::PolyHedra * PolyHedraPointer;
@@ -671,31 +777,29 @@ static void Toggle(PolyHedraPointer & polyhedra, PolyHedraPointer other)
 	}
 }
 
+// !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
 void Frame(FrameTime frame_time) override
 {
-	if (!OptionsMenuIs)
+	if (window.KeyBoardManager[Keys::Escape].State == State::Press)
 	{
-		if (window.KeyBoardManager[Keys::Escape].State == State::Press)
+		OptionsMenu.Hide();
+		if (PauseMenu.IsVisible())
 		{
-			OptionsMenu.Show();
-			OptionsMenuIs = true;
-			if (window.MouseManager.CursorModeIsLocked())
-			{
-				window.MouseManager.CursorModeFree();
-			}
+			PauseMenu.Hide();
 		}
+		else
+		{
+			PauseMenu.Show();
+		}
+	}
+
+	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible())
+	{
+		if (window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeFree(); }
 	}
 	else
 	{
-		if (window.KeyBoardManager[Keys::Escape].State == State::Press)
-		{
-			OptionsMenu.Hide();
-			OptionsMenuIs = false;
-			if (!window.MouseManager.CursorModeIsLocked())
-			{
-				window.MouseManager.CursorModeLock();
-			}
-		}
+		if (!window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeLock(); }
 	}
 
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { Toggle(ViewRaySync); }
@@ -704,14 +808,12 @@ void Frame(FrameTime frame_time) override
 
 	if (window.KeyBoardManager[Keys::F8].State == State::Press)
 	{
-		if (DebugMenuIs)
+		if (DebugMenu.IsVisible())
 		{
-			DebugMenuIs = false;
 			DebugMenu.Hide();
 		}
 		else
 		{
-			DebugMenuIs = true;
 			DebugMenu.Show();
 		}
 	}
@@ -724,22 +826,26 @@ void Frame(FrameTime frame_time) override
 		else
 		{ ViewDistance = 0.0f; }
 	}
-	if (window.KeyBoardManager[Keys::F4].State == State::Press)
+	/*if (window.KeyBoardManager[Keys::F4].State == State::Press)
 	{
-		//PlaneManager.ShouldGenerate = !PlaneManager.ShouldGenerate;
-		ChunkManager.ShouldGenerate = !ChunkManager.ShouldGenerate;
-	}
+		//Toggle(PlaneManager.ShouldGenerate);
+		Toggle(ChunkManager.DontGenerate);
+	}*/
 	if (window.KeyBoardManager[Keys::F5].State == State::Press)
 	{
 		//PlaneManager.Clear();
 		ChunkManager.Clear();
 	}
 
-	if (!OptionsMenuIs)
+	if (window.KeyBoardManager[Keys::F11].State == State::Press) { Toggle(ChunkManager.DontRemove); }
+	if (window.KeyBoardManager[Keys::F10].State == State::Press) { Toggle(ChunkManager.DontInsert); }
+	if (window.KeyBoardManager[Keys::F9].State == State::Press) { Toggle(ChunkManager.DontGenerate); }
+
+	if (!OptionsMenu.IsVisible())
 	{
 		UpdateAroundView(frame_time);
 	}
-
+	//std::cout << "line:" << __LINE__ << '\n';
 	{
 		UI::Control::Object obj;
 		obj.Create();
@@ -747,7 +853,7 @@ void Frame(FrameTime frame_time) override
 		obj.Box().Max = window.Size.Buffer.Half + Point2D(1, 1);
 		obj.Color() = ColorF4(1, 0, 1);
 	}
-
+	//std::cout << "line:" << __LINE__ << '\n';
 	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
 	{
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
@@ -759,7 +865,7 @@ void Frame(FrameTime frame_time) override
 			chunk_box.ShowWire();
 		}
 	}
-
+	//std::cout << "line:" << __LINE__ << '\n';
 	{
 		std::stringstream ss;
 
@@ -779,7 +885,20 @@ void Frame(FrameTime frame_time) override
 			VectorU3 voxel_idx = VectorI3(view.Trans.Position.roundF()) - (chunk_idx * CHUNK_VALUES_PER_SIDE);
 			ss << "Voxel " << chunk_idx << ' ' << voxel_idx << '\n';
 			ss << '\n';
+
+			ss << "None : " << (ViewCollisionSide.None) << '\n';
+			ss << "PrevX: " << (ViewCollisionSide.PrevX) << '\n';
+			ss << "PrevY: " << (ViewCollisionSide.PrevY) << '\n';
+			ss << "PrevZ: " << (ViewCollisionSide.PrevZ) << '\n';
+			ss << "NextX: " << (ViewCollisionSide.NextX) << '\n';
+			ss << "NextY: " << (ViewCollisionSide.NextY) << '\n';
+			ss << "NextZ: " << (ViewCollisionSide.NextZ) << '\n';
+			ss << '\n';
 		}
+
+		ss << "DontInsert: " << ChunkManager.DontInsert << '\n';
+		ss << "DontRemove: " << ChunkManager.DontRemove << '\n';
+		ss << "DontGenerate: " << ChunkManager.DontGenerate << '\n';
 
 		/*{
 			unsigned int count = PolyHedraManager.InstanceManagers.Count();
@@ -804,6 +923,7 @@ void Frame(FrameTime frame_time) override
 			ss << '\n';
 		}*/
 
+		//std::cout << "line:" << __LINE__ << '\n';
 		if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
 		{
 			unsigned int chunks_t = ChunkManager.Chunks.Count(); // total
@@ -848,14 +968,14 @@ void Frame(FrameTime frame_time) override
 			unsigned long long main_count = 0;
 			for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
 			{
-				main_count += ChunkManager.Chunks[i] -> MainCount;
+				main_count += ChunkManager.Chunks[i] -> Buffer.Main.DrawCount;
 			}
 			ss << "Voxel BufferData: " << Seperated1000(main_count);
 			ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) <<")\n";
 		}
 
 		UI::Text::Object text; text.Create();
-		if (DebugMenuIs)
+		if (DebugMenu.IsVisible())
 		{
 			text.TextPosition().X = DebugMenu.Anchor.X.GetMinSize();
 		}
@@ -864,8 +984,9 @@ void Frame(FrameTime frame_time) override
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.String() = ss.str();
 	}
-
+	//std::cout << "line:" << __LINE__ << '\n';
 	Draw();
+	//std::cout << '\n';
 }
 
 void Resize(DisplaySize display_size) override

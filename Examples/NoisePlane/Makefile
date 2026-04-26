@@ -33,6 +33,7 @@ FILES := \
 	GridCast/GridCast3D.cpp \
 \
 	Menus/Main.cpp \
+	Menus/Pause.cpp \
 	Menus/Options.cpp \
 	Menus/Debug.cpp \
 \

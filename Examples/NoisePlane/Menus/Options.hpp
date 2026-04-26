@@ -6,17 +6,13 @@
 
 struct OptionsMenu : public UI::Control::Form
 {
-	UI::Control::Slider		FOV_Slider;
-	UI::Control::Slider		Chunk_Insert_Slider;
-	UI::Control::Slider		Chunk_Remove_Slider;
-
-	UI::Control::Button		ButtonBack;
+	UI::Control::Slider		FOV;
+	UI::Control::Slider		ChunkInsert;
+	UI::Control::Slider		ChunkRemove;
+	UI::Control::Button		Back;
 
 	~OptionsMenu();
 	OptionsMenu();
-
-	void	FOV_Change(float val);
-	void	BackFunc(ClickArgs args);
 };
 
 #endif

@@ -68,11 +68,6 @@ and UI
 
 
 
-
-ChunkTypes are confusing
-
-
-
 Save/Load Chunk
 {
 how to Store Chunk ?

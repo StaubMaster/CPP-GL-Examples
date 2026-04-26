@@ -8,57 +8,40 @@ OptionsMenu::OptionsMenu()
 {
 	MakeTransparent();
 
-	float y = 0.0f;
+	float y;
 
+	y = 0.0f;
 
+	FOV.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	FOV.Anchor.Y.AnchorMin(y);
+	FOV.ValueMin = 20;
+	FOV.ValueMax = 160;
+	FOV.ValueResolution = 1.0f;
+	y = FOV.Anchor.Y.GetMinSize();
 
-	FOV_Slider.Anchor.X.AnchorBoth(0.0f, 0.0f);
-	FOV_Slider.Anchor.Y.AnchorMin(y);
-	FOV_Slider.ValueMin = 20;
-	FOV_Slider.ValueMax = 160;
-	FOV_Slider.ValueResolution = 1.0f;
-	y = FOV_Slider.Anchor.Y.GetMinSize();
+	y = 0.0f;
 
+	Back.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	Back.Anchor.Y.AnchorMax(y);
+	Back.SetText("Back");
+	y = Back.Anchor.Y.GetMaxSize();
 
+	ChunkInsert.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	ChunkInsert.Anchor.Y.AnchorMax(y);
+	ChunkInsert.ValueMin = 1;
+	ChunkInsert.ValueMax = 24;
+	ChunkInsert.ValueResolution = 1.0f;
+	y = ChunkInsert.Anchor.Y.GetMaxSize();
 
-	Chunk_Insert_Slider.Anchor.X.AnchorBoth(0.0f, 0.0f);
-	Chunk_Insert_Slider.Anchor.Y.AnchorMin(y);
-	Chunk_Insert_Slider.ValueMin = 1;
-	Chunk_Insert_Slider.ValueMax = 12;
-	Chunk_Insert_Slider.ValueResolution = 1.0f;
-	y = Chunk_Insert_Slider.Anchor.Y.GetMinSize();
+	ChunkRemove.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	ChunkRemove.Anchor.Y.AnchorMax(y);
+	ChunkRemove.ValueMin = 1;
+	ChunkRemove.ValueMax = 24;
+	ChunkRemove.ValueResolution = 1.0f;
+	y = ChunkRemove.Anchor.Y.GetMaxSize();
 
-
-
-	Chunk_Remove_Slider.Anchor.X.AnchorBoth(0.0f, 0.0f);
-	Chunk_Remove_Slider.Anchor.Y.AnchorMin(y);
-	Chunk_Remove_Slider.ValueMin = 1;
-	Chunk_Remove_Slider.ValueMax = 12;
-	Chunk_Remove_Slider.ValueResolution = 1.0f;
-	y = Chunk_Remove_Slider.Anchor.Y.GetMinSize();
-
-
-
-	ButtonBack.Anchor.X.AnchorMin(0, 200);
-	ButtonBack.Anchor.Y.AnchorMax(0);
-	ButtonBack.SetText("Back/Exit");
-	ButtonBack.ClickFunc.Assign(this, &OptionsMenu::BackFunc);
-
-
-
-	ChildInsert(FOV_Slider);
-	ChildInsert(Chunk_Insert_Slider);
-	ChildInsert(Chunk_Remove_Slider);
-	ChildInsert(ButtonBack);
-}
-
-
-
-#include "../ContextBase.hpp"
-void OptionsMenu::BackFunc(ClickArgs args)
-{
-	if (args.Action == Action::Press)
-	{
-		ContextBase::ChangeToContext0();
-	}
+	ChildInsert(FOV);
+	ChildInsert(ChunkInsert);
+	ChildInsert(ChunkRemove);
+	ChildInsert(Back);
 }

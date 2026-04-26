@@ -122,7 +122,7 @@ void UI::Control::Button::UpdateBoxRelay()
 
 void UI::Control::Button::RelayClick(ClickArgs params)
 {
-	if (!_Interactible) { return; }
+	if (!Interactible()) { return; }
 
 	ClickFunc(params);
 }

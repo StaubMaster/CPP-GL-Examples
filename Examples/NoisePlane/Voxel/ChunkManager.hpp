@@ -64,7 +64,16 @@ struct ChunkManager
 
 
 	bool	ClearVoxel(VoxelIndex idx, Voxel & vox);
+	bool	ClearVoxel(VectorI3 idx, Voxel & vox);
+
 	bool	PlaceVoxel(VoxelIndex idx, Voxel & vox);
+	bool	PlaceVoxel(VectorI3 idx, Voxel & vox);
+
+
+
+	bool	DontInsert = false;
+	bool	DontRemove = false;
+	bool	DontGenerate = false;
 
 	void	Clear();
 
@@ -74,7 +83,6 @@ struct ChunkManager
 	void	RemoveAround(VectorF3 pos, unsigned int size);
 	void	RemoveChunk(unsigned int idx);
 
-	bool	ShouldGenerate;
 	void	GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3, VectorF3 pos, unsigned int size, unsigned int count);
 
 	void	NeighbourInsert(Chunk & chunk);
@@ -82,6 +90,8 @@ struct ChunkManager
 	bool	GraphicsExist;
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+
+	void	GraphicsUpdateDataAround(VectorF3 pos, unsigned int count);
 
 	void	Draw();
 };

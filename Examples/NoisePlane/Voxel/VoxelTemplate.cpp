@@ -14,6 +14,9 @@ VoxelTemplate VoxelTemplate::Gray;
 VoxelTemplate VoxelTemplate::Grass;
 VoxelTemplate VoxelTemplate::RedLog;
 
+VoxelTemplate VoxelTemplate::ConcreteCube;
+VoxelTemplate VoxelTemplate::ConcreteCylinder;
+
 
 
 const Container::Binary<VoxelGraphics::MainData> & VoxelTemplate::AxisData(AxisRel axis) const

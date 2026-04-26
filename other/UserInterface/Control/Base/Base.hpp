@@ -39,27 +39,42 @@ class Base
 	float			Layer;
 
 	protected:
-	bool			_Enabled;		//visible but cannot be interacted with by User, can be changed via code, Grayed out ?
-	bool			_Visible;		//is current and children visible
-	bool			_Opaque;		//is current invisible, does not effect children
+	bool	_Enabled;	//visible but cannot be interacted with by User, can be changed via code, Grayed out ?
+	public:
+	bool	IsEnabled() const;
+	void	MakeEnabled();
+	void	MakeDisabled();
 
-	//	these are based on the others
-	//	have a function that "calculates" the value every time
-	bool			_Drawable;		//should this currently be drawn ?
-	bool			_Interactible;	//can be interacted with
+	protected:
+	bool	_Visible;	//is current and children visible
+	public:
+	bool	IsVisible() const;
+	void	Show();
+	void	Hide();
+
+	protected:
+	bool	_Opaque;	//is current invisible, does not effect children
+	public:
+	bool	IsTransparent() const;
+	bool	IsOpaque() const;
+	void	MakeTransparent();
+	void	MakeOpaque();
+
+	public:
+	bool	Drawable() const;		//should this currently be drawn ?
+	bool	Interactible() const;	//can be interacted with
 
 	public:
 	bool			Deletable;		//should be deleted when Parent is deleted
 
-	public:
-	Anchor2D		Anchor;
-
 	protected:
 	Point2D			AnchorSize;
-	AxisBox2D		AnchorDist;
 	Point2D			AnchorNormal;
-	public:
+	AxisBox2D		AnchorDist;
 	AxisBox2D		AnchorPadding;
+
+	public:
+	Anchor2D		Anchor;
 
 	AxisBox2D		AnchorBox;
 	protected:
@@ -84,25 +99,6 @@ class Base
 	//	for automatic Updating. should not be called by User
 	public:
 	void UpdateEntrys();
-
-	public:
-	//	Enabled
-	//bool IsEnabled();
-	void MakeEnabled();
-	void MakeDisabled();
-	
-	public:
-	//	Visibility
-	//bool Visible();
-	void Show();
-	void Hide();
-	
-	public:
-	//	Transparent
-	//bool IsTransparent();
-	//bool IsOpaque();
-	void MakeTransparent();
-	void MakeOpaque();
 
 	//	for automatic Updating. should not be called by User
 	private:

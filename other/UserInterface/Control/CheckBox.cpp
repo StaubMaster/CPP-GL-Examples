@@ -68,7 +68,7 @@ void UI::Control::CheckBox::RelayHover(unsigned char type)
 
 void UI::Control::CheckBox::RelayClick(ClickArgs params)
 {
-	if (!_Interactible) { return; }
+	if (!Interactible()) { return; }
 
 	//if (params.Action == Action::Press || params.Action == Action::Release)
 	if (params.Action == Action::Press)

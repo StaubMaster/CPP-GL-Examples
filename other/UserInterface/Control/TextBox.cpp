@@ -138,7 +138,7 @@ void UI::Control::TextBox::UpdateBoxRelay()
 
 void UI::Control::TextBox::RelayKey(KeyArgs params)
 {
-	if (!_Interactible || ReadOnly) { return; }
+	if (!Interactible() || ReadOnly) { return; }
 
 	if (params.Key == Keys::Backspace && (params.Action == Action::Press || params.Action == Action::Repeat))
 	{
@@ -151,7 +151,7 @@ void UI::Control::TextBox::RelayKey(KeyArgs params)
 }
 void UI::Control::TextBox::RelayText(TextArgs params)
 {
-	if (!_Interactible || ReadOnly) { return; }
+	if (!Interactible() || ReadOnly) { return; }
 
 	/*if (
 		(params.Codepoint >= '0' && params.Codepoint <= '9') ||

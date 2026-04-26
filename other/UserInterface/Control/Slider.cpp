@@ -44,7 +44,7 @@ void UI::Control::Slider::SetValue(float val)
 }
 void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 {
-	if (!_Interactible) { return; }
+	if (!Interactible()) { return; }
 
 	float slider_size_half = SliderSize / 2;
 	float slider_pos_min = AnchorBox.Min.X + slider_size_half;

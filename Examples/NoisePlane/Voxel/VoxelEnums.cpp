@@ -27,6 +27,7 @@ std::ostream & operator<<(std::ostream & s, AxisRel axis)
 		case AxisRel::NextX: s << "NextX"; break;
 		case AxisRel::NextY: s << "NextY"; break;
 		case AxisRel::NextZ: s << "NextZ"; break;
+		case AxisRel::Here : s << "Here"; break;
 		default : s << "AxisRel:" << ((unsigned int)axis); break;
 	}
 	return s;

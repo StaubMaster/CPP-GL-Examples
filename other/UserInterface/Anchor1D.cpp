@@ -4,16 +4,18 @@
 
 
 
-Anchor1D::Anchor1D(float & size, float & min_dist, float & max_dist, float & normal_center, float & min_padding, float & max_padding) :
-	Size(size),
-	MinDist(min_dist),
-	MaxDist(max_dist),
-	NormalCenter(normal_center),
-	MinPadding(min_padding),
-	MaxPadding(max_padding),
-	Anchor(AnchorType::Min)
+Anchor1D::Anchor1D(
+	float & size, float & normal_center
+	, float & min_dist, float & max_dist
+	, float & min_padding, float & max_padding
+)	: Size(size)
+	, NormalCenter(normal_center)
+	, MinDist(min_dist)
+	, MaxDist(max_dist)
+	, MinPadding(min_padding)
+	, MaxPadding(max_padding)
+	, Anchor(AnchorType::Min)
 { }
-
 
 
 
