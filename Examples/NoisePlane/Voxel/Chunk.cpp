@@ -295,6 +295,16 @@ void Chunk::GeneratePerlin(const Perlin3D & noise)
 	}
 }
 
+static void GeneratePlane(Chunk & chunk)
+{
+	if (chunk.Index.Y >= 0) { return; }
+	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
+	{
+		chunk.Data[i].Template = &VoxelTemplate::ConcreteCube;
+		chunk.Data[i].Orientation = VoxelOrientation();
+	}
+}
+
 void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 {
 	if (GenerationState != GenerationState::None) { return; }
@@ -303,12 +313,12 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	(void)noise2;
 	(void)noise3;
-	GeneratePerlin(noise2);
-	GeneratePerlin(noise3);
+	GeneratePlane(*this);
+//	GeneratePerlin(noise2);
+//	GeneratePerlin(noise3);
 //	GenerateGrid();
 
 	GenerationState = GenerationState::Generated;
-//	GenerationState = GenerationState::Done;
 
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 

@@ -19,6 +19,13 @@ OptionsMenu::OptionsMenu()
 	FOV.ValueResolution = 1.0f;
 	y = FOV.Anchor.Y.GetMinSize();
 
+	Depth.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	Depth.Anchor.Y.AnchorMin(y);
+	Depth.ValueMin = 10.0f;
+	Depth.ValueMax = 1000.0f;
+	Depth.ValueResolution = 10.0f;
+	y = Depth.Anchor.Y.GetMinSize();
+
 	y = 0.0f;
 
 	Back.Anchor.X.AnchorBoth(0.0f, 0.0f);
@@ -41,6 +48,7 @@ OptionsMenu::OptionsMenu()
 	y = ChunkRemove.Anchor.Y.GetMaxSize();
 
 	ChildInsert(FOV);
+	ChildInsert(Depth);
 	ChildInsert(ChunkInsert);
 	ChildInsert(ChunkRemove);
 	ChildInsert(Back);
