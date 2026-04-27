@@ -47,6 +47,15 @@ void CollisionSide::Consider(AxisRel axis)
 		default: break;
 	}
 }
+void CollisionSide::Consider(VectorF3 vec)
+{
+	if (vec.X > 0.0f) { Consider(AxisRel::PrevX); }
+	if (vec.Y > 0.0f) { Consider(AxisRel::PrevY); }
+	if (vec.Z > 0.0f) { Consider(AxisRel::PrevZ); }
+	if (vec.X < 0.0f) { Consider(AxisRel::NextX); }
+	if (vec.Y < 0.0f) { Consider(AxisRel::NextY); }
+	if (vec.Z < 0.0f) { Consider(AxisRel::NextZ); }
+}
 void CollisionSide::Consider(CollisionSide other)
 {
 	None = None | other.None;
@@ -97,14 +106,8 @@ CollisionSide BoxEntity::Collide(::ChunkManager & manager, LoopI3 loop, FrameTim
 			{
 				rel += (collision.Normal * 0.01f);
 				Vel -= (collision.Normal * dot);
-				Vel *= 0.9f;
 			}
-			if (collision.Normal.X > 0.0f) { side.Consider(AxisRel::PrevX); }
-			if (collision.Normal.Y > 0.0f) { side.Consider(AxisRel::PrevY); }
-			if (collision.Normal.Z > 0.0f) { side.Consider(AxisRel::PrevZ); }
-			if (collision.Normal.X < 0.0f) { side.Consider(AxisRel::NextX); }
-			if (collision.Normal.Y < 0.0f) { side.Consider(AxisRel::NextY); }
-			if (collision.Normal.Z < 0.0f) { side.Consider(AxisRel::NextZ); }
+			side.Consider(collision.Normal);
 		}
 		else
 		{

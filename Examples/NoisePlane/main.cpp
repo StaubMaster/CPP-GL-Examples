@@ -133,29 +133,81 @@ struct PhysicsContext
 	VectorF3	GravityDirection = VectorF3(0.0f, -1.0f, 0.0f);
 	float		GravityAcl = 1.0f;
 
-	float	AirDensity = 0.001f;
-	float	AirDragCoefficient = 1.0f;
-
-	float	CalculateAirResistance(float vel, float mass, float area) const
+	VectorF3	CalcGravityVec() const
 	{
-		float force = 0.5f * AirDensity * vel * vel * area * AirDragCoefficient;
+		return GravityDirection * GravityAcl;
+	}
+
+
+
+	float	DragFluidDensity = 0.001f;
+	float	DragCoefficient = 1.0f;
+
+	float	CalcDragLimit(float mass, float area, float accel) const
+	{
+		return sqrt((2 * mass * accel) / (DragFluidDensity * area * DragCoefficient));
+	}
+	float	CalcTerminalVel(float mass, float area) const
+	{
+		return CalcDragLimit(mass, area, GravityAcl);
+	}
+
+	float		CalcDrag(float vel, float mass, float area) const
+	{
+		float force = 0.5f * DragFluidDensity * vel * vel * area * DragCoefficient;
 		return force / mass;
 	}
-	float	CalculateAirResistanceLimit(float mass, float area, float accel) const
+	VectorF3	CalcDragVec(VectorF3 vel, float mass, float area) const
 	{
-		return sqrt((2 * mass * accel) / (AirDensity * area * AirDragCoefficient));
+		float vel_len;
+		vel = vel.normalize(vel_len);
+		return vel * CalcDrag(vel_len, mass, area);
 	}
 
-	float	CalculateTerminalVelocity(float mass, float area) const
+/*
+	uk: Kinetic Friciton Coefficient
+	Fk: Kinetic Friciton
+	Fn: Normal Force
+
+	Fk = uk * Fn
+
+	N: Normal Force
+	mg: Weight (Mass * Gravity)
+
+	P: External Force
+	Py: "downward Component of External Force" (parallel to Normal Force ?)
+	Px: horisontal Component of External Force (perpendicular to Normal Force ?)
+
+	N = mg + Py
+
+	Ff: Friciton Force
+	Ff = -Px (not sliding)
+	Ff = u * N (sliding)
+*/
+	// static Friction
+	float	FrictionCoefficient = 0.5f; // kinetic Friction
+	float		CalcFriction(float mass) const
 	{
-		return CalculateAirResistanceLimit(mass, area, GravityAcl);
+		float normal = mass * GravityAcl;
+		return FrictionCoefficient * normal;
+	}
+	VectorF3	CalcFriction(VectorF3 force, float friction_force) const
+	{
+		float    force_length;
+		VectorF3 force_normal = force.normalize(force_length);
+		if (friction_force > force_length)
+		{
+			return force;
+		}
+		else
+		{
+			return force_normal * friction_force;
+		}
 	}
 
 	VectorF3	CalculateVel(VectorF3 vel, float mass, float area) const
 	{
-		float vel_len;
-		vel = vel.normalize(vel_len);
-		return (GravityDirection * GravityAcl) - (vel * CalculateAirResistance(vel_len, mass, area));
+		return CalcGravityVec() - CalcDragVec(vel, mass, area);
 	}
 };
 ContextNoisePlane::PhysicsContext	PhysicsContext;
@@ -194,12 +246,15 @@ void	DisplayBoxEntityVoxels(BoxEntity & box_entity, FrameTime frame_time)
 bool ViewBoxCollision = false;
 float ViewDistance = 0.0f;
 
-float	ViewSpeed = 0.5f;
-float	ViewFaster = 10.0f;
+float	ViewSpeed = 0.2f;   // force when moving
+float	ViewFaster = 10.0f; // force multiplier when moving faster
+// force when moving in the air
+
+// force when no physics
 float	ViewSpeedNoClip = 10.0f;
 
 BoxEntity		ViewEntity;
-CollisionSide	ViewCollisionSide;
+CollisionSide	ViewCollisionSide; // last Frame
 /*
 	know what axis collided
 	if PrevY had a Collision, then on the ground
@@ -214,9 +269,7 @@ void UpdateViewColliding(FrameTime frame_time)
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		change = window.MoveSpinFromKeysCursor();
-		change.Position *= ViewSpeed;
 		change.Rotation *= view.FOV.ToRadians() * 0.05f;
-		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFaster; }
 		{
 			EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
 			change.Position = e.forward(change.Position);
@@ -225,15 +278,39 @@ void UpdateViewColliding(FrameTime frame_time)
 
 	if (ViewBoxCollision)
 	{
-		if (change.Position.Y > 0.0f)
+		// if on the ground
+		//  can jump
+		//  can sptrint
+		//  decelerate faster
+		// is not on ground
+		//  decelerate slower
+
+		if (ViewCollisionSide.PrevY)
 		{
-			if (!ViewCollisionSide.PrevY)
-			{ change.Position.Y = 0.0f; }
+			change.Position *= ViewSpeed;
+			if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFaster; }
+
+			float jump = 0.0f;
+			if (change.Position.Y > 0.0f) { jump = 15.0f; }
+			change.Position.Y = 0.0f;
+
+			float friction_force = PhysicsContext.CalcFriction(1.0f);
+			if (change.Position.length2() != 0.0f)
+			{
+				change.Position = PhysicsContext.CalcFriction(change.Position * 1.0f, friction_force) / 1.0f;
+			}
 			else
-			{ change.Position.Y = 15.0f; }
+			{
+				ViewEntity.Vel -= PhysicsContext.CalcFriction(ViewEntity.Vel * 1.0f, friction_force) / 1.0f;
+			}
+
+			change.Position.Y = jump;
 		}
-		// move faster when on the ground
-		// handle friction here ?
+		else
+		{
+			change.Position.Y = 0.0f;
+			change.Position *= 0.1f;
+		}
 
 		ViewEntity.Vel += change.Position + PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f);
 		DisplayBoxEntityVoxels(ViewEntity, frame_time);
@@ -243,6 +320,9 @@ void UpdateViewColliding(FrameTime frame_time)
 	}
 	else
 	{
+		change.Position *= ViewSpeed;
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFaster; }
+
 		ViewEntity.Vel = change.Position * ViewSpeedNoClip;
 		ViewEntity.Pos += ViewEntity.Vel * frame_time.Delta;
 	}

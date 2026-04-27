@@ -32,6 +32,7 @@ struct CollisionSide // could be compressed into a Byte
 	//bool	Here; // currently inside of something ?
 	CollisionSide();
 	void	Consider(AxisRel axis);
+	void	Consider(VectorF3 vec);
 	void	Consider(CollisionSide other);
 };
 
