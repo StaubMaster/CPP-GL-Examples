@@ -12,6 +12,10 @@ UI::Control::TextBox::TextBox()
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = Point2D(50, 25);
+
+	float padding = 0;
+	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
+
 	ColorDefault = ColorF4(1.0f, 1.0f, 1.0f);
 	ColorHover = ColorF4(0.875f, 0.875f, 0.875f);
 
@@ -45,8 +49,8 @@ void UI::Control::TextBox::CalcCharacterCount()
 }
 void UI::Control::TextBox::PutCharactersEntrys()
 {
-	Point2D min = AnchorBox.Min;
-	Point2D max = AnchorBox.Max;
+	Point2D min = ContainerBox.Min;
+	Point2D max = ContainerBox.Max;
 	Point2D center = (max + min) / 2.0f;
 
 	if (TextObject.Is())
@@ -56,7 +60,7 @@ void UI::Control::TextBox::PutCharactersEntrys()
 		TextObject.CharacterAlignmentY() = Text::Alignment::Mid;
 		TextObject.TextPosition().X = min.X + ((max.Y - min.Y) * 0.5f);
 		TextObject.TextPosition().Y = center.Y;
-		TextObject.Bound() = AnchorBox;
+		TextObject.Bound() = ContainerBox;
 	}
 
 	/*for (unsigned int i = 0; i < TextEntry.Length(); i++)

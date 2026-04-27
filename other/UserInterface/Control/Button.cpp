@@ -11,6 +11,10 @@ UI::Control::Button::Button() : Base()
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = Point2D(75, 25);
+
+	float padding = 0;
+	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
+
 	ColorDefault = ColorF4(0.625f, 0.625f, 0.625f);
 	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
 
@@ -41,8 +45,8 @@ void UI::Control::Button::CalcCharacterCount()
 }
 void UI::Control::Button::PutCharactersEntrys()
 {
-	Point2D min = AnchorBox.Min;
-	Point2D max = AnchorBox.Max;
+	Point2D min = ContainerBox.Min;
+	Point2D max = ContainerBox.Max;
 	Point2D center = (max + min) / 2.0f;
 
 	if (TextObject.Is())
@@ -53,7 +57,7 @@ void UI::Control::Button::PutCharactersEntrys()
 		TextObject.CharacterAlignmentX() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentY() = Text::Alignment::Mid;
 		TextObject.TextPosition() = center;
-		TextObject.Bound() = AnchorBox;
+		TextObject.Bound() = ContainerBox;
 	}
 }
 

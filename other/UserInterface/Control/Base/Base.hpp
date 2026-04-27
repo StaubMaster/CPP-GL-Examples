@@ -71,12 +71,17 @@ class Base
 	Point2D			AnchorSize;
 	Point2D			AnchorNormal;
 	AxisBox2D		AnchorDist;
+
+	AxisBox2D		AnchorMargin;
+	AxisBox2D		AnchorBoarder; // hardcoced as 2 in Shader
 	AxisBox2D		AnchorPadding;
 
 	public:
 	Anchor2D		Anchor;
+	AxisBox2D		DisplayBox;
+	AxisBox2D		ContainerBox;
+	// another Box for Text ?
 
-	AxisBox2D		AnchorBox;
 	protected:
 	bool			AnchorBoxChanged;
 

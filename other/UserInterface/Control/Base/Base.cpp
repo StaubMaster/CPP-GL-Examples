@@ -91,20 +91,28 @@ UI::Control::Base::Base() :
 	Anchor(
 		Anchor1D(AnchorSize.X, AnchorNormal.X
 			, AnchorDist.Min.X, AnchorDist.Max.X
+			, AnchorMargin.Min.X, AnchorMargin.Max.X
+			, AnchorBoarder.Min.X, AnchorBoarder.Max.X
 			, AnchorPadding.Min.X, AnchorPadding.Max.X
 		),
 		Anchor1D(AnchorSize.Y, AnchorNormal.Y
 			, AnchorDist.Min.Y, AnchorDist.Max.Y
+			, AnchorMargin.Min.Y, AnchorMargin.Max.Y
+			, AnchorBoarder.Min.Y, AnchorBoarder.Max.Y
 			, AnchorPadding.Min.Y, AnchorPadding.Max.Y
 		)
 	)
 {
 	AnchorDist = AxisBox2D(Point2D(0, 0), Point2D(0, 0));
 
-	//float padding = 10;
+	float margin = 5;
+	float boarder = 2;
 	float padding = 5;
-	//float padding = 0;
+
+	AnchorMargin = AxisBox2D(Point2D(margin, margin), Point2D(margin, margin));
+	AnchorBoarder = AxisBox2D(Point2D(boarder, boarder), Point2D(boarder, boarder));
 	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
+
 	AnchorBoxChanged = false;
 
 	ColorChanged = false;
@@ -218,7 +226,10 @@ void UI::Control::Base::UpdateBox()
 {
 	if (Parent != nullptr)
 	{
-		AnchorBox = Anchor.Calculate(Parent -> AnchorBox);
+		DisplayBox = Anchor.Calculate(Parent -> ContainerBox);
+		ContainerBox.Min = DisplayBox.Min + AnchorBoarder.Min + AnchorPadding.Min;
+		ContainerBox.Max = DisplayBox.Max - AnchorBoarder.Max - AnchorPadding.Max;
+		//AnchorBox = Anchor.Calculate(Parent -> AnchorBox);
 		AnchorBoxChanged = true;
 	}
 	UpdateBoxRelay();
@@ -234,8 +245,10 @@ UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
 {
 	if (!_Visible) { return nullptr; }
 	if (!_Enabled) { return nullptr; }
-	if (AnchorBox.Intersekt(mouse))
+	//if (AnchorBox.Intersekt(mouse))
+	if (DisplayBox.Intersekt(mouse))
 	{
+		// check ContainerBox before checking children ?
 		Base * control = nullptr;
 		for (unsigned int i = 0; i < Children.Count(); i++)
 		{
@@ -267,7 +280,8 @@ void UI::Control::Base::HoverLeave()
 
 void UI::Control::Base::UpdateEntryAnchorBoxRelay()
 {
-	ControlObject.Box() = AnchorBox;
+	//ControlObject.Box() = AnchorBox;
+	ControlObject.Box() = DisplayBox;
 	AnchorBoxChanged = false;
 }
 void UI::Control::Base::UpdateEntryColorRelay()

@@ -19,8 +19,10 @@ UI::Control::Window::~Window()
 
 void UI::Control::Window::UpdateWindowSize(Point2D size)
 {
-	AnchorBox.Min = Point2D();
-	AnchorBox.Max = size;
+	//AnchorBox.Min = Point2D();
+	//AnchorBox.Max = size;
+	DisplayBox = AxisBox2D(Point2D(), size);
+	ContainerBox = DisplayBox;
 	UpdateBox();
 }
 

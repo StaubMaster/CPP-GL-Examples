@@ -29,6 +29,12 @@ struct Anchor1D
 	float & MinDist;
 	float & MaxDist;
 
+	float & MinMargin;
+	float & MaxMargin;
+
+	float & MinBoarder;
+	float & MaxBoarder;
+
 	float & MinPadding;
 	float & MaxPadding;
 
@@ -38,6 +44,8 @@ struct Anchor1D
 	Anchor1D(
 		float & size, float & normal_center
 		, float & min_dist, float & max_dist
+		, float & min_margin, float & max_margin
+		, float & min_boarder, float & max_boarder
 		, float & min_padding, float & max_padding
 	);
 
@@ -53,45 +61,56 @@ struct Anchor1D
 	Sizes Padded means the Space it takes up
 */
 
-	private:
-	float GetRealSize();
-	float GetRealHalfSize();
-	float GetRealMinDist();
-	float GetRealMinSize();
-	float GetRealMaxDist();
-	float GetRealMaxSize();
-	float GetRealNormalCenter();
-	float GetRealCenter();
+	// remove Real vs Padded ?
+	// if you want to set directyl, just set Padding to 0
+	// also Paddign is actually margin
+
+	// Dist and Size names bad
+	// think of better names
+	// near and far. MinNear, MinFar. they arent the same length
+	// Min and Max. MinMin, MinMax. confusing
+	// MinDist is the distance of Control.Min(left) from Parent.Min(left)
+	// MinSize is the distance of Control.Max(right) from Parent.Min(left)
+
+	//private:
+	//float GetRealSize();
+	//float GetRealHalfSize();
+	//float GetRealMinDist();
+	//float GetRealMinSize();
+	//float GetRealMaxDist();
+	//float GetRealMaxSize();
+	//float GetRealNormalCenter();
+	//float GetRealCenter();
 
 
 
-	private:
-	void SetRealSize(float val);
-	void SetRealHalfSize(float val);
-	void SetRealMinDist(float val);
-	void SetRealMinSize(float val);
-	void SetRealMaxDist(float val);
-	void SetRealMaxSize(float val);
-	void SetRealNormalCenter(float val);
-	void SetRealCenter(float val);
+	//private:
+	//void SetRealSize(float val);
+	//void SetRealHalfSize(float val);
+	//void SetRealMinDist(float val);
+	//void SetRealMinSize(float val);
+	//void SetRealMaxDist(float val);
+	//void SetRealMaxSize(float val);
+	//void SetRealNormalCenter(float val);
+	//void SetRealCenter(float val);
 
 
 
-	private:
-	float GetPaddedSize();
-	float GetPaddedHalfSize();
-	float GetPaddedMinDist();
-	float GetPaddedMinSize();
-	float GetPaddedMaxDist();
-	float GetPaddedMaxSize();
+	//private:
+	//float GetPaddedSize();
+	//float GetPaddedHalfSize();
+	//float GetPaddedMinDist();
+	//float GetPaddedMinSize();
+	//float GetPaddedMaxDist();
+	//float GetPaddedMaxSize();
 
-	private:
-	void SetPaddedSize(float val);
-	void SetPaddedHalfSize(float val);
-	void SetPaddedMinDist(float val);
-	void SetPaddedMinSize(float val);
-	void SetPaddedMaxDist(float val);
-	void SetPaddedMaxSize(float val);
+	//private:
+	//void SetPaddedSize(float val);
+	//void SetPaddedHalfSize(float val);
+	//void SetPaddedMinDist(float val);
+	//void SetPaddedMinSize(float val);
+	//void SetPaddedMaxDist(float val);
+	//void SetPaddedMaxSize(float val);
 
 
 
@@ -122,6 +141,7 @@ struct Anchor1D
 	void	AnchorMax(float dist);
 	void	AnchorMax(float dist, float size);
 	void	AnchorBoth(float min, float max);
+	// Anchor Center
 
 	AxisBox1D Calculate(AxisBox1D Parent);
 };

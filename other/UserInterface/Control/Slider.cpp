@@ -14,6 +14,10 @@ UI::Control::Slider::Slider() : Base()
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = Point2D(75, 25);
+
+	float padding = 0;
+	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
+
 	ColorDefault = ColorF4(0.375f, 0.375f, 0.375f);
 	ColorHover = ColorF4(0.25f, 0.25f, 0.25f);
 
@@ -47,8 +51,8 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 	if (!Interactible()) { return; }
 
 	float slider_size_half = SliderSize / 2;
-	float slider_pos_min = AnchorBox.Min.X + slider_size_half;
-	float slider_pos_max = AnchorBox.Max.X - slider_size_half;
+	float slider_pos_min = ContainerBox.Min.X + slider_size_half;
+	float slider_pos_max = ContainerBox.Max.X - slider_size_half;
 
 	//float slider_value = mouse_pos.Absolute.X;
 	float slider_value = mouse_pos.Buffer.Corner.X;
@@ -86,8 +90,8 @@ void UI::Control::Slider::CalcCharacterCount()
 }
 void UI::Control::Slider::PutCharactersEntrys()
 {
-	Point2D min = AnchorBox.Min;
-	Point2D max = AnchorBox.Max;
+	Point2D min = ContainerBox.Min;
+	Point2D max = ContainerBox.Max;
 	Point2D center = (max + min) / 2.0f;
 
 	if (TextObject.Is())
@@ -98,7 +102,7 @@ void UI::Control::Slider::PutCharactersEntrys()
 		TextObject.CharacterAlignmentX() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentY() = Text::Alignment::Mid;
 		TextObject.TextPosition() = center;
-		TextObject.Bound() = AnchorBox;
+		TextObject.Bound() = ContainerBox;
 	}
 }
 
@@ -122,12 +126,12 @@ void UI::Control::Slider::UpdateEntrysRelay()
 	{
 		if (SliderChanged)
 		{
-			SliderObject.Box().Min.Y = AnchorBox.Min.Y;
-			SliderObject.Box().Max.Y = AnchorBox.Max.Y;
+			SliderObject.Box().Min.Y = DisplayBox.Min.Y;
+			SliderObject.Box().Max.Y = DisplayBox.Max.Y;
 
 			float slider_size_half = SliderSize / 2;
-			float slider_min = AnchorBox.Min.X + slider_size_half;
-			float slider_max = AnchorBox.Max.X - slider_size_half;
+			float slider_min = DisplayBox.Min.X + slider_size_half;
+			float slider_max = DisplayBox.Max.X - slider_size_half;
 
 			float slider_normal = (Value - ValueMin) / (ValueMax - ValueMin);
 			float slider_value = (slider_normal * (slider_max - slider_min)) + slider_min;
