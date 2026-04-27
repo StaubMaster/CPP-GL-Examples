@@ -68,6 +68,9 @@ struct Chunk
 	void	TestOrientation();
 	void	TestHouse();
 
+	static float	Generation3D_Factor;
+	static float	Generation3D_Comparison;
+
 	void	GenerateGrid();
 	void	GeneratePerlin(const Perlin2D & noise);
 	void	GeneratePerlin(const Perlin3D & noise);

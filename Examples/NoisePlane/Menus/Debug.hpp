@@ -25,6 +25,9 @@ struct DebugMenu : public UI::Control::Form
 
 	CheckBoxText	ViewCollisionVoxels;
 
+	UI::Control::Slider		Generation3DFactor;
+	UI::Control::Slider		Generation3DComparison;
+
 	~DebugMenu();
 	DebugMenu();
 };

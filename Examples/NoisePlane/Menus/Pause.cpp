@@ -6,7 +6,7 @@ PauseMenu::~PauseMenu() { }
 PauseMenu::PauseMenu()
 	: UI::Control::Form()
 {
-//	MakeTransparent();
+	MakeTransparent();
 
 	float y;
 

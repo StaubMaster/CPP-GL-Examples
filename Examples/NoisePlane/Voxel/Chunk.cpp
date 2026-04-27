@@ -200,6 +200,9 @@ void Chunk::TestHouse()
 	}
 }
 
+float Chunk::Generation3D_Factor = 5.0f; // 32
+float Chunk::Generation3D_Comparison = 0.0f;
+
 void Chunk::GenerateGrid()
 {
 	Undex3D size3(CHUNK_VALUES_PER_SIDE);
@@ -274,16 +277,21 @@ void Chunk::GeneratePerlin(const Perlin3D & noise)
 		);
 
 		float val = 0.0f;
-		val += noise.Calculate(p / 32.0f) / 32.0f;
+		//val += noise.Calculate(p / 32.0f) / 32.0f;
+		val += noise.Calculate(p / Generation3D_Factor) / Generation3D_Factor;
 
-		if (val > 0.0f)
-		{
-			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Template = &VoxelTemplate::Gray;
-		}
+		if (val > Generation3D_Comparison)
+		{ Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Template = nullptr; }
 		else
+		{ Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Template = &VoxelTemplate::Gray; }
+
+		/*if (val > 0.1f)
 		{
-			Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Template = nullptr;
-		}
+			if (Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Template != nullptr)
+			{
+				Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Template = nullptr;
+			}
+		}*/
 	}
 }
 
@@ -295,8 +303,8 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	(void)noise2;
 	(void)noise3;
-//	GeneratePerlin(noise3);
 	GeneratePerlin(noise2);
+	GeneratePerlin(noise3);
 //	GenerateGrid();
 
 	GenerationState = GenerationState::Generated;

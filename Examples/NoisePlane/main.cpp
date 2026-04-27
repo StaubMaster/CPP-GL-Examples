@@ -246,20 +246,16 @@ void	DisplayBoxEntityVoxels(BoxEntity & box_entity, FrameTime frame_time)
 bool ViewBoxCollision = false;
 float ViewDistance = 0.0f;
 
-float	ViewSpeed = 0.2f;   // force when moving
-float	ViewFaster = 10.0f; // force multiplier when moving faster
+float	ViewSpeed = 0.1f;   // force when moving
+float	ViewFaster = 3.0f; // force multiplier when moving faster
 // force when moving in the air
 
 // force when no physics
 float	ViewSpeedNoClip = 10.0f;
+float	ViewFasterNoClip = 10.0f;
 
 BoxEntity		ViewEntity;
 CollisionSide	ViewCollisionSide; // last Frame
-/*
-	know what axis collided
-	if PrevY had a Collision, then on the ground
-	is on the ground and space, then jump
-*/
 
 void UpdateViewColliding(FrameTime frame_time)
 {
@@ -278,13 +274,6 @@ void UpdateViewColliding(FrameTime frame_time)
 
 	if (ViewBoxCollision)
 	{
-		// if on the ground
-		//  can jump
-		//  can sptrint
-		//  decelerate faster
-		// is not on ground
-		//  decelerate slower
-
 		if (ViewCollisionSide.PrevY)
 		{
 			change.Position *= ViewSpeed;
@@ -320,10 +309,9 @@ void UpdateViewColliding(FrameTime frame_time)
 	}
 	else
 	{
-		change.Position *= ViewSpeed;
-		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFaster; }
-
-		ViewEntity.Vel = change.Position * ViewSpeedNoClip;
+		change.Position *= ViewSpeedNoClip;
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFasterNoClip; }
+		ViewEntity.Vel = change.Position;
 		ViewEntity.Pos += ViewEntity.Vel * frame_time.Delta;
 	}
 	view.Trans.Position = ViewEntity.Pos;
@@ -619,9 +607,28 @@ void MakeControls()
 	{
 		DebugMenu.FPS.Check.Check(true);
 
+		DebugMenu.Generation3DComparison.ValueChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DComparison);
+		DebugMenu.Generation3DComparison.SetValue(Chunk::Generation3D_Comparison);
+
+		DebugMenu.Generation3DFactor.ValueChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DFactor);
+		DebugMenu.Generation3DFactor.SetValue(Chunk::Generation3D_Factor);
+
 		DebugMenu.Hide();
 		ControlManager.Window.ChildInsert(DebugMenu);
 	}
+}
+
+void DebugMenu_Generation3DComparison(float val)
+{
+	Chunk::Generation3D_Comparison = val;
+	DebugMenu.Generation3DComparison.SetText("3D Comp:" + std::to_string(Chunk::Generation3D_Comparison));
+	ChunkManager.Clear();
+}
+void DebugMenu_Generation3DFactor(float val)
+{
+	Chunk::Generation3D_Factor = 1 << ((int)val);
+	DebugMenu.Generation3DFactor.SetText("3D Fact:" + std::to_string(Chunk::Generation3D_Factor));
+	ChunkManager.Clear();
 }
 
 void PauseMenu_Continue(ClickArgs args)
