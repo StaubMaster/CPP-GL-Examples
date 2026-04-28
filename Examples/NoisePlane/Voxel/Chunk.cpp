@@ -357,17 +357,19 @@ void Chunk::GraphicsDelete()
 
 
 
-static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, const Container::Binary<VoxelGraphics::MainData> & face, const VoxelOrientation & orientation, VectorU3 u)
+static void GraphicsData(Container::Binary<VoxelGraphics::MainTriangle> & data, const Container::Binary<VoxelGraphics::MainTriangle> & face, const VoxelOrientation & orientation, VectorU3 u)
 {
 	for (unsigned int i = 0; i < face.Count(); i++)
 	{
-		VoxelGraphics::MainData v = face[i];
-		v.Pos = orientation.absolute(v.Pos) + u;
+		VoxelGraphics::MainTriangle v = face[i];
+		v.Corners[0].Pos = orientation.absolute(v.Corners[0].Pos) + u;
+		v.Corners[1].Pos = orientation.absolute(v.Corners[1].Pos) + u;
+		v.Corners[2].Pos = orientation.absolute(v.Corners[2].Pos) + u;
 		data.Insert(v);
 	}
 }
 
-static void GraphicsData(Container::Binary<VoxelGraphics::MainData> & data, VectorU3 u, const Voxel & voxel, const ChunkNeighbours & neighbours, AxisRel axis)
+static void GraphicsData(Container::Binary<VoxelGraphics::MainTriangle> & data, VectorU3 u, const Voxel & voxel, const ChunkNeighbours & neighbours, AxisRel axis)
 {
 	if (neighbours.Visible(voxel.Orientation.absolute(axis), u))
 	{
@@ -414,6 +416,7 @@ void Chunk::GraphicsUpdateMainBuffer()
 	if (MainBufferState != BufferDataState::Ready) { return; }
 
 	Buffer.Main.Change(MainBufferData);
+	Buffer.Main.DrawCount = MainBufferData.Count() * 3;
 	MainBufferData.Clear();
 
 	MainBufferState = BufferDataState::None;

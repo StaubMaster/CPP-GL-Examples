@@ -97,7 +97,7 @@ struct Chunk
 	};
 
 	BufferDataState	MainBufferState; // put into Buffer ?
-	Container::Binary<VoxelGraphics::MainData>	MainBufferData; // put into Buffer ?
+	Container::Binary<VoxelGraphics::MainTriangle>	MainBufferData; // put into Buffer ?
 	void	GraphicsUpdateMainData();
 	void	GraphicsUpdateMainBuffer();
 

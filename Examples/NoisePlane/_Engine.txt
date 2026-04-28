@@ -1,6 +1,12 @@
 
 make better PolyHedra for simple Texture
 
+using PolyHedra and Skin is convoluted and confusing
+
+
+
+Transformation Scaling
+
 
 
 VectorN

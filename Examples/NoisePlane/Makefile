@@ -36,6 +36,10 @@ FILES := \
 	Menus/Pause.cpp \
 	Menus/Options.cpp \
 	Menus/Debug.cpp \
+	Menus/Inventory.cpp \
+	Menus/InventorySlot.cpp \
+	Inventory/ItemBase.cpp \
+	Inventory/ItemVoxel.cpp \
 \
 	main.cpp \
 

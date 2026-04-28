@@ -35,11 +35,20 @@
 // allways MakeCurrent
 // maybe make Object take Manager
 
-# include "ItmeBase.hpp"
+# include "ItemBase.hpp"
 
-struct ItmeVoxel : public ItemBase
+# include "Voxel/VoxelTemplate.hpp"
+
+# include "PolyHedra/Object.hpp"
+
+struct ItemVoxel : public ItemBase
 {
-	void	Draw() override;
+	::VoxelTemplate *	VoxelTemplate;
+	::PolyHedraObject	PolyHedraObject;
+	~ItemVoxel();
+	ItemVoxel();
+	void	Show(VectorF2 pos) override;
+	void	Hide() override;
 };
 
 #endif

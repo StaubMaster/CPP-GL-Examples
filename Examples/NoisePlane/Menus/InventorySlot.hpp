@@ -9,9 +9,10 @@ struct ItemBase;
 struct InventorySlot : public UI::Control::Base
 {
 	ItemBase *		Item;
-	unsigned int	Count;
 	~InventorySlot();
 	InventorySlot();
+	void	Show(VectorF2 pos);
+	void	Hide();
 };
 
 #endif

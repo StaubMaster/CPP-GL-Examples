@@ -75,19 +75,47 @@ vec4 proj(in vec3 p_inn)
 	p_out.z = p_inn.z;
 	p_out.w = 1;
 
-	p_out.x = p_out.x * DisplaySize.Ratio.x;
-	p_out.y = p_out.y * DisplaySize.Ratio.y;
+//	p_out.x = p_out.x * DisplaySize.Ratio.x;
+//	p_out.y = p_out.y * DisplaySize.Ratio.y;
 
 	return p_out;
 }
 
+/*
+	#-------|---|-------------------# 33 Pixels
+			|---| 4 Pixels
+			| 9 Pixels
+				| 13 Pixels
+
+	0-------|---|-------------------1
+			| 9 / 33 = 0.2727
+				| 13 / 33 = 0.3939
+			|---| [0.2727;0.3939] = 0.1212
+
+	4 / 33 = 0.1212
+*/
 void main()
 {
-	vs_out.Original = VPos * 0.25;
+	vec2 size = vec2(40, 40);
+	size = size / DisplaySize.Buffer.Full;
+	size = size * vec2(2, 2);
+
+// problem ?
+// need to scale before rotating
+// else depth dosent get scaled properly
+// but scaling needs to be done before moving ?
+// since moving relys on things being normalized ?
+// normalize the position outside ?
+
+	vs_out.Original = VPos;
+//	vs_out.Original = VPos * vec3(size, 1);
 
 	vs_out.Absolute = (vec4(vs_out.Original, 1) * ITrans).xyz;
+
 //	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
-	vs_out.Relative = vs_out.Absolute;
+	vs_out.Relative = vs_out.Absolute * vec3(size, 1);
+//	vs_out.Relative = vs_out.Absolute;
+
 	gl_Position = proj(vs_out.Relative);
 
 	vs_out.Normal = (vec4(VNormal, 1) * INormal).xyz;

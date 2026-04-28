@@ -7,6 +7,7 @@
 # include "Miscellaneous/Container/Binary.hpp"
 
 struct Voxel;
+class PolyHedra;
 
 struct VoxelTemplate
 {
@@ -24,6 +25,9 @@ struct VoxelTemplate
 
 
 	unsigned int	Texture;
+	// FileInfo Texture ? could be multiple
+	// know all File Names it wants to use
+	// 
 
 	bool	HidePrevX;
 	bool	HidePrevY;
@@ -36,17 +40,19 @@ struct VoxelTemplate
 	AxisRel	OrientationAxis0;
 	AxisRel	OrientationAxis1;
 
-	Container::Binary<VoxelGraphics::MainData>	Here;
+	Container::Binary<VoxelGraphics::MainTriangle>	Here;
 
-	Container::Binary<VoxelGraphics::MainData>	PrevX;
-	Container::Binary<VoxelGraphics::MainData>	PrevY;
-	Container::Binary<VoxelGraphics::MainData>	PrevZ;
+	Container::Binary<VoxelGraphics::MainTriangle>	PrevX;
+	Container::Binary<VoxelGraphics::MainTriangle>	PrevY;
+	Container::Binary<VoxelGraphics::MainTriangle>	PrevZ;
 
-	Container::Binary<VoxelGraphics::MainData>	NextX;
-	Container::Binary<VoxelGraphics::MainData>	NextY;
-	Container::Binary<VoxelGraphics::MainData>	NextZ;
+	Container::Binary<VoxelGraphics::MainTriangle>	NextX;
+	Container::Binary<VoxelGraphics::MainTriangle>	NextY;
+	Container::Binary<VoxelGraphics::MainTriangle>	NextZ;
 
-	const Container::Binary<VoxelGraphics::MainData> &	AxisData(AxisRel axis) const;
+	::PolyHedra *		PolyHedra;
+
+	const Container::Binary<VoxelGraphics::MainTriangle> &	AxisData(AxisRel axis) const;
 
 	VoxelOrientation	Orient(AxisRel placeAxis0, AxisRel placeAxis1) const;
 

@@ -64,6 +64,8 @@
 #include "Menus/Pause.hpp"
 #include "Menus/Options.hpp"
 #include "Menus/Debug.hpp"
+#include "Menus/Inventory.hpp"
+#include "Inventory/ItemVoxel.hpp"
 
 // Math
 #include <math.h>
@@ -98,6 +100,9 @@ UI::Text::Manager		TextManager;
 ::PauseMenu		PauseMenu;
 ::OptionsMenu	OptionsMenu;
 ::DebugMenu		DebugMenu;
+::Inventory		Inventory;
+
+
 
 Perlin2D	Perlin2;
 Perlin3D	Perlin3;
@@ -495,26 +500,15 @@ void ViewRayFunction()
 
 void UpdateAroundView(FrameTime frame_time)
 {
-	//std::cout << "UpdateAroundView ....\n";
-
-	//std::cout << "UpdateViewColliding\n";
 	UpdateViewColliding(frame_time);
 
-	//std::cout << "RemoveAround\n";
 	ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange);
-	//std::cout << "InsertAround\n";
 	ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange);
-	//std::cout << "GenerateAround\n";
 	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, ChunkInsertRange, 1);
 
-	//std::cout << "ViewRayFunction\n";
 	ViewRayFunction();
 
-	//std::cout << "GraphicsUpdateDataAround\n";
 	ChunkManager.GraphicsUpdateDataAround(view.Trans.Position, 1);
-
-	//std::cout << "UpdateAroundView done\n";
-	//std::cout << '\n';
 }
 
 
@@ -522,8 +516,6 @@ void UpdateAroundView(FrameTime frame_time)
 PolyHedra *		VoxelCube;
 PolyHedra *		VoxelChunkCube;
 PolyHedra *		ViewRayPolyHedra;
-
-PolyHedra *		VoxelTemplate_PolyHedra;
 
 static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 {
@@ -551,29 +543,36 @@ static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b110));
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
 }
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const Container::Binary<VoxelGraphics::MainData> & data)
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const Container::Binary<VoxelGraphics::MainTriangle> & data)
 {
 	Skin2DA & skin = *((Skin2DA*)polyhedra.Skin);
 	VectorF3 off(0.5f);
-	for (unsigned int i = 0; i < data.Count() / 3; i++)
+	for (unsigned int i = 0; i < data.Count(); i++)
 	{
-		unsigned int i3 = i * 3;
-		const VoxelGraphics::MainData & data0 = data[i3 + 0];
-		const VoxelGraphics::MainData & data1 = data[i3 + 1];
-		const VoxelGraphics::MainData & data2 = data[i3 + 2];
+		const VoxelGraphics::MainTriangle & face = data[i];
 
 		unsigned int ph_i = polyhedra.Corners.Count();
-		polyhedra.Insert_Corn(PolyHedra::Corner(data0.Pos - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(data1.Pos - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(data2.Pos - off));
+		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[0].Pos - off));
+		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[1].Pos - off));
+		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[2].Pos - off));
 		polyhedra.Insert_Face3(ph_i + 0, ph_i + 1, ph_i + 2);
 
 		skin.Insert_Face3(
-			Skin2DFaceCorner(data0.Tex.X, data0.Tex.Y, 0.0f),
-			Skin2DFaceCorner(data1.Tex.X, data1.Tex.Y, 0.0f),
-			Skin2DFaceCorner(data2.Tex.X, data2.Tex.Y, 0.0f)
+			Skin2DFaceCorner(face.Corners[0].Tex.X, face.Corners[0].Tex.Y, 0.0f),
+			Skin2DFaceCorner(face.Corners[1].Tex.X, face.Corners[1].Tex.Y, 0.0f),
+			Skin2DFaceCorner(face.Corners[2].Tex.X, face.Corners[2].Tex.Y, 0.0f)
 		);
 	}
+}
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelTemplate & voxel_template)
+{
+	PolyHedraVoxelData(polyhedra, voxel_template.Here);
+	PolyHedraVoxelData(polyhedra, voxel_template.PrevX);
+	PolyHedraVoxelData(polyhedra, voxel_template.PrevY);
+	PolyHedraVoxelData(polyhedra, voxel_template.PrevZ);
+	PolyHedraVoxelData(polyhedra, voxel_template.NextX);
+	PolyHedraVoxelData(polyhedra, voxel_template.NextY);
+	PolyHedraVoxelData(polyhedra, voxel_template.NextZ);
 }
 
 void Make()
@@ -621,22 +620,14 @@ void Make()
 		VoxelTemplate::ConcreteCylinder.InitCylinder(4);
 	}
 	{
-		VoxelTemplate_PolyHedra = new PolyHedra();
-		VoxelTemplate_PolyHedra -> Skin = new Skin2DA();
-		Skin2DA & skin = *((Skin2DA*)VoxelTemplate_PolyHedra -> Skin);
+		VoxelTemplate::ConcreteCylinder.PolyHedra = new PolyHedra();
+		VoxelTemplate::ConcreteCylinder.PolyHedra -> Skin = new Skin2DA();
+		Skin2DA & skin = *((Skin2DA*)VoxelTemplate::ConcreteCylinder.PolyHedra -> Skin);
 		skin.W = 128;
 		skin.H = 64;
 		skin.Images.Insert(MediaDirectory.File("Images/ConcreteCube.png").LoadImage());
 		skin.Done();
-
-		VoxelTemplate & voxel_template = VoxelTemplate::ConcreteCylinder;
-		PolyHedraVoxelData(*VoxelTemplate_PolyHedra, voxel_template.Here);
-		PolyHedraVoxelData(*VoxelTemplate_PolyHedra, voxel_template.PrevX);
-		PolyHedraVoxelData(*VoxelTemplate_PolyHedra, voxel_template.PrevY);
-		PolyHedraVoxelData(*VoxelTemplate_PolyHedra, voxel_template.PrevZ);
-		PolyHedraVoxelData(*VoxelTemplate_PolyHedra, voxel_template.NextX);
-		PolyHedraVoxelData(*VoxelTemplate_PolyHedra, voxel_template.NextY);
-		PolyHedraVoxelData(*VoxelTemplate_PolyHedra, voxel_template.NextZ);
+		PolyHedraVoxelData(*VoxelTemplate::ConcreteCylinder.PolyHedra, VoxelTemplate::ConcreteCylinder);
 	}
 
 	{
@@ -695,6 +686,20 @@ void MakeControls()
 
 		DebugMenu.Hide();
 		ControlManager.Window.ChildInsert(DebugMenu);
+	}
+	{
+		ItemVoxel * item;
+
+		item = new ItemVoxel();
+		item -> VoxelTemplate = &VoxelTemplate::ConcreteCylinder;
+		Inventory.Slots[0][0].Item = item;
+
+		item = new ItemVoxel();
+		item -> VoxelTemplate = &VoxelTemplate::ConcreteCylinder;
+		Inventory.Slots[1][1].Item = item;
+
+		Inventory.Hide();
+		ControlManager.Window.ChildInsert(Inventory);
 	}
 }
 
@@ -927,9 +932,7 @@ void Draw()
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
 	//PlaneManager.Draw();
-	//std::cout << "line:" << __LINE__ << '\n';
 	ChunkManager.Draw();
-	//std::cout << "line:" << __LINE__ << '\n';
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
@@ -963,12 +966,26 @@ static void Toggle(PolyHedraPointer & polyhedra, PolyHedraPointer other)
 	}
 }
 
+/*static VectorF2 BufferFull_To_NormalRel_Pos(VectorF2 pos, DisplaySize display_size)
+{
+	pos = pos / display_size.Buffer.Full; // NormalAbs
+	pos = (pos * VectorF2(2, 2)) - VectorF2(1, 1); // NormalRel
+	return pos;
+}*/
+/*static VectorF2 BufferFull_To_NormalRel_Size(VectorF2 size, DisplaySize display_size)
+{
+	size = size / display_size.Buffer.Full; // NormalAbs
+	size = (size * VectorF2(2, 2)); // NormalRel
+	return size;
+}*/
+
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
 void Frame(FrameTime frame_time) override
 {
 	if (window.KeyBoardManager[Keys::Escape].State == State::Press)
 	{
 		OptionsMenu.Hide();
+		Inventory.Hide();
 		if (PauseMenu.IsVisible())
 		{
 			PauseMenu.Hide();
@@ -978,8 +995,24 @@ void Frame(FrameTime frame_time) override
 			PauseMenu.Show();
 		}
 	}
+	if (window.KeyBoardManager[Keys::E].State == State::Press)
+	{
+		if (!PauseMenu.IsVisible() && !OptionsMenu.IsVisible())
+		{
+			if (!Inventory.IsVisible())
+			{
+				InventoryPolyHedraManager.MakeCurrent();
+				Inventory.Show();
+				PolyHedraManager.MakeCurrent();
+			}
+			else
+			{
+				Inventory.Hide();
+			}
+		}
+	}
 
-	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible())
+	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible() || Inventory.IsVisible())
 	{
 		if (window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeFree(); }
 	}
@@ -1031,15 +1064,14 @@ void Frame(FrameTime frame_time) override
 	{
 		UpdateAroundView(frame_time);
 	}
-	//std::cout << "line:" << __LINE__ << '\n';
 	{
+		float pixel_rad = 1;
 		UI::Control::Object obj;
 		obj.Create();
-		obj.Box().Min = window.Size.Buffer.Half - Point2D(1, 1);
-		obj.Box().Max = window.Size.Buffer.Half + Point2D(1, 1);
+		obj.Box().Min = window.Size.Buffer.Half - Point2D(pixel_rad, pixel_rad);
+		obj.Box().Max = window.Size.Buffer.Half + Point2D(pixel_rad, pixel_rad);
 		obj.Color() = ColorF4(1, 0, 1);
 	}
-	//std::cout << "line:" << __LINE__ << '\n';
 	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
 	{
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
@@ -1051,7 +1083,6 @@ void Frame(FrameTime frame_time) override
 			chunk_box.ShowWire();
 		}
 	}
-	//std::cout << "line:" << __LINE__ << '\n';
 	{
 		std::stringstream ss;
 
@@ -1109,7 +1140,6 @@ void Frame(FrameTime frame_time) override
 			ss << '\n';
 		}*/
 
-		//std::cout << "line:" << __LINE__ << '\n';
 		if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
 		{
 			unsigned int chunks_t = ChunkManager.Chunks.Count(); // total
@@ -1170,30 +1200,70 @@ void Frame(FrameTime frame_time) override
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.String() = ss.str();
 	}
-	//std::cout << "line:" << __LINE__ << '\n';
 
 	static float time_sum = 0.0f;
 	{
 		InventoryPolyHedraManager.MakeCurrent();
-		DisplayPosition display_pos = DisplayPosition::FromWindowCorner(VectorF2(80, 80), window.Size);
-		VectorF2 pos = display_pos.NormalRel / window.Size.Ratio.Value;
+
+		// as Transformation
+		// scale to PixelSize ?
+		// rotate
+		// move to PixelPos ?
+		// scale depends on DisplySize
+		// calculate Scale here ?
+		// also rotation changes DisplaySize Axis
+		// scale needs to be after rotation and before position
+
+		// Display Scaling is basically just ViewScaling
+		// so use a second Matrix
+
+		// Matrix0
+		//  dont scale
+		//  rotate
+		//  dont move
+		// Matrix1
+		//  scale to PixelSize (different per Instance)
+		//  move to PixelPos (different per Instance)
+		// this could all be done with a customn Matrix
+		// but the PolyHedraManager cant do that
+
+		VectorF2	PixelSize(40, 40); // hardcoded in Shader
+		VectorF2	size = window.Size.Buffer.SizeFullToNormalRel(PixelSize);
+
+		VectorF2	PixelPos;
+		PixelPos.X = window.Size.Buffer.Full.X - 40;
+		PixelPos.Y = 40;
+
+		VectorF2	pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
+
 		{
-			PolyHedraObject obj(VoxelTemplate_PolyHedra);
-			obj.Trans().Position.X = -pos.X;
-			obj.Trans().Position.Y = +pos.Y;
-			obj.Trans().Rotation.X1 = Angle::Degrees(30);
+			PolyHedraObject obj(VoxelTemplate::ConcreteCylinder.PolyHedra);
+			obj.Trans().Position.X = pos.X / size.X;
+			obj.Trans().Position.Y = pos.Y / size.Y;
+			obj.Trans().Rotation.X1 = Angle::Degrees(15);
 			obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
 		}
+
+		/*PixelPos = window.MouseManager.CursorPosition().Buffer.Corner;
+		{
+			pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
+			PolyHedraObject obj(VoxelTemplate_PolyHedra);
+			obj.Trans().Position.X = +pos.X / size.X;
+			obj.Trans().Position.Y = -pos.Y / size.Y;
+			obj.Trans().Rotation.X1 = Angle::Degrees(15);
+			obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
+		}*/
+	
 		time_sum += frame_time.Delta;
 		PolyHedraManager.MakeCurrent();
 	}
 
 	Draw();
-	//std::cout << '\n';
 }
 
 void Resize(DisplaySize display_size) override
 {
+	::Inventory::WindowSize = display_size;
 	Multiform_DisplaySize.ChangeData(display_size);
 }
 

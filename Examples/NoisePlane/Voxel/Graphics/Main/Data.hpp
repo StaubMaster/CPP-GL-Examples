@@ -18,6 +18,16 @@ namespace VoxelGraphics
 
 		MainData(VectorF3 pos, VectorF3 tex);
 	};
+	struct MainTriangle
+	{
+		MainData	Corners[3];
+
+		~MainTriangle();
+		MainTriangle();
+
+		MainTriangle(const MainTriangle & other);
+		MainTriangle & operator=(const MainTriangle & other);
+	};
 };
 
 #endif
