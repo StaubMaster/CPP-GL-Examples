@@ -1072,7 +1072,8 @@ void Frame(FrameTime frame_time) override
 		obj.Box().Max = window.Size.Buffer.Half + Point2D(pixel_rad, pixel_rad);
 		obj.Color() = ColorF4(1, 0, 1);
 	}
-	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
+
+	/*if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
 	{
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
@@ -1082,7 +1083,15 @@ void Frame(FrameTime frame_time) override
 			chunk_box.Trans().Position = (ChunkManager.Chunks[i] -> Index) * CHUNK_VALUES_PER_SIDE;
 			chunk_box.ShowWire();
 		}
+	}*/
+
+	if (DebugMenu.ChunkHere.Check.IsChecked())
+	{
+		VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
+
+
 	}
+
 	{
 		std::stringstream ss;
 
@@ -1097,12 +1106,6 @@ void Frame(FrameTime frame_time) override
 		{
 			ss << "View " << view.Trans.Position << '\n';
 			ss << "View " << ViewEntity.Vel << ' ' << ViewEntity.Vel.length() << '\n';
-			//ss << "Box " << (ViewBox + view.Trans.Position) << '\n';
-			VectorI3 chunk_idx = (view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF();
-			VectorU3 voxel_idx = VectorI3(view.Trans.Position.roundF()) - (chunk_idx * CHUNK_VALUES_PER_SIDE);
-			ss << "Voxel " << chunk_idx << ' ' << voxel_idx << '\n';
-			ss << '\n';
-
 			ss << "None : " << (ViewCollisionSide.None) << '\n';
 			ss << "PrevX: " << (ViewCollisionSide.PrevX) << '\n';
 			ss << "PrevY: " << (ViewCollisionSide.PrevY) << '\n';
@@ -1116,6 +1119,56 @@ void Frame(FrameTime frame_time) override
 		ss << "DontInsert: " << ChunkManager.DontInsert << '\n';
 		ss << "DontRemove: " << ChunkManager.DontRemove << '\n';
 		ss << "DontGenerate: " << ChunkManager.DontGenerate << '\n';
+		ss << '\n';
+
+		if (DebugMenu.ChunkHere.Check.IsChecked())
+		{
+			VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
+			ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
+			if (idx.ChunkMan != 0xFFFFFFFF)
+			{
+				ss << "Chunk: " << idx.ChunkMan << '\n';
+				Chunk & chunk = *ChunkManager.Chunks[idx.ChunkMan];
+
+				ss << "Data: ";
+				if (chunk.IsEmpty()) { ss << "Empty"; } else
+				{
+					ss << Memory1000ToString(CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
+				}
+				ss << '\n';
+
+				ss << "GenerationState: ";
+				if (chunk.Done()) { ss << "Done"; } else
+				{
+					switch (chunk.GenerationState)
+					{
+						case GenerationState::None: ss << "None"; break;
+						case GenerationState::Generated: ss << "Generated"; break;
+					};
+				}
+				ss << '\n';
+
+				ss << "MainBufferState: ";
+				switch (chunk.MainBufferState)
+				{
+					case Chunk::BufferDataState::None: ss << "None"; break;
+					case Chunk::BufferDataState::Needed : ss << "Needed"; break;
+					case Chunk::BufferDataState::Ready: ss << "Ready"; break;
+				}
+				ss << '\n';
+
+				ss << "Buffer: ";
+				ss << Memory1000ToString(chunk.Buffer.Main.DrawCount * sizeof(VoxelGraphics::MainData));
+				ss << '\n';
+
+				ss << '\n';
+			}
+			else
+			{
+				ss << "No Chunk Info\n";
+			}
+			ss << '\n';
+		}
 
 		/*{
 			unsigned int count = PolyHedraManager.InstanceManagers.Count();
@@ -1146,36 +1199,34 @@ void Frame(FrameTime frame_time) override
 			unsigned int chunks_u = 0; // ungenerated
 			unsigned int chunks_f = 0; // filled
 			unsigned int chunks_e = 0; // empty
-			unsigned int voxel_count = 0;
+			unsigned int chunks_main_n = 0; // Main Data Needed
+			unsigned int chunks_main_r = 0; // Main Data Ready
 			for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
 			{
 				Chunk & chunk = *ChunkManager.Chunks[i];
 				if (chunk.Done())
 				{
 					if (chunk.Data != nullptr)
-					{
-						chunks_f++;
-						voxel_count += CHUNK_VALUES_PER_VOLM;
-					}
+					{ chunks_f++; }
 					else
-					{
-						chunks_e++;
-					}
+					{ chunks_e++; }
 				}
 				else
-				{
-					chunks_u++;
-				}
+				{ chunks_u++; }
+				if (chunk.MainBufferState == Chunk::BufferDataState::Needed) { chunks_main_n++; }
+				if (chunk.MainBufferState == Chunk::BufferDataState::Ready) { chunks_main_r++; }
 			}
 			ss << "Chunks"
 			 << ':' << chunks_t << '['
+			 << 'U' << chunks_u << '|'
 			 << 'E' << chunks_e << '|'
-			 << 'F' << chunks_f << '|'
-			 << 'U' << chunks_u << ']'
+			 << 'F' << chunks_f << ']'
+			 << 'M' << chunks_main_n << ' '
+			 << 'R' << chunks_main_r << ' '
 			 << '\n';
-			ss << "Voxels:" << Seperated1000(voxel_count);
+			ss << "Voxels:" << Seperated1000(chunks_f * CHUNK_VALUES_PER_VOLM);
 			ss << " * " << Memory1000ToString(sizeof(Voxel));
-			ss << " = " << Memory1000ToString(voxel_count * sizeof(Voxel)) << '\n';
+			ss << " = " << Memory1000ToString(chunks_f * CHUNK_VALUES_PER_VOLM * sizeof(Voxel)) << '\n';
 			ss << '\n';
 		}
 

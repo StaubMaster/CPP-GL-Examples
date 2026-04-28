@@ -85,13 +85,6 @@ void ChunkNeighbours::UpdateOthersHere()
 
 void ChunkNeighbours::UpdateBufferMain()
 {
-	//if (Here  != nullptr) { Here  -> MainBufferNeedsData = true; Here  -> MainBufferDataReady = false; }
-	//if (NextX != nullptr) { NextX -> MainBufferNeedsData = true; NextX -> MainBufferDataReady = false; }
-	//if (NextY != nullptr) { NextY -> MainBufferNeedsData = true; NextY -> MainBufferDataReady = false; }
-	//if (NextZ != nullptr) { NextZ -> MainBufferNeedsData = true; NextZ -> MainBufferDataReady = false; }
-	//if (PrevX != nullptr) { PrevX -> MainBufferNeedsData = true; PrevX -> MainBufferDataReady = false; }
-	//if (PrevY != nullptr) { PrevY -> MainBufferNeedsData = true; PrevY -> MainBufferDataReady = false; }
-	//if (PrevZ != nullptr) { PrevZ -> MainBufferNeedsData = true; PrevZ -> MainBufferDataReady = false; }
 	if (Here  != nullptr) { Here  -> MainBufferState = Chunk::BufferDataState::Needed; }
 	if (NextX != nullptr) { NextX -> MainBufferState = Chunk::BufferDataState::Needed; }
 	if (NextY != nullptr) { NextY -> MainBufferState = Chunk::BufferDataState::Needed; }

@@ -1,0 +1,31 @@
+
+store all the Data in the background
+
+UI only interacts with it
+dosent inherently store it
+
+
+
+ItemBase
+{
+	Count
+}
+ItemVoxel : ItemBase
+{
+	VoxelTemplate
+}
+Inventory
+{
+	Array of ItemBase Pointers
+}
+
+
+
+
+Inventory_UI
+{
+	Pointer to Inventory
+	creates Item_Slots for however many are needed
+	Items store how to show them in Inventory
+	use those to show Items
+}

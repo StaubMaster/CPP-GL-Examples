@@ -23,6 +23,8 @@ ChunkManager::ChunkManager()
 
 
 
+static unsigned int ChecksCount;
+
 unsigned int ChunkManager::FindChunkUndex(Chunk * chunk) const
 {
 	for (unsigned int i = 0; i < Chunks.Count(); i++)
@@ -49,6 +51,7 @@ Chunk * ChunkManager::FindChunkOrNull(VectorI3 idx) const
 {
 	for (unsigned int i = 0; i < Chunks.Count(); i++)
 	{
+		ChecksCount++;
 		if (((*Chunks[i]).Index == idx).All(true))
 		{
 			return Chunks[i];
@@ -247,38 +250,72 @@ void ChunkManager::Clear()
 	Chunks.Clear();
 }
 
+static unsigned int LoopCount;
+
 void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 {
 	if (DontInsert) { return; }
 
 	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 
-	LoopI3 loop(chunk_idx - (int)size, chunk_idx + (int)size);
+	BoxI3 box(chunk_idx - (int)size, chunk_idx + (int)size);
+	VectorI3 box_size = box.Size() + 1;
+
+	LoopCount = 0;
+	ChecksCount = 0;
+
+	//std::cout << "Box: " << box << '\n';
+	//std::cout << "Size: " << box_size << '\n';
+	//std::cout << "Prod: " << box_size.Product() << '\n';
+
+	Chunk ** arr = new Chunk*[box_size.Product()]; // keep this allocated ?
+	for (int i = 0; i < box_size.Product(); i++)
+	{
+		arr[i] = nullptr;
+	}
+
+	// only reallocate when Insert Size changes
+	// use fixed size 3D Array instread of Container ?
+	for (unsigned int i = 0; i < Chunks.Count(); i++)
+	{
+		if (Chunks[i] == nullptr) { continue; }
+		Chunk & chunk = *Chunks[i];
+		if (box.IntersectVecInclusive(chunk.Index).All(true))
+		{
+			unsigned int j = box_size.Convert(chunk.Index - box.Min);
+			arr[j] = &chunk;
+		}
+	}
+
+	LoopI3 loop(box.Min, Bool3(false), box.Max, Bool3(false));
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
-		InsertChunk(i);
+		unsigned int j = box_size.Convert(i - box.Min);
+		if (arr[j] == nullptr)
+		{
+			InsertChunk(i);
+		}
+		LoopCount++;
 	}
+
+	delete[] arr;
+
+	//std::cout << "LoopCount " << LoopCount << '\n';
+	//std::cout << "ChecksCount " << ChecksCount << '\n';
+	//std::cout << '\n';
 }
 void ChunkManager::InsertChunk(VectorI3 idx)
 {
 	if (DontInsert) { return; }
 
-	Chunk * chunk = FindChunkOrNull(idx);
-	if (chunk == nullptr)
+	//Chunk * chunk = FindChunkOrNull(idx);
+	//if (chunk == nullptr)
 	{
+		Chunk * chunk;
 		chunk = new Chunk(idx, GraphicsExist);
-		//chunk -> Index = idx;
 
 		Chunks.Insert(chunk);
 		NeighbourInsert(*chunk);
-
-		/*chunk -> Buffer.Main.Pos.Change(0);
-		chunk -> Buffer.Main.Tex.Change(1);
-		chunk -> Buffer.Inst.Pos.Change(2);
-		if (GraphicsExist)
-		{
-			chunk -> GraphicsCreate();
-		}*/
 	}
 }
 
@@ -395,44 +432,27 @@ void ChunkManager::GraphicsUpdateDataAround(VectorF3 pos, unsigned int count)
 	if (!GraphicsExist) { return; }
 	for (unsigned int c = 0; c < count; c++)
 	{
-		//std::cout << "Iteration: " << c << '|' << count << '\n';
 		unsigned int idx = 0xFFFFFFFF;
 		float dist;
-		//std::cout << "Finding Candidate ...\n";
 		for (unsigned int i = 0; i < Chunks.Count(); i++)
 		{
-			//std::cout << "chunks[" << i << "]: " << Chunks[i] << '\n';
 			if (Chunks[i] == nullptr) { continue; }
-			//std::cout << "line:" << __LINE__ << '\n';
 			Chunk & chunk = *Chunks[i];
-			//std::cout << "line:" << __LINE__ << '\n';
 			if (chunk.MainBufferState != Chunk::BufferDataState::Needed) { continue; }
-			//std::cout << "line:" << __LINE__ << '\n';
 			VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
-			//std::cout << "line:" << __LINE__ << '\n';
 			float d = rel.length2();
 			if (idx == 0xFFFFFFFF || d < dist)
 			{
 				dist = d;
 				idx = i;
 			}
-			//std::cout << "line:" << __LINE__ << '\n';
 		}
 		if (idx != 0xFFFFFFFF)
 		{
-			//std::cout << "Found Candidate: " << idx << '\n';
 			Chunk & chunk = *Chunks[idx];
-			//std::cout << "Chunk: " << chunk.Index << '\n';
-			//std::cout << "Chunk: " << (chunk.Data) << '\n';
-			//std::cout << "Chunk: " << ((unsigned int)chunk.GenerationState) << '\n';
-			//std::cout << "Chunk: " << ((unsigned int)chunk.MainBufferState) << '\n';
 			chunk.GraphicsUpdateMainData();
 		}
-		else
-		{
-			//std::cout << "no Candidate found\n";
-			break;
-		}
+		else { break; }
 	}
 }
 

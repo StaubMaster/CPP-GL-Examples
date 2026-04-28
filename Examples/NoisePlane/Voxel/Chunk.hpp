@@ -1,8 +1,14 @@
 #ifndef  CHUNK_HPP
 # define CHUNK_HPP
 
-# define CHUNK_VALUES_PER_SIDE 16
+# define CHUNK_VALUES_PER_SIDE 32
 # define CHUNK_VALUES_PER_VOLM CHUNK_VALUES_PER_SIDE * CHUNK_VALUES_PER_SIDE * CHUNK_VALUES_PER_SIDE
+
+// 16 * 16 * 16 = 4096
+// 16 * 16 * 256 = 65536
+// 32 * 32 * 32 = 32768
+
+
 
 # include "Voxel.hpp"
 # include "Graphics/Buffer.hpp"

@@ -21,11 +21,6 @@
 
 
 
-#include <iostream>
-#include "ValueType/_Show.hpp"
-
-
-
 bool	Chunk::Done() const { return GenerationState == GenerationState::Generated; }
 
 Voxel &			Chunk::operator[](VectorU3 udx)			{ return Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)]; }
@@ -35,7 +30,6 @@ const Voxel &	Chunk::operator[](VectorU3 udx) const	{ return Data[VectorU3::Conv
 
 Chunk::~Chunk()
 {
-	//std::cout << "  ----  Chunk: " << this << '\n';
 	delete[] Data;
 	if (GraphicsExist)
 	{
@@ -52,7 +46,6 @@ Chunk::Chunk(VectorI3 idx, bool graphics_exist)
 	, MainBufferState(BufferDataState::None)
 	, InstBufferNeedsData(false)
 {
-	//std::cout << "  ++++  Chunk: " << this << '\n';
 	Buffer.Main.Pos.Change(0);
 	Buffer.Main.Tex.Change(1);
 	Buffer.Inst.Pos.Change(2);
@@ -236,15 +229,15 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		);
 
 		float val = 0.0f;
-		val += noise.Calculate(p2 / 32.0f) * 8;
+		val += noise.Calculate(p2 / 32.0f) * 32.0f;
 		//val += noise.Calculate(p2 / 32.0f) * 32;
 		//val += noise.Calculate(p2 / 16.0f) * 16;
 		//val += noise.Calculate(p2 / 8.0f) * 8;
 		//val += noise.Calculate(p2 / 4.0f) * 4;
 		//val += noise.Calculate(p2 / 2.0f) * 2;
 		//val += noise.Calculate(p2 / 1.0f) * 1;
-		val = val - p3.Y;
 
+		val = val - p3.Y;
 		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
 		{
 			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, Undex3D(u.X, i, u.Y));
@@ -295,7 +288,7 @@ void Chunk::GeneratePerlin(const Perlin3D & noise)
 	}
 }
 
-static void GeneratePlane(Chunk & chunk)
+/*static void GeneratePlane(Chunk & chunk)
 {
 	if (chunk.Index.Y >= 0) { return; }
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
@@ -303,7 +296,7 @@ static void GeneratePlane(Chunk & chunk)
 		chunk.Data[i].Template = &VoxelTemplate::ConcreteCube;
 		chunk.Data[i].Orientation = VoxelOrientation();
 	}
-}
+}*/
 
 void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 {
@@ -313,8 +306,8 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	(void)noise2;
 	(void)noise3;
-	GeneratePlane(*this);
-//	GeneratePerlin(noise2);
+//	GeneratePlane(*this);
+	GeneratePerlin(noise2);
 //	GeneratePerlin(noise3);
 //	GenerateGrid();
 
@@ -381,13 +374,10 @@ void Chunk::GraphicsUpdateMainData()
 {
 	if (MainBufferState != BufferDataState::Needed) { return; }
 
-	//std::cout << "Done: " << Done() << '\n';
 	if (!Done()) { return; }
 
-	//std::cout << "Clear\n";
 	MainBufferData.Clear();
 
-	//std::cout << "IsEmpty: " << IsEmpty() << '\n';
 	if (!IsEmpty())
 	{
 		Undex3D size(CHUNK_VALUES_PER_SIDE);
@@ -407,7 +397,6 @@ void Chunk::GraphicsUpdateMainData()
 		}
 	}
 	MainBufferState = BufferDataState::Ready;
-	//std::cout << "MainBUfferData done\n";
 }
 void Chunk::GraphicsUpdateMainBuffer()
 {
@@ -445,6 +434,8 @@ void Chunk::UpdateInstBuffer()
 void Chunk::Draw()
 {
 	if (!GraphicsExist) { return; }
+	if (!Done()) { return; }
+	if (IsEmpty()) { return; }
 	if (BufferNeedsInit)
 	{
 		Buffer.Inst.Init();

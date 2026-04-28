@@ -27,7 +27,6 @@ struct VoxelTemplate
 	unsigned int	Texture;
 	// FileInfo Texture ? could be multiple
 	// know all File Names it wants to use
-	// 
 
 	bool	HidePrevX;
 	bool	HidePrevY;
@@ -39,6 +38,15 @@ struct VoxelTemplate
 
 	AxisRel	OrientationAxis0;
 	AxisRel	OrientationAxis1;
+
+
+
+	// dont store duplicate Meshes
+	// Cubes have the same Meshes but different Textures
+	// also Template should know what Texture they use
+	// assamble Textures into TextureArray automatically ?
+	// what if textures have differnt sizes ?
+	// fixed allowed sizes
 
 	Container::Binary<VoxelGraphics::MainTriangle>	Here;
 
