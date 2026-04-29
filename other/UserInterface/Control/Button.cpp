@@ -45,10 +45,6 @@ void UI::Control::Button::CalcCharacterCount()
 }
 void UI::Control::Button::PutCharactersEntrys()
 {
-	Point2D min = ContainerBox.Min;
-	Point2D max = ContainerBox.Max;
-	Point2D center = (max + min) / 2.0f;
-
 	if (TextObject.Is())
 	{
 		TextObject.String() = Text;
@@ -56,7 +52,7 @@ void UI::Control::Button::PutCharactersEntrys()
 		TextObject.TextAlignmentY() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentX() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentY() = Text::Alignment::Mid;
-		TextObject.TextPosition() = center;
+		TextObject.TextPosition() = ContainerBox.Center();
 		TextObject.Bound() = ContainerBox;
 	}
 }

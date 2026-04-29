@@ -952,6 +952,8 @@ void Free() override
 
 
 
+unsigned int TextCharacterInstances;
+
 void Draw()
 {
 	GL::Enable(GL::Capability::DepthTest);
@@ -973,6 +975,7 @@ void Draw()
 		ControlManager.Draw();
 	}
 	TextManager.Draw();
+	TextCharacterInstances = TextManager.Buffer.Inst.Count;
 
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
@@ -1129,6 +1132,11 @@ void Frame(FrameTime frame_time) override
 		{
 			ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
 			ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
+			ss << '\n';
+		}
+
+		{
+			ss << "TextCharacterInstances " << TextCharacterInstances << '\n';
 			ss << '\n';
 		}
 

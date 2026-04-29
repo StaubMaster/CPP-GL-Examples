@@ -243,11 +243,20 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 
 		line_idx++;
 
+		// check if Character is in Bound ?
 		data.Pos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
-		data.Pallet = TextFont -> CharacterBoxFromCode(obj.Text[i]);
-		data.Bound = obj.Bound;
-		data.Color = obj.Color;
-		Instances.Insert(data);
+		data.Pallet = TextFont -> CharacterBoxFromCode(obj.Text[i]); // this will need to be bofore check for non MonoSpace
+		Point2D size = (obj.CharacterSize * 0.5f);
+
+		// any Intersection ?
+		// but has to touch somehow ?
+		// InnerBox.Normal() ?
+		if (obj.Bound.IntersectInclusive(BoxF2(data.Pos - size, data.Pos + size)).Any(true))
+		{
+			data.Bound = obj.Bound;
+			data.Color = obj.Color;
+			Instances.Insert(data);
+		}
 	}
 }
 

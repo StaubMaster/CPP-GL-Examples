@@ -16,3 +16,20 @@ clean up
 
 TextBound
 	text within a certain Bound
+put this in UI::Text:: ?
+
+make Text non MomoSpace
+
+
+
+if the Text is now Monospace, how would this be checked ?
+check in TextManager ?
+if a Character is outside of its Bound, dont make an Instance for it
+checking Bound for each Character might be slow ?
+
+
+with all the Debug stuff on it only shows 500 Characters
+filling the engire screen should be around 10.000 ?
+check Bound involves comparing 4 numbers
+so it should be trivial ?
+
