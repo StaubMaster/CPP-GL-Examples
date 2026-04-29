@@ -5,9 +5,9 @@
 #include "Graphics/Buffer/Array.hpp"
 
 #include "Graphics/Attribute/Base/Base.hpp"
-#include "Graphics/Attribute/Point2D.hpp"
+#include "Graphics/Attribute/VectorF2.hpp"
 #include "Graphics/Attribute/ColorF4.hpp"
-#include "Graphics/Attribute/Base/Float1.hpp"
+#include "Graphics/Attribute/Float.hpp"
 
 
 
@@ -20,7 +20,7 @@ namespace Control
 class Main_Buffer : public ::Buffer::Array
 {
 	public:
-	::Attribute::Point2D	Pos;
+	::Attribute::VectorF2	Pos;
 	public:
 	~Main_Buffer();
 	Main_Buffer(::VertexArray & vertex_array);
@@ -29,9 +29,9 @@ class Main_Buffer : public ::Buffer::Array
 class Inst_Buffer : public ::Buffer::Array
 {
 	public:
-	::Attribute::Point2D	Min;
-	::Attribute::Point2D	Max;
-	::Attribute::Float1		Layer;
+	::Attribute::VectorF2	Min;
+	::Attribute::VectorF2	Max;
+	::Attribute::Float		Layer;
 	::Attribute::ColorF4	Col;
 	public:
 	~Inst_Buffer();

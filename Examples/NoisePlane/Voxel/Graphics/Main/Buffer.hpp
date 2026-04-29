@@ -2,14 +2,14 @@
 # define VOXEL_GRAPHICS_MAIN_BUFFER_HPP
 
 # include "Graphics/Buffer/Array.hpp"
-# include "Graphics/Attribute/Point3D.hpp"
+# include "Graphics/Attribute/VectorF3.hpp"
 
 namespace VoxelGraphics
 {
 	struct MainBuffer : public ::Buffer::Array
 	{
-		::Attribute::Point3D	Pos;
-		::Attribute::Point3D	Tex;
+		::Attribute::VectorF3	Pos;
+		::Attribute::VectorF3	Tex;
 		~MainBuffer();
 		MainBuffer(::VertexArray & vertex_array);
 	};

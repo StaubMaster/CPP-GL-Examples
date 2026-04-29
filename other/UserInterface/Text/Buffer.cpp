@@ -7,27 +7,18 @@
 
 UI::Text::Main_Buffer::Main_Buffer(::VertexArray & vertex_array)
 	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Main_Data))
-	, Pos()
-{
-	Attributes.Allocate(1);
-	Attributes.Insert(&Pos);
-}
+	, Pos(*this)
+{ }
 
 
 
 UI::Text::Inst_Buffer::Inst_Buffer(::VertexArray & vertex_array)
 	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
-	, Pos()
-	, Pallet()
-	, Bound()
-	, Color()
-{
-	Attributes.Allocate(4);
-	Attributes.Insert(&Pos);
-	Attributes.Insert(&Pallet);
-	Attributes.Insert(&Bound);
-	Attributes.Insert(&Color);
-}
+	, Pos(*this)
+	, Pallet(*this)
+	, Bound(*this)
+	, Color(*this)
+{ }
 
 
 
