@@ -5,8 +5,8 @@
 
 
 
-Arrow2D::Inst::Buffer::Buffer(BufferArray::Base & buffer_array)
-	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Data))
+Arrow2D::Inst::Buffer::Buffer(VertexArray & vertex_array)
+	: ::Buffer::Array(buffer_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Data))
 	, Pos0()
 	, Pos1()
 	, Size()

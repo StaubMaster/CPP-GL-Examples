@@ -11,7 +11,7 @@ struct Buffer : public ::Buffer::Element
 {
 	public:
 	~Buffer();
-	Buffer(BufferArray::Base & buffer_array, unsigned int elem_per_type);
+	Buffer(VertexArray & vertex_array, unsigned int elem_per_type);
 };
 };
 };

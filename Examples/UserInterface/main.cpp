@@ -20,7 +20,7 @@
 #include "Graphics/Shader/Code.hpp"
 #include "Graphics/Shader/Base.hpp"
 
-#include "Graphics/Buffer/ArrayBase.hpp"
+#include "Graphics/Buffer/VertexArray.hpp"
 #include "Graphics/Buffer/Base.hpp"
 
 #include "Graphics/Attribute/Point2D.hpp"

@@ -46,13 +46,14 @@ bool ChunkNeighbours::Visible(AxisRel axis, VectorU3 udx) const
 	Chunk * chunk = nullptr;
 	switch (axis)
 	{
+		case AxisRel::None: return false;
 		case AxisRel::PrevX: if (udx.X != 0) { chunk = Here; udx.X--; } else { chunk = PrevX; udx.X = n; } break;
 		case AxisRel::PrevY: if (udx.Y != 0) { chunk = Here; udx.Y--; } else { chunk = PrevY; udx.Y = n; } break;
 		case AxisRel::PrevZ: if (udx.Z != 0) { chunk = Here; udx.Z--; } else { chunk = PrevZ; udx.Z = n; } break;
 		case AxisRel::NextX: if (udx.X != n) { chunk = Here; udx.X++; } else { chunk = NextX; udx.X = 0; } break;
 		case AxisRel::NextY: if (udx.Y != n) { chunk = Here; udx.Y++; } else { chunk = NextY; udx.Y = 0; } break;
 		case AxisRel::NextZ: if (udx.Z != n) { chunk = Here; udx.Z++; } else { chunk = NextZ; udx.Z = 0; } break;
-		default: break;
+		case AxisRel::Here: return true;
 	}
 	if (chunk == nullptr) { return false; }
 	if (!chunk -> Done()) { return false; }
@@ -61,16 +62,7 @@ bool ChunkNeighbours::Visible(AxisRel axis, VectorU3 udx) const
 	Voxel & voxel = (*chunk)[udx];
 	if (voxel.Template == nullptr) { return true; }
 
-	switch (voxel.Orientation.relative(axis))
-	{
-		case AxisRel::PrevX: return !(voxel.Template -> HideNextX);
-		case AxisRel::PrevY: return !(voxel.Template -> HideNextY);
-		case AxisRel::PrevZ: return !(voxel.Template -> HideNextZ);
-		case AxisRel::NextX: return !(voxel.Template -> HidePrevX);
-		case AxisRel::NextY: return !(voxel.Template -> HidePrevY);
-		case AxisRel::NextZ: return !(voxel.Template -> HidePrevZ);
-		default: return false;
-	}
+	return voxel.Template -> Visible(voxel.Orientation.relative(axis));
 }
 
 void ChunkNeighbours::UpdateOthersHere()

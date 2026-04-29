@@ -136,7 +136,7 @@ void UI::Text::Manager::GraphicsMain()
 	data.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
 	data.Insert(UI::Text::Main_Data(Point2D(+1, +1)));
 
-	Buffer.Main.Change(data);
+	Buffer.Main.Data(data);
 
 	GraphicsNeedMain = false;
 }
@@ -160,7 +160,7 @@ void UI::Text::Manager::GraphicsInst()
 			}
 		}
 	}
-	Buffer.Inst.Change(Instances);
+	Buffer.Inst.Data(Instances);
 }
 
 static unsigned int LineCount(const char * text)

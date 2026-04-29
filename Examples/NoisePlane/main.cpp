@@ -56,6 +56,7 @@
 #include "Voxel/VoxelOrientation.hpp"
 #include "Voxel/VoxelTemplate.hpp"
 #include "Voxel/VoxelIndex.hpp"
+#include "Voxel/VoxelGraphicsTemplate.hpp"
 
 #include "BoxEntity.hpp"
 
@@ -543,13 +544,13 @@ static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b110));
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
 }
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const Container::Binary<VoxelGraphics::MainTriangle> & data)
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGraphicsData & data)
 {
 	Skin2DA & skin = *((Skin2DA*)polyhedra.Skin);
 	VectorF3 off(0.5f);
-	for (unsigned int i = 0; i < data.Count(); i++)
+	for (unsigned int i = 0; i < data.Data.Count(); i++)
 	{
-		const VoxelGraphics::MainTriangle & face = data[i];
+		const VoxelGraphics::MainTriangle & face = data.Data[i];
 
 		unsigned int ph_i = polyhedra.Corners.Count();
 		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[0].Pos - off));
@@ -566,13 +567,13 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const Container::Binary<Vo
 }
 static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelTemplate & voxel_template)
 {
-	PolyHedraVoxelData(polyhedra, voxel_template.Here);
-	PolyHedraVoxelData(polyhedra, voxel_template.PrevX);
-	PolyHedraVoxelData(polyhedra, voxel_template.PrevY);
-	PolyHedraVoxelData(polyhedra, voxel_template.PrevZ);
-	PolyHedraVoxelData(polyhedra, voxel_template.NextX);
-	PolyHedraVoxelData(polyhedra, voxel_template.NextY);
-	PolyHedraVoxelData(polyhedra, voxel_template.NextZ);
+	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.Here);
+	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.PrevX);
+	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.PrevY);
+	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.PrevZ);
+	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.NextX);
+	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.NextY);
+	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.NextZ);
 }
 
 void Make()
@@ -610,14 +611,18 @@ void Make()
 
 	// Voxels
 	{
-		VoxelTemplate::OrientationCube.InitCube(0);
-		VoxelTemplate::OrientationCylinder.InitCylinder(0);
-		VoxelTemplate::OrientationSlope.InitSlope(0);
-		VoxelTemplate::Gray.InitCube(1);
-		VoxelTemplate::Grass.InitCube(2);
-		VoxelTemplate::RedLog.InitCylinder(3);
-		VoxelTemplate::ConcreteCube.InitCube(4);
-		VoxelTemplate::ConcreteCylinder.InitCylinder(4);
+		VoxelGraphicsTemplate::Cube.InitCube();
+		VoxelGraphicsTemplate::Cylinder.InitCylinder();
+		VoxelGraphicsTemplate::Slope.InitSlope();
+
+		VoxelTemplate::OrientationCube.Texture = (0);
+		VoxelTemplate::OrientationCylinder.Texture = (0);
+		VoxelTemplate::OrientationSlope.Texture = (0);
+		VoxelTemplate::Gray.Texture = (1);
+		VoxelTemplate::Grass.Texture = (2);
+		VoxelTemplate::RedLog.Texture = (3);
+		VoxelTemplate::ConcreteCube.Texture = (4);
+		VoxelTemplate::ConcreteCylinder.Texture = (4);
 	}
 	{
 		VoxelTemplate::ConcreteCylinder.PolyHedra = new PolyHedra();
@@ -1079,7 +1084,6 @@ void Frame(FrameTime frame_time) override
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
 		{
 			PolyHedraObject chunk_box(p);
-			chunk_box.Create(VoxelChunkCube);
 			chunk_box.Trans().Position = (ChunkManager.Chunks[i] -> Index) * CHUNK_VALUES_PER_SIDE;
 			chunk_box.ShowWire();
 		}
@@ -1089,7 +1093,9 @@ void Frame(FrameTime frame_time) override
 	{
 		VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
 
-
+		PolyHedraObject chunk_box(VoxelChunkCube);
+		chunk_box.Trans().Position = idx.Chunk * CHUNK_VALUES_PER_SIDE;
+		chunk_box.ShowWire();
 	}
 
 	{
@@ -1158,7 +1164,7 @@ void Frame(FrameTime frame_time) override
 				ss << '\n';
 
 				ss << "Buffer: ";
-				ss << Memory1000ToString(chunk.Buffer.Main.DrawCount * sizeof(VoxelGraphics::MainData));
+				ss << Memory1000ToString(chunk.Buffer.Main.Count * sizeof(VoxelGraphics::MainData));
 				ss << '\n';
 
 				ss << '\n';
@@ -1235,7 +1241,7 @@ void Frame(FrameTime frame_time) override
 			unsigned long long main_count = 0;
 			for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
 			{
-				main_count += ChunkManager.Chunks[i] -> Buffer.Main.DrawCount;
+				main_count += ChunkManager.Chunks[i] -> Buffer.Main.Count;
 			}
 			ss << "Voxel BufferData: " << Seperated1000(main_count);
 			ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) <<")\n";

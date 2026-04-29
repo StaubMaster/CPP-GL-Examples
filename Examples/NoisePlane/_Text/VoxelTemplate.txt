@@ -1,0 +1,22 @@
+
+Texture Files
+Images ?
+
+
+
+GraphicsData, organized into sides (automate ?)
+what sides does this hide (automate ?)
+PolyHedra
+
+PlaceOrientation
+
+
+
+some Voxels have the same Graphics but with different Texture
+
+assamble GraphicsData with Texture Data when building Chunk ?
+the MainData is assambled anyway, so it should be File
+
+
+
+

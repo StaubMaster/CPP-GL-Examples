@@ -1,0 +1,129 @@
+
+all the Managers are similar
+	PolyHedraManager
+	ControlManager
+	TextManager
+
+internally they are somewhat different
+
+ObjectManager
+{
+	PolyHedraManager
+	{
+		multiple Shaders/Buffers for Full/Wire
+		different Main Data
+	}
+	ControlManager
+	{
+		1 Shader/Buffer
+		1 MainData
+	}
+	TextManager
+	{
+		1 Shader/Buffer
+		multiple Instances per Object
+	}
+}
+
+
+
+
+
+ObjectData
+{
+	Remove
+	PolyHedra
+	{
+		DisplayFull
+		DisplayWire
+		Data
+	}
+	Control
+	{
+		Display
+		Data
+	}
+	Text
+	{
+		Display
+		Data
+	}
+}
+all have a flag to indicate if they should be removed
+all have a Display for if they should get and Instance that Frame
+PolyHedra has 2 due to having 2 Buffers
+
+Data is a bunch of stuff specific to that Object
+Display is not accessed directly
+use and Array ?
+
+
+
+
+
+Object
+{
+	ObjectData * Data
+	Is()
+
+	Canonical Stuff
+
+	Delete()
+	Create()
+}
+this is the thing that is used from the outside
+is is mostly functions used to access the ObjectData
+Creating and Deleting the ObjectData can be generalized
+anything else needs to be individual
+
+
+
+
+Manager
+{
+	Current Stuff
+
+	Binary ObjectDatas // rename to just Objects ?
+
+	GraphicsExist
+	GraphicsCreate()
+	GraphicsDelete()
+
+	CopyObject(ObjectData)
+
+	PolyHedra
+	{
+		PlaceObject(MainIdentifier)
+	}
+	Control/Text
+	{
+		PlaceObject()
+	}
+
+	PlaceInstance(ObjectData)
+	Draw()
+}
+
+reorganize "PipeLine"
+should maybe figure out what that actually is/means
+
+Draw
+{
+	loop
+	{
+		Buffer.Bind()
+		maybe Init Attributes
+		maybe new Main Data
+		maybe new Inst Data
+		Buffer.Draw()
+	}
+}
+
+UpdateInst()
+{
+	Clear InstanceContainer
+	fill InstanceContainer based on Objects
+	mark that new InstData is ready
+}
+
+this seperates filling Containers and Binding/Drawing

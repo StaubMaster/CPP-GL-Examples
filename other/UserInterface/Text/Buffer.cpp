@@ -5,8 +5,8 @@
 
 
 
-UI::Text::Main_Buffer::Main_Buffer(::BufferArray::Base & buffer_array)
-	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Main_Data))
+UI::Text::Main_Buffer::Main_Buffer(::VertexArray & vertex_array)
+	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Main_Data))
 	, Pos()
 {
 	Attributes.Allocate(1);
@@ -15,8 +15,8 @@ UI::Text::Main_Buffer::Main_Buffer(::BufferArray::Base & buffer_array)
 
 
 
-UI::Text::Inst_Buffer::Inst_Buffer(::BufferArray::Base & buffer_array)
-	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
+UI::Text::Inst_Buffer::Inst_Buffer(::VertexArray & vertex_array)
+	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
 	, Pos()
 	, Pallet()
 	, Bound()
@@ -34,7 +34,7 @@ UI::Text::Inst_Buffer::Inst_Buffer(::BufferArray::Base & buffer_array)
 UI::Text::Buffer::~Buffer() { }
 
 UI::Text::Buffer::Buffer()
-	: ::BufferArray::Base()
+	: ::VertexArray()
 	, Main(*this)
 	, Inst(*this)
 	, DrawMode(GL::DrawMode::Triangles)
@@ -45,5 +45,5 @@ UI::Text::Buffer::Buffer()
 }
 void UI::Text::Buffer::Draw()
 {
-	GL::DrawArraysInstanced(DrawMode, 0, Main.DrawCount, Inst.DrawCount);
+	GL::DrawArraysInstanced(DrawMode, 0, Main.Count, Inst.Count);
 }

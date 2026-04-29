@@ -110,7 +110,7 @@ void UI::Control::Manager::GraphicsMain()
 	data.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
 	data.Insert(UI::Control::Main_Data(Point2D(+1, +1)));
 
-	Buffer.Main.Change(data);
+	Buffer.Main.Data(data);
 
 	GraphicsNeedMain = false;
 }
@@ -134,7 +134,7 @@ void UI::Control::Manager::GraphicsInst()
 			}
 		}
 	}
-	Buffer.Inst.Change(Instances);
+	Buffer.Inst.Data(Instances);
 }
 
 void UI::Control::Manager::PlaceInstance(const ObjectData & obj)

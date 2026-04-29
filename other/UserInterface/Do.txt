@@ -6,4 +6,10 @@ Label: shows Text, cannot be changed
 Graph: takes Points and connects them
 	would need its own Shader
 
-check Visibility
+
+
+PolyHedra / PolyGon
+
+
+
+clean up

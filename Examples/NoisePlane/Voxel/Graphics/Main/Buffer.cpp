@@ -4,8 +4,8 @@
 
 
 VoxelGraphics::MainBuffer::~MainBuffer() { }
-VoxelGraphics::MainBuffer::MainBuffer(::BufferArray::Base & buffer_array)
-	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainData))
+VoxelGraphics::MainBuffer::MainBuffer(::VertexArray & vertex_array)
+	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainData))
 	, Pos()
 	, Tex()
 {

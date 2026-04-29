@@ -5,8 +5,8 @@
 
 
 Grid2DGraphics::Inst::Buffer::~Buffer() { }
-Grid2DGraphics::Inst::Buffer::Buffer(BufferArray::Base & buffer_array)
-	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 1, sizeof(Inst::Data))
+Grid2DGraphics::Inst::Buffer::Buffer(VertexArray & vertex_array)
+	: ::Buffer::Array(buffer_array, GL::BufferDataUsage::StaticDraw, 1, sizeof(Inst::Data))
 	, Pos()
 	, Size()
 {

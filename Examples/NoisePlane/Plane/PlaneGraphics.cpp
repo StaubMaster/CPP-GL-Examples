@@ -3,8 +3,8 @@
 
 
 PlaneGraphics::MainBuffer::~MainBuffer() { }
-PlaneGraphics::MainBuffer::MainBuffer(::BufferArray::Base & buffer_array)
-	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainData))
+PlaneGraphics::MainBuffer::MainBuffer(::VertexArray & vertex_array)
+	: ::Buffer::Array(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainData))
 	, Pos()
 	, Col()
 {
@@ -16,8 +16,8 @@ PlaneGraphics::MainBuffer::MainBuffer(::BufferArray::Base & buffer_array)
 
 
 PlaneGraphics::InstBuffer::~InstBuffer() { }
-PlaneGraphics::InstBuffer::InstBuffer(::BufferArray::Base & buffer_array)
-	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 1, sizeof(InstData))
+PlaneGraphics::InstBuffer::InstBuffer(::VertexArray & vertex_array)
+	: ::Buffer::Array(buffer_array, GL::BufferDataUsage::StaticDraw, 1, sizeof(InstData))
 	, Pos()
 {
 	Attributes.Allocate(1);

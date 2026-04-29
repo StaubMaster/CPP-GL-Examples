@@ -1,8 +1,8 @@
 #ifndef  UI_CONTROL_BUFFER_HPP
 # define UI_CONTROL_BUFFER_HPP
 
-#include "Graphics/Buffer/ArrayBase.hpp"
-#include "Graphics/Buffer/Attribute.hpp"
+#include "Graphics/Buffer/VertexArray.hpp"
+#include "Graphics/Buffer/Array.hpp"
 
 #include "Graphics/Attribute/Base/Base.hpp"
 #include "Graphics/Attribute/Point2D.hpp"
@@ -17,16 +17,16 @@ namespace UI
 namespace Control
 {
 
-class Main_Buffer : public ::Buffer::Attribute
+class Main_Buffer : public ::Buffer::Array
 {
 	public:
 	::Attribute::Point2D	Pos;
 	public:
 	~Main_Buffer();
-	Main_Buffer(::BufferArray::Base & buffer_array);
+	Main_Buffer(::VertexArray & vertex_array);
 };
 
-class Inst_Buffer : public ::Buffer::Attribute
+class Inst_Buffer : public ::Buffer::Array
 {
 	public:
 	::Attribute::Point2D	Min;
@@ -35,10 +35,10 @@ class Inst_Buffer : public ::Buffer::Attribute
 	::Attribute::ColorF4	Col;
 	public:
 	~Inst_Buffer();
-	Inst_Buffer(::BufferArray::Base & buffer_array);
+	Inst_Buffer(::VertexArray & vertex_array);
 };
 
-class Buffer : public ::BufferArray::Base
+class Buffer : public ::VertexArray
 {
 	public:
 	Main_Buffer		Main;

@@ -20,6 +20,8 @@ FILES := \
 	Voxel/Graphics/Shader.cpp \
 	\
 	Voxel/Voxel.cpp \
+	Voxel/VoxelGraphicsData.cpp \
+	Voxel/VoxelGraphicsTemplate.cpp \
 	Voxel/VoxelTemplate.cpp \
 	Voxel/VoxelOrientation.cpp \
 	Voxel/VoxelEnums.cpp \

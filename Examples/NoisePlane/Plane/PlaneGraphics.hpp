@@ -5,7 +5,7 @@
 # include "ValueType/ColorF4.hpp"
 
 # include "Graphics/Buffer/MainInst.hpp"
-# include "Graphics/Buffer/Attribute.hpp"
+# include "Graphics/Buffer/Array.hpp"
 # include "Graphics/Attribute/Point3D.hpp"
 # include "Graphics/Attribute/ColorF4.hpp"
 
@@ -23,18 +23,18 @@ namespace PlaneGraphics
 	{
 		Point3D		Pos;
 	};
-	struct MainBuffer : public ::Buffer::Attribute
+	struct MainBuffer : public ::Buffer::Array
 	{
 		::Attribute::Point3D	Pos;
 		::Attribute::ColorF4	Col;
 		~MainBuffer();
-		MainBuffer(::BufferArray::Base & buffer_array);
+		MainBuffer(::VertexArray & vertex_array);
 	};
-	struct InstBuffer : public ::Buffer::Attribute
+	struct InstBuffer : public ::Buffer::Array
 	{
 		::Attribute::Point3D	Pos;
 		~InstBuffer();
-		InstBuffer(::BufferArray::Base & buffer_array);
+		InstBuffer(::VertexArray & vertex_array);
 	};
 	struct Buffer : public ::BufferArray::MainInst<MainBuffer, InstBuffer>
 	{

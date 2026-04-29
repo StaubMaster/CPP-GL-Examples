@@ -5,8 +5,8 @@
 
 
 
-Arrow2D::Main::Buffer::Buffer(BufferArray::Base & buffer_array)
-	: ::Buffer::Attribute(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
+Arrow2D::Main::Buffer::Buffer(VertexArray & vertex_array)
+	: ::Buffer::Array(buffer_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Data))
 	, Pos()
 	, Tex()
 {

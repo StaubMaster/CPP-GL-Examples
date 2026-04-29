@@ -11,6 +11,8 @@
 
 
 # include "Voxel.hpp"
+# include "VoxelGraphicsData.hpp"
+
 # include "Graphics/Buffer.hpp"
 # include "Graphics/Main/Data.hpp"
 # include "ChunkNeighbours.hpp"
@@ -102,8 +104,8 @@ struct Chunk
 		Ready,
 	};
 
-	BufferDataState	MainBufferState; // put into Buffer ?
-	Container::Binary<VoxelGraphics::MainTriangle>	MainBufferData; // put into Buffer ?
+	BufferDataState		MainBufferState; // put into Buffer ?
+	VoxelGraphicsData	MainBufferData;
 	void	GraphicsUpdateMainData();
 	void	GraphicsUpdateMainBuffer();
 

@@ -350,23 +350,11 @@ void Chunk::GraphicsDelete()
 
 
 
-static void GraphicsData(Container::Binary<VoxelGraphics::MainTriangle> & data, const Container::Binary<VoxelGraphics::MainTriangle> & face, const VoxelOrientation & orientation, VectorU3 u)
-{
-	for (unsigned int i = 0; i < face.Count(); i++)
-	{
-		VoxelGraphics::MainTriangle v = face[i];
-		v.Corners[0].Pos = orientation.absolute(v.Corners[0].Pos) + u;
-		v.Corners[1].Pos = orientation.absolute(v.Corners[1].Pos) + u;
-		v.Corners[2].Pos = orientation.absolute(v.Corners[2].Pos) + u;
-		data.Insert(v);
-	}
-}
-
-static void GraphicsData(Container::Binary<VoxelGraphics::MainTriangle> & data, VectorU3 u, const Voxel & voxel, const ChunkNeighbours & neighbours, AxisRel axis)
+static void GraphicsData(VoxelGraphicsData & data, const ChunkNeighbours & neighbours, VectorU3 u, const Voxel & voxel, AxisRel axis)
 {
 	if (neighbours.Visible(voxel.Orientation.absolute(axis), u))
 	{
-		GraphicsData(data, voxel.Template -> AxisData(axis), voxel.Orientation, u);
+		data.Concatnate(u, voxel, axis);
 	}
 }
 
@@ -376,7 +364,7 @@ void Chunk::GraphicsUpdateMainData()
 
 	if (!Done()) { return; }
 
-	MainBufferData.Clear();
+	MainBufferData.Data.Clear();
 
 	if (!IsEmpty())
 	{
@@ -386,14 +374,13 @@ void Chunk::GraphicsUpdateMainData()
 		{
 			const Voxel & voxel = Data[size.Convert(u)];
 			if (voxel.Template == nullptr) { continue; }
-			const VoxelTemplate & voxel_template = *voxel.Template;
-			GraphicsData(MainBufferData, voxel_template.Here, voxel.Orientation, u);
-			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::PrevX);
-			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::PrevY);
-			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::PrevZ);
-			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::NextX);
-			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::NextY);
-			GraphicsData(MainBufferData, u, voxel, Neighbours, AxisRel::NextZ);
+			GraphicsData(MainBufferData, Neighbours, u, voxel, AxisRel::Here);
+			GraphicsData(MainBufferData, Neighbours, u, voxel, AxisRel::PrevX);
+			GraphicsData(MainBufferData, Neighbours, u, voxel, AxisRel::PrevY);
+			GraphicsData(MainBufferData, Neighbours, u, voxel, AxisRel::PrevZ);
+			GraphicsData(MainBufferData, Neighbours, u, voxel, AxisRel::NextX);
+			GraphicsData(MainBufferData, Neighbours, u, voxel, AxisRel::NextY);
+			GraphicsData(MainBufferData, Neighbours, u, voxel, AxisRel::NextZ);
 		}
 	}
 	MainBufferState = BufferDataState::Ready;
@@ -404,9 +391,9 @@ void Chunk::GraphicsUpdateMainBuffer()
 
 	if (MainBufferState != BufferDataState::Ready) { return; }
 
-	Buffer.Main.Change(MainBufferData);
-	Buffer.Main.DrawCount = MainBufferData.Count() * 3;
-	MainBufferData.Clear();
+	Buffer.Main.Data(MainBufferData.Data);
+//	Buffer.Main.Count = MainBufferData.Count() * 3;
+	MainBufferData.Data.Clear();
 
 	MainBufferState = BufferDataState::None;
 }
@@ -423,7 +410,7 @@ void Chunk::UpdateInstBuffer()
 		temp.Pos = Index * CHUNK_VALUES_PER_SIDE;
 		data.Insert(temp);
 
-		Buffer.Inst.Change(data);
+		Buffer.Inst.Data(data);
 	}
 
 	InstBufferNeedsData = false;

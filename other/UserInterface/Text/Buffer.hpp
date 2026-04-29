@@ -1,8 +1,8 @@
 #ifndef  UI_TEXT_BUFFER
 # define UI_TEXT_BUFFER
 
-#include "Graphics/Buffer/ArrayBase.hpp"
-#include "Graphics/Buffer/Attribute.hpp"
+#include "Graphics/Buffer/VertexArray.hpp"
+#include "Graphics/Buffer/Array.hpp"
 
 # include "Graphics/Attribute/Base/Base.hpp"
 # include "Graphics/Attribute/Point2D.hpp"
@@ -17,15 +17,15 @@ namespace UI
 namespace Text
 {
 
-class Main_Buffer : public ::Buffer::Attribute
+class Main_Buffer : public ::Buffer::Array
 {
 	public:
 	::Attribute::Point2D	Pos;
 	public:
-	Main_Buffer(::BufferArray::Base & buffer_array);
+	Main_Buffer(::VertexArray & vertex_array);
 };
 
-class Inst_Buffer : public ::Buffer::Attribute
+class Inst_Buffer : public ::Buffer::Array
 {
 	public:
 	::Attribute::Point2D	Pos;
@@ -33,10 +33,10 @@ class Inst_Buffer : public ::Buffer::Attribute
 	::Attribute::AxisBox2D	Bound;
 	::Attribute::ColorF4	Color;
 	public:
-	Inst_Buffer(::BufferArray::Base & buffer_array);
+	Inst_Buffer(::VertexArray & vertex_array);
 };
 
-class Buffer : public ::BufferArray::Base
+class Buffer : public ::VertexArray
 {
 	public:
 	Main_Buffer		Main;
