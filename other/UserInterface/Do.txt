@@ -13,3 +13,6 @@ PolyHedra / PolyGon
 
 
 clean up
+
+TextBound
+	text within a certain Bound

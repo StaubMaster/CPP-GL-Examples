@@ -615,24 +615,25 @@ void Make()
 		VoxelGraphicsTemplate::Cylinder.InitCylinder();
 		VoxelGraphicsTemplate::Slope.InitSlope();
 
-		VoxelTemplate::OrientationCube.Texture = (0);
-		VoxelTemplate::OrientationCylinder.Texture = (0);
-		VoxelTemplate::OrientationSlope.Texture = (0);
-		VoxelTemplate::Gray.Texture = (1);
-		VoxelTemplate::Grass.Texture = (2);
-		VoxelTemplate::RedLog.Texture = (3);
-		VoxelTemplate::ConcreteCube.Texture = (4);
-		VoxelTemplate::ConcreteCylinder.Texture = (4);
+		VoxelTemplate::OrientationCube.TextureFile = MediaDirectory.File("Images/OrientationCorners.png");
+		VoxelTemplate::OrientationCylinder.TextureFile = MediaDirectory.File("Images/OrientationCorners.png");
+		VoxelTemplate::OrientationSlope.TextureFile = MediaDirectory.File("Images/OrientationCorners.png");
+		VoxelTemplate::Gray.TextureFile = MediaDirectory.File("Images/Gray6.png");
+		VoxelTemplate::Grass.TextureFile = MediaDirectory.File("Images/fancy_GreenDirt.png");
+		VoxelTemplate::RedLog.TextureFile = MediaDirectory.File("Images/fancy_RedWood.png");
+		VoxelTemplate::ConcreteCube.TextureFile = MediaDirectory.File("Images/ConcreteCube.png");
+		VoxelTemplate::ConcreteCylinder.TextureFile = MediaDirectory.File("Images/ConcreteCube.png");
 	}
 	{
-		VoxelTemplate::ConcreteCylinder.PolyHedra = new PolyHedra();
-		VoxelTemplate::ConcreteCylinder.PolyHedra -> Skin = new Skin2DA();
-		Skin2DA & skin = *((Skin2DA*)VoxelTemplate::ConcreteCylinder.PolyHedra -> Skin);
+		VoxelTemplate & temp = VoxelTemplate::ConcreteCylinder;
+		temp.PolyHedra = new PolyHedra();
+		temp.PolyHedra -> Skin = new Skin2DA();
+		Skin2DA & skin = *((Skin2DA*)temp.PolyHedra -> Skin);
 		skin.W = 128;
 		skin.H = 64;
-		skin.Images.Insert(MediaDirectory.File("Images/ConcreteCube.png").LoadImage());
+		skin.Images.Insert(temp.TextureFile.LoadImage());
 		skin.Done();
-		PolyHedraVoxelData(*VoxelTemplate::ConcreteCylinder.PolyHedra, VoxelTemplate::ConcreteCylinder);
+		PolyHedraVoxelData(*temp.PolyHedra, temp);
 	}
 
 	{
@@ -902,14 +903,37 @@ void Init() override
 	GraphicsCreate();
 
 	{
-		ChunkManager.Texture.Bind();
-		Container::Array<FileInfo> files({
-			MediaDirectory.File("Images/OrientationCorners.png"),	// 0
-			MediaDirectory.File("Images/Gray6.png"),				// 1
-			MediaDirectory.File("Images/fancy_GreenDirt.png"),		// 2
-			MediaDirectory.File("Images/fancy_RedWood.png"),		// 3
-			MediaDirectory.File("Images/ConcreteCube.png"),			// 4
+		Container::Array<VoxelTemplate*> temps({
+			&VoxelTemplate::OrientationCube,
+			&VoxelTemplate::OrientationCylinder,
+			&VoxelTemplate::OrientationSlope,
+			&VoxelTemplate::Gray,
+			&VoxelTemplate::Grass,
+			&VoxelTemplate::RedLog,
+			&VoxelTemplate::ConcreteCube,
+			&VoxelTemplate::ConcreteCylinder,
 		});
+
+		ChunkManager.Texture.Bind();
+		Container::Binary<FileInfo> files;
+		for (unsigned int i = 0; i < temps.Count(); i++)
+		{
+			unsigned int j = 0xFFFFFFFF;
+			for (unsigned int f = 0; f < files.Count(); f++)
+			{
+				if (files[f].Name() == (temps[i] -> TextureFile.Name()))
+				{
+					j = f; break;
+				}
+			}
+			if (j == 0xFFFFFFFF)
+			{
+				j = files.Count();
+				files.Insert(temps[i] -> TextureFile);
+			}
+			temps[i] -> TextureIndex = j;
+		}
+
 		ChunkManager.Texture.Assign(VectorU2(128, 64), files);
 		window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
 		view.Depth.Color = window.DefaultColor;

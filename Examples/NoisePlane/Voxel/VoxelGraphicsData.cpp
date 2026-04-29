@@ -27,7 +27,7 @@ void VoxelGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientat
 }
 void VoxelGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelTemplate & temp, AxisRel axis)
 {
-	Concatnate(u, orientation, temp.Texture, temp.GraphicsTemplate, axis);
+	Concatnate(u, orientation, temp.TextureIndex, temp.GraphicsTemplate, axis);
 }
 void VoxelGraphicsData::Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis)
 {

@@ -1,6 +1,8 @@
 #ifndef  VOXEL_TEMPLATE_HPP
 # define VOXEL_TEMPLATE_HPP
 
+# include "FileInfo.hpp"
+
 # include "VoxelOrientation.hpp"
 
 struct Voxel;
@@ -25,9 +27,8 @@ struct VoxelTemplate
 
 	const VoxelGraphicsTemplate &	GraphicsTemplate;
 
-	unsigned int	Texture;
-	// FileInfo Texture ? could be multiple
-	// know all File Names it wants to use
+	FileInfo		TextureFile;
+	unsigned int	TextureIndex;
 
 	::PolyHedra *		PolyHedra;
 

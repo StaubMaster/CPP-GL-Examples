@@ -42,6 +42,7 @@ VoxelTemplate::~VoxelTemplate()
 { }
 VoxelTemplate::VoxelTemplate(VoxelGraphicsTemplate & graphics_template)
 	: GraphicsTemplate(graphics_template)
-	, Texture(0)
+	, TextureFile()
+	, TextureIndex(0)
 	, PolyHedra(nullptr)
 { }
