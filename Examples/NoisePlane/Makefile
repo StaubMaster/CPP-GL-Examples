@@ -43,8 +43,9 @@ FILES := \
 	Item/ItemVoxel.cpp \
 	Item/ItemContainer.cpp \
 	\
-	Menus/Inventory.cpp \
-	Menus/InventorySlot.cpp \
+	Menus/Item/InventorySlot.cpp \
+	Menus/Item/Inventory.cpp \
+	Menus/Item/HotBar.cpp \
 \
 	main.cpp \
 

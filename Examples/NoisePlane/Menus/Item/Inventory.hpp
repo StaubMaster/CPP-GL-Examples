@@ -7,12 +7,17 @@
 # include "InventorySlot.hpp"
 # include "Display/DisplaySize.hpp"
 
+# include "ValueType/VectorU2.hpp"
 # include "Item/ItemContainer.hpp"
 
 struct Inventory : public UI::Control::Form
 {
 	ItemContainer *		Container;
-	InventorySlot		Slots[5][10];
+
+	VectorU2			Count;
+	InventorySlot *		Slots;
+
+	InventorySlot &		operator[](VectorU2 idx);
 
 	~Inventory();
 	Inventory();

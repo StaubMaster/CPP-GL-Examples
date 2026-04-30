@@ -1,14 +1,22 @@
 #ifndef  ITEM_CONTAINER_HPP
 # define ITEM_CONTAINER_HPP
 
+# include "ValueType/VectorU2.hpp"
+
 struct ItemBase;
 
 struct ItemContainer
 {
-	ItemBase *		Items[5][10];
+	VectorU2		Count;
+	ItemBase * *	Data;
+
+	ItemBase * &	operator[](VectorU2 idx);
 
 	~ItemContainer();
-	ItemContainer();
+	ItemContainer() = delete;
+	ItemContainer(VectorU2 count);
+	ItemContainer(const ItemContainer & other) = delete;
+	ItemContainer & operator=(const ItemContainer & other) = delete;
 };
 
 #endif

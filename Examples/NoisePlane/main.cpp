@@ -65,12 +65,12 @@
 #include "Menus/Pause.hpp"
 #include "Menus/Options.hpp"
 #include "Menus/Debug.hpp"
-#include "Menus/Inventory.hpp"
 
 // Item
 #include "Item/ItemBase.hpp"
 #include "Item/ItemVoxel.hpp"
 #include "Item/ItemContainer.hpp"
+#include "Menus/Item/Inventory.hpp"
 
 // Math
 #include <math.h>
@@ -133,6 +133,8 @@ ContextNoisePlane()
 	, PauseMenu()
 	, OptionsMenu()
 	, DebugMenu()
+	, InventoryUI()
+	, Inventory(VectorU2(10, 5))
 	, Perlin2(Perlin2D::Random(Undex2D(8, 8)))
 	, Perlin3(Perlin3D::Random(Undex3D(8, 8, 8)))
 	, Multiform_DisplaySize("DisplaySize")
@@ -716,18 +718,19 @@ void MakeControls()
 		ControlManager.Window.ChildInsert(DebugMenu);
 	}
 	{
-		Inventory.Items[0][0] = new ItemVoxel(VoxelTemplate::OrientationCube);
-		Inventory.Items[0][1] = new ItemVoxel(VoxelTemplate::OrientationCylinder);
-		Inventory.Items[0][2] = new ItemVoxel(VoxelTemplate::OrientationSlope);
-		Inventory.Items[1][0] = new ItemVoxel(VoxelTemplate::Gray);
-		Inventory.Items[1][1] = new ItemVoxel(VoxelTemplate::Grass);
-		Inventory.Items[1][2] = new ItemVoxel(VoxelTemplate::RedLog);
-		Inventory.Items[2][0] = new ItemVoxel(VoxelTemplate::ConcreteCube);
-		Inventory.Items[2][1] = new ItemVoxel(VoxelTemplate::ConcreteCylinder);
+		InventoryPolyHedraManager.MakeCurrent();
+		Inventory[VectorU2(0, 0)] = new ItemVoxel(VoxelTemplate::OrientationCube);
+		Inventory[VectorU2(1, 0)] = new ItemVoxel(VoxelTemplate::OrientationCylinder);
+		Inventory[VectorU2(2, 0)] = new ItemVoxel(VoxelTemplate::OrientationSlope);
+		Inventory[VectorU2(0, 1)] = new ItemVoxel(VoxelTemplate::Gray);
+		Inventory[VectorU2(1, 1)] = new ItemVoxel(VoxelTemplate::Grass);
+		Inventory[VectorU2(2, 1)] = new ItemVoxel(VoxelTemplate::RedLog);
+		Inventory[VectorU2(0, 2)] = new ItemVoxel(VoxelTemplate::ConcreteCube);
+		Inventory[VectorU2(1, 2)] = new ItemVoxel(VoxelTemplate::ConcreteCylinder);
 		InventoryUI.Change(&Inventory);
-
 		InventoryUI.Hide();
 		ControlManager.Window.ChildInsert(InventoryUI);
+		PolyHedraManager.MakeCurrent();
 	}
 }
 
@@ -978,6 +981,11 @@ unsigned int TextCharacterInstances;
 
 void Draw()
 {
+	// should GraphicsManagers just know that they want Enabled/Disabled ?
+	// GraphicsManagerBase so I dont need to call the Create/Delete individually
+	// instead just put them in a Container
+	// also Update/Draw all automatically
+
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
 	PolyHedraManager.ClearInstances();
