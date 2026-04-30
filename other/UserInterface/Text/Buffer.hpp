@@ -4,10 +4,7 @@
 #include "Graphics/Buffer/VertexArray.hpp"
 #include "Graphics/Buffer/Array.hpp"
 
-# include "Graphics/Attribute/Base/Base.hpp"
-# include "Graphics/Attribute/VectorF2.hpp"
-# include "Graphics/Attribute/BoxF2.hpp"
-# include "Graphics/Attribute/ColorF4.hpp"
+# include "Graphics/Attribute/_Include.hpp"
 
 
 

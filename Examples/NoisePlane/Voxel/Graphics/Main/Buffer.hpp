@@ -2,7 +2,7 @@
 # define VOXEL_GRAPHICS_MAIN_BUFFER_HPP
 
 # include "Graphics/Buffer/Array.hpp"
-# include "Graphics/Attribute/VectorF3.hpp"
+# include "Graphics/Attribute/_Include.hpp"
 
 namespace VoxelGraphics
 {

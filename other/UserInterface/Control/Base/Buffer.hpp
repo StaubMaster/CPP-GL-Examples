@@ -1,13 +1,10 @@
 #ifndef  UI_CONTROL_BUFFER_HPP
 # define UI_CONTROL_BUFFER_HPP
 
-#include "Graphics/Buffer/VertexArray.hpp"
-#include "Graphics/Buffer/Array.hpp"
+# include "Graphics/Buffer/VertexArray.hpp"
+# include "Graphics/Buffer/Array.hpp"
 
-#include "Graphics/Attribute/Base/Base.hpp"
-#include "Graphics/Attribute/VectorF2.hpp"
-#include "Graphics/Attribute/ColorF4.hpp"
-#include "Graphics/Attribute/Float.hpp"
+# include "Graphics/Attribute/_Include.hpp"
 
 
 
