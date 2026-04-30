@@ -2,66 +2,93 @@
 
 
 
-DisplaySize Inventory::WindowSize;
-
-
-
 Inventory::~Inventory()
 { }
 Inventory::Inventory()
 	: UI::Control::Form()
+	, Container(nullptr)
 {
-	VectorF2 SlotSpace(40 + (5 * 2));
+	VectorF2 SlotSpace(50 + (5 * 2));
 
 	AnchorSize.X = SlotSpace.X * 10 + (5 * 2);
 	AnchorSize.Y = SlotSpace.Y * 5 + (5 * 2);
 
-	float x = 0;
-	float y = 0;
-	for (unsigned int iy = 0; iy < 5; iy++)
+	for (unsigned int y = 0; y < 5; y++)
 	{
-		y = iy * SlotSpace.Y;
-		for (unsigned int ix = 0; ix < 10; ix++)
+		for (unsigned int x = 0; x < 10; x++)
 		{
-			x = ix * SlotSpace.X;
-			Slots[iy][ix].Anchor.X.AnchorMin(x);
-			Slots[iy][ix].Anchor.Y.AnchorMin(y);
-			ChildInsert(Slots[iy][ix]);
+			Slots[y][x].Anchor.X.AnchorMin(x * SlotSpace.X);
+			Slots[y][x].Anchor.Y.AnchorMin(y * SlotSpace.Y);
+			ChildInsert(Slots[y][x]);
 		}
 	}
 }
 
-#include <iostream>
-#include "ValueType/_Show.hpp"
-void Inventory::InsertDrawingEntryRelay()
+
+
+void Inventory::Change(ItemContainer * container)
 {
-	VectorF2	PixelSize(40, 40); // hardcoded in Shader
-	VectorF2	size = WindowSize.Buffer.SizeFullToNormalRel(PixelSize);
+	Container = container;
 
-	for (unsigned int iy = 0; iy < 5; iy++)
+	// dont show/hide here
+	// bool that says that things changed
+	// give Controls a general Update
+	// rework Control Internals
+
+	//HideItems();
+
+	if (Container == nullptr)
 	{
-		for (unsigned int ix = 0; ix < 10; ix++)
+		for (unsigned int y = 0; y < 5; y++)
 		{
-			VectorF2 center = Slots[iy][ix].DisplayBox.Center();
+			for (unsigned int x = 0; x < 10; x++)
+			{
+				Slots[y][x].Item = nullptr;
+			}
+		}
+	}
+	else
+	{
+		for (unsigned int y = 0; y < 5; y++)
+		{
+			for (unsigned int x = 0; x < 10; x++)
+			{
+				Slots[y][x].Item = Container -> Items[y][x];
+			}
+		}
+	}
 
-			VectorF2 pos = WindowSize.Buffer.PosFullToNormalRel(center);
-			std::cout << "center  : " << center << '\n';
-			std::cout << "pos     : " << (pos) << '\n';
-			std::cout << "size    : " << (size) << '\n';
-			std::cout << "pos/size: " << (pos / size) << '\n';
-			Slots[iy][ix].Show(pos / size);
+	//ShowItems();
+}
+
+#include <iostream>
+void Inventory::ShowItems()
+{
+	for (unsigned int y = 0; y < 5; y++)
+	{
+		for (unsigned int x = 0; x < 10; x++)
+		{
+			Slots[y][x].Show();
 		}
 	}
 	std::cout << '\n';
 }
-void Inventory::RemoveDrawingEntryRelay()
+void Inventory::HideItems()
 {
-	for (unsigned int iy = 0; iy < 5; iy++)
+	for (unsigned int y = 0; y < 5; y++)
 	{
-		for (unsigned int ix = 0; ix < 10; ix++)
+		for (unsigned int x = 0; x < 10; x++)
 		{
-			Slots[iy][ix].Hide();
+			Slots[y][x].Hide();
 		}
 	}
 }
 
+void Inventory::InsertDrawingEntryRelay()
+{
+	ShowItems();
+}
+void Inventory::RemoveDrawingEntryRelay()
+{
+	HideItems();
+}

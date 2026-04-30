@@ -66,7 +66,11 @@
 #include "Menus/Options.hpp"
 #include "Menus/Debug.hpp"
 #include "Menus/Inventory.hpp"
-#include "Inventory/ItemVoxel.hpp"
+
+// Item
+#include "Item/ItemBase.hpp"
+#include "Item/ItemVoxel.hpp"
+#include "Item/ItemContainer.hpp"
 
 // Math
 #include <math.h>
@@ -101,7 +105,9 @@ UI::Text::Manager		TextManager;
 ::PauseMenu		PauseMenu;
 ::OptionsMenu	OptionsMenu;
 ::DebugMenu		DebugMenu;
-::Inventory		Inventory;
+
+::Inventory			InventoryUI;
+::ItemContainer		Inventory;
 
 
 
@@ -575,6 +581,17 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelTemplate & voxe
 	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.NextY);
 	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.NextZ);
 }
+static void PolyHedraVoxelData(VoxelTemplate & voxel_template)
+{
+	voxel_template.PolyHedra = new PolyHedra();
+	voxel_template.PolyHedra -> Skin = new Skin2DA();
+	Skin2DA & skin = *((Skin2DA*)voxel_template.PolyHedra -> Skin);
+	skin.W = 128;
+	skin.H = 64;
+	skin.Images.Insert(voxel_template.TextureFile.LoadImage());
+	skin.Done();
+	PolyHedraVoxelData(*voxel_template.PolyHedra, voxel_template);
+}
 
 void Make()
 {
@@ -625,15 +642,20 @@ void Make()
 		VoxelTemplate::ConcreteCylinder.TextureFile = MediaDirectory.File("Images/ConcreteCube.png");
 	}
 	{
-		VoxelTemplate & temp = VoxelTemplate::ConcreteCylinder;
-		temp.PolyHedra = new PolyHedra();
-		temp.PolyHedra -> Skin = new Skin2DA();
-		Skin2DA & skin = *((Skin2DA*)temp.PolyHedra -> Skin);
-		skin.W = 128;
-		skin.H = 64;
-		skin.Images.Insert(temp.TextureFile.LoadImage());
-		skin.Done();
-		PolyHedraVoxelData(*temp.PolyHedra, temp);
+		Container::Array<VoxelTemplate*> temps({
+			&VoxelTemplate::OrientationCube,
+			&VoxelTemplate::OrientationCylinder,
+			&VoxelTemplate::OrientationSlope,
+			&VoxelTemplate::Gray,
+			&VoxelTemplate::Grass,
+			&VoxelTemplate::RedLog,
+			&VoxelTemplate::ConcreteCube,
+			&VoxelTemplate::ConcreteCylinder,
+		});
+		for (unsigned int i = 0; i < temps.Count(); i++)
+		{
+			PolyHedraVoxelData(*temps[i]);
+		}
 	}
 
 	{
@@ -694,18 +716,18 @@ void MakeControls()
 		ControlManager.Window.ChildInsert(DebugMenu);
 	}
 	{
-		ItemVoxel * item;
+		Inventory.Items[0][0] = new ItemVoxel(VoxelTemplate::OrientationCube);
+		Inventory.Items[0][1] = new ItemVoxel(VoxelTemplate::OrientationCylinder);
+		Inventory.Items[0][2] = new ItemVoxel(VoxelTemplate::OrientationSlope);
+		Inventory.Items[1][0] = new ItemVoxel(VoxelTemplate::Gray);
+		Inventory.Items[1][1] = new ItemVoxel(VoxelTemplate::Grass);
+		Inventory.Items[1][2] = new ItemVoxel(VoxelTemplate::RedLog);
+		Inventory.Items[2][0] = new ItemVoxel(VoxelTemplate::ConcreteCube);
+		Inventory.Items[2][1] = new ItemVoxel(VoxelTemplate::ConcreteCylinder);
+		InventoryUI.Change(&Inventory);
 
-		item = new ItemVoxel();
-		item -> VoxelTemplate = &VoxelTemplate::ConcreteCylinder;
-		Inventory.Slots[0][0].Item = item;
-
-		item = new ItemVoxel();
-		item -> VoxelTemplate = &VoxelTemplate::ConcreteCylinder;
-		Inventory.Slots[1][1].Item = item;
-
-		Inventory.Hide();
-		ControlManager.Window.ChildInsert(Inventory);
+		InventoryUI.Hide();
+		ControlManager.Window.ChildInsert(InventoryUI);
 	}
 }
 
@@ -969,10 +991,12 @@ void Draw()
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 	{
+		InventoryPolyHedraManager.MakeCurrent();
 		ControlManager.UpdateSize(window.Size);
 		ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
 		ControlManager.Window.UpdateEntrys();
 		ControlManager.Draw();
+		PolyHedraManager.MakeCurrent();
 	}
 	TextManager.Draw();
 	TextCharacterInstances = TextManager.Buffer.Inst.Count;
@@ -998,26 +1022,13 @@ static void Toggle(PolyHedraPointer & polyhedra, PolyHedraPointer other)
 	}
 }
 
-/*static VectorF2 BufferFull_To_NormalRel_Pos(VectorF2 pos, DisplaySize display_size)
-{
-	pos = pos / display_size.Buffer.Full; // NormalAbs
-	pos = (pos * VectorF2(2, 2)) - VectorF2(1, 1); // NormalRel
-	return pos;
-}*/
-/*static VectorF2 BufferFull_To_NormalRel_Size(VectorF2 size, DisplaySize display_size)
-{
-	size = size / display_size.Buffer.Full; // NormalAbs
-	size = (size * VectorF2(2, 2)); // NormalRel
-	return size;
-}*/
-
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
 void Frame(FrameTime frame_time) override
 {
 	if (window.KeyBoardManager[Keys::Escape].State == State::Press)
 	{
 		OptionsMenu.Hide();
-		Inventory.Hide();
+		InventoryUI.Hide();
 		if (PauseMenu.IsVisible())
 		{
 			PauseMenu.Hide();
@@ -1031,20 +1042,20 @@ void Frame(FrameTime frame_time) override
 	{
 		if (!PauseMenu.IsVisible() && !OptionsMenu.IsVisible())
 		{
-			if (!Inventory.IsVisible())
+			if (!InventoryUI.IsVisible())
 			{
 				InventoryPolyHedraManager.MakeCurrent();
-				Inventory.Show();
+				InventoryUI.Show();
 				PolyHedraManager.MakeCurrent();
 			}
 			else
 			{
-				Inventory.Hide();
+				InventoryUI.Hide();
 			}
 		}
 	}
 
-	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible() || Inventory.IsVisible())
+	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible() || InventoryUI.IsVisible())
 	{
 		if (window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeFree(); }
 	}
@@ -1294,54 +1305,36 @@ void Frame(FrameTime frame_time) override
 	{
 		InventoryPolyHedraManager.MakeCurrent();
 
-		// as Transformation
-		// scale to PixelSize ?
-		// rotate
-		// move to PixelPos ?
-		// scale depends on DisplySize
-		// calculate Scale here ?
-		// also rotation changes DisplaySize Axis
-		// scale needs to be after rotation and before position
-
-		// Display Scaling is basically just ViewScaling
-		// so use a second Matrix
-
-		// Matrix0
-		//  dont scale
-		//  rotate
-		//  dont move
-		// Matrix1
-		//  scale to PixelSize (different per Instance)
-		//  move to PixelPos (different per Instance)
-		// this could all be done with a customn Matrix
-		// but the PolyHedraManager cant do that
-
 		VectorF2	PixelSize(40, 40); // hardcoded in Shader
 		VectorF2	size = window.Size.Buffer.SizeFullToNormalRel(PixelSize);
 
 		VectorF2	PixelPos;
-		PixelPos.X = window.Size.Buffer.Full.X - 40;
-		PixelPos.Y = 40;
+		VectorF2	pos;
 
-		VectorF2	pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
-
+		if (InventorySlot::StaticItem != nullptr)
 		{
-			PolyHedraObject obj(VoxelTemplate::ConcreteCylinder.PolyHedra);
+			ItemVoxel * item = (ItemVoxel*)InventorySlot::StaticItem;
+			PixelPos.X = window.Size.Buffer.Full.X - 40;
+			PixelPos.Y = 40;
+			pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
+			PolyHedraObject obj(item -> VoxelTemplate -> PolyHedra);
 			obj.Trans().Position.X = pos.X / size.X;
 			obj.Trans().Position.Y = pos.Y / size.Y;
 			obj.Trans().Rotation.X1 = Angle::Degrees(15);
 			obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
 		}
 
-		/*PixelPos = window.MouseManager.CursorPosition().Buffer.Corner;
+		if (InventorySlot::StaticItem != nullptr)
 		{
+			ItemVoxel * item = (ItemVoxel*)InventorySlot::StaticItem;
+			PixelPos = window.MouseManager.CursorPosition().Buffer.Corner;
 			pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
-			PolyHedraObject obj(VoxelTemplate_PolyHedra);
+			PolyHedraObject obj(item -> VoxelTemplate -> PolyHedra);
 			obj.Trans().Position.X = +pos.X / size.X;
 			obj.Trans().Position.Y = -pos.Y / size.Y;
 			obj.Trans().Rotation.X1 = Angle::Degrees(15);
 			obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
-		}*/
+		}
 	
 		time_sum += frame_time.Delta;
 		PolyHedraManager.MakeCurrent();
@@ -1352,7 +1345,7 @@ void Frame(FrameTime frame_time) override
 
 void Resize(DisplaySize display_size) override
 {
-	::Inventory::WindowSize = display_size;
+	::InventorySlot::WindowSize = display_size;
 	Multiform_DisplaySize.ChangeData(display_size);
 }
 
@@ -1360,7 +1353,12 @@ void Resize(DisplaySize display_size) override
 
 // make these virtual and put them in Base
 void MouseScroll(ScrollArgs args) override { (void)args; }
-void MouseClick(ClickArgs args) override { ControlManager.RelayClick(args); }
+void MouseClick(ClickArgs args) override
+{
+	InventoryPolyHedraManager.MakeCurrent();
+	ControlManager.RelayClick(args);
+	PolyHedraManager.MakeCurrent();
+}
 void MouseDrag(DragArgs args) override { ControlManager.RelayCursorDrag(args); }
 
 void KeyBoardKey(KeyArgs args) override { (void)args; }

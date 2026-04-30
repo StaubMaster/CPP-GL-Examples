@@ -38,10 +38,13 @@ FILES := \
 	Menus/Pause.cpp \
 	Menus/Options.cpp \
 	Menus/Debug.cpp \
+\
+	Item/ItemBase.cpp \
+	Item/ItemVoxel.cpp \
+	Item/ItemContainer.cpp \
+	\
 	Menus/Inventory.cpp \
 	Menus/InventorySlot.cpp \
-	Inventory/ItemBase.cpp \
-	Inventory/ItemVoxel.cpp \
 \
 	main.cpp \
 

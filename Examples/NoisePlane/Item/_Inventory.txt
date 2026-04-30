@@ -14,15 +14,14 @@ ItemVoxel : ItemBase
 {
 	VoxelTemplate
 }
-Inventory
+ItemContainer
 {
-	Array of ItemBase Pointers
+
 }
 
 
 
-
-Inventory_UI
+ItemContainerUI
 {
 	Pointer to Inventory
 	creates Item_Slots for however many are needed

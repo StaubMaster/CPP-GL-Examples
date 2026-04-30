@@ -6,10 +6,8 @@ struct VectorF2;
 struct ItemBase
 {
 	unsigned int	Count;
-	~ItemBase();
+	virtual ~ItemBase();
 	ItemBase();
-	virtual void	Show(VectorF2 pos) = 0;
-	virtual void	Hide() = 0;
 };
 
 #endif

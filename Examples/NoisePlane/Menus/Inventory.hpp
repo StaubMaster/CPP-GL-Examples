@@ -7,13 +7,20 @@
 # include "InventorySlot.hpp"
 # include "Display/DisplaySize.hpp"
 
+# include "Item/ItemContainer.hpp"
+
 struct Inventory : public UI::Control::Form
 {
-	static DisplaySize	WindowSize;
+	ItemContainer *		Container;
+	InventorySlot		Slots[5][10];
 
-	InventorySlot	Slots[5][10];
 	~Inventory();
 	Inventory();
+
+	void	Change(ItemContainer * container);
+
+	void	ShowItems();
+	void	HideItems();
 
 	void	InsertDrawingEntryRelay() override;
 	void	RemoveDrawingEntryRelay() override;
