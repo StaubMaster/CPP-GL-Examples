@@ -3,23 +3,42 @@
 
 # include "Graphics/Voxel.hpp"
 # include "VoxelOrientation.hpp" // only for AxisRel
+
 # include "Miscellaneous/Container/Binary.hpp"
+# include "Miscellaneous/Container/Array.hpp"
+# include "BlockList.hpp"
 
 struct VectorU3;
-
-//truct VoxelOrientation;
-struct VoxelGraphicsTemplate;
-struct VoxelTemplate;
 struct Voxel;
 
-struct VoxelGraphicsData
+struct VoxelAxisGraphicsData // VoxelAxisData
 {
 	Container::Binary<VoxelGraphics::MainTriangle>	Data;
 
-	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, unsigned int tex, const VoxelGraphicsData & other);
-	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, unsigned int tex, const VoxelGraphicsTemplate & graphics_temp, AxisRel axis);
-	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelTemplate & temp, AxisRel axis);
+	// Count()
+	// operator[]
+	// Insert()
+};
+struct VoxelGraphicsData
+{
+	VoxelAxisGraphicsData		Here;
+	VoxelAxisGraphicsData		PrevX;
+	VoxelAxisGraphicsData		PrevY;
+	VoxelAxisGraphicsData		PrevZ;
+	VoxelAxisGraphicsData		NextX;
+	VoxelAxisGraphicsData		NextY;
+	VoxelAxisGraphicsData		NextZ;
+
+	const VoxelAxisGraphicsData &	AxisData(AxisRel axis) const;
+};
+struct ChunkGraphicsData // ChunkData
+{
+	BlockList<1024, VoxelGraphics::MainTriangle>		Data;
+	Container::Array<VoxelGraphics::MainTriangle>	Array;
+
+	void	Clear();
 	void	Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis);
+	void	Done();
 };
 
 #endif

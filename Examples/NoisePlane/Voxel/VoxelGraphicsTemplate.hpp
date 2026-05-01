@@ -13,15 +13,9 @@ struct VoxelGraphicsTemplate
 
 
 
-	VoxelGraphicsData	Here;
-	VoxelGraphicsData	PrevX;
-	VoxelGraphicsData	PrevY;
-	VoxelGraphicsData	PrevZ;
-	VoxelGraphicsData	NextX;
-	VoxelGraphicsData	NextY;
-	VoxelGraphicsData	NextZ;
+	VoxelGraphicsData			Data; // this is Graphics Data. this whole struct is general VoxelTypeTemplate
 
-	const VoxelGraphicsData &	AxisData(AxisRel axis) const;
+	const VoxelAxisGraphicsData &	AxisData(AxisRel axis) const;
 
 	bool	HidePrevX;
 	bool	HidePrevY;

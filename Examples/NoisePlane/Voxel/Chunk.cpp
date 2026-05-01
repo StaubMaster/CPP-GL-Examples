@@ -19,6 +19,12 @@
 #include "ValueType/Undex3D.hpp"
 #include "ValueType/UndexLoop3D.hpp"
 
+#include "Telemetry/StopWatch.hpp"
+
+
+
+ValueAverager<float> Chunk::MainBufferDataTime(64);
+
 
 
 bool	Chunk::Done() const { return GenerationState == GenerationState::Generated; }
@@ -309,7 +315,7 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 //	GeneratePlane(*this);
 	GeneratePerlin(noise2);
 //	GeneratePerlin(noise3);
-//	GenerateGrid();
+	GenerateGrid();
 
 	GenerationState = GenerationState::Generated;
 
@@ -350,9 +356,10 @@ void Chunk::GraphicsDelete()
 
 
 
-static void GraphicsData(VoxelGraphicsData & data, const ChunkNeighbours & neighbours, VectorU3 u, const Voxel & voxel, AxisRel axis)
+static void GraphicsData(ChunkGraphicsData & data, const ChunkNeighbours & neighbours, VectorU3 u, const Voxel & voxel, AxisRel axis)
 {
-	if (neighbours.Visible(voxel.Orientation.absolute(axis), u))
+	//if (neighbours.Visible(voxel.Orientation.absolute(axis), u))
+	if (neighbours.Visible(axis, u))
 	{
 		data.Concatnate(u, voxel, axis);
 	}
@@ -364,10 +371,11 @@ void Chunk::GraphicsUpdateMainData()
 
 	if (!Done()) { return; }
 
-	MainBufferData.Data.Clear();
-
+	MainBufferData.Clear();
 	if (!IsEmpty())
 	{
+		StopWatch sw;
+		sw.Start();
 		Undex3D size(CHUNK_VALUES_PER_SIDE);
 		UndexLoop3D loop(Undex3D(), size);
 		for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
@@ -382,7 +390,11 @@ void Chunk::GraphicsUpdateMainData()
 			GraphicsData(MainBufferData, Neighbours, u, voxel, AxisRel::NextY);
 			GraphicsData(MainBufferData, Neighbours, u, voxel, AxisRel::NextZ);
 		}
+		sw.Stop();
+		MainBufferDataTime.NewValue(sw.ElapsedTime());
 	}
+	MainBufferData.Done();
+
 	MainBufferState = BufferDataState::Ready;
 }
 void Chunk::GraphicsUpdateMainBuffer()
@@ -391,9 +403,8 @@ void Chunk::GraphicsUpdateMainBuffer()
 
 	if (MainBufferState != BufferDataState::Ready) { return; }
 
-	Buffer.Main.Data(MainBufferData.Data);
-//	Buffer.Main.Count = MainBufferData.Count() * 3;
-	MainBufferData.Data.Clear();
+	Buffer.Main.Data(MainBufferData.Array);
+	MainBufferData.Clear();
 
 	MainBufferState = BufferDataState::None;
 }
@@ -422,7 +433,6 @@ void Chunk::Draw()
 {
 	if (!GraphicsExist) { return; }
 	if (!Done()) { return; }
-	if (IsEmpty()) { return; }
 	if (BufferNeedsInit)
 	{
 		Buffer.Inst.Init();
@@ -431,5 +441,6 @@ void Chunk::Draw()
 	}
 	GraphicsUpdateMainBuffer();
 	UpdateInstBuffer();
+	if (IsEmpty()) { return; }
 	Buffer.Draw();
 }

@@ -71,10 +71,6 @@ struct ChunkManager
 
 
 
-	bool	DontInsert = false;
-	bool	DontRemove = false;
-	bool	DontGenerate = false;
-
 	void	Clear();
 
 	void	InsertAround(VectorF3 pos, unsigned int size);

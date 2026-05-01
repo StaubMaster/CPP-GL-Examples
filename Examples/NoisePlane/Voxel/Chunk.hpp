@@ -20,7 +20,10 @@
 # include "ValueType/VectorI3.hpp"
 # include "ValueType/VectorU3.hpp"
 
-#include "Miscellaneous/Container/Binary.hpp"
+# include "Miscellaneous/Container/Binary.hpp"
+# include "Miscellaneous/Container/Array.hpp"
+
+# include "Telemetry/ValueAverager.hpp"
 
 struct Perlin2D;
 struct Perlin3D;
@@ -104,8 +107,10 @@ struct Chunk
 		Ready,
 	};
 
+	static ValueAverager<float>		MainBufferDataTime;
+
 	BufferDataState		MainBufferState; // put into Buffer ?
-	VoxelGraphicsData	MainBufferData;
+	ChunkGraphicsData	MainBufferData;
 	void	GraphicsUpdateMainData();
 	void	GraphicsUpdateMainBuffer();
 

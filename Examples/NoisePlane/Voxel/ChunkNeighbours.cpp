@@ -62,7 +62,8 @@ bool ChunkNeighbours::Visible(AxisRel axis, VectorU3 udx) const
 	Voxel & voxel = (*chunk)[udx];
 	if (voxel.Template == nullptr) { return true; }
 
-	return voxel.Template -> Visible(voxel.Orientation.relative(axis));
+	//return voxel.Template -> Visible(voxel.Orientation.relative(axis));
+	return voxel.Template -> Visible(axis);
 }
 
 void ChunkNeighbours::UpdateOthersHere()

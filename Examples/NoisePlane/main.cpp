@@ -75,6 +75,8 @@
 // Math
 #include <math.h>
 
+#include "BlockList.hpp"
+
 struct InventoryShader : public ::PolyHedraFull::Shader
 {
 	Uniform::DisplaySize		DisplaySize;
@@ -522,13 +524,13 @@ void UpdateAroundView(FrameTime frame_time)
 {
 	UpdateViewColliding(frame_time);
 
-	ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange);
-	ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange);
-	ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, ChunkInsertRange, 1);
+	if (!DontRemove) { ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange); }
+	if (!DontInsert) { ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange); }
+	if (!DontGenerate) { ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, ChunkInsertRange, 1); }
 
 	ViewRayFunction();
 
-	ChunkManager.GraphicsUpdateDataAround(view.Trans.Position, 1);
+	if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position, 1); }
 }
 
 
@@ -563,7 +565,7 @@ static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b110));
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
 }
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGraphicsData & data)
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsData & data)
 {
 	Skin2DA & skin = *((Skin2DA*)polyhedra.Skin);
 	VectorF3 off(0.5f);
@@ -584,15 +586,15 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGraphicsData & 
 		);
 	}
 }
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelTemplate & voxel_template)
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGraphicsData & voxel_graphics)
 {
-	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.Here);
-	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.PrevX);
-	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.PrevY);
-	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.PrevZ);
-	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.NextX);
-	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.NextY);
-	PolyHedraVoxelData(polyhedra, voxel_template.GraphicsTemplate.NextZ);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.Here);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevX);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevY);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevZ);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.NextX);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.NextY);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.NextZ);
 }
 static void PolyHedraVoxelData(VoxelTemplate & voxel_template)
 {
@@ -603,7 +605,7 @@ static void PolyHedraVoxelData(VoxelTemplate & voxel_template)
 	skin.H = 64;
 	skin.Images.Insert(voxel_template.TextureFile.LoadImage());
 	skin.Done();
-	PolyHedraVoxelData(*voxel_template.PolyHedra, voxel_template);
+	PolyHedraVoxelData(*voxel_template.PolyHedra, voxel_template.GraphicsTemplate.Data);
 }
 
 void Make()
@@ -687,6 +689,7 @@ unsigned int	ChunkRemoveRange;
 void MakeControls()
 {
 	std::cerr << "MakeControls()\n";
+	// Pause
 	{
 		PauseMenu.Continue.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Continue);
 		PauseMenu.Options.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Options);
@@ -696,12 +699,16 @@ void MakeControls()
 		PauseMenu.Show();
 		ControlManager.Window.ChildInsert(PauseMenu);
 	}
+	// Options
 	{
 		OptionsMenu.FOV.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FOV);
 		OptionsMenu.FOV.SetValue(view.FOV.ToDegrees());
 
 		OptionsMenu.Depth.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Depth);
 		OptionsMenu.Depth.SetValue(1000.0f);
+
+		OptionsMenu.DepthRange.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_DepthRange);
+		OptionsMenu.DepthRange.SetValue(view.Depth.Range.Min);
 
 		ChunkInsertRange = 3;
 		OptionsMenu.ChunkInsert.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Insert);
@@ -716,6 +723,7 @@ void MakeControls()
 		OptionsMenu.Hide();
 		ControlManager.Window.ChildInsert(OptionsMenu);
 	}
+	// Debug
 	{
 		DebugMenu.FPS.Check.Check(true);
 
@@ -728,6 +736,7 @@ void MakeControls()
 		DebugMenu.Hide();
 		ControlManager.Window.ChildInsert(DebugMenu);
 	}
+	// Inventory
 	{
 		InventoryPolyHedraManager.MakeCurrent();
 		Inventory[VectorU2(0, 0)] = new ItemVoxel(VoxelTemplate::OrientationCube);
@@ -743,6 +752,7 @@ void MakeControls()
 		ControlManager.Window.ChildInsert(InventoryUI);
 		PolyHedraManager.MakeCurrent();
 	}
+	// HotBar
 	{
 		InventoryPolyHedraManager.MakeCurrent();
 		HotBarUI.Anchor.Y.AnchorMax(0);
@@ -823,6 +833,12 @@ void OptionsMenu_Depth(float val)
 
 	unsigned int v = val;
 	OptionsMenu.Depth.SetText("Depth:" + std::to_string(v));
+}
+void OptionsMenu_DepthRange(float val)
+{
+	view.Depth.Range.ChangeMin(val);
+	Multiform_Depth.ChangeData(view.Depth);
+	OptionsMenu.DepthRange.SetText("DepthRange:" + std::to_string(val));
 }
 void OptionsMenu_Chunk_Insert(float val)
 {
@@ -1049,8 +1065,266 @@ static void Toggle(PolyHedraPointer & polyhedra, PolyHedraPointer other)
 	}
 }
 
+bool	DontRemove = false;
+bool	DontInsert = false;
+bool	DontGenerate = false;
+bool	DontBuffer = false;
+
+void BlockListTest()
+{
+	BlockList<4, unsigned int> list;
+
+	unsigned int count = Random::UInt32() & 0xF;
+	std::cout << "count " << count << '\n';
+	for (unsigned int c = 0; c < count; c++)
+	{
+		unsigned int item = Random::UInt32() & 0xF;
+		std::cout << '[' << c << ']' << item << '\n';
+		list.Insert(item);
+	}
+	std::cout << '\n';
+
+	std::cout << "count " << list.BlockCount() << '\n';
+	for (unsigned int b = 0; b < list.BlockCount(); b++)
+	{
+		std::cout << '[' << b << ']';
+		const BlockList<4, unsigned int>::Block & block = list.BlockIndex(b);
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			std::cout << ' ' << block.Data[i];
+		}
+		std::cout << '\n';
+	}
+	std::cout << '\n';
+
+	std::cout << "count " << list.Count() << '\n';
+	for (unsigned int i = 0; i < list.Count(); i++)
+	{
+		std::cout << '[' << i << ']' << list[i] << '\n';
+	}
+	std::cout << '\n';
+	std::cout << '\n';
+}
+void FrameText(FrameTime frame_time)
+{
+	std::stringstream ss;
+
+	//BlockListTest();
+
+	if (DebugMenu.FPS.Check.IsChecked())
+	{
+		ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
+		ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
+		ss << '\n';
+	}
+
+	{
+		ss << "MainBufferDataTime:\n";
+		ss << "Avg: " << Chunk::MainBufferDataTime.Average() << "s\n";
+		ss << "Min: " << Chunk::MainBufferDataTime.Min() << "s\n";
+		ss << "Max: " << Chunk::MainBufferDataTime.Max() << "s\n";
+		ss << '\n';
+	}
+
+	{
+		ss << "TextCharacterInstances " << TextCharacterInstances << '\n';
+		ss << '\n';
+	}
+
+	if (DebugMenu.View.Check.IsChecked())
+	{
+		ss << "View " << view.Trans.Position << '\n';
+		ss << "View " << ViewEntity.Vel << ' ' << ViewEntity.Vel.length() << '\n';
+		ss << "None : " << (ViewCollisionSide.None) << '\n';
+		ss << "PrevX: " << (ViewCollisionSide.PrevX) << '\n';
+		ss << "PrevY: " << (ViewCollisionSide.PrevY) << '\n';
+		ss << "PrevZ: " << (ViewCollisionSide.PrevZ) << '\n';
+		ss << "NextX: " << (ViewCollisionSide.NextX) << '\n';
+		ss << "NextY: " << (ViewCollisionSide.NextY) << '\n';
+		ss << "NextZ: " << (ViewCollisionSide.NextZ) << '\n';
+		ss << '\n';
+	}
+
+	ss << "DontInsert: " << DontInsert << '\n';
+	ss << "DontRemove: " << DontRemove << '\n';
+	ss << "DontGenerate: " << DontGenerate << '\n';
+	ss << "DontBuffer: " << DontBuffer << '\n';
+	ss << '\n';
+
+	if (DebugMenu.ChunkHere.Check.IsChecked())
+	{
+		VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
+		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
+		if (idx.ChunkMan != 0xFFFFFFFF)
+		{
+			ss << "Chunk: " << idx.ChunkMan << '\n';
+			Chunk & chunk = *ChunkManager.Chunks[idx.ChunkMan];
+
+			ss << "Data: ";
+			if (chunk.IsEmpty()) { ss << "Empty"; } else
+			{
+				ss << Memory1000ToString(CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
+			}
+			ss << '\n';
+
+			ss << "GenerationState: ";
+			if (chunk.Done()) { ss << "Done"; } else
+			{
+				switch (chunk.GenerationState)
+				{
+					case GenerationState::None: ss << "None"; break;
+					case GenerationState::Generated: ss << "Generated"; break;
+				};
+			}
+			ss << '\n';
+
+			ss << "MainBufferState: ";
+			switch (chunk.MainBufferState)
+			{
+				case Chunk::BufferDataState::None: ss << "None"; break;
+				case Chunk::BufferDataState::Needed : ss << "Needed"; break;
+				case Chunk::BufferDataState::Ready: ss << "Ready"; break;
+			}
+			ss << '\n';
+
+			ss << "Buffer: ";
+			ss << Memory1000ToString(chunk.Buffer.Main.Count * sizeof(VoxelGraphics::MainData));
+			ss << '\n';
+
+			ss << '\n';
+		}
+		else
+		{
+			ss << "No Chunk Info\n";
+		}
+		ss << '\n';
+	}
+
+	/*{
+		unsigned int count = PolyHedraManager.InstanceManagers.Count();
+		unsigned int all_count = PolyHedraManager.ObjectDatas.Count();
+		unsigned int full_count = 0;
+		unsigned int wire_count = 0;
+		for (unsigned int i = 0; i < count; i++)
+		{
+			full_count += PolyHedraManager.InstanceManagers[i].InstancesFull.Count();
+			wire_count += PolyHedraManager.InstanceManagers[i].InstancesWire.Count();
+		}
+		ss << "PolyHedra Main|Inst " << count << '|' << all_count << '\n';
+		ss << "Full|Wire" << ' ' << full_count << '|' << wire_count << '\n';
+		ss << '\n';
+	}*/
+
+	/*{
+		unsigned int count_planes = PlaneManager.Planes.Count();
+		unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
+		ss << "Planes|Tiles:" << count_planes << '|' << count_tiles;
+		ss << " (" << Memory1000ToString(count_tiles * sizeof(float)) << ")\n";
+		ss << '\n';
+	}*/
+
+	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
+	{
+		unsigned int chunks_t = ChunkManager.Chunks.Count(); // total
+		unsigned int chunks_u = 0; // ungenerated
+		unsigned int chunks_f = 0; // filled
+		unsigned int chunks_e = 0; // empty
+		unsigned int chunks_main__ = 0; // Main Data None
+		unsigned int chunks_main_n = 0; // Main Data Needed
+		unsigned int chunks_main_r = 0; // Main Data Ready
+		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
+		{
+			Chunk & chunk = *ChunkManager.Chunks[i];
+			if (chunk.Done())
+			{
+				if (chunk.Data != nullptr)
+				{ chunks_f++; }
+				else
+				{ chunks_e++; }
+			}
+			else
+			{ chunks_u++; }
+			if (chunk.MainBufferState == Chunk::BufferDataState::None) { chunks_main__++; }
+			if (chunk.MainBufferState == Chunk::BufferDataState::Needed) { chunks_main_n++; }
+			if (chunk.MainBufferState == Chunk::BufferDataState::Ready) { chunks_main_r++; }
+		}
+		ss << "Chunks"
+		 << ':' << chunks_t << '['
+		 << 'U' << chunks_u << '|'
+		 << 'E' << chunks_e << '|'
+		 << 'F' << chunks_f << ']'
+		 << ' ' << chunks_main__ << ' '
+		 << 'M' << chunks_main_n << ' '
+		 << 'R' << chunks_main_r << ' '
+		 << '\n';
+		ss << "Voxels:" << Seperated1000(chunks_f * CHUNK_VALUES_PER_VOLM);
+		ss << " * " << Memory1000ToString(sizeof(Voxel));
+		ss << " = " << Memory1000ToString(chunks_f * CHUNK_VALUES_PER_VOLM * sizeof(Voxel)) << '\n';
+		ss << '\n';
+	}
+
+	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
+	{
+		unsigned long long main_count = 0;
+		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
+		{
+			main_count += ChunkManager.Chunks[i] -> Buffer.Main.Count;
+		}
+		ss << "Voxel BufferData: " << Seperated1000(main_count);
+		ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) <<")\n";
+	}
+	
+	UI::Text::Object text; text.Create();
+	if (DebugMenu.IsVisible())
+	{
+		text.TextPosition().X = DebugMenu.Anchor.X.GetMinSize();
+	}
+	text.Color() = ColorF4(1, 1, 1);
+	text.Bound().Min = Point2D();
+	text.Bound().Max = window.Size.Buffer.Full;
+	text.String() = ss.str();
+}
+void InventoryCursor(FrameTime frame_time)
+{
+	static float time_sum = 0.0f;
+	InventoryPolyHedraManager.MakeCurrent();
+
+	VectorF2	PixelSize(40, 40); // hardcoded in Shader
+	VectorF2	size = window.Size.Buffer.SizeFullToNormalRel(PixelSize);
+
+	VectorF2	PixelPos;
+	VectorF2	pos;
+
+	if (HotBar[VectorU2(0, 0)] != nullptr)
+	{
+		ItemVoxel * item = (ItemVoxel*)HotBar[VectorU2(0, 0)];
+		PixelPos.X = window.Size.Buffer.Full.X - 40;
+		PixelPos.Y = 40;
+		pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
+		PolyHedraObject obj(item -> VoxelTemplate -> PolyHedra);
+		obj.Trans().Position.X = pos.X / size.X;
+		obj.Trans().Position.Y = pos.Y / size.Y;
+		obj.Trans().Rotation.X1 = Angle::Degrees(15);
+		obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
+	}
+
+	if (InventorySlot::StaticItem != nullptr)
+	{
+		ItemVoxel * item = (ItemVoxel*)InventorySlot::StaticItem;
+		PixelPos = window.MouseManager.CursorPosition().Buffer.Corner;
+		pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
+		PolyHedraObject obj(item -> VoxelTemplate -> PolyHedra);
+		obj.Trans().Position.X = +pos.X / size.X;
+		obj.Trans().Position.Y = -pos.Y / size.Y;
+		obj.Trans().Rotation.X1 = Angle::Degrees(15);
+		obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
+	}
+
+	time_sum += frame_time.Delta;
+	PolyHedraManager.MakeCurrent();
+}
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
-void Frame(FrameTime frame_time) override
+void FrameInput()
 {
 	if (window.KeyBoardManager[Keys::Escape].State == State::Press)
 	{
@@ -1085,20 +1359,11 @@ void Frame(FrameTime frame_time) override
 		}
 	}
 
-	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible() || InventoryUI.IsVisible())
-	{
-		if (window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeFree(); }
-	}
-	else
-	{
-		if (!window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeLock(); }
-	}
-
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { Toggle(ViewRaySync); }
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { Toggle(ChunkManager.ViewRayPolyHedra, ViewRayPolyHedra); }
 	if (window.KeyBoardManager[Keys::D3].State == State::Press) { Toggle(ChunkManager.VoxelBoxPolyHedra, VoxelCube); }
 
-	if (window.KeyBoardManager[Keys::F8].State == State::Press)
+	if (window.KeyBoardManager[Keys::F7].State == State::Press)
 	{
 		if (DebugMenu.IsVisible())
 		{
@@ -1129,9 +1394,23 @@ void Frame(FrameTime frame_time) override
 		ChunkManager.Clear();
 	}
 
-	if (window.KeyBoardManager[Keys::F11].State == State::Press) { Toggle(ChunkManager.DontRemove); }
-	if (window.KeyBoardManager[Keys::F10].State == State::Press) { Toggle(ChunkManager.DontInsert); }
-	if (window.KeyBoardManager[Keys::F9].State == State::Press) { Toggle(ChunkManager.DontGenerate); }
+	if (window.KeyBoardManager[Keys::F11].State == State::Press) { Toggle(DontRemove); }
+	if (window.KeyBoardManager[Keys::F10].State == State::Press) { Toggle(DontInsert); }
+	if (window.KeyBoardManager[Keys::F9].State == State::Press) { Toggle(DontGenerate); }
+	if (window.KeyBoardManager[Keys::F8].State == State::Press) { Toggle(DontBuffer); }
+
+	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible() || InventoryUI.IsVisible())
+	{
+		if (window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeFree(); }
+	}
+	else
+	{
+		if (!window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeLock(); }
+	}
+}
+void Frame(FrameTime frame_time) override
+{
+	FrameInput();
 
 	if (!OptionsMenu.IsVisible())
 	{
@@ -1166,209 +1445,9 @@ void Frame(FrameTime frame_time) override
 		chunk_box.ShowWire();
 	}
 
-	{
-		std::stringstream ss;
+	FrameText(frame_time);
 
-		if (DebugMenu.FPS.Check.IsChecked())
-		{
-			ss << "Frame Hz(" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")\n";
-			ss << "Frame D(" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")\n";
-			ss << '\n';
-		}
-
-		{
-			ss << "TextCharacterInstances " << TextCharacterInstances << '\n';
-			ss << '\n';
-		}
-
-		if (DebugMenu.View.Check.IsChecked())
-		{
-			ss << "View " << view.Trans.Position << '\n';
-			ss << "View " << ViewEntity.Vel << ' ' << ViewEntity.Vel.length() << '\n';
-			ss << "None : " << (ViewCollisionSide.None) << '\n';
-			ss << "PrevX: " << (ViewCollisionSide.PrevX) << '\n';
-			ss << "PrevY: " << (ViewCollisionSide.PrevY) << '\n';
-			ss << "PrevZ: " << (ViewCollisionSide.PrevZ) << '\n';
-			ss << "NextX: " << (ViewCollisionSide.NextX) << '\n';
-			ss << "NextY: " << (ViewCollisionSide.NextY) << '\n';
-			ss << "NextZ: " << (ViewCollisionSide.NextZ) << '\n';
-			ss << '\n';
-		}
-
-		ss << "DontInsert: " << ChunkManager.DontInsert << '\n';
-		ss << "DontRemove: " << ChunkManager.DontRemove << '\n';
-		ss << "DontGenerate: " << ChunkManager.DontGenerate << '\n';
-		ss << '\n';
-
-		if (DebugMenu.ChunkHere.Check.IsChecked())
-		{
-			VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
-			ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
-			if (idx.ChunkMan != 0xFFFFFFFF)
-			{
-				ss << "Chunk: " << idx.ChunkMan << '\n';
-				Chunk & chunk = *ChunkManager.Chunks[idx.ChunkMan];
-
-				ss << "Data: ";
-				if (chunk.IsEmpty()) { ss << "Empty"; } else
-				{
-					ss << Memory1000ToString(CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
-				}
-				ss << '\n';
-
-				ss << "GenerationState: ";
-				if (chunk.Done()) { ss << "Done"; } else
-				{
-					switch (chunk.GenerationState)
-					{
-						case GenerationState::None: ss << "None"; break;
-						case GenerationState::Generated: ss << "Generated"; break;
-					};
-				}
-				ss << '\n';
-
-				ss << "MainBufferState: ";
-				switch (chunk.MainBufferState)
-				{
-					case Chunk::BufferDataState::None: ss << "None"; break;
-					case Chunk::BufferDataState::Needed : ss << "Needed"; break;
-					case Chunk::BufferDataState::Ready: ss << "Ready"; break;
-				}
-				ss << '\n';
-
-				ss << "Buffer: ";
-				ss << Memory1000ToString(chunk.Buffer.Main.Count * sizeof(VoxelGraphics::MainData));
-				ss << '\n';
-
-				ss << '\n';
-			}
-			else
-			{
-				ss << "No Chunk Info\n";
-			}
-			ss << '\n';
-		}
-
-		/*{
-			unsigned int count = PolyHedraManager.InstanceManagers.Count();
-			unsigned int all_count = PolyHedraManager.ObjectDatas.Count();
-			unsigned int full_count = 0;
-			unsigned int wire_count = 0;
-			for (unsigned int i = 0; i < count; i++)
-			{
-				full_count += PolyHedraManager.InstanceManagers[i].InstancesFull.Count();
-				wire_count += PolyHedraManager.InstanceManagers[i].InstancesWire.Count();
-			}
-			ss << "PolyHedra Main|Inst " << count << '|' << all_count << '\n';
-			ss << "Full|Wire" << ' ' << full_count << '|' << wire_count << '\n';
-			ss << '\n';
-		}*/
-
-		/*{
-			unsigned int count_planes = PlaneManager.Planes.Count();
-			unsigned int count_tiles = count_planes * PLANE_VALUES_PER_AREA;
-			ss << "Planes|Tiles:" << count_planes << '|' << count_tiles;
-			ss << " (" << Memory1000ToString(count_tiles * sizeof(float)) << ")\n";
-			ss << '\n';
-		}*/
-
-		if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
-		{
-			unsigned int chunks_t = ChunkManager.Chunks.Count(); // total
-			unsigned int chunks_u = 0; // ungenerated
-			unsigned int chunks_f = 0; // filled
-			unsigned int chunks_e = 0; // empty
-			unsigned int chunks_main_n = 0; // Main Data Needed
-			unsigned int chunks_main_r = 0; // Main Data Ready
-			for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
-			{
-				Chunk & chunk = *ChunkManager.Chunks[i];
-				if (chunk.Done())
-				{
-					if (chunk.Data != nullptr)
-					{ chunks_f++; }
-					else
-					{ chunks_e++; }
-				}
-				else
-				{ chunks_u++; }
-				if (chunk.MainBufferState == Chunk::BufferDataState::Needed) { chunks_main_n++; }
-				if (chunk.MainBufferState == Chunk::BufferDataState::Ready) { chunks_main_r++; }
-			}
-			ss << "Chunks"
-			 << ':' << chunks_t << '['
-			 << 'U' << chunks_u << '|'
-			 << 'E' << chunks_e << '|'
-			 << 'F' << chunks_f << ']'
-			 << 'M' << chunks_main_n << ' '
-			 << 'R' << chunks_main_r << ' '
-			 << '\n';
-			ss << "Voxels:" << Seperated1000(chunks_f * CHUNK_VALUES_PER_VOLM);
-			ss << " * " << Memory1000ToString(sizeof(Voxel));
-			ss << " = " << Memory1000ToString(chunks_f * CHUNK_VALUES_PER_VOLM * sizeof(Voxel)) << '\n';
-			ss << '\n';
-		}
-
-		if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
-		{
-			unsigned long long main_count = 0;
-			for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
-			{
-				main_count += ChunkManager.Chunks[i] -> Buffer.Main.Count;
-			}
-			ss << "Voxel BufferData: " << Seperated1000(main_count);
-			ss << " (" << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData)) <<")\n";
-		}
-
-		UI::Text::Object text; text.Create();
-		if (DebugMenu.IsVisible())
-		{
-			text.TextPosition().X = DebugMenu.Anchor.X.GetMinSize();
-		}
-		text.Color() = ColorF4(1, 1, 1);
-		text.Bound().Min = Point2D();
-		text.Bound().Max = window.Size.Buffer.Full;
-		text.String() = ss.str();
-	}
-
-	static float time_sum = 0.0f;
-	{
-		InventoryPolyHedraManager.MakeCurrent();
-
-		VectorF2	PixelSize(40, 40); // hardcoded in Shader
-		VectorF2	size = window.Size.Buffer.SizeFullToNormalRel(PixelSize);
-
-		VectorF2	PixelPos;
-		VectorF2	pos;
-
-		if (HotBar[VectorU2(0, 0)] != nullptr)
-		{
-			ItemVoxel * item = (ItemVoxel*)HotBar[VectorU2(0, 0)];
-			PixelPos.X = window.Size.Buffer.Full.X - 40;
-			PixelPos.Y = 40;
-			pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
-			PolyHedraObject obj(item -> VoxelTemplate -> PolyHedra);
-			obj.Trans().Position.X = pos.X / size.X;
-			obj.Trans().Position.Y = pos.Y / size.Y;
-			obj.Trans().Rotation.X1 = Angle::Degrees(15);
-			obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
-		}
-
-		if (InventorySlot::StaticItem != nullptr)
-		{
-			ItemVoxel * item = (ItemVoxel*)InventorySlot::StaticItem;
-			PixelPos = window.MouseManager.CursorPosition().Buffer.Corner;
-			pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
-			PolyHedraObject obj(item -> VoxelTemplate -> PolyHedra);
-			obj.Trans().Position.X = +pos.X / size.X;
-			obj.Trans().Position.Y = -pos.Y / size.Y;
-			obj.Trans().Rotation.X1 = Angle::Degrees(15);
-			obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
-		}
-	
-		time_sum += frame_time.Delta;
-		PolyHedraManager.MakeCurrent();
-	}
+	InventoryCursor(frame_time);
 
 	Draw();
 }

@@ -19,7 +19,7 @@ VoxelTemplate VoxelTemplate::ConcreteCylinder(VoxelGraphicsTemplate::Cylinder);
 
 
 
-const VoxelGraphicsData & VoxelTemplate::AxisData(AxisRel axis) const
+const VoxelAxisGraphicsData & VoxelTemplate::AxisData(AxisRel axis) const
 {
 	return GraphicsTemplate.AxisData(axis);
 }

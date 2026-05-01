@@ -47,6 +47,9 @@ FILES := \
 	Menus/Item/Inventory.cpp \
 	Menus/Item/HotBar.cpp \
 \
+	Telemetry/Time.cpp \
+	Telemetry/StopWatch.cpp \
+\
 	main.cpp \
 
 DIR_SRC := .

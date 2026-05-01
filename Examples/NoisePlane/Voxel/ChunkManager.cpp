@@ -254,8 +254,6 @@ static unsigned int LoopCount;
 
 void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 {
-	if (DontInsert) { return; }
-
 	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 
 	BoxI3 box(chunk_idx - (int)size, chunk_idx + (int)size);
@@ -306,8 +304,6 @@ void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 }
 void ChunkManager::InsertChunk(VectorI3 idx)
 {
-	if (DontInsert) { return; }
-
 	//Chunk * chunk = FindChunkOrNull(idx);
 	//if (chunk == nullptr)
 	{
@@ -321,8 +317,6 @@ void ChunkManager::InsertChunk(VectorI3 idx)
 
 void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 {
-	if (DontRemove) { return; }
-
 	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 	BoxI3 chunk_box(chunk_idx - (int)size, chunk_idx + (int)size);
 
@@ -337,8 +331,6 @@ void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 }
 void ChunkManager::RemoveChunk(unsigned int idx)
 {
-	if (DontRemove) { return; }
-
 	Chunk * chunk = Chunks[idx];
 	Chunks.Remove(idx); // this might be slow. set to null and then remove all at once. maybe make Containers delete all items that match something
 	/*if (chunk != nullptr)
@@ -350,8 +342,6 @@ void ChunkManager::RemoveChunk(unsigned int idx)
 
 void ChunkManager::GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3, VectorF3 pos, unsigned int size, unsigned int count)
 {
-	if (DontGenerate) { return; }
-
 	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 	BoxI3 chunk_box(chunk_idx - (int)size, chunk_idx + (int)size);
 
@@ -438,6 +428,7 @@ void ChunkManager::GraphicsUpdateDataAround(VectorF3 pos, unsigned int count)
 		{
 			if (Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *Chunks[i];
+			if (!chunk.Done()) { continue; }
 			if (chunk.MainBufferState != Chunk::BufferDataState::Needed) { continue; }
 			VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
 			float d = rel.length2();

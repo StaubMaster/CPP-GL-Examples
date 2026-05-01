@@ -6,8 +6,8 @@
 # include "VoxelOrientation.hpp"
 
 struct Voxel;
-struct VoxelGraphicsData;
 struct VoxelGraphicsTemplate;
+struct VoxelAxisGraphicsData;
 class PolyHedra;
 
 struct VoxelTemplate
@@ -32,7 +32,7 @@ struct VoxelTemplate
 
 	::PolyHedra *		PolyHedra;
 
-	const VoxelGraphicsData &	AxisData(AxisRel axis) const;
+	const VoxelAxisGraphicsData &	AxisData(AxisRel axis) const;
 	bool	Visible(AxisRel axis) const;
 
 	Voxel	ToVoxel(AxisRel placeAxis0, AxisRel placeAxis1) const;
