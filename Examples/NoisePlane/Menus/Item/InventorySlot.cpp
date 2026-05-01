@@ -27,9 +27,9 @@ InventorySlot::InventorySlot()
 #include "ValueType/_Show.hpp"
 void InventorySlot::Show()
 {
-	if (Item != nullptr)
+	if (Item != nullptr && *Item != nullptr)
 	{
-		ItemVoxel * item = (ItemVoxel*)Item;
+		ItemVoxel * item = (ItemVoxel*)*Item;
 		if (item -> VoxelTemplate != nullptr && item -> VoxelTemplate -> PolyHedra != nullptr)
 		{
 			VectorF2 PixelSize(40, 40); // hardcoded in Shader
@@ -58,10 +58,13 @@ void InventorySlot::RelayClick(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		Hide();
-		ItemBase * temp = Item;
-		Item = StaticItem;
-		StaticItem = temp;
-		Show();
+		if (Item != nullptr)
+		{
+			Hide();
+			ItemBase * temp = *Item;
+			*Item = StaticItem;
+			StaticItem = temp;
+			Show();
+		}
 	}
 }

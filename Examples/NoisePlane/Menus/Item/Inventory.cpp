@@ -45,7 +45,7 @@ void Inventory::Change(ItemContainer * container)
 		Slots[_u].Anchor.X.AnchorMin(u.X * SlotSpace.X);
 		Slots[_u].Anchor.Y.AnchorMin(u.Y * SlotSpace.Y);
 		ChildInsert(Slots[_u]);
-		Slots[_u].Item = (*Container)[u];
+		Slots[_u].Item = &(*Container)[u];
 	}
 
 

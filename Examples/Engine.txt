@@ -5,3 +5,14 @@ rename Attributes and Uniforms to fit with new ValueType Names
 make Attributes and Uniforms for Vectors
 currently they are for float Arrays
 make seperate thing for those
+
+
+
+GraphicsManager
+GraphicsObject
+all should be seperated into 1 Shader with Multiple Buffers
+TextManager would just be that but with only 1 Main
+each Main would be a Font, so you could use that to have multiple Fonts
+
+
+

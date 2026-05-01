@@ -106,8 +106,11 @@ UI::Text::Manager		TextManager;
 ::OptionsMenu	OptionsMenu;
 ::DebugMenu		DebugMenu;
 
-::Inventory			InventoryUI;
 ::ItemContainer		Inventory;
+::ItemContainer		HotBar;
+
+::Inventory			InventoryUI;
+::Inventory			HotBarUI;
 
 
 
@@ -133,8 +136,10 @@ ContextNoisePlane()
 	, PauseMenu()
 	, OptionsMenu()
 	, DebugMenu()
-	, InventoryUI()
 	, Inventory(VectorU2(10, 5))
+	, HotBar(VectorU2(10, 1))
+	, InventoryUI()
+	, HotBarUI()
 	, Perlin2(Perlin2D::Random(Undex2D(8, 8)))
 	, Perlin3(Perlin3D::Random(Undex3D(8, 8, 8)))
 	, Multiform_DisplaySize("DisplaySize")
@@ -476,10 +481,16 @@ void ViewRayFunction()
 			if (place_axis_0 == AxisRel::PrevX) { hit.Index.X -= 1; }
 			if (place_axis_0 == AxisRel::PrevY) { hit.Index.Y -= 1; }
 			if (place_axis_0 == AxisRel::PrevZ) { hit.Index.Z -= 1; }
-			//Voxel voxel = VoxelTemplate::ConcreteCube.ToVoxel(place_axis_0, place_axis_1);
-			Voxel voxel = VoxelTemplate::ConcreteCylinder.ToVoxel(place_axis_0, place_axis_1);
-			//Voxel voxel = VoxelTemplate::OrientationSlope.ToVoxel(place_axis_0, place_axis_1);
-			ChunkManager.PlaceVoxel(hit.Index, voxel);
+
+			if (HotBar[VectorU2(0, 0)] != nullptr)
+			{
+				ItemVoxel * item = (ItemVoxel*)HotBar[VectorU2(0, 0)];
+				if (item -> VoxelTemplate != nullptr)
+				{
+					Voxel voxel = item -> VoxelTemplate -> ToVoxel(place_axis_0, place_axis_1);
+					ChunkManager.PlaceVoxel(hit.Index, voxel);
+				}
+			}
 		}
 	}
 
@@ -730,6 +741,14 @@ void MakeControls()
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
 		ControlManager.Window.ChildInsert(InventoryUI);
+		PolyHedraManager.MakeCurrent();
+	}
+	{
+		InventoryPolyHedraManager.MakeCurrent();
+		HotBarUI.Anchor.Y.AnchorMax(0);
+		HotBarUI.Change(&HotBar);
+		//HotBarUI.Hide();
+		ControlManager.Window.ChildInsert(HotBarUI);
 		PolyHedraManager.MakeCurrent();
 	}
 }
@@ -1037,6 +1056,7 @@ void Frame(FrameTime frame_time) override
 	{
 		OptionsMenu.Hide();
 		InventoryUI.Hide();
+		//HotBarUI.Hide();
 		if (PauseMenu.IsVisible())
 		{
 			PauseMenu.Hide();
@@ -1054,11 +1074,13 @@ void Frame(FrameTime frame_time) override
 			{
 				InventoryPolyHedraManager.MakeCurrent();
 				InventoryUI.Show();
+				//HotBarUI.Show();
 				PolyHedraManager.MakeCurrent();
 			}
 			else
 			{
 				InventoryUI.Hide();
+				//HotBarUI.Hide();
 			}
 		}
 	}
@@ -1319,9 +1341,9 @@ void Frame(FrameTime frame_time) override
 		VectorF2	PixelPos;
 		VectorF2	pos;
 
-		if (InventorySlot::StaticItem != nullptr)
+		if (HotBar[VectorU2(0, 0)] != nullptr)
 		{
-			ItemVoxel * item = (ItemVoxel*)InventorySlot::StaticItem;
+			ItemVoxel * item = (ItemVoxel*)HotBar[VectorU2(0, 0)];
 			PixelPos.X = window.Size.Buffer.Full.X - 40;
 			PixelPos.Y = 40;
 			pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);

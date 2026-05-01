@@ -13,7 +13,7 @@ struct InventorySlot : public UI::Control::Base
 	static ItemBase *	StaticItem;
 	static DisplaySize	WindowSize;
 
-	ItemBase *		Item;
+	ItemBase **		Item; // ItemContainer holds Item Pointers, this is a Pointer to that
 	PolyHedraObject	Object;
 
 	~InventorySlot();
