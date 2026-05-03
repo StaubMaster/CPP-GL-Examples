@@ -1,0 +1,45 @@
+
+ChunkContainer
+
+changing
+	isolated
+		UpdateChunkContainer()
+		Clear()
+
+checking
+	all the Find functions
+	Insert/Remove
+	Generate/Buffer
+
+checking at the same time is fine ?
+not sure how to do that.
+
+
+
+
+
+Chunk:
+
+changing Data
+is private, only done inside Chunk
+
+new[]/delete[]
+	MakeEmpty()
+	MakeNull()
+
+assign
+	ClearVoxel()
+	PlaceVoxel()
+	Generate()
+
+checking Data
+	operator[]
+		returns a referance to Data
+		lock and unlock outside
+
+new/delete Chunk
+	done from outside
+	no conflict when new
+	delete also delte[]s Data
+
+

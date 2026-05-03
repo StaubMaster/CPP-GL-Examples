@@ -14,6 +14,13 @@
 
 //# include "GridCast/GridCast3D.hpp"
 
+
+# include "Telemetry/ValueAverager.hpp"
+# include "Telemetry/StopWatch.hpp"
+
+# include <mutex>
+# include <atomic>
+
 struct Voxel;
 struct Chunk;
 enum class AxisRel : unsigned char;
@@ -34,14 +41,70 @@ struct VoxelHit
 	VoxelHit();
 };
 
+#include <iostream>
+#include "ValueType/_Show.hpp"
+
+struct WaitDoTime
+{
+	ValueAverager<float>	DoTime;
+	ValueAverager<float>	WaitTime;
+	WaitDoTime();
+};
+std::ostream & operator<<(std::ostream & o, const WaitDoTime & obj);
+
+struct ContainerLock
+{
+	std::mutex					Changing;	// changing Items
+	std::mutex					Checking;	// changing Container
+	std::atomic<unsigned int>	CheckingCount;
+
+	// terrible names
+	// Changing changes the Container
+	//  resize, assign Items
+	// Checking changes Items
+
+	void	Checking0();
+	void	Checking1();
+	void	Changing0();
+	void	Changing1();
+
+	void	Checking0(StopWatch & watch, WaitDoTime & time);
+	void	Checking1(StopWatch & watch, WaitDoTime & time);
+	void	Changing0(StopWatch & watch, WaitDoTime & time);
+	void	Changing1(StopWatch & watch, WaitDoTime & time);
+};
+
 struct ChunkManager
 {
 	VoxelGraphics::Shader		Shader;
 	Texture::Array2D			Texture;
-	Container::Binary<Chunk*>	Chunks;
 
+
+
+	Container::Binary<Chunk*>	Chunks;
+	ContainerLock				ChunksLock;
+
+	// Changing
+	//  lock Changing
+	//  lock Checking
+	//  wait for CheckingCount == 0
+	//  ... change
+	//  unlock Checking
+	//  unlock Changing
+
+	// Checking
+	//  lock Checking
+	//  CheckingCount++
+	//  unlock Checking
+	//  ... checking
+	//  CheckingCount--
+
+
+
+	public:
 	~ChunkManager();
 	ChunkManager();
+
 	ChunkManager(const ChunkManager & other) = delete;
 	ChunkManager & operator=(const ChunkManager & other) = delete;
 
@@ -49,15 +112,15 @@ struct ChunkManager
 	PolyHedra *	ChunkBoxPolyHedra = nullptr;
 	PolyHedra *	ViewRayPolyHedra = nullptr;
 
-	unsigned int	FindChunkUndex(Chunk * chunk) const;
-	unsigned int	FindChunkUndex(VectorI3 idx) const;
-	Chunk *			FindChunkOrNull(VectorI3 idx) const;
+	unsigned int	FindChunkUndex(Chunk * chunk);
+	unsigned int	FindChunkUndex(VectorI3 idx);
+	Chunk *			FindChunkOrNull(VectorI3 idx);
 
-	VoxelIndex		FindVoxelIndex(VoxelIndex idx) const;
-	VoxelIndex		FindVoxelIndex(VectorI3 idx) const;
+	VoxelIndex		FindVoxelIndex(VoxelIndex idx);
+	VoxelIndex		FindVoxelIndex(VectorI3 idx);
 
-	const Voxel *	FindVoxelOrNull(VoxelIndex idx) const;
-	const Voxel *	FindVoxelOrNull(VectorI3 idx) const;
+	const Voxel *	FindVoxelOrNull(VoxelIndex idx);
+	const Voxel *	FindVoxelOrNull(VectorI3 idx);
 
 	VoxelHit		HitVoxel(Ray3D ray) const;
 
@@ -71,22 +134,57 @@ struct ChunkManager
 
 
 
+	static WaitDoTime	TimeInsert;
+	static WaitDoTime	TimeInsertNeighbours;
+
+	static WaitDoTime	TimeRemove;
+
+	static WaitDoTime	TimeUpdate;
+	static WaitDoTime	TimeUpdateInsert;
+	static WaitDoTime	TimeUpdateChange;
+	static WaitDoTime	TimeUpdateRemove;
+
+	static WaitDoTime	TimeGenerate;
+	static WaitDoTime	TimeGraphics;
+
+	static WaitDoTime	TimeGraphicsCreate;
+	static WaitDoTime	TimeGraphicsDelete;
+	static WaitDoTime	TimeDraw;
+
+
+
+	private:
+	public:
+	Container::Binary<Chunk*>	ChunksToInsert;
+	Container::Binary<Chunk*>	ChunksToRemove;
+	ContainerLock				ChunksToInsertLock;
+	ContainerLock				ChunksToRemoveLock;
+
+	public:
 	void	Clear();
 
 	void	InsertAround(VectorF3 pos, unsigned int size);
-	void	InsertChunk(VectorI3 idx);
-
 	void	RemoveAround(VectorF3 pos, unsigned int size);
-	void	RemoveChunk(unsigned int idx);
 
+	void	FindNeighbours(Chunk & chunk);
+	void	NullNeighbours(Chunk & chunk);
+
+	void	UpdateChunksContainer();
+
+
+
+	public:
+	Chunk *	FindGenerateChunk(VectorF3 pos, unsigned int size);
 	void	GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3, VectorF3 pos, unsigned int size, unsigned int count);
 
-	void	NeighbourInsert(Chunk & chunk);
+
 
 	bool	GraphicsExist;
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+	void	GraphicsUpdate();
 
+	Chunk *	FindGraphicsUpdateChunk(VectorF3 pos);
 	void	GraphicsUpdateDataAround(VectorF3 pos, unsigned int count);
 
 	void	Draw();

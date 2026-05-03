@@ -7,6 +7,9 @@
 struct VoxelIndex
 {
 	unsigned int	ChunkMan; // Chunk Index in Manager
+	// ChunkMan becomes undefined with multithreading
+	// have a Pointer to a locked chunk ?
+
 	VectorI3		Chunk;
 	VectorU3		Voxel;
 

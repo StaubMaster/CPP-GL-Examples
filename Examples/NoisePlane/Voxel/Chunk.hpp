@@ -25,6 +25,8 @@
 
 # include "Telemetry/ValueAverager.hpp"
 
+# include <mutex>
+
 struct Perlin2D;
 struct Perlin3D;
 
@@ -53,38 +55,64 @@ enum class GenerationState
 
 struct Chunk
 {
-	public:		Voxel *				Data;
-	public:		VectorI3			Index;
-	public:		ChunkNeighbours		Neighbours;
-	public:		::GenerationState	GenerationState;
+	public:
+	const VectorI3		Index;
+	ChunkNeighbours		Neighbours;
+	private:
+	Voxel *				Data;
+	public:
+	::GenerationState	GenerationState;
+
+	public:
+	std::mutex			Changing;
+	// make wrapper functions for Mutex
+
+	// dont lock inside the Chunk
+	// this might result in calling a function that also trys to lock
+
+	// avoid locking a Chunk thats about to delete
+	// lock before deleting ?
+	// checking Delete inside the Functions might be "too late"
+	// check outside and dont do anything with a Chunk that is marked as delete
 
 	public:
 	bool	Done() const;
 
-	Voxel &			operator[](VectorU3 udx);
-	const Voxel &	operator[](VectorU3 udx) const;
+//	const Voxel &	operator[](VectorU3 udx) const;
 
+	public:
 	~Chunk();
-	Chunk(VectorI3 idx, bool graphics_exist);
+	Chunk(VectorI3 idx);
+
 	Chunk() = delete;
 	Chunk(const Chunk & other) = delete;
 	Chunk & operator=(const Chunk & other) = delete;
-	//void	Dispose();
 
+	public:
 	bool	IsEmpty() const;
 	bool	IsNullOrEmpty() const;
+	private:
 	void	MakeEmpty();
 	void	MakeNull();
 
-	void	TestOrientation();
-	void	TestHouse();
+	public:
+	bool	ClearVoxel(VectorU3 udx, Voxel & vox);
+	bool	PlaceVoxel(VectorU3 udx, Voxel & vox);
+	// ChangeVoxel ?
+
+	bool	Hit(VectorU3 udx) const;
+
+	//void	TestOrientation();
+	//void	TestHouse();
 
 	static float	Generation3D_Factor;
 	static float	Generation3D_Comparison;
 
+	private:
 	void	GenerateGrid();
 	void	GeneratePerlin(const Perlin2D & noise);
 	void	GeneratePerlin(const Perlin3D & noise);
+	public:
 	void	Generate(const Perlin2D & noise2, const Perlin3D & noise3);
 
 
@@ -92,11 +120,9 @@ struct Chunk
 	VoxelGraphics::Buffer	Buffer;
 
 	bool	GraphicsExist; // Buffer is the only thing ?
+	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
-
-//	void	GraphicsUpdateBuffer();
-//	void	GraphicsUpdateData();
 
 	bool	BufferNeedsInit; // split into Main and Inst. put into Buffer ?
 
@@ -107,8 +133,11 @@ struct Chunk
 		Ready,
 	};
 
-	static ValueAverager<float>		MainBufferDataTime;
+	private:
+	bool	Visible(AxisRel axis, VectorU3 udx) const;
+	void	GraphicsData(VectorU3 u, const Voxel & voxel, AxisRel axis);
 
+	public:
 	BufferDataState		MainBufferState; // put into Buffer ?
 	ChunkGraphicsData	MainBufferData;
 	void	GraphicsUpdateMainData();

@@ -9,24 +9,26 @@ enum class AxisRel : unsigned char;
 
 struct ChunkNeighbours
 {
+	private:
 	Chunk *		Here;
-
+	Chunk *		PrevX;
+	Chunk *		PrevY;
+	Chunk *		PrevZ;
 	Chunk *		NextX;
 	Chunk *		NextY;
 	Chunk *		NextZ;
 
-	Chunk *		PrevX;
-	Chunk *		PrevY;
-	Chunk *		PrevZ;
-
+	public:
 	~ChunkNeighbours();
 	ChunkNeighbours();
 	ChunkNeighbours(const ChunkNeighbours & other);
 	ChunkNeighbours & operator=(const ChunkNeighbours & other);
 
-	bool		Visible(AxisRel axis, VectorU3 udx) const;
+	public:
+	const Chunk *	Loop(AxisRel axis, VectorU3 & udx) const;
 
-	void	UpdateOthersHere();
+	// just take a Container of Chunks
+	void	Change(AxisRel axis, Chunk * chunk);
 
 	void	UpdateBufferMain();
 };
