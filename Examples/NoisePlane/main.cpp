@@ -325,7 +325,7 @@ void UpdateViewColliding(FrameTime frame_time)
 		}
 	}
 
-	if (ViewBoxCollision)
+	/*if (ViewBoxCollision)
 	{
 		if (ViewCollisionSide.PrevY)
 		{
@@ -360,7 +360,7 @@ void UpdateViewColliding(FrameTime frame_time)
 		ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
 		DisplayBoxEntity(ViewEntity);
 	}
-	else
+	else*/
 	{
 		change.Position *= ViewSpeedNoClip;
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFasterNoClip; }
@@ -534,11 +534,14 @@ void ViewRayFunction()
 
 void UpdateAroundView(FrameTime frame_time)
 {
+//	std::cout << "UpdateAroundView:" << __LINE__ << '\n';
 	UpdateViewColliding(frame_time);
 
 	StopWatch sw;
 	sw.Start();
+//	std::cout << "UpdateAroundView:" << __LINE__ << '\n';
 	ChunkManager.GraphicsUpdate();
+//	std::cout << "UpdateAroundView:" << __LINE__ << '\n';
 	sw.Stop();
 	FrameDuration.NewValue(sw.ElapsedTime());
 
@@ -551,14 +554,17 @@ void UpdateAroundView(FrameTime frame_time)
 //	ChunkManager.UpdateChunksArray();
 //	ChunkManager.UpdateChunksArrayGenerate(Perlin2, Perlin3);
 //	ChunkManager.ChunksArray.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
+	ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
 
 	ViewRayFunction();
 }
+bool		ThreadDelay = true;
 bool		ThreadTerminate = false;
 std::thread				AuxThread0;
 ValueAverager<float>	AuxThread0Time;
 void		AuxThread0Func()
 {
+	while (ThreadDelay) { }
 	StopWatch sw;
 	unsigned int NullNeighboursIndex = 0;
 	unsigned int FindNeighboursIndex = 0;
@@ -578,12 +584,13 @@ std::thread				AuxThread1;
 ValueAverager<float>	AuxThread1Time;
 void		AuxThread1Func()
 {
+	while (ThreadDelay) { }
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
 		sw.ReStart();
-		if (!DontGenerate) { ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, ChunkInsertRange, 1); }
-		if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position, 1); }
+		if (!DontGenerate) { ChunkManager.GenerateAround(view.Trans.Position, ChunkInsertRange, Perlin2, Perlin3); }
+		if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position); }
 		sw.Stop();
 		AuxThread1Time.NewValue(sw.ElapsedTime());
 	}
@@ -787,11 +794,17 @@ void MakeControls()
 		OptionsMenu.DepthRange.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_DepthRange);
 		OptionsMenu.DepthRange.SetValue(view.Depth.Range.Min);
 
-		ChunkInsertRange = 6;
+		// Remove range should never be less then Insert
+		// make RemoveRange = InsertRange * 2 ?
+		// make RemoveRange = InsertRange + n ?
+
+		//ChunkInsertRange = 6;
+		ChunkInsertRange = 1;
 		OptionsMenu.ChunkInsert.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Insert);
 		OptionsMenu.ChunkInsert.SetValue(ChunkInsertRange);
 
-		ChunkRemoveRange = 12;
+		//ChunkRemoveRange = 12;
+		ChunkRemoveRange = 3;
 		OptionsMenu.ChunkRemove.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
 		OptionsMenu.ChunkRemove.SetValue(ChunkRemoveRange);
 
@@ -1035,12 +1048,16 @@ void GraphicsDelete()
 
 void Init() override
 {
+	std::cout << "Init:" << __LINE__ << '\n';
 	Make();
 
+	std::cout << "Init:" << __LINE__ << '\n';
 	ChangeMedia();
 
+	std::cout << "Init:" << __LINE__ << '\n';
 	GraphicsCreate();
 
+	std::cout << "Init:" << __LINE__ << '\n';
 	{
 		Container::Array<VoxelTemplate*> temps({
 			&VoxelTemplate::OrientationCube,
@@ -1078,13 +1095,19 @@ void Init() override
 		view.Depth.Color = window.DefaultColor;
 	}
 
+	std::cout << "Init:" << __LINE__ << '\n';
 	MakeControls();
 
+	std::cout << "Init:" << __LINE__ << '\n';
 	ChunkManager.ChangeChunksArraySize(1);
 
+	std::cout << "Init:" << __LINE__ << '\n';
 	// View
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
+	std::cout << "Init:" << __LINE__ << '\n';
+	ThreadDelay = false;
+	std::cout << "Init:" << __LINE__ << '\n';
 }
 void Free() override
 {
@@ -1212,7 +1235,7 @@ void FrameText(FrameTime frame_time)
 	}
 
 	// Time
-	{
+	/*{
 		ss << "Time\n";
 
 		ss << "Duration:\n";
@@ -1247,7 +1270,9 @@ void FrameText(FrameTime frame_time)
 		ss << "        Generate: " << ChunkManager::TimeGenerate << '\n';
 		ss << "        Graphics: " << ChunkManager::TimeGraphics << '\n';
 		ss << '\n';
+	}*/
 
+	{
 		ss << "CheckingCount: " << ChunkManager.ChunksLock.CheckingCount.load() << '\n';
 		ss << "ToInsert: " << ChunkManager.ChunksToInsert.Count() << '\n';
 		ss << "ToRemove: " << ChunkManager.ChunksToRemove.Count() << '\n';
@@ -1569,6 +1594,7 @@ void FrameInput()
 }
 void Frame(FrameTime frame_time) override
 {
+//	std::cout << "Frame:" << __LINE__ << '\n';
 	FrameInput();
 
 	if (!OptionsMenu.IsVisible())
@@ -1605,14 +1631,14 @@ void Frame(FrameTime frame_time) override
 		chunk_box.ShowWire();
 	}*/
 
-	for (unsigned int i = 0; i < ChunkManager.ChunksArray.Count(); i++)
+	/*for (unsigned int i = 0; i < ChunkManager.ChunksArray.Count(); i++)
 	{
 		Chunk * chunk = ChunkManager.ChunksArray[i];
 		if (chunk == nullptr) { continue; }
 		PolyHedraObject chunk_box(VoxelChunkCube);
 		chunk_box.Trans().Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
 		chunk_box.ShowWire();
-	}
+	}*/
 
 	FrameText(frame_time);
 

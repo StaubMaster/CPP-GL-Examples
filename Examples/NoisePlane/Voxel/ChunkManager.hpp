@@ -97,12 +97,6 @@ struct ChunkArray3D
 	ChunkArray3D();
 	ChunkArray3D(const ChunkArray3D & other) = delete;
 	ChunkArray3D & operator=(const ChunkArray3D & other) = delete;
-
-	void	LoopX(VectorU3 u, VectorI3 diff);
-	void	LoopY(VectorU3 u, VectorI3 diff);
-	void	LoopZ(VectorU3 u, VectorI3 diff);
-
-	void	ChangeCenter(VectorI3 center);
 };
 
 struct ChunkManager
@@ -112,7 +106,7 @@ struct ChunkManager
 
 
 
-	ChunkArray3D	ChunksArray;
+	ChunkArray3D	Chunks;
 //	BoxI3			ChunksBox;
 
 	void	UpdateChunksArray();
@@ -120,7 +114,12 @@ struct ChunkManager
 	void	UpdateChunksArrayDraw();
 	void	ChangeChunksArraySize(unsigned int size);
 
-	Container::Binary<Chunk*>	Chunks;
+	void	ChangeCenterLoopX(VectorU3 u, VectorI3 diff);
+	void	ChangeCenterLoopY(VectorU3 u, VectorI3 diff);
+	void	ChangeCenterLoopZ(VectorU3 u, VectorI3 diff);
+	void	ChangeCenter(VectorI3 center);
+
+//	Container::Binary<Chunk*>	Chunks;
 	ContainerLock				ChunksLock;
 
 	// Changing
@@ -217,7 +216,7 @@ struct ChunkManager
 
 	public:
 	Chunk *	FindGenerateChunk(VectorF3 pos, unsigned int size);
-	void	GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3, VectorF3 pos, unsigned int size, unsigned int limit);
+	void	GenerateAround(VectorF3 pos, unsigned int size, const Perlin2D & noise2, const Perlin3D & noise3);
 
 
 
@@ -227,7 +226,7 @@ struct ChunkManager
 	void	GraphicsUpdate();
 
 	Chunk *	FindGraphicsUpdateChunk(VectorF3 pos);
-	void	GraphicsUpdateDataAround(VectorF3 pos, unsigned int limit);
+	void	GraphicsUpdateDataAround(VectorF3 pos);
 
 	void	Draw();
 };
