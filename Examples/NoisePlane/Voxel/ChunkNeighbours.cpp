@@ -6,6 +6,10 @@
 
 
 
+bool ChunkNeighbours::Done() const { return (Here != nullptr); }
+
+
+
 ChunkNeighbours::~ChunkNeighbours() { }
 ChunkNeighbours::ChunkNeighbours()
 	: Here(nullptr)

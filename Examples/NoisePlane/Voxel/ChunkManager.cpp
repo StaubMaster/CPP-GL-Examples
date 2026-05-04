@@ -103,9 +103,191 @@ void ContainerLock::Changing1(StopWatch & watch, WaitDoTime & time)
 
 
 
-ChunkManager::~ChunkManager() { }
+void ChunkManager::UpdateChunksArray()
+{
+	for (unsigned int i = 0; i < ChunksCount.Product(); i++)
+	{
+		if (ChunksArray[i] != nullptr) { continue; }
+		ChunksArray[i] = new Chunk(ChunksCount.Convert(i) + ChunksCorner);
+		ChunksArray[i] -> GraphicsCreate();
+		ChunksArray[i] -> Neighbours.Change(AxisRel::Here, ChunksArray[i]);
+	}
+}
+void ChunkManager::UpdateChunksArrayGenerate(const Perlin2D & noise2, const Perlin3D & noise3)
+{
+	for (unsigned int i = 0; i < ChunksCount.Product(); i++)
+	{
+		if (ChunksArray[i] == nullptr) { continue; }
+		ChunksArray[i] -> Generate(noise2, noise3);
+		ChunksArray[i] -> GraphicsUpdateMainData();
+	}
+}
+void ChunkManager::UpdateChunksArrayDraw()
+{
+	Shader.Bind();
+	Texture.Bind();
+	for (unsigned int i = 0; i < ChunksCount.Product(); i++)
+	{
+		if (ChunksArray[i] == nullptr) { continue; }
+		ChunksArray[i] -> Draw();
+	}
+}
+
+static VectorU3 ChunkSkipped;
+static VectorU3 ChunkMoved;
+
+void ChunkManager::UpdateChunksCenterLoopX(VectorU3 u, VectorI3 diff)
+{
+	unsigned int udx0 = ChunksCount.Convert(u);
+	delete ChunksArray[udx0];
+	ChunksArray[udx0] = nullptr;
+
+	if (((int)u.X) + diff.X < 0) { ChunkSkipped.X++; return; }
+	if (((int)u.X) + diff.X >= (int)ChunksCount.X) { ChunkSkipped.X++; return; }
+
+	unsigned int udx1 = ChunksCount.Convert(VectorU3(u.X + diff.X, u.Y, u.Z));
+	ChunksArray[udx0] = ChunksArray[udx1];
+	ChunksArray[udx1] = nullptr;
+	ChunkMoved.X++;
+}
+void ChunkManager::UpdateChunksCenterLoopY(VectorU3 u, VectorI3 diff)
+{
+	unsigned int udx0 = ChunksCount.Convert(u);
+	delete ChunksArray[udx0];
+	ChunksArray[udx0] = nullptr;
+
+	if (((int)u.Y) + diff.Y < 0) { ChunkSkipped.Y++; return; }
+	if (((int)u.Y) + diff.Y >= (int)ChunksCount.Y) { ChunkSkipped.Y++; return; }
+
+	unsigned int udx1 = ChunksCount.Convert(VectorU3(u.X, u.Y + diff.Y, u.Z));
+	ChunksArray[udx0] = ChunksArray[udx1];
+	ChunksArray[udx1] = nullptr;
+	ChunkMoved.Y++;
+}
+void ChunkManager::UpdateChunksCenterLoopZ(VectorU3 u, VectorI3 diff)
+{
+	unsigned int udx0 = ChunksCount.Convert(u);
+	delete ChunksArray[udx0];
+	ChunksArray[udx0] = nullptr;
+
+	if (((int)u.Z) + diff.Z < 0) { ChunkSkipped.Z++; return; }
+	if (((int)u.Z) + diff.Z >= (int)ChunksCount.Z) { ChunkSkipped.Z++; return; }
+
+	unsigned int udx1 = ChunksCount.Convert(VectorU3(u.X, u.Y, u.Z + diff.Z));
+	ChunksArray[udx0] = ChunksArray[udx1];
+	ChunksArray[udx1] = nullptr;
+	ChunkMoved.Z++;
+}
+
+void ChunkManager::UpdateChunksCenter(VectorI3 center)
+{
+	if ((ChunksCenter == center).All(true)) { return; }
+
+	// diff = center - Center
+
+	//	0	1	2	3	4	5	6	7
+	//			0	1	2	3	4	5	6	7
+	// diff +2
+	// remove [0;1]
+	// move   [2;7] to [0;5]
+	// insert [6;7]
+
+	//			0	1	2	3	4	5	6	7
+	//	0	1	2	3	4	5	6	7
+	// diff -2
+	// remove [6;7]
+	// move   [0;5] to [2;7]
+	// insert [0;1]
+
+	// n - diff < 0; ignore
+	// n - diff > limit; ignore
+	// [n] = [n + diff]
+	// when moving, delete the one currently at that postion
+	// then moving, make the old one null
+
+	// iterate in moving direction
+	VectorI3 diff = center - ChunksCenter;
+	std::cout << "diff " << diff << '\n';
+
+	ChunkSkipped = VectorU3(0);
+	ChunkMoved = VectorU3(0);
+
+	UndexLoop3D loop(VectorU3(), ChunksCount);
+
+	if (diff.X > 0) { for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u)) { UpdateChunksCenterLoopX(u, diff); } }
+	if (diff.X < 0) { for (VectorU3 u = loop.Max(); loop.Check(u).All(true); loop.Prev(u)) { UpdateChunksCenterLoopX(u, diff); } }
+
+	if (diff.Y > 0) { for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u)) { UpdateChunksCenterLoopY(u, diff); } }
+	if (diff.Y < 0) { for (VectorU3 u = loop.Max(); loop.Check(u).All(true); loop.Prev(u)) { UpdateChunksCenterLoopY(u, diff); } }
+
+	if (diff.Z > 0) { for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u)) { UpdateChunksCenterLoopZ(u, diff); } }
+	if (diff.Z < 0) { for (VectorU3 u = loop.Max(); loop.Check(u).All(true); loop.Prev(u)) { UpdateChunksCenterLoopZ(u, diff); } }
+
+	std::cout << "Skip: " << ChunkSkipped << '\n';
+	std::cout << "Move: " << ChunkMoved << '\n';
+
+	ChunksCenter = center;
+	ChunksCorner += diff;
+}
+void ChunkManager::ChangeChunksSize(unsigned int size)
+{
+	std::cout << "line:" << __LINE__ << '\n';
+	ChunksLock.Changing0();
+	std::cout << "line:" << __LINE__ << '\n';
+	for (unsigned int i = 0; i < ChunksCount.Product(); i++)
+	{
+		delete ChunksArray[i];
+	}
+	std::cout << "line:" << __LINE__ << '\n';
+	delete[] ChunksArray;
+	std::cout << "line:" << __LINE__ << '\n';
+
+	// Size = 2
+	// Center = c
+
+	// +2 +1 c +1 +2
+	// Count = 5
+	// Box = [ c-2 ; c+2 ]
+	// Corner = c-2
+
+	std::cout << "line:" << __LINE__ << '\n';
+	ChunksCorner = ChunksCenter - (int)size;
+
+	std::cout << "line:" << __LINE__ << '\n';
+	ChunksCount = VectorU3((size * 2) + 1);
+	ChunksBox = BoxI3(ChunksCenter - (int)size, ChunksCenter + (int)size);
+
+	std::cout << "line:" << __LINE__ << '\n';
+	ChunksArray = new Chunk*[ChunksCount.Product()];
+	for (unsigned int i = 0; i < ChunksCount.Product(); i++)
+	{
+		ChunksArray[i] = nullptr;
+	}
+	std::cout << "line:" << __LINE__ << '\n';
+
+	ChunksLock.Changing1();
+}
+
+
+
+ChunkManager::~ChunkManager()
+{
+	for (unsigned int i = 0; i < Chunks.Count(); i++)
+	{
+		delete Chunks[i];
+	}
+	for (unsigned int i = 0; i < ChunksCount.Product(); i++)
+	{
+		delete ChunksArray[i];
+	}
+	delete[] ChunksArray;
+}
 ChunkManager::ChunkManager()
 	: Shader()
+	, ChunksArray(nullptr)
+	, ChunksCount()
+	, ChunksCenter()
+	, ChunksBox()
 	, Chunks()
 	, ChunksLock()
 //	, ChunksChanging()
@@ -381,6 +563,42 @@ void ChunkManager::Clear()
 	//ChunksChanging.unlock();
 }
 
+/* Inserting
+	Find Chunks that need inserting
+	new in ChunksToInsert
+	{
+		Find Neighbours
+		Create Graphics
+	}
+	move from ChunksToInsert to Chunks
+*/
+
+/* Removing
+	Find Chunks that need removeing
+	move from Chunks to ChunksToRemove
+	{
+		Null Neighbours
+		Delete Graphics
+	}
+	delete from ChunksToRemove
+*/
+
+/* Find Neighbours is slow
+	it needs to look through all Chunks for each Neighbourhood to Find
+	if the centra Chunks were stored in a 3D Array with it might be easier
+	Insert around already makes one of those
+	use that ?
+	what about the ones not in the Neighbourhood ?
+	store the Remove Neighbourhood
+	Insert Neighbourhood is a part of that
+	everything outside should be moved to ChunksToRemove
+
+	for now just have a Limit for how many Neighbours should be found
+	also dont try to find Neighbours that are already found ?
+
+	maybe remember the index where it ended and continue there ?
+*/
+
 void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 {
 	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
@@ -412,7 +630,7 @@ void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 //	TimeInsert.WaitTime.NewValue(sw.ElapsedTime());
 
 //	sw.Start();
-	std::cout << "InsertAround:" << __LINE__ << '\n';
+//	std::cout << "InsertAround:" << __LINE__ << '\n';
 //	std::cout << "line:" << __LINE__ << '\n';
 	ChunksLock.Checking0();
 	for (unsigned int i = 0; i < Chunks.Count(); i++)
@@ -454,14 +672,6 @@ void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 //	std::cout << "line:" << __LINE__ << '\n';
 	delete[] arr;
 //	std::cout << "line:" << __LINE__ << '\n';
-	ChunksToInsertLock.Checking0(sw, TimeInsertNeighbours);
-	for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
-	{
-		if (ChunksToInsert[i] == nullptr) { continue; }
-		FindNeighbours(*ChunksToInsert[i]);
-	}
-	ChunksToInsertLock.Checking1(sw, TimeInsertNeighbours);
-//	std::cout << "line:" << __LINE__ << '\n';
 
 //	ChunksToInsertChanging.unlock();
 //	ChunksCheckingCount--;
@@ -481,15 +691,15 @@ void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 	// changes ChunksToRemove
 
 	sw.Start();
-	std::cout << "RemoveAround:" << __LINE__ << '\n';
+//	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	ChunksLock.Changing0();
 //	ChunksChanging.lock();
 //	ChunksChecking.lock();
 //	ChunksCheckingCount++;
 //	ChunksChecking.unlock();
-	std::cout << "RemoveAround:" << __LINE__ << '\n';
+//	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	ChunksToRemoveLock.Changing0();
-	std::cout << "RemoveAround:" << __LINE__ << '\n';
+//	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	sw.Stop();
 	TimeRemove.WaitTime.NewValue(sw.ElapsedTime());
 
@@ -498,7 +708,7 @@ void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
 	BoxI3 chunk_box(chunk_idx - (int)size, chunk_idx + (int)size);
 
-	std::cout << "RemoveAround:" << __LINE__ << '\n';
+//	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	for (unsigned int i = 0; i < Chunks.Count(); i++)
 	{
 		Chunk * chunk = Chunks[i];
@@ -506,19 +716,49 @@ void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 		if (chunk_box.IntersectVecInclusive(chunk -> Index).All(true)) { continue; }
 
 		Chunks[i] = nullptr;
-		NullNeighbours(*chunk);
 		ChunksToRemove.Insert(chunk);
 	}
 
-	std::cout << "RemoveAround:" << __LINE__ << '\n';
+//	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	ChunksToRemoveLock.Changing1();
 //	ChunksChanging.unlock();
 //	ChunksCheckingCount--;
-	std::cout << "RemoveAround:" << __LINE__ << '\n';
+//	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	ChunksLock.Changing1();
-	std::cout << "RemoveAround:" << __LINE__ << '\n';
+//	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	sw.Stop();
 	TimeRemove.DoTime.NewValue(sw.ElapsedTime());
+}
+
+void ChunkManager::FindNeighbours(unsigned int & idx)
+{
+	StopWatch sw;
+	ChunksToInsertLock.Checking0(sw, TimeInsertNeighbours);
+	for (unsigned int i = 0; i < ChunksToInsert.Count(); i++, idx++)
+	{
+		if (idx >= ChunksToInsert.Count()) { idx = 0; }
+		if (ChunksToInsert[idx] == nullptr) { continue; }
+		if (ChunksToInsert[idx] -> Done()) { continue; }
+		FindNeighbours(*ChunksToInsert[idx]);
+		break;
+	}
+	idx++;
+	ChunksToInsertLock.Checking1(sw, TimeInsertNeighbours);
+}
+void ChunkManager::NullNeighbours(unsigned int & idx)
+{
+	//StopWatch sw;
+	ChunksToRemoveLock.Checking0();
+	for (unsigned int i = 0; i < ChunksToRemove.Count(); i++, idx++)
+	{
+		if (idx >= ChunksToRemove.Count()) { idx = 0; }
+		if (ChunksToRemove[idx] == nullptr) { continue; }
+		if (!ChunksToRemove[idx] -> Done()) { continue; }
+		NullNeighbours(*ChunksToRemove[idx]);
+		break;
+	}
+	idx++;
+	ChunksToRemoveLock.Checking1();
 }
 
 void ChunkManager::FindNeighbours(Chunk & chunk)
@@ -556,45 +796,10 @@ void ChunkManager::NullNeighbours(Chunk & chunk)
 	chunk.Neighbours.Change(AxisRel::Here, nullptr);
 }
 
-/* Removing
-Thread0					Thread1
-	|						|
-	| member function		|
-	|						| ToRemove
-	|						| lock
-	|						| unlock
-	|						| delete
-	| lock					|
-	segfault
-
-use Counting Pointer ?
-when to count ?
-whenever a Member function is called ?
-usa an atomic int
-
-lock before member function ?
-this would segfault after chunk is deleted
-
-
-
-when Objects are deleted
-ChunksContainer is also locked
-
-
-
-allways lock from the outside
-to be accessible from the outside, it must be in the ChunksContainer
-so it wont be deleted
-
-if it is in the ToRemoveContainer
-then it is not accessible from the outside
-an all that access from the inside should already have it locked
-*/
-
 void ChunkManager::UpdateChunksContainer()
 {
 	StopWatch sw;
-	std::cout << "line:" << __LINE__ << '\n';
+//	std::cout << "line:" << __LINE__ << '\n';
 	//if (!ChunksChanging.try_lock()) { return; }
 
 //	sw.Start();
@@ -617,8 +822,9 @@ void ChunkManager::UpdateChunksContainer()
 		for (unsigned int i = 0; i < ChunksToRemove.Count(); i++)
 		{
 			Chunk * chunk = ChunksToRemove[i];
-			if (chunk != nullptr) { continue; }
+			if (chunk == nullptr) { ChunksToRemove.Remove(i); i--; continue; }
 			if (chunk -> GraphicsExist) { continue; }
+			if (chunk -> Neighbours.Done()) { continue; }
 			chunk -> Changing.lock();
 			chunk -> Changing.unlock();
 			delete chunk;
@@ -658,6 +864,7 @@ void ChunkManager::UpdateChunksContainer()
 			Chunk * chunk = ChunksToInsert[i];
 			if (chunk == nullptr) { continue; }
 			if (!(chunk -> GraphicsExist)) { continue; }
+			if (!(chunk -> Neighbours.Done())) { continue; }
 			Chunks.Insert(chunk);
 			ChunksToInsert.Remove(i);
 			i--;
@@ -687,9 +894,9 @@ Chunk * ChunkManager::FindGenerateChunk(VectorF3 pos, unsigned int size)
 //	ChunksChecking.lock();
 //	ChunksCheckingCount++;
 //	ChunksChecking.unlock();
-	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
+//	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
 	ChunksLock.Checking0(sw, TimeGenerate);
-	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
+//	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
 //	sw.Stop();
 //	WaitTimeGenerate.NewValue(sw.ElapsedTime());
 
@@ -728,9 +935,9 @@ Chunk * ChunkManager::FindGenerateChunk(VectorF3 pos, unsigned int size)
 		else { chunk.Changing.unlock(); }
 	}
 
-	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
+//	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
 	ChunksLock.Checking1(sw, TimeGenerate);
-	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
+//	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
 
 //	ChunksCheckingCount--;
 //	ChunksChanging.unlock();
@@ -787,31 +994,31 @@ void ChunkManager::GraphicsUpdate()
 
 	// lock Chunks ?
 
-	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
+//	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
 	{
 		StopWatch sw;
-		ChunksToRemoveLock.Changing0(sw, TimeGraphicsDelete);
+		ChunksToRemoveLock.Checking0(sw, TimeGraphicsDelete);
 		for (unsigned int i = 0; i < ChunksToRemove.Count(); i++)
 		{
 			Chunk * chunk = ChunksToRemove[i];
 			if (chunk == nullptr) { continue; }
 			chunk -> GraphicsDelete();
 		}
-		ChunksToRemoveLock.Changing1(sw, TimeGraphicsDelete);
+		ChunksToRemoveLock.Checking1(sw, TimeGraphicsDelete);
 	}
-	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
+//	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
 	{
 		StopWatch sw;
-		ChunksToInsertLock.Changing0(sw, TimeGraphicsCreate);
+		ChunksToInsertLock.Checking0(sw, TimeGraphicsCreate);
 		for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
 		{
 			Chunk * chunk = ChunksToInsert[i];
 			if (chunk == nullptr) { continue; }
 			chunk -> GraphicsCreate();
 		}
-		ChunksToInsertLock.Changing1(sw, TimeGraphicsCreate);
+		ChunksToInsertLock.Checking1(sw, TimeGraphicsCreate);
 	}
-	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
+//	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
 }
 
 
@@ -819,7 +1026,7 @@ void ChunkManager::GraphicsUpdate()
 Chunk * ChunkManager::FindGraphicsUpdateChunk(VectorF3 pos)
 {
 	StopWatch sw;
-	std::cout << "line:" << __LINE__ << '\n';
+//	std::cout << "line:" << __LINE__ << '\n';
 //	if (!ChunksChanging.try_lock()) { return nullptr; }
 
 //	sw.Start();
@@ -891,7 +1098,7 @@ void ChunkManager::Draw()
 //	ChunksChecking.unlock();
 	StopWatch sw;
 
-	std::cout << "line:" << __LINE__ << '\n';
+//	std::cout << "line:" << __LINE__ << '\n';
 	ChunksLock.Checking0(sw, TimeDraw);
 
 	Shader.Bind();

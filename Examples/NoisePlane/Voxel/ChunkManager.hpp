@@ -74,12 +74,31 @@ struct ContainerLock
 	void	Changing1(StopWatch & watch, WaitDoTime & time);
 };
 
+# include "ValueType/_Include.hpp"
+
 struct ChunkManager
 {
 	VoxelGraphics::Shader		Shader;
 	Texture::Array2D			Texture;
 
 
+
+	Chunk * *	ChunksArray;
+	VectorU3	ChunksCount;
+
+	VectorI3	ChunksCenter;
+	VectorI3	ChunksCorner;
+	BoxI3		ChunksBox;
+
+	void	UpdateChunksArray();
+	void	UpdateChunksArrayGenerate(const Perlin2D & noise2, const Perlin3D & noise3);
+	void	UpdateChunksArrayDraw();
+
+	void	UpdateChunksCenterLoopX(VectorU3 u, VectorI3 diff);
+	void	UpdateChunksCenterLoopY(VectorU3 u, VectorI3 diff);
+	void	UpdateChunksCenterLoopZ(VectorU3 u, VectorI3 diff);
+	void	UpdateChunksCenter(VectorI3 center);
+	void	ChangeChunksSize(unsigned int size);
 
 	Container::Binary<Chunk*>	Chunks;
 	ContainerLock				ChunksLock;
@@ -166,6 +185,9 @@ struct ChunkManager
 	void	InsertAround(VectorF3 pos, unsigned int size);
 	void	RemoveAround(VectorF3 pos, unsigned int size);
 
+	void	FindNeighbours(unsigned int & idx);
+	void	NullNeighbours(unsigned int & idx);
+
 	void	FindNeighbours(Chunk & chunk);
 	void	NullNeighbours(Chunk & chunk);
 
@@ -175,7 +197,7 @@ struct ChunkManager
 
 	public:
 	Chunk *	FindGenerateChunk(VectorF3 pos, unsigned int size);
-	void	GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3, VectorF3 pos, unsigned int size, unsigned int count);
+	void	GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3, VectorF3 pos, unsigned int size, unsigned int limit);
 
 
 
@@ -185,7 +207,7 @@ struct ChunkManager
 	void	GraphicsUpdate();
 
 	Chunk *	FindGraphicsUpdateChunk(VectorF3 pos);
-	void	GraphicsUpdateDataAround(VectorF3 pos, unsigned int count);
+	void	GraphicsUpdateDataAround(VectorF3 pos, unsigned int limit);
 
 	void	Draw();
 };

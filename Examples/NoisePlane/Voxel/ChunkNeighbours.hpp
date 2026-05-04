@@ -19,6 +19,9 @@ struct ChunkNeighbours
 	Chunk *		NextZ;
 
 	public:
+	bool	Done() const;
+
+	public:
 	~ChunkNeighbours();
 	ChunkNeighbours();
 	ChunkNeighbours(const ChunkNeighbours & other);
