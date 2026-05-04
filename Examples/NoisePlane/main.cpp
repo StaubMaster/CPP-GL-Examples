@@ -548,9 +548,9 @@ void UpdateAroundView(FrameTime frame_time)
 //	if (!DontGenerate) { ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, ChunkInsertRange, 1); }
 //	if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position, 1); }
 
-	ChunkManager.UpdateChunksArray();
-	ChunkManager.UpdateChunksArrayGenerate(Perlin2, Perlin3);
-	ChunkManager.UpdateChunksCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
+//	ChunkManager.UpdateChunksArray();
+//	ChunkManager.UpdateChunksArrayGenerate(Perlin2, Perlin3);
+//	ChunkManager.ChunksArray.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
 
 	ViewRayFunction();
 }
@@ -1080,7 +1080,7 @@ void Init() override
 
 	MakeControls();
 
-	ChunkManager.ChangeChunksSize(2);
+	ChunkManager.ChangeChunksArraySize(1);
 
 	// View
 	Multiform_Depth.ChangeData(view.Depth);
@@ -1110,8 +1110,8 @@ void Draw()
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
 	//PlaneManager.Draw();
-//	ChunkManager.Draw();
-	ChunkManager.UpdateChunksArrayDraw();
+	ChunkManager.Draw();
+//	ChunkManager.UpdateChunksArrayDraw();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
@@ -1605,7 +1605,7 @@ void Frame(FrameTime frame_time) override
 		chunk_box.ShowWire();
 	}*/
 
-	for (unsigned int i = 0; i < ChunkManager.ChunksCount.Product(); i++)
+	for (unsigned int i = 0; i < ChunkManager.ChunksArray.Count(); i++)
 	{
 		Chunk * chunk = ChunkManager.ChunksArray[i];
 		if (chunk == nullptr) { continue; }

@@ -76,6 +76,35 @@ struct ContainerLock
 
 # include "ValueType/_Include.hpp"
 
+struct ChunkArray3D
+{
+	Chunk * *	Data;
+	VectorU3	Size;
+//	VectorU3	Half;
+
+	VectorI3	Center;
+	VectorI3	Corner;
+
+	unsigned int	Count() const;
+
+	Chunk * &		operator[](unsigned int u);
+	Chunk * &		operator[](VectorU3 u);
+
+	VectorI3	absolute(VectorU3 u) const;
+	VectorU3	relative(VectorI3 i) const;
+
+	~ChunkArray3D();
+	ChunkArray3D();
+	ChunkArray3D(const ChunkArray3D & other) = delete;
+	ChunkArray3D & operator=(const ChunkArray3D & other) = delete;
+
+	void	LoopX(VectorU3 u, VectorI3 diff);
+	void	LoopY(VectorU3 u, VectorI3 diff);
+	void	LoopZ(VectorU3 u, VectorI3 diff);
+
+	void	ChangeCenter(VectorI3 center);
+};
+
 struct ChunkManager
 {
 	VoxelGraphics::Shader		Shader;
@@ -83,22 +112,13 @@ struct ChunkManager
 
 
 
-	Chunk * *	ChunksArray;
-	VectorU3	ChunksCount;
-
-	VectorI3	ChunksCenter;
-	VectorI3	ChunksCorner;
-	BoxI3		ChunksBox;
+	ChunkArray3D	ChunksArray;
+//	BoxI3			ChunksBox;
 
 	void	UpdateChunksArray();
 	void	UpdateChunksArrayGenerate(const Perlin2D & noise2, const Perlin3D & noise3);
 	void	UpdateChunksArrayDraw();
-
-	void	UpdateChunksCenterLoopX(VectorU3 u, VectorI3 diff);
-	void	UpdateChunksCenterLoopY(VectorU3 u, VectorI3 diff);
-	void	UpdateChunksCenterLoopZ(VectorU3 u, VectorI3 diff);
-	void	UpdateChunksCenter(VectorI3 center);
-	void	ChangeChunksSize(unsigned int size);
+	void	ChangeChunksArraySize(unsigned int size);
 
 	Container::Binary<Chunk*>	Chunks;
 	ContainerLock				ChunksLock;
