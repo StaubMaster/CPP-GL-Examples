@@ -15,112 +15,15 @@
 
 
 #include <iomanip>
-WaitDoTime::WaitDoTime()
-	: DoTime(64)
-	, WaitTime(64)
-{ }
-std::ostream & operator<<(std::ostream & o, const WaitDoTime & obj)
-{
-	o << '{';
-	o << std::fixed << std::setw(5) << std::setfill(' ') << std::setprecision(4) << obj.WaitTime.Min() << 's';
-	o << ' ';
-	o << std::fixed << std::setw(5) << std::setfill(' ') << std::setprecision(4) << obj.WaitTime.Average() << 's';
-	o << ' ';
-	o << std::fixed << std::setw(5) << std::setfill(' ') << std::setprecision(4) << obj.WaitTime.Max() << 's';
-	o << '|';
-	o << std::fixed << std::setw(5) << std::setfill(' ') << std::setprecision(4) << obj.DoTime.Min() << 's';
-	o << ' ';
-	o << std::fixed << std::setw(5) << std::setfill(' ') << std::setprecision(4) << obj.DoTime.Average() << 's';
-	o << ' ';
-	o << std::fixed << std::setw(5) << std::setfill(' ') << std::setprecision(4) << obj.DoTime.Max() << 's';
-	o << '}';
-	return o;
-}
+
+// Code
+#include "WaitDoTime.cpp"
+#include "ContainerLock.cpp"
+#include "ChunkArray3D.cpp"
+
+#include "ValueType/UndexLoop3D.hpp"
 
 
-
-void ContainerLock::Checking0()
-{
-	Checking.lock();
-	CheckingCount++;
-	Checking.unlock();
-}
-void ContainerLock::Checking1()
-{
-	CheckingCount--;
-}
-void ContainerLock::Changing0()
-{
-	Changing.lock();
-	Checking.lock();
-	while (CheckingCount.load() != 0) { }
-}
-void ContainerLock::Changing1()
-{
-	Checking.unlock();
-	Changing.unlock();
-}
-
-void ContainerLock::Checking0(StopWatch & watch, WaitDoTime & time)
-{
-	watch.ReStart();
-
-	Checking.lock();
-	CheckingCount++;
-	Checking.unlock();
-
-	watch.Stop();
-	time.WaitTime.NewValue(watch.ElapsedTime());
-	watch.ReStart();
-}
-void ContainerLock::Checking1(StopWatch & watch, WaitDoTime & time)
-{
-	CheckingCount--;
-
-	watch.Stop();
-	time.DoTime.NewValue(watch.ElapsedTime());
-}
-void ContainerLock::Changing0(StopWatch & watch, WaitDoTime & time)
-{
-	watch.ReStart();
-
-	Changing.lock();
-	Checking.lock();
-	while (CheckingCount.load() != 0) { }
-
-	watch.Stop();
-	time.WaitTime.NewValue(watch.ElapsedTime());
-	watch.ReStart();
-}
-void ContainerLock::Changing1(StopWatch & watch, WaitDoTime & time)
-{
-	Checking.unlock();
-	Changing.unlock();
-
-	watch.Stop();
-	time.DoTime.NewValue(watch.ElapsedTime());
-}
-
-
-
-
-
-unsigned int ChunkArray3D::Count() const { return Size.Product(); }
-
-Chunk * & ChunkArray3D::operator[](unsigned int u) { return Data[u]; }
-Chunk * & ChunkArray3D::operator[](VectorU3 u) { return Data[Size.Convert(u)]; }
-
-VectorI3 ChunkArray3D::absolute(VectorU3 u) const { return u + Corner; }
-VectorU3 ChunkArray3D::relative(VectorI3 i) const { return i - Corner; }
-
-ChunkArray3D::~ChunkArray3D()
-{
-	delete[] Data;
-}
-ChunkArray3D::ChunkArray3D()
-	: Data(nullptr)
-	, Size()
-{ }
 
 void ChunkManager::ChangeChunksArraySize(unsigned int size)
 {
@@ -297,11 +200,8 @@ ChunkManager::ChunkManager()
 	return true;
 }*/
 
-unsigned int ChunkManager::FindChunkUndex(Chunk * chunk)
+/*unsigned int ChunkManager::FindChunkUndex(Chunk * chunk)
 {
-//	ChunksChecking.lock();
-//	ChunksCheckingCount++;
-//	ChunksChecking.unlock();
 	std::cout << "FindChunkUndex:" << __LINE__ << '\n';
 	ChunksLock.Checking0();
 	std::cout << "FindChunkUndex:" << __LINE__ << '\n';
@@ -312,21 +212,16 @@ unsigned int ChunkManager::FindChunkUndex(Chunk * chunk)
 			std::cout << "FindChunkUndex:" << __LINE__ << '\n';
 			ChunksLock.Checking1();
 			std::cout << "FindChunkUndex:" << __LINE__ << '\n';
-			//ChunksCheckingCount--;
 			return i;
 		}
 	}
 	std::cout << "FindChunkUndex:" << __LINE__ << '\n';
 	ChunksLock.Checking1();
 	std::cout << "FindChunkUndex:" << __LINE__ << '\n';
-//	ChunksCheckingCount--;
 	return 0xFFFFFFFF;
-}
-unsigned int ChunkManager::FindChunkUndex(VectorI3 idx)
+}*/
+/*unsigned int ChunkManager::FindChunkUndex(VectorI3 idx)
 {
-//	ChunksChecking.lock();
-//	ChunksCheckingCount++;
-//	ChunksChecking.unlock();
 	std::cout << "FindChunkUndex:" << __LINE__ << '\n';
 	ChunksLock.Checking0();
 	std::cout << "FindChunkUndex:" << __LINE__ << '\n';
@@ -337,88 +232,93 @@ unsigned int ChunkManager::FindChunkUndex(VectorI3 idx)
 			std::cout << "FindChunkUndex:" << __LINE__ << '\n';
 			ChunksLock.Checking1();
 			std::cout << "FindChunkUndex:" << __LINE__ << '\n';
-			//ChunksCheckingCount--;
 			return i;
 		}
 	}
 	std::cout << "FindChunkUndex:" << __LINE__ << '\n';
 	ChunksLock.Checking1();
 	std::cout << "FindChunkUndex:" << __LINE__ << '\n';
-//	ChunksCheckingCount--;
 	return 0xFFFFFFFF;
-}
-Chunk * ChunkManager::FindChunkOrNull(VectorI3 idx)
+}*/
+/*Chunk * ChunkManager::FindChunkOrNull(VectorI3 idx)
 {
-//	ChunksChecking.lock();
-//	ChunksCheckingCount++;
-//	ChunksChecking.unlock();
-	std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
-	ChunksLock.Checking0();
-	std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
-	for (unsigned int i = 0; i < Chunks.Count(); i++)
-	{
-		if (((*Chunks[i]).Index == idx).All(true))
-		{
-			std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
-			ChunksLock.Checking1();
-			std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
-			//ChunksCheckingCount--;
-			return Chunks[i];
-		}
-	}
-	std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
-	ChunksLock.Checking1();
-	std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
-//	ChunksCheckingCount--;
-	return nullptr;
-}
+//	std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
+//	ChunksLock.Checking0();
+//	std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
+//	for (unsigned int i = 0; i < Chunks.Count(); i++)
+//	{
+//		Chunk * chunk = Chunks[i];
+//		if (chunk == nullptr) { continue; }
+//		chunk -> lock();
+//		if ((chunk -> Index == idx).All(true))
+//		{
+//			std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
+//			ChunksLock.Checking1();
+//			std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
+//			return chunk;
+//		}
+//		chunk -> unlock();
+//	}
+//	std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
+//	ChunksLock.Checking1();
+//	std::cout << "FindChunkOrNull:" << __LINE__ << '\n';
+//	return nullptr;
 
-VoxelIndex ChunkManager::FindVoxelIndex(VoxelIndex idx)
+	// do this in ChunksArray ?
+	VectorU3 udx = Chunks.relative(idx);
+	if ((udx < Chunks.Size).Any(false)) { return nullptr; }
+	return Chunks[udx];
+}*/
+
+/*VoxelIndex ChunkManager::FindVoxelIndex(VoxelIndex idx)
 {
-	idx.ChunkMan = FindChunkUndex(idx.Chunk);
+	//idx.ChunkPointer = FindChunkOrNull(idx.Chunk);
 	return idx;
-}
-VoxelIndex ChunkManager::FindVoxelIndex(VectorI3 idx)
+}*/
+/*VoxelIndex ChunkManager::FindVoxelIndex(VectorI3 idx)
 {
 	return FindVoxelIndex(VoxelIndex(idx));
-}
+}*/
 
 const Voxel * ChunkManager::FindVoxelOrNull(VoxelIndex idx)
 {
-	if (!idx.Valid()) { return nullptr; }
-	Chunk * chunk = Chunks[idx.ChunkMan];
-	if (chunk == nullptr)   {  return nullptr; }
-	if (!(chunk -> Done())) {  return nullptr; }
-	if (chunk -> IsEmpty()) {  return nullptr; }
+	//if (!idx.Valid()) { return nullptr; }
+	//Chunk * chunk = idx.ChunkPointer;
+	//Chunk * chunk = FindChunkOrNull(idx.Chunk);
+	Chunk * chunk = Chunks.FindLockOrNull(idx.Chunk);
+	if (chunk == nullptr)   { return nullptr; }
+	if (!(chunk -> Done())) { chunk -> unlock(); return nullptr; }
+	if (chunk -> IsEmpty()) { chunk -> unlock(); return nullptr; }
+	chunk -> unlock();
 	return nullptr;
 //	return &(*chunk)[idx.Voxel];
 }
 const Voxel * ChunkManager::FindVoxelOrNull(VectorI3 idx)
 {
-	return FindVoxelOrNull(FindVoxelIndex(idx));
+	return FindVoxelOrNull(VoxelIndex(idx));
 }
 
 
 
-//#include <math.h>
-//#include "PolyHedra/Object.hpp"
-//static PolyHedra *	ViewRayPolyHedra;
-//static PolyHedra *	VoxelBoxPolyHedra;
-//static PolyHedra *	ChunkBoxPolyHedra;
-/*static void ShowRay(Ray3D ray)
+#include <math.h>
+#include "PolyHedra/Object.hpp"
+static PolyHedra * ViewRayPolyHedra;
+static PolyHedra * VoxelBoxPolyHedra;
+//static PolyHedra * ChunkBoxPolyHedra;
+static void ShowRay(Ray3D ray)
 {
 	if (ViewRayPolyHedra == nullptr) { return; }
 	PolyHedraObject obj(ViewRayPolyHedra);
 	obj.Trans().Position = ray.Pos;
 	obj.Trans().Rotation = EulerAngle3D::PointToZ(ray.Dir);
-}*/
-/*static void ShowVoxel(VectorI3 idx)
+}
+static void ShowVoxel(VectorI3 idx)
 {
 	if (VoxelBoxPolyHedra == nullptr) { return; }
 	PolyHedraObject obj(VoxelBoxPolyHedra);
 	obj.Trans().Position = idx;
 	obj.ShowWire();
-}*/
+}
 /*static void ShowChunk(VectorI3 idx)
 {
 	PolyHedraObject obj(ChunkBoxPolyHedra);
@@ -426,7 +326,7 @@ const Voxel * ChunkManager::FindVoxelOrNull(VectorI3 idx)
 	obj.ShowWire();
 }*/
 
-/*static GridCast3D::Hit hit_ray(const Chunk & chunk, Ray3D ray3D, float limit)
+static GridCast3D::Hit hit_ray(Chunk & chunk, Ray3D ray3D, float limit)
 {
 	ShowRay(Ray3D(ray3D.Pos, ray3D.Dir));
 	BoxI3 box(VectorI3(-1), VectorI3(CHUNK_VALUES_PER_SIDE));
@@ -444,44 +344,76 @@ const Voxel * ChunkManager::FindVoxelOrNull(VectorI3 idx)
 	}
 	while (data.Iterate());
 	return GridCast3D::Hit();
-}*/
-/*static GridCast3D::Hit hit_ray(const ChunkManager & manager, Ray3D ray3D, float limit)
+}
+static GridCast3D::Hit hit_ray(ChunkManager & manager, Ray3D ray3D, float limit)
 {
 	GridCast3D::Data data(ray3D, limit, CHUNK_VALUES_PER_SIDE);
 	do
 	{
-		Chunk * chunk = manager.FindChunkOrNull(data.Index());
-		if (chunk == nullptr) { return GridCast3D::Hit(); }
-		if (!(chunk -> Done())) { return GridCast3D::Hit(); }
-		if (!(chunk -> IsEmpty()))
+//		std::cout << "hit_ray:" << __LINE__ << '\n';
+		//Chunk * chunk = manager.FindChunkOrNull(data.Index());
+		Chunk * chunk = manager.Chunks.FindLockOrNull(data.Index());
+		/*Chunk * chunk = nullptr;
 		{
-			GridCast3D::Hit hit = hit_ray(*chunk, data.Ray(), data.Limit());
-			if (hit.cardinal != AxisRel::None) { return hit; }
-		}
+//			std::cout << "hit_ray:" << __LINE__ << '\n';
+			for (unsigned int i = 0; i < manager.Chunks.Count(); i++)
+			{
+				if (manager.Chunks[i] == nullptr) { continue; }
+				if ((manager.Chunks[i] -> Index == data.Index()).All(true))
+				{
+					chunk = manager.Chunks[i];
+					break;
+				}
+			}
+//			std::cout << "hit_ray:" << __LINE__ << '\n';
+		}*/
+//		std::cout << "hit_ray:" << __LINE__ << '\n';
+		if (chunk == nullptr) { return GridCast3D::Hit(); }
+//		std::cout << "hit_ray:" << __LINE__ << ':' << (chunk -> Index) << '\n';
+		//chunk -> lock();
+//		std::cout << "hit_ray:" << __LINE__ << ':' << (chunk -> Index) << '\n';
+		if (!(chunk -> Done())) { chunk -> unlock(); return GridCast3D::Hit(); }
+		if ((chunk -> IsEmpty())) { chunk -> unlock(); continue; }
+		GridCast3D::Hit hit = hit_ray(*chunk, data.Ray(), data.Limit());
+		chunk -> unlock();
+		if (hit.cardinal != AxisRel::None) { return hit; }
 	}
 	while (data.Iterate());
 	return GridCast3D::Hit();
-}*/
+}
 
 bool VoxelHit::Valid() const { return Side != AxisRel::None; }
 VoxelHit::VoxelHit()
 	: Side(AxisRel::None)
 { }
 
-VoxelHit ChunkManager::HitVoxel(Ray3D ray) const
+VoxelHit ChunkManager::HitVoxel(Ray3D ray)
 {
-	return VoxelHit();
+//	(void)ray;
+//	return VoxelHit();
 
-//	::ViewRayPolyHedra = ViewRayPolyHedra;
-//	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
+	::ViewRayPolyHedra = ViewRayPolyHedra;
+	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
 //	::ChunkBoxPolyHedra = ChunkBoxPolyHedra;
 
 	//ShowRay(ray);
-//	GridCast3D::Hit _hit = hit_ray(*this, ray, 10.0f);
-	GridCast3D::Hit _hit; (void)ray;
+//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+	ChunksLock.Checking0();
+//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+	GridCast3D::Hit _hit = hit_ray(*this, ray, 10.0f);
+//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+	ChunksLock.Checking1();
+//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+//	GridCast3D::Hit _hit;
+
+//	std::cout << "dist: " << _hit.dist << '\n';
+//	std::cout << "idx: " << _hit.idx << '\n';
+//	std::cout << "pos: " << _hit.pos << '\n';
 
 	VoxelHit hit;
+//	std::cout << "HitVoxel:" << __LINE__ << '\n';
 	if (_hit.cardinal == AxisRel::None) { return hit; }
+//	std::cout << "HitVoxel:" << __LINE__ << '\n';
 
 	//hit.Position = ray.Pos + (ray.Dir * _hit.dist);
 	hit.Position = _hit.pos;
@@ -499,32 +431,49 @@ VoxelHit ChunkManager::HitVoxel(Ray3D ray) const
 
 	hit.Side = _hit.cardinal;
 	hit.Index = _hit.idx;
+//	std::cout << "HitVoxel:" << __LINE__ << '\n';
 	return hit;
 }
 
 
 
-bool ChunkManager::ClearVoxel(VoxelIndex idx, Voxel & vox)
+/*bool ChunkManager::ClearVoxel(VoxelIndex idx, Voxel & vox)
 {
-	return false;
-	if (!idx.Valid()) { return false; }
-	return Chunks[idx.ChunkMan] -> ClearVoxel(idx.Voxel, vox);
-}
-bool ChunkManager::ClearVoxel(VectorI3 idx, Voxel & vox)
+//	return false;
+	//if (!idx.Valid()) { return false; }
+	//return Chunks[idx.ChunkMan] -> ClearVoxel(idx.Voxel, vox);
+	//return idx.ChunkPointer -> ClearVoxel(idx.Voxel, vox);
+	std::cout << "ClearVoxel:" << __LINE__ << '\n';
+	Chunk * chunk = FindChunkOrNull(idx.Chunk);
+	std::cout << "ClearVoxel:" << __LINE__ << '\n';
+	if (chunk == nullptr) { return false; }
+	std::cout << "ClearVoxel:" << __LINE__ << '\n';
+	bool ret = chunk -> ClearVoxel(idx.Voxel, vox);
+	std::cout << "ClearVoxel:" << __LINE__ << '\n';
+	chunk -> Changing.unlock();
+	std::cout << "ClearVoxel:" << __LINE__ << '\n';
+	return ret;
+}*/
+/*bool ChunkManager::ClearVoxel(VectorI3 idx, Voxel & vox)
 {
 	return ClearVoxel(FindVoxelIndex(idx), vox);
-}
+}*/
 
-bool ChunkManager::PlaceVoxel(VoxelIndex idx, Voxel & vox)
+/*bool ChunkManager::PlaceVoxel(VoxelIndex idx, Voxel & vox)
 {
-	return false;
-	if (!idx.Valid()) { return false; }
-	return Chunks[idx.ChunkMan] -> PlaceVoxel(idx.Voxel, vox);
-}
-bool ChunkManager::PlaceVoxel(VectorI3 idx, Voxel & vox)
+//	return false;
+	//if (!idx.Valid()) { return false; }
+	//return Chunks[idx.ChunkMan] -> PlaceVoxel(idx.Voxel, vox);
+	Chunk * chunk = FindChunkOrNull(idx.Chunk);
+	if (chunk == nullptr) { return false; }
+	bool ret = chunk -> PlaceVoxel(idx.Voxel, vox);
+	chunk -> Changing.unlock();
+	return ret;
+}*/
+/*bool ChunkManager::PlaceVoxel(VectorI3 idx, Voxel & vox)
 {
 	return PlaceVoxel(FindVoxelIndex(idx), vox);
-}
+}*/
 
 
 
@@ -548,25 +497,7 @@ WaitDoTime	ChunkManager::TimeDraw;
 
 
 void ChunkManager::Clear()
-{
-	//ChunksChanging.lock();
-
-	// move all chunks to the ToRemove List ?
-
-	/*for (unsigned int i = 0; i < Chunks.Count(); i++)
-	{
-		delete Chunks[i];
-	}
-	Chunks.Clear();*/
-
-	/*for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
-	{
-		delete ChunksToInsert[i];
-	}
-	ChunksToInsert.Clear();*/
-
-	//ChunksChanging.unlock();
-}
+{ }
 
 /* Inserting
 	Find Chunks that need inserting
@@ -791,8 +722,8 @@ void ChunkManager::UpdateChunksContainer()
 			if (chunk == nullptr) { ChunksToRemove.Remove(i); i--; continue; }
 			if (chunk -> GraphicsExist) { continue; }
 			if (chunk -> Neighbours.Done()) { continue; }
-			chunk -> Changing.lock();
-			chunk -> Changing.unlock();
+			chunk -> lock();
+			chunk -> unlock();
 			delete chunk;
 			ChunksToRemove.Remove(i);
 			i--;
@@ -905,24 +836,27 @@ Chunk * ChunkManager::FindGenerateChunk(VectorF3 pos, unsigned int size)
 
 		Chunk & chunk = *Chunks[i];
 
-		if (!chunk.Changing.try_lock())
-		{ continue; }
+//		std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
+		chunk.lock();
+//		std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
+		//if (!chunk.try_lock())
+		//{ continue; }
 
 		if (chunk.Done())
-		{ chunk.Changing.unlock(); continue; }
+		{ chunk.unlock(); continue; }
 
 		if (!chunk_box.IntersectVecInclusive(chunk.Index).All(true))
-		{ chunk.Changing.unlock(); continue; }
+		{ chunk.unlock(); continue; }
 
 		VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
 		float d = rel.length2();
 		if (found == nullptr || d < dist)
 		{
-			if (found != nullptr) { found -> Changing.unlock(); }
+			if (found != nullptr) { found -> unlock(); }
 			found = &chunk;
 			dist = d;
 		}
-		else { chunk.Changing.unlock(); }
+		else { chunk.unlock(); }
 	}
 
 //	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
@@ -943,7 +877,7 @@ void ChunkManager::GenerateAround(VectorF3 pos, unsigned int size, const Perlin2
 //		std::cout << "GenerateAround:" << __LINE__ << '\n';
 		chunk -> Generate(noise2, noise3);
 		chunk -> Neighbours.UpdateBufferMain();
-		chunk -> Changing.unlock();
+		chunk -> unlock();
 	}
 }
 
@@ -1046,24 +980,27 @@ Chunk * ChunkManager::FindGraphicsUpdateChunk(VectorF3 pos)
 		if (Chunks[i] == nullptr) { continue; }
 		Chunk & chunk = *Chunks[i];
 
-		if (!chunk.Changing.try_lock())
-		{ continue; }
+//		std::cout << "FindGraphicsUpdateChunk:" << __LINE__ << '\n';
+		chunk.lock();
+//		std::cout << "FindGraphicsUpdateChunk:" << __LINE__ << '\n';
+		//if (!chunk.try_lock())
+		//{ continue; }
 
 		if (!chunk.Done())
-		{ chunk.Changing.unlock(); continue; }
+		{ chunk.unlock(); continue; }
 
 		if (chunk.MainBufferState != Chunk::BufferDataState::Needed)
-		{ chunk.Changing.unlock(); continue; }
+		{ chunk.unlock(); continue; }
 
 		VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
 		float d = rel.length2();
 		if (found == nullptr || d < dist)
 		{
-			if (found != nullptr) { found -> Changing.unlock(); }
+			if (found != nullptr) { found -> unlock(); }
 			found = &chunk;
 			dist = d;
 		}
-		else { chunk.Changing.unlock(); }
+		else { chunk.unlock(); }
 	}
 
 //	std::cout << "FindGraphicsUpdateChunk:" << __LINE__ << '\n';
@@ -1083,7 +1020,7 @@ void ChunkManager::GraphicsUpdateDataAround(VectorF3 pos)
 		if (chunk == nullptr) { return; }
 		//std::cout << "GraphicsUpdateDataAround:" << __LINE__ << '\n';
 		chunk -> GraphicsUpdateMainData();
-		chunk -> Changing.unlock();
+		chunk -> unlock();
 	}
 }
 

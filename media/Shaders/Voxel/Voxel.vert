@@ -46,19 +46,21 @@ uniform float FOV;
 
 
 
-layout(location = 0) in vec3 VPos;
-layout(location = 1) in vec3 VTex;
+layout(location = 0) in vec3 Main_Pos;
+layout(location = 1) in vec3 Main_Tex;
+layout(location = 2) in vec3 Main_Normal;
 
-layout(location = 2) in vec3 IPos;
+layout(location = 3) in vec3 Inst_Pos;
 
 
 
 out Vert {
-	vec3 Original;
-	vec3 Absolute;
-	vec3 Relative;
+	vec3	Original;
+	vec3	Absolute;
+	vec3	Relative;
 
-	vec3 Tex;
+	vec3	Normal;
+	vec3	Tex;
 } vs_out;
 
 
@@ -82,11 +84,12 @@ vec4 proj(in vec3 p_inn)
 
 void main()
 {
-	vs_out.Original = VPos;
+	vs_out.Original = Main_Pos;
 
-	vs_out.Absolute = vs_out.Original + IPos;
+	vs_out.Absolute = vs_out.Original + Inst_Pos;
 	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
 	gl_Position = proj(vs_out.Relative);
 
-	vs_out.Tex = VTex;
+	vs_out.Tex = Main_Tex;
+	vs_out.Normal = Main_Normal;
 }

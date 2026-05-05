@@ -389,7 +389,7 @@ Ray3D	ViewRay;
 void ViewRayFunction()
 {
 	if (PauseMenu.Interactible() || OptionsMenu.Interactible()) { return; }
-	// check is any Control is being hovered
+	// check if any Control is being hovered
 	// cast Ray at mouse
 
 	if (ViewRaySync)
@@ -427,6 +427,7 @@ void ViewRayFunction()
 	VoxelHit hit = ChunkManager.HitVoxel(ViewRay);
 	if (hit.Valid())
 	{
+//		std::cout << "main:" << __LINE__ << '\n';
 		// Voxel Indicator
 		{
 			PolyHedraObject voxel_box_obj(VoxelCube);
@@ -434,6 +435,7 @@ void ViewRayFunction()
 			voxel_box_obj.Trans().Position = hit.Index;
 			voxel_box_obj.ShowWire();
 		}
+//		std::cout << "main:" << __LINE__ << '\n';
 		// Hit Indicator
 		/*{
 			PolyHedraObject voxel_dir_obj(ViewRayPolyHedra);
@@ -442,6 +444,7 @@ void ViewRayFunction()
 			voxel_dir_obj.ShowWire();
 		}*/
 
+//		std::cout << "main:" << __LINE__ << '\n';
 		// Side: make part of VoxelHit ?
 		AxisRel place_axis_0;
 		AxisRel place_axis_1;
@@ -457,8 +460,9 @@ void ViewRayFunction()
 		// determine place_axis_1 based on where on the face was clicked ?
 		// top of face orients to point to top and so on
 
+//		std::cout << "main:" << __LINE__ << '\n';
 		// Text
-		{
+		/*{
 			VoxelIndex idx = ChunkManager.FindVoxelIndex(hit.Index);
 			ss << hit.Index << '\n';
 			ss << idx.Chunk << '\n';
@@ -480,12 +484,25 @@ void ViewRayFunction()
 				}
 				ss << '\n';
 			}
-		}
+		}*/
 
+//		std::cout << "main:" << __LINE__ << '\n';
 		if (window.MouseManager[MouseButtons::MouseL].State == State::Press)
 		{
 			Voxel voxel;
-			ChunkManager.ClearVoxel(hit.Index, voxel);
+			VoxelIndex idx = VoxelIndex(hit.Index);
+			//ChunkManager.ClearVoxel(hit.Index, voxel);
+//			std::cout << "main:" << __LINE__ << '\n';
+			Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
+//			std::cout << "main:" << __LINE__ << '\n';
+			if (chunk != nullptr)
+			{
+//				std::cout << "main:" << __LINE__ << '\n';
+				chunk -> ClearVoxel(idx.Voxel, voxel);
+//				std::cout << "main:" << __LINE__ << '\n';
+				chunk -> unlock();
+//				std::cout << "main:" << __LINE__ << '\n';
+			}
 		}
 		if (window.MouseManager[MouseButtons::MouseR].State == State::Press)
 		{
@@ -502,10 +519,17 @@ void ViewRayFunction()
 				if (item -> VoxelTemplate != nullptr)
 				{
 					Voxel voxel = item -> VoxelTemplate -> ToVoxel(place_axis_0, place_axis_1);
-					ChunkManager.PlaceVoxel(hit.Index, voxel);
+					VoxelIndex idx = VoxelIndex(hit.Index);
+					Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
+					if (chunk != nullptr)
+					{
+						chunk -> PlaceVoxel(idx.Voxel, voxel);
+						chunk -> unlock();
+					}
 				}
 			}
 		}
+//		std::cout << "main:" << __LINE__ << '\n';
 	}
 
 	{
@@ -537,6 +561,9 @@ void UpdateAroundView(FrameTime frame_time)
 //	std::cout << "UpdateAroundView:" << __LINE__ << '\n';
 	UpdateViewColliding(frame_time);
 
+//	static unsigned int NullNeighboursIndex = 0;
+//	static unsigned int FindNeighboursIndex = 0;
+
 	StopWatch sw;
 	sw.Start();
 //	std::cout << "UpdateAroundView:" << __LINE__ << '\n';
@@ -545,11 +572,13 @@ void UpdateAroundView(FrameTime frame_time)
 	sw.Stop();
 	FrameDuration.NewValue(sw.ElapsedTime());
 
-//	if (!DontRemove) { ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange); }
-//	if (!DontInsert) { ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange); }
-//	ChunkManager.UpdateChunksContainer();
-//	if (!DontGenerate) { ChunkManager.GenerateAround(Perlin2, Perlin3, view.Trans.Position, ChunkInsertRange, 1); }
-//	if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position, 1); }
+//		if (!DontRemove) { ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange); }
+//		if (!DontInsert) { ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange); }
+//		if (!DontRemove) { ChunkManager.NullNeighbours(NullNeighboursIndex); }
+//		if (!DontInsert) { ChunkManager.FindNeighbours(FindNeighboursIndex); }
+//		ChunkManager.UpdateChunksContainer();
+//		if (!DontGenerate) { ChunkManager.GenerateAround(view.Trans.Position, ChunkInsertRange, Perlin2, Perlin3); }
+//		if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position); }
 
 //	ChunkManager.UpdateChunksArray();
 //	ChunkManager.UpdateChunksArrayGenerate(Perlin2, Perlin3);
@@ -731,14 +760,19 @@ void Make()
 		VoxelGraphicsTemplate::Cylinder.InitCylinder();
 		VoxelGraphicsTemplate::Slope.InitSlope();
 
-		VoxelTemplate::OrientationCube.TextureFile = MediaDirectory.File("Images/OrientationCorners.png");
-		VoxelTemplate::OrientationCylinder.TextureFile = MediaDirectory.File("Images/OrientationCorners.png");
-		VoxelTemplate::OrientationSlope.TextureFile = MediaDirectory.File("Images/OrientationCorners.png");
-		VoxelTemplate::Gray.TextureFile = MediaDirectory.File("Images/Gray6.png");
-		VoxelTemplate::Grass.TextureFile = MediaDirectory.File("Images/fancy_GreenDirt.png");
-		VoxelTemplate::RedLog.TextureFile = MediaDirectory.File("Images/fancy_RedWood.png");
-		VoxelTemplate::ConcreteCube.TextureFile = MediaDirectory.File("Images/ConcreteCube.png");
-		VoxelTemplate::ConcreteCylinder.TextureFile = MediaDirectory.File("Images/ConcreteCube.png");
+		// All(all): same Texture on all sides
+		// PrismX(base, belt): base Texture and belt Texture
+		// PrismY(base, belt): base Texture and belt Texture
+		// PrismZ(base, belt): base Texture and belt Texture
+		// Axis(prevX, prevY, prevZ, nextX, nextY, nextZ): different Textures
+		VoxelTemplate::OrientationCube.TextureFile = MediaDirectory.File("Images/Voxel/Orientation_2_Cube.png");
+		VoxelTemplate::OrientationCylinder.TextureFile = MediaDirectory.File("Images/Voxel/Orientation_2_Cube.png");
+		VoxelTemplate::OrientationSlope.TextureFile = MediaDirectory.File("Images/Voxel/Orientation_2_Cube.png");
+		VoxelTemplate::Gray.TextureFile = MediaDirectory.File("Images/Voxel/Gray6.png");
+		VoxelTemplate::Grass.TextureFile = MediaDirectory.File("Images/Voxel/fancy_GreenDirt.png");
+		VoxelTemplate::RedLog.TextureFile = MediaDirectory.File("Images/Voxel/fancy_RedWood.png");
+		VoxelTemplate::ConcreteCube.TextureFile = MediaDirectory.File("Images/Voxel/Concrete_0_Cube.png");
+		VoxelTemplate::ConcreteCylinder.TextureFile = MediaDirectory.File("Images/Voxel/Concrete_0_Cube.png");
 	}
 	{
 		Container::Array<VoxelTemplate*> temps({
@@ -801,12 +835,14 @@ void MakeControls()
 		// make RemoveRange = InsertRange + n ?
 
 		//ChunkInsertRange = 6;
+		//ChunkInsertRange = 4;
 		ChunkInsertRange = 1;
 		OptionsMenu.ChunkInsert.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Insert);
 		OptionsMenu.ChunkInsert.SetValue(ChunkInsertRange);
 
 		//ChunkRemoveRange = 12;
-		ChunkRemoveRange = 2;
+		//ChunkRemoveRange = 8;
+		ChunkRemoveRange = 1;
 		OptionsMenu.ChunkRemove.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
 		OptionsMenu.ChunkRemove.SetValue(ChunkRemoveRange);
 
@@ -1052,16 +1088,12 @@ void GraphicsDelete()
 
 void Init() override
 {
-	std::cout << "Init:" << __LINE__ << '\n';
 	Make();
 
-	std::cout << "Init:" << __LINE__ << '\n';
 	ChangeMedia();
 
-	std::cout << "Init:" << __LINE__ << '\n';
 	GraphicsCreate();
 
-	std::cout << "Init:" << __LINE__ << '\n';
 	{
 		Container::Array<VoxelTemplate*> temps({
 			&VoxelTemplate::OrientationCube,
@@ -1101,19 +1133,15 @@ void Init() override
 		view.Depth.Range.ChangeMin(0.5f);
 	}
 
-	std::cout << "Init:" << __LINE__ << '\n';
 	MakeControls();
 
-	std::cout << "Init:" << __LINE__ << '\n';
-	ChunkManager.ChangeChunksArraySize(2);
+	//ChunkManager.ChangeChunksArraySize(8);
+	ChunkManager.ChangeChunksArraySize(1);
 
-	std::cout << "Init:" << __LINE__ << '\n';
-	// View
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
-	std::cout << "Init:" << __LINE__ << '\n';
+
 	ThreadDelay = false;
-	std::cout << "Init:" << __LINE__ << '\n';
 }
 void Free() override
 {
@@ -1279,7 +1307,7 @@ void FrameText(FrameTime frame_time)
 	}*/
 
 	{
-		ss << "CheckingCount: " << ChunkManager.ChunksLock.CheckingCount.load() << '\n';
+		ss << "CheckingCount: " << ChunkManager.ChunksLock.Count() << '\n';
 		ss << "ToInsert: " << ChunkManager.ChunksToInsert.Count() << '\n';
 		ss << "ToRemove: " << ChunkManager.ChunksToRemove.Count() << '\n';
 		ss << '\n';
@@ -1313,13 +1341,17 @@ void FrameText(FrameTime frame_time)
 
 	if (DebugMenu.ChunkHere.Check.IsChecked())
 	{
-		VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
+		//VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
+		VoxelIndex idx(view.Trans.Position.roundF());
 		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
 		//ChunkManager.ChunksInUse.lock();
-		if (idx.ChunkMan != 0xFFFFFFFF)
+		Chunk * chunk_ptr = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
+		//if (idx.ChunkMan != 0xFFFFFFFF)
+		if (chunk_ptr != nullptr)
 		{
-			ss << "Chunk: " << idx.ChunkMan << '\n';
-			Chunk & chunk = *ChunkManager.Chunks[idx.ChunkMan];
+			//ss << "Chunk: " << idx.ChunkMan << '\n';
+			//Chunk & chunk = *ChunkManager.Chunks[idx.ChunkMan];
+			Chunk & chunk = *chunk_ptr;
 
 			ss << "Data: ";
 			if (chunk.IsEmpty()) { ss << "Empty"; } else
@@ -1352,6 +1384,7 @@ void FrameText(FrameTime frame_time)
 			ss << Memory1000ToString(chunk.Buffer.Main.Count * sizeof(VoxelGraphics::MainData));
 			ss << '\n';
 
+			chunk.unlock();
 			ss << '\n';
 		}
 		else

@@ -23,7 +23,28 @@
 
 
 
-bool	Chunk::Done() const { return GenerationState == GenerationState::Generated; }
+#include <iostream>
+
+void Chunk::lock()
+{
+//	std::cout << "Chunk:" << this << ".lock()\n";
+	Changing.lock();
+}
+void Chunk::unlock()
+{
+//	std::cout << "Chunk:" << this << ".unlock()\n";
+	Changing.unlock();
+}
+bool Chunk::try_lock()
+{
+	bool ret = Changing.try_lock();
+//	std::cout << "Chunk:" << this << ".try_lock():" << ret << '\n';
+	return ret;
+}
+
+
+
+bool Chunk::Done() const { return GenerationState == GenerationState::Generated; }
 
 //const Voxel &	Chunk::operator[](VectorU3 udx) const	{ return Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)]; }
 
@@ -50,7 +71,8 @@ Chunk::Chunk(VectorI3 idx)
 {
 	Buffer.Main.Pos.Change(0);
 	Buffer.Main.Tex.Change(1);
-	Buffer.Inst.Pos.Change(2);
+	Buffer.Main.Normal.Change(2);
+	Buffer.Inst.Pos.Change(3);
 }
 
 
@@ -96,14 +118,12 @@ void Chunk::MakeNull()
 
 bool Chunk::ClearVoxel(VectorU3 udx, Voxel & vox)
 {
-	Changing.lock();
+	if (!Done()) { return false; }
 
-	if (!Done()) { Changing.unlock(); return false; }
-
-	if (IsEmpty()) { Changing.unlock(); return false; }
+	if (IsEmpty()) { return false; }
 
 	Voxel & voxel = Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)];
-	if (voxel.Template == nullptr) { Changing.unlock(); return false; }
+	if (voxel.Template == nullptr) { return false; }
 
 	vox = voxel;
 	voxel.Template = nullptr;
@@ -111,25 +131,21 @@ bool Chunk::ClearVoxel(VectorU3 udx, Voxel & vox)
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 
 	Neighbours.UpdateBufferMain(); // only update effected
-	Changing.unlock();
 	return true;
 }
 bool Chunk::PlaceVoxel(VectorU3 udx, Voxel & vox)
 {
-	Changing.lock();
-
-	if (!Done()) { Changing.unlock(); return false; }
+	if (!Done()) { return false; }
 
 	if (IsEmpty()) { MakeNull(); }
 
 	Voxel & voxel = Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)];
-	if (voxel.Template != nullptr) { Changing.unlock(); return false; }
+	if (voxel.Template != nullptr) {return false; }
 
 	voxel = vox;
 	vox.Template = nullptr;
 
 	Neighbours.UpdateBufferMain(); // only update effected
-	Changing.unlock();
 	return true;
 }
 
@@ -139,13 +155,6 @@ bool Chunk::Hit(VectorU3 udx) const
 }
 
 
-
-/*
-	0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
-		#		#		#		|	|		#		#		#	
-	#			#			#	|	|	#			#			#
-	#		#		#		#	|	|	#		#		#		#
-*/
 
 /*static void TestOrientation(Chunk & chunk, const VoxelTemplate & voxel_template, Diag diag, Flip flip, VectorU3 u)
 {
@@ -235,6 +244,8 @@ bool Chunk::Hit(VectorU3 udx) const
 float Chunk::Generation3D_Factor = 5.0f; // 32
 float Chunk::Generation3D_Comparison = 0.0f;
 
+// do these with files
+
 void Chunk::GenerateGrid()
 {
 	Undex3D size3(CHUNK_VALUES_PER_SIDE);
@@ -254,6 +265,44 @@ void Chunk::GenerateGrid()
 		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { Data[size3.Convert(u)].Template = &VoxelTemplate::OrientationCube; }
 		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { Data[size3.Convert(u)].Template = &VoxelTemplate::OrientationCube; }
 		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { Data[size3.Convert(u)].Template = &VoxelTemplate::OrientationCube; }
+	}
+}
+/*
+Condition: Y <= 0
+Place: ConcreteCube
+*/
+void Chunk::GeneratePlane()
+{
+	if (Index.Y >= 0) { return; }
+	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
+	{
+		Data[i].Template = &VoxelTemplate::ConcreteCube;
+		//Data[i].Orientation = VoxelOrientation();
+	}
+}
+/*
+Condition: Y == 0 || Y == 31
+Place: ConcreteCube
+
+Condition: ((X == 7 || X == 24) && (Z == 7 || Z == 24))
+Place: ConcreteCylinder
+*/
+void Chunk::GeneratePillars()
+{
+	//0123456789ABCDEF0123456789ABCDEF
+	//       #                #       
+
+	Undex3D size3(CHUNK_VALUES_PER_SIDE);
+
+	VectorI3 chunk_pos = Index * CHUNK_VALUES_PER_SIDE;
+
+	UndexLoop3D loop3(Undex3D(), size3);
+	for (Undex3D u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
+	{
+		if (u.Y == 0 || u.Y == 31)
+		{ Data[size3.Convert(u)].Template = &VoxelTemplate::ConcreteCube; }
+		else if ((u.X == 7 || u.X == 24) && (u.Z == 7 || u.Z == 24))
+		{ Data[size3.Convert(u)].Template = &VoxelTemplate::ConcreteCylinder; }
 	}
 }
 void Chunk::GeneratePerlin(const Perlin2D & noise)
@@ -327,16 +376,6 @@ void Chunk::GeneratePerlin(const Perlin3D & noise)
 	}
 }
 
-/*static void GeneratePlane(Chunk & chunk)
-{
-	if (chunk.Index.Y >= 0) { return; }
-	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
-	{
-		chunk.Data[i].Template = &VoxelTemplate::ConcreteCube;
-		chunk.Data[i].Orientation = VoxelOrientation();
-	}
-}*/
-
 void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 {
 	if (GenerationState != GenerationState::None) { return; }
@@ -346,12 +385,14 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	MakeNull();
 
+//	GenerateGrid();
+//	GeneratePlane();
+	GeneratePillars();
+
 	(void)noise2;
 	(void)noise3;
-//	GeneratePlane(*this);
-	GeneratePerlin(noise2);
+//	GeneratePerlin(noise2);
 //	GeneratePerlin(noise3);
-//	GenerateGrid();
 
 	GenerationState = GenerationState::Generated;
 

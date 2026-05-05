@@ -63,8 +63,12 @@ struct Chunk
 	public:
 	::GenerationState	GenerationState;
 
-	public:
+	private:
 	std::mutex			Changing;
+	public:
+	void	lock();
+	void	unlock();
+	bool	try_lock();
 	// make wrapper functions for Mutex
 
 	// dont lock inside the Chunk
@@ -102,14 +106,15 @@ struct Chunk
 
 	bool	Hit(VectorU3 udx) const;
 
-	//void	TestOrientation();
-	//void	TestHouse();
-
 	static float	Generation3D_Factor;
 	static float	Generation3D_Comparison;
 
 	private:
+	// do these with Files
+	//void	GenerateOrientation();
 	void	GenerateGrid();
+	void	GeneratePlane();
+	void	GeneratePillars();
 	void	GeneratePerlin(const Perlin2D & noise);
 	void	GeneratePerlin(const Perlin3D & noise);
 	public:

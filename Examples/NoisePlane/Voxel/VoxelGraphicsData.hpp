@@ -1,7 +1,7 @@
 #ifndef  VOXEL_GRAPHICS_DATA_HPP
 # define VOXEL_GRAPHICS_DATA_HPP
 
-# include "Graphics/Voxel.hpp"
+# include "Graphics/Main/Data.hpp"
 # include "VoxelOrientation.hpp" // only for AxisRel
 
 # include "Miscellaneous/Container/Binary.hpp"
@@ -11,29 +11,34 @@
 struct VectorU3;
 struct Voxel;
 
-struct VoxelAxisGraphicsData // VoxelAxisData
+struct VoxelAxisGraphicsData // VoxelAxisGraphicsData
 {
 	Container::Binary<VoxelGraphics::MainTriangle>	Data;
 
+	// Clear()
 	// Count()
 	// operator[]
 	// Insert()
+
+	void	Done();
 };
-struct VoxelGraphicsData
+struct VoxelGraphicsData // VoxelGraphicsData
 {
-	VoxelAxisGraphicsData		Here;
-	VoxelAxisGraphicsData		PrevX;
-	VoxelAxisGraphicsData		PrevY;
-	VoxelAxisGraphicsData		PrevZ;
-	VoxelAxisGraphicsData		NextX;
-	VoxelAxisGraphicsData		NextY;
-	VoxelAxisGraphicsData		NextZ;
+	VoxelAxisGraphicsData	Here;
+	VoxelAxisGraphicsData	PrevX;
+	VoxelAxisGraphicsData	PrevY;
+	VoxelAxisGraphicsData	PrevZ;
+	VoxelAxisGraphicsData	NextX;
+	VoxelAxisGraphicsData	NextY;
+	VoxelAxisGraphicsData	NextZ;
+
+	void	Done();
 
 	const VoxelAxisGraphicsData &	AxisData(AxisRel axis) const;
 };
-struct ChunkGraphicsData // ChunkData
+struct ChunkGraphicsData // ChunkGraphicsData
 {
-	BlockList<1024, VoxelGraphics::MainTriangle>		Data;
+	BlockList<1024, VoxelGraphics::MainTriangle>	Data;
 	Container::Array<VoxelGraphics::MainTriangle>	Array;
 
 	void	Clear();

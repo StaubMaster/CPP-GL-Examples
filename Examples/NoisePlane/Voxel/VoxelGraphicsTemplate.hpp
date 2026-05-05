@@ -1,7 +1,6 @@
 #ifndef  VOXEL_GRAPHICS_TEMPLATE_HPP
 # define VOXEL_GRAPHICS_TEMPLATE_HPP
 
-# include "Graphics/Voxel.hpp"
 # include "VoxelOrientation.hpp"
 # include "VoxelGraphicsData.hpp"
 

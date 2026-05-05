@@ -44,14 +44,18 @@ uniform DepthData Depth;
 
 uniform sampler2DArray texture0;
 
+const LightBase Ambient = LightBase(0.2f, vec4(1, 1, 1, 1));
+const LightSolar Solar = LightSolar(LightBase(0.5f, vec4(1, 1, 1, 1)), normalize(vec3(+1, -2, +3)));
+
 
 
 in Vert {
-	vec3 Original;
-	vec3 Absolute;
-	vec3 Relative;
+	vec3	Original;
+	vec3	Absolute;
+	vec3	Relative;
 
-	vec3 Tex;
+	vec3	Normal;
+	vec3	Tex;
 } fs_inn;
 
 
@@ -59,6 +63,17 @@ in Vert {
 out vec4 Color;
 
 
+
+vec4 CalcLightFactor()
+{
+	vec4 ambient_factor = Ambient.Intensity * Ambient.Color;
+	vec4 solar_factor = Solar.Base.Intensity * Solar.Base.Color * dot(Solar.Direction, normalize(-fs_inn.Normal));
+
+	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
+	light_factor = max(light_factor, ambient_factor);
+	light_factor = max(light_factor, solar_factor);
+	return light_factor;
+}
 
 float CalcDepthFactor()
 {
@@ -83,9 +98,12 @@ float CalcDepthFactor()
 void main()
 {
 	float	depth_factor = CalcDepthFactor();
+	vec4	light_factor = CalcLightFactor();
 
 	vec4 col = texture(texture0, fs_inn.Tex);
+//	col = vec4(abs(normalize(fs_inn.Normal)), 1);
 
+	col = col * light_factor;
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
 	Color = col;

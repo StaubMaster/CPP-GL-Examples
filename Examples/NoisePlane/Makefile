@@ -11,7 +11,6 @@ FANCY_NAME := NoisePlane
 #	Plane/PlaneManager.cpp \
 
 FILES := \
-	Voxel/Graphics/Voxel.cpp \
 	Voxel/Graphics/Main/Data.cpp \
 	Voxel/Graphics/Main/Buffer.cpp \
 	Voxel/Graphics/Inst/Data.cpp \

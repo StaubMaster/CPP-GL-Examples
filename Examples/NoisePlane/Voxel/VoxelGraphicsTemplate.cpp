@@ -109,6 +109,8 @@ void VoxelGraphicsTemplate::InitCube()
 	Quad1(Data.NextX, pos[0b001], pos[0b101], pos[0b011], pos[0b111], BoxF2(VectorF2(0.00f, 0.5f), VectorF2(0.25f, 1.0f)), Texture);
 	Quad1(Data.NextY, pos[0b010], pos[0b011], pos[0b110], pos[0b111], BoxF2(VectorF2(0.25f, 0.5f), VectorF2(0.50f, 1.0f)), Texture);
 	Quad1(Data.NextZ, pos[0b100], pos[0b110], pos[0b101], pos[0b111], BoxF2(VectorF2(0.50f, 0.5f), VectorF2(0.75f, 1.0f)), Texture);
+
+	Data.Done();
 }
 
 void VoxelGraphicsTemplate::InitCylinder()
@@ -234,6 +236,8 @@ void VoxelGraphicsTemplate::InitCylinder()
 	tri.Corners[1] = nY[0xB];
 	tri.Corners[2] = nY[0xA];
 	Data.NextY.Data.Insert(tri);
+
+	Data.Done();
 }
 
 void VoxelGraphicsTemplate::InitSlope()
@@ -278,4 +282,6 @@ void VoxelGraphicsTemplate::InitSlope()
 	Data.NextX.Data.Insert(tri);
 
 	Quad0(Data.Here, pos[0b000], pos[0b001], pos[0b110], pos[0b111], BoxF2(VectorF2(0.75f, 0.0f), VectorF2(1.00f, 1.0f)), Texture);
+
+	Data.Done();
 }

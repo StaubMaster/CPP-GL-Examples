@@ -1,0 +1,7 @@
+Snow
+Stone
+Grass
+Sand
+Water
+Stone
+Void

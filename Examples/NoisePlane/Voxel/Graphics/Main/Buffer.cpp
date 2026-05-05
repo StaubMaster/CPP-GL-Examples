@@ -8,4 +8,5 @@ VoxelGraphics::MainBuffer::MainBuffer(::VertexArray & vertex_array)
 	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainData))
 	, Pos(*this)
 	, Tex(*this)
+	, Normal(*this)
 { }

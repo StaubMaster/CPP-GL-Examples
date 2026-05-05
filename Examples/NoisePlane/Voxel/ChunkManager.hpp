@@ -44,60 +44,9 @@ struct VoxelHit
 #include <iostream>
 #include "ValueType/_Show.hpp"
 
-struct WaitDoTime
-{
-	ValueAverager<float>	DoTime;
-	ValueAverager<float>	WaitTime;
-	WaitDoTime();
-};
-std::ostream & operator<<(std::ostream & o, const WaitDoTime & obj);
-
-struct ContainerLock
-{
-	std::mutex					Changing;	// changing Items
-	std::mutex					Checking;	// changing Container
-	std::atomic<unsigned int>	CheckingCount;
-
-	// terrible names
-	// Changing changes the Container
-	//  resize, assign Items
-	// Checking changes Items
-
-	void	Checking0();
-	void	Checking1();
-	void	Changing0();
-	void	Changing1();
-
-	void	Checking0(StopWatch & watch, WaitDoTime & time);
-	void	Checking1(StopWatch & watch, WaitDoTime & time);
-	void	Changing0(StopWatch & watch, WaitDoTime & time);
-	void	Changing1(StopWatch & watch, WaitDoTime & time);
-};
-
-# include "ValueType/_Include.hpp"
-
-struct ChunkArray3D
-{
-	Chunk * *	Data;
-	VectorU3	Size;
-//	VectorU3	Half;
-
-	VectorI3	Center;
-	VectorI3	Corner;
-
-	unsigned int	Count() const;
-
-	Chunk * &		operator[](unsigned int u);
-	Chunk * &		operator[](VectorU3 u);
-
-	VectorI3	absolute(VectorU3 u) const;
-	VectorU3	relative(VectorI3 i) const;
-
-	~ChunkArray3D();
-	ChunkArray3D();
-	ChunkArray3D(const ChunkArray3D & other) = delete;
-	ChunkArray3D & operator=(const ChunkArray3D & other) = delete;
-};
+# include "WaitDoTime.hpp"
+# include "ContainerLock.hpp"
+# include "ChunkArray3D.hpp"
 
 struct ChunkManager
 {
@@ -122,21 +71,6 @@ struct ChunkManager
 //	Container::Binary<Chunk*>	Chunks;
 	ContainerLock				ChunksLock;
 
-	// Changing
-	//  lock Changing
-	//  lock Checking
-	//  wait for CheckingCount == 0
-	//  ... change
-	//  unlock Checking
-	//  unlock Changing
-
-	// Checking
-	//  lock Checking
-	//  CheckingCount++
-	//  unlock Checking
-	//  ... checking
-	//  CheckingCount--
-
 
 
 	public:
@@ -146,32 +80,42 @@ struct ChunkManager
 	ChunkManager(const ChunkManager & other) = delete;
 	ChunkManager & operator=(const ChunkManager & other) = delete;
 
+	public:
 	PolyHedra *	VoxelBoxPolyHedra = nullptr;
 	PolyHedra *	ChunkBoxPolyHedra = nullptr;
 	PolyHedra *	ViewRayPolyHedra = nullptr;
 
-	unsigned int	FindChunkUndex(Chunk * chunk);
-	unsigned int	FindChunkUndex(VectorI3 idx);
-	Chunk *			FindChunkOrNull(VectorI3 idx);
+	public:
+//	unsigned int	FindChunkUndex(Chunk * chunk);
+//	unsigned int	FindChunkUndex(VectorI3 idx);
+//	Chunk *			FindChunkOrNull(VectorI3 idx);
 
-	VoxelIndex		FindVoxelIndex(VoxelIndex idx);
-	VoxelIndex		FindVoxelIndex(VectorI3 idx);
+//	VoxelIndex		FindVoxelIndex(VoxelIndex idx);
+//	VoxelIndex		FindVoxelIndex(VectorI3 idx);
 
+	// have this in Chunk
+	// maybe return Chunk and Voxel
 	const Voxel *	FindVoxelOrNull(VoxelIndex idx);
 	const Voxel *	FindVoxelOrNull(VectorI3 idx);
 
-	VoxelHit		HitVoxel(Ray3D ray) const;
+
+
+	private:
+	public:
+	VoxelHit		HitVoxel(Ray3D ray);
 
 
 
-	bool	ClearVoxel(VoxelIndex idx, Voxel & vox);
-	bool	ClearVoxel(VectorI3 idx, Voxel & vox);
+	public:
+//	bool	ClearVoxel(VoxelIndex idx, Voxel & vox);
+//	bool	ClearVoxel(VectorI3 idx, Voxel & vox);
 
-	bool	PlaceVoxel(VoxelIndex idx, Voxel & vox);
-	bool	PlaceVoxel(VectorI3 idx, Voxel & vox);
+//	bool	PlaceVoxel(VoxelIndex idx, Voxel & vox);
+//	bool	PlaceVoxel(VectorI3 idx, Voxel & vox);
 
 
 
+	public:
 	static WaitDoTime	TimeInsert;
 	static WaitDoTime	TimeInsertNeighbours;
 

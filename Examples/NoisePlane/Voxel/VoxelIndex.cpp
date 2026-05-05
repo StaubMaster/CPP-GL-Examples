@@ -3,13 +3,13 @@
 
 
 
-bool VoxelIndex::Valid() const { return (ChunkMan != 0xFFFFFFFF); }
+//bool VoxelIndex::Valid() const { return (ChunkPointer != nullptr); }
 
 
 
 VoxelIndex::~VoxelIndex() { }
 VoxelIndex::VoxelIndex()
-	: ChunkMan(0xFFFFFFFF)
+//	: ChunkPointer(nullptr)
 { }
 
 
@@ -28,7 +28,7 @@ VoxelIndex & VoxelIndex::operator=(VectorI3 position)
 
 void VoxelIndex::FromPosition(VectorI3 position)
 {
-	ChunkMan = 0xFFFFFFFF;
+//	ChunkPointer = nullptr;
 	Chunk = (VectorF3(position) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
 	Voxel = position - (Chunk * CHUNK_VALUES_PER_SIDE);
 }

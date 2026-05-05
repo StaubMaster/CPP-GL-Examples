@@ -4,16 +4,16 @@
 # include "ValueType/VectorI3.hpp"
 # include "ValueType/VectorU3.hpp"
 
+struct Chunk;
+
 struct VoxelIndex
 {
-	unsigned int	ChunkMan; // Chunk Index in Manager
-	// ChunkMan becomes undefined with multithreading
-	// have a Pointer to a locked chunk ?
+	VectorI3	Chunk;
+	VectorU3	Voxel;
 
-	VectorI3		Chunk;
-	VectorU3		Voxel;
+//	::Chunk *	ChunkPointer;
 
-	bool	Valid() const;
+//	bool	Valid() const;
 
 	~VoxelIndex();
 	VoxelIndex();

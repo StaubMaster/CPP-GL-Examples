@@ -10,6 +10,7 @@ namespace VoxelGraphics
 	{
 		::Attribute::VectorF3	Pos;
 		::Attribute::VectorF3	Tex;
+		::Attribute::VectorF3	Normal;
 		~MainBuffer();
 		MainBuffer(::VertexArray & vertex_array);
 	};

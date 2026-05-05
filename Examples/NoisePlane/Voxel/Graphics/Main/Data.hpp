@@ -7,8 +7,9 @@ namespace VoxelGraphics
 {
 	struct MainData
 	{
-		VectorF3		Pos;
-		VectorF3		Tex;
+		VectorF3	Pos;
+		VectorF3	Tex;
+		VectorF3	Normal;
 
 		~MainData();
 		MainData();
@@ -27,6 +28,8 @@ namespace VoxelGraphics
 
 		MainTriangle(const MainTriangle & other);
 		MainTriangle & operator=(const MainTriangle & other);
+
+		void	CalcNormal();
 	};
 };
 
