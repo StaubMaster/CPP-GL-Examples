@@ -55,7 +55,7 @@
 #include "Voxel/ChunkManager.hpp"
 #include "Voxel/VoxelOrientation.hpp"
 #include "Voxel/VoxelTemplate.hpp"
-#include "Voxel/VoxelIndex.hpp"
+#include "Voxel/ChunkVoxelIndex.hpp"
 #include "Voxel/VoxelGraphicsTemplate.hpp"
 
 #include "BoxEntity.hpp"
@@ -284,13 +284,18 @@ void	DisplayBoxEntityVoxels(BoxEntity & box_entity, FrameTime frame_time)
 	LoopI3 loop(box.Min.round(), Bool3(false), box.Max.round(), Bool3(false));
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
-		const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
+		ChunkVoxelIndex idx(i);
+		Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
+		if (chunk == nullptr) { continue; }
+		//const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
+		const Voxel * voxel = chunk -> FindVoxelOrNull(idx.Voxel);
 		if (voxel != nullptr && voxel -> Template != nullptr)
 		{
 			PolyHedraObject voxel_obj(p);
 			voxel_obj.Trans().Position = i;
 			voxel_obj.ShowWire();
 		}
+		chunk -> unlock();
 	}
 }
 
@@ -325,7 +330,7 @@ void UpdateViewColliding(FrameTime frame_time)
 		}
 	}
 
-	/*if (ViewBoxCollision)
+	if (ViewBoxCollision)
 	{
 		if (ViewCollisionSide.PrevY)
 		{
@@ -360,7 +365,7 @@ void UpdateViewColliding(FrameTime frame_time)
 		ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
 		DisplayBoxEntity(ViewEntity);
 	}
-	else*/
+	else
 	{
 		change.Position *= ViewSpeedNoClip;
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFasterNoClip; }
@@ -490,7 +495,7 @@ void ViewRayFunction()
 		if (window.MouseManager[MouseButtons::MouseL].State == State::Press)
 		{
 			Voxel voxel;
-			VoxelIndex idx = VoxelIndex(hit.Index);
+			ChunkVoxelIndex idx(hit.Index);
 			//ChunkManager.ClearVoxel(hit.Index, voxel);
 //			std::cout << "main:" << __LINE__ << '\n';
 			Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
@@ -519,7 +524,7 @@ void ViewRayFunction()
 				if (item -> VoxelTemplate != nullptr)
 				{
 					Voxel voxel = item -> VoxelTemplate -> ToVoxel(place_axis_0, place_axis_1);
-					VoxelIndex idx = VoxelIndex(hit.Index);
+					ChunkVoxelIndex idx(hit.Index);
 					Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
 					if (chunk != nullptr)
 					{
@@ -765,12 +770,19 @@ void Make()
 		// PrismY(base, belt): base Texture and belt Texture
 		// PrismZ(base, belt): base Texture and belt Texture
 		// Axis(prevX, prevY, prevZ, nextX, nextY, nextZ): different Textures
+
 		VoxelTemplate::OrientationCube.TextureFile = MediaDirectory.File("Images/Voxel/Orientation_2_Cube.png");
 		VoxelTemplate::OrientationCylinder.TextureFile = MediaDirectory.File("Images/Voxel/Orientation_2_Cube.png");
 		VoxelTemplate::OrientationSlope.TextureFile = MediaDirectory.File("Images/Voxel/Orientation_2_Cube.png");
+
 		VoxelTemplate::Gray.TextureFile = MediaDirectory.File("Images/Voxel/Gray6.png");
 		VoxelTemplate::Grass.TextureFile = MediaDirectory.File("Images/Voxel/fancy_GreenDirt.png");
 		VoxelTemplate::RedLog.TextureFile = MediaDirectory.File("Images/Voxel/fancy_RedWood.png");
+
+		VoxelTemplate::Sand.TextureFile = MediaDirectory.File("Images/Voxel/Sand.png");
+		VoxelTemplate::Snow.TextureFile = MediaDirectory.File("Images/Voxel/Snow.png");
+		VoxelTemplate::Water.TextureFile = MediaDirectory.File("Images/Voxel/Water.png");
+
 		VoxelTemplate::ConcreteCube.TextureFile = MediaDirectory.File("Images/Voxel/Concrete_0_Cube.png");
 		VoxelTemplate::ConcreteCylinder.TextureFile = MediaDirectory.File("Images/Voxel/Concrete_0_Cube.png");
 	}
@@ -782,6 +794,9 @@ void Make()
 			&VoxelTemplate::Gray,
 			&VoxelTemplate::Grass,
 			&VoxelTemplate::RedLog,
+			&VoxelTemplate::Sand,
+			&VoxelTemplate::Snow,
+			&VoxelTemplate::Water,
 			&VoxelTemplate::ConcreteCube,
 			&VoxelTemplate::ConcreteCylinder,
 		});
@@ -835,14 +850,14 @@ void MakeControls()
 		// make RemoveRange = InsertRange + n ?
 
 		//ChunkInsertRange = 6;
-		//ChunkInsertRange = 4;
-		ChunkInsertRange = 1;
+		ChunkInsertRange = 4;
+		//ChunkInsertRange = 1;
 		OptionsMenu.ChunkInsert.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Insert);
 		OptionsMenu.ChunkInsert.SetValue(ChunkInsertRange);
 
 		//ChunkRemoveRange = 12;
-		//ChunkRemoveRange = 8;
-		ChunkRemoveRange = 1;
+		ChunkRemoveRange = 8;
+		//ChunkRemoveRange = 1;
 		OptionsMenu.ChunkRemove.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
 		OptionsMenu.ChunkRemove.SetValue(ChunkRemoveRange);
 
@@ -1102,6 +1117,9 @@ void Init() override
 			&VoxelTemplate::Gray,
 			&VoxelTemplate::Grass,
 			&VoxelTemplate::RedLog,
+			&VoxelTemplate::Sand,
+			&VoxelTemplate::Snow,
+			&VoxelTemplate::Water,
 			&VoxelTemplate::ConcreteCube,
 			&VoxelTemplate::ConcreteCylinder,
 		});
@@ -1135,8 +1153,8 @@ void Init() override
 
 	MakeControls();
 
-	//ChunkManager.ChangeChunksArraySize(8);
-	ChunkManager.ChangeChunksArraySize(1);
+	ChunkManager.ChangeChunksArraySize(8);
+	//ChunkManager.ChangeChunksArraySize(1);
 
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -1342,7 +1360,7 @@ void FrameText(FrameTime frame_time)
 	if (DebugMenu.ChunkHere.Check.IsChecked())
 	{
 		//VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
-		VoxelIndex idx(view.Trans.Position.roundF());
+		ChunkVoxelIndex idx(view.Trans.Position.roundF());
 		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
 		//ChunkManager.ChunksInUse.lock();
 		Chunk * chunk_ptr = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
@@ -1423,13 +1441,14 @@ void FrameText(FrameTime frame_time)
 		//ChunkManager.ChunksChanging.lock();
 		ChunkManager.ChunksLock.Checking0();
 
-		unsigned int chunks_t = ChunkManager.Chunks.Count(); // total
+		unsigned int chunks_t = 0; // total
 		unsigned int chunks_u = 0; // ungenerated
 		unsigned int chunks_f = 0; // filled
 		unsigned int chunks_e = 0; // empty
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
 		{
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
+			chunks_t++;
 			Chunk & chunk = *ChunkManager.Chunks[i];
 			if (chunk.Done())
 			{
@@ -1442,8 +1461,8 @@ void FrameText(FrameTime frame_time)
 			{ chunks_u++; }
 		}
 
-		ss << "Chunks";
-		ss << ':' << chunks_t << '[';
+		ss << "Chunks:" << ChunkManager.Chunks.Count();
+		ss << '|' << chunks_t << '[';
 		ss << 'U' << chunks_u << '|';
 		ss << 'E' << chunks_e << '|';
 		ss << 'F' << chunks_f << ']';

@@ -24,7 +24,6 @@
 struct Voxel;
 struct Chunk;
 enum class AxisRel : unsigned char;
-struct VoxelIndex;
 
 struct Ray3D;
 class PolyHedra;
@@ -85,33 +84,11 @@ struct ChunkManager
 	PolyHedra *	ChunkBoxPolyHedra = nullptr;
 	PolyHedra *	ViewRayPolyHedra = nullptr;
 
-	public:
-//	unsigned int	FindChunkUndex(Chunk * chunk);
-//	unsigned int	FindChunkUndex(VectorI3 idx);
-//	Chunk *			FindChunkOrNull(VectorI3 idx);
-
-//	VoxelIndex		FindVoxelIndex(VoxelIndex idx);
-//	VoxelIndex		FindVoxelIndex(VectorI3 idx);
-
-	// have this in Chunk
-	// maybe return Chunk and Voxel
-	const Voxel *	FindVoxelOrNull(VoxelIndex idx);
-	const Voxel *	FindVoxelOrNull(VectorI3 idx);
-
 
 
 	private:
 	public:
 	VoxelHit		HitVoxel(Ray3D ray);
-
-
-
-	public:
-//	bool	ClearVoxel(VoxelIndex idx, Voxel & vox);
-//	bool	ClearVoxel(VectorI3 idx, Voxel & vox);
-
-//	bool	PlaceVoxel(VoxelIndex idx, Voxel & vox);
-//	bool	PlaceVoxel(VectorI3 idx, Voxel & vox);
 
 
 

@@ -7,6 +7,9 @@ unsigned int ChunkArray3D::Count() const { return Size.Product(); }
 Chunk * & ChunkArray3D::operator[](unsigned int idx) { return Data[idx]; }
 Chunk * & ChunkArray3D::operator[](VectorU3 idx) { return Data[Size.Convert(idx)]; }
 
+// Lock Container while doing this
+// make Lock a part of Container ?
+
 Chunk * ChunkArray3D::FindLockOrNull(VectorI3 idx)
 {
 	VectorU3 udx = relative(idx);

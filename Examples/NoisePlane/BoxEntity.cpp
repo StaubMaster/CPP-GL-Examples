@@ -1,5 +1,6 @@
 #include "BoxEntity.hpp"
 #include "Voxel/ChunkManager.hpp"
+#include "Voxel/ChunkVoxelIndex.hpp"
 
 
 
@@ -74,7 +75,11 @@ VoxelBoxCollision BoxEntity::FindCollisionTime(::ChunkManager & manager, LoopI3 
 	VoxelBoxCollision collision;
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
-		const Voxel * voxel = manager.FindVoxelOrNull(i);
+		ChunkVoxelIndex idx(i);
+		Chunk * chunk = manager.Chunks.FindLockOrNull(idx.Chunk);
+		if (chunk == nullptr) { continue; }
+		//const Voxel * voxel = manager.FindVoxelOrNull(i);
+		const Voxel * voxel = chunk -> FindVoxelOrNull(idx.Voxel);
 		if (voxel != nullptr && voxel -> Template != nullptr)
 		{
 			BoxF3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
@@ -86,6 +91,7 @@ VoxelBoxCollision BoxEntity::FindCollisionTime(::ChunkManager & manager, LoopI3 
 			if (Vel.Z > 0.0f) { dir.Z = +1.0f; } else { dir.Z = -1.0f; }
 			collision.Consider(t, -dir);
 		}
+		chunk -> unlock();
 	}
 	return collision;
 }

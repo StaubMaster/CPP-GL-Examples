@@ -48,6 +48,13 @@ bool Chunk::Done() const { return GenerationState == GenerationState::Generated;
 
 //const Voxel &	Chunk::operator[](VectorU3 udx) const	{ return Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)]; }
 
+const Voxel * Chunk::FindVoxelOrNull(VectorU3 udx) const
+{
+	if (!(Done())) { return nullptr; }
+	if (IsEmpty()) { return nullptr; }
+	return &Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)];
+}
+
 
 
 Chunk::~Chunk()
@@ -244,8 +251,10 @@ bool Chunk::Hit(VectorU3 udx) const
 float Chunk::Generation3D_Factor = 5.0f; // 32
 float Chunk::Generation3D_Comparison = 0.0f;
 
-// do these with files
-
+/*
+Condition:
+Place: OrientationCube
+*/
 void Chunk::GenerateGrid()
 {
 	Undex3D size3(CHUNK_VALUES_PER_SIDE);
@@ -301,7 +310,8 @@ void Chunk::GeneratePillars()
 	{
 		if (u.Y == 0 || u.Y == 31)
 		{ Data[size3.Convert(u)].Template = &VoxelTemplate::ConcreteCube; }
-		else if ((u.X == 7 || u.X == 24) && (u.Z == 7 || u.Z == 24))
+		//else if ((u.X == 7 || u.X == 24) && (u.Z == 7 || u.Z == 24))
+		else if ((u.X == 1 || u.X == 30) && (u.Z == 1 || u.Z == 30))
 		{ Data[size3.Convert(u)].Template = &VoxelTemplate::ConcreteCylinder; }
 	}
 }
@@ -325,15 +335,22 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		//val += noise.Calculate(p2 / 2.0f) * 2;
 		//val += noise.Calculate(p2 / 1.0f) * 1;
 
-		val = val - p3.Y;
+		float val_rel = val - p3.Y;
 		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
 		{
 			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, Undex3D(u.X, i, u.Y));
-			if (i > val)
+			if (i > val_rel)
 			{
 				Data[voxel_u].Template = nullptr;
 			}
-			else if (val - i < 1)
+			else
+			{
+				//Data[voxel_u].Template = &VoxelTemplate::Water;
+				if (val < -1.0f) { Data[voxel_u].Template = &VoxelTemplate::Water; }
+				else if (val < +1.0f) { Data[voxel_u].Template = &VoxelTemplate::Sand; }
+				else { Data[voxel_u].Template = &VoxelTemplate::Grass; }
+			}
+			/*else if (val_rel - i < 1)
 			{
 				//Data[voxel_u].Template = &VoxelTemplate::Grass;
 				Data[voxel_u].Template = &VoxelTemplate::ConcreteCube;
@@ -341,7 +358,7 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 			else
 			{
 				Data[voxel_u].Template = &VoxelTemplate::Gray;
-			}
+			}*/
 		}
 	}
 }
@@ -387,11 +404,11 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 
 //	GenerateGrid();
 //	GeneratePlane();
-	GeneratePillars();
+//	GeneratePillars();
 
 	(void)noise2;
 	(void)noise3;
-//	GeneratePerlin(noise2);
+	GeneratePerlin(noise2);
 //	GeneratePerlin(noise3);
 
 	GenerationState = GenerationState::Generated;

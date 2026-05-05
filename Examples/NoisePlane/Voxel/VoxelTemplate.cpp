@@ -14,6 +14,10 @@ VoxelTemplate VoxelTemplate::Gray(VoxelGraphicsTemplate::Cube);
 VoxelTemplate VoxelTemplate::Grass(VoxelGraphicsTemplate::Cube);
 VoxelTemplate VoxelTemplate::RedLog(VoxelGraphicsTemplate::Cylinder);
 
+VoxelTemplate VoxelTemplate::Sand(VoxelGraphicsTemplate::Cube);
+VoxelTemplate VoxelTemplate::Snow(VoxelGraphicsTemplate::Cube);
+VoxelTemplate VoxelTemplate::Water(VoxelGraphicsTemplate::Cube);
+
 VoxelTemplate VoxelTemplate::ConcreteCube(VoxelGraphicsTemplate::Cube);
 VoxelTemplate VoxelTemplate::ConcreteCylinder(VoxelGraphicsTemplate::Cylinder);
 

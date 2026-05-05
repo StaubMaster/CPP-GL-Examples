@@ -24,7 +24,7 @@ FILES := \
 	Voxel/VoxelTemplate.cpp \
 	Voxel/VoxelOrientation.cpp \
 	Voxel/VoxelEnums.cpp \
-	Voxel/VoxelIndex.cpp \
+	Voxel/ChunkVoxelIndex.cpp \
 	Voxel/Chunk.cpp \
 	Voxel/ChunkNeighbours.cpp \
 	Voxel/ChunkManager.cpp \

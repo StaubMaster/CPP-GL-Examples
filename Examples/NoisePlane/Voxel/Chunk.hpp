@@ -84,6 +84,8 @@ struct Chunk
 
 //	const Voxel &	operator[](VectorU3 udx) const;
 
+	const Voxel *	FindVoxelOrNull(VectorU3 udx) const;
+
 	public:
 	~Chunk();
 	Chunk(VectorI3 idx);
@@ -153,5 +155,25 @@ struct Chunk
 
 	void	Draw();
 };
+
+/*struct ChunkLock
+{
+	private:
+	::Chunk *		Chunk;
+	unsigned int *	Count;
+
+	public:
+	bool	Is() const;
+
+	// how to access Chunk ?
+	// operator* ?
+
+	public:
+	~ChunkLock(); // (count--) or (delete and unlock)
+	ChunkLock(Chunk * chunk); // new count and count++ and lock chunk
+	ChunkLock(const ChunkLock & other); // count++
+	ChunkLock() = delete;
+	ChunkLock & operator=(const ChunkLock & other) = delete;
+};*/
 
 #endif

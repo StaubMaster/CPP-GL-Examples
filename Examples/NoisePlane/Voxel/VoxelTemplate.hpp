@@ -20,6 +20,10 @@ struct VoxelTemplate
 	static VoxelTemplate	Grass;
 	static VoxelTemplate	RedLog;
 
+	static VoxelTemplate	Sand;
+	static VoxelTemplate	Snow;
+	static VoxelTemplate	Water;
+
 	static VoxelTemplate	ConcreteCube;
 	static VoxelTemplate	ConcreteCylinder;
 
