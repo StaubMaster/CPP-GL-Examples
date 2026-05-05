@@ -268,8 +268,8 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		);
 
 		float val = 0.0f;
-		val += noise.Calculate(p2 / 32.0f) * 8.0f;
-		//val += noise.Calculate(p2 / 32.0f) * 32;
+		//val += noise.Calculate(p2 / 32.0f) * 8.0f;
+		val += noise.Calculate(p2 / 32.0f) * 32;
 		//val += noise.Calculate(p2 / 16.0f) * 16;
 		//val += noise.Calculate(p2 / 8.0f) * 8;
 		//val += noise.Calculate(p2 / 4.0f) * 4;

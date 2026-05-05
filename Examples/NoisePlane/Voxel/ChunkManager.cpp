@@ -606,7 +606,7 @@ void ChunkManager::Clear()
 
 void ChunkManager::InsertAround(VectorF3 pos, unsigned int size)
 {
-	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
+	VectorI3 chunk_idx((pos / (float)CHUNK_VALUES_PER_SIDE).roundF());
 
 	BoxI3 box(chunk_idx - (int)size, chunk_idx + (int)size);
 	VectorI3 box_size = box.Size() + 1;
@@ -675,7 +675,7 @@ void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 
 	sw.Start();
 
-	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
+	VectorI3 chunk_idx((pos / (float)CHUNK_VALUES_PER_SIDE).roundF());
 	BoxI3 chunk_box(chunk_idx - (int)size, chunk_idx + (int)size);
 
 //	std::cout << "RemoveAround:" << __LINE__ << '\n';
@@ -845,14 +845,26 @@ void ChunkManager::UpdateChunksContainer()
 	{
 		StopWatch sw2;
 		ChunksToInsertLock.Changing0(sw2, TimeUpdateInsert);
-		unsigned int j = 0;
+		for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
+		{
+			Chunk * chunk = ChunksToInsert[i];
+			if (chunk == nullptr) { continue; }
+			if (!(chunk -> GraphicsExist)) { continue; }
+			if (!(chunk -> Neighbours.Done())) { continue; }
+			VectorU3 u = Chunks.relative(chunk -> Index);
+			if ((u < Chunks.Size).Any(false)) { continue; }
+			if (Chunks[u] != nullptr) { continue; }
+			Chunks[u] = chunk;
+			ChunksToInsert.Remove(i);
+			i--;
+		}
+		/*unsigned int j = 0;
 		for (unsigned i = 0; i < ChunksToInsert.Count(); i++)
 		{
 			Chunk * chunk = ChunksToInsert[i];
 			if (chunk == nullptr) { continue; }
 			if (!(chunk -> GraphicsExist)) { continue; }
 			if (!(chunk -> Neighbours.Done())) { continue; }
-
 			for (; j < Chunks.Count(); j++)
 			{
 				if (Chunks[j] == nullptr) { break; }
@@ -863,7 +875,7 @@ void ChunkManager::UpdateChunksContainer()
 				ChunksToInsert.Remove(i);
 				i--;
 			}
-		}
+		}*/
 		ChunksToInsertLock.Changing1(sw2, TimeUpdateInsert);
 	}
 
@@ -881,7 +893,7 @@ Chunk * ChunkManager::FindGenerateChunk(VectorF3 pos, unsigned int size)
 	ChunksLock.Checking0(sw, TimeGenerate);
 //	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
 
-	VectorI3 chunk_idx(pos.roundF() / (float)CHUNK_VALUES_PER_SIDE);
+	VectorI3 chunk_idx((pos / (float)CHUNK_VALUES_PER_SIDE).roundF());
 	BoxI3 chunk_box(chunk_idx - (int)size, chunk_idx + (int)size);
 
 	Chunk * found = nullptr;

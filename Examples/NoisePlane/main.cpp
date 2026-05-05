@@ -716,7 +716,7 @@ void Make()
 	}
 	{
 		VoxelChunkCube = new PolyHedra();
-		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(), VectorF3(CHUNK_VALUES_PER_SIDE)));
+		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
 		PolyHedraManager.PlacePolyHedra(VoxelChunkCube);
 	}
 	{
@@ -770,6 +770,8 @@ void Make()
 unsigned int	ChunkInsertRange = 0;
 unsigned int	ChunkRemoveRange = 0;
 
+// make Lights
+// store in File
 void MakeControls()
 {
 	std::cerr << "MakeControls()\n";
@@ -789,7 +791,7 @@ void MakeControls()
 		OptionsMenu.FOV.SetValue(view.FOV.ToDegrees());
 
 		OptionsMenu.Depth.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Depth);
-		OptionsMenu.Depth.SetValue(1000.0f);
+		OptionsMenu.Depth.SetValue(100.0f); // get Depth. also depth works weirdly ?
 
 		OptionsMenu.DepthRange.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_DepthRange);
 		OptionsMenu.DepthRange.SetValue(view.Depth.Range.Min);
@@ -804,7 +806,7 @@ void MakeControls()
 		OptionsMenu.ChunkInsert.SetValue(ChunkInsertRange);
 
 		//ChunkRemoveRange = 12;
-		ChunkRemoveRange = 3;
+		ChunkRemoveRange = 2;
 		OptionsMenu.ChunkRemove.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
 		OptionsMenu.ChunkRemove.SetValue(ChunkRemoveRange);
 
@@ -816,6 +818,8 @@ void MakeControls()
 	// Debug
 	{
 		DebugMenu.FPS.Check.Check(true);
+
+		DebugMenu.VoxelChunkBoxes.Check.Check(true);
 
 		DebugMenu.VoxelChunkMemory.Check.Check(true);
 
@@ -1091,15 +1095,17 @@ void Init() override
 		}
 
 		ChunkManager.Texture.Assign(VectorU2(128, 64), files);
-		window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
+		window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
+		//window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
 		view.Depth.Color = window.DefaultColor;
+		view.Depth.Range.ChangeMin(0.5f);
 	}
 
 	std::cout << "Init:" << __LINE__ << '\n';
 	MakeControls();
 
 	std::cout << "Init:" << __LINE__ << '\n';
-	ChunkManager.ChangeChunksArraySize(1);
+	ChunkManager.ChangeChunksArraySize(2);
 
 	std::cout << "Init:" << __LINE__ << '\n';
 	// View
@@ -1611,16 +1617,18 @@ void Frame(FrameTime frame_time) override
 		obj.Color() = ColorF4(1, 0, 1);
 	}*/
 
-	/*if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
+	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
 	{
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
 		{
+			Chunk * chunk = ChunkManager.Chunks[i];
+			if (chunk == nullptr) { continue; }
 			PolyHedraObject chunk_box(p);
-			chunk_box.Trans().Position = (ChunkManager.Chunks[i] -> Index) * CHUNK_VALUES_PER_SIDE;
+			chunk_box.Trans().Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
 			chunk_box.ShowWire();
 		}
-	}*/
+	}
 
 	/*if (DebugMenu.ChunkHere.Check.IsChecked())
 	{
@@ -1628,15 +1636,6 @@ void Frame(FrameTime frame_time) override
 
 		PolyHedraObject chunk_box(VoxelChunkCube);
 		chunk_box.Trans().Position = idx.Chunk * CHUNK_VALUES_PER_SIDE;
-		chunk_box.ShowWire();
-	}*/
-
-	/*for (unsigned int i = 0; i < ChunkManager.ChunksArray.Count(); i++)
-	{
-		Chunk * chunk = ChunkManager.ChunksArray[i];
-		if (chunk == nullptr) { continue; }
-		PolyHedraObject chunk_box(VoxelChunkCube);
-		chunk_box.Trans().Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
 		chunk_box.ShowWire();
 	}*/
 
