@@ -1249,9 +1249,10 @@ void FrameText(FrameTime frame_time)
 			ss << "MainBufferState: ";
 			switch (chunk.MainBufferState)
 			{
-				case Chunk::BufferDataState::None: ss << "None"; break;
-				case Chunk::BufferDataState::Needed : ss << "Needed"; break;
-				case Chunk::BufferDataState::Ready: ss << "Ready"; break;
+				case BufferDataState::None: ss << "None"; break;
+				case BufferDataState::Needed : ss << "Needed"; break;
+				case BufferDataState::Ready: ss << "Ready"; break;
+				case BufferDataState::Drawable: ss << "Drawable"; break;
 			}
 			ss << '\n';
 
@@ -1354,9 +1355,9 @@ void FrameText(FrameTime frame_time)
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *ChunkManager.Chunks[i];
 			main_count += chunk.Buffer.Main.Count;
-			if (chunk.MainBufferState == Chunk::BufferDataState::None)   { buffer__++; }
-			if (chunk.MainBufferState == Chunk::BufferDataState::Needed) { buffer_n++; }
-			if (chunk.MainBufferState == Chunk::BufferDataState::Ready)  { buffer_r++; }
+			if (chunk.MainBufferState == BufferDataState::None)   { buffer__++; }
+			if (chunk.MainBufferState == BufferDataState::Needed) { buffer_n++; }
+			if (chunk.MainBufferState == BufferDataState::Ready)  { buffer_r++; }
 		}
 
 		ss << "State";

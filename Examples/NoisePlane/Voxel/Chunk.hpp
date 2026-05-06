@@ -53,6 +53,14 @@ enum class GenerationState
 //	Done,
 };
 
+enum class BufferDataState // put into Buffer
+{
+	None,
+	Needed,
+	Ready,
+	Drawable,
+};
+
 struct Chunk
 {
 	public:
@@ -123,13 +131,6 @@ struct Chunk
 	void	GraphicsDelete();
 
 	bool	BufferNeedsInit; // split into Main and Inst. put into Buffer ?
-
-	enum class BufferDataState // put into Buffer
-	{
-		None,
-		Needed,
-		Ready,
-	};
 
 	public:
 	bool	Visible(VectorU3 udx, AxisRel axis) const;

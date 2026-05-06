@@ -88,11 +88,11 @@ void ChunkNeighbours::Change(AxisRel axis, Chunk * chunk)
 
 void ChunkNeighbours::UpdateBufferMain()
 {
-	if (Here  != nullptr) { Here  -> MainBufferState = Chunk::BufferDataState::Needed; }
-	if (PrevX != nullptr) { PrevX -> MainBufferState = Chunk::BufferDataState::Needed; }
-	if (PrevY != nullptr) { PrevY -> MainBufferState = Chunk::BufferDataState::Needed; }
-	if (PrevZ != nullptr) { PrevZ -> MainBufferState = Chunk::BufferDataState::Needed; }
-	if (NextX != nullptr) { NextX -> MainBufferState = Chunk::BufferDataState::Needed; }
-	if (NextY != nullptr) { NextY -> MainBufferState = Chunk::BufferDataState::Needed; }
-	if (NextZ != nullptr) { NextZ -> MainBufferState = Chunk::BufferDataState::Needed; }
+	if (Here  != nullptr) { Here  -> MainBufferState = BufferDataState::Needed; }
+	if (PrevX != nullptr) { PrevX -> MainBufferState = BufferDataState::Needed; }
+	if (PrevY != nullptr) { PrevY -> MainBufferState = BufferDataState::Needed; }
+	if (PrevZ != nullptr) { PrevZ -> MainBufferState = BufferDataState::Needed; }
+	if (NextX != nullptr) { NextX -> MainBufferState = BufferDataState::Needed; }
+	if (NextY != nullptr) { NextY -> MainBufferState = BufferDataState::Needed; }
+	if (NextZ != nullptr) { NextZ -> MainBufferState = BufferDataState::Needed; }
 }

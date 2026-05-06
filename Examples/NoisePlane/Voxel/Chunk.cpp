@@ -484,9 +484,15 @@ void Chunk::GraphicsUpdateMainBuffer()
 	if (MainBufferState != BufferDataState::Ready) { return; }
 
 	Buffer.Main.Data(MainBufferData.Array);
-	MainBufferData.Clear();
-
-	MainBufferState = BufferDataState::None;
+	if (MainBufferData.Array.Count() != 0)
+	{
+		MainBufferData.Clear();
+		MainBufferState = BufferDataState::Drawable;
+	}
+	else
+	{
+		MainBufferState = BufferDataState::None;
+	}
 }
 
 void Chunk::UpdateInstBuffer()
@@ -521,6 +527,8 @@ void Chunk::Draw()
 	}
 	GraphicsUpdateMainBuffer();
 	UpdateInstBuffer();
-	if (IsEmpty()) { return; }
-	Buffer.Draw();
+	if (MainBufferState != BufferDataState::None)
+	{
+		Buffer.Draw();
+	}
 }

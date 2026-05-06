@@ -806,7 +806,7 @@ Chunk * ChunkManager::FindGraphicsUpdateChunk(VectorF3 pos)
 		if (!chunk.Done())
 		{ chunk.unlock(); continue; }
 
-		if (chunk.MainBufferState != Chunk::BufferDataState::Needed)
+		if (chunk.MainBufferState != BufferDataState::Needed)
 		{ chunk.unlock(); continue; }
 
 		VectorF3 rel = ((chunk.Index + VectorF3(0.5f)) * CHUNK_VALUES_PER_SIDE) - pos;
