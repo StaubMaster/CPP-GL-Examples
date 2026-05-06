@@ -7,13 +7,13 @@ ItemVoxel::~ItemVoxel()
 { }
 ItemVoxel::ItemVoxel()
 	: ItemBase()
-	, VoxelTemplate(nullptr)
+	, VoxelPallet(nullptr)
 { }
-ItemVoxel::ItemVoxel(const ::VoxelTemplate & voxel_template)
+ItemVoxel::ItemVoxel(const ::VoxelPallet & voxel_pallet)
 	: ItemBase()
-	, VoxelTemplate(&voxel_template)
+	, VoxelPallet(&voxel_pallet)
 { }
-ItemVoxel::ItemVoxel(const ::VoxelTemplate * voxel_template)
+ItemVoxel::ItemVoxel(const ::VoxelPallet * voxel_pallet)
 	: ItemBase()
-	, VoxelTemplate(voxel_template)
+	, VoxelPallet(voxel_pallet)
 { }

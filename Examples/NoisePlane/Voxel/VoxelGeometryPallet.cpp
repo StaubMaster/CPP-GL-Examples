@@ -1,16 +1,16 @@
-#include "VoxelGraphicsTemplate.hpp"
+#include "VoxelGeometryPallet.hpp"
 
 #include "ValueType/BoxF2.hpp"
 
 
 
-VoxelGraphicsTemplate VoxelGraphicsTemplate::Cube;
-VoxelGraphicsTemplate VoxelGraphicsTemplate::Cylinder;
-VoxelGraphicsTemplate VoxelGraphicsTemplate::Slope;
+VoxelGeometryPallet VoxelGeometryPallet::Cube;
+VoxelGeometryPallet VoxelGeometryPallet::Cylinder;
+VoxelGeometryPallet VoxelGeometryPallet::Slope;
 
 
 
-const VoxelAxisGraphicsData & VoxelGraphicsTemplate::AxisData(AxisRel axis) const
+const VoxelAxisGraphicsData & VoxelGeometryPallet::AxisData(AxisRel axis) const
 {
 	switch (axis)
 	{
@@ -24,7 +24,7 @@ const VoxelAxisGraphicsData & VoxelGraphicsTemplate::AxisData(AxisRel axis) cons
 	}
 }
 
-bool VoxelGraphicsTemplate::Visible(AxisRel axis) const
+bool VoxelGeometryPallet::Visible(AxisRel axis) const
 {
 	switch (axis)
 	{
@@ -40,7 +40,7 @@ bool VoxelGraphicsTemplate::Visible(AxisRel axis) const
 	}
 }
 
-VoxelOrientation VoxelGraphicsTemplate::Orient(AxisRel placeAxis0, AxisRel placeAxis1) const
+VoxelOrientation VoxelGeometryPallet::Orient(AxisRel placeAxis0, AxisRel placeAxis1) const
 {
 	VoxelOrientation orient;
 	orient.make(OrientationAxis0, placeAxis0, OrientationAxis1, placeAxis1);
@@ -76,10 +76,17 @@ static void Quad1(VoxelAxisGraphicsData & face, VectorF3 p00, VectorF3 p01, Vect
 
 
 
-void VoxelGraphicsTemplate::InitCube()
-{
-	unsigned int Texture = 0;
+// Textures are currently mapped onto a single Texture
+// should be 6 Textures
+// [0.00;0.25][0.0;0.5][tex] = [0;1][0;1][0]
+// [0.25;0.50][0.0;0.5][tex] = [0;1][0;1][1]
+// [0.50;0.75][0.0;0.5][tex] = [0;1][0;1][2]
+// [0.00;0.25][0.5;1.0][tex] = [0;1][0;1][3]
+// [0.25;0.50][0.5;1.0][tex] = [0;1][0;1][4]
+// [0.50;0.75][0.5;1.0][tex] = [0;1][0;1][5]
 
+void VoxelGeometryPallet::InitCube()
+{
 	HidePrevX = true;
 	HidePrevY = true;
 	HidePrevZ = true;
@@ -102,21 +109,19 @@ void VoxelGraphicsTemplate::InitCube()
 	pos[0b110] = VectorF3(0.0f, 1.0f, 1.0f);
 	pos[0b111] = VectorF3(1.0f, 1.0f, 1.0f);
 
-	Quad0(Data.PrevX, pos[0b000], pos[0b010], pos[0b100], pos[0b110], BoxF2(VectorF2(0.00f, 0.0f), VectorF2(0.25f, 0.5f)), Texture);
-	Quad0(Data.PrevY, pos[0b000], pos[0b100], pos[0b001], pos[0b101], BoxF2(VectorF2(0.25f, 0.0f), VectorF2(0.50f, 0.5f)), Texture);
-	Quad0(Data.PrevZ, pos[0b000], pos[0b001], pos[0b010], pos[0b011], BoxF2(VectorF2(0.50f, 0.0f), VectorF2(0.75f, 0.5f)), Texture);
+	Quad0(Data.PrevX, pos[0b000], pos[0b010], pos[0b100], pos[0b110], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 0);
+	Quad0(Data.PrevY, pos[0b000], pos[0b100], pos[0b001], pos[0b101], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 1);
+	Quad0(Data.PrevZ, pos[0b000], pos[0b001], pos[0b010], pos[0b011], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 2);
 
-	Quad1(Data.NextX, pos[0b001], pos[0b101], pos[0b011], pos[0b111], BoxF2(VectorF2(0.00f, 0.5f), VectorF2(0.25f, 1.0f)), Texture);
-	Quad1(Data.NextY, pos[0b010], pos[0b011], pos[0b110], pos[0b111], BoxF2(VectorF2(0.25f, 0.5f), VectorF2(0.50f, 1.0f)), Texture);
-	Quad1(Data.NextZ, pos[0b100], pos[0b110], pos[0b101], pos[0b111], BoxF2(VectorF2(0.50f, 0.5f), VectorF2(0.75f, 1.0f)), Texture);
+	Quad1(Data.NextX, pos[0b001], pos[0b101], pos[0b011], pos[0b111], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 3);
+	Quad1(Data.NextY, pos[0b010], pos[0b011], pos[0b110], pos[0b111], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 4);
+	Quad1(Data.NextZ, pos[0b100], pos[0b110], pos[0b101], pos[0b111], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 5);
 
 	Data.Done();
 }
 
-void VoxelGraphicsTemplate::InitCylinder()
+void VoxelGeometryPallet::InitCylinder()
 {
-	unsigned int Texture = 0;
-
 	HidePrevX = false;
 	HidePrevY = false;
 	HidePrevZ = false;
@@ -150,25 +155,28 @@ void VoxelGraphicsTemplate::InitCylinder()
 	pos[0x0E] = VectorF3(0.0f, 1.0f, 1.0f - f___);
 	pos[0x0F] = VectorF3(0.0f, 1.0f, 0.0f + f___);
 
-	Quad0(Data.PrevZ, pos[0x0], pos[0x1], pos[0x8], pos[0x9], BoxF2(VectorF2(0.50f, 0.0f), VectorF2(0.75f, 0.5f)), Texture);
-	Quad0(Data.Here , pos[0x1], pos[0x2], pos[0x9], pos[0xA], BoxF2(VectorF2(0.50f, 0.0f), VectorF2(0.75f, 0.5f)), Texture);
-	Quad1(Data.NextX, pos[0x2], pos[0x3], pos[0xA], pos[0xB], BoxF2(VectorF2(0.00f, 0.5f), VectorF2(0.25f, 1.0f)), Texture);
-	Quad1(Data.Here , pos[0x3], pos[0x4], pos[0xB], pos[0xC], BoxF2(VectorF2(0.00f, 0.5f), VectorF2(0.25f, 1.0f)), Texture);
-	Quad0(Data.NextZ, pos[0x4], pos[0x5], pos[0xC], pos[0xD], BoxF2(VectorF2(0.75f, 0.5f), VectorF2(0.50f, 1.0f)), Texture);
-	Quad0(Data.Here , pos[0x5], pos[0x6], pos[0xD], pos[0xE], BoxF2(VectorF2(0.75f, 0.5f), VectorF2(0.50f, 1.0f)), Texture);
-	Quad1(Data.PrevX, pos[0x6], pos[0x7], pos[0xE], pos[0xF], BoxF2(VectorF2(0.00f, 0.5f), VectorF2(0.25f, 0.0f)), Texture);
-	Quad1(Data.Here , pos[0x7], pos[0x0], pos[0xF], pos[0x8], BoxF2(VectorF2(0.00f, 0.5f), VectorF2(0.25f, 0.0f)), Texture);
+	Quad0(Data.PrevZ, pos[0x0], pos[0x1], pos[0x8], pos[0x9], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 2);
+	Quad0(Data.Here , pos[0x1], pos[0x2], pos[0x9], pos[0xA], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 2);
+
+	Quad1(Data.NextX, pos[0x2], pos[0x3], pos[0xA], pos[0xB], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 3);
+	Quad1(Data.Here , pos[0x3], pos[0x4], pos[0xB], pos[0xC], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 1.0f)), 3);
+
+	Quad0(Data.NextZ, pos[0x4], pos[0x5], pos[0xC], pos[0xD], BoxF2(VectorF2(1.0f, 0.0f), VectorF2(0.0f, 1.0f)), 5);
+	Quad0(Data.Here , pos[0x5], pos[0x6], pos[0xD], pos[0xE], BoxF2(VectorF2(1.0f, 0.0f), VectorF2(0.0f, 1.0f)), 5);
+
+	Quad1(Data.PrevX, pos[0x6], pos[0x7], pos[0xE], pos[0xF], BoxF2(VectorF2(0.0f, 1.0f), VectorF2(1.0f, 0.0f)), 0);
+	Quad1(Data.Here , pos[0x7], pos[0x0], pos[0xF], pos[0x8], BoxF2(VectorF2(0.0f, 1.0f), VectorF2(1.0f, 0.0f)), 0);
 
 	VoxelGraphics::MainTriangle	tri;
 	VoxelGraphics::MainData pY[8];
-	pY[0x0] = VoxelGraphics::MainData(pos[0x0], VectorF3(0.25f, 0.0f + 0.5f * f___, Texture));
-	pY[0x1] = VoxelGraphics::MainData(pos[0x1], VectorF3(0.25f, 0.5f - 0.5f * f___, Texture));
-	pY[0x2] = VoxelGraphics::MainData(pos[0x2], VectorF3(0.25f + 0.25f * f___, 0.5f, Texture));
-	pY[0x3] = VoxelGraphics::MainData(pos[0x3], VectorF3(0.50f - 0.25f * f___, 0.5f, Texture));
-	pY[0x4] = VoxelGraphics::MainData(pos[0x4], VectorF3(0.50f, 0.5f - 0.5f * f___, Texture));
-	pY[0x5] = VoxelGraphics::MainData(pos[0x5], VectorF3(0.50f, 0.0f + 0.5f * f___, Texture));
-	pY[0x6] = VoxelGraphics::MainData(pos[0x6], VectorF3(0.50f - 0.25f * f___, 0.0f, Texture));
-	pY[0x7] = VoxelGraphics::MainData(pos[0x7], VectorF3(0.25f + 0.25f * f___, 0.0f, Texture));
+	pY[0x0] = VoxelGraphics::MainData(pos[0x0], VectorF3(0.0f, 0.0f + f___, 1));
+	pY[0x1] = VoxelGraphics::MainData(pos[0x1], VectorF3(0.0f, 1.0f - f___, 1));
+	pY[0x2] = VoxelGraphics::MainData(pos[0x2], VectorF3(0.0f + f___, 1.0f, 1));
+	pY[0x3] = VoxelGraphics::MainData(pos[0x3], VectorF3(1.0f - f___, 1.0f, 1));
+	pY[0x4] = VoxelGraphics::MainData(pos[0x4], VectorF3(1.0f, 1.0f - f___, 1));
+	pY[0x5] = VoxelGraphics::MainData(pos[0x5], VectorF3(1.0f, 0.0f + f___, 1));
+	pY[0x6] = VoxelGraphics::MainData(pos[0x6], VectorF3(1.0f - f___, 0.0f, 1));
+	pY[0x7] = VoxelGraphics::MainData(pos[0x7], VectorF3(0.0f + f___, 0.0f, 1));
 
 	tri.Corners[0] = pY[0x0];
 	tri.Corners[1] = pY[0x1];
@@ -198,14 +206,14 @@ void VoxelGraphicsTemplate::InitCylinder()
 	Data.PrevY.Data.Insert(tri);
 
 	VoxelGraphics::MainData nY[16];
-	nY[0x8] = VoxelGraphics::MainData(pos[0x8], VectorF3(0.25f, 0.5f + 0.5f * f___, Texture));
-	nY[0x9] = VoxelGraphics::MainData(pos[0x9], VectorF3(0.25f, 1.0f - 0.5f * f___, Texture));
-	nY[0xA] = VoxelGraphics::MainData(pos[0xA], VectorF3(0.25f + 0.25f * f___, 1.0f, Texture));
-	nY[0xB] = VoxelGraphics::MainData(pos[0xB], VectorF3(0.50f - 0.25f * f___, 1.0f, Texture));
-	nY[0xC] = VoxelGraphics::MainData(pos[0xC], VectorF3(0.50f, 1.0f - 0.5f * f___, Texture));
-	nY[0xD] = VoxelGraphics::MainData(pos[0xD], VectorF3(0.50f, 0.5f + 0.5f * f___, Texture));
-	nY[0xE] = VoxelGraphics::MainData(pos[0xE], VectorF3(0.50f - 0.25f * f___, 0.5f, Texture));
-	nY[0xF] = VoxelGraphics::MainData(pos[0xF], VectorF3(0.25f + 0.25f * f___, 0.5f, Texture));
+	nY[0x8] = VoxelGraphics::MainData(pos[0x8], VectorF3(0.0f, 0.0f + f___, 4));
+	nY[0x9] = VoxelGraphics::MainData(pos[0x9], VectorF3(0.0f, 1.0f - f___, 4));
+	nY[0xA] = VoxelGraphics::MainData(pos[0xA], VectorF3(0.0f + f___, 1.0f, 4));
+	nY[0xB] = VoxelGraphics::MainData(pos[0xB], VectorF3(1.0f - f___, 1.0f, 4));
+	nY[0xC] = VoxelGraphics::MainData(pos[0xC], VectorF3(1.0f, 1.0f - f___, 4));
+	nY[0xD] = VoxelGraphics::MainData(pos[0xD], VectorF3(1.0f, 0.0f + f___, 4));
+	nY[0xE] = VoxelGraphics::MainData(pos[0xE], VectorF3(1.0f - f___, 0.0f, 4));
+	nY[0xF] = VoxelGraphics::MainData(pos[0xF], VectorF3(0.0f + f___, 0.0f, 4));
 
 	tri.Corners[0] = nY[0xE];
 	tri.Corners[1] = nY[0xD];
@@ -240,7 +248,7 @@ void VoxelGraphicsTemplate::InitCylinder()
 	Data.Done();
 }
 
-void VoxelGraphicsTemplate::InitSlope()
+void VoxelGeometryPallet::InitSlope()
 {
 	unsigned int Texture = 0;
 

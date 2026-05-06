@@ -20,10 +20,11 @@ FILES := \
 	\
 	Voxel/Voxel.cpp \
 	Voxel/VoxelGraphicsData.cpp \
-	Voxel/VoxelGraphicsTemplate.cpp \
-	Voxel/VoxelTemplate.cpp \
+	Voxel/VoxelGeometryPallet.cpp \
+	Voxel/VoxelPallet.cpp \
 	Voxel/VoxelOrientation.cpp \
 	Voxel/VoxelEnums.cpp \
+	\
 	Voxel/ChunkVoxelIndex.cpp \
 	Voxel/Chunk.cpp \
 	Voxel/ChunkNeighbours.cpp \

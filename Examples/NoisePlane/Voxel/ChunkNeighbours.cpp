@@ -2,7 +2,7 @@
 #include "Chunk.hpp"
 #include "Voxel.hpp"
 #include "VoxelOrientation.hpp"
-#include "VoxelTemplate.hpp"
+#include "VoxelPallet.hpp"
 
 
 

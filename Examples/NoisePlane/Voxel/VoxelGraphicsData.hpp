@@ -36,6 +36,8 @@ struct VoxelGraphicsData // VoxelGraphicsData
 
 	const VoxelAxisGraphicsData &	AxisData(AxisRel axis) const;
 };
+
+struct Chunk;
 struct ChunkGraphicsData // ChunkGraphicsData
 {
 	BlockList<1024, VoxelGraphics::MainTriangle>	Data;
@@ -43,6 +45,8 @@ struct ChunkGraphicsData // ChunkGraphicsData
 
 	void	Clear();
 	void	Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis);
+	void	Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis, const Chunk & chunk);
+	void	Make(const Chunk & chunk);
 	void	Done();
 };
 

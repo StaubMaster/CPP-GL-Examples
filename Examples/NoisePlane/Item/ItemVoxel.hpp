@@ -3,15 +3,15 @@
 
 # include "ItemBase.hpp"
 
-# include "Voxel/VoxelTemplate.hpp"
+# include "Voxel/VoxelPallet.hpp"
 
 struct ItemVoxel : public ItemBase
 {
-	const ::VoxelTemplate *		VoxelTemplate;
+	const ::VoxelPallet *		VoxelPallet;
 	~ItemVoxel();
 	ItemVoxel();
-	ItemVoxel(const ::VoxelTemplate & voxel_template);
-	ItemVoxel(const ::VoxelTemplate * voxel_template);
+	ItemVoxel(const ::VoxelPallet & voxel_pallet);
+	ItemVoxel(const ::VoxelPallet * voxel_pallet);
 };
 
 #endif

@@ -3,12 +3,14 @@
 
 # include "VoxelOrientation.hpp"
 
-struct VoxelTemplate;
+struct VoxelPallet;
 
 struct Voxel
 {
-	const VoxelTemplate *	Template;
+	const VoxelPallet *		Pallet;
 	VoxelOrientation		Orientation;
+
+	bool	Visible(AxisRel axis) const;
 
 	~Voxel();
 	Voxel();

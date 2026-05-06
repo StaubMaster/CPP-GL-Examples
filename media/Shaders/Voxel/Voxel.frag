@@ -99,6 +99,7 @@ void main()
 {
 	float	depth_factor = CalcDepthFactor();
 	vec4	light_factor = CalcLightFactor();
+//	vec4	light_factor = vec4(1, 1, 1, 1);
 
 	vec4 col = texture(texture0, fs_inn.Tex);
 //	col = vec4(abs(normalize(fs_inn.Normal)), 1);

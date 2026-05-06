@@ -69,20 +69,11 @@ struct Chunk
 	void	lock();
 	void	unlock();
 	bool	try_lock();
-	// make wrapper functions for Mutex
-
-	// dont lock inside the Chunk
-	// this might result in calling a function that also trys to lock
-
-	// avoid locking a Chunk thats about to delete
-	// lock before deleting ?
-	// checking Delete inside the Functions might be "too late"
-	// check outside and dont do anything with a Chunk that is marked as delete
 
 	public:
 	bool	Done() const;
 
-//	const Voxel &	operator[](VectorU3 udx) const;
+	const Voxel &	operator[](VectorU3 udx) const;
 
 	const Voxel *	FindVoxelOrNull(VectorU3 udx) const;
 
@@ -140,9 +131,8 @@ struct Chunk
 		Ready,
 	};
 
-	private:
-	bool	Visible(AxisRel axis, VectorU3 udx) const;
-	void	GraphicsData(VectorU3 u, const Voxel & voxel, AxisRel axis);
+	public:
+	bool	Visible(VectorU3 udx, AxisRel axis) const;
 
 	public:
 	BufferDataState		MainBufferState; // put into Buffer ?

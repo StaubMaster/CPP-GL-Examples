@@ -1,14 +1,14 @@
-#ifndef  VOXEL_GRAPHICS_TEMPLATE_HPP
-# define VOXEL_GRAPHICS_TEMPLATE_HPP
+#ifndef  VOXEL_GEOMETRY_PALLET_HPP
+# define VOXEL_GEOMETRY_PALLET_HPP
 
 # include "VoxelOrientation.hpp"
 # include "VoxelGraphicsData.hpp"
 
-struct VoxelGraphicsTemplate
+struct VoxelGeometryPallet
 {
-	static VoxelGraphicsTemplate	Cube;
-	static VoxelGraphicsTemplate	Cylinder;
-	static VoxelGraphicsTemplate	Slope;
+	static VoxelGeometryPallet	Cube;
+	static VoxelGeometryPallet	Cylinder;
+	static VoxelGeometryPallet	Slope;
 
 
 

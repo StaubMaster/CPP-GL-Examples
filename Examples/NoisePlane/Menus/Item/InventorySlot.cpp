@@ -30,7 +30,7 @@ void InventorySlot::Show()
 	if (Item != nullptr && *Item != nullptr)
 	{
 		ItemVoxel * item = (ItemVoxel*)*Item;
-		if (item -> VoxelTemplate != nullptr && item -> VoxelTemplate -> PolyHedra != nullptr)
+		if (item -> VoxelPallet != nullptr && item -> VoxelPallet -> PolyHedra != nullptr)
 		{
 			VectorF2 PixelSize(40, 40); // hardcoded in Shader
 			VectorF2 PixelPos = DisplayBox.Center();
@@ -39,7 +39,7 @@ void InventorySlot::Show()
 
 			std::cout << "pos " << pos << '\n'; // removing this breaks PolyHedras ???
 
-			Object.Create(item -> VoxelTemplate -> PolyHedra);
+			Object.Create(item -> VoxelPallet -> PolyHedra);
 			Object.Trans().Position.X = (+pos.X / size.X);
 			Object.Trans().Position.Y = (-pos.Y / size.Y);
 			Object.Trans().Rotation.X1 = Angle::Degrees(30);

@@ -54,9 +54,9 @@
 #include "Voxel/Chunk.hpp"
 #include "Voxel/ChunkManager.hpp"
 #include "Voxel/VoxelOrientation.hpp"
-#include "Voxel/VoxelTemplate.hpp"
+#include "Voxel/VoxelPallet.hpp"
 #include "Voxel/ChunkVoxelIndex.hpp"
-#include "Voxel/VoxelGraphicsTemplate.hpp"
+#include "Voxel/VoxelGeometryPallet.hpp"
 
 #include "BoxEntity.hpp"
 
@@ -92,6 +92,16 @@ struct InventoryShader : public ::PolyHedraFull::Shader
 		, DisplaySize(*this, "DisplaySize")
 	{ }
 };
+
+/* this File is too big. organize
+	View
+	UI
+	Threads
+	PolyHedra
+	static stuff
+*/
+
+#include "main_static.cpp"
 
 struct ContextNoisePlane : public ContextBase
 {
@@ -289,7 +299,7 @@ void	DisplayBoxEntityVoxels(BoxEntity & box_entity, FrameTime frame_time)
 		if (chunk == nullptr) { continue; }
 		//const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
 		const Voxel * voxel = chunk -> FindVoxelOrNull(idx.Voxel);
-		if (voxel != nullptr && voxel -> Template != nullptr)
+		if (voxel != nullptr && voxel -> Pallet != nullptr)
 		{
 			PolyHedraObject voxel_obj(p);
 			voxel_obj.Trans().Position = i;
@@ -393,7 +403,7 @@ bool	ViewRaySync = true;
 Ray3D	ViewRay;
 void ViewRayFunction()
 {
-	if (PauseMenu.Interactible() || OptionsMenu.Interactible()) { return; }
+	if (PauseMenu.Interactible() || OptionsMenu.Interactible() || InventoryUI.Interactible()) { return; }
 	// check if any Control is being hovered
 	// cast Ray at mouse
 
@@ -521,9 +531,9 @@ void ViewRayFunction()
 			if (HotBar[VectorU2(0, 0)] != nullptr)
 			{
 				ItemVoxel * item = (ItemVoxel*)HotBar[VectorU2(0, 0)];
-				if (item -> VoxelTemplate != nullptr)
+				if (item -> VoxelPallet != nullptr)
 				{
-					Voxel voxel = item -> VoxelTemplate -> ToVoxel(place_axis_0, place_axis_1);
+					Voxel voxel = item -> VoxelPallet -> ToVoxel(place_axis_0, place_axis_1);
 					ChunkVoxelIndex idx(hit.Index);
 					Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
 					if (chunk != nullptr)
@@ -657,75 +667,6 @@ PolyHedra *		VoxelCube;
 PolyHedra *		VoxelChunkCube;
 PolyHedra *		ViewRayPolyHedra;
 
-static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
-{
-	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Min.Y, box.Min.Z))); // 000
-	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Max.X, box.Min.Y, box.Min.Z))); // 001
-	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Max.Y, box.Min.Z))); // 010
-	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Max.X, box.Max.Y, box.Min.Z))); // 011
-	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Min.Y, box.Max.Z))); // 100
-	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Max.X, box.Min.Y, box.Max.Z))); // 101
-	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Min.X, box.Max.Y, box.Max.Z))); // 110
-	polyhedra.Corners.Insert(PolyHedra::Corner(Point3D(box.Max.X, box.Max.Y, box.Max.Z))); // 111
-
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b001));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b011));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b100, 0b101));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b110, 0b111));
-
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b010));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b001, 0b011));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b100, 0b110));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b101, 0b111));
-
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b100));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b001, 0b101));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b110));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
-}
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsData & data)
-{
-	Skin2DA & skin = *((Skin2DA*)polyhedra.Skin);
-	VectorF3 off(0.5f);
-	for (unsigned int i = 0; i < data.Data.Count(); i++)
-	{
-		const VoxelGraphics::MainTriangle & face = data.Data[i];
-
-		unsigned int ph_i = polyhedra.Corners.Count();
-		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[0].Pos - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[1].Pos - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[2].Pos - off));
-		polyhedra.Insert_Face3(ph_i + 0, ph_i + 1, ph_i + 2);
-
-		skin.Insert_Face3(
-			Skin2DFaceCorner(face.Corners[0].Tex.X, face.Corners[0].Tex.Y, 0.0f),
-			Skin2DFaceCorner(face.Corners[1].Tex.X, face.Corners[1].Tex.Y, 0.0f),
-			Skin2DFaceCorner(face.Corners[2].Tex.X, face.Corners[2].Tex.Y, 0.0f)
-		);
-	}
-}
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGraphicsData & voxel_graphics)
-{
-	PolyHedraVoxelData(polyhedra, voxel_graphics.Here);
-	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevX);
-	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevY);
-	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevZ);
-	PolyHedraVoxelData(polyhedra, voxel_graphics.NextX);
-	PolyHedraVoxelData(polyhedra, voxel_graphics.NextY);
-	PolyHedraVoxelData(polyhedra, voxel_graphics.NextZ);
-}
-static void PolyHedraVoxelData(VoxelTemplate & voxel_template)
-{
-	voxel_template.PolyHedra = new PolyHedra();
-	voxel_template.PolyHedra -> Skin = new Skin2DA();
-	Skin2DA & skin = *((Skin2DA*)voxel_template.PolyHedra -> Skin);
-	skin.W = 128;
-	skin.H = 64;
-	skin.Images.Insert(voxel_template.TextureFile.LoadImage());
-	skin.Done();
-	PolyHedraVoxelData(*voxel_template.PolyHedra, voxel_template.GraphicsTemplate.Data);
-}
-
 void Make()
 {
 	view.Trans.Position = VectorF3(0.5f, 0.5f, 0.5f);
@@ -761,49 +702,12 @@ void Make()
 
 	// Voxels
 	{
-		VoxelGraphicsTemplate::Cube.InitCube();
-		VoxelGraphicsTemplate::Cylinder.InitCylinder();
-		VoxelGraphicsTemplate::Slope.InitSlope();
+		VoxelGeometryPallet::Cube.InitCube();
+		VoxelGeometryPallet::Cylinder.InitCylinder();
+		VoxelGeometryPallet::Slope.InitSlope();
 
-		// All(all): same Texture on all sides
-		// PrismX(base, belt): base Texture and belt Texture
-		// PrismY(base, belt): base Texture and belt Texture
-		// PrismZ(base, belt): base Texture and belt Texture
-		// Axis(prevX, prevY, prevZ, nextX, nextY, nextZ): different Textures
-
-		VoxelTemplate::OrientationCube.TextureFile = MediaDirectory.File("Images/Voxel/Orientation_2_Cube.png");
-		VoxelTemplate::OrientationCylinder.TextureFile = MediaDirectory.File("Images/Voxel/Orientation_2_Cube.png");
-		VoxelTemplate::OrientationSlope.TextureFile = MediaDirectory.File("Images/Voxel/Orientation_2_Cube.png");
-
-		VoxelTemplate::Gray.TextureFile = MediaDirectory.File("Images/Voxel/Gray6.png");
-		VoxelTemplate::Grass.TextureFile = MediaDirectory.File("Images/Voxel/fancy_GreenDirt.png");
-		VoxelTemplate::RedLog.TextureFile = MediaDirectory.File("Images/Voxel/fancy_RedWood.png");
-
-		VoxelTemplate::Sand.TextureFile = MediaDirectory.File("Images/Voxel/Sand.png");
-		VoxelTemplate::Snow.TextureFile = MediaDirectory.File("Images/Voxel/Snow.png");
-		VoxelTemplate::Water.TextureFile = MediaDirectory.File("Images/Voxel/Water.png");
-
-		VoxelTemplate::ConcreteCube.TextureFile = MediaDirectory.File("Images/Voxel/Concrete_0_Cube.png");
-		VoxelTemplate::ConcreteCylinder.TextureFile = MediaDirectory.File("Images/Voxel/Concrete_0_Cube.png");
-	}
-	{
-		Container::Array<VoxelTemplate*> temps({
-			&VoxelTemplate::OrientationCube,
-			&VoxelTemplate::OrientationCylinder,
-			&VoxelTemplate::OrientationSlope,
-			&VoxelTemplate::Gray,
-			&VoxelTemplate::Grass,
-			&VoxelTemplate::RedLog,
-			&VoxelTemplate::Sand,
-			&VoxelTemplate::Snow,
-			&VoxelTemplate::Water,
-			&VoxelTemplate::ConcreteCube,
-			&VoxelTemplate::ConcreteCylinder,
-		});
-		for (unsigned int i = 0; i < temps.Count(); i++)
-		{
-			PolyHedraVoxelData(*temps[i]);
-		}
+		VoxelPalletMap::All.Default(MediaDirectory);
+		VoxelPalletMap::All.MakePolyHedra();
 	}
 
 	{
@@ -886,14 +790,14 @@ void MakeControls()
 	// Inventory
 	{
 		InventoryPolyHedraManager.MakeCurrent();
-		Inventory[VectorU2(0, 0)] = new ItemVoxel(VoxelTemplate::OrientationCube);
-		Inventory[VectorU2(1, 0)] = new ItemVoxel(VoxelTemplate::OrientationCylinder);
-		Inventory[VectorU2(2, 0)] = new ItemVoxel(VoxelTemplate::OrientationSlope);
-		Inventory[VectorU2(0, 1)] = new ItemVoxel(VoxelTemplate::Gray);
-		Inventory[VectorU2(1, 1)] = new ItemVoxel(VoxelTemplate::Grass);
-		Inventory[VectorU2(2, 1)] = new ItemVoxel(VoxelTemplate::RedLog);
-		Inventory[VectorU2(0, 2)] = new ItemVoxel(VoxelTemplate::ConcreteCube);
-		Inventory[VectorU2(1, 2)] = new ItemVoxel(VoxelTemplate::ConcreteCylinder);
+		Inventory[VectorU2(0, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationCube"]);
+		Inventory[VectorU2(1, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationCylinder"]);
+		//Inventory[VectorU2(2, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationSlope"]);
+		Inventory[VectorU2(0, 1)] = new ItemVoxel(VoxelPalletMap::All["Gray"]);
+		Inventory[VectorU2(1, 1)] = new ItemVoxel(VoxelPalletMap::All["Grass"]);
+		Inventory[VectorU2(2, 1)] = new ItemVoxel(VoxelPalletMap::All["RedLog"]);
+		Inventory[VectorU2(0, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCube"]);
+		Inventory[VectorU2(1, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCylinder"]);
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
 		ControlManager.Window.ChildInsert(InventoryUI);
@@ -1109,42 +1013,8 @@ void Init() override
 
 	GraphicsCreate();
 
+	VoxelPalletMap::All.LoadTextures(ChunkManager);
 	{
-		Container::Array<VoxelTemplate*> temps({
-			&VoxelTemplate::OrientationCube,
-			&VoxelTemplate::OrientationCylinder,
-			&VoxelTemplate::OrientationSlope,
-			&VoxelTemplate::Gray,
-			&VoxelTemplate::Grass,
-			&VoxelTemplate::RedLog,
-			&VoxelTemplate::Sand,
-			&VoxelTemplate::Snow,
-			&VoxelTemplate::Water,
-			&VoxelTemplate::ConcreteCube,
-			&VoxelTemplate::ConcreteCylinder,
-		});
-
-		ChunkManager.Texture.Bind();
-		Container::Binary<FileInfo> files;
-		for (unsigned int i = 0; i < temps.Count(); i++)
-		{
-			unsigned int j = 0xFFFFFFFF;
-			for (unsigned int f = 0; f < files.Count(); f++)
-			{
-				if (files[f].Name() == (temps[i] -> TextureFile.Name()))
-				{
-					j = f; break;
-				}
-			}
-			if (j == 0xFFFFFFFF)
-			{
-				j = files.Count();
-				files.Insert(temps[i] -> TextureFile);
-			}
-			temps[i] -> TextureIndex = j;
-		}
-
-		ChunkManager.Texture.Assign(VectorU2(128, 64), files);
 		window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
 		//window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
 		view.Depth.Color = window.DefaultColor;
@@ -1164,6 +1034,7 @@ void Init() override
 void Free() override
 {
 	GraphicsDelete();
+	ThreadDelay = false;
 	ThreadTerminate = true;
 	AuxThread0.join();
 	AuxThread1.join();
@@ -1206,20 +1077,6 @@ void Draw()
 	InventoryPolyHedraManager.ClearInstances();
 	InventoryPolyHedraManager.UpdateInstances();
 	InventoryPolyHedraManager.DrawFull();
-}
-
-typedef ::PolyHedra * PolyHedraPointer;
-static void Toggle(bool & value) { value = !value; }
-static void Toggle(PolyHedraPointer & polyhedra, PolyHedraPointer other)
-{
-	if (polyhedra == nullptr)
-	{
-		polyhedra = other;
-	}
-	else
-	{
-		polyhedra = nullptr;
-	}
 }
 
 bool	DontRemove = false;
@@ -1543,7 +1400,7 @@ void InventoryCursor(FrameTime frame_time)
 		PixelPos.X = window.Size.Buffer.Full.X - 40;
 		PixelPos.Y = 40;
 		pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
-		PolyHedraObject obj(item -> VoxelTemplate -> PolyHedra);
+		PolyHedraObject obj(item -> VoxelPallet -> PolyHedra);
 		obj.Trans().Position.X = pos.X / size.X;
 		obj.Trans().Position.Y = pos.Y / size.Y;
 		obj.Trans().Rotation.X1 = Angle::Degrees(15);
@@ -1555,7 +1412,7 @@ void InventoryCursor(FrameTime frame_time)
 		ItemVoxel * item = (ItemVoxel*)InventorySlot::StaticItem;
 		PixelPos = window.MouseManager.CursorPosition().Buffer.Corner;
 		pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
-		PolyHedraObject obj(item -> VoxelTemplate -> PolyHedra);
+		PolyHedraObject obj(item -> VoxelPallet -> PolyHedra);
 		obj.Trans().Position.X = +pos.X / size.X;
 		obj.Trans().Position.Y = -pos.Y / size.Y;
 		obj.Trans().Rotation.X1 = Angle::Degrees(15);
