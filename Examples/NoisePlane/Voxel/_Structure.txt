@@ -1,0 +1,19 @@
+
+Trees
+Tower
+
+Array3D that holds Data
+
+Air that replaces
+Air that dosent replace
+
+Fill underneath
+
+Connect to different Structure
+
+
+
+where ?
+distance
+
+

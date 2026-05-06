@@ -93,6 +93,89 @@ struct InventoryShader : public ::PolyHedraFull::Shader
 	{ }
 };
 
+struct PhysicsContext
+{
+	VectorF3	GravityDirection = VectorF3(0.0f, -1.0f, 0.0f);
+	float		GravityAcl = 1.0f;
+
+	VectorF3	CalcGravityVec() const
+	{
+		return GravityDirection * GravityAcl;
+	}
+
+
+
+	float	DragFluidDensity = 0.001f;
+	float	DragCoefficient = 1.0f;
+
+	float	CalcDragLimit(float mass, float area, float accel) const
+	{
+		return sqrt((2 * mass * accel) / (DragFluidDensity * area * DragCoefficient));
+	}
+	float	CalcTerminalVel(float mass, float area) const
+	{
+		return CalcDragLimit(mass, area, GravityAcl);
+	}
+
+	float		CalcDrag(float vel, float mass, float area) const
+	{
+		float force = 0.5f * DragFluidDensity * vel * vel * area * DragCoefficient;
+		return force / mass;
+	}
+	VectorF3	CalcDragVec(VectorF3 vel, float mass, float area) const
+	{
+		float vel_len;
+		vel = vel.normalize(vel_len);
+		return vel * CalcDrag(vel_len, mass, area);
+	}
+
+/*
+	uk: Kinetic Friciton Coefficient
+	Fk: Kinetic Friciton
+	Fn: Normal Force
+
+	Fk = uk * Fn
+
+	N: Normal Force
+	mg: Weight (Mass * Gravity)
+
+	P: External Force
+	Py: "downward Component of External Force" (parallel to Normal Force ?)
+	Px: horisontal Component of External Force (perpendicular to Normal Force ?)
+
+	N = mg + Py
+
+	Ff: Friciton Force
+	Ff = -Px (not sliding)
+	Ff = u * N (sliding)
+*/
+	// static Friction
+	float	FrictionCoefficient = 0.5f; // kinetic Friction
+	float		CalcFriction(float mass) const
+	{
+		float normal = mass * GravityAcl;
+		return FrictionCoefficient * normal;
+	}
+	VectorF3	CalcFriction(VectorF3 force, float friction_force) const
+	{
+		float    force_length;
+		VectorF3 force_normal = force.normalize(force_length);
+		if (friction_force > force_length)
+		{
+			return force;
+		}
+		else
+		{
+			return force_normal * friction_force;
+		}
+	}
+
+	VectorF3	CalculateVel(VectorF3 vel, float mass, float area) const
+	{
+		return CalcGravityVec() - CalcDragVec(vel, mass, area);
+	}
+};
+
 /* this File is too big. organize
 	View
 	UI
@@ -191,202 +274,66 @@ ContextNoisePlane()
 
 
 
-struct PhysicsContext
-{
-	VectorF3	GravityDirection = VectorF3(0.0f, -1.0f, 0.0f);
-	float		GravityAcl = 1.0f;
+::PhysicsContext	PhysicsContext;
 
-	VectorF3	CalcGravityVec() const
-	{
-		return GravityDirection * GravityAcl;
-	}
+/* View Update
 
+Input
+	regular Axis and EulerAngle
+Physics
+	ground movement
+	ground friction
+	air movement
+	air friction
+	jump
+		only on ground
+		uneffected by ground friciton
+Collision
 
+should movement speed depend on friction or a specified limit ?
 
-	float	DragFluidDensity = 0.001f;
-	float	DragCoefficient = 1.0f;
+allways do air movement/friction ?
+you are allways in the air
 
-	float	CalcDragLimit(float mass, float area, float accel) const
-	{
-		return sqrt((2 * mass * accel) / (DragFluidDensity * area * DragCoefficient));
-	}
-	float	CalcTerminalVel(float mass, float area) const
-	{
-		return CalcDragLimit(mass, area, GravityAcl);
-	}
-
-	float		CalcDrag(float vel, float mass, float area) const
-	{
-		float force = 0.5f * DragFluidDensity * vel * vel * area * DragCoefficient;
-		return force / mass;
-	}
-	VectorF3	CalcDragVec(VectorF3 vel, float mass, float area) const
-	{
-		float vel_len;
-		vel = vel.normalize(vel_len);
-		return vel * CalcDrag(vel_len, mass, area);
-	}
-
-/*
-	uk: Kinetic Friciton Coefficient
-	Fk: Kinetic Friciton
-	Fn: Normal Force
-
-	Fk = uk * Fn
-
-	N: Normal Force
-	mg: Weight (Mass * Gravity)
-
-	P: External Force
-	Py: "downward Component of External Force" (parallel to Normal Force ?)
-	Px: horisontal Component of External Force (perpendicular to Normal Force ?)
-
-	N = mg + Py
-
-	Ff: Friciton Force
-	Ff = -Px (not sliding)
-	Ff = u * N (sliding)
+movement is currently done using friction
+it makes sense but also immedeatly cancels out
+is that static friction ?
+is movement force too weak ?
 */
-	// static Friction
-	float	FrictionCoefficient = 0.5f; // kinetic Friction
-	float		CalcFriction(float mass) const
-	{
-		float normal = mass * GravityAcl;
-		return FrictionCoefficient * normal;
-	}
-	VectorF3	CalcFriction(VectorF3 force, float friction_force) const
-	{
-		float    force_length;
-		VectorF3 force_normal = force.normalize(force_length);
-		if (friction_force > force_length)
-		{
-			return force;
-		}
-		else
-		{
-			return force_normal * friction_force;
-		}
-	}
 
-	VectorF3	CalculateVel(VectorF3 vel, float mass, float area) const
-	{
-		return CalcGravityVec() - CalcDragVec(vel, mass, area);
-	}
-};
-ContextNoisePlane::PhysicsContext	PhysicsContext;
+/* View
+	the generic View3D stuff
+	Ray
+	RayHit ?
+	Physics Stuff
+	Collision Stuff
+*/
 
-// make a BoxEntity for Colliding stuff
-void	DisplayBoxEntity(BoxEntity & box_entity)
-{
-	PolyHedraObject view_box_obj(box_entity.PolyHedra);
-	view_box_obj.Trans().Position = box_entity.Pos;
-	view_box_obj.ShowWire();
-}
-void	DisplayBoxEntityVoxels(BoxEntity & box_entity, FrameTime frame_time)
-{
-	unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
+float	ViewDistance = 0.0f;
+bool	ViewTangible = false;
 
-	BoxF3 box = box_entity.Box + box_entity.Pos;
-	box.Consider(box_entity.Box.Min + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
-	box.Consider(box_entity.Box.Max + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
-	box = box - VectorF3(0.5f);
+float	ViewSpeed = 0.1f;	// force when moving
+float	ViewFaster = 3.0f;	// force multiplier when moving faster
 
-	LoopI3 loop(box.Min.round(), Bool3(false), box.Max.round(), Bool3(false));
-	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-	{
-		ChunkVoxelIndex idx(i);
-		Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
-		if (chunk == nullptr) { continue; }
-		//const Voxel * voxel = ChunkManager.FindVoxelOrNull(i);
-		const Voxel * voxel = chunk -> FindVoxelOrNull(idx.Voxel);
-		if (voxel != nullptr && voxel -> Pallet != nullptr)
-		{
-			PolyHedraObject voxel_obj(p);
-			voxel_obj.Trans().Position = i;
-			voxel_obj.ShowWire();
-		}
-		chunk -> unlock();
-	}
-}
-
-
-
-bool ViewBoxCollision = false;
-float ViewDistance = 0.0f;
-
-float	ViewSpeed = 0.1f;   // force when moving
-float	ViewFaster = 3.0f; // force multiplier when moving faster
-// force when moving in the air
-
-// force when no physics
 float	ViewSpeedNoClip = 10.0f;
 float	ViewFasterNoClip = 10.0f;
 
 BoxEntity		ViewEntity;
-CollisionSide	ViewCollisionSide; // last Frame
+CollisionSide	ViewCollisionSide;
 
-void UpdateViewColliding(FrameTime frame_time)
+bool		ViewRaySync = true;
+
+Ray3D		ViewRay;
+AxisRel		ViewRayAxis0;
+AxisRel		ViewRayAxis1;
+AxisRel		ViewRayAxis2;
+
+VoxelHit	ViewHit;
+AxisRel		ViewHitAxis0;
+AxisRel		ViewHitAxis1;
+
+void ViewUpdateDone()
 {
-	Trans3D change;
-
-	// View Change
-	if (window.MouseManager.CursorModeIsLocked())
-	{
-		change = window.MoveSpinFromKeysCursor();
-		change.Rotation *= view.FOV.ToRadians() * 0.05f;
-		{
-			EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
-			change.Position = e.forward(change.Position);
-		}
-	}
-
-	if (ViewBoxCollision)
-	{
-		if (ViewCollisionSide.PrevY)
-		{
-			change.Position *= ViewSpeed;
-			if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFaster; }
-
-			float jump = 0.0f;
-			if (change.Position.Y > 0.0f) { jump = 15.0f; }
-			change.Position.Y = 0.0f;
-
-			float friction_force = PhysicsContext.CalcFriction(1.0f);
-			if (change.Position.length2() != 0.0f)
-			{
-				change.Position = PhysicsContext.CalcFriction(change.Position * 1.0f, friction_force) / 1.0f;
-			}
-			else
-			{
-				ViewEntity.Vel -= PhysicsContext.CalcFriction(ViewEntity.Vel * 1.0f, friction_force) / 1.0f;
-			}
-
-			change.Position.Y = jump;
-		}
-		else
-		{
-			change.Position.Y = 0.0f;
-			change.Position *= 0.1f;
-		}
-
-		ViewEntity.Vel += change.Position + PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f);
-		DisplayBoxEntityVoxels(ViewEntity, frame_time);
-		DisplayBoxEntity(ViewEntity);
-		ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
-		DisplayBoxEntity(ViewEntity);
-	}
-	else
-	{
-		change.Position *= ViewSpeedNoClip;
-		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFasterNoClip; }
-		ViewEntity.Vel = change.Position;
-		ViewEntity.Pos += ViewEntity.Vel * frame_time.Delta;
-	}
-	view.Trans.Position = ViewEntity.Pos;
-	view.Trans.Rotation += change.Rotation * frame_time.Delta;
-	view.Trans.Rotation.X1.clampPI();
-
-	// View Matrix
 	if (ViewDistance == 0.0f)
 	{
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
@@ -398,58 +345,125 @@ void UpdateViewColliding(FrameTime frame_time)
 		));
 	}
 }
+void ViewUpdatePhysics(VectorF3 accel)
+{
+	VectorF3 decel;
 
-bool	ViewRaySync = true;
-Ray3D	ViewRay;
-void ViewRayFunction()
+	// Physics stuff
+	float jump = 0.0f;
+	if (ViewCollisionSide.PrevY && accel.Y > 0.0f) { jump = 15.0f; }
+	accel.Y = 0.0f;
+
+	if (ViewCollisionSide.PrevY)
+	{
+		accel *= ViewSpeed;
+		// find this earlier, pass a bool
+		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { accel *= ViewFaster; }
+
+		{
+			float dot = VectorF3::dot(decel, accel);
+			//if (dot < 0.0f)
+			//if (dot != 0.0f)
+			if (accel.length2() != 0.0f)
+			{
+				decel = decel - (accel * (dot / accel.length2()));
+			}
+			else
+			{
+				decel = ViewEntity.Vel;
+			}
+		}
+
+		float friction_force = PhysicsContext.CalcFriction(1.0f);
+		accel = PhysicsContext.CalcFriction(accel * 1.0f, friction_force) / 1.0f;
+		decel = PhysicsContext.CalcFriction(decel * 1.0f, friction_force) / 1.0f;
+	}
+	else
+	{
+		// use air friciton for movement
+		accel.Y = 0.0f;
+		accel *= 0.1f;
+	}
+
+	if (ViewCollisionSide.PrevY) { accel.Y = jump; }
+
+	ViewEntity.Vel += PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f) + accel - decel;
+}
+void ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
+{
+	change.Position *= ViewSpeedNoClip;
+	if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFasterNoClip; }
+	ViewEntity.Vel = change.Position;
+	ViewEntity.Pos += ViewEntity.Vel * frame_time.Delta;
+	view.Trans.Position = ViewEntity.Pos;
+	view.Trans.Rotation += change.Rotation * frame_time.Delta;
+	view.Trans.Rotation.X1.clampPI();
+}
+void ViewUpdateColliding(FrameTime frame_time)
+{
+	DisplayBoxEntityVoxels(PolyHedraManager.FindPolyHedra(VoxelCube), ChunkManager, ViewEntity, frame_time);
+	DisplayBoxEntity(ViewEntity);
+	ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
+	DisplayBoxEntity(ViewEntity);
+}
+void ViewRayUpdate()
+{
+	if (ViewRaySync)
+	{
+		ViewRay.Pos = view.Trans.Position;
+		ViewRay.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
+		{
+			VectorI3 ranks = ViewRay.Dir.abs().RankDimensions();
+			     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { ViewRayAxis0 = AxisRel::NextX; } else { ViewRayAxis0 = AxisRel::PrevX; } }
+			else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { ViewRayAxis0 = AxisRel::NextY; } else { ViewRayAxis0 = AxisRel::PrevY; } }
+			else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { ViewRayAxis0 = AxisRel::NextZ; } else { ViewRayAxis0 = AxisRel::PrevZ; } }
+			if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { ViewRayAxis1 = AxisRel::NextX; } else { ViewRayAxis1 = AxisRel::PrevX; } }
+			else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { ViewRayAxis1 = AxisRel::NextY; } else { ViewRayAxis1 = AxisRel::PrevY; } }
+			else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { ViewRayAxis1 = AxisRel::NextZ; } else { ViewRayAxis1 = AxisRel::PrevZ; } }
+			if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { ViewRayAxis2 = AxisRel::NextX; } else { ViewRayAxis2 = AxisRel::PrevX; } }
+			else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { ViewRayAxis2 = AxisRel::NextY; } else { ViewRayAxis2 = AxisRel::PrevY; } }
+			else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { ViewRayAxis2 = AxisRel::NextZ; } else { ViewRayAxis2 = AxisRel::PrevZ; } }
+			// what if same ranks ?
+		}
+	}
+
+	ViewHit = ChunkManager.HitVoxel(ViewRay);
+	if (ViewHit.Valid())
+	{
+		{
+			PolyHedraObject voxel_box_obj(VoxelCube);
+			//voxel_box_obj.Trans().Position = idx;
+			voxel_box_obj.Trans().Position = ViewHit.Index;
+			voxel_box_obj.ShowWire();
+		}
+		{
+			ViewHitAxis0 = ViewHit.Side;
+			AxisAbs axis = AxisRelToAxisAbs(ViewHitAxis0);
+			if (axis == AxisAbs::None) { ViewHitAxis1 = AxisRel::None; }
+			else if (axis != AxisRelToAxisAbs(ViewRayAxis2)) { ViewHitAxis1 = ViewRayAxis2; }
+			else if (axis != AxisRelToAxisAbs(ViewRayAxis1)) { ViewHitAxis1 = ViewRayAxis1; }
+			else if (axis != AxisRelToAxisAbs(ViewRayAxis0)) { ViewHitAxis1 = ViewRayAxis0; }
+			else { ViewHitAxis1 = AxisRel::None; }
+		}
+	}
+}
+void ViewRayDo()
 {
 	if (PauseMenu.Interactible() || OptionsMenu.Interactible() || InventoryUI.Interactible()) { return; }
 	// check if any Control is being hovered
 	// cast Ray at mouse
 
-	if (ViewRaySync)
-	{
-		ViewRay.Pos = view.Trans.Position;
-		ViewRay.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
-	}
-
-	// make part of VoxelHit ?
-	AxisRel look_axis_0 = AxisRel::None;
-	AxisRel look_axis_1 = AxisRel::None;
-	AxisRel look_axis_2 = AxisRel::None;
-	{
-		VectorI3 ranks = ViewRay.Dir.abs().RankDimensions();
-		     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { look_axis_0 = AxisRel::NextX; } else { look_axis_0 = AxisRel::PrevX; } }
-		else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { look_axis_0 = AxisRel::NextY; } else { look_axis_0 = AxisRel::PrevY; } }
-		else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { look_axis_0 = AxisRel::NextZ; } else { look_axis_0 = AxisRel::PrevZ; } }
-		if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { look_axis_1 = AxisRel::NextX; } else { look_axis_1 = AxisRel::PrevX; } }
-		else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { look_axis_1 = AxisRel::NextY; } else { look_axis_1 = AxisRel::PrevY; } }
-		else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { look_axis_1 = AxisRel::NextZ; } else { look_axis_1 = AxisRel::PrevZ; } }
-		if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { look_axis_2 = AxisRel::NextX; } else { look_axis_2 = AxisRel::PrevX; } }
-		else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { look_axis_2 = AxisRel::NextY; } else { look_axis_2 = AxisRel::PrevY; } }
-		else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { look_axis_2 = AxisRel::NextZ; } else { look_axis_2 = AxisRel::PrevZ; } }
-		// what if same ranks ?
-	}
-
 	std::stringstream ss;
 	{
 		ss << "ViewRay\n";
-		ss << look_axis_0 << " :Look0\n";
-		ss << look_axis_1 << " :Look1\n";
-		ss << look_axis_2 << " :Look2\n";
+		ss << ViewRayAxis0 << " :Look0\n";
+		ss << ViewRayAxis1 << " :Look1\n";
+		ss << ViewRayAxis2 << " :Look2\n";
 	}
 
-	VoxelHit hit = ChunkManager.HitVoxel(ViewRay);
-	if (hit.Valid())
+	if (ViewHit.Valid())
 	{
 //		std::cout << "main:" << __LINE__ << '\n';
-		// Voxel Indicator
-		{
-			PolyHedraObject voxel_box_obj(VoxelCube);
-			//voxel_box_obj.Trans().Position = idx;
-			voxel_box_obj.Trans().Position = hit.Index;
-			voxel_box_obj.ShowWire();
-		}
 //		std::cout << "main:" << __LINE__ << '\n';
 		// Hit Indicator
 		/*{
@@ -461,17 +475,6 @@ void ViewRayFunction()
 
 //		std::cout << "main:" << __LINE__ << '\n';
 		// Side: make part of VoxelHit ?
-		AxisRel place_axis_0;
-		AxisRel place_axis_1;
-		{
-			place_axis_0 = hit.Side;
-			AxisAbs axis = AxisRelToAxisAbs(place_axis_0);
-			if (axis == AxisAbs::None) { place_axis_1 = AxisRel::None; }
-			else if (axis != AxisRelToAxisAbs(look_axis_2)) { place_axis_1 = look_axis_2; }
-			else if (axis != AxisRelToAxisAbs(look_axis_1)) { place_axis_1 = look_axis_1; }
-			else if (axis != AxisRelToAxisAbs(look_axis_0)) { place_axis_1 = look_axis_0; }
-			else { place_axis_1 = AxisRel::None; }
-		}
 		// determine place_axis_1 based on where on the face was clicked ?
 		// top of face orients to point to top and so on
 
@@ -505,7 +508,7 @@ void ViewRayFunction()
 		if (window.MouseManager[MouseButtons::MouseL].State == State::Press)
 		{
 			Voxel voxel;
-			ChunkVoxelIndex idx(hit.Index);
+			ChunkVoxelIndex idx(ViewHit.Index);
 			//ChunkManager.ClearVoxel(hit.Index, voxel);
 //			std::cout << "main:" << __LINE__ << '\n';
 			Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
@@ -521,20 +524,20 @@ void ViewRayFunction()
 		}
 		if (window.MouseManager[MouseButtons::MouseR].State == State::Press)
 		{
-			if (place_axis_0 == AxisRel::NextX) { hit.Index.X += 1; }
-			if (place_axis_0 == AxisRel::NextY) { hit.Index.Y += 1; }
-			if (place_axis_0 == AxisRel::NextZ) { hit.Index.Z += 1; }
-			if (place_axis_0 == AxisRel::PrevX) { hit.Index.X -= 1; }
-			if (place_axis_0 == AxisRel::PrevY) { hit.Index.Y -= 1; }
-			if (place_axis_0 == AxisRel::PrevZ) { hit.Index.Z -= 1; }
+			if (ViewHitAxis0 == AxisRel::NextX) { ViewHit.Index.X += 1; }
+			if (ViewHitAxis0 == AxisRel::NextY) { ViewHit.Index.Y += 1; }
+			if (ViewHitAxis0 == AxisRel::NextZ) { ViewHit.Index.Z += 1; }
+			if (ViewHitAxis0 == AxisRel::PrevX) { ViewHit.Index.X -= 1; }
+			if (ViewHitAxis0 == AxisRel::PrevY) { ViewHit.Index.Y -= 1; }
+			if (ViewHitAxis0 == AxisRel::PrevZ) { ViewHit.Index.Z -= 1; }
 
 			if (HotBar[VectorU2(0, 0)] != nullptr)
 			{
 				ItemVoxel * item = (ItemVoxel*)HotBar[VectorU2(0, 0)];
 				if (item -> VoxelPallet != nullptr)
 				{
-					Voxel voxel = item -> VoxelPallet -> ToVoxel(place_axis_0, place_axis_1);
-					ChunkVoxelIndex idx(hit.Index);
+					Voxel voxel = item -> VoxelPallet -> ToVoxel(ViewHitAxis0, ViewHitAxis1);
+					ChunkVoxelIndex idx(ViewHit.Index);
 					Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
 					if (chunk != nullptr)
 					{
@@ -570,38 +573,39 @@ void ViewRayFunction()
 		}
 	}*/
 }
-
-void UpdateAroundView(FrameTime frame_time)
+void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 {
-//	std::cout << "UpdateAroundView:" << __LINE__ << '\n';
-	UpdateViewColliding(frame_time);
-
-//	static unsigned int NullNeighboursIndex = 0;
-//	static unsigned int FindNeighboursIndex = 0;
-
 	StopWatch sw;
 	sw.Start();
-//	std::cout << "UpdateAroundView:" << __LINE__ << '\n';
+
+	if (ViewTangible)
+	{
+		ViewUpdatePhysics(change.Position);
+		view.Trans.Rotation += change.Rotation * frame_time.Delta;
+		view.Trans.Rotation.X1.clampPI();
+		ViewUpdateColliding(frame_time);
+		view.Trans.Position = ViewEntity.Pos;
+	}
+	else
+	{
+		ViewUpdateIntangible(change, frame_time);
+	}
+	ViewUpdateDone();
+
 	ChunkManager.GraphicsUpdate();
-//	std::cout << "UpdateAroundView:" << __LINE__ << '\n';
-	sw.Stop();
-	FrameDuration.NewValue(sw.ElapsedTime());
-
-//		if (!DontRemove) { ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange); }
-//		if (!DontInsert) { ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange); }
-//		if (!DontRemove) { ChunkManager.NullNeighbours(NullNeighboursIndex); }
-//		if (!DontInsert) { ChunkManager.FindNeighbours(FindNeighboursIndex); }
-//		ChunkManager.UpdateChunksContainer();
-//		if (!DontGenerate) { ChunkManager.GenerateAround(view.Trans.Position, ChunkInsertRange, Perlin2, Perlin3); }
-//		if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position); }
-
-//	ChunkManager.UpdateChunksArray();
-//	ChunkManager.UpdateChunksArrayGenerate(Perlin2, Perlin3);
-//	ChunkManager.ChunksArray.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
 	ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
 
-	ViewRayFunction();
+	ViewRayUpdate();
+	ViewRayDo();
+
+	sw.Stop();
+	FrameDuration.NewValue(sw.ElapsedTime());
 }
+
+
+
+
+
 bool		ThreadDelay = true;
 bool		ThreadTerminate = false;
 std::thread				AuxThread0;
@@ -790,14 +794,18 @@ void MakeControls()
 	// Inventory
 	{
 		InventoryPolyHedraManager.MakeCurrent();
-		Inventory[VectorU2(0, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationCube"]);
-		Inventory[VectorU2(1, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationCylinder"]);
-		//Inventory[VectorU2(2, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationSlope"]);
-		Inventory[VectorU2(0, 1)] = new ItemVoxel(VoxelPalletMap::All["Gray"]);
-		Inventory[VectorU2(1, 1)] = new ItemVoxel(VoxelPalletMap::All["Grass"]);
-		Inventory[VectorU2(2, 1)] = new ItemVoxel(VoxelPalletMap::All["RedLog"]);
-		Inventory[VectorU2(0, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCube"]);
-		Inventory[VectorU2(1, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCylinder"]);
+		for (unsigned int i = 0; i < VoxelPalletMap::All.Data.Count(); i++)
+		{
+			Inventory[Inventory.Count.Convert(i)] = new ItemVoxel(VoxelPalletMap::All.Data[i]);
+		}
+		//Inventory[VectorU2(0, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationCube"]);
+		//Inventory[VectorU2(1, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationCylinder"]);
+		////Inventory[VectorU2(2, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationSlope"]);
+		//Inventory[VectorU2(0, 1)] = new ItemVoxel(VoxelPalletMap::All["Gray"]);
+		//Inventory[VectorU2(1, 1)] = new ItemVoxel(VoxelPalletMap::All["Grass"]);
+		//Inventory[VectorU2(2, 1)] = new ItemVoxel(VoxelPalletMap::All["RedLog"]);
+		//Inventory[VectorU2(0, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCube"]);
+		//Inventory[VectorU2(1, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCylinder"]);
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
 		ControlManager.Window.ChildInsert(InventoryUI);
@@ -1475,7 +1483,7 @@ void FrameInput()
 		}
 	}
 
-	if (window.KeyBoardManager[Keys::F2].State == State::Press) { ViewBoxCollision = !ViewBoxCollision; }
+	if (window.KeyBoardManager[Keys::F2].State == State::Press) { Toggle(ViewTangible); }
 	if (window.KeyBoardManager[Keys::F3].State == State::Press)
 	{
 		if (ViewDistance == 0.0f)
@@ -1515,7 +1523,17 @@ void Frame(FrameTime frame_time) override
 
 	if (!OptionsMenu.IsVisible())
 	{
-		UpdateAroundView(frame_time);
+		Trans3D change;
+		if (window.MouseManager.CursorModeIsLocked())
+		{
+			change = window.MoveSpinFromKeysCursor();
+			change.Rotation *= view.FOV.ToRadians() * 0.05f;
+			{
+				EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
+				change.Position = e.forward(change.Position);
+			}
+		}
+		ViewUpdateAround(change, frame_time);
 	}
 
 	/*{

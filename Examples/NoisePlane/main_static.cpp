@@ -49,3 +49,36 @@ static void Toggle(::PolyHedra * & polyhedra, ::PolyHedra * other)
 		polyhedra = nullptr;
 	}
 }
+
+static void DisplayBoxEntity(BoxEntity & box_entity)
+{
+	PolyHedraObject view_box_obj(box_entity.PolyHedra);
+	view_box_obj.Trans().Position = box_entity.Pos;
+	view_box_obj.ShowWire();
+}
+static void DisplayBoxEntityVoxels(unsigned int p, ::ChunkManager & manager, BoxEntity & box_entity, FrameTime frame_time)
+{
+//	unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
+
+	BoxF3 box = box_entity.Box + box_entity.Pos;
+	box.Consider(box_entity.Box.Min + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
+	box.Consider(box_entity.Box.Max + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
+	box = box - VectorF3(0.5f);
+
+	LoopI3 loop(box.Min.round(), Bool3(false), box.Max.round(), Bool3(false));
+	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+	{
+		ChunkVoxelIndex idx(i);
+		Chunk * chunk = manager.Chunks.FindLockOrNull(idx.Chunk);
+		if (chunk == nullptr) { continue; }
+		const Voxel * voxel = chunk -> FindVoxelOrNull(idx.Voxel);
+		if (voxel != nullptr && voxel -> Pallet != nullptr)
+		{
+			PolyHedraObject voxel_obj(p);
+			voxel_obj.Trans().Position = i;
+			voxel_obj.ShowWire();
+		}
+		chunk -> unlock();
+	}
+}
+

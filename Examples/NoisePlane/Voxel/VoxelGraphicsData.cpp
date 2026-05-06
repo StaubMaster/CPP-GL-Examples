@@ -45,12 +45,12 @@ void ChunkGraphicsData::Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis
 	for (unsigned int i = 0; i < axis_data.Data.Count(); i++)
 	{
 		VoxelGraphics::MainTriangle v = axis_data.Data[i];
-		//v.Corners[0].Pos = orientation.absolute(v.Corners[0].Pos) + u;
-		//v.Corners[1].Pos = orientation.absolute(v.Corners[1].Pos) + u;
-		//v.Corners[2].Pos = orientation.absolute(v.Corners[2].Pos) + u;
-		v.Corners[0].Pos = v.Corners[0].Pos + u;
-		v.Corners[1].Pos = v.Corners[1].Pos + u;
-		v.Corners[2].Pos = v.Corners[2].Pos + u;
+		v.Corners[0].Pos = voxel.Orientation.absolute(v.Corners[0].Pos) + u;
+		v.Corners[1].Pos = voxel.Orientation.absolute(v.Corners[1].Pos) + u;
+		v.Corners[2].Pos = voxel.Orientation.absolute(v.Corners[2].Pos) + u;
+		//v.Corners[0].Pos = v.Corners[0].Pos + u;
+		//v.Corners[1].Pos = v.Corners[1].Pos + u;
+		//v.Corners[2].Pos = v.Corners[2].Pos + u;
 		v.Corners[0].Tex.Z = (voxel.Pallet -> Textures[(int)v.Corners[0].Tex.Z]).Index;
 		v.Corners[1].Tex.Z = (voxel.Pallet -> Textures[(int)v.Corners[1].Tex.Z]).Index;
 		v.Corners[2].Tex.Z = (voxel.Pallet -> Textures[(int)v.Corners[2].Tex.Z]).Index;
@@ -59,8 +59,8 @@ void ChunkGraphicsData::Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis
 }
 void ChunkGraphicsData::Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis, const Chunk & chunk)
 {
-	//if (chunk.Visible(voxel.Orientation.absolute(axis), u))
-	if (chunk.Visible(u, axis))
+	if (chunk.Visible(u, voxel.Orientation.absolute(axis)))
+	//if (chunk.Visible(u, axis))
 	{
 		Concatnate(u, voxel, axis);
 	}
