@@ -3,8 +3,8 @@
 #include "Debug.hpp"
 
 // Contexts
-#include "Context0/Context0.hpp"
-#include "Context1/Context1.hpp"
+#include "Context0/new.hpp"
+#include "Context1/new.hpp"
 #include "NoisePlane/new.hpp"
 #include "TestTextAlignment/TestTextAlignment.hpp"
 
@@ -32,11 +32,11 @@ void ContextBase::Change(ContextBase * context)
 
 void ContextBase::ChangeToContext0()
 {
-	Change(new Context0());
+	Change(newContext0());
 }
 void ContextBase::ChangeToContext1()
 {
-	Change(new Context1());
+	Change(newContext1());
 }
 void ContextBase::ChangeToNoisePlane()
 {

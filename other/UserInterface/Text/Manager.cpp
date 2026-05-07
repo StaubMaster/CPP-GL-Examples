@@ -199,15 +199,15 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 	Point2D rel_chr;
 	switch (obj.CharacterAlignmentX)
 	{
-		case Alignment::Min: rel_chr.X = -0.5f; break;
+		case Alignment::Min: rel_chr.X = +0.5f; break;
 		case Alignment::Mid: rel_chr.X =  0.0f; break;
-		case Alignment::Max: rel_chr.X = +0.5f; break;
+		case Alignment::Max: rel_chr.X = -0.5f; break;
 	}
 	switch (obj.CharacterAlignmentY)
 	{
-		case Alignment::Min: rel_chr.Y = -0.5f; break;
+		case Alignment::Min: rel_chr.Y = +0.5f; break;
 		case Alignment::Mid: rel_chr.Y =  0.0f; break;
-		case Alignment::Max: rel_chr.Y = +0.5f; break;
+		case Alignment::Max: rel_chr.Y = -0.5f; break;
 	}
 
 	Point2D rel_txt;

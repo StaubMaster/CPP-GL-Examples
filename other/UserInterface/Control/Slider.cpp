@@ -32,6 +32,8 @@ UI::Control::Slider::Slider() : Base()
 UI::Control::Slider::~Slider()
 { }
 
+
+
 VectorF2 UI::Control::Slider::GetValue() const { return Value; }
 float UI::Control::Slider::GetValueX() const { return Value.X; }
 float UI::Control::Slider::GetValueY() const { return Value.Y; }
@@ -151,19 +153,6 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 
 
-void UI::Control::Slider::CalcCharacterCount()
-{
-	CharacterCountLimit2D = AnchorSize / CharacterSize;
-	unsigned int count = 0;
-	count += ceil(CharacterCountLimit2D.X);
-	count += ceil(CharacterCountLimit2D.Y);
-	if (CharacterCountLimit != count)
-	{
-		CharacterCountLimit = count;
-		//CharacterCountLimitChanged = true;
-		PutCharactersEntrys();
-	}
-}
 void UI::Control::Slider::PutCharactersEntrys()
 {
 	Point2D min = ContainerBox.Min;
@@ -191,55 +180,11 @@ std::string UI::Control::Slider::GetText() const
 void UI::Control::Slider::SetText(std::string text)
 {
 	Text = text;
-	//TextChanged = true;
 	PutCharactersEntrys();
 }
 
 
 
-/*void UI::Control::Slider::UpdateEntrysRelay()
-{
-	if (SliderObject.Is())
-	{
-		if (SliderChanged)
-		{
-			VectorF2 slider_size_half = NubSize / 2.0f;
-			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
-
-			VectorF2 slider_normal = Value;
-			slider_normal -= ValueMin;
-			slider_normal /= (ValueMax - ValueMin);
-
-			VectorF2 slider_value = slider_normal;
-			slider_value *= (slider_max - slider_min);
-			slider_value += slider_min;
-
-			SliderObject.Box().Min = slider_value - slider_size_half;
-			SliderObject.Box().Max = slider_value + slider_size_half;
-			
-			SliderChanged = false;
-		}
-	}
-	if (TextObject.Is() && TextManager != NULL)
-	{
-		if (CharacterCountLimitChanged)
-		{
-			//TextObject.Delete();
-			////TextManager -> Inst_Data_Container.CompactHere();
-			////TextEntry.Allocate(TextManager -> Inst_Data_Container, CharacterCountLimit);
-			//TextObject.Create();
-
-			TextChanged = true;
-			CharacterCountLimitChanged = false;
-		}
-		if (TextChanged)
-		{
-			PutCharactersEntrys();
-			TextChanged = false;
-		}
-	}
-}*/
 void UI::Control::Slider::InsertDrawingEntryRelay()
 {
 	if (!SliderObject.Is() && ControlManager != NULL)
@@ -268,9 +213,7 @@ void UI::Control::Slider::InsertDrawingEntryRelay()
 	}
 	if (!TextObject.Is() && TextManager != NULL)
 	{
-		CalcCharacterCount();
 		TextObject.Create();
-		//TextEntry.Allocate(TextManager -> Inst_Data_Container, CharacterCountLimit);
 	}
 }
 void UI::Control::Slider::RemoveDrawingEntryRelay()
@@ -306,8 +249,6 @@ void UI::Control::Slider::UpdateBoxRelay()
 		}
 	if (TextObject.Is())
 	{
-		CalcCharacterCount();
-		//TextChanged = true;
 		PutCharactersEntrys();
 	}
 }

@@ -15,31 +15,12 @@ namespace Control
 
 class Button : public Base
 {
-	private:
-	Text::Object	TextObject;
-
-	Point2D			CharacterSize;
-	Point2D			CharacterCountLimit2D;
-	unsigned int	CharacterCountLimit;
-//	bool			CharacterCountLimitChanged;
-
-	std::string		Text;
-//	bool			TextChanged;
-
 	public:
 	FunctionPointer<ClickArgs>	ClickFunc;
 
 	public:
-	Button();
 	~Button();
-
-	private:
-	void	CalcCharacterCount();
-	void	PutCharactersEntrys();
-
-	public:
-	std::string	GetText() const;
-	void		SetText(std::string text);
+	Button();
 
 	public:
 //	void	UpdateEntrysRelay() override;
@@ -49,6 +30,15 @@ class Button : public Base
 
 	public:
 	void	RelayClick(ClickArgs args) override;
+
+	private:
+	Text::Object	TextObject;
+	void			PutCharactersEntrys();
+	private:
+	std::string		Text;
+	public:
+	std::string	GetText() const;
+	void		SetText(std::string text);
 };
 
 };

@@ -6,7 +6,7 @@
 struct Context1Menu : public UI::Control::Form
 {
 	UI::Control::Button		QuitButton;
-	UI::Control::TextBox	TitleText;
+	UI::Control::Label		TitleText;
 
 	UI::Control::Button		Context0Button;
 	UI::Control::Button		Context1Button;

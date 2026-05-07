@@ -52,26 +52,9 @@ class Slider : public Base
 	FunctionPointer<float>		ValueYChangedFunc;
 	FunctionPointer<VectorF2>	ValueChangedFunc;
 
-	private:
-	Text::Object	TextObject;
-	Point2D			CharacterSize;
-	Point2D			CharacterCountLimit2D;
-	unsigned int	CharacterCountLimit;
-//	bool			CharacterCountLimitChanged;
-	std::string		Text;
-//	bool			TextChanged;
-
 	public:
 	Slider();
 	~Slider();
-
-	private:
-	void	CalcCharacterCount();
-	void	PutCharactersEntrys();
-
-	public:
-	std::string		GetText() const;
-	void			SetText(std::string text);
 
 	public:
 //	void UpdateEntrysRelay() override;
@@ -81,6 +64,15 @@ class Slider : public Base
 
 	void RelayClick(ClickArgs params) override;
 	void RelayCursorDrag(DragArgs params) override;
+
+	private:
+	Text::Object	TextObject;
+	std::string		Text;
+	private:
+	void	PutCharactersEntrys();
+	public:
+	std::string		GetText() const;
+	void			SetText(std::string text);
 };
 
 };

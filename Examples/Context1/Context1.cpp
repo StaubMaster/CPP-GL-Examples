@@ -84,3 +84,10 @@ void Context1::MouseDrag(DragArgs args) { ControlManager.RelayCursorDrag(args); 
 void Context1::MouseScroll(ScrollArgs args) { ControlManager.RelayScroll(args); }
 void Context1::KeyBoardKey(KeyArgs args) { ControlManager.RelayKey(args); }
 void Context1::KeyBoardText(TextArgs args) { ControlManager.RelayText(args); }
+
+
+
+ContextBase * newContext1()
+{
+	return new Context1();
+}

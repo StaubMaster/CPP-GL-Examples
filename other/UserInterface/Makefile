@@ -23,6 +23,7 @@ FILES := \
 	Control/TextBox.cpp \
 	Control/Slider.cpp \
 	Control/CheckBox.cpp \
+	Control/Label.cpp \
 \
 	Text/Data.cpp \
 	Text/Buffer.cpp \

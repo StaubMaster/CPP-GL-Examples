@@ -28,28 +28,28 @@ void UI::Text::Object::AlignTopLeft()
 {
 	Data -> TextAlignmentX = UI::Text::Alignment::Min;
 	Data -> TextAlignmentY = UI::Text::Alignment::Min;
-	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
-	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Min;
 }
 void UI::Text::Object::AlignTopMiddle()
 {
 	Data -> TextAlignmentX = UI::Text::Alignment::Mid;
 	Data -> TextAlignmentY = UI::Text::Alignment::Min;
 	Data -> CharacterAlignmentX = UI::Text::Alignment::Mid;
-	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Min;
 }
 void UI::Text::Object::AlignTopRight()
 {
 	Data -> TextAlignmentX = UI::Text::Alignment::Max;
 	Data -> TextAlignmentY = UI::Text::Alignment::Min;
-	Data -> CharacterAlignmentX = UI::Text::Alignment::Min;
-	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Min;
 }
 void UI::Text::Object::AlignMiddleLeft()
 {
 	Data -> TextAlignmentX = UI::Text::Alignment::Min;
 	Data -> TextAlignmentY = UI::Text::Alignment::Mid;
-	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Min;
 	Data -> CharacterAlignmentY = UI::Text::Alignment::Mid;
 }
 void UI::Text::Object::AlignMiddleMiddle()
@@ -63,29 +63,29 @@ void UI::Text::Object::AlignMiddleRight()
 {
 	Data -> TextAlignmentX = UI::Text::Alignment::Max;
 	Data -> TextAlignmentY = UI::Text::Alignment::Mid;
-	Data -> CharacterAlignmentX = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
 	Data -> CharacterAlignmentY = UI::Text::Alignment::Mid;
 }
 void UI::Text::Object::AlignBottomLeft()
 {
 	Data -> TextAlignmentX = UI::Text::Alignment::Min;
 	Data -> TextAlignmentY = UI::Text::Alignment::Max;
-	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
-	Data -> CharacterAlignmentY = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
 }
 void UI::Text::Object::AlignBottomMiddle()
 {
 	Data -> TextAlignmentX = UI::Text::Alignment::Mid;
 	Data -> TextAlignmentY = UI::Text::Alignment::Max;
 	Data -> CharacterAlignmentX = UI::Text::Alignment::Mid;
-	Data -> CharacterAlignmentY = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
 }
 void UI::Text::Object::AlignBottomRight()
 {
 	Data -> TextAlignmentX = UI::Text::Alignment::Max;
 	Data -> TextAlignmentY = UI::Text::Alignment::Max;
-	Data -> CharacterAlignmentX = UI::Text::Alignment::Min;
-	Data -> CharacterAlignmentY = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
 }
 
 

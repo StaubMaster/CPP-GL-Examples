@@ -1,5 +1,5 @@
-#ifndef  UI_CONTROL_TEXTBOX_HPP
-# define UI_CONTROL_TEXTBOX_HPP
+#ifndef  UI_CONTROL_LABEL_HPP
+# define UI_CONTROL_LABEL_HPP
 
 #include "Base/Base.hpp"
 
@@ -10,25 +10,17 @@ namespace UI
 {
 namespace Control
 {
-class TextBox : public Base
+class Label : public Base
 {
 	public:
-	bool	ReadOnly;
-	bool	MultiLine;
-
-	public:
-	~TextBox();
-	TextBox();
+	~Label();
+	Label();
 
 	public:
 //	void	UpdateEntrysRelay() override;
 	void	InsertDrawingEntryRelay() override;
 	void	RemoveDrawingEntryRelay() override;
 	void	UpdateBoxRelay() override;
-
-	public:
-	void	RelayKey(KeyArgs params) override;
-	void	RelayText(TextArgs params) override;
 
 	private:
 	Text::Object	TextObject;

@@ -56,18 +56,6 @@ void UI::Control::Base::MakeOpaque()
 	UpdateDrawable();
 }
 
-// Opaque also effects if it should be Drawable
-// have another function to check if Parent want Child to be drawn ?
-// should IsVisible() check Parents ?
-// what if I want to Check the Visibility of just this
-// IsThisVisible()
-// check if I want to Show a Child and Parent is not Visible ?
-// make Parent Visible as well ?
-// ShowThis() and HideThis() to only effect this one ?
-// Show() and Hide() call UpdateDrawable()
-// I dont want to do that when looping over Parents
-// delay ?
-
 bool UI::Control::Base::IsVisible() const
 {
 	if (Parent != nullptr)
@@ -90,6 +78,13 @@ bool UI::Control::Base::IsInteractible() const
 
 
 
+UI::Control::Base::~Base()
+{
+	/*for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		delete Children[i];
+	}*/
+}
 UI::Control::Base::Base() :
 	ControlManager(nullptr),
 	TextManager(nullptr),
@@ -128,13 +123,6 @@ UI::Control::Base::Base() :
 	//AnchorBoxChanged = false;
 
 	//ColorChanged = false;
-}
-UI::Control::Base::~Base()
-{
-	/*for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		delete Children[i];
-	}*/
 }
 
 

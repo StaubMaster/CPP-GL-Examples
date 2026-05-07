@@ -1,0 +1,20 @@
+
+I removed the Deleyed stuff to make it less confusing
+
+sometimes things get changed multiple times at once
+like appending text
+changing text every time would be inefficient
+
+just say that it needs to change
+then change it once
+before Drawing
+
+
+
+what should be done delayed ?
+
+changing DisplayBox ?
+	currently only changes from Resize
+	could also just move things in general ?
+changing Text
+changing Slider (Nub)
