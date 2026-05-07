@@ -744,14 +744,14 @@ void MakeControls()
 	}
 	// Options
 	{
-		OptionsMenu.FOV.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FOV);
-		OptionsMenu.FOV.SetValue(view.FOV.ToDegrees());
+		OptionsMenu.FOV.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FOV);
+		OptionsMenu.FOV.SetValueX(view.FOV.ToDegrees());
 
-		OptionsMenu.Depth.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Depth);
-		OptionsMenu.Depth.SetValue(100.0f); // get Depth. also depth works weirdly ?
+		OptionsMenu.Depth.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Depth);
+		OptionsMenu.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
 
-		OptionsMenu.DepthRange.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_DepthRange);
-		OptionsMenu.DepthRange.SetValue(view.Depth.Range.Min);
+		OptionsMenu.DepthRange.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_DepthRange);
+		OptionsMenu.DepthRange.SetValueX(view.Depth.Range.Min);
 
 		// Remove range should never be less then Insert
 		// make RemoveRange = InsertRange * 2 ?
@@ -760,14 +760,14 @@ void MakeControls()
 		//ChunkInsertRange = 6;
 		ChunkInsertRange = 4;
 		//ChunkInsertRange = 1;
-		OptionsMenu.ChunkInsert.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Insert);
-		OptionsMenu.ChunkInsert.SetValue(ChunkInsertRange);
+		OptionsMenu.ChunkInsert.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Insert);
+		OptionsMenu.ChunkInsert.SetValueX(ChunkInsertRange);
 
 		//ChunkRemoveRange = 12;
 		ChunkRemoveRange = 8;
 		//ChunkRemoveRange = 1;
-		OptionsMenu.ChunkRemove.ValueChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
-		OptionsMenu.ChunkRemove.SetValue(ChunkRemoveRange);
+		OptionsMenu.ChunkRemove.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
+		OptionsMenu.ChunkRemove.SetValueX(ChunkRemoveRange);
 
 		OptionsMenu.Back.ClickFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Back);
 
@@ -782,11 +782,11 @@ void MakeControls()
 
 		DebugMenu.VoxelChunkMemory.Check.Check(true);
 
-		DebugMenu.Generation3DComparison.ValueChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DComparison);
-		DebugMenu.Generation3DComparison.SetValue(Chunk::Generation3D_Comparison);
+		DebugMenu.Generation3DComparison.ValueXChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DComparison);
+		DebugMenu.Generation3DComparison.SetValueX(Chunk::Generation3D_Comparison);
 
-		DebugMenu.Generation3DFactor.ValueChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DFactor);
-		DebugMenu.Generation3DFactor.SetValue(Chunk::Generation3D_Factor);
+		DebugMenu.Generation3DFactor.ValueXChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DFactor);
+		DebugMenu.Generation3DFactor.SetValueX(Chunk::Generation3D_Factor);
 
 		DebugMenu.Hide();
 		ControlManager.Window.ChildInsert(DebugMenu);

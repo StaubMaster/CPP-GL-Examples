@@ -65,6 +65,12 @@ void ContextTestTextAlignment::Resize(DisplaySize display_size)
 */
 void ContextTestTextAlignment::Frame(FrameTime frame_time)
 {
+	if (window.KeyBoardManager[Keys::Escape].State == State::Press)
+	{
+		ChangeToContext0();
+		return;
+	}
+
 	AxisBox2D bound(Point2D(), window.Size.Buffer.Full);
 
 	{

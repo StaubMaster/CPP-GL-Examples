@@ -2,13 +2,21 @@
 TextBox Button Slider all have Text, copy and pasted. should generalize that
 
 Label: shows Text, cannot be changed
+	no Box ?
 
 Graph: takes Points and connects them
 	would need its own Shader
 
-
+SliderBase
+SliderHori
+SliderVert
+SliderArea
 
 PolyHedra / PolyGon
+
+
+
+new operator
 
 
 

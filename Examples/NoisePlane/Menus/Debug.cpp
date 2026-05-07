@@ -37,18 +37,18 @@ DebugMenu::DebugMenu()
 
 	Generation3DFactor.Anchor.X.AnchorBoth(0, 0);
 	Generation3DFactor.Anchor.Y.AnchorMin(y);
-	Generation3DFactor.ValueMin = 0.0f;
+	Generation3DFactor.ValueMin.X = 0.0f;
+	Generation3DFactor.ValueMax.X = 8.0f;
+	Generation3DFactor.ValueResolution.X = 1.0f;
 	Generation3DFactor.SetValue(4.0f);
-	Generation3DFactor.ValueMax = 8.0f;
-	Generation3DFactor.ValueResolution = 1.0f;
 	y = Generation3DFactor.Anchor.Y.GetMinSize();
 
 	Generation3DComparison.Anchor.X.AnchorBoth(0, 0);
 	Generation3DComparison.Anchor.Y.AnchorMin(y);
-	Generation3DComparison.ValueMin = 0.0f;
+	Generation3DComparison.ValueMin.X = 0.0f;
+	Generation3DComparison.ValueMax.X = 1.0f;
+	Generation3DComparison.ValueResolution.X = 0.01f;
 	Generation3DComparison.SetValue(0.0f);
-	Generation3DComparison.ValueMax = 1.0f;
-	Generation3DComparison.ValueResolution = 0.01f;
 	y = Generation3DComparison.Anchor.Y.GetMinSize();
 
 	FPS.Insert(*this);

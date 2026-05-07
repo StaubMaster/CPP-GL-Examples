@@ -20,6 +20,7 @@ Context1::Context1()
 
 void Context1::Make()
 {
+	window.KeyBoardManager.CallBack_TextEvent.Assign(this, &Context1::KeyBoardText);
 	ControlManager.Window.ChildInsert(Menu);
 }
 
@@ -78,7 +79,8 @@ void Context1::Frame(FrameTime frame_time)
 
 
 
-void Context1::MouseScroll(ScrollArgs args) { (void)args; }
 void Context1::MouseClick(ClickArgs args) { ControlManager.RelayClick(args); }
 void Context1::MouseDrag(DragArgs args) { ControlManager.RelayCursorDrag(args); }
-void Context1::KeyBoardKey(KeyArgs args) { (void)args; }
+void Context1::MouseScroll(ScrollArgs args) { ControlManager.RelayScroll(args); }
+void Context1::KeyBoardKey(KeyArgs args) { ControlManager.RelayKey(args); }
+void Context1::KeyBoardText(TextArgs args) { ControlManager.RelayText(args); }

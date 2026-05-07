@@ -14,23 +14,23 @@ OptionsMenu::OptionsMenu()
 
 	FOV.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	FOV.Anchor.Y.AnchorMin(y);
-	FOV.ValueMin = 20;
-	FOV.ValueMax = 160;
-	FOV.ValueResolution = 1.0f;
+	FOV.ValueMin.X = 20;
+	FOV.ValueMax.X = 160;
+	FOV.ValueResolution.X = 1.0f;
 	y = FOV.Anchor.Y.GetMinSize();
 
 	Depth.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	Depth.Anchor.Y.AnchorMin(y);
-	Depth.ValueMin = 10.0f;
-	Depth.ValueMax = 1000.0f;
-	Depth.ValueResolution = 10.0f;
+	Depth.ValueMin.X = 10.0f;
+	Depth.ValueMax.X = 1000.0f;
+	Depth.ValueResolution.X = 10.0f;
 	y = Depth.Anchor.Y.GetMinSize();
 
 	DepthRange.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	DepthRange.Anchor.Y.AnchorMin(y);
-	DepthRange.ValueMin = 0.0f;
-	DepthRange.ValueMax = 1.0f;
-	DepthRange.ValueResolution = 0.1f;
+	DepthRange.ValueMin.X = 0.0f;
+	DepthRange.ValueMax.X = 1.0f;
+	DepthRange.ValueResolution.X = 0.1f;
 	y = DepthRange.Anchor.Y.GetMinSize();
 
 	y = 0.0f;
@@ -42,16 +42,16 @@ OptionsMenu::OptionsMenu()
 
 	ChunkInsert.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	ChunkInsert.Anchor.Y.AnchorMax(y);
-	ChunkInsert.ValueMin = 1;
-	ChunkInsert.ValueMax = 24;
-	ChunkInsert.ValueResolution = 1.0f;
+	ChunkInsert.ValueMin.X = 1;
+	ChunkInsert.ValueMax.X = 24;
+	ChunkInsert.ValueResolution.X = 1.0f;
 	y = ChunkInsert.Anchor.Y.GetMaxSize();
 
 	ChunkRemove.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	ChunkRemove.Anchor.Y.AnchorMax(y);
-	ChunkRemove.ValueMin = 1;
-	ChunkRemove.ValueMax = 24;
-	ChunkRemove.ValueResolution = 1.0f;
+	ChunkRemove.ValueMin.X = 1;
+	ChunkRemove.ValueMax.X = 24;
+	ChunkRemove.ValueResolution.X = 1.0f;
 	y = ChunkRemove.Anchor.Y.GetMaxSize();
 
 	ChildInsert(FOV);

@@ -16,6 +16,16 @@
 
 #include "AnchorEnum.hpp"
 
+/* what do Controls do ?
+
+handle Events and/or Relay to children
+change Size relative to Parent
+change Visibility
+change Layer (Depth)
+change Color
+
+*/
+
 namespace UI
 {
 namespace Text { class Manager; };
@@ -39,21 +49,21 @@ class Base
 	float			Layer;
 
 	protected:
-	bool	_Enabled;	//visible but cannot be interacted with by User, can be changed via code, Grayed out ?
+	bool	_Enabled;
 	public:
 	bool	IsEnabled() const;
 	void	MakeEnabled();
 	void	MakeDisabled();
 
 	protected:
-	bool	_Visible;	//is current and children visible
+	bool	_Visible;
 	public:
 	bool	IsVisible() const;
 	void	Show();
 	void	Hide();
 
 	protected:
-	bool	_Opaque;	//is current invisible, does not effect children
+	bool	_Opaque;
 	public:
 	bool	IsTransparent() const;
 	bool	IsOpaque() const;
@@ -61,13 +71,14 @@ class Base
 	void	MakeOpaque();
 
 	public:
-	bool	Drawable() const;		//should this currently be drawn ?
-	bool	Interactible() const;	//can be interacted with
+	bool	Drawable() const; // rename to Displayed
+	bool	Interactible() const;
 
 	public:
 	bool			Deletable;		//should be deleted when Parent is deleted
 
 	protected:
+	// Anchor needs to change if these change ?
 	Point2D			AnchorSize;
 	Point2D			AnchorNormal;
 	AxisBox2D		AnchorDist;
@@ -78,6 +89,8 @@ class Base
 
 	public:
 	Anchor2D		Anchor;
+
+	protected:
 	AxisBox2D		DisplayBox;
 	AxisBox2D		ContainerBox;
 	// another Box for Text ?
@@ -87,13 +100,13 @@ class Base
 
 	public:
 	ColorF4			ColorDefault;
-	//Color			ColorDisabled;
+	//Color			ColorDisabled; // Gray Text
 	ColorF4			ColorHover;
 	bool			ColorChanged;
 
 	public:
-	Base();
 	virtual ~Base();
+	Base();
 
 	public:
 	void ChildInsert(Base & control);
