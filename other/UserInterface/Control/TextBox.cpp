@@ -20,10 +20,10 @@ UI::Control::TextBox::TextBox()
 	ColorHover = ColorF4(0.875f, 0.875f, 0.875f);
 
 	CharacterCountLimit = 0;
-	CharacterCountLimitChanged = false;
+//	CharacterCountLimitChanged = false;
 
 	Text = "";
-	TextChanged = false;
+//	TextChanged = false;
 
 	ReadOnly = false;
 	SingleLine = true;
@@ -44,7 +44,8 @@ void UI::Control::TextBox::CalcCharacterCount()
 	if (CharacterCountLimit != count)
 	{
 		CharacterCountLimit = count;
-		CharacterCountLimitChanged = true;
+		//CharacterCountLimitChanged = true;
+		PutCharactersEntrys();
 	}
 }
 void UI::Control::TextBox::PutCharactersEntrys()
@@ -86,12 +87,13 @@ std::string UI::Control::TextBox::GetText() const
 void UI::Control::TextBox::SetText(std::string text)
 {
 	Text = text;
-	TextChanged = true;
+	//TextChanged = true;
+	PutCharactersEntrys();
 }
 
 
 
-void UI::Control::TextBox::UpdateEntrysRelay()
+/*void UI::Control::TextBox::UpdateEntrysRelay()
 {
 	if (TextObject.Is() && TextManager != NULL)
 	{
@@ -111,7 +113,7 @@ void UI::Control::TextBox::UpdateEntrysRelay()
 			TextChanged = false;
 		}
 	}
-}
+}*/
 void UI::Control::TextBox::InsertDrawingEntryRelay()
 {
 	if (!TextObject.Is() && TextManager != NULL)
@@ -134,7 +136,8 @@ void UI::Control::TextBox::UpdateBoxRelay()
 	if (TextObject.Is())
 	{
 		CalcCharacterCount();
-		TextChanged = true;
+		//TextChanged = true;
+		PutCharactersEntrys();
 	}
 }
 
@@ -149,7 +152,8 @@ void UI::Control::TextBox::RelayKey(KeyArgs params)
 		if (Text.length() > 0)
 		{
 			Text.erase(Text.length() - 1, 1);
-			TextChanged = true;
+			//TextChanged = true;
+			PutCharactersEntrys();
 		}
 	}
 }
@@ -168,7 +172,8 @@ void UI::Control::TextBox::RelayText(TextArgs params)
 		)*/
 	{
 		Text += (char)params.Codepoint;
-		TextChanged = true;
+		//TextChanged = true;
+		PutCharactersEntrys();
 	}
 }
 

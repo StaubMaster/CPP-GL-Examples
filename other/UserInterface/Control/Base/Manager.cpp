@@ -173,8 +173,9 @@ void UI::Control::Manager::UpdateMouse(Point2D mouse)
 
 	if (control != Hovering)
 	{
-		if (Hovering != nullptr) { Hovering -> HoverLeave(); }
+		UI::Control::Base * temp = Hovering;
 		Hovering = control;
+		if (temp != nullptr) { temp -> HoverLeave(); }
 		if (Hovering != nullptr) { Hovering -> HoverEnter(); }
 	}
 	if (Hovering != nullptr) { /* Hover Over */ }

@@ -113,9 +113,9 @@ UI::Control::Base::Base() :
 	AnchorBoarder = AxisBox2D(Point2D(boarder, boarder), Point2D(boarder, boarder));
 	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
 
-	AnchorBoxChanged = false;
+	//AnchorBoxChanged = false;
 
-	ColorChanged = false;
+	//ColorChanged = false;
 }
 UI::Control::Base::~Base()
 {
@@ -161,7 +161,7 @@ void UI::Control::Base::ChangeManager(UI::Text::Manager * manager)
 
 
 
-void UI::Control::Base::UpdateEntrys()
+/*void UI::Control::Base::UpdateEntrys()
 {
 	if (ControlObject.Is())
 	{
@@ -181,7 +181,7 @@ void UI::Control::Base::UpdateEntrys()
 	{
 		Children[i] -> UpdateEntrys();
 	}
-}
+}*/
 
 
 
@@ -206,8 +206,10 @@ void UI::Control::Base::InsertDrawingEntry()
 	{
 		ControlObject.Create();
 		ControlObject.Layer() = Layer;
-		AnchorBoxChanged = true;
-		ColorChanged = true;
+		ControlObject.Box() = DisplayBox;
+		//AnchorBoxChanged = true;
+
+		//ColorChanged = true;
 	}
 	InsertDrawingEntryRelay();
 }
@@ -230,7 +232,16 @@ void UI::Control::Base::UpdateBox()
 		ContainerBox.Min = DisplayBox.Min + AnchorBoarder.Min + AnchorPadding.Min;
 		ContainerBox.Max = DisplayBox.Max - AnchorBoarder.Max - AnchorPadding.Max;
 		//AnchorBox = Anchor.Calculate(Parent -> AnchorBox);
-		AnchorBoxChanged = true;
+		if (ControlObject.Is())
+		{
+			ControlObject.Box() = DisplayBox;
+			// dont check Hovering, just assign DefaultColor
+			if (ControlManager -> Hovering != this)
+			{ ControlObject.Color() = ColorDefault; }
+			else
+			{ ControlObject.Color() = ColorHover; }
+		}
+		//AnchorBoxChanged = true;
 	}
 	UpdateBoxRelay();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -265,34 +276,49 @@ UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
 	return nullptr;
 }
 
+// dont check Hovering. just assign Color
 void UI::Control::Base::HoverEnter()
 {
-	ColorChanged = true;
+//	ColorChanged = true;
+	if (ControlObject.Is())
+	{
+		if (ControlManager -> Hovering != this)
+		{ ControlObject.Color() = ColorDefault; }
+		else
+		{ ControlObject.Color() = ColorHover; }
+	}
 	RelayHover(1);
 }
 void UI::Control::Base::HoverLeave()
 {
-	ColorChanged = true;
+//	ColorChanged = true;
+	if (ControlObject.Is())
+	{
+		if (ControlManager -> Hovering != this)
+		{ ControlObject.Color() = ColorDefault; }
+		else
+		{ ControlObject.Color() = ColorHover; }
+	}
 	RelayHover(0);
 }
 
 
 
-void UI::Control::Base::UpdateEntryAnchorBoxRelay()
+/*void UI::Control::Base::UpdateEntryAnchorBoxRelay()
 {
 	//ControlObject.Box() = AnchorBox;
 	ControlObject.Box() = DisplayBox;
 	AnchorBoxChanged = false;
-}
-void UI::Control::Base::UpdateEntryColorRelay()
+}*/
+/*void UI::Control::Base::UpdateEntryColorRelay()
 {
 	if (ControlManager -> Hovering != this)
 	{ ControlObject.Color() = ColorDefault; }
 	else
 	{ ControlObject.Color() = ColorHover; }
 	ColorChanged = false;
-}
-void UI::Control::Base::UpdateEntrysRelay() { }
+}*/
+//void UI::Control::Base::UpdateEntrysRelay() { }
 
 void UI::Control::Base::InsertDrawingEntryRelay() { }
 void UI::Control::Base::RemoveDrawingEntryRelay() { }
@@ -300,27 +326,9 @@ void UI::Control::Base::UpdateBoxRelay() { }
 
 
 
-void UI::Control::Base::RelayHover(unsigned char type)
-{
-	(void)type;
-}
-void UI::Control::Base::RelayClick(ClickArgs params)
-{
-	(void)params;
-}
-void UI::Control::Base::RelayScroll(ScrollArgs params)
-{
-	(void)params;
-}
-void UI::Control::Base::RelayCursorDrag(DragArgs params)
-{
-	(void)params;
-}
-void UI::Control::Base::RelayKey(KeyArgs params)
-{
-	(void)params;
-}
-void UI::Control::Base::RelayText(TextArgs params)
-{
-	(void)params;
-}
+void UI::Control::Base::RelayHover(unsigned char type) { (void)type; }
+void UI::Control::Base::RelayClick(ClickArgs args) { (void)args; }
+void UI::Control::Base::RelayScroll(ScrollArgs args) { (void)args; }
+void UI::Control::Base::RelayCursorDrag(DragArgs args) { (void)args; }
+void UI::Control::Base::RelayKey(KeyArgs args) { (void)args; }
+void UI::Control::Base::RelayText(TextArgs args) { (void)args; }

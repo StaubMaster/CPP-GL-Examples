@@ -41,7 +41,7 @@ void UI::Control::CheckBox::Check(bool state)
 
 
 
-void UI::Control::CheckBox::UpdateEntryColorRelay()
+/*void UI::Control::CheckBox::UpdateEntryColorRelay()
 {
 	if (ControlManager -> Hovering != this)
 	{
@@ -57,11 +57,25 @@ void UI::Control::CheckBox::UpdateEntryColorRelay()
 		else
 		{ ControlObject.Color() = ColorCheckedHover; }
 	}
-}
+}*/
 void UI::Control::CheckBox::RelayHover(unsigned char type)
 {
 	(void)type;
-	ColorChanged = true;
+	//ColorChanged = true;
+	if (ControlManager -> Hovering != this)
+	{
+		if (!Checked)
+		{ ControlObject.Color() = ColorDefault; }
+		else
+		{ ControlObject.Color() = ColorChecked; }
+	}
+	else
+	{
+		if (!Checked)
+		{ ControlObject.Color() = ColorHover; }
+		else
+		{ ControlObject.Color() = ColorCheckedHover; }
+	}
 }
 
 
@@ -74,7 +88,21 @@ void UI::Control::CheckBox::RelayClick(ClickArgs params)
 	if (params.Action == Action::Press)
 	{
 		Checked = !Checked;
-		ColorChanged = true;
+		//ColorChanged = true;
+	if (ControlManager -> Hovering != this)
+	{
+		if (!Checked)
+		{ ControlObject.Color() = ColorDefault; }
+		else
+		{ ControlObject.Color() = ColorChecked; }
+	}
+	else
+	{
+		if (!Checked)
+		{ ControlObject.Color() = ColorHover; }
+		else
+		{ ControlObject.Color() = ColorCheckedHover; }
+	}
 		ClickFunc(params);
 	}
 }

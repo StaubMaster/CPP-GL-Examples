@@ -18,10 +18,10 @@ class TextBox : public Base
 	Point2D			CharacterSize;
 	Point2D			CharacterCountLimit2D;
 	unsigned int	CharacterCountLimit;
-	bool			CharacterCountLimitChanged;
+//	bool			CharacterCountLimitChanged;
 
 	std::string	Text;
-	bool		TextChanged;
+//	bool		TextChanged;
 
 	public:
 	bool	ReadOnly;
@@ -43,7 +43,7 @@ class TextBox : public Base
 	void		SetText(std::string text);
 
 	public:
-	void	UpdateEntrysRelay() override;
+//	void	UpdateEntrysRelay() override;
 	void	InsertDrawingEntryRelay() override;
 	void	RemoveDrawingEntryRelay() override;
 	void	UpdateBoxRelay() override;

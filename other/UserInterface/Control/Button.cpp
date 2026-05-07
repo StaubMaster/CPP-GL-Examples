@@ -19,10 +19,10 @@ UI::Control::Button::Button() : Base()
 	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
 
 	CharacterCountLimit = 0;
-	CharacterCountLimitChanged = false;
+//	CharacterCountLimitChanged = false;
 
 	Text = "";
-	TextChanged = false;
+//	TextChanged = false;
 
 	ClickFunc = nullptr;
 }
@@ -40,7 +40,8 @@ void UI::Control::Button::CalcCharacterCount()
 	if (CharacterCountLimit != count)
 	{
 		CharacterCountLimit = count;
-		CharacterCountLimitChanged = true;
+		//CharacterCountLimitChanged = true;
+		PutCharactersEntrys();
 	}
 }
 void UI::Control::Button::PutCharactersEntrys()
@@ -66,12 +67,13 @@ std::string UI::Control::Button::GetText() const
 void UI::Control::Button::SetText(std::string text)
 {
 	Text = text;
-	TextChanged = true;
+//	TextChanged = true;
+	PutCharactersEntrys();
 }
 
 
 
-void UI::Control::Button::UpdateEntrysRelay()
+/*void UI::Control::Button::UpdateEntrysRelay()
 {
 	if (TextObject.Is() && TextManager != NULL)
 	{
@@ -91,7 +93,7 @@ void UI::Control::Button::UpdateEntrysRelay()
 			TextChanged = false;
 		}
 	}
-}
+}*/
 void UI::Control::Button::InsertDrawingEntryRelay()
 {
 	if (!TextObject.Is() && TextManager != NULL)
@@ -114,7 +116,8 @@ void UI::Control::Button::UpdateBoxRelay()
 	if (TextObject.Is())
 	{
 		CalcCharacterCount();
-		TextChanged = true;
+		//TextChanged = true;
+		PutCharactersEntrys();
 	}
 }
 

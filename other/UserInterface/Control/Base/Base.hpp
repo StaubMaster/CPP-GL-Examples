@@ -26,6 +26,29 @@ change Color
 
 */
 
+/* UpdateSize
+Window Size changes
+ControlManager is told that Size changed
+Control::Window is told that Size changed
+Control tells children that Size changed
+
+should this be done immedeatly or be delayed ?
+doing it immedeatly seems fine
+
+it also sets a Flag that Anchor Size changed
+*/
+
+/* UpdateEntrys
+is done every frame, before Draw
+changes GraphicalBox, does not calculate
+changes Color
+
+why is this delayed ?
+something else might also change it ?
+the delayed stuff is assigning, which is the fastest part
+if anything, delay the calculating ?
+*/
+
 namespace UI
 {
 namespace Text { class Manager; };
@@ -46,7 +69,7 @@ class Base
 	Container::Binary<Control::Base *> Children;
 
 	public:
-	float			Layer;
+	float	Layer; // make this unsigend char. 255 should be more then enough Layers
 
 	protected:
 	bool	_Enabled;
@@ -95,14 +118,16 @@ class Base
 	AxisBox2D		ContainerBox;
 	// another Box for Text ?
 
-	protected:
-	bool			AnchorBoxChanged;
+//	protected:
+//	bool			AnchorBoxChanged;
 
 	public:
 	ColorF4			ColorDefault;
 	//Color			ColorDisabled; // Gray Text
 	ColorF4			ColorHover;
-	bool			ColorChanged;
+
+//	private:
+//	bool			ColorChanged;
 
 	public:
 	virtual ~Base();
@@ -114,18 +139,42 @@ class Base
 	virtual void ChangeManager(Manager * manager);
 	virtual void ChangeManager(UI::Text::Manager * manager);
 
+	// UpdateHandler that has referances to these functions
+
 	//	for automatic Updating. should not be called by User
 	public:
-	void UpdateEntrys();
+	/* void UpdateEntrys();
+		changes GraphicalBox if needed
+		changes Color if needed
+		calls Relay
+		makes Children do the same
+	*/
+	//void UpdateEntrys();
 
 	//	for automatic Updating. should not be called by User
 	private:
+	/* void UpdateDrawable();
+		Insert/Remove GraphicalBox if needed
+		Update Anchor Box
+	*/
 	void UpdateDrawable();
+	/* void InsertDrawingEntry();
+		Creates GraphicalBox if it dosent exist already
+		calls Relay
+	*/
 	void InsertDrawingEntry();
+	/* void RemoveDrawingEntry();
+		Deletes GraphicalBox if i exist
+		calls Relay
+	*/
 	void RemoveDrawingEntry();
 
 	//	for automatic Updating. should not be called by User
 	public:
+	/* void UpdateBox();
+		changes AnchorBox
+		calls Relay
+	*/
 	void UpdateBox();
 
 	//	for automatic Updating. should not be called by User
@@ -139,9 +188,9 @@ class Base
 
 	//	Relay Auto
 	protected:
-	virtual void UpdateEntryAnchorBoxRelay();
-	virtual void UpdateEntryColorRelay();
-	virtual void UpdateEntrysRelay();
+	//virtual void UpdateEntryAnchorBoxRelay();
+	//virtual void UpdateEntryColorRelay();
+	//virtual void UpdateEntrysRelay();
 
 	virtual void InsertDrawingEntryRelay();
 	virtual void RemoveDrawingEntryRelay();

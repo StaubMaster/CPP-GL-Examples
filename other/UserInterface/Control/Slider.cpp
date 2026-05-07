@@ -21,7 +21,7 @@ UI::Control::Slider::Slider() : Base()
 	ColorDefault = ColorF4(0.375f, 0.375f, 0.375f);
 	ColorHover = ColorF4(0.25f, 0.25f, 0.25f);
 
-	SliderChanged = true;
+//	SliderChanged = true;
 	NubSize = VectorF2(10, 25);
 
 	Value = VectorF2(0.0f, 0.0f);
@@ -35,9 +35,69 @@ UI::Control::Slider::~Slider()
 VectorF2 UI::Control::Slider::GetValue() const { return Value; }
 float UI::Control::Slider::GetValueX() const { return Value.X; }
 float UI::Control::Slider::GetValueY() const { return Value.Y; }
-void UI::Control::Slider::SetValue(VectorF2 val) { Value = val; SliderChanged = true; ValueChangedFunc(Value); ValueXChangedFunc(Value.X); ValueYChangedFunc(Value.Y); }
-void UI::Control::Slider::SetValueX(float val) { Value.X = val; SliderChanged = true; ValueXChangedFunc(Value.X); }
-void UI::Control::Slider::SetValueY(float val) { Value.Y = val; SliderChanged = true; ValueYChangedFunc(Value.Y); }
+void UI::Control::Slider::SetValue(VectorF2 val)
+{
+	Value = val; /*SliderChanged = true;*/ ValueChangedFunc(Value); ValueXChangedFunc(Value.X); ValueYChangedFunc(Value.Y);
+	if (SliderObject.Is())
+		{
+			VectorF2 slider_size_half = NubSize / 2.0f;
+			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
+			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+
+			VectorF2 slider_normal = Value;
+			slider_normal -= ValueMin;
+			slider_normal /= (ValueMax - ValueMin);
+
+			VectorF2 slider_value = slider_normal;
+			slider_value *= (slider_max - slider_min);
+			slider_value += slider_min;
+
+			SliderObject.Box().Min = slider_value - slider_size_half;
+			SliderObject.Box().Max = slider_value + slider_size_half;
+		}
+}
+void UI::Control::Slider::SetValueX(float val)
+{
+	Value.X = val; /*SliderChanged = true;*/ ValueXChangedFunc(Value.X);
+	if (SliderObject.Is())
+		{
+			VectorF2 slider_size_half = NubSize / 2.0f;
+			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
+			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+
+			VectorF2 slider_normal = Value;
+			slider_normal -= ValueMin;
+			slider_normal /= (ValueMax - ValueMin);
+
+			VectorF2 slider_value = slider_normal;
+			slider_value *= (slider_max - slider_min);
+			slider_value += slider_min;
+
+			SliderObject.Box().Min = slider_value - slider_size_half;
+			SliderObject.Box().Max = slider_value + slider_size_half;
+		}
+}
+void UI::Control::Slider::SetValueY(float val)
+{
+	Value.Y = val; /*SliderChanged = true;*/ ValueYChangedFunc(Value.Y);
+	if (SliderObject.Is())
+		{
+			VectorF2 slider_size_half = NubSize / 2.0f;
+			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
+			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+
+			VectorF2 slider_normal = Value;
+			slider_normal -= ValueMin;
+			slider_normal /= (ValueMax - ValueMin);
+
+			VectorF2 slider_value = slider_normal;
+			slider_value *= (slider_max - slider_min);
+			slider_value += slider_min;
+
+			SliderObject.Box().Min = slider_value - slider_size_half;
+			SliderObject.Box().Max = slider_value + slider_size_half;
+		}
+}
 
 void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 {
@@ -65,7 +125,24 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 	if (slider_value.Y > ValueMax.Y) { slider_value.Y = ValueMax.Y; }
 
 	Value = slider_value;
-	SliderChanged = true;
+//	SliderChanged = true;
+	if (SliderObject.Is())
+		{
+			VectorF2 slider_size_half = NubSize / 2.0f;
+			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
+			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+
+			VectorF2 slider_normal = Value;
+			slider_normal -= ValueMin;
+			slider_normal /= (ValueMax - ValueMin);
+
+			VectorF2 slider_value = slider_normal;
+			slider_value *= (slider_max - slider_min);
+			slider_value += slider_min;
+
+			SliderObject.Box().Min = slider_value - slider_size_half;
+			SliderObject.Box().Max = slider_value + slider_size_half;
+		}
 
 	ValueXChangedFunc(Value.X);
 	ValueYChangedFunc(Value.Y);
@@ -83,7 +160,8 @@ void UI::Control::Slider::CalcCharacterCount()
 	if (CharacterCountLimit != count)
 	{
 		CharacterCountLimit = count;
-		CharacterCountLimitChanged = true;
+		//CharacterCountLimitChanged = true;
+		PutCharactersEntrys();
 	}
 }
 void UI::Control::Slider::PutCharactersEntrys()
@@ -113,12 +191,13 @@ std::string UI::Control::Slider::GetText() const
 void UI::Control::Slider::SetText(std::string text)
 {
 	Text = text;
-	TextChanged = true;
+	//TextChanged = true;
+	PutCharactersEntrys();
 }
 
 
 
-void UI::Control::Slider::UpdateEntrysRelay()
+/*void UI::Control::Slider::UpdateEntrysRelay()
 {
 	if (SliderObject.Is())
 	{
@@ -160,7 +239,7 @@ void UI::Control::Slider::UpdateEntrysRelay()
 			TextChanged = false;
 		}
 	}
-}
+}*/
 void UI::Control::Slider::InsertDrawingEntryRelay()
 {
 	if (!SliderObject.Is() && ControlManager != NULL)
@@ -168,7 +247,24 @@ void UI::Control::Slider::InsertDrawingEntryRelay()
 		SliderObject.Create();
 		SliderObject.Color() = ColorF4(0.5f, 0.5f, 0.5f);
 		SliderObject.Layer() = Layer - 0.01f;
-		SliderChanged = true;
+		//SliderChanged = true;
+	if (SliderObject.Is())
+		{
+			VectorF2 slider_size_half = NubSize / 2.0f;
+			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
+			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+
+			VectorF2 slider_normal = Value;
+			slider_normal -= ValueMin;
+			slider_normal /= (ValueMax - ValueMin);
+
+			VectorF2 slider_value = slider_normal;
+			slider_value *= (slider_max - slider_min);
+			slider_value += slider_min;
+
+			SliderObject.Box().Min = slider_value - slider_size_half;
+			SliderObject.Box().Max = slider_value + slider_size_half;
+		}
 	}
 	if (!TextObject.Is() && TextManager != NULL)
 	{
@@ -190,11 +286,29 @@ void UI::Control::Slider::RemoveDrawingEntryRelay()
 }
 void UI::Control::Slider::UpdateBoxRelay()
 {
-	SliderChanged = true;
+	//SliderChanged = true;
+	if (SliderObject.Is())
+		{
+			VectorF2 slider_size_half = NubSize / 2.0f;
+			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
+			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+
+			VectorF2 slider_normal = Value;
+			slider_normal -= ValueMin;
+			slider_normal /= (ValueMax - ValueMin);
+
+			VectorF2 slider_value = slider_normal;
+			slider_value *= (slider_max - slider_min);
+			slider_value += slider_min;
+
+			SliderObject.Box().Min = slider_value - slider_size_half;
+			SliderObject.Box().Max = slider_value + slider_size_half;
+		}
 	if (TextObject.Is())
 	{
 		CalcCharacterCount();
-		TextChanged = true;
+		//TextChanged = true;
+		PutCharactersEntrys();
 	}
 }
 

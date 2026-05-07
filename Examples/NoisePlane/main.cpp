@@ -1074,7 +1074,7 @@ void Draw()
 		InventoryPolyHedraManager.MakeCurrent();
 		ControlManager.UpdateSize(window.Size);
 		ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
-		ControlManager.Window.UpdateEntrys();
+//		ControlManager.Window.UpdateEntrys();
 		ControlManager.Draw();
 		PolyHedraManager.MakeCurrent();
 	}
