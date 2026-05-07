@@ -449,7 +449,7 @@ void ViewRayUpdate()
 }
 void ViewRayDo()
 {
-	if (PauseMenu.Interactible() || OptionsMenu.Interactible() || InventoryUI.Interactible()) { return; }
+	if (PauseMenu.IsInteractible() || OptionsMenu.IsInteractible() || InventoryUI.IsInteractible()) { return; }
 	// check if any Control is being hovered
 	// cast Ray at mouse
 

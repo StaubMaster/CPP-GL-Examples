@@ -49,6 +49,25 @@ the delayed stuff is assigning, which is the fastest part
 if anything, delay the calculating ?
 */
 
+/*
+change in Enabled
+	changes this
+
+change in Visibility
+	changes this
+	changes Children
+
+change in Transparency
+	change this
+
+change in Color
+	changes this
+
+change in Box
+	changes this
+	changes children
+*/
+
 namespace UI
 {
 namespace Text { class Manager; };
@@ -81,7 +100,7 @@ class Base
 	protected:
 	bool	_Visible;
 	public:
-	bool	IsVisible() const;
+	bool	IsThisVisible() const;
 	void	Show();
 	void	Hide();
 
@@ -94,8 +113,9 @@ class Base
 	void	MakeOpaque();
 
 	public:
-	bool	Drawable() const; // rename to Displayed
-	bool	Interactible() const;
+	bool	IsVisible() const;
+	bool	IsDrawable() const;
+	bool	IsInteractible() const;
 
 	public:
 	bool			Deletable;		//should be deleted when Parent is deleted

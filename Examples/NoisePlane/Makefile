@@ -50,7 +50,7 @@ FILES := \
 	Telemetry/Time.cpp \
 	Telemetry/StopWatch.cpp \
 \
-	main.cpp \
+	main_.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .

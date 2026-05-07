@@ -20,7 +20,7 @@ void UI::Control::Base::MakeDisabled()
 	//UpdateDrawable();
 }
 
-bool UI::Control::Base::IsVisible() const
+bool UI::Control::Base::IsThisVisible() const
 {
 	return _Visible;
 }
@@ -56,24 +56,36 @@ void UI::Control::Base::MakeOpaque()
 	UpdateDrawable();
 }
 
-// this loops over all Parents.
-// cant imagine there being more then 10 Layers for the UI
-// and it only does a simple check
-// so this should be fine
-bool UI::Control::Base::Drawable() const
+// Opaque also effects if it should be Drawable
+// have another function to check if Parent want Child to be drawn ?
+// should IsVisible() check Parents ?
+// what if I want to Check the Visibility of just this
+// IsThisVisible()
+// check if I want to Show a Child and Parent is not Visible ?
+// make Parent Visible as well ?
+// ShowThis() and HideThis() to only effect this one ?
+// Show() and Hide() call UpdateDrawable()
+// I dont want to do that when looping over Parents
+// delay ?
+
+bool UI::Control::Base::IsVisible() const
 {
 	if (Parent != nullptr)
 	{
-		return _Visible && (Parent -> Drawable());
+		return _Visible && (Parent -> IsVisible());
 	}
 	else
 	{
 		return _Visible;
 	}
 }
-bool UI::Control::Base::Interactible() const
+bool UI::Control::Base::IsDrawable() const
 {
-	return _Enabled && Drawable();
+	return _Opaque && IsVisible();
+}
+bool UI::Control::Base::IsInteractible() const
+{
+	return _Enabled && IsDrawable();
 }
 
 
@@ -187,12 +199,12 @@ void UI::Control::Base::ChangeManager(UI::Text::Manager * manager)
 
 void UI::Control::Base::UpdateDrawable()
 {
-	if (Drawable() && _Opaque)
+	if (IsDrawable())
 	{ InsertDrawingEntry(); }
 	else
 	{ RemoveDrawingEntry(); }
 
-	if (Drawable())
+	if (IsVisible())
 	{ UpdateBox(); }
 
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -207,9 +219,12 @@ void UI::Control::Base::InsertDrawingEntry()
 		ControlObject.Create();
 		ControlObject.Layer() = Layer;
 		ControlObject.Box() = DisplayBox;
-		//AnchorBoxChanged = true;
+		ControlObject.Color() = ColorDefault;
 
-		//ColorChanged = true;
+		//if (ControlManager -> Hovering != this)
+		//{ ControlObject.Color() = ColorDefault; }
+		//else
+		//{ ControlObject.Color() = ColorHover; }
 	}
 	InsertDrawingEntryRelay();
 }
@@ -217,6 +232,10 @@ void UI::Control::Base::RemoveDrawingEntry()
 {
 	if (ControlObject.Is() || ControlManager == nullptr)
 	{
+		if (ControlObject.Is())
+		{
+			ControlObject.Hide(); // should Check if it Exists ?
+		}
 		ControlObject.Delete();
 	}
 	RemoveDrawingEntryRelay();
@@ -226,22 +245,15 @@ void UI::Control::Base::RemoveDrawingEntry()
 
 void UI::Control::Base::UpdateBox()
 {
-	if (Parent != nullptr)
+	if (Parent != nullptr && IsVisible())
 	{
 		DisplayBox = Anchor.Calculate(Parent -> ContainerBox);
 		ContainerBox.Min = DisplayBox.Min + AnchorBoarder.Min + AnchorPadding.Min;
 		ContainerBox.Max = DisplayBox.Max - AnchorBoarder.Max - AnchorPadding.Max;
-		//AnchorBox = Anchor.Calculate(Parent -> AnchorBox);
-		if (ControlObject.Is())
+		if (ControlObject.Is() && IsDrawable())
 		{
 			ControlObject.Box() = DisplayBox;
-			// dont check Hovering, just assign DefaultColor
-			if (ControlManager -> Hovering != this)
-			{ ControlObject.Color() = ColorDefault; }
-			else
-			{ ControlObject.Color() = ColorHover; }
 		}
-		//AnchorBoxChanged = true;
 	}
 	UpdateBoxRelay();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -256,7 +268,6 @@ UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
 {
 	if (!_Visible) { return nullptr; }
 	if (!_Enabled) { return nullptr; }
-	//if (AnchorBox.Intersekt(mouse))
 	if (DisplayBox.Intersekt(mouse))
 	{
 		// check ContainerBox before checking children ?
@@ -276,28 +287,19 @@ UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
 	return nullptr;
 }
 
-// dont check Hovering. just assign Color
 void UI::Control::Base::HoverEnter()
 {
-//	ColorChanged = true;
-	if (ControlObject.Is())
+	if (IsEnabled() && ControlObject.Is())
 	{
-		if (ControlManager -> Hovering != this)
-		{ ControlObject.Color() = ColorDefault; }
-		else
-		{ ControlObject.Color() = ColorHover; }
+		ControlObject.Color() = ColorHover;
 	}
 	RelayHover(1);
 }
 void UI::Control::Base::HoverLeave()
 {
-//	ColorChanged = true;
-	if (ControlObject.Is())
+	if (IsEnabled() && ControlObject.Is())
 	{
-		if (ControlManager -> Hovering != this)
-		{ ControlObject.Color() = ColorDefault; }
-		else
-		{ ControlObject.Color() = ColorHover; }
+		ControlObject.Color() = ColorDefault;
 	}
 	RelayHover(0);
 }

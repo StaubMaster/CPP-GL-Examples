@@ -101,7 +101,7 @@ void UI::Control::Slider::SetValueY(float val)
 
 void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 {
-	if (!Interactible()) { return; }
+	if (!IsInteractible()) { return; }
 
 	VectorF2 slider_size_half = NubSize / 2.0f;
 	VectorF2 slider_pos_min = DisplayBox.Min + slider_size_half;
