@@ -45,7 +45,7 @@ struct VoxelHit
 
 # include "WaitDoTime.hpp"
 # include "ContainerLock.hpp"
-# include "ChunkArray3D.hpp"
+# include "Array3D.hpp"
 
 struct ChunkManager
 {
@@ -54,12 +54,17 @@ struct ChunkManager
 
 
 
-	ChunkArray3D	Chunks;
+	Array3D<Chunk*>	Chunks;
 //	BoxI3			ChunksBox;
+	VectorI3		Center;
+	VectorI3		Corner;
 
-	void	UpdateChunksArray();
-	void	UpdateChunksArrayGenerate(const Perlin2D & noise2, const Perlin3D & noise3);
-	void	UpdateChunksArrayDraw();
+	Chunk *		FindLockOrNull(VectorI3 idx);
+	Chunk *		FindTryLockOrNull(VectorI3 idx);
+
+	VectorI3	absolute(VectorU3 u) const;
+	VectorU3	relative(VectorI3 i) const;
+
 	void	ChangeChunksArraySize(unsigned int size);
 
 	void	ChangeCenterLoopX(VectorU3 u, VectorI3 diff);

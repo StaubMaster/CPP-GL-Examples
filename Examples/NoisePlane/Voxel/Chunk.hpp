@@ -12,6 +12,7 @@
 
 # include "Voxel.hpp"
 # include "VoxelGraphicsData.hpp"
+# include "ChunkGraphicsData.hpp"
 
 # include "Graphics/Buffer.hpp"
 # include "Graphics/Main/Data.hpp"

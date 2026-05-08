@@ -1,11 +1,9 @@
-#ifndef  VOXEL_INDEX_HPP
-# define VOXEL_INDEX_HPP
+#ifndef  CHUNK_VOXEL_INDEX_HPP
+# define CHUNK_VOXEL_INDEX_HPP
 
 # include "ValueType/VectorI3.hpp"
 # include "ValueType/VectorU3.hpp"
 
-// ChunkVoxelIndex
-// ChunkVoxelPointer
 struct ChunkVoxelIndex
 {
 	VectorI3	Chunk;

@@ -511,7 +511,7 @@ void ViewRayDo()
 			ChunkVoxelIndex idx(ViewHit.Index);
 			//ChunkManager.ClearVoxel(hit.Index, voxel);
 //			std::cout << "main:" << __LINE__ << '\n';
-			Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
+			Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
 //			std::cout << "main:" << __LINE__ << '\n';
 			if (chunk != nullptr)
 			{
@@ -538,7 +538,7 @@ void ViewRayDo()
 				{
 					Voxel voxel = item -> VoxelPallet -> ToVoxel(ViewHitAxis0, ViewHitAxis1);
 					ChunkVoxelIndex idx(ViewHit.Index);
-					Chunk * chunk = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
+					Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
 					if (chunk != nullptr)
 					{
 						chunk -> PlaceVoxel(idx.Voxel, voxel);
@@ -1228,7 +1228,7 @@ void FrameText(FrameTime frame_time)
 		ChunkVoxelIndex idx(view.Trans.Position.roundF());
 		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
 		//ChunkManager.ChunksInUse.lock();
-		Chunk * chunk_ptr = ChunkManager.Chunks.FindLockOrNull(idx.Chunk);
+		Chunk * chunk_ptr = ChunkManager.FindLockOrNull(idx.Chunk);
 		//if (idx.ChunkMan != 0xFFFFFFFF)
 		if (chunk_ptr != nullptr)
 		{
@@ -1387,6 +1387,7 @@ void FrameText(FrameTime frame_time)
 	{
 		text.TextPosition().X = DebugMenu.Anchor.X.GetMinSize();
 	}
+	text.AlignTopLeft();
 	text.Color() = ColorF4(1, 1, 1);
 	text.Bound().Min = Point2D();
 	text.Bound().Max = window.Size.Buffer.Full;

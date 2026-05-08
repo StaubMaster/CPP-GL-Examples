@@ -69,7 +69,7 @@ static void DisplayBoxEntityVoxels(unsigned int p, ::ChunkManager & manager, Box
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		ChunkVoxelIndex idx(i);
-		Chunk * chunk = manager.Chunks.FindLockOrNull(idx.Chunk);
+		Chunk * chunk = manager.FindLockOrNull(idx.Chunk);
 		if (chunk == nullptr) { continue; }
 		const Voxel * voxel = chunk -> FindVoxelOrNull(idx.Voxel);
 		if (voxel != nullptr && voxel -> Pallet != nullptr)
