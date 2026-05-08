@@ -1,0 +1,27 @@
+
+just realized that Buffers take a lot of space ?
+this is because of all the Attributes being stored ?
+
+Attributes are only needed for Initializing Attributes
+have a function that internally gathers Attributes
+then Initializing them, and then sets a Flag that they are set
+
+Attribute Locations depend on Shader ?
+store a single Attribute Location Pallet
+that gets stored in the Shader ?
+
+
+
+similar with Uniforms ?
+have a Uniform Name Pallet
+that is used to get the Uniform Locations
+the names arent needed after that
+
+for printing, use the Pallet
+otherwise there is a gl function to get Uniform Names
+
+also the Inheritance stuff takes a lot of space
+do I need that ?
+
+I dont need virtual Destructor, since I only use the Base for Pointers
+everything else is Type Sepcific ?

@@ -16,11 +16,11 @@
 
 # include "Graphics/Buffer.hpp"
 # include "Graphics/Main/Data.hpp"
-# include "ChunkNeighbours.hpp"
 
 # include "ValueType/VectorI3.hpp"
 # include "ValueType/VectorU3.hpp"
 
+# include "Array3D.hpp"
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Container/Array.hpp"
 
@@ -46,7 +46,7 @@ struct Perlin3D;
 // not Done:	dont draw Faces that point here
 // Empty:		do draw Faces that point here
 
-enum class GenerationState
+enum class GenerationState : unsigned char
 {
 	None,
 	Generated,
@@ -54,7 +54,7 @@ enum class GenerationState
 //	Done,
 };
 
-enum class BufferDataState // put into Buffer
+enum class BufferDataState : unsigned char // put into Buffer
 {
 	None,
 	Needed,
@@ -62,54 +62,71 @@ enum class BufferDataState // put into Buffer
 	Drawable,
 };
 
+// make this an Array3D ?
+struct ChunkManager;
 struct Chunk
 {
 	public:
 	const VectorI3		Index;
-	ChunkNeighbours		Neighbours;
-	private:
-	Voxel *				Data;
-	public:
-	::GenerationState	GenerationState;
+	ChunkManager &		Manager;
+
+
 
 	private:
-	std::mutex			Changing;
-	public:
-	void	lock();
-	void	unlock();
-	bool	try_lock();
+	Array3D<Voxel>		Voxels;
 
 	public:
-	bool	Done() const;
-
 	const Voxel &	operator[](VectorU3 udx) const;
-
 	const Voxel *	FindVoxelOrNull(VectorU3 udx) const;
+
+
 
 	public:
 	~Chunk();
-	Chunk(VectorI3 idx);
+	Chunk(VectorI3 idx, ChunkManager & manager);
 
 	Chunk() = delete;
 	Chunk(const Chunk & other) = delete;
 	Chunk & operator=(const Chunk & other) = delete;
 
+
+
+	private:
+	std::mutex	Changing;
+
+	public:
+	void		lock();
+	void		unlock();
+	bool		try_lock();
+
+
+
 	public:
 	bool	IsEmpty() const;
 	bool	IsNullOrEmpty() const;
+
 	private:
 	void	MakeEmpty();
 	void	MakeNull();
 
+
+
 	public:
+	bool	HitVoxel(VectorU3 udx) const;
 	bool	ClearVoxel(VectorU3 udx, Voxel & vox);
 	bool	PlaceVoxel(VectorU3 udx, Voxel & vox);
-	// ChangeVoxel ?
 
-	bool	Hit(VectorU3 udx) const;
 
+
+	public:
 	static float	Generation3D_Factor;
 	static float	Generation3D_Comparison;
+
+	public:
+	::GenerationState	GenerationState;
+
+	public:
+	bool	GenerationDone() const;
 
 	private:
 	// do these with Files
@@ -119,6 +136,7 @@ struct Chunk
 	void	GeneratePillars();
 	void	GeneratePerlin(const Perlin2D & noise);
 	void	GeneratePerlin(const Perlin3D & noise);
+
 	public:
 	void	Generate(const Perlin2D & noise2, const Perlin3D & noise3);
 
@@ -127,6 +145,12 @@ struct Chunk
 	VoxelGraphics::Buffer	Buffer;
 
 	bool	GraphicsExist; // Buffer is the only thing ?
+	// make this a Functin
+	// make it theck all the Graphics stuff ?
+	// why do I need this ?
+	// dont delete Object before all Graphics stuff has been deleted
+	// GraphicsAllExist(): if false, call GraphicsCreate ?
+	// GraphicsAnyExist(): if false, dont delete
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();

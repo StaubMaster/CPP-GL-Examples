@@ -28,7 +28,6 @@ FILES := \
 	Voxel/ChunkGraphicsData.cpp \
 	Voxel/ChunkVoxelIndex.cpp \
 	Voxel/Chunk.cpp \
-	Voxel/ChunkNeighbours.cpp \
 	Voxel/ChunkManager.cpp \
 	\
 	BoxEntity.cpp \

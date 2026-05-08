@@ -59,8 +59,8 @@ struct ChunkManager
 	VectorI3		Center;
 	VectorI3		Corner;
 
-	Chunk *		FindLockOrNull(VectorI3 idx);
-	Chunk *		FindTryLockOrNull(VectorI3 idx);
+	Chunk *			FindLockOrNull(VectorI3 idx);
+	Chunk *			FindTryLockOrNull(VectorI3 idx);
 
 	VectorI3	absolute(VectorU3 u) const;
 	VectorU3	relative(VectorI3 i) const;
@@ -130,13 +130,10 @@ struct ChunkManager
 	void	InsertAround(VectorF3 pos, unsigned int size);
 	void	RemoveAround(VectorF3 pos, unsigned int size);
 
-	void	FindNeighbours(unsigned int & idx);
-	void	NullNeighbours(unsigned int & idx);
-
-	void	FindNeighbours(Chunk & chunk);
-	void	NullNeighbours(Chunk & chunk);
-
 	void	UpdateChunksContainer();
+
+	const Chunk *	NeighbourLoopChunk(const Chunk & chunk, VectorU3 & udx, AxisRel axis) const;
+	void			NeighbourUpdateBufferMain(VectorI3 idx);
 
 
 

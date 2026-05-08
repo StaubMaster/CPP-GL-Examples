@@ -1,4 +1,6 @@
 #include "Chunk.hpp"
+#include "ChunkManager.hpp"
+
 #include "VoxelPallet.hpp"
 
 #include "Graphics/Inst/Data.hpp"
@@ -25,6 +27,45 @@
 
 #include <iostream>
 
+
+const Voxel &	Chunk::operator[](VectorU3 udx) const { return Voxels[udx]; }
+const Voxel *	Chunk::FindVoxelOrNull(VectorU3 udx) const
+{
+	if (!(GenerationDone())) { return nullptr; }
+	if (IsEmpty()) { return nullptr; }
+	return &Voxels[udx];
+}
+
+
+
+Chunk::~Chunk()
+{
+	//delete[] Data;
+	/*if (GraphicsExist)
+	{
+		Buffer.Delete();
+	}*/
+}
+Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
+	: Index(idx)
+	, Manager(manager)
+	, Voxels()
+	, Changing()
+	, GenerationState(GenerationState::None)
+	, Buffer()
+	, GraphicsExist(false)
+	, BufferNeedsInit(false)
+	, MainBufferState(BufferDataState::None)
+	, InstBufferNeedsData(false)
+{
+	Buffer.Main.Pos.Change(0);
+	Buffer.Main.Tex.Change(1);
+	Buffer.Main.Normal.Change(2);
+	Buffer.Inst.Pos.Change(3);
+}
+
+
+
 void Chunk::lock()
 {
 //	std::cout << "Chunk:" << this << ".lock()\n";
@@ -44,56 +85,16 @@ bool Chunk::try_lock()
 
 
 
-bool Chunk::Done() const { return GenerationState == GenerationState::Generated; }
-
-const Voxel &	Chunk::operator[](VectorU3 udx) const	{ return Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)]; }
-
-const Voxel * Chunk::FindVoxelOrNull(VectorU3 udx) const
-{
-	if (!(Done())) { return nullptr; }
-	if (IsEmpty()) { return nullptr; }
-	return &Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)];
-}
-
-
-
-Chunk::~Chunk()
-{
-	delete[] Data;
-	/*if (GraphicsExist)
-	{
-		Buffer.Delete();
-	}*/
-}
-Chunk::Chunk(VectorI3 idx)
-	: Index(idx)
-	, Data(nullptr)
-	, GenerationState(GenerationState::None)
-	, Changing()
-	, Buffer()
-	, GraphicsExist(false)
-	, BufferNeedsInit(false)
-	, MainBufferState(BufferDataState::None)
-	, InstBufferNeedsData(false)
-{
-	Buffer.Main.Pos.Change(0);
-	Buffer.Main.Tex.Change(1);
-	Buffer.Main.Normal.Change(2);
-	Buffer.Inst.Pos.Change(3);
-}
-
-
-
 bool Chunk::IsEmpty() const
 {
-	return (Data == nullptr);
+	return (Voxels.Count() == 0);
 }
 bool Chunk::IsNullOrEmpty() const
 {
 	if (IsEmpty()) { return true; }
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
-		if (Data[i].Pallet != nullptr)
+		if (Voxels[i].Pallet != nullptr)
 		{
 			return false;
 		}
@@ -104,32 +105,37 @@ void Chunk::MakeEmpty()
 {
 	if (!IsEmpty())
 	{
-		delete[] Data;
-		Data = nullptr;
-		Neighbours.UpdateBufferMain();
+		Voxels.Clear();
+		Manager.NeighbourUpdateBufferMain(Index);
 	}
 }
 void Chunk::MakeNull()
 {
 	if (IsEmpty())
 	{
-		Data = new Voxel[CHUNK_VALUES_PER_VOLM];
+		Voxels.ReSize(VectorU3(CHUNK_VALUES_PER_SIDE));
 	}
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
-		Data[i].Pallet = nullptr;
-		Data[i].Orientation = VoxelOrientation();
+		Voxels[i].Pallet = nullptr;
+		Voxels[i].Orientation = VoxelOrientation();
 	}
-	Neighbours.UpdateBufferMain();
+	Manager.NeighbourUpdateBufferMain(Index);
 }
 
+
+
+bool Chunk::HitVoxel(VectorU3 udx) const
+{
+	return (Voxels[udx].Pallet != nullptr);
+}
 bool Chunk::ClearVoxel(VectorU3 udx, Voxel & vox)
 {
-	if (!Done()) { return false; }
+	if (!GenerationDone()) { return false; }
 
 	if (IsEmpty()) { return false; }
 
-	Voxel & voxel = Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)];
+	Voxel & voxel = Voxels[udx];
 	if (voxel.Pallet == nullptr) { return false; }
 
 	vox = voxel;
@@ -137,28 +143,23 @@ bool Chunk::ClearVoxel(VectorU3 udx, Voxel & vox)
 
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 
-	Neighbours.UpdateBufferMain(); // only update effected
+	Manager.NeighbourUpdateBufferMain(Index);
 	return true;
 }
 bool Chunk::PlaceVoxel(VectorU3 udx, Voxel & vox)
 {
-	if (!Done()) { return false; }
+	if (!GenerationDone()) { return false; }
 
 	if (IsEmpty()) { MakeNull(); }
 
-	Voxel & voxel = Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)];
+	Voxel & voxel = Voxels[udx];
 	if (voxel.Pallet != nullptr) {return false; }
 
 	voxel = vox;
 	vox.Pallet = nullptr;
 
-	Neighbours.UpdateBufferMain(); // only update effected
+	Manager.NeighbourUpdateBufferMain(Index);
 	return true;
-}
-
-bool Chunk::Hit(VectorU3 udx) const
-{
-	return (Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, udx)].Pallet != nullptr);
 }
 
 
@@ -251,17 +252,17 @@ bool Chunk::Hit(VectorU3 udx) const
 float Chunk::Generation3D_Factor = 5.0f; // 32
 float Chunk::Generation3D_Comparison = 0.0f;
 
+bool Chunk::GenerationDone() const { return GenerationState == GenerationState::Generated; }
+
 /*
 Condition:
 Place: OrientationCube
 */
 void Chunk::GenerateGrid()
 {
-	Undex3D size3(CHUNK_VALUES_PER_SIDE);
-
 	VectorI3 chunk_pos = Index * CHUNK_VALUES_PER_SIDE;
 
-	UndexLoop3D loop3(Undex3D(), size3);
+	UndexLoop3D loop3(Undex3D(), Voxels.Size());
 	for (Undex3D u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
 	{
 		VectorI3 voxel_idx = chunk_pos + u;
@@ -270,10 +271,10 @@ void Chunk::GenerateGrid()
 		VectorF3 grid_pos = voxel_pos.round(256);
 		VectorF3 grid_rel = voxel_pos - grid_pos + VectorF3(0.5f);
 
-		if (grid_rel.length() < 4.0f) { Data[size3.Convert(u)].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
-		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { Data[size3.Convert(u)].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
-		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { Data[size3.Convert(u)].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
-		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { Data[size3.Convert(u)].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
+		if (grid_rel.length() < 4.0f) { Voxels[u].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
+		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { Voxels[u].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
+		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { Voxels[u].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
+		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { Voxels[u].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
 	}
 }
 /*
@@ -285,7 +286,7 @@ void Chunk::GeneratePlane()
 	if (Index.Y >= 0) { return; }
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
-		Data[i].Pallet = &VoxelPalletMap::All["ConcreteCube"];
+		Voxels[i].Pallet = &VoxelPalletMap::All["ConcreteCube"];
 		//Data[i].Orientation = VoxelOrientation();
 	}
 }
@@ -301,21 +302,19 @@ void Chunk::GeneratePillars()
 	//0123456789ABCDEF0123456789ABCDEF
 	//       #                #       
 
-	Undex3D size3(CHUNK_VALUES_PER_SIDE);
-
 	VectorI3 chunk_pos = Index * CHUNK_VALUES_PER_SIDE;
 
 	VoxelPallet & pallet0 = VoxelPalletMap::All["ConcreteCube"];
 	VoxelPallet & pallet1 = VoxelPalletMap::All["ConcreteCylinder"];
 
-	UndexLoop3D loop3(Undex3D(), size3);
+	UndexLoop3D loop3(Undex3D(), Voxels.Size());
 	for (Undex3D u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
 	{
 		if (u.Y == 0 || u.Y == 31)
-		{ Data[size3.Convert(u)].Pallet = &pallet0; }
+		{ Voxels[u].Pallet = &pallet0; }
 		//else if ((u.X == 7 || u.X == 24) && (u.Z == 7 || u.Z == 24))
 		else if ((u.X == 1 || u.X == 30) && (u.Z == 1 || u.Z == 30))
-		{ Data[size3.Convert(u)].Pallet = &pallet1; }
+		{ Voxels[u].Pallet = &pallet1; }
 	}
 }
 void Chunk::GeneratePerlin(const Perlin2D & noise)
@@ -330,8 +329,10 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		);
 
 		float val = 0.0f;
-		//val += noise.Calculate(p2 / 32.0f) * 8.0f;
-		val += noise.Calculate(p2 / 32.0f) * 32;
+		val += noise.Calculate(p2 / 256.0f) * 64;
+		//val += noise.Calculate(p2 / 128.0f) * 128;
+		//val += noise.Calculate(p2 / 64.0f) * 64;
+		//val += noise.Calculate(p2 / 32.0f) * 32;
 		//val += noise.Calculate(p2 / 16.0f) * 16;
 		//val += noise.Calculate(p2 / 8.0f) * 8;
 		//val += noise.Calculate(p2 / 4.0f) * 4;
@@ -344,26 +345,16 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, Undex3D(u.X, i, u.Y));
 			if (i > val_rel)
 			{
-				Data[voxel_u].Pallet = nullptr;
+				Voxels[voxel_u].Pallet = nullptr;
 			}
 			else
 			{
-				//Data[voxel_u].Pallet = &VoxelPallet::OrientationCube;
-				//Data[voxel_u].Pallet = &VoxelPallet::Grass;
+				Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Gray"];
 
-				if (val < -1.0f) { Data[voxel_u].Pallet = &VoxelPalletMap::All["Water"]; }
-				else if (val < +1.0f) { Data[voxel_u].Pallet = &VoxelPalletMap::All["Sand"]; }
-				else { Data[voxel_u].Pallet = &VoxelPalletMap::All["Grass"]; }
+				//if (val < -1.0f) { Data[voxel_u].Pallet = &VoxelPalletMap::All["Water"]; }
+				//else if (val < +1.0f) { Data[voxel_u].Pallet = &VoxelPalletMap::All["Sand"]; }
+				//else { Data[voxel_u].Pallet = &VoxelPalletMap::All["Grass"]; }
 			}
-			/*else if (val_rel - i < 1)
-			{
-				//Data[voxel_u].Pallet = &VoxelPallet::Grass;
-				Data[voxel_u].Pallet = &VoxelPallet::ConcreteCube;
-			}
-			else
-			{
-				Data[voxel_u].Pallet = &VoxelPallet::Gray;
-			}*/
 		}
 	}
 }
@@ -384,15 +375,15 @@ void Chunk::GeneratePerlin(const Perlin3D & noise)
 		val += noise.Calculate(p / Generation3D_Factor) / Generation3D_Factor;
 
 		if (val > Generation3D_Comparison)
-		{ Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Pallet = nullptr; }
+		{ Voxels[u].Pallet = nullptr; }
 		else
-		{ Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Pallet = &VoxelPalletMap::All["Gray"]; }
+		{ Voxels[u].Pallet = &VoxelPalletMap::All["Gray"]; }
 
 		/*if (val > 0.1f)
 		{
-			if (Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Pallet != nullptr)
+			if (Voxels[u].Pallet != nullptr)
 			{
-				Data[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u)].Pallet = nullptr;
+				Voxels[u].Pallet = nullptr;
 			}
 		}*/
 	}
@@ -440,7 +431,7 @@ void Chunk::GraphicsCreate()
 
 	BufferNeedsInit = true;
 
-	if (Done())
+	if (GenerationDone())
 	{
 		MainBufferState = BufferDataState::Needed;
 	}
@@ -459,9 +450,9 @@ void Chunk::GraphicsDelete()
 
 bool Chunk::Visible(VectorU3 udx, AxisRel axis) const
 {
-	const Chunk * chunk = Neighbours.Loop(axis, udx);
+	const Chunk * chunk = Manager.NeighbourLoopChunk(*this, udx, axis);
 	if (chunk == nullptr) { return false; }
-	if (!chunk -> Done()) { return false; }
+	if (!chunk -> GenerationDone()) { return false; }
 	if (chunk -> IsEmpty()) { return true; }
 	const Voxel & voxel = (*chunk)[udx];
 	return voxel.Visible(axis);
@@ -471,7 +462,7 @@ void Chunk::GraphicsUpdateMainData()
 {
 	if (MainBufferState != BufferDataState::Needed) { return; }
 
-	if (!Done()) { return; }
+	if (!GenerationDone()) { return; }
 
 	MainBufferData.Make(*this);
 
@@ -518,7 +509,7 @@ void Chunk::UpdateInstBuffer()
 void Chunk::Draw()
 {
 	if (!GraphicsExist) { return; }
-	if (!Done()) { return; }
+	if (!GenerationDone()) { return; }
 	if (BufferNeedsInit)
 	{
 		Buffer.Inst.Init();

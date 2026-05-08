@@ -614,15 +614,11 @@ void		AuxThread0Func()
 {
 	while (ThreadDelay) { }
 	StopWatch sw;
-	unsigned int NullNeighboursIndex = 0;
-	unsigned int FindNeighboursIndex = 0;
 	while (!ThreadTerminate)
 	{
 		sw.ReStart();
 		if (!DontRemove) { ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange); }
 		if (!DontInsert) { ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange); }
-		if (!DontRemove) { ChunkManager.NullNeighbours(NullNeighboursIndex); }
-		if (!DontInsert) { ChunkManager.FindNeighbours(FindNeighboursIndex); }
 		ChunkManager.UpdateChunksContainer();
 		sw.Stop();
 		AuxThread0Time.NewValue(sw.ElapsedTime());
@@ -1244,7 +1240,6 @@ void FrameText(FrameTime frame_time)
 			ss << '\n';
 
 			ss << "GenerationState: ";
-			if (chunk.Done()) { ss << "Done"; } else
 			{
 				switch (chunk.GenerationState)
 				{
@@ -1252,6 +1247,7 @@ void FrameText(FrameTime frame_time)
 					case GenerationState::Generated: ss << "Generated"; break;
 				};
 			}
+			if (chunk.GenerationDone()) { ss << "(Done)"; }
 			ss << '\n';
 
 			ss << "MainBufferState: ";
@@ -1316,7 +1312,7 @@ void FrameText(FrameTime frame_time)
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			chunks_t++;
 			Chunk & chunk = *ChunkManager.Chunks[i];
-			if (chunk.Done())
+			if (chunk.GenerationDone())
 			{
 				if (!chunk.IsEmpty())
 				{ chunks_f++; }
@@ -1334,6 +1330,15 @@ void FrameText(FrameTime frame_time)
 		ss << 'F' << chunks_f << ']';
 		ss << '\n';
 
+		ss << "ChunkSize\n";
+		ss << "sizeof(Chunk)" << ' ' << sizeof(Chunk) << '\n';
+		ss << "sizeof(VectorI3)" << ' ' << sizeof(VectorI3) << '\n';
+		ss << "sizeof(VectorU3)" << ' ' << sizeof(VectorU3) << '\n';
+		ss << "sizeof(Array3D<Voxel>)" << ' ' << sizeof(Array3D<Voxel>) << '\n';
+		ss << "sizeof(Chunk*)" << ' ' << sizeof(Chunk*) << '\n';
+		ss << "sizeof(VoxelGraphics::Buffer)" << ' ' << sizeof(VoxelGraphics::Buffer) << '\n';
+		ss << "sizeof(ChunkGraphicsData)" << ' ' << sizeof(ChunkGraphicsData) << '\n';
+		ss << "sizeof(std::mutex)" << ' ' << sizeof(std::mutex) << '\n';
 		ss << "Chunks:" << Memory1000ToString(sizeof(Chunk));
 		ss << " * " << Seperated1000(chunks_t);
 		ss << " = " << Memory1000ToString(chunks_t * sizeof(Chunk));
