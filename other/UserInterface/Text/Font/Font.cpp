@@ -11,8 +11,7 @@ UI::Text::Font::Character::Character() :
 
 UI::Text::Font::Font() :
 	AtlasTexture()
-{
-}
+{ }
 UI::Text::Font::~Font()
 {
 	AtlasTexture.Dispose();

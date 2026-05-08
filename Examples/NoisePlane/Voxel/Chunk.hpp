@@ -130,10 +130,11 @@ struct Chunk
 
 	private:
 	// do these with Files
-	//void	GenerateOrientation();
+//	void	GenerateOrientation();
 	void	GenerateGrid();
 	void	GeneratePlane();
 	void	GeneratePillars();
+	void	GeneratePillars(const Perlin2D & noise);
 	void	GeneratePerlin(const Perlin2D & noise);
 	void	GeneratePerlin(const Perlin3D & noise);
 

@@ -1,0 +1,28 @@
+
+PNG Loader
+
+Memory Leak in PNG Loader
+==92563==    at 0x484A2F3: operator new[](unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==92563==    by 0x1B1D69: ByteBlock::ByteBlock(unsigned long) (ByteBlock.cpp:31)
+==92563==    by 0x1B1FC0: ByteBlock::Bind(unsigned long, unsigned char*) (ByteBlock.cpp:82)
+==92563==    by 0x1B1CA2: ByteBlock::BlockAt(unsigned long, unsigned long) const (ByteBlock.cpp:16)
+==92563==    by 0x1BE0EF: DEFLATE::decode_Huffman(BitStreamGetter&, HuffmanTree&, HuffmanTree&, ByteStreamQueue&) (DEFLATE.cpp:101)
+==92563==    by 0x1BE939: DEFLATE::Block_dynamic(BitStreamGetter&, ByteStreamQueue&) (DEFLATE.cpp:212)
+==92563==    by 0x1BEA4A: DEFLATE::Blocks(BitStreamGetter&, ByteStreamQueue&) (DEFLATE.cpp:252)
+==92563==    by 0x1BDA25: ZLIB::decompress(ByteStreamGetter&, ByteStreamQueue&) (ZLIB.cpp:48)
+==92563==    by 0x1B3E44: PNG::Load(FileInfo const&, bool) (PNG.cpp:73)
+==92563==    by 0x1ABF91: FileInfo::LoadImage(bool) const (FileInfo.cpp:183)
+==92563==    by 0x16A9FD: UI::Text::Font::ParsingData::Parse_Image(TextCommand const&) (Parsing.cpp:53)
+==92563==    by 0x16A770: UI::Text::Font::ParsingData::Parse(TextCommand const&) (Parsing.cpp:33)
+0.5 MB for every Context change
+probably from Loading Font
+
+
+
+be able to turn off Unkown Type Warnings
+load static Huffman Tree (I finally found a File that has that)
+there is also direct Data
+	try to find a File that has that
+	probably a 2x2 or 1x1 Image
+
+

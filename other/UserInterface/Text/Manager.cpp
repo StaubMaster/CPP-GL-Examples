@@ -31,6 +31,10 @@ void UI::Text::Manager::MakeCurrent() { UI::Text::Manager::CurrentPointer = this
 UI::Text::Manager::~Manager()
 {
 	std::cout << "  ----  " << "UI::Text::Manager::~Manager()" << '\n';
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		delete ObjectDatas[i];
+	}
 	delete TextFont;
 }
 UI::Text::Manager::Manager()

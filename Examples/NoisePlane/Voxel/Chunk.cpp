@@ -317,15 +317,26 @@ void Chunk::GeneratePillars()
 		{ Voxels[u].Pallet = &pallet1; }
 	}
 }
+void Chunk::GeneratePillars(const Perlin2D & noise)
+{
+	(void)noise;
+	for (VectorU3 u(15, 0, 15); u.Y < CHUNK_VALUES_PER_SIDE; u.Y++)
+	{
+		if (Voxels[u].Pallet == nullptr)
+		{
+			Voxels[u].Pallet = &VoxelPalletMap::All["OrientationCube"];
+		}
+	}
+}
 void Chunk::GeneratePerlin(const Perlin2D & noise)
 {
-	VectorF3 p3 = Index * CHUNK_VALUES_PER_SIDE;
+	VectorF3 Offset = Index * CHUNK_VALUES_PER_SIDE;
 	UndexLoop2D loop(Undex2D(), Undex2D(CHUNK_VALUES_PER_SIDE));
 	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
 		VectorF2 p2(
-			p3.X + u.X,
-			p3.Z + u.Y
+			Offset.X + u.X,
+			Offset.Z + u.Y
 		);
 
 		float val = 0.0f;
@@ -339,7 +350,7 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		//val += noise.Calculate(p2 / 2.0f) * 2;
 		//val += noise.Calculate(p2 / 1.0f) * 1;
 
-		float val_rel = val - p3.Y;
+		float val_rel = val - Offset.Y;
 		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
 		{
 			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, Undex3D(u.X, i, u.Y));
@@ -393,19 +404,18 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 {
 	if (GenerationState != GenerationState::None) { return; }
 
-//	Changing.lock();
-//	if (Delete) { Changing.unlock(); return; }
+	(void)noise2;
+	(void)noise3;
 
 	MakeNull();
 
 //	GenerateGrid();
 //	GeneratePlane();
 //	GeneratePillars();
-
-	(void)noise2;
-	(void)noise3;
 	GeneratePerlin(noise2);
 //	GeneratePerlin(noise3);
+
+	GeneratePillars(noise2);
 
 	GenerationState = GenerationState::Generated;
 
@@ -415,8 +425,6 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 	{
 		MainBufferState = BufferDataState::Needed;
 	}
-
-//	Changing.unlock();
 }
 
 
