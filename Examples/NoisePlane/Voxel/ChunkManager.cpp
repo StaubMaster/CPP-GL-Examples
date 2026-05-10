@@ -14,10 +14,8 @@
 
 
 
-#include <iomanip>
-
 // Code
-#include "WaitDoTime.cpp"
+#include "Telemetry/WaitDoTime.cpp"
 #include "ContainerLock.cpp"
 
 #include "ValueType/LoopU3.hpp"
@@ -50,27 +48,27 @@ VectorU3 ChunkManager::relative(VectorI3 i) const { return i - Corner; }
 
 void ChunkManager::ChangeChunksArraySize(unsigned int size)
 {
-	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
+//	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 	ChunksLock.Changing0();
-	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
+//	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
 		Chunks[i] -> GraphicsDelete();
 		delete Chunks[i];
 	}
-	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
-	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
+//	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
+//	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 	Corner = Center - (int)size;
-	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
+//	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 	Chunks.ChangeSize(VectorU3((size * 2) + 1));
-	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
+//	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
 		Chunks[i] = nullptr;
 	}
-	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
+//	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 	ChunksLock.Changing1();
-	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
+//	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 }
 
 static VectorU3 ChunkSkipped;

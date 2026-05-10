@@ -30,6 +30,7 @@ FILES := \
 	Voxel/Chunk.cpp \
 	Voxel/ChunkManager.cpp \
 	\
+	ContainerLock.cpp \
 	BoxEntity.cpp \
 \
 	GridCast/GridCast3D.cpp \
@@ -49,6 +50,7 @@ FILES := \
 \
 	Telemetry/Time.cpp \
 	Telemetry/StopWatch.cpp \
+	Telemetry/WaitDoTime.cpp \
 \
 	main_.cpp \
 

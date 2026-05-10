@@ -254,6 +254,7 @@ ContextNoisePlane()
 	, TimeFPSAverage(64)
 	, FrameDuration(64)
 {
+	ContainerLock::ThreadName = "DrawThread";
 	PolyHedraManager.MakeCurrent();
 	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
@@ -612,6 +613,7 @@ std::thread				AuxThread0;
 ValueAverager<float>	AuxThread0Time;
 void		AuxThread0Func()
 {
+	ContainerLock::ThreadName = "AuxThread0";
 	while (ThreadDelay) { }
 	StopWatch sw;
 	while (!ThreadTerminate)
@@ -628,6 +630,7 @@ std::thread				AuxThread1;
 ValueAverager<float>	AuxThread1Time;
 void		AuxThread1Func()
 {
+	ContainerLock::ThreadName = "AuxThread1";
 	while (ThreadDelay) { }
 	StopWatch sw;
 	while (!ThreadTerminate)
@@ -707,7 +710,7 @@ void Make()
 		VoxelGeometryPallet::Slope.InitSlope();
 
 		VoxelPalletMap::All.Default(MediaDirectory);
-		VoxelPalletMap::All.MakePolyHedra();
+		//VoxelPalletMap::All.MakePolyHedra();
 	}
 
 	{
@@ -1024,6 +1027,7 @@ void Init() override
 		view.Depth.Color = window.DefaultColor;
 		view.Depth.Range.ChangeMin(0.5f);
 	}
+	VoxelPalletMap::All.MakePolyHedra();
 
 	MakeControls();
 
@@ -1524,7 +1528,6 @@ void FrameInput()
 }
 void Frame(FrameTime frame_time) override
 {
-//	std::cout << "Frame:" << __LINE__ << '\n';
 	FrameInput();
 
 	if (!OptionsMenu.IsVisible())

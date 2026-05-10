@@ -19,8 +19,9 @@ struct InventorySlot : public UI::Control::Base
 	~InventorySlot();
 	InventorySlot();
 
-	void	Show();
-	void	Hide();
+	void	InsertDrawingEntryRelay() override;
+	void	RemoveDrawingEntryRelay() override;
+	void	UpdateBoxRelay() override;
 
 	void	RelayClick(ClickArgs args) override;
 };

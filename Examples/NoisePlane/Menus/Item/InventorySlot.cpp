@@ -25,26 +25,23 @@ InventorySlot::InventorySlot()
 
 #include <iostream>
 #include "ValueType/_Show.hpp"
-void InventorySlot::Show()
+
+void InventorySlot::InsertDrawingEntryRelay()
 {
 	if (Item != nullptr && *Item != nullptr)
 	{
 		ItemVoxel * item = (ItemVoxel*)*Item;
 		if (item -> VoxelPallet != nullptr && item -> VoxelPallet -> PolyHedra != nullptr)
 		{
+			Object.Create(item -> VoxelPallet -> PolyHedra);
+
 			VectorF2 PixelSize(40, 40); // hardcoded in Shader
 			VectorF2 PixelPos = DisplayBox.Center();
 			VectorF2 size = WindowSize.Buffer.SizeFullToNormalRel(PixelSize);
 			VectorF2 pos = WindowSize.Buffer.PosFullToNormalRel(PixelPos);
 
-			std::cout << "Window: " << WindowSize.Buffer.Full << '\n';
-			std::cout << "PixelSize: " << PixelSize << '\n';
-			std::cout << "PixelPos: " << PixelPos << '\n';
-			std::cout << "size: " << size << '\n';
-			std::cout << "pos " << pos << '\n'; // removing this breaks PolyHedras ???
-			std::cout << '\n';
+			std::cout << pos << '\n';
 
-			Object.Create(item -> VoxelPallet -> PolyHedra);
 			Object.Trans().Position.X = (+pos.X / size.X);
 			Object.Trans().Position.Y = (-pos.Y / size.Y);
 			Object.Trans().Rotation.X1 = Angle::Degrees(30);
@@ -52,9 +49,24 @@ void InventorySlot::Show()
 		}
 	}
 }
-void InventorySlot::Hide()
+void InventorySlot::RemoveDrawingEntryRelay()
 {
 	Object.Delete();
+}
+void InventorySlot::UpdateBoxRelay()
+{
+	if (Object.Is())
+	{
+//		VectorF2 PixelSize(40, 40); // hardcoded in Shader
+//		VectorF2 PixelPos = DisplayBox.Center();
+//		VectorF2 size = WindowSize.Buffer.SizeFullToNormalRel(PixelSize);
+//		VectorF2 pos = WindowSize.Buffer.PosFullToNormalRel(PixelPos);
+//
+//		Object.Trans().Position.X = (+pos.X / size.X);
+//		Object.Trans().Position.Y = (-pos.Y / size.Y);
+//		Object.Trans().Rotation.X1 = Angle::Degrees(30);
+//		Object.Trans().Rotation.Y2 = Angle::Degrees(45);
+	}
 }
 
 

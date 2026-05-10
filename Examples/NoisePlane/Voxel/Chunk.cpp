@@ -402,9 +402,12 @@ void Chunk::GeneratePillars(const Perlin2D & noise)
 	for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
 		VectorU3 p = origin - offset + u;
-		if (Voxels[p].Pallet == nullptr)
+		if ((p < Voxels.Size()).All(true))
 		{
-			Voxels[p] = Tree[u];
+			if (Voxels[p].Pallet == nullptr)
+			{
+				Voxels[p] = Tree[u];
+			}
 		}
 	}
 }

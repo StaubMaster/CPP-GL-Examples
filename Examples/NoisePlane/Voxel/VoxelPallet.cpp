@@ -239,34 +239,40 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 #include "ChunkManager.hpp"
 void VoxelPalletMap::LoadTextures(ChunkManager & manager)
 {
-		manager.Texture.Bind();
-		Container::Binary<FileInfo> files;
-		for (unsigned int i = 0; i < VoxelPalletMap::All.Data.Count(); i++)
+	std::cout << "LoadTextures ....\n";
+	Container::Binary<FileInfo> files;
+	for (unsigned int i = 0; i < VoxelPalletMap::All.Data.Count(); i++)
+	{
+		for (unsigned int k = 0; k < 6; k++)
 		{
-			for (unsigned int k = 0; k < 6; k++)
+			unsigned int j = 0xFFFFFFFF;
+			for (unsigned int f = 0; f < files.Count(); f++)
 			{
-				unsigned int j = 0xFFFFFFFF;
-				for (unsigned int f = 0; f < files.Count(); f++)
+				if (files[f].Name() == (VoxelPalletMap::All.Data[i].Textures[k].File.Name()))
 				{
-					if (files[f].Name() == (VoxelPalletMap::All.Data[i].Textures[k].File.Name()))
-					{
-						j = f; break;
-					}
+					j = f;
+					break;
 				}
-				if (j == 0xFFFFFFFF)
-				{
-					j = files.Count();
-					files.Insert(VoxelPalletMap::All.Data[i].Textures[k].File);
-				}
-				VoxelPalletMap::All.Data[i].Textures[k].Index = j;
 			}
+			if (j == 0xFFFFFFFF)
+			{
+				j = files.Count();
+				files.Insert(VoxelPalletMap::All.Data[i].Textures[k].File);
+			}
+			VoxelPalletMap::All.Data[i].Textures[k].Index = j;
 		}
-		manager.Texture.Assign(VectorU2(32, 32), files);
+	}
+	std::cout << "Textures: " << files.Count() << '\n';
+	manager.Texture.Bind();
+	manager.Texture.Assign(VectorU2(32, 32), files);
+	std::cout << "LoadTextures done\n";
 }
 void VoxelPalletMap::MakePolyHedra()
 {
+	std::cout << "MakePolyHedra ....\n";
 	for (unsigned int i = 0; i < Data.Count(); i++)
 	{
 		Data[i].MakePolyHedra();
 	}
+	std::cout << "MakePolyHedra done\n";
 }

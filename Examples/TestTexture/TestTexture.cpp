@@ -62,16 +62,13 @@ void ContextTestTexture::Init()
 
 	Texture.Create();
 	{
-		Image img;
-		//img = MediaDirectory.File("Images/Voxel/Grass.png").LoadImage();
-		//img = MediaDirectory.File("Images/Voxel/Sand.png").LoadImage();
-		img = FileInfo("Image.png").LoadImage();
-		if (img.Empty())
-		{
-			img = Image::Missing(VectorU2(2, 2));
-		}
-		Texture.Assign(img);
-		img.Dispose();
+		Container::Binary<FileInfo> files;
+		files.Insert(MediaDirectory.File("Images/Voxel/Grass.png"));
+		files.Insert(MediaDirectory.File("Images/Voxel/Sand.png"));
+		files.Insert(FileInfo("Image.png"));
+
+		Texture.Bind();
+		Texture.Assign(VectorU2(32, 32), files);
 	}
 }
 void ContextTestTexture::Free()
