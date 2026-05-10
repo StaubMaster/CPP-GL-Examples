@@ -13,20 +13,20 @@ namespace Control
 
 struct Main_Data
 {
-	Point2D	Pos;
+	VectorF2	Pos;
 
 	Main_Data();
-	Main_Data(Point2D pos);
+	Main_Data(VectorF2 pos);
 };
 struct Inst_Data
 {
-	Point2D	Min;
-	Point2D	Max;
+	VectorF2	Min;
+	VectorF2	Max;
 	float	Layer;
 	ColorF4	Col;
 
 	Inst_Data();
-	Inst_Data(Point2D min, Point2D max, float layer, ColorF4 col);
+	Inst_Data(VectorF2 min, VectorF2 max, float layer, ColorF4 col);
 };
 
 };

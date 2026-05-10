@@ -3,9 +3,7 @@
 
 # include "Anchor1D.hpp"
 
-//struct AxisBox2D;
 struct BoxF2;
-typedef BoxF2 AxisBox2D;
 
 struct Anchor2D
 {
@@ -14,7 +12,7 @@ struct Anchor2D
 
 	Anchor2D(Anchor1D x, Anchor1D y);
 
-	AxisBox2D Calculate(AxisBox2D Parent);
+	BoxF2 Calculate(BoxF2 Parent);
 };
 
 #endif

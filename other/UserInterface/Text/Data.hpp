@@ -11,22 +11,22 @@ namespace Text
 
 struct Main_Data
 {
-	Point2D	Pos;
+	VectorF2	Pos;
 
 	Main_Data();
-	Main_Data(Point2D pos);
+	Main_Data(VectorF2 pos);
 };
 
 struct Inst_Data
 {
-	Point2D		Pos;
-	AxisBox2D	Pallet;
-	AxisBox2D	Bound;
+	VectorF2		Pos;
+	BoxF2	Pallet;
+	BoxF2	Bound;
 	ColorF4		Color;
 
 	Inst_Data();
-	Inst_Data(Point2D pos, AxisBox2D pallet);
-	Inst_Data(Point2D pos, AxisBox2D pallet, ColorF4 color);
+	Inst_Data(VectorF2 pos, BoxF2 pallet);
+	Inst_Data(VectorF2 pos, BoxF2 pallet, ColorF4 color);
 };
 
 };

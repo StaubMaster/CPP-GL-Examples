@@ -7,7 +7,7 @@ ChainNeighbours3D::ChainNeighbours3D() :
 	Here(),
 	Next(nullptr)
 { }
-ChainNeighbours3D::ChainNeighbours3D(Point3D * prev, Point3D & here, Point3D * next) :
+ChainNeighbours3D::ChainNeighbours3D(VectorF3 * prev, VectorF3 & here, VectorF3 * next) :
 	Prev(prev),
 	Here(here),
 	Next(next)
@@ -15,15 +15,15 @@ ChainNeighbours3D::ChainNeighbours3D(Point3D * prev, Point3D & here, Point3D * n
 
 
 
-ChainNeighbours3D ChainNeighbours3D::sHere(Point3D & prev, Point3D & here, Point3D & next)
+ChainNeighbours3D ChainNeighbours3D::sHere(VectorF3 & prev, VectorF3 & here, VectorF3 & next)
 {
 	return ChainNeighbours3D(&prev, here, &next);
 }
-ChainNeighbours3D ChainNeighbours3D::sPrev(Point3D & prev, Point3D & here)
+ChainNeighbours3D ChainNeighbours3D::sPrev(VectorF3 & prev, VectorF3 & here)
 {
 	return ChainNeighbours3D(&prev, here, nullptr);
 }
-ChainNeighbours3D ChainNeighbours3D::sNext(Point3D & here, Point3D & next)
+ChainNeighbours3D ChainNeighbours3D::sNext(VectorF3 & here, VectorF3 & next)
 {
 	return ChainNeighbours3D(nullptr, here, &next);
 }

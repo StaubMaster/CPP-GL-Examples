@@ -1,7 +1,7 @@
 #ifndef  PHYSICS_2D_EXTRINSIC_DATA_HPP
 # define PHYSICS_2D_EXTRINSIC_DATA_HPP
 
-# include "ValueType/Point2D.hpp"
+# include "ValueType/VectorF2.hpp"
 # include "ValueType/Angle.hpp"
 # include "ValueType/Trans2D.hpp"
 
@@ -24,7 +24,7 @@ struct ExtrinsicData
 
 	void Zero();
 
-	void Change(Point2D change);
+	void Change(VectorF2 change);
 	void Change(Angle change);
 
 	void Update(float timeDelta);

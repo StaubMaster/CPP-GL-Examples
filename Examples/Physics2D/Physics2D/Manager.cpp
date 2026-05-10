@@ -11,7 +11,7 @@
 
 
 #include "Arrow2D/Main/Data.hpp"
-#include "ValueType/AxisBox2D.hpp"
+#include "ValueType/BoxF2.hpp"
 
 
 
@@ -46,7 +46,7 @@ void Physics2D::Manager::GraphicsUpdate()
 void Physics2D::Manager::UpdateGravity(float timeDelta)
 {
 	(void)timeDelta;
-	//Point2D Gravity_Accel = Gravity * timeDelta;
+	//VectorF2 Gravity_Accel = Gravity * timeDelta;
 	//float GravityToY_Accel = GravityToY * timeDelta;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
@@ -126,7 +126,7 @@ void Physics2D::Manager::Update(float timeDelta)
 
 
 
-Undex Physics2D::Manager::FindObjectIndex(Point2D p) const
+Undex Physics2D::Manager::FindObjectIndex(VectorF2 p) const
 {
 	for (Undex u; u.Value < Objects.Count(); u++)
 	{

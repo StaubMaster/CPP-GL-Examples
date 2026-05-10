@@ -1,8 +1,8 @@
 #include "Perlin3D.hpp"
 #include "Random.hpp"
 
-#include "ValueType/VectorI3.hpp"
-#include "ValueType/UndexLoop3D.hpp"
+#include "ValueType/Vector/I3.hpp"
+#include "ValueType/LoopU3.hpp"
 #include "ValueType/EulerAngle3D.hpp"
 
 

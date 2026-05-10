@@ -6,7 +6,7 @@ typedef struct
 	float X;
 	float Y;
 	float Z;
-} Point3D;
+} VectorF3;
 
 typedef struct
 {
@@ -18,14 +18,14 @@ typedef struct
 
 typedef struct
 {
-	Point3D Pos;
+	VectorF3 Pos;
 	Angle3D Rot;
 } Trans3D;
 
 typedef struct
 {
-	Point3D Pos;
-	Point3D Dir;
+	VectorF3 Pos;
+	VectorF3 Dir;
 } Ray3D;
 
 typedef struct
@@ -46,7 +46,7 @@ void rot(float * pls, float * mns, float fsin, float fcos)
 
 
 
-float Point3D_len2(Point3D p)
+float VectorF3_len2(VectorF3 p)
 {
 	float ret = 0;
 	ret = ret + (p.X * p.X);
@@ -54,38 +54,38 @@ float Point3D_len2(Point3D p)
 	ret = ret + (p.Z * p.Z);
 	return ret;
 }
-float Point3D_len(Point3D p)
+float VectorF3_len(VectorF3 p)
 {
-	return sqrt(Point3D_len2(p));
+	return sqrt(VectorF3_len2(p));
 }
 
-Point3D Point3D_add(Point3D p0, Point3D p1)
+VectorF3 VectorF3_add(VectorF3 p0, VectorF3 p1)
 {
-	Point3D ret;
+	VectorF3 ret;
 	ret.X = p0.X + p1.X;
 	ret.Y = p0.Y + p1.Y;
 	ret.Z = p0.Z + p1.Z;
 	return ret;
 }
-Point3D Point3D_sub(Point3D p0, Point3D p1)
+VectorF3 VectorF3_sub(VectorF3 p0, VectorF3 p1)
 {
-	Point3D ret;
+	VectorF3 ret;
 	ret.X = p0.X - p1.X;
 	ret.Y = p0.Y - p1.Y;
 	ret.Z = p0.Z - p1.Z;
 	return ret;
 }
 
-Point3D Point3D_mul_flt(Point3D p, float val)
+VectorF3 VectorF3_mul_flt(VectorF3 p, float val)
 {
-	Point3D ret;
+	VectorF3 ret;
 	ret.X = p.X * val;
 	ret.Y = p.Y * val;
 	ret.Z = p.Z * val;
 	return ret;
 }
 
-float Point3D_dot(Point3D p0, Point3D p1)
+float VectorF3_dot(VectorF3 p0, VectorF3 p1)
 {
 	float ret = 0;
 	ret = ret + (p0.X * p1.X);
@@ -261,7 +261,7 @@ kernel void Move(
 {
 	Physics3D phys = buffer[get_global_id(0)];
 
-	phys.Trans.Pos = Point3D_add(phys.Trans.Pos, phys.Vel.Pos);
+	phys.Trans.Pos = VectorF3_add(phys.Trans.Pos, phys.Vel.Pos);
 
 	buffer[get_global_id(0)] = phys;
 }
@@ -282,10 +282,10 @@ kernel void Keep(
 	if (phys.Trans.Pos.Z > +200) { phys.Vel.Pos.Z = -0.1; }
 
 	/*float vel_limit = 10.0;
-	float len = Point3D_len(phys.Vel.Pos);
+	float len = VectorF3_len(phys.Vel.Pos);
 	if (len > vel_limit)
 	{
-		phys.Vel.Pos = Point3D_mul_flt(phys.Vel.Pos, vel_limit / len);
+		phys.Vel.Pos = VectorF3_mul_flt(phys.Vel.Pos, vel_limit / len);
 	}*/
 
 	buffer[get_global_id(0)] = phys;
@@ -299,7 +299,7 @@ kernel void Look(
 {
 	Physics3D phys = buffer[get_global_id(0)];
 
-	float len = Point3D_len(phys.Vel.Pos);
+	float len = VectorF3_len(phys.Vel.Pos);
 
 	phys.Trans.Rot.X = atan2(phys.Vel.Pos.X, phys.Vel.Pos.Z);
 	phys.Trans.Rot.Y = atan2(phys.Vel.Pos.Y, len);
@@ -319,24 +319,24 @@ kernel void GravRay(
 {
 	Physics3D phys = buffer[get_global_id(0)];
 
-	Point3D diff = Point3D_sub(ray -> Pos, phys.Trans.Pos);
+	VectorF3 diff = VectorF3_sub(ray -> Pos, phys.Trans.Pos);
 
-	float dot = Point3D_dot(ray -> Dir, diff);
-	float sqr = Point3D_len2(ray -> Dir);
+	float dot = VectorF3_dot(ray -> Dir, diff);
+	float sqr = VectorF3_len2(ray -> Dir);
 	float t = -(dot / sqr);
-	Point3D p = Point3D_add(Point3D_mul_flt(ray -> Dir, t), ray -> Pos);
+	VectorF3 p = VectorF3_add(VectorF3_mul_flt(ray -> Dir, t), ray -> Pos);
 
-	diff = Point3D_sub(p, phys.Trans.Pos);
-	float dist2 = Point3D_len2(diff);
-	diff = Point3D_mul_flt(diff, 1.0f / sqrt(dist2));
+	diff = VectorF3_sub(p, phys.Trans.Pos);
+	float dist2 = VectorF3_len2(diff);
+	diff = VectorF3_mul_flt(diff, 1.0f / sqrt(dist2));
 
-	Point3D grav_vel = Point3D_mul_flt(diff, 0.01f);
+	VectorF3 grav_vel = VectorF3_mul_flt(diff, 0.01f);
 
 //	phys.Vel.Pos = grav_vel;
-	phys.Vel.Pos = Point3D_add(phys.Vel.Pos, grav_vel);
+	phys.Vel.Pos = VectorF3_add(phys.Vel.Pos, grav_vel);
 
-//	phys.Vel.Pos = Point3D_mul_flt(diff, 0.1f);
-//	phys.Vel.Pos = Point3D_mul_flt(ray -> Dir, 0.1f);
+//	phys.Vel.Pos = VectorF3_mul_flt(diff, 0.1f);
+//	phys.Vel.Pos = VectorF3_mul_flt(ray -> Dir, 0.1f);
 
 	buffer[get_global_id(0)] = phys;
 }

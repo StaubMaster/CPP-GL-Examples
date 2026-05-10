@@ -17,7 +17,7 @@ InventorySlot::InventorySlot()
 	: UI::Control::Base()
 	, Item(nullptr)
 {
-	AnchorSize = Point2D(50, 50);
+	AnchorSize = VectorF2(50, 50);
 
 	ColorDefault = ColorF4(0.8750f, 0.8750f, 0.8750f);
 	ColorHover = ColorF4(0.9375f, 0.9375f, 0.9375f);
@@ -37,7 +37,12 @@ void InventorySlot::Show()
 			VectorF2 size = WindowSize.Buffer.SizeFullToNormalRel(PixelSize);
 			VectorF2 pos = WindowSize.Buffer.PosFullToNormalRel(PixelPos);
 
+			std::cout << "Window: " << WindowSize.Buffer.Full << '\n';
+			std::cout << "PixelSize: " << PixelSize << '\n';
+			std::cout << "PixelPos: " << PixelPos << '\n';
+			std::cout << "size: " << size << '\n';
 			std::cout << "pos " << pos << '\n'; // removing this breaks PolyHedras ???
+			std::cout << '\n';
 
 			Object.Create(item -> VoxelPallet -> PolyHedra);
 			Object.Trans().Position.X = (+pos.X / size.X);

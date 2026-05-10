@@ -4,7 +4,7 @@
 
 #include "PolyGon/PolyGon.hpp"
 
-#include "ValueType/AxisBox2D.hpp"
+#include "ValueType/BoxF2.hpp"
 
 
 
@@ -56,16 +56,16 @@ void Physics2D::InstanceManager::Dispose()
 void Physics2D::InstanceManager::Changed()
 {
 	{
-		AxisBox2D box = PolyGon -> ToAxisBox();
+		BoxF2 box = PolyGon -> ToAxisBox();
 		box.Min -= 0.01f;
 		box.Max += 0.01f;
 
 		ColorF4 col(1, 1, 1);
 		Bound -> Clear();
-		Bound -> NewCorner(Point2D(box.Min.X, box.Min.Y), col);
-		Bound -> NewCorner(Point2D(box.Max.X, box.Min.Y), col);
-		Bound -> NewCorner(Point2D(box.Max.X, box.Max.Y), col);
-		Bound -> NewCorner(Point2D(box.Min.X, box.Max.Y), col);
+		Bound -> NewCorner(VectorF2(box.Min.X, box.Min.Y), col);
+		Bound -> NewCorner(VectorF2(box.Max.X, box.Min.Y), col);
+		Bound -> NewCorner(VectorF2(box.Max.X, box.Max.Y), col);
+		Bound -> NewCorner(VectorF2(box.Min.X, box.Max.Y), col);
 	}
 	{
 		IntData.Calculate(*PolyGon);

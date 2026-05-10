@@ -190,6 +190,7 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 //	VoxelPalletMap::All.Data.Insert(VoxelPallet("OrientationSlope", VoxelGeometryPallet::Slope));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("Gray", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("Grass", VoxelGeometryPallet::Cube));
+	VoxelPalletMap::All.Data.Insert(VoxelPallet("Dirt", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("RedLog", VoxelGeometryPallet::Cylinder));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("Sand", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("Snow", VoxelGeometryPallet::Cube));
@@ -219,21 +220,14 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 
 	VoxelPalletMap::All["Gray"].TextureAll(MediaDirectory.File("Images/Voxel/Gray.png"));
 
-	// loading Dirt.png instead of Grass.png breaks all PNGs, including the Font ???
-	//VoxelPalletMap::All["Grass"].TextureAll(MediaDirectory.File("Images/Voxel/Dirt.png"));
 	VoxelPalletMap::All["Grass"].TextureAll(MediaDirectory.File("Images/Voxel/Grass.png"));
+	VoxelPalletMap::All["Dirt"].TextureAll(MediaDirectory.File("Images/Voxel/Dirt.png"));
 
 	VoxelPalletMap::All["RedLog"].TexturePrismY(
 		MediaDirectory.File("Images/Voxel/fancy_RedWood_Base.png"),
 		MediaDirectory.File("Images/Voxel/fancy_RedWood_Belt.png")
 	);
 
-	/*
-		Sand.png dosent load properly. fix that
-		And uses static Huffman Block
-		currently PNGs only work with Dynamic Huffman
-		turn off PNG: Unknown Type:
-	*/
 	VoxelPalletMap::All["Sand"].TextureAll(MediaDirectory.File("Images/Voxel/Sand.png"));
 	VoxelPalletMap::All["Snow"].TextureAll(MediaDirectory.File("Images/Voxel/Snow.png"));
 	VoxelPalletMap::All["Water"].TextureAll(MediaDirectory.File("Images/Voxel/Water.png"));
@@ -241,7 +235,7 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 	VoxelPalletMap::All["ConcreteCube"].TextureAll(MediaDirectory.File("Images/Voxel/Concrete_0.png"));
 	VoxelPalletMap::All["ConcreteCylinder"].TextureAll(MediaDirectory.File("Images/Voxel/Concrete_0.png"));
 }
-#include "ValueType/VectorU2.hpp"
+#include "ValueType/Vector/U2.hpp"
 #include "ChunkManager.hpp"
 void VoxelPalletMap::LoadTextures(ChunkManager & manager)
 {

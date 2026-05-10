@@ -1,8 +1,8 @@
 #ifndef  PERLIN_2D_HPP
 # define PERLIN_2D_HPP
 
-# include "ValueType/VectorU2.hpp"
-# include "ValueType/VectorF2.hpp"
+# include "ValueType/Vector/U2.hpp"
+# include "ValueType/Vector/F2.hpp"
 
 struct Perlin2D
 {

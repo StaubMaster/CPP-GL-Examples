@@ -10,7 +10,7 @@ class CubicSplineCurve3D : public InterPolator3D
 	private:
 	bool	Loop;
 	public:
-	Container::Array<Point3D>		Nodes;
+	Container::Array<VectorF3>		Nodes;
 	Container::Array<CubicSpline3D>	Segments;
 
 	public:
@@ -22,16 +22,16 @@ class CubicSplineCurve3D : public InterPolator3D
 	private:
 	unsigned int	SegmentIndex(float & t);
 	public:
-	Point3D InterPolatePos(float t) override;
-	Point3D InterPolateDir(float t) override;
+	VectorF3 InterPolatePos(float t) override;
+	VectorF3 InterPolateDir(float t) override;
 
 	private:
-	Point3D *	PrevNodePointer(unsigned int idx);
-	Point3D *	NextNodePointer(unsigned int idx);
+	VectorF3 *	PrevNodePointer(unsigned int idx);
+	VectorF3 *	NextNodePointer(unsigned int idx);
 
 	private:
-	void	ChangePrevPole1(unsigned int idx, Point3D pos, Point3D dir);
-	void	ChangeNextPole0(unsigned int idx, Point3D pos, Point3D dir);
+	void	ChangePrevPole1(unsigned int idx, VectorF3 pos, VectorF3 dir);
+	void	ChangeNextPole0(unsigned int idx, VectorF3 pos, VectorF3 dir);
 
 	public:
 	void FiniteDifference();

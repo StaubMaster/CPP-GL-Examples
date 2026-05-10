@@ -321,9 +321,9 @@ void Frame(double timeDelta)
 		ViewTrans.TransformFlatX(win -> MoveFromKeys(20.0f * timeDelta), win -> SpinFromCursor(0.2f * timeDelta));
 	}
 	ViewTrans.Rot.CalcBack();
-	Point2D cursor = win -> CursorCentered();
+	VectorF2 cursor = win -> CursorCentered();
 	ViewRay_GPU_Ptr -> Pos = ViewTrans.Pos;
-	ViewRay_GPU_Ptr -> Dir = ViewTrans.Rot.rotate(Point3D(cursor.X, cursor.Y, 1));
+	ViewRay_GPU_Ptr -> Dir = ViewTrans.Rot.rotate(VectorF3(cursor.X, cursor.Y, 1));
 	Uni_ViewTrans -> PutData(ViewTrans);
 
 	if (glfwGetMouseButton(win -> win, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
@@ -385,7 +385,7 @@ int main()
 
 	win -> DefaultColor = Color(0.125f, 0.0f, 0.0f);
 
-	ViewTrans = Trans3D(Point3D(0, 0, 0), Angle3D(0, 0, 0));
+	ViewTrans = Trans3D(VectorF3(0, 0, 0), Angle3D(0, 0, 0));
 	ViewDepth = Depth();
 	ViewDepth.Factors = DepthFactors(0.1f, 1000.0f);
 	ViewDepth.Range = Range(0.8f, 1.0f);

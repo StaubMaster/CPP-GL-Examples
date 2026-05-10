@@ -12,7 +12,7 @@ Arrow2D::Inst::Data::Data()
 
 
 
-Arrow2D::Inst::Data::Data(ColorF4 col, float size, Point2D origin, Point2D target)
+Arrow2D::Inst::Data::Data(ColorF4 col, float size, VectorF2 origin, VectorF2 target)
 	: Origin(origin)
 	, Target(target)
 	, Size(size)
@@ -59,6 +59,6 @@ Arrow2D::Inst::Data & Arrow2D::Inst::Data::operator=(const Ray2D & ray)
 
 void Arrow2D::Inst::Data::Clear()
 {
-	Origin = Point2D();
-	Target = Point2D();
+	Origin = VectorF2();
+	Target = VectorF2();
 }

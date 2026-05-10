@@ -27,7 +27,7 @@ struct Manager
 
 	Container::Binary<Physics2D::Object *>	Objects;
 
-	Point2D		Gravity;
+	VectorF2		Gravity;
 	float		AirResistance;
 
 	float	GravityToY;
@@ -55,7 +55,7 @@ struct Manager
 
 
 
-	Undex FindObjectIndex(Point2D p) const;
+	Undex FindObjectIndex(VectorF2 p) const;
 };
 };
 

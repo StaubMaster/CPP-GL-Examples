@@ -1,8 +1,8 @@
 #ifndef  GRID_CAST_3D_HPP
 # define GRID_CAST_3D_HPP
 
-# include "ValueType/VectorF3.hpp"
-# include "ValueType/VectorI3.hpp"
+# include "ValueType/Vector/F3.hpp"
+# include "ValueType/Vector/I3.hpp"
 # include "Voxel/VoxelEnums.hpp"
 
 # include "ValueType/Ray3D.hpp"

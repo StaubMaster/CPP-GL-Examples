@@ -1,13 +1,13 @@
 #ifndef  BOX_ENTITY_HPP
 # define BOX_ENTITY_HPP
 
-# include "ValueType/VectorF3.hpp"
-# include "ValueType/BoxF3.hpp"
+# include "ValueType/Vector/F3.hpp"
+# include "ValueType/Box/F3.hpp"
 # include "ValueType/LoopI3.hpp"
 
 # include "FrameTime.hpp"
 
-# include "ValueType/VectorI3.hpp"
+# include "ValueType/Vector/I3.hpp"
 # include "Voxel/Voxel.hpp"
 
 struct VoxelBoxCollision

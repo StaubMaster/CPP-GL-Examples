@@ -138,7 +138,7 @@ void Make() override
 	//	Physics2D_Manager.AirResistance = 0.1f;
 	//	Physics2D_Manager.GravityToY = 10.0f;
 	//	Physics2D_Manager.GravityToY = 1.0f;
-	Physics2D_Manager.Gravity = Point2D(0, -1.0f);
+	Physics2D_Manager.Gravity = VectorF2(0, -1.0f);
 
 
 
@@ -158,10 +158,10 @@ void Make() override
 		float thickness0 = 1.0f;
 		float thickness1 = 0.1f;
 		PolyGon & polygon = *(wall.PolyGon);
-		polygon.NewCorner(Point2D(-thickness0, 0), ColorF4(1, 1, 1));
-		polygon.NewCorner(Point2D(+thickness0, 0), ColorF4(1, 1, 1));
-		polygon.NewCorner(Point2D(-thickness0 - thickness1, -thickness1), ColorF4(0, 0, 0));
-		polygon.NewCorner(Point2D(+thickness0 + thickness1, -thickness1), ColorF4(0, 0, 0));
+		polygon.NewCorner(VectorF2(-thickness0, 0), ColorF4(1, 1, 1));
+		polygon.NewCorner(VectorF2(+thickness0, 0), ColorF4(1, 1, 1));
+		polygon.NewCorner(VectorF2(-thickness0 - thickness1, -thickness1), ColorF4(0, 0, 0));
+		polygon.NewCorner(VectorF2(+thickness0 + thickness1, -thickness1), ColorF4(0, 0, 0));
 		polygon.NewFace(0, 1, 2);
 		polygon.NewFace(2, 1, 3);
 		PolyGonManager.PlacePolyGon(wall.PolyGon);
@@ -173,9 +173,9 @@ void Make() override
 	Physics2D::InstanceManager & obj0 = Physics2D_Manager.MainInstances[idx];
 	{
 		PolyGon & polygon = *(obj0.PolyGon);
-		polygon.NewCorner(Point2D(+0.1f, -0.1f), ColorF4(1, 0, 0));
-		polygon.NewCorner(Point2D(-0.1f, -0.1f), ColorF4(0, 1, 0));
-		polygon.NewCorner(Point2D( 0.0f, +0.1f), ColorF4(0, 0, 1));
+		polygon.NewCorner(VectorF2(+0.1f, -0.1f), ColorF4(1, 0, 0));
+		polygon.NewCorner(VectorF2(-0.1f, -0.1f), ColorF4(0, 1, 0));
+		polygon.NewCorner(VectorF2( 0.0f, +0.1f), ColorF4(0, 0, 1));
 		polygon.NewFace(0, 1, 2);
 		PolyGonManager.PlacePolyGon(obj0.PolyGon);
 		PolyGonManager.PlacePolyGon(obj0.Bound);
@@ -187,10 +187,10 @@ void Make() override
 	{
 		float size = 0.1f;
 		PolyGon & polygon = *(obj1.PolyGon);
-		polygon.NewCorner(Point2D(-size, -size), ColorF4(0, 1, 0));
-		polygon.NewCorner(Point2D(+size, -size), ColorF4(0, 0, 1));
-		polygon.NewCorner(Point2D(+size, +size), ColorF4(0, 1, 0));
-		polygon.NewCorner(Point2D(-size, +size), ColorF4(1, 0, 0));
+		polygon.NewCorner(VectorF2(-size, -size), ColorF4(0, 1, 0));
+		polygon.NewCorner(VectorF2(+size, -size), ColorF4(0, 0, 1));
+		polygon.NewCorner(VectorF2(+size, +size), ColorF4(0, 1, 0));
+		polygon.NewCorner(VectorF2(-size, +size), ColorF4(1, 0, 0));
 		polygon.NewFace(0, 1, 2);
 		polygon.NewFace(2, 0, 3);
 		PolyGonManager.PlacePolyGon(obj1.PolyGon);
@@ -202,14 +202,14 @@ void Make() override
 	Physics2D::InstanceManager & obj2 = Physics2D_Manager.MainInstances[idx];
 	{
 		PolyGon & polygon = *(obj2.PolyGon);
-		//polygon.NewCorner(Point2D(-0.5f, -0.025f), ColorF4(0, 1, 0));
-		//polygon.NewCorner(Point2D(+0.5f, -0.025f), ColorF4(0, 0, 1));
-		//polygon.NewCorner(Point2D(+0.5f, +0.025f), ColorF4(0, 1, 0));
-		//polygon.NewCorner(Point2D(-0.5f, +0.025f), ColorF4(1, 0, 0));
-		polygon.NewCorner(Point2D(-1.0f, -0.1f), ColorF4(0, 1, 0));
-		polygon.NewCorner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 1));
-		polygon.NewCorner(Point2D(+1.0f, +0.1f), ColorF4(0, 1, 0));
-		polygon.NewCorner(Point2D(-1.0f, +0.1f), ColorF4(1, 0, 0));
+		//polygon.NewCorner(VectorF2(-0.5f, -0.025f), ColorF4(0, 1, 0));
+		//polygon.NewCorner(VectorF2(+0.5f, -0.025f), ColorF4(0, 0, 1));
+		//polygon.NewCorner(VectorF2(+0.5f, +0.025f), ColorF4(0, 1, 0));
+		//polygon.NewCorner(VectorF2(-0.5f, +0.025f), ColorF4(1, 0, 0));
+		polygon.NewCorner(VectorF2(-1.0f, -0.1f), ColorF4(0, 1, 0));
+		polygon.NewCorner(VectorF2(+1.0f, -0.1f), ColorF4(0, 0, 1));
+		polygon.NewCorner(VectorF2(+1.0f, +0.1f), ColorF4(0, 1, 0));
+		polygon.NewCorner(VectorF2(-1.0f, +0.1f), ColorF4(1, 0, 0));
 		polygon.NewFace(0, 1, 2);
 		polygon.NewFace(2, 0, 3);
 		PolyGonManager.PlacePolyGon(obj2.PolyGon);
@@ -228,39 +228,39 @@ void Make() override
 	{
 		wall.MakeCurrent();
 		float thickness0 = 1.0f;
-		//Physics2D::Object::Construct(Trans2D(Point2D(0, -thickness0), Angle2D(Angle::Degrees(  0))), true);
-		//Physics2D::Object::Construct(Trans2D(Point2D(+thickness0, 0), Angle2D(Angle::Degrees( 90))), true);
-		//Physics2D::Object::Construct(Trans2D(Point2D(0, +thickness0), Angle2D(Angle::Degrees(180))), true);
-		//Physics2D::Object::Construct(Trans2D(Point2D(-thickness0, 0), Angle2D(Angle::Degrees(270))), true);
+		//Physics2D::Object::Construct(Trans2D(VectorF2(0, -thickness0), Angle2D(Angle::Degrees(  0))), true);
+		//Physics2D::Object::Construct(Trans2D(VectorF2(+thickness0, 0), Angle2D(Angle::Degrees( 90))), true);
+		//Physics2D::Object::Construct(Trans2D(VectorF2(0, +thickness0), Angle2D(Angle::Degrees(180))), true);
+		//Physics2D::Object::Construct(Trans2D(VectorF2(-thickness0, 0), Angle2D(Angle::Degrees(270))), true);
 		(void)thickness0;
 	}
 
 	{
 		obj2.MakeCurrent();
-		//Physics2D::Object::Construct(Trans2D(), Trans2D(Point2D(), Angle2D(Angle::Degrees(90))), false);
-		Physics2D::Object::Construct(Trans2D(Point2D(0, 0.0f), Angle::Degrees(0)), Trans2D(), true);
-		Physics2D::Object::Construct(Trans2D(Point2D(0, 0.5f), Angle::Degrees(15)), Trans2D(), false);
-		//Physics2D::Object::Construct(Trans2D(Point2D(0, 1.5f), Angle2D(Angle::Degrees(90))), Trans2D(), false);
+		//Physics2D::Object::Construct(Trans2D(), Trans2D(VectorF2(), Angle2D(Angle::Degrees(90))), false);
+		Physics2D::Object::Construct(Trans2D(VectorF2(0, 0.0f), Angle::Degrees(0)), Trans2D(), true);
+		Physics2D::Object::Construct(Trans2D(VectorF2(0, 0.5f), Angle::Degrees(15)), Trans2D(), false);
+		//Physics2D::Object::Construct(Trans2D(VectorF2(0, 1.5f), Angle2D(Angle::Degrees(90))), Trans2D(), false);
 	}
 
 
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(0.0f, 0.1f), Angle2D(Angle::Degrees(45))), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(VectorF2(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(VectorF2(0.0f, 0.1f), Angle2D(Angle::Degrees(45))), false));
 
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(0.0f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(VectorF2(0.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(VectorF2(0.0f, 0.0f), Angle2D()), false));
 
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(Point2D(-0.1f, 0.0f), Angle2D()), false));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(Point2D(+0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(VectorF2(+0.3f, -0.1f), Angle2D(Angle::Degrees(160))), Trans2D(VectorF2(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(VectorF2(-0.3f, -0.1f), Angle2D(Angle::Degrees( 80))), Trans2D(VectorF2(+0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(VectorF2(+0.3f, +0.1f), Angle2D(Angle::Degrees(190))), Trans2D(VectorF2(-0.1f, 0.0f), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(VectorF2(-0.3f, +0.1f), Angle2D(Angle::Degrees(140))), Trans2D(VectorF2(+0.1f, 0.0f), Angle2D()), false));
 
 //	Stuck in Wall. Bounces back "into" Wall every time it would get out.
 //	No Force pushing it out.
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(Point2D(-1.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(Point2D(-1, 0), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj0, Trans2D(VectorF2(-1.0f, 0.0f), Angle2D(Angle::Degrees(0))), Trans2D(VectorF2(-1, 0), Angle2D()), false));
 
 
 
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj1, Trans2D(Point2D(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(Point2D(0, 0), Angle2D()), false));
-//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj1, Trans2D(Point2D(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(Point2D(0, 0), Angle2D(Angle::Degrees(-45))), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj1, Trans2D(VectorF2(-0.3f, 0.000f), Angle2D(Angle::Degrees(90))), Trans2D(VectorF2(0, 0), Angle2D()), false));
+//	Physics2D_Manager.Objects.Insert(Physics2D::Object(obj1, Trans2D(VectorF2(+0.3f, 0.025f), Angle2D(Angle::Degrees(180))), Trans2D(VectorF2(0, 0), Angle2D(Angle::Degrees(-45))), false));
 }
 
 
@@ -323,22 +323,22 @@ void GridTest()
 	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
 		float t = ((float)i) / grid.LinSections;
-		temp.Pos = Point2D(0, t); data.Insert(temp);
+		temp.Pos = VectorF2(0, t); data.Insert(temp);
 	}
 	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
 		float t = ((float)i) / grid.LinSections;
-		temp.Pos = Point2D(1, t); data.Insert(temp);
+		temp.Pos = VectorF2(1, t); data.Insert(temp);
 	}
 	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
 		float t = ((float)i) / grid.LinSections;
-		temp.Pos = Point2D(t, 0); data.Insert(temp);
+		temp.Pos = VectorF2(t, 0); data.Insert(temp);
 	}
 	for (unsigned int i = 0; i <= grid.LinSections; i++)
 	{
 		float t = ((float)i) / grid.LinSections;
-		temp.Pos = Point2D(t, 1); data.Insert(temp);
+		temp.Pos = VectorF2(t, 1); data.Insert(temp);
 	}
 	buffer.Main.Change(data);
 }
@@ -369,7 +369,7 @@ void GridTest()
 	Container::Binary<Grid2DGraphics::Inst::Data> data;
 	Grid2DGraphics::Inst::Data temp;
 
-	Point2D pos(
+	VectorF2 pos(
 		floor(view.Trans.Pos.X / (grid.Lin * grid.LinSections)) * (grid.Lin * grid.LinSections),
 		floor(view.Trans.Pos.Y / (grid.Lin * grid.LinSections)) * (grid.Lin * grid.LinSections)
 	);
@@ -396,10 +396,10 @@ void GridTest()
 {
 	Container::Binary<Grid2DGraphics::Main::Data> data;
 	Grid2DGraphics::Main::Data temp;
-	temp.Pos = Point2D(); data.Insert(temp);
+	temp.Pos = VectorF2(); data.Insert(temp);
 	for (unsigned int i = 0; i < grid.AngSections; i++)
 	{
-		temp.Pos = (Angle::Section(grid.AngSections) * i).forward(Point2D(1, 0));
+		temp.Pos = (Angle::Section(grid.AngSections) * i).forward(VectorF2(1, 0));
 		data.Insert(temp);
 	}
 	buffer.Main.Change(data);
@@ -656,7 +656,7 @@ void KeyBoardKey(KeyArgs args) override
 			Physics2D_Manager.MainInstances[2].MakeCurrent();
 			Physics2D::Object & obj = Physics2D::Object::Construct(
 				Trans2D(view.forward(window.Size.Convert(window.MouseManager.CursorPosition())), Angle()),
-				Trans2D(Point2D(), Angle()),
+				Trans2D(VectorF2(), Angle()),
 				false
 			);
 			(void)obj;

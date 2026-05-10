@@ -6,7 +6,7 @@
 
 # include "Graphics/Shader.hpp"
 
-# include "ValueType/VectorI3.hpp"
+# include "ValueType/Vector/I3.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
 
@@ -45,7 +45,7 @@ struct VoxelHit
 
 # include "WaitDoTime.hpp"
 # include "ContainerLock.hpp"
-# include "Array3D.hpp"
+# include "Miscellaneous/Container/Array3D.hpp"
 
 struct ChunkManager
 {

@@ -2,7 +2,7 @@
 # define ARROW_2D_INST_BUFFER_HPP
 
 # include "Graphics/Buffer/Array.hpp"
-# include "Graphics/Attribute/Point2D.hpp"
+# include "Graphics/Attribute/VectorF2.hpp"
 # include "Graphics/Attribute/ColorF4.hpp"
 # include "Graphics/Attribute/Base/Float1.hpp"
 
@@ -13,8 +13,8 @@ namespace Inst
 class Buffer : public ::Buffer::Array
 {
 	public:
-	::Attribute::Point2D	Pos0;
-	::Attribute::Point2D	Pos1;
+	::Attribute::VectorF2	Pos0;
+	::Attribute::VectorF2	Pos1;
 	::Attribute::Float1		Size;
 	::Attribute::ColorF4	Col;
 	public:

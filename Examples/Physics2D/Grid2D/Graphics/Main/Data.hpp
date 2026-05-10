@@ -1,7 +1,7 @@
 #ifndef  GRID_2D_GRAPHICS_MAIN_DATA_HPP
 # define GRID_2D_GRAPHICS_MAIN_DATA_HPP
 
-# include "ValueType/Point2D.hpp"
+# include "ValueType/VectorF2.hpp"
 
 namespace Grid2DGraphics
 {
@@ -9,7 +9,7 @@ namespace Main
 {
 struct Data
 {
-	Point2D	Pos;
+	VectorF2	Pos;
 };
 };
 };

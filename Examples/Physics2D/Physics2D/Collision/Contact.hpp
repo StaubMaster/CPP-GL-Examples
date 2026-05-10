@@ -5,9 +5,9 @@
 
 # include "Physics2D/Collision/Projection.hpp"
 
-# include "ValueType/AxisBox1D.hpp"
+# include "ValueType/Box/F1.hpp"
 
-# include "ValueType/Point2D.hpp"
+# include "ValueType/VectorF2.hpp"
 # include "ValueType/Ray2D.hpp"
 
 # include "ValueType/Matrix3x3.hpp"
@@ -20,7 +20,7 @@ struct ContactData
 {
 	bool		Valid;
 
-	Point2D		Normal;
+	VectorF2		Normal;
 	float		Limit;
 	float		Sum;
 
@@ -35,8 +35,8 @@ struct ContactData
 	void Consider(const Projection & projection);
 
 	static ContactData Project(
-		Point2D origin,
-		Point2D normal,
+		VectorF2 origin,
+		VectorF2 normal,
 		const Object & obj
 	);
 

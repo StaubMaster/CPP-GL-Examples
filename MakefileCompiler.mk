@@ -63,7 +63,7 @@ re-final:
 $(NAME) : $(FILES_OBJ) $(LIBRARYS)
 	@$(MAKE) -s logs_make
 	@$(call fancyNameCompilingEcho,$@)
-	@$(COMPILER) $(FLAGS) $(addprefix -I,$(INCLUDES)) $(FILES_OBJ) -o $(NAME) $(LIBRARYS) $(ARGUMENTS)
+	@$(COMPILER) $(FLAGS) $(addprefix -I,$(INCLUDES)) $(FILES_OBJ) -o $(NAME) $(LIBRARYS) $(LIBRARYS) $(ARGUMENTS)
 
 %.o : %.cpp
 	@$(call fancyNameCompilingEcho,$@)

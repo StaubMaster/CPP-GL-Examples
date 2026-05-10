@@ -1,11 +1,11 @@
 #include "PlaneManager.hpp"
 
 #include "ValueType/Bool2D.hpp"
-#include "ValueType/BoxI2.hpp"
+#include "ValueType/Box/I2.hpp"
 #include "ValueType/LoopI2.hpp"
 
 #include "ValueType/UndexBox2D.hpp"
-#include "ValueType/UndexLoop2D.hpp"
+#include "ValueType/LoopU2.hpp"
 
 
 
@@ -63,9 +63,9 @@ void PlaneManager::Clear()
 	}
 	Planes.Clear();
 }
-void PlaneManager::UpdateAround(const Perlin2D & noise, Point2D pos)
+void PlaneManager::UpdateAround(const Perlin2D & noise, VectorF2 pos)
 {
-	Point2D r = (pos / (float)(PLANE_VALUES_PER_SIDE * PLANE_SCALE)).roundF();
+	VectorF2 r = (pos / (float)(PLANE_VALUES_PER_SIDE * PLANE_SCALE)).roundF();
 	VectorI2 idx(r);
 
 	unsigned int size = 5;

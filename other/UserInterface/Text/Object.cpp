@@ -7,15 +7,15 @@
 bool			UI::Text::Object::Is() const { return (Data != nullptr); }
 std::string &	UI::Text::Object::String() { return (Data -> Text); }
 
-Point2D &				UI::Text::Object::TextPosition() { return (Data -> TextPosition); }
+VectorF2 &				UI::Text::Object::TextPosition() { return (Data -> TextPosition); }
 UI::Text::Alignment &	UI::Text::Object::TextAlignmentX() { return (Data -> TextAlignmentX); }
 UI::Text::Alignment &	UI::Text::Object::TextAlignmentY() { return (Data -> TextAlignmentY); }
 
-Point2D &				UI::Text::Object::CharacterSize() { return (Data -> CharacterSize); }
+VectorF2 &				UI::Text::Object::CharacterSize() { return (Data -> CharacterSize); }
 UI::Text::Alignment &	UI::Text::Object::CharacterAlignmentX() { return (Data -> CharacterAlignmentX); }
 UI::Text::Alignment &	UI::Text::Object::CharacterAlignmentY() { return (Data -> CharacterAlignmentY); }
 
-AxisBox2D &		UI::Text::Object::Bound() { return (Data -> Bound); }
+BoxF2 &		UI::Text::Object::Bound() { return (Data -> Bound); }
 ColorF4 &		UI::Text::Object::Color() { return (Data -> Color); }
 
 bool UI::Text::Object::Visibility() const { return (Data -> Display); }

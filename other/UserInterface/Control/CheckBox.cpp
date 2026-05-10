@@ -10,7 +10,7 @@ UI::Control::CheckBox::CheckBox() : Base()
 	Layer = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = Point2D(25, 25);
+	AnchorSize = VectorF2(25, 25);
 	ColorDefault = ColorF4(1.0f, 0.0f, 0.0f);
 	ColorHover = ColorF4(0.75f, 0.0f, 0.0f);
 

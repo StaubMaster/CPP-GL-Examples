@@ -2,7 +2,7 @@
 # define VOXEL_ORIENTATION_HPP
 
 # include "VoxelEnums.hpp"
-# include "ValueType/VectorF3.hpp"
+# include "ValueType/Vector/F3.hpp"
 
 struct VoxelOrientation
 {

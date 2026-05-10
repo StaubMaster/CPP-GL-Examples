@@ -17,10 +17,10 @@
 # include "Graphics/Buffer.hpp"
 # include "Graphics/Main/Data.hpp"
 
-# include "ValueType/VectorI3.hpp"
-# include "ValueType/VectorU3.hpp"
+# include "ValueType/Vector/I3.hpp"
+# include "ValueType/Vector/U3.hpp"
 
-# include "Array3D.hpp"
+# include "Miscellaneous/Container/Array3D.hpp"
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Container/Array.hpp"
 

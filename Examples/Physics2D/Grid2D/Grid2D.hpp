@@ -1,7 +1,7 @@
 #ifndef  GRID_2D_HPP
 # define GRID_2D_HPP
 
-# include "ValueType/Point2D.hpp"
+# include "ValueType/VectorF2.hpp"
 # include "ValueType/Angle.hpp"
 
 /*
@@ -22,7 +22,7 @@ struct Grid2D
 	Grid2D();
 	Grid2D(unsigned lin, unsigned ang);
 
-	Point2D		Align(Point2D p) const;
+	VectorF2		Align(VectorF2 p) const;
 	Angle		Align(Angle a) const;
 };
 

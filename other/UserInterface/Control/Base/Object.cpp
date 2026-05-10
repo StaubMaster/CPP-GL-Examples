@@ -12,7 +12,7 @@ void UI::Control::Object::Full() { (Data -> Display) = true; }
 
 
 
-AxisBox2D &		UI::Control::Object::Box() { return (Data -> Box); }
+BoxF2 &		UI::Control::Object::Box() { return (Data -> Box); }
 float &			UI::Control::Object::Layer() { return (Data -> Layer); }
 ColorF4 &		UI::Control::Object::Color() { return (Data -> Color); }
 

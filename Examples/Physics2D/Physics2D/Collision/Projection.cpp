@@ -9,7 +9,7 @@ Physics2D::Object * Physics2D::Collision::Projection::DebugObject = nullptr;
 unsigned int Physics2D::Collision::Projection::DebugEdgeUndex = 0xFFFFFFFF;
 
 bool Physics2D::Collision::Projection::DebugShow = false;
-Point2D Physics2D::Collision::Projection::DebugOrigin;
+VectorF2 Physics2D::Collision::Projection::DebugOrigin;
 
 
 
@@ -33,13 +33,13 @@ Physics2D::Collision::Projection & Physics2D::Collision::Projection::operator=(c
 
 
 Physics2D::Collision::Projection Physics2D::Collision::Projection::Project(
-	Point2D origin,
-	Point2D normal,
-	Point2D point
+	VectorF2 origin,
+	VectorF2 normal,
+	VectorF2 point
 )
 {
 	Projection data;
 	data.Position = point;
-	data.Distance = Point2D::dot(normal, point - origin);
+	data.Distance = VectorF2::dot(normal, point - origin);
 	return data;
 }

@@ -3,8 +3,8 @@
 
 # include "Alignment.hpp"
 
-# include "ValueType/Point2D.hpp"
-# include "ValueType/AxisBox2D.hpp"
+# include "ValueType/Vector/F2.hpp"
+# include "ValueType/Box/F2.hpp"
 # include "ValueType/ColorF4.hpp"
 
 # include <string>
@@ -16,15 +16,15 @@ namespace Text
 struct ObjectData
 {
 	std::string		Text;
-	Point2D			TextPosition;
+	VectorF2			TextPosition;
 	Alignment		TextAlignmentX;
 	Alignment		TextAlignmentY;
 
-	Point2D		CharacterSize;
+	VectorF2		CharacterSize;
 	Alignment	CharacterAlignmentX;
 	Alignment	CharacterAlignmentY;
 
-	AxisBox2D	Bound;
+	BoxF2	Bound;
 	ColorF4		Color;
 
 	bool	Remove;

@@ -1,0 +1,39 @@
+
+Parse Files
+	VoxelGeomentryPallet
+	VoxelPallet
+	Structure
+	Chunk
+
+
+
+VoxelGeomentryPallet File:
+	PolyHedra
+	how to divide into Axis ?
+	anything exactly on the 0 or 1 Plane ?
+	how to figure out what face hides what ?
+I want to divide Chunk Graphics into Voxels and Floating stuff
+Voxels have face Hiding
+everything else can get hidden by Voxels, but can not hide eachother
+
+
+
+VoxelPallet:
+	VoxelGeomentryPallet File
+	or Builtin ?
+	Texture Files
+
+
+
+Structure:
+	Array3D Size
+	Default VoxelPallet File
+	Voxel PalletFiles
+	{
+		Voxel		what voxel to place
+		Count		how may in a row to place
+		Distance	offset until next
+	}
+
+Chunk:
+	like Structure but with some extra Info ?

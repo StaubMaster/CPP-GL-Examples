@@ -10,10 +10,10 @@ UI::Control::Button::Button() : Base()
 	Layer = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = Point2D(75, 25);
+	AnchorSize = VectorF2(75, 25);
 
 	float padding = 0;
-	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
+	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	ColorDefault = ColorF4(0.625f, 0.625f, 0.625f);
 	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);

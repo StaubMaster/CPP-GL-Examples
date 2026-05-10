@@ -1,7 +1,7 @@
 #ifndef  VOXEL_GRAPHICS_MAIN_DATA_HPP
 # define VOXEL_GRAPHICS_MAIN_DATA_HPP
 
-# include "ValueType/VectorF3.hpp"
+# include "ValueType/Vector/F3.hpp"
 
 namespace VoxelGraphics
 {

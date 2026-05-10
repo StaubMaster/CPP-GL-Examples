@@ -18,11 +18,11 @@ void Physics2D::Object::Update(float timeDelta)
 
 
 
-Point2D Physics2D::Object::RelativePositionOf(Point2D p) const { return ExtData.Now.reverse(p); }
-Point2D Physics2D::Object::AbsolutePositionOf(Point2D p) const { return ExtData.Now.forward(p); }
-Point2D Physics2D::Object::AbsoluteVelocityOf(Point2D p) const
+VectorF2 Physics2D::Object::RelativePositionOf(VectorF2 p) const { return ExtData.Now.reverse(p); }
+VectorF2 Physics2D::Object::AbsolutePositionOf(VectorF2 p) const { return ExtData.Now.forward(p); }
+VectorF2 Physics2D::Object::AbsoluteVelocityOf(VectorF2 p) const
 {
-	return Point2D::cross(ExtData.Vel.Rot.ToRadians(), ExtData.Now.Rot.forward(p)) + ExtData.Vel.Pos;
+	return VectorF2::cross(ExtData.Vel.Rot.ToRadians(), ExtData.Now.Rot.forward(p)) + ExtData.Vel.Pos;
 }
 
 
@@ -33,11 +33,11 @@ unsigned int Physics2D::Object::CornerCount() const { return (PolyGon().Corners.
 
 unsigned int Physics2D::Object::SideCount() const { return (PolyGon().Faces.Count()); }
 
-bool Physics2D::Object::IsContaining(Point2D p) const { return PolyGon().IsContaining(RelativePositionOf(p)); }
+bool Physics2D::Object::IsContaining(VectorF2 p) const { return PolyGon().IsContaining(RelativePositionOf(p)); }
 
-Point2D Physics2D::Object::RelativePositionOfIndex(unsigned int idx) const { return PolyGon().Corners[idx].Pos; }
-Point2D Physics2D::Object::AbsolutePositionOfIndex(unsigned int idx) const { return AbsolutePositionOf(RelativePositionOfIndex(idx)); }
-Point2D Physics2D::Object::AbsoluteVelocityOfIndex(unsigned int idx) const { return AbsoluteVelocityOf(RelativePositionOfIndex(idx)); }
+VectorF2 Physics2D::Object::RelativePositionOfIndex(unsigned int idx) const { return PolyGon().Corners[idx].Pos; }
+VectorF2 Physics2D::Object::AbsolutePositionOfIndex(unsigned int idx) const { return AbsolutePositionOf(RelativePositionOfIndex(idx)); }
+VectorF2 Physics2D::Object::AbsoluteVelocityOfIndex(unsigned int idx) const { return AbsoluteVelocityOf(RelativePositionOfIndex(idx)); }
 
 Line2D Physics2D::Object::EdgeOfIndex(unsigned int idx) const
 {
@@ -70,37 +70,37 @@ void Physics2D::Object::GraphicsUpdate()
 	// Store Forces individually ?
 	if (Arrows.Is())
 	{
-//		Point2D now = ExtData.Now.Pos;
-//		Point2D vel = ExtData.Vel.Pos;
-//		Point2D acl = ExtData.Acl.Pos;
+//		VectorF2 now = ExtData.Now.Pos;
+//		VectorF2 vel = ExtData.Vel.Pos;
+//		VectorF2 acl = ExtData.Acl.Pos;
 //
 //		unsigned int idx = 0;
 //		Arrows[idx] = Arrow2D::Inst::Data(now, now + vel, 16.0f, ColorF4(0.0f, 0.5f, 0.0f)); idx++;
 //
 //		/*for (unsigned int j = 0; j < CornerCount(); j++)
 //		{
-//			Point2D p = CornerFromIndex(j);
-//			Point2D now = AbsolutePositionOf(p);
-//			Point2D vel = AbsoluteVelocityOf(p);
+//			VectorF2 p = CornerFromIndex(j);
+//			VectorF2 now = AbsolutePositionOf(p);
+//			VectorF2 vel = AbsoluteVelocityOf(p);
 //			//Arrows[1 + (j * 2 + 0)] = Arrow2D::Inst::Data(now, now + vel, 12.0f, ColorF4(0.5f, 1.0f, 0.5f)); idx++;
 //			vel -= ExtData.Vel.Pos;
 //			//Arrows[idx] = Arrow2D::Inst::Data(now, now + vel, 16.0f, ColorF4(0.0f, 0.5f, 0.0f)); idx++;
 //		}*/
-//		vel = Point2D(0, ExtData.Vel.Rot.Ang.ToRadians());
+//		vel = VectorF2(0, ExtData.Vel.Rot.Ang.ToRadians());
 //		Arrows[idx] = Arrow2D::Inst::Data(now, now + vel, 16.0f, ColorF4(0.0f, 0.5f, 0.0f)); idx++;
 
-		Point2D origin = ExtData.Now.Pos;
+		VectorF2 origin = ExtData.Now.Pos;
 		//Trans2D & now = ExtData.Now;
 		Trans2D & vel = ExtData.Vel;
 		Trans2D & acl = ExtData.Acl;
 		unsigned int idx = 0;
 
 		(Arrows[idx] = ColorF4(0.0f, 0.5f, 0.0f)) = Ray2D(origin, vel.Pos); idx++;
-		(Arrows[idx] = ColorF4(0.0f, 0.5f, 0.0f)) = Ray2D(origin, Point2D(0, vel.Rot.ToRadians())); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.5f, 0.0f)) = Ray2D(origin, VectorF2(0, vel.Rot.ToRadians())); idx++;
 		(Arrows[idx] = ColorF4(0.0f, 0.0f, 0.5f)) = Ray2D(origin, acl.Pos); idx++;
-		(Arrows[idx] = ColorF4(0.0f, 0.0f, 0.5f)) = Ray2D(origin, Point2D(0, acl.Rot.ToRadians())); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.0f, 0.5f)) = Ray2D(origin, VectorF2(0, acl.Rot.ToRadians())); idx++;
 
-		//Point2D gravity = InstanceManager -> Manager -> Gravity;
+		//VectorF2 gravity = InstanceManager -> Manager -> Gravity;
 		//if (now.Pos.Y > 0.0f) { gravity.Y = -(InstanceManager -> Manager -> GravityToY); }
 		//if (now.Pos.Y < 0.0f) { gravity.Y = +(InstanceManager -> Manager -> GravityToY); }
 		//Arrows[idx] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 12.0f, Ray2D(origin, gravity)); idx++;

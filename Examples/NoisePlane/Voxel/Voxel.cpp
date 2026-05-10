@@ -1,7 +1,7 @@
 #include "Voxel.hpp"
 #include "VoxelPallet.hpp"
 #include "VoxelGeometryPallet.hpp"
-#include "ValueType/VectorU3.hpp"
+#include "ValueType/Vector/U3.hpp"
 
 
 

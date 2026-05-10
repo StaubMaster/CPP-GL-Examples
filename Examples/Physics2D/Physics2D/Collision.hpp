@@ -3,9 +3,9 @@
 
 # include "Physics2D/Object.hpp"
 
-# include "ValueType/AxisBox1D.hpp"
+# include "ValueType/Box/F1.hpp"
 
-# include "ValueType/Point2D.hpp"
+# include "ValueType/VectorF2.hpp"
 # include "ValueType/Ray2D.hpp"
 
 # include "ValueType/Matrix3x3.hpp"
@@ -31,26 +31,26 @@ void Seperate(
 
 struct ObjectForceData
 {
-	Point2D		Contact;	// the Relative Position of where the Force is applied
-	Point2D		Force;		// Direction and Magniture of the Force
+	VectorF2		Contact;	// the Relative Position of where the Force is applied
+	VectorF2		Force;		// Direction and Magniture of the Force
 
-	Point2D		ForcePos;
-	Point2D		ForceRot;
+	VectorF2		ForcePos;
+	VectorF2		ForceRot;
 	float		Torque;
 
 	~ObjectForceData();
 	ObjectForceData();
 
-	void	Calculate(Point2D contact, Point2D force);
-	void	Calculate(Object & obj, Point2D contact, Point2D force);
+	void	Calculate(VectorF2 contact, VectorF2 force);
+	void	Calculate(Object & obj, VectorF2 contact, VectorF2 force);
 
-	ObjectForceData(Point2D contact, Point2D force);
-	ObjectForceData(Object & obj, Point2D contact, Point2D force);
+	ObjectForceData(VectorF2 contact, VectorF2 force);
+	ObjectForceData(Object & obj, VectorF2 contact, VectorF2 force);
 
 	void	Apply(Object & obj);
 };
 
-Point2D DragObjectForce(
+VectorF2 DragObjectForce(
 	Object & obj,
 	Ray2D drag,
 	float scalar

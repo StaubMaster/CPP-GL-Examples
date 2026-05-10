@@ -133,12 +133,12 @@ void UI::Text::Manager::GraphicsMain()
 
 	Container::Binary<UI::Text::Main_Data> data;
 
-	data.Insert(UI::Text::Main_Data(Point2D(-1, -1)));
-	data.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
-	data.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
-	data.Insert(UI::Text::Main_Data(Point2D(+1, -1)));
-	data.Insert(UI::Text::Main_Data(Point2D(-1, +1)));
-	data.Insert(UI::Text::Main_Data(Point2D(+1, +1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(-1, -1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(+1, -1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(+1, -1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(+1, +1)));
 
 	Buffer.Main.Data(data);
 
@@ -200,7 +200,7 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 	unsigned int line_idx = 0;
 	unsigned int line_len = LineLength(obj.Text.c_str(), 0);
 
-	Point2D rel_chr;
+	VectorF2 rel_chr;
 	switch (obj.CharacterAlignmentX)
 	{
 		case Alignment::Min: rel_chr.X = +0.5f; break;
@@ -214,7 +214,7 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 		case Alignment::Max: rel_chr.Y = -0.5f; break;
 	}
 
-	Point2D rel_txt;
+	VectorF2 rel_txt;
 	switch (obj.TextAlignmentY)
 	{
 		case Alignment::Min: rel_txt.Y = -(line_count * 0.0f); break;
@@ -250,7 +250,7 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 		// check if Character is in Bound ?
 		data.Pos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
 		data.Pallet = TextFont -> CharacterBoxFromCode(obj.Text[i]); // this will need to be bofore check for non MonoSpace
-		Point2D size = (obj.CharacterSize * 0.5f);
+		VectorF2 size = (obj.CharacterSize * 0.5f);
 
 		if (obj.Bound.InnerBox(BoxF2(data.Pos - size, data.Pos + size)).IsNormal())
 		{

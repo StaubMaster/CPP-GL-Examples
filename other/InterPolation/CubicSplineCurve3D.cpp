@@ -32,12 +32,12 @@ unsigned int CubicSplineCurve3D::SegmentIndex(float & t)
 	}
 	return t;
 }
-Point3D CubicSplineCurve3D::InterPolatePos(float t)
+VectorF3 CubicSplineCurve3D::InterPolatePos(float t)
 {
 	unsigned int idx = SegmentIndex(t);
 	return Segments[idx].InterPolatePos(t - idx);
 }
-Point3D CubicSplineCurve3D::InterPolateDir(float t)
+VectorF3 CubicSplineCurve3D::InterPolateDir(float t)
 {
 	unsigned int idx = SegmentIndex(t);
 	return Segments[idx].InterPolateDir(t - idx);
@@ -45,7 +45,7 @@ Point3D CubicSplineCurve3D::InterPolateDir(float t)
 
 
 
-Point3D * CubicSplineCurve3D::PrevNodePointer(unsigned int idx)
+VectorF3 * CubicSplineCurve3D::PrevNodePointer(unsigned int idx)
 {
 	if (idx == Nodes.MinIndex())
 	{
@@ -64,7 +64,7 @@ Point3D * CubicSplineCurve3D::PrevNodePointer(unsigned int idx)
 		return &Nodes[idx];
 	}
 }
-Point3D * CubicSplineCurve3D::NextNodePointer(unsigned int idx)
+VectorF3 * CubicSplineCurve3D::NextNodePointer(unsigned int idx)
 {
 	if (idx == Nodes.MaxIndex())
 	{
@@ -84,7 +84,7 @@ Point3D * CubicSplineCurve3D::NextNodePointer(unsigned int idx)
 	}
 }
 
-void CubicSplineCurve3D::ChangePrevPole1(unsigned int idx, Point3D pos, Point3D dir)
+void CubicSplineCurve3D::ChangePrevPole1(unsigned int idx, VectorF3 pos, VectorF3 dir)
 {
 	if (idx == 0)
 	{
@@ -101,7 +101,7 @@ void CubicSplineCurve3D::ChangePrevPole1(unsigned int idx, Point3D pos, Point3D 
 		Segments[idx].Pole1.Dir = dir;
 	}
 }
-void CubicSplineCurve3D::ChangeNextPole0(unsigned int idx, Point3D pos, Point3D dir)
+void CubicSplineCurve3D::ChangeNextPole0(unsigned int idx, VectorF3 pos, VectorF3 dir)
 {
 	if (idx == Segments.Count())
 	{

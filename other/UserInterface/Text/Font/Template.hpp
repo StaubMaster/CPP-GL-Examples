@@ -3,7 +3,7 @@
 
 # include "Text/Font/Font.hpp"
 
-# include "ValueType/Point2D.hpp"
+# include "ValueType/Vector/F2.hpp"
 
 class Image;
 
@@ -16,17 +16,17 @@ namespace Text
 struct Font::Template
 {
 	Font &	Referance;
-	Point2D	Scale;
+	VectorF2	Scale;
 
 	Template(Font & referance);
 	~Template();
 
 	void Done();
 
-	void Change_Scale(Point2D scale);
+	void Change_Scale(VectorF2 scale);
 	void Insert_Image(Image img);
-	void Change_DefaultCharacter(Point2D pos, Point2D size);
-	void Insert_Character(unsigned int code, Point2D pos, Point2D size);
+	void Change_DefaultCharacter(VectorF2 pos, VectorF2 size);
+	void Insert_Character(unsigned int code, VectorF2 pos, VectorF2 size);
 };
 
 };

@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_OBJECT_HPP
 # define UI_CONTROL_OBJECT_HPP
 
-# include "ValueType/AxisBox2D.hpp"
+# include "ValueType/Box/F2.hpp"
 # include "ValueType/ColorF4.hpp"
 
 namespace UI
@@ -20,7 +20,7 @@ struct Object
 	void	Hide();
 	void	Full();
 
-	AxisBox2D &		Box();
+	BoxF2 &		Box();
 	float &			Layer();
 	ColorF4 &		Color();
 

@@ -8,7 +8,7 @@
 #include "Debug.hpp"
 
 #include "ValueType/Matrix3x3.hpp"
-#include "ValueType/Point3D.hpp"
+#include "ValueType/VectorF3.hpp"
 
 
 
@@ -50,8 +50,8 @@ void Context2D::UpdateView(FrameTime frame_time)
 {
 	{
 		Trans2D trans;
-		Point3D move3D = window.MoveFromKeys();
-		trans.Pos = Point2D(move3D.X, move3D.Z) * 2.0f * view.Scale;
+		VectorF3 move3D = window.MoveFromKeys();
+		trans.Pos = VectorF2(move3D.X, move3D.Z) * 2.0f * view.Scale;
 		if (window.KeyBoardManager[Keys::Q].State == State::Down) { trans.Rot += Angle::Degrees(45); }
 		if (window.KeyBoardManager[Keys::E].State == State::Down) { trans.Rot -= Angle::Degrees(45); }
 		view.Change(trans, frame_time.Delta);
@@ -61,8 +61,8 @@ void Context2D::UpdateView(FrameTime frame_time)
 }
 void Context2D::UpdateViewZoom(ScrollArgs args)
 {
-	Point2D cursor_rel = window.Size.Convert(window.MouseManager.CursorPosition());
-	Point2D cursor_abs = view.forward(cursor_rel);
+	VectorF2 cursor_rel = window.Size.Convert(window.MouseManager.CursorPosition());
+	VectorF2 cursor_abs = view.forward(cursor_rel);
 
 	if (args.Y < 0.0f) { while (args.Y < 0.0f) { view.Scale *= 2; args.Y++; } }
 	if (args.Y > 0.0f) { while (args.Y > 0.0f) { view.Scale /= 2; args.Y--; } }
@@ -76,8 +76,8 @@ void Context2D::UpdateViewZoom(ScrollArgs args)
 	view.Trans.Pos = cursor_abs - (view.Trans.Rot.forward(cursor_rel * view.Scale));
 }
 
-Point2D DragAnchorRelative;
-Point2D DragAnchorAbsolute;
+VectorF2 DragAnchorRelative;
+VectorF2 DragAnchorAbsolute;
 void Context2D::UpdateViewDrag(DragArgs args)
 {	
 	if (args.Button == MouseButtons::MouseM)
@@ -90,7 +90,7 @@ void Context2D::UpdateViewDrag(DragArgs args)
 
 		if (args.Action == Action::Repeat)
 		{
-			Point2D target_rel = window.Size.Convert(args.Position);
+			VectorF2 target_rel = window.Size.Convert(args.Position);
 			view.Trans.Pos = DragAnchorAbsolute - (view.Trans.Rot.forward(target_rel * view.Scale));
 		}
 	}

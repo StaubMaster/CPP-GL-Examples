@@ -240,8 +240,8 @@ ContextNoisePlane()
 	, HotBar(VectorU2(10, 1))
 	, InventoryUI()
 	, HotBarUI()
-	, Perlin2(Perlin2D::Random(Undex2D(8, 8)))
-	, Perlin3(Perlin3D::Random(Undex3D(8, 8, 8)))
+	, Perlin2(Perlin2D::Random(VectorU2(8, 8)))
+	, Perlin3(Perlin3D::Random(VectorU3(8, 8, 8)))
 	, Multiform_DisplaySize("DisplaySize")
 	, Multiform_View("View")
 	, Multiform_Depth("Depth")
@@ -341,7 +341,7 @@ void ViewUpdateDone()
 	else
 	{
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(
-			Trans3D(view.Trans.Position - view.Trans.Rotation.forward(Point3D(0, 0, ViewDistance)), view.Trans.Rotation)
+			Trans3D(view.Trans.Position - view.Trans.Rotation.forward(VectorF3(0, 0, ViewDistance)), view.Trans.Rotation)
 		));
 	}
 }
@@ -554,7 +554,7 @@ void ViewRayDo()
 		UI::Text::Object text; text.Create();
 		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
 		text.AlignTopRight(); // take DisplaySize
-		text.Bound().Min = Point2D();
+		text.Bound().Min = VectorF2();
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.String() = ss.str();
 		text.Color() = ColorF4(1, 1, 1);
@@ -678,7 +678,7 @@ void Make()
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
-		Image img(Undex2D(1, 1));
+		Image img(VectorU2(1, 1));
 		PolyHedra * picture = PolyHedra::Generate::DuoHedra(img);
 		delete picture;
 	}
@@ -1307,7 +1307,7 @@ void FrameText(FrameTime frame_time)
 		unsigned int chunks_u = 0; // ungenerated
 		unsigned int chunks_f = 0; // filled
 		unsigned int chunks_e = 0; // empty
-		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
+		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
 		{
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			chunks_t++;
@@ -1323,7 +1323,7 @@ void FrameText(FrameTime frame_time)
 			{ chunks_u++; }
 		}
 
-		ss << "Chunks:" << ChunkManager.Chunks.Count();
+		ss << "Chunks:" << ChunkManager.Chunks.Length();
 		ss << '|' << chunks_t << '[';
 		ss << 'U' << chunks_u << '|';
 		ss << 'E' << chunks_e << '|';
@@ -1363,7 +1363,7 @@ void FrameText(FrameTime frame_time)
 		unsigned int buffer__ = 0;
 		unsigned int buffer_n = 0;
 		unsigned int buffer_r = 0;
-		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
+		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
 		{
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *ChunkManager.Chunks[i];
@@ -1394,7 +1394,7 @@ void FrameText(FrameTime frame_time)
 	}
 	text.AlignTopLeft();
 	text.Color() = ColorF4(1, 1, 1);
-	text.Bound().Min = Point2D();
+	text.Bound().Min = VectorF2();
 	text.Bound().Max = window.Size.Buffer.Full;
 	text.String() = ss.str();
 }
@@ -1546,15 +1546,15 @@ void Frame(FrameTime frame_time) override
 		float pixel_rad = 1;
 		UI::Control::Object obj;
 		obj.Create();
-		obj.Box().Min = window.Size.Buffer.Half - Point2D(pixel_rad, pixel_rad);
-		obj.Box().Max = window.Size.Buffer.Half + Point2D(pixel_rad, pixel_rad);
+		obj.Box().Min = window.Size.Buffer.Half - VectorF2(pixel_rad, pixel_rad);
+		obj.Box().Max = window.Size.Buffer.Half + VectorF2(pixel_rad, pixel_rad);
 		obj.Color() = ColorF4(1, 0, 1);
 	}*/
 
 	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
 	{
 		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
-		for (unsigned int i = 0; i < ChunkManager.Chunks.Count(); i++)
+		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
 		{
 			Chunk * chunk = ChunkManager.Chunks[i];
 			if (chunk == nullptr) { continue; }

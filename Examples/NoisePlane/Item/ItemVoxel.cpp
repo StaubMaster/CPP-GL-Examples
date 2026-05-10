@@ -1,5 +1,5 @@
 #include "ItemVoxel.hpp"
-#include "ValueType/VectorF2.hpp"
+#include "ValueType/Vector/F2.hpp"
 
 
 

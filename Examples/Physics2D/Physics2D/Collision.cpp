@@ -4,7 +4,7 @@
 #include "Physics2D/Collision/Resolve.hpp"
 
 #include "ValueType/Intersect.hpp"
-#include "ValueType/Point3D.hpp"
+#include "ValueType/VectorF3.hpp"
 #include "ValueType/Trans2D.hpp"
 
 #include "ValueTypeShow.hpp"
@@ -81,7 +81,7 @@ void Physics2D::Seperate(
 		}
 	}
 
-	Point2D inter;
+	VectorF2 inter;
 	for (unsigned int i0 = 0; i0 < obj0.CornerCount(); i0++)
 	{
 		edge0 = obj0.EdgeOfIndex(i0);
@@ -134,26 +134,26 @@ Physics2D::ObjectForceData::~ObjectForceData() { }
 Physics2D::ObjectForceData::ObjectForceData()
 { }
 
-void Physics2D::ObjectForceData::Calculate(Point2D contact, Point2D force)
+void Physics2D::ObjectForceData::Calculate(VectorF2 contact, VectorF2 force)
 {
 	Contact = contact;
 	Force = force;
 
-	float dot = Point2D::dot(Force, Contact);
+	float dot = VectorF2::dot(Force, Contact);
 	ForcePos = (Contact * ((dot / Contact.length2())));
 	ForceRot = Force - ForcePos;
-	Torque = Point2D::cross(Contact, ForceRot);
+	Torque = VectorF2::cross(Contact, ForceRot);
 }
-void Physics2D::ObjectForceData::Calculate(Object & obj, Point2D contact, Point2D force)
+void Physics2D::ObjectForceData::Calculate(Object & obj, VectorF2 contact, VectorF2 force)
 {
 	Calculate(contact - obj.ExtData.Now.Pos, force);
 }
 
-Physics2D::ObjectForceData::ObjectForceData(Point2D contact, Point2D force)
+Physics2D::ObjectForceData::ObjectForceData(VectorF2 contact, VectorF2 force)
 {
 	Calculate(contact, force);
 }
-Physics2D::ObjectForceData::ObjectForceData(Object & obj, Point2D contact, Point2D force)
+Physics2D::ObjectForceData::ObjectForceData(Object & obj, VectorF2 contact, VectorF2 force)
 {
 	Calculate(obj, contact, force);
 }
@@ -166,11 +166,11 @@ void Physics2D::ObjectForceData::Apply(Object & obj)
 
 
 
-Point2D Physics2D::DragObjectForce(Object & obj, Ray2D drag, float scalar)
+VectorF2 Physics2D::DragObjectForce(Object & obj, Ray2D drag, float scalar)
 {
 	// subtract the speed of the Contact
 	/*{
-		Point2D vel = obj.AbsoluteVelocityOf(obj.RelativePositionOf(drag.Pos));
+		VectorF2 vel = obj.AbsoluteVelocityOf(obj.RelativePositionOf(drag.Pos));
 		data.Force = (drag.Dir - vel) * scalar;
 	}*/
 	// almost good
@@ -180,8 +180,8 @@ Point2D Physics2D::DragObjectForce(Object & obj, Ray2D drag, float scalar)
 	// decrease Force if Velocity goes in the same Direction
 	// this is probably easy
 	{
-		Point2D momentum = obj.AbsoluteVelocityOf(obj.RelativePositionOf(drag.Pos)) * obj.IntData.Mass;
-		//Point2D force = obj.ExtData.Vel.Pos * obj.IntData.Mass;
+		VectorF2 momentum = obj.AbsoluteVelocityOf(obj.RelativePositionOf(drag.Pos)) * obj.IntData.Mass;
+		//VectorF2 force = obj.ExtData.Vel.Pos * obj.IntData.Mass;
 		return (drag.Dir - momentum) * scalar;
 	}
 	// this works better
@@ -193,8 +193,8 @@ Physics2D::ObjectDragForceData Physics2D::ApplyDragForce(float timeDelta, Object
 	ObjectDragForceData data;
 	data.Drag = drag;
 
-	Point2D Center = obj.ExtData.Now.Pos;
-	Point2D Origin = drag.Pos;
+	VectorF2 Center = obj.ExtData.Now.Pos;
+	VectorF2 Origin = drag.Pos;
 	data.Contact = Line2D(Center, Origin);
 //	data.Contact = Line2D(Center, obj.AbsolutePositionOf(obj.IntData.CenterOfMass));
 

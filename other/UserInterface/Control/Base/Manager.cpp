@@ -107,12 +107,12 @@ void UI::Control::Manager::GraphicsMain()
 
 	Container::Binary<Control::Main_Data> data;
 
-	data.Insert(UI::Control::Main_Data(Point2D(-1, -1)));
-	data.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
-	data.Insert(UI::Control::Main_Data(Point2D(+1, -1)));
-	data.Insert(UI::Control::Main_Data(Point2D(+1, -1)));
-	data.Insert(UI::Control::Main_Data(Point2D(-1, +1)));
-	data.Insert(UI::Control::Main_Data(Point2D(+1, +1)));
+	data.Insert(UI::Control::Main_Data(VectorF2(-1, -1)));
+	data.Insert(UI::Control::Main_Data(VectorF2(-1, +1)));
+	data.Insert(UI::Control::Main_Data(VectorF2(+1, -1)));
+	data.Insert(UI::Control::Main_Data(VectorF2(+1, -1)));
+	data.Insert(UI::Control::Main_Data(VectorF2(-1, +1)));
+	data.Insert(UI::Control::Main_Data(VectorF2(+1, +1)));
 
 	Buffer.Main.Data(data);
 
@@ -171,7 +171,7 @@ void UI::Control::Manager::UpdateSize(const DisplaySize & window_size)
 	WindowSize = window_size;
 	Window.UpdateWindowSize(WindowSize.Buffer.Full);
 }
-void UI::Control::Manager::UpdateMouse(Point2D mouse)
+void UI::Control::Manager::UpdateMouse(VectorF2 mouse)
 {
 	UI::Control::Base * control = Window.CheckHover(mouse);
 

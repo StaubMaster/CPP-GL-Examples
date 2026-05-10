@@ -6,8 +6,8 @@
 #include "VoxelPallet.hpp"
 #include "Voxel.hpp"
 
-#include "ValueType/VectorU3.hpp"
-#include "ValueType/UndexLoop3D.hpp"
+#include "ValueType/Vector/U3.hpp"
+#include "ValueType/LoopU3.hpp"
 
 
 
@@ -52,8 +52,8 @@ void ChunkGraphicsData::Make(const Chunk & chunk)
 	Clear();
 	if (!chunk.IsEmpty())
 	{
-		UndexLoop3D loop(VectorU3(), VectorU3(CHUNK_VALUES_PER_SIDE));
-		for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+		LoopU3 loop(VectorU3(), VectorU3(CHUNK_VALUES_PER_SIDE));
+		for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
 			const Voxel & voxel = chunk[u];
 			if (voxel.Pallet == nullptr) { continue; }

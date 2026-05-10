@@ -46,7 +46,7 @@ struct Object
 		Return:
 			Relative Position
 	*/
-	Point2D	RelativePositionOf(Point2D p) const;
+	VectorF2	RelativePositionOf(VectorF2 p) const;
 
 	/* AbsolutePositionOf
 		Parameters:
@@ -54,7 +54,7 @@ struct Object
 		Return:
 			Absolute Position
 	*/
-	Point2D	AbsolutePositionOf(Point2D p) const;
+	VectorF2	AbsolutePositionOf(VectorF2 p) const;
 
 	/* AbsoluteVelocityOf
 		Parameters:
@@ -62,7 +62,7 @@ struct Object
 		Return:
 			Absolute Velocity
 	*/
-	Point2D	AbsoluteVelocityOf(Point2D p) const;
+	VectorF2	AbsoluteVelocityOf(VectorF2 p) const;
 
 
 
@@ -71,11 +71,11 @@ struct Object
 	unsigned int		CornerCount() const;
 	unsigned int		SideCount() const;
 
-	bool				IsContaining(Point2D p) const;
+	bool				IsContaining(VectorF2 p) const;
 
-	Point2D		RelativePositionOfIndex(unsigned int idx) const;
-	Point2D		AbsolutePositionOfIndex(unsigned int idx) const;
-	Point2D		AbsoluteVelocityOfIndex(unsigned int idx) const;
+	VectorF2		RelativePositionOfIndex(unsigned int idx) const;
+	VectorF2		AbsolutePositionOfIndex(unsigned int idx) const;
+	VectorF2		AbsoluteVelocityOfIndex(unsigned int idx) const;
 
 	/* Edge from [idx - 1] to [idx - 0]
 		undefined if Corners.Count < 2

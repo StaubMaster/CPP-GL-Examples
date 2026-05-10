@@ -2,7 +2,7 @@
 #include "ValueGen/Perlin2D.hpp"
 
 #include "ValueType/Bool2D.hpp"
-#include "ValueType/UndexLoop2D.hpp"
+#include "ValueType/LoopU2.hpp"
 #include "Miscellaneous/Container/Binary.hpp"
 
 
@@ -30,13 +30,13 @@ void Plane::Generate(const Perlin2D & noise)
 {
 	if (IsGenerated) { return; }
 
-	Point2D pos = VectorI2(Index.X, Index.Y) * PLANE_VALUES_PER_SIDE;
+	VectorF2 pos = VectorI2(Index.X, Index.Y) * PLANE_VALUES_PER_SIDE;
 
-	Undex2D size(PLANE_VALUES_PER_SIDE, PLANE_VALUES_PER_SIDE);
-	UndexLoop2D loop(Undex2D(), size);
-	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	VectorU2 size(PLANE_VALUES_PER_SIDE, PLANE_VALUES_PER_SIDE);
+	LoopU2 loop(VectorU2(), size);
+	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
-		Point2D p(
+		VectorF2 p(
 			(pos.X + u.X) * PLANE_SCALE,
 			(pos.Y + u.Y) * PLANE_SCALE
 		);
@@ -95,19 +95,19 @@ void Plane::UpdateMainBuffer()
 	{
 		Container::Binary<PlaneGraphics::MainData> data;
 
-		Undex2D size(PLANE_VALUES_PER_SIDE, PLANE_VALUES_PER_SIDE);
-		UndexLoop2D loop(Undex2D(), size);
-		for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+		VectorU2 size(PLANE_VALUES_PER_SIDE, PLANE_VALUES_PER_SIDE);
+		LoopU2 loop(VectorU2(), size);
+		for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
-			Undex2D u0 = Undex2D(u.X + 0, u.Y + 0) % size;
-			Undex2D u1 = Undex2D(u.X + 1, u.Y + 1) % size;
+			VectorU2 u0 = VectorU2(u.X + 0, u.Y + 0) % size;
+			VectorU2 u1 = VectorU2(u.X + 1, u.Y + 1) % size;
 			Bool2D comp = u0 < u1;
 
 			unsigned int udxs[4];
-			udxs[0b00] = size.Convert(Undex2D(u0.X, u0.Y));
-			udxs[0b01] = size.Convert(Undex2D(u1.X, u0.Y));
-			udxs[0b10] = size.Convert(Undex2D(u0.X, u1.Y));
-			udxs[0b11] = size.Convert(Undex2D(u1.X, u1.Y));
+			udxs[0b00] = size.Convert(VectorU2(u0.X, u0.Y));
+			udxs[0b01] = size.Convert(VectorU2(u1.X, u0.Y));
+			udxs[0b10] = size.Convert(VectorU2(u0.X, u1.Y));
+			udxs[0b11] = size.Convert(VectorU2(u1.X, u1.Y));
 
 			PlaneValue vals[4];
 
@@ -145,10 +145,10 @@ void Plane::UpdateMainBuffer()
 
 			PlaneGraphics::MainData temp[4];
 
-			temp[0b00].Pos = Point3D((u.X + 0) * PLANE_SCALE, vals[0b00].Value, (u.Y + 0) * PLANE_SCALE);
-			temp[0b01].Pos = Point3D((u.X + 1) * PLANE_SCALE, vals[0b01].Value, (u.Y + 0) * PLANE_SCALE);
-			temp[0b10].Pos = Point3D((u.X + 0) * PLANE_SCALE, vals[0b10].Value, (u.Y + 1) * PLANE_SCALE);
-			temp[0b11].Pos = Point3D((u.X + 1) * PLANE_SCALE, vals[0b11].Value, (u.Y + 1) * PLANE_SCALE);
+			temp[0b00].Pos = VectorF3((u.X + 0) * PLANE_SCALE, vals[0b00].Value, (u.Y + 0) * PLANE_SCALE);
+			temp[0b01].Pos = VectorF3((u.X + 1) * PLANE_SCALE, vals[0b01].Value, (u.Y + 0) * PLANE_SCALE);
+			temp[0b10].Pos = VectorF3((u.X + 0) * PLANE_SCALE, vals[0b10].Value, (u.Y + 1) * PLANE_SCALE);
+			temp[0b11].Pos = VectorF3((u.X + 1) * PLANE_SCALE, vals[0b11].Value, (u.Y + 1) * PLANE_SCALE);
 
 			temp[0b00].Col = vals[0b00].ToColor();
 			temp[0b01].Col = vals[0b01].ToColor();

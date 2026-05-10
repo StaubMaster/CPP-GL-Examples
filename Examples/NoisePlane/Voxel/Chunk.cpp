@@ -10,16 +10,16 @@
 #include "ValueGen/Perlin2D.hpp"
 #include "ValueGen/Perlin3D.hpp"
 
-#include "ValueType/BoxI3.hpp"
+#include "ValueType/Box/I3.hpp"
 
 #include "ValueType/Bool3.hpp"
-#include "ValueType/VectorU3.hpp"
+#include "ValueType/Vector/U3.hpp"
 
-#include "ValueType/Undex2D.hpp"
-#include "ValueType/UndexLoop2D.hpp"
+#include "ValueType/Vector/U2.hpp"
+#include "ValueType/LoopU2.hpp"
 
-#include "ValueType/Undex3D.hpp"
-#include "ValueType/UndexLoop3D.hpp"
+#include "ValueType/Vector/U3.hpp"
+#include "ValueType/LoopU3.hpp"
 
 #include "Telemetry/StopWatch.hpp"
 
@@ -87,7 +87,7 @@ bool Chunk::try_lock()
 
 bool Chunk::IsEmpty() const
 {
-	return (Voxels.Count() == 0);
+	return (Voxels.Length() == 0);
 }
 bool Chunk::IsNullOrEmpty() const
 {
@@ -113,7 +113,7 @@ void Chunk::MakeNull()
 {
 	if (IsEmpty())
 	{
-		Voxels.ReSize(VectorU3(CHUNK_VALUES_PER_SIDE));
+		Voxels.ChangeSize(VectorU3(CHUNK_VALUES_PER_SIDE));
 	}
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
@@ -262,8 +262,8 @@ void Chunk::GenerateGrid()
 {
 	VectorI3 chunk_pos = Index * CHUNK_VALUES_PER_SIDE;
 
-	UndexLoop3D loop3(Undex3D(), Voxels.Size());
-	for (Undex3D u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
+	LoopU3 loop3(VectorU3(), Voxels.Size());
+	for (VectorU3 u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
 	{
 		VectorI3 voxel_idx = chunk_pos + u;
 		VectorF3 voxel_pos = voxel_idx;
@@ -307,8 +307,8 @@ void Chunk::GeneratePillars()
 	VoxelPallet & pallet0 = VoxelPalletMap::All["ConcreteCube"];
 	VoxelPallet & pallet1 = VoxelPalletMap::All["ConcreteCylinder"];
 
-	UndexLoop3D loop3(Undex3D(), Voxels.Size());
-	for (Undex3D u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
+	LoopU3 loop3(VectorU3(), Voxels.Size());
+	for (VectorU3 u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
 	{
 		if (u.Y == 0 || u.Y == 31)
 		{ Voxels[u].Pallet = &pallet0; }
@@ -343,7 +343,7 @@ void Chunk::GeneratePillars(const Perlin2D & noise)
 	*/
 
 	Array3D<Voxel> Tree;
-	Tree.ReSize(VectorU3(5, 7, 5));
+	Tree.ChangeSize(VectorU3(5, 7, 5));
 
 	Tree[VectorU3(1, 3, 0)].Pallet = &VoxelPalletMap::All["OrientationCube"];
 	Tree[VectorU3(2, 3, 0)].Pallet = &VoxelPalletMap::All["OrientationCube"];
@@ -398,7 +398,7 @@ void Chunk::GeneratePillars(const Perlin2D & noise)
 
 	VectorI3 offset(-2, 0, -2);
 
-	UndexLoop3D loop(0, Tree.Size());
+	LoopU3 loop(0, Tree.Size());
 	for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
 		VectorU3 p = origin - offset + u;
@@ -411,8 +411,8 @@ void Chunk::GeneratePillars(const Perlin2D & noise)
 void Chunk::GeneratePerlin(const Perlin2D & noise)
 {
 	VectorF3 Offset = Index * CHUNK_VALUES_PER_SIDE;
-	UndexLoop2D loop(Undex2D(), Undex2D(CHUNK_VALUES_PER_SIDE));
-	for (Undex2D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	LoopU2 loop(VectorU2(), VectorU2(CHUNK_VALUES_PER_SIDE));
+	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
 		VectorF2 p2(
 			Offset.X + u.X,
@@ -433,18 +433,19 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		float val_rel = val - Offset.Y;
 		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
 		{
-			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, Undex3D(u.X, i, u.Y));
+			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(u.X, i, u.Y));
 			if (i > val_rel)
 			{
 				Voxels[voxel_u].Pallet = nullptr;
 			}
 			else
 			{
-				Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Gray"];
+				//Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Gray"];
 
-				//if (val < -1.0f) { Data[voxel_u].Pallet = &VoxelPalletMap::All["Water"]; }
-				//else if (val < +1.0f) { Data[voxel_u].Pallet = &VoxelPalletMap::All["Sand"]; }
-				//else { Data[voxel_u].Pallet = &VoxelPalletMap::All["Grass"]; }
+				if (val < -1.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Water"]; }
+				//else if (val < +1.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Sand"]; }
+				else if (val < +1.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Dirt"]; }
+				else { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Grass"]; }
 			}
 		}
 	}
@@ -452,8 +453,8 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 void Chunk::GeneratePerlin(const Perlin3D & noise)
 {
 	VectorF3 pos = Index * CHUNK_VALUES_PER_SIDE;
-	UndexLoop3D loop(Undex3D(), Undex3D(CHUNK_VALUES_PER_SIDE));
-	for (Undex3D u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	LoopU3 loop(VectorU3(), VectorU3(CHUNK_VALUES_PER_SIDE));
+	for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
 		VectorF3 p(
 			pos.X + u.X,

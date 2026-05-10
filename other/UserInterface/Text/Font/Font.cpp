@@ -4,7 +4,7 @@
 
 UI::Text::Font::Character::Character() :
 	Code(0),
-	Box(Point2D(0, 0), Point2D(1, 1))
+	Box(VectorF2(0, 0), VectorF2(1, 1))
 { }
 
 
@@ -19,7 +19,7 @@ UI::Text::Font::~Font()
 
 
 
-AxisBox2D UI::Text::Font::CharacterBoxFromCode(unsigned int code)
+BoxF2 UI::Text::Font::CharacterBoxFromCode(unsigned int code)
 {
 	for (unsigned int i = 0; i < Characters.Count(); i++)
 	{

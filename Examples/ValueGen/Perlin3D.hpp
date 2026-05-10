@@ -1,8 +1,8 @@
 #ifndef  PERLIN_3D_HPP
 # define PERLIN_3D_HPP
 
-# include "ValueType/VectorU3.hpp"
-# include "ValueType/VectorF3.hpp"
+# include "ValueType/Vector/U3.hpp"
+# include "ValueType/Vector/F3.hpp"
 
 struct Perlin3D
 {

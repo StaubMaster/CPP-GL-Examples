@@ -11,10 +11,10 @@ UI::Control::Label::Label()
 	Layer = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = Point2D(50, 25);
+	AnchorSize = VectorF2(50, 25);
 
 	float padding = 0;
-	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
+	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);

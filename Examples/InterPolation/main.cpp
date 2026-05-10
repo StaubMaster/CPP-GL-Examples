@@ -226,21 +226,21 @@ PolyHedraObjectArray Test_Node_Instance_Entrys;
 void TestSpline_Init()
 {
 	/*Test_Spline = new SplineCurve3D((SplineNode3D []) {
-		SplineNode3D(Point3D(+40, +10, -20), Point3D(+1, 0, +1)),
-		SplineNode3D(Point3D(+40, -10, +20), Point3D(-1, 0, +1)),
-		SplineNode3D(Point3D(  0,   0, +40), Point3D(-1, 0,  0)),
-		SplineNode3D(Point3D(-40,   0, +20), Point3D(-1, 0, -1)),
-		SplineNode3D(Point3D(-40,   0, -20), Point3D(+1, 0, -1)),
-		SplineNode3D(Point3D(  0,   0, -40), Point3D(+1, 0,  0)),
+		SplineNode3D(VectorF3(+40, +10, -20), VectorF3(+1, 0, +1)),
+		SplineNode3D(VectorF3(+40, -10, +20), VectorF3(-1, 0, +1)),
+		SplineNode3D(VectorF3(  0,   0, +40), VectorF3(-1, 0,  0)),
+		SplineNode3D(VectorF3(-40,   0, +20), VectorF3(-1, 0, -1)),
+		SplineNode3D(VectorF3(-40,   0, -20), VectorF3(+1, 0, -1)),
+		SplineNode3D(VectorF3(  0,   0, -40), VectorF3(+1, 0,  0)),
 	}, 6, true, 0, 0, 0);*/
 	{
 		SplineNode3D nodes[6] {
-			SplineNode3D(Point3D(+40, +10, -20), Point3D(+1, 0, +1)),
-			SplineNode3D(Point3D(+40, -10, +20), Point3D(-1, 0, +1)),
-			SplineNode3D(Point3D(  0,   0, +40), Point3D(-1, 0,  0)),
-			SplineNode3D(Point3D(-40,   0, +20), Point3D(-1, 0, -1)),
-			SplineNode3D(Point3D(-40,   0, -20), Point3D(+1, 0, -1)),
-			SplineNode3D(Point3D(  0,   0, -40), Point3D(+1, 0,  0)),
+			SplineNode3D(VectorF3(+40, +10, -20), VectorF3(+1, 0, +1)),
+			SplineNode3D(VectorF3(+40, -10, +20), VectorF3(-1, 0, +1)),
+			SplineNode3D(VectorF3(  0,   0, +40), VectorF3(-1, 0,  0)),
+			SplineNode3D(VectorF3(-40,   0, +20), VectorF3(-1, 0, -1)),
+			SplineNode3D(VectorF3(-40,   0, -20), VectorF3(+1, 0, -1)),
+			SplineNode3D(VectorF3(  0,   0, -40), VectorF3(+1, 0,  0)),
 		};
 		Test_Spline = new SplineCurve3D(nodes, 6, true, 0, 0, 0);
 	}
@@ -304,39 +304,39 @@ void TrainSpline_Init()
 	{
 		Train_Spline = new CubicSplineCurve3D();
 		Train_Spline -> Nodes.List({
-			Point3D(+100, 0, +100),
-			Point3D(+100, 0, -100),
-			Point3D(-100, 0, -100),
-			Point3D(-100, 0, +100),
+			VectorF3(+100, 0, +100),
+			VectorF3(+100, 0, -100),
+			VectorF3(-100, 0, -100),
+			VectorF3(-100, 0, +100),
 		});
 		/*Train_Spline -> Nodes.List({
-			Point3D(+50, 0, +100),
-			Point3D(+50, 0,    0),
-			Point3D(+50, 0, -100),
-			Point3D(-50, 0, -100),
-			Point3D(-50, 0,    0),
-			Point3D(-50, 0, +100),
+			VectorF3(+50, 0, +100),
+			VectorF3(+50, 0,    0),
+			VectorF3(+50, 0, -100),
+			VectorF3(-50, 0, -100),
+			VectorF3(-50, 0,    0),
+			VectorF3(-50, 0, +100),
 		});*/
 		/*Train_Spline -> Nodes.List({
-			Point3D(+ 25, 0, +100),
-			Point3D(+ 75, 0, +100),
-			Point3D(+100, 0, + 75),
-			Point3D(+100, 0, + 25),
+			VectorF3(+ 25, 0, +100),
+			VectorF3(+ 75, 0, +100),
+			VectorF3(+100, 0, + 75),
+			VectorF3(+100, 0, + 25),
 
-			Point3D(+100, 0, - 25),
-			Point3D(+100, 0, - 75),
-			Point3D(+ 75, 0, -100),
-			Point3D(+ 25, 0, -100),
+			VectorF3(+100, 0, - 25),
+			VectorF3(+100, 0, - 75),
+			VectorF3(+ 75, 0, -100),
+			VectorF3(+ 25, 0, -100),
 
-			Point3D(- 25, 0, -100),
-			Point3D(- 75, 0, -100),
-			Point3D(-100, 0, - 75),
-			Point3D(-100, 0, - 25),
+			VectorF3(- 25, 0, -100),
+			VectorF3(- 75, 0, -100),
+			VectorF3(-100, 0, - 75),
+			VectorF3(-100, 0, - 25),
 
-			Point3D(-100, 0, + 25),
-			Point3D(-100, 0, + 75),
-			Point3D(- 75, 0, +100),
-			Point3D(- 25, 0, +100),
+			VectorF3(-100, 0, + 25),
+			VectorF3(-100, 0, + 75),
+			VectorF3(- 75, 0, +100),
+			VectorF3(- 25, 0, +100),
 		});*/
 		Train_Spline -> FiniteDifference();
 	}
@@ -364,7 +364,7 @@ void TrainSpline_Init()
 		t = t * (Train_Spline -> SegmentCount);
 		SplineNode3D node = Train_Spline -> Interpolate0(t);
 		Train_Rail_Instance_Entry[i].Trans.Pos = node.Pos;
-		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromPoint3D(node.Dir);
+		Train_Rail_Instance_Entry[i].Trans.Rot = Angle3D::FromVectorF3(node.Dir);
 		//Train_Rail_Instance_Entry[i].Trans.Rot.CalcBack();
 	}*/
 
@@ -399,7 +399,7 @@ void TrainSpline_Update(float timeDelta)
 		node.Pos = Train_Spline -> InterPolatePos(Train_Spline_Value);
 		node.Dir = Train_Spline -> InterPolateDir(Train_Spline_Value);
 		EulerAngle3D a = EulerAngle3D::PointToZ(node.Dir);
-		Train_Wheel_Instance_Entry[0].Trans().Position = node.Pos + a.reverse(Point3D(0, 6, 0));
+		Train_Wheel_Instance_Entry[0].Trans().Position = node.Pos + a.reverse(VectorF3(0, 6, 0));
 		Train_Wheel_Instance_Entry[0].Trans().Rotation = a;
 		Train_Wheel_Instance_Entry[0].Trans().Rotation.X1 += Angle::Radians(Train_WheelSpin);
 	}
@@ -477,7 +477,7 @@ void Frame(double timeDelta)
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	{
-		Point2D mouse = window.MouseManager.CursorPosition().Buffer.Corner;
+		VectorF2 mouse = window.MouseManager.CursorPosition().Buffer.Corner;
 		ControlManager.UpdateMouse(mouse);
 		ControlManager.Window.UpdateEntrys();
 		ControlManager.Draw();

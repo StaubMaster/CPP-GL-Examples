@@ -1,6 +1,6 @@
 #include "Anchor1D.hpp"
 #include "AnchorEnum.hpp"
-#include "ValueType/AxisBox1D.hpp"
+#include "ValueType/Box/F1.hpp"
 
 
 
@@ -133,7 +133,7 @@ void Anchor1D::AnchorBoth(float min, float max)
 	SetMaxDist(max);
 }
 
-AxisBox1D Anchor1D::Calculate(AxisBox1D Parent)
+BoxF1 Anchor1D::Calculate(BoxF1 Parent)
 {
 	float ParentSize = Parent.Max - Parent.Min;
 	if (Anchor == AnchorType::Both)
@@ -156,5 +156,5 @@ AxisBox1D Anchor1D::Calculate(AxisBox1D Parent)
 		MinDist = (ParentSize * NormalCenter) - (Size / 2);
 		MaxDist = ParentSize - (MinDist + Size);
 	}
-	return AxisBox1D(Parent.Min + MinDist, Parent.Max - MaxDist);
+	return BoxF1(Parent.Min + MinDist, Parent.Max - MaxDist);
 }

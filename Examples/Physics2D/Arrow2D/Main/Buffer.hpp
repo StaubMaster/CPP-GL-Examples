@@ -2,8 +2,8 @@
 # define ARROW_2D_MAIN_BUFFER_HPP
 
 # include "Graphics/Buffer/Array.hpp"
-# include "Graphics/Attribute/Point2D.hpp"
-# include "Graphics/Attribute/Point3D.hpp"
+# include "Graphics/Attribute/VectorF2.hpp"
+# include "Graphics/Attribute/VectorF3.hpp"
 
 namespace BufferArray { class Base; };
 
@@ -14,8 +14,8 @@ namespace Main
 class Buffer : public ::Buffer::Array
 {
 	public:
-	::Attribute::Point2D	Pos;
-	::Attribute::Point3D	Tex;
+	::Attribute::VectorF2	Pos;
+	::Attribute::VectorF3	Tex;
 	public:
 	Buffer(VertexArray & vertex_array);
 };

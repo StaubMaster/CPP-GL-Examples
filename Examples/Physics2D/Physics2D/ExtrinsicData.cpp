@@ -6,11 +6,11 @@
 
 void Physics2D::ExtrinsicData::Zero()
 {
-	Acl.Pos = Point2D();
+	Acl.Pos = VectorF2();
 	Acl.Rot = Angle();
 }
 
-void Physics2D::ExtrinsicData::Change(Point2D change)
+void Physics2D::ExtrinsicData::Change(VectorF2 change)
 {
 	Acl.Pos += change;
 }

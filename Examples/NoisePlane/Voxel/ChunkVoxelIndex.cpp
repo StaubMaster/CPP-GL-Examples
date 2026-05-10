@@ -1,5 +1,5 @@
 #include "ChunkVoxelIndex.hpp"
-#include "ValueType/VectorF3.hpp"
+#include "ValueType/Vector/F3.hpp"
 #include "Chunk.hpp"
 
 

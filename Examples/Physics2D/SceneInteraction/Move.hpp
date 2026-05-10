@@ -3,15 +3,15 @@
 
 # include "SceneInteraction/Base.hpp"
 # include "ValueType/Undex.hpp"
-# include "ValueType/Point2D.hpp"
+# include "ValueType/VectorF2.hpp"
 
 struct InteractionObjectMove : public SceneInteractionBase
 {
 	Undex	Object;
-	Point2D	Offset;
+	VectorF2	Offset;
 
-	Point2D	Origin;
-	Point2D	Target;
+	VectorF2	Origin;
+	VectorF2	Target;
 
 	InteractionObjectMove();
 

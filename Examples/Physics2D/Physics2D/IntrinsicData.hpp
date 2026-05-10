@@ -1,7 +1,7 @@
 #ifndef  PHYSICS_2D_INTRINSIC_DATA_HPP
 # define PHYSICS_2D_INTRINSIC_DATA_HPP
 
-# include "ValueType/Point2D.hpp"
+# include "ValueType/VectorF2.hpp"
 # include "ValueType/Matrix3x3.hpp"
 
 class PolyGon;
@@ -13,7 +13,7 @@ struct IntrinsicData
 	float		Mass;
 	float		Area;
 	float		Density;
-	Point2D		CenterOfMass;
+	VectorF2		CenterOfMass;
 	float		MomentOfInertia;
 	float		Restitution;
 

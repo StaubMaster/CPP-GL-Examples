@@ -10,13 +10,13 @@
 #include "Window.hpp"
 #include "ContextBase.hpp"
 
-#include "ValueType/UndexLoop2D.hpp"
+#include "ValueType/LoopU2.hpp"
 
 int main(int argc, char * argv[])
 {
 	std::cout << "int main() ...\n";
 	int ret = -1;
-	{ UndexLoop2D loop(Undex2D(0, 0), Undex2D(1, 1)); (void)loop; } // compiler complaining
+	{ LoopU2 loop(VectorU2(0, 0), VectorU2(1, 1)); (void)loop; } // compiler complaining
 	Debug::NewFileInDir(DirectoryInfo("./logs/"));
 	if (argc > 0)	{ Debug::Log << argv[0] << Debug::Done; }
 	else			{ Debug::Log << "NoName" << Debug::Done; }

@@ -14,11 +14,11 @@ struct Projection
 	static unsigned int DebugEdgeUndex;
 
 	static bool DebugShow;
-	static Point2D DebugOrigin;
+	static VectorF2 DebugOrigin;
 
 
 
-	Point2D			Position;
+	VectorF2			Position;
 	float			Distance;
 
 	~Projection();
@@ -28,9 +28,9 @@ struct Projection
 	Projection & operator=(const Projection & other);
 
 	static Projection Project(
-		Point2D origin,
-		Point2D normal,
-		Point2D point
+		VectorF2 origin,
+		VectorF2 normal,
+		VectorF2 point
 	);
 };
 };

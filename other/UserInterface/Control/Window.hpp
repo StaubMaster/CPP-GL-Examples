@@ -18,7 +18,7 @@ class Window : public Base
 	~Window();
 
 	public:
-	void UpdateWindowSize(Point2D size);
+	void UpdateWindowSize(VectorF2 size);
 
 	void ChangeManager(Manager * manager) override;
 	void ChangeManager(UI::Text::Manager * manager) override;

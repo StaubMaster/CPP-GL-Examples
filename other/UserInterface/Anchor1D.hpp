@@ -1,9 +1,7 @@
 #ifndef  ANCHOR_1D_HPP
 # define ANCHOR_1D_HPP
 
-//struct AxisBox1D;
 struct BoxF1;
-typedef BoxF1 AxisBox1D;
 enum class AnchorType : unsigned char;
 
 /*	do I ever not use the Padded numbers ?
@@ -143,7 +141,7 @@ struct Anchor1D
 	void	AnchorBoth(float min, float max);
 	// Anchor Center
 
-	AxisBox1D Calculate(AxisBox1D Parent);
+	BoxF1 Calculate(BoxF1 Parent);
 };
 
 #endif

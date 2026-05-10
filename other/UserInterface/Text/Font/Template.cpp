@@ -17,24 +17,20 @@ void UI::Text::Font::Template::Done()
 
 
 
-void UI::Text::Font::Template::Change_Scale(Point2D scale)
+void UI::Text::Font::Template::Change_Scale(VectorF2 scale)
 {
 	Scale = scale;
 }
 void UI::Text::Font::Template::Insert_Image(Image img)
 {
-	if (!Referance.AtlasTexture.Empty())
-	{
-		Referance.AtlasTexture.Dispose();
-	}
-	Referance.AtlasTexture.Bind(img);
+	Referance.AtlasTexture = img;
 }
-void UI::Text::Font::Template::Change_DefaultCharacter(Point2D pos, Point2D size)
+void UI::Text::Font::Template::Change_DefaultCharacter(VectorF2 pos, VectorF2 size)
 {
 	Referance.DefaultCharacter.Box.Min = (pos / Scale);
 	Referance.DefaultCharacter.Box.Max = (pos + size) / Scale;
 }
-void UI::Text::Font::Template::Insert_Character(unsigned int code, Point2D pos, Point2D size)
+void UI::Text::Font::Template::Insert_Character(unsigned int code, VectorF2 pos, VectorF2 size)
 {
 	Character chr;
 	chr.Code = code;

@@ -6,12 +6,12 @@
 # include "PlaneGraphics.hpp"
 # include "PlaneNeighbours.hpp"
 
-# include "ValueType/VectorI2.hpp"
+# include "ValueType/Vector/I2.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
 
 /*
-Plane Undex2D should be Index2D
+Plane VectorU2 should be Index2D
 then make them generate around View (Point)
 */
 
@@ -45,7 +45,7 @@ struct PlaneManager
 	Plane *			FindPlaneOrNull(VectorI2 idx) const;
 
 	void	Clear();
-	void	UpdateAround(const Perlin2D & noise, Point2D pos);
+	void	UpdateAround(const Perlin2D & noise, VectorF2 pos);
 
 	bool	ShouldGenerate;
 	void	Generate(const Perlin2D & noise, VectorI2 idx);

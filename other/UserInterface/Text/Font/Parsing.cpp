@@ -61,14 +61,14 @@ void UI::Text::Font::ParsingData::Parse_Scale(const TextCommand & cmd)
 {
 	if (!(cmd.Count() == 2)) { throw InvalidCommandArgumentCount(cmd, "n == 2"); }
 
-	Temp -> Change_Scale(Point2D(cmd.ToFloat(0), cmd.ToFloat(1)));
+	Temp -> Change_Scale(VectorF2(cmd.ToFloat(0), cmd.ToFloat(1)));
 }
 void UI::Text::Font::ParsingData::Parse_Character(const TextCommand & cmd)
 {
 	if (!(cmd.Count() == 5)) { throw InvalidCommandArgumentCount(cmd, "n == 5"); }
 
-	Point2D pos(cmd.ToFloat(1), cmd.ToFloat(2));
-	Point2D size(cmd.ToFloat(3), cmd.ToFloat(4));
+	VectorF2 pos(cmd.ToFloat(1), cmd.ToFloat(2));
+	VectorF2 size(cmd.ToFloat(3), cmd.ToFloat(4));
 
 	if (cmd.ToString(0) == "Default")
 	{ Temp -> Change_DefaultCharacter(pos, size); }

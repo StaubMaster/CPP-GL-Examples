@@ -10,7 +10,7 @@
 
 #include "Graphics/Shader/Code.hpp"
 
-#include "ValueType/AxisBox2D.hpp"
+#include "ValueType/BoxF2.hpp"
 
 
 
@@ -94,37 +94,37 @@ void Arrow2D::Manager::GraphicsDelete()
 
 void Arrow2D::Manager::GraphicsUpdateMain()
 {
-	AxisBox2D	Pos;
-	AxisBox2D	Tex;
+	BoxF2	Pos;
+	BoxF2	Tex;
 
 	Container::Binary<Arrow2D::Main::Data> data;
 
-	Pos = AxisBox2D(Point2D(-3, -1), Point2D(-1, +1));
-	Tex = AxisBox2D(Point2D(0 / 96.0f, 0), Point2D(32 / 96.0f, 1));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(Tex.Min.X, Tex.Min.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(Tex.Max.X, Tex.Max.Y, 0)));
+	Pos = BoxF2(VectorF2(-3, -1), VectorF2(-1, +1));
+	Tex = BoxF2(VectorF2(0 / 96.0f, 0), VectorF2(32 / 96.0f, 1));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Min.X, Pos.Min.Y), VectorF3(Tex.Min.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Min.X, Pos.Max.Y), VectorF3(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Max.X, Pos.Min.Y), VectorF3(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Max.X, Pos.Min.Y), VectorF3(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Min.X, Pos.Max.Y), VectorF3(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Max.X, Pos.Max.Y), VectorF3(Tex.Max.X, Tex.Max.Y, 0)));
 
-	Pos = AxisBox2D(Point2D(-1, -1), Point2D(+1, +1));
-	Tex = AxisBox2D(Point2D(32 / 96.0f, 0), Point2D(64 / 96.0f, 1));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(Tex.Min.X, Tex.Min.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(Tex.Max.X, Tex.Max.Y, 0)));
+	Pos = BoxF2(VectorF2(-1, -1), VectorF2(+1, +1));
+	Tex = BoxF2(VectorF2(32 / 96.0f, 0), VectorF2(64 / 96.0f, 1));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Min.X, Pos.Min.Y), VectorF3(Tex.Min.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Min.X, Pos.Max.Y), VectorF3(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Max.X, Pos.Min.Y), VectorF3(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Max.X, Pos.Min.Y), VectorF3(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Min.X, Pos.Max.Y), VectorF3(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Max.X, Pos.Max.Y), VectorF3(Tex.Max.X, Tex.Max.Y, 0)));
 
-	Pos = AxisBox2D(Point2D(+1, -1), Point2D(+3, +1));
-	Tex = AxisBox2D(Point2D(64 / 96.0f, 0), Point2D(96 / 96.0f, 1));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Min.Y), Point3D(Tex.Min.X, Tex.Min.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Min.Y), Point3D(Tex.Max.X, Tex.Min.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Min.X, Pos.Max.Y), Point3D(Tex.Min.X, Tex.Max.Y, 0)));
-	data.Insert(Arrow2D::Main::Data(Point2D(Pos.Max.X, Pos.Max.Y), Point3D(Tex.Max.X, Tex.Max.Y, 0)));
+	Pos = BoxF2(VectorF2(+1, -1), VectorF2(+3, +1));
+	Tex = BoxF2(VectorF2(64 / 96.0f, 0), VectorF2(96 / 96.0f, 1));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Min.X, Pos.Min.Y), VectorF3(Tex.Min.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Min.X, Pos.Max.Y), VectorF3(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Max.X, Pos.Min.Y), VectorF3(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Max.X, Pos.Min.Y), VectorF3(Tex.Max.X, Tex.Min.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Min.X, Pos.Max.Y), VectorF3(Tex.Min.X, Tex.Max.Y, 0)));
+	data.Insert(Arrow2D::Main::Data(VectorF2(Pos.Max.X, Pos.Max.Y), VectorF3(Tex.Max.X, Tex.Max.Y, 0)));
 
 	Buffer.Main.Change(data);
 }

@@ -7,7 +7,7 @@
 # include "InventorySlot.hpp"
 # include "Display/DisplaySize.hpp"
 
-# include "ValueType/VectorU2.hpp"
+# include "ValueType/Vector/U2.hpp"
 # include "Item/ItemContainer.hpp"
 
 struct HotBar : public UI::Control::Form

@@ -38,7 +38,7 @@ void Inventory::Change(ItemContainer * container)
 	AnchorSize.X = SlotSpace.X * Count.X + (5 * 2);
 	AnchorSize.Y = SlotSpace.Y * Count.Y + (5 * 2);
 
-	UndexLoop2D loop(VectorU2(), Count);
+	LoopU2 loop(VectorU2(), Count);
 	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
 		unsigned int _u = Count.Convert(u);
@@ -84,7 +84,7 @@ void Inventory::Change(ItemContainer * container)
 #include <iostream>
 void Inventory::ShowItems()
 {
-	UndexLoop2D loop(VectorU2(), Count);
+	LoopU2 loop(VectorU2(), Count);
 	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
 		Slots[Count.Convert(u)].Show();
@@ -100,7 +100,7 @@ void Inventory::ShowItems()
 }
 void Inventory::HideItems()
 {
-	UndexLoop2D loop(VectorU2(), Count);
+	LoopU2 loop(VectorU2(), Count);
 	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
 		Slots[Count.Convert(u)].Hide();

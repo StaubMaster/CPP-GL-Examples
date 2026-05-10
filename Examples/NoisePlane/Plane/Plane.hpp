@@ -6,8 +6,8 @@
 # define PLANE_VALUES_PER_SIDE 16
 # define PLANE_VALUES_PER_AREA PLANE_VALUES_PER_SIDE * PLANE_VALUES_PER_SIDE
 
-# include "ValueType/VectorI2.hpp"
-# include "ValueType/VectorU2.hpp"
+# include "ValueType/Vector/I2.hpp"
+# include "ValueType/Vector/U2.hpp"
 
 # include "PlaneGraphics.hpp"
 # include "PlaneNeighbours.hpp"

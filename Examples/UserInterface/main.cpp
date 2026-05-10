@@ -23,7 +23,7 @@
 #include "Graphics/Buffer/VertexArray.hpp"
 #include "Graphics/Buffer/Base.hpp"
 
-#include "Graphics/Attribute/Point2D.hpp"
+#include "Graphics/Attribute/VectorF2.hpp"
 #include "Graphics/Attribute/ColorF4.hpp"
 
 #include "Graphics/Uniform/_Include.hpp"
@@ -403,7 +403,7 @@ void ShowText(const char * text)
 	UI::Text::Object obj;
 	obj.String() = text;
 	obj.Pos() = window.Size.Buffer.Half;
-	obj.Bound() = AxisBox2D(Point2D(), window.Size.Buffer.Full);
+	obj.Bound() = BoxF2(VectorF2(), window.Size.Buffer.Full);
 }
 void ShowAlphabet()
 {
@@ -411,7 +411,7 @@ void ShowAlphabet()
 	obj.Create();
 
 	obj.Pos() = window.Size.Buffer.Half;
-	obj.Bound() = AxisBox2D(Point2D(), window.Size.Buffer.Full);
+	obj.Bound() = BoxF2(VectorF2(), window.Size.Buffer.Full);
 
 	obj.AlignmentX() = UI::Text::Alignment::Min;
 	obj.AlignmentY() = UI::Text::Alignment::Min;
@@ -432,7 +432,7 @@ void Frame(double timeDelta)
 
 		obj.Pos().X = window.Size.Window.Full.X - 10;
 		obj.Pos().Y = 0 + 10;
-		obj.Bound() = AxisBox2D(Point2D(), window.Size.Buffer.Full);
+		obj.Bound() = BoxF2(VectorF2(), window.Size.Buffer.Full);
 		obj.AlignmentX() = UI::Text::Alignment::Max;
 		obj.AlignmentY() = UI::Text::Alignment::Min;
 
@@ -447,8 +447,8 @@ void Frame(double timeDelta)
 	{
 		UI::Control::Object obj;
 		obj.Create();
-		obj.Box().Min = window.Size.Buffer.Half - Point2D(20, 20);
-		obj.Box().Max = window.Size.Buffer.Half + Point2D(20, 20);
+		obj.Box().Min = window.Size.Buffer.Half - VectorF2(20, 20);
+		obj.Box().Max = window.Size.Buffer.Half + VectorF2(20, 20);
 		obj.Color() = ColorF4(1, 0, 1);
 	}
 
@@ -457,7 +457,7 @@ void Frame(double timeDelta)
 	//ShowAllCharacters();
 
 	{
-		Point2D mouse = window.MouseManager.CursorPosition().Buffer.Corner;
+		VectorF2 mouse = window.MouseManager.CursorPosition().Buffer.Corner;
 		ControlManager.UpdateMouse(mouse);
 		ControlManager.Window.UpdateEntrys();
 		ControlManager.Draw();

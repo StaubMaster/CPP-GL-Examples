@@ -50,8 +50,8 @@ void Physics2D::Collision::ContactData::Consider(const Projection & projection)
 }
 
 Physics2D::Collision::ContactData Physics2D::Collision::ContactData::Project(
-	Point2D origin,
-	Point2D normal,
+	VectorF2 origin,
+	VectorF2 normal,
 	const Object & obj
 )
 {
@@ -140,8 +140,8 @@ bool Physics2D::Collision::ContactData::Contact(
 	ContactData	temp;
 
 	Line2D		edge;
-	Point2D		origin;
-	Point2D		normal;
+	VectorF2		origin;
+	VectorF2		normal;
 
 	unsigned int non_contact_count = edges.CornerCount();
 	for (unsigned int i = 0; i < edges.CornerCount(); i++)

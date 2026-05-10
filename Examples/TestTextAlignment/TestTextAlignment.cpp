@@ -71,14 +71,14 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		return;
 	}
 
-	AxisBox2D bound(Point2D(), window.Size.Buffer.Full);
+	BoxF2 bound(VectorF2(), window.Size.Buffer.Full);
 
 	{
 		UI::Text::Object	text;
 		text.Create();
 		text.String() = "Top\nLeft";
 		text.Bound() = bound;
-		text.TextPosition() = Point2D(0, 0);
+		text.TextPosition() = VectorF2(0, 0);
 		text.AlignTopLeft();
 		text.Color() = ColorF4(1, 0, 1);
 	}
@@ -87,7 +87,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		text.Create();
 		text.String() = "Top\nMiddle";
 		text.Bound() = bound;
-		text.TextPosition() = Point2D(window.Size.Buffer.Half.X, 0);
+		text.TextPosition() = VectorF2(window.Size.Buffer.Half.X, 0);
 		text.AlignTopMiddle();
 		text.Color() = ColorF4(0, 1, 0);
 	}
@@ -96,7 +96,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		text.Create();
 		text.String() = "Top\nRight";
 		text.Bound() = bound;
-		text.TextPosition() = Point2D(window.Size.Buffer.Full.X, 0);
+		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
 		text.AlignTopRight();
 		text.Color() = ColorF4(0, 1, 0);
 	}
@@ -106,7 +106,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		text.Create();
 		text.String() = "Middle\nLeft";
 		text.Bound() = bound;
-		text.TextPosition() = Point2D(0, window.Size.Buffer.Half.Y);
+		text.TextPosition() = VectorF2(0, window.Size.Buffer.Half.Y);
 		text.AlignMiddleLeft();
 		text.Color() = ColorF4(1, 0, 1);
 	}
@@ -115,7 +115,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		text.Create();
 		text.String() = "Middle\nMiddle";
 		text.Bound() = bound;
-		text.TextPosition() = Point2D(window.Size.Buffer.Half.X, window.Size.Buffer.Half.Y);
+		text.TextPosition() = VectorF2(window.Size.Buffer.Half.X, window.Size.Buffer.Half.Y);
 		text.AlignMiddleMiddle();
 		text.Color() = ColorF4(0, 1, 0);
 	}
@@ -124,7 +124,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		text.Create();
 		text.String() = "Middle\nRight";
 		text.Bound() = bound;
-		text.TextPosition() = Point2D(window.Size.Buffer.Full.X, window.Size.Buffer.Half.Y);
+		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, window.Size.Buffer.Half.Y);
 		text.AlignMiddleRight();
 		text.Color() = ColorF4(0, 1, 0);
 	}
@@ -134,7 +134,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		text.Create();
 		text.String() = "Bottom\nLeft";
 		text.Bound() = bound;
-		text.TextPosition() = Point2D(0, window.Size.Buffer.Full.Y);
+		text.TextPosition() = VectorF2(0, window.Size.Buffer.Full.Y);
 		text.AlignBottomLeft();
 		text.Color() = ColorF4(1, 0, 1);
 	}
@@ -143,7 +143,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		text.Create();
 		text.String() = "Bottom\nMiddle";
 		text.Bound() = bound;
-		text.TextPosition() = Point2D(window.Size.Buffer.Half.X, window.Size.Buffer.Full.Y);
+		text.TextPosition() = VectorF2(window.Size.Buffer.Half.X, window.Size.Buffer.Full.Y);
 		text.AlignBottomMiddle();
 		text.Color() = ColorF4(0, 1, 0);
 	}
@@ -152,7 +152,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		text.Create();
 		text.String() = "Bottom\nRight";
 		text.Bound() = bound;
-		text.TextPosition() = Point2D(window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y);
+		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y);
 		text.AlignBottomRight();
 		text.Color() = ColorF4(0, 1, 0);
 	}

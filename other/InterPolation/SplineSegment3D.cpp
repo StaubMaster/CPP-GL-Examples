@@ -259,11 +259,11 @@ SplineNode3D SplineSegment3D::InterpolateCubicHermite(float t) const
 
 SplineNode3D SplineSegment3D::InterpolateFiniteDifference(float t) const
 {
-	Point3D	dir0, dir1;
+	VectorF3	dir0, dir1;
 	{
-		Point3D	diff_Here = Node1.Pos - Node0.Pos;
-		Point3D diff_Prev;
-		Point3D diff_Next;
+		VectorF3	diff_Here = Node1.Pos - Node0.Pos;
+		VectorF3 diff_Prev;
+		VectorF3 diff_Next;
 		if (Prev != 0) { diff_Prev = Node0.Pos - (Prev -> Node0.Pos); }
 		else { diff_Prev = diff_Here; }
 		if (Next != 0) { diff_Next = (Next -> Node1.Pos) - Node1.Pos; }
@@ -294,11 +294,11 @@ SplineNode3D SplineSegment3D::InterpolateFiniteDifference(float t) const
 
 SplineNode3D SplineSegment3D::InterpolateKochanekBartels(float t) const
 {
-	Point3D	dir0, dir1;
+	VectorF3	dir0, dir1;
 	{
-		Point3D	diff_Here = Node1.Pos - Node0.Pos;
-		Point3D diff_Prev;
-		Point3D diff_Next;
+		VectorF3	diff_Here = Node1.Pos - Node0.Pos;
+		VectorF3 diff_Prev;
+		VectorF3 diff_Next;
 		if (Prev != 0) { diff_Prev = Node0.Pos - (Prev -> Node0.Pos); }
 		else { diff_Prev = diff_Here; }
 		if (Next != 0) { diff_Next = (Next -> Node1.Pos) - Node1.Pos; }
@@ -335,7 +335,7 @@ SplineNode3D SplineSegment3D::Interpolate0(float t) const
 	LInter linter;
 	linter.SetT0(t);
 
-	Point3D p[4]
+	VectorF3 p[4]
 	{
 		(Prev -> Node0).Pos,
 		Node0.Pos,
@@ -356,7 +356,7 @@ SplineNode3D SplineSegment3D::Interpolate0(float t) const
 	Factors<float> factorDir = Factors_T_Something(t);
 	Factors<float> TBC = CalcFactorsTCB(T, B, C);
 
-	Point3D dir[2]
+	VectorF3 dir[2]
 	{
 		((p[1] - p[0]) * TBC[0]) + ((p[2] - p[1]) * TBC[1]),
 		((p[2] - p[1]) * TBC[2]) + ((p[3] - p[2]) * TBC[3]),
@@ -366,7 +366,7 @@ SplineNode3D SplineSegment3D::Interpolate0(float t) const
 		(p[2] - p[1]) + (p[3] - p[2]),
 	};*/
 
-	Point3D vals[4]
+	VectorF3 vals[4]
 	/*{
 		p[1],
 		p[1] + (dir[0] / 3),
@@ -405,7 +405,7 @@ SplineNode3D SplineSegment3D::Interpolate1(float t) const
 	LInter linter;
 	linter.SetT0(t);
 
-	Point3D p[4]
+	VectorF3 p[4]
 	{
 		(Prev -> Node0).Pos,
 		Node0.Pos,
@@ -427,7 +427,7 @@ SplineNode3D SplineSegment3D::Interpolate1(float t) const
 
 	Factors<float> TBC = CalcFactorsTCB(T, B, C);
 
-	Point3D dir[2]
+	VectorF3 dir[2]
 	/*{
 		((p[1] - p[0]) * TBC[0]) + ((p[2] - p[1]) * TBC[1]),
 		((p[2] - p[1]) * TBC[2]) + ((p[3] - p[2]) * TBC[3]),
@@ -437,7 +437,7 @@ SplineNode3D SplineSegment3D::Interpolate1(float t) const
 		(p[2] - p[1]) + (p[3] - p[2]),
 	};
 
-	Point3D vals[4]
+	VectorF3 vals[4]
 	{
 		p[1],
 		p[1] + (dir[0] / 3),

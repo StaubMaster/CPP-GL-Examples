@@ -1,7 +1,7 @@
 #ifndef  ITEM_CONTAINER_HPP
 # define ITEM_CONTAINER_HPP
 
-# include "ValueType/VectorU2.hpp"
+# include "ValueType/Vector/U2.hpp"
 
 struct ItemBase;
 

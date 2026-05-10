@@ -80,7 +80,7 @@ void Frame(double timeDelta) override
 
 	{
 		PolyHedraObject obj((unsigned int)0);
-		obj.Trans() = Trans3D(Point3D(0, 0, 0));
+		obj.Trans() = Trans3D(VectorF3(0, 0, 0));
 		obj.ShowWire();
 	}
 

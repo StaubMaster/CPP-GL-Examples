@@ -1,6 +1,6 @@
 #include "VoxelGeometryPallet.hpp"
 
-#include "ValueType/BoxF2.hpp"
+#include "ValueType/Box/F2.hpp"
 
 
 

@@ -13,10 +13,10 @@ UI::Control::Slider::Slider() : Base()
 	Layer = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = Point2D(75, 25);
+	AnchorSize = VectorF2(75, 25);
 
 	float padding = 0;
-	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
+	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	ColorDefault = ColorF4(0.375f, 0.375f, 0.375f);
 	ColorHover = ColorF4(0.25f, 0.25f, 0.25f);
@@ -155,9 +155,9 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 void UI::Control::Slider::PutCharactersEntrys()
 {
-	Point2D min = ContainerBox.Min;
-	Point2D max = ContainerBox.Max;
-	Point2D center = (max + min) / 2.0f;
+	VectorF2 min = ContainerBox.Min;
+	VectorF2 max = ContainerBox.Max;
+	VectorF2 center = (max + min) / 2.0f;
 
 	if (TextObject.Is())
 	{

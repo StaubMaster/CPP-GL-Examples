@@ -3,9 +3,9 @@
 
 # include "Physics2D/Object.hpp"
 
-# include "ValueType/AxisBox1D.hpp"
+# include "ValueType/Box/F1.hpp"
 
-# include "ValueType/Point2D.hpp"
+# include "ValueType/VectorF2.hpp"
 # include "ValueType/Ray2D.hpp"
 
 # include "ValueType/Matrix3x3.hpp"
@@ -20,14 +20,14 @@ namespace Collision
 
 struct ResolveData
 {
-	Point2D	Pos0;
-	Point2D	Pos1;
+	VectorF2	Pos0;
+	VectorF2	Pos1;
 	Angle	Rot0;
 	Angle	Rot1;
 };
 
 ResolveData Resolve(
-	Point2D normal,
+	VectorF2 normal,
 	Projection & projection,
 	Object & obj0,
 	Object & obj1,

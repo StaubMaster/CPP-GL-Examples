@@ -4,7 +4,7 @@
 # include "FileInfo.hpp"
 # include "Text/Font/Font.hpp"
 
-# include "ValueType/Point2D.hpp"
+# include "ValueType/Vector/F2.hpp"
 
 # include <string>
 # include <exception>

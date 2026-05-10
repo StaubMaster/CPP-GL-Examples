@@ -86,7 +86,7 @@ class Manager
 	void	Draw();
 	
 	void	UpdateSize(const DisplaySize & window_size);
-	void	UpdateMouse(Point2D mouse);
+	void	UpdateMouse(VectorF2 mouse);
 
 	public:
 	void	RelayClick(ClickArgs args);

@@ -2,13 +2,13 @@
 # define LINEAR_3D_HPP
 
 # include "Interpolator3D.hpp"
-# include "ValueType/Point3D.hpp"
+# include "ValueType/VectorF3.hpp"
 
 class Linear3D : public InterPolator3D
 {
 	public:
-	Point3D	Pole0;
-	Point3D	Pole1;
+	VectorF3	Pole0;
+	VectorF3	Pole1;
 
 	public:
 	~Linear3D();
@@ -17,7 +17,7 @@ class Linear3D : public InterPolator3D
 	Linear3D & operator=(const Linear3D & other);
 
 	public:
-	Point3D InterPolate(float t) override;
+	VectorF3 InterPolate(float t) override;
 };
 
 #endif

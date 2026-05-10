@@ -19,7 +19,7 @@ Grid2D::Grid2D(unsigned lin, unsigned ang)
 
 
 
-Point2D Grid2D::Align(Point2D p) const
+VectorF2 Grid2D::Align(VectorF2 p) const
 {
 	p /= Lin;
 	p.X = roundf(p.X);

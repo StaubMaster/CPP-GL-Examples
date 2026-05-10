@@ -11,10 +11,10 @@ UI::Control::TextBox::TextBox()
 	Layer = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = Point2D(50, 25);
+	AnchorSize = VectorF2(50, 25);
 
 	float padding = 0;
-	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
+	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	ColorDefault = ColorF4(1.0f, 1.0f, 1.0f);
 	ColorHover = ColorF4(0.875f, 0.875f, 0.875f);

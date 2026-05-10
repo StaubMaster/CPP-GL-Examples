@@ -30,10 +30,10 @@ void Make() override
 {
 	{
 		PolyGon * polygon = new PolyGon();
-		polygon -> NewCorner(Point2D(-1.0f, -0.1f), ColorF4(0, 0, 0));
-		polygon -> NewCorner(Point2D(+1.0f, -0.1f), ColorF4(0, 0, 0));
-		polygon -> NewCorner(Point2D(+1.0f, +0.1f), ColorF4(0, 0, 0));
-		polygon -> NewCorner(Point2D(-1.0f, +0.1f), ColorF4(0, 0, 0));
+		polygon -> NewCorner(VectorF2(-1.0f, -0.1f), ColorF4(0, 0, 0));
+		polygon -> NewCorner(VectorF2(+1.0f, -0.1f), ColorF4(0, 0, 0));
+		polygon -> NewCorner(VectorF2(+1.0f, +0.1f), ColorF4(0, 0, 0));
+		polygon -> NewCorner(VectorF2(-1.0f, +0.1f), ColorF4(0, 0, 0));
 		polygon -> NewFace(0, 1, 2);
 		polygon -> NewFace(0, 2, 3);
 		unsigned int idx = PolyGonManager.PlacePolyGon(polygon);
@@ -52,13 +52,13 @@ void Frame(FrameTime frame_time) override
 
 	{
 		PolyGonObject obj((unsigned int)0);
-		obj.Trans() = Trans2D(Point2D(0, 0));
+		obj.Trans() = Trans2D(VectorF2(0, 0));
 		obj.ShowWire();
 	}
 
 	{
 		PolyGonObject obj((unsigned int)0);
-		obj.Trans() = Trans2D(Point2D(0.5f, 0.5f), Angle::Degrees(45));
+		obj.Trans() = Trans2D(VectorF2(0.5f, 0.5f), Angle::Degrees(45));
 		obj.ShowWire();
 		obj.HideFull();
 	}

@@ -1,21 +1,21 @@
 #ifndef  CHAIN_NEIGHBOURS_3D_HPP
 # define CHAIN_NEIGHBOURS_3D_HPP
 
-# include "ValueType/Point3D.hpp"
+# include "ValueType/VectorF3.hpp"
 # include "Miscellaneous/Container/Member.hpp"
 
 struct ChainNeighbours3D
 {
-	Point3D *	Prev;
-	Point3D		Here;
-	Point3D *	Next;
+	VectorF3 *	Prev;
+	VectorF3		Here;
+	VectorF3 *	Next;
 
 	ChainNeighbours3D();
-	ChainNeighbours3D(Point3D * prev, Point3D & here, Point3D * next);
+	ChainNeighbours3D(VectorF3 * prev, VectorF3 & here, VectorF3 * next);
 
-	static ChainNeighbours3D sHere(Point3D & prev, Point3D & here, Point3D & next);
-	static ChainNeighbours3D sPrev(Point3D & prev, Point3D & here);
-	static ChainNeighbours3D sNext(Point3D & here, Point3D & next);
+	static ChainNeighbours3D sHere(VectorF3 & prev, VectorF3 & here, VectorF3 & next);
+	static ChainNeighbours3D sPrev(VectorF3 & prev, VectorF3 & here);
+	static ChainNeighbours3D sNext(VectorF3 & here, VectorF3 & next);
 };
 
 #endif

@@ -122,20 +122,20 @@ class Base
 
 	protected:
 	// Anchor needs to change if these change ?
-	Point2D			AnchorSize;
-	Point2D			AnchorNormal;
-	AxisBox2D		AnchorDist;
+	VectorF2			AnchorSize;
+	VectorF2			AnchorNormal;
+	BoxF2		AnchorDist;
 
-	AxisBox2D		AnchorMargin;
-	AxisBox2D		AnchorBoarder; // hardcoced as 2 in Shader
-	AxisBox2D		AnchorPadding;
+	BoxF2		AnchorMargin;
+	BoxF2		AnchorBoarder; // hardcoced as 2 in Shader
+	BoxF2		AnchorPadding;
 
 	public:
 	Anchor2D		Anchor;
 
 	protected:
-	AxisBox2D		DisplayBox;
-	AxisBox2D		ContainerBox;
+	BoxF2		DisplayBox;
+	BoxF2		ContainerBox;
 	// another Box for Text ?
 
 //	protected:
@@ -199,7 +199,7 @@ class Base
 
 	//	for automatic Updating. should not be called by User
 	public:
-	Base * CheckHover(Point2D mouse);
+	Base * CheckHover(VectorF2 mouse);
 
 	//	for automatic Updating. should not be called by User
 	public:

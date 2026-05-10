@@ -4,7 +4,7 @@
 # include "FileParsing/Text/TextCommand.hpp"
 # include "Image.hpp"
 # include "Miscellaneous/Container/Binary.hpp"
-# include "ValueType/AxisBox2D.hpp"
+# include "ValueType/Box/F2.hpp"
 
 # include <string>
 # include <exception>
@@ -23,7 +23,7 @@ class Font
 	struct Character
 	{
 		unsigned int	Code;
-		AxisBox2D		Box;
+		BoxF2		Box;
 		Character();
 	};
 
@@ -38,7 +38,7 @@ class Font
 	~Font();
 
 	public:
-	AxisBox2D CharacterBoxFromCode(unsigned int code);
+	BoxF2 CharacterBoxFromCode(unsigned int code);
 
 	public:
 	struct Template;

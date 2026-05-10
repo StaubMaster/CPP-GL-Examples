@@ -22,7 +22,7 @@ CubicSpline3D & CubicSpline3D::operator=(const CubicSpline3D & other)
 
 
 
-Point3D CubicSpline3D::InterPolatePos(float t)
+VectorF3 CubicSpline3D::InterPolatePos(float t)
 {
 	float factors_pos[4];
 	{
@@ -35,14 +35,14 @@ Point3D CubicSpline3D::InterPolatePos(float t)
 		factors_pos[2] = -(2 * t3) + (3 * t2);
 		factors_pos[3] = t3 - t2;
 	}
-	Point3D pos;
+	VectorF3 pos;
 	pos += Pole0.Pos * factors_pos[0];
 	pos += Pole0.Dir * factors_pos[1];
 	pos += Pole1.Pos * factors_pos[2];
 	pos += Pole1.Dir * factors_pos[3];
 	return pos;
 }
-Point3D CubicSpline3D::InterPolateDir(float t)
+VectorF3 CubicSpline3D::InterPolateDir(float t)
 {
 	float factors_dir[4];
 	{
@@ -56,7 +56,7 @@ Point3D CubicSpline3D::InterPolateDir(float t)
 		factors_dir[2] = -(2 * t3) + (3 * t2);
 		factors_dir[3] = t3 - t2;
 	}
-	Point3D dir;
+	VectorF3 dir;
 	dir += Pole0.Pos * factors_dir[0];
 	dir += Pole0.Dir * factors_dir[1];
 	dir += Pole1.Pos * factors_dir[2];
@@ -69,7 +69,7 @@ Point3D CubicSpline3D::InterPolateDir(float t)
 CubicSpline3D::Tangents CubicSpline3D::FiniteDifference(ChainNeighbours3D neighbours)
 {
 	Tangents	tans;
-	Point3D		dir;
+	VectorF3		dir;
 	if (neighbours.Prev != nullptr && neighbours.Next != nullptr)
 	{
 		dir = (*neighbours.Next) - (*neighbours.Prev);
@@ -93,8 +93,8 @@ CubicSpline3D::Tangents CubicSpline3D::FiniteDifference(ChainNeighbours3D neighb
 CubicSpline3D::Tangents CubicSpline3D::KochanekBartels(ChainNeighbours3D neighbours, FactorsTCB tcb)
 {
 	Tangents	tans;
-	Point3D		dirPrev;
-	Point3D		dirNext;
+	VectorF3		dirPrev;
+	VectorF3		dirNext;
 
 	if (neighbours.Prev != nullptr && neighbours.Next != nullptr)
 	{

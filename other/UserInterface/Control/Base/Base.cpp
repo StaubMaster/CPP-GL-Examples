@@ -110,15 +110,15 @@ UI::Control::Base::Base() :
 		)
 	)
 {
-	AnchorDist = AxisBox2D(Point2D(0, 0), Point2D(0, 0));
+	AnchorDist = BoxF2(VectorF2(0, 0), VectorF2(0, 0));
 
 	float margin = 5;
 	float boarder = 2;
 	float padding = 5;
 
-	AnchorMargin = AxisBox2D(Point2D(margin, margin), Point2D(margin, margin));
-	AnchorBoarder = AxisBox2D(Point2D(boarder, boarder), Point2D(boarder, boarder));
-	AnchorPadding = AxisBox2D(Point2D(padding, padding), Point2D(padding, padding));
+	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
+	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));
+	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	//AnchorBoxChanged = false;
 
@@ -252,7 +252,7 @@ void UI::Control::Base::UpdateBox()
 
 
 
-UI::Control::Base * UI::Control::Base::CheckHover(Point2D mouse)
+UI::Control::Base * UI::Control::Base::CheckHover(VectorF2 mouse)
 {
 	if (!_Visible) { return nullptr; }
 	if (!_Enabled) { return nullptr; }

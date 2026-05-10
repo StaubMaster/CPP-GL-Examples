@@ -1,8 +1,8 @@
 #include "Perlin2D.hpp"
 #include "Random.hpp"
 
-#include "ValueType/VectorI2.hpp"
-#include "ValueType/UndexLoop2D.hpp"
+#include "ValueType/Vector/I2.hpp"
+#include "ValueType/LoopU2.hpp"
 #include "ValueType/Angle.hpp"
 
 
@@ -79,14 +79,14 @@ static float lerp(float val0, float val1, float t)
 static bool DebugStatus = false;
 void Perlin2D::DebugChange(bool status) { DebugStatus = status; }
 
-#include "ValueType/AxisBox1D.hpp"
-#include "ValueType/AxisBox2D.hpp"
-static AxisBox2D debug_rel;
-static AxisBox1D debug_rels[4];
-static AxisBox1D debug_dots[4];
-static AxisBox1D debug_dot0;
-static AxisBox1D debug_dot1;
-static AxisBox1D debug_dot;
+#include "ValueType/Box/F1.hpp"
+#include "ValueType/Box/F2.hpp"
+static BoxF2 debug_rel;
+static BoxF1 debug_rels[4];
+static BoxF1 debug_dots[4];
+static BoxF1 debug_dot0;
+static BoxF1 debug_dot1;
+static BoxF1 debug_dot;
 void Perlin2D::DebugShow()
 {
 	std::cout << "rel " << debug_rel << '\n';
