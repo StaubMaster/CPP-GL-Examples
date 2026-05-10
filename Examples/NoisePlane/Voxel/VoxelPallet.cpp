@@ -192,6 +192,8 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("Grass", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("Dirt", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("RedLog", VoxelGeometryPallet::Cylinder));
+	VoxelPalletMap::All.Data.Insert(VoxelPallet("Log", VoxelGeometryPallet::Cube));
+	VoxelPalletMap::All.Data.Insert(VoxelPallet("Leaves", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("Sand", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("Snow", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("Water", VoxelGeometryPallet::Cube));
@@ -227,6 +229,12 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 		MediaDirectory.File("Images/Voxel/fancy_RedWood_Base.png"),
 		MediaDirectory.File("Images/Voxel/fancy_RedWood_Belt.png")
 	);
+
+	VoxelPalletMap::All["Log"].TexturePrismY(
+		MediaDirectory.File("Images/Voxel/Log_Base.png"),
+		MediaDirectory.File("Images/Voxel/Log_Belt.png")
+	);
+	VoxelPalletMap::All["Leaves"].TextureAll(MediaDirectory.File("Images/Voxel/Leave1.png"));
 
 	VoxelPalletMap::All["Sand"].TextureAll(MediaDirectory.File("Images/Voxel/Sand.png"));
 	VoxelPalletMap::All["Snow"].TextureAll(MediaDirectory.File("Images/Voxel/Snow.png"));

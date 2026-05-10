@@ -73,6 +73,8 @@ struct VoxelPalletMap
 
 	Container::Binary<VoxelPallet>	Data;
 
+	// have a default to return if name is not found
+
 	VoxelPallet &	operator[](const char * name);
 	bool			Contains(const char * name) const;
 	VoxelPallet *	FindOrNull(const char * name);

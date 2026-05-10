@@ -345,56 +345,61 @@ void Chunk::GeneratePillars(const Perlin2D & noise)
 	Array3D<Voxel> Tree;
 	Tree.ChangeSize(VectorU3(5, 7, 5));
 
-	Tree[VectorU3(1, 3, 0)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 3, 0)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(3, 3, 0)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 4, 0)].Pallet = &VoxelPalletMap::All["OrientationCube"];
+	//VoxelPallet & pallet0 = &VoxelPalletMap::All["OrientationCube"];
+	//VoxelPallet & pallet1 = &VoxelPalletMap::All["OrientationCylinder"];
+	const VoxelPallet * pallet0 = &VoxelPalletMap::All["Leaves"];
+	const VoxelPallet * pallet1 = &VoxelPalletMap::All["Log"];
 
-	Tree[VectorU3(0, 3, 1)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(1, 3, 1)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 3, 1)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(3, 3, 1)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(4, 3, 1)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(1, 4, 1)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 4, 1)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(3, 4, 1)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 5, 1)].Pallet = &VoxelPalletMap::All["OrientationCube"];
+	Tree[VectorU3(1, 3, 0)].Pallet = pallet0;
+	Tree[VectorU3(2, 3, 0)].Pallet = pallet0;
+	Tree[VectorU3(3, 3, 0)].Pallet = pallet0;
+	Tree[VectorU3(2, 4, 0)].Pallet = pallet0;
 
-	Tree[VectorU3(0, 3, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(1, 3, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 3, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(3, 3, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(4, 3, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(0, 4, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(1, 4, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 4, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(3, 4, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(4, 4, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(1, 5, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 5, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(3, 5, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 6, 2)].Pallet = &VoxelPalletMap::All["OrientationCube"];
+	Tree[VectorU3(0, 3, 1)].Pallet = pallet0;
+	Tree[VectorU3(1, 3, 1)].Pallet = pallet0;
+	Tree[VectorU3(2, 3, 1)].Pallet = pallet0;
+	Tree[VectorU3(3, 3, 1)].Pallet = pallet0;
+	Tree[VectorU3(4, 3, 1)].Pallet = pallet0;
+	Tree[VectorU3(1, 4, 1)].Pallet = pallet0;
+	Tree[VectorU3(2, 4, 1)].Pallet = pallet0;
+	Tree[VectorU3(3, 4, 1)].Pallet = pallet0;
+	Tree[VectorU3(2, 5, 1)].Pallet = pallet0;
 
-	Tree[VectorU3(0, 3, 3)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(1, 3, 3)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 3, 3)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(3, 3, 3)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(4, 3, 3)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(1, 4, 3)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 4, 3)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(3, 4, 3)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 5, 3)].Pallet = &VoxelPalletMap::All["OrientationCube"];
+	Tree[VectorU3(0, 3, 2)].Pallet = pallet0;
+	Tree[VectorU3(1, 3, 2)].Pallet = pallet0;
+	Tree[VectorU3(2, 3, 2)].Pallet = pallet0;
+	Tree[VectorU3(3, 3, 2)].Pallet = pallet0;
+	Tree[VectorU3(4, 3, 2)].Pallet = pallet0;
+	Tree[VectorU3(0, 4, 2)].Pallet = pallet0;
+	Tree[VectorU3(1, 4, 2)].Pallet = pallet0;
+	Tree[VectorU3(2, 4, 2)].Pallet = pallet0;
+	Tree[VectorU3(3, 4, 2)].Pallet = pallet0;
+	Tree[VectorU3(4, 4, 2)].Pallet = pallet0;
+	Tree[VectorU3(1, 5, 2)].Pallet = pallet0;
+	Tree[VectorU3(2, 5, 2)].Pallet = pallet0;
+	Tree[VectorU3(3, 5, 2)].Pallet = pallet0;
+	Tree[VectorU3(2, 6, 2)].Pallet = pallet0;
 
-	Tree[VectorU3(1, 3, 4)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 3, 4)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(3, 3, 4)].Pallet = &VoxelPalletMap::All["OrientationCube"];
-	Tree[VectorU3(2, 4, 4)].Pallet = &VoxelPalletMap::All["OrientationCube"];
+	Tree[VectorU3(0, 3, 3)].Pallet = pallet0;
+	Tree[VectorU3(1, 3, 3)].Pallet = pallet0;
+	Tree[VectorU3(2, 3, 3)].Pallet = pallet0;
+	Tree[VectorU3(3, 3, 3)].Pallet = pallet0;
+	Tree[VectorU3(4, 3, 3)].Pallet = pallet0;
+	Tree[VectorU3(1, 4, 3)].Pallet = pallet0;
+	Tree[VectorU3(2, 4, 3)].Pallet = pallet0;
+	Tree[VectorU3(3, 4, 3)].Pallet = pallet0;
+	Tree[VectorU3(2, 5, 3)].Pallet = pallet0;
 
-	Tree[VectorU3(2, 0, 2)].Pallet = &VoxelPalletMap::All["OrientationCylinder"];
-	Tree[VectorU3(2, 1, 2)].Pallet = &VoxelPalletMap::All["OrientationCylinder"];
-	Tree[VectorU3(2, 2, 2)].Pallet = &VoxelPalletMap::All["OrientationCylinder"];
-	Tree[VectorU3(2, 3, 2)].Pallet = &VoxelPalletMap::All["OrientationCylinder"];
-	Tree[VectorU3(2, 4, 2)].Pallet = &VoxelPalletMap::All["OrientationCylinder"];
+	Tree[VectorU3(1, 3, 4)].Pallet = pallet0;
+	Tree[VectorU3(2, 3, 4)].Pallet = pallet0;
+	Tree[VectorU3(3, 3, 4)].Pallet = pallet0;
+	Tree[VectorU3(2, 4, 4)].Pallet = pallet0;
+
+	Tree[VectorU3(2, 0, 2)].Pallet = pallet1;
+	Tree[VectorU3(2, 1, 2)].Pallet = pallet1;
+	Tree[VectorU3(2, 2, 2)].Pallet = pallet1;
+	Tree[VectorU3(2, 3, 2)].Pallet = pallet1;
+	Tree[VectorU3(2, 4, 2)].Pallet = pallet1;
 
 	VectorI3 offset(-2, 0, -2);
 
@@ -433,23 +438,14 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		//val += noise.Calculate(p2 / 2.0f) * 2;
 		//val += noise.Calculate(p2 / 1.0f) * 1;
 
-		float val_rel = val - Offset.Y;
 		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
 		{
 			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(u.X, i, u.Y));
-			if (i > val_rel)
-			{
-				Voxels[voxel_u].Pallet = nullptr;
-			}
-			else
-			{
-				//Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Gray"];
-
-				if (val < -1.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Water"]; }
-				//else if (val < +1.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Sand"]; }
-				else if (val < +1.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Dirt"]; }
-				else { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Grass"]; }
-			}
+			float diff = val - (i + Offset.Y);
+			if      (diff < 0.0f) { Voxels[voxel_u].Pallet = nullptr; }
+			else if (diff < 1.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Grass"]; }
+			else if (diff < 4.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Dirt"]; }
+			else                  { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Gray"]; }
 		}
 	}
 }
