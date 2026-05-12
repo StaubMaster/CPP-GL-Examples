@@ -50,7 +50,7 @@ enum class GenerationState : unsigned char
 {
 	None,
 	Generated,
-//	Decorated,
+	Decorated,
 //	Done,
 };
 
@@ -69,10 +69,6 @@ struct Chunk
 	public:
 	const VectorI3		Index;
 	ChunkManager &		Manager;
-
-
-
-	private:
 	Array3D<Voxel>		Voxels;
 
 	public:
@@ -130,16 +126,36 @@ struct Chunk
 
 	private:
 	// do these with Files
-//	void	GenerateOrientation();
-	void	GenerateGrid();
-	void	GeneratePlane();
-	void	GeneratePillars();
-	void	GeneratePillars(const Perlin2D & noise);
-	void	GeneratePerlin(const Perlin2D & noise);
-	void	GeneratePerlin(const Perlin3D & noise);
+	/* TerrainGenerator
+		takes a Chunk
+		use AbsolutePosition
+		use RelativePosition
+		use Y Perlin2D result
+		use Perlin3D result
+	*/
+
+	void	TerrainPlane();
+	void	TerrainPillars();
+	void	TerrainPerlin(const Perlin2D & noise);
+	void	TerrainPerlin(const Perlin3D & noise);
+
+	/* DecorationGenerator
+		takes a Chunk Neighbourhood
+			not just axis, but a full cube
+			MineCraft uses all around a Corner
+			do I want to use all around
+		use AbsolutePosition
+		use RelativePosition
+		use Y Perlin2D result
+		use Perlin3D result
+	*/
+	void	DecorateGrid();
+	void	DecorateTrees(const Perlin2D & noise);
+	void	DecorateCity();
 
 	public:
-	void	Generate(const Perlin2D & noise2, const Perlin3D & noise3);
+	void	GenerateTerrain(const Perlin2D & noise2, const Perlin3D & noise3);
+	void	GenerateDecorate(const Perlin2D & noise2, const Perlin3D & noise3);
 
 
 

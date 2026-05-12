@@ -40,7 +40,8 @@ void InventorySlot::InsertDrawingEntryRelay()
 			VectorF2 size = WindowSize.Buffer.SizeFullToNormalRel(PixelSize);
 			VectorF2 pos = WindowSize.Buffer.PosFullToNormalRel(PixelPos);
 
-			std::cout << pos << '\n';
+			std::cout << "PixelPos: " << PixelPos << '\n';
+			std::cout << "pos: " << pos << '\n';
 
 			Object.Trans().Position.X = (+pos.X / size.X);
 			Object.Trans().Position.Y = (-pos.Y / size.Y);

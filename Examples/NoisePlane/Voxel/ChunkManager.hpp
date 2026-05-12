@@ -108,8 +108,10 @@ struct ChunkManager
 	static WaitDoTime	TimeUpdateChange;
 	static WaitDoTime	TimeUpdateRemove;
 
+	static WaitDoTime	TimeGenerateFind;
 	static WaitDoTime	TimeGenerate;
-	static WaitDoTime	TimeGraphics;
+	static WaitDoTime	TimeBuffersFind;
+	static WaitDoTime	TimeBuffers;
 
 	static WaitDoTime	TimeGraphicsCreate;
 	static WaitDoTime	TimeGraphicsDelete;
@@ -132,7 +134,7 @@ struct ChunkManager
 
 	void	UpdateChunksContainer();
 
-	const Chunk *	NeighbourLoopChunk(const Chunk & chunk, VectorU3 & udx, AxisRel axis) const;
+	const Chunk *	NeighbourLoopChunk(const Chunk & chunk, VectorU3 & udx, AxisRel axis);
 	void			NeighbourUpdateBufferMain(VectorI3 idx);
 
 

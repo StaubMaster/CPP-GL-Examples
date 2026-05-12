@@ -30,6 +30,8 @@ FILES := \
 	Voxel/Chunk.cpp \
 	Voxel/ChunkManager.cpp \
 	\
+	Voxel/Structure.cpp \
+	\
 	ContainerLock.cpp \
 	BoxEntity.cpp \
 \

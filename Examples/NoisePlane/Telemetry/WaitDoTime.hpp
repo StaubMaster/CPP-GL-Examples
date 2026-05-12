@@ -6,9 +6,11 @@
 
 struct WaitDoTime
 {
+	const char *			Name;
 	ValueAverager<float>	DoTime;
 	ValueAverager<float>	WaitTime;
-	WaitDoTime();
+	const char * 			ThreadName = "ThreadName";
+	WaitDoTime(const char * name);
 };
 std::ostream & operator<<(std::ostream & o, const WaitDoTime & obj);
 

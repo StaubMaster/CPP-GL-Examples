@@ -7,6 +7,8 @@
 
 #include "VoxelOrientation.hpp"
 
+#include "Structure.hpp"
+
 #include "ValueGen/Perlin2D.hpp"
 #include "ValueGen/Perlin3D.hpp"
 
@@ -252,13 +254,13 @@ bool Chunk::PlaceVoxel(VectorU3 udx, Voxel & vox)
 float Chunk::Generation3D_Factor = 5.0f; // 32
 float Chunk::Generation3D_Comparison = 0.0f;
 
-bool Chunk::GenerationDone() const { return GenerationState == GenerationState::Generated; }
+bool Chunk::GenerationDone() const { return GenerationState == GenerationState::Decorated; }
 
 /*
 Condition:
 Place: OrientationCube
 */
-void Chunk::GenerateGrid()
+void Chunk::DecorateGrid()
 {
 	VectorI3 chunk_pos = Index * CHUNK_VALUES_PER_SIDE;
 
@@ -281,8 +283,22 @@ void Chunk::GenerateGrid()
 Condition: Y <= 0
 Place: ConcreteCube
 */
-void Chunk::GeneratePlane()
+void Chunk::TerrainPlane()
 {
+	if (Index.Y == 0)
+	{
+		LoopU3 loop(0, Voxels.Size());
+		for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+		{
+			if (u.Y == 0)
+			{
+				//Voxels[u].Pallet = &VoxelPalletMap::All["ConcreteCube"];
+				Voxels[u].Pallet = &VoxelPalletMap::All["Grass"];
+			}
+		}
+		return;
+	}
+
 	if (Index.Y >= 0) { return; }
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
@@ -297,7 +313,7 @@ Place: ConcreteCube
 Condition: ((X == 7 || X == 24) && (Z == 7 || Z == 24))
 Place: ConcreteCylinder
 */
-void Chunk::GeneratePillars()
+void Chunk::TerrainPillars()
 {
 	//0123456789ABCDEF0123456789ABCDEF
 	//       #                #       
@@ -317,106 +333,111 @@ void Chunk::GeneratePillars()
 		{ Voxels[u].Pallet = &pallet1; }
 	}
 }
-void Chunk::GeneratePillars(const Perlin2D & noise)
+/*
+*/
+
+static void PlaceStructure(Chunk & chunk, VectorU3 origin, const Structure & structure)
 {
-	(void)noise;
-
-	VectorU3 origin(15, 0, 15);
-	if (Voxels[origin].Pallet == nullptr) { return; }
-	for (; origin.Y < CHUNK_VALUES_PER_SIDE; origin.Y++)
-	{
-		if (Voxels[origin].Pallet == nullptr)
-		{
-			break;
-		}
-	}
-	if (origin.Y == CHUNK_VALUES_PER_SIDE) { return; }
-
-	/*
-		|     |     |  #  |     |     |
-		|     |  #  | ### |  #  |     |
-		|  #  | ### |##|##| ### |  #  |
-		| ### |#####|##|##|#####| ### |
-		|     |     |  |  |     |     |
-		|     |     |  |  |     |     |
-		|     |     |  |  |     |     |
-	*/
-
-	Array3D<Voxel> Tree;
-	Tree.ChangeSize(VectorU3(5, 7, 5));
-
-	//VoxelPallet & pallet0 = &VoxelPalletMap::All["OrientationCube"];
-	//VoxelPallet & pallet1 = &VoxelPalletMap::All["OrientationCylinder"];
-	const VoxelPallet * pallet0 = &VoxelPalletMap::All["Leaves"];
-	const VoxelPallet * pallet1 = &VoxelPalletMap::All["Log"];
-
-	Tree[VectorU3(1, 3, 0)].Pallet = pallet0;
-	Tree[VectorU3(2, 3, 0)].Pallet = pallet0;
-	Tree[VectorU3(3, 3, 0)].Pallet = pallet0;
-	Tree[VectorU3(2, 4, 0)].Pallet = pallet0;
-
-	Tree[VectorU3(0, 3, 1)].Pallet = pallet0;
-	Tree[VectorU3(1, 3, 1)].Pallet = pallet0;
-	Tree[VectorU3(2, 3, 1)].Pallet = pallet0;
-	Tree[VectorU3(3, 3, 1)].Pallet = pallet0;
-	Tree[VectorU3(4, 3, 1)].Pallet = pallet0;
-	Tree[VectorU3(1, 4, 1)].Pallet = pallet0;
-	Tree[VectorU3(2, 4, 1)].Pallet = pallet0;
-	Tree[VectorU3(3, 4, 1)].Pallet = pallet0;
-	Tree[VectorU3(2, 5, 1)].Pallet = pallet0;
-
-	Tree[VectorU3(0, 3, 2)].Pallet = pallet0;
-	Tree[VectorU3(1, 3, 2)].Pallet = pallet0;
-	Tree[VectorU3(2, 3, 2)].Pallet = pallet0;
-	Tree[VectorU3(3, 3, 2)].Pallet = pallet0;
-	Tree[VectorU3(4, 3, 2)].Pallet = pallet0;
-	Tree[VectorU3(0, 4, 2)].Pallet = pallet0;
-	Tree[VectorU3(1, 4, 2)].Pallet = pallet0;
-	Tree[VectorU3(2, 4, 2)].Pallet = pallet0;
-	Tree[VectorU3(3, 4, 2)].Pallet = pallet0;
-	Tree[VectorU3(4, 4, 2)].Pallet = pallet0;
-	Tree[VectorU3(1, 5, 2)].Pallet = pallet0;
-	Tree[VectorU3(2, 5, 2)].Pallet = pallet0;
-	Tree[VectorU3(3, 5, 2)].Pallet = pallet0;
-	Tree[VectorU3(2, 6, 2)].Pallet = pallet0;
-
-	Tree[VectorU3(0, 3, 3)].Pallet = pallet0;
-	Tree[VectorU3(1, 3, 3)].Pallet = pallet0;
-	Tree[VectorU3(2, 3, 3)].Pallet = pallet0;
-	Tree[VectorU3(3, 3, 3)].Pallet = pallet0;
-	Tree[VectorU3(4, 3, 3)].Pallet = pallet0;
-	Tree[VectorU3(1, 4, 3)].Pallet = pallet0;
-	Tree[VectorU3(2, 4, 3)].Pallet = pallet0;
-	Tree[VectorU3(3, 4, 3)].Pallet = pallet0;
-	Tree[VectorU3(2, 5, 3)].Pallet = pallet0;
-
-	Tree[VectorU3(1, 3, 4)].Pallet = pallet0;
-	Tree[VectorU3(2, 3, 4)].Pallet = pallet0;
-	Tree[VectorU3(3, 3, 4)].Pallet = pallet0;
-	Tree[VectorU3(2, 4, 4)].Pallet = pallet0;
-
-	Tree[VectorU3(2, 0, 2)].Pallet = pallet1;
-	Tree[VectorU3(2, 1, 2)].Pallet = pallet1;
-	Tree[VectorU3(2, 2, 2)].Pallet = pallet1;
-	Tree[VectorU3(2, 3, 2)].Pallet = pallet1;
-	Tree[VectorU3(2, 4, 2)].Pallet = pallet1;
-
-	VectorI3 offset(-2, 0, -2);
-
-	LoopU3 loop(0, Tree.Size());
+	LoopU3 loop(0, structure.Voxels.Size());
 	for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
-		VectorU3 p = origin - offset + u;
-		if ((p < Voxels.Size()).All(true))
+		VectorU3 p = origin + structure.Offset + u;
+		if ((p < chunk.Voxels.Size()).All(true))
 		{
-			if (Voxels[p].Pallet == nullptr)
+			//if (chunk.Voxels[p].Pallet == nullptr)
 			{
-				Voxels[p] = Tree[u];
+				chunk.Voxels[p] = structure.Voxels[u];
 			}
 		}
 	}
 }
-void Chunk::GeneratePerlin(const Perlin2D & noise)
+static VectorU3 TopVoxel(const Chunk & chunk, VectorU3 udx)
+{
+	udx.Y = CHUNK_VALUES_PER_SIDE - 1;
+	for (; udx.Y < CHUNK_VALUES_PER_SIDE; udx.Y--)
+	{
+		if (chunk.Voxels[udx].Pallet != nullptr)
+		{
+			udx.Y++;
+			return udx;
+		}
+	}
+	udx.Y = CHUNK_VALUES_PER_SIDE;
+	return udx;
+}
+void Chunk::DecorateTrees(const Perlin2D & noise)
+{
+	if (Index.Z < 1) { return; }
+	(void)noise;
+
+	Container::Binary<VectorU3> structure_pos;
+
+	const VoxelPallet & pallet = VoxelPalletMap::All["OrientationCube"];
+	for (unsigned int z = 0; z < CHUNK_VALUES_PER_SIDE; z++)
+	{
+		for (unsigned int x = 0; x < CHUNK_VALUES_PER_SIDE; x++)
+		{
+			float val = 0.0f;
+			val += noise.Calculate(VectorF2(x, z) / 1.0f) * 1.0f;
+			val += noise.Calculate(VectorF2(x, z) / 2.0f) * 2.0f;
+			val += noise.Calculate(VectorF2(x, z) / 4.0f) * 4.0f;
+			val += noise.Calculate(VectorF2(x, z) / 8.0f) * 8.0f;
+			val += noise.Calculate(VectorF2(x, z) / 16.0f) * 16.0f;
+			val += noise.Calculate(VectorF2(x, z) / 32.0f) * 32.0f;
+			val += noise.Calculate(VectorF2(x, z) / 64.0f) * 64.0f;
+			val += noise.Calculate(VectorF2(x, z) / 128.0f) * 128.0f;
+			val += noise.Calculate(VectorF2(x, z) / 256.0f) * 256.0f;
+			//if (val == 0.0f)
+			if (val < +0.01f && val > -0.01f)
+			{
+				Voxels[VectorU3(x, 0, z)].Pallet = &pallet;
+				structure_pos.Insert(TopVoxel(*this, VectorU3(x, 0, z)));
+			}
+		}
+	}
+
+	structure_pos.Clear();
+	for (unsigned int i = 0; i < structure_pos.Count(); i++)
+	{
+		PlaceStructure(*this, structure_pos[i], Structure::Tree0);
+	}
+
+	/*for (unsigned int z = 1; z < CHUNK_VALUES_PER_SIDE; z += 4)
+	{
+		for (unsigned int x = 1; x < CHUNK_VALUES_PER_SIDE; x += 4)
+		{
+			PlaceStructure(*this, TopVoxel(*this, VectorU3(x, 0, z)), Structure::Tree0);
+		}
+		z += 4;
+		for (unsigned int x = 3; x < CHUNK_VALUES_PER_SIDE; x += 4)
+		{
+			PlaceStructure(*this, TopVoxel(*this, VectorU3(x, 0, z)), Structure::Tree0);
+		}
+	}*/
+}
+/*
+*/
+void Chunk::DecorateCity()
+{
+	const VoxelPallet * pallet = &VoxelPalletMap::All["ConcreteCube"];
+
+	LoopU3 loop3(VectorU3(), Voxels.Size());
+	for (VectorU3 u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
+	{
+		if ((u.X == 8 || u.X == 11 || u.X == 14 || u.X == 17 || u.X == 20 || u.X == 23) &&
+			(u.Z == 8 || u.Z == 11 || u.Z == 14 || u.Z == 17 || u.Z == 20 || u.Z == 23))
+		{
+			Voxels[u].Pallet = pallet;
+		}
+		if ((u.X >= 8 && u.X <= 23) && (u.Z >= 8 && u.Z <= 23) &&
+			(u.Y == 4 || u.Y == 27))
+		{
+			Voxels[u].Pallet = pallet;
+		}
+	}
+}
+
+void Chunk::TerrainPerlin(const Perlin2D & noise)
 {
 	VectorF3 Offset = Index * CHUNK_VALUES_PER_SIDE;
 	LoopU2 loop(VectorU2(), VectorU2(CHUNK_VALUES_PER_SIDE));
@@ -428,7 +449,6 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		);
 
 		float val = 0.0f;
-		val += noise.Calculate(p2 / 256.0f) * 64;
 		//val += noise.Calculate(p2 / 128.0f) * 128;
 		//val += noise.Calculate(p2 / 64.0f) * 64;
 		//val += noise.Calculate(p2 / 32.0f) * 32;
@@ -437,6 +457,18 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		//val += noise.Calculate(p2 / 4.0f) * 4;
 		//val += noise.Calculate(p2 / 2.0f) * 2;
 		//val += noise.Calculate(p2 / 1.0f) * 1;
+
+		//val += noise.Calculate(p2 / 1.0f) * 1.0f;
+		//val += noise.Calculate(p2 / 2.0f) * 2.0f;
+		//val += noise.Calculate(p2 / 4.0f) * 4.0f;
+		//val += noise.Calculate(p2 / 8.0f) * 8.0f;
+		//val += noise.Calculate(p2 / 16.0f) * 16.0f;
+		//val += noise.Calculate(p2 / 32.0f) * 32.0f;
+		//val += noise.Calculate(p2 / 64.0f) * 64.0f;
+		//val += noise.Calculate(p2 / 128.0f) * 128.0f;
+		//val += noise.Calculate(p2 / 256.0f) * 256.0f;
+	
+		val += noise.Calculate(p2 / 256.0f) * 64;
 
 		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
 		{
@@ -449,7 +481,7 @@ void Chunk::GeneratePerlin(const Perlin2D & noise)
 		}
 	}
 }
-void Chunk::GeneratePerlin(const Perlin3D & noise)
+void Chunk::TerrainPerlin(const Perlin3D & noise)
 {
 	VectorF3 pos = Index * CHUNK_VALUES_PER_SIDE;
 	LoopU3 loop(VectorU3(), VectorU3(CHUNK_VALUES_PER_SIDE));
@@ -480,7 +512,7 @@ void Chunk::GeneratePerlin(const Perlin3D & noise)
 	}
 }
 
-void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
+void Chunk::GenerateTerrain(const Perlin2D & noise2, const Perlin3D & noise3)
 {
 	if (GenerationState != GenerationState::None) { return; }
 
@@ -489,17 +521,27 @@ void Chunk::Generate(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	MakeNull();
 
-//	GenerateGrid();
-//	GeneratePlane();
-//	GeneratePillars();
-	GeneratePerlin(noise2);
-//	GeneratePerlin(noise3);
-
-	GeneratePillars(noise2);
+	TerrainPlane();
+//	TerrainPillars();
+//	TerrainPerlin(noise2);
+//	TerrainPerlin(noise3);
 
 	GenerationState = GenerationState::Generated;
+}
+void Chunk::GenerateDecorate(const Perlin2D & noise2, const Perlin3D & noise3)
+{
+	if (GenerationState != GenerationState::Generated) { return; }
+
+	(void)noise2;
+	(void)noise3;
+
+//	DecorateGrid();
+//	DecorateTrees(noise2);
+//	DecorateCity();
 
 	if (IsNullOrEmpty()) { MakeEmpty(); }
+
+	GenerationState = GenerationState::Decorated;
 
 	if (GraphicsExist)
 	{

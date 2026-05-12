@@ -1,6 +1,6 @@
 #include "UnitToString.hpp"
 #include <sstream>
-
+#include <iomanip>
 
 
 std::string Seperated1000(unsigned int n)
@@ -11,9 +11,9 @@ std::string Seperated1000(unsigned int n)
 	part[2] = n % 1000; n = n / 1000;
 	part[3] = n % 1000; n = n / 1000;
 	std::stringstream ss;
-	if (part[3] != 0) { ss << part[3] << '.'; }
-	if (part[2] != 0) { ss << part[2] << '.'; }
-	if (part[1] != 0) { ss << part[1] << '.'; }
+	if (part[3] != 0) { ss << std::setw(3) << std::setfill('0') << part[3] << '.'; }
+	if (part[2] != 0) { ss << std::setw(3) << std::setfill('0') << part[2] << '.'; }
+	if (part[1] != 0) { ss << std::setw(3) << std::setfill('0') << part[1] << '.'; }
 	ss << part[0];
 	return ss.str();
 }
