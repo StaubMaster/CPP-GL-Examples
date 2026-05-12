@@ -100,7 +100,7 @@ bool Chunk::IsNullOrEmpty() const
 	if (IsEmpty()) { return true; }
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
-		if (Voxels[i].Pallet != nullptr)
+		if (!Voxels[i].IsEmpty())
 		{
 			return false;
 		}
@@ -123,8 +123,7 @@ void Chunk::MakeNull()
 	}
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
-		Voxels[i].Pallet = nullptr;
-		Voxels[i].Orientation = VoxelOrientation();
+		Voxels[i] = Voxel();
 	}
 	Manager.NeighbourUpdateBufferMain(Index);
 }
@@ -133,7 +132,7 @@ void Chunk::MakeNull()
 
 bool Chunk::HitVoxel(VectorU3 udx) const
 {
-	return (Voxels[udx].Pallet != nullptr);
+	return (!Voxels[udx].IsEmpty());
 }
 bool Chunk::ClearVoxel(VectorU3 udx, Voxel & vox)
 {
@@ -142,10 +141,10 @@ bool Chunk::ClearVoxel(VectorU3 udx, Voxel & vox)
 	if (IsEmpty()) { return false; }
 
 	Voxel & voxel = Voxels[udx];
-	if (voxel.Pallet == nullptr) { return false; }
+	if (voxel.IsEmpty()) { return false; }
 
 	vox = voxel;
-	voxel.Pallet = nullptr;
+	voxel = Voxel();
 
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 
@@ -159,10 +158,10 @@ bool Chunk::PlaceVoxel(VectorU3 udx, Voxel & vox)
 	if (IsEmpty()) { MakeNull(); }
 
 	Voxel & voxel = Voxels[udx];
-	if (voxel.Pallet != nullptr) {return false; }
+	if (!voxel.IsEmpty()) {return false; }
 
 	voxel = vox;
-	vox.Pallet = nullptr;
+	vox = Voxel();
 
 	Manager.NeighbourUpdateBufferMain(Index);
 	return true;
@@ -277,10 +276,10 @@ void Chunk::DecorateGrid()
 		VectorF3 grid_pos = voxel_pos.round(256);
 		VectorF3 grid_rel = voxel_pos - grid_pos + VectorF3(0.5f);
 
-		if (grid_rel.length() < 4.0f) { Voxels[u].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
-		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { Voxels[u].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
-		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { Voxels[u].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
-		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { Voxels[u].Pallet = &VoxelPalletMap::All["OrientationCube"]; }
+		if (grid_rel.length() < 4.0f) { Voxels[u] = VoxelPalletMap::All["OrientationCube"].ToVoxel(); }
+		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { Voxels[u] = VoxelPalletMap::All["OrientationCube"].ToVoxel(); }
+		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { Voxels[u] = VoxelPalletMap::All["OrientationCube"].ToVoxel(); }
+		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { Voxels[u] = VoxelPalletMap::All["OrientationCube"].ToVoxel(); }
 	}
 }
 /*
@@ -297,7 +296,7 @@ void Chunk::TerrainPlane()
 			if (u.Y == 0)
 			{
 				//Voxels[u].Pallet = &VoxelPalletMap::All["ConcreteCube"];
-				Voxels[u].Pallet = &VoxelPalletMap::All["Grass"];
+				Voxels[u] = VoxelPalletMap::All["Grass"].ToVoxel();
 			}
 		}
 		return;
@@ -306,7 +305,7 @@ void Chunk::TerrainPlane()
 	if (Index.Y >= 0) { return; }
 	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
 	{
-		Voxels[i].Pallet = &VoxelPalletMap::All["ConcreteCube"];
+		Voxels[i] = VoxelPalletMap::All["ConcreteCube"].ToVoxel();
 		//Data[i].Orientation = VoxelOrientation();
 	}
 }
@@ -324,17 +323,17 @@ void Chunk::TerrainPillars()
 
 	VectorI3 chunk_pos = Index * CHUNK_VALUES_PER_SIDE;
 
-	VoxelPallet & pallet0 = VoxelPalletMap::All["ConcreteCube"];
-	VoxelPallet & pallet1 = VoxelPalletMap::All["ConcreteCylinder"];
+	const VoxelPallet & pallet0 = VoxelPalletMap::All["ConcreteCube"];
+	const VoxelPallet & pallet1 = VoxelPalletMap::All["ConcreteCylinder"];
 
 	LoopU3 loop3(VectorU3(), Voxels.Size());
 	for (VectorU3 u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
 	{
 		if (u.Y == 0 || u.Y == 31)
-		{ Voxels[u].Pallet = &pallet0; }
+		{ Voxels[u] = pallet0.ToVoxel(); }
 		//else if ((u.X == 7 || u.X == 24) && (u.Z == 7 || u.Z == 24))
 		else if ((u.X == 1 || u.X == 30) && (u.Z == 1 || u.Z == 30))
-		{ Voxels[u].Pallet = &pallet1; }
+		{ Voxels[u] = pallet1.ToVoxel(); }
 	}
 }
 /*
@@ -360,7 +359,7 @@ static VectorU3 TopVoxel(const Chunk & chunk, VectorU3 udx)
 	udx.Y = CHUNK_VALUES_PER_SIDE - 1;
 	for (; udx.Y < CHUNK_VALUES_PER_SIDE; udx.Y--)
 	{
-		if (chunk.Voxels[udx].Pallet != nullptr)
+		if (!chunk.Voxels[udx].IsEmpty())
 		{
 			udx.Y++;
 			return udx;
@@ -394,7 +393,7 @@ void Chunk::DecorateTrees(const Perlin2D & noise)
 			//if (val == 0.0f)
 			if (val < +0.01f && val > -0.01f)
 			{
-				Voxels[VectorU3(x, 0, z)].Pallet = &pallet;
+				Voxels[VectorU3(x, 0, z)] = pallet.ToVoxel();
 				structure_pos.Insert(TopVoxel(*this, VectorU3(x, 0, z)));
 			}
 		}
@@ -423,7 +422,7 @@ void Chunk::DecorateTrees(const Perlin2D & noise)
 */
 void Chunk::DecorateCity()
 {
-	const VoxelPallet * pallet = &VoxelPalletMap::All["ConcreteCube"];
+	const VoxelPallet & pallet = VoxelPalletMap::All["ConcreteCube"];
 
 	LoopU3 loop3(VectorU3(), Voxels.Size());
 	for (VectorU3 u = loop3.Min(); loop3.Check(u).All(true); loop3.Next(u))
@@ -431,12 +430,12 @@ void Chunk::DecorateCity()
 		if ((u.X == 8 || u.X == 11 || u.X == 14 || u.X == 17 || u.X == 20 || u.X == 23) &&
 			(u.Z == 8 || u.Z == 11 || u.Z == 14 || u.Z == 17 || u.Z == 20 || u.Z == 23))
 		{
-			Voxels[u].Pallet = pallet;
+			Voxels[u] = pallet.ToVoxel();
 		}
 		if ((u.X >= 8 && u.X <= 23) && (u.Z >= 8 && u.Z <= 23) &&
 			(u.Y == 4 || u.Y == 27))
 		{
-			Voxels[u].Pallet = pallet;
+			Voxels[u] = pallet.ToVoxel();
 		}
 	}
 }
@@ -478,10 +477,10 @@ void Chunk::TerrainPerlin(const Perlin2D & noise)
 		{
 			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(u.X, i, u.Y));
 			float diff = val - (i + Offset.Y);
-			if      (diff < 0.0f) { Voxels[voxel_u].Pallet = nullptr; }
-			else if (diff < 1.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Grass"]; }
-			else if (diff < 4.0f) { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Dirt"]; }
-			else                  { Voxels[voxel_u].Pallet = &VoxelPalletMap::All["Gray"]; }
+			if      (diff < 0.0f) { Voxels[voxel_u] = Voxel(); }
+			else if (diff < 1.0f) { Voxels[voxel_u] = VoxelPalletMap::All["Grass"].ToVoxel(); }
+			else if (diff < 4.0f) { Voxels[voxel_u] = VoxelPalletMap::All["Dirt"].ToVoxel(); }
+			else                  { Voxels[voxel_u] = VoxelPalletMap::All["Gray"].ToVoxel(); }
 		}
 	}
 }
@@ -502,9 +501,9 @@ void Chunk::TerrainPerlin(const Perlin3D & noise)
 		val += noise.Calculate(p / Generation3D_Factor) / Generation3D_Factor;
 
 		if (val > Generation3D_Comparison)
-		{ Voxels[u].Pallet = nullptr; }
+		{ Voxels[u] = Voxel(); }
 		else
-		{ Voxels[u].Pallet = &VoxelPalletMap::All["Gray"]; }
+		{ Voxels[u] = VoxelPalletMap::All["Gray"].ToVoxel(); }
 
 		/*if (val > 0.1f)
 		{

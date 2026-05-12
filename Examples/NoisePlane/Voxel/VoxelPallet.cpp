@@ -124,10 +124,16 @@ void VoxelPallet::MakePolyHedra()
 	PolyHedraVoxelData(*PolyHedra, GeometryPallet -> Data);
 }
 
+Voxel VoxelPallet::ToVoxel() const
+{
+	Voxel voxel;
+	voxel.Pallet = VoxelPalletMap::All.FindIndex(this);
+	return voxel;
+}
 Voxel VoxelPallet::ToVoxel(AxisRel placeAxis0, AxisRel placeAxis1) const
 {
 	Voxel voxel;
-	voxel.Pallet = this;
+	voxel.Pallet = VoxelPalletMap::All.FindIndex(this);
 	voxel.Orientation = GeometryPallet -> Orient(placeAxis0, placeAxis1);
 	return voxel;
 }
@@ -140,6 +146,14 @@ VoxelPalletMap VoxelPalletMap::All;
 
 #include <string>
 #include <iostream>
+VoxelPallet & VoxelPalletMap::operator[](unsigned short idx)
+{
+	return Data[idx];
+}
+const VoxelPallet & VoxelPalletMap::operator[](unsigned short idx) const
+{
+	return Data[idx];
+}
 VoxelPallet & VoxelPalletMap::operator[](const char * name)
 {
 	std::string str(name);
@@ -157,19 +171,53 @@ VoxelPallet & VoxelPalletMap::operator[](const char * name)
 	}
 	throw "VoxelPalletMap::operator[]";
 }
-bool VoxelPalletMap::Contains(const char * name) const
+const VoxelPallet & VoxelPalletMap::operator[](const char * name) const
 {
 	std::string str(name);
 	for (unsigned int i = 0; i < Data.Count(); i++)
 	{
 		if (str == Data[i].Name)
 		{
-			return true;
+			return Data[i];
 		}
 	}
-	return false;
+	std::cout << "not Found: " << name << '\n';
+	for (unsigned int i = 0; i < Data.Count(); i++)
+	{
+		std::cout << ' ' << Data[i].Name << '\n';
+	}
+	throw "VoxelPalletMap::operator[]";
 }
-VoxelPallet * VoxelPalletMap::FindOrNull(const char * name)
+
+unsigned short VoxelPalletMap::FindIndex(const char * name) const
+{
+	std::string str(name);
+	for (unsigned int i = 0; i < Data.Count(); i++)
+	{
+		if (str == Data[i].Name)
+		{
+			return i;
+		}
+	}
+	return 0xFFFF;
+}
+unsigned short VoxelPalletMap::FindIndex(const VoxelPallet * pallet) const
+{
+	for (unsigned int i = 0; i < Data.Count(); i++)
+	{
+		if (pallet == &Data[i])
+		{
+			return i;
+		}
+	}
+	return 0xFFFF;
+}
+unsigned short VoxelPalletMap::FindIndex(const VoxelPallet & pallet) const
+{
+	return FindIndex(&pallet);
+}
+
+/*VoxelPallet * VoxelPalletMap::FindOrNull(const char * name)
 {
 	std::string str(name);
 	for (unsigned int i = 0; i < Data.Count(); i++)
@@ -180,7 +228,7 @@ VoxelPallet * VoxelPalletMap::FindOrNull(const char * name)
 		}
 	}
 	return nullptr;
-}
+}*/
 
 #include "DirectoryInfo.hpp"
 void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)

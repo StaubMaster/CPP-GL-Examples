@@ -777,7 +777,7 @@ void MakeControls()
 		OptionsMenu.ChunkInsert.SetValueX(ChunkInsertRange);
 
 		//ChunkRemoveRange = 12;
-		ChunkRemoveRange = 16;
+		ChunkRemoveRange = 32;
 		//ChunkRemoveRange = 1;
 		OptionsMenu.ChunkRemove.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
 		OptionsMenu.ChunkRemove.SetValueX(ChunkRemoveRange);

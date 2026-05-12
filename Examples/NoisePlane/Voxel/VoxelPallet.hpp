@@ -60,6 +60,7 @@ struct VoxelPallet
 
 	void	MakePolyHedra();
 
+	Voxel	ToVoxel() const;
 	Voxel	ToVoxel(AxisRel placeAxis0, AxisRel placeAxis1) const;
 };
 
@@ -77,8 +78,15 @@ struct VoxelPalletMap
 
 	// use unsigned short instead of Pointer
 
-	bool			Contains(const char * name) const;
-	unsigned short	operator[](const char * name) const;
+	VoxelPallet &			operator[](unsigned short idx);
+	const VoxelPallet &		operator[](unsigned short idx) const;
+
+	VoxelPallet &			operator[](const char * name);
+	const VoxelPallet &		operator[](const char * name) const;
+
+	unsigned short			FindIndex(const char * name) const;
+	unsigned short			FindIndex(const VoxelPallet * pallet) const;
+	unsigned short			FindIndex(const VoxelPallet & pallet) const;
 
 	void	Default(const DirectoryInfo & MediaDirectory);
 	void	LoadTextures(ChunkManager & manager);

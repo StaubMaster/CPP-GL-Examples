@@ -81,7 +81,7 @@ VoxelBoxCollision BoxEntity::FindCollisionTime(::ChunkManager & manager, LoopI3 
 		if (chunk == nullptr) { continue; }
 		//const Voxel * voxel = manager.FindVoxelOrNull(i);
 		const Voxel * voxel = chunk -> FindVoxelOrNull(idx.Voxel);
-		if (voxel != nullptr && voxel -> Pallet != nullptr)
+		if (voxel != nullptr && !(voxel -> IsEmpty()))
 		{
 			BoxF3 voxel_box(i + VectorI3(0, 0, 0), i + VectorI3(1, 1, 1));
 			if ((box + off).IntersectBoxInclusive(voxel_box).All(true)) { continue; }

@@ -20,11 +20,12 @@ void ChunkGraphicsData::Clear()
 }
 void ChunkGraphicsData::Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis)
 {
-	if (voxel.Pallet == nullptr) { return; }
+	if (voxel.Pallet == 0xFFFF) { return; }
 	//const VoxelOrientation & orientation = voxel.Orientation;
 	//unsigned int tex_idx = voxel.Template -> GraphicsTemplate;
 	//unsigned int tex = voxel.Template -> TextureIndex;
-	const VoxelAxisGraphicsData & axis_data = voxel.Pallet -> GeometryPallet -> AxisData(axis);
+	const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
+	const VoxelAxisGraphicsData & axis_data = pallet.GeometryPallet -> AxisData(axis);
 
 	for (unsigned int i = 0; i < axis_data.Data.Count(); i++)
 	{
@@ -35,9 +36,9 @@ void ChunkGraphicsData::Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis
 		//v.Vertexes[0].Pos = v.Vertexes[0].Pos + u;
 		//v.Vertexes[1].Pos = v.Vertexes[1].Pos + u;
 		//v.Vertexes[2].Pos = v.Vertexes[2].Pos + u;
-		v.Vertexes[0].Tex.Z = (voxel.Pallet -> Textures[(int)v.Vertexes[0].Tex.Z]).Index;
-		v.Vertexes[1].Tex.Z = (voxel.Pallet -> Textures[(int)v.Vertexes[1].Tex.Z]).Index;
-		v.Vertexes[2].Tex.Z = (voxel.Pallet -> Textures[(int)v.Vertexes[2].Tex.Z]).Index;
+		v.Vertexes[0].Tex.Z = (pallet.Textures[(int)v.Vertexes[0].Tex.Z]).Index;
+		v.Vertexes[1].Tex.Z = (pallet.Textures[(int)v.Vertexes[1].Tex.Z]).Index;
+		v.Vertexes[2].Tex.Z = (pallet.Textures[(int)v.Vertexes[2].Tex.Z]).Index;
 		DataF.Insert(v);
 	}
 }
@@ -58,7 +59,7 @@ void ChunkGraphicsData::Make(const Chunk & chunk)
 		for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
 			const Voxel & voxel = chunk[u];
-			if (voxel.Pallet == nullptr) { continue; }
+			if (voxel.Pallet == 0xFFFF) { continue; }
 			Concatnate(u, voxel, AxisRel::Here, chunk);
 			Concatnate(u, voxel, AxisRel::PrevX, chunk);
 			Concatnate(u, voxel, AxisRel::PrevY, chunk);

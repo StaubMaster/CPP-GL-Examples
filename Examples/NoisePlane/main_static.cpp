@@ -72,7 +72,7 @@ static void DisplayBoxEntityVoxels(unsigned int p, ::ChunkManager & manager, Box
 		Chunk * chunk = manager.FindLockOrNull(idx.Chunk);
 		if (chunk == nullptr) { continue; }
 		const Voxel * voxel = chunk -> FindVoxelOrNull(idx.Voxel);
-		if (voxel != nullptr && voxel -> Pallet != nullptr)
+		if (voxel != nullptr && !(voxel -> IsEmpty()))
 		{
 			PolyHedraObject voxel_obj(p);
 			voxel_obj.Trans().Position = i;
