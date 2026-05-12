@@ -49,6 +49,29 @@ namespace VoxelGraphics
 	// make each Byte have 6 Bits for Pos, 1 Bit for Tex and 1 Bit of Normal ?
 	// or just use uint32 for now ?
 
+	/* Texture Coordinate ?
+		Texture on the Texture are [0;1]
+		Texture Index should be as much as possible ?
+		|------||------||------||------| Bits in 4 Bytes
+		[-PX-][-PY-][-PZ-][N][]
+							 |
+						TextureXY
+		this leaves 9 Bits [0;511] for the Texture Index
+		512 is now enough ?
+		I would much rather have 16 Bits [0;65535]
+		this should require a second UInt32
+		the Position wastes a lot of space
+		32*32*32=32768 is 15 Bits
+		currently it is 18 Bits
+		which would leave 12 Bits [0;4095] for Texture Index
+		4096 still dosent fell like enough
+
+		8 Bits pre Axis
+		2 Bits for Texture XY
+		3 Bits for Normal
+		32 Bits for Texture Index
+	*/
+
 	struct MainDataU
 	{
 		unsigned int	Value;

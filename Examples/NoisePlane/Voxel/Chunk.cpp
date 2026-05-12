@@ -371,11 +371,12 @@ static VectorU3 TopVoxel(const Chunk & chunk, VectorU3 udx)
 void Chunk::DecorateTrees(const Perlin2D & noise)
 {
 	if (Index.Z < 1) { return; }
+	if (Index.Y < 0) { return; }
 	(void)noise;
 
 	Container::Binary<VectorU3> structure_pos;
 
-	const VoxelPallet & pallet = VoxelPalletMap::All["OrientationCube"];
+	/*const VoxelPallet & pallet = VoxelPalletMap::All["OrientationCube"];
 	for (unsigned int z = 0; z < CHUNK_VALUES_PER_SIDE; z++)
 	{
 		for (unsigned int x = 0; x < CHUNK_VALUES_PER_SIDE; x++)
@@ -397,15 +398,15 @@ void Chunk::DecorateTrees(const Perlin2D & noise)
 				structure_pos.Insert(TopVoxel(*this, VectorU3(x, 0, z)));
 			}
 		}
-	}
+	}*/
 
-	structure_pos.Clear();
+	/*structure_pos.Clear();
 	for (unsigned int i = 0; i < structure_pos.Count(); i++)
 	{
 		PlaceStructure(*this, structure_pos[i], Structure::Tree0);
-	}
+	}*/
 
-	/*for (unsigned int z = 1; z < CHUNK_VALUES_PER_SIDE; z += 4)
+	for (unsigned int z = 1; z < CHUNK_VALUES_PER_SIDE; z += 4)
 	{
 		for (unsigned int x = 1; x < CHUNK_VALUES_PER_SIDE; x += 4)
 		{
@@ -416,7 +417,7 @@ void Chunk::DecorateTrees(const Perlin2D & noise)
 		{
 			PlaceStructure(*this, TopVoxel(*this, VectorU3(x, 0, z)), Structure::Tree0);
 		}
-	}*/
+	}
 }
 /*
 */
@@ -477,8 +478,14 @@ void Chunk::TerrainPerlin(const Perlin2D & noise)
 		{
 			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(u.X, i, u.Y));
 			float diff = val - (i + Offset.Y);
-			if      (diff < 0.0f) { Voxels[voxel_u] = Voxel(); }
-			else if (diff < 1.0f) { Voxels[voxel_u] = VoxelPalletMap::All["Grass"].ToVoxel(); }
+			if (diff < 0.0f) { Voxels[voxel_u] = Voxel(); }
+			else if (diff < 1.0f)
+			{
+				if (i + Offset.Y >= 0)
+				{ Voxels[voxel_u] = VoxelPalletMap::All["Grass"].ToVoxel(); }
+				else
+				{ Voxels[voxel_u] = VoxelPalletMap::All["Water"].ToVoxel(); }
+			}
 			else if (diff < 4.0f) { Voxels[voxel_u] = VoxelPalletMap::All["Dirt"].ToVoxel(); }
 			else                  { Voxels[voxel_u] = VoxelPalletMap::All["Gray"].ToVoxel(); }
 		}
@@ -539,7 +546,7 @@ void Chunk::GenerateDecorate(const Perlin2D & noise2, const Perlin3D & noise3)
 	(void)noise3;
 
 //	DecorateGrid();
-//	DecorateTrees(noise2);
+	DecorateTrees(noise2);
 //	DecorateCity();
 
 	if (IsNullOrEmpty()) { MakeEmpty(); }

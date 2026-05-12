@@ -3,6 +3,7 @@
 
 # include "VoxelEnums.hpp"
 # include "ValueType/Vector/F3.hpp"
+# include "ValueType/Vector/U3.hpp"
 
 struct VoxelOrientation
 {
@@ -26,7 +27,15 @@ struct VoxelOrientation
 	void	make(AxisRel origin, AxisRel target);
 	void	make(AxisRel origin0, AxisRel target0, AxisRel origin1, AxisRel target1); // make this a static function ?
 
+	/*
+		currently
+			VectorU3 and VectorF3 are in range [0;1] and rotate around 0.5f
+		should VectorF3 be [-1;+1] and rotate around 0.0f ?
+	*/
+
+	VectorU3	absolute(VectorU3 v) const;
 	VectorF3	absolute(VectorF3 v) const;
+
 	AxisRel		absolute(AxisRel axis) const;
 	AxisRel		relative(AxisRel axis) const;
 };

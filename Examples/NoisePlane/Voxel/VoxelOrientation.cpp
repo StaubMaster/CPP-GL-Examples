@@ -72,6 +72,28 @@ void VoxelOrientation::make(AxisRel origin0, AxisRel target0, AxisRel origin1, A
 
 
 
+VectorU3 VoxelOrientation::absolute(VectorU3 v) const
+{
+	switch (GetDiag())
+	{
+		case Diag::Here : v = VectorU3(v.X, v.Y, v.Z); break;
+		case Diag::Prev : v = VectorU3(v.Z, v.X, v.Y); break;
+		case Diag::Next : v = VectorU3(v.Y, v.Z, v.X); break;
+		case Diag::DiagX: v = VectorU3(1 - v.X, 1 - v.Z, 1 - v.Y); break;
+		case Diag::DiagY: v = VectorU3(1 - v.Z, 1 - v.Y, 1 - v.X); break;
+		case Diag::DiagZ: v = VectorU3(1 - v.Y, 1 - v.X, 1 - v.Z); break;
+	}
+
+	switch (GetFlip())
+	{
+		case Flip::None : v = VectorU3(0 + v.X, 0 + v.Y, 0 + v.Z); break;
+		case Flip::FlipX: v = VectorU3(0 + v.X, 1 - v.Y, 1 - v.Z); break;
+		case Flip::FlipY: v = VectorU3(1 - v.X, 0 + v.Y, 1 - v.Z); break;
+		case Flip::FlipZ: v = VectorU3(1 - v.X, 1 - v.Y, 0 + v.Z); break;
+	}
+
+	return v;
+}
 VectorF3 VoxelOrientation::absolute(VectorF3 v) const
 {
 	switch (GetDiag())

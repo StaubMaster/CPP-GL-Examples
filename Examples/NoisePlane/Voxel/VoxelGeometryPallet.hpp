@@ -12,6 +12,15 @@ struct VoxelGeometryPallet
 
 
 
+	/* DataU
+		the corners of the cube are allways the same
+		only the texture alignment / texture changes
+		VoxelGraphicsDataU
+		{
+			[6][4] Texture Coordinate
+		}
+		if something is allways a full cube, then it dosent need DataF
+	*/
 	VoxelGraphicsData			Data; // this is Graphics Data. this whole struct is general VoxelTypeTemplate
 
 	const VoxelAxisGraphicsData &	AxisData(AxisRel axis) const;
