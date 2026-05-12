@@ -51,26 +51,26 @@ VoxelOrientation VoxelGeometryPallet::Orient(AxisRel placeAxis0, AxisRel placeAx
 
 static void Quad0(VoxelAxisGraphicsData & face, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
 {
-	VoxelGraphics::MainTriangle	tri;
-	tri.Corners[0] = VoxelGraphics::MainData(p00, VectorF3(box.Min.X, box.Min.Y, tex));
-	tri.Corners[1] = VoxelGraphics::MainData(p10, VectorF3(box.Min.X, box.Max.Y, tex));
-	tri.Corners[2] = VoxelGraphics::MainData(p01, VectorF3(box.Max.X, box.Min.Y, tex));
+	VoxelGraphics::MainFaceF	tri;
+	tri.Vertexes[0] = VoxelGraphics::MainDataF(p00, VectorF3(box.Min.X, box.Min.Y, tex));
+	tri.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Min.X, box.Max.Y, tex));
+	tri.Vertexes[2] = VoxelGraphics::MainDataF(p01, VectorF3(box.Max.X, box.Min.Y, tex));
 	face.Data.Insert(tri);
-	tri.Corners[0] = VoxelGraphics::MainData(p01, VectorF3(box.Max.X, box.Min.Y, tex));
-	tri.Corners[1] = VoxelGraphics::MainData(p10, VectorF3(box.Min.X, box.Max.Y, tex));
-	tri.Corners[2] = VoxelGraphics::MainData(p11, VectorF3(box.Max.X, box.Max.Y, tex));
+	tri.Vertexes[0] = VoxelGraphics::MainDataF(p01, VectorF3(box.Max.X, box.Min.Y, tex));
+	tri.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Min.X, box.Max.Y, tex));
+	tri.Vertexes[2] = VoxelGraphics::MainDataF(p11, VectorF3(box.Max.X, box.Max.Y, tex));
 	face.Data.Insert(tri);
 }
 static void Quad1(VoxelAxisGraphicsData & face, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
 {
-	VoxelGraphics::MainTriangle	tri;
-	tri.Corners[0] = VoxelGraphics::MainData(p00, VectorF3(box.Min.X, box.Min.Y, tex));
-	tri.Corners[1] = VoxelGraphics::MainData(p10, VectorF3(box.Max.X, box.Min.Y, tex));
-	tri.Corners[2] = VoxelGraphics::MainData(p01, VectorF3(box.Min.X, box.Max.Y, tex));
+	VoxelGraphics::MainFaceF	tri;
+	tri.Vertexes[0] = VoxelGraphics::MainDataF(p00, VectorF3(box.Min.X, box.Min.Y, tex));
+	tri.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Max.X, box.Min.Y, tex));
+	tri.Vertexes[2] = VoxelGraphics::MainDataF(p01, VectorF3(box.Min.X, box.Max.Y, tex));
 	face.Data.Insert(tri);
-	tri.Corners[0] = VoxelGraphics::MainData(p01, VectorF3(box.Min.X, box.Max.Y, tex));
-	tri.Corners[1] = VoxelGraphics::MainData(p10, VectorF3(box.Max.X, box.Min.Y, tex));
-	tri.Corners[2] = VoxelGraphics::MainData(p11, VectorF3(box.Max.X, box.Max.Y, tex));
+	tri.Vertexes[0] = VoxelGraphics::MainDataF(p01, VectorF3(box.Min.X, box.Max.Y, tex));
+	tri.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Max.X, box.Min.Y, tex));
+	tri.Vertexes[2] = VoxelGraphics::MainDataF(p11, VectorF3(box.Max.X, box.Max.Y, tex));
 	face.Data.Insert(tri);
 }
 
@@ -167,82 +167,82 @@ void VoxelGeometryPallet::InitCylinder()
 	Quad1(Data.PrevX, pos[0x6], pos[0x7], pos[0xE], pos[0xF], BoxF2(VectorF2(0.0f, 1.0f), VectorF2(1.0f, 0.0f)), 0);
 	Quad1(Data.Here , pos[0x7], pos[0x0], pos[0xF], pos[0x8], BoxF2(VectorF2(0.0f, 1.0f), VectorF2(1.0f, 0.0f)), 0);
 
-	VoxelGraphics::MainTriangle	tri;
-	VoxelGraphics::MainData pY[8];
-	pY[0x0] = VoxelGraphics::MainData(pos[0x0], VectorF3(0.0f, 0.0f + f___, 1));
-	pY[0x1] = VoxelGraphics::MainData(pos[0x1], VectorF3(0.0f, 1.0f - f___, 1));
-	pY[0x2] = VoxelGraphics::MainData(pos[0x2], VectorF3(0.0f + f___, 1.0f, 1));
-	pY[0x3] = VoxelGraphics::MainData(pos[0x3], VectorF3(1.0f - f___, 1.0f, 1));
-	pY[0x4] = VoxelGraphics::MainData(pos[0x4], VectorF3(1.0f, 1.0f - f___, 1));
-	pY[0x5] = VoxelGraphics::MainData(pos[0x5], VectorF3(1.0f, 0.0f + f___, 1));
-	pY[0x6] = VoxelGraphics::MainData(pos[0x6], VectorF3(1.0f - f___, 0.0f, 1));
-	pY[0x7] = VoxelGraphics::MainData(pos[0x7], VectorF3(0.0f + f___, 0.0f, 1));
+	VoxelGraphics::MainFaceF	tri;
+	VoxelGraphics::MainDataF pY[8];
+	pY[0x0] = VoxelGraphics::MainDataF(pos[0x0], VectorF3(0.0f, 0.0f + f___, 1));
+	pY[0x1] = VoxelGraphics::MainDataF(pos[0x1], VectorF3(0.0f, 1.0f - f___, 1));
+	pY[0x2] = VoxelGraphics::MainDataF(pos[0x2], VectorF3(0.0f + f___, 1.0f, 1));
+	pY[0x3] = VoxelGraphics::MainDataF(pos[0x3], VectorF3(1.0f - f___, 1.0f, 1));
+	pY[0x4] = VoxelGraphics::MainDataF(pos[0x4], VectorF3(1.0f, 1.0f - f___, 1));
+	pY[0x5] = VoxelGraphics::MainDataF(pos[0x5], VectorF3(1.0f, 0.0f + f___, 1));
+	pY[0x6] = VoxelGraphics::MainDataF(pos[0x6], VectorF3(1.0f - f___, 0.0f, 1));
+	pY[0x7] = VoxelGraphics::MainDataF(pos[0x7], VectorF3(0.0f + f___, 0.0f, 1));
 
-	tri.Corners[0] = pY[0x0];
-	tri.Corners[1] = pY[0x1];
-	tri.Corners[2] = pY[0x5];
+	tri.Vertexes[0] = pY[0x0];
+	tri.Vertexes[1] = pY[0x1];
+	tri.Vertexes[2] = pY[0x5];
 	Data.PrevY.Data.Insert(tri);
-	tri.Corners[0] = pY[0x5];
-	tri.Corners[1] = pY[0x1];
-	tri.Corners[2] = pY[0x4];
-	Data.PrevY.Data.Insert(tri);
-	
-	tri.Corners[0] = pY[0x1];
-	tri.Corners[1] = pY[0x2];
-	tri.Corners[2] = pY[0x4];
-	Data.PrevY.Data.Insert(tri);
-	tri.Corners[0] = pY[0x4];
-	tri.Corners[1] = pY[0x2];
-	tri.Corners[2] = pY[0x3];
+	tri.Vertexes[0] = pY[0x5];
+	tri.Vertexes[1] = pY[0x1];
+	tri.Vertexes[2] = pY[0x4];
 	Data.PrevY.Data.Insert(tri);
 	
-	tri.Corners[0] = pY[0x5];
-	tri.Corners[1] = pY[0x6];
-	tri.Corners[2] = pY[0x0];
+	tri.Vertexes[0] = pY[0x1];
+	tri.Vertexes[1] = pY[0x2];
+	tri.Vertexes[2] = pY[0x4];
 	Data.PrevY.Data.Insert(tri);
-	tri.Corners[0] = pY[0x0];
-	tri.Corners[1] = pY[0x6];
-	tri.Corners[2] = pY[0x7];
+	tri.Vertexes[0] = pY[0x4];
+	tri.Vertexes[1] = pY[0x2];
+	tri.Vertexes[2] = pY[0x3];
+	Data.PrevY.Data.Insert(tri);
+	
+	tri.Vertexes[0] = pY[0x5];
+	tri.Vertexes[1] = pY[0x6];
+	tri.Vertexes[2] = pY[0x0];
+	Data.PrevY.Data.Insert(tri);
+	tri.Vertexes[0] = pY[0x0];
+	tri.Vertexes[1] = pY[0x6];
+	tri.Vertexes[2] = pY[0x7];
 	Data.PrevY.Data.Insert(tri);
 
-	VoxelGraphics::MainData nY[16];
-	nY[0x8] = VoxelGraphics::MainData(pos[0x8], VectorF3(0.0f, 0.0f + f___, 4));
-	nY[0x9] = VoxelGraphics::MainData(pos[0x9], VectorF3(0.0f, 1.0f - f___, 4));
-	nY[0xA] = VoxelGraphics::MainData(pos[0xA], VectorF3(0.0f + f___, 1.0f, 4));
-	nY[0xB] = VoxelGraphics::MainData(pos[0xB], VectorF3(1.0f - f___, 1.0f, 4));
-	nY[0xC] = VoxelGraphics::MainData(pos[0xC], VectorF3(1.0f, 1.0f - f___, 4));
-	nY[0xD] = VoxelGraphics::MainData(pos[0xD], VectorF3(1.0f, 0.0f + f___, 4));
-	nY[0xE] = VoxelGraphics::MainData(pos[0xE], VectorF3(1.0f - f___, 0.0f, 4));
-	nY[0xF] = VoxelGraphics::MainData(pos[0xF], VectorF3(0.0f + f___, 0.0f, 4));
+	VoxelGraphics::MainDataF nY[16];
+	nY[0x8] = VoxelGraphics::MainDataF(pos[0x8], VectorF3(0.0f, 0.0f + f___, 4));
+	nY[0x9] = VoxelGraphics::MainDataF(pos[0x9], VectorF3(0.0f, 1.0f - f___, 4));
+	nY[0xA] = VoxelGraphics::MainDataF(pos[0xA], VectorF3(0.0f + f___, 1.0f, 4));
+	nY[0xB] = VoxelGraphics::MainDataF(pos[0xB], VectorF3(1.0f - f___, 1.0f, 4));
+	nY[0xC] = VoxelGraphics::MainDataF(pos[0xC], VectorF3(1.0f, 1.0f - f___, 4));
+	nY[0xD] = VoxelGraphics::MainDataF(pos[0xD], VectorF3(1.0f, 0.0f + f___, 4));
+	nY[0xE] = VoxelGraphics::MainDataF(pos[0xE], VectorF3(1.0f - f___, 0.0f, 4));
+	nY[0xF] = VoxelGraphics::MainDataF(pos[0xF], VectorF3(0.0f + f___, 0.0f, 4));
 
-	tri.Corners[0] = nY[0xE];
-	tri.Corners[1] = nY[0xD];
-	tri.Corners[2] = nY[0xF];
+	tri.Vertexes[0] = nY[0xE];
+	tri.Vertexes[1] = nY[0xD];
+	tri.Vertexes[2] = nY[0xF];
 	Data.NextY.Data.Insert(tri);
 
-	tri.Corners[0] = nY[0xF];
-	tri.Corners[1] = nY[0xD];
-	tri.Corners[2] = nY[0x8];
+	tri.Vertexes[0] = nY[0xF];
+	tri.Vertexes[1] = nY[0xD];
+	tri.Vertexes[2] = nY[0x8];
 	Data.NextY.Data.Insert(tri);
 
-	tri.Corners[0] = nY[0x8];
-	tri.Corners[1] = nY[0xD];
-	tri.Corners[2] = nY[0xC];
+	tri.Vertexes[0] = nY[0x8];
+	tri.Vertexes[1] = nY[0xD];
+	tri.Vertexes[2] = nY[0xC];
 	Data.NextY.Data.Insert(tri);
 
-	tri.Corners[0] = nY[0x8];
-	tri.Corners[1] = nY[0xC];
-	tri.Corners[2] = nY[0x9];
+	tri.Vertexes[0] = nY[0x8];
+	tri.Vertexes[1] = nY[0xC];
+	tri.Vertexes[2] = nY[0x9];
 	Data.NextY.Data.Insert(tri);
 
-	tri.Corners[0] = nY[0x9];
-	tri.Corners[1] = nY[0xC];
-	tri.Corners[2] = nY[0xB];
+	tri.Vertexes[0] = nY[0x9];
+	tri.Vertexes[1] = nY[0xC];
+	tri.Vertexes[2] = nY[0xB];
 	Data.NextY.Data.Insert(tri);
 
-	tri.Corners[0] = nY[0x9];
-	tri.Corners[1] = nY[0xB];
-	tri.Corners[2] = nY[0xA];
+	tri.Vertexes[0] = nY[0x9];
+	tri.Vertexes[1] = nY[0xB];
+	tri.Vertexes[2] = nY[0xA];
 	Data.NextY.Data.Insert(tri);
 
 	Data.Done();
@@ -277,16 +277,16 @@ void VoxelGeometryPallet::InitSlope()
 	Quad0(Data.PrevY, pos[0b000], pos[0b100], pos[0b001], pos[0b101], BoxF2(VectorF2(0.25f, 0.0f), VectorF2(0.50f, 0.5f)), Texture);
 	Quad1(Data.NextZ, pos[0b100], pos[0b110], pos[0b101], pos[0b111], BoxF2(VectorF2(0.50f, 0.5f), VectorF2(0.75f, 1.0f)), Texture);
 
-	VoxelGraphics::MainTriangle	tri;
+	VoxelGraphics::MainFaceF	tri;
 
-	tri.Corners[0] = VoxelGraphics::MainData(pos[0b000], VectorF3(0.00f, 0.0f, Texture));
-	tri.Corners[1] = VoxelGraphics::MainData(pos[0b100], VectorF3(0.00f, 0.5f, Texture));
-	tri.Corners[2] = VoxelGraphics::MainData(pos[0b110], VectorF3(0.25f, 0.5f, Texture));
+	tri.Vertexes[0] = VoxelGraphics::MainDataF(pos[0b000], VectorF3(0.00f, 0.0f, Texture));
+	tri.Vertexes[1] = VoxelGraphics::MainDataF(pos[0b100], VectorF3(0.00f, 0.5f, Texture));
+	tri.Vertexes[2] = VoxelGraphics::MainDataF(pos[0b110], VectorF3(0.25f, 0.5f, Texture));
 	Data.PrevX.Data.Insert(tri);
 
-	tri.Corners[0] = VoxelGraphics::MainData(pos[0b101], VectorF3(0.00f, 1.0f, Texture));
-	tri.Corners[1] = VoxelGraphics::MainData(pos[0b001], VectorF3(0.00f, 0.5f, Texture));
-	tri.Corners[2] = VoxelGraphics::MainData(pos[0b111], VectorF3(0.25f, 1.0f, Texture));
+	tri.Vertexes[0] = VoxelGraphics::MainDataF(pos[0b101], VectorF3(0.00f, 1.0f, Texture));
+	tri.Vertexes[1] = VoxelGraphics::MainDataF(pos[0b001], VectorF3(0.00f, 0.5f, Texture));
+	tri.Vertexes[2] = VoxelGraphics::MainDataF(pos[0b111], VectorF3(0.25f, 1.0f, Texture));
 	Data.NextX.Data.Insert(tri);
 
 	Quad0(Data.Here, pos[0b000], pos[0b001], pos[0b110], pos[0b111], BoxF2(VectorF2(0.75f, 0.0f), VectorF2(1.00f, 1.0f)), Texture);

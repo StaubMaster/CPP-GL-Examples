@@ -8,10 +8,15 @@
 
 namespace VoxelGraphics
 {
-	struct Buffer : public ::BufferArray::MainInst<MainBuffer, InstBuffer>
+	struct BufferF : public ::BufferArray::MainInst<MainBufferF, InstBuffer>
 	{
-		~Buffer();
-		Buffer();
+		~BufferF();
+		BufferF();
+	};
+	struct BufferU : public ::BufferArray::MainInst<MainBufferU, InstBuffer>
+	{
+		~BufferU();
+		BufferU();
 	};
 };
 

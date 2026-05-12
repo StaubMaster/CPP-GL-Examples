@@ -75,9 +75,10 @@ struct VoxelPalletMap
 
 	// have a default to return if name is not found
 
-	VoxelPallet &	operator[](const char * name);
+	// use unsigned short instead of Pointer
+
 	bool			Contains(const char * name) const;
-	VoxelPallet *	FindOrNull(const char * name);
+	unsigned short	operator[](const char * name) const;
 
 	void	Default(const DirectoryInfo & MediaDirectory);
 	void	LoadTextures(ChunkManager & manager);

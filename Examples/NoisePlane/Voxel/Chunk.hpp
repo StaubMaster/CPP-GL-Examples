@@ -59,7 +59,6 @@ enum class BufferDataState : unsigned char // put into Buffer
 	None,
 	Needed,
 	Ready,
-	Drawable,
 };
 
 // make this an Array3D ?
@@ -159,7 +158,8 @@ struct Chunk
 
 
 
-	VoxelGraphics::Buffer	Buffer;
+	VoxelGraphics::BufferU	BufferU;
+	VoxelGraphics::BufferF	BufferF;
 
 	bool	GraphicsExist; // Buffer is the only thing ?
 	// make this a Functin

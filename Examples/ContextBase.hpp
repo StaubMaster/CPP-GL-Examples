@@ -6,17 +6,19 @@
 # include "Window.hpp"
 # include "Miscellaneous/Function/Object.hpp"
 
+# include "Miscellaneous/Function/Static.hpp"
+
 // should Context to use and such be here ?
 // as statics
 // should window and MediaDirectory be Static ?
 
 struct ContextBase
 {
-	static ::Window *		WindowPointer;
-	static ::ContextBase *	ContextToUse;
+	static ::Window *							WindowPointer;
+	static ::StaticFunction<::ContextBase*>		NewContext;
 
 	static void		Quit();
-	static void		Change(ContextBase * context);
+	static void		Change(StaticFunction<ContextBase*>::FunctionType new_context);
 
 	static void		ChangeToContext0();
 	static void		ChangeToContext1();

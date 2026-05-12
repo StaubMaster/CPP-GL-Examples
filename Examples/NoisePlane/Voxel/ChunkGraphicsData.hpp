@@ -13,8 +13,10 @@ struct Chunk;
 
 struct ChunkGraphicsData // ChunkGraphicsData
 {
-	BlockList<1024, VoxelGraphics::MainTriangle>	Data;
-	Container::Array<VoxelGraphics::MainTriangle>	Array;
+	BlockList<1024, VoxelGraphics::MainFaceF>	DataF;
+	BlockList<1024, VoxelGraphics::MainFaceU>	DataU;
+	Container::Array<VoxelGraphics::MainFaceF>	ArrayF;
+	Container::Array<VoxelGraphics::MainFaceU>	ArrayU;
 
 	void	Clear();
 	void	Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis);

@@ -13,7 +13,7 @@ struct Voxel;
 
 struct VoxelAxisGraphicsData // VoxelAxisGraphicsData
 {
-	Container::Binary<VoxelGraphics::MainTriangle>	Data;
+	Container::Binary<VoxelGraphics::MainFaceF>	Data;
 
 	// Clear()
 	// Count()

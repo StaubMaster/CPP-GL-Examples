@@ -84,18 +84,18 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsDat
 	VectorF3 off(0.5f);
 	for (unsigned int i = 0; i < data.Data.Count(); i++)
 	{
-		const VoxelGraphics::MainTriangle & face = data.Data[i];
+		const VoxelGraphics::MainFaceF & face = data.Data[i];
 
 		unsigned int ph_i = polyhedra.Corners.Count();
-		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[0].Pos - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[1].Pos - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(face.Corners[2].Pos - off));
+		polyhedra.Insert_Corn(PolyHedra::Corner(face.Vertexes[0].Pos - off));
+		polyhedra.Insert_Corn(PolyHedra::Corner(face.Vertexes[1].Pos - off));
+		polyhedra.Insert_Corn(PolyHedra::Corner(face.Vertexes[2].Pos - off));
 		polyhedra.Insert_Face3(ph_i + 0, ph_i + 1, ph_i + 2);
 
 		skin.Insert_Face3(
-			Skin2DFaceCorner(face.Corners[0].Tex),
-			Skin2DFaceCorner(face.Corners[1].Tex),
-			Skin2DFaceCorner(face.Corners[2].Tex)
+			Skin2DFaceCorner(face.Vertexes[0].Tex),
+			Skin2DFaceCorner(face.Vertexes[1].Tex),
+			Skin2DFaceCorner(face.Vertexes[2].Tex)
 		);
 	}
 }

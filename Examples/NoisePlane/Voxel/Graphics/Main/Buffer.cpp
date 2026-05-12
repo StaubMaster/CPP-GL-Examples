@@ -3,10 +3,16 @@
 
 
 
-VoxelGraphics::MainBuffer::~MainBuffer() { }
-VoxelGraphics::MainBuffer::MainBuffer(::VertexArray & vertex_array)
-	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainData))
+VoxelGraphics::MainBufferF::~MainBufferF() { }
+VoxelGraphics::MainBufferF::MainBufferF(::VertexArray & vertex_array)
+	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainDataF))
 	, Pos(*this)
 	, Tex(*this)
 	, Normal(*this)
+{ }
+
+VoxelGraphics::MainBufferU::~MainBufferU() { }
+VoxelGraphics::MainBufferU::MainBufferU(::VertexArray & vertex_array)
+	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainDataU))
+	, Value(*this)
 { }

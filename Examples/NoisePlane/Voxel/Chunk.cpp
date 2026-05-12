@@ -45,7 +45,7 @@ Chunk::~Chunk()
 	//delete[] Data;
 	/*if (GraphicsExist)
 	{
-		Buffer.Delete();
+		BufferF.Delete();
 	}*/
 }
 Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
@@ -54,16 +54,20 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, Voxels()
 	, Changing()
 	, GenerationState(GenerationState::None)
-	, Buffer()
+	, BufferU()
+	, BufferF()
 	, GraphicsExist(false)
 	, BufferNeedsInit(false)
 	, MainBufferState(BufferDataState::None)
 	, InstBufferNeedsData(false)
 {
-	Buffer.Main.Pos.Change(0);
-	Buffer.Main.Tex.Change(1);
-	Buffer.Main.Normal.Change(2);
-	Buffer.Inst.Pos.Change(3);
+	BufferU.Main.Value.Change(0);
+	BufferU.Inst.Pos.Change(1);
+
+	BufferF.Main.Pos.Change(0);
+	BufferF.Main.Tex.Change(1);
+	BufferF.Main.Normal.Change(2);
+	BufferF.Inst.Pos.Change(3);
 }
 
 
@@ -89,7 +93,7 @@ bool Chunk::try_lock()
 
 bool Chunk::IsEmpty() const
 {
-	return (Voxels.Length() == 0);
+	return Voxels.IsNull();
 }
 bool Chunk::IsNullOrEmpty() const
 {
@@ -521,9 +525,9 @@ void Chunk::GenerateTerrain(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	MakeNull();
 
-	TerrainPlane();
+//	TerrainPlane();
 //	TerrainPillars();
-//	TerrainPerlin(noise2);
+	TerrainPerlin(noise2);
 //	TerrainPerlin(noise3);
 
 	GenerationState = GenerationState::Generated;
@@ -555,7 +559,8 @@ void Chunk::GraphicsCreate()
 {
 	if (GraphicsExist) { return; }
 
-	Buffer.Create();
+	BufferU.Create();
+	BufferF.Create();
 
 	GraphicsExist = true;
 
@@ -571,7 +576,8 @@ void Chunk::GraphicsDelete()
 {
 	if (!GraphicsExist) { return; }
 
-	Buffer.Delete();
+	BufferU.Delete();
+	BufferF.Delete();
 
 	GraphicsExist = false;
 }
@@ -604,16 +610,11 @@ void Chunk::GraphicsUpdateMainBuffer()
 
 	if (MainBufferState != BufferDataState::Ready) { return; }
 
-	Buffer.Main.Data(MainBufferData.Array);
-	if (MainBufferData.Array.Count() != 0)
-	{
-		MainBufferData.Clear();
-		MainBufferState = BufferDataState::Drawable;
-	}
-	else
-	{
-		MainBufferState = BufferDataState::None;
-	}
+	BufferU.Main.Data(MainBufferData.ArrayU);
+	BufferF.Main.Data(MainBufferData.ArrayF);
+	MainBufferData.Clear();
+
+	MainBufferState = BufferDataState::None;
 }
 
 void Chunk::UpdateInstBuffer()
@@ -628,7 +629,7 @@ void Chunk::UpdateInstBuffer()
 		temp.Pos = Index * CHUNK_VALUES_PER_SIDE;
 		data.Insert(temp);
 
-		Buffer.Inst.Data(data);
+		BufferF.Inst.Data(data);
 	}
 
 	InstBufferNeedsData = false;
@@ -642,14 +643,14 @@ void Chunk::Draw()
 	if (!GenerationDone()) { return; }
 	if (BufferNeedsInit)
 	{
-		Buffer.Inst.Init();
-		Buffer.Main.Init();
+		BufferU.Inst.Init();
+		BufferU.Main.Init();
+		BufferF.Inst.Init();
+		BufferF.Main.Init();
 		BufferNeedsInit = false;
 	}
 	GraphicsUpdateMainBuffer();
 	UpdateInstBuffer();
-	if (MainBufferState != BufferDataState::None)
-	{
-		Buffer.Draw();
-	}
+	BufferU.Draw();
+	BufferF.Draw();
 }

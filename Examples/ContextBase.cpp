@@ -10,20 +10,20 @@
 
 
 
-::Window *		ContextBase::WindowPointer = nullptr;
-::ContextBase *	ContextBase::ContextToUse = nullptr;
+::Window *						ContextBase::WindowPointer = nullptr;
+::StaticFunction<ContextBase*>	ContextBase::NewContext;
 
 void ContextBase::Quit()
 {
-	ContextToUse = nullptr;
+	NewContext.Assign(nullptr);
 	if (WindowPointer != nullptr)
 	{
 		WindowPointer -> ExitLoop();
 	}
 }
-void ContextBase::Change(ContextBase * context)
+void ContextBase::Change(StaticFunction<ContextBase*>::FunctionType new_context)
 {
-	ContextToUse = context;
+	NewContext.Assign(new_context);
 	if (WindowPointer != nullptr)
 	{
 		WindowPointer -> ExitLoop();
@@ -32,19 +32,19 @@ void ContextBase::Change(ContextBase * context)
 
 void ContextBase::ChangeToContext0()
 {
-	Change(newContext0());
+	Change(newContext0);
 }
 void ContextBase::ChangeToContext1()
 {
-	Change(newContext1());
+	Change(newContext1);
 }
 void ContextBase::ChangeToNoisePlane()
 {
-	Change(newContextNoisePlane());
+	Change(newContextNoisePlane);
 }
 void ContextBase::ChangeToTestTextAlignment()
 {
-	Change(new ContextTestTextAlignment());
+	//Change(new ContextTestTextAlignment());
 }
 
 

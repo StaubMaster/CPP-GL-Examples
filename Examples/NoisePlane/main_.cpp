@@ -613,53 +613,65 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 
 
 
-bool		ThreadDelay = true;
+bool		ThreadIdle = true;
 bool		ThreadTerminate = false;
+
 std::thread				AuxThread0;
+bool					AuxThread0Idle = false;
 ValueAverager<float>	AuxThread0Time;
 void		AuxThread0Func()
 {
 	ContainerLock::ThreadName = "AuxThread0";
-	while (ThreadDelay) { }
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
-		sw.ReStart();
-		if (!DontRemove) { ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange); }
-		if (!DontInsert) { ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange); }
-		ChunkManager.UpdateChunksContainer();
-		sw.Stop();
-		AuxThread0Time.NewValue(sw.ElapsedTime());
+		if (!ThreadIdle && !AuxThread0Idle)
+		{
+			sw.ReStart();
+			if (!DontRemove) { ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange); }
+			if (!DontInsert) { ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange); }
+			ChunkManager.UpdateChunksContainer();
+			sw.Stop();
+			AuxThread0Time.NewValue(sw.ElapsedTime());
+		}
 	}
 }
+
 std::thread				AuxThread1;
+bool					AuxThread1Idle = false;
 ValueAverager<float>	AuxThread1Time;
 void		AuxThread1Func()
 {
 	ContainerLock::ThreadName = "AuxThread1";
-	while (ThreadDelay) { }
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
-		sw.ReStart();
-		if (!DontGenerate) { ChunkManager.GenerateAround(view.Trans.Position, ChunkInsertRange, Perlin2, Perlin3); }
-		sw.Stop();
-		AuxThread1Time.NewValue(sw.ElapsedTime());
+		if (!ThreadIdle && !AuxThread1Idle)
+		{
+			sw.ReStart();
+			if (!DontGenerate) { ChunkManager.GenerateAround(view.Trans.Position, ChunkInsertRange, Perlin2, Perlin3); }
+			sw.Stop();
+			AuxThread1Time.NewValue(sw.ElapsedTime());
+		}
 	}
 }
+
 std::thread				AuxThread2;
+bool					AuxThread2Idle = false;
 ValueAverager<float>	AuxThread2Time;
 void		AuxThread2Func()
 {
 	ContainerLock::ThreadName = "AuxThread2";
-	while (ThreadDelay) { }
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
-		sw.ReStart();
-		if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position); }
-		sw.Stop();
-		AuxThread2Time.NewValue(sw.ElapsedTime());
+		if (!ThreadIdle && !AuxThread2Idle)
+		{
+			sw.ReStart();
+			if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position); }
+			sw.Stop();
+			AuxThread2Time.NewValue(sw.ElapsedTime());
+		}
 	}
 }
 
@@ -748,7 +760,8 @@ void MakeControls()
 		OptionsMenu.FOV.SetValueX(view.FOV.ToDegrees());
 
 		OptionsMenu.Depth.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Depth);
-		OptionsMenu.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
+		//OptionsMenu.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
+		OptionsMenu.Depth.SetValueX(1000.0f); // get Depth. also depth works weirdly ?
 
 		OptionsMenu.DepthRange.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_DepthRange);
 		OptionsMenu.DepthRange.SetValueX(view.Depth.Range.Min);
@@ -989,16 +1002,26 @@ void ChangeMedia()
 	}
 }
 
+// Valgrind is very slow here ?
 void GraphicsCreate()
 {
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	PolyHedraManager.GraphicsCreate();
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	ControlManager.GraphicsCreate();
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	TextManager.GraphicsCreate();
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	//PlaneManager.GraphicsCreate();
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	ChunkManager.GraphicsCreate();
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	InventoryPolyHedraManager.GraphicsCreate();
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	InventoryShader.Create();
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 }
 void GraphicsDelete()
 {
@@ -1013,12 +1036,13 @@ void GraphicsDelete()
 
 void Init() override
 {
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Make();
-
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	ChangeMedia();
-
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	GraphicsCreate();
-
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	VoxelPalletMap::All.LoadTextures(ChunkManager);
 	{
 		window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
@@ -1027,25 +1051,26 @@ void Init() override
 		view.Depth.Range.ChangeMin(0.5f);
 	}
 	VoxelPalletMap::All.MakePolyHedra();
-
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	MakeControls();
-
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	ChunkManager.ChangeChunksArraySize(32);
 	//ChunkManager.ChangeChunksArraySize(8);
 	//ChunkManager.ChangeChunksArraySize(1);
-
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
-
-	ThreadDelay = false;
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	ThreadIdle = false;
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 }
 void Free() override
 {
 	GraphicsDelete();
-	ThreadDelay = false;
 	ThreadTerminate = true;
 	AuxThread0.join();
 	AuxThread1.join();
+	AuxThread2.join();
 }
 
 
@@ -1157,6 +1182,7 @@ void FrameText(FrameTime frame_time)
 	}
 
 	// Thread Time
+	if (DebugMenu.TimeThreads.Check.IsChecked())
 	{
 		ss << "FrameDurationTime:";
 		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << FrameDurationTime.Min() << 's' << ' ';
@@ -1182,6 +1208,7 @@ void FrameText(FrameTime frame_time)
 	}
 
 	// ChunkManager Time
+	if (DebugMenu.TimeWaitDo.Check.IsChecked())
 	{
 		ss << ChunkManager::TimeInsert << '\n';
 		ss << ChunkManager::TimeInsertNeighbours << '\n';
@@ -1268,12 +1295,15 @@ void FrameText(FrameTime frame_time)
 				case BufferDataState::None: ss << "None"; break;
 				case BufferDataState::Needed : ss << "Needed"; break;
 				case BufferDataState::Ready: ss << "Ready"; break;
-				case BufferDataState::Drawable: ss << "Drawable"; break;
 			}
 			ss << '\n';
 
-			ss << "Buffer: ";
-			ss << Memory1000ToString(chunk.Buffer.Main.Count * sizeof(VoxelGraphics::MainData));
+			//ss << "BufferU: ";
+			//ss << Memory1000ToString(chunk.BufferU.Main.Count * sizeof(VoxelGraphics::MainDataU));
+			//ss << '\n';
+
+			ss << "BufferF: ";
+			ss << Memory1000ToString(chunk.BufferF.Main.Count * sizeof(VoxelGraphics::MainDataF));
 			ss << '\n';
 
 			chunk.unlock();
@@ -1310,6 +1340,7 @@ void FrameText(FrameTime frame_time)
 		ss << '\n';
 	}*/
 
+	if (DebugMenu.ChunkRange.Check.IsChecked())
 	{
 		ss << "Chunk Ranges:" << '\n';
 		ss << "Chunk Insert: " << ChunkInsertRange << '\n';
@@ -1356,13 +1387,14 @@ void FrameText(FrameTime frame_time)
 		ss << 'F' << chunks_f << ']';
 		ss << '\n';
 
-		ss << "ChunkSize\n";
+		ss << "Chunk sizeof\n";
 		ss << "sizeof(Chunk)" << ' ' << sizeof(Chunk) << '\n';
 		ss << "sizeof(VectorI3)" << ' ' << sizeof(VectorI3) << '\n';
 		ss << "sizeof(VectorU3)" << ' ' << sizeof(VectorU3) << '\n';
 		ss << "sizeof(Array3D<Voxel>)" << ' ' << sizeof(Array3D<Voxel>) << '\n';
 		ss << "sizeof(Chunk*)" << ' ' << sizeof(Chunk*) << '\n';
-		ss << "sizeof(VoxelGraphics::Buffer)" << ' ' << sizeof(VoxelGraphics::Buffer) << '\n';
+		ss << "sizeof(VoxelGraphics::BufferF)" << ' ' << sizeof(VoxelGraphics::BufferF) << '\n';
+		ss << "sizeof(VoxelGraphics::BufferU)" << ' ' << sizeof(VoxelGraphics::BufferU) << '\n';
 		ss << "sizeof(ChunkGraphicsData)" << ' ' << sizeof(ChunkGraphicsData) << '\n';
 		ss << "sizeof(std::mutex)" << ' ' << sizeof(std::mutex) << '\n';
 		ss << "Chunks:" << Memory1000ToString(sizeof(Chunk));
@@ -1370,6 +1402,10 @@ void FrameText(FrameTime frame_time)
 		ss << " = " << Memory1000ToString(chunks_t * sizeof(Chunk));
 		ss << '\n';
 
+		ss << "Voxel sizeof\n";
+		ss << "sizeof(Voxel)" << ' ' << sizeof(Voxel) << '\n';
+		ss << "sizeof(VoxelOrientation)" << ' ' << sizeof(VoxelOrientation) << '\n';
+		ss << "sizeof(VoxelPallet*)" << ' ' << sizeof(VoxelPallet*) << '\n';
 		ss << "Voxels:" << Memory1000ToString(sizeof(Voxel));
 		ss << " * " << Seperated1000(chunks_f * CHUNK_VALUES_PER_VOLM);
 		ss << " = " << Memory1000ToString(chunks_f * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
@@ -1385,7 +1421,8 @@ void FrameText(FrameTime frame_time)
 		//ChunkManager.ChunksChanging.lock();
 		ChunkManager.ChunksLock.Checking0();
 
-		unsigned long long main_count = 0;
+		unsigned long long main_u_count = 0;
+		unsigned long long main_f_count = 0;
 		unsigned int buffer__ = 0;
 		unsigned int buffer_n = 0;
 		unsigned int buffer_r = 0;
@@ -1393,7 +1430,8 @@ void FrameText(FrameTime frame_time)
 		{
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *ChunkManager.Chunks[i];
-			main_count += chunk.Buffer.Main.Count;
+			//main_u_count += chunk.BufferU.Main.Count;
+			main_f_count += chunk.BufferF.Main.Count;
 			if (chunk.MainBufferState == BufferDataState::None)   { buffer__++; }
 			if (chunk.MainBufferState == BufferDataState::Needed) { buffer_n++; }
 			if (chunk.MainBufferState == BufferDataState::Ready)  { buffer_r++; }
@@ -1404,9 +1442,14 @@ void FrameText(FrameTime frame_time)
 		ss << 'N' << buffer_n << ' ';
 		ss << 'R' << buffer_r << '\n';
 
-		ss << "BufferData:" << Memory1000ToString(sizeof(VoxelGraphics::MainData));
-		ss << " * " << Seperated1000(main_count);
-		ss << " = " << Memory1000ToString(main_count * sizeof(VoxelGraphics::MainData));
+		ss << "BufferuData:" << Memory1000ToString(sizeof(VoxelGraphics::MainDataU));
+		ss << " * " << Seperated1000(main_u_count);
+		ss << " = " << Memory1000ToString(main_u_count * sizeof(VoxelGraphics::MainDataU));
+		ss << '\n';
+
+		ss << "BufferFData:" << Memory1000ToString(sizeof(VoxelGraphics::MainDataF));
+		ss << " * " << Seperated1000(main_f_count);
+		ss << " = " << Memory1000ToString(main_f_count * sizeof(VoxelGraphics::MainDataF));
 		ss << '\n';
 
 		ChunkManager.ChunksLock.Checking1();

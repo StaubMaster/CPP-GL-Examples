@@ -6,13 +6,19 @@
 
 namespace VoxelGraphics
 {
-	struct MainBuffer : public ::Buffer::Array
+	struct MainBufferF : public ::Buffer::Array
 	{
 		::Attribute::VectorF3	Pos;
 		::Attribute::VectorF3	Tex;
 		::Attribute::VectorF3	Normal;
-		~MainBuffer();
-		MainBuffer(::VertexArray & vertex_array);
+		~MainBufferF();
+		MainBufferF(::VertexArray & vertex_array);
+	};
+	struct MainBufferU : public ::Buffer::Array
+	{
+		::Attribute::UInt	Value;
+		~MainBufferU();
+		MainBufferU(::VertexArray & vertex_array);
 	};
 };
 

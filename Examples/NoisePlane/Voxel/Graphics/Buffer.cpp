@@ -2,7 +2,12 @@
 
 
 
-VoxelGraphics::Buffer::~Buffer() { }
-VoxelGraphics::Buffer::Buffer()
-	: ::BufferArray::MainInst<MainBuffer, InstBuffer>(GL::DrawMode::Triangles)
+VoxelGraphics::BufferF::~BufferF() { }
+VoxelGraphics::BufferF::BufferF()
+	: ::BufferArray::MainInst<MainBufferF, InstBuffer>(GL::DrawMode::Triangles)
+{ }
+
+VoxelGraphics::BufferU::~BufferU() { }
+VoxelGraphics::BufferU::BufferU()
+	: ::BufferArray::MainInst<MainBufferU, InstBuffer>(GL::DrawMode::Triangles)
 { }

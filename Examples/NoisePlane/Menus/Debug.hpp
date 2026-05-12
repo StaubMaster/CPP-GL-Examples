@@ -6,7 +6,7 @@
 
 struct CheckBoxText
 {
-	UI::Control::TextBox	Text;
+	UI::Control::Label		Label;
 	UI::Control::CheckBox	Check;
 	float	Place(float y, const char * str);
 	void	Insert(UI::Control::Form & form);
@@ -16,9 +16,19 @@ struct DebugMenu : public UI::Control::Form
 {
 	CheckBoxText	FPS;
 
+	CheckBoxText	TimeThreads;
+	CheckBoxText	TimeWaitDo;
+
+	CheckBoxText	AuxThread0Idle;
+	CheckBoxText	AuxThread1Idle;
+	CheckBoxText	AuxThread2Idle;
+
 	CheckBoxText	View;
 	CheckBoxText	ChunkHere;
 	CheckBoxText	VoxelThere;
+
+	CheckBoxText	ChunkRange;
+	CheckBoxText	ChunkRangeCenter;
 
 	CheckBoxText	VoxelChunkMemory;
 	CheckBoxText	VoxelChunkBoxes;

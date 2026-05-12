@@ -13,8 +13,10 @@
 
 void ChunkGraphicsData::Clear()
 {
-	Data.Clear();
-	Array.Clear();
+	DataF.Clear();
+	DataU.Clear();
+	ArrayF.Clear();
+	ArrayU.Clear();
 }
 void ChunkGraphicsData::Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis)
 {
@@ -26,17 +28,17 @@ void ChunkGraphicsData::Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis
 
 	for (unsigned int i = 0; i < axis_data.Data.Count(); i++)
 	{
-		VoxelGraphics::MainTriangle v = axis_data.Data[i];
-		v.Corners[0].Pos = voxel.Orientation.absolute(v.Corners[0].Pos) + u;
-		v.Corners[1].Pos = voxel.Orientation.absolute(v.Corners[1].Pos) + u;
-		v.Corners[2].Pos = voxel.Orientation.absolute(v.Corners[2].Pos) + u;
-		//v.Corners[0].Pos = v.Corners[0].Pos + u;
-		//v.Corners[1].Pos = v.Corners[1].Pos + u;
-		//v.Corners[2].Pos = v.Corners[2].Pos + u;
-		v.Corners[0].Tex.Z = (voxel.Pallet -> Textures[(int)v.Corners[0].Tex.Z]).Index;
-		v.Corners[1].Tex.Z = (voxel.Pallet -> Textures[(int)v.Corners[1].Tex.Z]).Index;
-		v.Corners[2].Tex.Z = (voxel.Pallet -> Textures[(int)v.Corners[2].Tex.Z]).Index;
-		Data.Insert(v);
+		VoxelGraphics::MainFaceF v = axis_data.Data[i];
+		v.Vertexes[0].Pos = voxel.Orientation.absolute(v.Vertexes[0].Pos) + u;
+		v.Vertexes[1].Pos = voxel.Orientation.absolute(v.Vertexes[1].Pos) + u;
+		v.Vertexes[2].Pos = voxel.Orientation.absolute(v.Vertexes[2].Pos) + u;
+		//v.Vertexes[0].Pos = v.Vertexes[0].Pos + u;
+		//v.Vertexes[1].Pos = v.Vertexes[1].Pos + u;
+		//v.Vertexes[2].Pos = v.Vertexes[2].Pos + u;
+		v.Vertexes[0].Tex.Z = (voxel.Pallet -> Textures[(int)v.Vertexes[0].Tex.Z]).Index;
+		v.Vertexes[1].Tex.Z = (voxel.Pallet -> Textures[(int)v.Vertexes[1].Tex.Z]).Index;
+		v.Vertexes[2].Tex.Z = (voxel.Pallet -> Textures[(int)v.Vertexes[2].Tex.Z]).Index;
+		DataF.Insert(v);
 	}
 }
 void ChunkGraphicsData::Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis, const Chunk & chunk)
@@ -70,20 +72,20 @@ void ChunkGraphicsData::Make(const Chunk & chunk)
 }
 void ChunkGraphicsData::Done()
 {
-	unsigned int limit = Data.Count();
-	Array.Allocate(limit, limit);
+	unsigned int limit = DataF.Count();
+	ArrayF.Allocate(limit, limit);
 	unsigned int count = 0;
-	for (unsigned int b = 0; b < Data.BlockCount(); b++)
+	for (unsigned int b = 0; b < DataF.BlockCount(); b++)
 	{
-		const BlockList<1024, VoxelGraphics::MainTriangle>::Block & block = Data.BlockIndex(b);
+		const BlockList<1024, VoxelGraphics::MainFaceF>::Block & block = DataF.BlockIndex(b);
 		for (unsigned int i = 0; i < 1024; i++)
 		{
 			if (count < limit)
 			{
-				Array[count] = block.Data[i];
+				ArrayF[count] = block.Data[i];
 				count++;
 			}
 		}
 	}
-	Data.Clear();
+	DataF.Clear();
 }

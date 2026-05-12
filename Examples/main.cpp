@@ -28,10 +28,10 @@ int main(int argc, char * argv[])
 			window.Create();
 			ContextBase::WindowPointer = &window;
 			ContextBase::ChangeToContext0();
-			while (ContextBase::ContextToUse != nullptr)
+			while (ContextBase::NewContext.Function != nullptr)
 			{
-				ContextBase * context = ContextBase::ContextToUse;
-				ContextBase::ContextToUse = nullptr;
+				ContextBase * context = ContextBase::NewContext.Invoke();
+				ContextBase::NewContext.Assign(nullptr);
 				context -> Run();
 				delete context;
 			}
