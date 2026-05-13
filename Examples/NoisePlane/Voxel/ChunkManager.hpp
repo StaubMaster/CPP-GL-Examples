@@ -50,7 +50,8 @@ struct VoxelHit
 
 struct ChunkManager
 {
-	VoxelGraphics::Shader		Shader;
+	VoxelGraphics::Shader		ShaderU;
+	VoxelGraphics::Shader		ShaderF;
 	Texture::Array2D			Texture;
 
 

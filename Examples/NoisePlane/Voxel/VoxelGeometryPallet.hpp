@@ -26,7 +26,8 @@ struct VoxelGeometryPallet
 	*/
 	VoxelGraphicsDataF			Data; // this is Graphics Data. this whole struct is general VoxelTypeTemplate
 
-	const VoxelAxisGraphicsDataF &	AxisData(AxisRel axis) const;
+	const VoxelAxisGraphicsDataU &	AxisDataU(AxisRel axis) const;
+	const VoxelAxisGraphicsDataF &	AxisDataF(AxisRel axis) const;
 
 	bool	HidePrevX;
 	bool	HidePrevY;

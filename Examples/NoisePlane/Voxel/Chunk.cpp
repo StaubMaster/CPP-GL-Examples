@@ -57,12 +57,18 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, BufferU()
 	, BufferF()
 	, GraphicsExist(false)
-	, BufferNeedsInit(false)
 	, MainBufferState(BufferDataState::None)
-	, InstBufferNeedsData(false)
+	, MainBufferData()
+	, BufferUMain_NewData(false)
+	, BufferFMain_NewData(false)
+	, BufferUInst_NewData(false)
+	, BufferFInst_NewData(false)
+	, BufferU_AttributesBound(false)
+	, BufferF_AttributesBound(false)
 {
-	BufferU.Main.Value.Change(0);
-	BufferU.Inst.Pos.Change(1);
+	BufferU.Main.Vertex.Change(0);
+	BufferU.Main.Texture.Change(1);
+	BufferU.Inst.Pos.Change(2);
 
 	BufferF.Main.Pos.Change(0);
 	BufferF.Main.Tex.Change(1);
@@ -570,13 +576,17 @@ void Chunk::GraphicsCreate()
 
 	GraphicsExist = true;
 
-	BufferNeedsInit = true;
+	BufferUMain_NewData = false;
+	BufferFMain_NewData = false;
+	BufferUInst_NewData = true;
+	BufferFInst_NewData = true;
+	BufferU_AttributesBound = false;
+	BufferF_AttributesBound = false;
 
 	if (GenerationDone())
 	{
 		MainBufferState = BufferDataState::Needed;
 	}
-	InstBufferNeedsData = true;
 }
 void Chunk::GraphicsDelete()
 {
@@ -603,7 +613,7 @@ void Chunk::GraphicsDelete()
 	return voxel.Visible(axis);
 }*/
 
-void Chunk::GraphicsUpdateMainData()
+void Chunk::GraphicsMakeData()
 {
 	if (MainBufferState != BufferDataState::Needed) { return; }
 
@@ -612,24 +622,54 @@ void Chunk::GraphicsUpdateMainData()
 	MainBufferData.Make(*this);
 
 	MainBufferState = BufferDataState::Ready;
+
+	BufferUMain_NewData = true;
+	BufferFMain_NewData = true;
 }
-void Chunk::GraphicsUpdateMainBuffer()
+
+void Chunk::BufferUMain_UpdateData()
 {
 	if (!GraphicsExist) { return; }
-
-	if (MainBufferState != BufferDataState::Ready) { return; }
+	if (!BufferUMain_NewData) { return; }
 
 	BufferU.Main.Data(MainBufferData.ArrayU);
-	BufferF.Main.Data(MainBufferData.ArrayF);
-	MainBufferData.Clear();
+	MainBufferData.ClearU();
 
-	MainBufferState = BufferDataState::None;
+	BufferUMain_NewData = false;
 }
-
-void Chunk::UpdateInstBuffer()
+void Chunk::BufferFMain_UpdateData()
 {
 	if (!GraphicsExist) { return; }
-	if (!InstBufferNeedsData) { return; }
+	if (!BufferFMain_NewData) { return; }
+
+	std::cout << "BufferUMain_UpdateData: " << MainBufferData.ArrayU.Count() << '\n';
+	BufferF.Main.Data(MainBufferData.ArrayF);
+	MainBufferData.ClearF();
+
+	BufferFMain_NewData = false;
+}
+
+void Chunk::BufferUInst_UpdateData()
+{
+	if (!GraphicsExist) { return; }
+	if (!BufferUInst_NewData) { return; }
+
+	{
+		Container::Binary<VoxelGraphics::InstData> data;
+
+		VoxelGraphics::InstData temp;
+		temp.Pos = Index * CHUNK_VALUES_PER_SIDE;
+		data.Insert(temp);
+
+		BufferU.Inst.Data(data);
+	}
+
+	BufferUInst_NewData = false;
+}
+void Chunk::BufferFInst_UpdateData()
+{
+	if (!GraphicsExist) { return; }
+	if (!BufferFInst_NewData) { return; }
 
 	{
 		Container::Binary<VoxelGraphics::InstData> data;
@@ -641,25 +681,36 @@ void Chunk::UpdateInstBuffer()
 		BufferF.Inst.Data(data);
 	}
 
-	InstBufferNeedsData = false;
+	BufferFInst_NewData = false;
 }
 
 
 
-void Chunk::Draw()
+void Chunk::DrawU()
 {
 	if (!GraphicsExist) { return; }
-	if (!GenerationDone()) { return; }
-	if (BufferNeedsInit)
+	BufferU.Bind();
+	if (!BufferU_AttributesBound)
 	{
 		BufferU.Inst.Init();
 		BufferU.Main.Init();
+		BufferU_AttributesBound = true;
+	}
+	BufferUMain_UpdateData();
+	BufferUInst_UpdateData();
+	BufferU.Draw();
+}
+void Chunk::DrawF()
+{
+	if (!GraphicsExist) { return; }
+	BufferF.Bind();
+	if (!BufferF_AttributesBound)
+	{
 		BufferF.Inst.Init();
 		BufferF.Main.Init();
-		BufferNeedsInit = false;
+		BufferF_AttributesBound = true;
 	}
-	GraphicsUpdateMainBuffer();
-	UpdateInstBuffer();
-	BufferU.Draw();
+	BufferFMain_UpdateData();
+	BufferFInst_UpdateData();
 	BufferF.Draw();
 }

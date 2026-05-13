@@ -172,21 +172,28 @@ struct Chunk
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 
-	bool	BufferNeedsInit; // split into Main and Inst. put into Buffer ?
-
 //	public:
 //	bool	Visible(VectorU3 udx, AxisRel axis) const;
 
 	public:
 	BufferDataState		MainBufferState; // put into Buffer ?
 	ChunkGraphicsData	MainBufferData;
-	void	GraphicsUpdateMainData();
-	void	GraphicsUpdateMainBuffer();
+	void	GraphicsMakeData();
 
-	bool	InstBufferNeedsData;
-	void	UpdateInstBuffer();
+	bool	BufferUMain_NewData;
+	bool	BufferFMain_NewData;
+	void	BufferUMain_UpdateData();
+	void	BufferFMain_UpdateData();
 
-	void	Draw();
+	bool	BufferUInst_NewData;
+	bool	BufferFInst_NewData;
+	void	BufferUInst_UpdateData();
+	void	BufferFInst_UpdateData();
+
+	bool	BufferU_AttributesBound;
+	bool	BufferF_AttributesBound;
+	void	DrawU();
+	void	DrawF();
 };
 
 /*struct ChunkLock

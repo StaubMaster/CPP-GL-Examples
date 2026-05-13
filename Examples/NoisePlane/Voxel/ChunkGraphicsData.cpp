@@ -19,47 +19,124 @@
 
 
 
-static ValueAverager<float> TimeAbsoluteAxis(0xFFFF);
-static ValueAverager<float> TimeVisible(0xFFFF);
-static ValueAverager<float> TimeAbsoluteVector(0xFFFF);
-static ValueAverager<float> TimeInsert(0xFFFF);
+static ValueAverager<float> TimeAbsoluteAxis(0xFFFFFF);
+static ValueAverager<float> TimeVisible(0xFFFFFF);
+static ValueAverager<float> TimeAbsoluteVector(0xFFFFFF);
+static ValueAverager<float> TimeAssign(0xFFFFFF);
+static ValueAverager<float> TimeTexture(0xFFFFFF);
+static ValueAverager<float> TimeInsert(0xFFFFFF);
+static ValueAverager<float> TimeLoop(0xFFFFFF);
 
-
-
-void ChunkGraphicsData::Clear()
+static void TimeClear()
 {
-	DataF.Clear();
+	TimeAbsoluteAxis.Clear();
+	TimeVisible.Clear();
+	TimeAbsoluteVector.Clear();
+	TimeAssign.Clear();
+	TimeTexture.Clear();
+	TimeInsert.Clear();
+	TimeLoop.Clear();
+}
+static void ShowNameCountValue(const char * name, unsigned int count, float value)
+{
+	std::cout << name << ' ';
+	std::cout << std::setw(6) << std::setfill(' ') << count << ' ';
+	std::cout << std::fixed << std::setprecision(12) << value << ' ';
+	std::cout << (value / count) << '\n';
+}
+static void ShowNameCountValue(const char * name, const ValueAverager<float> & value)
+{
+	ShowNameCountValue(name, value.Count, value.Sum());
+}
+static void ShowTime(float total)
+{
+	return;
+	ShowNameCountValue("Total   ", CHUNK_VALUES_PER_VOLM, total);
+	ShowNameCountValue("Absolute", TimeAbsoluteAxis);
+	ShowNameCountValue("Visible ", TimeVisible);
+	ShowNameCountValue("Absolute", TimeAbsoluteVector);
+	ShowNameCountValue("Texture ", TimeTexture);
+	ShowNameCountValue("Insert  ", TimeInsert);
+	ShowNameCountValue("Loop    ", TimeLoop);
+	std::cout << '\n' << std::flush;
+}
+
+
+
+void ChunkGraphicsData::ClearU()
+{
 	DataU.Clear();
-	ArrayF.Clear();
 	ArrayU.Clear();
 }
-void ChunkGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, const VoxelAxisGraphicsDataF & axis_data)
+void ChunkGraphicsData::ClearF()
+{
+	DataF.Clear();
+	ArrayF.Clear();
+}
+
+
+
+void ChunkGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis)
 {
 //	if (voxel.Pallet == 0xFFFF) { return; }
 //	const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
-//	const VoxelAxisGraphicsData & axis_data = pallet.GeometryPallet -> AxisData(axis);
+	const VoxelAxisGraphicsDataF & axis_data_f = pallet.GeometryPallet -> AxisDataF(axis);
 
 	StopWatch sw;
-	for (unsigned int i = 0; i < axis_data.Data.Count(); i++)
+	for (unsigned int i = 0; i < axis_data_f.Data.Count(); i++)
 	{
-		VoxelGraphics::MainFaceF v = axis_data.Data[i];
+		sw.ReStart();
+		VoxelGraphics::MainFaceF face = axis_data_f.Data[i];
+		sw.Stop();
+		TimeAssign.NewValue(sw.ElapsedTime());
 
 		sw.ReStart();
-		v.Vertexes[0].Pos = orientation.absolute(v.Vertexes[0].Pos) + u;
-		v.Vertexes[1].Pos = orientation.absolute(v.Vertexes[1].Pos) + u;
-		v.Vertexes[2].Pos = orientation.absolute(v.Vertexes[2].Pos) + u;
+		face.Vertexes[0].Pos = orientation.absolute(face.Vertexes[0].Pos) + u;
+		face.Vertexes[1].Pos = orientation.absolute(face.Vertexes[1].Pos) + u;
+		face.Vertexes[2].Pos = orientation.absolute(face.Vertexes[2].Pos) + u;
 		sw.Stop();
 		TimeAbsoluteVector.NewValue(sw.ElapsedTime());
 
-		v.Vertexes[0].Tex.Z = (pallet.Textures[(int)v.Vertexes[0].Tex.Z]).Index;
-		v.Vertexes[1].Tex.Z = (pallet.Textures[(int)v.Vertexes[1].Tex.Z]).Index;
-		v.Vertexes[2].Tex.Z = (pallet.Textures[(int)v.Vertexes[2].Tex.Z]).Index;
+		sw.ReStart();
+		face.Vertexes[0].Tex.Z = (pallet.Textures[(int)face.Vertexes[0].Tex.Z]).Index;
+		face.Vertexes[1].Tex.Z = (pallet.Textures[(int)face.Vertexes[1].Tex.Z]).Index;
+		face.Vertexes[2].Tex.Z = (pallet.Textures[(int)face.Vertexes[2].Tex.Z]).Index;
+		sw.Stop();
+		TimeTexture.NewValue(sw.ElapsedTime());
 
 		sw.ReStart();
-		DataF.Insert(v);
+		DataF.Insert(face);
 		sw.Stop();
 		TimeInsert.NewValue(sw.ElapsedTime());
 	}
+
+	if (axis != AxisRel::Here && axis != AxisRel::None)
+	{
+		VoxelAxisGraphicsDataU axis_data_u = pallet.GeometryPallet -> AxisDataU(axis);
+
+		axis_data_u.Data[0].Pos = orientation.absolute(axis_data_u.Data[0].Pos) + u;
+		axis_data_u.Data[1].Pos = orientation.absolute(axis_data_u.Data[1].Pos) + u;
+		axis_data_u.Data[2].Pos = orientation.absolute(axis_data_u.Data[2].Pos) + u;
+		axis_data_u.Data[3].Pos = orientation.absolute(axis_data_u.Data[3].Pos) + u;
+
+		axis_data_u.Data[0].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[0].Tex.Z]).Index;
+		axis_data_u.Data[1].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[1].Tex.Z]).Index;
+		axis_data_u.Data[2].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[2].Tex.Z]).Index;
+		axis_data_u.Data[3].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[3].Tex.Z]).Index;
+
+		axis = orientation.absolute(axis);
+
+		VoxelGraphics::MainFaceU face_u;
+		face_u.Vertexes[0] = VoxelGraphics::MainDataU(axis_data_u.Data[0].Pos, axis_data_u.Data[0].Tex, axis);
+		face_u.Vertexes[1] = VoxelGraphics::MainDataU(axis_data_u.Data[1].Pos, axis_data_u.Data[1].Tex, axis);
+		face_u.Vertexes[2] = VoxelGraphics::MainDataU(axis_data_u.Data[2].Pos, axis_data_u.Data[2].Tex, axis);
+		face_u.Vertexes[3] = VoxelGraphics::MainDataU(axis_data_u.Data[2].Pos, axis_data_u.Data[2].Tex, axis);
+		face_u.Vertexes[4] = VoxelGraphics::MainDataU(axis_data_u.Data[1].Pos, axis_data_u.Data[1].Tex, axis);
+		face_u.Vertexes[5] = VoxelGraphics::MainDataU(axis_data_u.Data[3].Pos, axis_data_u.Data[3].Tex, axis);
+		DataU.Insert(face_u);
+	}
+
+	(void)orientation;
 }
 void ChunkGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis, const ChunkNeighbour & neighbours)
 {
@@ -77,52 +154,81 @@ void ChunkGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientat
 
 	if (visible)
 	{
-		const VoxelAxisGraphicsDataF & axis_data = pallet.GeometryPallet -> AxisData(axis);
-		Concatnate(u, orientation, pallet, axis_data);
+		Concatnate(u, orientation, pallet, axis);
 	}
 }
+
 void ChunkGraphicsData::Make(const Chunk & chunk)
 {
-	Clear();
+	ClearU();
+	ClearF();
 	if (!chunk.IsEmpty())
 	{
-		TimeVisible.Clear();
-		TimeAbsoluteAxis.Clear();
-		TimeInsert.Clear();
-		TimeAbsoluteVector.Clear();
+		TimeClear();
 
 		ChunkNeighbour neighbours = chunk.Manager.FindNeighbours(chunk);
 
 		StopWatch sw;
+		StopWatch sw_loop;
 		sw.Start();
 		LoopU3 loop(VectorU3(), VectorU3(CHUNK_VALUES_PER_SIDE));
-		for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+		sw_loop.Start();
+		for (VectorU3 udx = loop.Min(); loop.Check(udx).All(true); loop.Next(udx))
 		{
-			const Voxel & voxel = chunk[u];
-			if (voxel.Pallet == 0xFFFF) { continue; }
+			const Voxel & voxel = chunk[udx];
+			if (voxel.IsEmpty())
+			{
+				sw_loop.Stop();
+				TimeLoop.NewValue(sw_loop.ElapsedTime());
+				sw_loop.ReStart();
+				continue;
+			}
 			const VoxelOrientation & orientation = voxel.Orientation;
 			const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
+			sw_loop.Stop();
+			TimeLoop.NewValue(sw_loop.ElapsedTime());
 
-			Concatnate(u, orientation, pallet, AxisRel::Here, neighbours);
-			Concatnate(u, orientation, pallet, AxisRel::PrevX, neighbours);
-			Concatnate(u, orientation, pallet, AxisRel::PrevY, neighbours);
-			Concatnate(u, orientation, pallet, AxisRel::PrevZ, neighbours);
-			Concatnate(u, orientation, pallet, AxisRel::NextX, neighbours);
-			Concatnate(u, orientation, pallet, AxisRel::NextY, neighbours);
-			Concatnate(u, orientation, pallet, AxisRel::NextZ, neighbours);
+			Concatnate(udx, orientation, pallet, AxisRel::Here, neighbours);
+			Concatnate(udx, orientation, pallet, AxisRel::PrevX, neighbours);
+			Concatnate(udx, orientation, pallet, AxisRel::PrevY, neighbours);
+			Concatnate(udx, orientation, pallet, AxisRel::PrevZ, neighbours);
+			Concatnate(udx, orientation, pallet, AxisRel::NextX, neighbours);
+			Concatnate(udx, orientation, pallet, AxisRel::NextY, neighbours);
+			Concatnate(udx, orientation, pallet, AxisRel::NextZ, neighbours);
+
+			sw_loop.ReStart();
 		}
 		sw.Stop();
-
-		std::cout << "Total   : " << std::setw(5) << std::setfill(' ') << CHUNK_VALUES_PER_VOLM << ' ' << std::fixed << std::setprecision(12) << sw.ElapsedTime() << "s\n";
-		std::cout << "Absolute: " << std::setw(5) << std::setfill(' ') << TimeAbsoluteAxis.Count << ' ' << std::fixed << std::setprecision(12) << TimeAbsoluteAxis.Sum() << "s\n";
-		std::cout << "Visible : " << std::setw(5) << std::setfill(' ') << TimeVisible.Count << ' ' << std::fixed << std::setprecision(12) << TimeVisible.Sum() << "s\n";
-		std::cout << "Absolute: " << std::setw(5) << std::setfill(' ') << TimeAbsoluteVector.Count << ' ' << std::fixed << std::setprecision(12) << TimeAbsoluteVector.Sum() << "s\n";
-		std::cout << "Insert  : " << std::setw(5) << std::setfill(' ') << TimeInsert.Count << ' ' << std::fixed << std::setprecision(12) << TimeInsert.Sum() << "s\n";
-		std::cout << '\n' << std::flush;
+		ShowTime(sw.ElapsedTime());
 	}
-	Done();
+//	std::cout << "Chunk Graphics Data Data: " << DataF.Count() << ' ' << DataU.Count() << '\n';
+	DoneU();
+	DoneF();
+//	std::cout << "Chunk Graphics Data Array: " << ArrayF.Count() << ' ' << ArrayU.Count() << '\n';
 }
-void ChunkGraphicsData::Done()
+
+
+
+void ChunkGraphicsData::DoneU()
+{
+	unsigned int limit = DataU.Count();
+	ArrayU.Allocate(limit, limit);
+	unsigned int count = 0;
+	for (unsigned int b = 0; b < DataU.BlockCount(); b++)
+	{
+		const BlockList<1024, VoxelGraphics::MainFaceU>::Block & block = DataU.BlockIndex(b);
+		for (unsigned int i = 0; i < 1024; i++)
+		{
+			if (count < limit)
+			{
+				ArrayU[count] = block.Data[i];
+				count++;
+			}
+		}
+	}
+	DataU.Clear();
+}
+void ChunkGraphicsData::DoneF()
 {
 	unsigned int limit = DataF.Count();
 	ArrayF.Allocate(limit, limit);

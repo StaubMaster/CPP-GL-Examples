@@ -33,6 +33,12 @@ struct VoxelOrientation
 		should VectorF3 be [-1;+1] and rotate around 0.0f ?
 	*/
 
+	// these functions are made of 2 switch statements
+	// thats fast enough for single use, but doing it multiple times gets slow ?
+	// there are only 24 combinations, make hardcoded functions that "swizzle" the coordinates
+	// then just make a function that returns a function pointer
+	// or function referance
+
 	VectorU3	absolute(VectorU3 v) const;
 	VectorF3	absolute(VectorF3 v) const;
 

@@ -67,23 +67,31 @@ void VoxelGraphics::MainFaceF::CalcNormal()
 
 VoxelGraphics::MainDataU::~MainDataU() { }
 VoxelGraphics::MainDataU::MainDataU()
-	: Value(0)
+	: Vertex(0)
+	, Texture(0)
 { }
 
 VoxelGraphics::MainDataU::MainDataU(const MainDataU & other)
-	: Value(other.Value)
+	: Vertex(other.Vertex)
+	, Texture(other.Texture)
 { }
 VoxelGraphics::MainDataU & VoxelGraphics::MainDataU::operator=(const MainDataU & other)
 {
-	Value = other.Value;
+	Vertex = other.Vertex;
+	Texture = other.Texture;
 	return *this;
 }
 
 VoxelGraphics::MainDataU::MainDataU(VectorU3 pos, VectorU3 tex, AxisRel axis)
+	: Vertex(0)
+	, Texture(tex.Z)
 {
-	(void)pos;
-	(void)tex;
-	(void)axis;
+	Vertex |= ((pos.X) & 0b111111) << 0;
+	Vertex |= ((pos.Y) & 0b111111) << 6;
+	Vertex |= ((pos.Z) & 0b111111) << 12;
+	Vertex |= ((tex.X) & 0b1) << 18;
+	Vertex |= ((tex.Y) & 0b1) << 19;
+	Vertex |= (((unsigned char)axis) & 0b111) << 20;
 }
 
 

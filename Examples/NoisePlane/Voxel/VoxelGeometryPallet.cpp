@@ -1,6 +1,7 @@
 #include "VoxelGeometryPallet.hpp"
 
 #include "ValueType/Box/F2.hpp"
+#include "ValueType/Box/U2.hpp"
 
 
 
@@ -8,9 +9,74 @@ VoxelGeometryPallet VoxelGeometryPallet::Cube;
 VoxelGeometryPallet VoxelGeometryPallet::Cylinder;
 VoxelGeometryPallet VoxelGeometryPallet::Slope;
 
+VoxelGraphicsDataU VoxelGeometryPallet::DataU;
 
 
-const VoxelAxisGraphicsDataF & VoxelGeometryPallet::AxisData(AxisRel axis) const
+
+static void Quad0(VoxelAxisGraphicsDataU & face_data, VectorU3 p00, VectorU3 p01, VectorU3 p10, VectorU3 p11, BoxU2 box, unsigned int tex)
+{
+	face_data.Data[0b00].Pos = p00;
+	face_data.Data[0b01].Pos = p10;
+	face_data.Data[0b10].Pos = p01;
+	face_data.Data[0b11].Pos = p11;
+
+	face_data.Data[0b00].Tex = VectorU3(box.Min.X, box.Min.Y, tex);
+	face_data.Data[0b01].Tex = VectorU3(box.Min.X, box.Max.Y, tex);
+	face_data.Data[0b10].Tex = VectorU3(box.Max.X, box.Min.Y, tex);
+	face_data.Data[0b11].Tex = VectorU3(box.Max.X, box.Max.Y, tex);
+}
+static void Quad1(VoxelAxisGraphicsDataU & face_data, VectorU3 p00, VectorU3 p01, VectorU3 p10, VectorU3 p11, BoxU2 box, unsigned int tex)
+{
+	face_data.Data[0b00].Pos = p00;
+	face_data.Data[0b01].Pos = p10;
+	face_data.Data[0b10].Pos = p01;
+	face_data.Data[0b11].Pos = p11;
+
+	face_data.Data[0b00].Tex = VectorU3(box.Min.X, box.Min.Y, tex);
+	face_data.Data[0b01].Tex = VectorU3(box.Max.X, box.Min.Y, tex);
+	face_data.Data[0b10].Tex = VectorU3(box.Min.X, box.Max.Y, tex);
+	face_data.Data[0b11].Tex = VectorU3(box.Max.X, box.Max.Y, tex);
+}
+
+void VoxelGeometryPallet::Default()
+{
+	VectorU3 pos[8];
+
+	pos[0b000] = VectorU3(0, 0, 0);
+	pos[0b001] = VectorU3(1, 0, 0);
+	pos[0b010] = VectorU3(0, 1, 0);
+	pos[0b011] = VectorU3(1, 1, 0);
+	pos[0b100] = VectorU3(0, 0, 1);
+	pos[0b101] = VectorU3(1, 0, 1);
+	pos[0b110] = VectorU3(0, 1, 1);
+	pos[0b111] = VectorU3(1, 1, 1);
+
+	Quad0(DataU.PrevX, pos[0b000], pos[0b010], pos[0b100], pos[0b110], BoxU2(VectorU2(0, 0), VectorU2(1, 1)), 0);
+	Quad0(DataU.PrevY, pos[0b000], pos[0b100], pos[0b001], pos[0b101], BoxU2(VectorU2(0, 0), VectorU2(1, 1)), 1);
+	Quad0(DataU.PrevZ, pos[0b000], pos[0b001], pos[0b010], pos[0b011], BoxU2(VectorU2(0, 0), VectorU2(1, 1)), 2);
+
+	Quad1(DataU.NextX, pos[0b001], pos[0b101], pos[0b011], pos[0b111], BoxU2(VectorU2(0, 0), VectorU2(1, 1)), 3);
+	Quad1(DataU.NextY, pos[0b010], pos[0b011], pos[0b110], pos[0b111], BoxU2(VectorU2(0, 0), VectorU2(1, 1)), 4);
+	Quad1(DataU.NextZ, pos[0b100], pos[0b110], pos[0b101], pos[0b111], BoxU2(VectorU2(0, 0), VectorU2(1, 1)), 5);
+}
+
+
+
+const VoxelAxisGraphicsDataU & VoxelGeometryPallet::AxisDataU(AxisRel axis) const
+{
+	switch (axis)
+	{
+		case AxisRel::PrevX: return DataU.PrevX;
+		case AxisRel::PrevY: return DataU.PrevY;
+		case AxisRel::PrevZ: return DataU.PrevZ;
+		case AxisRel::NextX: return DataU.NextX;
+		case AxisRel::NextY: return DataU.NextY;
+		case AxisRel::NextZ: return DataU.NextZ;
+		default: break;
+	}
+	throw "VoxelGeometryPallet::AxisDataU: Invalid axis\n";
+}
+const VoxelAxisGraphicsDataF & VoxelGeometryPallet::AxisDataF(AxisRel axis) const
 {
 	switch (axis)
 	{
@@ -49,29 +115,29 @@ VoxelOrientation VoxelGeometryPallet::Orient(AxisRel placeAxis0, AxisRel placeAx
 
 
 
-static void Quad0(VoxelAxisGraphicsDataF & face, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
+static void Quad0(VoxelAxisGraphicsDataF & face_data, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
 {
-	VoxelGraphics::MainFaceF	tri;
-	tri.Vertexes[0] = VoxelGraphics::MainDataF(p00, VectorF3(box.Min.X, box.Min.Y, tex));
-	tri.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Min.X, box.Max.Y, tex));
-	tri.Vertexes[2] = VoxelGraphics::MainDataF(p01, VectorF3(box.Max.X, box.Min.Y, tex));
-	face.Data.Insert(tri);
-	tri.Vertexes[0] = VoxelGraphics::MainDataF(p01, VectorF3(box.Max.X, box.Min.Y, tex));
-	tri.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Min.X, box.Max.Y, tex));
-	tri.Vertexes[2] = VoxelGraphics::MainDataF(p11, VectorF3(box.Max.X, box.Max.Y, tex));
-	face.Data.Insert(tri);
+	VoxelGraphics::MainFaceF	face;
+	face.Vertexes[0] = VoxelGraphics::MainDataF(p00, VectorF3(box.Min.X, box.Min.Y, tex));
+	face.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Min.X, box.Max.Y, tex));
+	face.Vertexes[2] = VoxelGraphics::MainDataF(p01, VectorF3(box.Max.X, box.Min.Y, tex));
+	face_data.Data.Insert(face);
+	face.Vertexes[0] = VoxelGraphics::MainDataF(p01, VectorF3(box.Max.X, box.Min.Y, tex));
+	face.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Min.X, box.Max.Y, tex));
+	face.Vertexes[2] = VoxelGraphics::MainDataF(p11, VectorF3(box.Max.X, box.Max.Y, tex));
+	face_data.Data.Insert(face);
 }
-static void Quad1(VoxelAxisGraphicsDataF & face, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
+static void Quad1(VoxelAxisGraphicsDataF & face_data, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
 {
-	VoxelGraphics::MainFaceF	tri;
-	tri.Vertexes[0] = VoxelGraphics::MainDataF(p00, VectorF3(box.Min.X, box.Min.Y, tex));
-	tri.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Max.X, box.Min.Y, tex));
-	tri.Vertexes[2] = VoxelGraphics::MainDataF(p01, VectorF3(box.Min.X, box.Max.Y, tex));
-	face.Data.Insert(tri);
-	tri.Vertexes[0] = VoxelGraphics::MainDataF(p01, VectorF3(box.Min.X, box.Max.Y, tex));
-	tri.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Max.X, box.Min.Y, tex));
-	tri.Vertexes[2] = VoxelGraphics::MainDataF(p11, VectorF3(box.Max.X, box.Max.Y, tex));
-	face.Data.Insert(tri);
+	VoxelGraphics::MainFaceF	face;
+	face.Vertexes[0] = VoxelGraphics::MainDataF(p00, VectorF3(box.Min.X, box.Min.Y, tex));
+	face.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Max.X, box.Min.Y, tex));
+	face.Vertexes[2] = VoxelGraphics::MainDataF(p01, VectorF3(box.Min.X, box.Max.Y, tex));
+	face_data.Data.Insert(face);
+	face.Vertexes[0] = VoxelGraphics::MainDataF(p01, VectorF3(box.Min.X, box.Max.Y, tex));
+	face.Vertexes[1] = VoxelGraphics::MainDataF(p10, VectorF3(box.Max.X, box.Min.Y, tex));
+	face.Vertexes[2] = VoxelGraphics::MainDataF(p11, VectorF3(box.Max.X, box.Max.Y, tex));
+	face_data.Data.Insert(face);
 }
 
 

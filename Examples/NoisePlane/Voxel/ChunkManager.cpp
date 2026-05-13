@@ -161,7 +161,8 @@ ChunkManager::~ChunkManager()
 	}*/
 }
 ChunkManager::ChunkManager()
-	: Shader()
+	: ShaderU()
+	, ShaderF()
 //	, ChunksArray()
 //	, ChunksBox()
 	, Chunks()
@@ -599,7 +600,8 @@ void ChunkManager::GraphicsCreate()
 {
 	if (GraphicsExist) { return; }
 
-	Shader.Create();
+	ShaderU.Create();
+	ShaderF.Create();
 	Texture.Create();
 
 //	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
@@ -620,7 +622,8 @@ void ChunkManager::GraphicsDelete()
 {
 	if (!GraphicsExist) { return; }
 
-	Shader.Delete();
+	ShaderU.Delete();
+	ShaderF.Delete();
 	Texture.Delete();
 
 //	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
@@ -731,7 +734,7 @@ void ChunkManager::GraphicsUpdateDataAround(VectorF3 pos)
 
 		StopWatch sw;
 		sw.Start();
-		chunk -> GraphicsUpdateMainData();
+		chunk -> GraphicsMakeData();
 		sw.Stop();
 		TimeBuffers.DoTime.NewValue(sw.ElapsedTime());
 		TimeBuffers.ThreadName = ThreadInfo::ThreadName;
@@ -749,13 +752,21 @@ void ChunkManager::Draw()
 	ChunksLock.Checking0(sw, TimeDraw);
 //	std::cout << "Draw:" << __LINE__ << '\n';
 
-	Shader.Bind();
+	ShaderU.Bind();
 	Texture.Bind();
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
 		if (Chunks[i] == nullptr) { continue; }
-		Chunks[i] -> Draw();
+		Chunks[i] -> DrawU();
 	}
+
+	/*ShaderF.Bind();
+	Texture.Bind();
+	for (unsigned int i = 0; i < Chunks.Length(); i++)
+	{
+		if (Chunks[i] == nullptr) { continue; }
+		Chunks[i] -> DrawF();
+	}*/
 
 //	std::cout << "Draw:" << __LINE__ << '\n';
 	ChunksLock.Checking1(sw, TimeDraw);

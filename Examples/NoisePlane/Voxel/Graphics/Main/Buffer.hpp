@@ -16,7 +16,8 @@ namespace VoxelGraphics
 	};
 	struct MainBufferU : public ::Buffer::Array
 	{
-		::Attribute::UInt	Value;
+		::Attribute::UInt	Vertex;
+		::Attribute::UInt	Texture;
 		~MainBufferU();
 		MainBufferU(::VertexArray & vertex_array);
 	};

@@ -53,8 +53,8 @@ namespace VoxelGraphics
 		Texture on the Texture are [0;1]
 		Texture Index should be as much as possible ?
 		|------||------||------||------| Bits in 4 Bytes
-		[-PX-][-PY-][-PZ-][N][]
-							 |
+		[-PX-][-PY-][-PZ-][][N]
+						  ||
 						TextureXY
 		this leaves 9 Bits [0;511] for the Texture Index
 		512 is now enough ?
@@ -74,7 +74,8 @@ namespace VoxelGraphics
 
 	struct MainDataU
 	{
-		unsigned int	Value;
+		unsigned int	Vertex;
+		unsigned int	Texture;
 
 		~MainDataU();
 		MainDataU();

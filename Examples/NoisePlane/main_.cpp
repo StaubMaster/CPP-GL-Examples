@@ -273,7 +273,8 @@ ContextNoisePlane()
 		&ControlManager.Shader,
 		&TextManager.Shader,
 //		&PlaneManager.Shader,
-		&ChunkManager.Shader,
+		&ChunkManager.ShaderU,
+		&ChunkManager.ShaderF,
 		&InventoryShader,
 	});
 	Multiform_DisplaySize.FindUniforms(shaders);
@@ -989,11 +990,20 @@ void ChangeMedia()
 
 	// ChunkManager
 	{
-		Container::Array<::Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
-		});
-		ChunkManager.Shader.Change(code);
+		{
+			Container::Array<::Shader::Code> code({
+				Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelU.vert")),
+				Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
+			});
+			ChunkManager.ShaderU.Change(code);
+		}
+		{
+			Container::Array<::Shader::Code> code({
+				Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelF.vert")),
+				Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
+			});
+			ChunkManager.ShaderF.Change(code);
+		}
 	}
 
 	// Inventory
@@ -1057,6 +1067,8 @@ void Init() override
 		view.Depth.Range.ChangeMin(0.5f);
 	}
 	VoxelPalletMap::All.MakePolyHedra();
+//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	VoxelGeometryPallet::Default();
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	MakeControls();
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
@@ -1439,7 +1451,7 @@ void FrameText(FrameTime frame_time)
 		{
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *ChunkManager.Chunks[i];
-			//main_u_count += chunk.BufferU.Main.Count;
+			main_u_count += chunk.BufferU.Main.Count;
 			main_f_count += chunk.BufferF.Main.Count;
 			if (chunk.MainBufferState == BufferDataState::None)   { buffer__++; }
 			if (chunk.MainBufferState == BufferDataState::Needed) { buffer_n++; }
@@ -1451,7 +1463,7 @@ void FrameText(FrameTime frame_time)
 		ss << 'N' << buffer_n << ' ';
 		ss << 'R' << buffer_r << '\n';
 
-		ss << "BufferuData:" << Memory1000ToString(sizeof(VoxelGraphics::MainDataU));
+		ss << "BufferUData:" << Memory1000ToString(sizeof(VoxelGraphics::MainDataU));
 		ss << " * " << Seperated1000(main_u_count);
 		ss << " = " << Memory1000ToString(main_u_count * sizeof(VoxelGraphics::MainDataU));
 		ss << '\n';

@@ -16,6 +16,16 @@ struct ChunkNeighbour;
 struct Voxel;
 struct Chunk;
 
+/* LOD ?
+use Float Data for those that want it
+only use DataU when farther away
+*/
+
+/* even simpler Graphics
+maybe 1 Color per Voxel
+for very far
+*/
+
 struct ChunkGraphicsData // ChunkGraphicsData
 {
 	BlockList<1024, VoxelGraphics::MainFaceF>	DataF;
@@ -23,11 +33,16 @@ struct ChunkGraphicsData // ChunkGraphicsData
 	Container::Array<VoxelGraphics::MainFaceF>	ArrayF;
 	Container::Array<VoxelGraphics::MainFaceU>	ArrayU;
 
-	void	Clear();
-	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, const VoxelAxisGraphicsDataF & axis_data);
+	void	ClearU();
+	void	ClearF();
+
+	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis);
 	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis, const ChunkNeighbour & neighbours);
+
 	void	Make(const Chunk & chunk);
-	void	Done();
+
+	void	DoneU();
+	void	DoneF();
 };
 
 #endif

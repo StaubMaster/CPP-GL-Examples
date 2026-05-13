@@ -8,11 +8,12 @@
 bool Voxel::IsEmpty() const { return (Pallet == 0xFFFF); }
 bool Voxel::Visible(AxisRel axis) const
 {
-	if (Pallet == 0xFFFF) { return true; }
+	if (IsEmpty()) { return true; }
 	const VoxelPallet & pallet = VoxelPalletMap::All[Pallet];
 	if (pallet.GeometryPallet == nullptr) { return true; }
 	//return Pallet -> GeometryPallet -> Visible(Orientation.relative(axis));
 	return pallet.GeometryPallet -> Visible(axis);
+	//return false; (void)axis;
 }
 
 
