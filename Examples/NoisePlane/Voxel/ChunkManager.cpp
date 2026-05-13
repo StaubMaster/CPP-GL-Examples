@@ -3,6 +3,7 @@
 #include "Voxel.hpp"
 #include "VoxelOrientation.hpp"
 #include "ChunkVoxelIndex.hpp"
+#include "ChunkNeighbours.hpp"
 
 #include "ValueType/Bool3.hpp"
 #include "ValueType/Box/I3.hpp"
@@ -15,6 +16,7 @@
 
 
 // Code
+#include "Telemetry/ThreadInfo.hpp"
 #include "Telemetry/WaitDoTime.hpp"
 #include "ContainerLock.hpp"
 
@@ -363,6 +365,7 @@ void ChunkManager::RemoveAround(VectorF3 pos, unsigned int size)
 //	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	sw.Stop();
 	TimeRemove.WaitTime.NewValue(sw.ElapsedTime());
+	TimeRemove.ThreadName = ThreadInfo::ThreadName;
 
 	sw.Start();
 
@@ -457,11 +460,25 @@ void ChunkManager::UpdateChunksContainer()
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 }
 
-const Chunk * ChunkManager::NeighbourLoopChunk(const Chunk & chunk, VectorU3 & udx, AxisRel axis)
+
+
+ChunkNeighbour ChunkManager::FindNeighbours(const Chunk & chunk) const
 {
-	//ChunksLock.Checking0();
+	ChunkNeighbour neighbours;
+	neighbours.Here = (Chunk*)&chunk;
+	neighbours.PrevX = Chunks[relative(chunk.Index - VectorI3(1, 0, 0))];
+	neighbours.PrevY = Chunks[relative(chunk.Index - VectorI3(0, 1, 0))];
+	neighbours.PrevZ = Chunks[relative(chunk.Index - VectorI3(0, 0, 1))];
+	neighbours.NextX = Chunks[relative(chunk.Index + VectorI3(1, 0, 0))];
+	neighbours.NextY = Chunks[relative(chunk.Index + VectorI3(0, 1, 0))];
+	neighbours.NextZ = Chunks[relative(chunk.Index + VectorI3(0, 0, 1))];
+	return neighbours;
+}
+/*const Chunk * ChunkManager::NeighbourLoopChunk(const Chunk & chunk, VectorU3 & udx, AxisRel axis)
+{
 	unsigned int n = CHUNK_VALUES_PER_SIDE - 1;
 	const Chunk * ptr = &chunk;
+	//ChunksLock.Checking0();
 	switch (axis)
 	{
 		case AxisRel::None: ptr = nullptr; break;
@@ -475,7 +492,7 @@ const Chunk * ChunkManager::NeighbourLoopChunk(const Chunk & chunk, VectorU3 & u
 	}
 	//ChunksLock.Checking1();
 	return ptr;
-}
+}*/
 void ChunkManager::NeighbourUpdateBufferMain(VectorI3 idx)
 {
 	Chunk * chunk;
@@ -564,6 +581,7 @@ void ChunkManager::GenerateAround(VectorF3 pos, unsigned int size, const Perlin2
 		chunk -> GenerateDecorate(noise2, noise3);
 		sw.Stop();
 		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
+		TimeGenerate.ThreadName = ThreadInfo::ThreadName;
 
 		chunk -> unlock();
 	}
@@ -716,6 +734,7 @@ void ChunkManager::GraphicsUpdateDataAround(VectorF3 pos)
 		chunk -> GraphicsUpdateMainData();
 		sw.Stop();
 		TimeBuffers.DoTime.NewValue(sw.ElapsedTime());
+		TimeBuffers.ThreadName = ThreadInfo::ThreadName;
 
 		chunk -> unlock();
 	}

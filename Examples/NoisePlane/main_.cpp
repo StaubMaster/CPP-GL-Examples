@@ -73,10 +73,13 @@
 #include "Item/ItemContainer.hpp"
 #include "Menus/Item/Inventory.hpp"
 
-// Math
-#include <math.h>
+// Telemetry
+#include "Telemetry/ThreadInfo.hpp"
 
+// Math
 #include "BlockList.hpp"
+
+#include <math.h>
 
 #include <thread>
 #include <mutex>
@@ -260,7 +263,7 @@ ContextNoisePlane()
 	, ViewUpdateTime(64)
 	, FrameDurationTime(64)
 {
-	ContainerLock::ThreadName = "DrawThread";
+	ThreadInfo::ThreadName = "DrawThread";
 	PolyHedraManager.MakeCurrent();
 	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
@@ -617,11 +620,12 @@ bool		ThreadIdle = true;
 bool		ThreadTerminate = false;
 
 std::thread				AuxThread0;
-bool					AuxThread0Idle = false;
-ValueAverager<float>	AuxThread0Time;
+bool					AuxThread0Idle = false;	// put in ThreadInfo
+ValueAverager<float>	AuxThread0Time;			// put in ThreadInfo
 void		AuxThread0Func()
 {
-	ContainerLock::ThreadName = "AuxThread0";
+	ThreadInfo::ThreadName = "AuxThread0";
+	std::cout << "ThreadName: " << ThreadInfo::ThreadName << '\n';
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
@@ -642,7 +646,8 @@ bool					AuxThread1Idle = false;
 ValueAverager<float>	AuxThread1Time;
 void		AuxThread1Func()
 {
-	ContainerLock::ThreadName = "AuxThread1";
+	ThreadInfo::ThreadName = "AuxThread1";
+	std::cout << "ThreadName: " << ThreadInfo::ThreadName << '\n';
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
@@ -661,7 +666,8 @@ bool					AuxThread2Idle = false;
 ValueAverager<float>	AuxThread2Time;
 void		AuxThread2Func()
 {
-	ContainerLock::ThreadName = "AuxThread2";
+	ThreadInfo::ThreadName = "AuxThread2";
+	std::cout << "ThreadName: " << ThreadInfo::ThreadName << '\n';
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
@@ -1178,6 +1184,9 @@ void FrameText(FrameTime frame_time)
 	// Text
 	{
 		ss << "TextManager.Instances.Count(): " << Seperated1000(TextManager.Instances.Count()) << '\n';
+		ss << ": " << PauseMenu.IsInteractible() << '\n';
+		ss << ": " << OptionsMenu.IsInteractible() << '\n';
+		ss << ": " << InventoryUI.IsInteractible() << '\n';
 		ss << '\n';
 	}
 

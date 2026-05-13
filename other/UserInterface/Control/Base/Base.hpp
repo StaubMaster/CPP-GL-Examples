@@ -115,6 +115,7 @@ class Base
 	public:
 	bool	IsVisible() const;
 	bool	IsDrawable() const;
+	bool	IsThisInteractible() const;
 	bool	IsInteractible() const;
 
 	public:

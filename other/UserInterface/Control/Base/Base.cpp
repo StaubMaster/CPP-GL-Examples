@@ -71,9 +71,13 @@ bool UI::Control::Base::IsDrawable() const
 {
 	return _Opaque && IsVisible();
 }
-bool UI::Control::Base::IsInteractible() const
+bool UI::Control::Base::IsThisInteractible() const
 {
 	return _Enabled && IsDrawable();
+}
+bool UI::Control::Base::IsInteractible() const
+{
+	return _Enabled && IsVisible();
 }
 
 

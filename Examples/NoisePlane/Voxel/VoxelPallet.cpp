@@ -78,7 +78,7 @@ void VoxelPallet::TextureAll(FileInfo tex)
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Skin/Skin2DA.hpp"
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsData & data)
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsDataF & data)
 {
 	Skin2DA & skin = *((Skin2DA*)polyhedra.Skin);
 	VectorF3 off(0.5f);
@@ -99,7 +99,7 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsDat
 		);
 	}
 }
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGraphicsData & voxel_graphics)
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGraphicsDataF & voxel_graphics)
 {
 	PolyHedraVoxelData(polyhedra, voxel_graphics.Here);
 	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevX);

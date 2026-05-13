@@ -9,9 +9,6 @@
 
 struct ContainerLock
 {
-	public:
-	static thread_local const char * ThreadName;
-
 	private:
 	std::mutex					Changing;	// changing Items
 	std::mutex					Checking;	// changing Container

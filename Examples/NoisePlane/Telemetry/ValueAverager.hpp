@@ -4,7 +4,7 @@
 template<typename ValueType>
 class ValueAverager
 {
-	private:
+	public:
 	unsigned int	Limit;
 	unsigned int	Count;
 	unsigned int	Index;
@@ -37,15 +37,20 @@ class ValueAverager
 		}
 		return val;
 	}
-	ValueType	Average() const
+	ValueType	Sum() const
 	{
 		ValueType sum = 0;
 		for (unsigned int i = 0; i < Count; i++)
 		{
 			sum += Data[i];
 		}
-		return sum / Count;
+		return sum;
 	}
+	ValueType	Average() const
+	{
+		return Sum() / Count;
+	}
+
 	void		NewValue(ValueType value)
 	{
 		Data[Index] = value;
@@ -59,6 +64,11 @@ class ValueAverager
 		{
 			Count = Index;
 		}
+	}
+	void		Clear()
+	{
+		Count = 0;
+		Index = 0;
 	}
 
 	public:

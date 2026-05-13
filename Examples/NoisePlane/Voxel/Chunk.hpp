@@ -174,8 +174,8 @@ struct Chunk
 
 	bool	BufferNeedsInit; // split into Main and Inst. put into Buffer ?
 
-	public:
-	bool	Visible(VectorU3 udx, AxisRel axis) const;
+//	public:
+//	bool	Visible(VectorU3 udx, AxisRel axis) const;
 
 	public:
 	BufferDataState		MainBufferState; // put into Buffer ?

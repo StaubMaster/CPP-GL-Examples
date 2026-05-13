@@ -2,7 +2,7 @@
 
 
 
-void VoxelAxisGraphicsData::Done()
+void VoxelAxisGraphicsDataF::Done()
 {
 	for (unsigned int i = 0; i < Data.Count(); i++)
 	{
@@ -10,7 +10,7 @@ void VoxelAxisGraphicsData::Done()
 	}
 }
 
-void VoxelGraphicsData::Done()
+void VoxelGraphicsDataF::Done()
 {
 	Here.Done();
 	PrevX.Done();

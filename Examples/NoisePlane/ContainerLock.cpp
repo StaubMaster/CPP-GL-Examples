@@ -1,9 +1,6 @@
 #include "ContainerLock.hpp"
+#include "Telemetry/ThreadInfo.hpp"
 //#include <iostream>
-
-
-
-thread_local const char * ContainerLock::ThreadName	= "unnamed";
 
 
 
@@ -54,8 +51,8 @@ void ContainerLock::Changing1()
 
 void ContainerLock::Checking0(StopWatch & watch, WaitDoTime & time)
 {
-//	std::cerr << "wait Checking0:" << ThreadName << '\n';
-	time.ThreadName = ThreadName;
+//	std::cout << "wait Checking0:" << ThreadInfo::ThreadName << '\n';
+	time.ThreadName = ThreadInfo::ThreadName;
 	watch.ReStart();
 
 	Checking.lock();
@@ -65,22 +62,22 @@ void ContainerLock::Checking0(StopWatch & watch, WaitDoTime & time)
 	watch.Stop();
 	time.WaitTime.NewValue(watch.ElapsedTime());
 	watch.ReStart();
-//	std::cerr << "have Checking0:" << ThreadName << '\n';
+//	std::cout << "have Checking0:" << ThreadInfo::ThreadName << '\n';
 }
 void ContainerLock::Checking1(StopWatch & watch, WaitDoTime & time)
 {
-	time.ThreadName = ThreadName;
-//	std::cerr << "have Checking1:" << ThreadName << '\n';
+	time.ThreadName = ThreadInfo::ThreadName;
+//	std::cout << "have Checking1:" << ThreadInfo::ThreadName << '\n';
 	CheckingCount--;
-	
+
 	watch.Stop();
 	time.DoTime.NewValue(watch.ElapsedTime());
-//	std::cerr << "done Checking1:" << ThreadName << '\n';
+//	std::cout << "done Checking1:" << ThreadInfo::ThreadName << '\n';
 }
 void ContainerLock::Changing0(StopWatch & watch, WaitDoTime & time)
 {
-	time.ThreadName = ThreadName;
-//	std::cerr << "wait Changing0:" << ThreadName << '\n';
+	time.ThreadName = ThreadInfo::ThreadName;
+//	std::cerr << "wait Changing0:" << ThreadInfo::ThreadName << '\n';
 	watch.ReStart();
 
 	Changing.lock();
@@ -90,16 +87,16 @@ void ContainerLock::Changing0(StopWatch & watch, WaitDoTime & time)
 	watch.Stop();
 	time.WaitTime.NewValue(watch.ElapsedTime());
 	watch.ReStart();
-//	std::cerr << "have Changing0:" << ThreadName << '\n';
+//	std::cerr << "have Changing0:" << ThreadInfo::ThreadName << '\n';
 }
 void ContainerLock::Changing1(StopWatch & watch, WaitDoTime & time)
 {
-	time.ThreadName = ThreadName;
-//	std::cerr << "have Changing1:" << ThreadName << '\n';
+	time.ThreadName = ThreadInfo::ThreadName;
+//	std::cerr << "have Changing1:" << ThreadInfo::ThreadName << '\n';
 	Checking.unlock();
 	Changing.unlock();
 	
 	watch.Stop();
 	time.DoTime.NewValue(watch.ElapsedTime());
-//	std::cerr << "done Changing1:" << ThreadName << '\n';
+//	std::cerr << "done Changing1:" << ThreadInfo::ThreadName << '\n';
 }

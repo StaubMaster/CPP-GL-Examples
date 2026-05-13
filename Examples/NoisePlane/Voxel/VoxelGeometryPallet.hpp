@@ -10,6 +10,9 @@ struct VoxelGeometryPallet
 	static VoxelGeometryPallet	Cylinder;
 	static VoxelGeometryPallet	Slope;
 
+	static VoxelGraphicsDataU	DataU;
+
+	static void		Default();
 
 
 	/* DataU
@@ -21,9 +24,9 @@ struct VoxelGeometryPallet
 		}
 		if something is allways a full cube, then it dosent need DataF
 	*/
-	VoxelGraphicsData			Data; // this is Graphics Data. this whole struct is general VoxelTypeTemplate
+	VoxelGraphicsDataF			Data; // this is Graphics Data. this whole struct is general VoxelTypeTemplate
 
-	const VoxelAxisGraphicsData &	AxisData(AxisRel axis) const;
+	const VoxelAxisGraphicsDataF &	AxisData(AxisRel axis) const;
 
 	bool	HidePrevX;
 	bool	HidePrevY;

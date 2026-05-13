@@ -23,6 +23,7 @@
 
 struct Voxel;
 struct Chunk;
+struct ChunkNeighbour;
 enum class AxisRel : unsigned char;
 
 struct Ray3D;
@@ -134,7 +135,8 @@ struct ChunkManager
 
 	void	UpdateChunksContainer();
 
-	const Chunk *	NeighbourLoopChunk(const Chunk & chunk, VectorU3 & udx, AxisRel axis);
+	ChunkNeighbour	FindNeighbours(const Chunk & chunk) const;
+//	const Chunk *	NeighbourLoopChunk(const Chunk & chunk, VectorU3 & udx, AxisRel axis);
 	void			NeighbourUpdateBufferMain(VectorI3 idx);
 
 

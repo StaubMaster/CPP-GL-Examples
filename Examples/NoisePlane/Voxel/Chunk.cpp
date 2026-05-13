@@ -590,15 +590,18 @@ void Chunk::GraphicsDelete()
 
 
 
-bool Chunk::Visible(VectorU3 udx, AxisRel axis) const
+/*bool Chunk::Visible(VectorU3 udx, AxisRel axis) const
 {
 	const Chunk * chunk = Manager.NeighbourLoopChunk(*this, udx, axis);
-	if (chunk == nullptr) { return false; }
-	if (!chunk -> GenerationDone()) { return false; }
-	if (chunk -> IsEmpty()) { return true; }
+	if (chunk != this)
+	{
+		if (chunk == nullptr) { return false; }
+		if (!chunk -> GenerationDone()) { return false; }
+		if (chunk -> IsEmpty()) { return true; }
+	}
 	const Voxel & voxel = (*chunk)[udx];
 	return voxel.Visible(axis);
-}
+}*/
 
 void Chunk::GraphicsUpdateMainData()
 {

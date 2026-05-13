@@ -11,7 +11,27 @@
 struct VectorU3;
 struct Voxel;
 
-struct VoxelAxisGraphicsData // VoxelAxisGraphicsData
+struct VoxelVertexGraphicsDataU
+{
+	VectorU3	Pos;
+	VectorU3	Tex;
+};
+struct VoxelAxisGraphicsDataU
+{
+	VoxelVertexGraphicsDataU	Data[4];
+};
+struct VoxelGraphicsDataU
+{
+	VoxelAxisGraphicsDataU	PrevX;
+	VoxelAxisGraphicsDataU	PrevY;
+	VoxelAxisGraphicsDataU	PrevZ;
+	VoxelAxisGraphicsDataU	NextX;
+	VoxelAxisGraphicsDataU	NextY;
+	VoxelAxisGraphicsDataU	NextZ;
+
+//	const VoxelAxisGraphicsDataU &	AxisData(AxisRel axis) const;
+};
+struct VoxelAxisGraphicsDataF // VoxelAxisGraphicsData
 {
 	Container::Binary<VoxelGraphics::MainFaceF>	Data;
 
@@ -22,19 +42,19 @@ struct VoxelAxisGraphicsData // VoxelAxisGraphicsData
 
 	void	Done();
 };
-struct VoxelGraphicsData // VoxelGraphicsData
+struct VoxelGraphicsDataF // VoxelGraphicsData
 {
-	VoxelAxisGraphicsData	Here;
-	VoxelAxisGraphicsData	PrevX;
-	VoxelAxisGraphicsData	PrevY;
-	VoxelAxisGraphicsData	PrevZ;
-	VoxelAxisGraphicsData	NextX;
-	VoxelAxisGraphicsData	NextY;
-	VoxelAxisGraphicsData	NextZ;
+	VoxelAxisGraphicsDataF	Here;
+	VoxelAxisGraphicsDataF	PrevX;
+	VoxelAxisGraphicsDataF	PrevY;
+	VoxelAxisGraphicsDataF	PrevZ;
+	VoxelAxisGraphicsDataF	NextX;
+	VoxelAxisGraphicsDataF	NextY;
+	VoxelAxisGraphicsDataF	NextZ;
 
 	void	Done();
 
-	const VoxelAxisGraphicsData &	AxisData(AxisRel axis) const;
+//	const VoxelAxisGraphicsDataF &	AxisData(AxisRel axis) const;
 };
 
 #endif

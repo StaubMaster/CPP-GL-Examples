@@ -8,6 +8,11 @@
 # include "BlockList.hpp"
 
 struct VectorU3;
+struct VoxelOrientation;
+struct VoxelPallet;
+struct VoxelAxisGraphicsDataF;
+struct ChunkNeighbour;
+
 struct Voxel;
 struct Chunk;
 
@@ -19,8 +24,8 @@ struct ChunkGraphicsData // ChunkGraphicsData
 	Container::Array<VoxelGraphics::MainFaceU>	ArrayU;
 
 	void	Clear();
-	void	Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis);
-	void	Concatnate(VectorU3 u, const Voxel & voxel, AxisRel axis, const Chunk & chunk);
+	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, const VoxelAxisGraphicsDataF & axis_data);
+	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis, const ChunkNeighbour & neighbours);
 	void	Make(const Chunk & chunk);
 	void	Done();
 };

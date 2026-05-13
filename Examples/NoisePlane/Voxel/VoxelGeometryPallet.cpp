@@ -10,7 +10,7 @@ VoxelGeometryPallet VoxelGeometryPallet::Slope;
 
 
 
-const VoxelAxisGraphicsData & VoxelGeometryPallet::AxisData(AxisRel axis) const
+const VoxelAxisGraphicsDataF & VoxelGeometryPallet::AxisData(AxisRel axis) const
 {
 	switch (axis)
 	{
@@ -49,7 +49,7 @@ VoxelOrientation VoxelGeometryPallet::Orient(AxisRel placeAxis0, AxisRel placeAx
 
 
 
-static void Quad0(VoxelAxisGraphicsData & face, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
+static void Quad0(VoxelAxisGraphicsDataF & face, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
 {
 	VoxelGraphics::MainFaceF	tri;
 	tri.Vertexes[0] = VoxelGraphics::MainDataF(p00, VectorF3(box.Min.X, box.Min.Y, tex));
@@ -61,7 +61,7 @@ static void Quad0(VoxelAxisGraphicsData & face, VectorF3 p00, VectorF3 p01, Vect
 	tri.Vertexes[2] = VoxelGraphics::MainDataF(p11, VectorF3(box.Max.X, box.Max.Y, tex));
 	face.Data.Insert(tri);
 }
-static void Quad1(VoxelAxisGraphicsData & face, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
+static void Quad1(VoxelAxisGraphicsDataF & face, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
 {
 	VoxelGraphics::MainFaceF	tri;
 	tri.Vertexes[0] = VoxelGraphics::MainDataF(p00, VectorF3(box.Min.X, box.Min.Y, tex));
