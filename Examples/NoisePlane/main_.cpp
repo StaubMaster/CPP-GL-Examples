@@ -53,6 +53,7 @@
 // Voxel
 #include "Voxel/Chunk.hpp"
 #include "Voxel/ChunkManager.hpp"
+#include "Voxel/ChunkNeighbours.hpp"
 #include "Voxel/VoxelOrientation.hpp"
 #include "Voxel/VoxelPallet.hpp"
 #include "Voxel/ChunkVoxelIndex.hpp"
@@ -1414,19 +1415,25 @@ void FrameText(FrameTime frame_time)
 		ss << "sizeof(VectorU3)" << ' ' << sizeof(VectorU3) << '\n';
 		ss << "sizeof(Array3D<Voxel>)" << ' ' << sizeof(Array3D<Voxel>) << '\n';
 		ss << "sizeof(Chunk*)" << ' ' << sizeof(Chunk*) << '\n';
+		ss << "sizeof(Chunk*[27])" << ' ' << sizeof(Chunk*[27]) << '\n';
+		ss << "sizeof(ChunkNeighbour)" << ' ' << sizeof(ChunkNeighbour) << '\n';
+		ss << "sizeof(Chunk*[7])" << ' ' << sizeof(Chunk*[7]) << '\n';
 		ss << "sizeof(VoxelGraphics::BufferF)" << ' ' << sizeof(VoxelGraphics::BufferF) << '\n';
 		ss << "sizeof(VoxelGraphics::BufferU)" << ' ' << sizeof(VoxelGraphics::BufferU) << '\n';
 		ss << "sizeof(ChunkGraphicsData)" << ' ' << sizeof(ChunkGraphicsData) << '\n';
 		ss << "sizeof(std::mutex)" << ' ' << sizeof(std::mutex) << '\n';
+		ss << '\n';
 		ss << "Chunks:" << Memory1000ToString(sizeof(Chunk));
 		ss << " * " << Seperated1000(chunks_t);
 		ss << " = " << Memory1000ToString(chunks_t * sizeof(Chunk));
 		ss << '\n';
-
+		ss << '\n';
+		
 		ss << "Voxel sizeof\n";
 		ss << "sizeof(Voxel)" << ' ' << sizeof(Voxel) << '\n';
 		ss << "sizeof(VoxelOrientation)" << ' ' << sizeof(VoxelOrientation) << '\n';
 		ss << "sizeof(VoxelPallet*)" << ' ' << sizeof(VoxelPallet*) << '\n';
+		ss << '\n';
 		ss << "Voxels:" << Memory1000ToString(sizeof(Voxel));
 		ss << " * " << Seperated1000(chunks_f * CHUNK_VALUES_PER_VOLM);
 		ss << " = " << Memory1000ToString(chunks_f * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));

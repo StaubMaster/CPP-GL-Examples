@@ -5,6 +5,25 @@ struct Chunk;
 struct VectorU3;
 enum class AxisRel : unsigned char;
 
+/* these are Axis Neighbours
+instead store all Neighbours
+so 3x3x3
+store in Chunk
+this is what I had before
+but I removed it because findind Chunks was slow
+but now I need to find them every time I want to do something
+
+also this takes a lot of space
+Chunks in Axis are 56 Bytes
+3x3x3 whould be 216 Bytes
+
+sizeof(Chunk) is currently 744
+this would make it 960 Bytes
+
+this would still be a fraction compared to Voxels and GraphicsData
+so it would be fine ?
+*/
+
 struct ChunkNeighbour
 {
 	Chunk *		Here;

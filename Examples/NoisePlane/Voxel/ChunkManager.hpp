@@ -56,6 +56,8 @@ struct ChunkManager
 
 
 
+	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
+
 	Array3D<Chunk*>	Chunks;
 //	BoxI3			ChunksBox;
 	VectorI3		Center;

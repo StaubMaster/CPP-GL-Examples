@@ -1,5 +1,0 @@
-
-have a Buffer for full Voxels
-that uses compressed ints for position
-
-seperate from the float Buffer

@@ -78,12 +78,10 @@ void ChunkGraphicsData::ClearF()
 
 void ChunkGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis)
 {
-//	if (voxel.Pallet == 0xFFFF) { return; }
-//	const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
-	const VoxelAxisGraphicsDataF & axis_data_f = pallet.GeometryPallet -> AxisDataF(axis);
+//	const VoxelAxisGraphicsDataF & axis_data_f = pallet.GeometryPallet -> AxisDataF(axis);
 
 	StopWatch sw;
-	for (unsigned int i = 0; i < axis_data_f.Data.Count(); i++)
+	/*for (unsigned int i = 0; i < axis_data_f.Data.Count(); i++)
 	{
 		sw.ReStart();
 		VoxelGraphics::MainFaceF face = axis_data_f.Data[i];
@@ -108,7 +106,7 @@ void ChunkGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientat
 		DataF.Insert(face);
 		sw.Stop();
 		TimeInsert.NewValue(sw.ElapsedTime());
-	}
+	}*/
 
 	if (axis != AxisRel::Here && axis != AxisRel::None)
 	{
