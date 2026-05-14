@@ -2,9 +2,9 @@
 
 
 
-UI::Control::Form::Form() : Base()
+UI::Control::Form::Form()
 {
-	Layer = 0.9f;
+	Depth = 0.9f;
 	Anchor.X.Anchor = AnchorType::None;
 	Anchor.Y.Anchor = AnchorType::None;
 	AnchorSize = VectorF2(480, 360);

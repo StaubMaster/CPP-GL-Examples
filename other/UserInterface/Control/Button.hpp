@@ -23,10 +23,9 @@ class Button : public Base
 	Button();
 
 	public:
-//	void	UpdateEntrysRelay() override;
-	void	InsertDrawingEntryRelay() override;
-	void	RemoveDrawingEntryRelay() override;
-	void	UpdateBoxRelay() override;
+	void	RelayUpdateBox() override;
+	void	RelayInsertObject() override;
+	void	RelayRemoveObject() override;
 
 	public:
 	void	RelayClick(ClickArgs args) override;

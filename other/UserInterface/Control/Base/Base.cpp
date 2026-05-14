@@ -5,6 +5,18 @@
 
 
 
+unsigned char UI::Control::Base::Layer() const
+{
+	unsigned char layer = 0;
+	const Base * control = this;
+	while (control -> Parent != nullptr)
+	{
+		layer++;
+		control = control -> Parent;
+	}
+	return layer;
+}
+
 bool UI::Control::Base::IsEnabled() const
 {
 	return _Enabled;
@@ -12,12 +24,12 @@ bool UI::Control::Base::IsEnabled() const
 void UI::Control::Base::MakeEnabled()
 {
 	_Enabled = true;
-	//UpdateDrawable();
+	ObjectColorNeedAssign = true;
 }
 void UI::Control::Base::MakeDisabled()
 {
 	_Enabled = false;
-	//UpdateDrawable();
+	ObjectColorNeedAssign = true;
 }
 
 bool UI::Control::Base::IsThisVisible() const
@@ -27,12 +39,12 @@ bool UI::Control::Base::IsThisVisible() const
 void UI::Control::Base::Show()
 {
 	_Visible = true;
-	UpdateDrawable();
+	DrawableWantUpdate();
 }
 void UI::Control::Base::Hide()
 {
 	_Visible = false;
-	UpdateDrawable();
+	DrawableWantUpdate();
 }
 
 bool UI::Control::Base::IsTransparent() const
@@ -46,14 +58,12 @@ bool UI::Control::Base::IsOpaque() const
 void UI::Control::Base::MakeTransparent()
 {
 	_Opaque = false;
-	//RemoveDrawingEntry();
-	UpdateDrawable();
+	DrawableWantUpdate();
 }
 void UI::Control::Base::MakeOpaque()
 {
 	_Opaque = true;
-	//InsertDrawingEntry();
-	UpdateDrawable();
+	DrawableWantUpdate();
 }
 
 bool UI::Control::Base::IsVisible() const
@@ -82,6 +92,25 @@ bool UI::Control::Base::IsInteractible() const
 
 
 
+void UI::Control::Base::DrawableWantUpdate()
+{
+	DrawableNeedUpdate = true;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> DrawableWantUpdate();
+	}
+}
+void UI::Control::Base::BoxWantUpdate()
+{
+	BoxNeedUpdate = true;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> BoxWantUpdate();
+	}
+}
+
+
+
 UI::Control::Base::~Base()
 {
 	/*for (unsigned int i = 0; i < Children.Count(); i++)
@@ -89,17 +118,17 @@ UI::Control::Base::~Base()
 		delete Children[i];
 	}*/
 }
-UI::Control::Base::Base() :
-	ControlManager(nullptr),
-	TextManager(nullptr),
-	ControlObject(),
-	Parent(nullptr),
-	Children(),
-	Layer(0.0f),
-	_Enabled(true),
-	_Visible(true),
-	_Opaque(true),
-	Anchor(
+UI::Control::Base::Base()
+	: ControlManager(nullptr)
+	, TextManager(nullptr)
+	, ControlObject()
+	, Parent(nullptr)
+	, Children()
+	, Depth(0.0f)
+	, _Enabled(true)
+	, _Visible(true)
+	, _Opaque(true)
+	, Anchor(
 		Anchor1D(AnchorSize.X, AnchorNormal.X
 			, AnchorDist.Min.X, AnchorDist.Max.X
 			, AnchorMargin.Min.X, AnchorMargin.Max.X
@@ -123,10 +152,6 @@ UI::Control::Base::Base() :
 	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
 	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
-
-	//AnchorBoxChanged = false;
-
-	//ColorChanged = false;
 }
 
 
@@ -137,8 +162,8 @@ void UI::Control::Base::ChildInsert(Base & control)
 	control.Parent = this;
 	control.ChangeManager(ControlManager);
 	control.ChangeManager(TextManager);
-	control.UpdateBox();
-	control.UpdateDrawable();
+	control.DrawableWantUpdate();
+	control.BoxWantUpdate();
 }
 void UI::Control::Base::ChildInsert(Base * control)
 {
@@ -165,94 +190,105 @@ void UI::Control::Base::ChangeManager(UI::Text::Manager * manager)
 
 
 
-/*void UI::Control::Base::UpdateEntrys()
+void UI::Control::Base::Update()
 {
-	if (ControlObject.Is())
+	if (DrawableNeedUpdate)
 	{
-		if (AnchorBoxChanged)
-		{
-			UpdateEntryAnchorBoxRelay();
-			AnchorBoxChanged = false;
-		}
-		if (ColorChanged)
-		{
-			UpdateEntryColorRelay();
-			ColorChanged = false;
-		}
+		if (IsDrawable())
+		{ InsertObject(); }
+		else
+		{ RemoveObject(); }
+		DrawableNeedUpdate = false;
 	}
-	UpdateEntrysRelay();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> UpdateEntrys();
-	}
-}*/
-
-
-
-void UI::Control::Base::UpdateDrawable()
-{
-	if (IsDrawable())
-	{ InsertDrawingEntry(); }
-	else
-	{ RemoveDrawingEntry(); }
 
 	if (IsVisible())
-	{ UpdateBox(); }
+	{
+		if (BoxNeedUpdate)
+		{
+			UpdateBox();
+			BoxNeedUpdate = false;
+		}
+	}
+
+	if (ControlObject.Is())
+	{
+		if (ObjectBoxNeedAssign)
+		{
+			AssignObjectBox();
+			ObjectBoxNeedAssign = false;
+		}
+		if (ObjectColorNeedAssign)
+		{
+			AssignObjectColor();
+			ObjectColorNeedAssign = false;
+		}
+	}
 
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> UpdateDrawable();
+		Children[i] -> Update();
 	}
 }
-void UI::Control::Base::InsertDrawingEntry()
+
+void UI::Control::Base::UpdateBox()
+{
+	if (Parent != nullptr)
+	{
+		DisplayBox = Anchor.Calculate(Parent -> ContainerBox);
+		ContainerBox.Min = DisplayBox.Min + AnchorBoarder.Min + AnchorPadding.Min;
+		ContainerBox.Max = DisplayBox.Max - AnchorBoarder.Max - AnchorPadding.Max;
+		ObjectBoxNeedAssign = true;
+	}
+	RelayUpdateBox();
+}
+void UI::Control::Base::InsertObject()
 {
 	if (!ControlObject.Is() && ControlManager != nullptr)
 	{
 		ControlObject.Create();
-		ControlObject.Layer() = Layer;
-		ControlObject.Box() = DisplayBox;
-		ControlObject.Color() = ColorDefault;
+		ControlObject.Layer() = Depth;
 
-		//if (ControlManager -> Hovering != this)
-		//{ ControlObject.Color() = ColorDefault; }
-		//else
-		//{ ControlObject.Color() = ColorHover; }
+		BoxNeedUpdate = true;
+		ObjectBoxNeedAssign = true;
+		ObjectColorNeedAssign = true;
 	}
-	InsertDrawingEntryRelay();
+	RelayInsertObject();
 }
-void UI::Control::Base::RemoveDrawingEntry()
+void UI::Control::Base::RemoveObject()
 {
 	if (ControlObject.Is() || ControlManager == nullptr)
 	{
 		if (ControlObject.Is())
 		{
-			ControlObject.Hide(); // should Check if it Exists ?
+			ControlObject.Hide();
 		}
 		ControlObject.Delete();
 	}
-	RemoveDrawingEntryRelay();
+	RelayRemoveObject();
 }
-
-
-
-void UI::Control::Base::UpdateBox()
+void UI::Control::Base::AssignObjectBox()
 {
-	if (Parent != nullptr && IsVisible())
-	{
-		DisplayBox = Anchor.Calculate(Parent -> ContainerBox);
-		ContainerBox.Min = DisplayBox.Min + AnchorBoarder.Min + AnchorPadding.Min;
-		ContainerBox.Max = DisplayBox.Max - AnchorBoarder.Max - AnchorPadding.Max;
-		if (ControlObject.Is() && IsDrawable())
-		{
-			ControlObject.Box() = DisplayBox;
-		}
-	}
-	UpdateBoxRelay();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> UpdateBox();
-	}
+	ControlObject.Box() = DisplayBox;
+	RelayAssignObjectBox();
 }
+void UI::Control::Base::AssignObjectColor()
+{
+	if (ControlManager -> Hovering != this)
+	{
+		ControlObject.Color() = ColorDefault;
+	}
+	else
+	{
+		ControlObject.Color() = ColorHover;
+	}
+	RelayAssignObjectColor();
+}
+
+void UI::Control::Base::RelayUpdateBox() { }
+void UI::Control::Base::RelayInsertObject() { }
+void UI::Control::Base::RelayRemoveObject() { }
+void UI::Control::Base::RelayAssignObjectBox() { }
+void UI::Control::Base::RelayAssignObjectColor() { }
 
 
 
@@ -267,7 +303,7 @@ UI::Control::Base * UI::Control::Base::CheckHover(VectorF2 mouse)
 		for (unsigned int i = 0; i < Children.Count(); i++)
 		{
 			Base * c = Children[i] -> CheckHover(mouse);
-			if (c != nullptr && (control == nullptr || c -> Layer < control -> Layer))
+			if (c != nullptr && (control == nullptr || c -> Depth < control -> Depth))
 			{
 				control = c;
 			}
@@ -295,28 +331,6 @@ void UI::Control::Base::HoverLeave()
 	}
 	RelayHover(0);
 }
-
-
-
-/*void UI::Control::Base::UpdateEntryAnchorBoxRelay()
-{
-	//ControlObject.Box() = AnchorBox;
-	ControlObject.Box() = DisplayBox;
-	AnchorBoxChanged = false;
-}*/
-/*void UI::Control::Base::UpdateEntryColorRelay()
-{
-	if (ControlManager -> Hovering != this)
-	{ ControlObject.Color() = ColorDefault; }
-	else
-	{ ControlObject.Color() = ColorHover; }
-	ColorChanged = false;
-}*/
-//void UI::Control::Base::UpdateEntrysRelay() { }
-
-void UI::Control::Base::InsertDrawingEntryRelay() { }
-void UI::Control::Base::RemoveDrawingEntryRelay() { }
-void UI::Control::Base::UpdateBoxRelay() { }
 
 
 

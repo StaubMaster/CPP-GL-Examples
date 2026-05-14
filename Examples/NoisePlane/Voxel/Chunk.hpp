@@ -30,29 +30,7 @@
 
 struct Perlin2D;
 struct Perlin3D;
-
-// chunks area already used via Pointer
-// make Voxels also a Pointer (rename to Data)
-// add a Dispose Function and store everything as a non Pointer
-// 
-// if the Chunks is empty (all 0) delete Data
-
-// States
-// UnGenerated
-// Done
-//  Empty
-//  Filled
-
-// not Done:	dont draw Faces that point here
-// Empty:		do draw Faces that point here
-
-enum class GenerationState : unsigned char
-{
-	None,
-	Generated,
-	Decorated,
-//	Done,
-};
+struct Structure;
 
 enum class BufferDataState : unsigned char // put into Buffer
 {
@@ -67,7 +45,7 @@ struct Chunk
 {
 	public:
 	const VectorI3		Index;
-	ChunkManager &		Manager;
+	ChunkManager &		Manager; // replace this with Neighbours
 	Array3D<Voxel>		Voxels;
 
 	public:
@@ -85,6 +63,9 @@ struct Chunk
 	Chunk & operator=(const Chunk & other) = delete;
 
 
+
+	// ContainerLock
+	// rename it and use it here
 
 	private:
 	std::mutex	Changing;
@@ -114,17 +95,41 @@ struct Chunk
 
 
 	public:
-	static float	Generation3D_Factor;
-	static float	Generation3D_Comparison;
-
-	public:
-	::GenerationState	GenerationState;
-
-	public:
 	bool	GenerationDone() const;
 
-	private:
-	// do these with Files
+	/* Generation
+		Terrain:
+			different Layers ?
+			just Height Map
+		Note Decorations:
+			put Decorations in Container
+			resolve Overlaps
+		Place Decorations:
+			resolve Overlaps
+			put Voxels
+			clear Decorations that arent needed for other Chunks
+		Clear Decorations:
+			clear Decorations Container
+		Done:
+	*/
+
+	/*
+		the chunk is already done after Placing Voxels
+		Clear Decorations is related to different Chunks
+		maybe just delete as needed
+	*/
+
+	public:
+	bool	TerrainDone;
+	bool	DecorationsNoted;
+	bool	DecorationsPlaced;
+	struct StructureObject
+	{
+		::Structure *	Structure = nullptr;
+		::VectorI3		Origin;
+	};
+	Container::Binary<StructureObject>	Decorations;
+
 	/* TerrainGenerator
 		takes a Chunk
 		use AbsolutePosition
@@ -132,11 +137,18 @@ struct Chunk
 		use Y Perlin2D result
 		use Perlin3D result
 	*/
-
+	public:
+	static float	Generation3D_Factor;
+	static float	Generation3D_Comparison;
+	private:
 	void	TerrainPlane();
 	void	TerrainPillars();
 	void	TerrainPerlin(const Perlin2D & noise);
 	void	TerrainPerlin(const Perlin3D & noise);
+	void	TerrainGrid();
+	void	TerrainCity();
+	public:
+	void	GenerateTerrain(const Perlin2D & noise2, const Perlin3D & noise3);
 
 	/* DecorationGenerator
 		takes a Chunk Neighbourhood
@@ -148,35 +160,26 @@ struct Chunk
 		use Y Perlin2D result
 		use Perlin3D result
 	*/
-	void	DecorateGrid();
+	private:
 	void	DecorateTrees(const Perlin2D & noise);
-	void	DecorateCity();
+	public:
+	void	GenerateDecorationNotes(const Perlin2D & noise2, const Perlin3D & noise3);
+
+	void	GenerateDecorationPlace();
+
+
 
 	public:
-	void	GenerateTerrain(const Perlin2D & noise2, const Perlin3D & noise3);
-	void	GenerateDecorate(const Perlin2D & noise2, const Perlin3D & noise3);
-
-
-
+	bool	GraphicsExist;
 	VoxelGraphics::BufferU	BufferU;
 	VoxelGraphics::BufferF	BufferF;
 
-	bool	GraphicsExist; // Buffer is the only thing ?
-	// make this a Functin
-	// make it theck all the Graphics stuff ?
-	// why do I need this ?
-	// dont delete Object before all Graphics stuff has been deleted
-	// GraphicsAllExist(): if false, call GraphicsCreate ?
-	// GraphicsAnyExist(): if false, dont delete
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 
-//	public:
-//	bool	Visible(VectorU3 udx, AxisRel axis) const;
-
 	public:
-	BufferDataState		MainBufferState; // put into Buffer ?
+	BufferDataState		MainBufferState;
 	ChunkGraphicsData	MainBufferData;
 	void	GraphicsMakeData();
 
@@ -190,30 +193,10 @@ struct Chunk
 	void	BufferUInst_UpdateData();
 	void	BufferFInst_UpdateData();
 
-	bool	BufferU_AttributesBound;
+	bool	BufferU_AttributesBound; // split into Main and Inst ?
 	bool	BufferF_AttributesBound;
 	void	DrawU();
 	void	DrawF();
 };
-
-/*struct ChunkLock
-{
-	private:
-	::Chunk *		Chunk;
-	unsigned int *	Count;
-
-	public:
-	bool	Is() const;
-
-	// how to access Chunk ?
-	// operator* ?
-
-	public:
-	~ChunkLock(); // (count--) or (delete and unlock)
-	ChunkLock(Chunk * chunk); // new count and count++ and lock chunk
-	ChunkLock(const ChunkLock & other); // count++
-	ChunkLock() = delete;
-	ChunkLock & operator=(const ChunkLock & other) = delete;
-};*/
 
 #endif

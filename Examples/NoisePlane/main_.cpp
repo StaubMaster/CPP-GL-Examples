@@ -253,16 +253,25 @@ ContextNoisePlane()
 	, Multiform_View("View")
 	, Multiform_Depth("Depth")
 	, Multiform_FOV("FOV")
+	, ViewUpdateTime(64)
+	, ViewUpdateCollisionTime(64)
+	, ViewUpdateChunksTime(64)
+	, ViewUpdateRayTime(64)
 	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 	, AuxThread0Time(64)
 	, AuxThread1(&ContextNoisePlane::AuxThread1Func, this)
 	, AuxThread1Time(64)
 	, AuxThread2(&ContextNoisePlane::AuxThread2Func, this)
 	, AuxThread2Time(64)
-	, TimeDLTAverage(64)
-	, TimeFPSAverage(64)
-	, ViewUpdateTime(64)
+	, DLTAverageTime(64)
+	, FPSAverageTime(64)
 	, FrameDurationTime(64)
+	, FrameInputTime(64)
+	, InventoryCursorTime(64)
+	, DrawTime(64)
+	, TextCharCount(0)
+	, TextAssambleTime(64)
+	, TextInstanceTime(64)
 {
 	ThreadInfo::ThreadName = "DrawThread";
 	PolyHedraManager.MakeCurrent();
@@ -343,6 +352,11 @@ AxisRel		ViewRayAxis2;
 VoxelHit	ViewHit;
 AxisRel		ViewHitAxis0;
 AxisRel		ViewHitAxis1;
+
+ValueAverager<float>	ViewUpdateTime;
+ValueAverager<float>	ViewUpdateCollisionTime;
+ValueAverager<float>	ViewUpdateChunksTime;
+ValueAverager<float>	ViewUpdateRayTime;
 
 void ViewUpdateDone()
 {
@@ -590,6 +604,8 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	StopWatch sw;
 	sw.Start();
 
+	StopWatch sw2;
+	sw2.Start();
 	if (ViewTangible)
 	{
 		ViewUpdatePhysics(change.Position);
@@ -603,12 +619,20 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 		ViewUpdateIntangible(change, frame_time);
 	}
 	ViewUpdateDone();
+	sw2.Stop();
+	ViewUpdateCollisionTime.NewValue(sw2.ElapsedTime());
 
+	sw2.ReStart();
 	ChunkManager.GraphicsUpdate();
 	ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
+	sw2.Stop();
+	ViewUpdateChunksTime.NewValue(sw2.ElapsedTime());
 
+	sw2.ReStart();
 	ViewRayUpdate();
 	ViewRayDo();
+	sw2.Stop();
+	ViewUpdateRayTime.NewValue(sw2.ElapsedTime());
 
 	sw.Stop();
 	ViewUpdateTime.NewValue(sw.ElapsedTime());
@@ -627,15 +651,14 @@ ValueAverager<float>	AuxThread0Time;			// put in ThreadInfo
 void		AuxThread0Func()
 {
 	ThreadInfo::ThreadName = "AuxThread0";
-	std::cout << "ThreadName: " << ThreadInfo::ThreadName << '\n';
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
 		if (!ThreadIdle && !AuxThread0Idle)
 		{
 			sw.ReStart();
-			if (!DontRemove) { ChunkManager.RemoveAround(view.Trans.Position, ChunkRemoveRange); }
-			if (!DontInsert) { ChunkManager.InsertAround(view.Trans.Position, ChunkInsertRange); }
+			if (!DontRemove) { ChunkManager.RemoveAround(); }
+			if (!DontInsert) { ChunkManager.InsertAround(); }
 			ChunkManager.UpdateChunksContainer();
 			sw.Stop();
 			AuxThread0Time.NewValue(sw.ElapsedTime());
@@ -649,14 +672,13 @@ ValueAverager<float>	AuxThread1Time;
 void		AuxThread1Func()
 {
 	ThreadInfo::ThreadName = "AuxThread1";
-	std::cout << "ThreadName: " << ThreadInfo::ThreadName << '\n';
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
 		if (!ThreadIdle && !AuxThread1Idle)
 		{
 			sw.ReStart();
-			if (!DontGenerate) { ChunkManager.GenerateAround(view.Trans.Position, ChunkInsertRange, Perlin2, Perlin3); }
+			if (!DontGenerate) { ChunkManager.GenerateAround(Perlin2, Perlin3); }
 			sw.Stop();
 			AuxThread1Time.NewValue(sw.ElapsedTime());
 		}
@@ -669,14 +691,13 @@ ValueAverager<float>	AuxThread2Time;
 void		AuxThread2Func()
 {
 	ThreadInfo::ThreadName = "AuxThread2";
-	std::cout << "ThreadName: " << ThreadInfo::ThreadName << '\n';
 	StopWatch sw;
 	while (!ThreadTerminate)
 	{
 		if (!ThreadIdle && !AuxThread2Idle)
 		{
 			sw.ReStart();
-			if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(view.Trans.Position); }
+			if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(); }
 			sw.Stop();
 			AuxThread2Time.NewValue(sw.ElapsedTime());
 		}
@@ -744,9 +765,6 @@ void Make()
 
 
 
-unsigned int	ChunkInsertRange = 0;
-unsigned int	ChunkRemoveRange = 0;
-
 // make Lights
 // store in File
 void MakeControls()
@@ -764,6 +782,9 @@ void MakeControls()
 	}
 	// Options
 	{
+		OptionsMenu.FPS.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FPS);
+		OptionsMenu.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
+
 		OptionsMenu.FOV.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FOV);
 		OptionsMenu.FOV.SetValueX(view.FOV.ToDegrees());
 
@@ -778,17 +799,11 @@ void MakeControls()
 		// make RemoveRange = InsertRange * 2 ?
 		// make RemoveRange = InsertRange + n ?
 
-		//ChunkInsertRange = 6;
-		ChunkInsertRange = 8;
-		//ChunkInsertRange = 1;
 		OptionsMenu.ChunkInsert.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Insert);
-		OptionsMenu.ChunkInsert.SetValueX(ChunkInsertRange);
+		//OptionsMenu.ChunkInsert.SetValueX();
 
-		//ChunkRemoveRange = 12;
-		ChunkRemoveRange = 32;
-		//ChunkRemoveRange = 1;
 		OptionsMenu.ChunkRemove.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
-		OptionsMenu.ChunkRemove.SetValueX(ChunkRemoveRange);
+		//OptionsMenu.ChunkRemove.SetValueX();
 
 		OptionsMenu.Back.ClickFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Back);
 
@@ -896,6 +911,14 @@ void PauseMenu_Exit(ClickArgs args)
 	ContextBase::ChangeToContext0();
 }
 
+void OptionsMenu_FPS(float val)
+{
+	//window.FrameTime.Change(val);
+	window.FrameTime = FrameTime(val, 4 / val);
+
+	unsigned int v = val;
+	OptionsMenu.FPS.SetText("FPS:" + std::to_string(v));
+}
 void OptionsMenu_FOV(float val)
 {
 	view.FOV = Angle::Degrees(val);
@@ -920,13 +943,13 @@ void OptionsMenu_DepthRange(float val)
 }
 void OptionsMenu_Chunk_Insert(float val)
 {
-	ChunkInsertRange = val;
-	OptionsMenu.ChunkInsert.SetText("Insert:" + std::to_string(ChunkInsertRange));
+	//ChunkInsertRange = val;
+	OptionsMenu.ChunkInsert.SetText("Insert:" + std::to_string(val));
 }
 void OptionsMenu_Chunk_Remove(float val)
 {
-	ChunkRemoveRange = val;
-	OptionsMenu.ChunkRemove.SetText("Remove:" + std::to_string(ChunkRemoveRange));
+	//ChunkRemoveRange = val;
+	OptionsMenu.ChunkRemove.SetText("Remove:" + std::to_string(val));
 }
 void OptionsMenu_Back(ClickArgs args)
 {
@@ -1073,7 +1096,7 @@ void Init() override
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	MakeControls();
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
-	ChunkManager.ChangeChunksArraySize(32);
+	ChunkManager.ChangeSize(8, 4);
 	//ChunkManager.ChangeChunksArraySize(8);
 	//ChunkManager.ChangeChunksArraySize(1);
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
@@ -1123,6 +1146,7 @@ void Draw()
 		PolyHedraManager.MakeCurrent();
 	}
 	TextManager.Draw();
+	TextCharCount = TextManager.Instances.Count();
 
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
@@ -1136,10 +1160,35 @@ bool	DontInsert = false;
 bool	DontGenerate = false;
 bool	DontBuffer = false;
 
-ValueAverager<float>	TimeDLTAverage;
-ValueAverager<int>		TimeFPSAverage;
-ValueAverager<float>	ViewUpdateTime;
+ValueAverager<float>	DLTAverageTime;
+ValueAverager<int>		FPSAverageTime;
 ValueAverager<float>	FrameDurationTime;
+ValueAverager<float>	FrameInputTime;
+ValueAverager<float>	InventoryCursorTime;
+ValueAverager<float>	DrawTime;
+
+static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
+{
+	ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's' << ' ';
+	ss << '(';
+	ss << std::setw(3) << std::setfill(' ') << freq << "Hz";
+	ss << ')';
+}
+static void ShowTime(std::stringstream & ss, float time)
+{
+	ShowTimeFreq(ss, time, 1.0f / time);
+}
+static void ShowNameTime(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
+{
+	ss << name << ':';
+	ShowTime(ss, time.Min()); ss << ' ';
+	ShowTime(ss, time.Average()); ss << ' ';
+	ShowTime(ss, time.Max()); ss << '\n';
+}
+
+unsigned int			TextCharCount = 0;
+ValueAverager<float>	TextAssambleTime;
+ValueAverager<float>	TextInstanceTime;
 
 void BlockListTest()
 {
@@ -1178,8 +1227,8 @@ void BlockListTest()
 }
 void FrameText(FrameTime frame_time)
 {
-	TimeDLTAverage.NewValue(frame_time.ActualFrameTime);
-	TimeFPSAverage.NewValue(frame_time.ActualFramesPerSecond);
+	StopWatch sw;
+	sw.Start();
 
 	std::stringstream ss;
 
@@ -1188,44 +1237,31 @@ void FrameText(FrameTime frame_time)
 		ss << "Frame (" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")Hz\n";
 		ss << "Frame (" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")s\n";
 		ss << '\n';
-		ss << "Min: " << std::setw(2) << std::setfill(' ') << TimeFPSAverage.Max() << "Hz " << TimeDLTAverage.Min() << "s\n";
-		ss << "Avg: " << std::setw(2) << std::setfill(' ') << TimeFPSAverage.Average() << "Hz " << TimeDLTAverage.Average() << "s\n";
-		ss << "Max: " << std::setw(2) << std::setfill(' ') << TimeFPSAverage.Min() << "Hz " << TimeDLTAverage.Max() << "s\n";
+		ss << "Min: "; ShowTimeFreq(ss, DLTAverageTime.Min(), FPSAverageTime.Max()); ss << '\n';
+		ss << "Avg: "; ShowTimeFreq(ss, DLTAverageTime.Average(), FPSAverageTime.Average()); ss << '\n';
+		ss << "Max: "; ShowTimeFreq(ss, DLTAverageTime.Max(), FPSAverageTime.Min()); ss << '\n';
 		ss << '\n';
 	}
 
 	// Text
 	{
-		ss << "TextManager.Instances.Count(): " << Seperated1000(TextManager.Instances.Count()) << '\n';
-		ss << ": " << PauseMenu.IsInteractible() << '\n';
-		ss << ": " << OptionsMenu.IsInteractible() << '\n';
-		ss << ": " << InventoryUI.IsInteractible() << '\n';
+		ss << "TextCharCount: " << Seperated1000(TextCharCount) << '\n';
+		ShowNameTime(ss, "TextAssambleTime", TextAssambleTime);
+		ShowNameTime(ss, "TextInstanceTime", TextInstanceTime);
 		ss << '\n';
 	}
 
 	// Thread Time
 	if (DebugMenu.TimeThreads.Check.IsChecked())
 	{
-		ss << "FrameDurationTime:";
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << FrameDurationTime.Min() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << FrameDurationTime.Average() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << FrameDurationTime.Max() << 's' << '\n';
-		ss << "ViewUpdateTime   :";
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << FrameDurationTime.Min() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << FrameDurationTime.Average() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << FrameDurationTime.Max() << 's' << '\n';
-		ss << "AuxThread0Time   :";
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << AuxThread0Time.Min() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << AuxThread0Time.Average() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << AuxThread0Time.Max() << 's' << '\n';
-		ss << "AuxThread1Time   :";
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << AuxThread1Time.Min() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << AuxThread1Time.Average() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << AuxThread1Time.Max() << 's' << '\n';
-		ss << "AuxThread2Time   :";
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << AuxThread2Time.Min() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << AuxThread2Time.Average() << 's' << ' ';
-		ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << AuxThread2Time.Max() << 's' << '\n';
+		ShowNameTime(ss, "FrameDurationTime  ", FrameDurationTime);
+		ShowNameTime(ss, "FrameInputTime     ", FrameInputTime);
+		ShowNameTime(ss, "InventoryCursorTime", InventoryCursorTime);
+		ShowNameTime(ss, "DrawTime           ", DrawTime);
+		ShowNameTime(ss, "ViewUpdateTime     ", ViewUpdateTime);
+		ShowNameTime(ss, "AuxThread0Time     ", AuxThread0Time);
+		ShowNameTime(ss, "AuxThread1Time     ", AuxThread1Time);
+		ShowNameTime(ss, "AuxThread2Time     ", AuxThread2Time);
 		ss << '\n';
 	}
 
@@ -1299,16 +1335,10 @@ void FrameText(FrameTime frame_time)
 			}
 			ss << '\n';
 
-			ss << "GenerationState: ";
-			{
-				switch (chunk.GenerationState)
-				{
-					case GenerationState::None: ss << "None"; break;
-					case GenerationState::Generated: ss << "Generated"; break;
-					case GenerationState::Decorated: ss << "Decorated"; break;
-				};
-			}
-			if (chunk.GenerationDone()) { ss << "(Done)"; }
+			ss << "TerrainDone: " << chunk.TerrainDone << '\n';
+			ss << "DecorationsNoted: " << chunk.DecorationsNoted << '\n';
+			ss << "DecorationsPlaced: " << chunk.DecorationsPlaced << '\n';
+			if (chunk.GenerationDone()) { ss << "Done"; }
 			ss << '\n';
 
 			ss << "MainBufferState: ";
@@ -1365,11 +1395,11 @@ void FrameText(FrameTime frame_time)
 	if (DebugMenu.ChunkRange.Check.IsChecked())
 	{
 		ss << "Chunk Ranges:" << '\n';
-		ss << "Chunk Insert: " << ChunkInsertRange << '\n';
-		ss << "Chunk Remove: " << ChunkRemoveRange << '\n';
+		ss << "Chunk Know: " << ChunkManager.KnowSize << '\n';
+		ss << "Chunk Care: " << ChunkManager.CareSize << '\n';
 
 		VectorU3 know = ChunkManager.Chunks.Size();
-		VectorU3 care((ChunkInsertRange * 2) + 1);
+		VectorU3 care((ChunkManager.CareSize * 2) + 1);
 
 		ss << "Know: " << know << ' ' << know.Product() << '\n';
 		ss << "Care: " << care << ' ' << care.Product() << '\n';
@@ -1409,7 +1439,7 @@ void FrameText(FrameTime frame_time)
 		ss << 'F' << chunks_f << ']';
 		ss << '\n';
 
-		ss << "Chunk sizeof\n";
+		/*ss << "Chunk sizeof\n";
 		ss << "sizeof(Chunk)" << ' ' << sizeof(Chunk) << '\n';
 		ss << "sizeof(VectorI3)" << ' ' << sizeof(VectorI3) << '\n';
 		ss << "sizeof(VectorU3)" << ' ' << sizeof(VectorU3) << '\n';
@@ -1422,18 +1452,20 @@ void FrameText(FrameTime frame_time)
 		ss << "sizeof(VoxelGraphics::BufferU)" << ' ' << sizeof(VoxelGraphics::BufferU) << '\n';
 		ss << "sizeof(ChunkGraphicsData)" << ' ' << sizeof(ChunkGraphicsData) << '\n';
 		ss << "sizeof(std::mutex)" << ' ' << sizeof(std::mutex) << '\n';
-		ss << '\n';
+		ss << '\n';*/
+
 		ss << "Chunks:" << Memory1000ToString(sizeof(Chunk));
 		ss << " * " << Seperated1000(chunks_t);
 		ss << " = " << Memory1000ToString(chunks_t * sizeof(Chunk));
 		ss << '\n';
 		ss << '\n';
 		
-		ss << "Voxel sizeof\n";
+		/*ss << "Voxel sizeof\n";
 		ss << "sizeof(Voxel)" << ' ' << sizeof(Voxel) << '\n';
 		ss << "sizeof(VoxelOrientation)" << ' ' << sizeof(VoxelOrientation) << '\n';
 		ss << "sizeof(VoxelPallet*)" << ' ' << sizeof(VoxelPallet*) << '\n';
-		ss << '\n';
+		ss << '\n';*/
+
 		ss << "Voxels:" << Memory1000ToString(sizeof(Voxel));
 		ss << " * " << Seperated1000(chunks_f * CHUNK_VALUES_PER_VOLM);
 		ss << " = " << Memory1000ToString(chunks_f * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
@@ -1484,6 +1516,10 @@ void FrameText(FrameTime frame_time)
 		//ChunkManager.ChunksChanging.unlock();
 	}
 
+	sw.Stop();
+	TextAssambleTime.NewValue(sw.ElapsedTime());
+
+	sw.ReStart();
 	UI::Text::Object text; text.Create();
 	if (DebugMenu.IsVisible())
 	{
@@ -1494,9 +1530,14 @@ void FrameText(FrameTime frame_time)
 	text.Bound().Min = VectorF2();
 	text.Bound().Max = window.Size.Buffer.Full;
 	text.String() = ss.str();
+	sw.Stop();
+	TextInstanceTime.NewValue(sw.ElapsedTime());
 }
 void InventoryCursor(FrameTime frame_time)
 {
+	StopWatch sw;
+	sw.Start();
+
 	static float time_sum = 0.0f;
 	InventoryPolyHedraManager.MakeCurrent();
 
@@ -1533,10 +1574,16 @@ void InventoryCursor(FrameTime frame_time)
 
 	time_sum += frame_time.Delta;
 	PolyHedraManager.MakeCurrent();
+
+	sw.Stop();
+	InventoryCursorTime.NewValue(sw.ElapsedTime());
 }
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
 void FrameInput()
 {
+	StopWatch sw;
+	sw.Start();
+
 	if (window.KeyBoardManager[Keys::Escape].State == State::Press)
 	{
 		OptionsMenu.Hide();
@@ -1618,9 +1665,15 @@ void FrameInput()
 	{
 		if (!window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeLock(); }
 	}
+
+	sw.Stop();
+	FrameInputTime.NewValue(sw.ElapsedTime());
 }
 void Frame(FrameTime frame_time) override
 {
+	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
+	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
+
 	StopWatch sw;
 	sw.Start();
 

@@ -3,7 +3,7 @@
 
 namespace ThreadInfo
 {
-	static thread_local const char * ThreadName;
+	extern thread_local const char * ThreadName;
 };
 
 #endif

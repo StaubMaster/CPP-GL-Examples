@@ -6,6 +6,7 @@
 
 struct OptionsMenu : public UI::Control::Form
 {
+	UI::Control::Slider		FPS;
 	UI::Control::Slider		FOV;
 	UI::Control::Slider		Depth;
 	UI::Control::Slider		DepthRange;

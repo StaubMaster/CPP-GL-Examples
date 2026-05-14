@@ -8,7 +8,7 @@
 UI::Control::Label::Label()
 	: Base()
 {
-	Layer = 0.1f;
+	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(50, 25);
@@ -50,25 +50,25 @@ void UI::Control::Label::SetText(std::string text)
 
 
 
-void UI::Control::Label::InsertDrawingEntryRelay()
+void UI::Control::Label::RelayUpdateBox()
+{
+	if (TextObject.Is())
+	{
+		PutCharactersEntrys();
+	}
+}
+
+void UI::Control::Label::RelayInsertObject()
 {
 	if (!TextObject.Is() && TextManager != NULL)
 	{
 		TextObject.Create();
 	}
 }
-void UI::Control::Label::RemoveDrawingEntryRelay()
+void UI::Control::Label::RelayRemoveObject()
 {
 	if (TextObject.Is() || TextManager == NULL)
 	{
 		TextObject.Delete();
-	}
-}
-
-void UI::Control::Label::UpdateBoxRelay()
-{
-	if (TextObject.Is())
-	{
-		PutCharactersEntrys();
 	}
 }

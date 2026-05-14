@@ -26,6 +26,10 @@ so it would be fine ?
 
 struct ChunkNeighbour
 {
+	// only Here Chunk as a referance
+	// the others should be more ChunkNeigbours
+	// dont make accessible directly
+
 	Chunk *		Here;
 	Chunk *		PrevX;
 	Chunk *		PrevY;

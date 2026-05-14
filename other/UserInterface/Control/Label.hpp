@@ -17,10 +17,9 @@ class Label : public Base
 	Label();
 
 	public:
-//	void	UpdateEntrysRelay() override;
-	void	InsertDrawingEntryRelay() override;
-	void	RemoveDrawingEntryRelay() override;
-	void	UpdateBoxRelay() override;
+	void	RelayUpdateBox() override;
+	void	RelayInsertObject() override;
+	void	RelayRemoveObject() override;
 
 	private:
 	Text::Object	TextObject;

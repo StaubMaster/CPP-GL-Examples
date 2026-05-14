@@ -51,7 +51,7 @@ void ContainerLock::Changing1()
 
 void ContainerLock::Checking0(StopWatch & watch, WaitDoTime & time)
 {
-//	std::cout << "wait Checking0:" << ThreadInfo::ThreadName << '\n';
+//	std::cout << "wait Checking0:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
 	time.ThreadName = ThreadInfo::ThreadName;
 	watch.ReStart();
 
@@ -62,17 +62,17 @@ void ContainerLock::Checking0(StopWatch & watch, WaitDoTime & time)
 	watch.Stop();
 	time.WaitTime.NewValue(watch.ElapsedTime());
 	watch.ReStart();
-//	std::cout << "have Checking0:" << ThreadInfo::ThreadName << '\n';
+//	std::cout << "have Checking0:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
 }
 void ContainerLock::Checking1(StopWatch & watch, WaitDoTime & time)
 {
 	time.ThreadName = ThreadInfo::ThreadName;
-//	std::cout << "have Checking1:" << ThreadInfo::ThreadName << '\n';
+//	std::cout << "have Checking1:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
 	CheckingCount--;
 
 	watch.Stop();
 	time.DoTime.NewValue(watch.ElapsedTime());
-//	std::cout << "done Checking1:" << ThreadInfo::ThreadName << '\n';
+//	std::cout << "done Checking1:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
 }
 void ContainerLock::Changing0(StopWatch & watch, WaitDoTime & time)
 {

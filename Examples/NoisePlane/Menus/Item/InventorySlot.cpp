@@ -26,7 +26,22 @@ InventorySlot::InventorySlot()
 #include <iostream>
 #include "ValueType/_Show.hpp"
 
-void InventorySlot::InsertDrawingEntryRelay()
+void InventorySlot::RelayUpdateBox()
+{
+	if (Object.Is())
+	{
+//		VectorF2 PixelSize(40, 40); // hardcoded in Shader
+//		VectorF2 PixelPos = DisplayBox.Center();
+//		VectorF2 size = WindowSize.Buffer.SizeFullToNormalRel(PixelSize);
+//		VectorF2 pos = WindowSize.Buffer.PosFullToNormalRel(PixelPos);
+//
+//		Object.Trans().Position.X = (+pos.X / size.X);
+//		Object.Trans().Position.Y = (-pos.Y / size.Y);
+//		Object.Trans().Rotation.X1 = Angle::Degrees(30);
+//		Object.Trans().Rotation.Y2 = Angle::Degrees(45);
+	}
+}
+void InventorySlot::RelayInsertObject()
 {
 	if (Item != nullptr && *Item != nullptr)
 	{
@@ -50,24 +65,9 @@ void InventorySlot::InsertDrawingEntryRelay()
 		}
 	}
 }
-void InventorySlot::RemoveDrawingEntryRelay()
+void InventorySlot::RelayRemoveObject()
 {
 	Object.Delete();
-}
-void InventorySlot::UpdateBoxRelay()
-{
-	if (Object.Is())
-	{
-//		VectorF2 PixelSize(40, 40); // hardcoded in Shader
-//		VectorF2 PixelPos = DisplayBox.Center();
-//		VectorF2 size = WindowSize.Buffer.SizeFullToNormalRel(PixelSize);
-//		VectorF2 pos = WindowSize.Buffer.PosFullToNormalRel(PixelPos);
-//
-//		Object.Trans().Position.X = (+pos.X / size.X);
-//		Object.Trans().Position.Y = (-pos.Y / size.Y);
-//		Object.Trans().Rotation.X1 = Angle::Degrees(30);
-//		Object.Trans().Rotation.Y2 = Angle::Degrees(45);
-	}
 }
 
 

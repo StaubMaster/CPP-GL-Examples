@@ -18,3 +18,28 @@ changing DisplayBox ?
 	could also just move things in general ?
 changing Text
 changing Slider (Nub)
+
+
+
+Update()
+{
+	Create/Delete DisplayObjects
+	if (ChangedDisplayBox)
+	{
+		change DisplayObject
+	}
+	if (ChangedColor)
+	{
+		change DisplayObject
+	}
+	...
+	RelayUpdate()
+}
+
+when Creating an Object
+all the things need to be set
+do that when requresting Object Creationg ?
+
+
+
+

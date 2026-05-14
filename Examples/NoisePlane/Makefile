@@ -53,6 +53,7 @@ FILES := \
 \
 	Telemetry/Time.cpp \
 	Telemetry/StopWatch.cpp \
+	Telemetry/ThreadInfo.cpp \
 	Telemetry/WaitDoTime.cpp \
 \
 	main_.cpp \

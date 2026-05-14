@@ -20,17 +20,11 @@ new operator
 
 
 
-clean up
-
-TextBound
-	text within a certain Bound
-put this in UI::Text:: ?
-
 make Text non MomoSpace
 
 
 
-if the Text is now Monospace, how would this be checked ?
+if the Text is not Monospace, how would this be checked ?
 check in TextManager ?
 if a Character is outside of its Bound, dont make an Instance for it
 checking Bound for each Character might be slow ?

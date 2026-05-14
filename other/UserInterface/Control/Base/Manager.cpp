@@ -155,6 +155,8 @@ void UI::Control::Manager::PlaceInstance(const ObjectData & obj)
 
 void UI::Control::Manager::Draw()
 {
+	Window.Update();
+
 	GraphicsInit();
 	GraphicsMain();
 	GraphicsInst();

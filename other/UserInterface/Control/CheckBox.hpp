@@ -18,28 +18,27 @@ class CheckBox : public Base
 	FunctionPointer<ClickArgs>	ClickFunc;
 
 	private:
-	bool Checked;
+	bool	Checked;
 
 	private:
-	ColorF4 ColorChecked;
-	ColorF4 ColorCheckedHover;
-	bool Color2Changed;
+	ColorF4		ColorChecked;
+	ColorF4		ColorCheckedHover;
 
 	public:
 	CheckBox();
 	~CheckBox();
 
 	public:
-	bool IsChecked();
-	void Toggle();
-	void Check(bool state);
+	bool	IsChecked();
+	void	Toggle();
+	void	Check(bool state);
 
 	protected:
-//	void UpdateEntryColorRelay() override;
-	void RelayHover(unsigned char type) override;
+	void	RelayAssignObjectColor() override;
+	void	RelayHover(unsigned char type) override;
 
 	public:
-	void RelayClick(ClickArgs params) override;
+	void	RelayClick(ClickArgs params) override;
 };
 
 };

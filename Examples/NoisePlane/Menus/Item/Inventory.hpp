@@ -31,9 +31,8 @@ struct Inventory : public UI::Control::Form
 	void	ShowItems();
 	void	HideItems();
 
-	void	InsertDrawingEntryRelay() override;
-	void	RemoveDrawingEntryRelay() override;
-	//void UpdateBoxRelay() override;
+	void	RelayInsertObject() override;
+	void	RelayRemoveObject() override;
 };
 
 #endif

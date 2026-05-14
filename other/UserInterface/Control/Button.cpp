@@ -7,7 +7,7 @@
 
 UI::Control::Button::Button() : Base()
 {
-	Layer = 0.1f;
+	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(75, 25);
@@ -55,26 +55,26 @@ void UI::Control::Button::SetText(std::string text)
 
 
 
-void UI::Control::Button::InsertDrawingEntryRelay()
+void UI::Control::Button::RelayUpdateBox()
+{
+	if (TextObject.Is())
+	{
+		PutCharactersEntrys();
+	}
+}
+
+void UI::Control::Button::RelayInsertObject()
 {
 	if (!TextObject.Is() && TextManager != NULL)
 	{
 		TextObject.Create();
 	}
 }
-void UI::Control::Button::RemoveDrawingEntryRelay()
+void UI::Control::Button::RelayRemoveObject()
 {
 	if (TextObject.Is() || TextManager == NULL)
 	{
 		TextObject.Delete();
-	}
-}
-
-void UI::Control::Button::UpdateBoxRelay()
-{
-	if (TextObject.Is())
-	{
-		PutCharactersEntrys();
 	}
 }
 

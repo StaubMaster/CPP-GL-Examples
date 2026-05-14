@@ -14,7 +14,7 @@ WaitDoTime::WaitDoTime(const char * name)
 
 std::ostream & operator<<(std::ostream & o, const WaitDoTime & obj)
 {
-//	o << (const void *)obj.ThreadName;
+	o << obj.ThreadName;
 	o << ' ';
 	o << '{';
 	o << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(4) << obj.WaitTime.Min() << 's';

@@ -10,7 +10,7 @@
 
 UI::Control::Slider::Slider() : Base()
 {
-	Layer = 0.1f;
+	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(75, 25);
@@ -185,13 +185,38 @@ void UI::Control::Slider::SetText(std::string text)
 
 
 
-void UI::Control::Slider::InsertDrawingEntryRelay()
+void UI::Control::Slider::RelayUpdateBox()
+{
+	//SliderChanged = true;
+	if (SliderObject.Is())
+		{
+			VectorF2 slider_size_half = NubSize / 2.0f;
+			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
+			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+
+			VectorF2 slider_normal = Value;
+			slider_normal -= ValueMin;
+			slider_normal /= (ValueMax - ValueMin);
+
+			VectorF2 slider_value = slider_normal;
+			slider_value *= (slider_max - slider_min);
+			slider_value += slider_min;
+
+			SliderObject.Box().Min = slider_value - slider_size_half;
+			SliderObject.Box().Max = slider_value + slider_size_half;
+		}
+	if (TextObject.Is())
+	{
+		PutCharactersEntrys();
+	}
+}
+void UI::Control::Slider::RelayInsertObject()
 {
 	if (!SliderObject.Is() && ControlManager != NULL)
 	{
 		SliderObject.Create();
 		SliderObject.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		SliderObject.Layer() = Layer - 0.01f;
+		SliderObject.Layer() = Depth - 0.01f;
 		//SliderChanged = true;
 	if (SliderObject.Is())
 		{
@@ -216,7 +241,7 @@ void UI::Control::Slider::InsertDrawingEntryRelay()
 		TextObject.Create();
 	}
 }
-void UI::Control::Slider::RemoveDrawingEntryRelay()
+void UI::Control::Slider::RelayRemoveObject()
 {
 	if (SliderObject.Is() || ControlManager == NULL)
 	{
@@ -225,31 +250,6 @@ void UI::Control::Slider::RemoveDrawingEntryRelay()
 	if (TextObject.Is() || TextManager == NULL)
 	{
 		TextObject.Delete();
-	}
-}
-void UI::Control::Slider::UpdateBoxRelay()
-{
-	//SliderChanged = true;
-	if (SliderObject.Is())
-		{
-			VectorF2 slider_size_half = NubSize / 2.0f;
-			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
-
-			VectorF2 slider_normal = Value;
-			slider_normal -= ValueMin;
-			slider_normal /= (ValueMax - ValueMin);
-
-			VectorF2 slider_value = slider_normal;
-			slider_value *= (slider_max - slider_min);
-			slider_value += slider_min;
-
-			SliderObject.Box().Min = slider_value - slider_size_half;
-			SliderObject.Box().Max = slider_value + slider_size_half;
-		}
-	if (TextObject.Is())
-	{
-		PutCharactersEntrys();
 	}
 }
 

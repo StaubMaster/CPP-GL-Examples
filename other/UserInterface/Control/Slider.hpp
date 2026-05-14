@@ -57,10 +57,9 @@ class Slider : public Base
 	~Slider();
 
 	public:
-//	void UpdateEntrysRelay() override;
-	void InsertDrawingEntryRelay() override;
-	void RemoveDrawingEntryRelay() override;
-	void UpdateBoxRelay() override;
+	void	RelayUpdateBox() override;
+	void	RelayInsertObject() override;
+	void	RelayRemoveObject() override;
 
 	void RelayClick(ClickArgs params) override;
 	void RelayCursorDrag(DragArgs params) override;

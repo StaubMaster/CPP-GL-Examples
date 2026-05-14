@@ -22,7 +22,7 @@ void Inventory::Change(ItemContainer * container)
 
 	Container = container;
 
-	Slots.ChangeSize(Container -> Items.Size());
+	Slots.Size(Container -> Items.Size());
 
 	VectorF2 SlotSpace(50 + (5 * 2));
 	AnchorSize.X = SlotSpace.X * Slots.Size().X + (5 * 2);
@@ -58,11 +58,11 @@ void Inventory::HideItems()
 	}
 }
 
-void Inventory::InsertDrawingEntryRelay()
+void Inventory::RelayInsertObject()
 {
 	ShowItems();
 }
-void Inventory::RemoveDrawingEntryRelay()
+void Inventory::RelayRemoveObject()
 {
 	HideItems();
 }

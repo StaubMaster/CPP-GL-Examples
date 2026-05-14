@@ -88,7 +88,8 @@ class Base
 	Container::Binary<Control::Base *> Children;
 
 	public:
-	float	Layer; // make this unsigend char. 255 should be more then enough Layers
+	float	Depth; // make this unsigend char. 255 should be more then enough Layers
+	unsigned char	Layer() const;
 
 	protected:
 	bool	_Enabled;
@@ -118,113 +119,89 @@ class Base
 	bool	IsThisInteractible() const;
 	bool	IsInteractible() const;
 
+	private:
+	void	DrawableWantUpdate();
+	protected:
+	bool	DrawableNeedUpdate;
+
 	public:
-	bool			Deletable;		//should be deleted when Parent is deleted
+	bool	Deletable;		//should be deleted when Parent is deleted
 
 	protected:
-	// Anchor needs to change if these change ?
-	VectorF2			AnchorSize;
-	VectorF2			AnchorNormal;
+	// DisplayBox needs to change if these change ?
+	VectorF2	AnchorSize;
+	VectorF2	AnchorNormal;
 	BoxF2		AnchorDist;
-
+	protected:
 	BoxF2		AnchorMargin;
-	BoxF2		AnchorBoarder; // hardcoced as 2 in Shader
+	BoxF2		AnchorBoarder;
 	BoxF2		AnchorPadding;
-
 	public:
-	Anchor2D		Anchor;
+	Anchor2D	Anchor;
 
+	protected:
+	void		BoxWantUpdate();
+	public:
+	bool		BoxNeedUpdate;
+	protected:
+	bool		ObjectBoxNeedAssign;
 	protected:
 	BoxF2		DisplayBox;
 	BoxF2		ContainerBox;
-	// another Box for Text ?
 
-//	protected:
-//	bool			AnchorBoxChanged;
-
+	protected:
+	bool		ObjectColorNeedAssign;
 	public:
-	ColorF4			ColorDefault;
-	//Color			ColorDisabled; // Gray Text
-	ColorF4			ColorHover;
-
-//	private:
-//	bool			ColorChanged;
+	ColorF4		ColorDefault;
+	//Color		ColorDisabled; // Gray Text
+	ColorF4		ColorHover;
 
 	public:
 	virtual ~Base();
 	Base();
 
 	public:
-	void ChildInsert(Base & control);
-	void ChildInsert(Base * control);
-	virtual void ChangeManager(Manager * manager);
-	virtual void ChangeManager(UI::Text::Manager * manager);
+	void			ChildInsert(Base & control);
+	void			ChildInsert(Base * control);
+	virtual void	ChangeManager(Manager * manager);
+	virtual void	ChangeManager(UI::Text::Manager * manager);
 
 	// UpdateHandler that has referances to these functions
 
-	//	for automatic Updating. should not be called by User
-	public:
-	/* void UpdateEntrys();
-		changes GraphicalBox if needed
-		changes Color if needed
-		calls Relay
-		makes Children do the same
-	*/
-	//void UpdateEntrys();
+	// seperate functinos for changing internals vs changing Graphics Object
 
-	//	for automatic Updating. should not be called by User
+	public:
+	void	Update();
+
 	private:
-	/* void UpdateDrawable();
-		Insert/Remove GraphicalBox if needed
-		Update Anchor Box
-	*/
-	void UpdateDrawable();
-	/* void InsertDrawingEntry();
-		Creates GraphicalBox if it dosent exist already
-		calls Relay
-	*/
-	void InsertDrawingEntry();
-	/* void RemoveDrawingEntry();
-		Deletes GraphicalBox if i exist
-		calls Relay
-	*/
-	void RemoveDrawingEntry();
+	void	UpdateBox();
+	void	InsertObject();
+	void	RemoveObject();
+	void	AssignObjectBox();
+	void	AssignObjectColor();
 
-	//	for automatic Updating. should not be called by User
-	public:
-	/* void UpdateBox();
-		changes AnchorBox
-		calls Relay
-	*/
-	void UpdateBox();
-
-	//	for automatic Updating. should not be called by User
-	public:
-	Base * CheckHover(VectorF2 mouse);
-
-	//	for automatic Updating. should not be called by User
-	public:
-	void HoverEnter();
-	void HoverLeave();
-
-	//	Relay Auto
+	// Relay Auto
 	protected:
-	//virtual void UpdateEntryAnchorBoxRelay();
-	//virtual void UpdateEntryColorRelay();
-	//virtual void UpdateEntrysRelay();
+	virtual void	RelayUpdateBox();
+	virtual void	RelayInsertObject();
+	virtual void	RelayRemoveObject();
+	virtual void	RelayAssignObjectBox();
+	virtual void	RelayAssignObjectColor();
 
-	virtual void InsertDrawingEntryRelay();
-	virtual void RemoveDrawingEntryRelay();
-	virtual void UpdateBoxRelay();
-
-	//	Relay User
+	//	for automatic Updating. should not be called by User
 	public:
-	virtual void RelayHover(unsigned char type);
-	virtual void RelayClick(ClickArgs args);
-	virtual void RelayScroll(ScrollArgs args);
-	virtual void RelayCursorDrag(DragArgs args);
-	virtual void RelayKey(KeyArgs args);
-	virtual void RelayText(TextArgs args);
+	Base *	CheckHover(VectorF2 mouse);
+	void	HoverEnter();
+	void	HoverLeave();
+
+	// Relay User
+	public:
+	virtual void	RelayHover(unsigned char type);
+	virtual void	RelayClick(ClickArgs args);
+	virtual void	RelayScroll(ScrollArgs args);
+	virtual void	RelayCursorDrag(DragArgs args);
+	virtual void	RelayKey(KeyArgs args);
+	virtual void	RelayText(TextArgs args);
 };
 };
 };

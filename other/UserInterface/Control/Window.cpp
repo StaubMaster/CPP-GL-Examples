@@ -2,15 +2,16 @@
 
 
 
-UI::Control::Window::Window() : Base()
+UI::Control::Window::Window()
 {
-	Layer = 1.0f;
+	Depth = 1.0f;
 	Anchor.X.Anchor = AnchorType::Both;
 	Anchor.Y.Anchor = AnchorType::Both;
 	AnchorDist.Min = VectorF2(0, 0);
 	AnchorDist.Max = VectorF2(0, 0);
 	ColorDefault = ColorF4(0, 0, 0);
 	ColorHover = ColorF4(0, 0, 0);
+	_Opaque = false;
 }
 UI::Control::Window::~Window()
 { }
@@ -19,11 +20,9 @@ UI::Control::Window::~Window()
 
 void UI::Control::Window::UpdateWindowSize(VectorF2 size)
 {
-	//AnchorBox.Min = VectorF2();
-	//AnchorBox.Max = size;
 	DisplayBox = BoxF2(VectorF2(), size);
 	ContainerBox = DisplayBox;
-	UpdateBox();
+	BoxWantUpdate();
 }
 
 

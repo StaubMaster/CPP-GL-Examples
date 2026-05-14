@@ -7,14 +7,15 @@
 
 UI::Control::CheckBox::CheckBox() : Base()
 {
-	Layer = 0.1f;
+	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(25, 25);
-	ColorDefault = ColorF4(1.0f, 0.0f, 0.0f);
-	ColorHover = ColorF4(0.75f, 0.0f, 0.0f);
 
 	Checked = false;
+
+	ColorDefault = ColorF4(1.0f, 0.0f, 0.0f);
+	ColorHover = ColorF4(0.75f, 0.0f, 0.0f);
 
 	ColorChecked = ColorF4(0.0f, 1.0f, 0.0f);
 	ColorCheckedHover = ColorF4(0.0f, 0.75f, 0.0f);
@@ -31,51 +32,45 @@ bool UI::Control::CheckBox::IsChecked()
 void UI::Control::CheckBox::Toggle()
 {
 	Checked = !Checked;
-	Color2Changed = true;
+	ObjectColorNeedAssign = true;
 }
 void UI::Control::CheckBox::Check(bool state)
 {
 	Checked = state;
-	Color2Changed = true;
+	ObjectColorNeedAssign = true;
 }
 
 
 
-/*void UI::Control::CheckBox::UpdateEntryColorRelay()
+void UI::Control::CheckBox::RelayAssignObjectColor()
 {
 	if (ControlManager -> Hovering != this)
 	{
 		if (!Checked)
-		{ ControlObject.Color() = ColorDefault; }
+		{
+			ControlObject.Color() = ColorDefault;
+		}
 		else
-		{ ControlObject.Color() = ColorChecked; }
+		{
+			ControlObject.Color() = ColorChecked;
+		}
 	}
 	else
 	{
 		if (!Checked)
-		{ ControlObject.Color() = ColorHover; }
+		{
+			ControlObject.Color() = ColorHover;
+		}
 		else
-		{ ControlObject.Color() = ColorCheckedHover; }
+		{
+			ControlObject.Color() = ColorCheckedHover;
+		}
 	}
-}*/
+}
 void UI::Control::CheckBox::RelayHover(unsigned char type)
 {
 	(void)type;
-	//ColorChanged = true;
-	if (ControlManager -> Hovering != this)
-	{
-		if (!Checked)
-		{ ControlObject.Color() = ColorDefault; }
-		else
-		{ ControlObject.Color() = ColorChecked; }
-	}
-	else
-	{
-		if (!Checked)
-		{ ControlObject.Color() = ColorHover; }
-		else
-		{ ControlObject.Color() = ColorCheckedHover; }
-	}
+	ObjectColorNeedAssign = true;
 }
 
 
@@ -88,21 +83,7 @@ void UI::Control::CheckBox::RelayClick(ClickArgs params)
 	if (params.Action == Action::Press)
 	{
 		Checked = !Checked;
-		//ColorChanged = true;
-	if (ControlManager -> Hovering != this)
-	{
-		if (!Checked)
-		{ ControlObject.Color() = ColorDefault; }
-		else
-		{ ControlObject.Color() = ColorChecked; }
-	}
-	else
-	{
-		if (!Checked)
-		{ ControlObject.Color() = ColorHover; }
-		else
-		{ ControlObject.Color() = ColorCheckedHover; }
-	}
+		ObjectColorNeedAssign = true;
 		ClickFunc(params);
 	}
 }

@@ -6,9 +6,8 @@
 
 
 UI::Control::TextBox::TextBox()
-	: Base()
 {
-	Layer = 0.1f;
+	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(50, 25);
@@ -53,26 +52,26 @@ void UI::Control::TextBox::SetText(std::string text)
 
 
 
-void UI::Control::TextBox::InsertDrawingEntryRelay()
+void UI::Control::TextBox::RelayUpdateBox()
+{
+	if (TextObject.Is())
+	{
+		PutCharactersEntrys();
+	}
+}
+
+void UI::Control::TextBox::RelayInsertObject()
 {
 	if (!TextObject.Is() && TextManager != NULL)
 	{
 		TextObject.Create();
 	}
 }
-void UI::Control::TextBox::RemoveDrawingEntryRelay()
+void UI::Control::TextBox::RelayRemoveObject()
 {
 	if (TextObject.Is() || TextManager == NULL)
 	{
 		TextObject.Delete();
-	}
-}
-
-void UI::Control::TextBox::UpdateBoxRelay()
-{
-	if (TextObject.Is())
-	{
-		PutCharactersEntrys();
 	}
 }
 

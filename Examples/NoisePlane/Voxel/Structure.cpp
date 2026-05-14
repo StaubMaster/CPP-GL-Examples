@@ -10,7 +10,7 @@ void Structure::Default()
 		Structure & structure = Tree0;
 
 		structure.Offset = VectorI3(-1, 0, -1);
-		structure.Voxels.ChangeSize(VectorU3(3, 24, 3));
+		structure.Voxels.Size(VectorU3(3, 24, 3));
 
 		const VoxelPallet & pallet0 = VoxelPalletMap::All["Leaves"];
 		const VoxelPallet & pallet1 = VoxelPalletMap::All["Log"];

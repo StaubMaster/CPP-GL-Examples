@@ -7,6 +7,7 @@
 # include "Graphics/Shader.hpp"
 
 # include "ValueType/Vector/I3.hpp"
+# include "ValueType/Box/I3.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
 
@@ -50,57 +51,6 @@ struct VoxelHit
 
 struct ChunkManager
 {
-	VoxelGraphics::Shader		ShaderU;
-	VoxelGraphics::Shader		ShaderF;
-	Texture::Array2D			Texture;
-
-
-
-	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
-
-	Array3D<Chunk*>	Chunks;
-//	BoxI3			ChunksBox;
-	VectorI3		Center;
-	VectorI3		Corner;
-
-	Chunk *			FindLockOrNull(VectorI3 idx);
-	Chunk *			FindTryLockOrNull(VectorI3 idx);
-
-	VectorI3	absolute(VectorU3 u) const;
-	VectorU3	relative(VectorI3 i) const;
-
-	void	ChangeChunksArraySize(unsigned int size);
-
-	void	ChangeCenterLoopX(VectorU3 u, VectorI3 diff);
-	void	ChangeCenterLoopY(VectorU3 u, VectorI3 diff);
-	void	ChangeCenterLoopZ(VectorU3 u, VectorI3 diff);
-	void	ChangeCenter(VectorI3 center);
-
-//	Container::Binary<Chunk*>	Chunks;
-	ContainerLock				ChunksLock;
-
-
-
-	public:
-	~ChunkManager();
-	ChunkManager();
-
-	ChunkManager(const ChunkManager & other) = delete;
-	ChunkManager & operator=(const ChunkManager & other) = delete;
-
-	public:
-	PolyHedra *	VoxelBoxPolyHedra = nullptr;
-	PolyHedra *	ChunkBoxPolyHedra = nullptr;
-	PolyHedra *	ViewRayPolyHedra = nullptr;
-
-
-
-	private:
-	public:
-	VoxelHit		HitVoxel(Ray3D ray);
-
-
-
 	public:
 	static WaitDoTime	TimeInsert;
 	static WaitDoTime	TimeInsertNeighbours;
@@ -123,6 +73,42 @@ struct ChunkManager
 
 
 
+
+
+	public:
+	VoxelGraphics::Shader		ShaderU;
+	VoxelGraphics::Shader		ShaderF;
+	Texture::Array2D			Texture;
+
+
+
+	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
+
+	public:
+	Array3D<Chunk*>	Chunks;
+	ContainerLock	ChunksLock;
+
+	unsigned int	KnowSize;
+	unsigned int	CareSize;
+
+	void	Clear();
+	void	ChangeSize(unsigned int know_size, unsigned int care_size);
+
+	void	ChangeCenterLoopX(VectorU3 u, VectorI3 diff);
+	void	ChangeCenterLoopY(VectorU3 u, VectorI3 diff);
+	void	ChangeCenterLoopZ(VectorU3 u, VectorI3 diff);
+	void	ChangeCenter(VectorI3 center);
+
+	VectorI3	Center;
+	BoxI3		KnowBox;
+	BoxI3		CareBox;
+
+	VectorI3	absolute(VectorU3 u) const;
+	VectorU3	relative(VectorI3 i) const;
+
+	Chunk *		FindLockOrNull(VectorI3 idx);
+	Chunk *		FindTryLockOrNull(VectorI3 idx);
+
 	private:
 	public:
 	Container::Binary<Chunk*>	ChunksToInsert;
@@ -131,10 +117,8 @@ struct ChunkManager
 	ContainerLock				ChunksToRemoveLock;
 
 	public:
-	void	Clear();
-
-	void	InsertAround(VectorF3 pos, unsigned int size);
-	void	RemoveAround(VectorF3 pos, unsigned int size);
+	void	InsertAround();
+	void	RemoveAround();
 
 	void	UpdateChunksContainer();
 
@@ -145,8 +129,26 @@ struct ChunkManager
 
 
 	public:
-	Chunk *	FindGenerateChunk(VectorF3 pos, unsigned int size);
-	void	GenerateAround(VectorF3 pos, unsigned int size, const Perlin2D & noise2, const Perlin3D & noise3);
+	~ChunkManager();
+	ChunkManager();
+
+	ChunkManager(const ChunkManager & other) = delete;
+	ChunkManager & operator=(const ChunkManager & other) = delete;
+
+	public:
+	PolyHedra *	VoxelBoxPolyHedra = nullptr;
+	PolyHedra *	ChunkBoxPolyHedra = nullptr;
+	PolyHedra *	ViewRayPolyHedra = nullptr;
+
+	private:
+	public:
+	VoxelHit		HitVoxel(Ray3D ray);
+
+
+
+	public:
+	Chunk *	FindGenerateChunk();
+	void	GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3);
 
 
 
@@ -155,8 +157,8 @@ struct ChunkManager
 	void	GraphicsDelete();
 	void	GraphicsUpdate();
 
-	Chunk *	FindGraphicsUpdateChunk(VectorF3 pos);
-	void	GraphicsUpdateDataAround(VectorF3 pos);
+	Chunk *	FindGraphicsUpdateChunk();
+	void	GraphicsUpdateDataAround();
 
 	void	Draw();
 };
