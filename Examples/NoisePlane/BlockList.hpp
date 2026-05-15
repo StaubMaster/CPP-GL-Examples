@@ -115,7 +115,7 @@ class BlockList
 		CurrentBlockItemCount = 0;
 		CurrentBlock = nullptr;
 	}
-	void	Insert(ItemType item)
+	void	Insert(const ItemType & item)
 	{
 		if (CurrentBlock == nullptr)
 		{

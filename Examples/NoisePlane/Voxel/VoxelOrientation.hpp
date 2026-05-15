@@ -39,6 +39,11 @@ struct VoxelOrientation
 	// then just make a function that returns a function pointer
 	// or function referance
 
+	typedef VectorU3 (*SwizzlerU_Ptr)(const VectorU3 &);
+	typedef VectorU3 (&SwizzlerU_Ref)(const VectorU3 &);
+
+	SwizzlerU_Ref	absoluteU_Func() const;
+
 	VectorU3	absolute(VectorU3 v) const;
 	VectorF3	absolute(VectorF3 v) const;
 

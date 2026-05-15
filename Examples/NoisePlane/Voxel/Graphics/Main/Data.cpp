@@ -82,17 +82,17 @@ VoxelGraphics::MainDataU & VoxelGraphics::MainDataU::operator=(const MainDataU &
 	return *this;
 }
 
-VoxelGraphics::MainDataU::MainDataU(VectorU3 pos, VectorU3 tex, AxisRel axis)
-	: Vertex(0)
+VoxelGraphics::MainDataU::MainDataU(const VectorU3 & pos, const VectorU3 & tex, const AxisRel & axis)
+	: Vertex(
+		(((pos.X) & 0b111111) << 0) |
+		(((pos.Y) & 0b111111) << 6) |
+		(((pos.Z) & 0b111111) << 12) |
+		(((tex.X) & 0b1) << 18) |
+		(((tex.Y) & 0b1) << 19) |
+		((((unsigned char)axis) & 0b111) << 20)
+	)
 	, Texture(tex.Z)
-{
-	Vertex |= ((pos.X) & 0b111111) << 0;
-	Vertex |= ((pos.Y) & 0b111111) << 6;
-	Vertex |= ((pos.Z) & 0b111111) << 12;
-	Vertex |= ((tex.X) & 0b1) << 18;
-	Vertex |= ((tex.Y) & 0b1) << 19;
-	Vertex |= (((unsigned char)axis) & 0b111) << 20;
-}
+{ }
 
 
 
@@ -122,3 +122,14 @@ VoxelGraphics::MainFaceU & VoxelGraphics::MainFaceU::operator=(const MainFaceU &
 	Vertexes[5] = other.Vertexes[5];
 	return *this;
 }
+
+VoxelGraphics::MainFaceU::MainFaceU(const MainDataU data[4])
+	: Vertexes{
+		data[0],
+		data[1],
+		data[2],
+		data[2],
+		data[1],
+		data[3],
+	}
+{ }

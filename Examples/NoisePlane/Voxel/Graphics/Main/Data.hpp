@@ -83,7 +83,7 @@ namespace VoxelGraphics
 		MainDataU(const MainDataU & other);
 		MainDataU & operator=(const MainDataU & other);
 
-		MainDataU(VectorU3 pos, VectorU3 tex, AxisRel axis);
+		MainDataU(const VectorU3 & pos, const VectorU3 & tex, const AxisRel & axis);
 	};
 	struct MainFaceU
 	{
@@ -91,9 +91,11 @@ namespace VoxelGraphics
 
 		~MainFaceU();
 		MainFaceU();
-
+		
 		MainFaceU(const MainFaceU & other);
 		MainFaceU & operator=(const MainFaceU & other);
+
+		MainFaceU(const MainDataU data[4]);
 	};
 };
 
