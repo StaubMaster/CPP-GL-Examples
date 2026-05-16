@@ -2,20 +2,17 @@
 #include "Time.hpp"
 
 
-//	bool	Watching;
-//	double	Time0;
-//	double	Time1;
 
-bool StopWatch::IsWatching() const { return Watching; }
+bool StopWatch::IsRunning() const { return Running; }
 double StopWatch::ElapsedTime() const
 {
-	if (Watching)
+	if (Running)
 	{
-		return TimeNow() - Time0;
+		return (TimeNow() - TimeStamp) + TimeSum;
 	}
 	else
 	{
-		return Time1 - Time0;
+		return TimeSum;
 	}
 }
 
@@ -23,32 +20,43 @@ double StopWatch::ElapsedTime() const
 
 StopWatch::~StopWatch() { }
 StopWatch::StopWatch()
-	: Watching(false)
-	, Time0(0.0)
-	, Time1(0.0)
+	: Running(false)
+	, TimeStamp(0.0)
+	, TimeSum(0.0)
 { }
 
 
 
+void StopWatch::Clear()
+{
+	Running = false;
+	TimeStamp = 0.0;
+	TimeSum = 0.0;
+}
 void StopWatch::Stop()
 {
-	if (Watching)
+	if (Running)
 	{
-		Watching = false;
-		Time1 = TimeNow();
+		TimeSum += (TimeNow() - TimeStamp);
+		Running = false;
 	}
 }
 void StopWatch::Start()
 {
-	if (!Watching)
+	if (!Running)
 	{
-		Watching = true;
-		Time0 = TimeNow();
+		TimeStamp = TimeNow();
+		Running = true;
 	}
 }
-
-void StopWatch::ReStart()
+void StopWatch::TakeOver(StopWatch & other)
 {
-	Watching = true;
-	Time0 = TimeNow();
+	if (Running && !other.Running)
+	{
+		double time = TimeNow();
+		TimeSum += (time - TimeStamp);
+		Running = false;
+		other.TimeStamp = time;
+		other.Running = true;
+	}
 }

@@ -19,56 +19,108 @@
 
 
 
-static ValueAverager<float> TimeAbsolute0(0xFFFFFF);
-static ValueAverager<float> TimeVisible(0xFFFFFF);
-static ValueAverager<float> TimeAbsolute1(0xFFFFFF);
-static ValueAverager<float> TimeAssign0(0xFFFFFF);
-static ValueAverager<float> TimeTexture(0xFFFFFF);
-static ValueAverager<float> TimeCompress(0xFFFFFF);
-static ValueAverager<float> TimeAssign1(0xFFFFFF);
-static ValueAverager<float> TimeInsert(0xFFFFFF);
-static ValueAverager<float> TimeLoop(0xFFFFFF);
+static ValueAverager<float> AverageTotal(1024);
+static StopWatch TimeTotal;
+static StopWatch TimeIteration;
+static StopWatch TimeLoop;
+
+static StopWatch TimeVoxelRetrieve;
+static StopWatch TimeVoxelRetrieveData;
+
+static ValueAverager<float> AverageVisible(1024);
+static StopWatch TimeVisibleTotal;
+static StopWatch TimeVisibleAbsolute;
+static StopWatch TimeVisibleCheck;
+
+static StopWatch TimeDataTotal;
+static StopWatch TimeDataRetrieveData;
+static StopWatch TimeDataAbsoluteVertex;
+static StopWatch TimeDataAbsoluteAxis;
+static StopWatch TimeDataTexture;
+static StopWatch TimeDataCompress;
+static StopWatch TimeDataAssign;
+
+static StopWatch TimeInsert;
+
+unsigned int	CountLoop;
+unsigned int	CountVoxel;
+unsigned int	CountVisible;
+unsigned int	CountData;
 
 static void TimeClear()
 {
-	TimeAbsolute0.Clear();
-	TimeVisible.Clear();
-	TimeAbsolute1.Clear();
-	TimeAssign0.Clear();
-	TimeTexture.Clear();
-	TimeCompress.Clear();
-	TimeAssign1.Clear();
-	TimeInsert.Clear();
+	TimeTotal.Clear();
+	TimeIteration.Clear();
 	TimeLoop.Clear();
+	
+	TimeVoxelRetrieve.Clear();
+	TimeVoxelRetrieveData.Clear();
+
+	TimeVisibleTotal.Clear();
+	TimeVisibleAbsolute.Clear();
+	TimeVisibleCheck.Clear();
+
+	TimeDataTotal.Clear();
+	TimeDataRetrieveData.Clear();
+	TimeDataAbsoluteVertex.Clear();
+	TimeDataAbsoluteAxis.Clear();
+	TimeDataTexture.Clear();
+	TimeDataCompress.Clear();
+	TimeDataAssign.Clear();
+
+	TimeInsert.Clear();
+
+	CountLoop = 0;
+	CountVoxel = 0;
+	CountVisible = 0;
+	CountData = 0;
 }
-static void ShowNameCountValue(const char * name, unsigned int count, float value)
+static void ShowNameCountValue(const char * name, float value)
 {
 	std::cout << name << ' ';
-	std::cout << std::setw(6) << std::setfill(' ') << count << ' ';
-	std::cout << std::fixed << std::setprecision(12) << value << ' ';
-	std::cout << (value / count) << '\n';
+	std::cout << std::fixed << std::setprecision(12) << value;
+	std::cout << '\n';
 }
-static void ShowNameCountValue(const char * name, const ValueAverager<float> & value)
+static void ShowNameCountValue(const char * name, const StopWatch & sw)
 {
-	ShowNameCountValue(name, value.Count, value.Sum());
+	ShowNameCountValue(name, sw.ElapsedTime());
 }
-static void ShowTime(float total)
+static void ShowTime()
 {
-	//return;
-	ShowNameCountValue("Total   ", CHUNK_VALUES_PER_VOLM, total);
-	ShowNameCountValue("Absolute", TimeAbsolute0);
-	ShowNameCountValue("Visible ", TimeVisible);
-	ShowNameCountValue("Assign  ", TimeAssign0);
-	ShowNameCountValue("Absolute", TimeAbsolute1);
-	ShowNameCountValue("Texture ", TimeTexture);
-	ShowNameCountValue("Compress", TimeCompress);
-	ShowNameCountValue("Assign  ", TimeAssign1);
-	ShowNameCountValue("Insert  ", TimeInsert);
-	ShowNameCountValue("Loop    ", TimeLoop);
+	return;
+	AverageTotal.NewValue(TimeTotal.ElapsedTime());
+	std::cout << "Total: " << AverageTotal.Average() << '\n';
+	ShowNameCountValue("Total             ", TimeTotal);
+	ShowNameCountValue("Iteration         ", TimeIteration);
+
+	std::cout << "Loop: " << CountLoop << '\n';
+	ShowNameCountValue("Loop              ", TimeLoop);
+
+	std::cout << "Voxel: " << CountVoxel << '\n';
+	ShowNameCountValue("VoxelRetrieve     ", TimeVoxelRetrieve);
+	ShowNameCountValue("VoxelRetrieveData ", TimeVoxelRetrieveData);
+
+	AverageVisible.NewValue(TimeVisibleTotal.ElapsedTime());
+	std::cout << "Visible: " << CountVisible << '\n';
+	std::cout << "Visible: " << AverageVisible.Average() << '\n';
+	ShowNameCountValue("VisibleTotal      ", TimeVisibleTotal);
+	ShowNameCountValue("VisibleAbsolute   ", TimeVisibleAbsolute);
+	ShowNameCountValue("VisibleCheck      ", TimeVisibleCheck);
+
+	std::cout << "Data: " << CountData << '\n';
+	ShowNameCountValue("DataTotal         ", TimeDataTotal);
+	ShowNameCountValue("DataRetrieveData  ", TimeDataRetrieveData);
+	ShowNameCountValue("DataAbsoluteVertex", TimeDataAbsoluteVertex);
+	ShowNameCountValue("DataAbsoluteAxis  ", TimeDataAbsoluteAxis);
+	ShowNameCountValue("DataTexture       ", TimeDataTexture);
+	ShowNameCountValue("DataCompress      ", TimeDataCompress);
+	ShowNameCountValue("DataAssign        ", TimeDataAssign);
+	ShowNameCountValue("Insert            ", TimeInsert);
+
 	std::cout << '\n' << std::flush;
 }
 
-
+//#define MEASURE_TIME
 
 
 
@@ -77,204 +129,155 @@ void ChunkGraphicsData::ClearU()
 	DataU.Clear();
 	ArrayU.Clear();
 }
-void ChunkGraphicsData::ClearF()
+void ChunkGraphicsData::CatU(VectorU3 u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet)
 {
-	DataF.Clear();
-	ArrayF.Clear();
+	if (axis == AxisRel::Here || axis == AxisRel::None) { return; }
+	CountData++;
+
+	#ifdef MEASURE_TIME
+	TimeDataRetrieveData.Start();
+	#endif
+
+	// axis needs to be rotated
+	VoxelAxisGraphicsDataU axis_data_u = pallet.GeometryPallet -> AxisDataU(axis);
+
+	#ifdef MEASURE_TIME
+	TimeDataRetrieveData.Stop();
+	TimeDataAbsoluteVertex.Start();
+	#endif
+
+	//axis_data_u.Data[0].Pos = orientation.absolute(axis_data_u.Data[0].Pos) + u;
+	//axis_data_u.Data[1].Pos = orientation.absolute(axis_data_u.Data[1].Pos) + u;
+	//axis_data_u.Data[2].Pos = orientation.absolute(axis_data_u.Data[2].Pos) + u;
+	//axis_data_u.Data[3].Pos = orientation.absolute(axis_data_u.Data[3].Pos) + u;
+
+	//VoxelOrientation::SwizzlerU_Ref func = orientation.absoluteU_Func();
+	//axis_data_u.Data[0].Pos = func(axis_data_u.Data[0].Pos) + u;
+	//axis_data_u.Data[1].Pos = func(axis_data_u.Data[1].Pos) + u;
+	//axis_data_u.Data[2].Pos = func(axis_data_u.Data[2].Pos) + u;
+	//axis_data_u.Data[3].Pos = func(axis_data_u.Data[3].Pos) + u;
+
+	axis_data_u.Data[0].Pos = axis_data_u.Data[0].Pos + u;
+	axis_data_u.Data[1].Pos = axis_data_u.Data[1].Pos + u;
+	axis_data_u.Data[2].Pos = axis_data_u.Data[2].Pos + u;
+	axis_data_u.Data[3].Pos = axis_data_u.Data[3].Pos + u;
+
+	#ifdef MEASURE_TIME
+	TimeDataAbsoluteVertex.Stop();
+	TimeDataAbsoluteAxis.Start();
+	#endif
+
+	axis = orientation.absolute(axis);
+
+	#ifdef MEASURE_TIME
+	TimeDataAbsoluteAxis.Stop();
+	TimeDataTexture.Start();
+	#endif
+
+	axis_data_u.Data[0].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[0].Tex.Z]).Index;
+	axis_data_u.Data[1].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[1].Tex.Z]).Index;
+	axis_data_u.Data[2].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[2].Tex.Z]).Index;
+	axis_data_u.Data[3].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[3].Tex.Z]).Index;
+
+	#ifdef MEASURE_TIME
+	TimeDataTexture.Stop();
+	TimeDataCompress.Start();
+	#endif
+
+	VoxelGraphics::MainDataU data[4];
+	data[0] = VoxelGraphics::MainDataU(axis_data_u.Data[0].Pos, axis_data_u.Data[0].Tex, axis);
+	data[1] = VoxelGraphics::MainDataU(axis_data_u.Data[1].Pos, axis_data_u.Data[1].Tex, axis);
+	data[2] = VoxelGraphics::MainDataU(axis_data_u.Data[2].Pos, axis_data_u.Data[2].Tex, axis);
+	data[3] = VoxelGraphics::MainDataU(axis_data_u.Data[3].Pos, axis_data_u.Data[3].Tex, axis);
+
+	#ifdef MEASURE_TIME
+	TimeDataCompress.Stop();
+	TimeInsert.Start();
+	#endif
+
+	DataU.Insert(VoxelGraphics::MainFaceU(data));
+
+	#ifdef MEASURE_TIME
+	TimeInsert.Stop();
+	#endif
 }
-
-
-
-void ChunkGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis)
+void ChunkGraphicsData::MakeU(const Chunk & chunk, const ChunkNeighbour & neighbours)
 {
-//	const VoxelAxisGraphicsDataF & axis_data_f = pallet.GeometryPallet -> AxisDataF(axis);
-
-	StopWatch sw;
-
-	/*for (unsigned int i = 0; i < axis_data_f.Data.Count(); i++)
+	Array3D<unsigned char> is_empty(VectorU3(CHUNK_VALUES_PER_SIDE));
+	for (unsigned int u = 0; u < CHUNK_VALUES_PER_VOLM; u++)
 	{
-		sw.ReStart();
-		VoxelGraphics::MainFaceF face = axis_data_f.Data[i];
-		sw.Stop();
-		TimeAssign.NewValue(sw.ElapsedTime());
-
-		sw.ReStart();
-		face.Vertexes[0].Pos = orientation.absolute(face.Vertexes[0].Pos) + u;
-		face.Vertexes[1].Pos = orientation.absolute(face.Vertexes[1].Pos) + u;
-		face.Vertexes[2].Pos = orientation.absolute(face.Vertexes[2].Pos) + u;
-		sw.Stop();
-		TimeAbsoluteVector.NewValue(sw.ElapsedTime());
-
-		sw.ReStart();
-		face.Vertexes[0].Tex.Z = (pallet.Textures[(int)face.Vertexes[0].Tex.Z]).Index;
-		face.Vertexes[1].Tex.Z = (pallet.Textures[(int)face.Vertexes[1].Tex.Z]).Index;
-		face.Vertexes[2].Tex.Z = (pallet.Textures[(int)face.Vertexes[2].Tex.Z]).Index;
-		sw.Stop();
-		TimeTexture.NewValue(sw.ElapsedTime());
-
-		sw.ReStart();
-		DataF.Insert(face);
-		sw.Stop();
-		TimeInsert.NewValue(sw.ElapsedTime());
-	}*/
-
-	/*
-		I think the slowest part are
-			passing Vectors around
-			orienting Axis
-	*/
-
-	if (axis != AxisRel::Here && axis != AxisRel::None)
-	{
-		sw.ReStart();
-		VoxelAxisGraphicsDataU axis_data_u = pallet.GeometryPallet -> AxisDataU(axis);
-		sw.Stop();
-		TimeAssign0.NewValue(sw.ElapsedTime());
-
-		sw.ReStart();
-		//axis_data_u.Data[0].Pos = orientation.absolute(axis_data_u.Data[0].Pos) + u;
-		//axis_data_u.Data[1].Pos = orientation.absolute(axis_data_u.Data[1].Pos) + u;
-		//axis_data_u.Data[2].Pos = orientation.absolute(axis_data_u.Data[2].Pos) + u;
-		//axis_data_u.Data[3].Pos = orientation.absolute(axis_data_u.Data[3].Pos) + u;
-		VoxelOrientation::SwizzlerU_Ref func = orientation.absoluteU_Func();
-		axis_data_u.Data[0].Pos = func(axis_data_u.Data[0].Pos) + u;
-		axis_data_u.Data[1].Pos = func(axis_data_u.Data[1].Pos) + u;
-		axis_data_u.Data[2].Pos = func(axis_data_u.Data[2].Pos) + u;
-		axis_data_u.Data[3].Pos = func(axis_data_u.Data[3].Pos) + u;
-		axis = orientation.absolute(axis);
-		sw.Stop();
-		TimeAbsolute1.NewValue(sw.ElapsedTime());
-
-		sw.ReStart();
-		axis_data_u.Data[0].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[0].Tex.Z]).Index;
-		axis_data_u.Data[1].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[1].Tex.Z]).Index;
-		axis_data_u.Data[2].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[2].Tex.Z]).Index;
-		axis_data_u.Data[3].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[3].Tex.Z]).Index;
-		sw.Stop();
-		TimeTexture.NewValue(sw.ElapsedTime());
-
-		sw.ReStart();
-		VoxelGraphics::MainDataU data[4];
-		data[0] = VoxelGraphics::MainDataU(axis_data_u.Data[0].Pos, axis_data_u.Data[0].Tex, axis);
-		data[1] = VoxelGraphics::MainDataU(axis_data_u.Data[1].Pos, axis_data_u.Data[1].Tex, axis);
-		data[2] = VoxelGraphics::MainDataU(axis_data_u.Data[2].Pos, axis_data_u.Data[2].Tex, axis);
-		data[3] = VoxelGraphics::MainDataU(axis_data_u.Data[3].Pos, axis_data_u.Data[3].Tex, axis);
-		sw.Stop();
-		TimeCompress.NewValue(sw.ElapsedTime());
-
-		/*sw.ReStart();
-		VoxelGraphics::MainFaceU face_u(data);
-		sw.Stop();
-		TimeAssign1.NewValue(sw.ElapsedTime());*/
-
-		sw.ReStart();
-		//DataU.Insert(face_u);
-		DataU.Insert(VoxelGraphics::MainFaceU(data));
-		sw.Stop();
-		TimeInsert.NewValue(sw.ElapsedTime());
+		is_empty[u] = chunk.Voxels.At(u).IsEmpty();
 	}
-}
-void ChunkGraphicsData::Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis, const ChunkNeighbour & neighbours)
-{
-	StopWatch sw;
 
-	sw.Start();
-	AxisRel a = orientation.absolute(axis);
-	sw.Stop();
-	TimeAbsolute0.NewValue(sw.ElapsedTime());
+	TimeTotal.Start();
 
-	sw.ReStart();
-	bool visible = neighbours.Visible(u, a);
-	sw.Stop();
-	TimeVisible.NewValue(sw.ElapsedTime());
+	#ifdef MEASURE_TIME
+	TimeLoop.Start();
+	#endif
 
-	if (visible)
+	for (unsigned int u = 0; u < CHUNK_VALUES_PER_VOLM; u++)
 	{
-		Concatnate(u, orientation, pallet, axis);
-	}
-}
+		CountLoop++;
 
-void ChunkGraphicsData::Make(const Chunk & chunk)
-{
-	ClearU();
-	ClearF();
-	if (!chunk.IsEmpty())
-	{
-		TimeClear();
+		#ifdef MEASURE_TIME
+		TimeLoop.TakeOver(TimeIteration);
+		TimeVoxelRetrieve.Start();
+		#endif
 
-		ChunkNeighbour neighbours = chunk.Manager.FindNeighbours(chunk);
-
-		StopWatch sw;
-		StopWatch sw_loop;
-		sw.Start();
-		LoopU3 loop(VectorU3(), VectorU3(CHUNK_VALUES_PER_SIDE));
-		sw_loop.Start();
-		for (VectorU3 udx = loop.Min(); loop.Check(udx).All(true); loop.Next(udx))
+		if (is_empty.At(u))
 		{
-			const Voxel & voxel = chunk[udx];
-			if (voxel.IsEmpty())
-			{
-				sw_loop.Stop();
-				TimeLoop.NewValue(sw_loop.ElapsedTime());
-				sw_loop.ReStart();
-				continue;
-			}
-			const VoxelOrientation & orientation = voxel.Orientation;
-			const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
-			sw_loop.Stop();
-			TimeLoop.NewValue(sw_loop.ElapsedTime());
+			#ifdef MEASURE_TIME
+			TimeVoxelRetrieve.Stop();
+			TimeIteration.TakeOver(TimeLoop);
+			#endif
 
-			Concatnate(udx, orientation, pallet, AxisRel::Here, neighbours);
-			Concatnate(udx, orientation, pallet, AxisRel::PrevX, neighbours);
-			Concatnate(udx, orientation, pallet, AxisRel::PrevY, neighbours);
-			Concatnate(udx, orientation, pallet, AxisRel::PrevZ, neighbours);
-			Concatnate(udx, orientation, pallet, AxisRel::NextX, neighbours);
-			Concatnate(udx, orientation, pallet, AxisRel::NextY, neighbours);
-			Concatnate(udx, orientation, pallet, AxisRel::NextZ, neighbours);
-
-			sw_loop.ReStart();
+			continue;
 		}
-		sw.Stop();
-		ShowTime(sw.ElapsedTime());
+
+		#ifdef MEASURE_TIME
+		TimeVoxelRetrieve.TakeOver(TimeVoxelRetrieveData);
+		#endif
+
+		CountVoxel++;
+		const Voxel & voxel = chunk.Voxels.At(u);
+		const VoxelOrientation & orientation = voxel.Orientation;
+		const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
+		VectorU3 udx = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
+
+		#ifdef MEASURE_TIME
+		TimeVoxelRetrieveData.TakeOver(TimeVisibleTotal);
+		#endif
+
+		bool is_visible_prev_x = neighbours.IsVisiblePrevX(is_empty, udx);
+		bool is_visible_prev_y = neighbours.IsVisiblePrevY(is_empty, udx);
+		bool is_visible_prev_z = neighbours.IsVisiblePrevZ(is_empty, udx);
+		bool is_visible_next_x = neighbours.IsVisibleNextX(is_empty, udx);
+		bool is_visible_next_y = neighbours.IsVisibleNextY(is_empty, udx);
+		bool is_visible_next_z = neighbours.IsVisibleNextZ(is_empty, udx);
+
+		#ifdef MEASURE_TIME
+		TimeVisibleTotal.TakeOver(TimeDataTotal);
+		#endif
+
+		if (is_visible_prev_x) { CatU(udx, AxisRel::PrevX, orientation, pallet); }
+		if (is_visible_prev_y) { CatU(udx, AxisRel::PrevY, orientation, pallet); }
+		if (is_visible_prev_z) { CatU(udx, AxisRel::PrevZ, orientation, pallet); }
+		if (is_visible_next_x) { CatU(udx, AxisRel::NextX, orientation, pallet); }
+		if (is_visible_next_y) { CatU(udx, AxisRel::NextY, orientation, pallet); }
+		if (is_visible_next_z) { CatU(udx, AxisRel::NextZ, orientation, pallet); }
+
+		#ifdef MEASURE_TIME
+		TimeDataTotal.Stop();
+		TimeIteration.TakeOver(TimeLoop);
+		#endif
 	}
-//	std::cout << "Chunk Graphics Data Data: " << DataF.Count() << ' ' << DataU.Count() << '\n';
-	DoneU();
-	DoneF();
-//	std::cout << "Chunk Graphics Data Array: " << ArrayF.Count() << ' ' << ArrayU.Count() << '\n';
+
+	#ifdef MEASURE_TIME
+	TimeLoop.Stop();
+	#endif
+
+	TimeTotal.Stop();
 }
-
-/* Make() is still very slow
-for each Voxel
-	check Neighbouring Voxel to see if this one is Visible
-		other one dosent need to check this ?
-	for PrevX (-X)
-	{
-		if X != 0
-			check between X - 1 and X - 0
-			if both are invisible: no Face
-			if both are visible: no Face
-			if Visibility is different
-				check which one is visible
-				that one gets a Face
-		else
-			get Neighbour
-				check all Neighbour stuff once
-				then keep it in memory
-	}
-	for NextX (+X)
-	{
-		if X != n
-			check between X - 1 and X - 0
-			if both are invisible: no Face
-			if both are visible: no Face
-			if Visibility is different
-				check which one is visible
-				that one gets a Face
-		else
-			do the same with Neighbour
-	}
-*/
-
 void ChunkGraphicsData::DoneU()
 {
 	unsigned int limit = DataU.Count();
@@ -294,6 +297,15 @@ void ChunkGraphicsData::DoneU()
 	}
 	DataU.Clear();
 }
+const Container::Array<VoxelGraphics::MainFaceU> & ChunkGraphicsData::GraphicsDataU() const { return ArrayU; }
+
+
+
+void ChunkGraphicsData::ClearF()
+{
+	DataF.Clear();
+	ArrayF.Clear();
+}
 void ChunkGraphicsData::DoneF()
 {
 	unsigned int limit = DataF.Count();
@@ -312,4 +324,21 @@ void ChunkGraphicsData::DoneF()
 		}
 	}
 	DataF.Clear();
+}
+const Container::Array<VoxelGraphics::MainFaceF> & ChunkGraphicsData::GraphicsDataF() const { return ArrayF; }
+
+
+
+void ChunkGraphicsData::Make(const Chunk & chunk, const ChunkNeighbour & neighbours)
+{
+	TimeClear();
+
+	ClearU();
+	if (!chunk.IsEmpty())
+	{
+		MakeU(chunk, neighbours);
+	}
+	DoneU();
+
+	ShowTime();
 }

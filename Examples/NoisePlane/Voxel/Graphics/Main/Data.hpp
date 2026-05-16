@@ -70,6 +70,12 @@ namespace VoxelGraphics
 		2 Bits for Texture XY
 		3 Bits for Normal
 		32 Bits for Texture Index
+
+		Position
+			Vertex Position is [0;32] 6 Bits
+			Voxel external Position is [0;31] 5 Bits
+			Voxel internal Position is [0;1] 1 Bits
+			would mean adding in the shaader ?
 	*/
 
 	struct MainDataU

@@ -9,15 +9,20 @@
 
 struct ContainerLock
 {
-	private:
-	std::mutex					Changing;	// changing Items
-	std::mutex					Checking;	// changing Container
-	std::atomic<unsigned int>	CheckingCount;
+	/* Container Mutex
+		when you want to change Container Memory
+		Inserting/Removing
+	*/
+	/* Item Mutex
+		when you want to access Items
+		this prevents Container Memory from changing
+		Items can still be changed by multiple Threads
+	*/
 
-	// terrible names
-	// Changing changes the Container
-	//  resize, assign Items
-	// Checking changes Items
+	private:
+	std::mutex					ContainerMutex;	// ContainerMutex
+	std::mutex					ItemMutex;		// ItemAccessMutex
+	std::atomic<unsigned int>	ItemLockCount;	// ItemAccessCount
 
 	public:
 	unsigned int	Count() const;
@@ -25,19 +30,38 @@ struct ContainerLock
 	public:
 	~ContainerLock();
 	ContainerLock();
+
 	ContainerLock(const ContainerLock & other) = delete;
 	ContainerLock & operator=(const ContainerLock & other) = delete;
 
 	public:
-	void	Checking0();
-	void	Checking1();
-	void	Changing0();
-	void	Changing1();
+	void	LockItems();
+	void	UnLockItems();
+	void	LockContainer();
+	void	UnlockContainer();
 
-	void	Checking0(StopWatch & watch, WaitDoTime & time);
-	void	Checking1(StopWatch & watch, WaitDoTime & time);
-	void	Changing0(StopWatch & watch, WaitDoTime & time);
-	void	Changing1(StopWatch & watch, WaitDoTime & time);
+	public:
+	void	LockItems(StopWatch & watch, WaitDoTime & time);
+	void	UnLockItems(StopWatch & watch, WaitDoTime & time);
+	void	LockContainer(StopWatch & watch, WaitDoTime & time);
+	void	UnlockContainer(StopWatch & watch, WaitDoTime & time);
+
+	public:
+	/*struct Object
+	{
+		private:
+		ContainerLock &		Lock;
+		bool				IsLocked;
+		//
+
+		public:
+		~Object();
+		Object() = delete;
+		Object(ContainerLock & lock);
+		Object(const Object & other);
+		Object & operator=(const Object & other) = delete;
+		void	Dispose();
+	};*/
 };
 
 #endif

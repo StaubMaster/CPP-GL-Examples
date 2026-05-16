@@ -53,7 +53,7 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	: Index(idx)
 	, Manager(manager)
 	, Voxels()
-	, Changing()
+	, Lock()
 	, TerrainDone(false)
 	, DecorationsNoted(false)
 	, DecorationsPlaced(false)
@@ -82,22 +82,10 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 
 
 
-void Chunk::lock()
-{
-//	std::cout << "Chunk:" << this << ".lock()\n";
-	Changing.lock();
-}
-void Chunk::unlock()
-{
-//	std::cout << "Chunk:" << this << ".unlock()\n";
-	Changing.unlock();
-}
-bool Chunk::try_lock()
-{
-	bool ret = Changing.try_lock();
-//	std::cout << "Chunk:" << this << ".try_lock():" << ret << '\n';
-	return ret;
-}
+void Chunk::LockItems() { Lock.LockItems(); }
+void Chunk::UnLockItems() { Lock.UnLockItems(); }
+void Chunk::LockContainer() { Lock.LockContainer(); }
+void Chunk::UnlockContainer() { Lock.UnlockContainer(); }
 
 
 
@@ -466,9 +454,9 @@ void Chunk::GenerateTerrain(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	MakeNull();
 
-	TerrainPlane();
+//	TerrainPlane();
 //	TerrainPillars();
-//	TerrainPerlin(noise2);
+	TerrainPerlin(noise2);
 //	TerrainPerlin(noise3);
 
 	TerrainDone = true;
@@ -575,9 +563,7 @@ void Chunk::GenerateDecorationNotes(const Perlin2D & noise2, const Perlin3D & no
 	(void)noise2;
 	(void)noise3;
 
-//	DecorateGrid();
-	DecorateTrees(noise2);
-//	DecorateCity();
+//	DecorateTrees(noise2);
 
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 
@@ -601,7 +587,6 @@ void Chunk::GenerateDecorationPlace()
 		MainBufferState = BufferDataState::Needed;
 	}
 }
-
 
 
 
@@ -636,13 +621,13 @@ void Chunk::GraphicsDelete()
 	GraphicsExist = false;
 }
 
-void Chunk::GraphicsMakeData()
+void Chunk::GraphicsMakeData(const ChunkNeighbour & neighbours)
 {
 	if (MainBufferState != BufferDataState::Needed) { return; }
 
 	if (!GenerationDone()) { return; }
 
-	MainBufferData.Make(*this);
+	MainBufferData.Make(*this, neighbours);
 
 	MainBufferState = BufferDataState::Ready;
 
@@ -655,7 +640,7 @@ void Chunk::BufferUMain_UpdateData()
 	if (!GraphicsExist) { return; }
 	if (!BufferUMain_NewData) { return; }
 
-	BufferU.Main.Data(MainBufferData.ArrayU);
+	BufferU.Main.Data(MainBufferData.GraphicsDataU());
 	MainBufferData.ClearU();
 
 	BufferUMain_NewData = false;
@@ -665,8 +650,7 @@ void Chunk::BufferFMain_UpdateData()
 	if (!GraphicsExist) { return; }
 	if (!BufferFMain_NewData) { return; }
 
-	std::cout << "BufferUMain_UpdateData: " << MainBufferData.ArrayU.Count() << '\n';
-	BufferF.Main.Data(MainBufferData.ArrayF);
+	BufferF.Main.Data(MainBufferData.GraphicsDataF());
 	MainBufferData.ClearF();
 
 	BufferFMain_NewData = false;

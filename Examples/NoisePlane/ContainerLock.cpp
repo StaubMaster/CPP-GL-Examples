@@ -4,99 +4,118 @@
 
 
 
-unsigned int ContainerLock::Count() const { return CheckingCount.load(); }
+unsigned int ContainerLock::Count() const { return ItemLockCount.load(); }
 
 
 
 ContainerLock::~ContainerLock() { }
 ContainerLock::ContainerLock()
-	: Changing()
-	, Checking()
-	, CheckingCount(0)
+	: ContainerMutex()
+	, ItemMutex()
+	, ItemLockCount(0)
 { }
 
 
 
-void ContainerLock::Checking0()
+void ContainerLock::LockItems()
 {
 //	std::cerr << "wait Checking0:" << ThreadName << '\n';
-	Checking.lock();
-	CheckingCount++;
-	Checking.unlock();
+	ItemMutex.lock();
+	ItemLockCount++;
+	ItemMutex.unlock();
 //	std::cerr << "have Checking0:" << ThreadName << '\n';
 }
-void ContainerLock::Checking1()
+void ContainerLock::UnLockItems()
 {
 //	std::cerr << "have Checking1:" << ThreadName << '\n';
-	CheckingCount--;
+	ItemLockCount--;
 //	std::cerr << "done Checking1:" << ThreadName << '\n';
 }
-void ContainerLock::Changing0()
+void ContainerLock::LockContainer()
 {
 //	std::cerr << "wait Changing0:" << ThreadName << '\n';
-	Changing.lock();
-	Checking.lock();
-	while (CheckingCount.load() != 0) { }
+	ContainerMutex.lock();
+	ItemMutex.lock();
+	while (ItemLockCount.load() != 0) { }
 //	std::cerr << "have Changing0:" << ThreadName << '\n';
 }
-void ContainerLock::Changing1()
+void ContainerLock::UnlockContainer()
 {
 //	std::cerr << "have Changing1:" << ThreadName << '\n';
-	Checking.unlock();
-	Changing.unlock();
+	ItemMutex.unlock();
+	ContainerMutex.unlock();
 //	std::cerr << "done Changing1:" << ThreadName << '\n';
 }
 
 
 
-void ContainerLock::Checking0(StopWatch & watch, WaitDoTime & time)
+void ContainerLock::LockItems(StopWatch & watch, WaitDoTime & time)
 {
 //	std::cout << "wait Checking0:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
 	time.ThreadName = ThreadInfo::ThreadName;
-	watch.ReStart();
+	watch.Clear(); watch.Start();
 
-	Checking.lock();
-	CheckingCount++;
-	Checking.unlock();
+	ItemMutex.lock();
+	ItemLockCount++;
+	ItemMutex.unlock();
 
 	watch.Stop();
 	time.WaitTime.NewValue(watch.ElapsedTime());
-	watch.ReStart();
+	watch.Clear(); watch.Start();
 //	std::cout << "have Checking0:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
 }
-void ContainerLock::Checking1(StopWatch & watch, WaitDoTime & time)
+void ContainerLock::UnLockItems(StopWatch & watch, WaitDoTime & time)
 {
 	time.ThreadName = ThreadInfo::ThreadName;
 //	std::cout << "have Checking1:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
-	CheckingCount--;
+	ItemLockCount--;
 
 	watch.Stop();
 	time.DoTime.NewValue(watch.ElapsedTime());
 //	std::cout << "done Checking1:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
 }
-void ContainerLock::Changing0(StopWatch & watch, WaitDoTime & time)
+void ContainerLock::LockContainer(StopWatch & watch, WaitDoTime & time)
 {
 	time.ThreadName = ThreadInfo::ThreadName;
 //	std::cerr << "wait Changing0:" << ThreadInfo::ThreadName << '\n';
-	watch.ReStart();
+	watch.Clear(); watch.Start();
 
-	Changing.lock();
-	Checking.lock();
-	while (CheckingCount.load() != 0) { }
+	ContainerMutex.lock();
+	ItemMutex.lock();
+	while (ItemLockCount.load() != 0) { }
 
 	watch.Stop();
 	time.WaitTime.NewValue(watch.ElapsedTime());
-	watch.ReStart();
+	watch.Clear(); watch.Start();
 //	std::cerr << "have Changing0:" << ThreadInfo::ThreadName << '\n';
 }
-void ContainerLock::Changing1(StopWatch & watch, WaitDoTime & time)
+void ContainerLock::UnlockContainer(StopWatch & watch, WaitDoTime & time)
 {
 	time.ThreadName = ThreadInfo::ThreadName;
 //	std::cerr << "have Changing1:" << ThreadInfo::ThreadName << '\n';
-	Checking.unlock();
-	Changing.unlock();
+	ItemMutex.unlock();
+	ContainerMutex.unlock();
 	
 	watch.Stop();
 	time.DoTime.NewValue(watch.ElapsedTime());
 //	std::cerr << "done Changing1:" << ThreadInfo::ThreadName << '\n';
 }
+
+
+
+
+
+/*ContainerLock::Object::~Object()
+{
+	if (IsLocked)
+	{
+
+	}
+}
+ContainerLock::Object::Object(ContainerLock & lock)
+	: Lock(lock)
+	, IsLocked(true)
+{ }
+ContainerLock::Object::Object(const Object & other)
+{ }
+void ContainerLock::Object::Dispose()*/

@@ -107,12 +107,11 @@ struct ChunkManager
 	VectorU3	relative(VectorI3 i) const;
 
 	Chunk *		FindLockOrNull(VectorI3 idx);
-	Chunk *		FindTryLockOrNull(VectorI3 idx);
 
 	private:
 	public:
-	Container::Binary<Chunk*>	ChunksToInsert;
-	Container::Binary<Chunk*>	ChunksToRemove;
+	Container::Binary<Chunk*>	ChunksToInsert; // do this in Chunks
+	Container::Binary<Chunk*>	ChunksToRemove; // ChunkDisposal
 	ContainerLock				ChunksToInsertLock;
 	ContainerLock				ChunksToRemoveLock;
 

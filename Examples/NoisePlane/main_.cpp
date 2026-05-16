@@ -193,6 +193,61 @@ struct PhysicsContext
 
 #include "main_static.cpp"
 
+
+
+#include "Telemetry/Time.hpp"
+#include <chrono>
+//static std::chrono::time_point<std::chrono::high_resolution_clock> TimeTest_point = std::chrono::high_resolution_clock::now();
+//static std::chrono::duration<float> TimeTest_sum = std::chrono::duration<float>::zero();
+static void TimeTest()
+{
+	return;
+
+	const unsigned int test_count = 1000000;
+
+	{
+		std::chrono::time_point<std::chrono::high_resolution_clock> time = std::chrono::high_resolution_clock::now();
+		for (unsigned int i = 0; i < test_count; i++)
+		{
+			std::chrono::time_point<std::chrono::high_resolution_clock> var = std::chrono::high_resolution_clock::now();
+			(void)var;
+		}
+		std::chrono::duration<float> duration = std::chrono::high_resolution_clock::now() - time;
+		std::cout << "Test0: " << duration.count() << '\n';
+	}
+
+	{
+		std::chrono::time_point<std::chrono::high_resolution_clock> time = std::chrono::high_resolution_clock::now();
+		for (unsigned int i = 0; i < test_count; i++)
+		{
+			double var = TimeNow();
+			(void)var;
+		}
+		std::chrono::duration<float> duration = std::chrono::high_resolution_clock::now() - time;
+		std::cout << "Test1: " << duration.count() << '\n';
+	}
+
+	std::cout << '\n';
+
+//	std::chrono::time_point<std::chrono::high_resolution_clock> TimeTest_now = std::chrono::high_resolution_clock::now();
+//
+//	std::chrono::duration<float> duration = TimeTest_now - TimeTest_point;
+//	TimeTest_sum += duration;
+//
+//	std::chrono::milliseconds time_m = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+//	std::chrono::milliseconds sum_m = std::chrono::duration_cast<std::chrono::milliseconds>(TimeTest_sum);
+//
+//	std::cout << "Time: " << duration.count() << '\n';
+//	std::cout << "Sum : " << TimeTest_sum.count() << '\n';
+//	std::cout << "Time: " << time_m.count() << '\n';
+//	std::cout << "Sum : " << sum_m.count() << '\n';
+//	std::cout << '\n';
+//
+//	TimeTest_point = TimeTest_now;
+}
+
+
+
 struct ContextNoisePlane : public ContextBase
 {
 View3D	view;
@@ -544,7 +599,7 @@ void ViewRayDo()
 //				std::cout << "main:" << __LINE__ << '\n';
 				chunk -> ClearVoxel(idx.Voxel, voxel);
 //				std::cout << "main:" << __LINE__ << '\n';
-				chunk -> unlock();
+				chunk -> UnLockItems();
 //				std::cout << "main:" << __LINE__ << '\n';
 			}
 		}
@@ -568,7 +623,7 @@ void ViewRayDo()
 					if (chunk != nullptr)
 					{
 						chunk -> PlaceVoxel(idx.Voxel, voxel);
-						chunk -> unlock();
+						chunk -> UnLockItems();
 					}
 				}
 			}
@@ -622,13 +677,13 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	sw2.Stop();
 	ViewUpdateCollisionTime.NewValue(sw2.ElapsedTime());
 
-	sw2.ReStart();
+	sw2.Clear(); sw2.Start();
 	ChunkManager.GraphicsUpdate();
 	ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
 	sw2.Stop();
 	ViewUpdateChunksTime.NewValue(sw2.ElapsedTime());
 
-	sw2.ReStart();
+	sw2.Clear(); sw2.Start();
 	ViewRayUpdate();
 	ViewRayDo();
 	sw2.Stop();
@@ -656,7 +711,7 @@ void		AuxThread0Func()
 	{
 		if (!ThreadIdle && !AuxThread0Idle)
 		{
-			sw.ReStart();
+			sw.Clear(); sw.Start();
 			if (!DontRemove) { ChunkManager.RemoveAround(); }
 			if (!DontInsert) { ChunkManager.InsertAround(); }
 			ChunkManager.UpdateChunksContainer();
@@ -677,7 +732,7 @@ void		AuxThread1Func()
 	{
 		if (!ThreadIdle && !AuxThread1Idle)
 		{
-			sw.ReStart();
+			sw.Clear(); sw.Start();
 			if (!DontGenerate) { ChunkManager.GenerateAround(Perlin2, Perlin3); }
 			sw.Stop();
 			AuxThread1Time.NewValue(sw.ElapsedTime());
@@ -696,7 +751,7 @@ void		AuxThread2Func()
 	{
 		if (!ThreadIdle && !AuxThread2Idle)
 		{
-			sw.ReStart();
+			sw.Clear(); sw.Start();
 			if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(); }
 			sw.Stop();
 			AuxThread2Time.NewValue(sw.ElapsedTime());
@@ -765,8 +820,6 @@ void Make()
 
 
 
-// make Lights
-// store in File
 void MakeControls()
 {
 	std::cerr << "MakeControls()\n";
@@ -783,7 +836,8 @@ void MakeControls()
 	// Options
 	{
 		OptionsMenu.FPS.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FPS);
-		OptionsMenu.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
+		//OptionsMenu.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
+		OptionsMenu.FPS.SetValueX(1024);
 
 		OptionsMenu.FOV.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FOV);
 		OptionsMenu.FOV.SetValueX(view.FOV.ToDegrees());
@@ -914,7 +968,7 @@ void PauseMenu_Exit(ClickArgs args)
 void OptionsMenu_FPS(float val)
 {
 	//window.FrameTime.Change(val);
-	window.FrameTime = FrameTime(val, 4 / val);
+	window.FrameTime = FrameTime(val, 1.0f / 0.0f);
 
 	unsigned int v = val;
 	OptionsMenu.FPS.SetText("FPS:" + std::to_string(v));
@@ -1097,8 +1151,6 @@ void Init() override
 	MakeControls();
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	ChunkManager.ChangeSize(8, 4);
-	//ChunkManager.ChangeChunksArraySize(8);
-	//ChunkManager.ChangeChunksArraySize(1);
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -1234,7 +1286,7 @@ void FrameText(FrameTime frame_time)
 
 	if (DebugMenu.FPS.Check.IsChecked())
 	{
-		ss << "Frame (" << frame_time.WantedFramesPerSecond << '|' << frame_time.ActualFramesPerSecond << ")Hz\n";
+		ss << "Frame (" << (int)frame_time.WantedFramesPerSecond << '|' << (int)frame_time.ActualFramesPerSecond << ")Hz\n";
 		ss << "Frame (" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")s\n";
 		ss << '\n';
 		ss << "Min: "; ShowTimeFreq(ss, DLTAverageTime.Min(), FPSAverageTime.Max()); ss << '\n';
@@ -1358,7 +1410,7 @@ void FrameText(FrameTime frame_time)
 			ss << Memory1000ToString(chunk.BufferF.Main.Count * sizeof(VoxelGraphics::MainDataF));
 			ss << '\n';
 
-			chunk.unlock();
+			chunk.UnLockItems();
 			ss << '\n';
 		}
 		else
@@ -1410,7 +1462,7 @@ void FrameText(FrameTime frame_time)
 	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
 	{
 		//ChunkManager.ChunksChanging.lock();
-		ChunkManager.ChunksLock.Checking0();
+		ChunkManager.ChunksLock.LockItems();
 
 		unsigned int chunks_t = 0; // total
 		unsigned int chunks_u = 0; // ungenerated
@@ -1472,14 +1524,14 @@ void FrameText(FrameTime frame_time)
 		ss << '\n';
 		ss << '\n';
 
-		ChunkManager.ChunksLock.Checking1();
+		ChunkManager.ChunksLock.UnLockItems();
 		//ChunkManager.ChunksChanging.unlock();
 	}
 
 	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
 	{
 		//ChunkManager.ChunksChanging.lock();
-		ChunkManager.ChunksLock.Checking0();
+		ChunkManager.ChunksLock.LockItems();
 
 		unsigned long long main_u_count = 0;
 		unsigned long long main_f_count = 0;
@@ -1512,14 +1564,14 @@ void FrameText(FrameTime frame_time)
 		ss << " = " << Memory1000ToString(main_f_count * sizeof(VoxelGraphics::MainDataF));
 		ss << '\n';
 
-		ChunkManager.ChunksLock.Checking1();
+		ChunkManager.ChunksLock.UnLockItems();
 		//ChunkManager.ChunksChanging.unlock();
 	}
 
 	sw.Stop();
 	TextAssambleTime.NewValue(sw.ElapsedTime());
 
-	sw.ReStart();
+	sw.Clear(); sw.Start();
 	UI::Text::Object text; text.Create();
 	if (DebugMenu.IsVisible())
 	{
@@ -1669,10 +1721,13 @@ void FrameInput()
 	sw.Stop();
 	FrameInputTime.NewValue(sw.ElapsedTime());
 }
+
 void Frame(FrameTime frame_time) override
 {
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
+
+	TimeTest();
 
 	StopWatch sw;
 	sw.Start();

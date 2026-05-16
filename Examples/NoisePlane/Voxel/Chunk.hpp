@@ -26,6 +26,8 @@
 
 # include "Telemetry/ValueAverager.hpp"
 
+# include "ContainerLock.hpp"
+
 # include <mutex>
 
 struct Perlin2D;
@@ -64,16 +66,13 @@ struct Chunk
 
 
 
-	// ContainerLock
-	// rename it and use it here
-
 	private:
-	std::mutex	Changing;
-
+	ContainerLock	Lock;
 	public:
-	void		lock();
-	void		unlock();
-	bool		try_lock();
+	void	LockItems();
+	void	UnLockItems();
+	void	LockContainer();
+	void	UnlockContainer();
 
 
 
@@ -181,7 +180,7 @@ struct Chunk
 	public:
 	BufferDataState		MainBufferState;
 	ChunkGraphicsData	MainBufferData;
-	void	GraphicsMakeData();
+	void	GraphicsMakeData(const ChunkNeighbour & neighbours);
 
 	bool	BufferUMain_NewData;
 	bool	BufferFMain_NewData;

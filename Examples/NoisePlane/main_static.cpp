@@ -78,7 +78,7 @@ static void DisplayBoxEntityVoxels(unsigned int p, ::ChunkManager & manager, Box
 			voxel_obj.Trans().Position = i;
 			voxel_obj.ShowWire();
 		}
-		chunk -> unlock();
+		chunk -> UnLockItems();
 	}
 }
 

@@ -92,7 +92,7 @@ VoxelBoxCollision BoxEntity::FindCollisionTime(::ChunkManager & manager, LoopI3 
 			if (Vel.Z > 0.0f) { dir.Z = +1.0f; } else { dir.Z = -1.0f; }
 			collision.Consider(t, -dir);
 		}
-		chunk -> unlock();
+		chunk -> UnLockItems();
 	}
 	return collision;
 }

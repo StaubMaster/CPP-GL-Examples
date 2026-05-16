@@ -5,6 +5,7 @@
 # include "VoxelEnums.hpp"
 
 # include "Miscellaneous/Container/Array.hpp"
+# include "Miscellaneous/Container/Array3D.hpp"
 # include "BlockList.hpp"
 
 struct VectorU3;
@@ -26,23 +27,36 @@ maybe 1 Color per Voxel
 for very far
 */
 
-struct ChunkGraphicsData // ChunkGraphicsData
+struct ChunkGraphicsData
 {
-	BlockList<1024, VoxelGraphics::MainFaceF>	DataF;
+	private:
 	BlockList<1024, VoxelGraphics::MainFaceU>	DataU;
-	Container::Array<VoxelGraphics::MainFaceF>	ArrayF;
 	Container::Array<VoxelGraphics::MainFaceU>	ArrayU;
-
+	public:
 	void	ClearU();
-	void	ClearF();
-
-	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis);
-	void	Concatnate(VectorU3 u, const VoxelOrientation & orientation, const VoxelPallet & pallet, AxisRel axis, const ChunkNeighbour & neighbours);
-
-	void	Make(const Chunk & chunk);
-
+	private:
+	void	CatU(VectorU3 u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet);
+	void	MakeU(const Chunk & chunk, const ChunkNeighbour & neighbours);
 	void	DoneU();
+	public:
+	const Container::Array<VoxelGraphics::MainFaceU> &	GraphicsDataU() const;
+
+
+
+	private:
+	BlockList<1024, VoxelGraphics::MainFaceF>	DataF;
+	Container::Array<VoxelGraphics::MainFaceF>	ArrayF;
+	public:
+	void	ClearF();
+	private:
 	void	DoneF();
+	public:
+	const Container::Array<VoxelGraphics::MainFaceF> &	GraphicsDataF() const;
+
+
+
+	public:
+	void	Make(const Chunk & chunk, const ChunkNeighbour & neighbours);
 };
 
 #endif

@@ -1,18 +1,15 @@
 #ifndef  STOP_WATCH_HPP
 # define STOP_WATCH_HPP
 
-/* improve
-*/
-
 class StopWatch
 {
 	private:
-	bool	Watching;
-	double	Time0;
-	double	Time1;
+	bool	Running;
+	double	TimeStamp;
+	double	TimeSum;
 
 	public:
-	bool	IsWatching() const;
+	bool	IsRunning() const;
 	double	ElapsedTime() const;
 
 	public:
@@ -20,9 +17,10 @@ class StopWatch
 	StopWatch();
 
 	public:
+	void	Clear();
 	void	Stop();
 	void	Start();
-	void	ReStart();
+	void	TakeOver(StopWatch & other);
 };
 
 #endif

@@ -2,8 +2,11 @@
 # define CHUNK_NEIGHBOURS_HPP
 
 struct Chunk;
+struct Voxel;
 struct VectorU3;
 enum class AxisRel : unsigned char;
+
+# include "Miscellaneous/Container/Array3D.hpp"
 
 /* these are Axis Neighbours
 instead store all Neighbours
@@ -44,10 +47,14 @@ struct ChunkNeighbour
 	const Chunk *	LoopNextX(VectorU3 & udx) const;
 	const Chunk *	LoopNextY(VectorU3 & udx) const;
 	const Chunk *	LoopNextZ(VectorU3 & udx) const;
+	const Chunk *	Loop(VectorU3 & udx, const AxisRel & axis) const;
 
-	const Chunk *	Loop(VectorU3 & udx, AxisRel axis) const;
-
-	bool	Visible(VectorU3 udx, AxisRel axis) const;
+	bool	IsVisiblePrevX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisiblePrevY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisiblePrevZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisibleNextX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisibleNextY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisibleNextZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
 };
 
 #endif
