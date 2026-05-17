@@ -62,7 +62,7 @@ void ChunkManager::ChangeSize(unsigned int know_size, unsigned int care_size)
 	KnowSize = know_size;
 	CareSize = care_size;
 //	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
-	ChunksLock.LockContainer();
+	ChunksLock.AssignL();
 //	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 	Clear();
 //	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
@@ -71,7 +71,7 @@ void ChunkManager::ChangeSize(unsigned int know_size, unsigned int care_size)
 //	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 	Chunks.Size(VectorU3((KnowSize * 2) + 1), nullptr);
 //	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
-	ChunksLock.UnlockContainer();
+	ChunksLock.AssignU();
 //	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 }
 
@@ -124,8 +124,8 @@ void ChunkManager::ChangeCenter(VectorI3 center)
 {
 	if ((Center == center).All(true)) { return; }
 
-	ChunksLock.LockContainer();
-	ChunksToRemoveLock.LockContainer();
+	ChunksLock.AssignL();
+	ChunksToRemoveLock.AssignL();
 
 	VectorI3 diff = center - Center;
 
@@ -150,8 +150,8 @@ void ChunkManager::ChangeCenter(VectorI3 center)
 	KnowBox = BoxI3(Center - (int)KnowSize, Center + (int)KnowSize);
 	CareBox = BoxI3(Center - (int)CareSize, Center + (int)CareSize);
 
-	ChunksToRemoveLock.UnlockContainer();
-	ChunksLock.UnlockContainer();
+	ChunksToRemoveLock.AssignU();
+	ChunksLock.AssignU();
 }
 
 VectorI3 ChunkManager::absolute(VectorU3 u) const { return u + KnowBox.Min; }
@@ -163,7 +163,7 @@ Chunk * ChunkManager::FindLockOrNull(VectorI3 idx)
 	if ((udx < Chunks.Size()).Any(false)) { return nullptr; }
 	Chunk * chunk = Chunks[udx];
 	if (chunk == nullptr) { return nullptr; }
-	chunk -> LockItems();
+	chunk -> AccessL();
 	return chunk;
 }
 
@@ -198,7 +198,7 @@ void ChunkManager::InsertAround()
 
 //	std::cout << "InsertAround:" << __LINE__ << '\n';
 
-	ChunksLock.LockItems();
+	ChunksLock.AccessL();
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
 		if (Chunks[i] == nullptr) { continue; }
@@ -209,11 +209,11 @@ void ChunkManager::InsertAround()
 			arr[j] = &chunk;
 		}
 	}
-	ChunksLock.UnLockItems();
+	ChunksLock.AccessU();
 
 //	std::cout << "InsertAround:" << __LINE__ << '\n';
 
-	ChunksToInsertLock.LockItems();
+	ChunksToInsertLock.AccessL();
 	for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
 	{
 		if (ChunksToInsert[i] == nullptr) { continue; }
@@ -224,11 +224,11 @@ void ChunkManager::InsertAround()
 			arr[j] = &chunk;
 		}
 	}
-	ChunksToInsertLock.UnLockItems();
+	ChunksToInsertLock.AccessU();
 
 //	std::cout << "InsertAround:" << __LINE__ << '\n';
 
-	ChunksToInsertLock.LockContainer();
+	ChunksToInsertLock.AssignL();
 	LoopI3 loop(CareBox.Min, Bool3(false), CareBox.Max, Bool3(false));
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
@@ -238,7 +238,7 @@ void ChunkManager::InsertAround()
 			ChunksToInsert.Insert(new Chunk(i, *this));
 		}
 	}
-	ChunksToInsertLock.UnlockContainer();
+	ChunksToInsertLock.AssignU();
 
 //	std::cout << "InsertAround:" << __LINE__ << '\n';
 	sw.Stop();
@@ -250,10 +250,10 @@ void ChunkManager::RemoveAround()
 	StopWatch sw;
 	sw.Start();
 //	std::cout << "RemoveAround:" << __LINE__ << '\n';
-//	ChunksLock.LockContainer();
-	ChunksLock.LockItems();
+//	ChunksLock.AssignL();
+	ChunksLock.AccessL();
 //	std::cout << "RemoveAround:" << __LINE__ << '\n';
-	ChunksToRemoveLock.LockContainer();
+	ChunksToRemoveLock.AssignL();
 //	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	sw.Stop();
 	TimeRemove.WaitTime.NewValue(sw.ElapsedTime());
@@ -273,10 +273,10 @@ void ChunkManager::RemoveAround()
 		ChunksToRemove.Insert(chunk);
 	}
 //	std::cout << "RemoveAround:" << __LINE__ << '\n';
-	ChunksToRemoveLock.UnlockContainer();
+	ChunksToRemoveLock.AssignU();
 //	std::cout << "RemoveAround:" << __LINE__ << '\n';
-	ChunksLock.UnLockItems();
-//	ChunksLock.UnlockContainer();
+	ChunksLock.AccessU();
+//	ChunksLock.AssignU();
 //	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	sw.Stop();
 	TimeRemove.DoTime.NewValue(sw.ElapsedTime());
@@ -286,8 +286,8 @@ void ChunkManager::UpdateChunksContainer()
 {
 	StopWatch sw;
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
-	ChunksLock.LockContainer(sw, TimeUpdate);
-//	ChunksLock.LockItems(sw, TimeUpdate);
+	ChunksLock.AssignL(sw, TimeUpdate);
+//	ChunksLock.AccessL(sw, TimeUpdate);
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 
 	sw.Start();
@@ -296,19 +296,19 @@ void ChunkManager::UpdateChunksContainer()
 	{
 		StopWatch sw2;
 		sw2.Start();
-		ChunksToRemoveLock.LockContainer();
+		ChunksToRemoveLock.AssignL();
 		for (unsigned int i = 0; i < ChunksToRemove.Count(); i++)
 		{
 			Chunk * chunk = ChunksToRemove[i];
 			if (chunk == nullptr) { ChunksToRemove.Remove(i); i--; continue; }
 			if (chunk -> GraphicsExist) { continue; }
-			chunk -> LockContainer();
-			chunk -> UnlockContainer();
+			chunk -> AssignL();
+			chunk -> AssignU();
 			delete chunk;
 			ChunksToRemove.Remove(i);
 			i--;
 		}
-		ChunksToRemoveLock.UnlockContainer();
+		ChunksToRemoveLock.AssignU();
 		sw2.Stop();
 		TimeUpdateRemove.DoTime.NewValue(sw2.ElapsedTime());
 	}
@@ -316,7 +316,7 @@ void ChunkManager::UpdateChunksContainer()
 	// Insert Chunks
 	{
 		StopWatch sw2;
-		ChunksToInsertLock.LockContainer(sw2, TimeUpdateInsert);
+		ChunksToInsertLock.AssignL(sw2, TimeUpdateInsert);
 		for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
 		{
 			Chunk * chunk = ChunksToInsert[i];
@@ -329,12 +329,12 @@ void ChunkManager::UpdateChunksContainer()
 			ChunksToInsert.Remove(i);
 			i--;
 		}
-		ChunksToInsertLock.UnlockContainer(sw2, TimeUpdateInsert);
+		ChunksToInsertLock.AssignU(sw2, TimeUpdateInsert);
 	}
 
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
-//	ChunksLock.UnLockItems(sw, TimeUpdate);
-	ChunksLock.UnlockContainer(sw, TimeUpdate);
+//	ChunksLock.AccessU(sw, TimeUpdate);
+	ChunksLock.AssignU(sw, TimeUpdate);
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 }
 
@@ -356,7 +356,7 @@ ChunkNeighbour ChunkManager::FindNeighbours(const Chunk & chunk) const
 {
 	unsigned int n = CHUNK_VALUES_PER_SIDE - 1;
 	const Chunk * ptr = &chunk;
-	//ChunksLock.LockItems();
+	//ChunksLock.AccessL();
 	switch (axis)
 	{
 		case AxisRel::None: ptr = nullptr; break;
@@ -368,7 +368,7 @@ ChunkNeighbour ChunkManager::FindNeighbours(const Chunk & chunk) const
 		case AxisRel::NextZ: if (udx.Z != n) { udx.Z++; ptr = &chunk; } else { udx.Z = 0; ptr = Chunks[relative(chunk.Index + VectorI3(0, 0, 1))]; } break;
 		case AxisRel::Here: ptr = &chunk; break;
 	}
-	//ChunksLock.UnLockItems();
+	//ChunksLock.AccessU();
 	return ptr;
 }*/
 void ChunkManager::NeighbourUpdateBufferMain(VectorI3 idx)
@@ -473,10 +473,10 @@ static GridCast3D::Hit hit_ray(ChunkManager & manager, Ray3D ray3D, float limit)
 	{
 		Chunk * chunk = manager.FindLockOrNull(data.Index());
 		if (chunk == nullptr) { return GridCast3D::Hit(); }
-		if (!(chunk -> GenerationDone())) { chunk -> UnLockItems(); return GridCast3D::Hit(); }
-		if ((chunk -> IsEmpty())) { chunk -> UnLockItems(); continue; }
+		if (!(chunk -> GenerationDone())) { chunk -> AccessU(); return GridCast3D::Hit(); }
+		if ((chunk -> IsEmpty())) { chunk -> AccessU(); continue; }
 		GridCast3D::Hit hit = hit_ray(*chunk, data.Ray(), data.Limit());
-		chunk -> UnLockItems();
+		chunk -> AccessU();
 		if (hit.cardinal != AxisRel::None) { return hit; }
 	}
 	while (data.Iterate());
@@ -495,11 +495,11 @@ VoxelHit ChunkManager::HitVoxel(Ray3D ray)
 	//::ChunkBoxPolyHedra = ChunkBoxPolyHedra;
 	//ShowRay(ray);
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
-	ChunksLock.LockItems();
+	ChunksLock.AccessL();
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
 	GridCast3D::Hit _hit = hit_ray(*this, ray, 10.0f);
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
-	ChunksLock.UnLockItems();
+	ChunksLock.AccessU();
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
 	VoxelHit hit;
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
@@ -530,7 +530,7 @@ Chunk * ChunkManager::FindGenerateChunk()
 {
 	StopWatch sw;
 //	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
-	ChunksLock.LockItems(sw, TimeGenerateFind);
+	ChunksLock.AccessL(sw, TimeGenerateFind);
 //	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
 
 	Chunk * found = nullptr;
@@ -543,30 +543,28 @@ Chunk * ChunkManager::FindGenerateChunk()
 		Chunk & chunk = *Chunks[i];
 
 //		std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
-		//chunk.lock();
-//		std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
-		chunk.LockContainer();
+		chunk.AssignL();
 //		std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
 
 		if (chunk.GenerationDone())
-		{ chunk.UnlockContainer(); continue; }
+		{ chunk.AssignU(); continue; }
 
 		if (!CareBox.IntersectVecInclusive(chunk.Index).All(true))
-		{ chunk.UnlockContainer(); continue; }
+		{ chunk.AssignU(); continue; }
 
 		VectorF3 rel = chunk.Index - Center;
 		float d = rel.length2();
 		if (found == nullptr || d < dist)
 		{
-			if (found != nullptr) { found -> UnlockContainer(); }
+			if (found != nullptr) { found -> AssignU(); }
 			found = &chunk;
 			dist = d;
 		}
-		else { chunk.UnlockContainer(); }
+		else { chunk.AssignU(); }
 	}
 
 //	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
-	ChunksLock.UnLockItems(sw, TimeGenerateFind);
+	ChunksLock.AccessU(sw, TimeGenerateFind);
 //	std::cout << "FindGenerateChunk:" << __LINE__ << '\n';
 
 	return found;
@@ -590,7 +588,7 @@ void ChunkManager::GenerateAround(const Perlin2D & noise2, const Perlin3D & nois
 		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
 		TimeGenerate.ThreadName = ThreadInfo::ThreadName;
 
-		chunk -> UnlockContainer();
+		chunk -> AssignU();
 	}
 }
 
@@ -611,7 +609,7 @@ void ChunkManager::GraphicsCreate()
 	Texture.Create();
 
 //	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
-	ChunksLock.LockItems();
+	ChunksLock.AccessL();
 //	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
@@ -619,7 +617,7 @@ void ChunkManager::GraphicsCreate()
 		Chunks[i] -> GraphicsCreate();
 	}
 //	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
-	ChunksLock.UnLockItems();
+	ChunksLock.AccessU();
 //	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
 
 	GraphicsExist = true;
@@ -633,7 +631,7 @@ void ChunkManager::GraphicsDelete()
 	Texture.Delete();
 
 //	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
-	ChunksLock.LockItems();
+	ChunksLock.AccessL();
 //	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
@@ -641,7 +639,7 @@ void ChunkManager::GraphicsDelete()
 		Chunks[i] -> GraphicsDelete();
 	}
 //	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
-	ChunksLock.UnLockItems();
+	ChunksLock.AccessU();
 //	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
 
 	GraphicsExist = false;
@@ -653,7 +651,7 @@ void ChunkManager::GraphicsUpdate()
 //	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
 	{
 		StopWatch sw;
-		ChunksToRemoveLock.LockItems(sw, TimeGraphicsDelete);
+		ChunksToRemoveLock.AccessL(sw, TimeGraphicsDelete);
 //		std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
 		for (unsigned int i = 0; i < ChunksToRemove.Count(); i++)
 		{
@@ -662,12 +660,12 @@ void ChunkManager::GraphicsUpdate()
 			chunk -> GraphicsDelete();
 		}
 //		std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
-		ChunksToRemoveLock.UnLockItems(sw, TimeGraphicsDelete);
+		ChunksToRemoveLock.AccessU(sw, TimeGraphicsDelete);
 	}
 //	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
 	{
 		StopWatch sw;
-		ChunksToInsertLock.LockItems(sw, TimeGraphicsCreate);
+		ChunksToInsertLock.AccessL(sw, TimeGraphicsCreate);
 //		std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
 		for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
 		{
@@ -676,7 +674,7 @@ void ChunkManager::GraphicsUpdate()
 			chunk -> GraphicsCreate();
 		}
 //		std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
-		ChunksToInsertLock.UnLockItems(sw, TimeGraphicsCreate);
+		ChunksToInsertLock.AccessU(sw, TimeGraphicsCreate);
 	}
 //	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
 }
@@ -687,7 +685,7 @@ Chunk * ChunkManager::FindGraphicsUpdateChunk()
 {
 	StopWatch sw;
 //	std::cout << "FindGraphicsUpdateChunk:" << __LINE__ << '\n';
-	ChunksLock.LockItems(sw, TimeBuffersFind);
+	ChunksLock.AccessL(sw, TimeBuffersFind);
 //	std::cout << "FindGraphicsUpdateChunk:" << __LINE__ << '\n';
 
 	Chunk * found = nullptr;
@@ -698,28 +696,28 @@ Chunk * ChunkManager::FindGraphicsUpdateChunk()
 		Chunk & chunk = *Chunks[i];
 
 //		std::cout << "FindGraphicsUpdateChunk:" << __LINE__ << '\n';
-		chunk.LockItems();
+		chunk.AccessL();
 //		std::cout << "FindGraphicsUpdateChunk:" << __LINE__ << '\n';
 
 		if (!chunk.GenerationDone())
-		{ chunk.UnLockItems(); continue; }
+		{ chunk.AccessU(); continue; }
 
 		if (chunk.MainBufferState != BufferDataState::Needed)
-		{ chunk.UnLockItems(); continue; }
+		{ chunk.AccessU(); continue; }
 
 		VectorF3 rel = chunk.Index - Center;
 		float d = rel.length2();
 		if (found == nullptr || d < dist)
 		{
-			if (found != nullptr) { found -> UnLockItems(); }
+			if (found != nullptr) { found -> AccessU(); }
 			found = &chunk;
 			dist = d;
 		}
-		else { chunk.UnLockItems(); }
+		else { chunk.AccessU(); }
 	}
 
 //	std::cout << "FindGraphicsUpdateChunk:" << __LINE__ << '\n';
-	ChunksLock.UnLockItems(sw, TimeBuffersFind);
+	ChunksLock.AccessU(sw, TimeBuffersFind);
 //	std::cout << "FindGraphicsUpdateChunk:" << __LINE__ << '\n';
 
 	return found;
@@ -790,7 +788,10 @@ void ChunkManager::GraphicsUpdateDataAround()
 
 			checking can be done at the same time
 		*/
+
+		ChunksLock.AccessL();
 		ChunkNeighbour neighbours = FindNeighbours(*chunk);
+		ChunksLock.AccessU();
 
 		StopWatch sw;
 		sw.Start();
@@ -799,7 +800,7 @@ void ChunkManager::GraphicsUpdateDataAround()
 		TimeBuffers.DoTime.NewValue(sw.ElapsedTime());
 		TimeBuffers.ThreadName = ThreadInfo::ThreadName;
 
-		chunk -> UnLockItems();
+		chunk -> AccessU();
 	}
 }
 
@@ -809,7 +810,7 @@ void ChunkManager::Draw()
 
 	StopWatch sw;
 //	std::cout << "Draw:" << __LINE__ << '\n';
-	ChunksLock.LockItems(sw, TimeDraw);
+	ChunksLock.AccessL(sw, TimeDraw);
 //	std::cout << "Draw:" << __LINE__ << '\n';
 
 	ShaderU.Bind();
@@ -829,6 +830,6 @@ void ChunkManager::Draw()
 	}*/
 
 //	std::cout << "Draw:" << __LINE__ << '\n';
-	ChunksLock.UnLockItems(sw, TimeDraw);
+	ChunksLock.AccessU(sw, TimeDraw);
 //	std::cout << "Draw:" << __LINE__ << '\n';
 }

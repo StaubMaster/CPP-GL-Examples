@@ -82,10 +82,10 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 
 
 
-void Chunk::LockItems() { Lock.LockItems(); }
-void Chunk::UnLockItems() { Lock.UnLockItems(); }
-void Chunk::LockContainer() { Lock.LockContainer(); }
-void Chunk::UnlockContainer() { Lock.UnlockContainer(); }
+void Chunk::AccessL() { Lock.AccessL(); }
+void Chunk::AccessU() { Lock.AccessU(); }
+void Chunk::AssignL() { Lock.AssignL(); }
+void Chunk::AssignU() { Lock.AssignU(); }
 
 
 

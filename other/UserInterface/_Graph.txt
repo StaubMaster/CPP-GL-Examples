@@ -1,0 +1,21 @@
+
+FPS drops every few seconds
+
+make a Graph to show this stuff
+
+how to do a Graph
+
+Bars
+	specific width
+Lines
+Areas
+
+Graph Area
+	Pixel in Window
+	Normal in Window
+
+Node Pos
+	Pixel in GraphArea
+	Normal in GraphArea
+
+

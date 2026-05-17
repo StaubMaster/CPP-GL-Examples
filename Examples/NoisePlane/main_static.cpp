@@ -37,7 +37,7 @@ static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
 }
 
-static void Toggle(bool & value) { value = !value; }
+//static void Toggle(bool & value) { value = !value; }
 static void Toggle(::PolyHedra * & polyhedra, ::PolyHedra * other)
 {
 	if (polyhedra == nullptr)
@@ -50,6 +50,7 @@ static void Toggle(::PolyHedra * & polyhedra, ::PolyHedra * other)
 	}
 }
 
+#ifndef DISABLE_VIEW_TANGIBLE
 static void DisplayBoxEntity(BoxEntity & box_entity)
 {
 	PolyHedraObject view_box_obj(box_entity.PolyHedra);
@@ -78,7 +79,7 @@ static void DisplayBoxEntityVoxels(unsigned int p, ::ChunkManager & manager, Box
 			voxel_obj.Trans().Position = i;
 			voxel_obj.ShowWire();
 		}
-		chunk -> UnLockItems();
+		chunk -> AccessU();
 	}
 }
-
+#endif

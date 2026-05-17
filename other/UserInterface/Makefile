@@ -32,7 +32,6 @@ FILES := \
 	Text/ObjectData.cpp \
 	Text/Object.cpp \
 	Text/Font/Font.cpp \
-	Text/Font/Template.cpp \
 	Text/Font/Parsing.cpp \
 
 DIR_SRC := .

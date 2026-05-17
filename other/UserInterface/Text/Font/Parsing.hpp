@@ -21,18 +21,21 @@ struct Font::ParsingData
 {
 	FileInfo			File;
 	Font *				Data;
-	Font::Template *	Temp;
+	VectorF2			Scale;
+	CharacterRange *	Range;
 
 	ParsingData(const FileInfo & file);
 	~ParsingData();
 
-	void Parse(const TextCommand & cmd);
+	void	Parse(const TextCommand & cmd);
 
-	void Parse_Type(const TextCommand & cmd);
+	void	Parse_Type(const TextCommand & cmd);
 
-	void Parse_Image(const TextCommand & cmd);
-	void Parse_Scale(const TextCommand & cmd);
-	void Parse_Character(const TextCommand & cmd);
+	void	Parse_Image(const TextCommand & cmd);
+	void	Parse_Scale(const TextCommand & cmd);
+	void	Parse_Character(const TextCommand & cmd);
+
+	void	Parse_Range(const TextCommand & cmd);
 };
 
 };

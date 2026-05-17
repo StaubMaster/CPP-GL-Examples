@@ -5,7 +5,9 @@
 UI::Text::ObjectData::~ObjectData() { }
 
 UI::Text::ObjectData::ObjectData()
-	: Text()
+	: Remove(false)
+	, Display(true)
+	, Text()
 	, TextPosition()
 	, TextAlignmentX(Alignment::Min)
 	, TextAlignmentY(Alignment::Min)
@@ -14,11 +16,11 @@ UI::Text::ObjectData::ObjectData()
 	, CharacterAlignmentY(Alignment::Max)
 	, Bound()
 	, Color()
-	, Remove(false)
-	, Display(true)
 { }
 UI::Text::ObjectData::ObjectData(const ObjectData & other)
-	: Text(other.Text)
+	: Remove(other.Remove)
+	, Display(other.Display)
+	, Text(other.Text)
 	, TextPosition(other.TextPosition)
 	, TextAlignmentX(other.TextAlignmentX)
 	, TextAlignmentY(other.TextAlignmentY)
@@ -27,11 +29,11 @@ UI::Text::ObjectData::ObjectData(const ObjectData & other)
 	, CharacterAlignmentY(other.CharacterAlignmentY)
 	, Bound(other.Bound)
 	, Color(other.Color)
-	, Remove(other.Remove)
-	, Display(other.Display)
 { }
 UI::Text::ObjectData & UI::Text::ObjectData::operator=(const ObjectData & other)
 {
+	Remove = other.Remove;
+	Display = other.Display;
 	Text = other.Text;
 	TextPosition = other.TextPosition;
 	TextAlignmentX = other.TextAlignmentX;
@@ -41,7 +43,5 @@ UI::Text::ObjectData & UI::Text::ObjectData::operator=(const ObjectData & other)
 	CharacterAlignmentY = other.CharacterAlignmentY;
 	Bound = other.Bound;
 	Color = other.Color;
-	Remove = other.Remove;
-	Display = other.Display;
 	return *this;
 }

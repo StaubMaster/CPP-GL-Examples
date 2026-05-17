@@ -4,3 +4,117 @@ when a InstanceManager has no Objects, remove it
 when the Main is used again, just insert it again
 
 
+
+Multi Thread ?
+
+Draw Thread
+{
+	lock Buffer_Data_Mutex
+	if (Buffer_Data_New)
+		put Buffer_Data in Buffer
+		Buffer_Data_New = false
+	unlock Buffer_Data_Mutex
+
+	Draw()
+}
+
+Objects_to_Data Thread
+{
+	lock Objects_Mutex
+	lock Buffer_Data_Mutex
+	clear Buffer_Data
+	make Buffer_Data
+	Buffer_Data_New = true
+	unlock Buffer_Data_Mutex
+	unlock Objects_Mutex
+}
+
+remove Objects ?
+{
+	lock Objects_Mutex
+	remove Objects
+	unlock Objects_Mutex
+}
+
+insert Objects ?
+{
+	lock Objects_Mutex
+	insert Object
+	unlock Objects_Mutex
+}
+
+
+
+Insert should be fast ?
+if there are many Objects then Remove and Objects_to_Data might take a while
+have a Queue
+	if Objects are locked, insert into Queue
+	or allways insert into Queue
+
+queue Object
+{
+	lock Queue
+	insert Object into Queue
+	unlock Queue
+}
+
+insert Object
+{
+	lock Queue
+	extract Queue Data into queue
+	unlock Queue
+
+	lock Objects
+	insert from queue
+	unlock Objects
+}
+
+
+
+sometimes, a temporary object is made
+that should only be shown for 1 frame
+
+if the other thread is slower then framerate, it will not show every frame
+if the other thread is faster then framerate, it will show multiple per frame ?
+
+just store the object
+maybe as static
+
+
+
+what happens when the Manager gets deleted or remade
+then the old object will be invalid
+
+make ObjectData know Object
+so it can tell it to change Pointer to null
+
+
+
+maybe change how this works ?
+
+GraphicsObjectManager / ObjectManager
+{
+	Shader
+	Container<BufferManager>
+	Container<ObjectData> why here ?
+}
+
+BufferManager
+{
+	Buffer
+	Texture
+	MainObject
+	Container<MainData> ?
+	Container<InstanceBufferData>
+	Container<ObjectData> why not here ?
+}
+
+ObjectData
+{
+	BufferManager
+	Remove
+	Display
+	Instance normal Data
+}
+
+

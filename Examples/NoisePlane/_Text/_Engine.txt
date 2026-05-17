@@ -24,3 +24,65 @@ BoxN
 
 BoxN
 	convert to other Types
+
+
+
+Containers
+	Dynamic Containers should count like ArrayND
+	remove a few Layers of Inheritance
+
+	changing _Count
+	allocate Count as well ?
+	struct
+	{
+		_Data
+		_Know
+		_Count
+		_Limit
+	}
+	the Container has a Pointer to this ?
+	this seems convoluted ?
+	Binary
+	{
+		_Data *
+		_Know *
+		_Count
+		_Limit
+	}
+
+	returning a Container should not copy all the stuff
+	but when 2 Containers point to the same Data, then one changing count will make the other undefined
+	there is no situation where I want both to be linked
+	i just dont want to move everything when returning
+	the compiler already dosent do that, but sometimes its weird
+	if anything wants to change, check if _Know != 0, if so, copy
+	this should never happen, but you can artificially cause it
+	makeing _Count and _Limit would mean they are synced until reallocation
+	this would be stupid so dont do that ?
+
+change Funciton Names
+	Insert() takes Item and inserts it somewhere
+	InsertAt() takes Item and inserts it at index
+
+	RemoveAt() takes index and removes Item, currently Remove()
+	Remove() takes Item and Removes it
+
+Queue
+	InsertCount
+	RemoveCount
+	different from Base ?
+	Void just needs void * Data and Void Count
+	dont have Limit() and Count()
+	make Base be 4 Pointers ?
+	Min and Max of Data
+	Min and Max of Used Data
+
+BlockLinkedList
+	not Void
+	no Remove ?
+
+
+
+
+Telemetry stuff
+	StopWatch at least

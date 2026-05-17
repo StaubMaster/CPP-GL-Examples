@@ -88,7 +88,15 @@
 #include <iomanip>
 
 
+#define DISABLE_INVENTORY
+#define DISABLE_VIEW_TANGIBLE
+#define DISABLE_VIEW_RAY
 
+
+
+
+
+#ifndef DISABLE_INVENTORY
 struct InventoryShader : public ::PolyHedraFull::Shader
 {
 	Uniform::DisplaySize		DisplaySize;
@@ -99,6 +107,7 @@ struct InventoryShader : public ::PolyHedraFull::Shader
 		, DisplaySize(*this, "DisplaySize")
 	{ }
 };
+#endif
 
 struct PhysicsContext
 {
@@ -195,59 +204,6 @@ struct PhysicsContext
 
 
 
-#include "Telemetry/Time.hpp"
-#include <chrono>
-//static std::chrono::time_point<std::chrono::high_resolution_clock> TimeTest_point = std::chrono::high_resolution_clock::now();
-//static std::chrono::duration<float> TimeTest_sum = std::chrono::duration<float>::zero();
-static void TimeTest()
-{
-	return;
-
-	const unsigned int test_count = 1000000;
-
-	{
-		std::chrono::time_point<std::chrono::high_resolution_clock> time = std::chrono::high_resolution_clock::now();
-		for (unsigned int i = 0; i < test_count; i++)
-		{
-			std::chrono::time_point<std::chrono::high_resolution_clock> var = std::chrono::high_resolution_clock::now();
-			(void)var;
-		}
-		std::chrono::duration<float> duration = std::chrono::high_resolution_clock::now() - time;
-		std::cout << "Test0: " << duration.count() << '\n';
-	}
-
-	{
-		std::chrono::time_point<std::chrono::high_resolution_clock> time = std::chrono::high_resolution_clock::now();
-		for (unsigned int i = 0; i < test_count; i++)
-		{
-			double var = TimeNow();
-			(void)var;
-		}
-		std::chrono::duration<float> duration = std::chrono::high_resolution_clock::now() - time;
-		std::cout << "Test1: " << duration.count() << '\n';
-	}
-
-	std::cout << '\n';
-
-//	std::chrono::time_point<std::chrono::high_resolution_clock> TimeTest_now = std::chrono::high_resolution_clock::now();
-//
-//	std::chrono::duration<float> duration = TimeTest_now - TimeTest_point;
-//	TimeTest_sum += duration;
-//
-//	std::chrono::milliseconds time_m = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-//	std::chrono::milliseconds sum_m = std::chrono::duration_cast<std::chrono::milliseconds>(TimeTest_sum);
-//
-//	std::cout << "Time: " << duration.count() << '\n';
-//	std::cout << "Sum : " << TimeTest_sum.count() << '\n';
-//	std::cout << "Time: " << time_m.count() << '\n';
-//	std::cout << "Sum : " << sum_m.count() << '\n';
-//	std::cout << '\n';
-//
-//	TimeTest_point = TimeTest_now;
-}
-
-
-
 struct ContextNoisePlane : public ContextBase
 {
 View3D	view;
@@ -258,8 +214,10 @@ UI::Text::Manager		TextManager;
 //::PlaneManager			PlaneManager;
 ::ChunkManager			ChunkManager;
 
+#ifndef DISABLE_INVENTORY
 ::PolyHedraManager		InventoryPolyHedraManager;
 ::InventoryShader		InventoryShader;
+#endif
 
 
 
@@ -268,11 +226,13 @@ UI::Text::Manager		TextManager;
 ::OptionsMenu	OptionsMenu;
 ::DebugMenu		DebugMenu;
 
+#ifndef DISABLE_INVENTORY
 ::ItemContainer		Inventory;
 ::ItemContainer		HotBar;
 
 ::Inventory			InventoryUI;
 ::Inventory			HotBarUI;
+#endif
 
 
 
@@ -298,17 +258,19 @@ ContextNoisePlane()
 	, PauseMenu()
 	, OptionsMenu()
 	, DebugMenu()
+#ifndef DISABLE_INVENTORY
 	, Inventory(VectorU2(10, 5))
 	, HotBar(VectorU2(10, 1))
 	, InventoryUI()
 	, HotBarUI()
+#endif
 	, Perlin2(Perlin2D::Random(VectorU2(8, 8)))
 	, Perlin3(Perlin3D::Random(VectorU3(8, 8, 8)))
 	, Multiform_DisplaySize("DisplaySize")
 	, Multiform_View("View")
 	, Multiform_Depth("Depth")
 	, Multiform_FOV("FOV")
-	, ViewUpdateTime(64)
+	, TimeUpdateView(64)
 	, ViewUpdateCollisionTime(64)
 	, ViewUpdateChunksTime(64)
 	, ViewUpdateRayTime(64)
@@ -318,12 +280,20 @@ ContextNoisePlane()
 	, AuxThread1Time(64)
 	, AuxThread2(&ContextNoisePlane::AuxThread2Func, this)
 	, AuxThread2Time(64)
+	, TimeDrawTotal(64)
+	, TimeDrawPolyHedra(64)
+	, TimeDrawChunk(64)
+	, TimeDrawControl(64)
+	, TimeMakeText(64)
+	, TimeDrawText(64)
 	, DLTAverageTime(64)
 	, FPSAverageTime(64)
-	, FrameDurationTime(64)
+	, TimeFrameTotal(64)
 	, FrameInputTime(64)
+	, TimeUpdateThread(64)
+#ifndef DISABLE_INVENTORY
 	, InventoryCursorTime(64)
-	, DrawTime(64)
+#endif
 	, TextCharCount(0)
 	, TextAssambleTime(64)
 	, TextInstanceTime(64)
@@ -340,7 +310,9 @@ ContextNoisePlane()
 //		&PlaneManager.Shader,
 		&ChunkManager.ShaderU,
 		&ChunkManager.ShaderF,
+#ifndef DISABLE_INVENTORY
 		&InventoryShader,
+#endif
 	});
 	Multiform_DisplaySize.FindUniforms(shaders);
 	Multiform_View.FindUniforms(shaders);
@@ -385,18 +357,21 @@ is movement force too weak ?
 	Collision Stuff
 */
 
+#ifndef DISABLE_VIEW_TANGIBLE
 float	ViewDistance = 0.0f;
 bool	ViewTangible = false;
 
 float	ViewSpeed = 0.1f;	// force when moving
 float	ViewFaster = 3.0f;	// force multiplier when moving faster
 
+BoxEntity		ViewEntity;
+CollisionSide	ViewCollisionSide;
+#endif
+
 float	ViewSpeedNoClip = 10.0f;
 float	ViewFasterNoClip = 10.0f;
 
-BoxEntity		ViewEntity;
-CollisionSide	ViewCollisionSide;
-
+#ifndef DISABLE_VIEW_RAY
 bool		ViewRaySync = true;
 
 Ray3D		ViewRay;
@@ -407,25 +382,31 @@ AxisRel		ViewRayAxis2;
 VoxelHit	ViewHit;
 AxisRel		ViewHitAxis0;
 AxisRel		ViewHitAxis1;
+#endif
 
-ValueAverager<float>	ViewUpdateTime;
+ValueAverager<float>	TimeUpdateView;
 ValueAverager<float>	ViewUpdateCollisionTime;
 ValueAverager<float>	ViewUpdateChunksTime;
 ValueAverager<float>	ViewUpdateRayTime;
 
 void ViewUpdateDone()
 {
+#ifndef DISABLE_VIEW_TANGIBLE
 	if (ViewDistance == 0.0f)
+#endif
 	{
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
 	}
+#ifndef DISABLE_VIEW_TANGIBLE
 	else
 	{
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(
 			Trans3D(view.Trans.Position - view.Trans.Rotation.forward(VectorF3(0, 0, ViewDistance)), view.Trans.Rotation)
 		));
 	}
+#endif
 }
+#ifndef DISABLE_VIEW_TANGIBLE
 void ViewUpdatePhysics(VectorF3 accel)
 {
 	VectorF3 decel;
@@ -470,16 +451,22 @@ void ViewUpdatePhysics(VectorF3 accel)
 
 	ViewEntity.Vel += PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f) + accel - decel;
 }
+#endif
 void ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
 {
 	change.Position *= ViewSpeedNoClip;
 	if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFasterNoClip; }
+#ifndef DISABLE_VIEW_TANGIBLE
 	ViewEntity.Vel = change.Position;
 	ViewEntity.Pos += ViewEntity.Vel * frame_time.Delta;
 	view.Trans.Position = ViewEntity.Pos;
+#else
+	view.Trans.Position += change.Position * frame_time.Delta;
+#endif
 	view.Trans.Rotation += change.Rotation * frame_time.Delta;
 	view.Trans.Rotation.X1.clampPI();
 }
+#ifndef DISABLE_VIEW_TANGIBLE
 void ViewUpdateColliding(FrameTime frame_time)
 {
 	DisplayBoxEntityVoxels(PolyHedraManager.FindPolyHedra(VoxelCube), ChunkManager, ViewEntity, frame_time);
@@ -487,6 +474,8 @@ void ViewUpdateColliding(FrameTime frame_time)
 	ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
 	DisplayBoxEntity(ViewEntity);
 }
+#endif
+#ifndef DISABLE_VIEW_RAY
 void ViewRayUpdate()
 {
 	if (ViewRaySync)
@@ -528,9 +517,15 @@ void ViewRayUpdate()
 		}
 	}
 }
+#endif
+#ifndef DISABLE_VIEW_RAY
 void ViewRayDo()
 {
+#ifndef DISABLE_INVENTORY
 	if (PauseMenu.IsInteractible() || OptionsMenu.IsInteractible() || InventoryUI.IsInteractible()) { return; }
+#else
+	if (PauseMenu.IsInteractible() || OptionsMenu.IsInteractible()) { return; }
+#endif
 	// check if any Control is being hovered
 	// cast Ray at mouse
 
@@ -599,7 +594,7 @@ void ViewRayDo()
 //				std::cout << "main:" << __LINE__ << '\n';
 				chunk -> ClearVoxel(idx.Voxel, voxel);
 //				std::cout << "main:" << __LINE__ << '\n';
-				chunk -> UnLockItems();
+				chunk -> AccessU();
 //				std::cout << "main:" << __LINE__ << '\n';
 			}
 		}
@@ -612,6 +607,7 @@ void ViewRayDo()
 			if (ViewHitAxis0 == AxisRel::PrevY) { ViewHit.Index.Y -= 1; }
 			if (ViewHitAxis0 == AxisRel::PrevZ) { ViewHit.Index.Z -= 1; }
 
+#ifndef DISABLE_INVENTORY
 			if (HotBar.Items[VectorU2(0, 0)] != nullptr)
 			{
 				ItemVoxel * item = (ItemVoxel*)HotBar.Items[VectorU2(0, 0)];
@@ -623,21 +619,22 @@ void ViewRayDo()
 					if (chunk != nullptr)
 					{
 						chunk -> PlaceVoxel(idx.Voxel, voxel);
-						chunk -> UnLockItems();
+						chunk -> AccessU();
 					}
 				}
 			}
+#endif
 		}
 //		std::cout << "main:" << __LINE__ << '\n';
 	}
 
 	{
 		UI::Text::Object text; text.Create();
+		text.Text() = ss.str();
 		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
 		text.AlignTopRight(); // take DisplaySize
 		text.Bound().Min = VectorF2();
 		text.Bound().Max = window.Size.Buffer.Full;
-		text.String() = ss.str();
 		text.Color() = ColorF4(1, 1, 1);
 	}
 
@@ -654,6 +651,7 @@ void ViewRayDo()
 		}
 	}*/
 }
+#endif
 void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 {
 	StopWatch sw;
@@ -661,6 +659,7 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 
 	StopWatch sw2;
 	sw2.Start();
+#ifndef DISABLE_VIEW_TANGIBLE
 	if (ViewTangible)
 	{
 		ViewUpdatePhysics(change.Position);
@@ -670,6 +669,7 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 		view.Trans.Position = ViewEntity.Pos;
 	}
 	else
+#endif
 	{
 		ViewUpdateIntangible(change, frame_time);
 	}
@@ -679,23 +679,32 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 
 	sw2.Clear(); sw2.Start();
 	ChunkManager.GraphicsUpdate();
-	ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
+	//ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
 	sw2.Stop();
 	ViewUpdateChunksTime.NewValue(sw2.ElapsedTime());
 
 	sw2.Clear(); sw2.Start();
+#ifndef DISABLE_VIEW_RAY
 	ViewRayUpdate();
 	ViewRayDo();
+#endif
 	sw2.Stop();
 	ViewUpdateRayTime.NewValue(sw2.ElapsedTime());
 
 	sw.Stop();
-	ViewUpdateTime.NewValue(sw.ElapsedTime());
+	TimeUpdateView.NewValue(sw.ElapsedTime());
 }
 
 
 
 
+
+/* Draw Thread should focus on Drawing
+	avoid locking
+	move View stuff to another Thread ?
+	Draw Thread needs to Create/Delete Graphics
+	Input from different Thread ?
+*/
 
 bool		ThreadIdle = true;
 bool		ThreadTerminate = false;
@@ -712,9 +721,9 @@ void		AuxThread0Func()
 		if (!ThreadIdle && !AuxThread0Idle)
 		{
 			sw.Clear(); sw.Start();
-			if (!DontRemove) { ChunkManager.RemoveAround(); }
-			if (!DontInsert) { ChunkManager.InsertAround(); }
-			ChunkManager.UpdateChunksContainer();
+			//ChunkManager.RemoveAround();
+			//ChunkManager.InsertAround();
+			//ChunkManager.UpdateChunksContainer();
 			sw.Stop();
 			AuxThread0Time.NewValue(sw.ElapsedTime());
 		}
@@ -733,7 +742,7 @@ void		AuxThread1Func()
 		if (!ThreadIdle && !AuxThread1Idle)
 		{
 			sw.Clear(); sw.Start();
-			if (!DontGenerate) { ChunkManager.GenerateAround(Perlin2, Perlin3); }
+			//ChunkManager.GenerateAround(Perlin2, Perlin3);
 			sw.Stop();
 			AuxThread1Time.NewValue(sw.ElapsedTime());
 		}
@@ -752,11 +761,28 @@ void		AuxThread2Func()
 		if (!ThreadIdle && !AuxThread2Idle)
 		{
 			sw.Clear(); sw.Start();
-			if (!DontBuffer) { ChunkManager.GraphicsUpdateDataAround(); }
+			//ChunkManager.GraphicsUpdateDataAround();
 			sw.Stop();
 			AuxThread2Time.NewValue(sw.ElapsedTime());
 		}
 	}
+}
+
+void DrawThreadUpdate()
+{
+	StopWatch sw;
+	sw.Start();
+
+	ChunkManager.RemoveAround();
+	ChunkManager.InsertAround();
+	ChunkManager.UpdateChunksContainer();
+
+	ChunkManager.GenerateAround(Perlin2, Perlin3);
+
+	ChunkManager.GraphicsUpdateDataAround();
+
+	sw.Stop();
+	TimeUpdateThread.NewValue(sw.ElapsedTime());
 }
 
 
@@ -768,11 +794,13 @@ PolyHedra *		ViewRayPolyHedra;
 void Make()
 {
 	view.Trans.Position = VectorF3(0.5f, 0.5f, 0.5f);
+#ifndef DISABLE_VIEW_TANGIBLE
 	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
 	ViewEntity.Box = BoxF3(
 		VectorF3(-0.4f, -1.7f, -0.4f),
 		VectorF3(+0.4f, +0.1f, +0.4f)
 	);
+#endif
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -792,11 +820,13 @@ void Make()
 		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
 		PolyHedraManager.PlacePolyHedra(VoxelChunkCube);
 	}
+#ifndef DISABLE_VIEW_TANGIBLE
 	{
 		ViewEntity.PolyHedra = new PolyHedra();
 		PolyHedraBoxEdges(*ViewEntity.PolyHedra, ViewEntity.Box);
 		PolyHedraManager.PlacePolyHedra(ViewEntity.PolyHedra);
 	}
+#endif
 
 	// Voxels
 	{
@@ -819,6 +849,13 @@ void Make()
 }
 
 
+
+/* why are these here ?
+	to access ContextNoisePlane
+	just have a Referance/Pointer to ContextNoisePlane ?
+	all the Code is in the Header
+	split main_.cpp into ContextNoisePlane.hpp and ContextNoisePlane.cpp
+*/
 
 void MakeControls()
 {
@@ -880,6 +917,7 @@ void MakeControls()
 		ControlManager.Window.ChildInsert(DebugMenu);
 	}
 	// Inventory
+#ifndef DISABLE_INVENTORY
 	{
 		InventoryPolyHedraManager.MakeCurrent();
 		for (unsigned int i = 0; i < VoxelPalletMap::All.Data.Count(); i++)
@@ -899,7 +937,9 @@ void MakeControls()
 		ControlManager.Window.ChildInsert(InventoryUI);
 		PolyHedraManager.MakeCurrent();
 	}
+#endif
 	// HotBar
+#ifndef DISABLE_INVENTORY
 	{
 		InventoryPolyHedraManager.MakeCurrent();
 		HotBarUI.Anchor.Y.AnchorMax(0);
@@ -908,6 +948,7 @@ void MakeControls()
 		ControlManager.Window.ChildInsert(HotBarUI);
 		PolyHedraManager.MakeCurrent();
 	}
+#endif
 }
 
 void DebugMenu_Generation3DComparison(float val)
@@ -1085,6 +1126,7 @@ void ChangeMedia()
 	}
 
 	// Inventory
+#ifndef DISABLE_INVENTORY
 	InventoryPolyHedraManager.InitExternal(MediaDirectory);
 	{
 		Container::Array<Shader::Code> code({
@@ -1094,6 +1136,7 @@ void ChangeMedia()
 		InventoryShader.Change(code);
 		InventoryPolyHedraManager.ShaderFullOther = &InventoryShader; // Others dosent need to be PolyHedraFullShader
 	}
+#endif
 }
 
 // Valgrind is very slow here ?
@@ -1112,10 +1155,12 @@ void GraphicsCreate()
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	ChunkManager.GraphicsCreate();
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
+#ifndef DISABLE_INVENTORY
 	InventoryPolyHedraManager.GraphicsCreate();
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	InventoryShader.Create();
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
+#endif
 }
 void GraphicsDelete()
 {
@@ -1124,8 +1169,10 @@ void GraphicsDelete()
 	TextManager.GraphicsDelete();
 	//PlaneManager.GraphicsDelete();
 	ChunkManager.GraphicsDelete();
+#ifndef DISABLE_INVENTORY
 	InventoryPolyHedraManager.GraphicsDelete();
 	InventoryShader.Delete();
+#endif
 }
 
 void Init() override
@@ -1150,7 +1197,9 @@ void Init() override
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	MakeControls();
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
-	ChunkManager.ChangeSize(8, 4);
+	//ChunkManager.ChangeSize(2, 1);
+	//ChunkManager.ChangeSize(8, 4);
+	ChunkManager.ChangeSize(16, 8);
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -1169,55 +1218,91 @@ void Free() override
 
 
 
+// this is slow ?
+ValueAverager<float>	TimeDrawTotal;
+ValueAverager<float>	TimeDrawPolyHedra;
+ValueAverager<float>	TimeDrawChunk;
+ValueAverager<float>	TimeDrawControl;
+ValueAverager<float>	TimeMakeText;
+ValueAverager<float>	TimeDrawText;
+
 void Draw()
 {
 	// should GraphicsManagers just know that they want Enabled/Disabled ?
 	// GraphicsManagerBase so I dont need to call the Create/Delete individually
 	// instead just put them in a Container
 	// also Update/Draw all automatically
+	StopWatch sw_total;
+	sw_total.Start();
+
+	StopWatch sw;
 
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
+
+	sw.Start();
 	PolyHedraManager.ClearInstances();
 	PolyHedraManager.UpdateInstances();
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
+	sw.Stop();
+	TimeDrawPolyHedra.NewValue(sw.ElapsedTime());
+
 	//PlaneManager.Draw();
+	sw.Clear(); sw.Start();
 	ChunkManager.Draw();
+	sw.Stop();
+	TimeDrawChunk.NewValue(sw.ElapsedTime());
 //	ChunkManager.UpdateChunksArrayDraw();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 	{
+#ifndef DISABLE_INVENTORY
 		InventoryPolyHedraManager.MakeCurrent();
+#endif
+		sw.Clear(); sw.Start();
 		ControlManager.UpdateSize(window.Size);
 		ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
 //		ControlManager.Window.UpdateEntrys();
 		ControlManager.Draw();
 		PolyHedraManager.MakeCurrent();
+		sw.Stop();
+		TimeDrawControl.NewValue(sw.ElapsedTime());
 	}
+
+	sw.Clear(); sw.Start();
+	TextManager.MakeInstances();
+	TimeMakeText.NewValue(sw.ElapsedTime());
+	sw.Stop();
+
+	sw.Clear(); sw.Start();
 	TextManager.Draw();
 	TextCharCount = TextManager.Instances.Count();
+	sw.Stop();
+	TimeDrawText.NewValue(sw.ElapsedTime());
 
+#ifndef DISABLE_INVENTORY
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
 	InventoryPolyHedraManager.ClearInstances();
 	InventoryPolyHedraManager.UpdateInstances();
 	InventoryPolyHedraManager.DrawFull();
-}
+#endif
 
-bool	DontRemove = false;
-bool	DontInsert = false;
-bool	DontGenerate = false;
-bool	DontBuffer = false;
+	sw_total.Stop();
+	TimeDrawTotal.NewValue(sw_total.ElapsedTime());
+}
 
 ValueAverager<float>	DLTAverageTime;
 ValueAverager<int>		FPSAverageTime;
-ValueAverager<float>	FrameDurationTime;
+ValueAverager<float>	TimeFrameTotal;
 ValueAverager<float>	FrameInputTime;
+ValueAverager<float>	TimeUpdateThread;
+#ifndef DISABLE_INVENTORY
 ValueAverager<float>	InventoryCursorTime;
-ValueAverager<float>	DrawTime;
+#endif
 
 static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 {
@@ -1226,11 +1311,22 @@ static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 	ss << std::setw(3) << std::setfill(' ') << freq << "Hz";
 	ss << ')';
 }
-static void ShowTime(std::stringstream & ss, float time)
+static void ShowTimeFreq(std::stringstream & ss, float time)
 {
 	ShowTimeFreq(ss, time, 1.0f / time);
 }
-static void ShowNameTime(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
+static void ShowNameTimeFreqLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
+{
+	ss << name << ':';
+	ShowTimeFreq(ss, time.Min()); ss << ' ';
+	ShowTimeFreq(ss, time.Average()); ss << ' ';
+	ShowTimeFreq(ss, time.Max()); ss << '\n';
+}
+static void ShowTime(std::stringstream & ss, float time)
+{
+	ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's';
+}
+static void ShowNameTimeLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
 {
 	ss << name << ':';
 	ShowTime(ss, time.Min()); ss << ' ';
@@ -1242,41 +1338,6 @@ unsigned int			TextCharCount = 0;
 ValueAverager<float>	TextAssambleTime;
 ValueAverager<float>	TextInstanceTime;
 
-void BlockListTest()
-{
-	BlockList<4, unsigned int> list;
-
-	unsigned int count = Random::UInt32() & 0xF;
-	std::cout << "count " << count << '\n';
-	for (unsigned int c = 0; c < count; c++)
-	{
-		unsigned int item = Random::UInt32() & 0xF;
-		std::cout << '[' << c << ']' << item << '\n';
-		list.Insert(item);
-	}
-	std::cout << '\n';
-
-	std::cout << "count " << list.BlockCount() << '\n';
-	for (unsigned int b = 0; b < list.BlockCount(); b++)
-	{
-		std::cout << '[' << b << ']';
-		const BlockList<4, unsigned int>::Block & block = list.BlockIndex(b);
-		for (unsigned int i = 0; i < 4; i++)
-		{
-			std::cout << ' ' << block.Data[i];
-		}
-		std::cout << '\n';
-	}
-	std::cout << '\n';
-
-	std::cout << "count " << list.Count() << '\n';
-	for (unsigned int i = 0; i < list.Count(); i++)
-	{
-		std::cout << '[' << i << ']' << list[i] << '\n';
-	}
-	std::cout << '\n';
-	std::cout << '\n';
-}
 void FrameText(FrameTime frame_time)
 {
 	StopWatch sw;
@@ -1298,22 +1359,33 @@ void FrameText(FrameTime frame_time)
 	// Text
 	{
 		ss << "TextCharCount: " << Seperated1000(TextCharCount) << '\n';
-		ShowNameTime(ss, "TextAssambleTime", TextAssambleTime);
-		ShowNameTime(ss, "TextInstanceTime", TextInstanceTime);
+		ss << "TextManager.Instances.Count(): " << Seperated1000(TextManager.Instances.Count()) << '\n';
+		ss << "TextManager.ObjectDatas.Count(): " << Seperated1000(TextManager.ObjectDatas.Count()) << '\n';
+		ShowNameTimeLine(ss, "TextAssambleTime", TextAssambleTime);
+		ShowNameTimeLine(ss, "TextInstanceTime", TextInstanceTime);
+		//std::cout << "TimeMakeText: " << TimeMakeText.Average() << '\n';
 		ss << '\n';
 	}
 
 	// Thread Time
 	if (DebugMenu.TimeThreads.Check.IsChecked())
 	{
-		ShowNameTime(ss, "FrameDurationTime  ", FrameDurationTime);
-		ShowNameTime(ss, "FrameInputTime     ", FrameInputTime);
-		ShowNameTime(ss, "InventoryCursorTime", InventoryCursorTime);
-		ShowNameTime(ss, "DrawTime           ", DrawTime);
-		ShowNameTime(ss, "ViewUpdateTime     ", ViewUpdateTime);
-		ShowNameTime(ss, "AuxThread0Time     ", AuxThread0Time);
-		ShowNameTime(ss, "AuxThread1Time     ", AuxThread1Time);
-		ShowNameTime(ss, "AuxThread2Time     ", AuxThread2Time);
+		ShowNameTimeLine(ss, "Frame       Total", TimeFrameTotal);
+		ShowNameTimeLine(ss, "Frame       Input", FrameInputTime);
+#ifndef DISABLE_INVENTORY
+		ShowNameTimeLine(ss, "Inventory  Cursor", InventoryCursorTime);
+#endif
+		ShowNameTimeLine(ss, "Update       View", TimeUpdateView);
+		ShowNameTimeLine(ss, "Update     Thread", TimeUpdateThread);
+		ShowNameTimeLine(ss, "Draw        Total", TimeDrawTotal);
+		ShowNameTimeLine(ss, "Draw    PolyHedra", TimeDrawPolyHedra);
+		ShowNameTimeLine(ss, "Draw        Chunk", TimeDrawChunk);
+		ShowNameTimeLine(ss, "Draw      Control", TimeDrawControl);
+		ShowNameTimeLine(ss, "Make         Text", TimeMakeText);
+		ShowNameTimeLine(ss, "Draw         Text", TimeDrawText);
+		ShowNameTimeLine(ss, "AuxThread       0", AuxThread0Time);
+		ShowNameTimeLine(ss, "AuxThread       1", AuxThread1Time);
+		ShowNameTimeLine(ss, "AuxThread       2", AuxThread2Time);
 		ss << '\n';
 	}
 
@@ -1355,6 +1427,7 @@ void FrameText(FrameTime frame_time)
 	if (DebugMenu.View.Check.IsChecked())
 	{
 		ss << "View " << view.Trans.Position << '\n';
+#ifndef DISABLE_VIEW_TANGIBLE
 		ss << "View " << ViewEntity.Vel << ' ' << ViewEntity.Vel.length() << '\n';
 		ss << "None : " << (ViewCollisionSide.None) << '\n';
 		ss << "PrevX: " << (ViewCollisionSide.PrevX) << '\n';
@@ -1363,6 +1436,7 @@ void FrameText(FrameTime frame_time)
 		ss << "NextX: " << (ViewCollisionSide.NextX) << '\n';
 		ss << "NextY: " << (ViewCollisionSide.NextY) << '\n';
 		ss << "NextZ: " << (ViewCollisionSide.NextZ) << '\n';
+#endif
 		ss << '\n';
 	}
 
@@ -1410,7 +1484,7 @@ void FrameText(FrameTime frame_time)
 			ss << Memory1000ToString(chunk.BufferF.Main.Count * sizeof(VoxelGraphics::MainDataF));
 			ss << '\n';
 
-			chunk.UnLockItems();
+			chunk.AccessU();
 			ss << '\n';
 		}
 		else
@@ -1462,7 +1536,7 @@ void FrameText(FrameTime frame_time)
 	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
 	{
 		//ChunkManager.ChunksChanging.lock();
-		ChunkManager.ChunksLock.LockItems();
+		ChunkManager.ChunksLock.AccessL();
 
 		unsigned int chunks_t = 0; // total
 		unsigned int chunks_u = 0; // ungenerated
@@ -1524,14 +1598,14 @@ void FrameText(FrameTime frame_time)
 		ss << '\n';
 		ss << '\n';
 
-		ChunkManager.ChunksLock.UnLockItems();
+		ChunkManager.ChunksLock.AccessU();
 		//ChunkManager.ChunksChanging.unlock();
 	}
 
 	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
 	{
 		//ChunkManager.ChunksChanging.lock();
-		ChunkManager.ChunksLock.LockItems();
+		ChunkManager.ChunksLock.AccessL();
 
 		unsigned long long main_u_count = 0;
 		unsigned long long main_f_count = 0;
@@ -1564,7 +1638,7 @@ void FrameText(FrameTime frame_time)
 		ss << " = " << Memory1000ToString(main_f_count * sizeof(VoxelGraphics::MainDataF));
 		ss << '\n';
 
-		ChunkManager.ChunksLock.UnLockItems();
+		ChunkManager.ChunksLock.AccessU();
 		//ChunkManager.ChunksChanging.unlock();
 	}
 
@@ -1573,6 +1647,7 @@ void FrameText(FrameTime frame_time)
 
 	sw.Clear(); sw.Start();
 	UI::Text::Object text; text.Create();
+	text.Text() = ss.str();
 	if (DebugMenu.IsVisible())
 	{
 		text.TextPosition().X = DebugMenu.Anchor.X.GetMinSize();
@@ -1581,10 +1656,10 @@ void FrameText(FrameTime frame_time)
 	text.Color() = ColorF4(1, 1, 1);
 	text.Bound().Min = VectorF2();
 	text.Bound().Max = window.Size.Buffer.Full;
-	text.String() = ss.str();
 	sw.Stop();
 	TextInstanceTime.NewValue(sw.ElapsedTime());
 }
+#ifndef DISABLE_INVENTORY
 void InventoryCursor(FrameTime frame_time)
 {
 	StopWatch sw;
@@ -1630,6 +1705,7 @@ void InventoryCursor(FrameTime frame_time)
 	sw.Stop();
 	InventoryCursorTime.NewValue(sw.ElapsedTime());
 }
+#endif
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
 void FrameInput()
 {
@@ -1639,7 +1715,9 @@ void FrameInput()
 	if (window.KeyBoardManager[Keys::Escape].State == State::Press)
 	{
 		OptionsMenu.Hide();
+#ifndef DISABLE_INVENTORY
 		InventoryUI.Hide();
+#endif
 		//HotBarUI.Hide();
 		if (PauseMenu.IsVisible())
 		{
@@ -1654,6 +1732,7 @@ void FrameInput()
 	{
 		if (!PauseMenu.IsVisible() && !OptionsMenu.IsVisible())
 		{
+#ifndef DISABLE_INVENTORY
 			if (!InventoryUI.IsVisible())
 			{
 				InventoryPolyHedraManager.MakeCurrent();
@@ -1666,10 +1745,13 @@ void FrameInput()
 				InventoryUI.Hide();
 				//HotBarUI.Hide();
 			}
+#endif
 		}
 	}
 
+#ifndef DISABLE_VIEW_RAY
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { Toggle(ViewRaySync); }
+#endif
 	if (window.KeyBoardManager[Keys::D2].State == State::Press) { Toggle(ChunkManager.ViewRayPolyHedra, ViewRayPolyHedra); }
 	if (window.KeyBoardManager[Keys::D3].State == State::Press) { Toggle(ChunkManager.VoxelBoxPolyHedra, VoxelCube); }
 
@@ -1685,13 +1767,17 @@ void FrameInput()
 		}
 	}
 
+#ifndef DISABLE_VIEW_TANGIBLE
 	if (window.KeyBoardManager[Keys::F2].State == State::Press) { Toggle(ViewTangible); }
+#endif
 	if (window.KeyBoardManager[Keys::F3].State == State::Press)
 	{
+#ifndef DISABLE_VIEW_TANGIBLE
 		if (ViewDistance == 0.0f)
 		{ ViewDistance = 2.0f; }
 		else
 		{ ViewDistance = 0.0f; }
+#endif
 	}
 	/*if (window.KeyBoardManager[Keys::F4].State == State::Press)
 	{
@@ -1704,12 +1790,11 @@ void FrameInput()
 		ChunkManager.Clear();
 	}
 
-	if (window.KeyBoardManager[Keys::F11].State == State::Press) { Toggle(DontRemove); }
-	if (window.KeyBoardManager[Keys::F10].State == State::Press) { Toggle(DontInsert); }
-	if (window.KeyBoardManager[Keys::F9].State == State::Press) { Toggle(DontGenerate); }
-	if (window.KeyBoardManager[Keys::F8].State == State::Press) { Toggle(DontBuffer); }
-
+#ifndef DISABLE_INVENTORY
 	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible() || InventoryUI.IsVisible())
+#else
+	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible())
+#endif
 	{
 		if (window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeFree(); }
 	}
@@ -1726,8 +1811,6 @@ void Frame(FrameTime frame_time) override
 {
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
-
-	TimeTest();
 
 	StopWatch sw;
 	sw.Start();
@@ -1748,6 +1831,8 @@ void Frame(FrameTime frame_time) override
 		}
 		ViewUpdateAround(change, frame_time);
 	}
+
+	DrawThreadUpdate();
 
 	/*{
 		float pixel_rad = 1;
@@ -1771,23 +1856,24 @@ void Frame(FrameTime frame_time) override
 		}
 	}
 
-	/*if (DebugMenu.ChunkHere.Check.IsChecked())
+	if (DebugMenu.ChunkHere.Check.IsChecked())
 	{
-		VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
-
+		ChunkVoxelIndex idx(view.Trans.Position.roundF());
 		PolyHedraObject chunk_box(VoxelChunkCube);
 		chunk_box.Trans().Position = idx.Chunk * CHUNK_VALUES_PER_SIDE;
 		chunk_box.ShowWire();
-	}*/
+	}
 
 	FrameText(frame_time);
 
+#ifndef DISABLE_INVENTORY
 	InventoryCursor(frame_time);
+#endif
 
 	Draw();
 
 	sw.Stop();
-	FrameDurationTime.NewValue(sw.ElapsedTime());
+	TimeFrameTotal.NewValue(sw.ElapsedTime());
 }
 
 void Resize(DisplaySize display_size) override
@@ -1802,7 +1888,9 @@ void Resize(DisplaySize display_size) override
 void MouseScroll(ScrollArgs args) override { (void)args; }
 void MouseClick(ClickArgs args) override
 {
+#ifndef DISABLE_INVENTORY
 	InventoryPolyHedraManager.MakeCurrent();
+#endif
 	ControlManager.RelayClick(args);
 	PolyHedraManager.MakeCurrent();
 }

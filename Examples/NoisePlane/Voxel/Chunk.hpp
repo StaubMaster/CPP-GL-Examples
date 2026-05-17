@@ -69,10 +69,10 @@ struct Chunk
 	private:
 	ContainerLock	Lock;
 	public:
-	void	LockItems();
-	void	UnLockItems();
-	void	LockContainer();
-	void	UnlockContainer();
+	void	AccessL();
+	void	AccessU();
+	void	AssignL();
+	void	AssignU();
 
 
 
@@ -179,8 +179,16 @@ struct Chunk
 
 	public:
 	BufferDataState		MainBufferState;
-	ChunkGraphicsData	MainBufferData;
+	ChunkGraphicsData	MainBufferData; // Lock Data
 	void	GraphicsMakeData(const ChunkNeighbour & neighbours);
+	/* 
+		BufferUMain_UpdateData clears MainBufferData
+		if during this time, MainBufferData is being remade
+		then MainBufferData is undefined
+
+		Lock Array
+		have another flag for turning BlockData into Array Data
+	*/
 
 	bool	BufferUMain_NewData;
 	bool	BufferFMain_NewData;
@@ -197,5 +205,13 @@ struct Chunk
 	void	DrawU();
 	void	DrawF();
 };
+
+/* const Chunk
+	should have Container Locked
+	shoule have Items Locked ?
+		changing Items dosent crash progeam but can cause undefined behaviour
+		like GraphicsData having gaps
+	
+*/
 
 #endif

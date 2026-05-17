@@ -161,7 +161,7 @@ void UI::Control::Slider::PutCharactersEntrys()
 
 	if (TextObject.Is())
 	{
-		TextObject.String() = Text;
+		TextObject.Text() = Text;
 		TextObject.TextAlignmentX() = Text::Alignment::Mid;
 		TextObject.TextAlignmentY() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentX() = Text::Alignment::Mid;

@@ -19,9 +19,9 @@ struct Main_Data
 
 struct Inst_Data
 {
-	VectorF2		Pos;
-	BoxF2	Pallet;
-	BoxF2	Bound;
+	VectorF2	Pos;
+	BoxF2		Pallet;
+	BoxF2		Bound;
 	ColorF4		Color;
 
 	Inst_Data();

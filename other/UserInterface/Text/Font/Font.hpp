@@ -23,26 +23,30 @@ class Font
 	struct Character
 	{
 		unsigned int	Code;
-		BoxF2		Box;
+		BoxF2			Box;
 		Character();
+	};
+	struct CharacterRange
+	{
+		unsigned int					CodeMin;
+		unsigned int					CodeMax;
+		Container::Binary<Character>	Characters;
 	};
 
 	public:
-	Image							AtlasTexture;
-	Character						DefaultCharacter;
-	Container::Binary<Character>	Characters;
+	Image								AtlasTexture;
+	Character							DefaultCharacter;
+	Container::Binary<Character>		Characters;
+	Container::Binary<CharacterRange*>	CharacterRanges;
 
-	private:
-	Font();
 	public:
 	~Font();
+	Font();
+	Font(const Font & other) = delete;
+	Font & operator=(const Font & other) = delete;
 
 	public:
-	BoxF2 CharacterBoxFromCode(unsigned int code);
-
-	public:
-	struct Template;
-	//Template * ToTemplate();
+	BoxF2	CharacterBoxFromCode(unsigned int code);
 
 	private:
 	struct ParsingData;

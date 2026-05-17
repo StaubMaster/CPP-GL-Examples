@@ -76,7 +76,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	{
 		UI::Text::Object	text;
 		text.Create();
-		text.String() = "Top\nLeft";
+		text.Text() = "Top\nLeft";
 		text.Bound() = bound;
 		text.TextPosition() = VectorF2(0, 0);
 		text.AlignTopLeft();
@@ -85,7 +85,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	{
 		UI::Text::Object	text;
 		text.Create();
-		text.String() = "Top\nMiddle";
+		text.Text() = "Top\nMiddle";
 		text.Bound() = bound;
 		text.TextPosition() = VectorF2(window.Size.Buffer.Half.X, 0);
 		text.AlignTopMiddle();
@@ -94,7 +94,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	{
 		UI::Text::Object	text;
 		text.Create();
-		text.String() = "Top\nRight";
+		text.Text() = "Top\nRight";
 		text.Bound() = bound;
 		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
 		text.AlignTopRight();
@@ -104,7 +104,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	{
 		UI::Text::Object	text;
 		text.Create();
-		text.String() = "Middle\nLeft";
+		text.Text() = "Middle\nLeft";
 		text.Bound() = bound;
 		text.TextPosition() = VectorF2(0, window.Size.Buffer.Half.Y);
 		text.AlignMiddleLeft();
@@ -113,7 +113,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	{
 		UI::Text::Object	text;
 		text.Create();
-		text.String() = "Middle\nMiddle";
+		text.Text() = "Middle\nMiddle";
 		text.Bound() = bound;
 		text.TextPosition() = VectorF2(window.Size.Buffer.Half.X, window.Size.Buffer.Half.Y);
 		text.AlignMiddleMiddle();
@@ -122,7 +122,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	{
 		UI::Text::Object	text;
 		text.Create();
-		text.String() = "Middle\nRight";
+		text.Text() = "Middle\nRight";
 		text.Bound() = bound;
 		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, window.Size.Buffer.Half.Y);
 		text.AlignMiddleRight();
@@ -132,7 +132,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	{
 		UI::Text::Object	text;
 		text.Create();
-		text.String() = "Bottom\nLeft";
+		text.Text() = "Bottom\nLeft";
 		text.Bound() = bound;
 		text.TextPosition() = VectorF2(0, window.Size.Buffer.Full.Y);
 		text.AlignBottomLeft();
@@ -141,7 +141,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	{
 		UI::Text::Object	text;
 		text.Create();
-		text.String() = "Bottom\nMiddle";
+		text.Text() = "Bottom\nMiddle";
 		text.Bound() = bound;
 		text.TextPosition() = VectorF2(window.Size.Buffer.Half.X, window.Size.Buffer.Full.Y);
 		text.AlignBottomMiddle();
@@ -150,7 +150,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	{
 		UI::Text::Object	text;
 		text.Create();
-		text.String() = "Bottom\nRight";
+		text.Text() = "Bottom\nRight";
 		text.Bound() = bound;
 		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, window.Size.Buffer.Full.Y);
 		text.AlignBottomRight();

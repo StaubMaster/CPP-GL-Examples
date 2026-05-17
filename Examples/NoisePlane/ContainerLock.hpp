@@ -19,10 +19,25 @@ struct ContainerLock
 		Items can still be changed by multiple Threads
 	*/
 
+	/*
+		changing Items while they are being checked in another part will technically not cause a program crash
+		but it is undefined, so it should be avoided
+		ItemAccess
+			like const
+		ItemAssign
+			Container stays the same
+			Items change
+		Container
+			Container changes
+
+		ItemAssign and Container can never overlap ?
+		so just split into access and assign ?
+	*/
+
 	private:
-	std::mutex					ContainerMutex;	// ContainerMutex
-	std::mutex					ItemMutex;		// ItemAccessMutex
-	std::atomic<unsigned int>	ItemLockCount;	// ItemAccessCount
+	std::mutex					AssignMutex;
+	std::mutex					AccessMutex;
+	std::atomic<unsigned int>	AccessCount;
 
 	public:
 	unsigned int	Count() const;
@@ -35,16 +50,16 @@ struct ContainerLock
 	ContainerLock & operator=(const ContainerLock & other) = delete;
 
 	public:
-	void	LockItems();
-	void	UnLockItems();
-	void	LockContainer();
-	void	UnlockContainer();
+	void	AccessL();
+	void	AccessU();
+	void	AssignL();
+	void	AssignU();
 
 	public:
-	void	LockItems(StopWatch & watch, WaitDoTime & time);
-	void	UnLockItems(StopWatch & watch, WaitDoTime & time);
-	void	LockContainer(StopWatch & watch, WaitDoTime & time);
-	void	UnlockContainer(StopWatch & watch, WaitDoTime & time);
+	void	AccessL(StopWatch & watch, WaitDoTime & time);
+	void	AccessU(StopWatch & watch, WaitDoTime & time);
+	void	AssignL(StopWatch & watch, WaitDoTime & time);
+	void	AssignU(StopWatch & watch, WaitDoTime & time);
 
 	public:
 	/*struct Object
@@ -52,7 +67,6 @@ struct ContainerLock
 		private:
 		ContainerLock &		Lock;
 		bool				IsLocked;
-		//
 
 		public:
 		~Object();

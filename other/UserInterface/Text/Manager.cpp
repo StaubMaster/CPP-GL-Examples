@@ -45,27 +45,14 @@ UI::Text::Manager::Manager()
 	, TextFont(nullptr)
 	, Pallet_Texture()
 	, GraphicsExist(false)
-	, GraphicsNeedInit(false)
-	, GraphicsNeedMain(false)
+	, TextureAssigned(false)
+	, BufferMainAttributesBound(false)
+	, BufferInstAttributesBound(false)
+	, BufferMainNewData(false)
+	, BufferInstNewData(false)
 {
 	std::cout << "  ++++  " << "UI::Text::Manager::Manager()" << '\n';
 }
-
-
-
-UI::Text::ObjectData * UI::Text::Manager::PlaceObject()
-{
-	ObjectData * obj = new ObjectData();
-	ObjectDatas.Insert(obj);
-	return obj;
-}
-UI::Text::ObjectData * UI::Text::Manager::CopyObject(const ObjectData * obj)
-{
-	if (obj == nullptr) { return nullptr; }
-	return PlaceObject();
-}
-
-
 
 void UI::Text::Manager::InitMedia(DirectoryInfo & media_dir)
 {
@@ -89,83 +76,19 @@ void UI::Text::Manager::InitMedia(DirectoryInfo & media_dir)
 
 
 
-void UI::Text::Manager::GraphicsCreate()
+UI::Text::ObjectData * UI::Text::Manager::MakeObject()
 {
-	if (!GraphicsExist)
-	{
-		Shader.Create();
-		Buffer.Create();
-		Pallet_Texture.Create();
-		GraphicsExist = true;
-		GraphicsNeedInit = true;
-		GraphicsNeedMain = true;
-	}
+	ObjectData * obj = new ObjectData();
+	ObjectDatas.Insert(obj);
+	return obj;
 }
-void UI::Text::Manager::GraphicsDelete()
+UI::Text::ObjectData * UI::Text::Manager::CopyObject(const ObjectData * obj)
 {
-	if (GraphicsExist)
-	{
-		Buffer.Delete();
-		Shader.Delete();
-		Pallet_Texture.Delete();
-		GraphicsExist = false;
-	}
+	if (obj == nullptr) { return nullptr; }
+	return MakeObject();
 }
 
 
-
-void UI::Text::Manager::GraphicsInit()
-{
-	if (!(GraphicsNeedInit && GraphicsExist)) { return; }
-
-	Buffer.Main.Init();
-	Buffer.Inst.Init();
-
-	Pallet_Texture.Bind();
-	Pallet_Texture.Assign(TextFont -> AtlasTexture);
-	Pallet_Texture.FilterMin(Texture::Base::FilterMinType::Linear);
-
-	GraphicsNeedInit = false;
-}
-void UI::Text::Manager::GraphicsMain()
-{
-	if (!(GraphicsNeedMain && GraphicsExist)) { return; }
-
-	Container::Binary<UI::Text::Main_Data> data;
-
-	data.Insert(UI::Text::Main_Data(VectorF2(-1, -1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(+1, -1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(+1, -1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(+1, +1)));
-
-	Buffer.Main.Data(data);
-
-	GraphicsNeedMain = false;
-}
-void UI::Text::Manager::GraphicsInst()
-{
-	Instances.Clear();
-	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
-	{
-		if (ObjectDatas[i] != nullptr)
-		{
-			ObjectData & obj = *ObjectDatas[i];
-			if (obj.Display)
-			{
-				PlaceInstance(obj);
-			}
-			if (obj.Remove)
-			{
-				ObjectDatas.Remove(i);
-				delete &obj;
-				i--;
-			}
-		}
-	}
-	Buffer.Inst.Data(Instances);
-}
 
 static unsigned int LineCount(const char * text)
 {
@@ -194,7 +117,7 @@ static unsigned int LineLength(const char * text, unsigned int i)
 	return len;
 }
 
-void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
+void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 {
 	unsigned int line_count = LineCount(obj.Text.c_str());
 	unsigned int line_idx = 0;
@@ -214,13 +137,22 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 		case Alignment::Max: rel_chr.Y = -0.5f; break;
 	}
 
-	VectorF2 rel_txt;
+	VectorF2 text_alignment;
+	switch (obj.TextAlignmentX)
+	{
+		case Alignment::Min: text_alignment.X = 0.0f; break;
+		case Alignment::Mid: text_alignment.X = 0.5f; break;
+		case Alignment::Max: text_alignment.X = 1.0f; break;
+	}
 	switch (obj.TextAlignmentY)
 	{
-		case Alignment::Min: rel_txt.Y = -(line_count * 0.0f); break;
-		case Alignment::Mid: rel_txt.Y = -(line_count * 0.5f); break;
-		case Alignment::Max: rel_txt.Y = -(line_count * 1.0f); break;
+		case Alignment::Min: text_alignment.Y = 0.0f; break;
+		case Alignment::Mid: text_alignment.Y = 0.5f; break;
+		case Alignment::Max: text_alignment.Y = 1.0f; break;
 	}
+
+	VectorF2 rel_txt;
+	rel_txt.Y = -(line_count * text_alignment.Y);
 
 	UI::Text::Inst_Data data;
 	for (unsigned int i = 0; i < obj.Text.length(); i++)
@@ -232,42 +164,148 @@ void UI::Text::Manager::PlaceInstance(const ObjectData & obj)
 		}
 		if (obj.Text[i] == '\n')
 		{
-			rel_txt.Y += 1;
+			rel_txt.Y++;
 			line_idx = 0;
 			line_len = LineLength(obj.Text.c_str(), i + 1);
 			continue;
 		}
 
-		switch (obj.TextAlignmentX)
-		{
-			case Alignment::Min: rel_txt.X = (line_idx + 0.0f) - (line_len * 0.0f); break;
-			case Alignment::Mid: rel_txt.X = (line_idx + 0.5f) - (line_len * 0.5f); break;
-			case Alignment::Max: rel_txt.X = (line_idx + 1.0f) - (line_len * 1.0f); break;
-		}
+		rel_txt.X = (line_idx + text_alignment.X) - (line_len * text_alignment.X);
 
 		line_idx++;
 
 		// check if Character is in Bound ?
 		data.Pos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
-		data.Pallet = TextFont -> CharacterBoxFromCode(obj.Text[i]); // this will need to be bofore check for non MonoSpace
+		data.Pallet = TextFont -> CharacterBoxFromCode(obj.Text[i]); // this will need to be before check for non MonoSpace
 		VectorF2 size = (obj.CharacterSize * 0.5f);
 
-		if (obj.Bound.InnerBox(BoxF2(data.Pos - size, data.Pos + size)).IsNormal())
+		//if (obj.Bound.InnerBox(BoxF2(data.Pos - size, data.Pos + size)).IsNormal()) // this is slow
 		{
 			data.Bound = obj.Bound;
 			data.Color = obj.Color;
-			Instances.Insert(data);
+			Instances.Insert(data); // this is slow
+			// use a BlockList ?
 		}
 	}
+}
+void UI::Text::Manager::MakeInstances()
+{
+	Instances.Clear();
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		if (ObjectDatas[i] != nullptr)
+		{
+			ObjectData & obj = *ObjectDatas[i];
+			if (obj.Display)
+			{
+				MakeObjectInstances(obj);
+			}
+			if (obj.Remove)
+			{
+				ObjectDatas.Remove(i);
+				delete &obj;
+				i--;
+			}
+		}
+	}
+	BufferInstNewData = true;
+}
+
+
+
+
+
+void UI::Text::Manager::GraphicsCreate()
+{
+	if (!GraphicsExist)
+	{
+		Shader.Create();
+		Buffer.Create();
+		Pallet_Texture.Create();
+		GraphicsExist = true;
+		TextureAssigned = false;
+		BufferMainAttributesBound = false;
+		BufferInstAttributesBound = false;
+		BufferMainNewData = true;
+	}
+}
+void UI::Text::Manager::GraphicsDelete()
+{
+	if (GraphicsExist)
+	{
+		Buffer.Delete();
+		Shader.Delete();
+		Pallet_Texture.Delete();
+		GraphicsExist = false;
+	}
+}
+
+void UI::Text::Manager::TextureAssign()
+{
+	if (!GraphicsExist || TextureAssigned) { return; }
+
+	Pallet_Texture.Bind();
+	Pallet_Texture.Assign(TextFont -> AtlasTexture);
+	Pallet_Texture.FilterMin(Texture::Base::FilterMinType::Linear);
+
+	TextureAssigned = true;
+}
+void UI::Text::Manager::BufferMainAttributesBind()
+{
+	if (!GraphicsExist || BufferMainAttributesBound) { return; }
+
+	Buffer.Main.Init();
+
+	BufferMainAttributesBound = true;
+}
+void UI::Text::Manager::BufferInstAttributesBind()
+{
+	if (!GraphicsExist || BufferInstAttributesBound) { return; }
+
+	Buffer.Inst.Init();
+
+	BufferInstAttributesBound = true;
+}
+
+void UI::Text::Manager::BufferMainUpdateData()
+{
+	if (!GraphicsExist || !BufferMainNewData) { return; }
+
+	Container::Binary<UI::Text::Main_Data> data;
+
+	data.Insert(UI::Text::Main_Data(VectorF2(-1, -1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(+1, -1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(+1, -1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
+	data.Insert(UI::Text::Main_Data(VectorF2(+1, +1)));
+
+	Buffer.Main.Data(data);
+
+	BufferMainNewData = false;
+}
+void UI::Text::Manager::BufferInstUpdateData()
+{
+	if (!GraphicsExist || !BufferInstNewData) { return; }
+
+	Buffer.Inst.Data(Instances);
+
+	BufferInstNewData = false;
 }
 
 
 
 void UI::Text::Manager::Draw()
 {
-	GraphicsInit();
-	GraphicsMain();
-	GraphicsInst();
+	if (!GraphicsExist) { return; }
+
+	TextureAssign();
+
+	BufferMainAttributesBind();
+	BufferMainUpdateData();
+
+	BufferInstAttributesBind();
+	BufferInstUpdateData();
 
 	Shader.Bind();
 	Pallet_Texture.Bind();

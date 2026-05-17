@@ -15,20 +15,21 @@ namespace Text
 {
 struct ObjectData
 {
+	bool	Remove;
+	bool	Display;
+	// Object. to set Data to null when this gets deleted
+
 	std::string		Text;
-	VectorF2			TextPosition;
+	VectorF2		TextPosition;
 	Alignment		TextAlignmentX;
 	Alignment		TextAlignmentY;
 
 	VectorF2		CharacterSize;
-	Alignment	CharacterAlignmentX;
-	Alignment	CharacterAlignmentY;
+	Alignment		CharacterAlignmentX;
+	Alignment		CharacterAlignmentY;
 
-	BoxF2	Bound;
-	ColorF4		Color;
-
-	bool	Remove;
-	bool	Display;
+	BoxF2			Bound;
+	ColorF4			Color;
 
 	~ObjectData();
 	ObjectData();

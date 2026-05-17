@@ -29,7 +29,7 @@ void UI::Control::Label::PutCharactersEntrys()
 {
 	if (TextObject.Is())
 	{
-		TextObject.String() = Text;
+		TextObject.Text() = Text;
 		TextObject.TextPosition() = ContainerBox.Min;
 		TextObject.AlignTopLeft();
 		TextObject.Bound() = ContainerBox;

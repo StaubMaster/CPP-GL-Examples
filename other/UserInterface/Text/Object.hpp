@@ -17,11 +17,19 @@ struct ObjectData;
 
 struct Object
 {
+	private:
 	ObjectData * Data;
 
-	bool			Is() const;
-	std::string &	String();
+	public:
+	bool	Is() const;
 
+	bool	Visibility() const;
+	void	Hide();
+	void	Full();
+
+	// change to get/set instead of returning referances ?
+
+	std::string &	Text();
 	VectorF2 &		TextPosition();
 	Alignment &		TextAlignmentX();
 	Alignment &		TextAlignmentY();
@@ -32,10 +40,6 @@ struct Object
 
 	BoxF2 &			Bound();
 	ColorF4 &		Color();
-
-	bool	Visibility() const;
-	void	Hide();
-	void	Full();
 
 	void	AlignTopLeft();
 	void	AlignTopMiddle();

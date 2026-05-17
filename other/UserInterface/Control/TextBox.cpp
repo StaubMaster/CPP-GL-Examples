@@ -31,7 +31,7 @@ void UI::Control::TextBox::PutCharactersEntrys()
 {
 	if (TextObject.Is())
 	{
-		TextObject.String() = Text;
+		TextObject.Text() = Text;
 		TextObject.TextPosition() = ContainerBox.Min;
 		TextObject.AlignTopLeft();
 		TextObject.Bound() = ContainerBox;

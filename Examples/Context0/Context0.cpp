@@ -68,6 +68,7 @@ void Context0::Frame(FrameTime frame_time)
 	(void)frame_time;
 	ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
 	ControlManager.Draw();
+	TextManager.MakeInstances();
 	TextManager.Draw();
 }
 

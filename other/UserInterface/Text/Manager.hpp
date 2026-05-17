@@ -44,6 +44,8 @@ class Manager
 	UI::Text::Font *	TextFont;
 	Texture::Array2D	Pallet_Texture;
 
+
+
 	public:
 	~Manager();
 	Manager();
@@ -51,11 +53,22 @@ class Manager
 	Manager & operator=(const Manager & other) = delete;
 
 	public:
-	ObjectData *	PlaceObject();
-	ObjectData *	CopyObject(const ObjectData * obj);
+	void	InitMedia(DirectoryInfo & media_dir);
+
+
 
 	public:
-	void	InitMedia(DirectoryInfo & media_dir);
+	ObjectData *	MakeObject();
+	ObjectData *	CopyObject(const ObjectData * obj);
+
+
+
+	private:
+	void	MakeObjectInstances(const ObjectData & obj);
+	public:
+	void	MakeInstances();
+
+
 
 	private:
 	bool	GraphicsExist;
@@ -64,14 +77,20 @@ class Manager
 	void	GraphicsDelete();
 
 	private:
-	bool	GraphicsNeedInit;
-	bool	GraphicsNeedMain;
+	bool	TextureAssigned;
+	void	TextureAssign();
+
 	private:
-	void	GraphicsInit(); // Init Buffer Attributes
-	void	GraphicsMain(); // put Main in Buffer
-	void	GraphicsInst(); // put Inst in Buffer
+	bool	BufferMainAttributesBound;
+	bool	BufferInstAttributesBound;
+	void	BufferMainAttributesBind();
+	void	BufferInstAttributesBind();
+
 	private:
-	void	PlaceInstance(const ObjectData & obj);
+	bool	BufferMainNewData;
+	bool	BufferInstNewData;
+	void	BufferMainUpdateData();
+	void	BufferInstUpdateData();
 
 	public:
 	void	Draw();

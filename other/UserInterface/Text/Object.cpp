@@ -4,9 +4,15 @@
 
 
 
-bool			UI::Text::Object::Is() const { return (Data != nullptr); }
-std::string &	UI::Text::Object::String() { return (Data -> Text); }
+bool UI::Text::Object::Is() const { return (Data != nullptr); }
 
+bool UI::Text::Object::Visibility() const { return (Data -> Display); }
+void UI::Text::Object::Hide() { (Data -> Display) = false; }
+void UI::Text::Object::Full() { (Data -> Display) = true; }
+
+
+
+std::string &			UI::Text::Object::Text() { return (Data -> Text); }
 VectorF2 &				UI::Text::Object::TextPosition() { return (Data -> TextPosition); }
 UI::Text::Alignment &	UI::Text::Object::TextAlignmentX() { return (Data -> TextAlignmentX); }
 UI::Text::Alignment &	UI::Text::Object::TextAlignmentY() { return (Data -> TextAlignmentY); }
@@ -15,12 +21,8 @@ VectorF2 &				UI::Text::Object::CharacterSize() { return (Data -> CharacterSize)
 UI::Text::Alignment &	UI::Text::Object::CharacterAlignmentX() { return (Data -> CharacterAlignmentX); }
 UI::Text::Alignment &	UI::Text::Object::CharacterAlignmentY() { return (Data -> CharacterAlignmentY); }
 
-BoxF2 &		UI::Text::Object::Bound() { return (Data -> Bound); }
-ColorF4 &		UI::Text::Object::Color() { return (Data -> Color); }
-
-bool UI::Text::Object::Visibility() const { return (Data -> Display); }
-void UI::Text::Object::Hide() { (Data -> Display) = false; }
-void UI::Text::Object::Full() { (Data -> Display) = true; }
+BoxF2 &					UI::Text::Object::Bound() { return (Data -> Bound); }
+ColorF4 &				UI::Text::Object::Color() { return (Data -> Color); }
 
 
 
@@ -127,6 +129,6 @@ void UI::Text::Object::Create()
 {
 	if (Data == nullptr)
 	{
-		Data = Manager::Current().PlaceObject();
+		Data = Manager::Current().MakeObject();
 	}
 }

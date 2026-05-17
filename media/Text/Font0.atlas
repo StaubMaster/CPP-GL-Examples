@@ -32,6 +32,8 @@ Character Default 15.0 00.0 1.0 1.0
 
 
 
+Range 48 57
+
 # 0 to 9
 Character 48 00.0 00.0 1.0 1.0
 Character 49 01.0 00.0 1.0 1.0
@@ -44,6 +46,8 @@ Character 55 07.0 00.0 1.0 1.0
 Character 56 08.0 00.0 1.0 1.0
 Character 57 09.0 00.0 1.0 1.0
 
+Range
+
 
 
 # +-=<>
@@ -54,6 +58,8 @@ Character 60 13.0 00.0 1.0 1.0
 Character 62 14.0 00.0 1.0 1.0
 
 
+
+Range 65 90
 
 # A to M
 Character 65 00.0 01.0 1.0 1.0
@@ -85,9 +91,14 @@ Character 88 10.0 02.0 1.0 1.0
 Character 89 11.0 02.0 1.0 1.0
 Character 90 12.0 02.0 1.0 1.0
 
+Range
 
+
+
+Range 097 122
 
 # a to m
+
 Character 097 00.0 03.0 1.0 1.0
 Character 098 01.0 03.0 1.0 1.0
 Character 099 02.0 03.0 1.0 1.0
@@ -116,6 +127,8 @@ Character 119 09.0 04.0 1.0 1.0
 Character 120 10.0 04.0 1.0 1.0
 Character 121 11.0 04.0 1.0 1.0
 Character 122 12.0 04.0 1.0 1.0
+
+Range
 
 
 
