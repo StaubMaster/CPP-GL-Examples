@@ -114,7 +114,7 @@ void UI::Control::Manager::GraphicsMain()
 	data.Insert(UI::Control::Main_Data(VectorF2(-1, +1)));
 	data.Insert(UI::Control::Main_Data(VectorF2(+1, +1)));
 
-	Buffer.Main.Data(data.ToVoid());
+	Buffer.Main.DataFull(data.ToVoid());
 
 	GraphicsNeedMain = false;
 }
@@ -138,7 +138,7 @@ void UI::Control::Manager::GraphicsInst()
 			}
 		}
 	}
-	Buffer.Inst.Data(Instances.ToVoid());
+	Buffer.Inst.DataFull(Instances.ToVoid());
 }
 
 void UI::Control::Manager::PlaceInstance(const ObjectData & obj)

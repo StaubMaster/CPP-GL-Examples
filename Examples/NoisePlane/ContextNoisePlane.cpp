@@ -806,8 +806,8 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	MakeControls();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
-	ChunkManager.ChangeSize(2, 1);
-	//ChunkManager.ChangeSize(8, 4);
+	//ChunkManager.ChangeSize(2, 1);
+	ChunkManager.ChangeSize(8, 4);
 	//ChunkManager.ChangeSize(16, 8);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
@@ -939,6 +939,41 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 }
 
 
+unsigned int					CopyTest_1K_Size = 1024;
+static ValueAverager<float>		CopyTest_1K_TimeNew(64);
+static ValueAverager<float>		CopyTest_1K_TimeCopy(64);
+
+unsigned int					CopyTest_1M_Size = 1024 * 2024;
+static ValueAverager<float>		CopyTest_1M_TimeNew(64);
+static ValueAverager<float>		CopyTest_1M_TimeCopy(64);
+
+static void TestCopyTimeSize(unsigned int size, ValueAverager<float> & time_new, ValueAverager<float> & time_copy)
+{
+	StopWatch sw;
+
+	sw.Start();
+	Container::Array<int> arr0(size);
+	Container::Array<int> arr1(size);
+	sw.Stop();
+	time_new.NewValue(sw.ElapsedTime());
+
+	sw.Clear();
+	sw.Start();
+	for (unsigned int i = 0; i < size; i++)
+	{
+		arr1[i] = arr0[i];
+	}
+	sw.Stop();
+	time_copy.NewValue(sw.ElapsedTime());
+}
+
+static void TestCopyTime()
+{
+	TestCopyTimeSize(CopyTest_1K_Size, CopyTest_1K_TimeNew, CopyTest_1K_TimeCopy);
+	TestCopyTimeSize(CopyTest_1M_Size, CopyTest_1M_TimeNew, CopyTest_1M_TimeCopy);
+}
+
+
 
 static ValueAverager<float>		DLTAverageTime(64);
 static ValueAverager<int>		FPSAverageTime(64);
@@ -978,6 +1013,13 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ShowNameTimeLine(ss, "TextInstanceTime", TextInstanceTime);
 		//std::cout << "TimeMakeText: " << TimeMakeText.Average() << '\n';
 		ss << '\n';
+	}
+
+	{
+		ShowNameTimeLine(ss, "TestCopyTimeSize 1K  New", CopyTest_1K_TimeNew);
+		ShowNameTimeLine(ss, "TestCopyTimeSize 1K Copy", CopyTest_1K_TimeCopy);
+		ShowNameTimeLine(ss, "TestCopyTimeSize 1M  New", CopyTest_1M_TimeNew);
+		ShowNameTimeLine(ss, "TestCopyTimeSize 1M Copy", CopyTest_1M_TimeCopy);
 	}
 
 	// Thread Time
@@ -1249,6 +1291,12 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << " = " << Memory1000ToString(main_f_count * sizeof(VoxelGraphics::MainDataF));
 		ss << '\n';
 
+		unsigned int vertex_u_limit = 6 * 3 * CHUNK_VALUES_PER_VOLM * sizeof(VoxelGraphics::MainDataU);
+		ss << "BufferUData Limit:" << Memory1000ToString(vertex_u_limit);
+		ss << " * " << Seperated1000(ChunkManager.Chunks.Length());
+		ss << " = " << Memory1000ToString(vertex_u_limit * ChunkManager.Chunks.Length());
+		ss << '\n';
+
 		ChunkManager.ChunksLock.AccessU();
 		//ChunkManager.ChunksChanging.unlock();
 	}
@@ -1422,6 +1470,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 {
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
+
+	TestCopyTime();
 
 	StopWatch sw;
 	sw.Start();

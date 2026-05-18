@@ -640,8 +640,10 @@ void Chunk::BufferUMain_UpdateData()
 	if (!GraphicsExist) { return; }
 	if (!BufferUMain_NewData) { return; }
 
+	if ((Index == VectorI3(0, 0, 0)).All(true)) { std::cout << "Chunk BufferU Main Data\n"; }
+
 	MainBufferData.ArrayLock.lock();
-	BufferU.Main.Data(MainBufferData.GraphicsDataU().ToVoid());
+	BufferU.Main.DataFull(MainBufferData.GraphicsDataU().ToVoid());
 	MainBufferData.ClearU();
 	MainBufferData.ArrayLock.unlock();
 
@@ -653,7 +655,7 @@ void Chunk::BufferFMain_UpdateData()
 	if (!BufferFMain_NewData) { return; }
 
 	MainBufferData.ArrayLock.lock();
-	BufferF.Main.Data(MainBufferData.GraphicsDataF().ToVoid());
+	BufferF.Main.DataFull(MainBufferData.GraphicsDataF().ToVoid());
 	MainBufferData.ClearF();
 	MainBufferData.ArrayLock.unlock();
 
@@ -665,6 +667,8 @@ void Chunk::BufferUInst_UpdateData()
 	if (!GraphicsExist) { return; }
 	if (!BufferUInst_NewData) { return; }
 
+	if ((Index == VectorI3(0, 0, 0)).All(true)) { std::cout << "Chunk BufferU Inst Data\n"; }
+
 	{
 		Container::Binary<VoxelGraphics::InstData> data;
 
@@ -672,7 +676,7 @@ void Chunk::BufferUInst_UpdateData()
 		temp.Pos = Index * CHUNK_VALUES_PER_SIDE;
 		data.Insert(temp);
 
-		BufferU.Inst.Data(data.ToVoid());
+		BufferU.Inst.DataFull(data.ToVoid());
 	}
 
 	BufferUInst_NewData = false;
@@ -689,7 +693,7 @@ void Chunk::BufferFInst_UpdateData()
 		temp.Pos = Index * CHUNK_VALUES_PER_SIDE;
 		data.Insert(temp);
 
-		BufferF.Inst.Data(data.ToVoid());
+		BufferF.Inst.DataFull(data.ToVoid());
 	}
 
 	BufferFInst_NewData = false;
@@ -700,6 +704,7 @@ void Chunk::DrawU()
 	if (!GraphicsExist) { return; }
 	if (!BufferU_AttributesBound)
 	{
+		if ((Index == VectorI3(0, 0, 0)).All(true)) { std::cout << "Chunk BufferU Init\n"; }
 		BufferU.Inst.Init();
 		BufferU.Main.Init();
 		BufferU_AttributesBound = true;
