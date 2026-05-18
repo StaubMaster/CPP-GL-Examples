@@ -320,7 +320,7 @@ void VoxelPalletMap::LoadTextures(ChunkManager & manager)
 	}
 	std::cout << "Textures: " << files.Count() << '\n';
 	manager.Texture.Bind();
-	manager.Texture.Assign(VectorU2(32, 32), files);
+	manager.Texture.Assign(VectorU2(32, 32), files.ToArray());
 	std::cout << "LoadTextures done\n";
 }
 void VoxelPalletMap::MakePolyHedra()

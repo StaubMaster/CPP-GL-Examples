@@ -6,7 +6,6 @@
 #include "Shader.hpp"
 
 #include "Miscellaneous/Container/Binary.hpp"
-#include "Miscellaneous/EntryContainer/Binary.hpp"
 
 #include "Font/Font.hpp"
 #include "Graphics/Texture/Array2D.hpp"

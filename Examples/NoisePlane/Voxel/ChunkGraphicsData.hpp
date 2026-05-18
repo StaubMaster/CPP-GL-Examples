@@ -6,7 +6,7 @@
 
 # include "Miscellaneous/Container/Array.hpp"
 # include "Miscellaneous/Container/Array3D.hpp"
-# include "BlockList.hpp"
+# include "Miscellaneous/Container/BlockLinkedList.hpp"
 
 struct VectorU3;
 struct VoxelOrientation;
@@ -27,10 +27,17 @@ maybe 1 Color per Voxel
 for very far
 */
 
+# include <mutex>
+
 struct ChunkGraphicsData
 {
+	public:
+	std::mutex	ArrayLock;
+
+
+
 	private:
-	BlockList<1024, VoxelGraphics::MainFaceU>	DataU;
+	Container::BlockLinkedList<1024, VoxelGraphics::MainFaceU>	BlockU;
 	Container::Array<VoxelGraphics::MainFaceU>	ArrayU;
 	public:
 	void	ClearU();
@@ -44,7 +51,7 @@ struct ChunkGraphicsData
 
 
 	private:
-	BlockList<1024, VoxelGraphics::MainFaceF>	DataF;
+	Container::BlockLinkedList<1024, VoxelGraphics::MainFaceF>	BlockF;
 	Container::Array<VoxelGraphics::MainFaceF>	ArrayF;
 	public:
 	void	ClearF();

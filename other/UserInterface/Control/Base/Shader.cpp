@@ -1,6 +1,5 @@
 #include "Shader.hpp"
 #include "Graphics/Shader/Code.hpp"
-#include "Miscellaneous/Container/Fixed.hpp"
 
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"

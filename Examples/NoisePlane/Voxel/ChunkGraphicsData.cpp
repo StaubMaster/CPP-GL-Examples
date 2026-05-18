@@ -126,7 +126,6 @@ static void ShowTime()
 
 void ChunkGraphicsData::ClearU()
 {
-	DataU.Clear();
 	ArrayU.Clear();
 }
 void ChunkGraphicsData::CatU(VectorU3 u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet)
@@ -195,7 +194,7 @@ void ChunkGraphicsData::CatU(VectorU3 u, AxisRel axis, const VoxelOrientation & 
 	TimeInsert.Start();
 	#endif
 
-	DataU.Insert(VoxelGraphics::MainFaceU(data));
+	BlockU.Insert(VoxelGraphics::MainFaceU(data));
 
 	#ifdef MEASURE_TIME
 	TimeInsert.Stop();
@@ -280,12 +279,13 @@ void ChunkGraphicsData::MakeU(const Chunk & chunk, const ChunkNeighbour & neighb
 }
 void ChunkGraphicsData::DoneU()
 {
-	unsigned int limit = DataU.Count();
-	ArrayU.Allocate(limit, limit);
+	ArrayU = BlockU.ToArray();
+	/*unsigned int limit = BlockU.Count();
+	ArrayU.NewLength(limit);
 	unsigned int count = 0;
-	for (unsigned int b = 0; b < DataU.BlockCount(); b++)
+	for (unsigned int b = 0; b < BlockU.BlockCount(); b++)
 	{
-		const BlockList<1024, VoxelGraphics::MainFaceU>::Block & block = DataU.BlockIndex(b);
+		const Container::BlockLinkedList<1024, VoxelGraphics::MainFaceU>::Block & block = BlockU.BlockIndex(b);
 		for (unsigned int i = 0; i < 1024; i++)
 		{
 			if (count < limit)
@@ -294,8 +294,8 @@ void ChunkGraphicsData::DoneU()
 				count++;
 			}
 		}
-	}
-	DataU.Clear();
+	}*/
+	BlockU.Clear();
 }
 const Container::Array<VoxelGraphics::MainFaceU> & ChunkGraphicsData::GraphicsDataU() const { return ArrayU; }
 
@@ -303,17 +303,17 @@ const Container::Array<VoxelGraphics::MainFaceU> & ChunkGraphicsData::GraphicsDa
 
 void ChunkGraphicsData::ClearF()
 {
-	DataF.Clear();
 	ArrayF.Clear();
 }
 void ChunkGraphicsData::DoneF()
 {
-	unsigned int limit = DataF.Count();
-	ArrayF.Allocate(limit, limit);
+	ArrayF = BlockF.ToArray();
+	/*unsigned int limit = BlockF.Count();
+	ArrayF.NewLength(limit);
 	unsigned int count = 0;
-	for (unsigned int b = 0; b < DataF.BlockCount(); b++)
+	for (unsigned int b = 0; b < BlockF.BlockCount(); b++)
 	{
-		const BlockList<1024, VoxelGraphics::MainFaceF>::Block & block = DataF.BlockIndex(b);
+		const Container::BlockLinkedList<1024, VoxelGraphics::MainFaceF>::Block & block = BlockF.BlockIndex(b);
 		for (unsigned int i = 0; i < 1024; i++)
 		{
 			if (count < limit)
@@ -322,8 +322,8 @@ void ChunkGraphicsData::DoneF()
 				count++;
 			}
 		}
-	}
-	DataF.Clear();
+	}*/
+	BlockF.Clear();
 }
 const Container::Array<VoxelGraphics::MainFaceF> & ChunkGraphicsData::GraphicsDataF() const { return ArrayF; }
 
@@ -333,12 +333,16 @@ void ChunkGraphicsData::Make(const Chunk & chunk, const ChunkNeighbour & neighbo
 {
 	TimeClear();
 
-	ClearU();
 	if (!chunk.IsEmpty())
 	{
 		MakeU(chunk, neighbours);
 	}
+
+	// could unlock Chunk here
+
+	ArrayLock.lock();
 	DoneU();
+	ArrayLock.unlock();
 
 	ShowTime();
 }

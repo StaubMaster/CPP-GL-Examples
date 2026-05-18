@@ -25,11 +25,9 @@
 
 
 WaitDoTime ChunkManager::TimeInsert("TimeInsert");
-WaitDoTime ChunkManager::TimeInsertNeighbours("TimeInsertNeighbours");
 WaitDoTime ChunkManager::TimeRemove("TimeRemove");
 WaitDoTime ChunkManager::TimeUpdate("TimeUpdate");
 WaitDoTime ChunkManager::TimeUpdateInsert("TimeUpdateInsert");
-WaitDoTime ChunkManager::TimeUpdateChange("TimeUpdateChange");
 WaitDoTime ChunkManager::TimeUpdateRemove("TimeUpdateRemove");
 WaitDoTime ChunkManager::TimeGenerateFind("TimeGenerateFind");
 WaitDoTime ChunkManager::TimeGenerate("TimeGenerate");
@@ -300,12 +298,12 @@ void ChunkManager::UpdateChunksContainer()
 		for (unsigned int i = 0; i < ChunksToRemove.Count(); i++)
 		{
 			Chunk * chunk = ChunksToRemove[i];
-			if (chunk == nullptr) { ChunksToRemove.Remove(i); i--; continue; }
+			if (chunk == nullptr) { ChunksToRemove.RemoveAt(i); i--; continue; }
 			if (chunk -> GraphicsExist) { continue; }
 			chunk -> AssignL();
 			chunk -> AssignU();
 			delete chunk;
-			ChunksToRemove.Remove(i);
+			ChunksToRemove.RemoveAt(i);
 			i--;
 		}
 		ChunksToRemoveLock.AssignU();
@@ -326,7 +324,7 @@ void ChunkManager::UpdateChunksContainer()
 			if ((u < Chunks.Size()).Any(false)) { continue; }
 			if (Chunks[u] != nullptr) { continue; }
 			Chunks[u] = chunk;
-			ChunksToInsert.Remove(i);
+			ChunksToInsert.RemoveAt(i);
 			i--;
 		}
 		ChunksToInsertLock.AssignU(sw2, TimeUpdateInsert);

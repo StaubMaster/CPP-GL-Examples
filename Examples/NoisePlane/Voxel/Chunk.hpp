@@ -179,7 +179,7 @@ struct Chunk
 
 	public:
 	BufferDataState		MainBufferState;
-	ChunkGraphicsData	MainBufferData; // Lock Data
+	ChunkGraphicsData	MainBufferData;
 	void	GraphicsMakeData(const ChunkNeighbour & neighbours);
 	/* 
 		BufferUMain_UpdateData clears MainBufferData
@@ -188,6 +188,25 @@ struct Chunk
 
 		Lock Array
 		have another flag for turning BlockData into Array Data
+	*/
+
+	/*
+		make new MainBufferData.Block
+		...
+		Chunk is locked as Access. so it cannot be changed
+		...
+		MainBufferData.Block is done
+		MainBufferData.Block to MainBufferData.Array
+		...
+		Chunk changes
+		...
+		make new MainBufferData.Block
+		...
+		MainBufferData.Array is put into Buffer
+		MainBufferData should be cleared so that less Memory is in use
+		only clear Array ?
+		Block should be cleard after Array has been made
+		but still lock to make sture no conflict happens
 	*/
 
 	bool	BufferUMain_NewData;
@@ -206,12 +225,26 @@ struct Chunk
 	void	DrawF();
 };
 
-/* const Chunk
-	should have Container Locked
-	shoule have Items Locked ?
-		changing Items dosent crash progeam but can cause undefined behaviour
-		like GraphicsData having gaps
-	
+/*struct AccessLockedChunk
+{
+	Pointer to Chunk
+	bool IsNull() const
+
+	operator[]
+	GeneratonDone()
+	NeedsBuffer()
+
+	more is not needed for access?
+};*/
+
+/* access to what ?
+	general external stuff
+		checking Voxels
+	Generation
+		needs to changes
+	making Buffer
+		needs to access Voxels
+		but also change BufferData
 */
 
 #endif

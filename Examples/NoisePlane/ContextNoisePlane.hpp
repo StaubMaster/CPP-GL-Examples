@@ -72,7 +72,6 @@
 
 // 
 #include "PhysicsContext.hpp"
-#include "BlockList.hpp"
 
 // Math
 #include <thread>
@@ -102,18 +101,21 @@ struct InventoryShader : public ::PolyHedraFull::Shader
 
 struct ContextNoisePlane : public ContextBase
 {
-View3D	view;
-
 ::PolyHedraManager		PolyHedraManager;
 UI::Control::Manager	ControlManager;
 UI::Text::Manager		TextManager;
-//::PlaneManager			PlaneManager;
+//::PlaneManager		PlaneManager;
 ::ChunkManager			ChunkManager;
 
 #ifndef DISABLE_INVENTORY
 ::PolyHedraManager		InventoryPolyHedraManager;
 ::InventoryShader		InventoryShader;
 #endif
+
+
+
+Perlin2D	Perlin2;
+Perlin3D	Perlin3;
 
 
 
@@ -132,9 +134,6 @@ UI::Text::Manager		TextManager;
 
 
 
-Perlin2D	Perlin2;
-Perlin3D	Perlin3;
-
 Multiform::DisplaySize		Multiform_DisplaySize;
 ::Multiform::Matrix4x4		Multiform_View;
 ::Multiform::Depth			Multiform_Depth;
@@ -147,31 +146,6 @@ ContextNoisePlane();
 
 ::PhysicsContext	PhysicsContext;
 
-/* View Update
-
-Input
-	regular Axis and EulerAngle
-Physics
-	ground movement
-	ground friction
-	air movement
-	air friction
-	jump
-		only on ground
-		uneffected by ground friciton
-Collision
-
-should movement speed depend on friction or a specified limit ?
-
-allways do air movement/friction ?
-you are allways in the air
-
-movement is currently done using friction
-it makes sense but also immedeatly cancels out
-is that static friction ?
-is movement force too weak ?
-*/
-
 /* View
 	the generic View3D stuff
 	Ray
@@ -179,6 +153,8 @@ is movement force too weak ?
 	Physics Stuff
 	Collision Stuff
 */
+
+View3D	view;
 
 #ifndef DISABLE_VIEW_TANGIBLE
 float	ViewDistance = 0.0f;
@@ -206,11 +182,6 @@ VoxelHit	ViewHit;
 AxisRel		ViewHitAxis0;
 AxisRel		ViewHitAxis1;
 #endif
-
-ValueAverager<float>	TimeUpdateView;
-ValueAverager<float>	ViewUpdateCollisionTime;
-ValueAverager<float>	ViewUpdateChunksTime;
-ValueAverager<float>	ViewUpdateRayTime;
 
 void ViewUpdateDone();
 #ifndef DISABLE_VIEW_TANGIBLE
@@ -303,29 +274,9 @@ void Free() override;
 
 
 
-// this is slow ?
-ValueAverager<float>	TimeDrawTotal;
-ValueAverager<float>	TimeDrawPolyHedra;
-ValueAverager<float>	TimeDrawChunk;
-ValueAverager<float>	TimeDrawControl;
-ValueAverager<float>	TimeMakeText;
-ValueAverager<float>	TimeDrawText;
-
 void Draw();
 
-// make Timing stuff static ?
-ValueAverager<float>	DLTAverageTime;
-ValueAverager<int>		FPSAverageTime;
-ValueAverager<float>	TimeFrameTotal;
-ValueAverager<float>	FrameInputTime;
-ValueAverager<float>	TimeUpdateThread;
-#ifndef DISABLE_INVENTORY
-ValueAverager<float>	InventoryCursorTime;
-#endif
 
-unsigned int			TextCharCount = 0;
-ValueAverager<float>	TextAssambleTime;
-ValueAverager<float>	TextInstanceTime;
 
 void FrameText(FrameTime frame_time);
 #ifndef DISABLE_INVENTORY

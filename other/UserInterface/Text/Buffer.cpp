@@ -30,9 +30,9 @@ UI::Text::Buffer::Buffer()
 	, Inst(*this)
 	, DrawMode(GL::DrawMode::Triangles)
 {
-	Buffers.Allocate(2);
 	Buffers.Insert(&Main);
 	Buffers.Insert(&Inst);
+	Buffers.Trim();
 }
 void UI::Text::Buffer::Draw()
 {

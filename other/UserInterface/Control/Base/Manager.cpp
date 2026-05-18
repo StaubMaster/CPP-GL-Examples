@@ -114,7 +114,7 @@ void UI::Control::Manager::GraphicsMain()
 	data.Insert(UI::Control::Main_Data(VectorF2(-1, +1)));
 	data.Insert(UI::Control::Main_Data(VectorF2(+1, +1)));
 
-	Buffer.Main.Data(data);
+	Buffer.Main.Data(data.ToVoid());
 
 	GraphicsNeedMain = false;
 }
@@ -132,13 +132,13 @@ void UI::Control::Manager::GraphicsInst()
 			}
 			if (obj.Remove)
 			{
-				ObjectDatas.Remove(i);
+				ObjectDatas.RemoveAt(i);
 				delete &obj;
 				i--;
 			}
 		}
 	}
-	Buffer.Inst.Data(Instances);
+	Buffer.Inst.Data(Instances.ToVoid());
 }
 
 void UI::Control::Manager::PlaceInstance(const ObjectData & obj)

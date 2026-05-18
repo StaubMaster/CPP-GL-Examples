@@ -202,7 +202,7 @@ void UI::Text::Manager::MakeInstances()
 			}
 			if (obj.Remove)
 			{
-				ObjectDatas.Remove(i);
+				ObjectDatas.RemoveAt(i);
 				delete &obj;
 				i--;
 			}
@@ -280,7 +280,7 @@ void UI::Text::Manager::BufferMainUpdateData()
 	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
 	data.Insert(UI::Text::Main_Data(VectorF2(+1, +1)));
 
-	Buffer.Main.Data(data);
+	Buffer.Main.Data(data.ToVoid());
 
 	BufferMainNewData = false;
 }
@@ -288,7 +288,7 @@ void UI::Text::Manager::BufferInstUpdateData()
 {
 	if (!GraphicsExist || !BufferInstNewData) { return; }
 
-	Buffer.Inst.Data(Instances);
+	Buffer.Inst.Data(Instances.ToVoid());
 
 	BufferInstNewData = false;
 }

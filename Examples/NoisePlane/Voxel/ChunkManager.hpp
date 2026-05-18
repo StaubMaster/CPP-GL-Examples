@@ -53,17 +53,14 @@ struct ChunkManager
 {
 	public:
 	static WaitDoTime	TimeInsert;
-	static WaitDoTime	TimeInsertNeighbours;
-
 	static WaitDoTime	TimeRemove;
-
 	static WaitDoTime	TimeUpdate;
 	static WaitDoTime	TimeUpdateInsert;
-	static WaitDoTime	TimeUpdateChange;
 	static WaitDoTime	TimeUpdateRemove;
 
 	static WaitDoTime	TimeGenerateFind;
 	static WaitDoTime	TimeGenerate;
+
 	static WaitDoTime	TimeBuffersFind;
 	static WaitDoTime	TimeBuffers;
 

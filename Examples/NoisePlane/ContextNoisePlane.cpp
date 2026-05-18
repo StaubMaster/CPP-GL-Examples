@@ -33,12 +33,13 @@ ContextNoisePlane::~ContextNoisePlane()
 { }
 ContextNoisePlane::ContextNoisePlane()
 	: ContextBase()
-	, view()
 	, PolyHedraManager()
 	, ControlManager()
 	, TextManager()
 //	, PlaneManager()
 	, ChunkManager()
+	, Perlin2(Perlin2D::Random(VectorU2(8, 8)))
+	, Perlin3(Perlin3D::Random(VectorU3(8, 8, 8)))
 	, MainMenu()
 	, PauseMenu(*this)
 	, OptionsMenu(*this)
@@ -49,39 +50,17 @@ ContextNoisePlane::ContextNoisePlane()
 	, InventoryUI()
 	, HotBarUI()
 #endif
-	, Perlin2(Perlin2D::Random(VectorU2(8, 8)))
-	, Perlin3(Perlin3D::Random(VectorU3(8, 8, 8)))
 	, Multiform_DisplaySize("DisplaySize")
 	, Multiform_View("View")
 	, Multiform_Depth("Depth")
 	, Multiform_FOV("FOV")
-	, TimeUpdateView(64)
-	, ViewUpdateCollisionTime(64)
-	, ViewUpdateChunksTime(64)
-	, ViewUpdateRayTime(64)
+	, view()
 	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 	, AuxThread0Time(64)
 	, AuxThread1(&ContextNoisePlane::AuxThread1Func, this)
 	, AuxThread1Time(64)
 	, AuxThread2(&ContextNoisePlane::AuxThread2Func, this)
 	, AuxThread2Time(64)
-	, TimeDrawTotal(64)
-	, TimeDrawPolyHedra(64)
-	, TimeDrawChunk(64)
-	, TimeDrawControl(64)
-	, TimeMakeText(64)
-	, TimeDrawText(64)
-	, DLTAverageTime(64)
-	, FPSAverageTime(64)
-	, TimeFrameTotal(64)
-	, FrameInputTime(64)
-	, TimeUpdateThread(64)
-#ifndef DISABLE_INVENTORY
-	, InventoryCursorTime(64)
-#endif
-	, TextCharCount(0)
-	, TextAssambleTime(64)
-	, TextInstanceTime(64)
 {
 	ThreadInfo::ThreadName = "DrawThread";
 	PolyHedraManager.MakeCurrent();
@@ -106,6 +85,11 @@ ContextNoisePlane::ContextNoisePlane()
 }
 
 
+
+static ValueAverager<float>		TimeUpdateView(64);
+static ValueAverager<float>		ViewUpdateCollisionTime(64);
+static ValueAverager<float>		ViewUpdateChunksTime(64);
+static ValueAverager<float>		ViewUpdateRayTime(64);
 
 void ContextNoisePlane::ViewUpdateDone()
 {
@@ -424,6 +408,8 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	Input from different Thread ?
 */
 
+static ValueAverager<float>		TimeUpdateThread(64);
+
 void ContextNoisePlane::AuxThread0Func()
 {
 	ThreadInfo::ThreadName = "AuxThread0";
@@ -465,7 +451,7 @@ void ContextNoisePlane::AuxThread2Func()
 		if (!ThreadIdle && !AuxThread2Idle)
 		{
 			sw.Clear(); sw.Start();
-			//ChunkManager.GraphicsUpdateDataAround();
+			ChunkManager.GraphicsUpdateDataAround();
 			sw.Stop();
 			AuxThread2Time.NewValue(sw.ElapsedTime());
 		}
@@ -482,7 +468,7 @@ void ContextNoisePlane::DrawThreadUpdate()
 
 	ChunkManager.GenerateAround(Perlin2, Perlin3);
 
-	ChunkManager.GraphicsUpdateDataAround();
+	//ChunkManager.GraphicsUpdateDataAround();
 
 	sw.Stop();
 	TimeUpdateThread.NewValue(sw.ElapsedTime());
@@ -664,9 +650,10 @@ void ContextNoisePlane::DebugMenu_Generation3DFactor(float val)
 // make a Base ? to organize
 void ContextNoisePlane::ChangeMedia()
 {
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	// PolyHedraManager
 	PolyHedraManager.InitExternal(MediaDirectory);
-
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
 		Container::Array<Shader::Code> code({
 			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
@@ -674,6 +661,7 @@ void ContextNoisePlane::ChangeMedia()
 		});
 		ControlManager.Shader.Change(code);
 	}
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
 		ControlManager.Buffer.Main.Pos.Change(0);
 		ControlManager.Buffer.Inst.Min.Change(1);
@@ -681,16 +669,39 @@ void ContextNoisePlane::ChangeMedia()
 		ControlManager.Buffer.Inst.Layer.Change(3);
 		ControlManager.Buffer.Inst.Col.Change(4);
 	}
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
 		ControlManager.Window.ChangeManager(&ControlManager);
 		ControlManager.Window.ChangeManager(&TextManager);
 	}
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 
 	// TextManager
-	TextManager.InitMedia(MediaDirectory);
-	TextManager.TextFont = UI::Text::Font::Parse(
-		MediaDirectory.File("Text/Font0.atlas")
-	);
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
+	{
+		Container::Array<::Shader::Code> code({
+			::Shader::Code(MediaDirectory.File("Shaders/UI/Text.vert")),
+			::Shader::Code(MediaDirectory.File("Shaders/UI/Text.frag")),
+		});
+		TextManager.Shader.Change(code);
+	}
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
+	{
+		TextManager.Buffer.Main.Pos.Change(0);
+		TextManager.Buffer.Inst.Pos.Change(1);
+		TextManager.Buffer.Inst.Pallet.Min.Change(2);
+		TextManager.Buffer.Inst.Pallet.Max.Change(3);
+		TextManager.Buffer.Inst.Bound.Min.Change(4);
+		TextManager.Buffer.Inst.Bound.Max.Change(5);
+		TextManager.Buffer.Inst.Color.Change(6);
+	}
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
+	{
+		TextManager.TextFont = UI::Text::Font::Parse(
+			MediaDirectory.File("Text/Font0.atlas")
+		);
+	}
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 
 	// PlaneManager
 	/*{
@@ -702,22 +713,26 @@ void ContextNoisePlane::ChangeMedia()
 	}*/
 
 	// ChunkManager
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
-		{
-			Container::Array<::Shader::Code> code({
-				Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelU.vert")),
-				Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
-			});
-			ChunkManager.ShaderU.Change(code);
-		}
-		{
-			Container::Array<::Shader::Code> code({
-				Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelF.vert")),
-				Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
-			});
-			ChunkManager.ShaderF.Change(code);
-		}
+		Container::Array<::Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelU.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
+		});
+		ChunkManager.ShaderU.Change(code);
+		// Attribute Map. store in Shader
+		// Shader can be larger then Buffer
+		// Buffers are stored a lot more
 	}
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
+	{
+		Container::Array<::Shader::Code> code({
+			Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelF.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
+		});
+		ChunkManager.ShaderF.Change(code);
+	}
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 
 	// Inventory
 #ifndef DISABLE_INVENTORY
@@ -771,13 +786,13 @@ void ContextNoisePlane::GraphicsDelete()
 
 void ContextNoisePlane::Init()
 {
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Make();
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	ChangeMedia();
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	GraphicsCreate();
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	VoxelPalletMap::All.LoadTextures(ChunkManager);
 	{
 		window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
@@ -786,20 +801,20 @@ void ContextNoisePlane::Init()
 		view.Depth.Range.ChangeMin(0.5f);
 	}
 	VoxelPalletMap::All.MakePolyHedra();
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	VoxelGeometryPallet::Default();
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	MakeControls();
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
-	//ChunkManager.ChangeSize(2, 1);
-	ChunkManager.ChangeSize(8, 4);
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	ChunkManager.ChangeSize(2, 1);
+	//ChunkManager.ChangeSize(8, 4);
 	//ChunkManager.ChangeSize(16, 8);
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	ThreadIdle = false;
-//	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 }
 void ContextNoisePlane::Free()
 {
@@ -811,6 +826,15 @@ void ContextNoisePlane::Free()
 }
 
 
+
+static ValueAverager<float>		TimeDrawTotal(64);
+static ValueAverager<float>		TimeDrawPolyHedra(64);
+static ValueAverager<float>		TimeDrawChunk(64);
+static ValueAverager<float>		TimeDrawControl(64);
+static ValueAverager<float>		TimeMakeText(64);
+static ValueAverager<float>		TimeDrawText(64);
+
+static unsigned int				TextCharCount = 0;
 
 void ContextNoisePlane::Draw()
 {
@@ -916,6 +940,17 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 
 
 
+static ValueAverager<float>		DLTAverageTime(64);
+static ValueAverager<int>		FPSAverageTime(64);
+static ValueAverager<float>		TimeFrameTotal(64);
+static ValueAverager<float>		FrameInputTime(64);
+#ifndef DISABLE_INVENTORY
+static ValueAverager<float>		InventoryCursorTime(64);
+#endif
+
+static ValueAverager<float>		TextAssambleTime(64);
+static ValueAverager<float>		TextInstanceTime(64);
+
 void ContextNoisePlane::FrameText(FrameTime frame_time)
 {
 	StopWatch sw;
@@ -971,11 +1006,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	if (DebugMenu.TimeWaitDo.Check.IsChecked())
 	{
 		ss << ChunkManager::TimeInsert << '\n';
-		ss << ChunkManager::TimeInsertNeighbours << '\n';
 		ss << ChunkManager::TimeRemove << '\n';
 		ss << ChunkManager::TimeUpdate << '\n';
 		ss << ChunkManager::TimeUpdateInsert << '\n';
-		ss << ChunkManager::TimeUpdateChange << '\n';
 		ss << ChunkManager::TimeUpdateRemove << '\n';
 		ss << ChunkManager::TimeGenerateFind << '\n';
 		ss << ChunkManager::TimeGenerate << '\n'; // #2 slowest

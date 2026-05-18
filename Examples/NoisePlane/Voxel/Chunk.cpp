@@ -640,8 +640,10 @@ void Chunk::BufferUMain_UpdateData()
 	if (!GraphicsExist) { return; }
 	if (!BufferUMain_NewData) { return; }
 
-	BufferU.Main.Data(MainBufferData.GraphicsDataU());
+	MainBufferData.ArrayLock.lock();
+	BufferU.Main.Data(MainBufferData.GraphicsDataU().ToVoid());
 	MainBufferData.ClearU();
+	MainBufferData.ArrayLock.unlock();
 
 	BufferUMain_NewData = false;
 }
@@ -650,8 +652,10 @@ void Chunk::BufferFMain_UpdateData()
 	if (!GraphicsExist) { return; }
 	if (!BufferFMain_NewData) { return; }
 
-	BufferF.Main.Data(MainBufferData.GraphicsDataF());
+	MainBufferData.ArrayLock.lock();
+	BufferF.Main.Data(MainBufferData.GraphicsDataF().ToVoid());
 	MainBufferData.ClearF();
+	MainBufferData.ArrayLock.unlock();
 
 	BufferFMain_NewData = false;
 }
@@ -668,7 +672,7 @@ void Chunk::BufferUInst_UpdateData()
 		temp.Pos = Index * CHUNK_VALUES_PER_SIDE;
 		data.Insert(temp);
 
-		BufferU.Inst.Data(data);
+		BufferU.Inst.Data(data.ToVoid());
 	}
 
 	BufferUInst_NewData = false;
@@ -685,7 +689,7 @@ void Chunk::BufferFInst_UpdateData()
 		temp.Pos = Index * CHUNK_VALUES_PER_SIDE;
 		data.Insert(temp);
 
-		BufferF.Inst.Data(data);
+		BufferF.Inst.Data(data.ToVoid());
 	}
 
 	BufferFInst_NewData = false;
