@@ -4,6 +4,8 @@
 # include "Control/Base/Manager.hpp"
 # include "ControlsInclude.hpp"
 
+struct ContextNoisePlane;
+
 struct CheckBoxText
 {
 	UI::Control::Label		Label;
@@ -14,6 +16,8 @@ struct CheckBoxText
 
 struct DebugMenu : public UI::Control::Form
 {
+	ContextNoisePlane &		Context;
+
 	CheckBoxText	FPS;
 
 	CheckBoxText	TimeThreads;
@@ -39,7 +43,7 @@ struct DebugMenu : public UI::Control::Form
 	UI::Control::Slider		Generation3DComparison;
 
 	~DebugMenu();
-	DebugMenu();
+	DebugMenu(ContextNoisePlane & context);
 };
 
 #endif

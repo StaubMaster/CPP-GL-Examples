@@ -56,7 +56,8 @@ FILES := \
 	Telemetry/ThreadInfo.cpp \
 	Telemetry/WaitDoTime.cpp \
 \
-	main_.cpp \
+	PhysicsContext.cpp \
+	ContextNoisePlane.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .

@@ -1,10 +1,12 @@
 #include "Pause.hpp"
+#include "ContextNoisePlane.hpp"
 
 
 
 PauseMenu::~PauseMenu() { }
-PauseMenu::PauseMenu()
+PauseMenu::PauseMenu(ContextNoisePlane & context)
 	: UI::Control::Form()
+	, Context(context)
 {
 	MakeTransparent();
 
@@ -38,4 +40,46 @@ PauseMenu::PauseMenu()
 	ChildInsert(Options);
 	ChildInsert(Debug);
 	ChildInsert(Exit);
+}
+
+void PauseMenu::ContinueFunc(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	if (!Context.PauseMenu.IsVisible())
+	{
+		Context.PauseMenu.Show();
+	}
+	else
+	{
+		Context.PauseMenu.Hide();
+	}
+}
+void PauseMenu::OptionsFunc(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	if (!Context.OptionsMenu.IsVisible())
+	{
+		Context.OptionsMenu.Show();
+	}
+	if (Context.PauseMenu.IsVisible())
+	{
+		Context.PauseMenu.Hide();
+	}
+}
+void PauseMenu::DebugFunc(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	if (Context.DebugMenu.IsVisible())
+	{
+		Context.DebugMenu.Hide();
+	}
+	else
+	{
+		Context.DebugMenu.Show();
+	}
+}
+void PauseMenu::ExitFunc(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	ContextBase::ChangeToContext0();
 }

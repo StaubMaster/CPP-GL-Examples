@@ -1,10 +1,12 @@
 #include "Options.hpp"
+#include "ContextNoisePlane.hpp"
 
 
 
 OptionsMenu::~OptionsMenu() { }
-OptionsMenu::OptionsMenu()
+OptionsMenu::OptionsMenu(ContextNoisePlane & context)
 	: UI::Control::Form()
+	, Context(context)
 {
 	MakeTransparent();
 
@@ -68,4 +70,55 @@ OptionsMenu::OptionsMenu()
 	ChildInsert(ChunkInsert);
 	ChildInsert(ChunkRemove);
 	ChildInsert(Back);
+}
+
+void OptionsMenu::FPSFunc(float val)
+{
+	//window.FrameTime.Change(val);
+	Context.window.FrameTime = FrameTime(val, 1.0f / 0.0f);
+
+	unsigned int v = val;
+	Context.OptionsMenu.FPS.SetText("FPS:" + std::to_string(v));
+}
+void OptionsMenu::FOVFunc(float val)
+{
+	Context.view.FOV = Angle::Degrees(val);
+	Context.Multiform_FOV.ChangeData(Context.view.FOV);
+
+	unsigned int v = val;
+	Context.OptionsMenu.FOV.SetText("FOV:" + std::to_string(v));
+}
+void OptionsMenu::DepthFunc(float val)
+{
+	Context.view.Depth.Factors.ChangeFar(val);
+	Context.Multiform_Depth.ChangeData(Context.view.Depth);
+
+	unsigned int v = val;
+	Context.OptionsMenu.Depth.SetText("Depth:" + std::to_string(v));
+}
+void OptionsMenu::DepthRangeFunc(float val)
+{
+	Context.view.Depth.Range.ChangeMin(val);
+	Context.Multiform_Depth.ChangeData(Context.view.Depth);
+	Context.OptionsMenu.DepthRange.SetText("DepthRange:" + std::to_string(val));
+}
+void OptionsMenu::Chunk_InsertFunc(float val)
+{
+	Context.OptionsMenu.ChunkInsert.SetText("Insert:" + std::to_string(val));
+}
+void OptionsMenu::Chunk_RemoveFunc(float val)
+{
+	Context.OptionsMenu.ChunkRemove.SetText("Remove:" + std::to_string(val));
+}
+void OptionsMenu::BackFunc(ClickArgs args)
+{
+	if (args.Action != Action::Press) { return; }
+	if (Context.OptionsMenu.IsVisible())
+	{
+		Context.OptionsMenu.Hide();
+	}
+	if (!Context.PauseMenu.IsVisible())
+	{
+		Context.PauseMenu.Show();
+	}
 }

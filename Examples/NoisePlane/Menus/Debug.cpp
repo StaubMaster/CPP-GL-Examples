@@ -1,4 +1,6 @@
 #include "Debug.hpp"
+#include "ContextNoisePlane.hpp"
+
 
 
 float CheckBoxText::Place(float y, const char * str)
@@ -21,8 +23,9 @@ void CheckBoxText::Insert(UI::Control::Form & form)
 
 
 DebugMenu::~DebugMenu() { }
-DebugMenu::DebugMenu()
+DebugMenu::DebugMenu(ContextNoisePlane & context)
 	: UI::Control::Form()
+	, Context(context)
 {
 	Anchor.X.AnchorMin(0, 360.0f);
 	Anchor.Y.AnchorBoth(0, 0);

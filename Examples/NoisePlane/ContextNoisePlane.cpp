@@ -1,252 +1,37 @@
+#include "ContextNoisePlane.hpp"
 #include "new.hpp"
 
 // Debug
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include "Debug.hpp"
 #include "ValueType/_Show.hpp"
 #include "ValueType/_Include.hpp"
 
-// ValueType
-#include "ValueType/View3D.hpp"
-#include "ValueType/LoopI3.hpp"
-
-// PolyHedra
-#include "PolyHedra/PolyHedra.hpp"
-#include "PolyHedra/Generate.hpp"
-#include "PolyHedra/Manager.hpp"
-#include "PolyHedra/Object.hpp"
-#include "PolyHedra/Data.hpp"
-
-#include "PolyHedra/Skin/Skin2DA.hpp"
-#include "PolyHedra/Skin/Skin2D_Data.hpp"
-
-// Graphics
-#include "Graphics/Shader/Code.hpp"
-#include "Miscellaneous/Container/Array.hpp"
-#include "Graphics/Multiform/_Include.hpp"
-
-// FileManager
-#include "Image.hpp"
-
-// Text
-#include "Text/Manager.hpp"
-#include "Text/Object.hpp"
-
-// Controls
-#include "Control/Base/Manager.hpp"
-#include "ControlsInclude.hpp"
-
-// Units
-#include "UnitToString.hpp"
-
-// ValueGen
-#include "ValueGen/Random.hpp"
-#include "ValueGen/Perlin2D.hpp"
-#include "ValueGen/Perlin3D.hpp"
-
-// Plane
-//#include "Plane/Plane.hpp"
-//#include "Plane/PlaneGraphics.hpp"
-//#include "Plane/PlaneManager.hpp"
-
-// Voxel
-#include "Voxel/Chunk.hpp"
-#include "Voxel/ChunkManager.hpp"
-#include "Voxel/ChunkNeighbours.hpp"
-#include "Voxel/VoxelOrientation.hpp"
-#include "Voxel/VoxelPallet.hpp"
-#include "Voxel/ChunkVoxelIndex.hpp"
-#include "Voxel/VoxelGeometryPallet.hpp"
-#include "Voxel/Structure.hpp"
-
-#include "BoxEntity.hpp"
-
-// Menus
-#include "Menus/Main.hpp"
-#include "Menus/Pause.hpp"
-#include "Menus/Options.hpp"
-#include "Menus/Debug.hpp"
-
-// Item
-#include "Item/ItemBase.hpp"
-#include "Item/ItemVoxel.hpp"
-#include "Item/ItemContainer.hpp"
-#include "Menus/Item/Inventory.hpp"
-
-// Telemetry
-#include "Telemetry/ThreadInfo.hpp"
-
 // Math
-#include "BlockList.hpp"
-
 #include <math.h>
-
-#include <thread>
-#include <mutex>
-
-#include <iomanip>
-
-
-#define DISABLE_INVENTORY
-#define DISABLE_VIEW_TANGIBLE
-#define DISABLE_VIEW_RAY
-
-
 
 
 
 #ifndef DISABLE_INVENTORY
-struct InventoryShader : public ::PolyHedraFull::Shader
-{
-	Uniform::DisplaySize		DisplaySize;
-	~InventoryShader()
-	{ }
-	InventoryShader()
-		: ::PolyHedraFull::Shader()
-		, DisplaySize(*this, "DisplaySize")
-	{ }
-};
+InventoryShader::~InventoryShader()
+{ }
+InventoryShader::InventoryShader()
+	: ::PolyHedraFull::Shader()
+	, DisplaySize(*this, "DisplaySize")
+{ }
 #endif
 
-struct PhysicsContext
-{
-	VectorF3	GravityDirection = VectorF3(0.0f, -1.0f, 0.0f);
-	float		GravityAcl = 1.0f;
 
-	VectorF3	CalcGravityVec() const
-	{
-		return GravityDirection * GravityAcl;
-	}
-
-
-
-	float	DragFluidDensity = 0.001f;
-	float	DragCoefficient = 1.0f;
-
-	float	CalcDragLimit(float mass, float area, float accel) const
-	{
-		return sqrt((2 * mass * accel) / (DragFluidDensity * area * DragCoefficient));
-	}
-	float	CalcTerminalVel(float mass, float area) const
-	{
-		return CalcDragLimit(mass, area, GravityAcl);
-	}
-
-	float		CalcDrag(float vel, float mass, float area) const
-	{
-		float force = 0.5f * DragFluidDensity * vel * vel * area * DragCoefficient;
-		return force / mass;
-	}
-	VectorF3	CalcDragVec(VectorF3 vel, float mass, float area) const
-	{
-		float vel_len;
-		vel = vel.normalize(vel_len);
-		return vel * CalcDrag(vel_len, mass, area);
-	}
-
-/*
-	uk: Kinetic Friciton Coefficient
-	Fk: Kinetic Friciton
-	Fn: Normal Force
-
-	Fk = uk * Fn
-
-	N: Normal Force
-	mg: Weight (Mass * Gravity)
-
-	P: External Force
-	Py: "downward Component of External Force" (parallel to Normal Force ?)
-	Px: horisontal Component of External Force (perpendicular to Normal Force ?)
-
-	N = mg + Py
-
-	Ff: Friciton Force
-	Ff = -Px (not sliding)
-	Ff = u * N (sliding)
-*/
-	// static Friction
-	float	FrictionCoefficient = 0.5f; // kinetic Friction
-	float		CalcFriction(float mass) const
-	{
-		float normal = mass * GravityAcl;
-		return FrictionCoefficient * normal;
-	}
-	VectorF3	CalcFriction(VectorF3 force, float friction_force) const
-	{
-		float    force_length;
-		VectorF3 force_normal = force.normalize(force_length);
-		if (friction_force > force_length)
-		{
-			return force;
-		}
-		else
-		{
-			return force_normal * friction_force;
-		}
-	}
-
-	VectorF3	CalculateVel(VectorF3 vel, float mass, float area) const
-	{
-		return CalcGravityVec() - CalcDragVec(vel, mass, area);
-	}
-};
-
-/* this File is too big. organize
-	View
-	UI
-	Threads
-	PolyHedra
-	static stuff
-*/
 
 #include "main_static.cpp"
 
 
 
-struct ContextNoisePlane : public ContextBase
-{
-View3D	view;
-
-::PolyHedraManager		PolyHedraManager;
-UI::Control::Manager	ControlManager;
-UI::Text::Manager		TextManager;
-//::PlaneManager			PlaneManager;
-::ChunkManager			ChunkManager;
-
-#ifndef DISABLE_INVENTORY
-::PolyHedraManager		InventoryPolyHedraManager;
-::InventoryShader		InventoryShader;
-#endif
-
-
-
-::MainMenu		MainMenu;
-::PauseMenu		PauseMenu;
-::OptionsMenu	OptionsMenu;
-::DebugMenu		DebugMenu;
-
-#ifndef DISABLE_INVENTORY
-::ItemContainer		Inventory;
-::ItemContainer		HotBar;
-
-::Inventory			InventoryUI;
-::Inventory			HotBarUI;
-#endif
-
-
-
-Perlin2D	Perlin2;
-Perlin3D	Perlin3;
-
-Multiform::DisplaySize		Multiform_DisplaySize;
-::Multiform::Matrix4x4		Multiform_View;
-::Multiform::Depth			Multiform_Depth;
-::Multiform::Angle			Multiform_FOV;
-
-~ContextNoisePlane()
+ContextNoisePlane::~ContextNoisePlane()
 { }
-ContextNoisePlane()
+ContextNoisePlane::ContextNoisePlane()
 	: ContextBase()
 	, view()
 	, PolyHedraManager()
@@ -255,9 +40,9 @@ ContextNoisePlane()
 //	, PlaneManager()
 	, ChunkManager()
 	, MainMenu()
-	, PauseMenu()
-	, OptionsMenu()
-	, DebugMenu()
+	, PauseMenu(*this)
+	, OptionsMenu(*this)
+	, DebugMenu(*this)
 #ifndef DISABLE_INVENTORY
 	, Inventory(VectorU2(10, 5))
 	, HotBar(VectorU2(10, 1))
@@ -322,74 +107,7 @@ ContextNoisePlane()
 
 
 
-::PhysicsContext	PhysicsContext;
-
-/* View Update
-
-Input
-	regular Axis and EulerAngle
-Physics
-	ground movement
-	ground friction
-	air movement
-	air friction
-	jump
-		only on ground
-		uneffected by ground friciton
-Collision
-
-should movement speed depend on friction or a specified limit ?
-
-allways do air movement/friction ?
-you are allways in the air
-
-movement is currently done using friction
-it makes sense but also immedeatly cancels out
-is that static friction ?
-is movement force too weak ?
-*/
-
-/* View
-	the generic View3D stuff
-	Ray
-	RayHit ?
-	Physics Stuff
-	Collision Stuff
-*/
-
-#ifndef DISABLE_VIEW_TANGIBLE
-float	ViewDistance = 0.0f;
-bool	ViewTangible = false;
-
-float	ViewSpeed = 0.1f;	// force when moving
-float	ViewFaster = 3.0f;	// force multiplier when moving faster
-
-BoxEntity		ViewEntity;
-CollisionSide	ViewCollisionSide;
-#endif
-
-float	ViewSpeedNoClip = 10.0f;
-float	ViewFasterNoClip = 10.0f;
-
-#ifndef DISABLE_VIEW_RAY
-bool		ViewRaySync = true;
-
-Ray3D		ViewRay;
-AxisRel		ViewRayAxis0;
-AxisRel		ViewRayAxis1;
-AxisRel		ViewRayAxis2;
-
-VoxelHit	ViewHit;
-AxisRel		ViewHitAxis0;
-AxisRel		ViewHitAxis1;
-#endif
-
-ValueAverager<float>	TimeUpdateView;
-ValueAverager<float>	ViewUpdateCollisionTime;
-ValueAverager<float>	ViewUpdateChunksTime;
-ValueAverager<float>	ViewUpdateRayTime;
-
-void ViewUpdateDone()
+void ContextNoisePlane::ViewUpdateDone()
 {
 #ifndef DISABLE_VIEW_TANGIBLE
 	if (ViewDistance == 0.0f)
@@ -452,7 +170,7 @@ void ViewUpdatePhysics(VectorF3 accel)
 	ViewEntity.Vel += PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f) + accel - decel;
 }
 #endif
-void ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
+void ContextNoisePlane::ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
 {
 	change.Position *= ViewSpeedNoClip;
 	if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFasterNoClip; }
@@ -467,7 +185,7 @@ void ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
 	view.Trans.Rotation.X1.clampPI();
 }
 #ifndef DISABLE_VIEW_TANGIBLE
-void ViewUpdateColliding(FrameTime frame_time)
+void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 {
 	DisplayBoxEntityVoxels(PolyHedraManager.FindPolyHedra(VoxelCube), ChunkManager, ViewEntity, frame_time);
 	DisplayBoxEntity(ViewEntity);
@@ -476,7 +194,7 @@ void ViewUpdateColliding(FrameTime frame_time)
 }
 #endif
 #ifndef DISABLE_VIEW_RAY
-void ViewRayUpdate()
+void ContextNoisePlane::ViewRayUpdate()
 {
 	if (ViewRaySync)
 	{
@@ -519,7 +237,7 @@ void ViewRayUpdate()
 }
 #endif
 #ifndef DISABLE_VIEW_RAY
-void ViewRayDo()
+void ContextNoisePlane::ViewRayDo()
 {
 #ifndef DISABLE_INVENTORY
 	if (PauseMenu.IsInteractible() || OptionsMenu.IsInteractible() || InventoryUI.IsInteractible()) { return; }
@@ -652,7 +370,7 @@ void ViewRayDo()
 	}*/
 }
 #endif
-void ViewUpdateAround(Trans3D change, FrameTime frame_time)
+void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 {
 	StopWatch sw;
 	sw.Start();
@@ -706,13 +424,7 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	Input from different Thread ?
 */
 
-bool		ThreadIdle = true;
-bool		ThreadTerminate = false;
-
-std::thread				AuxThread0;
-bool					AuxThread0Idle = false;	// put in ThreadInfo
-ValueAverager<float>	AuxThread0Time;			// put in ThreadInfo
-void		AuxThread0Func()
+void ContextNoisePlane::AuxThread0Func()
 {
 	ThreadInfo::ThreadName = "AuxThread0";
 	StopWatch sw;
@@ -729,11 +441,7 @@ void		AuxThread0Func()
 		}
 	}
 }
-
-std::thread				AuxThread1;
-bool					AuxThread1Idle = false;
-ValueAverager<float>	AuxThread1Time;
-void		AuxThread1Func()
+void ContextNoisePlane::AuxThread1Func()
 {
 	ThreadInfo::ThreadName = "AuxThread1";
 	StopWatch sw;
@@ -748,11 +456,7 @@ void		AuxThread1Func()
 		}
 	}
 }
-
-std::thread				AuxThread2;
-bool					AuxThread2Idle = false;
-ValueAverager<float>	AuxThread2Time;
-void		AuxThread2Func()
+void ContextNoisePlane::AuxThread2Func()
 {
 	ThreadInfo::ThreadName = "AuxThread2";
 	StopWatch sw;
@@ -767,8 +471,7 @@ void		AuxThread2Func()
 		}
 	}
 }
-
-void DrawThreadUpdate()
+void ContextNoisePlane::DrawThreadUpdate()
 {
 	StopWatch sw;
 	sw.Start();
@@ -787,11 +490,7 @@ void DrawThreadUpdate()
 
 
 
-PolyHedra *		VoxelCube;
-PolyHedra *		VoxelChunkCube;
-PolyHedra *		ViewRayPolyHedra;
-
-void Make()
+void ContextNoisePlane::Make()
 {
 	view.Trans.Position = VectorF3(0.5f, 0.5f, 0.5f);
 #ifndef DISABLE_VIEW_TANGIBLE
@@ -850,53 +549,43 @@ void Make()
 
 
 
-/* why are these here ?
-	to access ContextNoisePlane
-	just have a Referance/Pointer to ContextNoisePlane ?
-	all the Code is in the Header
-	split main_.cpp into ContextNoisePlane.hpp and ContextNoisePlane.cpp
-*/
-
-void MakeControls()
+void ContextNoisePlane::MakeControls()
 {
 	std::cerr << "MakeControls()\n";
 	// Pause
 	{
-		PauseMenu.Continue.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Continue);
-		PauseMenu.Options.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Options);
-		PauseMenu.Debug.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Debug);
-		PauseMenu.Exit.ClickFunc.Assign(this, &ContextNoisePlane::PauseMenu_Exit);
+		PauseMenu.Continue.ClickFunc.Assign(&PauseMenu, &PauseMenu::ContinueFunc);
+		PauseMenu.Options.ClickFunc.Assign(&PauseMenu, &PauseMenu::OptionsFunc);
+		PauseMenu.Debug.ClickFunc.Assign(&PauseMenu, &PauseMenu::DebugFunc);
+		PauseMenu.Exit.ClickFunc.Assign(&PauseMenu, &PauseMenu::ExitFunc);
 
 		PauseMenu.Show();
 		ControlManager.Window.ChildInsert(PauseMenu);
 	}
 	// Options
 	{
-		OptionsMenu.FPS.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FPS);
+		OptionsMenu.FPS.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::FPSFunc);
 		//OptionsMenu.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
 		OptionsMenu.FPS.SetValueX(1024);
 
-		OptionsMenu.FOV.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_FOV);
+		OptionsMenu.FOV.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::FOVFunc);
 		OptionsMenu.FOV.SetValueX(view.FOV.ToDegrees());
 
-		OptionsMenu.Depth.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Depth);
+		OptionsMenu.Depth.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::DepthFunc);
 		//OptionsMenu.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
 		OptionsMenu.Depth.SetValueX(1000.0f); // get Depth. also depth works weirdly ?
 
-		OptionsMenu.DepthRange.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_DepthRange);
+		OptionsMenu.DepthRange.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::DepthRangeFunc);
 		OptionsMenu.DepthRange.SetValueX(view.Depth.Range.Min);
 
 		// Remove range should never be less then Insert
 		// make RemoveRange = InsertRange * 2 ?
 		// make RemoveRange = InsertRange + n ?
 
-		OptionsMenu.ChunkInsert.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Insert);
-		//OptionsMenu.ChunkInsert.SetValueX();
+		OptionsMenu.ChunkInsert.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::Chunk_InsertFunc);
+		OptionsMenu.ChunkRemove.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::Chunk_RemoveFunc);
 
-		OptionsMenu.ChunkRemove.ValueXChangedFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Chunk_Remove);
-		//OptionsMenu.ChunkRemove.SetValueX();
-
-		OptionsMenu.Back.ClickFunc.Assign(this, &ContextNoisePlane::OptionsMenu_Back);
+		OptionsMenu.Back.ClickFunc.Assign(&OptionsMenu, &OptionsMenu::BackFunc);
 
 		OptionsMenu.Hide();
 		ControlManager.Window.ChildInsert(OptionsMenu);
@@ -951,112 +640,17 @@ void MakeControls()
 #endif
 }
 
-void DebugMenu_Generation3DComparison(float val)
+void ContextNoisePlane::DebugMenu_Generation3DComparison(float val)
 {
 	Chunk::Generation3D_Comparison = val;
 	DebugMenu.Generation3DComparison.SetText("3D Comp:" + std::to_string(Chunk::Generation3D_Comparison));
 	ChunkManager.Clear();
 }
-void DebugMenu_Generation3DFactor(float val)
+void ContextNoisePlane::DebugMenu_Generation3DFactor(float val)
 {
 	Chunk::Generation3D_Factor = 1 << ((int)val);
 	DebugMenu.Generation3DFactor.SetText("3D Fact:" + std::to_string(Chunk::Generation3D_Factor));
 	ChunkManager.Clear();
-}
-
-void PauseMenu_Continue(ClickArgs args)
-{
-	if (args.Action != Action::Press) { return; }
-	if (!PauseMenu.IsVisible())
-	{
-		PauseMenu.Show();
-	}
-	else
-	{
-		PauseMenu.Hide();
-	}
-}
-void PauseMenu_Options(ClickArgs args)
-{
-	if (args.Action != Action::Press) { return; }
-	if (!OptionsMenu.IsVisible())
-	{
-		OptionsMenu.Show();
-	}
-	if (PauseMenu.IsVisible())
-	{
-		PauseMenu.Hide();
-	}
-}
-void PauseMenu_Debug(ClickArgs args)
-{
-	if (args.Action != Action::Press) { return; }
-	if (DebugMenu.IsVisible())
-	{
-		DebugMenu.Hide();
-	}
-	else
-	{
-		DebugMenu.Show();
-	}
-}
-void PauseMenu_Exit(ClickArgs args)
-{
-	if (args.Action != Action::Press) { return; }
-	ContextBase::ChangeToContext0();
-}
-
-void OptionsMenu_FPS(float val)
-{
-	//window.FrameTime.Change(val);
-	window.FrameTime = FrameTime(val, 1.0f / 0.0f);
-
-	unsigned int v = val;
-	OptionsMenu.FPS.SetText("FPS:" + std::to_string(v));
-}
-void OptionsMenu_FOV(float val)
-{
-	view.FOV = Angle::Degrees(val);
-	Multiform_FOV.ChangeData(view.FOV);
-
-	unsigned int v = val;
-	OptionsMenu.FOV.SetText("FOV:" + std::to_string(v));
-}
-void OptionsMenu_Depth(float val)
-{
-	view.Depth.Factors.ChangeFar(val);
-	Multiform_Depth.ChangeData(view.Depth);
-
-	unsigned int v = val;
-	OptionsMenu.Depth.SetText("Depth:" + std::to_string(v));
-}
-void OptionsMenu_DepthRange(float val)
-{
-	view.Depth.Range.ChangeMin(val);
-	Multiform_Depth.ChangeData(view.Depth);
-	OptionsMenu.DepthRange.SetText("DepthRange:" + std::to_string(val));
-}
-void OptionsMenu_Chunk_Insert(float val)
-{
-	//ChunkInsertRange = val;
-	OptionsMenu.ChunkInsert.SetText("Insert:" + std::to_string(val));
-}
-void OptionsMenu_Chunk_Remove(float val)
-{
-	//ChunkRemoveRange = val;
-	OptionsMenu.ChunkRemove.SetText("Remove:" + std::to_string(val));
-}
-void OptionsMenu_Back(ClickArgs args)
-{
-	if (args.Action != Action::Press) { return; }
-	if (OptionsMenu.IsVisible())
-	{
-		OptionsMenu.Hide();
-	}
-	if (!PauseMenu.IsVisible())
-	{
-		PauseMenu.Show();
-	}
 }
 
 
@@ -1068,7 +662,7 @@ void OptionsMenu_Back(ClickArgs args)
 //
 // a lot of the managers are siminal with the bool flags and function names
 // make a Base ? to organize
-void ChangeMedia()
+void ContextNoisePlane::ChangeMedia()
 {
 	// PolyHedraManager
 	PolyHedraManager.InitExternal(MediaDirectory);
@@ -1140,7 +734,7 @@ void ChangeMedia()
 }
 
 // Valgrind is very slow here ?
-void GraphicsCreate()
+void ContextNoisePlane::GraphicsCreate()
 {
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	PolyHedraManager.GraphicsCreate();
@@ -1162,7 +756,7 @@ void GraphicsCreate()
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 #endif
 }
-void GraphicsDelete()
+void ContextNoisePlane::GraphicsDelete()
 {
 	PolyHedraManager.GraphicsDelete();
 	ControlManager.GraphicsDelete();
@@ -1175,7 +769,7 @@ void GraphicsDelete()
 #endif
 }
 
-void Init() override
+void ContextNoisePlane::Init()
 {
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Make();
@@ -1198,8 +792,8 @@ void Init() override
 	MakeControls();
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	//ChunkManager.ChangeSize(2, 1);
-	//ChunkManager.ChangeSize(8, 4);
-	ChunkManager.ChangeSize(16, 8);
+	ChunkManager.ChangeSize(8, 4);
+	//ChunkManager.ChangeSize(16, 8);
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -1207,7 +801,7 @@ void Init() override
 	ThreadIdle = false;
 //	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 }
-void Free() override
+void ContextNoisePlane::Free()
 {
 	GraphicsDelete();
 	ThreadTerminate = true;
@@ -1218,15 +812,7 @@ void Free() override
 
 
 
-// this is slow ?
-ValueAverager<float>	TimeDrawTotal;
-ValueAverager<float>	TimeDrawPolyHedra;
-ValueAverager<float>	TimeDrawChunk;
-ValueAverager<float>	TimeDrawControl;
-ValueAverager<float>	TimeMakeText;
-ValueAverager<float>	TimeDrawText;
-
-void Draw()
+void ContextNoisePlane::Draw()
 {
 	// should GraphicsManagers just know that they want Enabled/Disabled ?
 	// GraphicsManagerBase so I dont need to call the Create/Delete individually
@@ -1295,14 +881,7 @@ void Draw()
 	TimeDrawTotal.NewValue(sw_total.ElapsedTime());
 }
 
-ValueAverager<float>	DLTAverageTime;
-ValueAverager<int>		FPSAverageTime;
-ValueAverager<float>	TimeFrameTotal;
-ValueAverager<float>	FrameInputTime;
-ValueAverager<float>	TimeUpdateThread;
-#ifndef DISABLE_INVENTORY
-ValueAverager<float>	InventoryCursorTime;
-#endif
+
 
 static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 {
@@ -1311,17 +890,18 @@ static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 	ss << std::setw(3) << std::setfill(' ') << freq << "Hz";
 	ss << ')';
 }
-static void ShowTimeFreq(std::stringstream & ss, float time)
+/*static void ShowTimeFreq(std::stringstream & ss, float time)
 {
 	ShowTimeFreq(ss, time, 1.0f / time);
-}
-static void ShowNameTimeFreqLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
+}*/
+/*static void ShowNameTimeFreqLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
 {
 	ss << name << ':';
 	ShowTimeFreq(ss, time.Min()); ss << ' ';
 	ShowTimeFreq(ss, time.Average()); ss << ' ';
 	ShowTimeFreq(ss, time.Max()); ss << '\n';
-}
+}*/
+
 static void ShowTime(std::stringstream & ss, float time)
 {
 	ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's';
@@ -1334,11 +914,9 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 	ShowTime(ss, time.Max()); ss << '\n';
 }
 
-unsigned int			TextCharCount = 0;
-ValueAverager<float>	TextAssambleTime;
-ValueAverager<float>	TextInstanceTime;
 
-void FrameText(FrameTime frame_time)
+
+void ContextNoisePlane::FrameText(FrameTime frame_time)
 {
 	StopWatch sw;
 	sw.Start();
@@ -1660,7 +1238,7 @@ void FrameText(FrameTime frame_time)
 	TextInstanceTime.NewValue(sw.ElapsedTime());
 }
 #ifndef DISABLE_INVENTORY
-void InventoryCursor(FrameTime frame_time)
+void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 {
 	StopWatch sw;
 	sw.Start();
@@ -1707,7 +1285,7 @@ void InventoryCursor(FrameTime frame_time)
 }
 #endif
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
-void FrameInput()
+void ContextNoisePlane::FrameInput()
 {
 	StopWatch sw;
 	sw.Start();
@@ -1807,7 +1385,7 @@ void FrameInput()
 	FrameInputTime.NewValue(sw.ElapsedTime());
 }
 
-void Frame(FrameTime frame_time) override
+void ContextNoisePlane::Frame(FrameTime frame_time)
 {
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
@@ -1876,7 +1454,7 @@ void Frame(FrameTime frame_time) override
 	TimeFrameTotal.NewValue(sw.ElapsedTime());
 }
 
-void Resize(DisplaySize display_size) override
+void ContextNoisePlane::Resize(DisplaySize display_size)
 {
 	::InventorySlot::WindowSize = display_size;
 	Multiform_DisplaySize.ChangeData(display_size);
@@ -1885,19 +1463,21 @@ void Resize(DisplaySize display_size) override
 
 
 // make these virtual and put them in Base
-void MouseScroll(ScrollArgs args) override { (void)args; }
-void MouseClick(ClickArgs args) override
+void ContextNoisePlane::MouseScroll(ScrollArgs args) { (void)args; }
+void ContextNoisePlane::MouseClick(ClickArgs args)
 {
 #ifndef DISABLE_INVENTORY
 	InventoryPolyHedraManager.MakeCurrent();
 #endif
 	ControlManager.RelayClick(args);
+#ifndef DISABLE_INVENTORY
 	PolyHedraManager.MakeCurrent();
+#endif
 }
-void MouseDrag(DragArgs args) override { ControlManager.RelayCursorDrag(args); }
+void ContextNoisePlane::MouseDrag(DragArgs args) { ControlManager.RelayCursorDrag(args); }
+void ContextNoisePlane::KeyBoardKey(KeyArgs args) { (void)args; }
 
-void KeyBoardKey(KeyArgs args) override { (void)args; }
-};
+
 
 ContextBase * newContextNoisePlane()
 {
