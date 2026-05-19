@@ -9,5 +9,5 @@ VoxelGraphics::BufferF::BufferF()
 
 VoxelGraphics::BufferU::~BufferU() { }
 VoxelGraphics::BufferU::BufferU()
-	: ::BufferArray::MainInst<MainBufferU, InstBuffer>(GL::DrawMode::Triangles)
+	: ::BufferArray::Main<MainBufferU>(GL::DrawMode::Triangles)
 { }

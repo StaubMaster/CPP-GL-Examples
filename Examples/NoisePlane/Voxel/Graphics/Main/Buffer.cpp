@@ -14,6 +14,7 @@ VoxelGraphics::MainBufferF::MainBufferF(::VertexArray & vertex_array)
 VoxelGraphics::MainBufferU::~MainBufferU() { }
 VoxelGraphics::MainBufferU::MainBufferU(::VertexArray & vertex_array)
 	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(MainDataU))
-	, Vertex(*this)
+	, Voxel(*this)
 	, Texture(*this)
+	, Chunk(*this)
 { }

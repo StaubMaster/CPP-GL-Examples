@@ -128,7 +128,7 @@ void ChunkGraphicsData::ClearU()
 {
 	ArrayU.Clear();
 }
-void ChunkGraphicsData::CatU(VectorU3 u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet)
+void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet)
 {
 	if (axis == AxisRel::Here || axis == AxisRel::None) { return; }
 	CountData++;
@@ -156,11 +156,6 @@ void ChunkGraphicsData::CatU(VectorU3 u, AxisRel axis, const VoxelOrientation & 
 	//axis_data_u.Data[2].Pos = func(axis_data_u.Data[2].Pos) + u;
 	//axis_data_u.Data[3].Pos = func(axis_data_u.Data[3].Pos) + u;
 
-	axis_data_u.Data[0].Pos = axis_data_u.Data[0].Pos + u;
-	axis_data_u.Data[1].Pos = axis_data_u.Data[1].Pos + u;
-	axis_data_u.Data[2].Pos = axis_data_u.Data[2].Pos + u;
-	axis_data_u.Data[3].Pos = axis_data_u.Data[3].Pos + u;
-
 	#ifdef MEASURE_TIME
 	TimeDataAbsoluteVertex.Stop();
 	TimeDataAbsoluteAxis.Start();
@@ -184,10 +179,10 @@ void ChunkGraphicsData::CatU(VectorU3 u, AxisRel axis, const VoxelOrientation & 
 	#endif
 
 	VoxelGraphics::MainDataU data[4];
-	data[0] = VoxelGraphics::MainDataU(axis_data_u.Data[0].Pos, axis_data_u.Data[0].Tex, axis);
-	data[1] = VoxelGraphics::MainDataU(axis_data_u.Data[1].Pos, axis_data_u.Data[1].Tex, axis);
-	data[2] = VoxelGraphics::MainDataU(axis_data_u.Data[2].Pos, axis_data_u.Data[2].Tex, axis);
-	data[3] = VoxelGraphics::MainDataU(axis_data_u.Data[3].Pos, axis_data_u.Data[3].Tex, axis);
+	data[0] = VoxelGraphics::MainDataU(u, axis_data_u.Data[0].Pos, axis_data_u.Data[0].Tex, axis, chunk);
+	data[1] = VoxelGraphics::MainDataU(u, axis_data_u.Data[1].Pos, axis_data_u.Data[1].Tex, axis, chunk);
+	data[2] = VoxelGraphics::MainDataU(u, axis_data_u.Data[2].Pos, axis_data_u.Data[2].Tex, axis, chunk);
+	data[3] = VoxelGraphics::MainDataU(u, axis_data_u.Data[3].Pos, axis_data_u.Data[3].Tex, axis, chunk);
 
 	#ifdef MEASURE_TIME
 	TimeDataCompress.Stop();
@@ -258,12 +253,12 @@ void ChunkGraphicsData::MakeU(const Chunk & chunk, const ChunkNeighbour & neighb
 		TimeVisibleTotal.TakeOver(TimeDataTotal);
 		#endif
 
-		if (is_visible_prev_x) { CatU(udx, AxisRel::PrevX, orientation, pallet); }
-		if (is_visible_prev_y) { CatU(udx, AxisRel::PrevY, orientation, pallet); }
-		if (is_visible_prev_z) { CatU(udx, AxisRel::PrevZ, orientation, pallet); }
-		if (is_visible_next_x) { CatU(udx, AxisRel::NextX, orientation, pallet); }
-		if (is_visible_next_y) { CatU(udx, AxisRel::NextY, orientation, pallet); }
-		if (is_visible_next_z) { CatU(udx, AxisRel::NextZ, orientation, pallet); }
+		if (is_visible_prev_x) { CatU(chunk.Index, udx, AxisRel::PrevX, orientation, pallet); }
+		if (is_visible_prev_y) { CatU(chunk.Index, udx, AxisRel::PrevY, orientation, pallet); }
+		if (is_visible_prev_z) { CatU(chunk.Index, udx, AxisRel::PrevZ, orientation, pallet); }
+		if (is_visible_next_x) { CatU(chunk.Index, udx, AxisRel::NextX, orientation, pallet); }
+		if (is_visible_next_y) { CatU(chunk.Index, udx, AxisRel::NextY, orientation, pallet); }
+		if (is_visible_next_z) { CatU(chunk.Index, udx, AxisRel::NextZ, orientation, pallet); }
 
 		#ifdef MEASURE_TIME
 		TimeDataTotal.Stop();

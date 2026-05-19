@@ -67,32 +67,39 @@ void VoxelGraphics::MainFaceF::CalcNormal()
 
 VoxelGraphics::MainDataU::~MainDataU() { }
 VoxelGraphics::MainDataU::MainDataU()
-	: Vertex(0)
+	: Voxel(0)
 	, Texture(0)
+	, Chunk(0)
 { }
 
 VoxelGraphics::MainDataU::MainDataU(const MainDataU & other)
-	: Vertex(other.Vertex)
+	: Voxel(other.Voxel)
 	, Texture(other.Texture)
+	, Chunk(other.Chunk)
 { }
 VoxelGraphics::MainDataU & VoxelGraphics::MainDataU::operator=(const MainDataU & other)
 {
-	Vertex = other.Vertex;
+	Voxel = other.Voxel;
 	Texture = other.Texture;
+	Chunk = other.Chunk;
 	return *this;
 }
 
-VoxelGraphics::MainDataU::MainDataU(const VectorU3 & pos, const VectorU3 & tex, const AxisRel & axis)
-	: Vertex(
-		(((pos.X) & 0b111111) << 0) |
-		(((pos.Y) & 0b111111) << 6) |
-		(((pos.Z) & 0b111111) << 12) |
-		(((tex.X) & 0b1) << 18) |
-		(((tex.Y) & 0b1) << 19) |
-		((((unsigned char)axis) & 0b111) << 20)
-	)
+VoxelGraphics::MainDataU::MainDataU(const VectorU3 & pos, const VectorU3 & vert, const VectorU3 & tex, const AxisRel & axis, const VectorI3 & chunk)
+	: Voxel(0)
 	, Texture(tex.Z)
-{ }
+	, Chunk(chunk)
+{
+	Voxel |= (((pos.X) & 0xFF) << 0);
+	Voxel |= (((pos.Y) & 0xFF) << 8);
+	Voxel |= (((pos.Z) & 0xFF) << 16);
+	Voxel |= (((tex.X) & 0b1) << 24);
+	Voxel |= (((tex.Y) & 0b1) << 25);
+	Voxel |= ((((unsigned char)axis) & 0b111) << 26);
+	Voxel |= (((vert.X) & 0b1) << 29);
+	Voxel |= (((vert.Y) & 0b1) << 30);
+	Voxel |= (((vert.Z) & 0b1) << 31);
+}
 
 
 

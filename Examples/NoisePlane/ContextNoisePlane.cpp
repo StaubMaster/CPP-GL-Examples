@@ -1269,7 +1269,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		{
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *ChunkManager.Chunks[i];
-			main_u_count += chunk.BufferU.Main.Count;
+			main_u_count += chunk.BufferU.MainBuffer.Count;
 			main_f_count += chunk.BufferF.Main.Count;
 			if (chunk.MainBufferState == BufferDataState::None)   { buffer__++; }
 			if (chunk.MainBufferState == BufferDataState::Needed) { buffer_n++; }

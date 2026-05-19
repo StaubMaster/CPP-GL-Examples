@@ -67,10 +67,9 @@ uniform float FOV;
 
 
 
-layout(location = 0) in uint Main_Vert;
+layout(location = 0) in uint Main_Voxel;
 layout(location = 1) in uint Main_Tex;
-
-layout(location = 2) in vec3 Inst_Pos;
+layout(location = 2) in ivec3 Main_Chunk;
 
 
 
@@ -104,17 +103,21 @@ vec4 proj(in vec3 p_inn)
 
 void main()
 {
-	vs_out.Original.x = (Main_Vert >> 0) & 0x3Fu;
-	vs_out.Original.y = (Main_Vert >> 6) & 0x3Fu;
-	vs_out.Original.z = (Main_Vert >> 12) & 0x3Fu;
+	vs_out.Original.x = ((Main_Voxel >>  0) & 0xFFu);
+	vs_out.Original.y = ((Main_Voxel >>  8) & 0xFFu);
+	vs_out.Original.z = ((Main_Voxel >> 16) & 0xFFu);
 
-	vs_out.Absolute = vs_out.Original + Inst_Pos;
+	vs_out.Original.x += ((Main_Voxel >> 29) & 0x1u);
+	vs_out.Original.y += ((Main_Voxel >> 30) & 0x1u);
+	vs_out.Original.z += ((Main_Voxel >> 31) & 0x1u);
+
+	vs_out.Absolute = vs_out.Original + Main_Chunk * 32;
 	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
 	gl_Position = proj(vs_out.Relative);
 
-	vs_out.Tex.x = float((Main_Vert >> 18) & 0x1u);
-	vs_out.Tex.y = float((Main_Vert >> 19) & 0x1u);
+	vs_out.Tex.x = float((Main_Voxel >> 24) & 0x1u);
+	vs_out.Tex.y = float((Main_Voxel >> 25) & 0x1u);
 	vs_out.Tex.z = Main_Tex;
 
-	vs_out.Normal = axis[(Main_Vert >> 20) & 0x7u];
+	vs_out.Normal = axis[(Main_Voxel >> 26) & 0x7u];
 }

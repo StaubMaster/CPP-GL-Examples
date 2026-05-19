@@ -3,6 +3,7 @@
 
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/Vector/U3.hpp"
+# include "ValueType/Vector/I3.hpp"
 
 enum class AxisRel : unsigned char;
 
@@ -78,10 +79,30 @@ namespace VoxelGraphics
 			would mean adding in the shaader ?
 	*/
 
+	/*
+		|------||------||------||------| 32 Bits in 4 Bytes
+		[--PX--][--PY--][--PZ--]TTNNNVVV
+		{8} [0;255] Voxel Position X
+		{8} [0;255] Voxel Position Y
+		{8} [0;255] Voxel Position Z
+		{1} [0;1] Texture X
+		{1} [0;1] Texture Y
+		{3} [0;7] Normal
+		{1} [0;1] Voxel Vertex Position X
+		{1} [0;1] Voxel Vertex Position Y
+		{1} [0;1] Voxel Vertex Position Z
+
+		1 Byte for Texture Z
+		1 Byte for Chunk Position X
+		1 Byte for Chunk Position Y
+		1 Byte for Chunk Position Z
+	*/
+
 	struct MainDataU
 	{
-		unsigned int	Vertex;
+		unsigned int	Voxel;
 		unsigned int	Texture;
+		VectorU3		Chunk;
 
 		~MainDataU();
 		MainDataU();
@@ -89,7 +110,7 @@ namespace VoxelGraphics
 		MainDataU(const MainDataU & other);
 		MainDataU & operator=(const MainDataU & other);
 
-		MainDataU(const VectorU3 & pos, const VectorU3 & tex, const AxisRel & axis);
+		MainDataU(const VectorU3 & pos, const VectorU3 & vert, const VectorU3 & tex, const AxisRel & axis, const VectorI3 & chunk);
 	};
 	struct MainFaceU
 	{

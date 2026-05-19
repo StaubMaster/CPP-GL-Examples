@@ -9,6 +9,7 @@
 # include "Miscellaneous/Container/BlockLinkedList.hpp"
 
 struct VectorU3;
+struct VectorI3;
 struct VoxelOrientation;
 struct VoxelPallet;
 struct VoxelAxisGraphicsDataF;
@@ -42,7 +43,7 @@ struct ChunkGraphicsData
 	public:
 	void	ClearU();
 	private:
-	void	CatU(VectorU3 u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet);
+	void	CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet);
 	void	MakeU(const Chunk & chunk, const ChunkNeighbour & neighbours);
 	void	DoneU();
 	public:

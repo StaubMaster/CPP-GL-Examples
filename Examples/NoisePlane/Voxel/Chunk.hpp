@@ -41,8 +41,9 @@ enum class BufferDataState : unsigned char // put into Buffer
 	Ready,
 };
 
-// make this an Array3D ?
-struct ChunkManager;
+//struct ChunkManager;
+#include "ChunkManager.hpp"
+
 struct Chunk
 {
 	public:
@@ -172,6 +173,7 @@ struct Chunk
 	bool	GraphicsExist;
 	VoxelGraphics::BufferU	BufferU;
 	VoxelGraphics::BufferF	BufferF;
+	ChunkManager::ChunkDataUMainEntry	DataU_Entry;
 
 	public:
 	void	GraphicsCreate();

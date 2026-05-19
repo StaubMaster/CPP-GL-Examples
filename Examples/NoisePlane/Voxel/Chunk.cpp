@@ -70,9 +70,9 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, BufferU_AttributesBound(false)
 	, BufferF_AttributesBound(false)
 {
-	BufferU.Main.Vertex.Change(0);
-	BufferU.Main.Texture.Change(1);
-	BufferU.Inst.Pos.Change(2);
+	BufferU.MainBuffer.Voxel.Change(0);
+	BufferU.MainBuffer.Texture.Change(1);
+	BufferU.MainBuffer.Chunk.Change(2);
 
 	BufferF.Main.Pos.Change(0);
 	BufferF.Main.Tex.Change(1);
@@ -643,7 +643,7 @@ void Chunk::BufferUMain_UpdateData()
 	if ((Index == VectorI3(0, 0, 0)).All(true)) { std::cout << "Chunk BufferU Main Data\n"; }
 
 	MainBufferData.ArrayLock.lock();
-	BufferU.Main.DataFull(MainBufferData.GraphicsDataU().ToVoid());
+	BufferU.MainBuffer.DataFull(MainBufferData.GraphicsDataU().ToVoid());
 	MainBufferData.ClearU();
 	MainBufferData.ArrayLock.unlock();
 
@@ -676,7 +676,7 @@ void Chunk::BufferUInst_UpdateData()
 		temp.Pos = Index * CHUNK_VALUES_PER_SIDE;
 		data.Insert(temp);
 
-		BufferU.Inst.DataFull(data.ToVoid());
+		//BufferU.Inst.DataFull(data.ToVoid());
 	}
 
 	BufferUInst_NewData = false;
@@ -705,8 +705,7 @@ void Chunk::DrawU()
 	if (!BufferU_AttributesBound)
 	{
 		if ((Index == VectorI3(0, 0, 0)).All(true)) { std::cout << "Chunk BufferU Init\n"; }
-		BufferU.Inst.Init();
-		BufferU.Main.Init();
+		BufferU.MainBuffer.Init();
 		BufferU_AttributesBound = true;
 	}
 	BufferUMain_UpdateData();

@@ -5,6 +5,7 @@
 # include "Inst/Buffer.hpp"
 
 # include "Graphics/Buffer/MainInst.hpp"
+# include "Graphics/Buffer/Main.hpp"
 
 namespace VoxelGraphics
 {
@@ -13,7 +14,7 @@ namespace VoxelGraphics
 		~BufferF();
 		BufferF();
 	};
-	struct BufferU : public ::BufferArray::MainInst<MainBufferU, InstBuffer>
+	struct BufferU : public ::BufferArray::Main<MainBufferU>
 	{
 		~BufferU();
 		BufferU();

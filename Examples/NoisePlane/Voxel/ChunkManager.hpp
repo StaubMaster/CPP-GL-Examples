@@ -5,6 +5,9 @@
 # include "ValueGen/Perlin3D.hpp"
 
 # include "Graphics/Shader.hpp"
+# include "Graphics/Buffer.hpp"
+
+# include "Graphics/Main/Data.hpp"
 
 # include "ValueType/Vector/I3.hpp"
 # include "ValueType/Box/I3.hpp"
@@ -14,7 +17,6 @@
 # include "Graphics/Texture/Array2D.hpp"
 
 //# include "GridCast/GridCast3D.hpp"
-
 
 # include "Telemetry/ValueAverager.hpp"
 # include "Telemetry/StopWatch.hpp"
@@ -76,6 +78,27 @@ struct ChunkManager
 	VoxelGraphics::BufferU		BufferU;
 	VoxelGraphics::BufferF		BufferF;
 	Texture::Array2D			Texture;
+
+	VoxelGraphics::MainFaceU *	BufferU_Main_Data = nullptr;
+	unsigned int				BufferU_Main_Size = 0;
+	struct ChunkDataUMainEntry
+	{
+		ChunkManager *	Manager;
+		unsigned int	Offset;
+		unsigned int	Length;
+
+		bool						IsValid() const;
+		VoxelGraphics::MainFaceU &	operator[](unsigned int idx);
+
+		~ChunkDataUMainEntry();
+		ChunkDataUMainEntry();
+		ChunkDataUMainEntry(const ChunkDataUMainEntry & other) = delete;
+		ChunkDataUMainEntry & operator=(const ChunkDataUMainEntry & other) = delete;
+	};
+	Container::Binary<ChunkDataUMainEntry*>		BufferU_Entrys;
+	bool	BufferU_CheckOverlap(ChunkDataUMainEntry & entry);
+	void	BufferU_Insert(ChunkDataUMainEntry & entry);
+	void	BufferU_Remove(ChunkDataUMainEntry & entry);
 
 	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
 

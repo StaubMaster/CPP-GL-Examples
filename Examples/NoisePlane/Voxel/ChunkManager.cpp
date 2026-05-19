@@ -41,6 +41,84 @@ WaitDoTime ChunkManager::TimeDraw("TimeDraw");
 
 
 
+bool ChunkManager::ChunkDataUMainEntry::IsValid() const
+{
+	return (Manager != nullptr);
+}
+VoxelGraphics::MainFaceU & ChunkManager::ChunkDataUMainEntry::operator[](unsigned int idx)
+{
+	return Manager -> BufferU_Main_Data[Offset + idx];
+}
+
+ChunkManager::ChunkDataUMainEntry::~ChunkDataUMainEntry()
+{
+	if (Manager != nullptr)
+	{
+		Manager -> BufferU_Remove(*this);
+	}
+}
+ChunkManager::ChunkDataUMainEntry::ChunkDataUMainEntry()
+	: Manager(nullptr)
+	, Offset(0)
+	, Length(0)
+{ }
+
+bool ChunkManager::BufferU_CheckOverlap(ChunkDataUMainEntry & entry)
+{
+	for (unsigned int i = 0; i < BufferU_Entrys.Count(); i++)
+	{
+		// Max0 >= Min1 && Min0 <= Max1
+		ChunkDataUMainEntry & other = *(BufferU_Entrys[i]);
+		if (
+			(entry.Offset + entry.Length) > (other.Offset) &&
+			(entry.Offset) < (other.Offset + other.Length)
+		)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+void ChunkManager::BufferU_Insert(ChunkDataUMainEntry & entry)
+{
+	entry.Manager = this;
+
+	entry.Offset = 0;
+	if (!BufferU_CheckOverlap(entry))
+	{
+		return;
+	}
+
+	for (unsigned int i = 0; i < BufferU_Entrys.Count(); i++)
+	{
+		ChunkDataUMainEntry & other = *(BufferU_Entrys[i]);
+		entry.Offset = other.Offset + other.Length;
+		if (!BufferU_CheckOverlap(entry))
+		{
+			return;
+		}
+	}
+
+	entry.Offset = 0;
+	entry.Manager = nullptr;
+}
+void ChunkManager::BufferU_Remove(ChunkDataUMainEntry & entry)
+{
+	for (unsigned int i = 0; i < BufferU_Entrys.Count(); i++)
+	{
+		if (BufferU_Entrys[i] == &entry)
+		{
+			BufferU_Entrys.RemoveAt(i);
+			break;
+		}
+	}
+	entry.Manager = nullptr;
+}
+
+
+
+
+
 void ChunkManager::Clear()
 {
 //	std::cout << "Clear:" << __LINE__ << '\n';
