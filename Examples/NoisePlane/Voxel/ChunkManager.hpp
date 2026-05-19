@@ -70,14 +70,12 @@ struct ChunkManager
 
 
 
-
-
 	public:
 	VoxelGraphics::Shader		ShaderU;
 	VoxelGraphics::Shader		ShaderF;
+	VoxelGraphics::BufferU		BufferU;
+	VoxelGraphics::BufferF		BufferF;
 	Texture::Array2D			Texture;
-
-
 
 	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
 
