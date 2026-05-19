@@ -79,9 +79,10 @@ struct ChunkManager
 	VoxelGraphics::BufferF		BufferF;
 	Texture::Array2D			Texture;
 
-	VoxelGraphics::MainFaceU *	BufferU_Main_Data = nullptr;
-	unsigned int				BufferU_Main_Size = 0;
-	struct ChunkDataUMainEntry
+	bool						BufferU_AttributesBound = false;
+	VoxelGraphics::MainFaceU *	BufferU_Data = nullptr;
+	unsigned int				BufferU_Size = 1024 * 1024;
+	struct ChunkDataUEntry
 	{
 		ChunkManager *	Manager;
 		unsigned int	Offset;
@@ -90,15 +91,17 @@ struct ChunkManager
 		bool						IsValid() const;
 		VoxelGraphics::MainFaceU &	operator[](unsigned int idx);
 
-		~ChunkDataUMainEntry();
-		ChunkDataUMainEntry();
-		ChunkDataUMainEntry(const ChunkDataUMainEntry & other) = delete;
-		ChunkDataUMainEntry & operator=(const ChunkDataUMainEntry & other) = delete;
+		~ChunkDataUEntry();
+		ChunkDataUEntry();
+		ChunkDataUEntry(const ChunkDataUEntry & other) = delete;
+		ChunkDataUEntry & operator=(const ChunkDataUEntry & other) = delete;
 	};
-	Container::Binary<ChunkDataUMainEntry*>		BufferU_Entrys;
-	bool	BufferU_CheckOverlap(ChunkDataUMainEntry & entry);
-	void	BufferU_Insert(ChunkDataUMainEntry & entry);
-	void	BufferU_Remove(ChunkDataUMainEntry & entry);
+	Container::Binary<ChunkDataUEntry*>		BufferU_Entrys;
+	bool	BufferU_CheckEntry(ChunkDataUEntry & entry);
+	void	BufferU_Insert(ChunkDataUEntry & entry);
+	void	BufferU_Remove(ChunkDataUEntry & entry);
+
+
 
 	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
 

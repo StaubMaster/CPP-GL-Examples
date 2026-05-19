@@ -726,6 +726,12 @@ void ContextNoisePlane::ChangeMedia()
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
+		ChunkManager.BufferU.MainBuffer.Voxel.Change(0);
+		ChunkManager.BufferU.MainBuffer.Texture.Change(1);
+		ChunkManager.BufferU.MainBuffer.Chunk.Change(2);
+	}
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
+	{
 		Container::Array<::Shader::Code> code({
 			Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelF.vert")),
 			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
@@ -807,8 +813,8 @@ void ContextNoisePlane::Init()
 	MakeControls();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	//ChunkManager.ChangeSize(2, 1);
-	ChunkManager.ChangeSize(8, 4);
-	//ChunkManager.ChangeSize(16, 8);
+	//ChunkManager.ChangeSize(8, 4);
+	ChunkManager.ChangeSize(16, 8);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -1291,10 +1297,16 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << " = " << Memory1000ToString(main_f_count * sizeof(VoxelGraphics::MainDataF));
 		ss << '\n';
 
-		unsigned int vertex_u_limit = 6 * 3 * CHUNK_VALUES_PER_VOLM * sizeof(VoxelGraphics::MainDataU);
-		ss << "BufferUData Limit:" << Memory1000ToString(vertex_u_limit);
-		ss << " * " << Seperated1000(ChunkManager.Chunks.Length());
-		ss << " = " << Memory1000ToString(vertex_u_limit * ChunkManager.Chunks.Length());
+		unsigned long long main_u_used = 0;
+		ss << "BufferUData Entrys:" << ChunkManager.BufferU_Entrys.Count() << '\n';
+		for (unsigned int i = 0; i < ChunkManager.BufferU_Entrys.Count(); i++)
+		{
+			main_u_used += ChunkManager.BufferU_Entrys[i] -> Length;
+		}
+		ss << "BufferUData Usage:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));
+		ss << " * " << Seperated1000(main_u_used);
+		ss << " = " << Memory1000ToString(main_u_used * sizeof(VoxelGraphics::MainFaceU));
+		ss << " / " << Memory1000ToString(ChunkManager.BufferU_Size * sizeof(VoxelGraphics::MainFaceU));
 		ss << '\n';
 
 		ChunkManager.ChunksLock.AccessU();
