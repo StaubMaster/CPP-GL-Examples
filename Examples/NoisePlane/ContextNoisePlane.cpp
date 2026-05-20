@@ -451,7 +451,7 @@ void ContextNoisePlane::AuxThread2Func()
 		if (!ThreadIdle && !AuxThread2Idle)
 		{
 			sw.Clear(); sw.Start();
-			ChunkManager.GraphicsUpdateDataAround();
+			//ChunkManager.GraphicsUpdateDataAround();
 			sw.Stop();
 			AuxThread2Time.NewValue(sw.ElapsedTime());
 		}
@@ -468,7 +468,7 @@ void ContextNoisePlane::DrawThreadUpdate()
 
 	ChunkManager.GenerateAround(Perlin2, Perlin3);
 
-	//ChunkManager.GraphicsUpdateDataAround();
+	ChunkManager.GraphicsUpdateDataAround();
 
 	sw.Stop();
 	TimeUpdateThread.NewValue(sw.ElapsedTime());
@@ -812,9 +812,10 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	MakeControls();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
 	//ChunkManager.ChangeSize(8, 4);
-	ChunkManager.ChangeSize(16, 8);
+	//ChunkManager.ChangeSize(16, 8);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -945,41 +946,6 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 }
 
 
-unsigned int					CopyTest_1K_Size = 1024;
-static ValueAverager<float>		CopyTest_1K_TimeNew(64);
-static ValueAverager<float>		CopyTest_1K_TimeCopy(64);
-
-unsigned int					CopyTest_1M_Size = 1024 * 2024;
-static ValueAverager<float>		CopyTest_1M_TimeNew(64);
-static ValueAverager<float>		CopyTest_1M_TimeCopy(64);
-
-static void TestCopyTimeSize(unsigned int size, ValueAverager<float> & time_new, ValueAverager<float> & time_copy)
-{
-	StopWatch sw;
-
-	sw.Start();
-	Container::Array<int> arr0(size);
-	Container::Array<int> arr1(size);
-	sw.Stop();
-	time_new.NewValue(sw.ElapsedTime());
-
-	sw.Clear();
-	sw.Start();
-	for (unsigned int i = 0; i < size; i++)
-	{
-		arr1[i] = arr0[i];
-	}
-	sw.Stop();
-	time_copy.NewValue(sw.ElapsedTime());
-}
-
-static void TestCopyTime()
-{
-	TestCopyTimeSize(CopyTest_1K_Size, CopyTest_1K_TimeNew, CopyTest_1K_TimeCopy);
-	TestCopyTimeSize(CopyTest_1M_Size, CopyTest_1M_TimeNew, CopyTest_1M_TimeCopy);
-}
-
-
 
 static ValueAverager<float>		DLTAverageTime(64);
 static ValueAverager<int>		FPSAverageTime(64);
@@ -1021,12 +987,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << '\n';
 	}
 
-	{
-		ShowNameTimeLine(ss, "TestCopyTimeSize 1K  New", CopyTest_1K_TimeNew);
-		ShowNameTimeLine(ss, "TestCopyTimeSize 1K Copy", CopyTest_1K_TimeCopy);
-		ShowNameTimeLine(ss, "TestCopyTimeSize 1M  New", CopyTest_1M_TimeNew);
-		ShowNameTimeLine(ss, "TestCopyTimeSize 1M Copy", CopyTest_1M_TimeCopy);
-	}
 
 	// Thread Time
 	if (DebugMenu.TimeThreads.Check.IsChecked())
@@ -1306,7 +1266,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "BufferUData Usage:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));
 		ss << " * " << Seperated1000(main_u_used);
 		ss << " = " << Memory1000ToString(main_u_used * sizeof(VoxelGraphics::MainFaceU));
-		ss << " / " << Memory1000ToString(ChunkManager.BufferU_Size * sizeof(VoxelGraphics::MainFaceU));
+		ss << " / " << Memory1000ToString(ChunkManager.BufferU_Array.Length() * sizeof(VoxelGraphics::MainFaceU));
+		ss << " / " << Seperated1000(ChunkManager.BufferU.MainBuffer.Count);
 		ss << '\n';
 
 		ChunkManager.ChunksLock.AccessU();
@@ -1482,8 +1443,6 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 {
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
-
-	TestCopyTime();
 
 	StopWatch sw;
 	sw.Start();

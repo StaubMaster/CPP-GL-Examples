@@ -79,9 +79,8 @@ struct ChunkManager
 	VoxelGraphics::BufferF		BufferF;
 	Texture::Array2D			Texture;
 
-	bool						BufferU_AttributesBound = false;
-	VoxelGraphics::MainFaceU *	BufferU_Data = nullptr;
-	unsigned int				BufferU_Size = 1024 * 1024;
+	bool										BufferU_AttributesBound = false;
+	Container::Array<VoxelGraphics::MainFaceU>	BufferU_Array;
 	struct ChunkDataUEntry
 	{
 		ChunkManager *	Manager;

@@ -82,9 +82,10 @@ namespace VoxelGraphics
 	/*
 		|------||------||------||------| 32 Bits in 4 Bytes
 		[--PX--][--PY--][--PZ--]TTNNNVVV
-		{8} [0;255] Voxel Position X
-		{8} [0;255] Voxel Position Y
-		{8} [0;255] Voxel Position Z
+								XY   XYZ
+		{8} [0;255] Voxel Position X (only {5} [0;31] are used)
+		{8} [0;255] Voxel Position Y (only {5} [0;31] are used)
+		{8} [0;255] Voxel Position Z (only {5} [0;31] are used)
 		{1} [0;1] Texture X
 		{1} [0;1] Texture Y
 		{3} [0;7] Normal

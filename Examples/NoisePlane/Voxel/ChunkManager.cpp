@@ -47,11 +47,7 @@ bool ChunkManager::ChunkDataUEntry::IsValid() const
 }
 VoxelGraphics::MainFaceU & ChunkManager::ChunkDataUEntry::operator[](unsigned int idx)
 {
-	if (Offset + idx >= Manager -> BufferU_Size)
-	{
-		std::cout << "Invalid Index\n";
-	}
-	return Manager -> BufferU_Data[Offset + idx];
+	return Manager -> BufferU_Array[Offset + idx];
 }
 
 ChunkManager::ChunkDataUEntry::~ChunkDataUEntry()
@@ -69,7 +65,7 @@ ChunkManager::ChunkDataUEntry::ChunkDataUEntry()
 
 bool ChunkManager::BufferU_CheckEntry(ChunkDataUEntry & entry)
 {
-	if ((entry.Offset + entry.Length) >= BufferU_Size)
+	if ((entry.Offset + entry.Length) >= BufferU_Array.Length())
 	{
 		return false;
 	}
@@ -441,12 +437,15 @@ ChunkNeighbour ChunkManager::FindNeighbours(const Chunk & chunk) const
 {
 	ChunkNeighbour neighbours;
 	neighbours.Here = (Chunk*)&chunk;
-	neighbours.PrevX = Chunks[relative(chunk.Index - VectorI3(1, 0, 0))];
-	neighbours.PrevY = Chunks[relative(chunk.Index - VectorI3(0, 1, 0))];
-	neighbours.PrevZ = Chunks[relative(chunk.Index - VectorI3(0, 0, 1))];
-	neighbours.NextX = Chunks[relative(chunk.Index + VectorI3(1, 0, 0))];
-	neighbours.NextY = Chunks[relative(chunk.Index + VectorI3(0, 1, 0))];
-	neighbours.NextZ = Chunks[relative(chunk.Index + VectorI3(0, 0, 1))];
+
+	VectorU3 udx;
+	udx = relative(chunk.Index - VectorI3(1, 0, 0)); if (Chunks.Check(udx)) { neighbours.PrevX = Chunks[udx]; } else  { neighbours.PrevX = nullptr; }
+	udx = relative(chunk.Index - VectorI3(0, 1, 0)); if (Chunks.Check(udx)) { neighbours.PrevY = Chunks[udx]; } else  { neighbours.PrevY = nullptr; }
+	udx = relative(chunk.Index - VectorI3(0, 0, 1)); if (Chunks.Check(udx)) { neighbours.PrevZ = Chunks[udx]; } else  { neighbours.PrevZ = nullptr; }
+	udx = relative(chunk.Index + VectorI3(1, 0, 0)); if (Chunks.Check(udx)) { neighbours.NextX = Chunks[udx]; } else  { neighbours.NextX = nullptr; }
+	udx = relative(chunk.Index + VectorI3(0, 1, 0)); if (Chunks.Check(udx)) { neighbours.NextY = Chunks[udx]; } else  { neighbours.NextY = nullptr; }
+	udx = relative(chunk.Index + VectorI3(0, 0, 1)); if (Chunks.Check(udx)) { neighbours.NextZ = Chunks[udx]; } else  { neighbours.NextZ = nullptr; }
+
 	return neighbours;
 }
 /*const Chunk * ChunkManager::NeighbourLoopChunk(const Chunk & chunk, VectorU3 & udx, AxisRel axis)
@@ -468,16 +467,19 @@ ChunkNeighbour ChunkManager::FindNeighbours(const Chunk & chunk) const
 	//ChunksLock.AccessU();
 	return ptr;
 }*/
+
 void ChunkManager::NeighbourUpdateBufferMain(VectorI3 idx)
 {
 	Chunk * chunk;
 	chunk = Chunks[relative(idx)]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; }
-	chunk = Chunks[relative(idx - VectorI3(1, 0, 0))]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; }
-	chunk = Chunks[relative(idx - VectorI3(0, 1, 0))]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; }
-	chunk = Chunks[relative(idx - VectorI3(0, 0, 1))]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; }
-	chunk = Chunks[relative(idx + VectorI3(1, 0, 0))]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; }
-	chunk = Chunks[relative(idx + VectorI3(0, 1, 0))]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; }
-	chunk = Chunks[relative(idx + VectorI3(0, 0, 1))]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; }
+
+	VectorU3 udx;
+	udx = relative(idx - VectorI3(1, 0, 0)); if (Chunks.Check(udx)) { chunk = Chunks[udx]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; } }
+	udx = relative(idx - VectorI3(0, 1, 0)); if (Chunks.Check(udx)) { chunk = Chunks[udx]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; } }
+	udx = relative(idx - VectorI3(0, 0, 1)); if (Chunks.Check(udx)) { chunk = Chunks[udx]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; } }
+	udx = relative(idx + VectorI3(1, 0, 0)); if (Chunks.Check(udx)) { chunk = Chunks[udx]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; } }
+	udx = relative(idx + VectorI3(0, 1, 0)); if (Chunks.Check(udx)) { chunk = Chunks[udx]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; } }
+	udx = relative(idx + VectorI3(0, 0, 1)); if (Chunks.Check(udx)) { chunk = Chunks[udx]; if (chunk != nullptr) { chunk -> MainBufferState = BufferDataState::Needed; } }
 
 //	if (Here  != nullptr) { Here  -> MainBufferState = BufferDataState::Needed; }
 //	if (PrevX != nullptr) { PrevX -> MainBufferState = BufferDataState::Needed; }
@@ -721,16 +723,23 @@ void ChunkManager::GraphicsCreate()
 
 	BufferU_AttributesBound = false;
 	{
-		BufferU.MainBuffer.DataFull(BufferU_Size * sizeof(VoxelGraphics::MainFaceU));
-		void * ptr = BufferU.MainBuffer.DataMap();
-		BufferU_Data = (VoxelGraphics::MainFaceU*)ptr;
-		if (ptr != (void*)BufferU_Data)
-		{
-			std::cerr << "!!!! POINTER CAST DIFFERANCE !!!!" << '\n';
-			std::cerr << "pointer: " << ptr << '\n';
-			std::cerr << "cast   : " << (void*)BufferU_Data << '\n';
-			std::cerr << '\n';
-		}
+		// Container::Void to Container::Array
+		// Container::Void constructor(size, data)
+
+		std::cout << " Error: " << GL::GetError() << '\n';
+		BufferU.Bind();
+		unsigned int size = 1024 * 16;
+		std::cout << " Error: " << GL::GetError() << '\n';
+		BufferU.MainBuffer.DataFull(size * sizeof(VoxelGraphics::MainFaceU));
+		std::cout << " Error: " << GL::GetError() << '\n';
+		//void * ptr = BufferU.MainBuffer.DataMap();
+		//std::cout << " Error: " << GL::GetError() << '\n';
+
+		void * ptr = new VoxelGraphics::MainFaceU[size];
+		BufferU_Array = Container::Array<VoxelGraphics::MainFaceU>(size, (VoxelGraphics::MainFaceU*)ptr);
+
+		if (ptr != (void*)BufferU_Array.Memory())
+		{ std::cerr << "!!!! POINTER CAST DIFFERANCE !!!!" << '\n'; }
 	}
 
 	GraphicsExist = true;
@@ -757,7 +766,7 @@ void ChunkManager::GraphicsDelete()
 	ChunksLock.AccessU();
 //	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
 
-	BufferU_Data = nullptr;
+	BufferU_Array.Clear();
 
 	GraphicsExist = false;
 }
@@ -937,12 +946,60 @@ void ChunkManager::Draw()
 		if (Chunks[i] == nullptr) { continue; }
 		Chunks[i] -> DrawU();
 	}
-	if (!BufferU_AttributesBound)
+
+	BufferU.Bind();
+	//if (!BufferU_AttributesBound)
 	{
 		BufferU.MainBuffer.Init();
 		BufferU_AttributesBound = true;
 	}
+
+	/*{
+		Container::Void cont;
+		cont.Data = BufferU_Data;
+		cont.Size = BufferU_Size * sizeof(VoxelGraphics::MainFaceU);
+		BufferU.MainBuffer.DataFull(cont);
+	}*/
+	{
+		BufferU.MainBuffer.Bind();
+		std::cout << "Map\n";
+		std::cout << "ArrayBuffer: " << GL::GetIntegerv(GL::ParameterName::ArrayBufferBinding) << '\n';
+		std::cout << "Error: " << GL::GetError() << '\n';
+		//static VoxelGraphics::MainFaceU * data = (VoxelGraphics::MainFaceU*)BufferU.MainBuffer.DataMap();
+		static VoxelGraphics::MainFaceU * data = (VoxelGraphics::MainFaceU*)glMapBuffer((unsigned int)GL::BufferTarget::ArrayBuffer, GL_READ_WRITE);
+		std::cout << "Error: " << GL::GetError() << '\n';
+		std::cout << "data: " << data << '\n';
+		{
+			int val;
+			glGetBufferParameteriv((unsigned int)GL::BufferTarget::ArrayBuffer, GL_BUFFER_SIZE, &val);
+			std::cout << "Size: " << val << '\n';
+			std::cout << "Size: " << (val / sizeof(VoxelGraphics::MainFaceU)) << '\n';
+			std::cout << "Size: " << ((val / sizeof(VoxelGraphics::MainFaceU)) / 1024) << '\n';
+		}
+		std::cout << '\n';
+		/*for (unsigned int i = 0; i < BufferU_Array.Length(); i++)
+		{
+			data[i] = BufferU_Array[i];
+		}*/
+		std::cout << "UnMap\n";
+		std::cout << "ArrayBuffer: " << GL::GetIntegerv(GL::ParameterName::ArrayBufferBinding) << '\n';
+		std::cout << "Error: " << GL::GetError() << '\n';
+		bool ret = glUnmapBuffer((unsigned int)GL::BufferTarget::ArrayBuffer);
+		std::cout << "Error: " << GL::GetError() << '\n';
+		std::cout << "ret: " << ret << '\n';
+		std::cout << '\n';
+	}
+
 	BufferU.Draw();
+
+	BufferU.Bind();
+	for (unsigned int i = 0; i < BufferU_Entrys.Count(); i++)
+	{
+		ChunkDataUEntry & entry = *BufferU_Entrys[i];
+		//std::cout << "Draw: " << '(' << entry.Offset << ' ' << entry.Length << ')' << '\n';
+		GL::DrawArrays(GL::DrawMode::Triangles, entry.Offset, entry.Length);
+	}
+	//std::cout << '\n';
 
 	/*ShaderF.Bind();
 	Texture.Bind();
