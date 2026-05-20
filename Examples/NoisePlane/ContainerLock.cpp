@@ -2,6 +2,8 @@
 #include "Telemetry/ThreadInfo.hpp"
 //#include <iostream>
 
+//#define LOG_THREAD_INFO
+
 
 
 unsigned int ContainerLock::Count() const { return AccessCount.load(); }
@@ -19,39 +21,57 @@ ContainerLock::ContainerLock()
 
 void ContainerLock::AccessL()
 {
-//	std::cerr << "wait Checking0:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " wait AccessL" << '\n';
+#endif
 	AccessMutex.lock();
 	AccessCount++;
 	AccessMutex.unlock();
-//	std::cerr << "have Checking0:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " have AccessL" << '\n';
+#endif
 }
 void ContainerLock::AccessU()
 {
-//	std::cerr << "have Checking1:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " have AccessU" << '\n';
+#endif
 	AccessCount--;
-//	std::cerr << "done Checking1:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " done AccessU" << '\n';
+#endif
 }
 void ContainerLock::AssignL()
 {
-//	std::cerr << "wait Changing0:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " wait AssignL" << '\n';
+#endif
 	AssignMutex.lock();
 	AccessMutex.lock();
 	while (AccessCount.load() != 0) { }
-//	std::cerr << "have Changing0:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " have AssignL" << '\n';
+#endif
 }
 void ContainerLock::AssignU()
 {
-//	std::cerr << "have Changing1:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " have AssignU" << '\n';
+#endif
 	AccessMutex.unlock();
 	AssignMutex.unlock();
-//	std::cerr << "done Changing1:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " done AssignU" << '\n';
+#endif
 }
 
 
 
 void ContainerLock::AccessL(StopWatch & watch, WaitDoTime & time)
 {
-//	std::cerr << "wait Checking0:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " wait AccessL" << '\n' << std::flush;
+#endif
 	time.ThreadName = ThreadInfo::ThreadName;
 	watch.Clear(); watch.Start();
 
@@ -62,22 +82,30 @@ void ContainerLock::AccessL(StopWatch & watch, WaitDoTime & time)
 	watch.Stop();
 	time.WaitTime.NewValue(watch.ElapsedTime());
 	watch.Clear(); watch.Start();
-//	std::cerr << "have Checking0:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " have AccessL" << '\n' << std::flush;
+#endif
 }
 void ContainerLock::AccessU(StopWatch & watch, WaitDoTime & time)
 {
 	time.ThreadName = ThreadInfo::ThreadName;
-//	std::cerr << "have Checking1:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " have AccessU" << '\n' << std::flush;
+#endif
 	AccessCount--;
 
 	watch.Stop();
 	time.DoTime.NewValue(watch.ElapsedTime());
-//	std::cerr << "done Checking1:" << (const void *)ThreadInfo::ThreadName << '\n' << std::flush;
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " done AccessU" << '\n' << std::flush;
+#endif
 }
 void ContainerLock::AssignL(StopWatch & watch, WaitDoTime & time)
 {
 	time.ThreadName = ThreadInfo::ThreadName;
-//	std::cerr << "wait Changing0:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " wait AssignL" << '\n';
+#endif
 	watch.Clear(); watch.Start();
 
 	AssignMutex.lock();
@@ -87,18 +115,24 @@ void ContainerLock::AssignL(StopWatch & watch, WaitDoTime & time)
 	watch.Stop();
 	time.WaitTime.NewValue(watch.ElapsedTime());
 	watch.Clear(); watch.Start();
-//	std::cerr << "have Changing0:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " have AssignL" << '\n';
+#endif
 }
 void ContainerLock::AssignU(StopWatch & watch, WaitDoTime & time)
 {
 	time.ThreadName = ThreadInfo::ThreadName;
-//	std::cerr << "have Changing1:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " have AssignU" << '\n';
+#endif
 	AccessMutex.unlock();
 	AssignMutex.unlock();
 	
 	watch.Stop();
 	time.DoTime.NewValue(watch.ElapsedTime());
-//	std::cerr << "done Changing1:" << ThreadInfo::ThreadName << '\n';
+#ifdef LOG_THREAD_INFO
+	std::cerr << ThreadInfo::ThreadName << " done AssignU" << '\n';
+#endif
 }
 
 

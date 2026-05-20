@@ -41,7 +41,8 @@ UI::Text::Manager::Manager()
 	: Shader()
 	, Buffer()
 	, ObjectDatas()
-	, Instances()
+	, InstancesBlock()
+	, InstancesArray()
 	, TextFont(nullptr)
 	, Pallet_Texture()
 	, GraphicsExist(false)
@@ -117,8 +118,93 @@ static unsigned int LineLength(const char * text, unsigned int i)
 	return len;
 }
 
+#include "../../Examples/NoisePlane/Telemetry/StopWatch.hpp"
+#include "../../Examples/NoisePlane/Telemetry/ValueAverager.hpp"
+#include <iomanip>
+
+//static StopWatch				WatchTotal;
+//static StopWatch				WatchClear;
+//static StopWatch				WatchDisplay;
+//static StopWatch				WatchRemove;
+//static StopWatch				WatchAlign;
+//static StopWatch				WatchLoop;
+//static StopWatch				WatchOther;
+//static StopWatch				WatchFind;
+//static StopWatch				WatchAssign;
+//static StopWatch				WatchInsert;
+//static StopWatch				WatchNext0;
+//static StopWatch				WatchNext1;
+//static StopWatch				WatchArray;
+
+//static ValueAverager<float>		TimeTotal(64);
+//static ValueAverager<float>		TimeClear(64);
+//static ValueAverager<float>		TimeDisplay(64);
+//static ValueAverager<float>		TimeRemove(64);
+//static ValueAverager<float>		TimeAlign(64);
+//static ValueAverager<float>		TimeLoop(64);
+//static ValueAverager<float>		TimeOther(64);
+//static ValueAverager<float>		TimeFind(64);
+//static ValueAverager<float>		TimeAssign(64);
+//static ValueAverager<float>		TimeInsert(64);
+//static ValueAverager<float>		TimeNext0(64);
+//static ValueAverager<float>		TimeNext1(64);
+//static ValueAverager<float>		TimeArray(64);
+
+/*static void TimeClearFunc()
+{
+	WatchTotal.Clear();
+	WatchClear.Clear();
+	WatchDisplay.Clear();
+	WatchRemove.Clear();
+	WatchAlign.Clear();
+	WatchLoop.Clear();
+	WatchOther.Clear();
+	WatchFind.Clear();
+	WatchAssign.Clear();
+	WatchInsert.Clear();
+	WatchNext0.Clear();
+	WatchNext1.Clear();
+	WatchArray.Clear();
+}*/
+/*static void TimeValueFunc()
+{
+	TimeTotal.NewValue(WatchTotal.ElapsedTime());
+	TimeClear.NewValue(WatchClear.ElapsedTime());
+	TimeDisplay.NewValue(WatchDisplay.ElapsedTime());
+	TimeRemove.NewValue(WatchRemove.ElapsedTime());
+	TimeAlign.NewValue(WatchAlign.ElapsedTime());
+	TimeLoop.NewValue(WatchLoop.ElapsedTime());
+	TimeOther.NewValue(WatchOther.ElapsedTime());
+	TimeFind.NewValue(WatchFind.ElapsedTime());
+	TimeAssign.NewValue(WatchAssign.ElapsedTime());
+	TimeInsert.NewValue(WatchInsert.ElapsedTime());
+	TimeNext0.NewValue(WatchNext0.ElapsedTime());
+	TimeNext1.NewValue(WatchNext1.ElapsedTime());
+	TimeArray.NewValue(WatchArray.ElapsedTime());
+}*/
+
+void UI::Text::Manager::ShowInstancesTime()
+{
+	//std::cout << "Total   " << std::fixed << TimeTotal.Average() << '\n';
+	//std::cout << "Clear   " << std::fixed << TimeClear.Average() << '\n';
+	//std::cout << "Display " << std::fixed << TimeDisplay.Average() << '\n';
+	//std::cout << "Remove  " << std::fixed << TimeRemove.Average() << '\n';
+	//std::cout << "Align   " << std::fixed << TimeAlign.Average() << '\n';
+	//std::cout << "Loop    " << std::fixed << TimeLoop.Average() << '\n';
+	//std::cout << "Other   " << std::fixed << TimeOther.Average() << '\n';
+	//std::cout << "Find    " << std::fixed << TimeFind.Average() << '\n';
+	//std::cout << "Assign  " << std::fixed << TimeAssign.Average() << '\n';
+	//std::cout << "Insert  " << std::fixed << TimeInsert.Average() << '\n';
+	//std::cout << "Next0   " << std::fixed << TimeNext0.Average() << '\n';
+	//std::cout << "Next1   " << std::fixed << TimeNext1.Average() << '\n';
+	//std::cout << "Array   " << std::fixed << TimeArray.Average() << '\n';
+	//std::cout << '\n';
+}
+
 void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 {
+	//WatchAlign.Start();
+
 	unsigned int line_count = LineCount(obj.Text.c_str());
 	unsigned int line_idx = 0;
 	unsigned int line_len = LineLength(obj.Text.c_str(), 0);
@@ -154,15 +240,19 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 	VectorF2 rel_txt;
 	rel_txt.Y = -(line_count * text_alignment.Y);
 
-	UI::Text::Inst_Data data;
+	//WatchAlign.Stop();
+
+	//WatchLoop.Start();
+
 	for (unsigned int i = 0; i < obj.Text.length(); i++)
 	{
-		if (obj.Text[i] == ' ')
+		char c = obj.Text[i];
+		if (c == ' ')
 		{
 			line_idx++;
 			continue;;
 		}
-		if (obj.Text[i] == '\n')
+		if (c == '\n')
 		{
 			rel_txt.Y++;
 			line_idx = 0;
@@ -170,27 +260,50 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 			continue;
 		}
 
+		//WatchNext0.Start();
+		UI::Text::Inst_Data & data = InstancesBlock.MakeNext();
+		//WatchNext0.Stop();
+
+		//WatchOther.Start();
 		rel_txt.X = (line_idx + text_alignment.X) - (line_len * text_alignment.X);
-
 		line_idx++;
-
-		// check if Character is in Bound ?
 		data.Pos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
-		data.Pallet = TextFont -> CharacterBoxFromCode(obj.Text[i]); // this will need to be before check for non MonoSpace
-		VectorF2 size = (obj.CharacterSize * 0.5f);
+		//WatchOther.Stop();
 
+		//WatchFind.Start();
+		data.Pallet = (*TextFont)[c].Box;
+		//WatchFind.Stop();
+
+		//VectorF2 size = (obj.CharacterSize * 0.5f);
 		//if (obj.Bound.InnerBox(BoxF2(data.Pos - size, data.Pos + size)).IsNormal()) // this is slow
-		{
-			data.Bound = obj.Bound;
-			data.Color = obj.Color;
-			Instances.Insert(data); // this is slow
-			// use a BlockList ?
-		}
+
+		//WatchAssign.Start();
+		data.Bound = obj.Bound;
+		data.Color = obj.Color;
+		//WatchAssign.Stop();
+
+		//WatchInsert.Start();
+		//InstancesBlock.Insert(data);
+		//WatchInsert.Stop();
+
+		//WatchNext1.Start();
+		InstancesBlock.Next();
+		//WatchNext1.Stop();
 	}
+
+	//WatchLoop.Stop();
 }
 void UI::Text::Manager::MakeInstances()
 {
-	Instances.Clear();
+	//TimeClearFunc();
+
+	//WatchTotal.Start();
+
+	//WatchClear.Start();
+	InstancesBlock.Clear();
+	InstancesArray.Clear();
+	//WatchClear.Stop();
+
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
 		if (ObjectDatas[i] != nullptr)
@@ -198,17 +311,29 @@ void UI::Text::Manager::MakeInstances()
 			ObjectData & obj = *ObjectDatas[i];
 			if (obj.Display)
 			{
+				//WatchDisplay.Start();
 				MakeObjectInstances(obj);
+				//WatchDisplay.Stop();
 			}
 			if (obj.Remove)
 			{
+				//WatchRemove.Start();
 				ObjectDatas.RemoveAt(i);
 				delete &obj;
 				i--;
+				//WatchRemove.Stop();
 			}
 		}
 	}
 	BufferInstNewData = true;
+
+	//WatchArray.Start();
+	InstancesArray = InstancesBlock.ToArray();
+	//WatchArray.Stop();
+
+	//WatchTotal.Stop();
+
+	//TimeValueFunc();
 }
 
 
@@ -288,7 +413,7 @@ void UI::Text::Manager::BufferInstUpdateData()
 {
 	if (!GraphicsExist || !BufferInstNewData) { return; }
 
-	Buffer.Inst.DataFull(Instances.ToVoid());
+	Buffer.Inst.DataFull(InstancesArray.ToVoid());
 
 	BufferInstNewData = false;
 }

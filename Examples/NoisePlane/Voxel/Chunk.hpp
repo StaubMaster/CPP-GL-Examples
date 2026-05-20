@@ -180,6 +180,12 @@ struct Chunk
 	void	GraphicsDelete();
 
 	public:
+	/* BufferState
+		None: no Data / empty
+		Want: wants new Data
+		Have: new Data is ready to Bind
+		Done: has Data
+	*/
 	BufferDataState		MainBufferState;
 	ChunkGraphicsData	MainBufferData;
 	void	GraphicsMakeData(const ChunkNeighbour & neighbours);

@@ -9,24 +9,14 @@ UI::Text::Font::Character::Character()
 
 
 
-UI::Text::Font::Font() :
-	AtlasTexture()
-{ }
-UI::Text::Font::~Font()
-{
-	AtlasTexture.Dispose();
-}
-
-
-
-BoxF2 UI::Text::Font::CharacterBoxFromCode(unsigned int code)
+UI::Text::Font::Character & UI::Text::Font::operator[](unsigned int code)
 {
 	for (unsigned int j = 0; j < CharacterRanges.Count(); j++)
 	{
 		CharacterRange * range = CharacterRanges[j];
 		if (code >= range -> CodeMin && code <= range -> CodeMax)
 		{
-			return range -> Characters[code - (range -> CodeMin)].Box;
+			return range -> Characters[code - (range -> CodeMin)];
 		}
 	}
 
@@ -34,9 +24,19 @@ BoxF2 UI::Text::Font::CharacterBoxFromCode(unsigned int code)
 	{
 		if (Characters[i].Code == code)
 		{
-			return Characters[i].Box;
+			return Characters[i];
 		}
 	}
 
-	return DefaultCharacter.Box;
+	return DefaultCharacter;
+}
+
+
+
+UI::Text::Font::Font() :
+	AtlasTexture()
+{ }
+UI::Text::Font::~Font()
+{
+	AtlasTexture.Dispose();
 }

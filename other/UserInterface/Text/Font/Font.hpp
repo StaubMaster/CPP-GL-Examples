@@ -40,13 +40,13 @@ class Font
 	Container::Binary<CharacterRange*>	CharacterRanges;
 
 	public:
+	Character &		operator[](unsigned int code);
+
+	public:
 	~Font();
 	Font();
 	Font(const Font & other) = delete;
 	Font & operator=(const Font & other) = delete;
-
-	public:
-	BoxF2	CharacterBoxFromCode(unsigned int code);
 
 	private:
 	struct ParsingData;

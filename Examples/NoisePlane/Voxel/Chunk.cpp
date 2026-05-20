@@ -556,7 +556,7 @@ void Chunk::GenerateDecorationNotes(const Perlin2D & noise2, const Perlin3D & no
 	(void)noise2;
 	(void)noise3;
 
-//	DecorateTrees(noise2);
+	DecorateTrees(noise2);
 
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 

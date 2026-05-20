@@ -6,6 +6,8 @@
 #include "Shader.hpp"
 
 #include "Miscellaneous/Container/Binary.hpp"
+#include "Miscellaneous/Container/Array.hpp"
+#include "Miscellaneous/Container/BlockLinkedList.hpp"
 
 #include "Font/Font.hpp"
 #include "Graphics/Texture/Array2D.hpp"
@@ -37,8 +39,9 @@ class Manager
 	UI::Text::Shader	Shader;
 	UI::Text::Buffer	Buffer;
 
-	Container::Binary<UI::Text::ObjectData*>	ObjectDatas;
-	Container::Binary<UI::Text::Inst_Data>		Instances;
+	Container::Binary<UI::Text::ObjectData*>				ObjectDatas;
+	Container::BlockLinkedList<1024, UI::Text::Inst_Data>	InstancesBlock;
+	Container::Array<UI::Text::Inst_Data>					InstancesArray;
 
 	UI::Text::Font *	TextFont;
 	Texture::Array2D	Pallet_Texture;
@@ -62,6 +65,8 @@ class Manager
 
 
 
+	public:
+	void	ShowInstancesTime();
 	private:
 	void	MakeObjectInstances(const ObjectData & obj);
 	public:

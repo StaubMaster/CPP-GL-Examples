@@ -419,9 +419,9 @@ void ContextNoisePlane::AuxThread0Func()
 		if (!ThreadIdle && !AuxThread0Idle)
 		{
 			sw.Clear(); sw.Start();
-			//ChunkManager.RemoveAround();
-			//ChunkManager.InsertAround();
-			//ChunkManager.UpdateChunksContainer();
+			ChunkManager.RemoveAround();
+			ChunkManager.InsertAround();
+			ChunkManager.UpdateChunksContainer();
 			sw.Stop();
 			AuxThread0Time.NewValue(sw.ElapsedTime());
 		}
@@ -436,7 +436,7 @@ void ContextNoisePlane::AuxThread1Func()
 		if (!ThreadIdle && !AuxThread1Idle)
 		{
 			sw.Clear(); sw.Start();
-			//ChunkManager.GenerateAround(Perlin2, Perlin3);
+			ChunkManager.GenerateAround(Perlin2, Perlin3);
 			sw.Stop();
 			AuxThread1Time.NewValue(sw.ElapsedTime());
 		}
@@ -451,7 +451,7 @@ void ContextNoisePlane::AuxThread2Func()
 		if (!ThreadIdle && !AuxThread2Idle)
 		{
 			sw.Clear(); sw.Start();
-			//ChunkManager.GraphicsUpdateDataAround();
+			ChunkManager.GraphicsUpdateDataAround();
 			sw.Stop();
 			AuxThread2Time.NewValue(sw.ElapsedTime());
 		}
@@ -462,13 +462,13 @@ void ContextNoisePlane::DrawThreadUpdate()
 	StopWatch sw;
 	sw.Start();
 
-	ChunkManager.RemoveAround();
-	ChunkManager.InsertAround();
-	ChunkManager.UpdateChunksContainer();
+	//ChunkManager.RemoveAround();
+	//ChunkManager.InsertAround();
+	//ChunkManager.UpdateChunksContainer();
 
-	ChunkManager.GenerateAround(Perlin2, Perlin3);
+	//ChunkManager.GenerateAround(Perlin2, Perlin3);
 
-	ChunkManager.GraphicsUpdateDataAround();
+	//ChunkManager.GraphicsUpdateDataAround();
 
 	sw.Stop();
 	TimeUpdateThread.NewValue(sw.ElapsedTime());
@@ -700,6 +700,26 @@ void ContextNoisePlane::ChangeMedia()
 		TextManager.TextFont = UI::Text::Font::Parse(
 			MediaDirectory.File("Text/Font0.atlas")
 		);
+
+		std::cout << "TextFont\n";
+
+		std::cout << "Characters\n";
+		for (unsigned int i = 0; i < TextManager.TextFont -> Characters.Count(); i++)
+		{
+			std::cout << ' ' << (char)(TextManager.TextFont -> Characters[i].Code);
+		}
+		std::cout << '\n';
+
+		std::cout << "CharacterRanges\n";
+		for (unsigned int j = 0; j < TextManager.TextFont -> CharacterRanges.Count(); j++)
+		{
+			for (unsigned int i = 0; i < TextManager.TextFont -> CharacterRanges[j] -> Characters.Count(); i++)
+			{
+				std::cout << ' ' << (char)(TextManager.TextFont -> CharacterRanges[j] -> Characters[i].Code);
+			}
+			std::cout << '\n';
+		}
+		std::cout << '\n';
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 
@@ -894,9 +914,11 @@ void ContextNoisePlane::Draw()
 	TimeMakeText.NewValue(sw.ElapsedTime());
 	sw.Stop();
 
+	TextManager.ShowInstancesTime();
+
 	sw.Clear(); sw.Start();
 	TextManager.Draw();
-	TextCharCount = TextManager.Instances.Count();
+	TextCharCount = TextManager.InstancesArray.Length();
 	sw.Stop();
 	TimeDrawText.NewValue(sw.ElapsedTime());
 
@@ -979,14 +1001,13 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	// Text
 	{
 		ss << "TextCharCount: " << Seperated1000(TextCharCount) << '\n';
-		ss << "TextManager.Instances.Count(): " << Seperated1000(TextManager.Instances.Count()) << '\n';
+		ss << "TextManager.Instances.Count(): " << Seperated1000(TextManager.InstancesArray.Length()) << '\n';
 		ss << "TextManager.ObjectDatas.Count(): " << Seperated1000(TextManager.ObjectDatas.Count()) << '\n';
 		ShowNameTimeLine(ss, "TextAssambleTime", TextAssambleTime);
 		ShowNameTimeLine(ss, "TextInstanceTime", TextInstanceTime);
 		//std::cout << "TimeMakeText: " << TimeMakeText.Average() << '\n';
 		ss << '\n';
 	}
-
 
 	// Thread Time
 	if (DebugMenu.TimeThreads.Check.IsChecked())
