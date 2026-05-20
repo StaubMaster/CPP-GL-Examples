@@ -96,8 +96,8 @@ void UI::Control::Manager::GraphicsInit()
 {
 	if (!(GraphicsNeedInit && GraphicsExist)) { return; }
 
-	Buffer.Main.Init();
-	Buffer.Inst.Init();
+	Buffer.Main.Update();
+	Buffer.Inst.Update();
 
 	GraphicsNeedInit = false;
 }

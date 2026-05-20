@@ -53,7 +53,42 @@ struct VoxelHit
 
 class MultiBuffe_ChunkU
 {
-	
+	public:
+	struct Entry
+	{
+		MultiBuffe_ChunkU &	Buffer;
+		unsigned int		Offset;
+		unsigned int		Length;
+		// put Array here
+		// update Buffer
+		//  check for Array, put Array, clear Array
+
+		bool	IsEmpty() const;
+		void	MakeEmpty();
+
+		void	Put(const Container::Array<VoxelGraphics::MainFaceU> & data);
+
+		~Entry();
+		Entry() = delete;
+		Entry(MultiBuffe_ChunkU & buffer);
+		Entry(const Entry & other) = delete;
+		Entry & operator=(const Entry & other) = delete;
+	};
+
+	VoxelGraphics::BufferU		Buffer;
+	unsigned int				Size;
+
+	void	NewSize(unsigned int size);
+
+	Container::Binary<Entry*>	Entrys;
+	Container::Binary<int>		Offsets;
+	Container::Binary<int>		Lengths;
+
+	bool	CheckEntry(Entry & entry);
+	void	Insert(Entry & entry);
+	void	Remove(Entry & entry);
+
+	void	Draw();
 };
 
 struct ChunkManager
@@ -80,33 +115,9 @@ struct ChunkManager
 	public:
 	VoxelGraphics::Shader		ShaderU;
 	VoxelGraphics::Shader		ShaderF;
-	VoxelGraphics::BufferU		BufferU;
+	MultiBuffe_ChunkU			BufferU;
 	VoxelGraphics::BufferF		BufferF;
 	Texture::Array2D			Texture;
-
-	bool										BufferU_AttributesBound = false;
-	Container::Array<VoxelGraphics::MainFaceU>	BufferU_Array;
-	struct ChunkDataUEntry
-	{
-		ChunkManager *	Manager;
-		unsigned int	Offset;
-		unsigned int	Length;
-
-		bool						IsValid() const;
-		VoxelGraphics::MainFaceU &	operator[](unsigned int idx);
-		void	Put(unsigned int offset, const Container::Array<VoxelGraphics::MainFaceU> & data);
-
-		~ChunkDataUEntry();
-		ChunkDataUEntry();
-		ChunkDataUEntry(const ChunkDataUEntry & other) = delete;
-		ChunkDataUEntry & operator=(const ChunkDataUEntry & other) = delete;
-	};
-	Container::Binary<ChunkDataUEntry*>		BufferU_Entrys;
-	bool	BufferU_CheckEntry(ChunkDataUEntry & entry);
-	void	BufferU_Insert(ChunkDataUEntry & entry);
-	void	BufferU_Remove(ChunkDataUEntry & entry);
-
-
 
 	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
 

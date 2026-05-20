@@ -59,20 +59,14 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, DecorationsPlaced(false)
 	, Decorations()
 	, GraphicsExist(false)
-	, BufferU()
+	, BufferU_Entry(manager.BufferU)
 	, BufferF()
 	, MainBufferState(BufferDataState::None)
 	, MainBufferData()
 	, BufferUMain_NewData(false)
 	, BufferFMain_NewData(false)
 	, BufferFInst_NewData(false)
-	, BufferU_AttributesBound(false)
-	, BufferF_AttributesBound(false)
 {
-	BufferU.MainBuffer.Voxel.Change(0);
-	BufferU.MainBuffer.Texture.Change(1);
-	BufferU.MainBuffer.Chunk.Change(2);
-
 	BufferF.Main.Pos.Change(0);
 	BufferF.Main.Tex.Change(1);
 	BufferF.Main.Normal.Change(2);
@@ -593,14 +587,13 @@ void Chunk::GraphicsCreate()
 {
 	if (GraphicsExist) { return; }
 
-	BufferU.Create();
 	BufferF.Create();
 
 	BufferUMain_NewData = false;
 	BufferFMain_NewData = false;
 	BufferFInst_NewData = true;
-	BufferU_AttributesBound = false;
-	BufferF_AttributesBound = false;
+	BufferF.Main.AttributesBound = false;
+	BufferF.Inst.AttributesBound = false;
 
 	GraphicsExist = true;
 
@@ -613,7 +606,6 @@ void Chunk::GraphicsDelete()
 {
 	if (!GraphicsExist) { return; }
 
-	BufferU.Delete();
 	BufferF.Delete();
 
 	GraphicsExist = false;
@@ -639,36 +631,18 @@ void Chunk::BufferUMain_UpdateData()
 	if (!BufferUMain_NewData) { return; }
 
 	MainBufferData.ArrayLock.lock();
-	{
-		const Container::Array<VoxelGraphics::MainFaceU> & data = MainBufferData.GraphicsDataU();
-		BufferU.MainBuffer.DataFull(data.ToVoid());
-
-		if (DataU_Entry.IsValid())
-		{
-			Manager.BufferU_Remove(DataU_Entry);
-		}
-		DataU_Entry.Length = data.Length();
-		Manager.BufferU_Insert(DataU_Entry);
-		if (DataU_Entry.IsValid())
-		{
-			DataU_Entry.Put(0, data);
-			/*for (unsigned int i = 0; i < data.Length(); i++)
-			{
-				DataU_Entry[i] = data[i];
-			}*/
-		}
-	}
+	BufferU_Entry.Put(MainBufferData.GraphicsDataU());
 	MainBufferData.ClearU();
 	MainBufferData.ArrayLock.unlock();
 
-	if (!BufferU_AttributesBound)
-	{
-		BufferU.MainBuffer.Init();
-		BufferU_AttributesBound = true;
-	}
-
 	BufferUMain_NewData = false;
 }
+void Chunk::UpdateU()
+{
+	if (!GraphicsExist) { return; }
+	BufferUMain_UpdateData();
+}
+
 void Chunk::BufferFMain_UpdateData()
 {
 	if (!GraphicsExist) { return; }
@@ -681,7 +655,6 @@ void Chunk::BufferFMain_UpdateData()
 
 	BufferFMain_NewData = false;
 }
-
 void Chunk::BufferFInst_UpdateData()
 {
 	if (!GraphicsExist) { return; }
@@ -699,22 +672,11 @@ void Chunk::BufferFInst_UpdateData()
 
 	BufferFInst_NewData = false;
 }
-
-void Chunk::DrawU()
-{
-	if (!GraphicsExist) { return; }
-	BufferUMain_UpdateData();
-	//BufferU.Draw();
-}
 void Chunk::DrawF()
 {
 	if (!GraphicsExist) { return; }
-	if (!BufferF_AttributesBound)
-	{
-		BufferF.Inst.Init();
-		BufferF.Main.Init();
-		BufferF_AttributesBound = true;
-	}
+	BufferF.Inst.Update();
+	BufferF.Main.Update();
 	BufferFMain_UpdateData();
 	BufferFInst_UpdateData();
 	BufferF.Draw();

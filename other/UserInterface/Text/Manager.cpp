@@ -254,7 +254,7 @@ void UI::Text::Manager::BufferMainAttributesBind()
 {
 	if (!GraphicsExist || BufferMainAttributesBound) { return; }
 
-	Buffer.Main.Init();
+	Buffer.Main.Update();
 
 	BufferMainAttributesBound = true;
 }
@@ -262,7 +262,7 @@ void UI::Text::Manager::BufferInstAttributesBind()
 {
 	if (!GraphicsExist || BufferInstAttributesBound) { return; }
 
-	Buffer.Inst.Init();
+	Buffer.Inst.Update();
 
 	BufferInstAttributesBound = true;
 }

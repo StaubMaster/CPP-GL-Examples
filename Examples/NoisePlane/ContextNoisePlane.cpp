@@ -726,9 +726,9 @@ void ContextNoisePlane::ChangeMedia()
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
-		ChunkManager.BufferU.MainBuffer.Voxel.Change(0);
-		ChunkManager.BufferU.MainBuffer.Texture.Change(1);
-		ChunkManager.BufferU.MainBuffer.Chunk.Change(2);
+		ChunkManager.BufferU.Buffer.MainBuffer.Voxel.Change(0);
+		ChunkManager.BufferU.Buffer.MainBuffer.Texture.Change(1);
+		ChunkManager.BufferU.Buffer.MainBuffer.Chunk.Change(2);
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
@@ -814,8 +814,8 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	//ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
-	ChunkManager.ChangeSize(8, 4);
-	//ChunkManager.ChangeSize(16, 8);
+	//ChunkManager.ChangeSize(8, 4);
+	ChunkManager.ChangeSize(16, 8);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -1226,7 +1226,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		//ChunkManager.ChunksChanging.lock();
 		ChunkManager.ChunksLock.AccessL();
 
-		unsigned long long main_u_count = 0;
 		unsigned long long main_f_count = 0;
 		unsigned int buffer__ = 0;
 		unsigned int buffer_n = 0;
@@ -1235,7 +1234,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		{
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *ChunkManager.Chunks[i];
-			main_u_count += chunk.BufferU.MainBuffer.Count;
 			main_f_count += chunk.BufferF.Main.Count;
 			if (chunk.MainBufferState == BufferDataState::None)   { buffer__++; }
 			if (chunk.MainBufferState == BufferDataState::Needed) { buffer_n++; }
@@ -1247,27 +1245,22 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << 'N' << buffer_n << ' ';
 		ss << 'R' << buffer_r << '\n';
 
-		ss << "BufferUData:" << Memory1000ToString(sizeof(VoxelGraphics::MainDataU));
-		ss << " * " << Seperated1000(main_u_count);
-		ss << " = " << Memory1000ToString(main_u_count * sizeof(VoxelGraphics::MainDataU));
-		ss << '\n';
-
 		ss << "BufferFData:" << Memory1000ToString(sizeof(VoxelGraphics::MainDataF));
 		ss << " * " << Seperated1000(main_f_count);
 		ss << " = " << Memory1000ToString(main_f_count * sizeof(VoxelGraphics::MainDataF));
 		ss << '\n';
 
 		unsigned long long main_u_used = 0;
-		ss << "BufferUData Entrys:" << ChunkManager.BufferU_Entrys.Count() << '\n';
-		for (unsigned int i = 0; i < ChunkManager.BufferU_Entrys.Count(); i++)
+		ss << "BufferUData Entrys:" << ChunkManager.BufferU.Entrys.Count() << '\n';
+		for (unsigned int i = 0; i < ChunkManager.BufferU.Entrys.Count(); i++)
 		{
-			main_u_used += ChunkManager.BufferU_Entrys[i] -> Length;
+			main_u_used += ChunkManager.BufferU.Entrys[i] -> Length;
 		}
 		ss << "BufferUData Usage:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));
 		ss << " * " << Seperated1000(main_u_used);
 		ss << " = " << Memory1000ToString(main_u_used * sizeof(VoxelGraphics::MainFaceU));
-		ss << " / " << Memory1000ToString(ChunkManager.BufferU_Array.Length() * sizeof(VoxelGraphics::MainFaceU));
-		ss << " / " << Seperated1000(ChunkManager.BufferU.MainBuffer.Count);
+		ss << " / " << Memory1000ToString(ChunkManager.BufferU.Size * sizeof(VoxelGraphics::MainFaceU));
+		ss << " / " << Seperated1000(ChunkManager.BufferU.Size);
 		ss << '\n';
 
 		ChunkManager.ChunksLock.AccessU();

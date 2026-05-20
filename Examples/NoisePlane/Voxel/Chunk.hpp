@@ -172,9 +172,8 @@ struct Chunk
 
 	public:
 	bool	GraphicsExist;
-	VoxelGraphics::BufferU	BufferU;
-	VoxelGraphics::BufferF	BufferF;
-	ChunkManager::ChunkDataUEntry	DataU_Entry;
+	MultiBuffe_ChunkU::Entry	BufferU_Entry;
+	VoxelGraphics::BufferF		BufferF;
 
 	public:
 	void	GraphicsCreate();
@@ -213,16 +212,13 @@ struct Chunk
 	*/
 
 	bool	BufferUMain_NewData;
-	bool	BufferFMain_NewData;
 	void	BufferUMain_UpdateData();
-	void	BufferFMain_UpdateData();
+	void	UpdateU();
 
+	bool	BufferFMain_NewData;
 	bool	BufferFInst_NewData;
+	void	BufferFMain_UpdateData();
 	void	BufferFInst_UpdateData();
-
-	bool	BufferU_AttributesBound;
-	bool	BufferF_AttributesBound;
-	void	DrawU();
 	void	DrawF();
 };
 

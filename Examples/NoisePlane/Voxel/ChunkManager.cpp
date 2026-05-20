@@ -40,42 +40,51 @@ WaitDoTime ChunkManager::TimeDraw("TimeDraw");
 
 
 
-
-bool ChunkManager::ChunkDataUEntry::IsValid() const
+bool MultiBuffe_ChunkU::Entry::IsEmpty() const
 {
-	return (Manager != nullptr);
+	return (Offset == 0 && Length == 0);
 }
-VoxelGraphics::MainFaceU & ChunkManager::ChunkDataUEntry::operator[](unsigned int idx)
+void MultiBuffe_ChunkU::Entry::MakeEmpty()
 {
-	return Manager -> BufferU_Array[Offset + idx];
+	Offset = 0;
+	Length = 0;
 }
-void  ChunkManager::ChunkDataUEntry::Put(unsigned int offset, const Container::Array<VoxelGraphics::MainFaceU> & data)
+void MultiBuffe_ChunkU::Entry::Put(const Container::Array<VoxelGraphics::MainFaceU> & data)
 {
-	Manager -> BufferU.MainBuffer.DataPart((Offset + offset) * sizeof(VoxelGraphics::MainFaceU), data.ToVoid());
-}
-
-ChunkManager::ChunkDataUEntry::~ChunkDataUEntry()
-{
-	if (Manager != nullptr)
+	Buffer.Remove(*this);
+	Length = data.Length();
+	Buffer.Insert(*this);
+	if (!IsEmpty())
 	{
-		Manager -> BufferU_Remove(*this);
+		Buffer.Buffer.MainBuffer.DataPart(Offset * sizeof(VoxelGraphics::MainFaceU), data.ToVoid());
 	}
 }
-ChunkManager::ChunkDataUEntry::ChunkDataUEntry()
-	: Manager(nullptr)
+
+MultiBuffe_ChunkU::Entry::~Entry()
+{
+	Buffer.Remove(*this);
+}
+MultiBuffe_ChunkU::Entry::Entry(MultiBuffe_ChunkU & buffer)
+	: Buffer(buffer)
 	, Offset(0)
 	, Length(0)
 { }
 
-bool ChunkManager::BufferU_CheckEntry(ChunkDataUEntry & entry)
+void MultiBuffe_ChunkU::NewSize(unsigned int size)
 {
-	if ((entry.Offset + entry.Length) >= BufferU_Array.Length())
+	Buffer.MainBuffer.DataFull(size * sizeof(VoxelGraphics::MainFaceU));
+	Size = size;
+}
+
+bool MultiBuffe_ChunkU::CheckEntry(Entry & entry)
+{
+	if ((entry.Offset + entry.Length) >= Size)
 	{
 		return false;
 	}
-	for (unsigned int i = 0; i < BufferU_Entrys.Count(); i++)
+	for (unsigned int i = 0; i < Entrys.Count(); i++)
 	{
-		ChunkDataUEntry & other = *(BufferU_Entrys[i]);
+		Entry & other = *(Entrys[i]);
 		if (
 			(entry.Offset + entry.Length) > (other.Offset) &&
 			(entry.Offset) < (other.Offset + other.Length)
@@ -86,32 +95,33 @@ bool ChunkManager::BufferU_CheckEntry(ChunkDataUEntry & entry)
 	}
 	return true;
 }
-void ChunkManager::BufferU_Insert(ChunkDataUEntry & entry)
+void MultiBuffe_ChunkU::Insert(Entry & entry)
 {
 	if (entry.Length == 0)
 	{
-		entry.Manager = nullptr;
-		entry.Offset = 0;
+		entry.MakeEmpty();
 		return;
 	}
 
-	entry.Manager = this;
-
 	entry.Offset = 0;
-	if (BufferU_CheckEntry(entry))
+	if (CheckEntry(entry))
 	{
-		BufferU_Entrys.Insert(&entry);
+		Entrys.Insert(&entry);
+		Offsets.Insert(entry.Offset * 6);
+		Lengths.Insert(entry.Length * 6);
 		std::cout << "insert BufferUEntry of Length: " << entry.Length << " at " << entry.Offset << '\n';
 		return;
 	}
 
-	for (unsigned int i = 0; i < BufferU_Entrys.Count(); i++)
+	for (unsigned int i = 0; i < Entrys.Count(); i++)
 	{
-		ChunkDataUEntry & other = *(BufferU_Entrys[i]);
+		Entry & other = *(Entrys[i]);
 		entry.Offset = other.Offset + other.Length;
-		if (BufferU_CheckEntry(entry))
+		if (CheckEntry(entry))
 		{
-			BufferU_Entrys.Insert(&entry);
+			Entrys.Insert(&entry);
+			Offsets.Insert(entry.Offset * 6);
+			Lengths.Insert(entry.Length * 6);
 			std::cout << "insert BufferUEntry of Length: " << entry.Length << " at " << entry.Offset << '\n';
 			return;
 		}
@@ -119,21 +129,36 @@ void ChunkManager::BufferU_Insert(ChunkDataUEntry & entry)
 
 	std::cout << " failed BufferUEntry of Length: " << entry.Length << '\n';
 
-	entry.Offset = 0;
-	entry.Manager = nullptr;
+	entry.MakeEmpty();
 }
-void ChunkManager::BufferU_Remove(ChunkDataUEntry & entry)
+void MultiBuffe_ChunkU::Remove(Entry & entry)
 {
-	for (unsigned int i = 0; i < BufferU_Entrys.Count(); i++)
+	if (entry.IsEmpty())
 	{
-		if (BufferU_Entrys[i] == &entry)
+		return;
+	}
+	for (unsigned int i = 0; i < Entrys.Count(); i++)
+	{
+		if (Entrys[i] == &entry)
 		{
-			BufferU_Entrys.RemoveAt(i);
+			Entrys.RemoveAt(i);
+			Offsets.RemoveAt(i);
+			Lengths.RemoveAt(i);
 			break;
 		}
 	}
 	std::cout << "remove BufferUEntry of Length: " << entry.Length << " at " << entry.Offset << '\n';
-	entry.Manager = nullptr;
+	entry.MakeEmpty();
+}
+void MultiBuffe_ChunkU::Draw()
+{
+	Buffer.Bind();
+	/*for (unsigned int i = 0; i < Entrys.Count(); i++)
+	{
+		MultiBuffe_ChunkU::Entry & entry = *Entrys[i];
+		GL::DrawArrays(GL::DrawMode::Triangles, entry.Offset * 6, entry.Length * 6);
+	}*/
+	glMultiDrawArrays((unsigned int)GL::DrawMode::Triangles, Offsets.ToArray().Memory(), Lengths.ToArray().Memory(), Entrys.Count());
 }
 
 
@@ -709,7 +734,7 @@ void ChunkManager::GraphicsCreate()
 
 	ShaderU.Create();
 	ShaderF.Create();
-	BufferU.Create();
+	BufferU.Buffer.Create();
 	BufferF.Create();
 	Texture.Create();
 
@@ -725,26 +750,10 @@ void ChunkManager::GraphicsCreate()
 	ChunksLock.AccessU();
 //	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
 
-	BufferU_AttributesBound = false;
-	{
-		// Container::Void to Container::Array
-		// Container::Void constructor(size, data)
-
-		std::cout << " Error: " << GL::GetError() << '\n';
-		BufferU.Bind();
-		unsigned int size = 1024 * 256;
-		std::cout << " Error: " << GL::GetError() << '\n';
-		BufferU.MainBuffer.DataFull(size * sizeof(VoxelGraphics::MainFaceU));
-		std::cout << " Error: " << GL::GetError() << '\n';
-		//void * ptr = BufferU.MainBuffer.DataMap();
-		std::cout << " Error: " << GL::GetError() << '\n';
-
-		void * ptr = new VoxelGraphics::MainFaceU[size];
-		BufferU_Array = Container::Array<VoxelGraphics::MainFaceU>(size, (VoxelGraphics::MainFaceU*)ptr);
-
-		if (ptr != (void*)BufferU_Array.Memory())
-		{ std::cerr << "!!!! POINTER CAST DIFFERANCE !!!!" << '\n'; }
-	}
+	BufferU.Buffer.MainBuffer.AttributesBound = false;
+	BufferU.NewSize(1024 * 256);
+	// Container::Void to Container::Array
+	// Container::Void constructor(size, data)
 
 	GraphicsExist = true;
 }
@@ -754,7 +763,7 @@ void ChunkManager::GraphicsDelete()
 
 	ShaderU.Delete();
 	ShaderF.Delete();
-	BufferU.Delete();
+	BufferU.Buffer.Delete();
 	BufferF.Delete();
 	Texture.Delete();
 
@@ -770,7 +779,7 @@ void ChunkManager::GraphicsDelete()
 	ChunksLock.AccessU();
 //	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
 
-	BufferU_Array.Clear();
+	BufferU.Size = 0;
 
 	GraphicsExist = false;
 }
@@ -948,22 +957,11 @@ void ChunkManager::Draw()
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
 		if (Chunks[i] == nullptr) { continue; }
-		Chunks[i] -> DrawU();
+		Chunks[i] -> UpdateU();
 	}
 
-	BufferU.Bind();
-	//if (!BufferU_AttributesBound)
-	{
-		BufferU.MainBuffer.Init();
-		BufferU_AttributesBound = true;
-	}
-
-	BufferU.Bind();
-	for (unsigned int i = 0; i < BufferU_Entrys.Count(); i++)
-	{
-		ChunkDataUEntry & entry = *BufferU_Entrys[i];
-		GL::DrawArrays(GL::DrawMode::Triangles, entry.Offset * 6, entry.Length * 6);
-	}
+	BufferU.Buffer.MainBuffer.Update();
+	BufferU.Draw();
 
 	/*ShaderF.Bind();
 	Texture.Bind();
