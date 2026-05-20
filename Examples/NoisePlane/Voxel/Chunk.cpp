@@ -651,10 +651,11 @@ void Chunk::BufferUMain_UpdateData()
 		Manager.BufferU_Insert(DataU_Entry);
 		if (DataU_Entry.IsValid())
 		{
-			for (unsigned int i = 0; i < data.Length(); i++)
+			DataU_Entry.Put(0, data);
+			/*for (unsigned int i = 0; i < data.Length(); i++)
 			{
 				DataU_Entry[i] = data[i];
-			}
+			}*/
 		}
 	}
 	MainBufferData.ClearU();

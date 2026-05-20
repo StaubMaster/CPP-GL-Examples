@@ -812,9 +812,9 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	MakeControls();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
-	ChunkManager.ChangeSize(0, 0);
+	//ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
-	//ChunkManager.ChangeSize(8, 4);
+	ChunkManager.ChangeSize(8, 4);
 	//ChunkManager.ChangeSize(16, 8);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
@@ -1433,6 +1433,19 @@ void ContextNoisePlane::FrameInput()
 	else
 	{
 		if (!window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeLock(); }
+	}
+
+	if (window.KeyBoardManager[Keys::P].State == State::Press)
+	{
+		ChunkVoxelIndex idx(view.Trans.Position.roundF());
+		Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
+		if (chunk != nullptr)
+		{
+			std::cout << "Chunk" << idx.Chunk << ".MakeNull()\n";
+			chunk -> MakeNull();
+			chunk -> MainBufferState = BufferDataState::Needed;
+			chunk -> AccessU();
+		}
 	}
 
 	sw.Stop();

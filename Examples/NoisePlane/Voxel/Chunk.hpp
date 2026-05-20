@@ -81,7 +81,8 @@ struct Chunk
 	bool	IsEmpty() const;
 	bool	IsNullOrEmpty() const;
 
-	private:
+	//private:
+	public:
 	void	MakeEmpty();
 	void	MakeNull();
 

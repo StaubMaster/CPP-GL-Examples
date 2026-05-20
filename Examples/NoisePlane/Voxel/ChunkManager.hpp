@@ -51,6 +51,11 @@ struct VoxelHit
 # include "ContainerLock.hpp"
 # include "Miscellaneous/Container/Array3D.hpp"
 
+class MultiBuffe_ChunkU
+{
+	
+};
+
 struct ChunkManager
 {
 	public:
@@ -89,6 +94,7 @@ struct ChunkManager
 
 		bool						IsValid() const;
 		VoxelGraphics::MainFaceU &	operator[](unsigned int idx);
+		void	Put(unsigned int offset, const Container::Array<VoxelGraphics::MainFaceU> & data);
 
 		~ChunkDataUEntry();
 		ChunkDataUEntry();

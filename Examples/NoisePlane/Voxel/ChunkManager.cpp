@@ -49,6 +49,10 @@ VoxelGraphics::MainFaceU & ChunkManager::ChunkDataUEntry::operator[](unsigned in
 {
 	return Manager -> BufferU_Array[Offset + idx];
 }
+void  ChunkManager::ChunkDataUEntry::Put(unsigned int offset, const Container::Array<VoxelGraphics::MainFaceU> & data)
+{
+	Manager -> BufferU.MainBuffer.DataPart((Offset + offset) * sizeof(VoxelGraphics::MainFaceU), data.ToVoid());
+}
 
 ChunkManager::ChunkDataUEntry::~ChunkDataUEntry()
 {
@@ -728,12 +732,12 @@ void ChunkManager::GraphicsCreate()
 
 		std::cout << " Error: " << GL::GetError() << '\n';
 		BufferU.Bind();
-		unsigned int size = 1024 * 16;
+		unsigned int size = 1024 * 256;
 		std::cout << " Error: " << GL::GetError() << '\n';
 		BufferU.MainBuffer.DataFull(size * sizeof(VoxelGraphics::MainFaceU));
 		std::cout << " Error: " << GL::GetError() << '\n';
 		//void * ptr = BufferU.MainBuffer.DataMap();
-		//std::cout << " Error: " << GL::GetError() << '\n';
+		std::cout << " Error: " << GL::GetError() << '\n';
 
 		void * ptr = new VoxelGraphics::MainFaceU[size];
 		BufferU_Array = Container::Array<VoxelGraphics::MainFaceU>(size, (VoxelGraphics::MainFaceU*)ptr);
@@ -954,52 +958,12 @@ void ChunkManager::Draw()
 		BufferU_AttributesBound = true;
 	}
 
-	/*{
-		Container::Void cont;
-		cont.Data = BufferU_Data;
-		cont.Size = BufferU_Size * sizeof(VoxelGraphics::MainFaceU);
-		BufferU.MainBuffer.DataFull(cont);
-	}*/
-	{
-		BufferU.MainBuffer.Bind();
-		std::cout << "Map\n";
-		std::cout << "ArrayBuffer: " << GL::GetIntegerv(GL::ParameterName::ArrayBufferBinding) << '\n';
-		std::cout << "Error: " << GL::GetError() << '\n';
-		//static VoxelGraphics::MainFaceU * data = (VoxelGraphics::MainFaceU*)BufferU.MainBuffer.DataMap();
-		static VoxelGraphics::MainFaceU * data = (VoxelGraphics::MainFaceU*)glMapBuffer((unsigned int)GL::BufferTarget::ArrayBuffer, GL_READ_WRITE);
-		std::cout << "Error: " << GL::GetError() << '\n';
-		std::cout << "data: " << data << '\n';
-		{
-			int val;
-			glGetBufferParameteriv((unsigned int)GL::BufferTarget::ArrayBuffer, GL_BUFFER_SIZE, &val);
-			std::cout << "Size: " << val << '\n';
-			std::cout << "Size: " << (val / sizeof(VoxelGraphics::MainFaceU)) << '\n';
-			std::cout << "Size: " << ((val / sizeof(VoxelGraphics::MainFaceU)) / 1024) << '\n';
-		}
-		std::cout << '\n';
-		/*for (unsigned int i = 0; i < BufferU_Array.Length(); i++)
-		{
-			data[i] = BufferU_Array[i];
-		}*/
-		std::cout << "UnMap\n";
-		std::cout << "ArrayBuffer: " << GL::GetIntegerv(GL::ParameterName::ArrayBufferBinding) << '\n';
-		std::cout << "Error: " << GL::GetError() << '\n';
-		bool ret = glUnmapBuffer((unsigned int)GL::BufferTarget::ArrayBuffer);
-		std::cout << "Error: " << GL::GetError() << '\n';
-		std::cout << "ret: " << ret << '\n';
-		std::cout << '\n';
-	}
-
-	BufferU.Draw();
-
 	BufferU.Bind();
 	for (unsigned int i = 0; i < BufferU_Entrys.Count(); i++)
 	{
 		ChunkDataUEntry & entry = *BufferU_Entrys[i];
-		//std::cout << "Draw: " << '(' << entry.Offset << ' ' << entry.Length << ')' << '\n';
-		GL::DrawArrays(GL::DrawMode::Triangles, entry.Offset, entry.Length);
+		GL::DrawArrays(GL::DrawMode::Triangles, entry.Offset * 6, entry.Length * 6);
 	}
-	//std::cout << '\n';
 
 	/*ShaderF.Bind();
 	Texture.Bind();
