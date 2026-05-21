@@ -1,7 +1,12 @@
 #ifndef  UNIT_TO_STRING_HPP
 # define UNIT_TO_STRING_HPP
 
-// develop more and put in Engine
+
+
+const char *	ToString(unsigned int num, unsigned char digits = 1);
+const char *	ToString(float num);
+
+
 
 # include <string>
 
@@ -23,7 +28,5 @@ std::string Memory1000ToString(unsigned long long memory);
 	so convert them to ints ?
 	but also make a general float to string
 */
-
-const char *	FloatToString(float num);
 
 #endif

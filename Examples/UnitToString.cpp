@@ -1,7 +1,103 @@
 #include "UnitToString.hpp"
+
+
+
+static thread_local int		string_buffer_idx = 0;
+static thread_local char	string_buffer[256];
+static const char * string_buffer_done()
+{
+	string_buffer[string_buffer_idx] = '\0';
+	return string_buffer;
+}
+static void string_buffer_new()
+{
+	string_buffer_idx = 0;
+}
+static void string_buffer_reverse()
+{
+	int i = 0;
+	int j = string_buffer_idx - 1;
+	char temp;
+	while (i < j)
+	{
+		temp = string_buffer[i];
+		string_buffer[i] = string_buffer[j];
+		string_buffer[j] = temp;
+		i++;
+		j--;
+	}
+}
+static void string_buffer_put(char c)
+{
+	string_buffer[string_buffer_idx] = c;
+	string_buffer_idx++;
+}
+static void string_buffer_digit_10(int digit)
+{
+	char c = '?';
+	if (digit >= 0 && digit <= 9)
+	{
+		c = digit + '0';
+	}
+	string_buffer_put(c);
+}
+
+static void string_buffer_int(unsigned int num, unsigned char digits)
+{
+	for (int i = 0; i < 10; i++)
+	{
+		unsigned int digit = num % 10;
+		num /= 10;
+		if (digit != 0 || i < digits)
+		{
+			string_buffer_digit_10(digit);
+		}
+	}
+	string_buffer_reverse();
+}
+
+
+
+#include <math.h>
+
+const char * ToString(unsigned int num, unsigned char digits)
+{
+	string_buffer_new();
+
+	string_buffer_int(num, digits);
+
+	return string_buffer_done();
+}
+const char * ToString(float num)
+{
+	string_buffer_new();
+
+	num = abs(num);
+	int full;
+
+	full = num;
+	num -= full;
+	string_buffer_int(full, 1);
+
+	string_buffer_put('.');
+	for (int i = 0; i < 6; i++)
+	{
+		num *= 10;
+
+		full = num;
+		string_buffer_digit_10(full);
+		num -= full;
+	}
+
+	return string_buffer_done();
+}
+
+
+
+
+
 #include <sstream>
 #include <iomanip>
-
 
 std::string Seperated1000(unsigned int n)
 {
@@ -27,60 +123,4 @@ std::string Memory1000ToString(unsigned long long memory)
 	std::stringstream ss;
 	ss << memory << factor;
 	return ss.str();
-}
-
-#include <math.h>
-
-static thread_local int		string_buffer_idx = 0;
-static thread_local char	string_buffer[256];
-static const char * string_buffer_done()
-{
-	string_buffer[string_buffer_idx] = '\0';
-	return string_buffer;
-}static void string_buffer_new()
-{
-	string_buffer_idx = 0;
-}
-static void string_buffer_put(char c)
-{
-	string_buffer[string_buffer_idx] = c;
-	string_buffer_idx++;
-}
-static void string_buffer_digit_10(int digit)
-{
-	char c = '?';
-	if (digit >= 0 && digit <= 9)
-	{
-		c = digit + '0';
-	}
-	string_buffer_put(c);
-}
-
-/*static void IntToString(int num)
-{
-	(void)num;
-}*/
-
-const char * FloatToString(float num)
-{
-	string_buffer_new();
-	string_buffer_put('0');
-	string_buffer_put('.');
-
-	num = abs(num);
-	int full;
-
-	full = num;
-	num -= full;
-
-	for (int i = 0; i < 6; i++)
-	{
-		num *= 10;
-
-		full = num;
-		string_buffer_digit_10(full);
-		num -= full;
-	}
-
-	return string_buffer_done();
 }

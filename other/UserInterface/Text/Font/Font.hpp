@@ -40,7 +40,8 @@ class Font
 	Container::Binary<CharacterRange*>	CharacterRanges;
 
 	public:
-	Character &		operator[](unsigned int code);
+	const Character &	operator[](unsigned int code) const;
+	unsigned int		FindCodeIndex(unsigned int code) const;
 
 	public:
 	~Font();

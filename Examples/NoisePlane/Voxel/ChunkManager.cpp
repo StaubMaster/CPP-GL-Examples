@@ -405,8 +405,8 @@ void ChunkManager::UpdateChunksContainer()
 {
 	StopWatch sw;
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
-	ChunksLock.AssignL(sw, TimeUpdate);
-//	ChunksLock.AccessL(sw, TimeUpdate);
+//	ChunksLock.AssignL(sw, TimeUpdate);
+	ChunksLock.AccessL(sw, TimeUpdate);
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 
 	sw.Start();
@@ -452,8 +452,8 @@ void ChunkManager::UpdateChunksContainer()
 	}
 
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
-//	ChunksLock.AccessU(sw, TimeUpdate);
-	ChunksLock.AssignU(sw, TimeUpdate);
+	ChunksLock.AccessU(sw, TimeUpdate);
+//	ChunksLock.AssignU(sw, TimeUpdate);
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 }
 

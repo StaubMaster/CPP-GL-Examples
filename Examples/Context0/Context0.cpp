@@ -48,6 +48,7 @@ void Context0::Init()
 
 	ControlManager.GraphicsCreate();
 	TextManager.GraphicsCreate();
+	TextManager.InitFont();
 
 	Make();
 }

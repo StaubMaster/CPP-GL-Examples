@@ -19,14 +19,11 @@ struct Main_Data
 
 struct Inst_Data
 {
-	VectorF2	Pos;
-	BoxF2		Pallet;
-	BoxF2		Bound;
-	ColorF4		Color;
+	VectorF2		Pos;
+	unsigned int	PalletIdx;
+	unsigned int	TextIdx;
 
 	Inst_Data();
-	Inst_Data(VectorF2 pos, BoxF2 pallet);
-	Inst_Data(VectorF2 pos, BoxF2 pallet, ColorF4 color);
 };
 
 };

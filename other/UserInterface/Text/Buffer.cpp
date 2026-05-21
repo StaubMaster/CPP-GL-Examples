@@ -15,9 +15,8 @@ UI::Text::Main_Buffer::Main_Buffer(::VertexArray & vertex_array)
 UI::Text::Inst_Buffer::Inst_Buffer(::VertexArray & vertex_array)
 	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
 	, Pos(*this)
-	, Pallet(*this)
-	, Bound(*this)
-	, Color(*this)
+	, PalletIdx(*this)
+	, TextIdx(*this)
 { }
 
 

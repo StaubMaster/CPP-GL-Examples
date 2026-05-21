@@ -1,12 +1,14 @@
 #include "ContextBase.hpp"
 
 #include "Debug.hpp"
+#include <iostream>
+#include <sstream>
 
 // Contexts
 #include "Context0/new.hpp"
 #include "Context1/new.hpp"
 #include "NoisePlane/new.hpp"
-#include "TestTextAlignment/TestTextAlignment.hpp"
+#include "TestTextAlignment/new.hpp"
 
 
 
@@ -44,7 +46,7 @@ void ContextBase::ChangeToNoisePlane()
 }
 void ContextBase::ChangeToTestTextAlignment()
 {
-	//Change(new ContextTestTextAlignment());
+	Change(newContextTestTextAlignment);
 }
 
 

@@ -26,9 +26,8 @@ class Inst_Buffer : public ::Buffer::Array
 {
 	public:
 	::Attribute::VectorF2	Pos;
-	::Attribute::BoxF2		Pallet;
-	::Attribute::BoxF2		Bound;
-	::Attribute::ColorF4	Color;
+	::Attribute::UInt		PalletIdx;
+	::Attribute::UInt		TextIdx;
 	public:
 	Inst_Buffer(::VertexArray & vertex_array);
 };

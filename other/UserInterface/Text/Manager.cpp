@@ -43,6 +43,11 @@ UI::Text::Manager::Manager()
 	, ObjectDatas()
 	, InstancesBlock()
 	, InstancesArray()
+	, FontPalletMin(128)
+	, FontPalletMax(128)
+	, TextBoundMin(32)
+	, TextBoundMax(32)
+	, TextColor(32)
 	, TextFont(nullptr)
 	, Pallet_Texture()
 	, GraphicsExist(false)
@@ -67,12 +72,38 @@ void UI::Text::Manager::InitMedia(DirectoryInfo & media_dir)
 	{
 		Buffer.Main.Pos.Change(0);
 		Buffer.Inst.Pos.Change(1);
-		Buffer.Inst.Pallet.Min.Change(2);
-		Buffer.Inst.Pallet.Max.Change(3);
-		Buffer.Inst.Bound.Min.Change(4);
-		Buffer.Inst.Bound.Max.Change(5);
-		Buffer.Inst.Color.Change(6);
+		Buffer.Inst.PalletIdx.Change(2);
+		Buffer.Inst.TextIdx.Change(3);
 	}
+}
+#include "Font/Font.hpp"
+void UI::Text::Manager::InitFont()
+{
+	unsigned int idx = 0;
+
+	for (unsigned int j = 0; j < TextFont -> CharacterRanges.Count(); j++)
+	{
+		for (unsigned int i = 0; i < TextFont -> CharacterRanges[j] -> Characters.Count(); i++)
+		{
+			FontPalletMin[idx] = (TextFont -> CharacterRanges[j] -> Characters[i].Box.Min);
+			FontPalletMax[idx] = (TextFont -> CharacterRanges[j] -> Characters[i].Box.Max);
+			idx++;
+		}
+	}
+
+	for (unsigned int i = 0; i < TextFont -> Characters.Count(); i++)
+	{
+		FontPalletMin[idx] = (TextFont -> Characters[i].Box.Min);
+		FontPalletMax[idx] = (TextFont -> Characters[i].Box.Max);
+		idx++;
+	}
+
+	FontPalletMin[idx] = (TextFont -> DefaultCharacter.Box.Min);
+	FontPalletMax[idx] = (TextFont -> DefaultCharacter.Box.Max);
+
+	Shader.Bind();
+	Shader.PalletArrayMin.Put(FontPalletMin.Memory());
+	Shader.PalletArrayMax.Put(FontPalletMax.Memory());
 }
 
 
@@ -120,37 +151,44 @@ static unsigned int LineLength(const char * text, unsigned int i)
 
 #include "../../Examples/Telemetry/StopWatch.hpp"
 #include "../../Examples/Telemetry/ValueAverager.hpp"
-#include <iomanip>
+#include "../../Examples/UnitToString.hpp"
 
-//static StopWatch				WatchTotal;
-//static StopWatch				WatchClear;
-//static StopWatch				WatchDisplay;
-//static StopWatch				WatchRemove;
-//static StopWatch				WatchAlign;
-//static StopWatch				WatchLoop;
-//static StopWatch				WatchOther;
-//static StopWatch				WatchFind;
-//static StopWatch				WatchAssign;
-//static StopWatch				WatchInsert;
-//static StopWatch				WatchNext0;
-//static StopWatch				WatchNext1;
-//static StopWatch				WatchArray;
+//#define TELEMETRY_TIME
 
-//static ValueAverager<float>		TimeTotal(64);
-//static ValueAverager<float>		TimeClear(64);
-//static ValueAverager<float>		TimeDisplay(64);
-//static ValueAverager<float>		TimeRemove(64);
-//static ValueAverager<float>		TimeAlign(64);
-//static ValueAverager<float>		TimeLoop(64);
-//static ValueAverager<float>		TimeOther(64);
-//static ValueAverager<float>		TimeFind(64);
-//static ValueAverager<float>		TimeAssign(64);
-//static ValueAverager<float>		TimeInsert(64);
-//static ValueAverager<float>		TimeNext0(64);
-//static ValueAverager<float>		TimeNext1(64);
-//static ValueAverager<float>		TimeArray(64);
+#ifdef TELEMETRY_TIME
+static StopWatch				WatchTotal;
+static StopWatch				WatchClear;
+static StopWatch				WatchDisplay;
+static StopWatch				WatchRemove;
+static StopWatch				WatchAlign;
+static StopWatch				WatchLoop;
+static StopWatch				WatchOther;
+static StopWatch				WatchFind;
+static StopWatch				WatchAssign;
+static StopWatch				WatchInsert;
+static StopWatch				WatchNext0;
+static StopWatch				WatchNext1;
+static StopWatch				WatchArray;
+#endif
 
-/*static void TimeClearFunc()
+#ifdef TELEMETRY_TIME
+static ValueAverager<float>		TimeTotal(64);
+static ValueAverager<float>		TimeClear(64);
+static ValueAverager<float>		TimeDisplay(64);
+static ValueAverager<float>		TimeRemove(64);
+static ValueAverager<float>		TimeAlign(64);
+static ValueAverager<float>		TimeLoop(64);
+static ValueAverager<float>		TimeOther(64);
+static ValueAverager<float>		TimeFind(64);
+static ValueAverager<float>		TimeAssign(64);
+static ValueAverager<float>		TimeInsert(64);
+static ValueAverager<float>		TimeNext0(64);
+static ValueAverager<float>		TimeNext1(64);
+static ValueAverager<float>		TimeArray(64);
+#endif
+
+#ifdef TELEMETRY_TIME
+static void TimeClearFunc()
 {
 	WatchTotal.Clear();
 	WatchClear.Clear();
@@ -165,8 +203,10 @@ static unsigned int LineLength(const char * text, unsigned int i)
 	WatchNext0.Clear();
 	WatchNext1.Clear();
 	WatchArray.Clear();
-}*/
-/*static void TimeValueFunc()
+}
+#endif
+#ifdef TELEMETRY_TIME
+static void TimeValueFunc()
 {
 	TimeTotal.NewValue(WatchTotal.ElapsedTime());
 	TimeClear.NewValue(WatchClear.ElapsedTime());
@@ -181,29 +221,40 @@ static unsigned int LineLength(const char * text, unsigned int i)
 	TimeNext0.NewValue(WatchNext0.ElapsedTime());
 	TimeNext1.NewValue(WatchNext1.ElapsedTime());
 	TimeArray.NewValue(WatchArray.ElapsedTime());
-}*/
+}
+#endif
 
 void UI::Text::Manager::ShowInstancesTime()
 {
-	//std::cout << "Total   " << std::fixed << TimeTotal.Average() << '\n';
-	//std::cout << "Clear   " << std::fixed << TimeClear.Average() << '\n';
-	//std::cout << "Display " << std::fixed << TimeDisplay.Average() << '\n';
-	//std::cout << "Remove  " << std::fixed << TimeRemove.Average() << '\n';
-	//std::cout << "Align   " << std::fixed << TimeAlign.Average() << '\n';
-	//std::cout << "Loop    " << std::fixed << TimeLoop.Average() << '\n';
-	//std::cout << "Other   " << std::fixed << TimeOther.Average() << '\n';
-	//std::cout << "Find    " << std::fixed << TimeFind.Average() << '\n';
-	//std::cout << "Assign  " << std::fixed << TimeAssign.Average() << '\n';
-	//std::cout << "Insert  " << std::fixed << TimeInsert.Average() << '\n';
-	//std::cout << "Next0   " << std::fixed << TimeNext0.Average() << '\n';
-	//std::cout << "Next1   " << std::fixed << TimeNext1.Average() << '\n';
-	//std::cout << "Array   " << std::fixed << TimeArray.Average() << '\n';
-	//std::cout << '\n';
+#ifdef TELEMETRY_TIME
+	std::cout << "Total   " << ToString(TimeTotal.Average()) << '\n';
+	std::cout << "Clear   " << ToString(TimeClear.Average()) << '\n';
+	std::cout << "Display " << ToString(TimeDisplay.Average()) << '\n';
+	std::cout << "Remove  " << ToString(TimeRemove.Average()) << '\n';
+	std::cout << "Align   " << ToString(TimeAlign.Average()) << '\n';
+	std::cout << "Loop    " << ToString(TimeLoop.Average()) << '\n';
+	std::cout << "Other   " << ToString(TimeOther.Average()) << '\n';
+	std::cout << "Find    " << ToString(TimeFind.Average()) << '\n';
+	std::cout << "Assign  " << ToString(TimeAssign.Average()) << '\n';
+	std::cout << "Insert  " << ToString(TimeInsert.Average()) << '\n';
+	std::cout << "Next0   " << ToString(TimeNext0.Average()) << '\n';
+	std::cout << "Next1   " << ToString(TimeNext1.Average()) << '\n';
+	std::cout << "Array   " << ToString(TimeArray.Average()) << '\n';
+	std::cout << '\n';
+#endif
 }
 
 void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 {
-	//WatchAlign.Start();
+	if (TextArrayIdx == 32)
+	{
+		std::cerr << "!!!! Text Limit 32 reached !!!!\n";
+		return;
+	}
+
+#ifdef TELEMETRY_TIME
+	WatchAlign.Start();
+#endif
 
 	unsigned int line_count = LineCount(obj.Text.c_str());
 	unsigned int line_idx = 0;
@@ -240,9 +291,17 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 	VectorF2 rel_txt;
 	rel_txt.Y = -(line_count * text_alignment.Y);
 
-	//WatchAlign.Stop();
+	TextBoundMin[TextArrayIdx] = obj.Bound.Min;
+	TextBoundMax[TextArrayIdx] = obj.Bound.Max;
+	TextColor[TextArrayIdx] = obj.Color;
 
-	//WatchLoop.Start();
+#ifdef TELEMETRY_TIME
+	WatchAlign.Stop();
+#endif
+
+#ifdef TELEMETRY_TIME
+	WatchLoop.Start();
+#endif
 
 	for (unsigned int i = 0; i < obj.Text.length(); i++)
 	{
@@ -260,49 +319,82 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 			continue;
 		}
 
-		//WatchNext0.Start();
+#ifdef TELEMETRY_TIME
+		WatchNext0.Start();
+#endif
 		UI::Text::Inst_Data & data = InstancesBlock.MakeNext();
-		//WatchNext0.Stop();
+#ifdef TELEMETRY_TIME
+		WatchNext0.Stop();
+#endif
 
-		//WatchOther.Start();
+#ifdef TELEMETRY_TIME
+		WatchOther.Start();
+#endif
 		rel_txt.X = (line_idx + text_alignment.X) - (line_len * text_alignment.X);
 		line_idx++;
 		data.Pos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
-		//WatchOther.Stop();
+#ifdef TELEMETRY_TIME
+		WatchOther.Stop();
+#endif
 
-		//WatchFind.Start();
-		data.Pallet = (*TextFont)[c].Box;
-		//WatchFind.Stop();
+#ifdef TELEMETRY_TIME
+		WatchFind.Start();
+#endif
+		data.PalletIdx = (*TextFont).FindCodeIndex(c);
+#ifdef TELEMETRY_TIME
+		WatchFind.Stop();
+#endif
 
 		//VectorF2 size = (obj.CharacterSize * 0.5f);
 		//if (obj.Bound.InnerBox(BoxF2(data.Pos - size, data.Pos + size)).IsNormal()) // this is slow
 
-		//WatchAssign.Start();
-		data.Bound = obj.Bound;
-		data.Color = obj.Color;
-		//WatchAssign.Stop();
+#ifdef TELEMETRY_TIME
+		WatchAssign.Start();
+#endif
+		data.TextIdx = TextArrayIdx;
+#ifdef TELEMETRY_TIME
+		WatchAssign.Stop();
+#endif
 
-		//WatchInsert.Start();
+#ifdef TELEMETRY_TIME
+		WatchInsert.Start();
+#endif
 		//InstancesBlock.Insert(data);
-		//WatchInsert.Stop();
+#ifdef TELEMETRY_TIME
+		WatchInsert.Stop();
+#endif
 
-		//WatchNext1.Start();
+#ifdef TELEMETRY_TIME
+		WatchNext1.Start();
+#endif
 		InstancesBlock.Next();
-		//WatchNext1.Stop();
+#ifdef TELEMETRY_TIME
+		WatchNext1.Stop();
+#endif
 	}
 
-	//WatchLoop.Stop();
+	TextArrayIdx++;
+
+#ifdef TELEMETRY_TIME
+	WatchLoop.Stop();
+#endif
 }
 void UI::Text::Manager::MakeInstances()
 {
-	//TimeClearFunc();
+#ifdef TELEMETRY_TIME
+	TimeClearFunc();
+	WatchTotal.Start();
+#endif
 
-	//WatchTotal.Start();
-
-	//WatchClear.Start();
+#ifdef TELEMETRY_TIME
+	WatchClear.Start();
+#endif
+	TextArrayIdx = 0;
 	InstancesBlock.Clear();
 	InstancesArray.Clear();
-	//WatchClear.Stop();
+#ifdef TELEMETRY_TIME
+	WatchClear.Stop();
+#endif
 
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
@@ -311,29 +403,47 @@ void UI::Text::Manager::MakeInstances()
 			ObjectData & obj = *ObjectDatas[i];
 			if (obj.Display)
 			{
-				//WatchDisplay.Start();
+#ifdef TELEMETRY_TIME
+				WatchDisplay.Start();
+#endif
 				MakeObjectInstances(obj);
-				//WatchDisplay.Stop();
+#ifdef TELEMETRY_TIME
+				WatchDisplay.Stop();
+#endif
 			}
 			if (obj.Remove)
 			{
-				//WatchRemove.Start();
+#ifdef TELEMETRY_TIME
+				WatchRemove.Start();
+#endif
 				ObjectDatas.RemoveAt(i);
 				delete &obj;
 				i--;
-				//WatchRemove.Stop();
+#ifdef TELEMETRY_TIME
+				WatchRemove.Stop();
+#endif
 			}
 		}
 	}
 	BufferInstNewData = true;
 
-	//WatchArray.Start();
+	Shader.Bind();
+	Shader.TextBoundArrayMin.Put(TextBoundMin.Memory());
+	Shader.TextBoundArrayMax.Put(TextBoundMax.Memory());
+	Shader.TextColorArray.Put(TextColor.Memory());
+
+#ifdef TELEMETRY_TIME
+	WatchArray.Start();
+#endif
 	InstancesArray = InstancesBlock.ToArray();
-	//WatchArray.Stop();
+#ifdef TELEMETRY_TIME
+	WatchArray.Stop();
+#endif
 
-	//WatchTotal.Stop();
-
-	//TimeValueFunc();
+#ifdef TELEMETRY_TIME
+	WatchTotal.Stop();
+	TimeValueFunc();
+#endif
 }
 
 

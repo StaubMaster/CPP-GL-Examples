@@ -43,6 +43,14 @@ class Manager
 	Container::BlockLinkedList<1024, UI::Text::Inst_Data>	InstancesBlock;
 	Container::Array<UI::Text::Inst_Data>					InstancesArray;
 
+	Container::Array<VectorF2>	FontPalletMin;
+	Container::Array<VectorF2>	FontPalletMax;
+
+	unsigned int				TextArrayIdx;
+	Container::Array<VectorF2>	TextBoundMin;
+	Container::Array<VectorF2>	TextBoundMax;
+	Container::Array<ColorF4>	TextColor;
+
 	UI::Text::Font *	TextFont;
 	Texture::Array2D	Pallet_Texture;
 
@@ -56,6 +64,7 @@ class Manager
 
 	public:
 	void	InitMedia(DirectoryInfo & media_dir);
+	void	InitFont();
 
 
 

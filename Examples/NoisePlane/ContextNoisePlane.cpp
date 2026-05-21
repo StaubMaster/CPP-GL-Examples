@@ -689,11 +689,8 @@ void ContextNoisePlane::ChangeMedia()
 	{
 		TextManager.Buffer.Main.Pos.Change(0);
 		TextManager.Buffer.Inst.Pos.Change(1);
-		TextManager.Buffer.Inst.Pallet.Min.Change(2);
-		TextManager.Buffer.Inst.Pallet.Max.Change(3);
-		TextManager.Buffer.Inst.Bound.Min.Change(4);
-		TextManager.Buffer.Inst.Bound.Max.Change(5);
-		TextManager.Buffer.Inst.Color.Change(6);
+		TextManager.Buffer.Inst.PalletIdx.Change(2);
+		TextManager.Buffer.Inst.TextIdx.Change(3);
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
@@ -819,6 +816,8 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	GraphicsCreate();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	TextManager.InitFont();
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	VoxelPalletMap::All.LoadTextures(ChunkManager);
 	{
 		window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
@@ -939,9 +938,9 @@ void ContextNoisePlane::Draw()
 static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 {
 	//ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's' << ' ';
-	ss << FloatToString(time) << 's' << ' ';
+	ss << ToString(time) << 's' << ' ';
 	ss << '(';
-	ss << std::setw(3) << std::setfill(' ') << freq << "Hz";
+	ss << ToString(freq, 4) << "Hz";
 	ss << ')';
 }
 /*static void ShowTimeFreq(std::stringstream & ss, float time)
@@ -959,7 +958,7 @@ static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 static void ShowTime(std::stringstream & ss, float time)
 {
 	//ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's';
-	ss << FloatToString(time) << 's';
+	ss << ToString(time) << 's';
 }
 static void ShowNameTimeLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
 {
@@ -967,6 +966,75 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 	ShowTime(ss, time.Min()); ss << ' ';
 	ShowTime(ss, time.Average()); ss << ' ';
 	ShowTime(ss, time.Max()); ss << '\n';
+}
+
+
+
+static unsigned int				TestTime_UInt_Loop = 1024;
+//static unsigned int				TestTime_UInt_Value = 0xFFFFFFFF;
+static unsigned int				TestTime_UInt_Value = 997;
+static ValueAverager<float>		TestTime_UInt_0(1024);
+static ValueAverager<float>		TestTime_UInt_1(1024);
+static void TestTime_UInt()
+{
+	{
+		StopWatch sw;
+		sw.Start();
+		std::stringstream ss;
+		for (unsigned int i = 0; i < TestTime_UInt_Loop; i++)
+		{
+			ss << std::fixed << TestTime_UInt_Value << '\n';
+		}
+		sw.Stop();
+		TestTime_UInt_0.NewValue(sw.ElapsedTime());
+	}
+	{
+		StopWatch sw;
+		sw.Start();
+		std::stringstream ss;
+		for (unsigned int i = 0; i < TestTime_UInt_Loop; i++)
+		{
+			ss << ToString(TestTime_UInt_Value) << '\n';
+		}
+		sw.Stop();
+		TestTime_UInt_1.NewValue(sw.ElapsedTime());
+	}
+}
+
+static unsigned int				TestTime_Float_Loop = 1024;
+static float					TestTime_Float_Value = 0.1234f;
+static ValueAverager<float>		TestTime_Float_0(1024);
+static ValueAverager<float>		TestTime_Float_1(1024);
+static void TestTime_Float()
+{
+	{
+		StopWatch sw;
+		sw.Start();
+		std::stringstream ss;
+		for (unsigned int i = 0; i < TestTime_Float_Loop; i++)
+		{
+			ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << TestTime_Float_Value << '\n';
+		}
+		sw.Stop();
+		TestTime_Float_0.NewValue(sw.ElapsedTime());
+	}
+	{
+		StopWatch sw;
+		sw.Start();
+		std::stringstream ss;
+		for (unsigned int i = 0; i < TestTime_Float_Loop; i++)
+		{
+			ss << ToString(TestTime_Float_Value) << '\n';
+		}
+		sw.Stop();
+		TestTime_Float_1.NewValue(sw.ElapsedTime());
+	}
+}
+
+static void TestTime()
+{
+	TestTime_UInt();
+	TestTime_Float();
 }
 
 
@@ -979,16 +1047,35 @@ static ValueAverager<float>		FrameInputTime(64);
 static ValueAverager<float>		InventoryCursorTime(64);
 #endif
 
-static ValueAverager<float>		TextAssambleTime(64);
-static ValueAverager<float>		TextInstanceTime(64);
+static ValueAverager<float>		TextTime_Assamble(64);
+static ValueAverager<float>		TextTime_Instance(64);
+
+static ValueAverager<float>		TextTime_TestFPS(64);
+static ValueAverager<float>		TextTime_TestTime(64);
+static ValueAverager<float>		TextTime_Text(64);
+static ValueAverager<float>		TextTime_ThreadTime(64);
+static ValueAverager<float>		TextTime_ChunkManagerTime(64);
+static ValueAverager<float>		TextTime_View(64);
+static ValueAverager<float>		TextTime_ChunkHere(64);
+static ValueAverager<float>		TextTime_ChunkRange(64);
+static ValueAverager<float>		TextTime_VoxelChunkMemory0(64);
+static ValueAverager<float>		TextTime_VoxelChunkMemory0_Wait(64);
+static ValueAverager<float>		TextTime_VoxelChunkMemory0_Loop(64);
+static ValueAverager<float>		TextTime_VoxelChunkMemory0_Show(64);
+static ValueAverager<float>		TextTime_VoxelChunkMemory1(64);
 
 void ContextNoisePlane::FrameText(FrameTime frame_time)
 {
 	StopWatch sw;
 	sw.Start();
 
+	StopWatch sw_;
+	StopWatch sw__;
+
 	std::stringstream ss;
 
+	// FPS
+	sw_.Clear(); sw_.Start();
 	if (DebugMenu.FPS.Check.IsChecked())
 	{
 		ss << "Frame (" << (int)frame_time.WantedFramesPerSecond << '|' << (int)frame_time.ActualFramesPerSecond << ")Hz\n";
@@ -999,19 +1086,51 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "Max: "; ShowTimeFreq(ss, DLTAverageTime.Max(), FPSAverageTime.Min()); ss << '\n';
 		ss << '\n';
 	}
+	sw_.Stop(); TextTime_TestFPS.NewValue(sw_.ElapsedTime());
+
+	// TestTime
+	sw_.Clear(); sw_.Start();
+	/*{
+		ss << "TestTime\n";
+		ss << "UInt_0 " << TestTime_UInt_0.Average() << '\n';
+		ss << "UInt_1 " << TestTime_UInt_1.Average() << '\n';
+		ss << "UInt_0 " << TestTime_UInt_Value << '\n';
+		ss << "UInt_1 " << ToString(TestTime_UInt_Value) << '\n';
+		ss << "Float_0 " << TestTime_Float_0.Average() << '\n';
+		ss << "Float_1 " << TestTime_Float_1.Average() << '\n';
+		ss << "Float_0 " << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << TestTime_Float_Value << '\n';
+		ss << "Float_1 " << ToString(TestTime_Float_Value) << '\n';
+		ss << '\n';
+	}*/
+	sw_.Stop(); TextTime_TestTime.NewValue(sw_.ElapsedTime());
 
 	// Text
+	sw_.Clear(); sw_.Start();
 	{
 		ss << "TextCharCount: " << Seperated1000(TextCharCount) << '\n';
 		ss << "TextManager.Instances.Count(): " << Seperated1000(TextManager.InstancesArray.Length()) << '\n';
 		ss << "TextManager.ObjectDatas.Count(): " << Seperated1000(TextManager.ObjectDatas.Count()) << '\n';
-		ShowNameTimeLine(ss, "TextAssambleTime", TextAssambleTime); // 0.01s to 0.014s
-		ShowNameTimeLine(ss, "TextInstanceTime", TextInstanceTime);
-		//std::cout << "TimeMakeText: " << TimeMakeText.Average() << '\n';
+		ShowNameTimeLine(ss, "TextTime_Assamble     ", TextTime_Assamble); // 0.01s to 0.014s
+		ShowNameTimeLine(ss, "TextTime_Instance     ", TextTime_Instance);
+		ShowNameTimeLine(ss, "TestFPS               ", TextTime_TestFPS);
+		ShowNameTimeLine(ss, "TestTime              ", TextTime_TestTime);
+		ShowNameTimeLine(ss, "Text                  ", TextTime_Text);
+		ShowNameTimeLine(ss, "ThreadTime            ", TextTime_ThreadTime);
+		ShowNameTimeLine(ss, "ChunkManagerTime      ", TextTime_ChunkManagerTime);
+		ShowNameTimeLine(ss, "View                  ", TextTime_View);
+		ShowNameTimeLine(ss, "ChunkHere             ", TextTime_ChunkHere);
+		ShowNameTimeLine(ss, "ChunkRange            ", TextTime_ChunkRange);
+		ShowNameTimeLine(ss, "VoxelChunkMemory0     ", TextTime_VoxelChunkMemory0);
+		ShowNameTimeLine(ss, "VoxelChunkMemory0_Wait", TextTime_VoxelChunkMemory0_Wait);
+		ShowNameTimeLine(ss, "VoxelChunkMemory0_Loop", TextTime_VoxelChunkMemory0_Loop);
+		ShowNameTimeLine(ss, "VoxelChunkMemory0_Show", TextTime_VoxelChunkMemory0_Show);
+		ShowNameTimeLine(ss, "VoxelChunkMemory1     ", TextTime_VoxelChunkMemory1);
 		ss << '\n';
 	}
+	sw_.Stop(); TextTime_Text.NewValue(sw_.ElapsedTime());
 
 	// Thread Time
+	sw_.Clear(); sw_.Start();
 	if (DebugMenu.TimeThreads.Check.IsChecked())
 	{
 		ShowNameTimeLine(ss, "Frame       Total", TimeFrameTotal);
@@ -1032,8 +1151,10 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ShowNameTimeLine(ss, "AuxThread       2", AuxThread2Time);
 		ss << '\n';
 	}
+	sw_.Stop(); TextTime_ThreadTime.NewValue(sw_.ElapsedTime());
 
 	// ChunkManager Time
+	sw_.Clear(); sw_.Start();
 	if (DebugMenu.TimeWaitDo.Check.IsChecked())
 	{
 		ss << ChunkManager::TimeInsert << '\n';
@@ -1050,6 +1171,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << ChunkManager::TimeDraw << '\n';
 		ss << '\n';
 	}
+	sw_.Stop(); TextTime_ChunkManagerTime.NewValue(sw_.ElapsedTime());
 
 	/*{
 		ss << "CheckingCount: " << ChunkManager.ChunksLock.Count() << '\n';
@@ -1066,6 +1188,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << '\n';
 	}*/
 
+	// View
+	sw_.Clear(); sw_.Start();
 	if (DebugMenu.View.Check.IsChecked())
 	{
 		ss << "View " << view.Trans.Position << '\n';
@@ -1081,7 +1205,10 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 #endif
 		ss << '\n';
 	}
+	sw_.Stop(); TextTime_View.NewValue(sw_.ElapsedTime());
 
+	// ChunkHere
+	sw_.Clear(); sw_.Start();
 	if (DebugMenu.ChunkHere.Check.IsChecked())
 	{
 		//VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
@@ -1136,6 +1263,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << '\n';
 		//ChunkManager.ChunksInUse.unlock();
 	}
+	sw_.Stop(); TextTime_ChunkHere.NewValue(sw_.ElapsedTime());
 
 	/*{
 		unsigned int count = PolyHedraManager.InstanceManagers.Count();
@@ -1160,6 +1288,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << '\n';
 	}*/
 
+	// ChunkRange
+	sw_.Clear(); sw_.Start();
 	if (DebugMenu.ChunkRange.Check.IsChecked())
 	{
 		ss << "Chunk Ranges:" << '\n';
@@ -1174,12 +1304,18 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 		ss << '\n';
 	}
+	sw_.Stop(); TextTime_ChunkRange.NewValue(sw_.ElapsedTime());
 
+	// VoxelChunkMemory
 	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
 	{
+		sw_.Clear(); sw_.Start();
+		sw__.Clear(); sw__.Start();
 		//ChunkManager.ChunksChanging.lock();
 		ChunkManager.ChunksLock.AccessL();
+		sw__.Stop(); TextTime_VoxelChunkMemory0_Wait.NewValue(sw__.ElapsedTime());
 
+		sw__.Clear(); sw__.Start();
 		unsigned int chunks_t = 0; // total
 		unsigned int chunks_u = 0; // ungenerated
 		unsigned int chunks_f = 0; // filled
@@ -1199,7 +1335,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			else
 			{ chunks_u++; }
 		}
+		sw__.Stop(); TextTime_VoxelChunkMemory0_Loop.NewValue(sw__.ElapsedTime());
 
+		sw__.Clear(); sw__.Start();
 		ss << "Chunks:" << ChunkManager.Chunks.Length();
 		ss << '|' << chunks_t << '[';
 		ss << 'U' << chunks_u << '|';
@@ -1207,45 +1345,30 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << 'F' << chunks_f << ']';
 		ss << '\n';
 
-		/*ss << "Chunk sizeof\n";
-		ss << "sizeof(Chunk)" << ' ' << sizeof(Chunk) << '\n';
-		ss << "sizeof(VectorI3)" << ' ' << sizeof(VectorI3) << '\n';
-		ss << "sizeof(VectorU3)" << ' ' << sizeof(VectorU3) << '\n';
-		ss << "sizeof(Array3D<Voxel>)" << ' ' << sizeof(Array3D<Voxel>) << '\n';
-		ss << "sizeof(Chunk*)" << ' ' << sizeof(Chunk*) << '\n';
-		ss << "sizeof(Chunk*[27])" << ' ' << sizeof(Chunk*[27]) << '\n';
-		ss << "sizeof(ChunkNeighbour)" << ' ' << sizeof(ChunkNeighbour) << '\n';
-		ss << "sizeof(Chunk*[7])" << ' ' << sizeof(Chunk*[7]) << '\n';
-		ss << "sizeof(VoxelGraphics::BufferF)" << ' ' << sizeof(VoxelGraphics::BufferF) << '\n';
-		ss << "sizeof(VoxelGraphics::BufferU)" << ' ' << sizeof(VoxelGraphics::BufferU) << '\n';
-		ss << "sizeof(ChunkGraphicsData)" << ' ' << sizeof(ChunkGraphicsData) << '\n';
-		ss << "sizeof(std::mutex)" << ' ' << sizeof(std::mutex) << '\n';
-		ss << '\n';*/
-
 		ss << "Chunks:" << Memory1000ToString(sizeof(Chunk));
 		ss << " * " << Seperated1000(chunks_t);
 		ss << " = " << Memory1000ToString(chunks_t * sizeof(Chunk));
 		ss << '\n';
 		ss << '\n';
-		
-		/*ss << "Voxel sizeof\n";
-		ss << "sizeof(Voxel)" << ' ' << sizeof(Voxel) << '\n';
-		ss << "sizeof(VoxelOrientation)" << ' ' << sizeof(VoxelOrientation) << '\n';
-		ss << "sizeof(VoxelPallet*)" << ' ' << sizeof(VoxelPallet*) << '\n';
-		ss << '\n';*/
 
 		ss << "Voxels:" << Memory1000ToString(sizeof(Voxel));
 		ss << " * " << Seperated1000(chunks_f * CHUNK_VALUES_PER_VOLM);
 		ss << " = " << Memory1000ToString(chunks_f * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
 		ss << '\n';
 		ss << '\n';
+		sw__.Stop(); TextTime_VoxelChunkMemory0_Show.NewValue(sw__.ElapsedTime());
 
 		ChunkManager.ChunksLock.AccessU();
 		//ChunkManager.ChunksChanging.unlock();
+
+		sw_.Stop(); TextTime_VoxelChunkMemory0.NewValue(sw_.ElapsedTime());
 	}
 
+	// VoxelChunkMemory
 	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
 	{
+		sw_.Clear(); sw_.Start();
+
 		//ChunkManager.ChunksChanging.lock();
 		ChunkManager.ChunksLock.AccessL();
 
@@ -1288,10 +1411,12 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 		ChunkManager.ChunksLock.AccessU();
 		//ChunkManager.ChunksChanging.unlock();
+
+		sw_.Stop(); TextTime_VoxelChunkMemory1.NewValue(sw_.ElapsedTime());
 	}
 
 	sw.Stop();
-	TextAssambleTime.NewValue(sw.ElapsedTime());
+	TextTime_Assamble.NewValue(sw.ElapsedTime());
 
 	sw.Clear(); sw.Start();
 	UI::Text::Object text; text.Create();
@@ -1305,7 +1430,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	text.Bound().Min = VectorF2();
 	text.Bound().Max = window.Size.Buffer.Full;
 	sw.Stop();
-	TextInstanceTime.NewValue(sw.ElapsedTime());
+	TextTime_Instance.NewValue(sw.ElapsedTime());
 }
 #ifndef DISABLE_INVENTORY
 void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
@@ -1472,6 +1597,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 {
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
+
+	TestTime();
 
 	StopWatch sw;
 	sw.Start();

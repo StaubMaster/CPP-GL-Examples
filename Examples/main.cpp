@@ -28,6 +28,7 @@ int main(int argc, char * argv[])
 			window.Create();
 			ContextBase::WindowPointer = &window;
 			ContextBase::ChangeToContext0();
+			//ContextBase::ChangeToTestTextAlignment();
 			while (ContextBase::NewContext.Function != nullptr)
 			{
 				ContextBase * context = ContextBase::NewContext.Invoke();

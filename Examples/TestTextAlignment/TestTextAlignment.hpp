@@ -16,18 +16,20 @@ UI::Text::Manager		TextManager;
 ~ContextTestTextAlignment();
 ContextTestTextAlignment();
 
-void Make();
+void	Make();
 
-void Init() override;
-void Free() override;
+void	Init() override;
+void	Free() override;
 
-void Resize(DisplaySize display_size) override;
-void Frame(FrameTime frame_time) override;
+void	TextAlignment();
 
-void MouseScroll(ScrollArgs args) override;
-void MouseClick(ClickArgs args) override;
-void MouseDrag(DragArgs args) override;
-void KeyBoardKey(KeyArgs args) override;
+void	Frame(FrameTime frame_time) override;
+void	Resize(DisplaySize display_size) override;
+
+void	MouseScroll(ScrollArgs args) override;
+void	MouseClick(ClickArgs args) override;
+void	MouseDrag(DragArgs args) override;
+void	KeyBoardKey(KeyArgs args) override;
 };
 
 #endif

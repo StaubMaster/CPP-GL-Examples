@@ -6,6 +6,7 @@ FANCY_NAME := TestTextAlignment
 
 FILES := \
 	TestTextAlignment.cpp \
+	new.cpp
 
 DIR_SRC := .
 DIR_OBJ := .
