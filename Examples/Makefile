@@ -11,6 +11,11 @@ FILES := \
 	ValueGen/Perlin2D.cpp \
 	ValueGen/Perlin3D.cpp \
 \
+	Telemetry/Time.cpp \
+	Telemetry/StopWatch.cpp \
+	Telemetry/ThreadInfo.cpp \
+	Telemetry/WaitDoTime.cpp \
+\
 	UnitToString.cpp \
 \
 	main.cpp \

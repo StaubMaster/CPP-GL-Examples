@@ -51,11 +51,6 @@ FILES := \
 	Menus/Item/Inventory.cpp \
 	Menus/Item/HotBar.cpp \
 \
-	Telemetry/Time.cpp \
-	Telemetry/StopWatch.cpp \
-	Telemetry/ThreadInfo.cpp \
-	Telemetry/WaitDoTime.cpp \
-\
 	PhysicsContext.cpp \
 	ContextNoisePlane.cpp \
 

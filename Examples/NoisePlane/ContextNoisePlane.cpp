@@ -938,7 +938,8 @@ void ContextNoisePlane::Draw()
 
 static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 {
-	ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's' << ' ';
+	//ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's' << ' ';
+	ss << FloatToString(time) << 's' << ' ';
 	ss << '(';
 	ss << std::setw(3) << std::setfill(' ') << freq << "Hz";
 	ss << ')';
@@ -957,7 +958,8 @@ static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 
 static void ShowTime(std::stringstream & ss, float time)
 {
-	ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's';
+	//ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's';
+	ss << FloatToString(time) << 's';
 }
 static void ShowNameTimeLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
 {
@@ -1003,7 +1005,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "TextCharCount: " << Seperated1000(TextCharCount) << '\n';
 		ss << "TextManager.Instances.Count(): " << Seperated1000(TextManager.InstancesArray.Length()) << '\n';
 		ss << "TextManager.ObjectDatas.Count(): " << Seperated1000(TextManager.ObjectDatas.Count()) << '\n';
-		ShowNameTimeLine(ss, "TextAssambleTime", TextAssambleTime);
+		ShowNameTimeLine(ss, "TextAssambleTime", TextAssambleTime); // 0.01s to 0.014s
 		ShowNameTimeLine(ss, "TextInstanceTime", TextInstanceTime);
 		//std::cout << "TimeMakeText: " << TimeMakeText.Average() << '\n';
 		ss << '\n';

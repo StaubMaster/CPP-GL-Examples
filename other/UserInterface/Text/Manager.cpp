@@ -118,8 +118,8 @@ static unsigned int LineLength(const char * text, unsigned int i)
 	return len;
 }
 
-#include "../../Examples/NoisePlane/Telemetry/StopWatch.hpp"
-#include "../../Examples/NoisePlane/Telemetry/ValueAverager.hpp"
+#include "../../Examples/Telemetry/StopWatch.hpp"
+#include "../../Examples/Telemetry/ValueAverager.hpp"
 #include <iomanip>
 
 //static StopWatch				WatchTotal;
