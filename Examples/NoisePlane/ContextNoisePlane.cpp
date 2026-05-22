@@ -380,8 +380,9 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	ViewUpdateCollisionTime.NewValue(sw2.ElapsedTime());
 
 	sw2.Clear(); sw2.Start();
-	ChunkManager.GraphicsUpdate();
-	//ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
+	ChunkManager.GraphicsUpdate(); // this has nothing to do with View. should be done in DrawThread
+	//ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF()); // do this in Insert/Remove Thread
+	//ChangeCenter segfaults
 	sw2.Stop();
 	ViewUpdateChunksTime.NewValue(sw2.ElapsedTime());
 
@@ -835,6 +836,7 @@ void ContextNoisePlane::Init()
 	//ChunkManager.ChangeSize(2, 1);
 	//ChunkManager.ChangeSize(8, 4);
 	ChunkManager.ChangeSize(16, 8);
+	//ChunkManager.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -1215,38 +1217,35 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ChunkVoxelIndex idx(view.Trans.Position.roundF());
 		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
 		//ChunkManager.ChunksInUse.lock();
-		Chunk * chunk_ptr = ChunkManager.FindLockOrNull(idx.Chunk);
+		AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
 		//if (idx.ChunkMan != 0xFFFFFFFF)
-		if (chunk_ptr != nullptr)
+		if (chunk.Is())
 		{
 			//ss << "Chunk: " << idx.ChunkMan << '\n';
-			//Chunk & chunk = *ChunkManager.Chunks[idx.ChunkMan];
-			Chunk & chunk = *chunk_ptr;
 
 			ss << "Data: ";
-			if (chunk.IsEmpty()) { ss << "Empty"; } else
+			if ((*chunk).IsEmpty()) { ss << "Empty"; } else
 			{
 				ss << Memory1000ToString(CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
 			}
 			ss << '\n';
 
-			ss << "TerrainDone: " << chunk.TerrainDone << '\n';
-			ss << "DecorationsNoted: " << chunk.DecorationsNoted << '\n';
-			ss << "DecorationsPlaced: " << chunk.DecorationsPlaced << '\n';
-			if (chunk.GenerationDone()) { ss << "Done"; }
+			ss << "TerrainDone: " << (*chunk).TerrainDone << '\n';
+			ss << "DecorationsNoted: " << (*chunk).DecorationsNoted << '\n';
+			ss << "DecorationsPlaced: " << (*chunk).DecorationsPlaced << '\n';
+			if ((*chunk).GenerationDone()) { ss << "Done"; }
 			ss << '\n';
 
-			ss << "MainBufferDataNew: " << chunk.MainBufferDataNew << '\n';
+			ss << "MainBufferDataNew: " << (*chunk).MainBufferDataNew << '\n';
 
 			//ss << "BufferU: ";
 			//ss << Memory1000ToString(chunk.BufferU.Main.Count * sizeof(VoxelGraphics::MainDataU));
 			//ss << '\n';
 
 			ss << "BufferF: ";
-			ss << Memory1000ToString(chunk.BufferF.Main.Count * sizeof(VoxelGraphics::MainDataF));
+			ss << Memory1000ToString((*chunk).BufferF.Main.Count * sizeof(VoxelGraphics::MainDataF));
 			ss << '\n';
 
-			chunk.AccessU();
 			ss << '\n';
 		}
 		else
@@ -1372,20 +1371,20 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ChunkManager.ChunksLock.AccessL();
 
 		unsigned long long main_f_count = 0;
-		unsigned int buffer_data_0 = 0;
-		unsigned int buffer_data_1 = 0;
+		unsigned int buffer_data_have = 0;
+		unsigned int buffer_data_want = 0;
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
 		{
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *ChunkManager.Chunks[i];
 			main_f_count += chunk.BufferF.Main.Count;
-			if (chunk.MainBufferDataNew)	{ buffer_data_1++; }
-			else							{ buffer_data_0++; }
+			if (chunk.MainBufferDataNew)	{ buffer_data_want++; }
+			else							{ buffer_data_have++; }
 		}
 
-		ss << "State ";
-		ss << '[' << '0' << ']' << buffer_data_0 << ' ';
-		ss << '[' << '1' << ']' << buffer_data_1 << ' ';
+		ss << "BufferUState";
+		ss << " Have:" << buffer_data_have;
+		ss << " Want:" << buffer_data_want;
 		ss << '\n';
 
 		ss << "BufferFData:" << Memory1000ToString(sizeof(VoxelGraphics::MainDataF));
@@ -1573,7 +1572,7 @@ void ContextNoisePlane::FrameInput()
 		if (!window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeLock(); }
 	}
 
-	if (window.KeyBoardManager[Keys::P].State == State::Press)
+	/*if (window.KeyBoardManager[Keys::P].State == State::Press)
 	{
 		ChunkVoxelIndex idx(view.Trans.Position.roundF());
 		Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
@@ -1584,7 +1583,7 @@ void ContextNoisePlane::FrameInput()
 			chunk -> MainBufferDataNew = true;
 			chunk -> AccessU();
 		}
-	}
+	}*/
 
 	sw.Stop();
 	FrameInputTime.NewValue(sw.ElapsedTime());

@@ -2,8 +2,9 @@
 # define CHUNK_NEIGHBOURS_HPP
 
 struct Chunk;
-struct Voxel;
+struct ChunkManager;
 struct VectorU3;
+struct VectorI3;
 enum class AxisRel : unsigned char;
 
 # include "Miscellaneous/Container/Array3D.hpp"
@@ -27,12 +28,36 @@ this would still be a fraction compared to Voxels and GraphicsData
 so it would be fine ?
 */
 
+/* different Neighbours
+
+Generation
+	needs 3x3x3 Neighbours
+	or 2x2x2
+	all besides Here should be Access locked
+	Here should be Assign locked
+UpdateBuffer
+	needs Axis Neighbours
+	all should be Access locked
+	Here gets BufferDat changed
+RequestBuffer Update
+	when a Chunk changes from Generation or Assign
+	then neighbouring Chunks need to update Visuals
+
+	if this and UpdateBuffer change Flag at weird times
+	it could cause a Chunk to not be Updated when it should be
+
+	Request only gets set from Chunk assign
+	Buffer should not be made at the same time as assign
+
+	currently, Buffers can be made if neighbour is generated
+	when the neighbour finishes, it tells it neighbouts to updat visuals
+	but the neighbout is currently updating visuals
+	which causes the update to be lost
+*/
+
 struct ChunkNeighbour
 {
-	// only Here Chunk as a referance
-	// the others should be more ChunkNeigbours
-	// dont make accessible directly
-
+	private:
 	Chunk *		Here;
 	Chunk *		PrevX;
 	Chunk *		PrevY;
@@ -41,6 +66,16 @@ struct ChunkNeighbour
 	Chunk *		NextY;
 	Chunk *		NextZ;
 
+	public:
+	~ChunkNeighbour();
+	ChunkNeighbour();
+	ChunkNeighbour(const ChunkNeighbour & other);
+	ChunkNeighbour & operator=(const ChunkNeighbour & other) = delete;
+
+	ChunkNeighbour(ChunkManager & manager, Chunk * chunk);
+	ChunkNeighbour(ChunkManager & manager, VectorI3 idx);
+
+	public:
 	const Chunk *	LoopPrevX(VectorU3 & udx) const;
 	const Chunk *	LoopPrevY(VectorU3 & udx) const;
 	const Chunk *	LoopPrevZ(VectorU3 & udx) const;
@@ -49,12 +84,17 @@ struct ChunkNeighbour
 	const Chunk *	LoopNextZ(VectorU3 & udx) const;
 	const Chunk *	Loop(VectorU3 & udx, const AxisRel & axis) const;
 
+	public:
 	bool	IsVisiblePrevX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
 	bool	IsVisiblePrevY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
 	bool	IsVisiblePrevZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
 	bool	IsVisibleNextX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
 	bool	IsVisibleNextY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
 	bool	IsVisibleNextZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+
+	public:
+	void	UpdateVisual() const;
+	bool	GenerationDone() const;
 };
 
 #endif

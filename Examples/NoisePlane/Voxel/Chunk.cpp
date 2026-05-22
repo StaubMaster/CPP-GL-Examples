@@ -31,6 +31,89 @@
 
 
 
+
+
+bool			AccessLockedChunk::Is() const { return (Pointer != nullptr); }
+const Chunk &	AccessLockedChunk::operator*() const { return (*Pointer); }
+
+AccessLockedChunk::~AccessLockedChunk()
+{
+	if (Count != nullptr)
+	{
+		if ((*Count) == 0)
+		{
+			delete Count;
+			if (Pointer != nullptr)
+			{
+				Pointer -> AccessU();
+			}
+		}
+		else
+		{
+			(*Count)--;
+		}
+	}
+}
+AccessLockedChunk::AccessLockedChunk()
+	: Count(nullptr)
+	, Pointer(nullptr)
+{ }
+AccessLockedChunk::AccessLockedChunk(const AccessLockedChunk & other)
+	: Count(other.Count)
+	, Pointer(other.Pointer)
+{
+	if (Count != nullptr)
+	{
+		(*Count)++;
+	}
+}
+AccessLockedChunk & AccessLockedChunk::operator=(const AccessLockedChunk & other)
+{
+	if (Count != nullptr)
+	{
+		if ((*Count) == 0)
+		{
+			delete Count;
+			if (Pointer != nullptr)
+			{
+				Pointer -> AccessU();
+			}
+		}
+		else
+		{
+			(*Count)--;
+		}
+	}
+
+	Count = other.Count;
+	Pointer = other.Pointer;
+	if (Count != nullptr)
+	{
+		(*Count)++;
+	}
+
+	return *this;
+}
+
+AccessLockedChunk::AccessLockedChunk(Chunk * chunk)
+	: Count(new unsigned)
+	, Pointer(chunk)
+{
+	if (Pointer != nullptr)
+	{
+		(*Count) = 0;
+	}
+	else
+	{
+		delete Count;
+		Count = nullptr;
+	}
+}
+
+
+
+
+
 const Voxel &	Chunk::operator[](VectorU3 udx) const { return Voxels[udx]; }
 const Voxel *	Chunk::FindVoxelOrNull(VectorU3 udx) const
 {
@@ -82,6 +165,22 @@ bool Chunk::AccessT() { return Lock.AccessT(); }
 void Chunk::AccessToAssign() { Lock.AccessToAssign(); }
 void Chunk::AssignL() { Lock.AssignL(); }
 void Chunk::AssignU() { Lock.AssignU(); }
+
+AccessLockedChunk Chunk::ToAccess()
+{
+	AccessL();
+	return AccessLockedChunk(this);
+}
+AccessLockedChunk Chunk::ToAccessTry()
+{
+	if (AccessT())
+	{
+		return AccessLockedChunk(this);
+	}
+	return AccessLockedChunk();
+}
+
+
 
 
 
@@ -495,6 +594,7 @@ void Chunk::DecorateTrees(const Perlin2D & noise)
 	if (Index.Y < 0) { return; }
 	(void)noise;
 
+	int off_y = Index.Y * CHUNK_VALUES_PER_SIDE;
 	const VoxelPallet & pallet = VoxelPalletMap::All["OrientationCube"];
 	for (unsigned int z = 0; z < CHUNK_VALUES_PER_SIDE; z++)
 	{
@@ -511,11 +611,14 @@ void Chunk::DecorateTrees(const Perlin2D & noise)
 			val += noise.Calculate(VectorF2(x, z) / 128.0f) * 128.0f;
 			val += noise.Calculate(VectorF2(x, z) / 256.0f) * 256.0f;
 			//if (val == 0.0f)
-			if (val < +0.01f && val > -0.01f)
+			//if (val > -0.01f && val < +0.01f)
 			{
 				for (unsigned int y = 0; y < CHUNK_VALUES_PER_SIDE; y++)
 				{
-					Voxels[VectorU3(x, y, z)] = pallet.ToVoxel();
+					if (y + off_y < val)
+					{
+						Voxels[VectorU3(x, y, z)] = pallet.ToVoxel();
+					}
 				}
 				/*VectorU3 origin = TopVoxel(*this, VectorU3(x, 0, z));
 				if (origin.Y < CHUNK_VALUES_PER_SIDE)

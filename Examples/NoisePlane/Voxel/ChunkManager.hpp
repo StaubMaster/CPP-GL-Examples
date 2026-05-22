@@ -27,6 +27,7 @@
 struct Voxel;
 struct Chunk;
 struct ChunkNeighbour;
+struct AccessLockedChunk;
 enum class AxisRel : unsigned char;
 
 struct Ray3D;
@@ -130,10 +131,6 @@ struct ChunkManager
 
 	void	Clear();
 	void	ChangeSize(unsigned int know_size, unsigned int care_size);
-
-	void	ChangeCenterLoopX(VectorU3 u, VectorI3 diff);
-	void	ChangeCenterLoopY(VectorU3 u, VectorI3 diff);
-	void	ChangeCenterLoopZ(VectorU3 u, VectorI3 diff);
 	void	ChangeCenter(VectorI3 center);
 
 	VectorI3	Center;
@@ -143,7 +140,7 @@ struct ChunkManager
 	VectorI3	absolute(VectorU3 u) const;
 	VectorU3	relative(VectorI3 i) const;
 
-	Chunk *		FindLockOrNull(VectorI3 idx);
+	AccessLockedChunk		FindAccess(VectorI3 idx);
 
 	private:
 	public:
@@ -158,8 +155,8 @@ struct ChunkManager
 
 	void	UpdateChunksContainer();
 
-	ChunkNeighbour	FindNeighbours(const Chunk & chunk) const;
-//	const Chunk *	NeighbourLoopChunk(const Chunk & chunk, VectorU3 & udx, AxisRel axis);
+	
+
 	void			NeighbourUpdateBufferMain(VectorI3 idx);
 
 
@@ -193,8 +190,8 @@ struct ChunkManager
 	void	GraphicsDelete();
 	void	GraphicsUpdate();
 
-	Chunk *	FindGraphicsUpdateChunk();
-	void	GraphicsUpdateDataAround();
+	AccessLockedChunk	FindGraphicsUpdateChunk();
+	void				GraphicsUpdateDataAround();
 
 	void	Draw();
 };

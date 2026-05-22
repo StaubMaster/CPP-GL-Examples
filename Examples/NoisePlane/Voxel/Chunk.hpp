@@ -37,6 +37,58 @@ struct Structure;
 //struct ChunkManager;
 #include "ChunkManager.hpp"
 
+struct Chunk;
+
+/* Chunk Changes
+Access
+	dosent change Voxels, dosent change BufferNew, dosent changes BufferData, basically const
+Generate
+	changes Voxels, changes BufferNew, dosent changes BufferData
+Buffer
+	dosnet change Voxel, changes BufferNew, changes BufferData
+Assign
+	changes Voxels, changes BufferNew, dosent changes BufferData, for user
+
+Buffer is like Access, since it dosent change Voxels
+but gets cast from (const Chunk *) to (Chunk *) to actually change things
+
+Generate is like Assign, since it changes Voxels and then requrests a Buffer update
+*/
+
+/* LogicalData and VisualData
+whenever LogicalData changes, VisualData should be updated
+whenever VisualData is updated, LogicalData should not change
+
+LogicalData can be changed from multiple places
+VisualData is only changed by the function that makes VisualData
+
+VisualData has Stages
+Stage0: making BlockData
+Stage1: turning BlockData into ArrayData
+Stage2: putting ArrayData into Buffer
+
+Stages 0 and 2 can happen at the same time
+Stages 1 and 2 should not happen at the same time
+*/
+
+struct AccessLockedChunk
+{
+	private:
+	unsigned int *	Count;
+	Chunk *			Pointer;
+
+	public:
+	bool			Is() const;
+	const Chunk &	operator*() const;
+
+	~AccessLockedChunk();
+	AccessLockedChunk();
+	AccessLockedChunk(const AccessLockedChunk & other);
+	AccessLockedChunk & operator=(const AccessLockedChunk & other);
+
+	AccessLockedChunk(Chunk * chunk);
+};
+
 struct Chunk
 {
 	public:
@@ -70,6 +122,11 @@ struct Chunk
 	void	AccessToAssign();
 	void	AssignL();
 	void	AssignU();
+
+	AccessLockedChunk	ToAccess();
+	AccessLockedChunk	ToAccessTry();
+
+
 
 
 
@@ -217,27 +274,5 @@ struct Chunk
 	void	BufferFInst_UpdateData();
 	void	DrawF();
 };
-
-/*struct AccessLockedChunk
-{
-	Pointer to Chunk
-	bool IsNull() const
-
-	operator[]
-	GeneratonDone()
-	NeedsBuffer()
-
-	more is not needed for access?
-};*/
-
-/* access to what ?
-	general external stuff
-		checking Voxels
-	Generation
-		needs to changes
-	making Buffer
-		needs to access Voxels
-		but also change BufferData
-*/
 
 #endif
