@@ -34,13 +34,6 @@ struct Perlin2D;
 struct Perlin3D;
 struct Structure;
 
-enum class BufferDataState : unsigned char // put into Buffer
-{
-	None,
-	Needed,
-	Ready,
-};
-
 //struct ChunkManager;
 #include "ChunkManager.hpp"
 
@@ -70,8 +63,11 @@ struct Chunk
 	private:
 	ContainerLock	Lock;
 	public:
+	bool	InUse() const;
 	void	AccessL();
 	void	AccessU();
+	bool	AccessT();
+	void	AccessToAssign();
 	void	AssignL();
 	void	AssignU();
 
@@ -180,13 +176,7 @@ struct Chunk
 	void	GraphicsDelete();
 
 	public:
-	/* BufferState
-		None: no Data / empty
-		Want: wants new Data
-		Have: new Data is ready to Bind
-		Done: has Data
-	*/
-	BufferDataState		MainBufferState;
+	bool				MainBufferDataNew;
 	ChunkGraphicsData	MainBufferData;
 	void	GraphicsMakeData(const ChunkNeighbour & neighbours);
 	/* 

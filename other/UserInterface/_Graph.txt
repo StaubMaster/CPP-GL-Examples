@@ -19,3 +19,8 @@ Node Pos
 	Normal in GraphArea
 
 
+might be easiest to just draw to a texture ?
+might be easy to do that with Forms too ?
+not sure how slow that is
+
+

@@ -35,3 +35,8 @@ filling the engire screen should be around 10.000 ?
 check Bound involves comparing 4 numbers
 so it should be trivial ?
 
+
+
+make Forms resizable
+have flags if they can be resized
+use resize Cursors

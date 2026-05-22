@@ -35,12 +35,13 @@ struct ContainerLock
 	*/
 
 	private:
+	std::atomic<unsigned int>	UseCount;
 	std::mutex					AssignMutex;
 	std::mutex					AccessMutex;
 	std::atomic<unsigned int>	AccessCount;
 
 	public:
-	unsigned int	Count() const;
+	bool	InUse() const;
 
 	public:
 	~ContainerLock();
@@ -52,6 +53,10 @@ struct ContainerLock
 	public:
 	void	AccessL();
 	void	AccessU();
+
+	bool	AccessT();
+	void	AccessToAssign();
+
 	void	AssignL();
 	void	AssignU();
 

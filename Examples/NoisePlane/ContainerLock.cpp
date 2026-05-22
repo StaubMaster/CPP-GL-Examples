@@ -6,13 +6,14 @@
 
 
 
-unsigned int ContainerLock::Count() const { return AccessCount.load(); }
+bool ContainerLock::InUse() const { return (UseCount.load() != 0); }
 
 
 
 ContainerLock::~ContainerLock() { }
 ContainerLock::ContainerLock()
-	: AssignMutex()
+	: UseCount(0)
+	, AssignMutex()
 	, AccessMutex()
 	, AccessCount(0)
 { }
@@ -21,6 +22,7 @@ ContainerLock::ContainerLock()
 
 void ContainerLock::AccessL()
 {
+	UseCount++;
 #ifdef LOG_THREAD_INFO
 	std::cerr << ThreadInfo::ThreadName << " wait AccessL" << '\n';
 #endif
@@ -40,9 +42,32 @@ void ContainerLock::AccessU()
 #ifdef LOG_THREAD_INFO
 	std::cerr << ThreadInfo::ThreadName << " done AccessU" << '\n';
 #endif
+	UseCount--;
 }
+
+bool ContainerLock::AccessT()
+{
+	UseCount++;
+	if (AccessMutex.try_lock())
+	{
+		AccessCount++;
+		AccessMutex.unlock();
+		return true;
+	}
+	UseCount--;
+	return false;
+}
+void ContainerLock::AccessToAssign()
+{
+	AccessCount--;
+	AssignMutex.lock();
+	AccessMutex.lock();
+	while (AccessCount.load() != 0) { }
+}
+
 void ContainerLock::AssignL()
 {
+	UseCount++;
 #ifdef LOG_THREAD_INFO
 	std::cerr << ThreadInfo::ThreadName << " wait AssignL" << '\n';
 #endif
@@ -63,12 +88,14 @@ void ContainerLock::AssignU()
 #ifdef LOG_THREAD_INFO
 	std::cerr << ThreadInfo::ThreadName << " done AssignU" << '\n';
 #endif
+	UseCount--;
 }
 
 
 
 void ContainerLock::AccessL(StopWatch & watch, WaitDoTime & time)
 {
+	UseCount++;
 #ifdef LOG_THREAD_INFO
 	std::cerr << ThreadInfo::ThreadName << " wait AccessL" << '\n' << std::flush;
 #endif
@@ -99,9 +126,11 @@ void ContainerLock::AccessU(StopWatch & watch, WaitDoTime & time)
 #ifdef LOG_THREAD_INFO
 	std::cerr << ThreadInfo::ThreadName << " done AccessU" << '\n' << std::flush;
 #endif
+	UseCount--;
 }
 void ContainerLock::AssignL(StopWatch & watch, WaitDoTime & time)
 {
+	UseCount++;
 	time.ThreadName = ThreadInfo::ThreadName;
 #ifdef LOG_THREAD_INFO
 	std::cerr << ThreadInfo::ThreadName << " wait AssignL" << '\n';
@@ -133,6 +162,7 @@ void ContainerLock::AssignU(StopWatch & watch, WaitDoTime & time)
 #ifdef LOG_THREAD_INFO
 	std::cerr << ThreadInfo::ThreadName << " done AssignU" << '\n';
 #endif
+	UseCount--;
 }
 
 

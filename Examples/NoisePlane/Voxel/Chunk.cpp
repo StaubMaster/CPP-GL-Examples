@@ -61,7 +61,7 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, GraphicsExist(false)
 	, BufferU_Entry(manager.BufferU)
 	, BufferF()
-	, MainBufferState(BufferDataState::None)
+	, MainBufferDataNew(false)
 	, MainBufferData()
 	, BufferUMain_NewData(false)
 	, BufferFMain_NewData(false)
@@ -75,8 +75,11 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 
 
 
+bool Chunk::InUse() const { return Lock.InUse(); }
 void Chunk::AccessL() { Lock.AccessL(); }
 void Chunk::AccessU() { Lock.AccessU(); }
+bool Chunk::AccessT() { return Lock.AccessT(); }
+void Chunk::AccessToAssign() { Lock.AccessToAssign(); }
 void Chunk::AssignL() { Lock.AssignL(); }
 void Chunk::AssignU() { Lock.AssignU(); }
 
@@ -577,7 +580,7 @@ void Chunk::GenerateDecorationPlace()
 
 	if (GraphicsExist)
 	{
-		MainBufferState = BufferDataState::Needed;
+		MainBufferDataNew = true;
 	}
 }
 
@@ -599,7 +602,7 @@ void Chunk::GraphicsCreate()
 
 	if (GenerationDone())
 	{
-		MainBufferState = BufferDataState::Needed;
+		MainBufferDataNew = true;
 	}
 }
 void Chunk::GraphicsDelete()
@@ -613,13 +616,13 @@ void Chunk::GraphicsDelete()
 
 void Chunk::GraphicsMakeData(const ChunkNeighbour & neighbours)
 {
-	if (MainBufferState != BufferDataState::Needed) { return; }
+	if (!MainBufferDataNew) { return; }
 
 	if (!GenerationDone()) { return; }
 
 	MainBufferData.Make(*this, neighbours);
 
-	MainBufferState = BufferDataState::Ready;
+	MainBufferDataNew = false;
 
 	BufferUMain_NewData = true;
 	BufferFMain_NewData = true;
