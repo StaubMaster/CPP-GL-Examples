@@ -594,31 +594,32 @@ void Chunk::DecorateTrees(const Perlin2D & noise)
 	if (Index.Y < 0) { return; }
 	(void)noise;
 
-	int off_y = Index.Y * CHUNK_VALUES_PER_SIDE;
+	VectorI3 Offset = Index * (int)CHUNK_VALUES_PER_SIDE;
 	const VoxelPallet & pallet = VoxelPalletMap::All["OrientationCube"];
 	for (unsigned int z = 0; z < CHUNK_VALUES_PER_SIDE; z++)
 	{
 		for (unsigned int x = 0; x < CHUNK_VALUES_PER_SIDE; x++)
 		{
 			float val = 0.0f;
-			val += noise.Calculate(VectorF2(x, z) / 1.0f) * 1.0f;
-			val += noise.Calculate(VectorF2(x, z) / 2.0f) * 2.0f;
-			val += noise.Calculate(VectorF2(x, z) / 4.0f) * 4.0f;
-			val += noise.Calculate(VectorF2(x, z) / 8.0f) * 8.0f;
-			val += noise.Calculate(VectorF2(x, z) / 16.0f) * 16.0f;
-			val += noise.Calculate(VectorF2(x, z) / 32.0f) * 32.0f;
-			val += noise.Calculate(VectorF2(x, z) / 64.0f) * 64.0f;
-			val += noise.Calculate(VectorF2(x, z) / 128.0f) * 128.0f;
-			val += noise.Calculate(VectorF2(x, z) / 256.0f) * 256.0f;
+			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 001.0f) * 1.0f;
+			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 002.0f) * 1.0f;
+			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 004.0f) * 1.0f;
+			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 008.0f) * 1.0f;
+			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 016.0f) * 1.0f;
+			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 032.0f) * 1.0f;
+			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 064.0f) * 1.0f;
+			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 128.0f) * 1.0f;
+			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 256.0f) * 1.0f;
 			//if (val == 0.0f)
-			//if (val > -0.01f && val < +0.01f)
+			if (val > -0.01f && val < +0.01f)
 			{
 				for (unsigned int y = 0; y < CHUNK_VALUES_PER_SIDE; y++)
 				{
-					if (y + off_y < val)
+					Voxels[VectorU3(x, y, z)] = pallet.ToVoxel();
+					/*if ((Offset.Y + y) < val)
 					{
 						Voxels[VectorU3(x, y, z)] = pallet.ToVoxel();
-					}
+					}*/
 				}
 				/*VectorU3 origin = TopVoxel(*this, VectorU3(x, 0, z));
 				if (origin.Y < CHUNK_VALUES_PER_SIDE)
