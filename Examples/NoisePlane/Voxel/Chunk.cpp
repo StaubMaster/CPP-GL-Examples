@@ -367,9 +367,9 @@ void Chunk::GenerateTerrain(const ChunkGenerationNoise & noise)
 
 	MakeNull();
 
-//	TerrainPlane();
+	TerrainFlat(0, 0);
 //	TerrainPillars();
-	TerrainPlane(noise.Plane);
+//	TerrainPlane(noise.Plane);
 //	TerrainCaveNoodle(noise.Cave0, noise.Cave1);
 //	TerrainCaveBlob(noise.Cave2);
 
@@ -380,27 +380,38 @@ void Chunk::GenerateTerrain(const ChunkGenerationNoise & noise)
 Condition: Y <= 0
 Place: ConcreteCube
 */
-void Chunk::TerrainPlane()
+void Chunk::TerrainFlat(int y_chunk, unsigned int y_voxel)
 {
-	if (Index.Y == 0)
+	// 0.016s
+
+	const VoxelPallet & pallet_dirt = VoxelPalletMap::All["Dirt"];
+	const VoxelPallet & pallet_grass = VoxelPalletMap::All["Grass"];
+
+	(void)pallet_dirt;
+	(void)pallet_grass;
+
+	if (Index.Y == y_chunk)
 	{
 		LoopU3 loop(0, Voxels.Size());
 		for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 		{
-			if (u.Y == 0)
+			if (u.Y == y_voxel)
 			{
-				//Voxels[u].Pallet = &VoxelPalletMap::All["ConcreteCube"];
-				Voxels[u] = VoxelPalletMap::All["Grass"].ToVoxel();
+				Voxels[u] = pallet_grass.ToVoxel();
+			}
+			else if (u.Y < y_voxel)
+			{
+				Voxels[u] = pallet_dirt.ToVoxel();
 			}
 		}
-		return;
 	}
-
-	if (Index.Y >= 0) { return; }
-	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
+	else if (Index.Y < y_chunk)
 	{
-		Voxels[i] = VoxelPalletMap::All["ConcreteCube"].ToVoxel();
-		//Data[i].Orientation = VoxelOrientation();
+		LoopU3 loop(0, Voxels.Size());
+		for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+		{
+			Voxels[u] = pallet_dirt.ToVoxel();
+		}
 	}
 }
 /*
@@ -433,10 +444,15 @@ void Chunk::TerrainPillars()
 
 void Chunk::TerrainPlane(const Perlin2D & noise)
 {
-	// pallet_gray
-	// pallet_dirt
-	// pallet_grass
-	// pallet_water
+	const VoxelPallet & pallet_gray = VoxelPalletMap::All["Gray"];
+	const VoxelPallet & pallet_dirt = VoxelPalletMap::All["Dirt"];
+	const VoxelPallet & pallet_grass = VoxelPalletMap::All["Grass"];
+	const VoxelPallet & pallet_water = VoxelPalletMap::All["Water"];
+
+	(void)pallet_gray;
+	(void)pallet_dirt;
+	(void)pallet_grass;
+	(void)pallet_water;
 
 	VectorF3 Offset = Index * CHUNK_VALUES_PER_SIDE;
 	LoopU2 loop(VectorU2(), VectorU2(CHUNK_VALUES_PER_SIDE));
@@ -448,6 +464,7 @@ void Chunk::TerrainPlane(const Perlin2D & noise)
 		);
 
 		float val = 0.0f;
+
 		//val += noise.Calculate(p2 / 128.0f) * 128;
 		//val += noise.Calculate(p2 / 64.0f) * 64;
 		//val += noise.Calculate(p2 / 32.0f) * 32;
@@ -478,18 +495,18 @@ void Chunk::TerrainPlane(const Perlin2D & noise)
 			{
 				Voxels[voxel_u] = Voxel();
 				//if (abs_y < 0)
-				//{ Voxels[voxel_u] = VoxelPalletMap::All["Water"].ToVoxel(); }
+				//{ Voxels[voxel_u] = pallet_water.ToVoxel(); }
 			}
 			else if (diff < 1.0f)
 			{
-				{ Voxels[voxel_u] = VoxelPalletMap::All["Grass"].ToVoxel(); }
+				{ Voxels[voxel_u] = pallet_grass.ToVoxel(); }
 				//if (abs_y >= 0)
-				//{ Voxels[voxel_u] = VoxelPalletMap::All["Grass"].ToVoxel(); }
+				//{ Voxels[voxel_u] = pallet_grass.ToVoxel(); }
 				//else
-				//{ Voxels[voxel_u] = VoxelPalletMap::All["Dirt"].ToVoxel(); }
+				//{ Voxels[voxel_u] = pallet_dirt.ToVoxel(); }
 			}
-			else if (diff < 4.0f) { Voxels[voxel_u] = VoxelPalletMap::All["Dirt"].ToVoxel(); }
-			else                  { Voxels[voxel_u] = VoxelPalletMap::All["Gray"].ToVoxel(); }
+			else if (diff < 4.0f) { Voxels[voxel_u] = pallet_dirt.ToVoxel(); }
+			else                  { Voxels[voxel_u] = pallet_gray.ToVoxel(); }
 		}
 	}
 }
@@ -611,6 +628,15 @@ void Chunk::GenerateDecoration(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	if (DecorationsGenerated) { return; }
 
+	if ((Index.X % 4 == 0) && (Index.Z % 4 == 0))
+	{
+		StructureObject obj;
+		obj.Structure = &Structure::Tree1;
+		obj.Origin = VectorU3(15, 0, 15);
+		if (FindMinYNull(obj.Origin))
+		{ Decorations.Insert(obj); }
+	}
+
 	//DecorateTrees(noise2);
 
 	DecorationsGenerated = true;
@@ -715,12 +741,6 @@ void Chunk::DecorateTrees(const Perlin2D & noise)
 		}
 	}
 
-	//StructureObject obj;
-	//obj.Structure = &Structure::Tree0;
-	//obj.Origin = VectorU3(0, 0, 0);
-	//Decorations.Insert(obj);
-
-	//return;
 
 	/*
 		know Axis Neighbours
@@ -780,6 +800,7 @@ void Chunk::AssambleDecoration(const ChunkCubeNeighbour & neighbours)
 
 	if (GraphicsExist)
 	{
+		Manager.NeighbourUpdateBufferMain(Index);
 		MainBufferDataNew = true;
 	}
 }

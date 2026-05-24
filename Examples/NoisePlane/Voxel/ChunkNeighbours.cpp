@@ -260,10 +260,9 @@ bool ChunkCubeNeighbour::CanAssamble() const
 		{
 			for (unsigned int x = 0; x < 3; x++)
 			{
-				const Chunk * ptr = Cube[z][y][x];
-				if (ptr == nullptr) { return false; }
-				const Chunk & chunk = *ptr;
-				if (!chunk.DecorationsGenerated) { return false; }
+				const Chunk * chunk = Cube[z][y][x];
+				if (chunk == nullptr) { return false; }
+				if (!chunk -> DecorationsGenerated) { return false; }
 			}
 		}
 	}

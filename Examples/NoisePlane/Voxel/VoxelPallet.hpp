@@ -36,12 +36,13 @@ struct VoxelPallet
 
 	TextureFileIndex	Textures[6];
 	::PolyHedra *		PolyHedra;
+	unsigned int		Index;
 
 
 
 	~VoxelPallet();
 	VoxelPallet();
-	VoxelPallet(const char * name, const VoxelGeometryPallet & geometry_template);
+	VoxelPallet(const char * name, const VoxelGeometryPallet & geometry_template, unsigned int idx);
 
 	VoxelPallet(const VoxelPallet & other);
 	VoxelPallet & operator=(const VoxelPallet & other);

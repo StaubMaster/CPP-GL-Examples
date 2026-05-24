@@ -60,6 +60,8 @@ ContextNoisePlane::ContextNoisePlane()
 	, AuxThread1Time(64)
 	, AuxThread2(&ContextNoisePlane::AuxThread2Func, this)
 	, AuxThread2Time(64)
+	, AuxThread3(&ContextNoisePlane::AuxThread3Func, this)
+	, AuxThread3Time(64)
 {
 	ThreadInfo::ThreadName = "DrawThread";
 	PolyHedraManager.MakeCurrent();
@@ -441,8 +443,7 @@ void ContextNoisePlane::AuxThread1Func()
 		if (!ThreadIdle && !AuxThread1Idle)
 		{
 			sw.Clear(); sw.Start();
-			ChunkManager.GenerateChunk(GenerationNoise);
-			ChunkManager.AssambleChunk();
+			ChunkManager.MakeBuffer();
 			sw.Stop();
 			AuxThread1Time.NewValue(sw.ElapsedTime());
 		}
@@ -457,9 +458,24 @@ void ContextNoisePlane::AuxThread2Func()
 		if (!ThreadIdle && !AuxThread2Idle)
 		{
 			sw.Clear(); sw.Start();
-			ChunkManager.MakeBuffer();
+			ChunkManager.GenerateChunk(GenerationNoise);
 			sw.Stop();
 			AuxThread2Time.NewValue(sw.ElapsedTime());
+		}
+	}
+}
+void ContextNoisePlane::AuxThread3Func()
+{
+	ThreadInfo::ThreadName = "AuxThread3";
+	StopWatch sw;
+	while (!ThreadTerminate)
+	{
+		if (!ThreadIdle && !AuxThread3Idle)
+		{
+			sw.Clear(); sw.Start();
+			ChunkManager.AssambleChunk();
+			sw.Stop();
+			AuxThread3Time.NewValue(sw.ElapsedTime());
 		}
 	}
 }
@@ -817,6 +833,15 @@ void ContextNoisePlane::GraphicsDelete()
 void ContextNoisePlane::Init()
 {
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	{
+		//window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
+		//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
+		window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
+		window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
+		view.Depth.Color = window.DefaultColor;
+		view.Depth.Range.ChangeMin(0.5f);
+	}
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Make();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	ChangeMedia();
@@ -826,13 +851,7 @@ void ContextNoisePlane::Init()
 	TextManager.InitFont();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	VoxelPalletMap::All.LoadTextures(ChunkManager);
-	{
-		//window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
-		//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
-		window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
-		view.Depth.Color = window.DefaultColor;
-		view.Depth.Range.ChangeMin(0.5f);
-	}
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	VoxelPalletMap::All.MakePolyHedra();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	VoxelGeometryPallet::Default();
@@ -848,17 +867,18 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+
 	ThreadIdle = false;
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 }
 void ContextNoisePlane::Free()
 {
 	GraphicsDelete();
+
 	ThreadTerminate = true;
 	AuxThread0.join();
 	AuxThread1.join();
 	AuxThread2.join();
+	AuxThread3.join();
 }
 
 
@@ -1068,11 +1088,10 @@ static ValueAverager<float>		TextTime_ChunkManagerTime(64);
 static ValueAverager<float>		TextTime_View(64);
 static ValueAverager<float>		TextTime_ChunkHere(64);
 static ValueAverager<float>		TextTime_ChunkRange(64);
-static ValueAverager<float>		TextTime_VoxelChunkMemory0(64);
-static ValueAverager<float>		TextTime_VoxelChunkMemory0_Wait(64);
-static ValueAverager<float>		TextTime_VoxelChunkMemory0_Loop(64);
-static ValueAverager<float>		TextTime_VoxelChunkMemory0_Show(64);
-static ValueAverager<float>		TextTime_VoxelChunkMemory1(64);
+static ValueAverager<float>		TextTime_VoxelChunkMemory(64);
+static ValueAverager<float>		TextTime_VoxelChunkMemory_Wait(64);
+static ValueAverager<float>		TextTime_VoxelChunkMemory_Loop(64);
+static ValueAverager<float>		TextTime_VoxelChunkMemory_Show(64);
 
 void ContextNoisePlane::FrameText(FrameTime frame_time)
 {
@@ -1159,6 +1178,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ShowNameTimeLine(ss, "AuxThread       0", AuxThread0Time);
 		ShowNameTimeLine(ss, "AuxThread       1", AuxThread1Time);
 		ShowNameTimeLine(ss, "AuxThread       2", AuxThread2Time);
+		ShowNameTimeLine(ss, "AuxThread       3", AuxThread3Time);
 		ss << '\n';
 	}
 	sw_.Stop(); TextTime_ThreadTime.NewValue(sw_.ElapsedTime());
@@ -1318,22 +1338,33 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		sw__.Clear(); sw__.Start();
 		//ChunkManager.ChunksChanging.lock();
 		ChunkManager.ChunksLock.AccessL();
-		sw__.Stop(); TextTime_VoxelChunkMemory0_Wait.NewValue(sw__.ElapsedTime());
+		sw__.Stop(); TextTime_VoxelChunkMemory_Wait.NewValue(sw__.ElapsedTime());
 
 		sw__.Clear(); sw__.Start();
+
 		unsigned int chunks_limit = ChunkManager.Chunks.Length();
 		unsigned int chunks_total = 0;
+
 		unsigned int chunks_gen_TD = 0;
 		unsigned int chunks_gen_DG = 0;
 		unsigned int chunks_gen_DA = 0;
 		unsigned int chunks_gen_done = 0;
-		unsigned int chunks_empty = 0;
-		unsigned int chunks_filled = 0;
-		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
+
+		unsigned int chunks_done_empty = 0;
+		unsigned int chunks_done_filled = 0;
+
+		unsigned long long main_f_count = 0;
+		unsigned int buffer_data_none = 0;
+		unsigned int buffer_data_have = 0;
+		unsigned int buffer_data_want = 0;
+
+		for (unsigned int i = 0; i < chunks_limit; i++)
 		{
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
-			chunks_total++;
+
 			Chunk & chunk = *ChunkManager.Chunks[i];
+			chunks_total++;
+
 			if (chunk.TerrainDone) { chunks_gen_TD++; }
 			if (chunk.DecorationsGenerated) { chunks_gen_DG++; }
 			if (chunk.DecorationsAssambled) { chunks_gen_DA++; }
@@ -1341,59 +1372,11 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			{
 				chunks_gen_done++;
 				if (chunk.IsEmpty())
-				{ chunks_empty++; }
+				{ chunks_done_empty++; }
 				else
-				{ chunks_filled++; }
+				{ chunks_done_filled++; }
 			}
-		}
-		sw__.Stop(); TextTime_VoxelChunkMemory0_Loop.NewValue(sw__.ElapsedTime());
 
-		// keep track of these and make thread check
-		// Total/Limit
-		// Generation NotDone|Done
-		// Empty/Full
-		sw__.Clear(); sw__.Start();
-		ss << "Chunks:\n";
-		ss << chunks_limit << '|' << chunks_total << '\n';
-		ss << "TD" << chunks_gen_TD << ' ' << "DG" << chunks_gen_DG << ' ' << "DA" << chunks_gen_DA << ' ' << 'D' << chunks_gen_done << '\n';
-		ss << 'E' << chunks_empty << ' ' << 'F' << chunks_filled << '\n';
-		ss << '\n';
-
-		ss << "Chunks:" << Memory1000ToString(sizeof(Chunk));
-		ss << " * " << Seperated1000(chunks_total);
-		ss << " = " << Memory1000ToString(chunks_total * sizeof(Chunk));
-		ss << '\n';
-
-		ss << "Voxels:" << Memory1000ToString(sizeof(Voxel));
-		ss << " * " << Seperated1000(chunks_filled * CHUNK_VALUES_PER_VOLM);
-		ss << " = " << Memory1000ToString(chunks_filled * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
-		ss << '\n';
-
-		ss << '\n';
-		sw__.Stop(); TextTime_VoxelChunkMemory0_Show.NewValue(sw__.ElapsedTime());
-
-		ChunkManager.ChunksLock.AccessU();
-		//ChunkManager.ChunksChanging.unlock();
-
-		sw_.Stop(); TextTime_VoxelChunkMemory0.NewValue(sw_.ElapsedTime());
-	}
-
-	// VoxelChunkMemory
-	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
-	{
-		sw_.Clear(); sw_.Start();
-
-		//ChunkManager.ChunksChanging.lock();
-		ChunkManager.ChunksLock.AccessL();
-
-		unsigned long long main_f_count = 0;
-		unsigned int buffer_data_none = 0;
-		unsigned int buffer_data_have = 0;
-		unsigned int buffer_data_want = 0;
-		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
-		{
-			if (ChunkManager.Chunks[i] == nullptr) { continue; }
-			Chunk & chunk = *ChunkManager.Chunks[i];
 			main_f_count += chunk.BufferF.Main.Count;
 			if (chunk.GenerationDone())
 			{
@@ -1406,35 +1389,64 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 				buffer_data_none++;
 			}
 		}
+		sw__.Stop(); TextTime_VoxelChunkMemory_Loop.NewValue(sw__.ElapsedTime());
 
-		ss << "BufferUState";
+		sw__.Clear(); sw__.Start();
+
+		ss << "Chunks:\n";
+		ss << "Total:" << chunks_limit << ' ' << chunks_total << '\n';
+		ss << "Gen:" << "TD" << chunks_gen_TD << ' ' << "DG" << chunks_gen_DG << ' ' << "DA" << chunks_gen_DA << ' ' << 'D' << chunks_gen_done << '\n';
+		ss << "Done:" << 'E' << chunks_done_empty << ' ' << 'F' << chunks_done_filled << '\n';
+		ss << '\n';
+
+		ss << "Chunks: " << Memory1000ToString(sizeof(Chunk));
+		ss << " * " << Seperated1000(chunks_total);
+		ss << " = " << Memory1000ToString(chunks_total * sizeof(Chunk));
+		ss << '\n';
+
+		ss << "Voxels: " << Memory1000ToString(sizeof(Voxel));
+		ss << " * " << Seperated1000(chunks_done_filled * CHUNK_VALUES_PER_VOLM);
+		ss << " = " << Memory1000ToString(chunks_done_filled * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
+		ss << '\n';
+
+		ss << "BufferState";
 		ss << " None:" << buffer_data_none;
 		ss << " Have:" << buffer_data_have;
 		ss << " Want:" << buffer_data_want;
 		ss << '\n';
 
-		ss << "BufferFData:" << Memory1000ToString(sizeof(VoxelGraphics::MainDataF));
-		ss << " * " << Seperated1000(main_f_count);
-		ss << " = " << Memory1000ToString(main_f_count * sizeof(VoxelGraphics::MainDataF));
-		ss << '\n';
-
+		ss << "DataU Entrys:" << ChunkManager.BufferU.Entrys.Count() << '\n';
 		unsigned long long main_u_used = 0;
-		ss << "BufferUData Entrys:" << ChunkManager.BufferU.Entrys.Count() << '\n';
 		for (unsigned int i = 0; i < ChunkManager.BufferU.Entrys.Count(); i++)
 		{
 			main_u_used += ChunkManager.BufferU.Entrys[i] -> Length;
 		}
-		ss << "BufferUData Usage:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));
+
+		ss << "DataU Memory: ";
+		ss << Memory1000ToString(main_u_used * sizeof(VoxelGraphics::MainFaceU));
+		ss << " / ";
+		ss << Memory1000ToString(ChunkManager.BufferU.Size * sizeof(VoxelGraphics::MainFaceU));
+		ss << '\n';
+
+		/*ss << "DataU Memory:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));
 		ss << " * " << Seperated1000(main_u_used);
 		ss << " = " << Memory1000ToString(main_u_used * sizeof(VoxelGraphics::MainFaceU));
 		ss << " / " << Memory1000ToString(ChunkManager.BufferU.Size * sizeof(VoxelGraphics::MainFaceU));
 		ss << " / " << Seperated1000(ChunkManager.BufferU.Size);
+		ss << '\n';*/
+
+		/*ss << "DataF: " << Memory1000ToString(sizeof(VoxelGraphics::MainDataF));
+		ss << " * " << Seperated1000(main_f_count);
+		ss << " = " << Memory1000ToString(main_f_count * sizeof(VoxelGraphics::MainDataF));
+		ss << '\n';*/
+
 		ss << '\n';
+		sw_.Stop(); TextTime_VoxelChunkMemory_Show.NewValue(sw__.ElapsedTime());
 
 		ChunkManager.ChunksLock.AccessU();
 		//ChunkManager.ChunksChanging.unlock();
 
-		sw_.Stop(); TextTime_VoxelChunkMemory1.NewValue(sw_.ElapsedTime());
+		sw_.Stop(); TextTime_VoxelChunkMemory.NewValue(sw_.ElapsedTime());
 	}
 
 	sw.Stop();

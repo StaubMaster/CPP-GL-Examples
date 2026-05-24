@@ -102,6 +102,12 @@ struct AccessLockedChunk
 
 struct Chunk
 {
+	// store Neighbours
+	// need to update Neighbours
+	// when inserting a chunk, change pointer from null
+	// when removeing a chunk, change pointer to null
+	// thats it ?
+
 	public:
 	const VectorI3		Index;
 	ChunkManager &		Manager; // replace this with Neighbours
@@ -198,7 +204,7 @@ struct Chunk
 		use Perlin3D result
 	*/
 	private:
-	void	TerrainPlane();
+	void	TerrainFlat(int y_chunk, unsigned int y_voxel);
 	void	TerrainPillars();
 	void	TerrainPlane(const Perlin2D & noise);
 	void	TerrainCaveNoodle(const Perlin3D & noise0, const Perlin3D & noise1);

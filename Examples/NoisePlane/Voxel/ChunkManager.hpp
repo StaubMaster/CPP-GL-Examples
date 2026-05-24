@@ -163,9 +163,7 @@ struct ChunkManager
 
 	void	UpdateChunksContainer();
 
-	
-
-	void			NeighbourUpdateBufferMain(VectorI3 idx);
+	void	NeighbourUpdateBufferMain(VectorI3 idx);
 
 
 

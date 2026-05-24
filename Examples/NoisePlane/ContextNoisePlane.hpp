@@ -216,17 +216,22 @@ bool		ThreadTerminate = false;
 std::thread				AuxThread0;
 bool					AuxThread0Idle = false;	// put in ThreadInfo
 ValueAverager<float>	AuxThread0Time;			// put in ThreadInfo
-void		AuxThread0Func();
+void					AuxThread0Func();
 
 std::thread				AuxThread1;
 bool					AuxThread1Idle = false;
 ValueAverager<float>	AuxThread1Time;
-void		AuxThread1Func();
+void					AuxThread1Func();
 
 std::thread				AuxThread2;
 bool					AuxThread2Idle = false;
 ValueAverager<float>	AuxThread2Time;
-void		AuxThread2Func();
+void					AuxThread2Func();
+
+std::thread				AuxThread3;
+bool					AuxThread3Idle = false;
+ValueAverager<float>	AuxThread3Time;
+void					AuxThread3Func();
 
 void DrawThreadUpdate();
 

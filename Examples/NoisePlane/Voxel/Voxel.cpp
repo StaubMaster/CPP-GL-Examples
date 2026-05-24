@@ -18,6 +18,18 @@ bool Voxel::Visible(AxisRel axis) const
 
 
 
+void Voxel::MakeEmpty()
+{
+	Pallet = 0xFFFF;
+}
+/*void Voxel::Make(const VoxelPallet & pallet)
+{
+	(void)pallet;
+	//Pallet = pallet.
+}*/
+
+
+
 Voxel::~Voxel() { }
 Voxel::Voxel()
 	: Pallet(0xFFFF)

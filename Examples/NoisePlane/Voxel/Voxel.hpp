@@ -13,6 +13,9 @@ struct Voxel
 	bool	IsEmpty() const;
 	bool	Visible(AxisRel axis) const;
 
+	void	MakeEmpty();
+	void	Make(const VoxelPallet & pallet);
+
 	~Voxel();
 	Voxel();
 
