@@ -3,11 +3,11 @@
 
 # include "ValueType/Vector/U3.hpp"
 # include "ValueType/Vector/F3.hpp"
+# include "Miscellaneous/Container/Array3D.hpp"
 
 struct Perlin3D
 {
-	VectorU3	Count;
-	VectorF3 *	Data;
+	Array3D<VectorF3>	Nodes;
 
 	~Perlin3D();
 	Perlin3D();

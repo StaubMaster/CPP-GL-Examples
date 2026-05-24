@@ -195,7 +195,7 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	TimeInsert.Stop();
 	#endif
 }
-void ChunkGraphicsData::MakeU(const Chunk & chunk, const ChunkNeighbour & neighbours)
+void ChunkGraphicsData::MakeU(const Chunk & chunk, const ChunkAxisNeighbour & neighbours)
 {
 	Array3D<unsigned char> is_empty(VectorU3(CHUNK_VALUES_PER_SIDE));
 	for (unsigned int u = 0; u < CHUNK_VALUES_PER_VOLM; u++)
@@ -324,7 +324,7 @@ const Container::Array<VoxelGraphics::MainFaceF> & ChunkGraphicsData::GraphicsDa
 
 
 
-void ChunkGraphicsData::Make(const Chunk & chunk, const ChunkNeighbour & neighbours)
+void ChunkGraphicsData::Make(const Chunk & chunk, const ChunkAxisNeighbour & neighbours)
 {
 	TimeClear();
 

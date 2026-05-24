@@ -233,6 +233,9 @@ unsigned short VoxelPalletMap::FindIndex(const VoxelPallet & pallet) const
 #include "DirectoryInfo.hpp"
 void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 {
+	VoxelPalletMap::All.Data.Insert(VoxelPallet("DebugR", VoxelGeometryPallet::Cube));
+	VoxelPalletMap::All.Data.Insert(VoxelPallet("DebugG", VoxelGeometryPallet::Cube));
+	VoxelPalletMap::All.Data.Insert(VoxelPallet("DebugB", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("OrientationCube", VoxelGeometryPallet::Cube));
 	VoxelPalletMap::All.Data.Insert(VoxelPallet("OrientationCylinder", VoxelGeometryPallet::Cylinder));
 //	VoxelPalletMap::All.Data.Insert(VoxelPallet("OrientationSlope", VoxelGeometryPallet::Slope));
@@ -250,6 +253,9 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 
 	// JSON ?
 	// or another specifici Parser ?
+	VoxelPalletMap::All["DebugR"].TextureAll(MediaDirectory.File("Images/Voxel/Debug/R.png"));
+	VoxelPalletMap::All["DebugG"].TextureAll(MediaDirectory.File("Images/Voxel/Debug/G.png"));
+	VoxelPalletMap::All["DebugB"].TextureAll(MediaDirectory.File("Images/Voxel/Debug/B.png"));
 
 	VoxelPalletMap::All["OrientationCube"].TextureAxis(
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),

@@ -23,6 +23,7 @@ void Context0::Make()
 
 void Context0::Init()
 {
+	window.DefaultColor = ColorF4(0, 0, 0);
 	{
 		Container::Array<Shader::Code> code({
 			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),

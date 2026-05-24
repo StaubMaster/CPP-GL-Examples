@@ -114,8 +114,7 @@ UI::Text::Manager		TextManager;
 
 
 
-Perlin2D	Perlin2;
-Perlin3D	Perlin3;
+ChunkGenerationNoise	GenerationNoise;
 
 
 

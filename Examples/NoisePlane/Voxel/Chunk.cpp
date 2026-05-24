@@ -1,5 +1,6 @@
 #include "Chunk.hpp"
 #include "ChunkManager.hpp"
+#include "ChunkNeighbours.hpp"
 
 #include "VoxelPallet.hpp"
 
@@ -138,9 +139,9 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, Voxels()
 	, Lock()
 	, TerrainDone(false)
-	, DecorationsNoted(false)
-	, DecorationsPlaced(false)
 	, Decorations()
+	, DecorationsGenerated(false)
+	, DecorationsAssambled(false)
 	, GraphicsExist(false)
 	, BufferU_Entry(manager.BufferU)
 	, BufferF()
@@ -353,13 +354,28 @@ bool Chunk::PlaceVoxel(VectorU3 udx, Voxel & vox)
 
 bool Chunk::GenerationDone() const
 {
-	return TerrainDone && DecorationsNoted && DecorationsPlaced;
+	return TerrainDone && DecorationsGenerated && DecorationsAssambled;
 }
 
 
 
-float Chunk::Generation3D_Factor = 5.0f; // 32
-float Chunk::Generation3D_Comparison = 0.0f;
+void Chunk::GenerateTerrain(const ChunkGenerationNoise & noise)
+{
+	(void)noise;
+
+	if (TerrainDone) { return; }
+
+	MakeNull();
+
+//	TerrainPlane();
+//	TerrainPillars();
+	TerrainPlane(noise.Plane);
+//	TerrainCaveNoodle(noise.Cave0, noise.Cave1);
+//	TerrainCaveBlob(noise.Cave2);
+
+	TerrainDone = true;
+}
+
 /*
 Condition: Y <= 0
 Place: ConcreteCube
@@ -415,8 +431,13 @@ void Chunk::TerrainPillars()
 	}
 }
 
-void Chunk::TerrainPerlin(const Perlin2D & noise)
+void Chunk::TerrainPlane(const Perlin2D & noise)
 {
+	// pallet_gray
+	// pallet_dirt
+	// pallet_grass
+	// pallet_water
+
 	VectorF3 Offset = Index * CHUNK_VALUES_PER_SIDE;
 	LoopU2 loop(VectorU2(), VectorU2(CHUNK_VALUES_PER_SIDE));
 	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
@@ -445,20 +466,27 @@ void Chunk::TerrainPerlin(const Perlin2D & noise)
 		//val += noise.Calculate(p2 / 64.0f) * 64.0f;
 		//val += noise.Calculate(p2 / 128.0f) * 128.0f;
 		//val += noise.Calculate(p2 / 256.0f) * 256.0f;
-	
+
 		val += noise.Calculate(p2 / 256.0f) * 64;
 
-		for (unsigned int i = 0; i < CHUNK_VALUES_PER_SIDE; i++)
+		for (unsigned int y = 0; y < CHUNK_VALUES_PER_SIDE; y++)
 		{
-			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(u.X, i, u.Y));
-			float diff = val - (i + Offset.Y);
-			if (diff < 0.0f) { Voxels[voxel_u] = Voxel(); }
+			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(u.X, y, u.Y));
+			int abs_y = y + Offset.Y;
+			float diff = val - abs_y;
+			if (diff < 0.0f)
+			{
+				Voxels[voxel_u] = Voxel();
+				//if (abs_y < 0)
+				//{ Voxels[voxel_u] = VoxelPalletMap::All["Water"].ToVoxel(); }
+			}
 			else if (diff < 1.0f)
 			{
-				if (i + Offset.Y >= 0)
 				{ Voxels[voxel_u] = VoxelPalletMap::All["Grass"].ToVoxel(); }
-				else
-				{ Voxels[voxel_u] = VoxelPalletMap::All["Water"].ToVoxel(); }
+				//if (abs_y >= 0)
+				//{ Voxels[voxel_u] = VoxelPalletMap::All["Grass"].ToVoxel(); }
+				//else
+				//{ Voxels[voxel_u] = VoxelPalletMap::All["Dirt"].ToVoxel(); }
 			}
 			else if (diff < 4.0f) { Voxels[voxel_u] = VoxelPalletMap::All["Dirt"].ToVoxel(); }
 			else                  { Voxels[voxel_u] = VoxelPalletMap::All["Gray"].ToVoxel(); }
@@ -466,36 +494,70 @@ void Chunk::TerrainPerlin(const Perlin2D & noise)
 	}
 }
 
-void Chunk::TerrainPerlin(const Perlin3D & noise)
+void Chunk::TerrainCaveNoodle(const Perlin3D & noise0, const Perlin3D & noise1)
 {
-	VectorF3 pos = Index * CHUNK_VALUES_PER_SIDE;
+	//if (Index.Y >= 0) { return; }
+	//if (Index.Y != -1) { return; }
+	if (IsEmpty()) { return; }
+
+	(void)noise0;
+	(void)noise1;
+
+	const VoxelPallet & pallet_r = VoxelPalletMap::All["DebugR"];
+	const VoxelPallet & pallet_g = VoxelPalletMap::All["DebugG"];
+	const VoxelPallet & pallet_b = VoxelPalletMap::All["DebugB"];
+
+	(void)pallet_r;
+	(void)pallet_g;
+	(void)pallet_b;
+
+	const float range = 4.0f;
+	const float center = 0.0f;
+	const float min = center - range;
+	const float max = center + range;
+
+	VectorF3 Offset = Index * CHUNK_VALUES_PER_SIDE;
 	LoopU3 loop(VectorU3(), VectorU3(CHUNK_VALUES_PER_SIDE));
 	for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
+		//if (u.Y != 31) { continue; }
 		VectorF3 p(
-			pos.X + u.X,
-			pos.Y + u.Y,
-			pos.Z + u.Z
+			Offset.X + u.X,
+			Offset.Y + u.Y,
+			Offset.Z + u.Z
 		);
 
-		float val = 0.0f;
-		//val += noise.Calculate(p / 32.0f) / 32.0f;
-		val += noise.Calculate(p / Generation3D_Factor) / Generation3D_Factor;
+		const float factor = 128.0f;
+		float val0 = noise0.Calculate(p / factor) * factor;
+		float val1 = noise1.Calculate(p / factor) * factor;
 
-		if (val > Generation3D_Comparison)
-		{ Voxels[u] = Voxel(); }
-		else
-		{ Voxels[u] = VoxelPalletMap::All["Gray"].ToVoxel(); }
+		//if (!(val0 > min && val0 < max)) { Voxels[u] = pallet_r.ToVoxel(); }
+		//if (!(val1 > min && val1 < max)) { Voxels[u] = pallet_b.ToVoxel(); }
+		if ((val0 > min && val0 < max) && (val1 > min && val1 < max)) { Voxels[u] = pallet_g.ToVoxel(); }
+		//if ((val0 > min && val0 < max) && (val1 > min && val1 < max)) { Voxels[u] = Voxel(); }
 
-		/*if (val > 0.1f)
+		/*float val0 = 0.0f;
+		//val += noise.Calculate(p / 32.0f) * 32.0f;
+		//val += noise.Calculate(p / 64.0f) * 64.0f;
+		//val += noise.Calculate(p / 128.0f) * 128.0f;
+		val0 += noise0.Calculate(p / 256.0f) * 256.0f;
+		//val += noise.Calculate(p / 512.0f) * 512.0f;
+
+		if (val0 > min && val0 < max)
 		{
-			if (Voxels[u].Pallet != nullptr)
-			{
-				Voxels[u].Pallet = nullptr;
-			}
+			Voxels[u] = pallet_g.ToVoxel();
+		}
+		else if (val0 < 0.0f)
+		{
+			//Voxels[u] = pallet_b.ToVoxel();
+		}
+		else if (val0 > 0.0f)
+		{
+			//Voxels[u] = pallet_r.ToVoxel();
 		}*/
 	}
 }
+
 /*
 Condition:
 Place: OrientationCube
@@ -540,82 +602,101 @@ void Chunk::TerrainCity()
 	}
 }
 
-void Chunk::GenerateTerrain(const Perlin2D & noise2, const Perlin3D & noise3)
-{
-	if (TerrainDone) { return; }
 
+
+void Chunk::GenerateDecoration(const Perlin2D & noise2, const Perlin3D & noise3)
+{
 	(void)noise2;
 	(void)noise3;
 
-	MakeNull();
+	if (DecorationsGenerated) { return; }
 
-//	TerrainPlane();
-//	TerrainPillars();
-	TerrainPerlin(noise2);
-//	TerrainPerlin(noise3);
+	//DecorateTrees(noise2);
 
-	TerrainDone = true;
+	DecorationsGenerated = true;
 }
 
-
-
-static void PlaceStructure(Chunk & chunk, VectorU3 origin, const Structure & structure)
-{
-	LoopU3 loop(0, structure.Voxels.Size());
-	for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-	{
-		VectorU3 p = origin + structure.Offset + u;
-		if ((p < chunk.Voxels.Size()).All(true))
-		{
-			//if (chunk.Voxels[p].Pallet == nullptr)
-			{
-				chunk.Voxels[p] = structure.Voxels[u];
-			}
-		}
-	}
-}
-/*static VectorU3 TopVoxel(const Chunk & chunk, VectorU3 udx)
+bool Chunk::FindMinYNull(VectorU3 & udx) const
 {
 	udx.Y = CHUNK_VALUES_PER_SIDE - 1;
+	if (!Voxels[udx].IsEmpty())
+	{
+		return false;
+	}
 	for (; udx.Y < CHUNK_VALUES_PER_SIDE; udx.Y--)
 	{
-		if (!chunk.Voxels[udx].IsEmpty())
+		if (!Voxels[udx].IsEmpty())
 		{
 			udx.Y++;
-			return udx;
+			return true;
 		}
 	}
 	udx.Y = CHUNK_VALUES_PER_SIDE;
-	return udx;
-}*/
+	return false;
+}
 void Chunk::DecorateTrees(const Perlin2D & noise)
 {
-	if (Index.Z < 1) { return; }
-	if (Index.Y < 0) { return; }
+//	if (Index.Z < 1) { return; }
+//	if (Index.Y < 0) { return; }
+//	if (Index.Y > 0) { return; }
+
 	(void)noise;
 
-	VectorI3 Offset = Index * (int)CHUNK_VALUES_PER_SIDE;
+	const VoxelPallet & pallet_r = VoxelPalletMap::All["DebugR"];
+	const VoxelPallet & pallet_g = VoxelPalletMap::All["DebugG"];
+	const VoxelPallet & pallet_b = VoxelPalletMap::All["DebugB"];
+
+	(void)pallet_r;
+	(void)pallet_g;
+	(void)pallet_b;
+
+	//const float range = 0.1f;
+	//const float center = 0.0f;
+	//const float min = center - range;
+	//const float max = center + range;
+
 	const VoxelPallet & pallet = VoxelPalletMap::All["OrientationCube"];
+	(void)pallet;
+
+	VectorI3 Offset = Index * (int)CHUNK_VALUES_PER_SIDE;
 	for (unsigned int z = 0; z < CHUNK_VALUES_PER_SIDE; z++)
 	{
 		for (unsigned int x = 0; x < CHUNK_VALUES_PER_SIDE; x++)
 		{
-			float val = 0.0f;
-			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 001.0f) * 1.0f;
-			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 002.0f) * 1.0f;
-			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 004.0f) * 1.0f;
-			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 008.0f) * 1.0f;
-			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 016.0f) * 1.0f;
-			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 032.0f) * 1.0f;
-			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 064.0f) * 1.0f;
-			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 128.0f) * 1.0f;
-			val += noise.Calculate(VectorF2(Offset.X + x, Offset.Z + z) / 256.0f) * 1.0f;
+			//VectorF2 pos(Offset.X + (int)x, Offset.Z + (int)z);
+
+			//float val = 0.0f;
+
+			//val += noise.Calculate(pos / 001.0f) * 1.0f;
+			//val += noise.Calculate(pos / 002.0f) * 1.0f;
+			//val += noise.Calculate(pos / 003.0f) * 1.0f;
+			//val += noise.Calculate(pos / 005.0f) * 1.0f;
+			//val += noise.Calculate(pos / 007.0f) * 1.0f;
+			//val += noise.Calculate(pos / 011.0f) * 1.0f;
+			//val += noise.Calculate(pos / 013.0f) * 1.0f;
+
+			//val += noise.Calculate(pos / 001.0f) * 1.0f;
+			//val += noise.Calculate(pos / 002.0f) * 1.0f;
+			//val += noise.Calculate(pos / 004.0f) * 1.0f;
+			//val += noise.Calculate(pos / 008.0f) * 1.0f;
+			//val += noise.Calculate(pos / 016.0f) * 1.0f;
+			//val += noise.Calculate(pos / 032.0f) * 1.0f;
+			//val += noise.Calculate(pos / 064.0f) * 1.0f;
+			//val += noise.Calculate(pos / 128.0f) * 1.0f;
+			//val += noise.Calculate(pos / 256.0f) * 1.0f;
+
 			//if (val == 0.0f)
-			if (val > -0.01f && val < +0.01f)
+			//if (val > -0.01f && val < +0.01f)
 			{
-				for (unsigned int y = 0; y < CHUNK_VALUES_PER_SIDE; y++)
+				//for (unsigned int y = 0; y < CHUNK_VALUES_PER_SIDE; y++)
 				{
-					Voxels[VectorU3(x, y, z)] = pallet.ToVoxel();
+					//VectorU3 u(x, 0, z);
+
+					//if (val >= min && val <= max) { Voxels[u] = pallet_g.ToVoxel(); }
+					//else if (val > 0.0f) { Voxels[u] = pallet_r.ToVoxel(); }
+					//else if (val < 0.0f) { Voxels[u] = pallet_b.ToVoxel(); }
+
+					//Voxels[VectorU3(x, y, z)] = pallet.ToVoxel();
 					/*if ((Offset.Y + y) < val)
 					{
 						Voxels[VectorU3(x, y, z)] = pallet.ToVoxel();
@@ -634,59 +715,95 @@ void Chunk::DecorateTrees(const Perlin2D & noise)
 		}
 	}
 
-	/*for (unsigned int z = 1; z < CHUNK_VALUES_PER_SIDE; z += 4)
+	//StructureObject obj;
+	//obj.Structure = &Structure::Tree0;
+	//obj.Origin = VectorU3(0, 0, 0);
+	//Decorations.Insert(obj);
+
+	//return;
+
+	/*
+		know Axis Neighbours
+		only the touching face, like for BufferData
+	*/
+
+	for (unsigned int z = 1; z < CHUNK_VALUES_PER_SIDE; z += 4)
 	{
 		for (unsigned int x = 1; x < CHUNK_VALUES_PER_SIDE; x += 4)
 		{
-			//PlaceStructure(*this, TopVoxel(*this, VectorU3(x, 0, z)), Structure::Tree0);
 			StructureObject obj;
 			obj.Structure = &Structure::Tree0;
-			obj.Origin = TopVoxel(*this, VectorU3(x, 0, z));
-			Decorations.Insert(obj);
+			obj.Origin = VectorU3(x, 0, z);
+			if (FindMinYNull(obj.Origin))
+			{ Decorations.Insert(obj); }
 		}
 		z += 4;
 		for (unsigned int x = 3; x < CHUNK_VALUES_PER_SIDE; x += 4)
 		{
-			//PlaceStructure(*this, TopVoxel(*this, VectorU3(x, 0, z)), Structure::Tree0);
 			StructureObject obj;
 			obj.Structure = &Structure::Tree0;
-			obj.Origin = TopVoxel(*this, VectorU3(x, 0, z));
-			Decorations.Insert(obj);
+			obj.Origin = VectorU3(x, 0, z);
+			if (FindMinYNull(obj.Origin))
+			{ Decorations.Insert(obj); }
 		}
-	}*/
+	}
 }
 
-void Chunk::GenerateDecorationNotes(const Perlin2D & noise2, const Perlin3D & noise3)
+
+
+void Chunk::AssambleDecoration(const ChunkCubeNeighbour & neighbours)
 {
-	if (DecorationsNoted) { return; }
+	if (DecorationsAssambled) { return; }
 
-	(void)noise2;
-	(void)noise3;
+	(void)neighbours;
 
-	DecorateTrees(noise2);
+	for (int z = 0; z < 3; z++)
+	{
+		for (int y = 0; y < 3; y++)
+		{
+			for (int x = 0; x < 3; x++)
+			{
+				const Chunk & chunk = *neighbours.Cube[z][y][x];
+				for (unsigned int i = 0; i < chunk.Decorations.Count(); i++)
+				{
+					AssambleDecoration(chunk.Decorations[i], VectorI3(x - 1, y - 1, z - 1) * CHUNK_VALUES_PER_SIDE);
+				}
+			}
+		}
+	}
+
+	//Decorations.Clear();
 
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 
-	DecorationsNoted = true;
-}
-void Chunk::GenerateDecorationPlace()
-{
-	if (DecorationsPlaced) { return; }
-
-	for (unsigned int i = 0; i < Decorations.Count(); i++)
-	{
-		if (Decorations[i].Structure == nullptr) { continue; }
-		PlaceStructure(*this, Decorations[i].Origin, *Decorations[i].Structure);
-	}
-	Decorations.Clear();
-
-	DecorationsPlaced = true;
+	DecorationsAssambled = true;
 
 	if (GraphicsExist)
 	{
 		MainBufferDataNew = true;
 	}
 }
+
+void Chunk::AssambleDecoration(const StructureObject & obj, const VectorI3 & offset)
+{
+	if (obj.Structure == nullptr) { return; }
+
+	const Structure & structure = *obj.Structure;
+	LoopU3 loop(VectorU3(), structure.Voxels.Size());
+	for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		VectorU3 p = obj.Origin - structure.Center + u + offset;
+		if ((p < Voxels.Size()).All(true))
+		{
+			if (!structure.Voxels[u].IsEmpty())
+			{
+				Voxels[p] = structure.Voxels[u];
+			}
+		}
+	}
+}
+
+
 
 
 
@@ -718,7 +835,7 @@ void Chunk::GraphicsDelete()
 	GraphicsExist = false;
 }
 
-void Chunk::GraphicsMakeData(const ChunkNeighbour & neighbours)
+void Chunk::GraphicsMakeData(const ChunkAxisNeighbour & neighbours)
 {
 	if (!MainBufferDataNew) { return; }
 

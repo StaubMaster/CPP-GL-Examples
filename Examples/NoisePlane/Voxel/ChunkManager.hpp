@@ -26,9 +26,13 @@
 
 struct Voxel;
 struct Chunk;
-struct ChunkNeighbour;
+struct Chunk;
+struct ChunkGenerationNoise;
 struct AccessLockedChunk;
 enum class AxisRel : unsigned char;
+
+struct ChunkCubeNeighbour;
+struct ChunkAxisNeighbour;
 
 struct Ray3D;
 class PolyHedra;
@@ -104,8 +108,11 @@ struct ChunkManager
 	static WaitDoTime	TimeGenerateFind;
 	static WaitDoTime	TimeGenerate;
 
-	static WaitDoTime	TimeBuffersFind;
-	static WaitDoTime	TimeBuffers;
+	static WaitDoTime	TimeAssambleFind;
+	static WaitDoTime	TimeAssamble;
+
+	static WaitDoTime	TimeMakeBufferFind;
+	static WaitDoTime	TimeMakeBuffer;
 
 	static WaitDoTime	TimeGraphicsCreate;
 	static WaitDoTime	TimeGraphicsDelete;
@@ -140,6 +147,7 @@ struct ChunkManager
 	VectorI3	absolute(VectorU3 u) const;
 	VectorU3	relative(VectorI3 i) const;
 
+	Chunk *					FindAbsOrNull(VectorI3 idx);
 	AccessLockedChunk		FindAccess(VectorI3 idx);
 
 	private:
@@ -179,19 +187,30 @@ struct ChunkManager
 
 
 
-	public:
+	private:
 	Chunk *	FindGenerateChunk();
-	void	GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3);
+	public:
+	void		GenerateChunk(const ChunkGenerationNoise & noise);
+
+	private:
+	Chunk *	FindAssambleChunk(ChunkCubeNeighbour & neighbours);
+	public:
+	void		AssambleChunk();
 
 
+
+	public:
+	// put Shader /Buffer here ?
 
 	bool	GraphicsExist;
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 	void	GraphicsUpdate();
 
-	AccessLockedChunk	FindGraphicsUpdateChunk();
-	void				GraphicsUpdateDataAround();
+	private:
+	AccessLockedChunk	FindMakeBuffer(ChunkAxisNeighbour & neighbours);
+	public:
+	void					MakeBuffer();
 
 	void	Draw();
 };

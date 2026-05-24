@@ -31,8 +31,10 @@ WaitDoTime ChunkManager::TimeUpdateInsert("TimeUpdateInsert");
 WaitDoTime ChunkManager::TimeUpdateRemove("TimeUpdateRemove");
 WaitDoTime ChunkManager::TimeGenerateFind("TimeGenerateFind");
 WaitDoTime ChunkManager::TimeGenerate("TimeGenerate");
-WaitDoTime ChunkManager::TimeBuffersFind("TimeBuffersFind");
-WaitDoTime ChunkManager::TimeBuffers("TimeBuffers");
+WaitDoTime ChunkManager::TimeAssambleFind("TimeAssambleFind");
+WaitDoTime ChunkManager::TimeAssamble("TimeAssamble");
+WaitDoTime ChunkManager::TimeMakeBufferFind("TimeMakeBufferFind");
+WaitDoTime ChunkManager::TimeMakeBuffer("TimeMakeBuffer");
 WaitDoTime ChunkManager::TimeGraphicsCreate("TimeGraphicsCreate");
 WaitDoTime ChunkManager::TimeGraphicsDelete("TimeGraphicsDelete");
 WaitDoTime ChunkManager::TimeDraw("TimeDraw");
@@ -286,6 +288,15 @@ void ChunkManager::ChangeCenter(VectorI3 center)
 VectorI3 ChunkManager::absolute(VectorU3 u) const { return u + KnowBox.Min; }
 VectorU3 ChunkManager::relative(VectorI3 i) const { return i - KnowBox.Min; }
 
+Chunk * ChunkManager::FindAbsOrNull(VectorI3 idx)
+{
+	VectorU3 udx = relative(idx);
+	if (Chunks.Check(udx))
+	{
+		return Chunks[udx];
+	}
+	return nullptr;
+}
 AccessLockedChunk ChunkManager::FindAccess(VectorI3 idx)
 {
 	VectorU3 udx = relative(idx);
@@ -505,8 +516,21 @@ void ChunkManager::UpdateChunksContainer()
 
 void ChunkManager::NeighbourUpdateBufferMain(VectorI3 idx)
 {
-	ChunkNeighbour neighbours(*this, idx);
-	neighbours.UpdateVisual();
+	Chunk * Here  = FindAbsOrNull(idx);
+	Chunk * PrevX = FindAbsOrNull(idx - VectorI3(1, 0, 0));
+	Chunk * PrevY = FindAbsOrNull(idx - VectorI3(0, 1, 0));
+	Chunk * PrevZ = FindAbsOrNull(idx - VectorI3(0, 0, 1));
+	Chunk * NextX = FindAbsOrNull(idx + VectorI3(1, 0, 0));
+	Chunk * NextY = FindAbsOrNull(idx + VectorI3(0, 1, 0));
+	Chunk * NextZ = FindAbsOrNull(idx + VectorI3(0, 0, 1));
+
+	if (Here  != nullptr) { Here  -> MainBufferDataNew = true; }
+	if (PrevX != nullptr) { PrevX -> MainBufferDataNew = true; }
+	if (PrevY != nullptr) { PrevY -> MainBufferDataNew = true; }
+	if (PrevZ != nullptr) { PrevZ -> MainBufferDataNew = true; }
+	if (NextX != nullptr) { NextX -> MainBufferDataNew = true; }
+	if (NextY != nullptr) { NextY -> MainBufferDataNew = true; }
+	if (NextZ != nullptr) { NextZ -> MainBufferDataNew = true; }
 }
 
 
@@ -663,7 +687,7 @@ Chunk * ChunkManager::FindGenerateChunk()
 		chunk.AccessL();
 		//std::cout << ThreadInfo::ThreadName << " FindGenerateChunk " << __LINE__ << '\n';
 
-		if (chunk.GenerationDone())
+		if (chunk.TerrainDone && chunk.DecorationsGenerated)
 		{ chunk.AccessU(); continue; }
 
 		if (!CareBox.IntersectVecInclusive(chunk.Index).All(true))
@@ -686,24 +710,103 @@ Chunk * ChunkManager::FindGenerateChunk()
 
 	return found;
 }
-void ChunkManager::GenerateAround(const Perlin2D & noise2, const Perlin3D & noise3)
+void ChunkManager::GenerateChunk(const ChunkGenerationNoise & noise)
 {
-	//std::cout << ThreadInfo::ThreadName << " GenerateAround " << __LINE__ << '\n';
+	//std::cout << ThreadInfo::ThreadName << " GenerateChunk " << __LINE__ << '\n';
 	Chunk * chunk = FindGenerateChunk();
-	//std::cout << ThreadInfo::ThreadName << " GenerateAround " << __LINE__ << '\n';
+	//std::cout << ThreadInfo::ThreadName << " GenerateChunk " << __LINE__ << '\n';
 	if (chunk == nullptr) { return; }
-	//std::cout << ThreadInfo::ThreadName << " GenerateAround " << __LINE__ << '\n';
+	//std::cout << ThreadInfo::ThreadName << " GenerateChunk " << __LINE__ << '\n';
 
 	chunk -> AccessToAssign();
 
 	StopWatch sw;
 	sw.Start();
-	chunk -> GenerateTerrain(noise2, noise3);
-	chunk -> GenerateDecorationNotes(noise2, noise3);
-	chunk -> GenerateDecorationPlace();
+	chunk -> GenerateTerrain(noise);
+	chunk -> GenerateDecoration(noise.Plane, noise.Cave0);
 	sw.Stop();
 	TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
 	TimeGenerate.ThreadName = ThreadInfo::ThreadName;
+
+	chunk -> AssignU();
+}
+
+Chunk * ChunkManager::FindAssambleChunk(ChunkCubeNeighbour & neighbours)
+{
+	Chunk * found = nullptr;
+	float dist;
+	for (unsigned int i = 0; i < Chunks.Length(); i++)
+	{
+		Chunk * ptr = Chunks[i];
+		if (ptr == nullptr)
+		{ continue; }
+		Chunk & chunk = *ptr;
+
+		//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
+		chunk.AccessL();
+		//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
+
+		if (!chunk.TerrainDone || !chunk.DecorationsGenerated || chunk.DecorationsAssambled)
+		{ chunk.AccessU(); continue; }
+
+		if (!CareBox.IntersectVecInclusive(chunk.Index).All(true))
+		{ chunk.AccessU(); continue; }
+
+		ChunkCubeNeighbour neighbours_temp = ChunkCubeNeighbour(chunk);
+		for (int z = 0; z < 3; z++)
+		{
+			for (int y = 0; y < 3; y++)
+			{
+				for (int x = 0; x < 3; x++)
+				{
+					if (x != 1 || y != 1 || z != 1)
+					{
+						neighbours_temp.Change(FindAbsOrNull(chunk.Index + VectorI3(x - 1, y - 1, z - 1)), x, y, z);
+					}
+				}
+			}
+		}
+
+		if (!neighbours_temp.CanAssamble())
+		{ chunk.AccessU(); continue; }
+
+		VectorF3 rel = chunk.Index - Center;
+		float d = rel.length2();
+		if (found == nullptr || d < dist)
+		{
+			if (found != nullptr) { found -> AccessU(); }
+			found = &chunk;
+			neighbours = neighbours_temp;
+			dist = d;
+		}
+		else { chunk.AccessU(); }
+	}
+
+	return found;
+}
+void ChunkManager::AssambleChunk()
+{
+	StopWatch sw;
+
+	//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
+	ChunksLock.AccessL(sw, TimeAssambleFind);
+	//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
+	ChunkCubeNeighbour neighbours;
+	Chunk * chunk = FindAssambleChunk(neighbours);
+	//std::cout << ThreadInfo::ThreadName << " AssambleChunk " << __LINE__ << '\n';
+	ChunksLock.AccessU(sw, TimeAssambleFind);
+	//std::cout << ThreadInfo::ThreadName << " AssambleChunk " << __LINE__ << '\n';
+	if (chunk == nullptr) { return; }
+	//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
+
+	chunk -> AccessToAssign();
+
+	sw.Clear();
+	sw.Start();
+	chunk -> AssambleDecoration(neighbours);
+	sw.Stop();
+	TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
+	TimeAssamble.ThreadName = ThreadInfo::ThreadName;
 
 	chunk -> AssignU();
 }
@@ -812,7 +915,7 @@ void ChunkManager::GraphicsUpdate()
 Know = 16 means 35937 Chunks that are looped over
 go outside from center, take first matching case
 */
-AccessLockedChunk ChunkManager::FindGraphicsUpdateChunk()
+AccessLockedChunk ChunkManager::FindMakeBuffer(ChunkAxisNeighbour & neighbours)
 {
 	StopWatch sw;
 
@@ -834,11 +937,23 @@ AccessLockedChunk ChunkManager::FindGraphicsUpdateChunk()
 		// dont create Buffer for chunks currenly being assigned
 		// also ignore if neighbour is being assigned, that will result in this being regenerated later
 
+		ChunkAxisNeighbour neighbours_temp(*chunk);
+		neighbours_temp.ChangePrevX(FindAbsOrNull((*chunk).Index - VectorI3(1, 0, 0)));
+		neighbours_temp.ChangePrevY(FindAbsOrNull((*chunk).Index - VectorI3(0, 1, 0)));
+		neighbours_temp.ChangePrevZ(FindAbsOrNull((*chunk).Index - VectorI3(0, 0, 1)));
+		neighbours_temp.ChangeNextX(FindAbsOrNull((*chunk).Index + VectorI3(1, 0, 0)));
+		neighbours_temp.ChangeNextY(FindAbsOrNull((*chunk).Index + VectorI3(0, 1, 0)));
+		neighbours_temp.ChangeNextZ(FindAbsOrNull((*chunk).Index + VectorI3(0, 0, 1)));
+
+		if (!neighbours_temp.GenerationDone())
+		{ continue; }
+
 		VectorF3 rel = (*chunk).Index - Center;
 		float d = rel.length2();
 		if (!found.Is() || d < dist)
 		{
 			found = chunk;
+			neighbours = neighbours_temp;
 			dist = d;
 		}
 	}
@@ -849,27 +964,19 @@ AccessLockedChunk ChunkManager::FindGraphicsUpdateChunk()
 
 	return found;
 }
-void ChunkManager::GraphicsUpdateDataAround()
+void ChunkManager::MakeBuffer()
 {
 	StopWatch sw;
 
 	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-	ChunksLock.AccessL(sw, TimeBuffersFind);
+	ChunksLock.AccessL(sw, TimeMakeBufferFind);
 	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-
+	ChunkAxisNeighbour neighbours;
+	AccessLockedChunk chunk = FindMakeBuffer(neighbours);
 	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-	AccessLockedChunk chunk = FindGraphicsUpdateChunk();
+	ChunksLock.AccessU(sw, TimeMakeBufferFind);
 	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-	sw.Stop();
-	TimeBuffersFind.DoTime.NewValue(sw.ElapsedTime());
-	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-	if (!chunk.Is())
-	{
-		//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-		//ChunksLock.AccessU();
-		//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-		return;
-	}
+	if (!chunk.Is()) { return; }
 	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
 
 		/* Lock
@@ -928,25 +1035,12 @@ void ChunkManager::GraphicsUpdateDataAround()
 			checking can be done at the same time
 		*/
 
-	// finding neighbours in the loop would be slow ?
-	ChunkNeighbour neighbours(*this, (Chunk*)&(*chunk));
-
-	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-	ChunksLock.AccessU();
-	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-
-	// check if neighbours are being generated
-	if (!neighbours.GenerationDone())
-	{
-		return;
-	}
-
 	sw.Clear();
 	sw.Start();
 	((Chunk*)&(*chunk)) -> GraphicsMakeData(neighbours);
 	sw.Stop();
-	TimeBuffers.DoTime.NewValue(sw.ElapsedTime());
-	TimeBuffers.ThreadName = ThreadInfo::ThreadName;
+	TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
+	TimeMakeBuffer.ThreadName = ThreadInfo::ThreadName;
 }
 
 void ChunkManager::Draw()

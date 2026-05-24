@@ -30,9 +30,20 @@
 
 # include <mutex>
 
-struct Perlin2D;
-struct Perlin3D;
+//struct Perlin2D;
+//struct Perlin3D;
+# include "ValueGen/Perlin2D.hpp"
+# include "ValueGen/Perlin3D.hpp"
+struct ChunkGenerationNoise
+{
+	Perlin2D	Plane;
+	Perlin3D	Cave0;
+	Perlin3D	Cave1;
+	Perlin3D	Cave2;
+};
+
 struct Structure;
+struct ChunkCubeNeighbour;
 
 //struct ChunkManager;
 #include "ChunkManager.hpp"
@@ -148,9 +159,10 @@ struct Chunk
 
 
 
+
+
 	public:
 	bool	GenerationDone() const;
-
 	/* Generation
 		Terrain:
 			different Layers ?
@@ -173,17 +185,11 @@ struct Chunk
 		maybe just delete as needed
 	*/
 
+
+
 	public:
 	bool	TerrainDone;
-	bool	DecorationsNoted;
-	bool	DecorationsPlaced;
-	struct StructureObject
-	{
-		::Structure *	Structure = nullptr;
-		::VectorI3		Origin;
-	};
-	Container::Binary<StructureObject>	Decorations;
-
+	void	GenerateTerrain(const ChunkGenerationNoise & noise);
 	/* TerrainGenerator
 		takes a Chunk
 		use AbsolutePosition
@@ -191,19 +197,30 @@ struct Chunk
 		use Y Perlin2D result
 		use Perlin3D result
 	*/
-	public:
-	static float	Generation3D_Factor;
-	static float	Generation3D_Comparison;
 	private:
 	void	TerrainPlane();
 	void	TerrainPillars();
-	void	TerrainPerlin(const Perlin2D & noise);
-	void	TerrainPerlin(const Perlin3D & noise);
+	void	TerrainPlane(const Perlin2D & noise);
+	void	TerrainCaveNoodle(const Perlin3D & noise0, const Perlin3D & noise1);
+	void	TerrainCaveBlob(const Perlin3D & noise);
 	void	TerrainGrid();
 	void	TerrainCity();
-	public:
-	void	GenerateTerrain(const Perlin2D & noise2, const Perlin3D & noise3);
 
+
+
+	private:
+	struct StructureObject
+	{
+		::Structure *	Structure = nullptr;
+		::VectorU3		Origin;
+	};
+	Container::Binary<StructureObject>	Decorations;
+
+
+
+	public:
+	bool	DecorationsGenerated;
+	void	GenerateDecoration(const Perlin2D & noise2, const Perlin3D & noise3);
 	/* DecorationGenerator
 		takes a Chunk Neighbourhood
 			not just axis, but a full cube
@@ -215,11 +232,18 @@ struct Chunk
 		use Perlin3D result
 	*/
 	private:
+	bool	FindMinYNull(VectorU3 & udx) const;
 	void	DecorateTrees(const Perlin2D & noise);
-	public:
-	void	GenerateDecorationNotes(const Perlin2D & noise2, const Perlin3D & noise3);
 
-	void	GenerateDecorationPlace();
+
+
+	public:
+	bool	DecorationsAssambled;
+	void	AssambleDecoration(const ChunkCubeNeighbour & neighbours);
+	private:
+	void	AssambleDecoration(const StructureObject & obj, const VectorI3 & offset);
+
+
 
 
 
@@ -235,7 +259,7 @@ struct Chunk
 	public:
 	bool				MainBufferDataNew;
 	ChunkGraphicsData	MainBufferData;
-	void	GraphicsMakeData(const ChunkNeighbour & neighbours);
+	void	GraphicsMakeData(const ChunkAxisNeighbour & neighbours);
 	/* 
 		BufferUMain_UpdateData clears MainBufferData
 		if during this time, MainBufferData is being remade

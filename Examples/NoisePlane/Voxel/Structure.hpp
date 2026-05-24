@@ -9,9 +9,10 @@
 struct Structure
 {
 	static Structure	Tree0;
+	static Structure	Tree1;
 	static void			Default();
 
-	VectorI3		Offset;
+	VectorU3		Center;
 	Array3D<Voxel>	Voxels;
 };
 

@@ -55,34 +55,34 @@ RequestBuffer Update
 	which causes the update to be lost
 */
 
-struct ChunkNeighbour
+// this is uses specifically used for making Buffer Data
+// Here isnt really used since it gets compressed into is_empty
+// store is_empty here ?
+struct ChunkAxisNeighbour
 {
 	private:
-	Chunk *		Here;
-	Chunk *		PrevX;
-	Chunk *		PrevY;
-	Chunk *		PrevZ;
-	Chunk *		NextX;
-	Chunk *		NextY;
-	Chunk *		NextZ;
+	const Chunk *	Here;
+	const Chunk *	PrevX;
+	const Chunk *	PrevY;
+	const Chunk *	PrevZ;
+	const Chunk *	NextX;
+	const Chunk *	NextY;
+	const Chunk *	NextZ;
 
 	public:
-	~ChunkNeighbour();
-	ChunkNeighbour();
-	ChunkNeighbour(const ChunkNeighbour & other);
-	ChunkNeighbour & operator=(const ChunkNeighbour & other) = delete;
-
-	ChunkNeighbour(ChunkManager & manager, Chunk * chunk);
-	ChunkNeighbour(ChunkManager & manager, VectorI3 idx);
+	~ChunkAxisNeighbour();
+	ChunkAxisNeighbour();
+	ChunkAxisNeighbour(const ChunkAxisNeighbour & other);
+	ChunkAxisNeighbour & operator=(const ChunkAxisNeighbour & other);
+	ChunkAxisNeighbour(const Chunk & chunk);
 
 	public:
-	const Chunk *	LoopPrevX(VectorU3 & udx) const;
-	const Chunk *	LoopPrevY(VectorU3 & udx) const;
-	const Chunk *	LoopPrevZ(VectorU3 & udx) const;
-	const Chunk *	LoopNextX(VectorU3 & udx) const;
-	const Chunk *	LoopNextY(VectorU3 & udx) const;
-	const Chunk *	LoopNextZ(VectorU3 & udx) const;
-	const Chunk *	Loop(VectorU3 & udx, const AxisRel & axis) const;
+	void	ChangePrevX(const Chunk * chunk);
+	void	ChangePrevY(const Chunk * chunk);
+	void	ChangePrevZ(const Chunk * chunk);
+	void	ChangeNextX(const Chunk * chunk);
+	void	ChangeNextY(const Chunk * chunk);
+	void	ChangeNextZ(const Chunk * chunk);
 
 	public:
 	bool	IsVisiblePrevX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
@@ -93,8 +93,27 @@ struct ChunkNeighbour
 	bool	IsVisibleNextZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
 
 	public:
-	void	UpdateVisual() const;
 	bool	GenerationDone() const;
+};
+
+struct ChunkCubeNeighbour
+{
+	private:
+	public:
+	const Chunk * Cube[3][3][3];
+
+	public:
+	~ChunkCubeNeighbour();
+	ChunkCubeNeighbour();
+	ChunkCubeNeighbour(const ChunkCubeNeighbour & other);
+	ChunkCubeNeighbour & operator=(const ChunkCubeNeighbour & other);
+	ChunkCubeNeighbour(const Chunk & chunk);
+
+	public:
+	void	Change(const Chunk * chunk, unsigned int x, unsigned int y, unsigned int z);
+
+	public:
+	bool	CanAssamble() const;
 };
 
 #endif

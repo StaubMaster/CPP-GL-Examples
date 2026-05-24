@@ -8,47 +8,27 @@
 
 
 Perlin3D::~Perlin3D()
-{
-	delete[] Data;
-}
+{ }
 Perlin3D::Perlin3D()
-	: Count(0, 0, 0)
-	, Data(nullptr)
+	: Nodes()
 { }
 Perlin3D::Perlin3D(const Perlin3D & other)
-	: Count(other.Count)
-	, Data(new VectorF3[Count.Product()])
-{
-	unsigned int c = Count.Product();
-	for (unsigned int i = 0; i < c; i++)
-	{
-		Data[i] = other.Data[i];
-	}
-}
+	: Nodes(other.Nodes)
+{ }
 Perlin3D & Perlin3D::operator=(const Perlin3D & other)
 {
-	delete[] Data;
-	Count = other.Count;
-	Data = new VectorF3[Count.Product()];
-
-	unsigned int c = Count.Product();
-	for (unsigned int i = 0; i < c; i++)
-	{
-		Data[i] = other.Data[i];
-	}
-
+	Nodes = other.Nodes;
 	return *this;
 }
 
 Perlin3D::Perlin3D(VectorU3 count)
-	: Count(count)
-	, Data(new VectorF3[Count.Product()])
+	: Nodes(count)
 { }
 
 Perlin3D Perlin3D::Random(VectorU3 count)
 {
 	Perlin3D perlin(count);
-	unsigned int c = perlin.Count.Product();
+	unsigned int c = perlin.Nodes.Length();
 	for (unsigned int i = 0; i < c; i++)
 	{
 		EulerAngle3D a = EulerAngle3D::Degrees(
@@ -56,27 +36,29 @@ Perlin3D Perlin3D::Random(VectorU3 count)
 			Random::Float01In() * 360.0f,
 			Random::Float01In() * 360.0f
 		);
-		perlin.Data[i] = a.forward(VectorF3(0, 0, 1));
+		perlin.Nodes[i] = a.forward(VectorF3(0, 0, 1));
 	}
 	return perlin;
 }
 
 VectorU3 Perlin3D::Normalize(VectorF3 node) const
 {
+	VectorU3 count = Nodes.Size();
 	int x = node.X;
 	int y = node.Y;
 	int z = node.Z;
-	while (x < 0) { x += Count.X; }
-	while (y < 0) { y += Count.Y; }
-	while (z < 0) { z += Count.Z; }
-	while (x >= (int)Count.X) { x -= Count.X; }
-	while (y >= (int)Count.Y) { y -= Count.Y; }
-	while (z >= (int)Count.Z) { z -= Count.Z; }
+	while (x < 0) { x += count.X; }
+	while (y < 0) { y += count.Y; }
+	while (z < 0) { z += count.Z; }
+	while (x >= (int)count.X) { x -= count.X; }
+	while (y >= (int)count.Y) { y -= count.Y; }
+	while (z >= (int)count.Z) { z -= count.Z; }
 	return VectorU3(x, y, z);
 }
 
-static float lerp(float val0, float val1, float t)
+static float interpolate(float val0, float val1, float t)
 {
+	//t = (3.0f - t * 2.0f) * t * t;
 	return (val0 * (1.0f - t)) + (val1 * (t - 0.0f));
 }
 
@@ -86,53 +68,63 @@ float Perlin3D::Calculate(VectorF3 pos) const
 {
 	VectorF3 posF = pos.roundF();
 	VectorI3 posI = posF;
+
 	VectorF3 rel = pos - posI;
+	VectorF3 rel0 = rel;
+	VectorF3 rel1 = rel - VectorF3(1.0f);
 
-	VectorU3 i0 = ((posI % Count) + Count) % Count;
-	VectorU3 i1 = (i0 + VectorU3(1)) % Count;
+	VectorU3 count = Nodes.Size();
+	VectorU3 i0 = ((posI % count) + count) % count;
+	VectorU3 i1 = (i0 + VectorU3(1)) % count; // do this with if checks ?
 
-	VectorF3 dirs[8];
-	dirs[0b000] = Data[Count.Convert(VectorU3(i0.X, i0.Y, i0.Z))];
-	dirs[0b001] = Data[Count.Convert(VectorU3(i1.X, i0.Y, i0.Z))];
-	dirs[0b010] = Data[Count.Convert(VectorU3(i0.X, i1.Y, i0.Z))];
-	dirs[0b011] = Data[Count.Convert(VectorU3(i1.X, i1.Y, i0.Z))];
+	i0.Y = i0.Y * count.X; i0.Z = i0.Z * count.X * count.Y;
+	i1.Y = i1.Y * count.X; i1.Z = i1.Z * count.X * count.Y;
 
-	dirs[0b100] = Data[Count.Convert(VectorU3(i0.X, i0.Y, i1.Z))];
-	dirs[0b101] = Data[Count.Convert(VectorU3(i1.X, i0.Y, i1.Z))];
-	dirs[0b110] = Data[Count.Convert(VectorU3(i0.X, i1.Y, i1.Z))];
-	dirs[0b111] = Data[Count.Convert(VectorU3(i1.X, i1.Y, i1.Z))];
+	float dotZ[8] ={
+		VectorF3::dot(Nodes[i0.X + i0.Y + i0.Z], VectorF3(rel0.X, rel0.Y, rel0.Z)),
+		VectorF3::dot(Nodes[i1.X + i0.Y + i0.Z], VectorF3(rel1.X, rel0.Y, rel0.Z)),
+		VectorF3::dot(Nodes[i0.X + i1.Y + i0.Z], VectorF3(rel0.X, rel1.Y, rel0.Z)),
+		VectorF3::dot(Nodes[i1.X + i1.Y + i0.Z], VectorF3(rel1.X, rel1.Y, rel0.Z)),
+		VectorF3::dot(Nodes[i0.X + i0.Y + i1.Z], VectorF3(rel0.X, rel0.Y, rel1.Z)),
+		VectorF3::dot(Nodes[i1.X + i0.Y + i1.Z], VectorF3(rel1.X, rel0.Y, rel1.Z)),
+		VectorF3::dot(Nodes[i0.X + i1.Y + i1.Z], VectorF3(rel0.X, rel1.Y, rel1.Z)),
+		VectorF3::dot(Nodes[i1.X + i1.Y + i1.Z], VectorF3(rel1.X, rel1.Y, rel1.Z)),
+	};
 
-	VectorF3 rels[8];
-	rels[0b000] = VectorF3(rel.X - 0, rel.Y - 0, rel.Z - 0);
-	rels[0b001] = VectorF3(rel.X - 1, rel.Y - 0, rel.Z - 0);
-	rels[0b010] = VectorF3(rel.X - 0, rel.Y - 1, rel.Z - 0);
-	rels[0b011] = VectorF3(rel.X - 1, rel.Y - 1, rel.Z - 0);
+	float dotY[4] = {
+		interpolate(dotZ[0b000], dotZ[0b100], rel.Z),
+		interpolate(dotZ[0b001], dotZ[0b101], rel.Z),
+		interpolate(dotZ[0b010], dotZ[0b110], rel.Z),
+		interpolate(dotZ[0b011], dotZ[0b111], rel.Z),
+	};
 
-	rels[0b100] = VectorF3(rel.X - 0, rel.Y - 0, rel.Z - 1);
-	rels[0b101] = VectorF3(rel.X - 1, rel.Y - 0, rel.Z - 1);
-	rels[0b110] = VectorF3(rel.X - 0, rel.Y - 1, rel.Z - 1);
-	rels[0b111] = VectorF3(rel.X - 1, rel.Y - 1, rel.Z - 1);
+	float dotX[2] = {
+		interpolate(dotY[0b00], dotY[0b10], rel.Y),
+		interpolate(dotY[0b01], dotY[0b11], rel.Y),
+	};
 
-	float dots[8];
-	dots[0b000] = VectorF3::dot(dirs[0b000], rels[0b000]);
-	dots[0b001] = VectorF3::dot(dirs[0b001], rels[0b001]);
-	dots[0b010] = VectorF3::dot(dirs[0b010], rels[0b010]);
-	dots[0b011] = VectorF3::dot(dirs[0b011], rels[0b011]);
+	return interpolate(dotX[0b0], dotX[0b1], rel.X);
 
-	dots[0b100] = VectorF3::dot(dirs[0b100], rels[0b100]);
-	dots[0b101] = VectorF3::dot(dirs[0b101], rels[0b101]);
-	dots[0b110] = VectorF3::dot(dirs[0b110], rels[0b110]);
-	dots[0b111] = VectorF3::dot(dirs[0b111], rels[0b111]);
-
-	float dot_00 = lerp(dots[0b000], dots[0b100], rel.Z);
-	float dot_01 = lerp(dots[0b001], dots[0b101], rel.Z);
-	float dot_10 = lerp(dots[0b010], dots[0b110], rel.Z);
-	float dot_11 = lerp(dots[0b011], dots[0b111], rel.Z);
-
-	float dot__0 = lerp(dot_00, dot_10, rel.Y);
-	float dot__1 = lerp(dot_01, dot_11, rel.Y);
-
-	float dot___ = lerp(dot__0, dot__1, rel.X);
-
-	return dot___;
+	/*return interpolate(
+		interpolate(
+			interpolate(
+				VectorF3::dot(Nodes[i0.X + i0.Y + i0.Z], VectorF3(rel0.X, rel0.Y, rel0.Z)),
+				VectorF3::dot(Nodes[i0.X + i0.Y + i1.Z], VectorF3(rel0.X, rel0.Y, rel1.Z)),
+				rel.Z),
+			interpolate(
+				VectorF3::dot(Nodes[i0.X + i1.Y + i0.Z], VectorF3(rel0.X, rel1.Y, rel0.Z)),
+				VectorF3::dot(Nodes[i0.X + i1.Y + i1.Z], VectorF3(rel0.X, rel1.Y, rel1.Z)),
+				rel.Z),
+			rel.Y),
+		interpolate(
+			interpolate(
+				VectorF3::dot(Nodes[i1.X + i0.Y + i0.Z], VectorF3(rel1.X, rel0.Y, rel0.Z)),
+				VectorF3::dot(Nodes[i1.X + i0.Y + i1.Z], VectorF3(rel1.X, rel0.Y, rel1.Z)),
+				rel.Z),
+			interpolate(
+				VectorF3::dot(Nodes[i1.X + i1.Y + i0.Z], VectorF3(rel1.X, rel1.Y, rel0.Z)),
+				VectorF3::dot(Nodes[i1.X + i1.Y + i1.Z], VectorF3(rel1.X, rel1.Y, rel1.Z)),
+				rel.Z),
+			rel.Y),
+		rel.X);*/
 }

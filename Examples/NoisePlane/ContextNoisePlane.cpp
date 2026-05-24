@@ -38,8 +38,7 @@ ContextNoisePlane::ContextNoisePlane()
 	, TextManager()
 //	, PlaneManager()
 	, ChunkManager()
-	, Perlin2(Perlin2D::Random(VectorU2(8, 8)))
-	, Perlin3(Perlin3D::Random(VectorU3(8, 8, 8)))
+	, GenerationNoise()
 	, MainMenu()
 	, PauseMenu(*this)
 	, OptionsMenu(*this)
@@ -82,6 +81,11 @@ ContextNoisePlane::ContextNoisePlane()
 	Multiform_View.FindUniforms(shaders);
 	Multiform_Depth.FindUniforms(shaders);
 	Multiform_FOV.FindUniforms(shaders);
+
+	GenerationNoise.Plane = Perlin2D::Random(VectorU2(8, 8));
+	GenerationNoise.Cave0 = Perlin3D::Random(VectorU3(8, 8, 8));
+	GenerationNoise.Cave1 = Perlin3D::Random(VectorU3(8, 8, 8));
+	GenerationNoise.Cave2 = Perlin3D::Random(VectorU3(8, 8, 8));
 }
 
 
@@ -437,7 +441,8 @@ void ContextNoisePlane::AuxThread1Func()
 		if (!ThreadIdle && !AuxThread1Idle)
 		{
 			sw.Clear(); sw.Start();
-			ChunkManager.GenerateAround(Perlin2, Perlin3);
+			ChunkManager.GenerateChunk(GenerationNoise);
+			ChunkManager.AssambleChunk();
 			sw.Stop();
 			AuxThread1Time.NewValue(sw.ElapsedTime());
 		}
@@ -452,7 +457,7 @@ void ContextNoisePlane::AuxThread2Func()
 		if (!ThreadIdle && !AuxThread2Idle)
 		{
 			sw.Clear(); sw.Start();
-			ChunkManager.GraphicsUpdateDataAround();
+			ChunkManager.MakeBuffer();
 			sw.Stop();
 			AuxThread2Time.NewValue(sw.ElapsedTime());
 		}
@@ -479,7 +484,6 @@ void ContextNoisePlane::DrawThreadUpdate()
 
 void ContextNoisePlane::Make()
 {
-	view.Trans.Position = VectorF3(0.5f, 0.5f, 0.5f);
 #ifndef DISABLE_VIEW_TANGIBLE
 	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
 	ViewEntity.Box = BoxF3(
@@ -584,10 +588,10 @@ void ContextNoisePlane::MakeControls()
 		DebugMenu.VoxelChunkMemory.Check.Check(true);
 
 		DebugMenu.Generation3DComparison.ValueXChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DComparison);
-		DebugMenu.Generation3DComparison.SetValueX(Chunk::Generation3D_Comparison);
+		//DebugMenu.Generation3DComparison.SetValueX(Chunk::Generation3D_Comparison);
 
 		DebugMenu.Generation3DFactor.ValueXChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DFactor);
-		DebugMenu.Generation3DFactor.SetValueX(Chunk::Generation3D_Factor);
+		//DebugMenu.Generation3DFactor.SetValueX(Chunk::Generation3D_Factor);
 
 		DebugMenu.Hide();
 		ControlManager.Window.ChildInsert(DebugMenu);
@@ -629,15 +633,17 @@ void ContextNoisePlane::MakeControls()
 
 void ContextNoisePlane::DebugMenu_Generation3DComparison(float val)
 {
-	Chunk::Generation3D_Comparison = val;
-	DebugMenu.Generation3DComparison.SetText("3D Comp:" + std::to_string(Chunk::Generation3D_Comparison));
-	ChunkManager.Clear();
+	(void)val;
+	//Chunk::Generation3D_Comparison = val;
+	//DebugMenu.Generation3DComparison.SetText("3D Comp:" + std::to_string(Chunk::Generation3D_Comparison));
+	//ChunkManager.Clear();
 }
 void ContextNoisePlane::DebugMenu_Generation3DFactor(float val)
 {
-	Chunk::Generation3D_Factor = 1 << ((int)val);
-	DebugMenu.Generation3DFactor.SetText("3D Fact:" + std::to_string(Chunk::Generation3D_Factor));
-	ChunkManager.Clear();
+	(void)val;
+	//Chunk::Generation3D_Factor = 1 << ((int)val);
+	//DebugMenu.Generation3DFactor.SetText("3D Fact:" + std::to_string(Chunk::Generation3D_Factor));
+	//ChunkManager.Clear();
 }
 
 
@@ -821,8 +827,9 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	VoxelPalletMap::All.LoadTextures(ChunkManager);
 	{
-		window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
-		//window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
+		//window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
+		//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
+		window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
 		view.Depth.Color = window.DefaultColor;
 		view.Depth.Range.ChangeMin(0.5f);
 	}
@@ -835,7 +842,8 @@ void ContextNoisePlane::Init()
 	//ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
 	//ChunkManager.ChangeSize(8, 4);
-	ChunkManager.ChangeSize(16, 8);
+	//ChunkManager.ChangeSize(16, 8);
+	ChunkManager.ChangeSize(16, 12);
 	//ChunkManager.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
@@ -1164,10 +1172,15 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << ChunkManager::TimeUpdate << '\n';
 		ss << ChunkManager::TimeUpdateInsert << '\n';
 		ss << ChunkManager::TimeUpdateRemove << '\n';
+		ss << '\n';
 		ss << ChunkManager::TimeGenerateFind << '\n';
-		ss << ChunkManager::TimeGenerate << '\n'; // #2 slowest
-		ss << ChunkManager::TimeBuffersFind << '\n';
-		ss << ChunkManager::TimeBuffers << '\n'; // #1 slowest
+		ss << ChunkManager::TimeGenerate << '\n';
+		ss << ChunkManager::TimeAssambleFind << '\n';
+		ss << ChunkManager::TimeAssamble << '\n';
+		ss << '\n';
+		ss << ChunkManager::TimeMakeBufferFind << '\n';
+		ss << ChunkManager::TimeMakeBuffer << '\n';
+		ss << '\n';
 		ss << ChunkManager::TimeGraphicsCreate << '\n';
 		ss << ChunkManager::TimeGraphicsDelete << '\n';
 		ss << ChunkManager::TimeDraw << '\n';
@@ -1231,8 +1244,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			ss << '\n';
 
 			ss << "TerrainDone: " << (*chunk).TerrainDone << '\n';
-			ss << "DecorationsNoted: " << (*chunk).DecorationsNoted << '\n';
-			ss << "DecorationsPlaced: " << (*chunk).DecorationsPlaced << '\n';
+			ss << "DecorationsGenerated: " << (*chunk).DecorationsGenerated << '\n';
+			ss << "DecorationsAssambled: " << (*chunk).DecorationsAssambled << '\n';
 			if ((*chunk).GenerationDone()) { ss << "Done"; }
 			ss << '\n';
 
@@ -1310,7 +1323,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		sw__.Clear(); sw__.Start();
 		unsigned int chunks_limit = ChunkManager.Chunks.Length();
 		unsigned int chunks_total = 0;
-		unsigned int chunks_gen_not = 0;
+		unsigned int chunks_gen_TD = 0;
+		unsigned int chunks_gen_DG = 0;
+		unsigned int chunks_gen_DA = 0;
 		unsigned int chunks_gen_done = 0;
 		unsigned int chunks_empty = 0;
 		unsigned int chunks_filled = 0;
@@ -1319,6 +1334,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			chunks_total++;
 			Chunk & chunk = *ChunkManager.Chunks[i];
+			if (chunk.TerrainDone) { chunks_gen_TD++; }
+			if (chunk.DecorationsGenerated) { chunks_gen_DG++; }
+			if (chunk.DecorationsAssambled) { chunks_gen_DA++; }
 			if (chunk.GenerationDone())
 			{
 				chunks_gen_done++;
@@ -1327,8 +1345,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 				else
 				{ chunks_filled++; }
 			}
-			else
-			{ chunks_gen_not++; }
 		}
 		sw__.Stop(); TextTime_VoxelChunkMemory0_Loop.NewValue(sw__.ElapsedTime());
 
@@ -1339,7 +1355,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		sw__.Clear(); sw__.Start();
 		ss << "Chunks:\n";
 		ss << chunks_limit << '|' << chunks_total << '\n';
-		ss << 'N' << chunks_gen_not << ' ' << 'D' << chunks_gen_done << '\n';
+		ss << "TD" << chunks_gen_TD << ' ' << "DG" << chunks_gen_DG << ' ' << "DA" << chunks_gen_DA << ' ' << 'D' << chunks_gen_done << '\n';
 		ss << 'E' << chunks_empty << ' ' << 'F' << chunks_filled << '\n';
 		ss << '\n';
 
@@ -1371,6 +1387,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ChunkManager.ChunksLock.AccessL();
 
 		unsigned long long main_f_count = 0;
+		unsigned int buffer_data_none = 0;
 		unsigned int buffer_data_have = 0;
 		unsigned int buffer_data_want = 0;
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
@@ -1378,11 +1395,20 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			if (ChunkManager.Chunks[i] == nullptr) { continue; }
 			Chunk & chunk = *ChunkManager.Chunks[i];
 			main_f_count += chunk.BufferF.Main.Count;
-			if (chunk.MainBufferDataNew)	{ buffer_data_want++; }
-			else							{ buffer_data_have++; }
+			if (chunk.GenerationDone())
+			{
+				if (chunk.MainBufferDataNew)	{ buffer_data_want++; }
+				else							{ buffer_data_have++; }
+			}
+			else
+			{
+				// none should be if buffer if Data is empty ?
+				buffer_data_none++;
+			}
 		}
 
 		ss << "BufferUState";
+		ss << " None:" << buffer_data_none;
 		ss << " Have:" << buffer_data_have;
 		ss << " Want:" << buffer_data_want;
 		ss << '\n';

@@ -13,7 +13,7 @@ struct VectorI3;
 struct VoxelOrientation;
 struct VoxelPallet;
 struct VoxelAxisGraphicsDataF;
-struct ChunkNeighbour;
+struct ChunkAxisNeighbour;
 
 struct Voxel;
 struct Chunk;
@@ -44,7 +44,7 @@ struct ChunkGraphicsData
 	void	ClearU();
 	private:
 	void	CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet);
-	void	MakeU(const Chunk & chunk, const ChunkNeighbour & neighbours);
+	void	MakeU(const Chunk & chunk, const ChunkAxisNeighbour & neighbours);
 	void	DoneU();
 	public:
 	const Container::Array<VoxelGraphics::MainFaceU> &	GraphicsDataU() const;
@@ -64,7 +64,7 @@ struct ChunkGraphicsData
 
 
 	public:
-	void	Make(const Chunk & chunk, const ChunkNeighbour & neighbours);
+	void	Make(const Chunk & chunk, const ChunkAxisNeighbour & neighbours);
 };
 
 #endif
