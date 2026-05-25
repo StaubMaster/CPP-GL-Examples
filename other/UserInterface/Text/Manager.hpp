@@ -38,6 +38,8 @@ class Manager
 	public:
 	UI::Text::Shader	Shader;
 	UI::Text::Buffer	Buffer;
+	UI::Text::Main_Layout	LayoutMain;
+	UI::Text::Inst_Layout	LayoutInst;
 
 	Container::Binary<UI::Text::ObjectData*>				ObjectDatas;
 	Container::BlockLinkedList<1024, UI::Text::Inst_Data>	InstancesBlock;

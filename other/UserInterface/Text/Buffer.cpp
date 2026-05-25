@@ -5,15 +5,15 @@
 
 
 
-UI::Text::Main_Buffer::Main_Buffer(::VertexArray & vertex_array)
-	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Main_Data))
+UI::Text::Main_Layout::Main_Layout()
+	: ::Attribute::Layout(0, sizeof(Main_Data))
 	, Pos(*this)
 { }
 
 
 
-UI::Text::Inst_Buffer::Inst_Buffer(::VertexArray & vertex_array)
-	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
+UI::Text::Inst_Layout::Inst_Layout()
+	: ::Attribute::Layout(1, sizeof(Inst_Data))
 	, Pos(*this)
 	, PalletIdx(*this)
 	, TextIdx(*this)
@@ -25,8 +25,8 @@ UI::Text::Buffer::~Buffer() { }
 
 UI::Text::Buffer::Buffer()
 	: ::VertexArray()
-	, Main(*this)
-	, Inst(*this)
+	, Main(*this, GL::BufferDataUsage::StaticDraw)
+	, Inst(*this, GL::BufferDataUsage::StreamDraw)
 	, DrawMode(GL::DrawMode::Triangles)
 {
 	Buffers.Insert(&Main);

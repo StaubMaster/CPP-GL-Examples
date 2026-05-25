@@ -4,6 +4,7 @@
 # include "Graphics/Buffer/VertexArray.hpp"
 # include "Graphics/Buffer/Array.hpp"
 
+# include "Graphics/Attribute/Layout.hpp"
 # include "Graphics/Attribute/_Include.hpp"
 
 
@@ -14,16 +15,16 @@ namespace UI
 namespace Control
 {
 
-class Main_Buffer : public ::Buffer::Array
+class Main_Layout : public ::Attribute::Layout
 {
 	public:
 	::Attribute::VectorF2	Pos;
 	public:
-	~Main_Buffer();
-	Main_Buffer(::VertexArray & vertex_array);
+	~Main_Layout();
+	Main_Layout();
 };
 
-class Inst_Buffer : public ::Buffer::Array
+class Inst_Layout : public ::Attribute::Layout
 {
 	public:
 	::Attribute::VectorF2	Min;
@@ -31,16 +32,16 @@ class Inst_Buffer : public ::Buffer::Array
 	::Attribute::Float		Layer;
 	::Attribute::ColorF4	Col;
 	public:
-	~Inst_Buffer();
-	Inst_Buffer(::VertexArray & vertex_array);
+	~Inst_Layout();
+	Inst_Layout();
 };
 
 class Buffer : public ::VertexArray
 {
 	public:
-	Main_Buffer		Main;
-	Inst_Buffer		Inst;
-	GL::DrawMode	DrawMode;
+	::Buffer::Array		Main;
+	::Buffer::Array		Inst;
+	GL::DrawMode		DrawMode;
 	public:
 	~Buffer();
 	Buffer();

@@ -5,17 +5,17 @@
 
 
 
-UI::Control::Main_Buffer::~Main_Buffer() { }
-UI::Control::Main_Buffer::Main_Buffer(::VertexArray & vertex_array)
-	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw, 0, sizeof(Main_Data))
+UI::Control::Main_Layout::~Main_Layout() { }
+UI::Control::Main_Layout::Main_Layout()
+	: ::Attribute::Layout(0, sizeof(Main_Data))
 	, Pos(*this)
 { }
 
 
 
-UI::Control::Inst_Buffer::~Inst_Buffer() { }
-UI::Control::Inst_Buffer::Inst_Buffer(::VertexArray & vertex_array)
-	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StreamDraw, 1, sizeof(Inst_Data))
+UI::Control::Inst_Layout::~Inst_Layout() { }
+UI::Control::Inst_Layout::Inst_Layout()
+	: ::Attribute::Layout(1, sizeof(Inst_Data))
 	, Min(*this)
 	, Max(*this)
 	, Layer(*this)
@@ -27,8 +27,8 @@ UI::Control::Inst_Buffer::Inst_Buffer(::VertexArray & vertex_array)
 UI::Control::Buffer::~Buffer() { }
 UI::Control::Buffer::Buffer()
 	: ::VertexArray()
-	, Main(*this)
-	, Inst(*this)
+	, Main(*this, GL::BufferDataUsage::StaticDraw)
+	, Inst(*this, GL::BufferDataUsage::StreamDraw)
 	, DrawMode(GL::DrawMode::Triangles)
 {
 	Buffers.Insert(&Main);

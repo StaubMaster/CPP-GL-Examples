@@ -4,6 +4,7 @@
 #include "Graphics/Buffer/VertexArray.hpp"
 #include "Graphics/Buffer/Array.hpp"
 
+# include "Graphics/Attribute/Layout.hpp"
 # include "Graphics/Attribute/_Include.hpp"
 
 
@@ -14,30 +15,30 @@ namespace UI
 namespace Text
 {
 
-class Main_Buffer : public ::Buffer::Array
+class Main_Layout : public ::Attribute::Layout
 {
 	public:
 	::Attribute::VectorF2	Pos;
 	public:
-	Main_Buffer(::VertexArray & vertex_array);
+	Main_Layout();
 };
 
-class Inst_Buffer : public ::Buffer::Array
+class Inst_Layout : public ::Attribute::Layout
 {
 	public:
 	::Attribute::VectorF2	Pos;
 	::Attribute::UInt		PalletIdx;
 	::Attribute::UInt		TextIdx;
 	public:
-	Inst_Buffer(::VertexArray & vertex_array);
+	Inst_Layout();
 };
 
 class Buffer : public ::VertexArray
 {
 	public:
-	Main_Buffer		Main;
-	Inst_Buffer		Inst;
-	GL::DrawMode	DrawMode;
+	::Buffer::Array		Main;
+	::Buffer::Array		Inst;
+	GL::DrawMode		DrawMode;
 	public:
 	~Buffer();
 	Buffer();

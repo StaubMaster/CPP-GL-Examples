@@ -31,8 +31,7 @@ struct ChunkGenerationNoise;
 struct AccessLockedChunk;
 enum class AxisRel : unsigned char;
 
-struct ChunkCubeNeighbour;
-struct ChunkAxisNeighbour;
+struct ChunkNeighbour;
 
 struct Ray3D;
 class PolyHedra;
@@ -80,7 +79,8 @@ class MultiBuffe_ChunkU
 		Entry & operator=(const Entry & other) = delete;
 	};
 
-	VoxelGraphics::BufferU		Buffer;
+	VoxelGraphics::BufferU			Buffer;
+	VoxelGraphics::MainLayoutU		Layout;
 	unsigned int				Size;
 
 	void	NewSize(unsigned int size);
@@ -191,7 +191,7 @@ struct ChunkManager
 	void		GenerateChunk(const ChunkGenerationNoise & noise);
 
 	private:
-	Chunk *	FindAssambleChunk(ChunkCubeNeighbour & neighbours);
+	Chunk *	FindAssambleChunk();
 	public:
 	void		AssambleChunk();
 
@@ -206,10 +206,11 @@ struct ChunkManager
 	void	GraphicsUpdate();
 
 	private:
-	AccessLockedChunk	FindMakeBuffer(ChunkAxisNeighbour & neighbours);
+	AccessLockedChunk	FindMakeBuffer();
 	public:
 	void					MakeBuffer();
 
+	public:
 	void	Draw();
 };
 

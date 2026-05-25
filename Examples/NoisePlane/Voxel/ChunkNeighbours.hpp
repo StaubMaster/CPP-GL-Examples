@@ -58,7 +58,8 @@ RequestBuffer Update
 // this is uses specifically used for making Buffer Data
 // Here isnt really used since it gets compressed into is_empty
 // store is_empty here ?
-struct ChunkAxisNeighbour
+
+/*struct ChunkAxisNeighbour
 {
 	private:
 	const Chunk *	Here;
@@ -94,9 +95,9 @@ struct ChunkAxisNeighbour
 
 	public:
 	bool	GenerationDone() const;
-};
+};*/
 
-struct ChunkCubeNeighbour
+/*struct ChunkCubeNeighbour
 {
 	private:
 	public:
@@ -111,6 +112,38 @@ struct ChunkCubeNeighbour
 
 	public:
 	void	Change(const Chunk * chunk, unsigned int x, unsigned int y, unsigned int z);
+
+	public:
+	bool	CanAssamble() const;
+};*/
+
+struct ChunkNeighbour
+{
+	private:
+	public:
+	Chunk * Cube[3][3][3];
+	// [Z][Y][X]
+	// [0] Prev
+	// [1] Here
+	// [2] Next
+
+	public:
+	~ChunkNeighbour();
+	ChunkNeighbour();
+	ChunkNeighbour(const ChunkNeighbour & other);
+	ChunkNeighbour & operator=(const ChunkNeighbour & other);
+	ChunkNeighbour(Chunk & chunk);
+
+	public:
+	bool	IsVisiblePrevX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisiblePrevY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisiblePrevZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisibleNextX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisibleNextY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	bool	IsVisibleNextZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+
+	public:
+	bool	CanMakeBuffer() const;
 
 	public:
 	bool	CanAssamble() const;

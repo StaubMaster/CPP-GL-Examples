@@ -686,11 +686,13 @@ void ContextNoisePlane::ChangeMedia()
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
-		ControlManager.Buffer.Main.Pos.Change(0);
-		ControlManager.Buffer.Inst.Min.Change(1);
-		ControlManager.Buffer.Inst.Max.Change(2);
-		ControlManager.Buffer.Inst.Layer.Change(3);
-		ControlManager.Buffer.Inst.Col.Change(4);
+		ControlManager.LayoutMain.Pos.Change(0);
+		ControlManager.LayoutInst.Min.Change(1);
+		ControlManager.LayoutInst.Max.Change(2);
+		ControlManager.LayoutInst.Layer.Change(3);
+		ControlManager.LayoutInst.Col.Change(4);
+		ControlManager.Buffer.Main.AttributeLayout = &ControlManager.LayoutMain;
+		ControlManager.Buffer.Inst.AttributeLayout = &ControlManager.LayoutInst;
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
@@ -710,10 +712,12 @@ void ContextNoisePlane::ChangeMedia()
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
-		TextManager.Buffer.Main.Pos.Change(0);
-		TextManager.Buffer.Inst.Pos.Change(1);
-		TextManager.Buffer.Inst.PalletIdx.Change(2);
-		TextManager.Buffer.Inst.TextIdx.Change(3);
+		TextManager.LayoutMain.Pos.Change(0);
+		TextManager.LayoutInst.Pos.Change(1);
+		TextManager.LayoutInst.PalletIdx.Change(2);
+		TextManager.LayoutInst.TextIdx.Change(3);
+		TextManager.Buffer.Main.AttributeLayout = &TextManager.LayoutMain;
+		TextManager.Buffer.Inst.AttributeLayout = &TextManager.LayoutInst;
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
@@ -766,9 +770,10 @@ void ContextNoisePlane::ChangeMedia()
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
-		ChunkManager.BufferU.Buffer.MainBuffer.Voxel.Change(0);
-		ChunkManager.BufferU.Buffer.MainBuffer.Texture.Change(1);
-		ChunkManager.BufferU.Buffer.MainBuffer.Chunk.Change(2);
+		ChunkManager.BufferU.Layout.Voxel.Change(0);
+		ChunkManager.BufferU.Layout.Texture.Change(1);
+		ChunkManager.BufferU.Layout.Chunk.Change(2);
+		ChunkManager.BufferU.Buffer.MainBuffer.AttributeLayout = &ChunkManager.BufferU.Layout;
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
@@ -1275,9 +1280,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			//ss << Memory1000ToString(chunk.BufferU.Main.Count * sizeof(VoxelGraphics::MainDataU));
 			//ss << '\n';
 
-			ss << "BufferF: ";
+			/*ss << "BufferF: ";
 			ss << Memory1000ToString((*chunk).BufferF.Main.Count * sizeof(VoxelGraphics::MainDataF));
-			ss << '\n';
+			ss << '\n';*/
 
 			ss << '\n';
 		}
@@ -1353,10 +1358,11 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		unsigned int chunks_done_empty = 0;
 		unsigned int chunks_done_filled = 0;
 
-		unsigned long long main_f_count = 0;
 		unsigned int buffer_data_none = 0;
 		unsigned int buffer_data_have = 0;
 		unsigned int buffer_data_want = 0;
+
+		//unsigned long long main_f_count = 0;
 
 		for (unsigned int i = 0; i < chunks_limit; i++)
 		{
@@ -1377,7 +1383,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 				{ chunks_done_filled++; }
 			}
 
-			main_f_count += chunk.BufferF.Main.Count;
+			//main_f_count += chunk.BufferF.Main.Count;
+
 			if (chunk.GenerationDone())
 			{
 				if (chunk.MainBufferDataNew)	{ buffer_data_want++; }

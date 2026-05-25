@@ -70,10 +70,12 @@ void UI::Text::Manager::InitMedia(DirectoryInfo & media_dir)
 		Shader.Change(code);
 	}
 	{
-		Buffer.Main.Pos.Change(0);
-		Buffer.Inst.Pos.Change(1);
-		Buffer.Inst.PalletIdx.Change(2);
-		Buffer.Inst.TextIdx.Change(3);
+		LayoutMain.Pos.Change(0);
+		LayoutInst.Pos.Change(1);
+		LayoutInst.PalletIdx.Change(2);
+		LayoutInst.TextIdx.Change(3);
+		Buffer.Main.AttributeLayout = &LayoutMain;
+		Buffer.Inst.AttributeLayout = &LayoutInst;
 	}
 }
 #include "Font/Font.hpp"

@@ -43,7 +43,8 @@ struct ChunkGenerationNoise
 };
 
 struct Structure;
-struct ChunkCubeNeighbour;
+//struct ChunkNeighbour;
+#include "ChunkNeighbours.hpp"
 
 //struct ChunkManager;
 #include "ChunkManager.hpp"
@@ -100,6 +101,7 @@ struct AccessLockedChunk
 	AccessLockedChunk(Chunk * chunk);
 };
 
+// 600B
 struct Chunk
 {
 	// store Neighbours
@@ -112,6 +114,9 @@ struct Chunk
 	const VectorI3		Index;
 	ChunkManager &		Manager; // replace this with Neighbours
 	Array3D<Voxel>		Voxels;
+
+	public:
+	ChunkNeighbour		Neighbours;
 
 	public:
 	const Voxel &	operator[](VectorU3 udx) const;
@@ -245,7 +250,7 @@ struct Chunk
 
 	public:
 	bool	DecorationsAssambled;
-	void	AssambleDecoration(const ChunkCubeNeighbour & neighbours);
+	void	AssambleDecoration();
 	private:
 	void	AssambleDecoration(const StructureObject & obj, const VectorI3 & offset);
 
@@ -256,7 +261,7 @@ struct Chunk
 	public:
 	bool	GraphicsExist;
 	MultiBuffe_ChunkU::Entry	BufferU_Entry;
-	VoxelGraphics::BufferF		BufferF;
+//	VoxelGraphics::BufferF		BufferF;
 
 	public:
 	void	GraphicsCreate();
@@ -265,7 +270,7 @@ struct Chunk
 	public:
 	bool				MainBufferDataNew;
 	ChunkGraphicsData	MainBufferData;
-	void	GraphicsMakeData(const ChunkAxisNeighbour & neighbours);
+	void	GraphicsMakeData();
 	/* 
 		BufferUMain_UpdateData clears MainBufferData
 		if during this time, MainBufferData is being remade

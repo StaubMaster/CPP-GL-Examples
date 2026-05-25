@@ -34,11 +34,13 @@ void Context1::Init()
 		ControlManager.Shader.Change(code);
 	}
 	{
-		ControlManager.Buffer.Main.Pos.Change(0);
-		ControlManager.Buffer.Inst.Min.Change(1);
-		ControlManager.Buffer.Inst.Max.Change(2);
-		ControlManager.Buffer.Inst.Layer.Change(3);
-		ControlManager.Buffer.Inst.Col.Change(4);
+		
+
+		ControlManager.LayoutMain.Pos.Change(0);
+		ControlManager.LayoutInst.Min.Change(1);
+		ControlManager.LayoutInst.Max.Change(2);
+		ControlManager.LayoutInst.Layer.Change(3);
+		ControlManager.LayoutInst.Col.Change(4);
 	}
 	{
 		ControlManager.Window.ChangeManager(&ControlManager);
