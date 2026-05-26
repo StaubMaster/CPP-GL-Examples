@@ -1,8 +1,7 @@
 #ifndef  UI_CONTROL_BUFFER_HPP
 # define UI_CONTROL_BUFFER_HPP
 
-# include "Graphics/Buffer/VertexArray.hpp"
-# include "Graphics/Buffer/Array.hpp"
+# include "Graphics/Buffer/MainInst.hpp"
 
 # include "Graphics/Attribute/Layout.hpp"
 # include "Graphics/Attribute/_Include.hpp"
@@ -36,18 +35,11 @@ class Inst_Layout : public ::Attribute::Layout
 	Inst_Layout();
 };
 
-class Buffer : public ::VertexArray
-{
-	public:
-	::Buffer::Array		Main;
-	::Buffer::Array		Inst;
-	GL::DrawMode		DrawMode;
-	public:
-	~Buffer();
-	Buffer();
-	public:
-	void Draw();
-};
+typedef ::BufferArray::MainInst<
+	GL::BufferDataUsage::StaticDraw,
+	GL::BufferDataUsage::StreamDraw,
+	GL::DrawMode::Triangles
+> Buffer;
 
 };
 

@@ -4,7 +4,8 @@
 # include "ValueGen/Perlin2D.hpp"
 # include "ValueGen/Perlin3D.hpp"
 
-# include "Graphics/Shader.hpp"
+# include "Graphics/Shader/Base.hpp"
+# include "Graphics/ShaderLayout.hpp"
 # include "Graphics/Buffer.hpp"
 
 # include "Graphics/Main/Data.hpp"
@@ -121,10 +122,10 @@ struct ChunkManager
 
 
 	public:
-	VoxelGraphics::Shader		ShaderU;
-	VoxelGraphics::Layout		ShaderLayoutU;
-	VoxelGraphics::Shader		ShaderF;
-	VoxelGraphics::Layout		ShaderLayoutF;
+	::Shader::Base					ShaderU;
+	VoxelGraphics::ShaderLayout		ShaderLayoutU;
+//	VoxelGraphics::Shader		ShaderF;
+//	VoxelGraphics::Layout		ShaderLayoutF;
 
 	MultiBuffe_ChunkU			BufferU;
 	VoxelGraphics::BufferF		BufferF;

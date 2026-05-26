@@ -100,8 +100,8 @@ void UI::Control::Manager::GraphicsInit()
 {
 	if (!(GraphicsNeedInit && GraphicsExist)) { return; }
 
-	Buffer.Main.Update();
-	Buffer.Inst.Update();
+	Buffer.MainBuffer.Update();
+	Buffer.InstBuffer.Update();
 
 	GraphicsNeedInit = false;
 }
@@ -118,7 +118,7 @@ void UI::Control::Manager::GraphicsMain()
 	data.Insert(UI::Control::Main_Data(VectorF2(-1, +1)));
 	data.Insert(UI::Control::Main_Data(VectorF2(+1, +1)));
 
-	Buffer.Main.DataFull(data.ToVoid());
+	Buffer.MainBuffer.DataFull(data.ToVoid());
 
 	GraphicsNeedMain = false;
 }
@@ -142,7 +142,7 @@ void UI::Control::Manager::GraphicsInst()
 			}
 		}
 	}
-	Buffer.Inst.DataFull(Instances.ToVoid());
+	Buffer.InstBuffer.DataFull(Instances.ToVoid());
 }
 
 void UI::Control::Manager::PlaceInstance(const ObjectData & obj)

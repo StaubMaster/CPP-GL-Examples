@@ -78,8 +78,8 @@ void UI::Text::Manager::InitMedia(DirectoryInfo & media_dir)
 		LayoutInst.Pos.Change(1);
 		LayoutInst.PalletIdx.Change(2);
 		LayoutInst.TextIdx.Change(3);
-		Buffer.Main.AttributeLayout = &LayoutMain;
-		Buffer.Inst.AttributeLayout = &LayoutInst;
+		Buffer.MainBuffer.AttributeLayout = &LayoutMain;
+		Buffer.InstBuffer.AttributeLayout = &LayoutInst;
 	}
 }
 #include "Font/Font.hpp"
@@ -495,7 +495,7 @@ void UI::Text::Manager::BufferMainAttributesBind()
 {
 	if (!GraphicsExist || BufferMainAttributesBound) { return; }
 
-	Buffer.Main.Update();
+	Buffer.MainBuffer.Update();
 
 	BufferMainAttributesBound = true;
 }
@@ -503,7 +503,7 @@ void UI::Text::Manager::BufferInstAttributesBind()
 {
 	if (!GraphicsExist || BufferInstAttributesBound) { return; }
 
-	Buffer.Inst.Update();
+	Buffer.InstBuffer.Update();
 
 	BufferInstAttributesBound = true;
 }
@@ -521,7 +521,7 @@ void UI::Text::Manager::BufferMainUpdateData()
 	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
 	data.Insert(UI::Text::Main_Data(VectorF2(+1, +1)));
 
-	Buffer.Main.DataFull(data.ToVoid());
+	Buffer.MainBuffer.DataFull(data.ToVoid());
 
 	BufferMainNewData = false;
 }
@@ -529,7 +529,7 @@ void UI::Text::Manager::BufferInstUpdateData()
 {
 	if (!GraphicsExist || !BufferInstNewData) { return; }
 
-	Buffer.Inst.DataFull(InstancesArray.ToVoid());
+	Buffer.InstBuffer.DataFull(InstancesArray.ToVoid());
 
 	BufferInstNewData = false;
 }

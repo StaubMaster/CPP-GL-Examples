@@ -1,14 +1,8 @@
 #ifndef  UI_TEXT_SHADER_HPP
 # define UI_TEXT_SHADER_HPP
 
-#include "Graphics/Shader/Base.hpp"
-
 #include "Graphics/Uniform/Layout.hpp"
 #include "Graphics/Uniform/_Include.hpp"
-
-
-
-class DirectoryInfo;
 
 
 
@@ -18,14 +12,7 @@ namespace UI
 namespace Text
 {
 
-class Shader : public ::Shader::Base
-{
-	public:
-	~Shader();
-	Shader();
-};
-
-class Layout : public Uniform::Layout
+class ShaderLayout : public Uniform::Layout
 {
 	public:
 	Uniform::DisplaySize		DisplaySize;
@@ -40,8 +27,8 @@ class Layout : public Uniform::Layout
 	Uniform::ColorF4Array<32>		TextColorArray;
 
 	public:
-	~Layout();
-	Layout();
+	~ShaderLayout();
+	ShaderLayout();
 };
 
 };

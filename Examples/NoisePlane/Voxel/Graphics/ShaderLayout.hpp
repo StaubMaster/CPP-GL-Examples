@@ -7,19 +7,14 @@
 
 namespace VoxelGraphics
 {
-	struct Shader : public ::Shader::Base
-	{
-		~Shader();
-		Shader();
-	};
-	struct Layout : public Uniform::Layout
+	struct ShaderLayout : public Uniform::Layout
 	{
 		::Uniform::DisplaySize		DisplaySize;
 		::Uniform::Matrix4x4		View;
 		::Uniform::Depth			Depth;
 		::Uniform::Angle			FOV;
-		~Layout();
-		Layout();
+		~ShaderLayout();
+		ShaderLayout();
 	};
 };
 

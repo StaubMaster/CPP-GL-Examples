@@ -37,8 +37,8 @@ void Context0::Init()
 		ControlManager.LayoutInst.Max.Change(2);
 		ControlManager.LayoutInst.Layer.Change(3);
 		ControlManager.LayoutInst.Col.Change(4);
-		ControlManager.Buffer.Main.AttributeLayout = &ControlManager.LayoutMain;
-		ControlManager.Buffer.Inst.AttributeLayout = &ControlManager.LayoutInst;
+		ControlManager.Buffer.MainBuffer.AttributeLayout = &ControlManager.LayoutMain;
+		ControlManager.Buffer.InstBuffer.AttributeLayout = &ControlManager.LayoutInst;
 	}
 	{
 		ControlManager.Window.ChangeManager(&ControlManager);

@@ -10,7 +10,7 @@ FILES := \
 \
 	Control/Base/Data.cpp \
 	Control/Base/Buffer.cpp \
-	Control/Base/Shader.cpp \
+	Control/Base/ShaderLayout.cpp \
 	Control/Base/Manager.cpp \
 	Control/Base/ObjectData.cpp \
 	Control/Base/Object.cpp \
@@ -27,7 +27,7 @@ FILES := \
 \
 	Text/Data.cpp \
 	Text/Buffer.cpp \
-	Text/Shader.cpp \
+	Text/ShaderLayout.cpp \
 	Text/Manager.cpp \
 	Text/ObjectData.cpp \
 	Text/Object.cpp \

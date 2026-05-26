@@ -3,7 +3,8 @@
 
 #include "Data.hpp"
 #include "Buffer.hpp"
-#include "Shader.hpp"
+#include "ShaderLayout.hpp"
+#include "Graphics/Shader/Base.hpp"
 
 #include "Miscellaneous/Container/Binary.hpp"
 #include "Miscellaneous/Container/Array.hpp"
@@ -11,6 +12,10 @@
 
 #include "Font/Font.hpp"
 #include "Graphics/Texture/Array2D.hpp"
+
+
+
+class DirectoryInfo;
 
 
 
@@ -36,10 +41,10 @@ class Manager
 
 
 	public:
-	UI::Text::Shader	Shader;
-	UI::Text::Layout	ShaderLayout;
+	::Shader::Base			Shader;
+	UI::Text::ShaderLayout	ShaderLayout;
 
-	UI::Text::Buffer	Buffer;
+	UI::Text::Buffer		Buffer;
 	UI::Text::Main_Layout	LayoutMain;
 	UI::Text::Inst_Layout	LayoutInst;
 

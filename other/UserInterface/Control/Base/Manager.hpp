@@ -1,18 +1,19 @@
 #ifndef  UI_CONTROL_MANAGER_HPP
 # define UI_CONTROL_MANAGER_HPP
 
-#include "Data.hpp"
-#include "Buffer.hpp"
-#include "Shader.hpp"
+# include "Data.hpp"
+# include "Buffer.hpp"
+# include "ShaderLayout.hpp"
+# include "Graphics/Shader/Base.hpp"
 
-#include "Control/Window.hpp"
+# include "Control/Window.hpp"
 
-#include "Display/DisplaySize.hpp"
+# include "Display/DisplaySize.hpp"
 
-#include "User/MouseArgs.hpp"
-#include "User/KeyBoardArgs.hpp"
+# include "User/MouseArgs.hpp"
+# include "User/KeyBoardArgs.hpp"
 
-#include "Miscellaneous/Container/Binary.hpp"
+# include "Miscellaneous/Container/Binary.hpp"
 
 
 
@@ -40,12 +41,12 @@ class Manager
 
 
 	public:
-	UI::Control::Shader		Shader;
-	UI::Control::Layout		ShaderLayout;
+	::Shader::Base					Shader;
+	UI::Control::ShaderLayout		ShaderLayout;
 
-	UI::Control::Buffer			Buffer;
-	UI::Control::Main_Layout	LayoutMain;
-	UI::Control::Inst_Layout	LayoutInst;
+	UI::Control::Buffer				Buffer;
+	UI::Control::Main_Layout		LayoutMain;
+	UI::Control::Inst_Layout		LayoutInst;
 
 	Container::Binary<ObjectData*>			ObjectDatas;
 	Container::Binary<Control::Inst_Data>	Instances;

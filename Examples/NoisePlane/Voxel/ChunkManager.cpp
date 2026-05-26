@@ -553,8 +553,8 @@ ChunkManager::~ChunkManager()
 ChunkManager::ChunkManager()
 	: ShaderU()
 	, ShaderLayoutU()
-	, ShaderF()
-	, ShaderLayoutF()
+//	, ShaderF()
+//	, ShaderLayoutF()
 //	, ChunksArray()
 //	, ChunksBox()
 	, Chunks()
@@ -567,8 +567,8 @@ ChunkManager::ChunkManager()
 	ShaderU.UniformLayout = &ShaderLayoutU;
 	ShaderLayoutU.Shader = &ShaderU;
 
-	ShaderF.UniformLayout = &ShaderLayoutF;
-	ShaderLayoutF.Shader = &ShaderF;
+//	ShaderF.UniformLayout = &ShaderLayoutF;
+//	ShaderLayoutF.Shader = &ShaderF;
 }
 
 
@@ -817,7 +817,7 @@ void ChunkManager::GraphicsCreate()
 	if (GraphicsExist) { return; }
 
 	ShaderU.Create();
-	ShaderF.Create();
+//	ShaderF.Create();
 	BufferU.Buffer.Create();
 	BufferF.Create();
 	Texture.Create();
@@ -846,7 +846,7 @@ void ChunkManager::GraphicsDelete()
 	if (!GraphicsExist) { return; }
 
 	ShaderU.Delete();
-	ShaderF.Delete();
+//	ShaderF.Delete();
 	BufferU.Buffer.Delete();
 	BufferF.Delete();
 	Texture.Delete();

@@ -16,7 +16,7 @@ FILES := \
 	Voxel/Graphics/Inst/Data.cpp \
 	Voxel/Graphics/Inst/Buffer.cpp \
 	Voxel/Graphics/Buffer.cpp \
-	Voxel/Graphics/Shader.cpp \
+	Voxel/Graphics/ShaderLayout.cpp \
 	\
 	Voxel/Voxel.cpp \
 	Voxel/VoxelGraphicsData.cpp \

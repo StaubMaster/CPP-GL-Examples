@@ -68,13 +68,13 @@ ContextNoisePlane::ContextNoisePlane()
 	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
 	Container::Array<Uniform::Layout *> layouts({
-//		&PolyHedraManager.ShaderFullDefault,
-//		&PolyHedraManager.ShaderWireDefault,
+		&PolyHedraManager.ShaderLayoutFullDefault,
+		&PolyHedraManager.ShaderLayoutWireDefault,
 		&ControlManager.ShaderLayout,
 		&TextManager.ShaderLayout,
 //		&PlaneManager.Shader,
 		&ChunkManager.ShaderLayoutU,
-		&ChunkManager.ShaderLayoutF,
+//		&ChunkManager.ShaderLayoutF,
 #ifndef DISABLE_INVENTORY
 		&InventoryShader,
 #endif
@@ -691,8 +691,8 @@ void ContextNoisePlane::ChangeMedia()
 		ControlManager.LayoutInst.Max.Change(2);
 		ControlManager.LayoutInst.Layer.Change(3);
 		ControlManager.LayoutInst.Col.Change(4);
-		ControlManager.Buffer.Main.AttributeLayout = &ControlManager.LayoutMain;
-		ControlManager.Buffer.Inst.AttributeLayout = &ControlManager.LayoutInst;
+		ControlManager.Buffer.MainBuffer.AttributeLayout = &ControlManager.LayoutMain;
+		ControlManager.Buffer.InstBuffer.AttributeLayout = &ControlManager.LayoutInst;
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
@@ -716,8 +716,8 @@ void ContextNoisePlane::ChangeMedia()
 		TextManager.LayoutInst.Pos.Change(1);
 		TextManager.LayoutInst.PalletIdx.Change(2);
 		TextManager.LayoutInst.TextIdx.Change(3);
-		TextManager.Buffer.Main.AttributeLayout = &TextManager.LayoutMain;
-		TextManager.Buffer.Inst.AttributeLayout = &TextManager.LayoutInst;
+		TextManager.Buffer.MainBuffer.AttributeLayout = &TextManager.LayoutMain;
+		TextManager.Buffer.InstBuffer.AttributeLayout = &TextManager.LayoutInst;
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
@@ -776,13 +776,13 @@ void ContextNoisePlane::ChangeMedia()
 		ChunkManager.BufferU.Buffer.MainBuffer.AttributeLayout = &ChunkManager.BufferU.Layout;
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	{
+	/*{
 		Container::Array<::Shader::Code> code({
 			Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelF.vert")),
 			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
 		});
 		ChunkManager.ShaderF.Change(code);
-	}
+	}*/
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 
 	// Inventory
