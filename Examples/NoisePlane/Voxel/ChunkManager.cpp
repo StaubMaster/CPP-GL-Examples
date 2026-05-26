@@ -33,8 +33,6 @@ WaitDoTime ChunkManager::TimeGenerateFind("TimeGenerateFind");
 WaitDoTime ChunkManager::TimeGenerate("TimeGenerate");
 WaitDoTime ChunkManager::TimeAssambleFind("TimeAssambleFind");
 WaitDoTime ChunkManager::TimeAssamble("TimeAssamble");
-WaitDoTime ChunkManager::TimeMakeBufferFind("TimeMakeBufferFind");
-WaitDoTime ChunkManager::TimeMakeBuffer("TimeMakeBuffer");
 WaitDoTime ChunkManager::TimeGraphicsCreate("TimeGraphicsCreate");
 WaitDoTime ChunkManager::TimeGraphicsDelete("TimeGraphicsDelete");
 WaitDoTime ChunkManager::TimeDraw("TimeDraw");
@@ -939,7 +937,7 @@ AccessLockedChunk ChunkManager::FindMakeBuffer()
 
 	return found;
 }
-void ChunkManager::MakeBuffer()
+/*void ChunkManager::MakeBuffer()
 {
 	StopWatch sw;
 
@@ -953,69 +951,13 @@ void ChunkManager::MakeBuffer()
 	if (!chunk.Is()) { return; }
 	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
 
-		/* Lock
-			lock Neighbours so they dont change while making Buffer
-			have a ContainerLock instead of muted ?
-
-			deleting
-			when chunk is about to be deleten, it is no longer in Chunks
-			but in ChunkDisposal
-
-			Generation is also supposed to lock Chunks from changing
-			so they might deadlock ?
-		*/
-		/*
-			0	1	2	3
-			4	5	6	7
-			8	9	A	B
-			C	D	E	F
-			9 wants 8 A 5 D to make Buffer
-			6 wants 1 2 3 5 7 9 A B to generate
-
-			9 locks 9
-			9 locks 8
-			9 locks A
-			6 locks 6
-			6 locks 1
-			6 locks 2
-			6 locks 3
-			6 locks 5
-			6 locks 7
-			6 tries to lock 9, which is locked by 9
-			9 tries to lock 5, which is locked by 6
-
-			lock locking ?
-			9 locks locking
-			9 locks 9
-			9 locks 8
-			9 locks A
-			6 wants to lock, but that is locked so it cant
-			9 locks 5
-			9 locks D
-			9 makes Buffer
-			9 unlocks 8
-			9 unlocks A
-			9 unlocks 5
-			9 unlocks D
-			9 unlocks locking
-
-			should locking be unlocked before unlocking chunks ?
-
-			this means that 6 has to wait for 9
-			which might be slow ?
-			generation dosent need to modify neighbours ?
-			only the chunk being generated is modified
-
-			checking can be done at the same time
-		*/
-
 	sw.Clear();
 	sw.Start();
 	((Chunk*)&(*chunk)) -> GraphicsMakeData();
 	sw.Stop();
 	TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
 	TimeMakeBuffer.ThreadName = ThreadInfo::ThreadName;
-}
+}*/
 
 void ChunkManager::Draw()
 {

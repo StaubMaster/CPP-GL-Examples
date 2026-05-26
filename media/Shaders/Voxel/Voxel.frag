@@ -44,8 +44,8 @@ uniform DepthData Depth;
 
 uniform sampler2DArray texture0;
 
-const LightBase Ambient = LightBase(0.5f, vec4(1, 1, 1, 1));
-const LightSolar Solar = LightSolar(LightBase(0.9f, vec4(1, 1, 1, 1)), normalize(vec3(+1, -3, +2)));
+uniform LightBase Ambient = LightBase(0.5f, vec4(1, 1, 1, 1));
+uniform LightSolar Solar = LightSolar(LightBase(0.9f, vec4(1, 1, 1, 1)), normalize(vec3(+1, -3, +2)));
 
 
 

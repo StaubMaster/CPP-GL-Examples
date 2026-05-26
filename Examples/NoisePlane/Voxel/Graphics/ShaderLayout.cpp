@@ -9,4 +9,6 @@ VoxelGraphics::ShaderLayout::ShaderLayout()
 	, View(*this, "View")
 	, Depth(*this, "Depth")
 	, FOV(*this, "FOV")
+	, LightAmbient(*this, "Ambient")
+	, LightSolar(*this, "Solar")
 { }

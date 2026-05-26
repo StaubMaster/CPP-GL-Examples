@@ -628,7 +628,7 @@ void Chunk::GenerateDecoration(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	if (DecorationsGenerated) { return; }
 
-	if ((Index.X % 4 == 0) && (Index.Z % 4 == 0))
+	if ((Index.X % 2 == 0) && (Index.Z % 2 == 0))
 	{
 		StructureObject obj;
 		obj.Structure = &Structure::Tree1;

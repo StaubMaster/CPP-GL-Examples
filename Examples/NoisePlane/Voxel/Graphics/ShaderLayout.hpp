@@ -13,6 +13,10 @@ namespace VoxelGraphics
 		::Uniform::Matrix4x4		View;
 		::Uniform::Depth			Depth;
 		::Uniform::Angle			FOV;
+
+		::Uniform::LightBase		LightAmbient;
+		::Uniform::LightSolar		LightSolar;
+
 		~ShaderLayout();
 		ShaderLayout();
 	};

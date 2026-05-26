@@ -112,9 +112,6 @@ struct ChunkManager
 	static WaitDoTime	TimeAssambleFind;
 	static WaitDoTime	TimeAssamble;
 
-	static WaitDoTime	TimeMakeBufferFind;
-	static WaitDoTime	TimeMakeBuffer;
-
 	static WaitDoTime	TimeGraphicsCreate;
 	static WaitDoTime	TimeGraphicsDelete;
 	static WaitDoTime	TimeDraw;
@@ -209,9 +206,8 @@ struct ChunkManager
 	void	GraphicsDelete();
 	void	GraphicsUpdate();
 
-	private:
-	AccessLockedChunk	FindMakeBuffer();
 	public:
+	AccessLockedChunk	FindMakeBuffer();
 	void					MakeBuffer();
 
 	public:

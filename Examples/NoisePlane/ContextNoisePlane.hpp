@@ -200,6 +200,8 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time);
 
 
 
+::LightBase		LightAmbient;
+::LightSolar	LightSolar;
 
 
 
@@ -210,12 +212,12 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time);
 	Input from different Thread ?
 */
 
-bool		ThreadIdle = true;
-bool		ThreadTerminate = false;
+bool	ThreadIdle = true;
+bool	ThreadTerminate = false;
 
 std::thread				AuxThread0;
-bool					AuxThread0Idle = false;	// put in ThreadInfo
-ValueAverager<float>	AuxThread0Time;			// put in ThreadInfo
+bool					AuxThread0Idle = false;
+ValueAverager<float>	AuxThread0Time;
 void					AuxThread0Func();
 
 std::thread				AuxThread1;

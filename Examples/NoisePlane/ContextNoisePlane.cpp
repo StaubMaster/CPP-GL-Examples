@@ -415,7 +415,44 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	Input from different Thread ?
 */
 
+/* busy waiting
+	the loops that check if something needs update
+	those still take CPU Usage
+	how to not take CPU ?
+	sleep ?
+	want want these to continue as soon as something happens
+
+	std::condition_variable
+	as I understand
+
+	Thread1:
+		checks condition(function)
+		if condition is false
+		then wait
+
+	Thread2:
+		use condition_variable so tell waiting threads (1 or all) to check again
+		if Thread2 changed whatever is used for checking (like a bool)
+		then Thread1 will check again, the condition will pass, and it will continue
+
+	what is the condition ?
+		Find a Chunk
+		if no Chunk was found
+		then keep waiting
+		else do whatever needs to be done with the chunk
+
+		that seems long to check
+		and also locks to check ?
+		
+		maybe have a Container of all the Chunks that need something done
+		then just check that it is not empty ?
+
+		whenever MainBufferDrawNew gets changed, check condition
+*/
+
 static ValueAverager<float>		TimeUpdateThread(64);
+static WaitDoTime				TimeMakeBufferFind("TimeMakeBufferFind");
+static WaitDoTime				TimeMakeBuffer("TimeMakeBuffer");
 
 void ContextNoisePlane::AuxThread0Func()
 {
@@ -437,15 +474,50 @@ void ContextNoisePlane::AuxThread0Func()
 void ContextNoisePlane::AuxThread1Func()
 {
 	ThreadInfo::ThreadName = "AuxThread1";
-	StopWatch sw;
+	StopWatch sw_loop;
+	//StopWatch sw_ticker;
+	//unsigned int count_idle = 0;
+	//unsigned int count_make = 0;
+	//sw_ticker.Start();
 	while (!ThreadTerminate)
 	{
 		if (!ThreadIdle && !AuxThread1Idle)
 		{
-			sw.Clear(); sw.Start();
-			ChunkManager.MakeBuffer();
-			sw.Stop();
-			AuxThread1Time.NewValue(sw.ElapsedTime());
+			/*if (sw_ticker.ElapsedTime() > 1.0f)
+			{
+				std::cout << "MakeBuffer: " << ToString(count_idle, 3) << ' ' << ToString(count_make, 3) << ' ' << ToString(100.0f * ((float)count_make / (float)count_idle), 0) << '%' << '\n' << std::flush;
+				count_idle = 0;
+				count_make = 0;
+				sw_ticker.Clear();
+				sw_ticker.Start();
+			}*/
+
+			sw_loop.Clear(); sw_loop.Start();
+
+			StopWatch sw;
+			AccessLockedChunk chunk;
+
+			ChunkManager.ChunksLock.AccessL(sw, TimeMakeBufferFind);
+			chunk = ChunkManager.FindMakeBuffer();
+			ChunkManager.ChunksLock.AccessU(sw, TimeMakeBufferFind);
+
+			if (chunk.Is())
+			{
+				//count_make++;
+				sw.Clear();
+				sw.Start();
+				((Chunk*)&(*chunk)) -> GraphicsMakeData();
+				sw.Stop();
+				TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
+				TimeMakeBuffer.ThreadName = ThreadInfo::ThreadName;
+			}
+			/*else
+			{
+				count_idle++;
+			}*/
+
+			sw_loop.Stop();
+			AuxThread1Time.NewValue(sw_loop.ElapsedTime());
 		}
 	}
 }
@@ -500,6 +572,18 @@ void ContextNoisePlane::DrawThreadUpdate()
 
 void ContextNoisePlane::Make()
 {
+	{
+		//window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
+		//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
+		window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
+		//window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
+		view.Depth.Color = window.DefaultColor;
+		view.Depth.Range.ChangeMin(0.5f);
+
+		LightAmbient = ::LightBase(0.2f, ColorF4(1.0f, 1.0f, 1.0f));
+		LightSolar = ::LightSolar(1.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(1.0f, -1.0f, 0.0f));
+	}
+
 #ifndef DISABLE_VIEW_TANGIBLE
 	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
 	ViewEntity.Box = BoxF3(
@@ -838,15 +922,6 @@ void ContextNoisePlane::GraphicsDelete()
 void ContextNoisePlane::Init()
 {
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
-	{
-		window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
-		//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
-		//window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
-		//window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
-		view.Depth.Color = window.DefaultColor;
-		view.Depth.Range.ChangeMin(0.5f);
-	}
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Make();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	ChangeMedia();
@@ -920,6 +995,8 @@ void ContextNoisePlane::Draw()
 	TimeDrawPolyHedra.NewValue(sw.ElapsedTime());
 
 	//PlaneManager.Draw();
+	ChunkManager.ShaderLayoutU.LightAmbient.Put(LightAmbient);
+	ChunkManager.ShaderLayoutU.LightSolar.Put(LightSolar);
 	sw.Clear(); sw.Start();
 	ChunkManager.Draw();
 	sw.Stop();
@@ -1203,8 +1280,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << ChunkManager::TimeAssambleFind << '\n';
 		ss << ChunkManager::TimeAssamble << '\n';
 		ss << '\n';
-		ss << ChunkManager::TimeMakeBufferFind << '\n';
-		ss << ChunkManager::TimeMakeBuffer << '\n';
+		ss << TimeMakeBufferFind << '\n';
+		ss << TimeMakeBuffer << '\n';
 		ss << '\n';
 		ss << ChunkManager::TimeGraphicsCreate << '\n';
 		ss << ChunkManager::TimeGraphicsDelete << '\n';
@@ -1535,10 +1612,12 @@ void ContextNoisePlane::FrameInput()
 		//HotBarUI.Hide();
 		if (PauseMenu.IsVisible())
 		{
+			//ThreadIdle = false;
 			PauseMenu.Hide();
 		}
 		else
 		{
+			//ThreadIdle = true;
 			PauseMenu.Show();
 		}
 	}
@@ -1638,6 +1717,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 {
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
+
+	LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
 
 	TestTime();
 
