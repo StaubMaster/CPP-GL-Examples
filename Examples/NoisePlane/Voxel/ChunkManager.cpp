@@ -552,7 +552,9 @@ ChunkManager::~ChunkManager()
 }
 ChunkManager::ChunkManager()
 	: ShaderU()
+	, ShaderLayoutU()
 	, ShaderF()
+	, ShaderLayoutF()
 //	, ChunksArray()
 //	, ChunksBox()
 	, Chunks()
@@ -561,7 +563,13 @@ ChunkManager::ChunkManager()
 //	, ChunksChecking()
 //	, ChunksCheckingCount()
 	, GraphicsExist(false)
-{ }
+{
+	ShaderU.UniformLayout = &ShaderLayoutU;
+	ShaderLayoutU.Shader = &ShaderU;
+
+	ShaderF.UniformLayout = &ShaderLayoutF;
+	ShaderLayoutF.Shader = &ShaderF;
+}
 
 
 

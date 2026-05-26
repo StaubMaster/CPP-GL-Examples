@@ -67,22 +67,22 @@ ContextNoisePlane::ContextNoisePlane()
 	PolyHedraManager.MakeCurrent();
 	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
-	Container::Array<Shader::Base*> shaders({
-		&PolyHedraManager.ShaderFullDefault,
-		&PolyHedraManager.ShaderWireDefault,
-		&ControlManager.Shader,
-		&TextManager.Shader,
+	Container::Array<Uniform::Layout *> layouts({
+//		&PolyHedraManager.ShaderFullDefault,
+//		&PolyHedraManager.ShaderWireDefault,
+		&ControlManager.ShaderLayout,
+		&TextManager.ShaderLayout,
 //		&PlaneManager.Shader,
-		&ChunkManager.ShaderU,
-		&ChunkManager.ShaderF,
+		&ChunkManager.ShaderLayoutU,
+		&ChunkManager.ShaderLayoutF,
 #ifndef DISABLE_INVENTORY
 		&InventoryShader,
 #endif
 	});
-	Multiform_DisplaySize.FindUniforms(shaders);
-	Multiform_View.FindUniforms(shaders);
-	Multiform_Depth.FindUniforms(shaders);
-	Multiform_FOV.FindUniforms(shaders);
+	Multiform_DisplaySize.FindUniforms(layouts);
+	Multiform_View.FindUniforms(layouts);
+	Multiform_Depth.FindUniforms(layouts);
+	Multiform_FOV.FindUniforms(layouts);
 
 	GenerationNoise.Plane = Perlin2D::Random(VectorU2(8, 8));
 	GenerationNoise.Cave0 = Perlin3D::Random(VectorU3(8, 8, 8));
@@ -839,10 +839,10 @@ void ContextNoisePlane::Init()
 {
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	{
-		//window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
-		//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
 		window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
-		window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
+		//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
+		//window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
+		//window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
 		view.Depth.Color = window.DefaultColor;
 		view.Depth.Range.ChangeMin(0.5f);
 	}

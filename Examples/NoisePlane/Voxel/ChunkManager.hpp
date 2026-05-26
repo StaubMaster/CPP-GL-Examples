@@ -122,7 +122,10 @@ struct ChunkManager
 
 	public:
 	VoxelGraphics::Shader		ShaderU;
+	VoxelGraphics::Layout		ShaderLayoutU;
 	VoxelGraphics::Shader		ShaderF;
+	VoxelGraphics::Layout		ShaderLayoutF;
+
 	MultiBuffe_ChunkU			BufferU;
 	VoxelGraphics::BufferF		BufferF;
 	Texture::Array2D			Texture;

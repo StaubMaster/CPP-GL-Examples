@@ -11,6 +11,14 @@ UI::Text::Shader::~Shader() { }
 
 UI::Text::Shader::Shader()
 	: Shader::Base()
+{ }
+
+
+
+UI::Text::Layout::~Layout() { }
+
+UI::Text::Layout::Layout()
+	: Uniform::Layout()
 	, DisplaySize(*this, "DisplaySize")
 	, PalletArrayMin(*this, "PalletArrayMin")
 	, PalletArrayMax(*this, "PalletArrayMax")

@@ -38,6 +38,7 @@ UI::Control::Manager::~Manager()
 }
 UI::Control::Manager::Manager()
 	: Shader()
+	, ShaderLayout()
 	, Buffer()
 	, WindowSize()
 	, Window()
@@ -48,6 +49,9 @@ UI::Control::Manager::Manager()
 	, GraphicsNeedMain(false)
 {
 	std::cout << "  ++++  " << "UI::Control::Manager::Manager()" << "\n";
+
+	Shader.UniformLayout = &ShaderLayout;
+	ShaderLayout.Shader = &Shader;
 
 	Window.Show();
 }

@@ -37,6 +37,8 @@ class Manager
 
 	public:
 	UI::Text::Shader	Shader;
+	UI::Text::Layout	ShaderLayout;
+
 	UI::Text::Buffer	Buffer;
 	UI::Text::Main_Layout	LayoutMain;
 	UI::Text::Inst_Layout	LayoutInst;

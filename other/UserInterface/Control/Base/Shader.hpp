@@ -3,6 +3,7 @@
 
 #include "Graphics/Shader/Base.hpp"
 
+#include "Graphics/Uniform/Layout.hpp"
 #include "Graphics/Uniform/_Include.hpp"
 
 
@@ -20,12 +21,18 @@ namespace Control
 class Shader : public ::Shader::Base
 {
 	public:
+	~Shader();
+	Shader();
+};
+
+class Layout : public Uniform::Layout
+{
+	public:
 	Uniform::DisplaySize	DisplaySize;
 
 	public:
-	Shader();
-	//Shader(const DirectoryInfo & dir);
-	~Shader();
+	~Layout();
+	Layout();
 };
 
 };

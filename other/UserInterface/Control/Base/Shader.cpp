@@ -6,25 +6,17 @@
 
 
 
+UI::Control::Shader::~Shader()
+{ }
 UI::Control::Shader::Shader()
 	: Shader::Base()
-	, DisplaySize(*this, "DisplaySize")
 { }
-/*UI::Control::Shader::Shader(const DirectoryInfo & dir)
-	: Shader::Base(
-		//Container::Base<::Shader::Code>(
-		//	(Shader::Code[]) {
-		//		Shader::Code(dir.File("UI/Control.vert")),
-		//		Shader::Code(dir.File("UI/Control.frag"))
-		//	}, 2
-		//)
-	),
-	WindowSize(Uniform::NameShader("WindowSize", *this))
-{
-	Container::Fixed<::Shader::Code> code(2);
-	code.Insert(::Shader::Code(dir.File("UI/Control.vert")));
-	code.Insert(::Shader::Code(dir.File("UI/Control.frag")));
-	Change(code);
-}*/
-UI::Control::Shader::~Shader()
+
+
+
+UI::Control::Layout::~Layout()
+{ }
+UI::Control::Layout::Layout()
+	: Uniform::Layout()
+	, DisplaySize(*this, "DisplaySize")
 { }

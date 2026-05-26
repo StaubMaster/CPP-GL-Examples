@@ -3,6 +3,7 @@
 
 #include "Graphics/Shader/Base.hpp"
 
+#include "Graphics/Uniform/Layout.hpp"
 #include "Graphics/Uniform/_Include.hpp"
 
 
@@ -20,6 +21,13 @@ namespace Text
 class Shader : public ::Shader::Base
 {
 	public:
+	~Shader();
+	Shader();
+};
+
+class Layout : public Uniform::Layout
+{
+	public:
 	Uniform::DisplaySize		DisplaySize;
 
 	// make Uniform::BoxF2
@@ -32,8 +40,8 @@ class Shader : public ::Shader::Base
 	Uniform::ColorF4Array<32>		TextColorArray;
 
 	public:
-	~Shader();
-	Shader();
+	~Layout();
+	Layout();
 };
 
 };

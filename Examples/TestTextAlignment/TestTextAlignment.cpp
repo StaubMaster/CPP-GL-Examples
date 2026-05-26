@@ -252,8 +252,8 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 
 void ContextTestTextAlignment::Resize(DisplaySize display_size)
 {
-	TextManager.Shader.DisplaySize.Put(display_size);
-	ControlManager.Shader.DisplaySize.Put(display_size);
+	TextManager.ShaderLayout.DisplaySize.Put(display_size);
+	ControlManager.ShaderLayout.DisplaySize.Put(display_size);
 	ControlManager.UpdateSize(display_size);
 }
 /* DisplaySize Functions

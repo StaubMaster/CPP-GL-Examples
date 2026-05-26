@@ -39,6 +39,7 @@ UI::Text::Manager::~Manager()
 }
 UI::Text::Manager::Manager()
 	: Shader()
+	, ShaderLayout()
 	, Buffer()
 	, ObjectDatas()
 	, InstancesBlock()
@@ -57,6 +58,9 @@ UI::Text::Manager::Manager()
 	, BufferMainNewData(false)
 	, BufferInstNewData(false)
 {
+	Shader.UniformLayout = &ShaderLayout;
+	ShaderLayout.Shader = &Shader;
+
 	std::cout << "  ++++  " << "UI::Text::Manager::Manager()" << '\n';
 }
 
@@ -104,8 +108,8 @@ void UI::Text::Manager::InitFont()
 	FontPalletMax[idx] = (TextFont -> DefaultCharacter.Box.Max);
 
 	Shader.Bind();
-	Shader.PalletArrayMin.Put(FontPalletMin.Memory());
-	Shader.PalletArrayMax.Put(FontPalletMax.Memory());
+	ShaderLayout.PalletArrayMin.Put(FontPalletMin.Memory());
+	ShaderLayout.PalletArrayMax.Put(FontPalletMax.Memory());
 }
 
 
@@ -430,9 +434,9 @@ void UI::Text::Manager::MakeInstances()
 	BufferInstNewData = true;
 
 	Shader.Bind();
-	Shader.TextBoundArrayMin.Put(TextBoundMin.Memory());
-	Shader.TextBoundArrayMax.Put(TextBoundMax.Memory());
-	Shader.TextColorArray.Put(TextColor.Memory());
+	ShaderLayout.TextBoundArrayMin.Put(TextBoundMin.Memory());
+	ShaderLayout.TextBoundArrayMax.Put(TextBoundMax.Memory());
+	ShaderLayout.TextColorArray.Put(TextColor.Memory());
 
 #ifdef TELEMETRY_TIME
 	WatchArray.Start();

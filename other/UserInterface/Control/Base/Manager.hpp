@@ -41,7 +41,9 @@ class Manager
 
 	public:
 	UI::Control::Shader		Shader;
-	UI::Control::Buffer		Buffer;
+	UI::Control::Layout		ShaderLayout;
+
+	UI::Control::Buffer			Buffer;
 	UI::Control::Main_Layout	LayoutMain;
 	UI::Control::Inst_Layout	LayoutInst;
 

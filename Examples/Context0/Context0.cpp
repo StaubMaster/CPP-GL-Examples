@@ -63,8 +63,8 @@ void Context0::Free()
 
 void Context0::Resize(DisplaySize display_size)
 {
-	TextManager.Shader.DisplaySize.Put(display_size);
-	ControlManager.Shader.DisplaySize.Put(display_size);
+	TextManager.ShaderLayout.DisplaySize.Put(display_size);
+	ControlManager.ShaderLayout.DisplaySize.Put(display_size);
 	ControlManager.UpdateSize(display_size);
 }
 void Context0::Frame(FrameTime frame_time)
