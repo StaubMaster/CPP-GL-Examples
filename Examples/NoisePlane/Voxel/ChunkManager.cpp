@@ -673,7 +673,97 @@ VoxelHit ChunkManager::HitVoxel(Ray3D ray)
 
 
 
+/* 3D Center Distance Algorithm
+instead of going over all
 
+Manhatten Distance ?
+each "ring" has the same Manhatton Distance
+so all coords summed up, relative to the Center, absolute
+that is the same for each "ring"
+
+(X, Y, Z)
+(ring, 0, 0)
+relative to Center
+
+ContinueX	(ring - 1, +1,  0)
+ContinueY	(ring - 1,  0, +1)
+ContinueY	(ring - 1, -1,  0)
+ContinueY	(ring - 1,  0, -1)
+
+ContinueX	(ring - 2, +2,  0)
+ContinueY	(ring - 2, +1, +1)
+ContinueY	(ring - 2,  0, +2)
+ContinueY	(ring - 2, -1, +1)
+ContinueY	(ring - 2, -2,  0)
+
+
+dirY = -1
+dirZ = +1
+Y = dist
+Z = 0
+
+Y += dirY
+Z += dirZ
+if (Y == 0) { invert dirZ }
+if (Z == 0) { invert dirY }
+
+|pos(ring - 2, +2,  0)	dir( ?, -1, +1)
+|pos(ring - 2, +1, +1)
+|pos(ring - 2,  0, +2)	dir( ?, -1, -1)
+|pos(ring - 2, -1, +1)
+|pos(ring - 2, -2,  0)	dir( ?, +1, -1)
+|pos(ring - 2, -1, -1)
+|pos(ring - 2,  0, -2)	dir( ?, +1, +1)
+|pos(ring - 2, +1, -1)
+|pos(ring - 2, +2,  0)	done
+
+so generally:
+|pos(ring - n, +n    ,  0    )	dir( ?, -1, +1)
+|pos(ring - n, +n - 1,  0 + 1)
+|...
+|pos(ring - n,  0 + 1, +n - 1)
+|pos(ring - n,  0    , +n    )	dir( ?, -1, -1)
+|pos(ring - n,  0 - 1, +n - 1)
+|...
+|pos(ring - n, -n + 1,  0 + 1)
+|pos(ring - n, -n   ,   0    )	dir( ?, +1, -1)
+|pos(ring - n, -n + 1,  0 - 1)
+|...
+|pos(ring - n,  0 - 1, -n + 1)
+|pos(ring - n,  0    , -n    )	dir( ?, +1, +1)
+|pos(ring - n,  0 + 1, -n + 1)
+|...
+|pos(ring - n, +n + 1,  0 - 1)
+|pos(ring - n, +n    ,  0    )	done
+
+do half of this along the other Axis
+
+|pos(+n    , ?, ?)	loopYZ(0    )
+|pos(+n - 1, ?, ?)	loopYZ(0 + 1)
+|...
+|pos( 0 + 1, ?, ?)	loopYZ(n - 1)
+|pos( 0    , ?, ?)	loopYZ(n    )
+|pos( 0 - 1, ?, ?)	loopYZ(n - 1)
+|...
+|pos(-n + 1, ?, ?)	loopYZ(0 + 1)
+|pos(-n    , ?, ?)	loopYZ(0    )
+
+should the 2D Loop be along XY of YZ ?
+
+skip Edges
+direction is inverted when Axis == 0
+if Axis == Enge, so Axis +- 1 is outside
+	then invert the Direction of the other
+	and also invert the Position
+	normally 0 is inverted, which is still 0
+
+how to visualize for testing ?
+make a List of Boxes
+Button to clear
+Button to continue
+show Boxes using PolyHedra
+
+*/
 Chunk * ChunkManager::GenerateChunkFind()
 {
 	Chunk * found = nullptr;
@@ -681,19 +771,14 @@ Chunk * ChunkManager::GenerateChunkFind()
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
 		Chunk * ptr = Chunks[i];
-		if (ptr == nullptr)
-		{ continue; }
+		if (ptr == nullptr) { continue; }
+
 		Chunk & chunk = *ptr;
-
-		//std::cout << ThreadInfo::ThreadName << " FindGenerateChunk " << __LINE__ << '\n';
 		chunk.AccessL();
-		//std::cout << ThreadInfo::ThreadName << " FindGenerateChunk " << __LINE__ << '\n';
 
-		if (chunk.TerrainDone && chunk.DecorationsGenerated)
-		{ chunk.AccessU(); continue; }
+		if (chunk.TerrainDone && chunk.DecorationsGenerated) { chunk.AccessU(); continue; }
 
-		if (!CareBox.IntersectVecInclusive(chunk.Index).All(true))
-		{ chunk.AccessU(); continue; }
+		if (!CareBox.IntersectVecInclusive(chunk.Index).All(true)) { chunk.AccessU(); continue; }
 
 		VectorF3 rel = chunk.Index - Center;
 		float d = rel.length2();

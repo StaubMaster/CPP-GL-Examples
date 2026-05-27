@@ -382,6 +382,12 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	sw2.Stop();
 	ViewUpdateCollisionTime.NewValue(sw2.ElapsedTime());
 
+	// needs new View Position
+	// but Ray needs new Chunks ?
+	// they dont need eachother in the same frame
+	// so it should be fine to use a old View Position
+	// or Ray into old Chunks
+
 	sw2.Clear(); sw2.Start();
 	ChunkManager.GraphicsUpdate(); // this has nothing to do with View. should be done in DrawThread
 	//ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF()); // do this in Insert/Remove Thread
@@ -410,41 +416,6 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	move View stuff to another Thread ?
 	Draw Thread needs to Create/Delete Graphics
 	Input from different Thread ?
-*/
-
-/* busy waiting
-	the loops that check if something needs update
-	those still take CPU Usage
-	how to not take CPU ?
-	sleep ?
-	want want these to continue as soon as something happens
-
-	std::condition_variable
-	as I understand
-
-	Thread1:
-		checks condition(function)
-		if condition is false
-		then wait
-
-	Thread2:
-		use condition_variable so tell waiting threads (1 or all) to check again
-		if Thread2 changed whatever is used for checking (like a bool)
-		then Thread1 will check again, the condition will pass, and it will continue
-
-	what is the condition ?
-		Find a Chunk
-		if no Chunk was found
-		then keep waiting
-		else do whatever needs to be done with the chunk
-
-		that seems long to check
-		and also locks to check ?
-		
-		maybe have a Container of all the Chunks that need something done
-		then just check that it is not empty ?
-
-		whenever MainBufferDrawNew gets changed, check condition
 */
 
 static ValueAverager<float>		TimeUpdateThread(64);
@@ -530,7 +501,7 @@ void ContextNoisePlane::AuxThread2Func()
 		if (ThreadIdle || AuxThread2DoIdle) { continue; }
 
 		StopWatch sw;
-		Chunk * chunk;
+		AccessLockedChunk chunk;
 
 		std::unique_lock<std::mutex> lk(ChunkManager.GenerateChunkMutex);
 		ChunkManager.GenerateChunkConditionVar.wait(lk, [&]
@@ -541,7 +512,7 @@ void ContextNoisePlane::AuxThread2Func()
 			chunk = ChunkManager.GenerateChunkFind();
 			ChunkManager.ChunksLock.AccessU(sw, TimeGenerateFind);
 
-			if (chunk != nullptr)
+			if (chunk.Is())
 			{
 				AuxThread2IsIdle = false;
 				return true;
@@ -552,19 +523,17 @@ void ContextNoisePlane::AuxThread2Func()
 
 		if (ThreadTerminate) { return; }
 
-		if (chunk == nullptr) { continue; }
+		if (!chunk.Is()) { continue; }
 
-		chunk -> AccessToAssign();
+		AssignLockedChunk chunk2 = chunk.ToAssign();
 
 		sw.Clear();
 		sw.Start();
-		chunk -> GenerateTerrain(GenerationNoise);
-		chunk -> GenerateDecoration(GenerationNoise.Plane, GenerationNoise.Cave0);
+		(*chunk2).GenerateTerrain(GenerationNoise);
+		(*chunk2).GenerateDecoration(GenerationNoise.Plane, GenerationNoise.Cave0);
 		sw.Stop();
 		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
 		TimeGenerate.ThreadName = ThreadInfo::ThreadName;
-
-		chunk -> AssignU();
 	}
 }
 void ContextNoisePlane::AuxThread3Func()
@@ -630,6 +599,56 @@ void ContextNoisePlane::DrawThreadUpdate()
 
 
 
+
+
+static VectorI3						CenterIndexLoop_Center(0, 0, 0);
+static Container::Binary<VectorI3>	CenterIndexLoop_List;
+
+static unsigned int					CenterIndexLoop_Layer;
+static unsigned int					CenterIndexLoop_Limit;
+static VectorI3						CenterIndexLoop_Index;
+static VectorI3						CenterIndexLoop_Dir;
+
+static void CenterIndexLoop_Clear()
+{
+	CenterIndexLoop_List.Clear();
+
+	CenterIndexLoop_Layer = 0;
+	CenterIndexLoop_Limit = 4;
+	CenterIndexLoop_Index = VectorI3(+CenterIndexLoop_Layer, 0, 0);
+	CenterIndexLoop_Dir = VectorI3(0, 0, 0);
+}
+static void CenterIndexLoop_Loop()
+{
+	CenterIndexLoop_List.Insert(CenterIndexLoop_Index);
+
+	CenterIndexLoop_Index.X += CenterIndexLoop_Dir.X;
+	CenterIndexLoop_Index.Y += CenterIndexLoop_Dir.Y;
+
+	if (CenterIndexLoop_Index.X == 0) { CenterIndexLoop_Dir.Y = -CenterIndexLoop_Dir.Y; }
+	if (CenterIndexLoop_Index.Y == 0) { CenterIndexLoop_Dir.X = -CenterIndexLoop_Dir.X; }
+
+	if ((unsigned int)CenterIndexLoop_Index.X == CenterIndexLoop_Layer)
+	{
+		CenterIndexLoop_Layer++;
+		CenterIndexLoop_Index = VectorI3(+CenterIndexLoop_Layer, 0, 0);
+		CenterIndexLoop_Dir = VectorI3(-1, +1, 0);
+	}
+}
+static void CenterIndexLoop_Show(PolyHedra * polyhedra)
+{
+	for (unsigned int i = 0; i < CenterIndexLoop_List.Count(); i++)
+	{
+		PolyHedraObject obj(polyhedra);
+		obj.ShowFull();
+		obj.Trans().Position = (CenterIndexLoop_List[i] + CenterIndexLoop_Center);
+	}
+}
+
+
+
+
+
 void ContextNoisePlane::Make()
 {
 	{
@@ -661,8 +680,9 @@ void ContextNoisePlane::Make()
 
 	// 3 Cuboids. implement Scaling for Transformations
 	{
-		VoxelCube = new PolyHedra();
-		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
+		//VoxelCube = new PolyHedra();
+		VoxelCube = PolyHedra::Generate::HexaHedron(0.5f);
+		//PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
 		PolyHedraManager.PlacePolyHedra(VoxelCube);
 	}
 	{
@@ -696,6 +716,8 @@ void ContextNoisePlane::Make()
 	}
 	//Perlin2D::DebugShow();
 	//TestRandom();
+
+	CenterIndexLoop_Clear();
 }
 
 
@@ -1000,9 +1022,9 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	//ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
-	//ChunkManager.ChangeSize(8, 4);
+	ChunkManager.ChangeSize(8, 6);
 	//ChunkManager.ChangeSize(16, 8);
-	ChunkManager.ChangeSize(16, 12);
+	//ChunkManager.ChangeSize(16, 12);
 	//ChunkManager.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
@@ -1023,6 +1045,8 @@ void ContextNoisePlane::Free()
 	AuxThread2.join();
 	AuxThread3.join();
 }
+
+
 
 
 
@@ -1141,75 +1165,6 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 	ShowTime(ss, time.Min()); ss << ' ';
 	ShowTime(ss, time.Average()); ss << ' ';
 	ShowTime(ss, time.Max()); ss << '\n';
-}
-
-
-
-static unsigned int				TestTime_UInt_Loop = 1024;
-//static unsigned int				TestTime_UInt_Value = 0xFFFFFFFF;
-static unsigned int				TestTime_UInt_Value = 997;
-static ValueAverager<float>		TestTime_UInt_0(1024);
-static ValueAverager<float>		TestTime_UInt_1(1024);
-static void TestTime_UInt()
-{
-	{
-		StopWatch sw;
-		sw.Start();
-		std::stringstream ss;
-		for (unsigned int i = 0; i < TestTime_UInt_Loop; i++)
-		{
-			ss << std::fixed << TestTime_UInt_Value << '\n';
-		}
-		sw.Stop();
-		TestTime_UInt_0.NewValue(sw.ElapsedTime());
-	}
-	{
-		StopWatch sw;
-		sw.Start();
-		std::stringstream ss;
-		for (unsigned int i = 0; i < TestTime_UInt_Loop; i++)
-		{
-			ss << ToString(TestTime_UInt_Value) << '\n';
-		}
-		sw.Stop();
-		TestTime_UInt_1.NewValue(sw.ElapsedTime());
-	}
-}
-
-static unsigned int				TestTime_Float_Loop = 1024;
-static float					TestTime_Float_Value = 0.1234f;
-static ValueAverager<float>		TestTime_Float_0(1024);
-static ValueAverager<float>		TestTime_Float_1(1024);
-static void TestTime_Float()
-{
-	{
-		StopWatch sw;
-		sw.Start();
-		std::stringstream ss;
-		for (unsigned int i = 0; i < TestTime_Float_Loop; i++)
-		{
-			ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << TestTime_Float_Value << '\n';
-		}
-		sw.Stop();
-		TestTime_Float_0.NewValue(sw.ElapsedTime());
-	}
-	{
-		StopWatch sw;
-		sw.Start();
-		std::stringstream ss;
-		for (unsigned int i = 0; i < TestTime_Float_Loop; i++)
-		{
-			ss << ToString(TestTime_Float_Value) << '\n';
-		}
-		sw.Stop();
-		TestTime_Float_1.NewValue(sw.ElapsedTime());
-	}
-}
-
-static void TestTime()
-{
-	TestTime_UInt();
-	TestTime_Float();
 }
 
 
@@ -1784,7 +1739,9 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 	LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
 
-	TestTime();
+	if (window.KeyBoardManager[Keys::Delete].State == State::Press) { CenterIndexLoop_Clear(); }
+	if (window.KeyBoardManager[Keys::Insert].State == State::Press) { CenterIndexLoop_Loop(); }
+	CenterIndexLoop_Show(VoxelCube);
 
 	StopWatch sw;
 	sw.Start();

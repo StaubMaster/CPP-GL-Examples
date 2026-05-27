@@ -111,6 +111,109 @@ AccessLockedChunk::AccessLockedChunk(Chunk * chunk)
 	}
 }
 
+AssignLockedChunk AccessLockedChunk::ToAssign()
+{
+	if (Count != nullptr)
+	{
+		if ((*Count) == 0)
+		{
+			delete Count;
+			Count = nullptr;
+			if (Pointer != nullptr)
+			{
+				Chunk * chunk = Pointer;
+				Pointer = nullptr;
+				chunk -> AccessToAssign();
+				return AssignLockedChunk(chunk);
+			}
+		}
+		else
+		{
+			(*Count)--;
+		}
+	}
+	return AssignLockedChunk();
+}
+
+
+
+bool		AssignLockedChunk::Is() const { return (Pointer != nullptr); }
+Chunk &		AssignLockedChunk::operator*() { return (*Pointer); }
+
+AssignLockedChunk::~AssignLockedChunk()
+{
+	if (Count != nullptr)
+	{
+		if ((*Count) == 0)
+		{
+			delete Count;
+			if (Pointer != nullptr)
+			{
+				Pointer -> AssignU();
+			}
+		}
+		else
+		{
+			(*Count)--;
+		}
+	}
+}
+AssignLockedChunk::AssignLockedChunk()
+	: Count(nullptr)
+	, Pointer(nullptr)
+{ }
+AssignLockedChunk::AssignLockedChunk(const AssignLockedChunk & other)
+	: Count(other.Count)
+	, Pointer(other.Pointer)
+{
+	if (Count != nullptr)
+	{
+		(*Count)++;
+	}
+}
+AssignLockedChunk & AssignLockedChunk::operator=(const AssignLockedChunk & other)
+{
+	if (Count != nullptr)
+	{
+		if ((*Count) == 0)
+		{
+			delete Count;
+			if (Pointer != nullptr)
+			{
+				Pointer -> AssignU();
+			}
+		}
+		else
+		{
+			(*Count)--;
+		}
+	}
+
+	Count = other.Count;
+	Pointer = other.Pointer;
+	if (Count != nullptr)
+	{
+		(*Count)++;
+	}
+
+	return *this;
+}
+
+AssignLockedChunk::AssignLockedChunk(Chunk * chunk)
+	: Count(new unsigned)
+	, Pointer(chunk)
+{
+	if (Pointer != nullptr)
+	{
+		(*Count) = 0;
+	}
+	else
+	{
+		delete Count;
+		Count = nullptr;
+	}
+}
+
 
 
 
@@ -182,6 +285,19 @@ AccessLockedChunk Chunk::ToAccessTry()
 	}
 	return AccessLockedChunk();
 }
+AssignLockedChunk Chunk::ToAssign()
+{
+	AssignL();
+	return AssignLockedChunk(this);
+}
+/*AssignLockedChunk Chunk::ToAssignTry()
+{
+	if (AssignT())
+	{
+		return AssignLockedChunk(this);
+	}
+	return AssignLockedChunk();
+}*/
 
 
 
@@ -369,7 +485,7 @@ void Chunk::GenerateTerrain(const ChunkGenerationNoise & noise)
 
 	MakeNull();
 
-	TerrainFlat(0, 0);
+//	TerrainFlat(0, 0);
 //	TerrainPillars();
 //	TerrainPlane(noise.Plane);
 //	TerrainCaveNoodle(noise.Cave0, noise.Cave1);
@@ -631,14 +747,14 @@ void Chunk::GenerateDecoration(const Perlin2D & noise2, const Perlin3D & noise3)
 
 	if (DecorationsGenerated) { return; }
 
-	if ((Index.X % 2 == 0) && (Index.Z % 2 == 0))
+	/*if ((Index.X % 2 == 0) && (Index.Z % 2 == 0))
 	{
 		StructureObject obj;
 		obj.Structure = &Structure::Tree1;
 		obj.Origin = VectorU3(15, 0, 15);
 		if (FindMinYNull(obj.Origin))
 		{ Decorations.Insert(obj); }
-	}
+	}*/
 
 	//DecorateTrees(noise2);
 
