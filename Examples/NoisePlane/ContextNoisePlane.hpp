@@ -225,17 +225,18 @@ ValueAverager<float>	AuxThread0Time;
 void					AuxThread0Func();
 
 std::thread				AuxThread1;
-bool					AuxThread1Idle = false;
+bool					AuxThread1DoIdle = false;
+bool					AuxThread1IsIdle = false;
 void					AuxThread1Func();
 
 std::thread				AuxThread2;
-bool					AuxThread2Idle = false;
-ValueAverager<float>	AuxThread2Time;
+bool					AuxThread2DoIdle = false;
+bool					AuxThread2IsIdle = false;
 void					AuxThread2Func();
 
 std::thread				AuxThread3;
-bool					AuxThread3Idle = false;
-ValueAverager<float>	AuxThread3Time;
+bool					AuxThread3DoIdle = false;
+bool					AuxThread3IsIdle = false;
 void					AuxThread3Func();
 
 void DrawThreadUpdate();

@@ -155,6 +155,8 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	//BufferF.Main.Tex.Change(1);
 	//BufferF.Main.Normal.Change(2);
 	//BufferF.Inst.Pos.Change(3);
+	Manager.GenerateChunkConditionVar.notify_all();
+	Manager.AssambleChunkConditionVar.notify_all();
 }
 
 
@@ -374,6 +376,7 @@ void Chunk::GenerateTerrain(const ChunkGenerationNoise & noise)
 //	TerrainCaveBlob(noise.Cave2);
 
 	TerrainDone = true;
+	Manager.AssambleChunkConditionVar.notify_all();
 }
 
 /*
@@ -640,6 +643,7 @@ void Chunk::GenerateDecoration(const Perlin2D & noise2, const Perlin3D & noise3)
 	//DecorateTrees(noise2);
 
 	DecorationsGenerated = true;
+	Manager.AssambleChunkConditionVar.notify_all();
 }
 
 bool Chunk::FindMinYNull(VectorU3 & udx) const
@@ -795,6 +799,7 @@ void Chunk::AssambleDecoration()
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 
 	DecorationsAssambled = true;
+	Manager.AssambleChunkConditionVar.notify_all();
 
 	if (GraphicsExist)
 	{

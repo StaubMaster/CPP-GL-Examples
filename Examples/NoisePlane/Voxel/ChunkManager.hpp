@@ -107,12 +107,6 @@ struct ChunkManager
 	static WaitDoTime	TimeUpdateInsert;
 	static WaitDoTime	TimeUpdateRemove;
 
-	static WaitDoTime	TimeGenerateFind;
-	static WaitDoTime	TimeGenerate;
-
-	static WaitDoTime	TimeAssambleFind;
-	static WaitDoTime	TimeAssamble;
-
 	static WaitDoTime	TimeGraphicsCreate;
 	static WaitDoTime	TimeGraphicsDelete;
 	static WaitDoTime	TimeDraw;
@@ -187,15 +181,15 @@ struct ChunkManager
 
 
 
-	private:
-	Chunk *	FindGenerateChunk();
 	public:
-	void		GenerateChunk(const ChunkGenerationNoise & noise);
+	std::mutex					GenerateChunkMutex;
+	std::condition_variable		GenerateChunkConditionVar;
+	Chunk *						GenerateChunkFind();
 
-	private:
-	Chunk *	FindAssambleChunk();
 	public:
-	void		AssambleChunk();
+	std::mutex					AssambleChunkMutex;
+	std::condition_variable		AssambleChunkConditionVar;
+	Chunk *						AssambleChunkFind();
 
 
 
@@ -208,10 +202,9 @@ struct ChunkManager
 	void	GraphicsUpdate();
 
 	public:
-	std::mutex				MakeBufferMutex;
-	std::condition_variable	MakeBufferConditionVar;
-	AccessLockedChunk	FindMakeBuffer();
-	void					MakeBuffer();
+	std::mutex					MakeBufferMutex;
+	std::condition_variable		MakeBufferConditionVar;
+	AccessLockedChunk			MakeBufferFind();
 
 	public:
 	void	Draw();

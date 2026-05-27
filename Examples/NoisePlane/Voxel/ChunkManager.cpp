@@ -29,10 +29,6 @@ WaitDoTime ChunkManager::TimeRemove("TimeRemove");
 WaitDoTime ChunkManager::TimeUpdate("TimeUpdate");
 WaitDoTime ChunkManager::TimeUpdateInsert("TimeUpdateInsert");
 WaitDoTime ChunkManager::TimeUpdateRemove("TimeUpdateRemove");
-WaitDoTime ChunkManager::TimeGenerateFind("TimeGenerateFind");
-WaitDoTime ChunkManager::TimeGenerate("TimeGenerate");
-WaitDoTime ChunkManager::TimeAssambleFind("TimeAssambleFind");
-WaitDoTime ChunkManager::TimeAssamble("TimeAssamble");
 WaitDoTime ChunkManager::TimeGraphicsCreate("TimeGraphicsCreate");
 WaitDoTime ChunkManager::TimeGraphicsDelete("TimeGraphicsDelete");
 WaitDoTime ChunkManager::TimeDraw("TimeDraw");
@@ -506,6 +502,8 @@ void ChunkManager::UpdateChunksContainer()
 		}
 		ChunksToInsertLock.AssignU(sw2, TimeUpdateInsert);
 	}
+	GenerateChunkConditionVar.notify_all();
+	AssambleChunkConditionVar.notify_all();
 
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 	ChunksLock.AccessU(sw, TimeUpdate);
@@ -676,13 +674,8 @@ VoxelHit ChunkManager::HitVoxel(Ray3D ray)
 
 
 
-Chunk * ChunkManager::FindGenerateChunk()
+Chunk * ChunkManager::GenerateChunkFind()
 {
-	StopWatch sw;
-	//std::cout << ThreadInfo::ThreadName << " FindGenerateChunk " << __LINE__ << '\n';
-	ChunksLock.AccessL(sw, TimeGenerateFind);
-	//std::cout << ThreadInfo::ThreadName << " FindGenerateChunk " << __LINE__ << '\n';
-
 	Chunk * found = nullptr;
 	float dist;
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
@@ -713,34 +706,10 @@ Chunk * ChunkManager::FindGenerateChunk()
 		else { chunk.AccessU(); }
 	}
 
-	//std::cout << ThreadInfo::ThreadName << " FindGenerateChunk " << __LINE__ << '\n';
-	ChunksLock.AccessU(sw, TimeGenerateFind);
-	//std::cout << ThreadInfo::ThreadName << " FindGenerateChunk " << __LINE__ << '\n';
-
 	return found;
 }
-void ChunkManager::GenerateChunk(const ChunkGenerationNoise & noise)
-{
-	//std::cout << ThreadInfo::ThreadName << " GenerateChunk " << __LINE__ << '\n';
-	Chunk * chunk = FindGenerateChunk();
-	//std::cout << ThreadInfo::ThreadName << " GenerateChunk " << __LINE__ << '\n';
-	if (chunk == nullptr) { return; }
-	//std::cout << ThreadInfo::ThreadName << " GenerateChunk " << __LINE__ << '\n';
 
-	chunk -> AccessToAssign();
-
-	StopWatch sw;
-	sw.Start();
-	chunk -> GenerateTerrain(noise);
-	chunk -> GenerateDecoration(noise.Plane, noise.Cave0);
-	sw.Stop();
-	TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
-	TimeGenerate.ThreadName = ThreadInfo::ThreadName;
-
-	chunk -> AssignU();
-}
-
-Chunk * ChunkManager::FindAssambleChunk()
+Chunk * ChunkManager::AssambleChunkFind()
 {
 	Chunk * found = nullptr;
 	float dist;
@@ -777,31 +746,8 @@ Chunk * ChunkManager::FindAssambleChunk()
 
 	return found;
 }
-void ChunkManager::AssambleChunk()
-{
-	StopWatch sw;
 
-	//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
-	ChunksLock.AccessL(sw, TimeAssambleFind);
-	//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
-	Chunk * chunk = FindAssambleChunk();
-	//std::cout << ThreadInfo::ThreadName << " AssambleChunk " << __LINE__ << '\n';
-	ChunksLock.AccessU(sw, TimeAssambleFind);
-	//std::cout << ThreadInfo::ThreadName << " AssambleChunk " << __LINE__ << '\n';
-	if (chunk == nullptr) { return; }
-	//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
 
-	chunk -> AccessToAssign();
-
-	sw.Clear();
-	sw.Start();
-	chunk -> AssambleDecoration();
-	sw.Stop();
-	TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
-	TimeAssamble.ThreadName = ThreadInfo::ThreadName;
-
-	chunk -> AssignU();
-}
 
 
 
@@ -903,11 +849,7 @@ void ChunkManager::GraphicsUpdate()
 
 
 
-/*
-Know = 16 means 35937 Chunks that are looped over
-go outside from center, take first matching case
-*/
-AccessLockedChunk ChunkManager::FindMakeBuffer()
+AccessLockedChunk ChunkManager::MakeBufferFind()
 {
 	StopWatch sw;
 
@@ -938,27 +880,6 @@ AccessLockedChunk ChunkManager::FindMakeBuffer()
 
 	return found;
 }
-/*void ChunkManager::MakeBuffer()
-{
-	StopWatch sw;
-
-	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-	ChunksLock.AccessL(sw, TimeMakeBufferFind);
-	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-	AccessLockedChunk chunk = FindMakeBuffer();
-	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-	ChunksLock.AccessU(sw, TimeMakeBufferFind);
-	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-	if (!chunk.Is()) { return; }
-	//std::cout << ThreadInfo::ThreadName << " GraphicsUpdateDataAround " << __LINE__ << '\n';
-
-	sw.Clear();
-	sw.Start();
-	((Chunk*)&(*chunk)) -> GraphicsMakeData();
-	sw.Stop();
-	TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
-	TimeMakeBuffer.ThreadName = ThreadInfo::ThreadName;
-}*/
 
 void ChunkManager::Draw()
 {
