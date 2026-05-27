@@ -42,7 +42,7 @@ static void string_buffer_digit_10(int digit)
 	string_buffer_put(c);
 }
 
-static void string_buffer_int(unsigned int num, unsigned char digits)
+static void string_buffer_uint32_rev(unsigned int num, unsigned char digits)
 {
 	for (int i = 0; i < 10; i++)
 	{
@@ -53,22 +53,35 @@ static void string_buffer_int(unsigned int num, unsigned char digits)
 			string_buffer_digit_10(digit);
 		}
 	}
-	string_buffer_reverse();
 }
 
 
 
 #include <math.h>
 
-const char * ToString(unsigned int num, unsigned char digits)
+const char * ToStringU32(unsigned int num, unsigned char digits)
 {
 	string_buffer_new();
 
-	string_buffer_int(num, digits);
+	string_buffer_uint32_rev(num, digits);
+	string_buffer_reverse();
 
 	return string_buffer_done();
 }
-const char * ToString(float num)
+const char * ToStringI32(int num, unsigned char digits)
+{
+	string_buffer_new();
+
+	string_buffer_uint32_rev(num, digits);
+	if (num > 0) { string_buffer_put('+'); }
+	if (num < 0) { string_buffer_put('-'); }
+	// for padding, give 0 a ' '
+	// also give 0x7FFFFFFF a ' ' since its kind of both ?
+	string_buffer_reverse();
+
+	return string_buffer_done();
+}
+const char * ToStringF32(float num, unsigned char digits_after, unsigned char digits_before)
 {
 	string_buffer_new();
 
@@ -77,10 +90,11 @@ const char * ToString(float num)
 
 	full = num;
 	num -= full;
-	string_buffer_int(full, 1);
+	string_buffer_uint32_rev(full, digits_before);
+	string_buffer_reverse();
 
 	string_buffer_put('.');
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < digits_after; i++)
 	{
 		num *= 10;
 
@@ -93,6 +107,13 @@ const char * ToString(float num)
 }
 
 
+
+const char * ToString(unsigned int num, unsigned char digits)
+{ return ToStringU32(num, digits); }
+const char * ToString(int num, unsigned char digits)
+{ return ToStringI32(num, digits); }
+const char * ToString(float num, unsigned char digits_after, unsigned char digits_before)
+{ return ToStringF32(num, digits_after, digits_before); }
 
 
 

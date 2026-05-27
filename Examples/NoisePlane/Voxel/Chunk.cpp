@@ -800,6 +800,7 @@ void Chunk::AssambleDecoration()
 	{
 		Manager.NeighbourUpdateBufferMain(Index);
 		MainBufferDataNew = true;
+		Manager.MakeBufferConditionVar.notify_all();
 	}
 }
 
@@ -843,6 +844,7 @@ void Chunk::GraphicsCreate()
 	if (GenerationDone())
 	{
 		MainBufferDataNew = true;
+		Manager.MakeBufferConditionVar.notify_all();
 	}
 }
 void Chunk::GraphicsDelete()

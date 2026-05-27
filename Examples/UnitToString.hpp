@@ -3,8 +3,13 @@
 
 
 
+const char *	ToStringU32(unsigned int num, unsigned char digits = 1);
+const char *	ToStringI32(int num, unsigned char digits = 1);
+const char *	ToStringF32(float num, unsigned char digits_after = 1, unsigned char digits_before = 1);
+
 const char *	ToString(unsigned int num, unsigned char digits = 1);
-const char *	ToString(float num);
+const char *	ToString(int num, unsigned char digits = 1);
+const char *	ToString(float num, unsigned char digits_after = 1, unsigned char digits_before = 1);
 
 
 

@@ -133,6 +133,10 @@ ChunkGenerationNoise	GenerationNoise;
 
 
 
+// make a Layout for Multiforms
+// it takes an array of shaders
+// or singular shaders, one a fter another
+// and tries to get the names
 Multiform::DisplaySize		Multiform_DisplaySize;
 ::Multiform::Matrix4x4		Multiform_View;
 ::Multiform::Depth			Multiform_Depth;
@@ -222,7 +226,6 @@ void					AuxThread0Func();
 
 std::thread				AuxThread1;
 bool					AuxThread1Idle = false;
-ValueAverager<float>	AuxThread1Time;
 void					AuxThread1Func();
 
 std::thread				AuxThread2;

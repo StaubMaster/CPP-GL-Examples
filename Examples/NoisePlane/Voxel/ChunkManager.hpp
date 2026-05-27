@@ -24,6 +24,7 @@
 
 # include <mutex>
 # include <atomic>
+# include <condition_variable>
 
 struct Voxel;
 struct Chunk;
@@ -207,6 +208,8 @@ struct ChunkManager
 	void	GraphicsUpdate();
 
 	public:
+	std::mutex				MakeBufferMutex;
+	std::condition_variable	MakeBufferConditionVar;
 	AccessLockedChunk	FindMakeBuffer();
 	void					MakeBuffer();
 

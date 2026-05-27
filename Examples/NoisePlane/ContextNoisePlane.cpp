@@ -57,7 +57,6 @@ ContextNoisePlane::ContextNoisePlane()
 	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 	, AuxThread0Time(64)
 	, AuxThread1(&ContextNoisePlane::AuxThread1Func, this)
-	, AuxThread1Time(64)
 	, AuxThread2(&ContextNoisePlane::AuxThread2Func, this)
 	, AuxThread2Time(64)
 	, AuxThread3(&ContextNoisePlane::AuxThread3Func, this)
@@ -474,36 +473,33 @@ void ContextNoisePlane::AuxThread0Func()
 void ContextNoisePlane::AuxThread1Func()
 {
 	ThreadInfo::ThreadName = "AuxThread1";
-	StopWatch sw_loop;
-	//StopWatch sw_ticker;
-	//unsigned int count_idle = 0;
-	//unsigned int count_make = 0;
-	//sw_ticker.Start();
 	while (!ThreadTerminate)
 	{
 		if (!ThreadIdle && !AuxThread1Idle)
 		{
-			/*if (sw_ticker.ElapsedTime() > 1.0f)
-			{
-				std::cout << "MakeBuffer: " << ToString(count_idle, 3) << ' ' << ToString(count_make, 3) << ' ' << ToString(100.0f * ((float)count_make / (float)count_idle), 0) << '%' << '\n' << std::flush;
-				count_idle = 0;
-				count_make = 0;
-				sw_ticker.Clear();
-				sw_ticker.Start();
-			}*/
-
-			sw_loop.Clear(); sw_loop.Start();
-
 			StopWatch sw;
 			AccessLockedChunk chunk;
 
-			ChunkManager.ChunksLock.AccessL(sw, TimeMakeBufferFind);
-			chunk = ChunkManager.FindMakeBuffer();
-			ChunkManager.ChunksLock.AccessU(sw, TimeMakeBufferFind);
+			std::unique_lock<std::mutex> lk(ChunkManager.MakeBufferMutex);
+			ChunkManager.MakeBufferConditionVar.wait(lk, [&]
+			{
+				if (ThreadTerminate) { return true; }
+
+				ChunkManager.ChunksLock.AccessL(sw, TimeMakeBufferFind);
+				chunk = ChunkManager.FindMakeBuffer();
+				ChunkManager.ChunksLock.AccessU(sw, TimeMakeBufferFind);
+
+				if (chunk.Is())
+				{
+					return true;
+				}
+				return false;
+			});
+
+			if (ThreadTerminate) { return; }
 
 			if (chunk.Is())
 			{
-				//count_make++;
 				sw.Clear();
 				sw.Start();
 				((Chunk*)&(*chunk)) -> GraphicsMakeData();
@@ -511,13 +507,6 @@ void ContextNoisePlane::AuxThread1Func()
 				TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
 				TimeMakeBuffer.ThreadName = ThreadInfo::ThreadName;
 			}
-			/*else
-			{
-				count_idle++;
-			}*/
-
-			sw_loop.Stop();
-			AuxThread1Time.NewValue(sw_loop.ElapsedTime());
 		}
 	}
 }
@@ -1258,7 +1247,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ShowNameTimeLine(ss, "Make         Text", TimeMakeText);
 		ShowNameTimeLine(ss, "Draw         Text", TimeDrawText);
 		ShowNameTimeLine(ss, "AuxThread       0", AuxThread0Time);
-		ShowNameTimeLine(ss, "AuxThread       1", AuxThread1Time);
 		ShowNameTimeLine(ss, "AuxThread       2", AuxThread2Time);
 		ShowNameTimeLine(ss, "AuxThread       3", AuxThread3Time);
 		ss << '\n';

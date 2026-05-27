@@ -531,6 +531,7 @@ void ChunkManager::NeighbourUpdateBufferMain(VectorI3 idx)
 	if (NextX != nullptr) { NextX -> MainBufferDataNew = true; }
 	if (NextY != nullptr) { NextY -> MainBufferDataNew = true; }
 	if (NextZ != nullptr) { NextZ -> MainBufferDataNew = true; }
+	MakeBufferConditionVar.notify_all();
 }
 
 
