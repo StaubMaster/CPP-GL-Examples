@@ -544,7 +544,7 @@ void ContextNoisePlane::AuxThread3Func()
 		if (ThreadIdle || AuxThread3DoIdle) { continue; }
 
 		StopWatch sw;
-		Chunk * chunk;
+		AccessLockedChunk chunk;
 
 		std::unique_lock<std::mutex> lk(ChunkManager.AssambleChunkMutex);
 		ChunkManager.AssambleChunkConditionVar.wait(lk, [&]
@@ -555,7 +555,7 @@ void ContextNoisePlane::AuxThread3Func()
 			chunk = ChunkManager.AssambleChunkFind();
 			ChunkManager.ChunksLock.AccessU(sw, TimeAssambleFind);
 
-			if (chunk != nullptr)
+			if (chunk.Is())
 			{
 				AuxThread3IsIdle = false;
 				return true;
@@ -566,18 +566,16 @@ void ContextNoisePlane::AuxThread3Func()
 
 		if (ThreadTerminate) { return; }
 
-		if (chunk == nullptr) { continue; }
+		if (!chunk.Is()) { continue; }
 
-		chunk -> AccessToAssign();
+		AssignLockedChunk chunk2 = chunk.ToAssign();
 
 		sw.Clear();
 		sw.Start();
-		chunk -> AssambleDecoration();
+		(*chunk2).AssambleDecoration();
 		sw.Stop();
 		TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
 		TimeAssamble.ThreadName = ThreadInfo::ThreadName;
-
-		chunk -> AssignU();
 	}
 }
 void ContextNoisePlane::DrawThreadUpdate()
@@ -601,32 +599,132 @@ void ContextNoisePlane::DrawThreadUpdate()
 
 
 
-namespace CenterIndexLoop
+struct CenterIndexLoop2D
 {
+	unsigned int	Limit;
 
-static VectorI3						Center;
-static Container::Binary<VectorI3>	List;
+	bool			Done;
+	unsigned int	Size;
+	unsigned char	Control;
+	VectorI2		Index;
 
-static unsigned int		Limit;
-//static VectorI3			Index;
+	void New(unsigned int layer)
+	{
+		Size = layer;
+		if (Limit * 2 < Size)
+		{
+			Done = true;
+			return;
+		}
 
-// these are 2D
-// FullLoop and HalfLoop
-// outer layer does a Half Loop
-// where one Coordinate is Index.Z
-// and the other is Layer for the next Loop
-// which does a FullLoop
-// and controls Index.X and Index.Y
+		if (Limit >= Size)
+		{
+			Index = VectorI2(-Size, 0);
+		}
+		else
+		{
+			Index = VectorI2(-Limit, +Size - Limit);
+		}
 
-static bool				Layer0Done;
-static unsigned int		Layer0Size;
-static unsigned char	Layer0Control;
-static VectorI2			Layer0Index;
+		Control = 0;
+		Done = false;
+	}
+	void Continue()
+	{
+		if (Index.X == 0 && Index.Y == 0) { Done = true; }
 
-static bool				Layer1Done;
-static unsigned int		Layer1Size;
-static unsigned char	Layer1Control;
-static VectorI2			Layer1Index;
+		if (Control == 0)
+		{
+			if (Index.X == 0)
+			{
+				Control = 1;
+				Index.X++;
+				Index.Y--;
+			}
+			else if (Index.Y == +(int)Limit)
+			{
+				Control = 1;
+				Index.X = -Index.X;
+			}
+			else
+			{
+				Index.X++;
+				Index.Y++;
+			}
+		}
+		else if (Control == 1)
+		{
+			if (Index.Y == 0)
+			{
+				Control = 2;
+				Index.X--;
+				Index.Y--;
+			}
+			else if (Index.X == +(int)Limit)
+			{
+				Control = 2;
+				Index.Y = -Index.Y;
+			}
+			else
+			{
+				Index.X++;
+				Index.Y--;
+			}
+		}
+		else if (Control == 2)
+		{
+			if (Index.X == 0)
+			{
+				Control = 3;
+				Index.X--;
+				Index.Y++;
+			}
+			else if (Index.Y == -(int)Limit)
+			{
+				Control = 3;
+				Index.X = -Index.X;
+			}
+			else
+			{
+				Index.X--;
+				Index.Y--;
+			}
+		}
+		else
+		{
+			if (Index.Y == 0)
+			{
+				Control = 0;
+				Index.X++;
+				Index.Y++;
+				Done = true;
+			}
+			else if (Index.X == -(int)Limit)
+			{
+				Control = 0;
+				Index.Y = -Index.Y;
+				Done = true;
+			}
+			else
+			{
+				Index.X--;
+				Index.Y++;
+			}
+		}
+
+		if (Control == 3 && Index.Y == 0) { Done = true; }
+	}
+};
+struct CenterIndexLoop3D
+{
+unsigned int		Limit;
+
+CenterIndexLoop2D	Layer0;
+
+bool				Layer1Done;
+unsigned int		Layer1Size;
+unsigned char		Layer1Control;
+VectorI2			Layer1Index;
 
 
 
@@ -699,114 +797,7 @@ static VectorI2			Layer1Index;
 	}
 */
 
-static void Layer0New(unsigned int layer)
-{
-	Layer0Size = layer;
-	if (Limit * 2 < Layer0Size)
-	{
-		Layer0Done = true;
-		return;
-	}
-
-	if (Limit >= Layer0Size)
-	{
-		Layer0Index = VectorI2(-Layer0Size, 0);
-	}
-	else
-	{
-		Layer0Index = VectorI2(-Limit, +Layer0Size - Limit);
-	}
-
-	Layer0Control = 0;
-	Layer0Done = false;
-}
-static void Layer0Loop()
-{
-	if (Layer0Index.X == 0 && Layer0Index.Y == 0) { Layer0Done = true; }
-
-	if (Layer0Control == 0)
-	{
-		if (Layer0Index.X == 0)
-		{
-			Layer0Control = 1;
-			Layer0Index.X++;
-			Layer0Index.Y--;
-		}
-		else if (Layer0Index.Y == +(int)Limit)
-		{
-			Layer0Control = 1;
-			Layer0Index.X = -Layer0Index.X;
-		}
-		else
-		{
-			Layer0Index.X++;
-			Layer0Index.Y++;
-		}
-	}
-	else if (Layer0Control == 1)
-	{
-		if (Layer0Index.Y == 0)
-		{
-			Layer0Control = 2;
-			Layer0Index.X--;
-			Layer0Index.Y--;
-		}
-		else if (Layer0Index.X == +(int)Limit)
-		{
-			Layer0Control = 2;
-			Layer0Index.Y = -Layer0Index.Y;
-		}
-		else
-		{
-			Layer0Index.X++;
-			Layer0Index.Y--;
-		}
-	}
-	else if (Layer0Control == 2)
-	{
-		if (Layer0Index.X == 0)
-		{
-			Layer0Control = 3;
-			Layer0Index.X--;
-			Layer0Index.Y++;
-		}
-		else if (Layer0Index.Y == -(int)Limit)
-		{
-			Layer0Control = 3;
-			Layer0Index.X = -Layer0Index.X;
-		}
-		else
-		{
-			Layer0Index.X--;
-			Layer0Index.Y--;
-		}
-	}
-	else
-	{
-		if (Layer0Index.Y == 0)
-		{
-			Layer0Control = 0;
-			Layer0Index.X++;
-			Layer0Index.Y++;
-			Layer0Done = true;
-		}
-		else if (Layer0Index.X == -(int)Limit)
-		{
-			Layer0Control = 0;
-			Layer0Index.Y = -Layer0Index.Y;
-			Layer0Done = true;
-		}
-		else
-		{
-			Layer0Index.X--;
-			Layer0Index.Y++;
-		}
-	}
-
-	if (Layer0Control == 3 && Layer0Index.Y == 0) { Layer0Done = true; }
-}
-
-static void Layer1New(unsigned int layer)
+void Layer1New(unsigned int layer)
 {
 	Layer1Size = layer;
 
@@ -824,7 +815,7 @@ static void Layer1New(unsigned int layer)
 	Layer1Control = 0;
 	Layer1Done = false;
 }
-static void Layer1Loop()
+void Layer1Loop()
 {
 	if (Layer1Index.X == 0 && Layer1Index.Y == 0) { Layer1Done = true; }
 
@@ -870,27 +861,29 @@ static void Layer1Loop()
 	}
 }
 
-static void Clear()
+bool Done() const
 {
-	List.Clear();
-	Center = VectorI3(0, 0, 0);
+	return (Layer0.Done || Layer1Done);
+}
+VectorI3 Index() const
+{
+	return VectorI3(Layer0.Index.X, Layer0.Index.Y, Layer1Index.X);
+}
 
-	Limit = 2;
+void New(unsigned int limit)
+{
+	Limit = limit;
+	Layer0.Limit = Limit;
 
 	Layer1New(0);
-	Layer0New(Layer1Index.Y);
+	Layer0.New(Layer1Index.Y);
 }
-static void Loop()
+void Continue()
 {
-	if (!Layer0Done && !Layer1Done)
+	if (!Layer0.Done)
 	{
-		List.Insert(VectorI3(Layer0Index.X, Layer0Index.Y, Layer1Index.X));
-	}
-
-	if (!Layer0Done)
-	{
-		Layer0Loop();
-		if (Layer0Done)
+		Layer0.Continue();
+		if (Layer0.Done)
 		{
 			if (!Layer1Done)
 			{
@@ -899,22 +892,41 @@ static void Loop()
 				{
 					Layer1New(Layer1Size + 1);
 				}
-				Layer0New(Layer1Index.Y);
+				Layer0.New(Layer1Index.Y);
 			}
 		}
 	}
 }
-static void Show(PolyHedra * polyhedra)
+};
+
+CenterIndexLoop3D CenterIndexLoop;
+
+static VectorI3 CenterIndexLoop_Center;
+static Container::Binary<VectorI3> CenterIndexLoop_List;
+static void CenterIndexLoop_Clear()
 {
-	for (unsigned int i = 0; i < List.Count(); i++)
+	CenterIndexLoop_Center = VectorI3(0, 0, 0);
+	CenterIndexLoop_List.Clear();
+
+	CenterIndexLoop.New(2);
+}
+static void CenterIndexLoop_Loop()
+{
+	if (!CenterIndexLoop.Done())
+	{
+		CenterIndexLoop_List.Insert(CenterIndexLoop.Index());
+		CenterIndexLoop.Continue();
+	}
+}
+static void CenterIndexLoop_Show(PolyHedra * polyhedra)
+{
+	for (unsigned int i = 0; i < CenterIndexLoop_List.Count(); i++)
 	{
 		PolyHedraObject obj(polyhedra);
 		obj.ShowFull();
-		obj.Trans().Position = (List[i] + Center);
+		obj.Trans().Position = (CenterIndexLoop_List[i] + CenterIndexLoop_Center);
 	}
 }
-
-};
 
 
 
@@ -988,7 +1000,7 @@ void ContextNoisePlane::Make()
 	//Perlin2D::DebugShow();
 	//TestRandom();
 
-	CenterIndexLoop::Clear();
+	CenterIndexLoop_Clear();
 }
 
 
@@ -2010,9 +2022,9 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 	LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
 
-	if (window.KeyBoardManager[Keys::Delete].State == State::Press) { CenterIndexLoop::Clear(); }
-	if (window.KeyBoardManager[Keys::Insert].State == State::Press) { CenterIndexLoop::Loop(); }
-	CenterIndexLoop::Show(VoxelCube);
+	if (window.KeyBoardManager[Keys::Delete].State == State::Press) { CenterIndexLoop_Clear(); }
+	if (window.KeyBoardManager[Keys::Insert].State == State::Press) { CenterIndexLoop_Loop(); }
+	CenterIndexLoop_Show(VoxelCube);
 
 	StopWatch sw;
 	sw.Start();

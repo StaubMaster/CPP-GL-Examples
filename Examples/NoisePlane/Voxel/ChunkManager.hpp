@@ -184,12 +184,12 @@ struct ChunkManager
 	public:
 	std::mutex					GenerateChunkMutex;
 	std::condition_variable		GenerateChunkConditionVar;
-	Chunk *						GenerateChunkFind();
+	AccessLockedChunk			GenerateChunkFind();
 
 	public:
 	std::mutex					AssambleChunkMutex;
 	std::condition_variable		AssambleChunkConditionVar;
-	Chunk *						AssambleChunkFind();
+	AccessLockedChunk			AssambleChunkFind();
 
 
 

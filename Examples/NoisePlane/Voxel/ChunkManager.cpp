@@ -672,105 +672,245 @@ VoxelHit ChunkManager::HitVoxel(Ray3D ray)
 
 
 
+#include "ValueType/Vector/I2.hpp"
 
-/* 3D Center Distance Algorithm
-instead of going over all
-
-Manhatten Distance ?
-each "ring" has the same Manhatton Distance
-so all coords summed up, relative to the Center, absolute
-that is the same for each "ring"
-
-(X, Y, Z)
-(ring, 0, 0)
-relative to Center
-
-ContinueX	(ring - 1, +1,  0)
-ContinueY	(ring - 1,  0, +1)
-ContinueY	(ring - 1, -1,  0)
-ContinueY	(ring - 1,  0, -1)
-
-ContinueX	(ring - 2, +2,  0)
-ContinueY	(ring - 2, +1, +1)
-ContinueY	(ring - 2,  0, +2)
-ContinueY	(ring - 2, -1, +1)
-ContinueY	(ring - 2, -2,  0)
-
-
-dirY = -1
-dirZ = +1
-Y = dist
-Z = 0
-
-Y += dirY
-Z += dirZ
-if (Y == 0) { invert dirZ }
-if (Z == 0) { invert dirY }
-
-|pos(ring - 2, +2,  0)	dir( ?, -1, +1)
-|pos(ring - 2, +1, +1)
-|pos(ring - 2,  0, +2)	dir( ?, -1, -1)
-|pos(ring - 2, -1, +1)
-|pos(ring - 2, -2,  0)	dir( ?, +1, -1)
-|pos(ring - 2, -1, -1)
-|pos(ring - 2,  0, -2)	dir( ?, +1, +1)
-|pos(ring - 2, +1, -1)
-|pos(ring - 2, +2,  0)	done
-
-so generally:
-|pos(ring - n, +n    ,  0    )	dir( ?, -1, +1)
-|pos(ring - n, +n - 1,  0 + 1)
-|...
-|pos(ring - n,  0 + 1, +n - 1)
-|pos(ring - n,  0    , +n    )	dir( ?, -1, -1)
-|pos(ring - n,  0 - 1, +n - 1)
-|...
-|pos(ring - n, -n + 1,  0 + 1)
-|pos(ring - n, -n   ,   0    )	dir( ?, +1, -1)
-|pos(ring - n, -n + 1,  0 - 1)
-|...
-|pos(ring - n,  0 - 1, -n + 1)
-|pos(ring - n,  0    , -n    )	dir( ?, +1, +1)
-|pos(ring - n,  0 + 1, -n + 1)
-|...
-|pos(ring - n, +n + 1,  0 - 1)
-|pos(ring - n, +n    ,  0    )	done
-
-do half of this along the other Axis
-
-|pos(+n    , ?, ?)	loopYZ(0    )
-|pos(+n - 1, ?, ?)	loopYZ(0 + 1)
-|...
-|pos( 0 + 1, ?, ?)	loopYZ(n - 1)
-|pos( 0    , ?, ?)	loopYZ(n    )
-|pos( 0 - 1, ?, ?)	loopYZ(n - 1)
-|...
-|pos(-n + 1, ?, ?)	loopYZ(0 + 1)
-|pos(-n    , ?, ?)	loopYZ(0    )
-
-should the 2D Loop be along XY of YZ ?
-
-skip Edges
-direction is inverted when Axis == 0
-if Axis == Enge, so Axis +- 1 is outside
-	then invert the Direction of the other
-	and also invert the Position
-	normally 0 is inverted, which is still 0
-
-how to visualize for testing ?
-make a List of Boxes
-Button to clear
-Button to continue
-show Boxes using PolyHedra
-
-*/
-Chunk * ChunkManager::GenerateChunkFind()
+struct CenterIndexLoop2D
 {
-	Chunk * found = nullptr;
-	float dist;
-	for (unsigned int i = 0; i < Chunks.Length(); i++)
+	unsigned int	Limit;
+
+	bool			Done;
+	unsigned int	Size;
+	unsigned char	Control;
+	VectorI2		Index;
+
+	void New(unsigned int layer)
 	{
-		Chunk * ptr = Chunks[i];
+		Size = layer;
+		if (Limit * 2 < Size)
+		{
+			Done = true;
+			return;
+		}
+
+		if (Limit >= Size)
+		{
+			Index = VectorI2(-Size, 0);
+		}
+		else
+		{
+			Index = VectorI2(-Limit, +Size - Limit);
+		}
+
+		Control = 0;
+		Done = false;
+	}
+	void Continue()
+	{
+		if (Index.X == 0 && Index.Y == 0) { Done = true; }
+
+		if (Control == 0)
+		{
+			if (Index.X == 0)
+			{
+				Control = 1;
+				Index.X++;
+				Index.Y--;
+			}
+			else if (Index.Y == +(int)Limit)
+			{
+				Control = 1;
+				Index.X = -Index.X;
+			}
+			else
+			{
+				Index.X++;
+				Index.Y++;
+			}
+		}
+		else if (Control == 1)
+		{
+			if (Index.Y == 0)
+			{
+				Control = 2;
+				Index.X--;
+				Index.Y--;
+			}
+			else if (Index.X == +(int)Limit)
+			{
+				Control = 2;
+				Index.Y = -Index.Y;
+			}
+			else
+			{
+				Index.X++;
+				Index.Y--;
+			}
+		}
+		else if (Control == 2)
+		{
+			if (Index.X == 0)
+			{
+				Control = 3;
+				Index.X--;
+				Index.Y++;
+			}
+			else if (Index.Y == -(int)Limit)
+			{
+				Control = 3;
+				Index.X = -Index.X;
+			}
+			else
+			{
+				Index.X--;
+				Index.Y--;
+			}
+		}
+		else
+		{
+			if (Index.Y == 0)
+			{
+				Control = 0;
+				Index.X++;
+				Index.Y++;
+				Done = true;
+			}
+			else if (Index.X == -(int)Limit)
+			{
+				Control = 0;
+				Index.Y = -Index.Y;
+				Done = true;
+			}
+			else
+			{
+				Index.X--;
+				Index.Y++;
+			}
+		}
+
+		if (Control == 3 && Index.Y == 0) { Done = true; }
+	}
+};
+struct CenterIndexLoop3D
+{
+unsigned int		Limit;
+
+CenterIndexLoop2D	Layer0;
+
+bool				Layer1Done;
+unsigned int		Layer1Size;
+unsigned char		Layer1Control;
+VectorI2			Layer1Index;
+
+void Layer1New(unsigned int layer)
+{
+	Layer1Size = layer;
+
+	Layer1Index = VectorI2(-Layer1Size, 0);
+
+	if (Limit >= Layer1Size)
+	{
+		Layer1Index = VectorI2(-Layer1Size, 0);
+	}
+	else
+	{
+		Layer1Index = VectorI2(-Limit, +Layer1Size - Limit);
+	}
+
+	Layer1Control = 0;
+	Layer1Done = false;
+}
+void Layer1Loop()
+{
+	if (Layer1Index.X == 0 && Layer1Index.Y == 0) { Layer1Done = true; }
+
+	if (Layer1Control == 0)
+	{
+		if (Layer1Index.X == 0)
+		{
+			Layer1Control = 1;
+			Layer1Index.X++;
+			Layer1Index.Y--;
+		}
+		else if (Limit * 2 <= (unsigned int)Layer1Index.Y)
+		{
+			Layer1Control = 1;
+			Layer1Index.X = -Layer1Index.X;
+		}
+		else
+		{
+			Layer1Index.X++;
+			Layer1Index.Y++;
+		}
+	}
+	else if (Layer1Control == 1)
+	{
+		if (Layer1Index.Y == 0)
+		{
+			Layer1Control = 0;
+			Layer1Index.X--;
+			Layer1Index.Y--;
+			Layer1Done = true;
+		}
+		else if (Layer1Index.X == +(int)Limit)
+		{
+			Layer1Control = 0;
+			Layer1Index.Y = -Layer1Index.Y;
+			Layer1Done = true;
+		}
+		else
+		{
+			Layer1Index.X++;
+			Layer1Index.Y--;
+		}
+	}
+}
+
+bool Done() const
+{
+	return (Layer0.Done || Layer1Done);
+}
+VectorI3 Index() const
+{
+	return VectorI3(Layer0.Index.X, Layer0.Index.Y, Layer1Index.X);
+}
+
+void New(unsigned int limit)
+{
+	Limit = limit;
+	Layer0.Limit = Limit;
+
+	Layer1New(0);
+	Layer0.New(Layer1Index.Y);
+}
+void Continue()
+{
+	if (!Layer0.Done)
+	{
+		Layer0.Continue();
+		if (Layer0.Done)
+		{
+			if (!Layer1Done)
+			{
+				Layer1Loop();
+				if (Layer1Done)
+				{
+					Layer1New(Layer1Size + 1);
+				}
+				Layer0.New(Layer1Index.Y);
+			}
+		}
+	}
+}
+};
+
+
+
+AccessLockedChunk ChunkManager::GenerateChunkFind()
+{
+	/*CenterIndexLoop3D	loop;
+	for (loop.New(CareSize); !loop.Done(); loop.Continue())
+	{
+		Chunk * ptr = Chunks[relative(loop.Index())];
 		if (ptr == nullptr) { continue; }
 
 		Chunk & chunk = *ptr;
@@ -780,56 +920,74 @@ Chunk * ChunkManager::GenerateChunkFind()
 
 		if (!CareBox.IntersectVecInclusive(chunk.Index).All(true)) { chunk.AccessU(); continue; }
 
-		VectorF3 rel = chunk.Index - Center;
-		float d = rel.length2();
-		if (found == nullptr || d < dist)
-		{
-			if (found != nullptr) { found -> AccessU(); }
-			found = &chunk;
-			dist = d;
-		}
-		else { chunk.AccessU(); }
+		return &chunk;
 	}
+	return nullptr;*/
 
-	return found;
-}
-
-Chunk * ChunkManager::AssambleChunkFind()
-{
+//	AccessLockedChunk found;
 	Chunk * found = nullptr;
 	float dist;
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
 		Chunk * ptr = Chunks[i];
-		if (ptr == nullptr)
-		{ continue; }
-		Chunk & chunk = *ptr;
+		if (ptr == nullptr) { continue; }
+		const Chunk & ref = *ptr;
 
-		//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
-		chunk.AccessL();
-		//std::cout << ThreadInfo::ThreadName << " FindAssambleChunk " << __LINE__ << '\n';
+		//AccessLockedChunk chunk = ptr -> ToAccess();
+		ptr -> AccessL();
 
-		if (!chunk.TerrainDone || !chunk.DecorationsGenerated || chunk.DecorationsAssambled)
-		{ chunk.AccessU(); continue; }
+		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); continue; }
+		if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
 
-		if (!CareBox.IntersectVecInclusive(chunk.Index).All(true))
-		{ chunk.AccessU(); continue; }
-
-		if (!chunk.Neighbours.CanAssamble())
-		{ chunk.AccessU(); continue; }
-
-		VectorF3 rel = chunk.Index - Center;
+		VectorF3 rel = ref.Index - Center;
 		float d = rel.length2();
+		//if (!found.Is() || d < dist)
 		if (found == nullptr || d < dist)
 		{
 			if (found != nullptr) { found -> AccessU(); }
-			found = &chunk;
+			found = ptr;
 			dist = d;
 		}
-		else { chunk.AccessU(); }
+		else { ptr -> AccessU(); }
 	}
 
-	return found;
+	//return found;
+	return AccessLockedChunk(found);
+}
+
+AccessLockedChunk ChunkManager::AssambleChunkFind()
+{
+//	AccessLockedChunk found;
+	Chunk * found = nullptr;
+	float dist;
+	for (unsigned int i = 0; i < Chunks.Length(); i++)
+	{
+		Chunk * ptr = Chunks[i];
+		if (ptr == nullptr) { continue; }
+		const Chunk & ref = *ptr;
+
+		//AccessLockedChunk chunk = ptr -> ToAccess();
+		ptr -> AccessL();
+
+		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { ptr -> AccessU(); continue; }
+		if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
+		if (!ref.Neighbours.CanAssamble()) { ptr -> AccessU(); continue; }
+
+		VectorF3 rel = ref.Index - Center;
+		float d = rel.length2();
+		//if (!found.Is() || d < dist)
+		if (found == nullptr || d < dist)
+		{
+			if (found != nullptr) { found -> AccessU(); }
+			//found = chunk;
+			found = ptr;
+			dist = d;
+		}
+		else { ptr -> AccessU(); }
+	}
+
+	//return found;
+	return AccessLockedChunk(found);
 }
 
 
@@ -940,7 +1098,7 @@ AccessLockedChunk ChunkManager::MakeBufferFind()
 
 	//std::cout << ThreadInfo::ThreadName << " FindGraphicsUpdateChunk " << __LINE__ << '\n';
 
-	AccessLockedChunk found = nullptr;
+	AccessLockedChunk found;
 	float dist;
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{

@@ -12,22 +12,24 @@ WaitDoTime::WaitDoTime(const char * name)
 
 
 
+const int digits = 6;
+
 std::ostream & operator<<(std::ostream & o, const WaitDoTime & obj)
 {
 	o << obj.ThreadName;
 	o << ' ';
 	o << '{';
-	o << std::fixed << std::setw(2 + 3) << std::setfill(' ') << std::setprecision(3) << obj.WaitTime.Min() << 's';
+	o << std::fixed << std::setw(2 + digits) << std::setfill(' ') << std::setprecision(digits) << obj.WaitTime.Min() << 's';
 	o << ' ';
-	o << std::fixed << std::setw(2 + 3) << std::setfill(' ') << std::setprecision(3) << obj.WaitTime.Average() << 's';
+	o << std::fixed << std::setw(2 + digits) << std::setfill(' ') << std::setprecision(digits) << obj.WaitTime.Average() << 's';
 	o << ' ';
-	o << std::fixed << std::setw(2 + 3) << std::setfill(' ') << std::setprecision(3) << obj.WaitTime.Max() << 's';
+	o << std::fixed << std::setw(2 + digits) << std::setfill(' ') << std::setprecision(digits) << obj.WaitTime.Max() << 's';
 	o << '|';
-	o << std::fixed << std::setw(2 + 3) << std::setfill(' ') << std::setprecision(3) << obj.DoTime.Min() << 's';
+	o << std::fixed << std::setw(2 + digits) << std::setfill(' ') << std::setprecision(digits) << obj.DoTime.Min() << 's';
 	o << ' ';
-	o << std::fixed << std::setw(2 + 3) << std::setfill(' ') << std::setprecision(3) << obj.DoTime.Average() << 's';
+	o << std::fixed << std::setw(2 + digits) << std::setfill(' ') << std::setprecision(digits) << obj.DoTime.Average() << 's';
 	o << ' ';
-	o << std::fixed << std::setw(2 + 3) << std::setfill(' ') << std::setprecision(3) << obj.DoTime.Max() << 's';
+	o << std::fixed << std::setw(2 + digits) << std::setfill(' ') << std::setprecision(digits) << obj.DoTime.Max() << 's';
 	o << '}';
 	o << ' ';
 	o << obj.Name;
