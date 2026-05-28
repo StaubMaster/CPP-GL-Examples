@@ -601,49 +601,247 @@ void ContextNoisePlane::DrawThreadUpdate()
 
 
 
-static VectorI3						CenterIndexLoop_Center(0, 0, 0);
-static Container::Binary<VectorI3>	CenterIndexLoop_List;
-
-static unsigned int					CenterIndexLoop_Layer;
-static unsigned int					CenterIndexLoop_Limit;
-static VectorI3						CenterIndexLoop_Index;
-static VectorI3						CenterIndexLoop_Dir;
-
-static void CenterIndexLoop_Clear()
+namespace CenterIndexLoop
 {
-	CenterIndexLoop_List.Clear();
 
-	CenterIndexLoop_Layer = 0;
-	CenterIndexLoop_Limit = 4;
-	CenterIndexLoop_Index = VectorI3(+CenterIndexLoop_Layer, 0, 0);
-	CenterIndexLoop_Dir = VectorI3(0, 0, 0);
-}
-static void CenterIndexLoop_Loop()
-{
-	CenterIndexLoop_List.Insert(CenterIndexLoop_Index);
+static VectorI3						Center;
+static Container::Binary<VectorI3>	List;
 
-	CenterIndexLoop_Index.X += CenterIndexLoop_Dir.X;
-	CenterIndexLoop_Index.Y += CenterIndexLoop_Dir.Y;
+static unsigned int		Layer;
+static unsigned int		Limit;
+static unsigned char	Control;
+static VectorI3			Index;
+static bool				Done;
 
-	if (CenterIndexLoop_Index.X == 0) { CenterIndexLoop_Dir.Y = -CenterIndexLoop_Dir.Y; }
-	if (CenterIndexLoop_Index.Y == 0) { CenterIndexLoop_Dir.X = -CenterIndexLoop_Dir.X; }
+/*
+	|         4         | X = 0
+	|       3   5       |
+	|     2       6     |
+	|   1           7   |
+	| 0               8 |
 
-	if ((unsigned int)CenterIndexLoop_Index.X == CenterIndexLoop_Layer)
+	|         #         |
+	|       #   #       |
+	|-----2       3-----| Y = Limit
+	|   1           4   |
+	| 0               5 |
+
+	|         0         | X = 0
+	|           1       |
+	|             2     |
+	|               3   |
+	|                 4 |
+
+	|       #           |
+	|         #         |
+	|           0-------| Y = Limit
+	|             1     |
+	|               2   |
+*/
+/*
+	Layer = 4				Layer = 4				Layer = 4				Layer = 4
+	Limit = 4				Limit = 3				Limit = 2				Limit = 1
+	|-|-------4-------|-|	|   |     #     |   |	|     |   #   |     |	|       | # |       |
+	| |     3   5     | |	|---|---2---3---|---|	|     | #   # |     |	|       #   #       |
+	| |   2       6   | |	|   | 1       4 |   |	|-----0-------1-----|	|     # |   | #     |
+	| | 1           7 | |	|   0           5   |	|   # |       | #   |	|---#---|---|---#---|
+	| 0               8 |	| # |           | # |	| #   |       |   # |	| #     |   |     # |
+	| | F           9 | |	|   B           6   |	|   # |       | #   |	|---#---|---|---#---|
+	| |   E       A   | |	|   | A       7 |   |	|-----3-------2-----|	|     # |   | #     |
+	| |     D   B     | |	|---|---9---8---|---|	|     | #   # |     |	|       #   #       |
+	|-|-------C-------|-|	|   |     #     |   |	|     |   #   |     |	|       | # |       |
+
+	if (Limit * 2 < Layer) return
+
+	if (Limit >= Layer)
+		Pos(-Layer, 0)
+	else
+		Pos(-Limit, +Layer - Limit)
+	Dir(+, +)
+	ControlAxis = Y
+
+	loop
 	{
-		CenterIndexLoop_Layer++;
-		CenterIndexLoop_Index = VectorI3(+CenterIndexLoop_Layer, 0, 0);
-		CenterIndexLoop_Dir = VectorI3(-1, +1, 0);
+		if ControlAxis == Y
+			if Pos.Y == 0
+				invert Dir.X
+				Pos.X += Dir.X
+				Pos.Y += Dir.Y
+				ControlAxis = X
+			else if Dir.Y == + && Pos.Y == +Limit
+				invert Dir.X
+				invert Pos.X
+				ControlAxis = X
+			else if Dir.Y == - && Pos.Y == -Limit
+				invert Dir.X
+				invert Pos.X
+				ControlAxis = X
+			else
+				Pos.Y += Dir.Y
+				Pos.X += Dir.X
+	}
+*/
+
+/*
+how to know then Layer is done
+	if == 0 or Limit skip
+		if Dir.X > 0 && Dir.Y < 0
+			Layer done
+*/
+
+static void Clear()
+{
+	List.Clear();
+	Center = VectorI3(0, 0, 0);
+
+	Layer = 0;
+	Limit = 4;
+
+	if (Limit >= Layer)
+	{
+		Index = VectorI3(-Layer, 0, 0);
+	}
+	else
+	{
+		Index = VectorI3(-Limit, +Layer - Limit, 0);
+	}
+	Control = 0;
+	Done = false;
+}
+static void Loop()
+{
+	List.Insert(Index);
+
+	std::cout << '\n';
+	std::cout << '{' << Layer << ' ' << Limit << '}' << '\n';
+	std::cout << "Control " << (int)Control << '\n';
+	std::cout << "Pos " << Index << '\n';
+
+	if (Index.X == 0 && Index.Y == 0) { Done = true; }
+
+	if (Control == 0)
+	{
+		if (Index.X == 0)
+		{
+			std::cout << "Corner\n";
+			Control = 1;
+			Index.X++;
+			Index.Y--;
+		}
+		else if (Index.Y == +(int)Limit)
+		{
+			std::cout << "Limit\n";
+			Index.X = -Index.X;
+			Control = 1;
+		}
+		else
+		{
+			std::cout << "Middle\n";
+			Index.X++;
+			Index.Y++;
+		}
+	}
+	else if (Control == 1)
+	{
+		if (Index.Y == 0)
+		{
+			std::cout << "Corner\n";
+			Control = 2;
+			Index.X--;
+			Index.Y--;
+		}
+		else if (Index.X == +(int)Limit)
+		{
+			std::cout << "Limit\n";
+			Index.Y = -Index.Y;
+			Control = 2;
+		}
+		else
+		{
+			std::cout << "Middle\n";
+			Index.X++;
+			Index.Y--;
+		}
+	}
+	else if (Control == 2)
+	{
+		if (Index.X == 0)
+		{
+			std::cout << "Corner\n";
+			Control = 3;
+			Index.X--;
+			Index.Y++;
+		}
+		else if (Index.Y == -(int)Limit)
+		{
+			std::cout << "Limit\n";
+			Index.X = -Index.X;
+			Control = 3;
+		}
+		else
+		{
+			std::cout << "Middle\n";
+			Index.X--;
+			Index.Y--;
+		}
+	}
+	else
+	{
+		if (Index.Y == 0)
+		{
+			std::cout << "Corner\n";
+			Control = 0;
+			Index.X++;
+			Index.Y++;
+			// this was done before this
+			Done = true;
+		}
+		else if (Index.X == -(int)Limit)
+		{
+			std::cout << "Limit\n";
+			Index.Y = -Index.Y;
+			Control = 0;
+			// this is done now
+			Done = true;
+		}
+		else
+		{
+			std::cout << "Middle\n";
+			Index.X--;
+			Index.Y++;
+		}
+	}
+	std::cout << "\n";
+
+	if (Control == 3 && Index.Y == 0) { Done = true; }
+
+	if (Done)
+	{
+		std::cout << "Done\n\n";
+		Layer++;
+		if (Limit >= Layer)
+		{
+			Index = VectorI3(-Layer, 0, 0);
+		}
+		else
+		{
+			Index = VectorI3(-Limit, +Layer - Limit, 0);
+		}
+		Control = 0;
+		Done = false;
 	}
 }
-static void CenterIndexLoop_Show(PolyHedra * polyhedra)
+static void Show(PolyHedra * polyhedra)
 {
-	for (unsigned int i = 0; i < CenterIndexLoop_List.Count(); i++)
+	for (unsigned int i = 0; i < List.Count(); i++)
 	{
 		PolyHedraObject obj(polyhedra);
 		obj.ShowFull();
-		obj.Trans().Position = (CenterIndexLoop_List[i] + CenterIndexLoop_Center);
+		obj.Trans().Position = (List[i] + Center);
 	}
 }
+
+};
 
 
 
@@ -717,7 +915,7 @@ void ContextNoisePlane::Make()
 	//Perlin2D::DebugShow();
 	//TestRandom();
 
-	CenterIndexLoop_Clear();
+	CenterIndexLoop::Clear();
 }
 
 
@@ -1739,9 +1937,9 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 	LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
 
-	if (window.KeyBoardManager[Keys::Delete].State == State::Press) { CenterIndexLoop_Clear(); }
-	if (window.KeyBoardManager[Keys::Insert].State == State::Press) { CenterIndexLoop_Loop(); }
-	CenterIndexLoop_Show(VoxelCube);
+	if (window.KeyBoardManager[Keys::Delete].State == State::Press) { CenterIndexLoop::Clear(); }
+	if (window.KeyBoardManager[Keys::Insert].State == State::Press) { CenterIndexLoop::Loop(); }
+	CenterIndexLoop::Show(VoxelCube);
 
 	StopWatch sw;
 	sw.Start();
