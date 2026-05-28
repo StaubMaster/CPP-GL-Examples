@@ -607,11 +607,28 @@ namespace CenterIndexLoop
 static VectorI3						Center;
 static Container::Binary<VectorI3>	List;
 
-static unsigned int		Layer;
 static unsigned int		Limit;
-static unsigned char	Control;
-static VectorI3			Index;
-static bool				Done;
+//static VectorI3			Index;
+
+// these are 2D
+// FullLoop and HalfLoop
+// outer layer does a Half Loop
+// where one Coordinate is Index.Z
+// and the other is Layer for the next Loop
+// which does a FullLoop
+// and controls Index.X and Index.Y
+
+static bool				Layer0Done;
+static unsigned int		Layer0Size;
+static unsigned char	Layer0Control;
+static VectorI2			Layer0Index;
+
+static bool				Layer1Done;
+static unsigned int		Layer1Size;
+static unsigned char	Layer1Control;
+static VectorI2			Layer1Index;
+
+
 
 /*
 	|         4         | X = 0
@@ -682,153 +699,209 @@ static bool				Done;
 	}
 */
 
-/*
-how to know then Layer is done
-	if == 0 or Limit skip
-		if Dir.X > 0 && Dir.Y < 0
-			Layer done
-*/
+static void Layer0New(unsigned int layer)
+{
+	Layer0Size = layer;
+	if (Limit * 2 < Layer0Size)
+	{
+		Layer0Done = true;
+		return;
+	}
+
+	if (Limit >= Layer0Size)
+	{
+		Layer0Index = VectorI2(-Layer0Size, 0);
+	}
+	else
+	{
+		Layer0Index = VectorI2(-Limit, +Layer0Size - Limit);
+	}
+
+	Layer0Control = 0;
+	Layer0Done = false;
+}
+static void Layer0Loop()
+{
+	if (Layer0Index.X == 0 && Layer0Index.Y == 0) { Layer0Done = true; }
+
+	if (Layer0Control == 0)
+	{
+		if (Layer0Index.X == 0)
+		{
+			Layer0Control = 1;
+			Layer0Index.X++;
+			Layer0Index.Y--;
+		}
+		else if (Layer0Index.Y == +(int)Limit)
+		{
+			Layer0Control = 1;
+			Layer0Index.X = -Layer0Index.X;
+		}
+		else
+		{
+			Layer0Index.X++;
+			Layer0Index.Y++;
+		}
+	}
+	else if (Layer0Control == 1)
+	{
+		if (Layer0Index.Y == 0)
+		{
+			Layer0Control = 2;
+			Layer0Index.X--;
+			Layer0Index.Y--;
+		}
+		else if (Layer0Index.X == +(int)Limit)
+		{
+			Layer0Control = 2;
+			Layer0Index.Y = -Layer0Index.Y;
+		}
+		else
+		{
+			Layer0Index.X++;
+			Layer0Index.Y--;
+		}
+	}
+	else if (Layer0Control == 2)
+	{
+		if (Layer0Index.X == 0)
+		{
+			Layer0Control = 3;
+			Layer0Index.X--;
+			Layer0Index.Y++;
+		}
+		else if (Layer0Index.Y == -(int)Limit)
+		{
+			Layer0Control = 3;
+			Layer0Index.X = -Layer0Index.X;
+		}
+		else
+		{
+			Layer0Index.X--;
+			Layer0Index.Y--;
+		}
+	}
+	else
+	{
+		if (Layer0Index.Y == 0)
+		{
+			Layer0Control = 0;
+			Layer0Index.X++;
+			Layer0Index.Y++;
+			Layer0Done = true;
+		}
+		else if (Layer0Index.X == -(int)Limit)
+		{
+			Layer0Control = 0;
+			Layer0Index.Y = -Layer0Index.Y;
+			Layer0Done = true;
+		}
+		else
+		{
+			Layer0Index.X--;
+			Layer0Index.Y++;
+		}
+	}
+
+	if (Layer0Control == 3 && Layer0Index.Y == 0) { Layer0Done = true; }
+}
+
+static void Layer1New(unsigned int layer)
+{
+	Layer1Size = layer;
+
+	Layer1Index = VectorI2(-Layer1Size, 0);
+
+	if (Limit >= Layer1Size)
+	{
+		Layer1Index = VectorI2(-Layer1Size, 0);
+	}
+	else
+	{
+		Layer1Index = VectorI2(-Limit, +Layer1Size - Limit);
+	}
+
+	Layer1Control = 0;
+	Layer1Done = false;
+}
+static void Layer1Loop()
+{
+	if (Layer1Index.X == 0 && Layer1Index.Y == 0) { Layer1Done = true; }
+
+	if (Layer1Control == 0)
+	{
+		if (Layer1Index.X == 0)
+		{
+			Layer1Control = 1;
+			Layer1Index.X++;
+			Layer1Index.Y--;
+		}
+		else if (Limit * 2 <= (unsigned int)Layer1Index.Y)
+		{
+			Layer1Control = 1;
+			Layer1Index.X = -Layer1Index.X;
+		}
+		else
+		{
+			Layer1Index.X++;
+			Layer1Index.Y++;
+		}
+	}
+	else if (Layer1Control == 1)
+	{
+		if (Layer1Index.Y == 0)
+		{
+			Layer1Control = 0;
+			Layer1Index.X--;
+			Layer1Index.Y--;
+			Layer1Done = true;
+		}
+		else if (Layer1Index.X == +(int)Limit)
+		{
+			Layer1Control = 0;
+			Layer1Index.Y = -Layer1Index.Y;
+			Layer1Done = true;
+		}
+		else
+		{
+			Layer1Index.X++;
+			Layer1Index.Y--;
+		}
+	}
+}
 
 static void Clear()
 {
 	List.Clear();
 	Center = VectorI3(0, 0, 0);
 
-	Layer = 0;
-	Limit = 4;
+	Limit = 2;
 
-	if (Limit >= Layer)
-	{
-		Index = VectorI3(-Layer, 0, 0);
-	}
-	else
-	{
-		Index = VectorI3(-Limit, +Layer - Limit, 0);
-	}
-	Control = 0;
-	Done = false;
+	Layer1New(0);
+	Layer0New(Layer1Index.Y);
 }
 static void Loop()
 {
-	List.Insert(Index);
-
-	std::cout << '\n';
-	std::cout << '{' << Layer << ' ' << Limit << '}' << '\n';
-	std::cout << "Control " << (int)Control << '\n';
-	std::cout << "Pos " << Index << '\n';
-
-	if (Index.X == 0 && Index.Y == 0) { Done = true; }
-
-	if (Control == 0)
+	if (!Layer0Done && !Layer1Done)
 	{
-		if (Index.X == 0)
-		{
-			std::cout << "Corner\n";
-			Control = 1;
-			Index.X++;
-			Index.Y--;
-		}
-		else if (Index.Y == +(int)Limit)
-		{
-			std::cout << "Limit\n";
-			Index.X = -Index.X;
-			Control = 1;
-		}
-		else
-		{
-			std::cout << "Middle\n";
-			Index.X++;
-			Index.Y++;
-		}
+		List.Insert(VectorI3(Layer0Index.X, Layer0Index.Y, Layer1Index.X));
 	}
-	else if (Control == 1)
-	{
-		if (Index.Y == 0)
-		{
-			std::cout << "Corner\n";
-			Control = 2;
-			Index.X--;
-			Index.Y--;
-		}
-		else if (Index.X == +(int)Limit)
-		{
-			std::cout << "Limit\n";
-			Index.Y = -Index.Y;
-			Control = 2;
-		}
-		else
-		{
-			std::cout << "Middle\n";
-			Index.X++;
-			Index.Y--;
-		}
-	}
-	else if (Control == 2)
-	{
-		if (Index.X == 0)
-		{
-			std::cout << "Corner\n";
-			Control = 3;
-			Index.X--;
-			Index.Y++;
-		}
-		else if (Index.Y == -(int)Limit)
-		{
-			std::cout << "Limit\n";
-			Index.X = -Index.X;
-			Control = 3;
-		}
-		else
-		{
-			std::cout << "Middle\n";
-			Index.X--;
-			Index.Y--;
-		}
-	}
-	else
-	{
-		if (Index.Y == 0)
-		{
-			std::cout << "Corner\n";
-			Control = 0;
-			Index.X++;
-			Index.Y++;
-			// this was done before this
-			Done = true;
-		}
-		else if (Index.X == -(int)Limit)
-		{
-			std::cout << "Limit\n";
-			Index.Y = -Index.Y;
-			Control = 0;
-			// this is done now
-			Done = true;
-		}
-		else
-		{
-			std::cout << "Middle\n";
-			Index.X--;
-			Index.Y++;
-		}
-	}
-	std::cout << "\n";
 
-	if (Control == 3 && Index.Y == 0) { Done = true; }
-
-	if (Done)
+	if (!Layer0Done)
 	{
-		std::cout << "Done\n\n";
-		Layer++;
-		if (Limit >= Layer)
+		Layer0Loop();
+		if (Layer0Done)
 		{
-			Index = VectorI3(-Layer, 0, 0);
+			if (!Layer1Done)
+			{
+				Layer1Loop();
+				if (Layer1Done)
+				{
+					Layer1New(Layer1Size + 1);
+				}
+				Layer0New(Layer1Index.Y);
+			}
 		}
-		else
-		{
-			Index = VectorI3(-Limit, +Layer - Limit, 0);
-		}
-		Control = 0;
-		Done = false;
 	}
 }
 static void Show(PolyHedra * polyhedra)
