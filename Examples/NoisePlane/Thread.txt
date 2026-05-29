@@ -1,45 +1,30 @@
 
-ChunkContainer
+Draw Thread should just Draw
+seperate Threads for
+	Input
+	UI
 
-changing
-	isolated
-		UpdateChunkContainer()
-		Clear()
+Input
+	callback only happen in the main thread, the same that draws ?
+	.Tick for Input Managers could be done from other Thread
+	but make sure there is no conflict
+	thats kind of everything that does ?
 
-checking
-	all the Find functions
-	Insert/Remove
-	Generate/Buffer
+	getting Input suck as checking Keys/Mouse Position should be doable from other threads
+	need to lock when getting Key ?
+	also have a way to lock Input, get Keys and then unlock
+	just use a recursive Mutex
 
-checking at the same time is fine ?
-not sure how to do that.
+UI
+	all the internal stuff can be done from anywhere
+	Callbacks are called by Window Callbacks which are called by glfw Callbacks
+	so those need to be queued
+	have 2 tickes
+	one that calls Callbacks as fast as possible
+	and one the updates the Controls
 
-
-
-
-
-Chunk:
-
-changing Data
-is private, only done inside Chunk
-
-new[]/delete[]
-	MakeEmpty()
-	MakeNull()
-
-assign
-	ClearVoxel()
-	PlaceVoxel()
-	Generate()
-
-checking Data
-	operator[]
-		returns a referance to Data
-		lock and unlock outside
-
-new/delete Chunk
-	done from outside
-	no conflict when new
-	delete also delte[]s Data
+	richt now the UI stuff is the bare minimum
+	add more stuff ?
+	make it work better ?
 
 

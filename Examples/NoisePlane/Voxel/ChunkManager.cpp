@@ -466,6 +466,7 @@ void ChunkManager::UpdateChunksContainer()
 
 	// Insert Chunks
 	{
+		bool inserted = false;
 		StopWatch sw2;
 		ChunksToInsertLock.AssignL(sw2, TimeUpdateInsert);
 		for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
@@ -497,13 +498,18 @@ void ChunkManager::UpdateChunksContainer()
 				}
 			}
 
+			inserted = true;
 			ChunksToInsert.RemoveAt(i);
 			i--;
 		}
 		ChunksToInsertLock.AssignU(sw2, TimeUpdateInsert);
+
+		if (inserted)
+		{
+			GenerateChunkConditionVar.notify_all();
+			AssambleChunkConditionVar.notify_all();
+		}
 	}
-	GenerateChunkConditionVar.notify_all();
-	AssambleChunkConditionVar.notify_all();
 
 //	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 	ChunksLock.AccessU(sw, TimeUpdate);
@@ -529,6 +535,7 @@ void ChunkManager::NeighbourUpdateBufferMain(VectorI3 idx)
 	if (NextX != nullptr) { NextX -> MainBufferDataNew = true; }
 	if (NextY != nullptr) { NextY -> MainBufferDataNew = true; }
 	if (NextZ != nullptr) { NextZ -> MainBufferDataNew = true; }
+
 	MakeBufferConditionVar.notify_all();
 }
 
@@ -907,22 +914,29 @@ void Continue()
 
 AccessLockedChunk ChunkManager::GenerateChunkFind()
 {
-	/*CenterIndexLoop3D	loop;
+	/* loop takes longer the longer it goes on
+		save what chunks are fully complete
+		then start at the end of those
+		reset when Center changes ?
+		what if a random chunk needs to be regenerated ?
+		just reset and loop over everything again
+		it would only need to loop once, which should be fine
+	*/
+
+	CenterIndexLoop3D	loop;
 	for (loop.New(CareSize); !loop.Done(); loop.Continue())
 	{
 		Chunk * ptr = Chunks[relative(loop.Index())];
 		if (ptr == nullptr) { continue; }
+		const Chunk & ref = *ptr;
 
-		Chunk & chunk = *ptr;
-		chunk.AccessL();
+		ptr -> AccessL();
+		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); continue; }
+		if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
 
-		if (chunk.TerrainDone && chunk.DecorationsGenerated) { chunk.AccessU(); continue; }
-
-		if (!CareBox.IntersectVecInclusive(chunk.Index).All(true)) { chunk.AccessU(); continue; }
-
-		return &chunk;
+		return AccessLockedChunk(ptr);
 	}
-	return nullptr;*/
+	return AccessLockedChunk();
 
 //	AccessLockedChunk found;
 	Chunk * found = nullptr;
@@ -957,6 +971,21 @@ AccessLockedChunk ChunkManager::GenerateChunkFind()
 
 AccessLockedChunk ChunkManager::AssambleChunkFind()
 {
+	/*CenterIndexLoop3D	loop;
+	for (loop.New(CareSize); !loop.Done(); loop.Continue())
+	{
+		Chunk * ptr = Chunks[relative(loop.Index())];
+		if (ptr == nullptr) { continue; }
+		const Chunk & ref = *ptr;
+
+		ptr -> AccessL();
+		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); continue; }
+		if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
+
+		return AccessLockedChunk(ptr);
+	}
+	return AccessLockedChunk();*/
+
 //	AccessLockedChunk found;
 	Chunk * found = nullptr;
 	float dist;

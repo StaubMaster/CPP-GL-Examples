@@ -1305,10 +1305,10 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	//ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
-	ChunkManager.ChangeSize(8, 6);
+	//ChunkManager.ChangeSize(8, 6);
 	//ChunkManager.ChangeSize(16, 8);
 	//ChunkManager.ChangeSize(16, 12);
-	//ChunkManager.ChangeSize(32, 16);
+	ChunkManager.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -1439,8 +1439,7 @@ static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 
 static void ShowTime(std::stringstream & ss, float time)
 {
-	//ss << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << time << 's';
-	ss << ToString(time) << 's';
+	ss << ToString(time, 6) << 's';
 }
 static void ShowNameTimeLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
 {
@@ -1496,6 +1495,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "Min: "; ShowTimeFreq(ss, DLTAverageTime.Min(), FPSAverageTime.Max()); ss << '\n';
 		ss << "Avg: "; ShowTimeFreq(ss, DLTAverageTime.Average(), FPSAverageTime.Average()); ss << '\n';
 		ss << "Max: "; ShowTimeFreq(ss, DLTAverageTime.Max(), FPSAverageTime.Min()); ss << '\n';
+		ss << ToString(frame_time.Delta, 6) << '\n';
+		ss << ToString(1.0f / frame_time.Delta) << '\n';
 		ss << '\n';
 	}
 	sw_.Stop(); TextTime_TestFPS.NewValue(sw_.ElapsedTime());
@@ -1573,17 +1574,17 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << ChunkManager::TimeUpdateInsert << '\n';
 		ss << ChunkManager::TimeUpdateRemove << '\n';
 		ss << '\n';
-		ss << "Idle: " << AuxThread2DoIdle << ' ' << AuxThread2IsIdle << '\n';
+		ss << "AuxThread1 IsIdle: " << AuxThread1IsIdle << '\n';
+		ss << TimeMakeBufferFind << '\n';
+		ss << TimeMakeBuffer << '\n';
+		ss << '\n';
+		ss << "AuxThread2 IsIdle: " << AuxThread2IsIdle << '\n';
 		ss << TimeGenerateFind << '\n';
 		ss << TimeGenerate << '\n';
 		ss << '\n';
-		ss << "Idle: " << AuxThread3DoIdle << ' ' << AuxThread3IsIdle << '\n';
+		ss << "AuxThread3 IsIdle: " << AuxThread3IsIdle << '\n';
 		ss << TimeAssambleFind << '\n';
 		ss << TimeAssamble << '\n';
-		ss << '\n';
-		ss << "Idle: " << AuxThread1DoIdle << ' ' << AuxThread1IsIdle << '\n';
-		ss << TimeMakeBufferFind << '\n';
-		ss << TimeMakeBuffer << '\n';
 		ss << '\n';
 		ss << ChunkManager::TimeGraphicsCreate << '\n';
 		ss << ChunkManager::TimeGraphicsDelete << '\n';

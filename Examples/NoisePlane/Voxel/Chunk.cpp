@@ -25,6 +25,7 @@
 #include "ValueType/LoopU3.hpp"
 
 #include "Telemetry/StopWatch.hpp"
+#include "Telemetry/ThreadInfo.hpp"
 
 
 

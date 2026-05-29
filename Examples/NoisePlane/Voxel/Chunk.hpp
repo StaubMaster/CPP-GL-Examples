@@ -51,6 +51,26 @@ struct Structure;
 
 struct Chunk;
 
+/* Do I need Assign Lock ?
+
+when changing
+just createa a New Voxel Array and fill that with the new data
+then just replace the old Voxel Array with the new one
+just lock, replace, unlock
+that should be done internally
+
+Generation is currently the only one that changes
+
+changing should not happen at the same time
+so lock it for others that want to change
+but also changing should not lock checking until Voxels are changed
+
+do the same with Chunks in ChunkManager
+*/
+
+/* deleting Chunk
+*/
+
 struct AssignLockedChunk;
 
 struct AccessLockedChunk
