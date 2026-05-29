@@ -201,10 +201,31 @@ struct ChunkManager
 	void	GraphicsDelete();
 	void	GraphicsUpdate();
 
+	/* BufferUpdate
+		None: no Vertex Data
+		Want: requrest to make Vertex Data
+		Make: make Vertex Data
+		Have: requrest to put Vertex Data into Buffer
+		Bind: put Vertex Data into Buffer
+		Done: Vertex Data is freed
+	*/
+
 	public:
 	std::mutex					MakeBufferMutex;
 	std::condition_variable		MakeBufferConditionVar;
 	AccessLockedChunk			MakeBufferFind();
+
+	public:
+	Container::Binary<Chunk *>	BufferUpdateU_Queue;
+	std::mutex					BufferUpdateU_Queue_Mutex;
+
+	public:
+	static ValueAverager<float>		DrawTotal;
+	static ValueAverager<float>		DrawWait;
+	static ValueAverager<float>		DrawTextureBind;
+	static ValueAverager<float>		DrawShaderBind;
+	static ValueAverager<float>		DrawUpdateBind;
+	static ValueAverager<float>		DrawBufferDraw;
 
 	public:
 	void	Draw();

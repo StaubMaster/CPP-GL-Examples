@@ -528,13 +528,13 @@ void ChunkManager::NeighbourUpdateBufferMain(VectorI3 idx)
 	Chunk * NextY = FindAbsOrNull(idx + VectorI3(0, 1, 0));
 	Chunk * NextZ = FindAbsOrNull(idx + VectorI3(0, 0, 1));
 
-	if (Here  != nullptr) { Here  -> MainBufferDataNew = true; }
-	if (PrevX != nullptr) { PrevX -> MainBufferDataNew = true; }
-	if (PrevY != nullptr) { PrevY -> MainBufferDataNew = true; }
-	if (PrevZ != nullptr) { PrevZ -> MainBufferDataNew = true; }
-	if (NextX != nullptr) { NextX -> MainBufferDataNew = true; }
-	if (NextY != nullptr) { NextY -> MainBufferDataNew = true; }
-	if (NextZ != nullptr) { NextZ -> MainBufferDataNew = true; }
+	if (Here  != nullptr) { Here  -> BufferUData_Want = true; }
+	if (PrevX != nullptr) { PrevX -> BufferUData_Want = true; }
+	if (PrevY != nullptr) { PrevY -> BufferUData_Want = true; }
+	if (PrevZ != nullptr) { PrevZ -> BufferUData_Want = true; }
+	if (NextX != nullptr) { NextX -> BufferUData_Want = true; }
+	if (NextY != nullptr) { NextY -> BufferUData_Want = true; }
+	if (NextZ != nullptr) { NextZ -> BufferUData_Want = true; }
 
 	MakeBufferConditionVar.notify_all();
 }
@@ -1135,7 +1135,7 @@ AccessLockedChunk ChunkManager::MakeBufferFind()
 		if (ptr == nullptr) { continue; }
 		AccessLockedChunk chunk = ptr -> ToAccessTry();
 		if (!chunk.Is()) { continue; }
-		if (!(*chunk).MainBufferDataNew) { continue; }
+		if (!(*chunk).BufferUData_Want) { continue; }
 		if (!(*chunk).GenerationDone()) { continue; }
 		if (!(*chunk).Neighbours.CanMakeBuffer()) { continue; }
 
@@ -1153,33 +1153,80 @@ AccessLockedChunk ChunkManager::MakeBufferFind()
 	return found;
 }
 
+
+
+ValueAverager<float> ChunkManager::DrawTotal(64);
+ValueAverager<float> ChunkManager::DrawWait(64);
+ValueAverager<float> ChunkManager::DrawTextureBind(64);
+ValueAverager<float> ChunkManager::DrawShaderBind(64);
+ValueAverager<float> ChunkManager::DrawUpdateBind(64);
+ValueAverager<float> ChunkManager::DrawBufferDraw(64);
+
 void ChunkManager::Draw()
 {
 	if (!GraphicsExist) { return; }
 
+	StopWatch sw_total;
+	sw_total.Start();
+
+	StopWatch sw_part;
+
+
+
 	StopWatch sw;
+
+	sw_part.Clear(); sw_part.Start();
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
 	ChunksLock.AccessL(sw, TimeDraw);
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
+	sw_part.Stop(); DrawWait.NewValue(sw_part.ElapsedTime());
 
+
+
+	sw_part.Clear(); sw_part.Start();
 	Texture.Bind();
+	sw_part.Stop(); DrawTextureBind.NewValue(sw_part.ElapsedTime());
 
+
+
+	sw_part.Clear(); sw_part.Start();
 	ShaderU.Bind();
-	for (unsigned int i = 0; i < Chunks.Length(); i++)
-	{
-		if (Chunks[i] == nullptr) { continue; }
-		Chunks[i] -> UpdateU();
-	}
-	BufferU.Draw();
+	sw_part.Stop(); DrawShaderBind.NewValue(sw_part.ElapsedTime());
 
-	/*ShaderF.Bind();
-	for (unsigned int i = 0; i < Chunks.Length(); i++)
+
+
+	/* Update is slow
+		even when nothing is updated, so the loop is slow
+		maybe have a Queue of Chunks that need to Update
+		then go through that, then cleare it
+		a Queue might also help with some other things
+	*/
+	sw_part.Clear(); sw_part.Start();
+	BufferUpdateU_Queue_Mutex.lock();
+	for (unsigned int i = 0; i < BufferUpdateU_Queue.Count(); i++)
 	{
-		if (Chunks[i] == nullptr) { continue; }
-		Chunks[i] -> DrawF();
-	}*/
+		Chunk * ptr = BufferUpdateU_Queue[i];
+		if (ptr == nullptr) { continue; }
+		if (!ptr -> BufferUData_Have) { continue; }
+		ptr -> BufferUData_Update();
+	}
+	BufferUpdateU_Queue_Mutex.unlock();
+	BufferUpdateU_Queue.Clear();
+	sw_part.Stop(); DrawUpdateBind.NewValue(sw_part.ElapsedTime());
+
+
+
+	sw_part.Clear(); sw_part.Start();
+	BufferU.Draw();
+	sw_part.Stop(); DrawBufferDraw.NewValue(sw_part.ElapsedTime());
+
+
 
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
 	ChunksLock.AccessU(sw, TimeDraw);
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
+
+
+
+	sw_total.Stop(); DrawTotal.NewValue(sw_total.ElapsedTime());
 }

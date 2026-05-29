@@ -271,7 +271,6 @@ struct Chunk
 
 	public:
 	bool	GraphicsExist;
-	MultiBuffe_ChunkU::Entry	BufferU_Entry;
 //	VoxelGraphics::BufferF		BufferF;
 
 	public:
@@ -279,46 +278,18 @@ struct Chunk
 	void	GraphicsDelete();
 
 	public:
-	bool				MainBufferDataNew;
-	ChunkGraphicsData	MainBufferData;
-	void	GraphicsMakeData();
-	/* 
-		BufferUMain_UpdateData clears MainBufferData
-		if during this time, MainBufferData is being remade
-		then MainBufferData is undefined
+	ChunkGraphicsData			BufferUData;
+	MultiBuffe_ChunkU::Entry	BufferUData_Entry;
+	bool						BufferUData_Want;
+	void						BufferUData_Make();
+	bool						BufferUData_Have;
+	void						BufferUData_Update();
 
-		Lock Array
-		have another flag for turning BlockData into Array Data
-	*/
-
-	/*
-		make new MainBufferData.Block
-		...
-		Chunk is locked as Access. so it cannot be changed
-		...
-		MainBufferData.Block is done
-		MainBufferData.Block to MainBufferData.Array
-		...
-		Chunk changes
-		...
-		make new MainBufferData.Block
-		...
-		MainBufferData.Array is put into Buffer
-		MainBufferData should be cleared so that less Memory is in use
-		only clear Array ?
-		Block should be cleard after Array has been made
-		but still lock to make sture no conflict happens
-	*/
-
-	bool	BufferUMain_NewData;
-	void	BufferUMain_UpdateData();
-	void	UpdateU();
-
-	bool	BufferFMain_NewData;
+	/*bool	BufferFMain_NewData;
 	bool	BufferFInst_NewData;
 	void	BufferFMain_UpdateData();
 	void	BufferFInst_UpdateData();
-	void	DrawF();
+	void	DrawF();*/
 };
 
 #endif

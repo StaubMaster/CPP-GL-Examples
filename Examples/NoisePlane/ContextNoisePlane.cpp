@@ -487,7 +487,7 @@ void ContextNoisePlane::AuxThread1Func()
 
 		sw.Clear();
 		sw.Start();
-		((Chunk*)&(*chunk)) -> GraphicsMakeData();
+		((Chunk*)&(*chunk)) -> BufferUData_Make();
 		sw.Stop();
 		TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
 		TimeMakeBuffer.ThreadName = ThreadInfo::ThreadName;
@@ -1305,10 +1305,10 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	//ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
-	//ChunkManager.ChangeSize(8, 6);
+	ChunkManager.ChangeSize(8, 6);
 	//ChunkManager.ChangeSize(16, 8);
 	//ChunkManager.ChangeSize(16, 12);
-	ChunkManager.ChangeSize(32, 16);
+	//ChunkManager.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
@@ -1503,18 +1503,16 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 	// TestTime
 	sw_.Clear(); sw_.Start();
-	/*{
-		ss << "TestTime\n";
-		ss << "UInt_0 " << TestTime_UInt_0.Average() << '\n';
-		ss << "UInt_1 " << TestTime_UInt_1.Average() << '\n';
-		ss << "UInt_0 " << TestTime_UInt_Value << '\n';
-		ss << "UInt_1 " << ToString(TestTime_UInt_Value) << '\n';
-		ss << "Float_0 " << TestTime_Float_0.Average() << '\n';
-		ss << "Float_1 " << TestTime_Float_1.Average() << '\n';
-		ss << "Float_0 " << std::fixed << std::setw(6) << std::setfill(' ') << std::setprecision(6) << TestTime_Float_Value << '\n';
-		ss << "Float_1 " << ToString(TestTime_Float_Value) << '\n';
+	{
+		ss << "ChunkManager::Draw()\n";
+		ss << "Total       " << ToString(::ChunkManager::DrawTotal.Average(), 6) << '\n';
+		ss << "Wait        " << ToString(::ChunkManager::DrawWait.Average(), 6) << '\n';
+		ss << "TextureBind " << ToString(::ChunkManager::DrawTextureBind.Average(), 6) << '\n';
+		ss << "ShaderBind  " << ToString(::ChunkManager::DrawShaderBind.Average(), 6) << '\n';
+		ss << "UpdateBind  " << ToString(::ChunkManager::DrawUpdateBind.Average(), 6) << '\n';
+		ss << "BufferDraw  " << ToString(::ChunkManager::DrawBufferDraw.Average(), 6) << '\n';
 		ss << '\n';
-	}*/
+	}
 	sw_.Stop(); TextTime_TestTime.NewValue(sw_.ElapsedTime());
 
 	// Text
@@ -1654,7 +1652,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			if ((*chunk).GenerationDone()) { ss << "Done"; }
 			ss << '\n';
 
-			ss << "MainBufferDataNew: " << (*chunk).MainBufferDataNew << '\n';
+			ss << "BufferUData_Want: " << (*chunk).BufferUData_Want << '\n';
+			ss << "BufferUData_Have: " << (*chunk).BufferUData_Have << '\n';
 
 			//ss << "BufferU: ";
 			//ss << Memory1000ToString(chunk.BufferU.Main.Count * sizeof(VoxelGraphics::MainDataU));
@@ -1739,8 +1738,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		unsigned int chunks_done_filled = 0;
 
 		unsigned int buffer_data_none = 0;
-		unsigned int buffer_data_have = 0;
-		unsigned int buffer_data_want = 0;
+		unsigned int buffer_data_have[2] = { 0, 0 };
+		unsigned int buffer_data_want[2] = { 0, 0 };
 
 		//unsigned long long main_f_count = 0;
 
@@ -1765,10 +1764,14 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 			//main_f_count += chunk.BufferF.Main.Count;
 
+			// Edge Chunks dont get BufferData because the outside Chunks are not done Decorating
+			// Edge Chunks dont Decorate because the outside Chunks are out of Bounds and assumed null
 			if (chunk.GenerationDone())
 			{
-				if (chunk.MainBufferDataNew)	{ buffer_data_want++; }
-				else							{ buffer_data_have++; }
+				if (chunk.BufferUData_Want)		{ buffer_data_want[0]++; }
+				else							{ buffer_data_want[1]++; }
+				if (chunk.BufferUData_Have)		{ buffer_data_have[0]++; }
+				else							{ buffer_data_have[1]++; }
 			}
 			else
 			{
@@ -1797,9 +1800,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << '\n';
 
 		ss << "BufferState";
-		ss << " None:" << buffer_data_none;
-		ss << " Have:" << buffer_data_have;
-		ss << " Want:" << buffer_data_want;
+		ss << " None[" << buffer_data_none << ']';
+		ss << " Want[" << buffer_data_want[0] << ':' << buffer_data_want[1] << ']';
+		ss << " Have[" << buffer_data_have[0] << ':' << buffer_data_have[1] << ']';
 		ss << '\n';
 
 		ss << "DataU Entrys:" << ChunkManager.BufferU.Entrys.Count() << '\n';

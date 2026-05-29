@@ -247,13 +247,14 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, DecorationsGenerated(false)
 	, DecorationsAssambled(false)
 	, GraphicsExist(false)
-	, BufferU_Entry(manager.BufferU)
+	, BufferUData()
+	, BufferUData_Entry(manager.BufferU)
+	, BufferUData_Want(false)
+	, BufferUData_Have(false)
 //	, BufferF()
-	, MainBufferDataNew(false)
-	, MainBufferData()
-	, BufferUMain_NewData(false)
-	, BufferFMain_NewData(false)
-	, BufferFInst_NewData(false)
+//	, BufferUMain_NewData(false)
+//	, BufferFMain_NewData(false)
+//	, BufferFInst_NewData(false)
 {
 	//BufferF.Main.Pos.Change(0);
 	//BufferF.Main.Tex.Change(1);
@@ -921,7 +922,7 @@ void Chunk::AssambleDecoration()
 	if (GraphicsExist)
 	{
 		Manager.NeighbourUpdateBufferMain(Index);
-		MainBufferDataNew = true;
+		BufferUData_Want = true;
 		Manager.MakeBufferConditionVar.notify_all();
 	}
 }
@@ -953,11 +954,11 @@ void Chunk::GraphicsCreate()
 {
 	if (GraphicsExist) { return; }
 
-	//BufferF.Create();
+	BufferUData_Have = false;
 
-	BufferUMain_NewData = false;
-	BufferFMain_NewData = false;
-	BufferFInst_NewData = true;
+	//BufferF.Create();
+	//BufferFMain_NewData = false;
+	//BufferFInst_NewData = true;
 	//BufferF.Main.AttributesBound = false;
 	//BufferF.Inst.AttributesBound = false;
 
@@ -965,7 +966,7 @@ void Chunk::GraphicsCreate()
 
 	if (GenerationDone())
 	{
-		MainBufferDataNew = true;
+		BufferUData_Want = true;
 		Manager.MakeBufferConditionVar.notify_all();
 	}
 }
@@ -978,51 +979,47 @@ void Chunk::GraphicsDelete()
 	GraphicsExist = false;
 }
 
-void Chunk::GraphicsMakeData()
+void Chunk::BufferUData_Make()
 {
-	if (!MainBufferDataNew) { return; }
-
+	if (!BufferUData_Want) { return; }
 	if (!GenerationDone()) { return; }
 
-	MainBufferData.Make(*this, Neighbours);
+	BufferUData.Make(*this, Neighbours);
 
-	MainBufferDataNew = false;
+	BufferUData_Want = false;
+	BufferUData_Have = true;
 
-	BufferUMain_NewData = true;
-	BufferFMain_NewData = true;
+	Manager.BufferUpdateU_Queue_Mutex.lock();
+	Manager.BufferUpdateU_Queue.Insert(this);
+	Manager.BufferUpdateU_Queue_Mutex.unlock();
 }
 
-void Chunk::BufferUMain_UpdateData()
+void Chunk::BufferUData_Update()
 {
 	if (!GraphicsExist) { return; }
-	if (!BufferUMain_NewData) { return; }
+	if (!BufferUData_Have) { return; }
 
-	MainBufferData.ArrayLock.lock();
-	BufferU_Entry.Put(MainBufferData.GraphicsDataU());
-	MainBufferData.ClearU();
-	MainBufferData.ArrayLock.unlock();
+	BufferUData.ArrayLock.lock();
+	BufferUData_Entry.Put(BufferUData.GraphicsDataU());
+	BufferUData.ClearU();
+	BufferUData.ArrayLock.unlock();
 
-	BufferUMain_NewData = false;
-}
-void Chunk::UpdateU()
-{
-	if (!GraphicsExist) { return; }
-	BufferUMain_UpdateData();
+	BufferUData_Have = false;
 }
 
-void Chunk::BufferFMain_UpdateData()
+/*void Chunk::BufferFMain_UpdateData()
 {
 	if (!GraphicsExist) { return; }
 	if (!BufferFMain_NewData) { return; }
 
-	MainBufferData.ArrayLock.lock();
-	//BufferF.Main.DataFull(MainBufferData.GraphicsDataF().ToVoid());
-	MainBufferData.ClearF();
-	MainBufferData.ArrayLock.unlock();
+	BufferUData.ArrayLock.lock();
+	//BufferF.Main.DataFull(BufferUData.GraphicsDataF().ToVoid());
+	BufferUData.ClearF();
+	BufferUData.ArrayLock.unlock();
 
 	BufferFMain_NewData = false;
-}
-void Chunk::BufferFInst_UpdateData()
+}*/
+/*void Chunk::BufferFInst_UpdateData()
 {
 	if (!GraphicsExist) { return; }
 	if (!BufferFInst_NewData) { return; }
@@ -1038,13 +1035,10 @@ void Chunk::BufferFInst_UpdateData()
 	}
 
 	BufferFInst_NewData = false;
-}
-void Chunk::DrawF()
+}*/
+/*void Chunk::DrawF()
 {
 	if (!GraphicsExist) { return; }
 	BufferFMain_UpdateData();
 	BufferFInst_UpdateData();
-	//BufferF.Inst.Update();
-	//BufferF.Main.Update();
-	//BufferF.Draw();
-}
+}*/
