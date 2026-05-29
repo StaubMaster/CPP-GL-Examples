@@ -5,6 +5,9 @@
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/Vector/U3.hpp"
 
+// rename to AxisOrientation
+// change VoxelEnums to AxisEnums
+
 struct VoxelOrientation
 {
 	private:

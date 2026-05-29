@@ -38,17 +38,7 @@ struct ChunkNeighbour;
 struct Ray3D;
 class PolyHedra;
 
-struct VoxelHit
-{
-	AxisRel		Side;
-	VectorI3	Index;
-	//VoxelIndex	Index;
-	VectorF3	Position;
-	VectorF3	Normal;
-
-	bool	Valid() const;
-	VoxelHit();
-};
+struct VoxelHit;
 
 #include <iostream>
 #include "ValueType/_Show.hpp"
@@ -57,46 +47,7 @@ struct VoxelHit
 # include "ContainerLock.hpp"
 # include "Miscellaneous/Container/Array3D.hpp"
 
-class MultiBuffe_ChunkU
-{
-	public:
-	struct Entry
-	{
-		MultiBuffe_ChunkU &	Buffer;
-		unsigned int		Offset;
-		unsigned int		Length;
-		// put Array here
-		// update Buffer
-		//  check for Array, put Array, clear Array
-
-		bool	IsEmpty() const;
-		void	MakeEmpty();
-
-		void	Put(const Container::Array<VoxelGraphics::MainFaceU> & data);
-
-		~Entry();
-		Entry() = delete;
-		Entry(MultiBuffe_ChunkU & buffer);
-		Entry(const Entry & other) = delete;
-		Entry & operator=(const Entry & other) = delete;
-	};
-
-	VoxelGraphics::BufferU			Buffer;
-	VoxelGraphics::MainLayoutU		Layout;
-	unsigned int				Size;
-
-	void	NewSize(unsigned int size);
-
-	Container::Binary<Entry*>	Entrys;
-	Container::Binary<int>		Offsets;
-	Container::Binary<int>		Lengths;
-
-	bool	CheckEntry(Entry & entry);
-	void	Insert(Entry & entry);
-	void	Remove(Entry & entry);
-
-	void	Draw();
-};
+# include "Graphics/MultiBufferChunkU.hpp"
 
 struct ChunkManager
 {
@@ -114,14 +65,10 @@ struct ChunkManager
 
 
 	public:
+	Texture::Array2D				Texture;
 	::Shader::Base					ShaderU;
 	VoxelGraphics::ShaderLayout		ShaderLayoutU;
-//	VoxelGraphics::Shader		ShaderF;
-//	VoxelGraphics::Layout		ShaderLayoutF;
-
-	MultiBuffe_ChunkU			BufferU;
-	VoxelGraphics::BufferF		BufferF;
-	Texture::Array2D			Texture;
+	MultiBufferChunkU				BufferU;
 
 	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
 
@@ -171,15 +118,41 @@ struct ChunkManager
 	ChunkManager & operator=(const ChunkManager & other) = delete;
 
 	public:
-	PolyHedra *	VoxelBoxPolyHedra = nullptr;
-	PolyHedra *	ChunkBoxPolyHedra = nullptr;
-	PolyHedra *	ViewRayPolyHedra = nullptr;
+	//PolyHedra *	VoxelBoxPolyHedra = nullptr;
+	//PolyHedra *	ChunkBoxPolyHedra = nullptr;
+	//PolyHedra *	ViewRayPolyHedra = nullptr;
 
 	private:
 	public:
 	VoxelHit		HitVoxel(Ray3D ray);
 
 
+
+	/* make a Queue for Generating/Assambling ?
+		Problem:
+			I want the nearest stuff to be generated first
+		Solution:
+			the thing that Queues a Generation can be a CenterIndexLoop
+			so the stuff nearer to the Center get generated first
+			which then means that the stuff near the Center get assambled first
+
+		Problem:
+			duplicates in Queue
+		Solution:
+			keep the flags on weather the Chunks actually needs that done or not
+			if not, just skip it
+
+		Problem:
+			what if the Center changes, a lot
+			now the Center is of what was the Edge
+			but the Queue is alreay filled with Chunks that area now far away
+			the stuff close by should be prioratized
+		Solution:
+			this would require soring the distances of all Chunks
+			and then using Binary insertion to insert new ones
+			this would also mean recalculating Distances when Center changes
+			could probably just use Manhatton distance to keep Distance simple
+	*/
 
 	public:
 	std::mutex					GenerateChunkMutex;
@@ -210,6 +183,15 @@ struct ChunkManager
 		Done: Vertex Data is freed
 	*/
 
+	/* Queue for making BufferData ?
+		duplicates ?
+		Timelime:
+			new Data is requested for Chunk
+			new Data is requested for Chunk
+			make Data
+			make Data again
+		nothing changed since the first make, so doing it again wastes resources
+	*/
 	public:
 	std::mutex					MakeBufferMutex;
 	std::condition_variable		MakeBufferConditionVar;

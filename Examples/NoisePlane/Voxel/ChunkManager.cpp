@@ -11,8 +11,6 @@
 
 #include "ValueType/Ray3D.hpp"
 
-#include "GridCast/GridCast3D.hpp"
-
 
 
 // Code
@@ -33,126 +31,6 @@ WaitDoTime ChunkManager::TimeGraphicsCreate("TimeGraphicsCreate");
 WaitDoTime ChunkManager::TimeGraphicsDelete("TimeGraphicsDelete");
 WaitDoTime ChunkManager::TimeDraw("TimeDraw");
 
-
-
-
-
-bool MultiBuffe_ChunkU::Entry::IsEmpty() const
-{
-	return (Offset == 0 && Length == 0);
-}
-void MultiBuffe_ChunkU::Entry::MakeEmpty()
-{
-	Offset = 0;
-	Length = 0;
-}
-void MultiBuffe_ChunkU::Entry::Put(const Container::Array<VoxelGraphics::MainFaceU> & data)
-{
-	Buffer.Remove(*this);
-	Length = data.Length();
-	Buffer.Insert(*this);
-	if (!IsEmpty())
-	{
-		Buffer.Buffer.MainBuffer.DataPart(Offset * sizeof(VoxelGraphics::MainFaceU), data.ToVoid());
-	}
-}
-
-MultiBuffe_ChunkU::Entry::~Entry()
-{
-	Buffer.Remove(*this);
-}
-MultiBuffe_ChunkU::Entry::Entry(MultiBuffe_ChunkU & buffer)
-	: Buffer(buffer)
-	, Offset(0)
-	, Length(0)
-{ }
-
-void MultiBuffe_ChunkU::NewSize(unsigned int size)
-{
-	Buffer.MainBuffer.DataFull(size);
-	Size = size / sizeof(VoxelGraphics::MainFaceU);
-}
-
-bool MultiBuffe_ChunkU::CheckEntry(Entry & entry)
-{
-	if ((entry.Offset + entry.Length) >= Size)
-	{
-		return false;
-	}
-	for (unsigned int i = 0; i < Entrys.Count(); i++)
-	{
-		Entry & other = *(Entrys[i]);
-		if (
-			(entry.Offset + entry.Length) > (other.Offset) &&
-			(entry.Offset) < (other.Offset + other.Length)
-		)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-void MultiBuffe_ChunkU::Insert(Entry & entry)
-{
-	if (entry.Length == 0)
-	{
-		entry.MakeEmpty();
-		return;
-	}
-
-	entry.Offset = 0;
-	if (CheckEntry(entry))
-	{
-		Entrys.Insert(&entry);
-		Offsets.Insert(entry.Offset * 6);
-		Lengths.Insert(entry.Length * 6);
-		//std::cout << "insert BufferUEntry of Length: " << entry.Length << " at " << entry.Offset << '\n';
-		return;
-	}
-
-	for (unsigned int i = 0; i < Entrys.Count(); i++)
-	{
-		Entry & other = *(Entrys[i]);
-		entry.Offset = other.Offset + other.Length;
-		if (CheckEntry(entry))
-		{
-			Entrys.Insert(&entry);
-			Offsets.Insert(entry.Offset * 6);
-			Lengths.Insert(entry.Length * 6);
-			//std::cout << "insert BufferUEntry of Length: " << entry.Length << " at " << entry.Offset << '\n';
-			return;
-		}
-	}
-
-	std::cout << " failed BufferUEntry of Length: " << entry.Length << '\n';
-
-	entry.MakeEmpty();
-}
-void MultiBuffe_ChunkU::Remove(Entry & entry)
-{
-	if (entry.IsEmpty())
-	{
-		return;
-	}
-	for (unsigned int i = 0; i < Entrys.Count(); i++)
-	{
-		if (Entrys[i] == &entry)
-		{
-			Entrys.RemoveAt(i);
-			Offsets.RemoveAt(i);
-			Lengths.RemoveAt(i);
-			break;
-		}
-	}
-	//std::cout << "remove BufferUEntry of Length: " << entry.Length << " at " << entry.Offset << '\n';
-	entry.MakeEmpty();
-}
-void MultiBuffe_ChunkU::Draw()
-{
-	Buffer.Bind();
-	Buffer.MainBuffer.Update();
-	glMultiDrawArrays((unsigned int)GL::DrawMode::Triangles, Offsets.ToArray().Memory(), Lengths.ToArray().Memory(), Entrys.Count());
-}
 
 
 
@@ -549,110 +427,33 @@ ChunkManager::~ChunkManager()
 	{
 		delete Chunks[i];
 	}
-	/*for (unsigned int i = 0; i < ChunksArray.Count(); i++)
-	{
-		delete ChunksArray[i];
-	}*/
 }
 ChunkManager::ChunkManager()
-	: ShaderU()
+	: Texture()
+	, ShaderU()
 	, ShaderLayoutU()
-//	, ShaderF()
-//	, ShaderLayoutF()
-//	, ChunksArray()
-//	, ChunksBox()
+	, BufferU()
 	, Chunks()
 	, ChunksLock()
-//	, ChunksChanging()
-//	, ChunksChecking()
-//	, ChunksCheckingCount()
 	, GraphicsExist(false)
 {
 	ShaderU.UniformLayout = &ShaderLayoutU;
 	ShaderLayoutU.Shader = &ShaderU;
-
-//	ShaderF.UniformLayout = &ShaderLayoutF;
-//	ShaderLayoutF.Shader = &ShaderF;
 }
 
 
 
-#include <math.h>
-#include "PolyHedra/Object.hpp"
-static PolyHedra * ViewRayPolyHedra;
-static PolyHedra * VoxelBoxPolyHedra;
-//static PolyHedra * ChunkBoxPolyHedra;
-static void ShowRay(Ray3D ray)
-{
-	if (ViewRayPolyHedra == nullptr) { return; }
-	PolyHedraObject obj(ViewRayPolyHedra);
-	obj.Trans().Position = ray.Pos;
-	obj.Trans().Rotation = EulerAngle3D::PointToZ(ray.Dir);
-}
-static void ShowVoxel(VectorI3 idx)
-{
-	if (VoxelBoxPolyHedra == nullptr) { return; }
-	PolyHedraObject obj(VoxelBoxPolyHedra);
-	obj.Trans().Position = idx;
-	obj.ShowWire();
-}
-/*static void ShowChunk(VectorI3 idx)
-{
-	PolyHedraObject obj(ChunkBoxPolyHedra);
-	obj.Trans().Position = idx * CHUNK_VALUES_PER_SIDE;
-	obj.ShowWire();
-}*/
-
-static GridCast3D::Hit hit_ray(const Chunk & chunk, Ray3D ray3D, float limit)
-{
-	ShowRay(Ray3D(ray3D.Pos, ray3D.Dir));
-	BoxI3 box(VectorI3(-1), VectorI3(CHUNK_VALUES_PER_SIDE));
-	GridCast3D::Data data(ray3D, limit, 1.0f);
-	do
-	{
-		ShowRay(data.Ray());
-		ShowVoxel(data.Index());
-		VectorI3 idx = data.Index() - (chunk.Index * CHUNK_VALUES_PER_SIDE);
-		if (box.IntersectVecInclusive(idx).All(false)) { return GridCast3D::Hit(); }
-		if (box.IntersectVecExclusive(idx).All(true))
-		{
-			if (chunk.HitVoxel(idx)) { return GridCast3D::Hit(data); }
-		}
-	}
-	while (data.Iterate());
-	return GridCast3D::Hit();
-}
-static GridCast3D::Hit hit_ray(ChunkManager & manager, Ray3D ray3D, float limit)
-{
-	GridCast3D::Data data(ray3D, limit, CHUNK_VALUES_PER_SIDE);
-	do
-	{
-		AccessLockedChunk chunk = manager.FindAccess(data.Index());
-		if (!chunk.Is()) { return GridCast3D::Hit(); }
-		if (!((*chunk).GenerationDone())) { return GridCast3D::Hit(); }
-		if (((*chunk).IsEmpty())) { continue; }
-		GridCast3D::Hit hit = hit_ray(*chunk, data.Ray(), data.Limit());
-		if (hit.cardinal != AxisRel::None) { return hit; }
-	}
-	while (data.Iterate());
-	return GridCast3D::Hit();
-}
-
-bool VoxelHit::Valid() const { return Side != AxisRel::None; }
-VoxelHit::VoxelHit()
-	: Side(AxisRel::None)
-{ }
-
+#include "VoxelHit.hpp"
 VoxelHit ChunkManager::HitVoxel(Ray3D ray)
 {
-	::ViewRayPolyHedra = ViewRayPolyHedra;
-	::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
+	//::ViewRayPolyHedra = ViewRayPolyHedra;
+	//::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
 	//::ChunkBoxPolyHedra = ChunkBoxPolyHedra;
 	//ShowRay(ray);
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
 	ChunksLock.AccessL();
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
-	GridCast3D::Hit _hit = hit_ray(*this, ray, 10.0f);
+	GridCast3D::Hit _hit = VoxelHit::Hit(*this, ray, 10.0f);
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
 	ChunksLock.AccessU();
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
@@ -1033,11 +834,11 @@ void ChunkManager::GraphicsCreate()
 {
 	if (GraphicsExist) { return; }
 
-	ShaderU.Create();
-//	ShaderF.Create();
-	BufferU.Buffer.Create();
-	BufferF.Create();
 	Texture.Create();
+	ShaderU.Create();
+	BufferU.Buffer.Create();
+//	ShaderF.Create();
+//	BufferF.Create();
 
 //	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
 	ChunksLock.AccessL();
@@ -1062,11 +863,11 @@ void ChunkManager::GraphicsDelete()
 {
 	if (!GraphicsExist) { return; }
 
-	ShaderU.Delete();
-//	ShaderF.Delete();
-	BufferU.Buffer.Delete();
-	BufferF.Delete();
 	Texture.Delete();
+	ShaderU.Delete();
+	BufferU.Buffer.Delete();
+//	ShaderF.Delete();
+//	BufferF.Delete();
 
 //	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
 	ChunksLock.AccessL();

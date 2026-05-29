@@ -17,6 +17,7 @@ FILES := \
 	Voxel/Graphics/Inst/Buffer.cpp \
 	Voxel/Graphics/Buffer.cpp \
 	Voxel/Graphics/ShaderLayout.cpp \
+	Voxel/Graphics/MultiBufferChunkU.cpp \
 	\
 	Voxel/Voxel.cpp \
 	Voxel/VoxelGraphicsData.cpp \
@@ -24,10 +25,13 @@ FILES := \
 	Voxel/VoxelPallet.cpp \
 	Voxel/VoxelOrientation.cpp \
 	Voxel/VoxelEnums.cpp \
+	Voxel/VoxelHit.cpp \
 	\
 	Voxel/ChunkGraphicsData.cpp \
 	Voxel/ChunkVoxelIndex.cpp \
 	Voxel/Chunk.cpp \
+	Voxel/AccessLockedChunk.cpp \
+	Voxel/AssignLockedChunk.cpp \
 	Voxel/ChunkNeighbours.cpp \
 	Voxel/ChunkManager.cpp \
 	\

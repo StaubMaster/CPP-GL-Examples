@@ -41,6 +41,9 @@ struct ChunkGenerationNoise
 	Perlin3D	Cave1;
 	Perlin3D	Cave2;
 };
+// put all generation stuff into a seperate Generator object
+// do all the generation functions to the Voxels in that object
+// then put the new Voxels into the Chunk
 
 struct Structure;
 //struct ChunkNeighbour;
@@ -71,46 +74,9 @@ do the same with Chunks in ChunkManager
 /* deleting Chunk
 */
 
-struct AssignLockedChunk;
+# include "AssignLockedChunk.hpp"
+# include "AccessLockedChunk.hpp"
 
-struct AccessLockedChunk
-{
-	private:
-	unsigned int *	Count;
-	Chunk *			Pointer;
-
-	public:
-	bool			Is() const;
-	const Chunk &	operator*() const;
-
-	~AccessLockedChunk();
-	AccessLockedChunk();
-	AccessLockedChunk(const AccessLockedChunk & other);
-	AccessLockedChunk & operator=(const AccessLockedChunk & other);
-
-	AccessLockedChunk(Chunk * chunk);
-	AssignLockedChunk	ToAssign();
-};
-
-struct AssignLockedChunk
-{
-	private:
-	unsigned int *	Count;
-	Chunk *			Pointer;
-
-	public:
-	bool			Is() const;
-	Chunk &			operator*();
-
-	~AssignLockedChunk();
-	AssignLockedChunk();
-	AssignLockedChunk(const AssignLockedChunk & other);
-	AssignLockedChunk & operator=(const AssignLockedChunk & other);
-
-	AssignLockedChunk(Chunk * chunk);
-};
-
-// 600B
 struct Chunk
 {
 	// store Neighbours
@@ -175,7 +141,6 @@ struct Chunk
 
 
 	public:
-	bool	HitVoxel(VectorU3 udx) const;
 	bool	ClearVoxel(VectorU3 udx, Voxel & vox);
 	bool	PlaceVoxel(VectorU3 udx, Voxel & vox);
 
@@ -279,7 +244,7 @@ struct Chunk
 
 	public:
 	ChunkGraphicsData			BufferUData;
-	MultiBuffe_ChunkU::Entry	BufferUData_Entry;
+	MultiBufferChunkU::Entry	BufferUData_Entry;
 	bool						BufferUData_Want;
 	void						BufferUData_Make();
 	bool						BufferUData_Have;

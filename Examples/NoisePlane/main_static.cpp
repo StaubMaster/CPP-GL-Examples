@@ -37,7 +37,10 @@ static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
 }
 
-//static void Toggle(bool & value) { value = !value; }
+__attribute__((unused))
+static void Toggle(bool & value) { value = !value; }
+
+__attribute__((unused))
 static void Toggle(::PolyHedra * & polyhedra, ::PolyHedra * other)
 {
 	if (polyhedra == nullptr)

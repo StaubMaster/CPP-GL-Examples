@@ -1113,11 +1113,6 @@ void ContextNoisePlane::DebugMenu_Generation3DFactor(float val)
 
 
 
-// hardcode Shaders into Managers
-// hardcode Attributes into Managers
-// "Template" for Attributes in Managers with InstanceManagers
-// also organize Shader Files
-//
 // a lot of the managers are siminal with the bool flags and function names
 // make a Base ? to organize
 void ContextNoisePlane::ChangeMedia()
@@ -1136,11 +1131,11 @@ void ContextNoisePlane::ChangeMedia()
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
 		ControlManager.LayoutMain.Pos.Change(0);
+		ControlManager.Buffer.MainBuffer.AttributeLayout = &ControlManager.LayoutMain;
 		ControlManager.LayoutInst.Min.Change(1);
 		ControlManager.LayoutInst.Max.Change(2);
 		ControlManager.LayoutInst.Layer.Change(3);
 		ControlManager.LayoutInst.Col.Change(4);
-		ControlManager.Buffer.MainBuffer.AttributeLayout = &ControlManager.LayoutMain;
 		ControlManager.Buffer.InstBuffer.AttributeLayout = &ControlManager.LayoutInst;
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
@@ -1162,10 +1157,10 @@ void ContextNoisePlane::ChangeMedia()
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
 		TextManager.LayoutMain.Pos.Change(0);
+		TextManager.Buffer.MainBuffer.AttributeLayout = &TextManager.LayoutMain;
 		TextManager.LayoutInst.Pos.Change(1);
 		TextManager.LayoutInst.PalletIdx.Change(2);
 		TextManager.LayoutInst.TextIdx.Change(3);
-		TextManager.Buffer.MainBuffer.AttributeLayout = &TextManager.LayoutMain;
 		TextManager.Buffer.InstBuffer.AttributeLayout = &TextManager.LayoutInst;
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
@@ -1213,9 +1208,6 @@ void ContextNoisePlane::ChangeMedia()
 			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
 		});
 		ChunkManager.ShaderU.Change(code);
-		// Attribute Map. store in Shader
-		// Shader can be larger then Buffer
-		// Buffers are stored a lot more
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
@@ -1224,14 +1216,6 @@ void ContextNoisePlane::ChangeMedia()
 		ChunkManager.BufferU.Layout.Chunk.Change(2);
 		ChunkManager.BufferU.Buffer.MainBuffer.AttributeLayout = &ChunkManager.BufferU.Layout;
 	}
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	/*{
-		Container::Array<::Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelF.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
-		});
-		ChunkManager.ShaderF.Change(code);
-	}*/
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 
 	// Inventory
@@ -1950,9 +1934,9 @@ void ContextNoisePlane::FrameInput()
 
 #ifndef DISABLE_VIEW_RAY
 	if (window.KeyBoardManager[Keys::D1].State == State::Press) { Toggle(ViewRaySync); }
+	//if (window.KeyBoardManager[Keys::D2].State == State::Press) { Toggle(ChunkManager.ViewRayPolyHedra, ViewRayPolyHedra); }
+	//if (window.KeyBoardManager[Keys::D3].State == State::Press) { Toggle(ChunkManager.VoxelBoxPolyHedra, VoxelCube); }
 #endif
-	if (window.KeyBoardManager[Keys::D2].State == State::Press) { Toggle(ChunkManager.ViewRayPolyHedra, ViewRayPolyHedra); }
-	if (window.KeyBoardManager[Keys::D3].State == State::Press) { Toggle(ChunkManager.VoxelBoxPolyHedra, VoxelCube); }
 
 	if (window.KeyBoardManager[Keys::F7].State == State::Press)
 	{
