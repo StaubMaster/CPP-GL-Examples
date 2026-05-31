@@ -16,6 +16,8 @@ namespace VoxelGraphics
 
 		::Uniform::LightBase		LightAmbient;
 		::Uniform::LightSolar		LightSolar;
+		::Uniform::LightSpot		LightSpot;
+		::Uniform::UInt				LightSpotCount;
 
 		~ShaderLayout();
 		ShaderLayout();

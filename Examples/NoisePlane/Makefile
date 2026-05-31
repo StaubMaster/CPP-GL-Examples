@@ -38,6 +38,11 @@ FILES := \
 	Voxel/Structure.cpp \
 	\
 	AuxThread1.cpp \
+	AuxThread2.cpp \
+	AuxThread3.cpp \
+	\
+	CenterIndexLoop2D.cpp \
+	CenterIndexLoop3D.cpp \
 	\
 	ContainerLock.cpp \
 	BoxEntity.cpp \

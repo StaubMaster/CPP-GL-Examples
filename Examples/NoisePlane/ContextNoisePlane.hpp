@@ -115,10 +115,6 @@ UI::Text::Manager		TextManager;
 
 
 
-ChunkGenerationNoise	GenerationNoise;
-
-
-
 ::MainMenu		MainMenu;
 ::PauseMenu		PauseMenu;
 ::OptionsMenu	OptionsMenu;
@@ -207,6 +203,7 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time);
 
 ::LightBase		LightAmbient;
 ::LightSolar	LightSolar;
+::LightSpot		LightSpot;
 
 
 
@@ -222,18 +219,6 @@ bool					AuxThread0Term = true;
 bool					AuxThread0Idle = false;
 ValueAverager<float>	AuxThread0Time;
 void					AuxThread0Func();
-
-std::thread				AuxThread2;
-bool					AuxThread2Term = false;
-bool					AuxThread2DoIdle = true;
-bool					AuxThread2IsIdle = false;
-void					AuxThread2Func();
-
-std::thread				AuxThread3;
-bool					AuxThread3Term = false;
-bool					AuxThread3DoIdle = true;
-bool					AuxThread3IsIdle = false;
-void					AuxThread3Func();
 
 void DrawThreadUpdate();
 

@@ -80,7 +80,6 @@ ContextNoisePlane::ContextNoisePlane()
 	, TextManager()
 //	, PlaneManager()
 	, ChunkManager()
-	, GenerationNoise()
 	, MainMenu()
 	, PauseMenu(*this)
 	, OptionsMenu(*this)
@@ -98,8 +97,6 @@ ContextNoisePlane::ContextNoisePlane()
 	, view()
 	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 	, AuxThread0Time(64)
-	, AuxThread2(&ContextNoisePlane::AuxThread2Func, this)
-	, AuxThread3(&ContextNoisePlane::AuxThread3Func, this)
 {
 	AuxThreadBase::ThreadName = "DrawThread";
 	PolyHedraManager.MakeCurrent();
@@ -121,11 +118,6 @@ ContextNoisePlane::ContextNoisePlane()
 	Multiform_View.FindUniforms(layouts);
 	Multiform_Depth.FindUniforms(layouts);
 	Multiform_FOV.FindUniforms(layouts);
-
-	GenerationNoise.Plane = Perlin2D::Random(VectorU2(8, 8));
-	GenerationNoise.Cave0 = Perlin3D::Random(VectorU3(8, 8, 8));
-	GenerationNoise.Cave1 = Perlin3D::Random(VectorU3(8, 8, 8));
-	GenerationNoise.Cave2 = Perlin3D::Random(VectorU3(8, 8, 8));
 }
 
 
@@ -450,12 +442,6 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 
 static ValueAverager<float>		TimeUpdateThread(64);
 
-static WaitDoTime	TimeGenerateFind("TimeGenerateFind");
-static WaitDoTime	TimeGenerate("TimeGenerate");
-
-static WaitDoTime	TimeAssambleFind("TimeAssambleFind");
-static WaitDoTime	TimeAssamble("TimeAssamble");
-
 /*
 put the Finding Functino into the Thread as well
 condition_variable is basically just a Poke
@@ -480,89 +466,6 @@ void ContextNoisePlane::AuxThread0Func()
 			sw.Stop();
 			AuxThread0Time.NewValue(sw.ElapsedTime());
 		}
-	}
-}
-void ContextNoisePlane::AuxThread2Func()
-{
-	AuxThreadBase::ThreadName = "AuxThread2";
-	while (!AuxThread2Term)
-	{
-		StopWatch sw;
-		AccessLockedChunk chunk;
-
-		std::unique_lock<std::mutex> lk(ChunkManager.GenerateChunkConditionMutex);
-		ChunkManager.GenerateChunkConditionVar.wait(lk, [&]
-		{
-			if (AuxThread2Term) { return true; }
-			if (AuxThread2DoIdle) { return false; }
-
-			ChunkManager.ChunksLock.AccessL(sw, TimeGenerateFind);
-			chunk = ChunkManager.GenerateChunkFind();
-			ChunkManager.ChunksLock.AccessU(sw, TimeGenerateFind);
-
-			if (chunk.Is())
-			{
-				AuxThread2IsIdle = false;
-				return true;
-			}
-			AuxThread2IsIdle = true;
-			return false;
-		});
-
-		if (AuxThread2Term) { return; }
-
-		if (!chunk.Is()) { continue; }
-
-		AssignLockedChunk chunk2 = chunk.ToAssign();
-
-		sw.Clear();
-		sw.Start();
-		(*chunk2).GenerateTerrain(GenerationNoise);
-		(*chunk2).GenerateDecoration(GenerationNoise.Plane, GenerationNoise.Cave0);
-		sw.Stop();
-		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
-		TimeGenerate.ThreadName = AuxThreadBase::ThreadName;
-	}
-}
-void ContextNoisePlane::AuxThread3Func()
-{
-	AuxThreadBase::ThreadName = "AuxThread3";
-	while (!AuxThread3Term)
-	{
-		StopWatch sw;
-		AccessLockedChunk chunk;
-
-		std::unique_lock<std::mutex> lk(ChunkManager.AssambleChunkConditionMutex);
-		ChunkManager.AssambleChunkConditionVar.wait(lk, [&]
-		{
-			if (AuxThread3Term) { return true; }
-			if (AuxThread3DoIdle) { return false; }
-
-			ChunkManager.ChunksLock.AccessL(sw, TimeAssambleFind);
-			chunk = ChunkManager.AssambleChunkFind();
-			ChunkManager.ChunksLock.AccessU(sw, TimeAssambleFind);
-
-			if (chunk.Is())
-			{
-				AuxThread3IsIdle = false;
-				return true;
-			}
-			AuxThread3IsIdle = true;
-			return false;
-		});
-
-		if (AuxThread3Term) { return; }
-
-		if (!chunk.Is()) { continue; }
-
-		AssignLockedChunk chunk2 = chunk.ToAssign();
-
-		sw.Clear();
-		sw.Start();
-		(*chunk2).AssambleDecoration();
-		sw.Stop();
-		TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
-		TimeAssamble.ThreadName = AuxThreadBase::ThreadName;
 	}
 }
 void ContextNoisePlane::DrawThreadUpdate()
@@ -629,6 +532,7 @@ void ContextNoisePlane::Make()
 
 		LightAmbient = ::LightBase(0.2f, ColorF4(1.0f, 1.0f, 1.0f));
 		LightSolar = ::LightSolar(1.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(1.0f, -1.0f, 0.0f));
+		LightSpot = ::LightSpot(0.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), Range(0.1f, 1.0f));
 	}
 
 #ifndef DISABLE_VIEW_TANGIBLE
@@ -984,12 +888,12 @@ void ContextNoisePlane::Init()
 
 	AuxThread0Idle = false;
 	ChunkManager.AuxThread1.DoIdle = false;
-	AuxThread2DoIdle = false;
-	AuxThread3DoIdle = false;
+	ChunkManager.AuxThread2.DoIdle = false;
+	ChunkManager.AuxThread3.DoIdle = false;
 
 	ChunkManager.AuxThread1.Poke();
-	ChunkManager.GenerateChunkConditionVar.notify_all();
-	ChunkManager.AssambleChunkConditionVar.notify_all();
+	ChunkManager.AuxThread2.Poke();
+	ChunkManager.AuxThread3.Poke();
 }
 void ContextNoisePlane::Free()
 {
@@ -997,17 +901,17 @@ void ContextNoisePlane::Free()
 
 	AuxThread0Term = true;
 	ChunkManager.AuxThread1.Term = true;
-	AuxThread2Term = true;
-	AuxThread3Term = true;
+	ChunkManager.AuxThread2.Term = true;
+	ChunkManager.AuxThread3.Term = true;
 
 	ChunkManager.AuxThread1.Poke();
-	ChunkManager.GenerateChunkConditionVar.notify_all();
-	ChunkManager.AssambleChunkConditionVar.notify_all();
+	ChunkManager.AuxThread2.Poke();
+	ChunkManager.AuxThread3.Poke();
 
 	AuxThread0.join();
 	ChunkManager.AuxThread1.Join();
-	AuxThread2.join();
-	AuxThread3.join();
+	ChunkManager.AuxThread2.Join();
+	ChunkManager.AuxThread3.Join();
 }
 
 
@@ -1041,6 +945,8 @@ void ContextNoisePlane::Draw()
 	sw.Clear(); sw.Start();
 	ChunkManager.ShaderLayoutU.LightAmbient.Put(LightAmbient);
 	ChunkManager.ShaderLayoutU.LightSolar.Put(LightSolar);
+	ChunkManager.ShaderLayoutU.LightSpot.Put(LightSpot);
+	ChunkManager.ShaderLayoutU.LightSpotCount.Put(1);
 	sw.Stop(); FrameTime_Draw_UniformChunk.NewValue(sw.ElapsedTime());
 
 	sw.Clear(); sw.Start();
@@ -1368,13 +1274,13 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << ChunkManager.AuxThread1.TimeMakeBufferFind << '\n';
 		ss << ChunkManager.AuxThread1.TimeMakeBuffer << '\n';
 		ss << '\n';
-		ss << "AuxThread2 IsIdle: " << AuxThread2IsIdle << '\n';
-		ss << TimeGenerateFind << '\n';
-		ss << TimeGenerate << '\n';
+		ss << "AuxThread2 IsIdle: " << ChunkManager.AuxThread2.IsIdle << '\n';
+		ss << ChunkManager.AuxThread2.TimeGenerateFind << '\n';
+		ss << ChunkManager.AuxThread2.TimeGenerate << '\n';
 		ss << '\n';
-		ss << "AuxThread3 IsIdle: " << AuxThread3IsIdle << '\n';
-		ss << TimeAssambleFind << '\n';
-		ss << TimeAssamble << '\n';
+		ss << "AuxThread3 IsIdle: " << ChunkManager.AuxThread3.IsIdle << '\n';
+		ss << ChunkManager.AuxThread3.TimeAssambleFind << '\n';
+		ss << ChunkManager.AuxThread3.TimeAssamble << '\n';
 		ss << '\n';
 		ss << ChunkManager::TimeGraphicsCreate << '\n';
 		ss << ChunkManager::TimeGraphicsDelete << '\n';
@@ -1517,8 +1423,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "BufferData Have " << ChunkManager.BufferDataHaveQueue.Count() << '\n';
 		ChunkManager.BufferDataHaveQueueMutex.unlock();
 
-		ss << "Generate Candidates " << ChunkManager.GenerateChunkFindCandidateCount << '\n';
-		ss << "Assamble Candidates " << ChunkManager.AssambleChunkFindCandidateCount << '\n';
+		ss << "Generate Candidates " << ChunkManager.AuxThread2.FindCandidateCount << '\n';
+		ss << "Assamble Candidates " << ChunkManager.AuxThread3.FindCandidateCount << '\n';
 
 		ss << '\n';
 	}
@@ -1742,6 +1648,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
 
 	LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
+	LightSpot.Pos = view.Trans.Position;
+	LightSpot.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
 
 	if (window.KeyBoardManager[Keys::Delete].State == State::Press) { CenterIndexLoop_Clear(); }
 	if (window.KeyBoardManager[Keys::Insert].State == State::Press) { CenterIndexLoop_Loop(); }
@@ -1855,3 +1763,4 @@ ContextBase * newContextNoisePlane()
 {
 	return new ContextNoisePlane();
 }
+// 1858

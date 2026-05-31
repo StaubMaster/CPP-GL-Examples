@@ -11,4 +11,6 @@ VoxelGraphics::ShaderLayout::ShaderLayout()
 	, FOV(*this, "FOV")
 	, LightAmbient(*this, "Ambient")
 	, LightSolar(*this, "Solar")
+	, LightSpot(*this, "SpotArr[0]")
+	, LightSpotCount(*this, "SpotCount")
 { }

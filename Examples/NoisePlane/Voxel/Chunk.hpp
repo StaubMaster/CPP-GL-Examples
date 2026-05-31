@@ -30,17 +30,8 @@
 
 # include <mutex>
 
-//struct Perlin2D;
-//struct Perlin3D;
-# include "ValueGen/Perlin2D.hpp"
-# include "ValueGen/Perlin3D.hpp"
-struct ChunkGenerationNoise
-{
-	Perlin2D	Plane;
-	Perlin3D	Cave0;
-	Perlin3D	Cave1;
-	Perlin3D	Cave2;
-};
+# include "ChunkGenerationNoise.hpp"
+
 // put all generation stuff into a seperate Generator object
 // do all the generation functions to the Voxels in that object
 // then put the new Voxels into the Chunk

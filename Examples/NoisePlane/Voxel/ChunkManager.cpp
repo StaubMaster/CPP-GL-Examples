@@ -456,8 +456,8 @@ void ChunkManager::UpdateChunksContainer()
 
 		if (inserted)
 		{
-			GenerateChunkConditionVar.notify_all();
-			AssambleChunkConditionVar.notify_all();
+			AuxThread2.Poke();
+			AuxThread3.Poke();
 		}
 	}
 
@@ -484,6 +484,8 @@ ChunkManager::ChunkManager()
 	, BufferU()
 	, Chunks()
 	, ChunksLock()
+	, AuxThread2(*this)
+	, AuxThread3(*this)
 	, GraphicsExist(false)
 	, AuxThread1(*this)
 {
@@ -526,119 +528,6 @@ VoxelHit ChunkManager::HitVoxel(Ray3D ray)
 	hit.Index = _hit.idx;
 //	std::cout << "HitVoxel:" << __LINE__ << '\n';
 	return hit;
-}
-
-
-
-AccessLockedChunk ChunkManager::GenerateChunkFind()
-{
-	/* loop takes longer the longer it goes on
-		save what chunks are fully complete
-		then start at the end of those
-		reset when Center changes ?
-		what if a random chunk needs to be regenerated ?
-		just reset and loop over everything again
-		it would only need to loop once, which should be fine
-	*/
-
-	CenterIndexLoop3D	loop = GenerateChunkFindLoop;
-	GenerateChunkFindCandidateCount = 0;
-	for (loop.New(CareSize); !loop.Done(); loop.Continue())
-	{
-		Chunk * ptr = Chunks[relative(loop.Index())];
-		if (ptr == nullptr) { continue; }
-		const Chunk & ref = *ptr;
-
-		ptr -> AccessL();
-		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); GenerateChunkFindLoop = loop; continue; }
-		//if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
-
-		return AccessLockedChunk(ptr);
-	}
-	return AccessLockedChunk();
-
-//	AccessLockedChunk found;
-	Chunk * found = nullptr;
-	float dist;
-	for (unsigned int i = 0; i < Chunks.Length(); i++)
-	{
-		Chunk * ptr = Chunks[i];
-		if (ptr == nullptr) { continue; }
-		const Chunk & ref = *ptr;
-
-		//AccessLockedChunk chunk = ptr -> ToAccess();
-		ptr -> AccessL();
-
-		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); continue; }
-		if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
-
-		VectorF3 rel = ref.Index - Center;
-		float d = rel.length2();
-		//if (!found.Is() || d < dist)
-		if (found == nullptr || d < dist)
-		{
-			if (found != nullptr) { found -> AccessU(); }
-			found = ptr;
-			dist = d;
-		}
-		else { ptr -> AccessU(); }
-	}
-
-	//return found;
-	return AccessLockedChunk(found);
-}
-
-AccessLockedChunk ChunkManager::AssambleChunkFind()
-{
-	/*CenterIndexLoop3D	loop;
-	for (loop.New(CareSize); !loop.Done(); loop.Continue())
-	{
-		Chunk * ptr = Chunks[relative(loop.Index())];
-		if (ptr == nullptr) { continue; }
-		const Chunk & ref = *ptr;
-
-		ptr -> AccessL();
-		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); continue; }
-		if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
-
-		return AccessLockedChunk(ptr);
-	}
-	return AccessLockedChunk();*/
-
-//	AccessLockedChunk found;
-	Chunk * found = nullptr;
-	float dist;
-	unsigned int candidate_count = 0;
-	for (unsigned int i = 0; i < Chunks.Length(); i++)
-	{
-		Chunk * ptr = Chunks[i];
-		if (ptr == nullptr) { continue; }
-		const Chunk & ref = *ptr;
-
-		//AccessLockedChunk chunk = ptr -> ToAccess();
-		ptr -> AccessL();
-
-		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { ptr -> AccessU(); continue; }
-		if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
-		if (!ref.Neighbours.CanAssamble()) { ptr -> AccessU(); continue; }
-
-		candidate_count++;
-		VectorF3 rel = ref.Index - Center;
-		float d = rel.length2();
-		//if (!found.Is() || d < dist)
-		if (found == nullptr || d < dist)
-		{
-			if (found != nullptr) { found -> AccessU(); }
-			//found = chunk;
-			found = ptr;
-			dist = d;
-		}
-		else { ptr -> AccessU(); }
-	}
-	AssambleChunkFindCandidateCount = candidate_count;
-
-	//return found;
-	return AccessLockedChunk(found);
 }
 
 
