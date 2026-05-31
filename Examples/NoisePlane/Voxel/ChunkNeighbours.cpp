@@ -442,17 +442,13 @@ void ChunkNeighbour::BufferDataWant()
 	if (Cube[1][1][1] == nullptr) { return; }
 	Chunk & chunk = *Cube[1][1][1];
 
-	chunk.Manager.BufferDataWantQueueMutex.lock();
-	if (Cube[1][1][1] != nullptr) { chunk.Manager.BufferDataWantQueuePut(Cube[1][1][1]); }
-	if (Cube[1][1][0] != nullptr) { chunk.Manager.BufferDataWantQueuePut(Cube[1][1][0]); }
-	if (Cube[1][0][1] != nullptr) { chunk.Manager.BufferDataWantQueuePut(Cube[1][0][1]); }
-	if (Cube[0][1][1] != nullptr) { chunk.Manager.BufferDataWantQueuePut(Cube[0][1][1]); }
-	if (Cube[1][1][2] != nullptr) { chunk.Manager.BufferDataWantQueuePut(Cube[1][1][2]); }
-	if (Cube[1][2][1] != nullptr) { chunk.Manager.BufferDataWantQueuePut(Cube[1][2][1]); }
-	if (Cube[2][1][1] != nullptr) { chunk.Manager.BufferDataWantQueuePut(Cube[2][1][1]); }
-	chunk.Manager.BufferDataWantQueueMutex.unlock();
-
-	chunk.Manager.MakeBufferConditionVar.notify_all();
+	if (Cube[1][1][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][1][1]); }
+	if (Cube[1][1][0] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][1][0]); }
+	if (Cube[1][0][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][0][1]); }
+	if (Cube[0][1][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[0][1][1]); }
+	if (Cube[1][1][2] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][1][2]); }
+	if (Cube[1][2][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][2][1]); }
+	if (Cube[2][1][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[2][1][1]); }
 }
 
 bool ChunkNeighbour::CanMakeBuffer() const

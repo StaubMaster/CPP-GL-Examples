@@ -283,6 +283,10 @@ void Continue()
 }
 };
 
+
+
+# include "AuxThread1.hpp"
+
 struct ChunkManager
 {
 	public:
@@ -420,19 +424,11 @@ struct ChunkManager
 	*/
 
 	public:
-	std::mutex					MakeBufferConditionMutex;
-	std::condition_variable		MakeBufferConditionVar;
-
-	std::mutex					BufferDataWantQueueMutex;
-	Container::Binary<Chunk *>	BufferDataWantQueue;
-	void						BufferDataWantQueuePut(Chunk * chunk);
-	void						BufferDataWantQueuePutLock(Chunk * chunk);
-	AccessLockedChunk			BufferDataWantFind();
+	::AuxThread1				AuxThread1;
 
 	public:
 	std::mutex					BufferDataHaveQueueMutex;
 	Container::Binary<Chunk *>	BufferDataHaveQueue;
-	void						BufferDataHaveQueuePut(Chunk * chunk);
 
 	public:
 	static ValueAverager<float>		DrawTotal;

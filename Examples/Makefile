@@ -13,8 +13,8 @@ FILES := \
 \
 	Telemetry/Time.cpp \
 	Telemetry/StopWatch.cpp \
-	Telemetry/ThreadInfo.cpp \
 	Telemetry/WaitDoTime.cpp \
+	Telemetry/AuxThreadBase.cpp \
 \
 	UnitToString.cpp \
 \

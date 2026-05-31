@@ -98,11 +98,10 @@ ContextNoisePlane::ContextNoisePlane()
 	, view()
 	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 	, AuxThread0Time(64)
-	, AuxThread1(&ContextNoisePlane::AuxThread1Func, this)
 	, AuxThread2(&ContextNoisePlane::AuxThread2Func, this)
 	, AuxThread3(&ContextNoisePlane::AuxThread3Func, this)
 {
-	ThreadInfo::ThreadName = "DrawThread";
+	AuxThreadBase::ThreadName = "DrawThread";
 	PolyHedraManager.MakeCurrent();
 	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
@@ -457,9 +456,6 @@ static WaitDoTime	TimeGenerate("TimeGenerate");
 static WaitDoTime	TimeAssambleFind("TimeAssambleFind");
 static WaitDoTime	TimeAssamble("TimeAssamble");
 
-static WaitDoTime	TimeMakeBufferFind("TimeMakeBufferFind");
-static WaitDoTime	TimeMakeBuffer("TimeMakeBuffer");
-
 /*
 put the Finding Functino into the Thread as well
 condition_variable is basically just a Poke
@@ -467,13 +463,15 @@ move the condition_variable and Mutex into the Thread ?
 then the Chunks/Manager need to know bout the Thread to .Poke() it
 */
 
+thread_local const char * AuxThreadBase::ThreadName = "ThreadName";
+
 void ContextNoisePlane::AuxThread0Func()
 {
-	ThreadInfo::ThreadName = "AuxThread0";
+	AuxThreadBase::ThreadName = "AuxThread0";
 	StopWatch sw;
-	while (!ThreadTerminate)
+	while (!AuxThread0Term)
 	{
-		if (!ThreadIdle && !AuxThread0Idle)
+		if (!AuxThread0Idle)
 		{
 			sw.Clear(); sw.Start();
 			//ChunkManager.RemoveAround();
@@ -484,65 +482,19 @@ void ContextNoisePlane::AuxThread0Func()
 		}
 	}
 }
-void ContextNoisePlane::AuxThread1Func()
-{
-	ThreadInfo::ThreadName = "AuxThread1";
-	while (!ThreadTerminate)
-	{
-		if (ThreadIdle || AuxThread1DoIdle) { continue; }
-
-		StopWatch sw;
-		AccessLockedChunk chunk;
-
-		std::unique_lock<std::mutex> lk(ChunkManager.MakeBufferConditionMutex);
-		ChunkManager.MakeBufferConditionVar.wait(lk, [&]
-		{
-			if (ThreadTerminate) { return true; }
-
-			ChunkManager.ChunksLock.AccessL(sw, TimeMakeBufferFind);
-			chunk = ChunkManager.BufferDataWantFind();
-			ChunkManager.ChunksLock.AccessU(sw, TimeMakeBufferFind);
-
-			if (chunk.Is())
-			{
-				AuxThread1IsIdle = false;
-				return true;
-			}
-			/*if (ChunkManager.MakeBufferQueue.Count() != 0)
-			{
-				AuxThread1IsIdle = false;
-				return true;
-			}*/
-			AuxThread1IsIdle = true;
-			return false;
-		});
-
-		if (ThreadTerminate) { return; }
-
-		if (!chunk.Is()) { continue; }
-
-		sw.Clear();
-		sw.Start();
-		((Chunk*)&(*chunk)) -> BufferUData_Make();
-		sw.Stop();
-		TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
-		TimeMakeBuffer.ThreadName = ThreadInfo::ThreadName;
-	}
-}
 void ContextNoisePlane::AuxThread2Func()
 {
-	ThreadInfo::ThreadName = "AuxThread2";
-	while (!ThreadTerminate)
+	AuxThreadBase::ThreadName = "AuxThread2";
+	while (!AuxThread2Term)
 	{
-		if (ThreadIdle || AuxThread2DoIdle) { continue; }
-
 		StopWatch sw;
 		AccessLockedChunk chunk;
 
 		std::unique_lock<std::mutex> lk(ChunkManager.GenerateChunkConditionMutex);
 		ChunkManager.GenerateChunkConditionVar.wait(lk, [&]
 		{
-			if (ThreadTerminate) { return true; }
+			if (AuxThread2Term) { return true; }
+			if (AuxThread2DoIdle) { return false; }
 
 			ChunkManager.ChunksLock.AccessL(sw, TimeGenerateFind);
 			chunk = ChunkManager.GenerateChunkFind();
@@ -557,7 +509,7 @@ void ContextNoisePlane::AuxThread2Func()
 			return false;
 		});
 
-		if (ThreadTerminate) { return; }
+		if (AuxThread2Term) { return; }
 
 		if (!chunk.Is()) { continue; }
 
@@ -569,23 +521,22 @@ void ContextNoisePlane::AuxThread2Func()
 		(*chunk2).GenerateDecoration(GenerationNoise.Plane, GenerationNoise.Cave0);
 		sw.Stop();
 		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
-		TimeGenerate.ThreadName = ThreadInfo::ThreadName;
+		TimeGenerate.ThreadName = AuxThreadBase::ThreadName;
 	}
 }
 void ContextNoisePlane::AuxThread3Func()
 {
-	ThreadInfo::ThreadName = "AuxThread3";
-	while (!ThreadTerminate)
+	AuxThreadBase::ThreadName = "AuxThread3";
+	while (!AuxThread3Term)
 	{
-		if (ThreadIdle || AuxThread3DoIdle) { continue; }
-
 		StopWatch sw;
 		AccessLockedChunk chunk;
 
 		std::unique_lock<std::mutex> lk(ChunkManager.AssambleChunkConditionMutex);
 		ChunkManager.AssambleChunkConditionVar.wait(lk, [&]
 		{
-			if (ThreadTerminate) { return true; }
+			if (AuxThread3Term) { return true; }
+			if (AuxThread3DoIdle) { return false; }
 
 			ChunkManager.ChunksLock.AccessL(sw, TimeAssambleFind);
 			chunk = ChunkManager.AssambleChunkFind();
@@ -600,7 +551,7 @@ void ContextNoisePlane::AuxThread3Func()
 			return false;
 		});
 
-		if (ThreadTerminate) { return; }
+		if (AuxThread3Term) { return; }
 
 		if (!chunk.Is()) { continue; }
 
@@ -611,7 +562,7 @@ void ContextNoisePlane::AuxThread3Func()
 		(*chunk2).AssambleDecoration();
 		sw.Stop();
 		TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
-		TimeAssamble.ThreadName = ThreadInfo::ThreadName;
+		TimeAssamble.ThreadName = AuxThreadBase::ThreadName;
 	}
 }
 void ContextNoisePlane::DrawThreadUpdate()
@@ -1031,18 +982,30 @@ void ContextNoisePlane::Init()
 	Multiform_Depth.ChangeData(view.Depth);
 	Multiform_FOV.ChangeData(view.FOV);
 
-	ThreadIdle = false;
+	AuxThread0Idle = false;
+	ChunkManager.AuxThread1.DoIdle = false;
+	AuxThread2DoIdle = false;
+	AuxThread3DoIdle = false;
+
+	ChunkManager.AuxThread1.Poke();
+	ChunkManager.GenerateChunkConditionVar.notify_all();
+	ChunkManager.AssambleChunkConditionVar.notify_all();
 }
 void ContextNoisePlane::Free()
 {
 	GraphicsDelete();
 
-	ThreadTerminate = true;
-	ChunkManager.MakeBufferConditionVar.notify_all();
+	AuxThread0Term = true;
+	ChunkManager.AuxThread1.Term = true;
+	AuxThread2Term = true;
+	AuxThread3Term = true;
+
+	ChunkManager.AuxThread1.Poke();
 	ChunkManager.GenerateChunkConditionVar.notify_all();
 	ChunkManager.AssambleChunkConditionVar.notify_all();
+
 	AuxThread0.join();
-	AuxThread1.join();
+	ChunkManager.AuxThread1.Join();
 	AuxThread2.join();
 	AuxThread3.join();
 }
@@ -1401,9 +1364,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << ChunkManager::TimeUpdateInsert << '\n';
 		ss << ChunkManager::TimeUpdateRemove << '\n';
 		ss << '\n';
-		ss << "AuxThread1 IsIdle: " << AuxThread1IsIdle << '\n';
-		ss << TimeMakeBufferFind << '\n';
-		ss << TimeMakeBuffer << '\n';
+		ss << "AuxThread1 IsIdle: " << ChunkManager.AuxThread1.IsIdle << '\n';
+		ss << ChunkManager.AuxThread1.TimeMakeBufferFind << '\n';
+		ss << ChunkManager.AuxThread1.TimeMakeBuffer << '\n';
 		ss << '\n';
 		ss << "AuxThread2 IsIdle: " << AuxThread2IsIdle << '\n';
 		ss << TimeGenerateFind << '\n';
@@ -1548,9 +1511,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	{
 		ss << "Queues:\n";
 
-		ChunkManager.BufferDataWantQueueMutex.lock();
-		ss << "BufferData Want " << ChunkManager.BufferDataWantQueue.Count() << '\n';
-		ChunkManager.BufferDataWantQueueMutex.unlock();
+		ss << "BufferData Want " << ChunkManager.AuxThread1.QueueCount() << '\n';
 
 		ChunkManager.BufferDataHaveQueueMutex.lock();
 		ss << "BufferData Have " << ChunkManager.BufferDataHaveQueue.Count() << '\n';
@@ -1674,12 +1635,12 @@ void ContextNoisePlane::FrameInput()
 		//HotBarUI.Hide();
 		if (PauseMenu.IsVisible())
 		{
-			//ThreadIdle = false;
+			//AuxThreadBase::Idle = false;
 			PauseMenu.Hide();
 		}
 		else
 		{
-			//ThreadIdle = true;
+			//AuxThreadBase::Idle = true;
 			PauseMenu.Show();
 		}
 	}

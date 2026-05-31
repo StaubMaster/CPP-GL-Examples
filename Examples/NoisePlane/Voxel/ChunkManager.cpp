@@ -14,7 +14,7 @@
 
 
 // Code
-#include "Telemetry/ThreadInfo.hpp"
+#include "Telemetry/AuxThreadBase.hpp"
 #include "Telemetry/WaitDoTime.hpp"
 #include "ContainerLock.hpp"
 
@@ -338,7 +338,7 @@ void ChunkManager::InsertAround()
 
 //	std::cout << "InsertAround:" << __LINE__ << '\n';
 	sw_total.Stop(); TimeInsert.DoTime.NewValue(sw_total.ElapsedTime());
-	TimeInsert.ThreadName = ThreadInfo::ThreadName;
+	TimeInsert.ThreadName = AuxThreadBase::ThreadName;
 }
 void ChunkManager::RemoveAround()
 {
@@ -356,7 +356,7 @@ void ChunkManager::RemoveAround()
 //	std::cout << "RemoveAround:" << __LINE__ << '\n';
 	sw.Stop();
 	TimeRemove.WaitTime.NewValue(sw.ElapsedTime());
-	TimeRemove.ThreadName = ThreadInfo::ThreadName;
+	TimeRemove.ThreadName = AuxThreadBase::ThreadName;
 
 	sw.Clear();
 	sw.Start();
@@ -485,6 +485,7 @@ ChunkManager::ChunkManager()
 	, Chunks()
 	, ChunksLock()
 	, GraphicsExist(false)
+	, AuxThread1(*this)
 {
 	ShaderU.UniformLayout = &ShaderLayoutU;
 	ShaderLayoutU.Shader = &ShaderU;
@@ -732,46 +733,6 @@ void ChunkManager::GraphicsUpdate()
 		ChunksToInsertLock.AccessU(sw, TimeGraphicsCreate);
 	}
 //	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
-}
-
-
-
-void ChunkManager::BufferDataWantQueuePut(Chunk * chunk)
-{
-	if (chunk == nullptr) { return; }
-	for (unsigned int i = 0; i < BufferDataWantQueue.Count(); i++)
-	{
-		if (BufferDataWantQueue[i] == chunk) { return; }
-	}
-	chunk -> BufferUData_Want = true;
-	BufferDataWantQueue.Insert(chunk);
-}
-void ChunkManager::BufferDataWantQueuePutLock(Chunk * chunk)
-{
-	if (chunk == nullptr) { return; }
-	BufferDataWantQueueMutex.lock();
-	BufferDataWantQueuePut(chunk);
-	BufferDataWantQueueMutex.unlock();
-}
-AccessLockedChunk ChunkManager::BufferDataWantFind()
-{
-	BufferDataWantQueueMutex.lock();
-	for (unsigned int i = 0; i < BufferDataWantQueue.Count(); i++)
-	{
-		Chunk * ptr = BufferDataWantQueue[i];
-		if (ptr == nullptr) { BufferDataWantQueue.RemoveAt(i); i--; continue; }
-		BufferDataWantQueueMutex.unlock();
-		const Chunk & ref = *ptr;
-		AccessLockedChunk chunk = ptr -> ToAccess();
-		//AccessLockedChunk chunk = ptr -> ToAccessTry();
-		//if (!chunk.Is()) { continue; }
-		if (!ref.BufferUData_Want) { BufferDataWantQueueMutex.lock(); BufferDataWantQueue.RemoveAt(i); i--; continue; }
-		if (!ref.GenerationDone()) { BufferDataWantQueueMutex.lock(); BufferDataWantQueue.RemoveAt(i); i--; continue; }
-		if (!ref.Neighbours.CanMakeBuffer()) { BufferDataWantQueueMutex.lock(); BufferDataWantQueue.RemoveAt(i); i--; continue; }
-		return chunk;
-	}
-	BufferDataWantQueueMutex.unlock();
-	return AccessLockedChunk();
 }
 
 

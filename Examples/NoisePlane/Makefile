@@ -37,6 +37,8 @@ FILES := \
 	\
 	Voxel/Structure.cpp \
 	\
+	AuxThread1.cpp \
+	\
 	ContainerLock.cpp \
 	BoxEntity.cpp \
 \

@@ -67,8 +67,9 @@
 #include "Item/ItemContainer.hpp"
 #include "Menus/Item/Inventory.hpp"
 
-// Telemetry
-#include "Telemetry/ThreadInfo.hpp"
+// Threads
+#include "Telemetry/AuxThreadBase.hpp"
+#include "AuxThread1.hpp"
 
 // 
 #include "PhysicsContext.hpp"
@@ -216,26 +217,21 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time);
 	Input from different Thread ?
 */
 
-bool	ThreadIdle = true;
-bool	ThreadTerminate = false;
-
 std::thread				AuxThread0;
+bool					AuxThread0Term = true;
 bool					AuxThread0Idle = false;
 ValueAverager<float>	AuxThread0Time;
 void					AuxThread0Func();
 
-std::thread				AuxThread1;
-bool					AuxThread1DoIdle = false;
-bool					AuxThread1IsIdle = false;
-void					AuxThread1Func();
-
 std::thread				AuxThread2;
-bool					AuxThread2DoIdle = false;
+bool					AuxThread2Term = false;
+bool					AuxThread2DoIdle = true;
 bool					AuxThread2IsIdle = false;
 void					AuxThread2Func();
 
 std::thread				AuxThread3;
-bool					AuxThread3DoIdle = false;
+bool					AuxThread3Term = false;
+bool					AuxThread3DoIdle = true;
 bool					AuxThread3IsIdle = false;
 void					AuxThread3Func();
 

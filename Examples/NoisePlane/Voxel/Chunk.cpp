@@ -25,7 +25,7 @@
 #include "ValueType/LoopU3.hpp"
 
 #include "Telemetry/StopWatch.hpp"
-#include "Telemetry/ThreadInfo.hpp"
+#include "Telemetry/AuxThreadBase.hpp"
 
 
 
@@ -734,7 +734,7 @@ void Chunk::AssambleDecoration()
 	if (GraphicsExist)
 	{
 		Neighbours.BufferDataWant();
-		Manager.BufferDataWantQueuePutLock(this);
+		Manager.AuxThread1.QueuePut(this);
 	}
 }
 
@@ -771,7 +771,7 @@ void Chunk::GraphicsCreate()
 
 	if (GenerationDone())
 	{
-		Manager.BufferDataWantQueuePutLock(this);
+		Manager.AuxThread1.QueuePut(this);
 	}
 }
 void Chunk::GraphicsDelete()
