@@ -189,22 +189,22 @@ void UI::Control::Slider::RelayUpdateBox()
 {
 	//SliderChanged = true;
 	if (SliderObject.Is())
-		{
-			VectorF2 slider_size_half = NubSize / 2.0f;
-			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+	{
+		VectorF2 slider_size_half = NubSize / 2.0f;
+		VectorF2 slider_min = DisplayBox.Min + slider_size_half;
+		VectorF2 slider_max = DisplayBox.Max - slider_size_half;
 
-			VectorF2 slider_normal = Value;
-			slider_normal -= ValueMin;
-			slider_normal /= (ValueMax - ValueMin);
+		VectorF2 slider_normal = Value;
+		slider_normal -= ValueMin;
+		slider_normal /= (ValueMax - ValueMin);
 
-			VectorF2 slider_value = slider_normal;
-			slider_value *= (slider_max - slider_min);
-			slider_value += slider_min;
+		VectorF2 slider_value = slider_normal;
+		slider_value *= (slider_max - slider_min);
+		slider_value += slider_min;
 
-			SliderObject.Box().Min = slider_value - slider_size_half;
-			SliderObject.Box().Max = slider_value + slider_size_half;
-		}
+		SliderObject.Box().Min = slider_value - slider_size_half;
+		SliderObject.Box().Max = slider_value + slider_size_half;
+	}
 	if (TextObject.Is())
 	{
 		PutCharactersEntrys();

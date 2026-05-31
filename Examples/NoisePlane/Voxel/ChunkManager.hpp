@@ -49,10 +49,248 @@ struct VoxelHit;
 
 # include "Graphics/MultiBufferChunkU.hpp"
 
+
+
+// CenterIndexLoop
+# include "ValueType/Vector/I2.hpp"
+
+struct CenterIndexLoop2D
+{
+	unsigned int	Limit;
+
+	bool			Done;
+	unsigned int	Size;
+	unsigned char	Control;
+	VectorI2		Index;
+
+	void New(unsigned int layer)
+	{
+		Size = layer;
+		if (Limit * 2 < Size)
+		{
+			Done = true;
+			return;
+		}
+
+		if (Limit >= Size)
+		{
+			Index = VectorI2(-Size, 0);
+		}
+		else
+		{
+			Index = VectorI2(-Limit, +Size - Limit);
+		}
+
+		Control = 0;
+		Done = false;
+	}
+	void Continue()
+	{
+		if (Index.X == 0 && Index.Y == 0) { Done = true; }
+
+		if (Control == 0)
+		{
+			if (Index.X == 0)
+			{
+				Control = 1;
+				Index.X++;
+				Index.Y--;
+			}
+			else if (Index.Y == +(int)Limit)
+			{
+				Control = 1;
+				Index.X = -Index.X;
+			}
+			else
+			{
+				Index.X++;
+				Index.Y++;
+			}
+		}
+		else if (Control == 1)
+		{
+			if (Index.Y == 0)
+			{
+				Control = 2;
+				Index.X--;
+				Index.Y--;
+			}
+			else if (Index.X == +(int)Limit)
+			{
+				Control = 2;
+				Index.Y = -Index.Y;
+			}
+			else
+			{
+				Index.X++;
+				Index.Y--;
+			}
+		}
+		else if (Control == 2)
+		{
+			if (Index.X == 0)
+			{
+				Control = 3;
+				Index.X--;
+				Index.Y++;
+			}
+			else if (Index.Y == -(int)Limit)
+			{
+				Control = 3;
+				Index.X = -Index.X;
+			}
+			else
+			{
+				Index.X--;
+				Index.Y--;
+			}
+		}
+		else
+		{
+			if (Index.Y == 0)
+			{
+				Control = 0;
+				Index.X++;
+				Index.Y++;
+				Done = true;
+			}
+			else if (Index.X == -(int)Limit)
+			{
+				Control = 0;
+				Index.Y = -Index.Y;
+				Done = true;
+			}
+			else
+			{
+				Index.X--;
+				Index.Y++;
+			}
+		}
+
+		if (Control == 3 && Index.Y == 0) { Done = true; }
+	}
+};
+struct CenterIndexLoop3D
+{
+unsigned int		Limit;
+
+CenterIndexLoop2D	Layer0;
+
+bool				Layer1Done;
+unsigned int		Layer1Size;
+unsigned char		Layer1Control;
+VectorI2			Layer1Index;
+
+void Layer1New(unsigned int layer)
+{
+	Layer1Size = layer;
+
+	Layer1Index = VectorI2(-Layer1Size, 0);
+
+	if (Limit >= Layer1Size)
+	{
+		Layer1Index = VectorI2(-Layer1Size, 0);
+	}
+	else
+	{
+		Layer1Index = VectorI2(-Limit, +Layer1Size - Limit);
+	}
+
+	Layer1Control = 0;
+	Layer1Done = false;
+}
+void Layer1Loop()
+{
+	if (Layer1Index.X == 0 && Layer1Index.Y == 0) { Layer1Done = true; }
+
+	if (Layer1Control == 0)
+	{
+		if (Layer1Index.X == 0)
+		{
+			Layer1Control = 1;
+			Layer1Index.X++;
+			Layer1Index.Y--;
+		}
+		else if (Limit * 2 <= (unsigned int)Layer1Index.Y)
+		{
+			Layer1Control = 1;
+			Layer1Index.X = -Layer1Index.X;
+		}
+		else
+		{
+			Layer1Index.X++;
+			Layer1Index.Y++;
+		}
+	}
+	else if (Layer1Control == 1)
+	{
+		if (Layer1Index.Y == 0)
+		{
+			Layer1Control = 0;
+			Layer1Index.X--;
+			Layer1Index.Y--;
+			Layer1Done = true;
+		}
+		else if (Layer1Index.X == +(int)Limit)
+		{
+			Layer1Control = 0;
+			Layer1Index.Y = -Layer1Index.Y;
+			Layer1Done = true;
+		}
+		else
+		{
+			Layer1Index.X++;
+			Layer1Index.Y--;
+		}
+	}
+}
+
+bool Done() const
+{
+	return (Layer0.Done || Layer1Done);
+}
+VectorI3 Index() const
+{
+	return VectorI3(Layer0.Index.X, Layer0.Index.Y, Layer1Index.X);
+}
+
+void New(unsigned int limit)
+{
+	Limit = limit;
+	Layer0.Limit = Limit;
+
+	Layer1New(0);
+	Layer0.New(Layer1Index.Y);
+}
+void Continue()
+{
+	if (!Layer0.Done)
+	{
+		Layer0.Continue();
+		if (Layer0.Done)
+		{
+			if (!Layer1Done)
+			{
+				Layer1Loop();
+				if (Layer1Done)
+				{
+					Layer1New(Layer1Size + 1);
+				}
+				Layer0.New(Layer1Index.Y);
+			}
+		}
+	}
+}
+};
+
 struct ChunkManager
 {
 	public:
 	static WaitDoTime	TimeInsert;
+
+	static WaitDoTime	TimeInsertNew;
+	static WaitDoTime	TimeInsertPut;
+
 	static WaitDoTime	TimeRemove;
 	static WaitDoTime	TimeUpdate;
 	static WaitDoTime	TimeUpdateInsert;
@@ -106,8 +344,6 @@ struct ChunkManager
 
 	void	UpdateChunksContainer();
 
-	void	NeighbourUpdateBufferMain(VectorI3 idx);
-
 
 
 	public:
@@ -117,10 +353,7 @@ struct ChunkManager
 	ChunkManager(const ChunkManager & other) = delete;
 	ChunkManager & operator=(const ChunkManager & other) = delete;
 
-	public:
-	//PolyHedra *	VoxelBoxPolyHedra = nullptr;
-	//PolyHedra *	ChunkBoxPolyHedra = nullptr;
-	//PolyHedra *	ViewRayPolyHedra = nullptr;
+
 
 	private:
 	public:
@@ -155,13 +388,16 @@ struct ChunkManager
 	*/
 
 	public:
-	std::mutex					GenerateChunkMutex;
+	std::mutex					GenerateChunkConditionMutex;
 	std::condition_variable		GenerateChunkConditionVar;
+	CenterIndexLoop3D			GenerateChunkFindLoop;
+	unsigned int				GenerateChunkFindCandidateCount;
 	AccessLockedChunk			GenerateChunkFind();
 
 	public:
-	std::mutex					AssambleChunkMutex;
+	std::mutex					AssambleChunkConditionMutex;
 	std::condition_variable		AssambleChunkConditionVar;
+	unsigned int				AssambleChunkFindCandidateCount;
 	AccessLockedChunk			AssambleChunkFind();
 
 
@@ -183,23 +419,20 @@ struct ChunkManager
 		Done: Vertex Data is freed
 	*/
 
-	/* Queue for making BufferData ?
-		duplicates ?
-		Timelime:
-			new Data is requested for Chunk
-			new Data is requested for Chunk
-			make Data
-			make Data again
-		nothing changed since the first make, so doing it again wastes resources
-	*/
 	public:
-	std::mutex					MakeBufferMutex;
+	std::mutex					MakeBufferConditionMutex;
 	std::condition_variable		MakeBufferConditionVar;
-	AccessLockedChunk			MakeBufferFind();
+
+	std::mutex					BufferDataWantQueueMutex;
+	Container::Binary<Chunk *>	BufferDataWantQueue;
+	void						BufferDataWantQueuePut(Chunk * chunk);
+	void						BufferDataWantQueuePutLock(Chunk * chunk);
+	AccessLockedChunk			BufferDataWantFind();
 
 	public:
-	Container::Binary<Chunk *>	BufferUpdateU_Queue;
-	std::mutex					BufferUpdateU_Queue_Mutex;
+	std::mutex					BufferDataHaveQueueMutex;
+	Container::Binary<Chunk *>	BufferDataHaveQueue;
+	void						BufferDataHaveQueuePut(Chunk * chunk);
 
 	public:
 	static ValueAverager<float>		DrawTotal;

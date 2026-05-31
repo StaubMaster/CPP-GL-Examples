@@ -119,13 +119,14 @@ RequestBuffer Update
 
 struct ChunkNeighbour
 {
-	private:
-	public:
-	Chunk * Cube[3][3][3];
 	// [Z][Y][X]
 	// [0] Prev
 	// [1] Here
 	// [2] Next
+
+	private:
+	public:
+	Chunk * Cube[3][3][3];
 
 	public:
 	~ChunkNeighbour();
@@ -141,6 +142,9 @@ struct ChunkNeighbour
 	bool	IsVisibleNextX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
 	bool	IsVisibleNextY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
 	bool	IsVisibleNextZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+
+	public:
+	void	BufferDataWant();
 
 	public:
 	bool	CanMakeBuffer() const;

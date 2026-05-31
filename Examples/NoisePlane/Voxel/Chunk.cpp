@@ -142,7 +142,7 @@ void Chunk::MakeEmpty()
 	if (!IsEmpty())
 	{
 		Voxels.Clear();
-		Manager.NeighbourUpdateBufferMain(Index);
+		Neighbours.BufferDataWant();
 	}
 }
 void Chunk::MakeNull()
@@ -155,7 +155,7 @@ void Chunk::MakeNull()
 	{
 		Voxels[i] = Voxel();
 	}
-	Manager.NeighbourUpdateBufferMain(Index);
+	Neighbours.BufferDataWant();
 }
 
 
@@ -174,7 +174,7 @@ bool Chunk::ClearVoxel(VectorU3 udx, Voxel & vox)
 
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 
-	Manager.NeighbourUpdateBufferMain(Index);
+	Neighbours.BufferDataWant();
 	return true;
 }
 bool Chunk::PlaceVoxel(VectorU3 udx, Voxel & vox)
@@ -189,7 +189,7 @@ bool Chunk::PlaceVoxel(VectorU3 udx, Voxel & vox)
 	voxel = vox;
 	vox = Voxel();
 
-	Manager.NeighbourUpdateBufferMain(Index);
+	Neighbours.BufferDataWant();
 	return true;
 }
 
@@ -733,9 +733,8 @@ void Chunk::AssambleDecoration()
 
 	if (GraphicsExist)
 	{
-		Manager.NeighbourUpdateBufferMain(Index);
-		BufferUData_Want = true;
-		Manager.MakeBufferConditionVar.notify_all();
+		Neighbours.BufferDataWant();
+		Manager.BufferDataWantQueuePutLock(this);
 	}
 }
 
@@ -766,20 +765,13 @@ void Chunk::GraphicsCreate()
 {
 	if (GraphicsExist) { return; }
 
-	BufferUData_Have = false;
-
-	//BufferF.Create();
-	//BufferFMain_NewData = false;
-	//BufferFInst_NewData = true;
-	//BufferF.Main.AttributesBound = false;
-	//BufferF.Inst.AttributesBound = false;
-
 	GraphicsExist = true;
+
+	BufferUData_Have = false;
 
 	if (GenerationDone())
 	{
-		BufferUData_Want = true;
-		Manager.MakeBufferConditionVar.notify_all();
+		Manager.BufferDataWantQueuePutLock(this);
 	}
 }
 void Chunk::GraphicsDelete()
@@ -801,9 +793,9 @@ void Chunk::BufferUData_Make()
 	BufferUData_Want = false;
 	BufferUData_Have = true;
 
-	Manager.BufferUpdateU_Queue_Mutex.lock();
-	Manager.BufferUpdateU_Queue.Insert(this);
-	Manager.BufferUpdateU_Queue_Mutex.unlock();
+	Manager.BufferDataHaveQueueMutex.lock();
+	Manager.BufferDataHaveQueue.Insert(this);
+	Manager.BufferDataHaveQueueMutex.unlock();
 }
 
 void Chunk::BufferUData_Update()

@@ -10,7 +10,8 @@ bool ContainerLock::InUse() const { return (UseCount.load() != 0); }
 
 
 
-ContainerLock::~ContainerLock() { }
+ContainerLock::~ContainerLock()
+{ }
 ContainerLock::ContainerLock()
 	: UseCount(0)
 	, AssignMutex()
@@ -128,6 +129,7 @@ void ContainerLock::AccessU(StopWatch & watch, WaitDoTime & time)
 #endif
 	UseCount--;
 }
+
 void ContainerLock::AssignL(StopWatch & watch, WaitDoTime & time)
 {
 	UseCount++;
@@ -164,22 +166,3 @@ void ContainerLock::AssignU(StopWatch & watch, WaitDoTime & time)
 #endif
 	UseCount--;
 }
-
-
-
-
-
-/*ContainerLock::Object::~Object()
-{
-	if (IsLocked)
-	{
-
-	}
-}
-ContainerLock::Object::Object(ContainerLock & lock)
-	: Lock(lock)
-	, IsLocked(true)
-{ }
-ContainerLock::Object::Object(const Object & other)
-{ }
-void ContainerLock::Object::Dispose()*/
