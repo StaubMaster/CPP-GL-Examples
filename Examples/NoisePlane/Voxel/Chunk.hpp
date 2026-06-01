@@ -68,6 +68,14 @@ do the same with Chunks in ChunkManager
 # include "AssignLockedChunk.hpp"
 # include "AccessLockedChunk.hpp"
 
+// StructurePlacement ?
+// StructureOrientation ?
+struct StructureObject
+{
+	::Structure *	Structure = nullptr;
+	::VectorU3		Origin;
+};
+
 struct Chunk
 {
 	public:
@@ -159,59 +167,15 @@ struct Chunk
 
 	public:
 	bool	TerrainDone;
-	void	GenerateTerrain(const ChunkGenerationNoise & noise);
-	/* TerrainGenerator
-		takes a Chunk
-		use AbsolutePosition
-		use RelativePosition
-		use Y Perlin2D result
-		use Perlin3D result
-	*/
-	private:
-	void	TerrainFlat(int y_chunk, unsigned int y_voxel);
-	void	TerrainPillars();
-	void	TerrainPlane(const Perlin2D & noise);
-	void	TerrainCaveNoodle(const Perlin3D & noise0, const Perlin3D & noise1);
-	void	TerrainCaveBlob(const Perlin3D & noise);
-	void	TerrainGrid();
-	void	TerrainCity();
 
-
-
-	private:
-	struct StructureObject
-	{
-		::Structure *	Structure = nullptr;
-		::VectorU3		Origin;
-	};
+	public:
 	Container::Binary<StructureObject>	Decorations;
-
-
 
 	public:
 	bool	DecorationsGenerated;
-	void	GenerateDecoration(const Perlin2D & noise2, const Perlin3D & noise3);
-	/* DecorationGenerator
-		takes a Chunk Neighbourhood
-			not just axis, but a full cube
-			MineCraft uses all around a Corner
-			do I want to use all around
-		use AbsolutePosition
-		use RelativePosition
-		use Y Perlin2D result
-		use Perlin3D result
-	*/
-	private:
-	bool	FindMinYNull(VectorU3 & udx) const;
-	void	DecorateTrees(const Perlin2D & noise);
-
-
 
 	public:
 	bool	DecorationsAssambled;
-	void	AssambleDecoration();
-	private:
-	void	AssambleDecoration(const StructureObject & obj, const VectorI3 & offset);
 
 
 

@@ -1417,10 +1417,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "Queues:\n";
 
 		ss << "BufferData Want " << ChunkManager.AuxThread1.QueueCount() << '\n';
-
-		ChunkManager.BufferDataHaveQueueMutex.lock();
-		ss << "BufferData Have " << ChunkManager.BufferDataHaveQueue.Count() << '\n';
-		ChunkManager.BufferDataHaveQueueMutex.unlock();
+		ss << "BufferData Have " << ChunkManager.BufferDataHave.QueueCount() << '\n';
 
 		ss << "Generate Candidates " << ChunkManager.AuxThread2.FindCandidateCount << '\n';
 		ss << "Assamble Candidates " << ChunkManager.AuxThread3.FindCandidateCount << '\n';
@@ -1646,7 +1643,7 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
 
-	LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
+	//LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
 	LightSpot.Pos = view.Trans.Position;
 	LightSpot.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
 

@@ -6,6 +6,8 @@ AuxThreadBase::~AuxThreadBase()
 { }
 AuxThreadBase::AuxThreadBase()
 	: Thread(&AuxThreadBase::Func, this)
+	, ConditionVar()
+	, ConditionVarMutex()
 	, Term(false)
 	, DoIdle(true)
 	, IsIdle(false)
@@ -15,6 +17,10 @@ AuxThreadBase::AuxThreadBase()
 
 
 
+void AuxThreadBase::Poke()
+{
+	ConditionVar.notify_all();
+}
 void AuxThreadBase::Join()
 {
 	Thread.join();

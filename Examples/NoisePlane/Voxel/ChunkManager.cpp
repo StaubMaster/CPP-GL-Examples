@@ -477,16 +477,16 @@ ChunkManager::~ChunkManager()
 	}
 }
 ChunkManager::ChunkManager()
-	: Texture()
-	, ShaderU()
-	, ShaderLayoutU()
-	, BufferU()
-	, Chunks()
+	: Chunks()
 	, ChunksLock()
+	, AuxThread1(*this)
 	, AuxThread2(*this)
 	, AuxThread3(*this)
 	, GraphicsExist(false)
-	, AuxThread1(*this)
+	, Texture()
+	, ShaderU()
+	, ShaderLayoutU()
+	, BufferU()
 {
 	ShaderU.UniformLayout = &ShaderLayoutU;
 	ShaderLayoutU.Shader = &ShaderU;
@@ -563,6 +563,35 @@ void ChunkManager::GraphicsDelete()
 
 
 
+unsigned int ChunkManager::BufferHave::QueueCount()
+{
+	QueueMutex.lock();
+	unsigned int c = Queue.Count();
+	QueueMutex.unlock();
+	return c;
+}
+void ChunkManager::BufferHave::QueuePut(Chunk * chunk)
+{
+	if (chunk == nullptr) { return; }
+
+	QueueMutex.lock();
+
+	/*for (unsigned int i = 0; i < Queue.Count(); i++)
+	{
+		if (Queue[i] == chunk)
+		{
+			QueueMutex.unlock();
+			return;
+		}
+	}*/
+	chunk -> BufferUData_Have = true;
+	Queue.Insert(chunk);
+
+	QueueMutex.unlock();
+}
+
+
+
 ValueAverager<float> ChunkManager::DrawTotal(64);
 ValueAverager<float> ChunkManager::DrawWait(64);
 ValueAverager<float> ChunkManager::DrawTextureBind(64);
@@ -604,17 +633,17 @@ void ChunkManager::Draw()
 
 
 	sw_part.Clear(); sw_part.Start();
-	BufferDataHaveQueueMutex.lock();
-	for (unsigned int i = 0; i < BufferDataHaveQueue.Count(); i++)
+	BufferDataHave.QueueMutex.lock();
+	for (unsigned int i = 0; i < BufferDataHave.Queue.Count(); i++)
 	{
-		Chunk * ptr = BufferDataHaveQueue[i];
+		Chunk * ptr = BufferDataHave.Queue[i];
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 		if (!ref.BufferUData_Have) { continue; }
 		ptr -> BufferUData_Update();
 	}
-	BufferDataHaveQueue.Clear();
-	BufferDataHaveQueueMutex.unlock();
+	BufferDataHave.Queue.Clear();
+	BufferDataHave.QueueMutex.unlock();
 	sw_part.Stop(); DrawUpdateBind.NewValue(sw_part.ElapsedTime());
 
 

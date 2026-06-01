@@ -31,15 +31,6 @@ struct AuxThread1 : public AuxThreadBase
 
 
 	private:
-	std::condition_variable		ConditionVar;
-	std::mutex					ConditionVarMutex;
-
-	public:
-	void	Poke();
-
-
-
-	private:
 	Container::Binary<Chunk *>	Queue;
 	std::mutex					QueueMutex;
 

@@ -4,14 +4,13 @@
 # include "Telemetry/AuxThreadBase.hpp"
 # include "Telemetry/WaitDoTime.hpp"
 
-# include <mutex>
-# include <condition_variable>
-
 # include "Miscellaneous/Container/Binary.hpp"
 
 struct ChunkManager;
 struct Chunk;
 struct AccessLockedChunk;
+struct StructureObject;
+struct VectorI3;
 
 struct AuxThread3 : public AuxThreadBase
 {
@@ -30,19 +29,17 @@ struct AuxThread3 : public AuxThreadBase
 
 
 
-	private:
-	std::condition_variable		ConditionVar;
-	std::mutex					ConditionVarMutex;
-
-	public:
-	void	Poke();
-
-
-
 	public:	
 	unsigned int				FindCandidateCount;
 	private:
 	AccessLockedChunk			Find();
+
+
+
+	private:
+	void	AssambleDecoration(Chunk & chunk);
+	void	AssambleDecoration(Chunk & chunk, const StructureObject & obj, const VectorI3 & offset);
+
 };
 
 #endif

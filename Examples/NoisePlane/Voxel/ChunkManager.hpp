@@ -74,32 +74,30 @@ struct ChunkManager
 
 
 
-	public:
-	Texture::Array2D				Texture;
-	::Shader::Base					ShaderU;
-	VoxelGraphics::ShaderLayout		ShaderLayoutU;
-	MultiBufferChunkU				BufferU;
-
 	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
 
 	public:
 	Array3D<Chunk*>	Chunks;
 	ContainerLock	ChunksLock;
 
+	public:
 	unsigned int	KnowSize;
 	unsigned int	CareSize;
 
-	void	Clear();
-	void	ChangeSize(unsigned int know_size, unsigned int care_size);
-	void	ChangeCenter(VectorI3 center);
-
+	public:
 	VectorI3	Center;
 	BoxI3		KnowBox;
 	BoxI3		CareBox;
 
+	public:
+	void	Clear();
+	void	ChangeSize(unsigned int know_size, unsigned int care_size);
+	void	ChangeCenter(VectorI3 center);
+
 	VectorI3	absolute(VectorU3 u) const;
 	VectorU3	relative(VectorI3 i) const;
 
+	public:
 	Chunk *					FindAbsOrNull(VectorI3 idx);
 	AccessLockedChunk		FindAccess(VectorI3 idx);
 
@@ -112,7 +110,7 @@ struct ChunkManager
 
 	public:
 	void	InsertAround();
-	void	RemoveAround();
+	void	RemoveAround(); // returns immedeatly
 
 	void	UpdateChunksContainer();
 
@@ -133,51 +131,26 @@ struct ChunkManager
 
 
 
-	/* make a Queue for Generating/Assambling ?
-		Problem:
-			I want the nearest stuff to be generated first
-		Solution:
-			the thing that Queues a Generation can be a CenterIndexLoop
-			so the stuff nearer to the Center get generated first
-			which then means that the stuff near the Center get assambled first
-
-		Problem:
-			duplicates in Queue
-		Solution:
-			keep the flags on weather the Chunks actually needs that done or not
-			if not, just skip it
-
-		Problem:
-			what if the Center changes, a lot
-			now the Center is of what was the Edge
-			but the Queue is alreay filled with Chunks that area now far away
-			the stuff close by should be prioratized
-		Solution:
-			this would require soring the distances of all Chunks
-			and then using Binary insertion to insert new ones
-			this would also mean recalculating Distances when Center changes
-			could probably just use Manhatton distance to keep Distance simple
-	*/
-
-//	public:
-//	std::mutex					GenerateChunkConditionMutex;
-//	std::condition_variable		GenerateChunkConditionVar;
-//	CenterIndexLoop3D			GenerateChunkFindLoop;
-//	unsigned int				GenerateChunkFindCandidateCount;
-//	AccessLockedChunk			GenerateChunkFind();
-
 	public:
+	//							// DrawBufferThread
+	::AuxThread1	AuxThread1;	// MakeBufferThread
 	::AuxThread2	AuxThread2;
 	::AuxThread3	AuxThread3;
 
 
 
 	public:
-	// put Shader /Buffer here ?
-
 	bool	GraphicsExist;
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+
+	public:
+	Texture::Array2D				Texture;
+	::Shader::Base					ShaderU;
+	VoxelGraphics::ShaderLayout		ShaderLayoutU;
+	MultiBufferChunkU				BufferU;
+
+
 
 	/* BufferUpdate
 		None: no Vertex Data
@@ -188,12 +161,16 @@ struct ChunkManager
 		Done: Vertex Data is freed
 	*/
 
-	public:
-	::AuxThread1				AuxThread1;
-
-	public:
-	std::mutex					BufferDataHaveQueueMutex;
-	Container::Binary<Chunk *>	BufferDataHaveQueue;
+	struct BufferHave
+	{
+		public:
+		Container::Binary<Chunk *>	Queue;
+		std::mutex					QueueMutex;
+		public:
+		unsigned int				QueueCount();
+		void						QueuePut(Chunk * chunk);
+	};
+	ChunkManager::BufferHave	BufferDataHave;
 
 	public:
 	static ValueAverager<float>		DrawTotal;

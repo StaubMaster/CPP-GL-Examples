@@ -3,6 +3,9 @@
 #include "Voxel/ChunkManager.hpp"
 #include "Voxel/Chunk.hpp"
 #include "Voxel/AccessLockedChunk.hpp"
+#include "Voxel/Structure.hpp"
+
+#include "ValueType/LoopU3.hpp"
 
 
 
@@ -55,7 +58,8 @@ void AuxThread3::Func()
 
 		sw.Clear();
 		sw.Start();
-		(*chunk2).AssambleDecoration();
+		//(*chunk2).AssambleDecoration();
+		AssambleDecoration(*chunk2);
 		sw.Stop();
 		TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
 		TimeAssamble.ThreadName = AuxThreadBase::ThreadName;
@@ -63,13 +67,6 @@ void AuxThread3::Func()
 }
 
 
-
-
-
-void AuxThread3::Poke()
-{
-	ConditionVar.notify_all();
-}
 
 
 
@@ -124,4 +121,56 @@ AccessLockedChunk AuxThread3::Find()
 
 	//return found;
 	return AccessLockedChunk(found);
+}
+
+
+
+
+
+void AuxThread3::AssambleDecoration(Chunk & chunk)
+{
+	if (chunk.DecorationsAssambled) { return; }
+
+	for (int z = 0; z < 3; z++)
+	{
+		for (int y = 0; y < 3; y++)
+		{
+			for (int x = 0; x < 3; x++)
+			{
+				const Chunk & other = *chunk.Neighbours.Cube[z][y][x];
+				VectorI3 offset = VectorI3(x - 1, y - 1, z - 1) * CHUNK_VALUES_PER_SIDE;
+				for (unsigned int i = 0; i < other.Decorations.Count(); i++)
+				{
+					AssambleDecoration(chunk, other.Decorations[i], offset);
+				}
+			}
+		}
+	}
+
+	//Decorations.Clear();
+
+	if (chunk.IsNullOrEmpty()) { chunk.MakeEmpty(); }
+
+	chunk.DecorationsAssambled = true;
+
+	chunk.Neighbours.BufferDataWant();
+	Manager.AuxThread1.QueuePut(&chunk);
+}
+void AuxThread3::AssambleDecoration(Chunk & chunk, const StructureObject & obj, const VectorI3 & offset)
+{
+	if (obj.Structure == nullptr) { return; }
+
+	const Structure & structure = *obj.Structure;
+	LoopU3 loop(VectorU3(), structure.Voxels.Size());
+	for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		VectorU3 p = obj.Origin - structure.Center + u + offset;
+		if ((p < chunk.Voxels.Size()).All(true))
+		{
+			if (!structure.Voxels[u].IsEmpty())
+			{
+				chunk.Voxels[p] = structure.Voxels[u];
+			}
+		}
+	}
 }

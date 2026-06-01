@@ -66,15 +66,6 @@ void AuxThread1::Func()
 
 
 
-
-
-void AuxThread1::Poke()
-{
-	ConditionVar.notify_all();
-}
-
-
-
 unsigned int AuxThread1::QueueCount()
 {
 	QueueMutex.lock();

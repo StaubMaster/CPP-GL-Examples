@@ -12,6 +12,10 @@
 struct ChunkManager;
 struct Chunk;
 struct AccessLockedChunk;
+struct Voxel;
+
+# include "ValueType/LoopU2.hpp"
+# include "ValueType/LoopU3.hpp"
 
 # include "CenterIndexLoop3D.hpp"
 # include "Voxel/ChunkGenerationNoise.hpp"
@@ -42,6 +46,8 @@ struct AccessLockedChunk;
 		could probably just use Manhatton distance to keep Distance simple
 */
 
+// seperate generating Terrain and generating Decorations
+
 struct AuxThread2 : public AuxThreadBase
 {
 	ChunkManager &	Manager;
@@ -60,20 +66,60 @@ struct AuxThread2 : public AuxThreadBase
 
 
 
-	private:
-	std::condition_variable		ConditionVar;
-	std::mutex					ConditionVarMutex;
-
-	public:
-	void	Poke();
-
-
-
 	public:	
 	CenterIndexLoop3D			FindLoop;
 	unsigned int				FindCandidateCount;
 	private:
 	AccessLockedChunk			Find();
+
+
+
+	private:
+	void	GenerateTerrain(Chunk & chunk, const ChunkGenerationNoise & noise);
+	LoopU2	Loop2;
+	LoopU3	Loop3;
+	struct ChunkData
+	{
+		VectorI3		Index;
+		VectorI3		Offset;
+		Array3D<Voxel>	Voxels;
+		ChunkData(Chunk & chunk);
+	};
+	/* TerrainGenerator
+		takes a Chunk
+		use AbsolutePosition
+		use RelativePosition
+		use Y Perlin2D result
+		use Perlin3D result
+	*/
+	private:
+	void	TerrainFlat(ChunkData & data, int y_chunk, unsigned int y_voxel);
+	void	TerrainPillars(ChunkData & data);
+	void	TerrainPlane(ChunkData & data, const Perlin2D & noise);
+	void	TerrainCaveNoodle(ChunkData & data, const Perlin3D & noise0, const Perlin3D & noise1);
+	void	TerrainCaveBlob(ChunkData & data, const Perlin3D & noise);
+	void	TerrainGrid(ChunkData & data);
+	void	TerrainCity(ChunkData & data);
+
+
+
+	private:
+	void	GenerateDecoration(Chunk & chunk, const Perlin2D & noise2, const Perlin3D & noise3);
+	/* DecorationGenerator
+		takes a Chunk Neighbourhood
+			not just axis, but a full cube
+			MineCraft uses all around a Corner
+			do I want to use all around
+		use AbsolutePosition
+		use RelativePosition
+		use Y Perlin2D result
+		use Perlin3D result
+	*/
+	private:
+	bool	FindMinYNull(Chunk & chunk, VectorU3 & udx) const;
+	void	DecorateTreesCenter(Chunk & chunk);
+	void	DecorateTreesLines(Chunk & chunk);
+	void	DecorateTrees(Chunk & chunk, const Perlin2D & noise);
 };
 
 #endif
