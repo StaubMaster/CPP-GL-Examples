@@ -70,18 +70,10 @@ do the same with Chunks in ChunkManager
 
 struct Chunk
 {
-	// store Neighbours
-	// need to update Neighbours
-	// when inserting a chunk, change pointer from null
-	// when removeing a chunk, change pointer to null
-	// thats it ?
-
 	public:
 	const VectorI3		Index;
-	ChunkManager &		Manager; // replace this with Neighbours
+	ChunkManager &		Manager;
 	Array3D<Voxel>		Voxels;
-
-	public:
 	ChunkNeighbour		Neighbours;
 
 	public:
@@ -226,26 +218,12 @@ struct Chunk
 
 
 	public:
-	bool	GraphicsExist;
-//	VoxelGraphics::BufferF		BufferF;
-
-	public:
-	void	GraphicsCreate();
-	void	GraphicsDelete();
-
-	public:
 	ChunkGraphicsData			BufferUData;
 	MultiBufferChunkU::Entry	BufferUData_Entry;
 	bool						BufferUData_Want;
 	void						BufferUData_Make();
 	bool						BufferUData_Have;
 	void						BufferUData_Update();
-
-	/*bool	BufferFMain_NewData;
-	bool	BufferFInst_NewData;
-	void	BufferFMain_UpdateData();
-	void	BufferFInst_UpdateData();
-	void	DrawF();*/
 };
 
 #endif

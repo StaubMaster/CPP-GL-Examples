@@ -2,7 +2,7 @@
 # define CHUNK_GRAPHICS_DATA_HPP
 
 # include "Graphics/Main/Data.hpp"
-# include "VoxelEnums.hpp"
+# include "AxisEnums.hpp"
 
 # include "Miscellaneous/Container/Array.hpp"
 # include "Miscellaneous/Container/Array3D.hpp"
@@ -10,7 +10,7 @@
 
 struct VectorU3;
 struct VectorI3;
-struct VoxelOrientation;
+struct AxisOrientation;
 struct VoxelPallet;
 struct VoxelAxisGraphicsDataF;
 struct ChunkNeighbour;
@@ -43,7 +43,7 @@ struct ChunkGraphicsData
 	public:
 	void	ClearU();
 	private:
-	void	CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet);
+	void	CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet);
 	void	MakeU(const Chunk & chunk, const ChunkNeighbour & neighbours);
 	void	DoneU();
 	public:

@@ -178,7 +178,6 @@ struct ChunkManager
 	bool	GraphicsExist;
 	void	GraphicsCreate();
 	void	GraphicsDelete();
-	void	GraphicsUpdate();
 
 	/* BufferUpdate
 		None: no Vertex Data

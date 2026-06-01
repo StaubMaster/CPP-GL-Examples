@@ -1,7 +1,7 @@
 #include "ChunkManager.hpp"
 #include "Chunk.hpp"
 #include "Voxel.hpp"
-#include "VoxelOrientation.hpp"
+#include "AxisOrientation.hpp"
 #include "ChunkVoxelIndex.hpp"
 #include "ChunkNeighbours.hpp"
 
@@ -42,7 +42,7 @@ void ChunkManager::Clear()
 //	std::cout << "Clear:" << __LINE__ << '\n';
 	for (unsigned int i = 0; i < Chunks.Length(); i++)
 	{
-		Chunks[i] -> GraphicsDelete();
+		//Chunks[i] -> GraphicsDelete();
 		delete Chunks[i];
 	}
 //	std::cout << "Clear:" << __LINE__ << '\n';
@@ -422,7 +422,7 @@ void ChunkManager::UpdateChunksContainer()
 		{
 			Chunk * chunk = ChunksToRemove[i];
 			if (chunk == nullptr) { ChunksToRemove.RemoveAt(i); i--; continue; }
-			if (chunk -> GraphicsExist) { continue; }
+			//if (chunk -> GraphicsExist) { continue; }
 			if (chunk -> InUse()) { continue; }
 			delete chunk;
 			ChunksToRemove.RemoveAt(i);
@@ -442,7 +442,6 @@ void ChunkManager::UpdateChunksContainer()
 		{
 			Chunk * chunk = ChunksToInsert[i];
 			if (chunk == nullptr) { continue; }
-			if (!(chunk -> GraphicsExist)) { continue; }
 			VectorU3 u = relative(chunk -> Index);
 			if ((u < Chunks.Size()).Any(false)) { continue; }
 			//if (Chunks[u] != nullptr) { continue; }
@@ -541,20 +540,6 @@ void ChunkManager::GraphicsCreate()
 	Texture.Create();
 	ShaderU.Create();
 	BufferU.Buffer.Create();
-//	ShaderF.Create();
-//	BufferF.Create();
-
-//	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
-	ChunksLock.AccessL();
-//	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
-	for (unsigned int i = 0; i < Chunks.Length(); i++)
-	{
-		if (Chunks[i] == nullptr) { continue; }
-		Chunks[i] -> GraphicsCreate();
-	}
-//	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
-	ChunksLock.AccessU();
-//	std::cout << "GraphicsCreate:" << __LINE__ << '\n';
 
 	BufferU.Buffer.MainBuffer.AttributesBound = false;
 	BufferU.NewSize(1024 * 1024 * 1024);
@@ -570,58 +555,10 @@ void ChunkManager::GraphicsDelete()
 	Texture.Delete();
 	ShaderU.Delete();
 	BufferU.Buffer.Delete();
-//	ShaderF.Delete();
-//	BufferF.Delete();
-
-//	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
-	ChunksLock.AccessL();
-//	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
-	for (unsigned int i = 0; i < Chunks.Length(); i++)
-	{
-		if (Chunks[i] == nullptr) { continue; }
-		Chunks[i] -> GraphicsDelete();
-	}
-//	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
-	ChunksLock.AccessU();
-//	std::cout << "GraphicsDelete:" << __LINE__ << '\n';
 
 	BufferU.Size = 0;
 
 	GraphicsExist = false;
-}
-void ChunkManager::GraphicsUpdate()
-{
-	if (!GraphicsExist) { return; }
-
-//	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
-	{
-		StopWatch sw;
-		ChunksToRemoveLock.AccessL(sw, TimeGraphicsDelete);
-//		std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
-		for (unsigned int i = 0; i < ChunksToRemove.Count(); i++)
-		{
-			Chunk * chunk = ChunksToRemove[i];
-			if (chunk == nullptr) { continue; }
-			chunk -> GraphicsDelete();
-		}
-//		std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
-		ChunksToRemoveLock.AccessU(sw, TimeGraphicsDelete);
-	}
-//	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
-	{
-		StopWatch sw;
-		ChunksToInsertLock.AccessL(sw, TimeGraphicsCreate);
-//		std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
-		for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
-		{
-			Chunk * chunk = ChunksToInsert[i];
-			if (chunk == nullptr) { continue; }
-			chunk -> GraphicsCreate();
-		}
-//		std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
-		ChunksToInsertLock.AccessU(sw, TimeGraphicsCreate);
-	}
-//	std::cout << "GraphicsUpdate:" << __LINE__ << '\n';
 }
 
 

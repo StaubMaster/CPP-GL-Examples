@@ -1,14 +1,14 @@
 #ifndef  VOXEL_HPP
 # define VOXEL_HPP
 
-# include "VoxelOrientation.hpp"
+# include "AxisOrientation.hpp"
 
 struct VoxelPallet;
 
 struct Voxel
 {
 	unsigned short		Pallet;
-	VoxelOrientation	Orientation;
+	AxisOrientation		Orientation;
 
 	bool	IsEmpty() const;
 	bool	Visible(AxisRel axis) const;

@@ -1,24 +1,24 @@
-#include "VoxelOrientation.hpp"
+#include "AxisOrientation.hpp"
 
 
 
-Diag VoxelOrientation::GetDiag() const { return (Diag)((Value & 0b00000111) >> 0); }
-Flip VoxelOrientation::GetFlip() const { return (Flip)((Value & 0b00011000) >> 3); }
+Diag AxisOrientation::GetDiag() const { return (Diag)((Value & 0b00000111) >> 0); }
+Flip AxisOrientation::GetFlip() const { return (Flip)((Value & 0b00011000) >> 3); }
 
-void VoxelOrientation::SetDiag(Diag diag) { Value = (Value & (~0b00000111)) | (((unsigned char)diag) << 0); }
-void VoxelOrientation::SetFlip(Flip flip) { Value = (Value & (~0b00011000)) | (((unsigned char)flip) << 3); }
+void AxisOrientation::SetDiag(Diag diag) { Value = (Value & (~0b00000111)) | (((unsigned char)diag) << 0); }
+void AxisOrientation::SetFlip(Flip flip) { Value = (Value & (~0b00011000)) | (((unsigned char)flip) << 3); }
 
 
 
-VoxelOrientation::~VoxelOrientation() { }
-VoxelOrientation::VoxelOrientation()
+AxisOrientation::~AxisOrientation() { }
+AxisOrientation::AxisOrientation()
 	: Value(0)
 { }
 
-VoxelOrientation::VoxelOrientation(const VoxelOrientation & other)
+AxisOrientation::AxisOrientation(const AxisOrientation & other)
 	: Value(other.Value)
 { }
-VoxelOrientation & VoxelOrientation::operator=(const VoxelOrientation & other)
+AxisOrientation & AxisOrientation::operator=(const AxisOrientation & other)
 {
 	Value = other.Value;
 	return *this;
@@ -26,13 +26,13 @@ VoxelOrientation & VoxelOrientation::operator=(const VoxelOrientation & other)
 
 
 
-void VoxelOrientation::make(Diag diag, Flip flip) { SetDiag(diag); SetFlip(flip); }
+void AxisOrientation::make(Diag diag, Flip flip) { SetDiag(diag); SetFlip(flip); }
 
-void VoxelOrientation::make(AxisRel origin, AxisRel target)
+void AxisOrientation::make(AxisRel origin, AxisRel target)
 {
 	make(origin, target, AxisRel::None, AxisRel::None);
 }
-void VoxelOrientation::make(AxisRel origin0, AxisRel target0, AxisRel origin1, AxisRel target1)
+void AxisOrientation::make(AxisRel origin0, AxisRel target0, AxisRel origin1, AxisRel target1)
 {
 	Diag diags[6] =
 	{
@@ -50,7 +50,7 @@ void VoxelOrientation::make(AxisRel origin0, AxisRel target0, AxisRel origin1, A
 		Flip::FlipY,
 		Flip::FlipZ,
 	};
-	VoxelOrientation orient;
+	AxisOrientation orient;
 
 	bool ignore0 = (origin0 == AxisRel::None || target0 == AxisRel::None);
 	bool ignore1 = (origin1 == AxisRel::None || target1 == AxisRel::None);
@@ -67,7 +67,7 @@ void VoxelOrientation::make(AxisRel origin0, AxisRel target0, AxisRel origin1, A
 			}
 		}
 	}
-	*this = VoxelOrientation();
+	*this = AxisOrientation();
 }
 
 /* absolute Swizzles
@@ -160,7 +160,7 @@ VectorU3 absoluteU_SwizzleFunc_27(const VectorU3 & u) { return VectorU3(+u.X, +u
 VectorU3 absoluteU_SwizzleFunc_28(const VectorU3 & u) { return VectorU3(+u.Z, +u.Y, -u.X); }
 VectorU3 absoluteU_SwizzleFunc_29(const VectorU3 & u) { return VectorU3(+u.Y, +u.X, -u.Z); }
 
-VoxelOrientation::SwizzlerU_Ptr absoluteU_SwizzleFunc_Array[32] = {
+AxisOrientation::SwizzlerU_Ptr absoluteU_SwizzleFunc_Array[32] = {
 	&absoluteU_SwizzleFunc_00,
 	&absoluteU_SwizzleFunc_01,
 	&absoluteU_SwizzleFunc_02,
@@ -195,11 +195,11 @@ VoxelOrientation::SwizzlerU_Ptr absoluteU_SwizzleFunc_Array[32] = {
 	nullptr
 };
 
-VoxelOrientation::SwizzlerU_Ref VoxelOrientation::absoluteU_Func() const { return *(absoluteU_SwizzleFunc_Array[Value]); }
+AxisOrientation::SwizzlerU_Ref AxisOrientation::absoluteU_Func() const { return *(absoluteU_SwizzleFunc_Array[Value]); }
 
 
 
-VectorU3 VoxelOrientation::absolute(VectorU3 v) const
+VectorU3 AxisOrientation::absolute(VectorU3 v) const
 {
 	switch (GetDiag())
 	{
@@ -221,7 +221,7 @@ VectorU3 VoxelOrientation::absolute(VectorU3 v) const
 
 	return v;
 }
-VectorF3 VoxelOrientation::absolute(VectorF3 v) const
+VectorF3 AxisOrientation::absolute(VectorF3 v) const
 {
 	switch (GetDiag())
 	{
@@ -255,7 +255,7 @@ rotate only the lowest 3 bits
 
 */
 
-AxisRel VoxelOrientation::absolute(AxisRel axis) const
+AxisRel AxisOrientation::absolute(AxisRel axis) const
 {
 	switch (GetDiag())
 	{
@@ -367,7 +367,7 @@ AxisRel VoxelOrientation::absolute(AxisRel axis) const
 
 	return axis;
 }
-AxisRel VoxelOrientation::relative(AxisRel axis) const
+AxisRel AxisOrientation::relative(AxisRel axis) const
 {
 	switch (GetFlip())
 	{

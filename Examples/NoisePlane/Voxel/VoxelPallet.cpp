@@ -1,5 +1,5 @@
 #include "VoxelPallet.hpp"
-#include "VoxelOrientation.hpp"
+#include "AxisOrientation.hpp"
 #include "Voxel.hpp"
 
 #include "VoxelGeometryPallet.hpp"

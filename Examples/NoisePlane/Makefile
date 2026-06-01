@@ -23,8 +23,8 @@ FILES := \
 	Voxel/VoxelGraphicsData.cpp \
 	Voxel/VoxelGeometryPallet.cpp \
 	Voxel/VoxelPallet.cpp \
-	Voxel/VoxelOrientation.cpp \
-	Voxel/VoxelEnums.cpp \
+	Voxel/AxisOrientation.cpp \
+	Voxel/AxisEnums.cpp \
 	Voxel/VoxelHit.cpp \
 	\
 	Voxel/ChunkGraphicsData.cpp \

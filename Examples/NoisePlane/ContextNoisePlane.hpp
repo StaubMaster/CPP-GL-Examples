@@ -47,7 +47,7 @@
 #include "Voxel/Chunk.hpp"
 #include "Voxel/ChunkManager.hpp"
 #include "Voxel/ChunkNeighbours.hpp"
-#include "Voxel/VoxelOrientation.hpp"
+#include "Voxel/AxisOrientation.hpp"
 #include "Voxel/VoxelPallet.hpp"
 #include "Voxel/ChunkVoxelIndex.hpp"
 #include "Voxel/VoxelGeometryPallet.hpp"

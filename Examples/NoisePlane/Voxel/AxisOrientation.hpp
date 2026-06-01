@@ -1,14 +1,11 @@
-#ifndef  VOXEL_ORIENTATION_HPP
-# define VOXEL_ORIENTATION_HPP
+#ifndef  AXIS_ORIENTATION_HPP
+# define AXIS_ORIENTATION_HPP
 
-# include "VoxelEnums.hpp"
+# include "AxisEnums.hpp"
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/Vector/U3.hpp"
 
-// rename to AxisOrientation
-// change VoxelEnums to AxisEnums
-
-struct VoxelOrientation
+struct AxisOrientation
 {
 	private:
 	unsigned char Value;
@@ -20,11 +17,11 @@ struct VoxelOrientation
 	void	SetDiag(Diag diag);
 	void	SetFlip(Flip flip);
 
-	~VoxelOrientation();
-	VoxelOrientation();
+	~AxisOrientation();
+	AxisOrientation();
 
-	VoxelOrientation(const VoxelOrientation & other);
-	VoxelOrientation & operator=(const VoxelOrientation & other);
+	AxisOrientation(const AxisOrientation & other);
+	AxisOrientation & operator=(const AxisOrientation & other);
 
 	void	make(Diag diag, Flip flip);
 	void	make(AxisRel origin, AxisRel target);

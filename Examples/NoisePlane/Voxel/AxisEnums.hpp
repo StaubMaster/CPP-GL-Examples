@@ -1,5 +1,5 @@
-#ifndef  VOXEL_ENUMS_HPP
-# define VOXEL_ENUMS_HPP
+#ifndef  AXIS_ENUMS_HPP
+# define AXIS_ENUMS_HPP
 
 # include <iosfwd>
 

@@ -106,9 +106,9 @@ bool VoxelGeometryPallet::Visible(AxisRel axis) const
 	}
 }
 
-VoxelOrientation VoxelGeometryPallet::Orient(AxisRel placeAxis0, AxisRel placeAxis1) const
+AxisOrientation VoxelGeometryPallet::Orient(AxisRel placeAxis0, AxisRel placeAxis1) const
 {
-	VoxelOrientation orient;
+	AxisOrientation orient;
 	orient.make(OrientationAxis0, placeAxis0, OrientationAxis1, placeAxis1);
 	return orient;
 }

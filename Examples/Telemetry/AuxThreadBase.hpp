@@ -3,10 +3,7 @@
 
 # include <thread>
 
-/* put condision_var here
-	Poke to unIdle
-	dont want all the ones that want ThreadName to include all the Thread stuff
-	put threadName into its own thing
+/* Condition Var ?
 */
 
 struct AuxThreadBase

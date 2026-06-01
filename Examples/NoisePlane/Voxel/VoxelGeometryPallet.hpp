@@ -1,7 +1,7 @@
 #ifndef  VOXEL_GEOMETRY_PALLET_HPP
 # define VOXEL_GEOMETRY_PALLET_HPP
 
-# include "VoxelOrientation.hpp"
+# include "AxisOrientation.hpp"
 # include "VoxelGraphicsData.hpp"
 
 struct VoxelGeometryPallet
@@ -42,7 +42,7 @@ struct VoxelGeometryPallet
 	AxisRel		OrientationAxis0;
 	AxisRel		OrientationAxis1;
 
-	VoxelOrientation	Orient(AxisRel placeAxis0, AxisRel placeAxis1) const;
+	AxisOrientation	Orient(AxisRel placeAxis0, AxisRel placeAxis1) const;
 
 
 

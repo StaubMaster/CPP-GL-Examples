@@ -128,7 +128,7 @@ void ChunkGraphicsData::ClearU()
 {
 	ArrayU.Clear();
 }
-void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const VoxelOrientation & orientation, const VoxelPallet & pallet)
+void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet)
 {
 	if (axis == AxisRel::Here || axis == AxisRel::None) { return; }
 	CountData++;
@@ -150,7 +150,7 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	//axis_data_u.Data[2].Pos = orientation.absolute(axis_data_u.Data[2].Pos) + u;
 	//axis_data_u.Data[3].Pos = orientation.absolute(axis_data_u.Data[3].Pos) + u;
 
-	//VoxelOrientation::SwizzlerU_Ref func = orientation.absoluteU_Func();
+	//AxisOrientation::SwizzlerU_Ref func = orientation.absoluteU_Func();
 	//axis_data_u.Data[0].Pos = func(axis_data_u.Data[0].Pos) + u;
 	//axis_data_u.Data[1].Pos = func(axis_data_u.Data[1].Pos) + u;
 	//axis_data_u.Data[2].Pos = func(axis_data_u.Data[2].Pos) + u;
@@ -254,7 +254,7 @@ void ChunkGraphicsData::MakeU(const Chunk & chunk, const ChunkNeighbour & neighb
 			is_visible_next_x || is_visible_next_y || is_visible_next_z)
 		{
 			const Voxel & voxel = chunk.Voxels.At(u);
-			const VoxelOrientation & orientation = voxel.Orientation;
+			const AxisOrientation & orientation = voxel.Orientation;
 			const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
 
 			if (is_visible_prev_x) { CatU(chunk.Index, udx, AxisRel::PrevX, orientation, pallet); }

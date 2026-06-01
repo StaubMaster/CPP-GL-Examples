@@ -1,7 +1,7 @@
 #include "ChunkNeighbours.hpp"
 #include "Chunk.hpp"
 #include "Voxel.hpp"
-#include "VoxelEnums.hpp"
+#include "AxisEnums.hpp"
 
 #include "ValueType/Vector/U3.hpp"
 

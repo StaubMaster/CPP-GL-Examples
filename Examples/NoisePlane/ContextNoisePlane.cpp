@@ -414,7 +414,6 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	// or Ray into old Chunks
 
 	sw.Clear(); sw.Start();
-	ChunkManager.GraphicsUpdate(); // this has nothing to do with View. should be done in DrawThread
 	//ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF()); // do this in Insert/Remove Thread
 	//ChangeCenter segfaults
 	sw.Stop();

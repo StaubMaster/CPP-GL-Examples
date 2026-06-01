@@ -6,7 +6,7 @@
 
 #include "Graphics/Inst/Data.hpp"
 
-#include "VoxelOrientation.hpp"
+#include "AxisOrientation.hpp"
 
 #include "Structure.hpp"
 
@@ -46,13 +46,7 @@ const Voxel *	Chunk::FindVoxelOrNull(VectorU3 udx) const
 
 
 Chunk::~Chunk()
-{
-	//delete[] Data;
-	/*if (GraphicsExist)
-	{
-		BufferF.Delete();
-	}*/
-}
+{ }
 Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	: Index(idx)
 	, Manager(manager)
@@ -62,24 +56,11 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, Decorations()
 	, DecorationsGenerated(false)
 	, DecorationsAssambled(false)
-	, GraphicsExist(false)
 	, BufferUData()
 	, BufferUData_Entry(manager.BufferU)
 	, BufferUData_Want(false)
 	, BufferUData_Have(false)
-//	, BufferF()
-//	, BufferUMain_NewData(false)
-//	, BufferFMain_NewData(false)
-//	, BufferFInst_NewData(false)
-{
-	//BufferF.Main.Pos.Change(0);
-	//BufferF.Main.Tex.Change(1);
-	//BufferF.Main.Normal.Change(2);
-	//BufferF.Inst.Pos.Change(3);
-
-	Manager.AuxThread2.Poke();
-	Manager.AuxThread3.Poke();
-}
+{ }
 
 
 
@@ -730,13 +711,9 @@ void Chunk::AssambleDecoration()
 	if (IsNullOrEmpty()) { MakeEmpty(); }
 
 	DecorationsAssambled = true;
-	Manager.AuxThread3.Poke();
 
-	if (GraphicsExist)
-	{
-		Neighbours.BufferDataWant();
-		Manager.AuxThread1.QueuePut(this);
-	}
+	Neighbours.BufferDataWant();
+	Manager.AuxThread1.QueuePut(this);
 }
 
 void Chunk::AssambleDecoration(const StructureObject & obj, const VectorI3 & offset)
@@ -762,28 +739,6 @@ void Chunk::AssambleDecoration(const StructureObject & obj, const VectorI3 & off
 
 
 
-void Chunk::GraphicsCreate()
-{
-	if (GraphicsExist) { return; }
-
-	GraphicsExist = true;
-
-	BufferUData_Have = false;
-
-	if (GenerationDone())
-	{
-		Manager.AuxThread1.QueuePut(this);
-	}
-}
-void Chunk::GraphicsDelete()
-{
-	if (!GraphicsExist) { return; }
-
-	//BufferF.Delete();
-
-	GraphicsExist = false;
-}
-
 void Chunk::BufferUData_Make()
 {
 	if (!BufferUData_Want) { return; }
@@ -801,7 +756,7 @@ void Chunk::BufferUData_Make()
 
 void Chunk::BufferUData_Update()
 {
-	if (!GraphicsExist) { return; }
+	//if (!GraphicsExist) { return; }
 	if (!BufferUData_Have) { return; }
 
 	BufferUData.ArrayLock.lock();

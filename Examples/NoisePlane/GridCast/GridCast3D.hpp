@@ -3,7 +3,7 @@
 
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/Vector/I3.hpp"
-# include "Voxel/VoxelEnums.hpp"
+# include "Voxel/AxisEnums.hpp"
 
 # include "ValueType/Ray3D.hpp"
 
