@@ -62,6 +62,14 @@ OptionsMenu::OptionsMenu(ContextNoisePlane & context)
 	ChunkRemove.ValueMax.X = 24;
 	ChunkRemove.ValueResolution.X = 1.0f;
 	y = ChunkRemove.Anchor.Y.GetMaxSize();
+	
+	FPS.ValueXChangedFunc.Assign(this, &OptionsMenu::FPSFunc);
+	FOV.ValueXChangedFunc.Assign(this, &OptionsMenu::FOVFunc);
+	Depth.ValueXChangedFunc.Assign(this, &OptionsMenu::DepthFunc);
+	DepthRange.ValueXChangedFunc.Assign(this, &OptionsMenu::DepthRangeFunc);
+	ChunkInsert.ValueXChangedFunc.Assign(this, &OptionsMenu::Chunk_InsertFunc);
+	ChunkRemove.ValueXChangedFunc.Assign(this, &OptionsMenu::Chunk_RemoveFunc);
+	Back.ClickFunc.Assign(this, &OptionsMenu::BackFunc);
 
 	ChildInsert(FPS);
 	ChildInsert(FOV);

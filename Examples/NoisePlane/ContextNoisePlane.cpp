@@ -34,7 +34,6 @@ InventoryShader::InventoryShader()
 static ValueAverager<float>		FrameTime_(64);
 static ValueAverager<float>		FrameTime_Input(64);
 static ValueAverager<float>		FrameTime_ViewUpdate(64);
-static ValueAverager<float>		FrameTime_ThreadUpdate(64);
 static ValueAverager<float>		FrameTime_ChunkBoxes(64);
 static ValueAverager<float>		FrameTime_ChunkHereBox(64);
 static ValueAverager<float>		FrameTime_Text(64);
@@ -153,7 +152,7 @@ void ViewUpdatePhysics(VectorF3 accel)
 	{
 		accel *= ViewSpeed;
 		// find this earlier, pass a bool
-		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { accel *= ViewFaster; }
+		if (window[Keys::LeftControl] == State::Down) { accel *= ViewFaster; }
 
 		{
 			float dot = VectorF3::dot(decel, accel);
@@ -188,7 +187,7 @@ void ViewUpdatePhysics(VectorF3 accel)
 void ContextNoisePlane::ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
 {
 	change.Position *= ViewSpeedNoClip;
-	if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { change.Position *= ViewFasterNoClip; }
+	if (window[Keys::LeftControl] == State::Down) { change.Position *= ViewFasterNoClip; }
 #ifndef DISABLE_VIEW_TANGIBLE
 	ViewEntity.Vel = change.Position;
 	ViewEntity.Pos += ViewEntity.Vel * frame_time.Delta;
@@ -314,7 +313,7 @@ void ContextNoisePlane::ViewRayDo()
 		}*/
 
 //		std::cout << "main:" << __LINE__ << '\n';
-		if (window.MouseManager[MouseButtons::MouseL].State == State::Press)
+		if (window.MouseManager[MouseButtons::MouseL] == State::Press)
 		{
 			Voxel voxel;
 			ChunkVoxelIndex idx(ViewHit.Index);
@@ -331,7 +330,7 @@ void ContextNoisePlane::ViewRayDo()
 //				std::cout << "main:" << __LINE__ << '\n';
 			}
 		}
-		if (window.MouseManager[MouseButtons::MouseR].State == State::Press)
+		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
 		{
 			if (ViewHitAxis0 == AxisRel::NextX) { ViewHit.Index.X += 1; }
 			if (ViewHitAxis0 == AxisRel::NextY) { ViewHit.Index.Y += 1; }
@@ -371,7 +370,7 @@ void ContextNoisePlane::ViewRayDo()
 		text.Color() = ColorF4(1, 1, 1);
 	}
 
-	/*if (window.KeyBoardManager[Keys::NumPadEnter].State == State::Press)
+	/*if (window[Keys::NumPadEnter] == State::Press)
 	{
 		// make a struct for VoxelIndex
 		// struct VoxelIndexAbs; VectorI3
@@ -432,15 +431,6 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 
 
 
-/* Draw Thread should focus on Drawing
-	avoid locking
-	move View stuff to another Thread ?
-	Draw Thread needs to Create/Delete Graphics
-	Input from different Thread ?
-*/
-
-static ValueAverager<float>		TimeUpdateThread(64);
-
 /*
 put the Finding Functino into the Thread as well
 condition_variable is basically just a Poke
@@ -466,22 +456,6 @@ void ContextNoisePlane::AuxThread0Func()
 			AuxThread0Time.NewValue(sw.ElapsedTime());
 		}
 	}
-}
-void ContextNoisePlane::DrawThreadUpdate()
-{
-	StopWatch sw;
-	sw.Start();
-
-	//ChunkManager.RemoveAround();
-	//ChunkManager.InsertAround();
-	//ChunkManager.UpdateChunksContainer();
-
-	//ChunkManager.GenerateAround(Perlin2, Perlin3);
-
-	//ChunkManager.GraphicsUpdateDataAround();
-
-	sw.Stop();
-	TimeUpdateThread.NewValue(sw.ElapsedTime());
 }
 
 
@@ -598,38 +572,22 @@ void ContextNoisePlane::MakeControls()
 	std::cerr << "MakeControls()\n";
 	// Pause
 	{
-		PauseMenu.Continue.ClickFunc.Assign(&PauseMenu, &PauseMenu::ContinueFunc);
-		PauseMenu.Options.ClickFunc.Assign(&PauseMenu, &PauseMenu::OptionsFunc);
-		PauseMenu.Debug.ClickFunc.Assign(&PauseMenu, &PauseMenu::DebugFunc);
-		PauseMenu.Exit.ClickFunc.Assign(&PauseMenu, &PauseMenu::ExitFunc);
-
 		PauseMenu.Show();
 		ControlManager.Window.ChildInsert(PauseMenu);
 	}
 	// Options
 	{
-		OptionsMenu.FPS.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::FPSFunc);
 		//OptionsMenu.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
 		OptionsMenu.FPS.SetValueX(1024);
-
-		OptionsMenu.FOV.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::FOVFunc);
 		OptionsMenu.FOV.SetValueX(view.FOV.ToDegrees());
 
-		OptionsMenu.Depth.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::DepthFunc);
 		//OptionsMenu.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
 		OptionsMenu.Depth.SetValueX(1000.0f); // get Depth. also depth works weirdly ?
-
-		OptionsMenu.DepthRange.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::DepthRangeFunc);
 		OptionsMenu.DepthRange.SetValueX(view.Depth.Range.Min);
 
 		// Remove range should never be less then Insert
 		// make RemoveRange = InsertRange * 2 ?
 		// make RemoveRange = InsertRange + n ?
-
-		OptionsMenu.ChunkInsert.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::Chunk_InsertFunc);
-		OptionsMenu.ChunkRemove.ValueXChangedFunc.Assign(&OptionsMenu, &OptionsMenu::Chunk_RemoveFunc);
-
-		OptionsMenu.Back.ClickFunc.Assign(&OptionsMenu, &OptionsMenu::BackFunc);
 
 		OptionsMenu.Hide();
 		ControlManager.Window.ChildInsert(OptionsMenu);
@@ -637,14 +595,7 @@ void ContextNoisePlane::MakeControls()
 	// Debug
 	{
 		DebugMenu.FPS.Check.Check(true);
-
 		DebugMenu.VoxelChunkMemory.Check.Check(true);
-
-		DebugMenu.Generation3DComparison.ValueXChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DComparison);
-		//DebugMenu.Generation3DComparison.SetValueX(Chunk::Generation3D_Comparison);
-
-		DebugMenu.Generation3DFactor.ValueXChangedFunc.Assign(this, &ContextNoisePlane::DebugMenu_Generation3DFactor);
-		//DebugMenu.Generation3DFactor.SetValueX(Chunk::Generation3D_Factor);
 
 		DebugMenu.Hide();
 		ControlManager.Window.ChildInsert(DebugMenu);
@@ -684,21 +635,6 @@ void ContextNoisePlane::MakeControls()
 #endif
 }
 
-void ContextNoisePlane::DebugMenu_Generation3DComparison(float val)
-{
-	(void)val;
-	//Chunk::Generation3D_Comparison = val;
-	//DebugMenu.Generation3DComparison.SetText("3D Comp:" + std::to_string(Chunk::Generation3D_Comparison));
-	//ChunkManager.Clear();
-}
-void ContextNoisePlane::DebugMenu_Generation3DFactor(float val)
-{
-	(void)val;
-	//Chunk::Generation3D_Factor = 1 << ((int)val);
-	//DebugMenu.Generation3DFactor.SetText("3D Fact:" + std::to_string(Chunk::Generation3D_Factor));
-	//ChunkManager.Clear();
-}
-
 
 
 // a lot of the managers are siminal with the bool flags and function names
@@ -706,6 +642,7 @@ void ContextNoisePlane::DebugMenu_Generation3DFactor(float val)
 void ContextNoisePlane::ChangeMedia()
 {
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
+
 	// PolyHedraManager
 	PolyHedraManager.InitExternal(MediaDirectory);
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
@@ -1216,7 +1153,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "}\n";
 		ShowNameTimeLine(ss, "RayTime         ", FrameTime_ViewUpdate_RayTime);
 		ss << "}\n";*/
-		ShowNameTimeLine(ss, "ThreadUpdate    ", FrameTime_ThreadUpdate);
 		ShowNameTimeLine(ss, "ChunkBoxes      ", FrameTime_ChunkBoxes);
 		ShowNameTimeLine(ss, "ChunkHereBox    ", FrameTime_ChunkHereBox);
 		ShowNameTimeLine(ss, "Text            ", FrameTime_Text);
@@ -1528,7 +1464,7 @@ void ContextNoisePlane::FrameInput()
 	//StopWatch sw;
 	//sw.Start();
 
-	if (window.KeyBoardManager[Keys::Escape].State == State::Press)
+	if (window[Keys::Escape] == State::Press)
 	{
 		OptionsMenu.Hide();
 #ifndef DISABLE_INVENTORY
@@ -1546,7 +1482,7 @@ void ContextNoisePlane::FrameInput()
 			PauseMenu.Show();
 		}
 	}
-	if (window.KeyBoardManager[Keys::E].State == State::Press)
+	if (window[Keys::E] == State::Press)
 	{
 		if (!PauseMenu.IsVisible() && !OptionsMenu.IsVisible())
 		{
@@ -1568,12 +1504,12 @@ void ContextNoisePlane::FrameInput()
 	}
 
 #ifndef DISABLE_VIEW_RAY
-	if (window.KeyBoardManager[Keys::D1].State == State::Press) { Toggle(ViewRaySync); }
-	//if (window.KeyBoardManager[Keys::D2].State == State::Press) { Toggle(ChunkManager.ViewRayPolyHedra, ViewRayPolyHedra); }
-	//if (window.KeyBoardManager[Keys::D3].State == State::Press) { Toggle(ChunkManager.VoxelBoxPolyHedra, VoxelCube); }
+	if (window[Keys::D1] == State::Press) { Toggle(ViewRaySync); }
+	//if (window[Keys::D2] == State::Press) { Toggle(ChunkManager.ViewRayPolyHedra, ViewRayPolyHedra); }
+	//if (window[Keys::D3] == State::Press) { Toggle(ChunkManager.VoxelBoxPolyHedra, VoxelCube); }
 #endif
 
-	if (window.KeyBoardManager[Keys::F7].State == State::Press)
+	if (window[Keys::F7] == State::Press)
 	{
 		if (DebugMenu.IsVisible())
 		{
@@ -1586,9 +1522,9 @@ void ContextNoisePlane::FrameInput()
 	}
 
 #ifndef DISABLE_VIEW_TANGIBLE
-	if (window.KeyBoardManager[Keys::F2].State == State::Press) { Toggle(ViewTangible); }
+	if (window[Keys::F2] == State::Press) { Toggle(ViewTangible); }
 #endif
-	if (window.KeyBoardManager[Keys::F3].State == State::Press)
+	if (window[Keys::F3] == State::Press)
 	{
 #ifndef DISABLE_VIEW_TANGIBLE
 		if (ViewDistance == 0.0f)
@@ -1597,12 +1533,12 @@ void ContextNoisePlane::FrameInput()
 		{ ViewDistance = 0.0f; }
 #endif
 	}
-	/*if (window.KeyBoardManager[Keys::F4].State == State::Press)
+	/*if (window[Keys::F4] == State::Press)
 	{
 		//Toggle(PlaneManager.ShouldGenerate);
 		Toggle(ChunkManager.DontGenerate);
 	}*/
-	if (window.KeyBoardManager[Keys::F5].State == State::Press)
+	if (window[Keys::F5] == State::Press)
 	{
 		//PlaneManager.Clear();
 		ChunkManager.Clear();
@@ -1621,7 +1557,7 @@ void ContextNoisePlane::FrameInput()
 		if (!window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeLock(); }
 	}
 
-	/*if (window.KeyBoardManager[Keys::P].State == State::Press)
+	/*if (window[Keys::P] == State::Press)
 	{
 		ChunkVoxelIndex idx(view.Trans.Position.roundF());
 		Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
@@ -1643,12 +1579,14 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
 	FPSAverageTime.NewValue(frame_time.ActualFramesPerSecond);
 
+	// this is general Update, not Draw specific
 	//LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
 	LightSpot.Pos = view.Trans.Position;
 	LightSpot.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
 
-	if (window.KeyBoardManager[Keys::Delete].State == State::Press) { CenterIndexLoop_Clear(); }
-	if (window.KeyBoardManager[Keys::Insert].State == State::Press) { CenterIndexLoop_Loop(); }
+	// this is general Update, not Draw specific
+	if (window[Keys::Delete] == State::Press) { CenterIndexLoop_Clear(); }
+	if (window[Keys::Insert] == State::Press) { CenterIndexLoop_Loop(); }
 	CenterIndexLoop_Show(VoxelCube);
 
 	StopWatch sw_total;
@@ -1656,10 +1594,12 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 	StopWatch sw;
 
+	// this is general Update, not Draw specific
 	sw.Clear(); sw.Start();
 	FrameInput();
 	sw.Stop(); FrameTime_Input.NewValue(sw.ElapsedTime());
 
+	// this is general Update, not Draw specific, except View Matrix Uniform
 	sw.Clear(); sw.Start();
 	if (!OptionsMenu.IsVisible())
 	{
@@ -1677,10 +1617,6 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	}
 	sw.Stop(); FrameTime_ViewUpdate.NewValue(sw.ElapsedTime());
 
-	sw.Clear(); sw.Start();
-	DrawThreadUpdate();
-	sw.Stop(); FrameTime_ThreadUpdate.NewValue(sw.ElapsedTime());
-
 	/*{
 		float pixel_rad = 1;
 		UI::Control::Object obj;
@@ -1690,6 +1626,7 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 		obj.Color() = ColorF4(1, 0, 1);
 	}*/
 
+	// rechnically not Draw related, but PolyHedraManager is currently not intended for different Threads
 	sw.Clear(); sw.Start();
 	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
 	{
@@ -1704,7 +1641,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 		}
 	}
 	sw.Stop(); FrameTime_ChunkBoxes.NewValue(sw.ElapsedTime());
-
+	
+	// rechnically not Draw related, but PolyHedraManager is currently not intended for different Threads
 	sw.Clear(); sw.Start();
 	if (DebugMenu.ChunkHere.Check.IsChecked())
 	{
@@ -1715,6 +1653,7 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	}
 	sw.Stop(); FrameTime_ChunkHereBox.NewValue(sw.ElapsedTime());
 
+	// rechnically not Draw related, but TextManager is currently not intended for different Threads
 	sw.Clear(); sw.Start();
 	FrameText(frame_time);
 	sw.Stop(); FrameTime_Text.NewValue(sw.ElapsedTime());

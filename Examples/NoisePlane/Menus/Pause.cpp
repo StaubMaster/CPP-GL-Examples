@@ -36,6 +36,11 @@ PauseMenu::PauseMenu(ContextNoisePlane & context)
 	Debug.SetText("Debug");
 	y = Debug.Anchor.Y.GetMaxSize();
 
+	Continue.ClickFunc.Assign(this, &PauseMenu::ContinueFunc);
+	Options.ClickFunc.Assign(this, &PauseMenu::OptionsFunc);
+	Debug.ClickFunc.Assign(this, &PauseMenu::DebugFunc);
+	Exit.ClickFunc.Assign(this, &PauseMenu::ExitFunc);
+
 	ChildInsert(Continue);
 	ChildInsert(Options);
 	ChildInsert(Debug);

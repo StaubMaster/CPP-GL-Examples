@@ -98,7 +98,84 @@ struct InventoryShader : public ::PolyHedraFull::Shader
 
 
 
+/* organize
+UI stuff
+View stuff
+	move / ray / collide
+Voxel stuff
+*/
 
+/* PolyHedra Manager
+store ObjectDatas in InstanceManagers ?
+use DefaultVisibility properly
+
+have a way to have multiple PolyHedra Managers
+seperate based on Instance Data
+
+template would mean putting everything into Header
+generalize so lots of stuff can be put into Code files
+*/
+
+/* User Interface
+the Menus have referances to Context to change stuff
+Menus could easitly be moved somewhere else
+they are already self contained
+
+make UI Manager "constant"
+so like Window, it stays during Context change
+Clear on context change ?
+should be cleared by Contexts
+
+Loading stuff ?
+this would require WindowFrameLoop to allways be active
+this also means that Init and Free happen independently of WindowFrameLoop
+
+so this would require change Window internals
+probably just make FrameLoop to be independant of Window
+
+Frequency/Intervals should be done with sleep
+checking Time is busy waiting
+
+just make a Ticker
+that calls a function
+this probably exists already
+
+keep FrameLoop in window
+remove Init and Free
+
+Resize ?
+UI wants Callback
+but others also want Callback
+
+inheriting and then call the Base first
+Callback is done using Functino Pointer
+make a Function Chain
+that holds a linked list of Function Pointers
+and calls all of them with Parameters
+will also need to remove from List
+*/
+
+/* how to keep Loading Display seperate ?
+Init/Free and such need to not be done on the DrawThread
+this should be all fine
+apart from Creating Graphics
+use async/promise/... for this stuff ?
+
+give Window seperate Loops for Frame and Update
+put Update onto different Thread
+make Update Thread outside for now
+*/
+
+/* Input from different Threads
+the KeyStates are stored in an Array
+this is safe to access from any thread
+except when it changes
+
+it is only changed from one place
+and changing does not change Memory Location
+this does not mean it is safe, but it should not cause any segfaults
+just put a mutex in it that locks in operator[] and when changing
+*/
 
 struct ContextNoisePlane : public ContextBase
 {
@@ -220,8 +297,6 @@ bool					AuxThread0Idle = false;
 ValueAverager<float>	AuxThread0Time;
 void					AuxThread0Func();
 
-void DrawThreadUpdate();
-
 
 
 PolyHedra *		VoxelCube;
@@ -241,9 +316,6 @@ void Make();
 */
 
 void MakeControls();
-
-void DebugMenu_Generation3DComparison(float val);
-void DebugMenu_Generation3DFactor(float val);
 
 
 
