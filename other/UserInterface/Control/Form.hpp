@@ -24,21 +24,30 @@ namespace Control
 class Form : public Base
 {
 	public:
-	bool	IsMovable;
-
-	public:
-	bool	IsResizableX;
-	bool	IsResizableY;
-	BoxF2	SizeLimit;
-
-	public:
 	~Form();
 	Form();
+
+
+
+	public:
+	bool	IsMovable;
 
 	private:
 	bool	IsMoving;
 	BoxF2	MovingRel;
-	void	UpdateMoving(DragArgs args);
+	void	UserMoving(DragArgs args);
+
+
+	public:
+	bool	IsResizableX;
+	bool	IsResizableY;
+	//BoxF2	SizeLimit;
+
+	private:
+	bool			IsResizing;
+	unsigned char	Boarder;
+	BoxF2			BoarderRel;
+	void			UserResize(DragArgs args);
 
 	public:
 	void	RelayCursorDrag(DragArgs args) override;
