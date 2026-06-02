@@ -820,16 +820,20 @@ void ContextNoisePlane::Init()
 	//ChunkManager.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_FOV.ChangeData(view.FOV);
-
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	AuxThread0Idle = false;
 	ChunkManager.AuxThread1.DoIdle = false;
 	ChunkManager.AuxThread2.DoIdle = false;
 	ChunkManager.AuxThread3.DoIdle = false;
-
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	ChunkManager.AuxThread1.Poke();
 	ChunkManager.AuxThread2.Poke();
 	ChunkManager.AuxThread3.Poke();
+	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 }
 void ContextNoisePlane::Free()
 {

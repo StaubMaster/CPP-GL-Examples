@@ -205,6 +205,9 @@ void UI::Control::Manager::RelayClick(ClickArgs args)
 }
 void UI::Control::Manager::RelayScroll(ScrollArgs args)
 {
+	// scroll hovering
+	// if hovering does not have a scroll
+	// scroll selected
 	if (Selected != nullptr)
 	{
 		Selected -> RelayScroll(args);

@@ -8,10 +8,6 @@
 
 # include "Miscellaneous/Function/Static.hpp"
 
-// should Context to use and such be here ?
-// as statics
-// should window and MediaDirectory be Static ?
-
 struct ContextBase
 {
 	static ::Window *							WindowPointer;

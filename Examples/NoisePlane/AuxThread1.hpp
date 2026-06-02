@@ -13,6 +13,7 @@ struct ChunkManager;
 struct Chunk;
 struct AccessLockedChunk;
 
+// BufferDataMakeThread
 struct AuxThread1 : public AuxThreadBase
 {
 	ChunkManager &	Manager;
