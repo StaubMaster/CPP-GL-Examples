@@ -135,7 +135,7 @@ void Anchor1D::AnchorBoth(float min, float max)
 
 BoxF1 Anchor1D::Calculate(BoxF1 Parent)
 {
-	float ParentSize = Parent.Max - Parent.Min;
+	float ParentSize = Parent.Size();
 	if (Anchor == AnchorType::Both)
 	{
 		Size = ParentSize - (MinDist + MaxDist);
@@ -157,4 +157,12 @@ BoxF1 Anchor1D::Calculate(BoxF1 Parent)
 		MaxDist = ParentSize - (MinDist + Size);
 	}
 	return BoxF1(Parent.Min + MinDist, Parent.Max - MaxDist);
+}
+void Anchor1D::Calculate(BoxF1 Parent, BoxF1 box)
+{
+	MinDist = +(box.Min - Parent.Min);
+	MaxDist = -(box.Max - Parent.Max);
+	float ParentSize = Parent.Size();
+	Size = ParentSize - (MinDist + MaxDist);
+	NormalCenter = (MinDist + (Size / 2)) / ParentSize;
 }

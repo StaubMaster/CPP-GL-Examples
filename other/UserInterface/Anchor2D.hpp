@@ -12,7 +12,8 @@ struct Anchor2D
 
 	Anchor2D(Anchor1D x, Anchor1D y);
 
-	BoxF2 Calculate(BoxF2 Parent);
+	BoxF2	Calculate(BoxF2 Parent);
+	void	Calculate(BoxF2 Parent, BoxF2 box);
 };
 
 #endif

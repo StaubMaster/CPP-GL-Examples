@@ -173,6 +173,9 @@ class Base
 	public:
 	void	Update();
 
+	protected:
+	void	ChangeAnchorBox(BoxF2 box);
+
 	private:
 	void	UpdateBox();
 	void	InsertObject();

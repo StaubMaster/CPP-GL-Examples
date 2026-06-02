@@ -26,28 +26,29 @@ UI::Control::Form::Form()
 #include "ValueType/_Show.hpp"
 void UI::Control::Form::UpdateMoving(DragArgs args)
 {
+	
 	if (args.Action == Action::Press)
 	{
-		std::cout << "Moving Press\n";
-		std::cout << "Pos " << args.Position.Buffer.Corner << '\n';
-		MovingRel.Min = args.Position.Buffer.Corner - DisplayBox.Min;
-		MovingRel.Max = args.Position.Buffer.Corner - DisplayBox.Max;
-		std::cout << "Rel " << MovingRel << '\n';
+		if (IsMovable)
+		{
+			MovingRel.Min = args.Position.Buffer.Corner - DisplayBox.Min;
+			MovingRel.Max = args.Position.Buffer.Corner - DisplayBox.Max;
+			IsMoving = true;
+		}
 	}
 	else if (args.Action == Action::Repeat)
 	{
-		std::cout << "Moving Repeat\n";
-		std::cout << "Pos " << args.Position.Buffer.Corner << '\n';
-		std::cout << "Rel " << MovingRel << '\n';
-		DisplayBox.Min = MovingRel.Min + args.Position.Buffer.Corner;
-		DisplayBox.Max = MovingRel.Max + args.Position.Buffer.Corner;
-		ContainerBox.Min = DisplayBox.Min + AnchorBoarder.Min + AnchorPadding.Min;
-		ContainerBox.Max = DisplayBox.Max - AnchorBoarder.Max - AnchorPadding.Max;
-		ObjectBoxNeedAssign = true;
+		if (IsMoving)
+		{
+			ChangeAnchorBox(BoxF2(
+				args.Position.Buffer.Corner - MovingRel.Min,
+				args.Position.Buffer.Corner - MovingRel.Max
+			));
+		}
 	}
 	else if (args.Action == Action::Release)
 	{
-		std::cout << "Moving Release\n";
+		IsMoving = false;
 	}
 }
 

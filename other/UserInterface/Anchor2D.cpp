@@ -18,3 +18,8 @@ BoxF2 Anchor2D::Calculate(BoxF2 Parent)
 		VectorF2(x.Max, y.Max)
 	);
 }
+void Anchor2D::Calculate(BoxF2 Parent, BoxF2 box)
+{
+	X.Calculate(BoxF1(Parent.Min.X, Parent.Max.X), BoxF1(box.Min.X, box.Max.X));
+	Y.Calculate(BoxF1(Parent.Min.Y, Parent.Max.Y), BoxF1(box.Min.Y, box.Max.Y));
+}

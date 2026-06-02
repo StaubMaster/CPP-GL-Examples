@@ -141,7 +141,8 @@ struct Anchor1D
 	void	AnchorBoth(float min, float max);
 	// Anchor Center
 
-	BoxF1 Calculate(BoxF1 Parent);
+	BoxF1	Calculate(BoxF1 Parent);
+	void	Calculate(BoxF1 Parent, BoxF1 box);
 };
 
 #endif

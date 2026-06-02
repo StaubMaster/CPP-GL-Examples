@@ -230,6 +230,18 @@ void UI::Control::Base::Update()
 	}
 }
 
+void UI::Control::Base::ChangeAnchorBox(BoxF2 box)
+{
+	if (Parent != nullptr)
+	{
+		// limit based on Parent ContainerBox
+		// use Margin of Parent and Padding of this
+
+		Anchor.Calculate(Parent -> ContainerBox, box);
+		BoxWantUpdate();
+	}
+}
+
 void UI::Control::Base::UpdateBox()
 {
 	if (Parent != nullptr)
