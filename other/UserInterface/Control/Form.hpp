@@ -48,6 +48,7 @@ class Form : public Base
 		ResizeMaxMin,
 		ResizeMaxMax,
 	};
+	EChangingBoxType	FindChangingArea(VectorF2 mouse) const;
 	EChangingBoxType	ChangingBoxType;
 	BoxF2				ChangingBoxRel;
 	void				UserChangingBox(DragArgs args);
