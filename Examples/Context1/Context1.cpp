@@ -21,7 +21,7 @@ Context1::Context1()
 void Context1::Make()
 {
 	window.KeyBoardManager.CallBack_TextEvent.Assign(this, &Context1::KeyBoardText);
-	ControlManager.Window.ChildInsert(Menu);
+	ControlManager.WindowControl.ChildInsert(Menu);
 }
 
 void Context1::Init()
@@ -34,17 +34,15 @@ void Context1::Init()
 		ControlManager.Shader.Change(code);
 	}
 	{
-		
-
-		ControlManager.LayoutMain.Pos.Change(0);
-		ControlManager.LayoutInst.Min.Change(1);
-		ControlManager.LayoutInst.Max.Change(2);
-		ControlManager.LayoutInst.Layer.Change(3);
-		ControlManager.LayoutInst.Col.Change(4);
+		ControlManager.BufferLayoutMain.Pos.Change(0);
+		ControlManager.BufferLayoutInst.Min.Change(1);
+		ControlManager.BufferLayoutInst.Max.Change(2);
+		ControlManager.BufferLayoutInst.Layer.Change(3);
+		ControlManager.BufferLayoutInst.Col.Change(4);
 	}
 	{
-		ControlManager.Window.ChangeManager(&ControlManager);
-		ControlManager.Window.ChangeManager(&TextManager);
+		ControlManager.WindowControl.ChangeManager(&ControlManager);
+		ControlManager.WindowControl.ChangeManager(&TextManager);
 	}
 	TextManager.InitMedia(MediaDirectory);
 	TextManager.TextFont = UI::Text::Font::Parse(

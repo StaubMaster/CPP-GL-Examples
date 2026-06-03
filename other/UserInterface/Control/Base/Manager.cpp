@@ -28,6 +28,265 @@ void UI::Control::Manager::MakeCurrent() { UI::Control::Manager::CurrentPointer 
 
 
 
+#include "Image.hpp"
+__attribute__((unused)) static Image CursorImgCross(ColorU4 col_fill, ColorU4 col_edge)
+{
+	Image img(31, 31);
+
+	unsigned char middle = 15;
+	unsigned char neck = 10;
+	unsigned char thick = 2;
+
+	LoopU2 loop = img.Loop();
+	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		VectorI2 rel = VectorI2(u) - ((int)middle);
+		VectorI2 abs = rel;
+		if (abs.X < 0) { abs.X = -abs.X; }
+		if (abs.Y < 0) { abs.Y = -abs.Y; }
+
+		if (abs.X > neck || abs.Y > neck)
+		{
+			if (abs.X + abs.Y == middle) { img.Pixel(u) = col_edge; }
+			if (abs.X + abs.Y < middle) { img.Pixel(u) = col_fill; }
+		}
+		if (abs.X == neck || abs.Y == neck)
+		{
+			if (abs.X + abs.Y <= middle) { img.Pixel(u) = col_edge; }
+			//if (abs.X < thick || abs.Y < thick) { img.Pixel(u) = col_fill; }
+		}
+		if (abs.X < neck && abs.Y < neck)
+		{
+			if (abs.X == thick || abs.Y == thick) { img.Pixel(u) = col_edge; }
+			if (abs.X < thick || abs.Y < thick) { img.Pixel(u) = col_fill; }
+		}
+	}
+
+	return img;
+}
+__attribute__((unused)) static Image CursorImgResizeH(ColorU4 col_fill, ColorU4 col_edge)
+{
+	Image img(31, 31);
+
+	unsigned char middle = 15;
+	unsigned char neck = 8;
+	unsigned char thick = 2;
+
+	LoopU2 loop = img.Loop();
+	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		VectorI2 rel = VectorI2(u) - ((int)middle);
+		VectorI2 abs = rel;
+		if (abs.X < 0) { abs.X = -abs.X; }
+		if (abs.Y < 0) { abs.Y = -abs.Y; }
+
+		if (abs.X > neck)
+		{
+			if (abs.X + abs.Y == middle) { img.Pixel(u) = col_edge; }
+			if (abs.X + abs.Y < middle) { img.Pixel(u) = col_fill; }
+		}
+		if (abs.X == neck)
+		{
+			if (abs.X + abs.Y <= middle) { img.Pixel(u) = col_edge; }
+			//if (abs.Y < thick) { img.Pixel(u) = col_fill; }
+		}
+		if (abs.X < neck)
+		{
+			if (abs.Y == thick) { img.Pixel(u) = col_edge; }
+			if (abs.Y < thick) { img.Pixel(u) = col_fill; }
+		}
+	}
+
+	return img;
+}
+__attribute__((unused)) static Image CursorImgResizeV(ColorU4 col_fill, ColorU4 col_edge)
+{
+	Image img(31, 31);
+
+	unsigned char middle = 15;
+	unsigned char neck = 8;
+	unsigned char thick = 2;
+
+	LoopU2 loop = img.Loop();
+	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		VectorI2 rel = VectorI2(u) - ((int)middle);
+		VectorI2 abs = rel;
+		if (abs.X < 0) { abs.X = -abs.X; }
+		if (abs.Y < 0) { abs.Y = -abs.Y; }
+
+		if (abs.Y > neck)
+		{
+			if (abs.X + abs.Y == middle) { img.Pixel(u) = col_edge; }
+			if (abs.X + abs.Y < middle) { img.Pixel(u) = col_fill; }
+		}
+		if (abs.Y == neck)
+		{
+			if (abs.X + abs.Y <= middle) { img.Pixel(u) = col_edge; }
+			//if (abs.Y < thick) { img.Pixel(u) = col_fill; }
+		}
+		if (abs.Y < neck)
+		{
+			if (abs.X == thick) { img.Pixel(u) = col_edge; }
+			if (abs.X < thick) { img.Pixel(u) = col_fill; }
+		}
+	}
+
+	return img;
+}
+__attribute__((unused)) static Image CursorImgResizeD(ColorU4 col_fill, ColorU4 col_edge)
+{
+	Image img(31, 31);
+
+	unsigned char middle = 15;
+	unsigned char neck = 20;
+	unsigned char thick = 2;
+
+	(void)col_fill;
+	(void)col_edge;
+	(void)neck;
+	(void)thick;
+
+	LoopU2 loop = img.Loop();
+	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		VectorI2 rel = VectorI2(u) - ((int)middle);
+		VectorI2 abs = rel;
+		if (abs.X < 0) { abs.X = -abs.X; }
+		if (abs.Y < 0) { abs.Y = -abs.Y; }
+
+		if (abs.X + abs.Y > neck)
+		{
+			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_fill; }
+			if (abs.X == middle || abs.Y == middle) { img.Pixel(u) = col_edge; }
+		}
+		if (abs.X + abs.Y == neck)
+		{
+			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_edge; }
+		}
+		if (abs.X + abs.Y < neck)
+		{
+			int diff = 0;
+			if (abs.X > abs.Y) { diff = abs.X - abs.Y; }
+			if (abs.Y > abs.X) { diff = abs.Y - abs.X; }
+			if (diff == thick) { img.Pixel(u) = col_edge; }
+			if (diff < thick) { img.Pixel(u) = col_fill; }
+		}
+	}
+
+	return img;
+}
+__attribute__((unused)) static Image CursorImgResizeD0(ColorU4 col_fill, ColorU4 col_edge)
+{
+	Image img(31, 31);
+
+	unsigned char middle = 15;
+	unsigned char neck = 20;
+	unsigned char thick = 2;
+
+	LoopU2 loop = img.Loop();
+	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		VectorI2 rel = VectorI2(u) - ((int)middle);
+		VectorI2 abs = rel;
+		abs.Y = -abs.Y;
+		if (abs.X < 0) { abs.X = -abs.X; abs.Y = -abs.Y; }
+
+		if (abs.X + abs.Y > neck)
+		{
+			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_fill; }
+			if (abs.X == middle || abs.Y == middle) { img.Pixel(u) = col_edge; }
+		}
+		if (abs.X + abs.Y == neck)
+		{
+			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_edge; }
+		}
+		if (abs.X + abs.Y < neck)
+		{
+			int diff = 0;
+			if (abs.X > abs.Y) { diff = abs.X - abs.Y; }
+			if (abs.Y > abs.X) { diff = abs.Y - abs.X; }
+			if (diff == thick) { img.Pixel(u) = col_edge; }
+			if (diff < thick) { img.Pixel(u) = col_fill; }
+		}
+	}
+
+	return img;
+}
+__attribute__((unused)) static Image CursorImgResizeD1(ColorU4 col_fill, ColorU4 col_edge)
+{
+	Image img(31, 31);
+
+	unsigned char middle = 15;
+	unsigned char neck = 20;
+	unsigned char thick = 2;
+
+	LoopU2 loop = img.Loop();
+	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
+	{
+		VectorI2 rel = VectorI2(u) - ((int)middle);
+		VectorI2 abs = rel;
+		if (abs.X < 0 || abs.Y < 0) { abs.X = -abs.X; abs.Y = -abs.Y; }
+
+		if (abs.X + abs.Y > neck)
+		{
+			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_fill; }
+			if (abs.X == middle || abs.Y == middle) { img.Pixel(u) = col_edge; }
+		}
+		if (abs.X + abs.Y == neck)
+		{
+			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_edge; }
+		}
+		if (abs.X + abs.Y < neck)
+		{
+			int diff = 0;
+			if (abs.X > abs.Y) { diff = abs.X - abs.Y; }
+			if (abs.Y > abs.X) { diff = abs.Y - abs.X; }
+			if (diff == thick) { img.Pixel(u) = col_edge; }
+			if (diff < thick) { img.Pixel(u) = col_fill; }
+		}
+	}
+
+	return img;
+}
+GLFWcursor * ImageToCursor(Image img)
+{
+	GLFWimage glfw_img;
+	glfw_img.width = img.W();
+	glfw_img.height = img.H();
+	glfw_img.pixels = (unsigned char *)img.Data();
+	return glfwCreateCursor(&glfw_img, 15, 15);
+}
+void UI::Control::Manager::CursorsCreate()
+{
+	ColorU4 col0(0x00, 0x00, 0x00, 0xFF);
+	ColorU4 col1(0xFF, 0xFF, 0xFF, 0xFF);
+
+	glfw_cursorResizeH = ImageToCursor(CursorImgResizeH(col1, col0));
+	glfw_cursorResizeV = ImageToCursor(CursorImgResizeV(col1, col0));
+	glfw_cursorResizeD0 = ImageToCursor(CursorImgResizeD0(col1, col0));
+	glfw_cursorResizeD1 = ImageToCursor(CursorImgResizeD1(col1, col0));
+	glfw_cursorCross = ImageToCursor(CursorImgCross(col1, col0));
+}
+void UI::Control::Manager::CursorsDelete()
+{
+	glfwDestroyCursor(glfw_cursorResizeH);
+	glfwDestroyCursor(glfw_cursorResizeV);
+	glfwDestroyCursor(glfw_cursorResizeD0);
+	glfwDestroyCursor(glfw_cursorResizeD1);
+	glfwDestroyCursor(glfw_cursorCross);
+}
+void UI::Control::Manager::CursorsUseDefault() { glfwSetCursor(glfw_window, nullptr); }
+void UI::Control::Manager::CursorsUseResizeH() { glfwSetCursor(glfw_window, glfw_cursorResizeH); }
+void UI::Control::Manager::CursorsUseResizeV() { glfwSetCursor(glfw_window, glfw_cursorResizeV); }
+void UI::Control::Manager::CursorsUseResizeD0() { glfwSetCursor(glfw_window, glfw_cursorResizeD0); }
+void UI::Control::Manager::CursorsUseResizeD1() { glfwSetCursor(glfw_window, glfw_cursorResizeD1); }
+void UI::Control::Manager::CursorsUseCross() { glfwSetCursor(glfw_window, glfw_cursorCross); }
+
+
+
+
+
 UI::Control::Manager::~Manager()
 {
 	std::cout << "  ----  " << "UI::Control::Manager::~Manager()" << "\n";
@@ -41,9 +300,15 @@ UI::Control::Manager::Manager()
 	, ShaderLayout()
 	, Buffer()
 	, WindowSize()
-	, Window()
+	, WindowControl()
 	, Hovering(nullptr)
 	, Selected(nullptr)
+	, glfw_window(nullptr)
+	, glfw_cursorResizeH(nullptr)
+	, glfw_cursorResizeV(nullptr)
+	, glfw_cursorResizeD0(nullptr)
+	, glfw_cursorResizeD1(nullptr)
+	, glfw_cursorCross(nullptr)
 	, GraphicsExist(false)
 	, GraphicsNeedInit(false)
 	, GraphicsNeedMain(false)
@@ -53,7 +318,32 @@ UI::Control::Manager::Manager()
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
-	Window.Show();
+	WindowControl.Show();
+}
+UI::Control::Manager::Manager(GLFWwindow * glfw_window)
+	: Shader()
+	, ShaderLayout()
+	, Buffer()
+	, WindowSize()
+	, WindowControl()
+	, Hovering(nullptr)
+	, Selected(nullptr)
+	, glfw_window(glfw_window)
+	, glfw_cursorResizeH(nullptr)
+	, glfw_cursorResizeV(nullptr)
+	, glfw_cursorResizeD0(nullptr)
+	, glfw_cursorResizeD1(nullptr)
+	, glfw_cursorCross(nullptr)
+	, GraphicsExist(false)
+	, GraphicsNeedInit(false)
+	, GraphicsNeedMain(false)
+{
+	std::cout << "  ++++  " << "UI::Control::Manager::Manager()" << "\n";
+
+	Shader.UniformLayout = &ShaderLayout;
+	ShaderLayout.Shader = &Shader;
+
+	WindowControl.Show();
 }
 
 
@@ -80,6 +370,7 @@ void UI::Control::Manager::GraphicsCreate()
 
 	Buffer.Create();
 	Shader.Create();
+	CursorsCreate();
 
 	GraphicsExist = true;
 
@@ -92,6 +383,7 @@ void UI::Control::Manager::GraphicsDelete()
 
 	Buffer.Delete();
 	Shader.Delete();
+	CursorsDelete();
 
 	GraphicsExist = false;
 }
@@ -159,7 +451,7 @@ void UI::Control::Manager::PlaceInstance(const ObjectData & obj)
 
 void UI::Control::Manager::Draw()
 {
-	Window.Update();
+	WindowControl.Update();
 
 	GraphicsInit();
 	GraphicsMain();
@@ -175,20 +467,31 @@ void UI::Control::Manager::Draw()
 void UI::Control::Manager::UpdateSize(const DisplaySize & window_size)
 {
 	WindowSize = window_size;
-	Window.UpdateWindowSize(WindowSize.Buffer.Full);
+	WindowControl.UpdateWindowSize(WindowSize.Buffer.Full);
 }
 void UI::Control::Manager::UpdateMouse(VectorF2 mouse)
 {
-	UI::Control::Base * control = Window.CheckHover(mouse);
+	CursorPosition = mouse;
+	UI::Control::Base * control = WindowControl.CheckHover(mouse);
 
 	if (control != Hovering)
 	{
+		// this is done in this order so that when the Hover Leave function is called
+		// the Manager Hovering is no longer that control
+		// Control should not access Manager Hovering
+		// change/store hovering state internally ?
+		// store hovering this and hovering child ?
+		// and hovering parent ?
+		// or just dont update color until later ?
 		UI::Control::Base * temp = Hovering;
 		Hovering = control;
-		if (temp != nullptr) { temp -> HoverLeave(); }
-		if (Hovering != nullptr) { Hovering -> HoverEnter(); }
+		if (temp != nullptr) { temp -> ChangeHover(UI::Control::Base::HoverArgs::Leave); }
+		if (Hovering != nullptr) { Hovering -> ChangeHover(UI::Control::Base::HoverArgs::Enter); }
 	}
-	if (Hovering != nullptr) { /* Hover Over */ }
+	if (Hovering != nullptr)
+	{
+		Hovering -> ChangeHover(UI::Control::Base::HoverArgs::Move);
+	}
 }
 
 

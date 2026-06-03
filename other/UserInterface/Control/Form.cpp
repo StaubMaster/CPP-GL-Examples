@@ -7,8 +7,7 @@ UI::Control::Form::~Form()
 UI::Control::Form::Form()
 	: Base()
 	, IsMovable(true)
-	, IsResizableX(true)
-	, IsResizableY(true)
+	, IsResizable(true)
 	, ChangingBoxType(EChangingBoxType::None)
 {
 	// give this stuff to Base ?
@@ -30,27 +29,39 @@ void UI::Control::Form::UserChangingBox(DragArgs args)
 		ChangingBoxRel.Min = args.Position.Buffer.Corner - DisplayBox.Min;
 		ChangingBoxRel.Max = args.Position.Buffer.Corner - DisplayBox.Max;
 
-		BoxF2 BoarderMinX_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Min.X + AnchorBoarder.Min.X, DisplayBox.Max.Y));
-		BoxF2 BoarderMaxX_Box(VectorF2(DisplayBox.Max.X - AnchorBoarder.Max.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
-		BoxF2 BoarderMinY_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Min.Y + AnchorBoarder.Min.Y));
-		BoxF2 BoarderMaxY_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Max.Y - AnchorBoarder.Max.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
+		/* Resize area
+			in vscode, the cursor needs to be a bit inside of the window to resize
+			in firefox, the cursor needs to be a bit outside of the window to resize
+		*/
 
-		bool BoarderMinX_Hovering = BoarderMinX_Box.IntersectInclusive(args.Position.Buffer.Corner).All(true);
-		bool BoarderMinY_Hovering = BoarderMinY_Box.IntersectInclusive(args.Position.Buffer.Corner).All(true);
-		bool BoarderMaxX_Hovering = BoarderMaxX_Box.IntersectInclusive(args.Position.Buffer.Corner).All(true);
-		bool BoarderMaxY_Hovering = BoarderMaxY_Box.IntersectInclusive(args.Position.Buffer.Corner).All(true);
+		BoxF2 MinX_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Min.X + AnchorBoarder.Min.X, DisplayBox.Max.Y));
+		BoxF2 MaxX_Box(VectorF2(DisplayBox.Max.X - AnchorBoarder.Max.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
+		BoxF2 MinY_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Min.Y + AnchorBoarder.Min.Y));
+		BoxF2 MaxY_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Max.Y - AnchorBoarder.Max.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
 
-		if (IsResizableX && (BoarderMinX_Hovering || BoarderMaxX_Hovering))
+		bool MinX_Hovering = MinX_Box.IntersectInclusive(args.Position.Buffer.Corner).All(true);
+		bool MinY_Hovering = MinY_Box.IntersectInclusive(args.Position.Buffer.Corner).All(true);
+		bool MaxX_Hovering = MaxX_Box.IntersectInclusive(args.Position.Buffer.Corner).All(true);
+		bool MaxY_Hovering = MaxY_Box.IntersectInclusive(args.Position.Buffer.Corner).All(true);
+
+		if (MinX_Hovering || MaxX_Hovering || MinY_Hovering || MaxY_Hovering)
 		{
-			if (BoarderMinX_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMinX; }
-			if (BoarderMaxX_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMaxX; }
+			if (IsResizable)
+			{
+				if (MinX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { ChangingBoxType = EChangingBoxType::ResizeMinX; }
+				if (MaxX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { ChangingBoxType = EChangingBoxType::ResizeMaxX; }
+				if (MinY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { ChangingBoxType = EChangingBoxType::ResizeMinY; }
+				if (MaxY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { ChangingBoxType = EChangingBoxType::ResizeMaxY; }
+				if (MinX_Hovering && MinY_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMinMin; }
+				if (MinX_Hovering && MaxY_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMinMax; }
+				if (MaxX_Hovering && MinY_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMaxMin; }
+				if (MaxX_Hovering && MaxY_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMaxMax; }
+			}
 		}
-		else if (IsResizableY && (BoarderMinY_Hovering || BoarderMaxY_Hovering))
+		else
 		{
-			if (BoarderMinY_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMinY; }
-			if (BoarderMaxY_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMaxY; }
+			if (IsMovable) { ChangingBoxType = EChangingBoxType::Move; }
 		}
-		else if (IsMovable) { ChangingBoxType = EChangingBoxType::Move; }
 	}
 	else if (args.Action == Action::Repeat)
 	{
@@ -74,6 +85,10 @@ void UI::Control::Form::UserChangingBox(DragArgs args)
 			else if (ChangingBoxType == EChangingBoxType::ResizeMaxX) { box.Max.X = args.Position.Buffer.Corner.X; }
 			else if (ChangingBoxType == EChangingBoxType::ResizeMinY) { box.Min.Y = args.Position.Buffer.Corner.Y; }
 			else if (ChangingBoxType == EChangingBoxType::ResizeMaxY) { box.Max.Y = args.Position.Buffer.Corner.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMinMin) { box.Min.X = args.Position.Buffer.Corner.X; box.Min.Y = args.Position.Buffer.Corner.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMinMax) { box.Min.X = args.Position.Buffer.Corner.X; box.Max.Y = args.Position.Buffer.Corner.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMaxMin) { box.Max.X = args.Position.Buffer.Corner.X; box.Min.Y = args.Position.Buffer.Corner.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMaxMax) { box.Max.X = args.Position.Buffer.Corner.X; box.Max.Y = args.Position.Buffer.Corner.Y; }
 			ChangeAnchorBox(box);
 		}
 	}
@@ -83,6 +98,53 @@ void UI::Control::Form::UserChangingBox(DragArgs args)
 	}
 }
 
+#include <iostream>
+#include "Base/Manager.hpp"
+void UI::Control::Form::RelayHover(HoverArgs args)
+{
+	/*if (args == HoverArgs::Enter)
+	{
+		ControlManager -> CursorsUseResizeH();
+	}*/
+	if (args == HoverArgs::Leave)
+	{
+		ControlManager -> CursorsUseDefault();
+	}
+	if (args == HoverArgs::Move)
+	{
+		BoxF2 MinX_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Min.X + AnchorBoarder.Min.X, DisplayBox.Max.Y));
+		BoxF2 MaxX_Box(VectorF2(DisplayBox.Max.X - AnchorBoarder.Max.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
+		BoxF2 MinY_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Min.Y + AnchorBoarder.Min.Y));
+		BoxF2 MaxY_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Max.Y - AnchorBoarder.Max.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
+
+		bool MinX_Hovering = MinX_Box.IntersectInclusive(ControlManager -> CursorPosition).All(true);
+		bool MinY_Hovering = MinY_Box.IntersectInclusive(ControlManager -> CursorPosition).All(true);
+		bool MaxX_Hovering = MaxX_Box.IntersectInclusive(ControlManager -> CursorPosition).All(true);
+		bool MaxY_Hovering = MaxY_Box.IntersectInclusive(ControlManager -> CursorPosition).All(true);
+
+		bool none = true;
+		if (MinX_Hovering || MaxX_Hovering || MinY_Hovering || MaxY_Hovering)
+		{
+			if (IsResizable)
+			{
+				if (MinX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { ControlManager -> CursorsUseResizeH(); none = false; }
+				if (MaxX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { ControlManager -> CursorsUseResizeH(); none = false; }
+				if (MinY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { ControlManager -> CursorsUseResizeV(); none = false; }
+				if (MaxY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { ControlManager -> CursorsUseResizeV(); none = false; }
+				if ((MaxX_Hovering && MinY_Hovering) || (MinX_Hovering && MaxY_Hovering)) { ControlManager -> CursorsUseResizeD0(); none = false; }
+				if ((MinX_Hovering && MinY_Hovering) || (MaxX_Hovering && MaxY_Hovering)) { ControlManager -> CursorsUseResizeD1(); none = false; }
+			}
+		}
+		/*else
+		{
+			if (IsMovable) { ControlManager -> CursorsUseCross(); none = false; }
+		}*/
+		if (none)
+		{
+			ControlManager -> CursorsUseDefault();
+		}
+	}
+}
 void UI::Control::Form::RelayCursorDrag(DragArgs args)
 {
 	UserChangingBox(args);

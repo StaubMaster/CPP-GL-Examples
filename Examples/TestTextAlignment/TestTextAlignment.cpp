@@ -33,15 +33,15 @@ void ContextTestTextAlignment::Init()
 		ControlManager.Shader.Change(code);
 	}
 	{
-		ControlManager.LayoutMain.Pos.Change(0);
-		ControlManager.LayoutInst.Min.Change(1);
-		ControlManager.LayoutInst.Max.Change(2);
-		ControlManager.LayoutInst.Layer.Change(3);
-		ControlManager.LayoutInst.Col.Change(4);
+		ControlManager.BufferLayoutMain.Pos.Change(0);
+		ControlManager.BufferLayoutInst.Min.Change(1);
+		ControlManager.BufferLayoutInst.Max.Change(2);
+		ControlManager.BufferLayoutInst.Layer.Change(3);
+		ControlManager.BufferLayoutInst.Col.Change(4);
 	}
 	{
-		ControlManager.Window.ChangeManager(&ControlManager);
-		ControlManager.Window.ChangeManager(&TextManager);
+		ControlManager.WindowControl.ChangeManager(&ControlManager);
+		ControlManager.WindowControl.ChangeManager(&TextManager);
 	}
 	TextManager.InitMedia(MediaDirectory);
 	TextManager.TextFont = UI::Text::Font::Parse(
@@ -238,7 +238,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	TextAlignment();
 	(void)frame_time;
 	ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
-//	ControlManager.Window.UpdateEntrys();
+//	ControlManager.WindowControl.UpdateEntrys();
 	ControlManager.Draw();
 
 	sw.Clear(); sw.Start();

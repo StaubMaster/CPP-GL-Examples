@@ -67,9 +67,9 @@ void UI::Control::CheckBox::RelayAssignObjectColor()
 		}
 	}
 }
-void UI::Control::CheckBox::RelayHover(unsigned char type)
+void UI::Control::CheckBox::RelayHover(HoverArgs args)
 {
-	(void)type;
+	(void)args;
 	ObjectColorNeedAssign = true;
 }
 

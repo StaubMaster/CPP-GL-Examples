@@ -15,6 +15,8 @@
 
 # include "Miscellaneous/Container/Binary.hpp"
 
+# include "OpenGL.hpp"
+
 
 
 namespace UI
@@ -45,22 +47,40 @@ class Manager
 	UI::Control::ShaderLayout		ShaderLayout;
 
 	UI::Control::Buffer				Buffer;
-	UI::Control::Main_Layout		LayoutMain;
-	UI::Control::Inst_Layout		LayoutInst;
+	UI::Control::Main_Layout		BufferLayoutMain;
+	UI::Control::Inst_Layout		BufferLayoutInst;
 
 	Container::Binary<ObjectData*>			ObjectDatas;
 	Container::Binary<Control::Inst_Data>	Instances;
 
-	DisplaySize		WindowSize;
-
-	UI::Control::Window		Window;
+	DisplaySize				WindowSize;
+	UI::Control::Window		WindowControl;
 
 	Base *	Hovering;
 	Base *	Selected;
 
 	public:
+	// Cursors
+	VectorF2		CursorPosition;
+	GLFWwindow *	glfw_window;
+	GLFWcursor *	glfw_cursorResizeH;
+	GLFWcursor *	glfw_cursorResizeV;
+	GLFWcursor *	glfw_cursorResizeD0;
+	GLFWcursor *	glfw_cursorResizeD1;
+	GLFWcursor *	glfw_cursorCross;
+	void	CursorsCreate();
+	void	CursorsDelete();
+	void	CursorsUseDefault();
+	void	CursorsUseResizeH();
+	void	CursorsUseResizeV();
+	void	CursorsUseResizeD0();
+	void	CursorsUseResizeD1();
+	void	CursorsUseCross();
+
+	public:
 	~Manager();
 	Manager();
+	Manager(GLFWwindow * glfw_window);
 	Manager(const Manager & other) = delete;
 	Manager & operator=(const Manager & other) = delete;
 
@@ -85,7 +105,7 @@ class Manager
 	void	GraphicsInst();
 
 	private:
-	void			PlaceInstance(const ObjectData & obj);
+	void	PlaceInstance(const ObjectData & obj);
 
 	public:
 	void	Draw();

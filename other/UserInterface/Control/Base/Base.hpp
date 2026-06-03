@@ -191,15 +191,21 @@ class Base
 	virtual void	RelayAssignObjectBox();
 	virtual void	RelayAssignObjectColor();
 
+	public:
+	enum class HoverArgs
+	{
+		Enter,
+		Move,
+		Leave,
+	}; // should be a struct that also stores position
+
 	//	for automatic Updating. should not be called by User
 	public:
 	Base *	CheckHover(VectorF2 mouse);
-	void	HoverEnter();
-	void	HoverLeave();
+	void	ChangeHover(HoverArgs args);
 
 	// Relay User
-	public:
-	virtual void	RelayHover(unsigned char type);
+	virtual void	RelayHover(HoverArgs args);
 	virtual void	RelayClick(ClickArgs args);
 	virtual void	RelayScroll(ScrollArgs args);
 	virtual void	RelayCursorDrag(DragArgs args);

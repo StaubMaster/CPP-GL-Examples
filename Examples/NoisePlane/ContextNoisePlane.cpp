@@ -573,7 +573,7 @@ void ContextNoisePlane::MakeControls()
 	// Pause
 	{
 		PauseMenu.Show();
-		ControlManager.Window.ChildInsert(PauseMenu);
+		ControlManager.WindowControl.ChildInsert(PauseMenu);
 	}
 	// Options
 	{
@@ -590,7 +590,7 @@ void ContextNoisePlane::MakeControls()
 		// make RemoveRange = InsertRange + n ?
 
 		OptionsMenu.Hide();
-		ControlManager.Window.ChildInsert(OptionsMenu);
+		ControlManager.WindowControl.ChildInsert(OptionsMenu);
 	}
 	// Debug
 	{
@@ -598,7 +598,7 @@ void ContextNoisePlane::MakeControls()
 		DebugMenu.VoxelChunkMemory.Check.Check(true);
 
 		DebugMenu.Hide();
-		ControlManager.Window.ChildInsert(DebugMenu);
+		ControlManager.WindowControl.ChildInsert(DebugMenu);
 	}
 	// Inventory
 #ifndef DISABLE_INVENTORY
@@ -618,7 +618,7 @@ void ContextNoisePlane::MakeControls()
 		//Inventory[VectorU2(1, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCylinder"]);
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
-		ControlManager.Window.ChildInsert(InventoryUI);
+		ControlManager.WindowControl.ChildInsert(InventoryUI);
 		PolyHedraManager.MakeCurrent();
 	}
 #endif
@@ -629,7 +629,7 @@ void ContextNoisePlane::MakeControls()
 		HotBarUI.Anchor.Y.AnchorMax(0);
 		HotBarUI.Change(&HotBar);
 		//HotBarUI.Hide();
-		ControlManager.Window.ChildInsert(HotBarUI);
+		ControlManager.WindowControl.ChildInsert(HotBarUI);
 		PolyHedraManager.MakeCurrent();
 	}
 #endif
@@ -655,18 +655,18 @@ void ContextNoisePlane::ChangeMedia()
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
-		ControlManager.LayoutMain.Pos.Change(0);
-		ControlManager.Buffer.MainBuffer.AttributeLayout = &ControlManager.LayoutMain;
-		ControlManager.LayoutInst.Min.Change(1);
-		ControlManager.LayoutInst.Max.Change(2);
-		ControlManager.LayoutInst.Layer.Change(3);
-		ControlManager.LayoutInst.Col.Change(4);
-		ControlManager.Buffer.InstBuffer.AttributeLayout = &ControlManager.LayoutInst;
+		ControlManager.BufferLayoutMain.Pos.Change(0);
+		ControlManager.Buffer.MainBuffer.AttributeLayout = &ControlManager.BufferLayoutMain;
+		ControlManager.BufferLayoutInst.Min.Change(1);
+		ControlManager.BufferLayoutInst.Max.Change(2);
+		ControlManager.BufferLayoutInst.Layer.Change(3);
+		ControlManager.BufferLayoutInst.Col.Change(4);
+		ControlManager.Buffer.InstBuffer.AttributeLayout = &ControlManager.BufferLayoutInst;
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
-		ControlManager.Window.ChangeManager(&ControlManager);
-		ControlManager.Window.ChangeManager(&TextManager);
+		ControlManager.WindowControl.ChangeManager(&ControlManager);
+		ControlManager.WindowControl.ChangeManager(&TextManager);
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 
@@ -904,7 +904,7 @@ void ContextNoisePlane::Draw()
 		sw.Clear(); sw.Start();
 		ControlManager.UpdateSize(window.Size);
 		ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
-//		ControlManager.Window.UpdateEntrys();
+//		ControlManager.WindowControl.UpdateEntrys();
 		ControlManager.Draw();
 		PolyHedraManager.MakeCurrent();
 		sw.Stop(); FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime());

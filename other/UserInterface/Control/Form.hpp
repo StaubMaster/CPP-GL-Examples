@@ -31,8 +31,7 @@ class Form : public Base
 
 	public:
 	bool	IsMovable;
-	bool	IsResizableX;
-	bool	IsResizableY;
+	bool	IsResizable;
 	//BoxF2	SizeLimit;
 
 	private:
@@ -44,13 +43,17 @@ class Form : public Base
 		ResizeMaxX,
 		ResizeMinY,
 		ResizeMaxY,
-		// Diagonals
+		ResizeMinMin,
+		ResizeMinMax,
+		ResizeMaxMin,
+		ResizeMaxMax,
 	};
 	EChangingBoxType	ChangingBoxType;
 	BoxF2				ChangingBoxRel;
 	void				UserChangingBox(DragArgs args);
 
 	public:
+	void	RelayHover(HoverArgs args) override;
 	void	RelayCursorDrag(DragArgs args) override;
 };
 

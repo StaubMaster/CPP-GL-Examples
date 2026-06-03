@@ -35,7 +35,7 @@ class CheckBox : public Base
 
 	protected:
 	void	RelayAssignObjectColor() override;
-	void	RelayHover(unsigned char type) override;
+	void	RelayHover(HoverArgs args) override;
 
 	public:
 	void	RelayClick(ClickArgs params) override;

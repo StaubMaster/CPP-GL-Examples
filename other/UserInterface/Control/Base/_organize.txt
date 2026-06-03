@@ -1,0 +1,4 @@
+
+move Manager/Object into Control/
+move all the Controls into Control/Controls
+change ControlsInclude.hpp to Control/Include.hpp

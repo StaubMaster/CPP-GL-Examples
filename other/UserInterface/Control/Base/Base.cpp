@@ -327,26 +327,28 @@ UI::Control::Base * UI::Control::Base::CheckHover(VectorF2 mouse)
 	return nullptr;
 }
 
-void UI::Control::Base::HoverEnter()
+void UI::Control::Base::ChangeHover(HoverArgs args)
 {
-	if (IsEnabled() && ControlObject.Is())
+	if (args == HoverArgs::Enter)
 	{
-		ControlObject.Color() = ColorHover;
+		if (IsEnabled() && ControlObject.Is())
+		{
+			ControlObject.Color() = ColorHover;
+		}
 	}
-	RelayHover(1);
-}
-void UI::Control::Base::HoverLeave()
-{
-	if (IsEnabled() && ControlObject.Is())
+	if (args == HoverArgs::Leave)
 	{
-		ControlObject.Color() = ColorDefault;
+		if (IsEnabled() && ControlObject.Is())
+		{
+			ControlObject.Color() = ColorDefault;
+		}
 	}
-	RelayHover(0);
+	RelayHover(args);
 }
 
 
 
-void UI::Control::Base::RelayHover(unsigned char type) { (void)type; }
+void UI::Control::Base::RelayHover(HoverArgs args) { (void)args; }
 void UI::Control::Base::RelayClick(ClickArgs args) { (void)args; }
 void UI::Control::Base::RelayScroll(ScrollArgs args) { (void)args; }
 void UI::Control::Base::RelayCursorDrag(DragArgs args) { (void)args; }
