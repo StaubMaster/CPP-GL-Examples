@@ -50,6 +50,7 @@ void Context0::Init()
 	);
 
 	ControlManager.GraphicsCreate();
+	ControlManager.CursorsCreate(MediaDirectory);
 	TextManager.GraphicsCreate();
 	TextManager.InitFont();
 
@@ -58,6 +59,7 @@ void Context0::Init()
 void Context0::Free()
 {
 	ControlManager.GraphicsDelete();
+	ControlManager.CursorsDelete();
 	TextManager.GraphicsDelete();
 }
 

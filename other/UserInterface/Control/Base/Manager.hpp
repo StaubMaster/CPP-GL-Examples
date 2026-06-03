@@ -19,6 +19,8 @@
 
 
 
+class DirectoryInfo;
+
 namespace UI
 {
 
@@ -68,7 +70,7 @@ class Manager
 	GLFWcursor *	glfw_cursorResizeD0;
 	GLFWcursor *	glfw_cursorResizeD1;
 	GLFWcursor *	glfw_cursorCross;
-	void	CursorsCreate();
+	void	CursorsCreate(const DirectoryInfo & dir);
 	void	CursorsDelete();
 	void	CursorsUseDefault();
 	void	CursorsUseResizeH();

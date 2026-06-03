@@ -131,8 +131,8 @@ void UI::Control::Form::RelayHover(HoverArgs args)
 				if (MaxX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { ControlManager -> CursorsUseResizeH(); none = false; }
 				if (MinY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { ControlManager -> CursorsUseResizeV(); none = false; }
 				if (MaxY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { ControlManager -> CursorsUseResizeV(); none = false; }
-				if ((MaxX_Hovering && MinY_Hovering) || (MinX_Hovering && MaxY_Hovering)) { ControlManager -> CursorsUseResizeD0(); none = false; }
-				if ((MinX_Hovering && MinY_Hovering) || (MaxX_Hovering && MaxY_Hovering)) { ControlManager -> CursorsUseResizeD1(); none = false; }
+				if ((MinX_Hovering && MinY_Hovering) || (MaxX_Hovering && MaxY_Hovering)) { ControlManager -> CursorsUseResizeD0(); none = false; }
+				if ((MaxX_Hovering && MinY_Hovering) || (MinX_Hovering && MaxY_Hovering)) { ControlManager -> CursorsUseResizeD1(); none = false; }
 			}
 		}
 		/*else

@@ -29,227 +29,10 @@ void UI::Control::Manager::MakeCurrent() { UI::Control::Manager::CurrentPointer 
 
 
 #include "Image.hpp"
-__attribute__((unused)) static Image CursorImgCross(ColorU4 col_fill, ColorU4 col_edge)
-{
-	Image img(31, 31);
+#include "DirectoryInfo.hpp"
+#include "FileInfo.hpp"
 
-	unsigned char middle = 15;
-	unsigned char neck = 10;
-	unsigned char thick = 2;
-
-	LoopU2 loop = img.Loop();
-	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-	{
-		VectorI2 rel = VectorI2(u) - ((int)middle);
-		VectorI2 abs = rel;
-		if (abs.X < 0) { abs.X = -abs.X; }
-		if (abs.Y < 0) { abs.Y = -abs.Y; }
-
-		if (abs.X > neck || abs.Y > neck)
-		{
-			if (abs.X + abs.Y == middle) { img.Pixel(u) = col_edge; }
-			if (abs.X + abs.Y < middle) { img.Pixel(u) = col_fill; }
-		}
-		if (abs.X == neck || abs.Y == neck)
-		{
-			if (abs.X + abs.Y <= middle) { img.Pixel(u) = col_edge; }
-			//if (abs.X < thick || abs.Y < thick) { img.Pixel(u) = col_fill; }
-		}
-		if (abs.X < neck && abs.Y < neck)
-		{
-			if (abs.X == thick || abs.Y == thick) { img.Pixel(u) = col_edge; }
-			if (abs.X < thick || abs.Y < thick) { img.Pixel(u) = col_fill; }
-		}
-	}
-
-	return img;
-}
-__attribute__((unused)) static Image CursorImgResizeH(ColorU4 col_fill, ColorU4 col_edge)
-{
-	Image img(31, 31);
-
-	unsigned char middle = 15;
-	unsigned char neck = 8;
-	unsigned char thick = 2;
-
-	LoopU2 loop = img.Loop();
-	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-	{
-		VectorI2 rel = VectorI2(u) - ((int)middle);
-		VectorI2 abs = rel;
-		if (abs.X < 0) { abs.X = -abs.X; }
-		if (abs.Y < 0) { abs.Y = -abs.Y; }
-
-		if (abs.X > neck)
-		{
-			if (abs.X + abs.Y == middle) { img.Pixel(u) = col_edge; }
-			if (abs.X + abs.Y < middle) { img.Pixel(u) = col_fill; }
-		}
-		if (abs.X == neck)
-		{
-			if (abs.X + abs.Y <= middle) { img.Pixel(u) = col_edge; }
-			//if (abs.Y < thick) { img.Pixel(u) = col_fill; }
-		}
-		if (abs.X < neck)
-		{
-			if (abs.Y == thick) { img.Pixel(u) = col_edge; }
-			if (abs.Y < thick) { img.Pixel(u) = col_fill; }
-		}
-	}
-
-	return img;
-}
-__attribute__((unused)) static Image CursorImgResizeV(ColorU4 col_fill, ColorU4 col_edge)
-{
-	Image img(31, 31);
-
-	unsigned char middle = 15;
-	unsigned char neck = 8;
-	unsigned char thick = 2;
-
-	LoopU2 loop = img.Loop();
-	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-	{
-		VectorI2 rel = VectorI2(u) - ((int)middle);
-		VectorI2 abs = rel;
-		if (abs.X < 0) { abs.X = -abs.X; }
-		if (abs.Y < 0) { abs.Y = -abs.Y; }
-
-		if (abs.Y > neck)
-		{
-			if (abs.X + abs.Y == middle) { img.Pixel(u) = col_edge; }
-			if (abs.X + abs.Y < middle) { img.Pixel(u) = col_fill; }
-		}
-		if (abs.Y == neck)
-		{
-			if (abs.X + abs.Y <= middle) { img.Pixel(u) = col_edge; }
-			//if (abs.Y < thick) { img.Pixel(u) = col_fill; }
-		}
-		if (abs.Y < neck)
-		{
-			if (abs.X == thick) { img.Pixel(u) = col_edge; }
-			if (abs.X < thick) { img.Pixel(u) = col_fill; }
-		}
-	}
-
-	return img;
-}
-__attribute__((unused)) static Image CursorImgResizeD(ColorU4 col_fill, ColorU4 col_edge)
-{
-	Image img(31, 31);
-
-	unsigned char middle = 15;
-	unsigned char neck = 20;
-	unsigned char thick = 2;
-
-	(void)col_fill;
-	(void)col_edge;
-	(void)neck;
-	(void)thick;
-
-	LoopU2 loop = img.Loop();
-	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-	{
-		VectorI2 rel = VectorI2(u) - ((int)middle);
-		VectorI2 abs = rel;
-		if (abs.X < 0) { abs.X = -abs.X; }
-		if (abs.Y < 0) { abs.Y = -abs.Y; }
-
-		if (abs.X + abs.Y > neck)
-		{
-			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_fill; }
-			if (abs.X == middle || abs.Y == middle) { img.Pixel(u) = col_edge; }
-		}
-		if (abs.X + abs.Y == neck)
-		{
-			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_edge; }
-		}
-		if (abs.X + abs.Y < neck)
-		{
-			int diff = 0;
-			if (abs.X > abs.Y) { diff = abs.X - abs.Y; }
-			if (abs.Y > abs.X) { diff = abs.Y - abs.X; }
-			if (diff == thick) { img.Pixel(u) = col_edge; }
-			if (diff < thick) { img.Pixel(u) = col_fill; }
-		}
-	}
-
-	return img;
-}
-__attribute__((unused)) static Image CursorImgResizeD0(ColorU4 col_fill, ColorU4 col_edge)
-{
-	Image img(31, 31);
-
-	unsigned char middle = 15;
-	unsigned char neck = 20;
-	unsigned char thick = 2;
-
-	LoopU2 loop = img.Loop();
-	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-	{
-		VectorI2 rel = VectorI2(u) - ((int)middle);
-		VectorI2 abs = rel;
-		abs.Y = -abs.Y;
-		if (abs.X < 0) { abs.X = -abs.X; abs.Y = -abs.Y; }
-
-		if (abs.X + abs.Y > neck)
-		{
-			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_fill; }
-			if (abs.X == middle || abs.Y == middle) { img.Pixel(u) = col_edge; }
-		}
-		if (abs.X + abs.Y == neck)
-		{
-			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_edge; }
-		}
-		if (abs.X + abs.Y < neck)
-		{
-			int diff = 0;
-			if (abs.X > abs.Y) { diff = abs.X - abs.Y; }
-			if (abs.Y > abs.X) { diff = abs.Y - abs.X; }
-			if (diff == thick) { img.Pixel(u) = col_edge; }
-			if (diff < thick) { img.Pixel(u) = col_fill; }
-		}
-	}
-
-	return img;
-}
-__attribute__((unused)) static Image CursorImgResizeD1(ColorU4 col_fill, ColorU4 col_edge)
-{
-	Image img(31, 31);
-
-	unsigned char middle = 15;
-	unsigned char neck = 20;
-	unsigned char thick = 2;
-
-	LoopU2 loop = img.Loop();
-	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
-	{
-		VectorI2 rel = VectorI2(u) - ((int)middle);
-		VectorI2 abs = rel;
-		if (abs.X < 0 || abs.Y < 0) { abs.X = -abs.X; abs.Y = -abs.Y; }
-
-		if (abs.X + abs.Y > neck)
-		{
-			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_fill; }
-			if (abs.X == middle || abs.Y == middle) { img.Pixel(u) = col_edge; }
-		}
-		if (abs.X + abs.Y == neck)
-		{
-			if (abs.X < middle || abs.Y < middle) { img.Pixel(u) = col_edge; }
-		}
-		if (abs.X + abs.Y < neck)
-		{
-			int diff = 0;
-			if (abs.X > abs.Y) { diff = abs.X - abs.Y; }
-			if (abs.Y > abs.X) { diff = abs.Y - abs.X; }
-			if (diff == thick) { img.Pixel(u) = col_edge; }
-			if (diff < thick) { img.Pixel(u) = col_fill; }
-		}
-	}
-
-	return img;
-}
-GLFWcursor * ImageToCursor(Image img)
+static GLFWcursor * ImageToCursor(Image img)
 {
 	GLFWimage glfw_img;
 	glfw_img.width = img.W();
@@ -257,16 +40,13 @@ GLFWcursor * ImageToCursor(Image img)
 	glfw_img.pixels = (unsigned char *)img.Data();
 	return glfwCreateCursor(&glfw_img, 15, 15);
 }
-void UI::Control::Manager::CursorsCreate()
+void UI::Control::Manager::CursorsCreate(const DirectoryInfo & dir)
 {
-	ColorU4 col0(0x00, 0x00, 0x00, 0xFF);
-	ColorU4 col1(0xFF, 0xFF, 0xFF, 0xFF);
-
-	glfw_cursorResizeH = ImageToCursor(CursorImgResizeH(col1, col0));
-	glfw_cursorResizeV = ImageToCursor(CursorImgResizeV(col1, col0));
-	glfw_cursorResizeD0 = ImageToCursor(CursorImgResizeD0(col1, col0));
-	glfw_cursorResizeD1 = ImageToCursor(CursorImgResizeD1(col1, col0));
-	glfw_cursorCross = ImageToCursor(CursorImgCross(col1, col0));
+	glfw_cursorResizeH = ImageToCursor(dir.File("Images/Cursors/R_Hori.png").LoadImage());
+	glfw_cursorResizeV = ImageToCursor(dir.File("Images/Cursors/R_Vert.png").LoadImage());
+	glfw_cursorResizeD0 = ImageToCursor(dir.File("Images/Cursors/R_Diag_0.png").LoadImage());
+	glfw_cursorResizeD1 = ImageToCursor(dir.File("Images/Cursors/R_Diag_1.png").LoadImage());
+	glfw_cursorCross = ImageToCursor(dir.File("Images/Cursors/Cross.png").LoadImage());
 }
 void UI::Control::Manager::CursorsDelete()
 {
@@ -370,7 +150,6 @@ void UI::Control::Manager::GraphicsCreate()
 
 	Buffer.Create();
 	Shader.Create();
-	CursorsCreate();
 
 	GraphicsExist = true;
 
@@ -383,7 +162,6 @@ void UI::Control::Manager::GraphicsDelete()
 
 	Buffer.Delete();
 	Shader.Delete();
-	CursorsDelete();
 
 	GraphicsExist = false;
 }
