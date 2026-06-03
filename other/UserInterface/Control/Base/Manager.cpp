@@ -40,6 +40,7 @@ static GLFWcursor * ImageToCursor(Image img)
 	glfw_img.pixels = (unsigned char *)img.Data();
 	return glfwCreateCursor(&glfw_img, 15, 15);
 }
+
 void UI::Control::Manager::CursorsCreate(const DirectoryInfo & dir)
 {
 	glfw_cursorResizeH = ImageToCursor(dir.File("Images/Cursors/R_Hori.png").LoadImage());
@@ -56,12 +57,13 @@ void UI::Control::Manager::CursorsDelete()
 	glfwDestroyCursor(glfw_cursorResizeD1);
 	glfwDestroyCursor(glfw_cursorCross);
 }
-void UI::Control::Manager::CursorsUseDefault() { glfwSetCursor(glfw_window, nullptr); }
-void UI::Control::Manager::CursorsUseResizeH() { glfwSetCursor(glfw_window, glfw_cursorResizeH); }
-void UI::Control::Manager::CursorsUseResizeV() { glfwSetCursor(glfw_window, glfw_cursorResizeV); }
-void UI::Control::Manager::CursorsUseResizeD0() { glfwSetCursor(glfw_window, glfw_cursorResizeD0); }
-void UI::Control::Manager::CursorsUseResizeD1() { glfwSetCursor(glfw_window, glfw_cursorResizeD1); }
-void UI::Control::Manager::CursorsUseCross() { glfwSetCursor(glfw_window, glfw_cursorCross); }
+
+void UI::Control::Manager::CursorsUseDefault()  { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, nullptr); } }
+void UI::Control::Manager::CursorsUseResizeH()  { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorResizeH); } }
+void UI::Control::Manager::CursorsUseResizeV()  { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorResizeV); } }
+void UI::Control::Manager::CursorsUseResizeD0() { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorResizeD0); } }
+void UI::Control::Manager::CursorsUseResizeD1() { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorResizeD1); } }
+void UI::Control::Manager::CursorsUseCross()    { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorCross); } }
 
 
 

@@ -234,8 +234,24 @@ void UI::Control::Base::ChangeAnchorBox(BoxF2 box)
 {
 	if (Parent != nullptr)
 	{
-		// limit based on Parent ContainerBox
-		// use Margin of Parent and Padding of this
+		// when moving, keep size
+		// when resizing, keep other side
+
+		BoxF2 other_box;
+		other_box.Min = (Parent -> ContainerBox.Min) + AnchorMargin.Min;
+		other_box.Max = (Parent -> ContainerBox.Max) - AnchorMargin.Max;
+
+		VectorF2 size = box.Max - box.Min;
+		Bool2 limit_min = box.Min < other_box.Min;
+		Bool2 limit_max = box.Max > other_box.Max;
+
+		if (limit_min.GetX()&& limit_max.GetX()) {  }
+		else if (limit_min.GetX() && !limit_max.GetX()) { box.Min.X = other_box.Min.X; box.Max.X = box.Min.X + size.X; }
+		else if (!limit_min.GetX() && limit_max.GetX()) { box.Max.X = other_box.Max.X; box.Min.X = box.Max.X - size.X; }
+
+		if (limit_min.GetY()&& limit_max.GetY()) {  }
+		else if (limit_min.GetY() && !limit_max.GetY()) { box.Min.Y = other_box.Min.Y; box.Max.Y = box.Min.Y + size.Y; }
+		else if (!limit_min.GetY() && limit_max.GetY()) { box.Max.Y = other_box.Max.Y; box.Min.Y = box.Max.Y - size.Y; }
 
 		Anchor.Calculate(Parent -> ContainerBox, box);
 		BoxWantUpdate();
