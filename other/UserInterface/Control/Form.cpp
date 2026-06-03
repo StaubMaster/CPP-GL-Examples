@@ -5,7 +5,13 @@
 UI::Control::Form::~Form()
 { }
 UI::Control::Form::Form()
+	: Base()
+	, IsMovable(true)
+	, IsResizableX(true)
+	, IsResizableY(true)
+	, ChangingBoxType(EChangingBoxType::None)
 {
+	// give this stuff to Base ?
 	Depth = 0.9f;
 	Anchor.X.Anchor = AnchorType::None;
 	Anchor.Y.Anchor = AnchorType::None;
@@ -13,47 +19,16 @@ UI::Control::Form::Form()
 	AnchorNormal = VectorF2(0.5, 0.5);
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
-
-	IsMovable = true;
-	IsMoving = false;
-
-	IsResizableX = true;
-	IsResizableY = true;
-	IsResizing = false;
 }
 
 
 
-void UI::Control::Form::UserMoving(DragArgs args)
+void UI::Control::Form::UserChangingBox(DragArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		MovingRel.Min = args.Position.Buffer.Corner - DisplayBox.Min;
-		MovingRel.Max = args.Position.Buffer.Corner - DisplayBox.Max;
-
-		if (IsMovable) { IsMoving = true; }
-	}
-	else if (args.Action == Action::Repeat)
-	{
-		if (IsMoving)
-		{
-			ChangeAnchorBox(BoxF2(
-				args.Position.Buffer.Corner - MovingRel.Min,
-				args.Position.Buffer.Corner - MovingRel.Max
-			));
-		}
-	}
-	else if (args.Action == Action::Release)
-	{
-		IsMoving = false;
-	}
-}
-void UI::Control::Form::UserResize(DragArgs args)
-{
-	if (args.Action == Action::Press)
-	{
-		BoarderRel.Min = args.Position.Buffer.Corner - DisplayBox.Min;
-		BoarderRel.Max = args.Position.Buffer.Corner - DisplayBox.Max;
+		ChangingBoxRel.Min = args.Position.Buffer.Corner - DisplayBox.Min;
+		ChangingBoxRel.Max = args.Position.Buffer.Corner - DisplayBox.Max;
 
 		BoxF2 BoarderMinX_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Min.X + AnchorBoarder.Min.X, DisplayBox.Max.Y));
 		BoxF2 BoarderMaxX_Box(VectorF2(DisplayBox.Max.X - AnchorBoarder.Max.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
@@ -67,35 +42,48 @@ void UI::Control::Form::UserResize(DragArgs args)
 
 		if (IsResizableX && (BoarderMinX_Hovering || BoarderMaxX_Hovering))
 		{
-			if (BoarderMinX_Hovering) { Boarder = 0b00; IsResizing = true; }
-			if (BoarderMaxX_Hovering) { Boarder = 0b01; IsResizing = true; }
+			if (BoarderMinX_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMinX; }
+			if (BoarderMaxX_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMaxX; }
 		}
 		else if (IsResizableY && (BoarderMinY_Hovering || BoarderMaxY_Hovering))
 		{
-			if (BoarderMinY_Hovering) { Boarder = 0b10; IsResizing = true; }
-			if (BoarderMaxY_Hovering) { Boarder = 0b11; IsResizing = true; }
+			if (BoarderMinY_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMinY; }
+			if (BoarderMaxY_Hovering) { ChangingBoxType = EChangingBoxType::ResizeMaxY; }
 		}
+		else if (IsMovable) { ChangingBoxType = EChangingBoxType::Move; }
 	}
 	else if (args.Action == Action::Repeat)
 	{
-		if (IsResizing)
+		// when changing would make the Box go outside of the Window
+		// keep it inside of the Window (with MBP) and lock it to that Edge
+		// when changing makes a Edge of the Box be away from whe Window Boarder
+		// make it unlocked from that Edge
+		// also make things lock to eachother ?
+
+		if (ChangingBoxType != EChangingBoxType::None)
 		{
 			BoxF2 box = DisplayBox;
-			if (Boarder == 0b00) { box.Min.X = args.Position.Buffer.Corner.X; }
-			if (Boarder == 0b01) { box.Max.X = args.Position.Buffer.Corner.X; }
-			if (Boarder == 0b10) { box.Min.Y = args.Position.Buffer.Corner.Y; }
-			if (Boarder == 0b11) { box.Max.Y = args.Position.Buffer.Corner.Y; }
+			if (ChangingBoxType == EChangingBoxType::Move)
+			{
+				box = BoxF2(
+					args.Position.Buffer.Corner - ChangingBoxRel.Min,
+					args.Position.Buffer.Corner - ChangingBoxRel.Max
+				);
+			}
+			else if (ChangingBoxType == EChangingBoxType::ResizeMinX) { box.Min.X = args.Position.Buffer.Corner.X; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMaxX) { box.Max.X = args.Position.Buffer.Corner.X; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMinY) { box.Min.Y = args.Position.Buffer.Corner.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMaxY) { box.Max.Y = args.Position.Buffer.Corner.Y; }
 			ChangeAnchorBox(box);
 		}
 	}
 	else if (args.Action == Action::Release)
 	{
-		IsResizing = false;
+		ChangingBoxType = EChangingBoxType::None;
 	}
 }
 
 void UI::Control::Form::RelayCursorDrag(DragArgs args)
 {
-	//UpdateMoving(args);
-	UserResize(args);
+	UserChangingBox(args);
 }

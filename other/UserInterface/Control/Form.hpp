@@ -31,23 +31,24 @@ class Form : public Base
 
 	public:
 	bool	IsMovable;
-
-	private:
-	bool	IsMoving;
-	BoxF2	MovingRel;
-	void	UserMoving(DragArgs args);
-
-
-	public:
 	bool	IsResizableX;
 	bool	IsResizableY;
 	//BoxF2	SizeLimit;
 
 	private:
-	bool			IsResizing;
-	unsigned char	Boarder;
-	BoxF2			BoarderRel;
-	void			UserResize(DragArgs args);
+	enum class EChangingBoxType : unsigned char
+	{
+		None,
+		Move,
+		ResizeMinX,
+		ResizeMaxX,
+		ResizeMinY,
+		ResizeMaxY,
+		// Diagonals
+	};
+	EChangingBoxType	ChangingBoxType;
+	BoxF2				ChangingBoxRel;
+	void				UserChangingBox(DragArgs args);
 
 	public:
 	void	RelayCursorDrag(DragArgs args) override;

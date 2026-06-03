@@ -8,6 +8,9 @@ PauseMenu::PauseMenu(ContextNoisePlane & context)
 	: UI::Control::Form()
 	, Context(context)
 {
+	// Why make this transparent ?
+	// So you can see what is happening.
+	// Forms are now movable, just move this or options out of the way if you want to see.
 	MakeTransparent();
 
 	float y;
