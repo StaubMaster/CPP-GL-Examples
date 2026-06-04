@@ -49,9 +49,9 @@ class Form : public Base
 		ResizeMaxMax,
 	};
 	EChangingBoxType	FindChangingArea(VectorF2 mouse) const;
+
 	EChangingBoxType	ChangingBoxType;
 	BoxF2				ChangingBoxRel;
-	void				UserChangingBox(DragArgs args);
 
 	public:
 	void	RelayHover(HoverArgs args) override;

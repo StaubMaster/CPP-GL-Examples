@@ -56,54 +56,6 @@ UI::Control::Form::EChangingBoxType UI::Control::Form::FindChangingArea(VectorF2
 	}
 	return EChangingBoxType::None;
 }
-void UI::Control::Form::UserChangingBox(DragArgs args)
-{
-	if (args.Action == Action::Press)
-	{
-		ChangingBoxRel.Min = args.Position.Buffer.Corner - DisplayBox.Min;
-		ChangingBoxRel.Max = args.Position.Buffer.Corner - DisplayBox.Max;
-
-		/* Resize area
-			in vscode, the cursor needs to be a bit inside of the window to resize
-			in firefox, the cursor needs to be a bit outside of the window to resize
-		*/
-
-		ChangingBoxType = FindChangingArea(args.Position.Buffer.Corner);
-	}
-	else if (args.Action == Action::Repeat)
-	{
-		// when changing would make the Box go outside of the Window
-		// keep it inside of the Window (with MBP) and lock it to that Edge
-		// when changing makes a Edge of the Box be away from whe Window Boarder
-		// make it unlocked from that Edge
-		// also make things lock to eachother ?
-
-		if (ChangingBoxType != EChangingBoxType::None)
-		{
-			BoxF2 box = DisplayBox;
-			if (ChangingBoxType == EChangingBoxType::Move)
-			{
-				box = BoxF2(
-					args.Position.Buffer.Corner - ChangingBoxRel.Min,
-					args.Position.Buffer.Corner - ChangingBoxRel.Max
-				);
-			}
-			else if (ChangingBoxType == EChangingBoxType::ResizeMinX) { box.Min.X = args.Position.Buffer.Corner.X; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMaxX) { box.Max.X = args.Position.Buffer.Corner.X; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMinY) { box.Min.Y = args.Position.Buffer.Corner.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMaxY) { box.Max.Y = args.Position.Buffer.Corner.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMinMin) { box.Min.X = args.Position.Buffer.Corner.X; box.Min.Y = args.Position.Buffer.Corner.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMinMax) { box.Min.X = args.Position.Buffer.Corner.X; box.Max.Y = args.Position.Buffer.Corner.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMaxMin) { box.Max.X = args.Position.Buffer.Corner.X; box.Min.Y = args.Position.Buffer.Corner.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMaxMax) { box.Max.X = args.Position.Buffer.Corner.X; box.Max.Y = args.Position.Buffer.Corner.Y; }
-			ChangeAnchorBox(box);
-		}
-	}
-	else if (args.Action == Action::Release)
-	{
-		ChangingBoxType = EChangingBoxType::None;
-	}
-}
 
 #include <iostream>
 #include "Base/Manager.hpp"
@@ -134,5 +86,48 @@ void UI::Control::Form::RelayHover(HoverArgs args)
 }
 void UI::Control::Form::RelayCursorDrag(DragArgs args)
 {
-	UserChangingBox(args);
+	if (args.Action == Action::Press)
+	{
+		ChangingBoxRel.Min = args.Position.Buffer.Corner - DisplayBox.Min;
+		ChangingBoxRel.Max = args.Position.Buffer.Corner - DisplayBox.Max;
+
+		/* Resize area
+			in vscode, the cursor needs to be a bit inside of the window to resize
+			in firefox, the cursor needs to be a bit outside of the window to resize
+		*/
+
+		ChangingBoxType = FindChangingArea(args.Position.Buffer.Corner);
+	}
+	else if (args.Action == Action::Repeat)
+	{
+		// when changing would make the Box go outside of the Window
+		// keep it inside of the Window (with MBP) and lock it to that Edge
+		// when changing makes a Edge of the Box be away from whe Window Boarder
+		// make it unlocked from that Edge
+		// also make things lock to eachother ?
+
+		if (ChangingBoxType != EChangingBoxType::None)
+		{
+			const VectorF2 & mouse = args.Position.Buffer.Corner;
+			BoxF2 box = DisplayBox;
+			if (ChangingBoxType == EChangingBoxType::Move)
+			{
+				box.Min = mouse - ChangingBoxRel.Min;
+				box.Max = mouse - ChangingBoxRel.Max;
+			}
+			else if (ChangingBoxType == EChangingBoxType::ResizeMinX) { box.Min.X = mouse.X; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMaxX) { box.Max.X = mouse.X; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMinY) { box.Min.Y = mouse.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMaxY) { box.Max.Y = mouse.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMinMin) { box.Min.X = mouse.X; box.Min.Y = mouse.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMinMax) { box.Min.X = mouse.X; box.Max.Y = mouse.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMaxMin) { box.Max.X = mouse.X; box.Min.Y = mouse.Y; }
+			else if (ChangingBoxType == EChangingBoxType::ResizeMaxMax) { box.Max.X = mouse.X; box.Max.Y = mouse.Y; }
+			ChangeAnchorBox(box);
+		}
+	}
+	else if (args.Action == Action::Release)
+	{
+		ChangingBoxType = EChangingBoxType::None;
+	}
 }
