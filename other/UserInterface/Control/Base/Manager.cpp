@@ -34,6 +34,15 @@ void UI::Control::Manager::MakeCurrent() { UI::Control::Manager::CurrentPointer 
 
 static GLFWcursor * ImageToCursor(Image img)
 {
+	for (unsigned int i = 0; i < img.Size().Product(); i++)
+	{
+		ColorU4 & col = img.Pixel(i);
+		if (col.R == 0x7F && col.G == 0x7F && col.B == 0x7F)
+		{
+			col.A = 0x00;
+		}
+	}
+
 	GLFWimage glfw_img;
 	glfw_img.width = img.W();
 	glfw_img.height = img.H();
@@ -43,27 +52,51 @@ static GLFWcursor * ImageToCursor(Image img)
 
 void UI::Control::Manager::CursorsCreate(const DirectoryInfo & dir)
 {
-	glfw_cursorResizeH = ImageToCursor(dir.File("Images/Cursors/R_Hori.png").LoadImage());
-	glfw_cursorResizeV = ImageToCursor(dir.File("Images/Cursors/R_Vert.png").LoadImage());
-	glfw_cursorResizeD0 = ImageToCursor(dir.File("Images/Cursors/R_Diag_0.png").LoadImage());
-	glfw_cursorResizeD1 = ImageToCursor(dir.File("Images/Cursors/R_Diag_1.png").LoadImage());
-	glfw_cursorCross = ImageToCursor(dir.File("Images/Cursors/Cross.png").LoadImage());
+	glfw_cursorArrowC = ImageToCursor(dir.File("Images/Cursors/ArrowCross.png").LoadImage());
+
+	glfw_cursorArrowH = ImageToCursor(dir.File("Images/Cursors/ArrowHori.png").LoadImage());
+	glfw_cursorArrowV = ImageToCursor(dir.File("Images/Cursors/ArrowVert.png").LoadImage());
+	glfw_cursorArrowD0 = ImageToCursor(dir.File("Images/Cursors/ArrowDiag0.png").LoadImage());
+	glfw_cursorArrowD1 = ImageToCursor(dir.File("Images/Cursors/ArrowDiag1.png").LoadImage());
+
+	glfw_cursorBoxEdge[0] = ImageToCursor(dir.File("Images/Cursors/BoxEdge0.png").LoadImage());
+	glfw_cursorBoxEdge[1] = ImageToCursor(dir.File("Images/Cursors/BoxEdge1.png").LoadImage());
+	glfw_cursorBoxEdge[2] = ImageToCursor(dir.File("Images/Cursors/BoxEdge2.png").LoadImage());
+	glfw_cursorBoxEdge[3] = ImageToCursor(dir.File("Images/Cursors/BoxEdge3.png").LoadImage());
+
+	glfw_cursorBoxCorn[0] = ImageToCursor(dir.File("Images/Cursors/BoxCorn0.png").LoadImage());
+	glfw_cursorBoxCorn[1] = ImageToCursor(dir.File("Images/Cursors/BoxCorn1.png").LoadImage());
+	glfw_cursorBoxCorn[2] = ImageToCursor(dir.File("Images/Cursors/BoxCorn2.png").LoadImage());
+	glfw_cursorBoxCorn[3] = ImageToCursor(dir.File("Images/Cursors/BoxCorn3.png").LoadImage());
 }
 void UI::Control::Manager::CursorsDelete()
 {
-	glfwDestroyCursor(glfw_cursorResizeH);
-	glfwDestroyCursor(glfw_cursorResizeV);
-	glfwDestroyCursor(glfw_cursorResizeD0);
-	glfwDestroyCursor(glfw_cursorResizeD1);
-	glfwDestroyCursor(glfw_cursorCross);
+	glfwDestroyCursor(glfw_cursorArrowC);
+
+	glfwDestroyCursor(glfw_cursorArrowH);
+	glfwDestroyCursor(glfw_cursorArrowV);
+	glfwDestroyCursor(glfw_cursorArrowD0);
+	glfwDestroyCursor(glfw_cursorArrowD1);
+
+	glfwDestroyCursor(glfw_cursorBoxEdge[0]);
+	glfwDestroyCursor(glfw_cursorBoxEdge[1]);
+	glfwDestroyCursor(glfw_cursorBoxEdge[2]);
+	glfwDestroyCursor(glfw_cursorBoxEdge[3]);
+
+	glfwDestroyCursor(glfw_cursorBoxCorn[0]);
+	glfwDestroyCursor(glfw_cursorBoxCorn[1]);
+	glfwDestroyCursor(glfw_cursorBoxCorn[2]);
+	glfwDestroyCursor(glfw_cursorBoxCorn[3]);
 }
 
-void UI::Control::Manager::CursorsUseDefault()  { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, nullptr); } }
-void UI::Control::Manager::CursorsUseResizeH()  { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorResizeH); } }
-void UI::Control::Manager::CursorsUseResizeV()  { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorResizeV); } }
-void UI::Control::Manager::CursorsUseResizeD0() { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorResizeD0); } }
-void UI::Control::Manager::CursorsUseResizeD1() { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorResizeD1); } }
-void UI::Control::Manager::CursorsUseCross()    { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorCross); } }
+void UI::Control::Manager::CursorsUseDefault() { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, nullptr); } }
+void UI::Control::Manager::CursorsUseArrowC()  { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorArrowC); } }
+void UI::Control::Manager::CursorsUseArrowH()  { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorArrowH); } }
+void UI::Control::Manager::CursorsUseArrowV()  { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorArrowV); } }
+void UI::Control::Manager::CursorsUseArrowD0() { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorArrowD0); } }
+void UI::Control::Manager::CursorsUseArrowD1() { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorArrowD1); } }
+void UI::Control::Manager::CursorsUseBoxEdge(unsigned char i) { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorBoxEdge[i]); } }
+void UI::Control::Manager::CursorsUseBoxCorn(unsigned char i) { if (glfw_window != nullptr) { glfwSetCursor(glfw_window, glfw_cursorBoxCorn[i]); } }
 
 
 
@@ -86,19 +119,23 @@ UI::Control::Manager::Manager()
 	, Hovering(nullptr)
 	, Selected(nullptr)
 	, glfw_window(nullptr)
-	, glfw_cursorResizeH(nullptr)
-	, glfw_cursorResizeV(nullptr)
-	, glfw_cursorResizeD0(nullptr)
-	, glfw_cursorResizeD1(nullptr)
-	, glfw_cursorCross(nullptr)
+	, glfw_cursorArrowC(nullptr)
+	, glfw_cursorArrowH(nullptr)
+	, glfw_cursorArrowV(nullptr)
+	, glfw_cursorArrowD0(nullptr)
+	, glfw_cursorArrowD1(nullptr)
+	, glfw_cursorBoxEdge{ nullptr, nullptr, nullptr, nullptr }
+	, glfw_cursorBoxCorn{ nullptr, nullptr, nullptr, nullptr }
 	, GraphicsExist(false)
-	, GraphicsNeedInit(false)
 	, GraphicsNeedMain(false)
 {
 	std::cout << "  ++++  " << "UI::Control::Manager::Manager()" << "\n";
 
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
+
+	Buffer.MainBuffer.AttributeLayout = &BufferLayoutMain;
+	Buffer.InstBuffer.AttributeLayout = &BufferLayoutInst;
 
 	WindowControl.Show();
 }
@@ -111,19 +148,23 @@ UI::Control::Manager::Manager(GLFWwindow * glfw_window)
 	, Hovering(nullptr)
 	, Selected(nullptr)
 	, glfw_window(glfw_window)
-	, glfw_cursorResizeH(nullptr)
-	, glfw_cursorResizeV(nullptr)
-	, glfw_cursorResizeD0(nullptr)
-	, glfw_cursorResizeD1(nullptr)
-	, glfw_cursorCross(nullptr)
+	, glfw_cursorArrowC(nullptr)
+	, glfw_cursorArrowH(nullptr)
+	, glfw_cursorArrowV(nullptr)
+	, glfw_cursorArrowD0(nullptr)
+	, glfw_cursorArrowD1(nullptr)
+	, glfw_cursorBoxEdge{ nullptr, nullptr, nullptr, nullptr }
+	, glfw_cursorBoxCorn{ nullptr, nullptr, nullptr, nullptr }
 	, GraphicsExist(false)
-	, GraphicsNeedInit(false)
 	, GraphicsNeedMain(false)
 {
 	std::cout << "  ++++  " << "UI::Control::Manager::Manager()" << "\n";
 
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
+
+	Buffer.MainBuffer.AttributeLayout = &BufferLayoutMain;
+	Buffer.InstBuffer.AttributeLayout = &BufferLayoutInst;
 
 	WindowControl.Show();
 }
@@ -146,6 +187,24 @@ UI::Control::ObjectData * UI::Control::Manager::CopyObject(const ObjectData * ob
 
 
 
+void UI::Control::Manager::ChangeMedia(const DirectoryInfo & dir)
+{
+	{
+		Container::Array<Shader::Code> code({
+			Shader::Code(dir.File("Shaders/UI/Control.vert")),
+			Shader::Code(dir.File("Shaders/UI/Control.frag")),
+		});
+		Shader.Change(code);
+	}
+	{
+		BufferLayoutMain.Pos.Change(0);
+		BufferLayoutInst.Min.Change(1);
+		BufferLayoutInst.Max.Change(2);
+		BufferLayoutInst.Layer.Change(3);
+		BufferLayoutInst.Col.Change(4);
+	}
+}
+
 void UI::Control::Manager::GraphicsCreate()
 {
 	if (GraphicsExist) { return; }
@@ -155,7 +214,6 @@ void UI::Control::Manager::GraphicsCreate()
 
 	GraphicsExist = true;
 
-	GraphicsNeedInit = true;
 	GraphicsNeedMain = true;
 }
 void UI::Control::Manager::GraphicsDelete()
@@ -168,15 +226,6 @@ void UI::Control::Manager::GraphicsDelete()
 	GraphicsExist = false;
 }
 
-void UI::Control::Manager::GraphicsInit()
-{
-	if (!(GraphicsNeedInit && GraphicsExist)) { return; }
-
-	Buffer.MainBuffer.Update();
-	Buffer.InstBuffer.Update();
-
-	GraphicsNeedInit = false;
-}
 void UI::Control::Manager::GraphicsMain()
 {
 	if (!(GraphicsNeedMain && GraphicsExist)) { return; }
@@ -196,6 +245,21 @@ void UI::Control::Manager::GraphicsMain()
 }
 void UI::Control::Manager::GraphicsInst()
 {
+	MakeInstances();
+	Buffer.InstBuffer.DataFull(Instances.ToVoid());
+}
+
+void UI::Control::Manager::PlaceInstance(const ObjectData & obj)
+{
+	Inst_Data data;
+	data.Min = obj.Box.Min;
+	data.Max = obj.Box.Max;
+	data.Layer = obj.Layer;
+	data.Col = obj.Color;
+	Instances.Insert(data);
+}
+void UI::Control::Manager::MakeInstances()
+{
 	Instances.Clear();
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
@@ -214,17 +278,6 @@ void UI::Control::Manager::GraphicsInst()
 			}
 		}
 	}
-	Buffer.InstBuffer.DataFull(Instances.ToVoid());
-}
-
-void UI::Control::Manager::PlaceInstance(const ObjectData & obj)
-{
-	Inst_Data data;
-	data.Min = obj.Box.Min;
-	data.Max = obj.Box.Max;
-	data.Layer = obj.Layer;
-	data.Col = obj.Color;
-	Instances.Insert(data);
 }
 
 
@@ -233,12 +286,14 @@ void UI::Control::Manager::Draw()
 {
 	WindowControl.Update();
 
-	GraphicsInit();
 	GraphicsMain();
 	GraphicsInst();
 
 	Shader.Bind();
+
 	Buffer.Bind();
+	Buffer.MainBuffer.Update();
+	Buffer.InstBuffer.Update();
 	Buffer.Draw();
 }
 

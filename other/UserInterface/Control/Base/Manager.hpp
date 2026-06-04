@@ -27,6 +27,7 @@ namespace UI
 namespace Control
 {
 class Base;
+class Form;
 
 struct ObjectData;
 
@@ -61,23 +62,32 @@ class Manager
 	Base *	Hovering;
 	Base *	Selected;
 
-	public:
+	Form *	BoxChanging;
+
 	// Cursors
+	public:
 	VectorF2		CursorPosition;
+
 	GLFWwindow *	glfw_window;
-	GLFWcursor *	glfw_cursorResizeH;
-	GLFWcursor *	glfw_cursorResizeV;
-	GLFWcursor *	glfw_cursorResizeD0;
-	GLFWcursor *	glfw_cursorResizeD1;
-	GLFWcursor *	glfw_cursorCross;
+	GLFWcursor *	glfw_cursorArrowC;
+	GLFWcursor *	glfw_cursorArrowH;
+	GLFWcursor *	glfw_cursorArrowV;
+	GLFWcursor *	glfw_cursorArrowD0;
+	GLFWcursor *	glfw_cursorArrowD1;
+	GLFWcursor *	glfw_cursorBoxEdge[4];
+	GLFWcursor *	glfw_cursorBoxCorn[4];
+
 	void	CursorsCreate(const DirectoryInfo & dir);
 	void	CursorsDelete();
+
 	void	CursorsUseDefault();
-	void	CursorsUseResizeH();
-	void	CursorsUseResizeV();
-	void	CursorsUseResizeD0();
-	void	CursorsUseResizeD1();
-	void	CursorsUseCross();
+	void	CursorsUseArrowC();
+	void	CursorsUseArrowH();
+	void	CursorsUseArrowV();
+	void	CursorsUseArrowD0();
+	void	CursorsUseArrowD1();
+	void	CursorsUseBoxEdge(unsigned char i);
+	void	CursorsUseBoxCorn(unsigned char i);
 
 	public:
 	~Manager();
@@ -92,6 +102,9 @@ class Manager
 	// give these functions static Variants that return if no Current
 	// else they do the stuff with current
 
+	public:
+	void	ChangeMedia(const DirectoryInfo & dir);
+
 	private:
 	bool	GraphicsExist;
 	public:
@@ -99,15 +112,15 @@ class Manager
 	void	GraphicsDelete();
 
 	private:
-	bool	GraphicsNeedInit;
 	bool	GraphicsNeedMain;
+
 	private:
-	void	GraphicsInit();
 	void	GraphicsMain();
 	void	GraphicsInst();
 
 	private:
 	void	PlaceInstance(const ObjectData & obj);
+	void	MakeInstances();
 
 	public:
 	void	Draw();

@@ -129,24 +129,18 @@ UI::Control::Base::Base()
 	, _Visible(true)
 	, _Opaque(true)
 	, Anchor(
-		Anchor1D(AnchorSize.X, AnchorNormal.X
-			, AnchorDist.Min.X, AnchorDist.Max.X
-			, AnchorMargin.Min.X, AnchorMargin.Max.X
-			, AnchorBoarder.Min.X, AnchorBoarder.Max.X
-			, AnchorPadding.Min.X, AnchorPadding.Max.X
-		),
-		Anchor1D(AnchorSize.Y, AnchorNormal.Y
-			, AnchorDist.Min.Y, AnchorDist.Max.Y
-			, AnchorMargin.Min.Y, AnchorMargin.Max.Y
-			, AnchorBoarder.Min.Y, AnchorBoarder.Max.Y
-			, AnchorPadding.Min.Y, AnchorPadding.Max.Y
+			AnchorSize,
+			AnchorDist,
+			AnchorMargin,
+			AnchorBoarder,
+			AnchorPadding,
+			AnchorNormal
 		)
-	)
 {
 	AnchorDist = BoxF2(VectorF2(0, 0), VectorF2(0, 0));
 
 	float margin = 5;
-	float boarder = 5;
+	float boarder = 2;
 	float padding = 5;
 
 	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
@@ -230,8 +224,9 @@ void UI::Control::Base::Update()
 	}
 }
 
-void UI::Control::Base::ChangeAnchorBox(BoxF2 box)
+void UI::Control::Base::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 {
+	if (type == EBoxChangeType::None) { return; }
 	if (Parent != nullptr)
 	{
 		// when moving, keep size
@@ -241,18 +236,37 @@ void UI::Control::Base::ChangeAnchorBox(BoxF2 box)
 		other_box.Min = (Parent -> ContainerBox.Min) + AnchorMargin.Min;
 		other_box.Max = (Parent -> ContainerBox.Max) - AnchorMargin.Max;
 
-		VectorF2 size = box.Max - box.Min;
-		Bool2 limit_min = box.Min < other_box.Min;
-		Bool2 limit_max = box.Max > other_box.Max;
+		Bool2 limit_min = box.Min <= other_box.Min;
+		Bool2 limit_max = box.Max >= other_box.Max;
 
-		if (limit_min.GetX()&& limit_max.GetX()) {  }
-		else if (limit_min.GetX() && !limit_max.GetX()) { box.Min.X = other_box.Min.X; box.Max.X = box.Min.X + size.X; }
-		else if (!limit_min.GetX() && limit_max.GetX()) { box.Max.X = other_box.Max.X; box.Min.X = box.Max.X - size.X; }
+		AnchorType anchor_type_x = Anchor.X.Anchor;
+		AnchorType anchor_type_y = Anchor.Y.Anchor;
 
-		if (limit_min.GetY()&& limit_max.GetY()) {  }
-		else if (limit_min.GetY() && !limit_max.GetY()) { box.Min.Y = other_box.Min.Y; box.Max.Y = box.Min.Y + size.Y; }
-		else if (!limit_min.GetY() && limit_max.GetY()) { box.Max.Y = other_box.Max.Y; box.Min.Y = box.Max.Y - size.Y; }
+		if (type != EBoxChangeType::Move)
+		{
+			if      ( limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Both; box.Min.X = other_box.Min.X; box.Max.X = other_box.Max.X; }
+			else if ( limit_min.GetX() && !limit_max.GetX()) { anchor_type_x = AnchorType::Min;  box.Min.X = other_box.Min.X;                              }
+			else if (!limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Max;  box.Max.X = other_box.Max.X;                              }
 
+			if      ( limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Both; box.Min.Y = other_box.Min.Y; box.Max.Y = other_box.Max.Y; }
+			else if ( limit_min.GetY() && !limit_max.GetY()) { anchor_type_y = AnchorType::Min;  box.Min.Y = other_box.Min.Y;                              }
+			else if (!limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Max;  box.Max.Y = other_box.Max.Y;                              }
+		}
+		else
+		{
+			VectorF2 size = box.Max - box.Min;
+
+			if      ( limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Both; box.Min.X = other_box.Min.X; box.Max.X = other_box.Max.X;    }
+			else if ( limit_min.GetX() && !limit_max.GetX()) { anchor_type_x = AnchorType::Min;  box.Min.X = other_box.Min.X; box.Max.X = box.Min.X + size.X; }
+			else if (!limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Max;  box.Max.X = other_box.Max.X; box.Min.X = box.Max.X - size.X; }
+
+			if      ( limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Both; box.Min.Y = other_box.Min.Y; box.Max.Y = other_box.Max.Y;    }
+			else if ( limit_min.GetY() && !limit_max.GetY()) { anchor_type_y = AnchorType::Min;  box.Min.Y = other_box.Min.Y; box.Max.Y = box.Min.Y + size.Y; }
+			else if (!limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Max;  box.Max.Y = other_box.Max.Y; box.Min.Y = box.Max.Y - size.Y; }
+		}
+
+		Anchor.X.Anchor = anchor_type_x;
+		Anchor.Y.Anchor = anchor_type_y;
 		Anchor.Calculate(Parent -> ContainerBox, box);
 		BoxWantUpdate();
 	}

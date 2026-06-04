@@ -2,6 +2,7 @@
 # define ANCHOR_1D_HPP
 
 struct BoxF1;
+
 enum class AnchorType : unsigned char;
 
 /*	do I ever not use the Padded numbers ?
@@ -18,33 +19,33 @@ but when I add Boarders, should that specify the inside or the outside ?
 right now it is tecnically the outside, so just keep doing that
 */
 
+struct refBoxF1
+{
+	float & Min;
+	float & Max;
+	refBoxF1(float & min, float & max);
+};
+
 struct Anchor1D
 {
 	private:
-	float & Size;
-	float & NormalCenter;
-
-	float & MinDist;
-	float & MaxDist;
-
-	float & MinMargin;
-	float & MaxMargin;
-
-	float & MinBoarder;
-	float & MaxBoarder;
-
-	float & MinPadding;
-	float & MaxPadding;
+	float &		Size;
+	refBoxF1	Dist;
+	refBoxF1	Margin;
+	refBoxF1	Boarder;
+	refBoxF1	Padding;
+	float &		NormalCenter;
 
 	public:
 	AnchorType Anchor;
 
 	Anchor1D(
-		float & size, float & normal_center
-		, float & min_dist, float & max_dist
-		, float & min_margin, float & max_margin
-		, float & min_boarder, float & max_boarder
-		, float & min_padding, float & max_padding
+		float & size,
+		refBoxF1 dist,
+		refBoxF1 margin,
+		refBoxF1 boarder,
+		refBoxF1 padding,
+		float & normal_center
 	);
 
 /*
@@ -134,6 +135,7 @@ struct Anchor1D
 
 
 
+	public:
 	void	AnchorMin(float dist);
 	void	AnchorMin(float dist, float size);
 	void	AnchorMax(float dist);
@@ -141,6 +143,10 @@ struct Anchor1D
 	void	AnchorBoth(float min, float max);
 	// Anchor Center
 
+	private:
+	void	CalculateSize(float ParentSize);
+	void	CalculateNormalCenter(float ParentSize);
+	public:
 	BoxF1	Calculate(BoxF1 Parent);
 	void	Calculate(BoxF1 Parent, BoxF1 box);
 };

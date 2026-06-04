@@ -174,7 +174,20 @@ class Base
 	void	Update();
 
 	protected:
-	void	ChangeAnchorBox(BoxF2 box);
+	enum class EBoxChangeType : unsigned char
+	{
+		None,
+		Move,
+		ResizeMinX,
+		ResizeMaxX,
+		ResizeMinY,
+		ResizeMaxY,
+		ResizeMinMin,
+		ResizeMinMax,
+		ResizeMaxMin,
+		ResizeMaxMax,
+	};
+	void	ChangeAnchorBox(BoxF2 box, EBoxChangeType type);
 
 	private:
 	void	UpdateBox();

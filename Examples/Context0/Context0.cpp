@@ -24,26 +24,11 @@ void Context0::Make()
 void Context0::Init()
 {
 	window.DefaultColor = ColorF4(0, 0, 0);
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")),
-		});
-		ControlManager.Shader.Change(code);
-	}
-	{
-		ControlManager.BufferLayoutMain.Pos.Change(0);
-		ControlManager.BufferLayoutInst.Min.Change(1);
-		ControlManager.BufferLayoutInst.Max.Change(2);
-		ControlManager.BufferLayoutInst.Layer.Change(3);
-		ControlManager.BufferLayoutInst.Col.Change(4);
-		ControlManager.Buffer.MainBuffer.AttributeLayout = &ControlManager.BufferLayoutMain;
-		ControlManager.Buffer.InstBuffer.AttributeLayout = &ControlManager.BufferLayoutInst;
-	}
-	{
-		ControlManager.WindowControl.ChangeManager(&ControlManager);
-		ControlManager.WindowControl.ChangeManager(&TextManager);
-	}
+
+	ControlManager.ChangeMedia(MediaDirectory);
+	ControlManager.WindowControl.ChangeManager(&ControlManager);
+	ControlManager.WindowControl.ChangeManager(&TextManager);
+
 	TextManager.InitMedia(MediaDirectory);
 	TextManager.TextFont = UI::Text::Font::Parse(
 		MediaDirectory.File("Text/Font0.atlas")

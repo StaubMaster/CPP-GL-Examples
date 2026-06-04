@@ -8,7 +8,7 @@ UI::Control::Form::Form()
 	: Base()
 	, IsMovable(true)
 	, IsResizable(true)
-	, ChangingBoxType(EChangingBoxType::None)
+	, ChangingBoxType(EBoxChangeType::None)
 {
 	// give this stuff to Base ?
 	Depth = 0.9f;
@@ -22,11 +22,11 @@ UI::Control::Form::Form()
 
 
 
-UI::Control::Form::EChangingBoxType UI::Control::Form::FindChangingArea(VectorF2 mouse) const
+UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 mouse) const
 {
 	BoxF2 BoarderBox;
-	BoarderBox.Min = DisplayBox.Min + AnchorBoarder.Min;
-	BoarderBox.Max = DisplayBox.Max - AnchorBoarder.Max;
+	BoarderBox.Min = DisplayBox.Min + 10.0f;
+	BoarderBox.Max = DisplayBox.Max - 10.0f;
 
 	BoxF2 MinX_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(BoarderBox.Min.X, DisplayBox.Max.Y));
 	BoxF2 MaxX_Box(VectorF2(BoarderBox.Max.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
@@ -40,25 +40,30 @@ UI::Control::Form::EChangingBoxType UI::Control::Form::FindChangingArea(VectorF2
 
 	if (MinX_Hovering || MaxX_Hovering || MinY_Hovering || MaxY_Hovering)
 	{
-		if (MinX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { return EChangingBoxType::ResizeMinX; }
-		if (MaxX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { return EChangingBoxType::ResizeMaxX; }
-		if (MinY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { return EChangingBoxType::ResizeMinY; }
-		if (MaxY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { return EChangingBoxType::ResizeMaxY; }
+		if (MinX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { return EBoxChangeType::ResizeMinX; }
+		if (MaxX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { return EBoxChangeType::ResizeMaxX; }
+		if (MinY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { return EBoxChangeType::ResizeMinY; }
+		if (MaxY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { return EBoxChangeType::ResizeMaxY; }
 
-		if (MinX_Hovering && MinY_Hovering) { return EChangingBoxType::ResizeMinMin; }
-		if (MinX_Hovering && MaxY_Hovering) { return EChangingBoxType::ResizeMinMax; }
-		if (MaxX_Hovering && MinY_Hovering) { return EChangingBoxType::ResizeMaxMin; }
-		if (MaxX_Hovering && MaxY_Hovering) { return EChangingBoxType::ResizeMaxMax; }
+		if (MinX_Hovering && MinY_Hovering) { return EBoxChangeType::ResizeMinMin; }
+		if (MinX_Hovering && MaxY_Hovering) { return EBoxChangeType::ResizeMinMax; }
+		if (MaxX_Hovering && MinY_Hovering) { return EBoxChangeType::ResizeMaxMin; }
+		if (MaxX_Hovering && MaxY_Hovering) { return EBoxChangeType::ResizeMaxMax; }
 	}
 	else
 	{
-		return EChangingBoxType::Move;
+		return EBoxChangeType::Move;
 	}
-	return EChangingBoxType::None;
+	return EBoxChangeType::None;
 }
 
 #include <iostream>
 #include "Base/Manager.hpp"
+/* put into Manager
+	Cursors flicked when moving
+	put into Manager, Cursor should stay the same until changing ends
+	dont do any Events (drag/move) while changing
+*/
 void UI::Control::Form::RelayHover(HoverArgs args)
 {
 	/*if (args == HoverArgs::Enter)
@@ -71,16 +76,16 @@ void UI::Control::Form::RelayHover(HoverArgs args)
 	}
 	if (args == HoverArgs::Move)
 	{
-		EChangingBoxType type = FindChangingArea(ControlManager -> CursorPosition);
-		if (type == EChangingBoxType::Move) { ControlManager -> CursorsUseDefault(); }
-		else if (type == EChangingBoxType::ResizeMinX) { ControlManager -> CursorsUseResizeH(); }
-		else if (type == EChangingBoxType::ResizeMaxX) { ControlManager -> CursorsUseResizeH(); }
-		else if (type == EChangingBoxType::ResizeMinY) { ControlManager -> CursorsUseResizeV(); }
-		else if (type == EChangingBoxType::ResizeMaxY) { ControlManager -> CursorsUseResizeV(); }
-		else if (type == EChangingBoxType::ResizeMinMin) { ControlManager -> CursorsUseResizeD0(); }
-		else if (type == EChangingBoxType::ResizeMaxMax) { ControlManager -> CursorsUseResizeD0(); }
-		else if (type == EChangingBoxType::ResizeMaxMin) { ControlManager -> CursorsUseResizeD1(); }
-		else if (type == EChangingBoxType::ResizeMinMax) { ControlManager -> CursorsUseResizeD1(); }
+		EBoxChangeType type = FindChangingArea(ControlManager -> CursorPosition);
+		if (type == EBoxChangeType::Move) { ControlManager -> CursorsUseDefault(); }
+		else if (type == EBoxChangeType::ResizeMinX) { ControlManager -> CursorsUseBoxEdge(0); }
+		else if (type == EBoxChangeType::ResizeMinY) { ControlManager -> CursorsUseBoxEdge(1); }
+		else if (type == EBoxChangeType::ResizeMaxX) { ControlManager -> CursorsUseBoxEdge(2); }
+		else if (type == EBoxChangeType::ResizeMaxY) { ControlManager -> CursorsUseBoxEdge(3); }
+		else if (type == EBoxChangeType::ResizeMinMin) { ControlManager -> CursorsUseBoxCorn(0); }
+		else if (type == EBoxChangeType::ResizeMaxMin) { ControlManager -> CursorsUseBoxCorn(1); }
+		else if (type == EBoxChangeType::ResizeMinMax) { ControlManager -> CursorsUseBoxCorn(2); }
+		else if (type == EBoxChangeType::ResizeMaxMax) { ControlManager -> CursorsUseBoxCorn(3); }
 		else { ControlManager -> CursorsUseDefault(); }
 	}
 }
@@ -106,28 +111,28 @@ void UI::Control::Form::RelayCursorDrag(DragArgs args)
 		// make it unlocked from that Edge
 		// also make things lock to eachother ?
 
-		if (ChangingBoxType != EChangingBoxType::None)
+		if (ChangingBoxType != EBoxChangeType::None)
 		{
 			const VectorF2 & mouse = args.Position.Buffer.Corner;
 			BoxF2 box = DisplayBox;
-			if (ChangingBoxType == EChangingBoxType::Move)
+			if (ChangingBoxType == EBoxChangeType::Move)
 			{
 				box.Min = mouse - ChangingBoxRel.Min;
 				box.Max = mouse - ChangingBoxRel.Max;
 			}
-			else if (ChangingBoxType == EChangingBoxType::ResizeMinX) { box.Min.X = mouse.X; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMaxX) { box.Max.X = mouse.X; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMinY) { box.Min.Y = mouse.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMaxY) { box.Max.Y = mouse.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMinMin) { box.Min.X = mouse.X; box.Min.Y = mouse.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMinMax) { box.Min.X = mouse.X; box.Max.Y = mouse.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMaxMin) { box.Max.X = mouse.X; box.Min.Y = mouse.Y; }
-			else if (ChangingBoxType == EChangingBoxType::ResizeMaxMax) { box.Max.X = mouse.X; box.Max.Y = mouse.Y; }
-			ChangeAnchorBox(box);
+			else if (ChangingBoxType == EBoxChangeType::ResizeMinX) { box.Min.X = mouse.X; }
+			else if (ChangingBoxType == EBoxChangeType::ResizeMaxX) { box.Max.X = mouse.X; }
+			else if (ChangingBoxType == EBoxChangeType::ResizeMinY) { box.Min.Y = mouse.Y; }
+			else if (ChangingBoxType == EBoxChangeType::ResizeMaxY) { box.Max.Y = mouse.Y; }
+			else if (ChangingBoxType == EBoxChangeType::ResizeMinMin) { box.Min.X = mouse.X; box.Min.Y = mouse.Y; }
+			else if (ChangingBoxType == EBoxChangeType::ResizeMinMax) { box.Min.X = mouse.X; box.Max.Y = mouse.Y; }
+			else if (ChangingBoxType == EBoxChangeType::ResizeMaxMin) { box.Max.X = mouse.X; box.Min.Y = mouse.Y; }
+			else if (ChangingBoxType == EBoxChangeType::ResizeMaxMax) { box.Max.X = mouse.X; box.Max.Y = mouse.Y; }
+			ChangeAnchorBox(box, ChangingBoxType);
 		}
 	}
 	else if (args.Action == Action::Release)
 	{
-		ChangingBoxType = EChangingBoxType::None;
+		ChangingBoxType = EBoxChangeType::None;
 	}
 }

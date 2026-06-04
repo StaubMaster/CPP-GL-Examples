@@ -35,23 +35,9 @@ class Form : public Base
 	//BoxF2	SizeLimit;
 
 	private:
-	enum class EChangingBoxType : unsigned char
-	{
-		None,
-		Move,
-		ResizeMinX,
-		ResizeMaxX,
-		ResizeMinY,
-		ResizeMaxY,
-		ResizeMinMin,
-		ResizeMinMax,
-		ResizeMaxMin,
-		ResizeMaxMax,
-	};
-	EChangingBoxType	FindChangingArea(VectorF2 mouse) const;
-
-	EChangingBoxType	ChangingBoxType;
-	BoxF2				ChangingBoxRel;
+	EBoxChangeType	FindChangingArea(VectorF2 mouse) const;
+	EBoxChangeType	ChangingBoxType;
+	BoxF2			ChangingBoxRel;
 
 	public:
 	void	RelayHover(HoverArgs args) override;
