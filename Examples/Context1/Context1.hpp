@@ -4,15 +4,11 @@
 # include "ContextBase.hpp"
 # include "Context1Menu.hpp"
 
-# include "Control/Base/Manager.hpp"
-# include "ControlsInclude.hpp"
-
-# include "Text/Manager.hpp"
+# include "UIManager.hpp"
 
 struct Context1 : public ContextBase
 {
-UI::Control::Manager	ControlManager;
-UI::Text::Manager		TextManager;
+UI::Manager				UIManager;
 
 Context1Menu			Menu;
 
@@ -27,11 +23,12 @@ void Free() override;
 void Resize(DisplaySize display_size) override;
 void Frame(FrameTime frame_time) override;
 
-void MouseClick(ClickArgs args) override;
-void MouseDrag(DragArgs args) override;
-void MouseScroll(ScrollArgs args) override;
-void KeyBoardKey(KeyArgs args) override;
-void KeyBoardText(TextArgs args);
+void	MouseMove(MoveArgs args) override;
+void	MouseClick(ClickArgs args) override;
+void	MouseScroll(ScrollArgs args) override;
+void	MouseDrag(DragArgs args) override;
+void	KeyBoardKey(KeyArgs args) override;
+void	KeyBoardText(TextArgs args) override;
 };
 
 #endif

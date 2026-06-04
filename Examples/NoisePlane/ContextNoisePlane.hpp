@@ -22,13 +22,9 @@
 // FileManager
 #include "Image.hpp"
 
-// Text
-#include "Text/Manager.hpp"
+// UI
+#include "UIManager.hpp"
 #include "Text/Object.hpp"
-
-// Controls
-#include "Control/Base/Manager.hpp"
-#include "ControlsInclude.hpp"
 
 // Units
 #include "UnitToString.hpp"
@@ -101,8 +97,7 @@ struct InventoryShader : public ::PolyHedraFull::Shader
 struct ContextNoisePlane : public ContextBase
 {
 ::PolyHedraManager		PolyHedraManager;
-UI::Control::Manager	ControlManager;
-UI::Text::Manager		TextManager;
+UI::Manager				UIManager;
 //::PlaneManager		PlaneManager;
 ::ChunkManager			ChunkManager;
 
@@ -270,15 +265,14 @@ void InventoryCursor(FrameTime frame_time);
 void FrameInput();;
 
 void Frame(FrameTime frame_time) override;
-
 void Resize(DisplaySize display_size) override;
 
 
 
-// make these virtual and put them in Base
-void MouseScroll(ScrollArgs args) override;
-void MouseClick(ClickArgs args) override;
-void MouseDrag(DragArgs args) override;
-
-void KeyBoardKey(KeyArgs args) override;
+void	MouseMove(MoveArgs args) override;
+void	MouseClick(ClickArgs args) override;
+void	MouseScroll(ScrollArgs args) override;
+void	MouseDrag(DragArgs args) override;
+void	KeyBoardKey(KeyArgs args) override;
+void	KeyBoardText(TextArgs args) override;
 };

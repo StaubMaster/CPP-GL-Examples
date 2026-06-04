@@ -75,8 +75,7 @@ ContextNoisePlane::~ContextNoisePlane()
 ContextNoisePlane::ContextNoisePlane()
 	: ContextBase()
 	, PolyHedraManager()
-	, ControlManager()
-	, TextManager()
+	, UIManager()
 //	, PlaneManager()
 	, ChunkManager()
 	, MainMenu()
@@ -99,13 +98,11 @@ ContextNoisePlane::ContextNoisePlane()
 {
 	AuxThreadBase::ThreadName = "DrawThread";
 	PolyHedraManager.MakeCurrent();
-	ControlManager.MakeCurrent();
-	TextManager.MakeCurrent();
 	Container::Array<Uniform::Layout *> layouts({
 		&PolyHedraManager.ShaderLayoutFullDefault,
 		&PolyHedraManager.ShaderLayoutWireDefault,
-		&ControlManager.ShaderLayout,
-		&TextManager.ShaderLayout,
+		&UIManager.ControlManager.ShaderLayout,
+		&UIManager.TextManager.ShaderLayout,
 //		&PlaneManager.Shader,
 		&ChunkManager.ShaderLayoutU,
 //		&ChunkManager.ShaderLayoutF,
@@ -573,7 +570,7 @@ void ContextNoisePlane::MakeControls()
 	// Pause
 	{
 		PauseMenu.Show();
-		ControlManager.WindowControl.ChildInsert(PauseMenu);
+		UIManager.WindowControl.ChildInsert(PauseMenu);
 	}
 	// Options
 	{
@@ -590,7 +587,7 @@ void ContextNoisePlane::MakeControls()
 		// make RemoveRange = InsertRange + n ?
 
 		OptionsMenu.Hide();
-		ControlManager.WindowControl.ChildInsert(OptionsMenu);
+		UIManager.WindowControl.ChildInsert(OptionsMenu);
 	}
 	// Debug
 	{
@@ -598,7 +595,7 @@ void ContextNoisePlane::MakeControls()
 		DebugMenu.VoxelChunkMemory.Check.Check(true);
 
 		DebugMenu.Hide();
-		ControlManager.WindowControl.ChildInsert(DebugMenu);
+		UIManager.WindowControl.ChildInsert(DebugMenu);
 	}
 	// Inventory
 #ifndef DISABLE_INVENTORY
@@ -618,7 +615,7 @@ void ContextNoisePlane::MakeControls()
 		//Inventory[VectorU2(1, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCylinder"]);
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
-		ControlManager.WindowControl.ChildInsert(InventoryUI);
+		UIManager.WindowControl.ChildInsert(InventoryUI);
 		PolyHedraManager.MakeCurrent();
 	}
 #endif
@@ -629,7 +626,7 @@ void ContextNoisePlane::MakeControls()
 		HotBarUI.Anchor.Y.AnchorMax(0);
 		HotBarUI.Change(&HotBar);
 		//HotBarUI.Hide();
-		ControlManager.WindowControl.ChildInsert(HotBarUI);
+		UIManager.WindowControl.ChildInsert(HotBarUI);
 		PolyHedraManager.MakeCurrent();
 	}
 #endif
@@ -645,6 +642,9 @@ void ContextNoisePlane::ChangeMedia()
 
 	// PolyHedraManager
 	PolyHedraManager.InitExternal(MediaDirectory);
+
+	// ControlManager
+	/*
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
 		Container::Array<Shader::Code> code({
@@ -669,8 +669,10 @@ void ContextNoisePlane::ChangeMedia()
 		ControlManager.WindowControl.ChangeManager(&TextManager);
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
+	*/
 
 	// TextManager
+	/*
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	{
 		Container::Array<::Shader::Code> code({
@@ -715,6 +717,9 @@ void ContextNoisePlane::ChangeMedia()
 		std::cout << '\n';
 	}
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
+	*/
+
+	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 
 	// PlaneManager
 	/*{
@@ -765,9 +770,7 @@ void ContextNoisePlane::GraphicsCreate()
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
-	ControlManager.GraphicsCreate();
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
-	TextManager.GraphicsCreate();
+	UIManager.GraphicsCreate();
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
 	//PlaneManager.GraphicsCreate();
 //	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
@@ -783,8 +786,7 @@ void ContextNoisePlane::GraphicsCreate()
 void ContextNoisePlane::GraphicsDelete()
 {
 	PolyHedraManager.GraphicsDelete();
-	ControlManager.GraphicsDelete();
-	TextManager.GraphicsDelete();
+	UIManager.GraphicsDelete();
 	//PlaneManager.GraphicsDelete();
 	ChunkManager.GraphicsDelete();
 #ifndef DISABLE_INVENTORY
@@ -802,7 +804,7 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	GraphicsCreate();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
-	TextManager.InitFont();
+	UIManager.TextManager.InitFont();
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	VoxelPalletMap::All.LoadTextures(ChunkManager);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
@@ -902,23 +904,24 @@ void ContextNoisePlane::Draw()
 		InventoryPolyHedraManager.MakeCurrent();
 #endif
 		sw.Clear(); sw.Start();
-		ControlManager.UpdateSize(window.Size);
-		ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
-//		ControlManager.WindowControl.UpdateEntrys();
-		ControlManager.Draw();
+		UIManager.WindowControl.Update();
+		UIManager.Resize(window.Size);
+		UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+		UIManager.ControlManager.MakeInstances();
+		UIManager.ControlManager.Draw();
 		PolyHedraManager.MakeCurrent();
 		sw.Stop(); FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime());
 	}
 
 	sw.Clear(); sw.Start();
-	TextManager.MakeInstances();
+	UIManager.TextManager.MakeInstances();
 	sw.Stop(); FrameTime_Draw_MakeText.NewValue(sw.ElapsedTime());
 
-	TextManager.ShowInstancesTime();
+	UIManager.TextManager.ShowInstancesTime();
 
 	sw.Clear(); sw.Start();
-	TextManager.Draw();
-	TextCharCount = TextManager.InstancesArray.Length();
+	UIManager.TextManager.Draw();
+	TextCharCount = UIManager.TextManager.InstancesArray.Length();
 	sw.Stop(); FrameTime_Draw_DrawText.NewValue(sw.ElapsedTime());
 
 #ifndef DISABLE_INVENTORY
@@ -1682,19 +1685,21 @@ void ContextNoisePlane::Resize(DisplaySize display_size)
 
 
 // make these virtual and put them in Base
-void ContextNoisePlane::MouseScroll(ScrollArgs args) { (void)args; }
+void ContextNoisePlane::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
 void ContextNoisePlane::MouseClick(ClickArgs args)
 {
 #ifndef DISABLE_INVENTORY
 	InventoryPolyHedraManager.MakeCurrent();
 #endif
-	ControlManager.RelayClick(args);
+	UIManager.MouseClick(args);
 #ifndef DISABLE_INVENTORY
 	PolyHedraManager.MakeCurrent();
 #endif
 }
-void ContextNoisePlane::MouseDrag(DragArgs args) { ControlManager.RelayCursorDrag(args); }
-void ContextNoisePlane::KeyBoardKey(KeyArgs args) { (void)args; }
+void ContextNoisePlane::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
+void ContextNoisePlane::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
+void ContextNoisePlane::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
+void ContextNoisePlane::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
 
 
 

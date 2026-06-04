@@ -1,4 +1,5 @@
 #include "Form.hpp"
+#include "UIManager.hpp"
 
 
 
@@ -68,25 +69,25 @@ void UI::Control::Form::RelayHover(HoverArgs args)
 {
 	/*if (args == HoverArgs::Enter)
 	{
-		ControlManager -> CursorsUseResizeH();
+		Manager -> CursorsUseResizeH();
 	}*/
 	if (args == HoverArgs::Leave)
 	{
-		ControlManager -> CursorsUseDefault();
+		Manager -> CursorsUseDefault();
 	}
 	if (args == HoverArgs::Move)
 	{
-		EBoxChangeType type = FindChangingArea(ControlManager -> CursorPosition);
-		if (type == EBoxChangeType::Move) { ControlManager -> CursorsUseDefault(); }
-		else if (type == EBoxChangeType::ResizeMinX) { ControlManager -> CursorsUseBoxEdge(0); }
-		else if (type == EBoxChangeType::ResizeMinY) { ControlManager -> CursorsUseBoxEdge(1); }
-		else if (type == EBoxChangeType::ResizeMaxX) { ControlManager -> CursorsUseBoxEdge(2); }
-		else if (type == EBoxChangeType::ResizeMaxY) { ControlManager -> CursorsUseBoxEdge(3); }
-		else if (type == EBoxChangeType::ResizeMinMin) { ControlManager -> CursorsUseBoxCorn(0); }
-		else if (type == EBoxChangeType::ResizeMaxMin) { ControlManager -> CursorsUseBoxCorn(1); }
-		else if (type == EBoxChangeType::ResizeMinMax) { ControlManager -> CursorsUseBoxCorn(2); }
-		else if (type == EBoxChangeType::ResizeMaxMax) { ControlManager -> CursorsUseBoxCorn(3); }
-		else { ControlManager -> CursorsUseDefault(); }
+		EBoxChangeType type = FindChangingArea(Manager -> CursorPosition);
+		if (type == EBoxChangeType::Move) { Manager -> CursorsUseDefault(); }
+		else if (type == EBoxChangeType::ResizeMinX) { Manager -> CursorsUseBoxEdge(0); }
+		else if (type == EBoxChangeType::ResizeMinY) { Manager -> CursorsUseBoxEdge(1); }
+		else if (type == EBoxChangeType::ResizeMaxX) { Manager -> CursorsUseBoxEdge(2); }
+		else if (type == EBoxChangeType::ResizeMaxY) { Manager -> CursorsUseBoxEdge(3); }
+		else if (type == EBoxChangeType::ResizeMinMin) { Manager -> CursorsUseBoxCorn(0); }
+		else if (type == EBoxChangeType::ResizeMaxMin) { Manager -> CursorsUseBoxCorn(1); }
+		else if (type == EBoxChangeType::ResizeMinMax) { Manager -> CursorsUseBoxCorn(2); }
+		else if (type == EBoxChangeType::ResizeMaxMax) { Manager -> CursorsUseBoxCorn(3); }
+		else { Manager -> CursorsUseDefault(); }
 	}
 }
 void UI::Control::Form::RelayCursorDrag(DragArgs args)

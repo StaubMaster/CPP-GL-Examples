@@ -65,14 +65,14 @@ void UI::Control::Button::RelayUpdateBox()
 
 void UI::Control::Button::RelayInsertObject()
 {
-	if (!TextObject.Is() && TextManager != NULL)
+	if (!TextObject.Is() && Manager != NULL)
 	{
 		TextObject.Create();
 	}
 }
 void UI::Control::Button::RelayRemoveObject()
 {
-	if (TextObject.Is() || TextManager == NULL)
+	if (TextObject.Is() || Manager == NULL)
 	{
 		TextObject.Delete();
 	}

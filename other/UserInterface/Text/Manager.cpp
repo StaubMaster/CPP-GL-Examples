@@ -64,7 +64,7 @@ UI::Text::Manager::Manager()
 	std::cout << "  ++++  " << "UI::Text::Manager::Manager()" << '\n';
 }
 
-void UI::Text::Manager::InitMedia(DirectoryInfo & media_dir)
+void UI::Text::Manager::InitMedia(const DirectoryInfo & media_dir)
 {
 	{
 		Container::Array<::Shader::Code> code({

@@ -24,22 +24,3 @@ void UI::Control::Window::UpdateWindowSize(VectorF2 size)
 	ContainerBox = DisplayBox;
 	BoxWantUpdate();
 }
-
-
-
-void UI::Control::Window::ChangeManager(Manager * manager)
-{
-	ControlManager = manager;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> ChangeManager(manager);
-	}
-}
-void UI::Control::Window::ChangeManager(UI::Text::Manager * manager)
-{
-	TextManager = manager;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> ChangeManager(manager);
-	}
-}

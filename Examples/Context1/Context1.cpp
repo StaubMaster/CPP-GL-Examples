@@ -8,82 +8,51 @@
 Context1::~Context1() { }
 Context1::Context1()
 	: ContextBase()
-	, ControlManager()
-	, TextManager()
+	, UIManager()
 	, Menu()
-{
-	ControlManager.MakeCurrent();
-	TextManager.MakeCurrent();
-}
+{ }
 
 
 
 void Context1::Make()
 {
-	window.KeyBoardManager.CallBack_TextEvent.Assign(this, &Context1::KeyBoardText);
-	ControlManager.WindowControl.ChildInsert(Menu);
+	UIManager.WindowControl.ChildInsert(Menu);
 }
 
 void Context1::Init()
 {
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")),
-		});
-		ControlManager.Shader.Change(code);
-	}
-	{
-		ControlManager.BufferLayoutMain.Pos.Change(0);
-		ControlManager.BufferLayoutInst.Min.Change(1);
-		ControlManager.BufferLayoutInst.Max.Change(2);
-		ControlManager.BufferLayoutInst.Layer.Change(3);
-		ControlManager.BufferLayoutInst.Col.Change(4);
-	}
-	{
-		ControlManager.WindowControl.ChangeManager(&ControlManager);
-		ControlManager.WindowControl.ChangeManager(&TextManager);
-	}
-	TextManager.InitMedia(MediaDirectory);
-	TextManager.TextFont = UI::Text::Font::Parse(
-		MediaDirectory.File("Text/Font0.atlas")
-	);
+	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 
-	ControlManager.GraphicsCreate();
-	TextManager.GraphicsCreate();
+	UIManager.GraphicsCreate();
 
 	Make();
 }
 void Context1::Free()
 {
-	ControlManager.GraphicsDelete();
-	TextManager.GraphicsDelete();
+	UIManager.GraphicsDelete();
 }
 
 
 
 void Context1::Resize(DisplaySize display_size)
 {
-	TextManager.ShaderLayout.DisplaySize.Put(display_size);
-	ControlManager.ShaderLayout.DisplaySize.Put(display_size);
-	ControlManager.UpdateSize(display_size);
+	UIManager.Resize(display_size);
 }
 void Context1::Frame(FrameTime frame_time)
 {
 	(void)frame_time;
-	ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
-//	ControlManager.Window.UpdateEntrys();
-	ControlManager.Draw();
-	TextManager.Draw();
+	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+	UIManager.Draw();
 }
 
 
 
-void Context1::MouseClick(ClickArgs args) { ControlManager.RelayClick(args); }
-void Context1::MouseDrag(DragArgs args) { ControlManager.RelayCursorDrag(args); }
-void Context1::MouseScroll(ScrollArgs args) { ControlManager.RelayScroll(args); }
-void Context1::KeyBoardKey(KeyArgs args) { ControlManager.RelayKey(args); }
-void Context1::KeyBoardText(TextArgs args) { ControlManager.RelayText(args); }
+void Context1::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
+void Context1::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
+void Context1::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
+void Context1::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
+void Context1::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
+void Context1::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
 
 
 

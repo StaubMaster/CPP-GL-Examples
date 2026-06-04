@@ -1,5 +1,5 @@
 #include "Base.hpp"
-#include "Manager.hpp"
+#include "UIManager.hpp"
 
 #include "User/MouseArgs.hpp"
 
@@ -119,8 +119,7 @@ UI::Control::Base::~Base()
 	}*/
 }
 UI::Control::Base::Base()
-	: ControlManager(nullptr)
-	, TextManager(nullptr)
+	: Manager(nullptr)
 	, ControlObject()
 	, Parent(nullptr)
 	, Children()
@@ -154,8 +153,7 @@ void UI::Control::Base::ChildInsert(Base & control)
 {
 	Children.Insert(&control);
 	control.Parent = this;
-	control.ChangeManager(ControlManager);
-	control.ChangeManager(TextManager);
+	control.ChangeManager(Manager);
 	control.DrawableWantUpdate();
 	control.BoxWantUpdate();
 }
@@ -163,21 +161,17 @@ void UI::Control::Base::ChildInsert(Base * control)
 {
 	ChildInsert(*control);
 }
-void UI::Control::Base::ChangeManager(Manager * manager)
+void UI::Control::Base::ChangeManager(UI::Manager * manager)
 {
-	ControlManager = manager;
+	Manager = manager;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> ChangeManager(manager);
 	}
 }
-void UI::Control::Base::ChangeManager(UI::Text::Manager * manager)
+void UI::Control::Base::ChangeManager(UI::Manager & manager)
 {
-	TextManager = manager;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> ChangeManager(manager);
-	}
+	ChangeManager(&manager);
 }
 
 
@@ -285,7 +279,7 @@ void UI::Control::Base::UpdateBox()
 }
 void UI::Control::Base::InsertObject()
 {
-	if (!ControlObject.Is() && ControlManager != nullptr)
+	if (!ControlObject.Is() && Manager != nullptr)
 	{
 		ControlObject.Create();
 		ControlObject.Layer() = Depth;
@@ -298,7 +292,7 @@ void UI::Control::Base::InsertObject()
 }
 void UI::Control::Base::RemoveObject()
 {
-	if (ControlObject.Is() || ControlManager == nullptr)
+	if (ControlObject.Is() || Manager == nullptr)
 	{
 		if (ControlObject.Is())
 		{
@@ -315,7 +309,7 @@ void UI::Control::Base::AssignObjectBox()
 }
 void UI::Control::Base::AssignObjectColor()
 {
-	if (ControlManager -> Hovering != this)
+	if (Manager -> Hovering != this)
 	{
 		ControlObject.Color() = ColorDefault;
 	}

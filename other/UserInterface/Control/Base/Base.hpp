@@ -70,18 +70,16 @@ change in Box
 
 namespace UI
 {
-namespace Text { class Manager; };
+class Manager;
 namespace Control
 {
-class Manager;
 class Base
 {
 	protected:
-	Manager *			ControlManager;
-	UI::Text::Manager *	TextManager;
+	UI::Manager *	Manager;
 
 	protected:
-	Object		ControlObject;
+	Object			ControlObject;
 
 	protected:
 	Base * Parent;
@@ -161,10 +159,10 @@ class Base
 	Base();
 
 	public:
-	void			ChildInsert(Base & control);
-	void			ChildInsert(Base * control);
-	virtual void	ChangeManager(Manager * manager);
-	virtual void	ChangeManager(UI::Text::Manager * manager);
+	void	ChildInsert(Base & control);
+	void	ChildInsert(Base * control);
+	void	ChangeManager(UI::Manager * manager);
+	void	ChangeManager(UI::Manager & manager);
 
 	// UpdateHandler that has referances to these functions
 

@@ -72,7 +72,7 @@ class Manager
 	Manager & operator=(const Manager & other) = delete;
 
 	public:
-	void	InitMedia(DirectoryInfo & media_dir);
+	void	InitMedia(const DirectoryInfo & media_dir);
 	void	InitFont();
 
 

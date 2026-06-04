@@ -33,6 +33,8 @@ FILES := \
 	Text/Object.cpp \
 	Text/Font/Font.cpp \
 	Text/Font/Parsing.cpp \
+\
+	UIManager.cpp
 
 DIR_SRC := .
 DIR_OBJ := .

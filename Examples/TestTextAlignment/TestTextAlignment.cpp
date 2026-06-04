@@ -1,5 +1,7 @@
 #include "TestTextAlignment.hpp"
 
+#include "Text/Object.hpp"
+
 #include "Graphics/Shader/Code.hpp"
 #include "Miscellaneous/Container/Array.hpp"
 
@@ -12,12 +14,8 @@
 ContextTestTextAlignment::~ContextTestTextAlignment() { }
 ContextTestTextAlignment::ContextTestTextAlignment()
 	: ContextBase()
-	, ControlManager()
-	, TextManager()
-{
-	ControlManager.MakeCurrent();
-	TextManager.MakeCurrent();
-}
+	, UIManager()
+{ }
 
 
 
@@ -25,37 +23,13 @@ void ContextTestTextAlignment::Init()
 {
 	window.FrameTime = FrameTime(4096, 1.0f / 0.0f);
 
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")),
-		});
-		ControlManager.Shader.Change(code);
-	}
-	{
-		ControlManager.BufferLayoutMain.Pos.Change(0);
-		ControlManager.BufferLayoutInst.Min.Change(1);
-		ControlManager.BufferLayoutInst.Max.Change(2);
-		ControlManager.BufferLayoutInst.Layer.Change(3);
-		ControlManager.BufferLayoutInst.Col.Change(4);
-	}
-	{
-		ControlManager.WindowControl.ChangeManager(&ControlManager);
-		ControlManager.WindowControl.ChangeManager(&TextManager);
-	}
-	TextManager.InitMedia(MediaDirectory);
-	TextManager.TextFont = UI::Text::Font::Parse(
-		MediaDirectory.File("Text/Font0.atlas")
-	);
+	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 
-	ControlManager.GraphicsCreate();
-	TextManager.GraphicsCreate();
-	TextManager.InitFont();
+	UIManager.GraphicsCreate();
 }
 void ContextTestTextAlignment::Free()
 {
-	ControlManager.GraphicsDelete();
-	TextManager.GraphicsDelete();
+	UIManager.GraphicsDelete();
 }
 
 
@@ -184,7 +158,7 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		return;
 	}
 
-	TextManager.ShowInstancesTime();
+	UIManager.TextManager.ShowInstancesTime();
 
 	{
 		BoxF2 bound(VectorF2(), window.Size.Buffer.Full);
@@ -201,9 +175,9 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 		ss << "Max: "; ShowTimeFreq(ss, DLTAverageTime.Max(), FPSAverageTime.Min()); ss << '\n';
 		ss << '\n';
 
-		ss << "TextManager.TextArrayIdx     : " << TextManager.TextArrayIdx << '\n';
-		ss << "TextManager.Instances.Count(): " << TextManager.InstancesArray.Length() << '\n';
-		ss << "TextManager.ObjectDatas.Count(): " << TextManager.ObjectDatas.Count() << '\n';
+		ss << "TextManager.TextArrayIdx     : " << UIManager.TextManager.TextArrayIdx << '\n';
+		ss << "TextManager.Instances.Count(): " << UIManager.TextManager.InstancesArray.Length() << '\n';
+		ss << "TextManager.ObjectDatas.Count(): " << UIManager.TextManager.ObjectDatas.Count() << '\n';
 		ShowNameTimeLine(ss, "TextMake", TimeData_TextMake);
 		ShowNameTimeLine(ss, "TextDraw", TimeData_TextDraw);
 		ss << '\n';
@@ -237,24 +211,24 @@ void ContextTestTextAlignment::Frame(FrameTime frame_time)
 	StopWatch sw;
 	TextAlignment();
 	(void)frame_time;
-	ControlManager.UpdateMouse(window.MouseManager.CursorPosition().Buffer.Corner);
-//	ControlManager.WindowControl.UpdateEntrys();
-	ControlManager.Draw();
+
+	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+
+	UIManager.ControlManager.MakeInstances();
+	UIManager.ControlManager.Draw();
 
 	sw.Clear(); sw.Start();
-	TextManager.MakeInstances();
+	UIManager.TextManager.MakeInstances();
 	sw.Stop(); TimeData_TextMake.NewValue(sw.ElapsedTime());
 
 	sw.Clear(); sw.Start();
-	TextManager.Draw();
+	UIManager.TextManager.Draw();
 	sw.Stop(); TimeData_TextDraw.NewValue(sw.ElapsedTime());
 }
 
 void ContextTestTextAlignment::Resize(DisplaySize display_size)
 {
-	TextManager.ShaderLayout.DisplaySize.Put(display_size);
-	ControlManager.ShaderLayout.DisplaySize.Put(display_size);
-	ControlManager.UpdateSize(display_size);
+	UIManager.Resize(display_size);
 }
 /* DisplaySize Functions
 	DisplayBound()
@@ -263,7 +237,9 @@ void ContextTestTextAlignment::Resize(DisplaySize display_size)
 
 
 
-void ContextTestTextAlignment::MouseScroll(ScrollArgs args) { (void)args; }
-void ContextTestTextAlignment::MouseClick(ClickArgs args) { ControlManager.RelayClick(args); }
-void ContextTestTextAlignment::MouseDrag(DragArgs args) { ControlManager.RelayCursorDrag(args); }
-void ContextTestTextAlignment::KeyBoardKey(KeyArgs args) { (void)args; }
+void ContextTestTextAlignment::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
+void ContextTestTextAlignment::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
+void ContextTestTextAlignment::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
+void ContextTestTextAlignment::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
+void ContextTestTextAlignment::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
+void ContextTestTextAlignment::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }

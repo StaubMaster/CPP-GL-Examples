@@ -3,15 +3,11 @@
 
 # include "ContextBase.hpp"
 
-# include "Control/Base/Manager.hpp"
-# include "ControlsInclude.hpp"
-
-# include "Text/Manager.hpp"
+# include "UIManager.hpp"
 
 struct ContextTestTextAlignment : public ContextBase
 {
-UI::Control::Manager	ControlManager;
-UI::Text::Manager		TextManager;
+UI::Manager				UIManager;
 
 ~ContextTestTextAlignment();
 ContextTestTextAlignment();
@@ -26,10 +22,12 @@ void	TextAlignment();
 void	Frame(FrameTime frame_time) override;
 void	Resize(DisplaySize display_size) override;
 
-void	MouseScroll(ScrollArgs args) override;
+void	MouseMove(MoveArgs args) override;
 void	MouseClick(ClickArgs args) override;
+void	MouseScroll(ScrollArgs args) override;
 void	MouseDrag(DragArgs args) override;
 void	KeyBoardKey(KeyArgs args) override;
+void	KeyBoardText(TextArgs args) override;
 };
 
 #endif

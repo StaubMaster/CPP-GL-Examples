@@ -212,7 +212,7 @@ void UI::Control::Slider::RelayUpdateBox()
 }
 void UI::Control::Slider::RelayInsertObject()
 {
-	if (!SliderObject.Is() && ControlManager != NULL)
+	if (!SliderObject.Is() && Manager != NULL)
 	{
 		SliderObject.Create();
 		SliderObject.Color() = ColorF4(0.5f, 0.5f, 0.5f);
@@ -236,18 +236,18 @@ void UI::Control::Slider::RelayInsertObject()
 			SliderObject.Box().Max = slider_value + slider_size_half;
 		}
 	}
-	if (!TextObject.Is() && TextManager != NULL)
+	if (!TextObject.Is() && Manager != NULL)
 	{
 		TextObject.Create();
 	}
 }
 void UI::Control::Slider::RelayRemoveObject()
 {
-	if (SliderObject.Is() || ControlManager == NULL)
+	if (SliderObject.Is() || Manager == NULL)
 	{
 		SliderObject.Delete();
 	}
-	if (TextObject.Is() || TextManager == NULL)
+	if (TextObject.Is() || Manager == NULL)
 	{
 		TextObject.Delete();
 	}

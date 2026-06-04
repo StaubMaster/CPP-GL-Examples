@@ -56,43 +56,9 @@ class Manager
 	Container::Binary<ObjectData*>			ObjectDatas;
 	Container::Binary<Control::Inst_Data>	Instances;
 
-	DisplaySize				WindowSize;
-	UI::Control::Window		WindowControl;
-
-	Base *	Hovering;
-	Base *	Selected;
-
-	Form *	BoxChanging;
-
-	// Cursors
-	public:
-	VectorF2		CursorPosition;
-
-	GLFWwindow *	glfw_window;
-	GLFWcursor *	glfw_cursorArrowC;
-	GLFWcursor *	glfw_cursorArrowH;
-	GLFWcursor *	glfw_cursorArrowV;
-	GLFWcursor *	glfw_cursorArrowD0;
-	GLFWcursor *	glfw_cursorArrowD1;
-	GLFWcursor *	glfw_cursorBoxEdge[4];
-	GLFWcursor *	glfw_cursorBoxCorn[4];
-
-	void	CursorsCreate(const DirectoryInfo & dir);
-	void	CursorsDelete();
-
-	void	CursorsUseDefault();
-	void	CursorsUseArrowC();
-	void	CursorsUseArrowH();
-	void	CursorsUseArrowV();
-	void	CursorsUseArrowD0();
-	void	CursorsUseArrowD1();
-	void	CursorsUseBoxEdge(unsigned char i);
-	void	CursorsUseBoxCorn(unsigned char i);
-
 	public:
 	~Manager();
 	Manager();
-	Manager(GLFWwindow * glfw_window);
 	Manager(const Manager & other) = delete;
 	Manager & operator=(const Manager & other) = delete;
 
@@ -120,21 +86,11 @@ class Manager
 
 	private:
 	void	PlaceInstance(const ObjectData & obj);
+	public:
 	void	MakeInstances();
 
 	public:
 	void	Draw();
-	
-	void	UpdateSize(const DisplaySize & window_size);
-	void	UpdateMouse(VectorF2 mouse);
-
-	public:
-	void	RelayClick(ClickArgs args);
-	void	RelayScroll(ScrollArgs args);
-	void	RelayCursorDrag(DragArgs args);
-
-	void	RelayKey(KeyArgs args);
-	void	RelayText(TextArgs args);
 };
 
 };

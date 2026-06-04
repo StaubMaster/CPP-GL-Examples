@@ -35,10 +35,12 @@ struct ContextBase
 	virtual void	Resize(DisplaySize display_size) = 0;
 	virtual void	Frame(FrameTime frame_time) = 0;
 
-	virtual void	MouseScroll(ScrollArgs args) = 0;
+	virtual void	MouseMove(MoveArgs args) = 0;
 	virtual void	MouseClick(ClickArgs args) = 0;
+	virtual void	MouseScroll(ScrollArgs args) = 0;
 	virtual void	MouseDrag(DragArgs args) = 0;
 	virtual void	KeyBoardKey(KeyArgs args) = 0;
+	virtual void	KeyBoardText(TextArgs args) = 0;
 
 	void	Run();
 };

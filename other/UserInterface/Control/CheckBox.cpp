@@ -1,5 +1,5 @@
 #include "CheckBox.hpp"
-#include "Base/Manager.hpp"
+#include "UIManager.hpp"
 
 #include "User/MouseArgs.hpp"
 
@@ -44,7 +44,7 @@ void UI::Control::CheckBox::Check(bool state)
 
 void UI::Control::CheckBox::RelayAssignObjectColor()
 {
-	if (ControlManager -> Hovering != this)
+	if (Manager -> Hovering != this)
 	{
 		if (!Checked)
 		{
