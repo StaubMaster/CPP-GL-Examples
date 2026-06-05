@@ -108,10 +108,25 @@ void UI::Graph::Manager::PlaceInstance(const ObjectData & obj)
 	data.Box = obj.Box;
 	data.Col = obj.Col;
 
-	VectorF2 limit(
-		obj.Values -> Limit - 1,
-		128
-	);
+	/*	
+		what value should be in the middle
+		what is the scale ?
+		data.Pos is [0;1] should be [-1;+1]
+
++1	#-------------------# Center + Magnitude
+	|					|
+	|					|
+ 0	|-------------------| Center
+	|					|
+	|					|
+-1	#-------------------# Center - Magnitude
+	*/
+
+	float Center = 60;
+	float Magnitede = 8;
+
+	float limit = obj.Values -> Limit - 1;
+
 	if (obj.Values -> Count != 0)
 	{
 		unsigned int i = obj.Values -> Index;
@@ -121,13 +136,37 @@ void UI::Graph::Manager::PlaceInstance(const ObjectData & obj)
 			unsigned int i0 = i;
 			unsigned int i1 = (i + 1) % (obj.Values -> Count);
 
-			data.Pos = VectorF2(j - 1, obj.Values -> Data[i0]) / limit;
-			Instances.Insert(data);
-			data.Pos = VectorF2(j - 0, obj.Values -> Data[i1]) / limit;
-			Instances.Insert(data);
+			float val0 = obj.Values -> Data[i0];
+			float val1 = obj.Values -> Data[i1];
 
+			val0 = (val0 - Center) / Magnitede;
+			val1 = (val1 - Center) / Magnitede;
+
+			data.Pos = VectorF2((((j - 1) / limit) * 2) - 1, val0); Instances.Insert(data);
+			data.Pos = VectorF2((((j - 0) / limit) * 2) - 1, val1); Instances.Insert(data);
+			
 			i = i1;
 		}
+
+		data.Col = ColorF4(0, 0, 0);
+		data.Pos = VectorF2(-1, 0); Instances.Insert(data);
+		data.Pos = VectorF2(+1, 0); Instances.Insert(data);
+
+		/*{
+			float val;
+
+			val = ((obj.Values -> Min()) - Center) / Magnitede;
+			data.Pos = VectorF2(-1, val); Instances.Insert(data);
+			data.Pos = VectorF2(+1, val); Instances.Insert(data);
+			
+			val = ((obj.Values -> Max()) - Center) / Magnitede;
+			data.Pos = VectorF2(-1, val); Instances.Insert(data);
+			data.Pos = VectorF2(+1, val); Instances.Insert(data);
+			
+			val = ((obj.Values -> Average()) - Center) / Magnitede;
+			data.Pos = VectorF2(-1, val); Instances.Insert(data);
+			data.Pos = VectorF2(+1, val); Instances.Insert(data);
+		}*/
 	}
 }
 void UI::Graph::Manager::MakeInstances()

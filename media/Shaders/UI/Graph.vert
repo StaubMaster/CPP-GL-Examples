@@ -33,10 +33,12 @@ out Vert_UI_Graph
 
 void main()
 {
-	vec2 BoxSize = Box_Max - Box_Min;
+	vec2 BoxCenter = (Box_Max + Box_Min) / 2;
+	vec2 BoxSizeHalf = (Box_Max - Box_Min) / 2;
 
 	vec2 pos = Pos;
-	pos = (pos * BoxSize) + Box_Min;
+	pos = vec2(+pos.x, -pos.y);
+	pos = (pos * BoxSizeHalf) + BoxCenter;
 	pos = ((pos / DisplaySize.Buffer.Full) * 2) - 1;
 	pos = vec2(+pos.x, -pos.y);
 
