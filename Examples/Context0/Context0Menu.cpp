@@ -49,12 +49,16 @@ Context0Menu::Context0Menu()
 	ContextTestTextAlignmentButton.ClickFunc.Assign(this, &Context0Menu::ContextTestTextAlignmentFunc);
 	y = ContextTestTextAlignmentButton.Anchor.Y.GetMinSize();
 
+	TEST_GRAPH.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	TEST_GRAPH.Anchor.Y.AnchorBoth(y, QuitButton.Anchor.Y.GetMaxSize());
+
 	ChildInsert(TitleText);
 	ChildInsert(QuitButton);
 	ChildInsert(Context0Button);
 	ChildInsert(Context1Button);
 	ChildInsert(ContextNoisePlaneButton);
 	ChildInsert(ContextTestTextAlignmentButton);
+	ChildInsert(TEST_GRAPH);
 }
 
 void Context0Menu::QuitFunc(ClickArgs args)

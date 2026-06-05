@@ -38,16 +38,16 @@ out Vert_UI
 
 void main()
 {
-	vec2 main_pos = Main_Pos;
-	main_pos.y = -main_pos.y;
-
 	vec2 Center = (Inst_Max + Inst_Min) / 2;
 	vec2 SizeHalf = (Inst_Max - Inst_Min) / 2;
-	vec2 pos = (main_pos * SizeHalf) + Center;
-	vec2 pos_normal = ((pos / DisplaySize.Buffer.Full) * 2) - 1;
-	pos_normal.y = -pos_normal.y;
 
-	gl_Position = vec4(pos_normal, Inst_Layer, 1);
+	vec2 pos = Main_Pos;
+	pos = vec2(+pos.x, -pos.y);
+	pos = (pos * SizeHalf) + Center;
+	pos = ((pos / DisplaySize.Buffer.Full) * 2) - 1;
+	pos = vec2(+pos.x, -pos.y);
+
+	gl_Position = vec4(pos, Inst_Layer, 1);
 
 	vs_out.Min = Inst_Min;
 	vs_out.Max = Inst_Max;

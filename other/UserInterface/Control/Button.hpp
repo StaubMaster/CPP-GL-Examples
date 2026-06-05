@@ -5,7 +5,6 @@
 # include "Miscellaneous/Function/Pointer.hpp"
 
 # include "../Text/Object.hpp"
-# include <string>
 
 namespace UI
 {

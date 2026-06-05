@@ -114,12 +114,19 @@ void UI::Graph::Manager::PlaceInstance(const ObjectData & obj)
 	);
 	if (obj.Values -> Count != 0)
 	{
-		for (unsigned int i = 1; i < obj.Values -> Count; i++)
+		unsigned int i = obj.Values -> Index;
+
+		for (unsigned int j = 1; j < obj.Values -> Count; j++)
 		{
-			data.Pos = VectorF2(i - 1, obj.Values -> Data[i - 1]) / limit;
+			unsigned int i0 = i;
+			unsigned int i1 = (i + 1) % (obj.Values -> Count);
+
+			data.Pos = VectorF2(j - 1, obj.Values -> Data[i0]) / limit;
 			Instances.Insert(data);
-			data.Pos = VectorF2(i - 0, obj.Values -> Data[i - 0]) / limit;
+			data.Pos = VectorF2(j - 0, obj.Values -> Data[i1]) / limit;
 			Instances.Insert(data);
+
+			i = i1;
 		}
 	}
 }

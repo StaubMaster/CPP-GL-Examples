@@ -49,6 +49,8 @@ static ValueAccumulator<float> Values_FPS_Have(64);
 
 void Context0::Frame(FrameTime frame_time)
 {
+	Menu.TEST_GRAPH.Values.NewValue(frame_time.ActualFramesPerSecond);
+
 	Values_FPS_Want.NewValue(60);
 	Values_FPS_Have.NewValue(frame_time.ActualFramesPerSecond);
 

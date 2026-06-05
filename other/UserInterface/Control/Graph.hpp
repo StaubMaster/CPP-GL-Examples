@@ -5,6 +5,8 @@
 
 # include "../../Examples/Telemetry/ValueAccumulator.hpp"
 
+# include "../Graph/Object.hpp"
+
 namespace UI
 {
 
@@ -13,13 +15,19 @@ namespace Control
 
 class Graph : public Base
 {
+	public:
 	ValueAccumulator<float>		Values;
-	// Graph object ?
-	// 
+	UI::Graph::Object			GraphObject;
 
 	public:
 	~Graph();
 	Graph();
+
+	public:
+	void	RelayUpdateBox() override;
+	void	RelayInsertObject() override;
+	void	RelayRemoveObject() override;
+
 };
 
 };

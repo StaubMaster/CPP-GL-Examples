@@ -13,6 +13,8 @@ struct Context0Menu : public UI::Control::Form
 	UI::Control::Button		ContextNoisePlaneButton;
 	UI::Control::Button		ContextTestTextAlignmentButton;
 
+	UI::Control::Graph		TEST_GRAPH;
+
 	~Context0Menu();
 	Context0Menu();
 

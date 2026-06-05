@@ -35,9 +35,11 @@ void main()
 {
 	vec2 BoxSize = Box_Max - Box_Min;
 
-	vec2 pos_pixel = (Pos * BoxSize) + Box_Min;
-	vec2 pos_normal = ((pos_pixel / DisplaySize.Buffer.Full) * 2) - 1;
+	vec2 pos = Pos;
+	pos = (pos * BoxSize) + Box_Min;
+	pos = ((pos / DisplaySize.Buffer.Full) * 2) - 1;
+	pos = vec2(+pos.x, -pos.y);
 
-	gl_Position = vec4(pos_normal, 0, 1);
+	gl_Position = vec4(pos, 0, 1);
 	vs_out.Col = Col;
 }
