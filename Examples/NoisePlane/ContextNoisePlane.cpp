@@ -410,7 +410,7 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	// or Ray into old Chunks
 
 	sw.Clear(); sw.Start();
-	//ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF()); // do this in Insert/Remove Thread
+	ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF()); // do this in Insert/Remove Thread
 	//ChangeCenter segfaults
 	sw.Stop();
 	FrameTime_ViewUpdate_ChunksTime.NewValue(sw.ElapsedTime());
@@ -439,6 +439,8 @@ thread_local const char * AuxThreadBase::ThreadName = "ThreadName";
 
 void ContextNoisePlane::AuxThread0Func()
 {
+	// do CenterChange here
+
 	AuxThreadBase::ThreadName = "AuxThread0";
 	StopWatch sw;
 	while (!AuxThread0Term)
@@ -816,9 +818,9 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	//ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
-	//ChunkManager.ChangeSize(8, 6);
+	ChunkManager.ChangeSize(8, 6);
 	//ChunkManager.ChangeSize(16, 8);
-	ChunkManager.ChangeSize(16, 12);
+	//ChunkManager.ChangeSize(16, 12);
 	//ChunkManager.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
@@ -924,6 +926,9 @@ void ContextNoisePlane::Draw()
 	TextCharCount = UIManager.TextManager.InstancesArray.Length();
 	sw.Stop(); FrameTime_Draw_DrawText.NewValue(sw.ElapsedTime());
 
+	UIManager.GraphManager.MakeInstances();
+	UIManager.GraphManager.Draw();
+
 #ifndef DISABLE_INVENTORY
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
@@ -971,8 +976,8 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 
 
 
-static ValueAccumulator<float>		DLTAverageTime(64);
-static ValueAccumulator<int>		FPSAverageTime(64);
+static ValueAccumulator<float>		DLTAverageTime(1024);
+static ValueAccumulator<float>		FPSAverageTime(1024);
 #ifndef DISABLE_INVENTORY
 static ValueAccumulator<float>		InventoryCursorTime(64);
 #endif
@@ -1118,6 +1123,7 @@ struct VoxelChunkMemoryInfo
 	}
 };
 
+#include "Graph/ObjectData.hpp"
 void ContextNoisePlane::FrameText(FrameTime frame_time)
 {
 	StopWatch sw_total;
@@ -1136,10 +1142,20 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "Frame (" << (int)frame_time.WantedFramesPerSecond << '|' << (int)frame_time.ActualFramesPerSecond << ")Hz\n";
 		ss << "Frame (" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")s\n";
 		ss << '\n';
-		ss << "Min: "; ShowTimeFreq(ss, DLTAverageTime.Min(), FPSAverageTime.Max()); ss << '\n';
+
+		ss << "Min: "; ShowTimeFreq(ss, DLTAverageTime.Min(),     FPSAverageTime.Max());     ss << '\n';
 		ss << "Avg: "; ShowTimeFreq(ss, DLTAverageTime.Average(), FPSAverageTime.Average()); ss << '\n';
-		ss << "Max: "; ShowTimeFreq(ss, DLTAverageTime.Max(), FPSAverageTime.Min()); ss << '\n';
+		ss << "Max: "; ShowTimeFreq(ss, DLTAverageTime.Max(),     FPSAverageTime.Min());     ss << '\n';
 		ss << '\n';
+
+		UI::Graph::Object obj_graph;
+		obj_graph.Create();
+		obj_graph.Box().Min = VectorF2( 400,  75);
+		obj_graph.Box().Max = VectorF2(1200, 175);
+		obj_graph.Data -> Center = 512;
+		obj_graph.Data -> Magnitede = 512;
+		obj_graph.Data -> Col = ColorF4(1, 0, 1);
+		obj_graph.Data -> Values = &FPSAverageTime;
 	}
 	sw.Stop(); TextTime_TestFPS.NewValue(sw.ElapsedTime());
 
@@ -1350,6 +1366,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 		ss << "Know: " << know << ' ' << know.Product() << '\n';
 		ss << "Care: " << care << ' ' << care.Product() << '\n';
+
+		ss << "ToInsert: " << ChunkManager.ChunksToInsert.Count() << '\n';
+		ss << "ToRemove: " << ChunkManager.ChunksToRemove.Count() << '\n';
 
 		ss << '\n';
 	}

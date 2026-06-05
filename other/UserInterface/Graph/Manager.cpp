@@ -138,6 +138,10 @@ void UI::Graph::Manager::PlaceInstance(const ObjectData & obj)
 		data.Col = ColorF4(0, 0, 0);
 		data.Pos = VectorF2(-1, 0); Instances.Insert(data);
 		data.Pos = VectorF2(+1, 0); Instances.Insert(data);
+		data.Pos = VectorF2(-1, -1); Instances.Insert(data);
+		data.Pos = VectorF2(+1, -1); Instances.Insert(data);
+		data.Pos = VectorF2(-1, +1); Instances.Insert(data);
+		data.Pos = VectorF2(+1, +1); Instances.Insert(data);
 
 		/*{
 			float val;

@@ -20,8 +20,8 @@ void UI::Control::Graph::RelayUpdateBox()
 {
 	if (GraphObject.Is())
 	{
-		GraphObject.Box() = DisplayBox;
-		GraphObject.Data -> Center = 60;
+		GraphObject.Box() = ContainerBox;
+		GraphObject.Data -> Center = 64;
 		GraphObject.Data -> Magnitede = 8;
 		GraphObject.Data -> Col = ColorF4(0, 1, 0);
 		GraphObject.Data -> Values = &Values;

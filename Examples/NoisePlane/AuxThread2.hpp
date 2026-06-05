@@ -50,7 +50,7 @@ struct Voxel;
 
 struct AuxThread2 : public AuxThreadBase
 {
-	ChunkManager &	Manager;
+	ChunkManager &			Manager;
 	ChunkGenerationNoise	GenerationNoise;
 
 	WaitDoTime		TimeGenerateFind;

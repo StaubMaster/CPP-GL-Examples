@@ -91,7 +91,7 @@ AccessLockedChunk AuxThread2::Find()
 	FindCandidateCount = 0;
 	for (loop.New(Manager.CareSize); !loop.Done(); loop.Continue())
 	{
-		Chunk * ptr = Manager.Chunks[Manager.relative(loop.Index())];
+		Chunk * ptr = Manager.Chunks[Manager.relative(loop.Index() + Manager.Center)];
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 

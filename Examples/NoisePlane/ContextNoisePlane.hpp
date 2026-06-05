@@ -208,8 +208,8 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time);
 */
 
 std::thread					AuxThread0;
-bool						AuxThread0Term = true;
-bool						AuxThread0Idle = false;
+bool						AuxThread0Term = false;
+bool						AuxThread0Idle = true;
 ValueAccumulator<float>		AuxThread0Time;
 void						AuxThread0Func();
 
@@ -220,7 +220,6 @@ PolyHedra *		VoxelChunkCube;
 PolyHedra *		ViewRayPolyHedra;
 
 void Make();
-
 
 
 

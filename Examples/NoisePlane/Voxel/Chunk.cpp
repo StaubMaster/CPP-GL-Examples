@@ -46,7 +46,9 @@ const Voxel *	Chunk::FindVoxelOrNull(VectorU3 udx) const
 
 
 Chunk::~Chunk()
-{ }
+{
+	//std::cout << "delete Chunk " << Index << '\n';
+}
 Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	: Index(idx)
 	, Manager(manager)

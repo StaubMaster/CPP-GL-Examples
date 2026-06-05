@@ -27,6 +27,7 @@ void MultiBufferChunkU::Entry::Put(const Container::Array<VoxelGraphics::MainFac
 
 MultiBufferChunkU::Entry::~Entry()
 {
+	//std::cout << "delete BufferUEntry of Length: " << Length << " at " << Offset << '\n';
 	Buffer.Remove(*this);
 }
 MultiBufferChunkU::Entry::Entry(MultiBufferChunkU & buffer)

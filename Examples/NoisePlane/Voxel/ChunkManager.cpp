@@ -284,59 +284,13 @@ void ChunkManager::InsertAround()
 	ChunksLock.AccessU();
 	sw.Stop(); TimeInsertPut.DoTime.NewValue(sw.ElapsedTime());
 
-
-
-	//StopWatch sw_;
-
-	//VectorU3 box_size = CareBox.Size() + 1;
-
-	//Array3D<Chunk*> arr(box_size, nullptr);
-
-//	std::cout << "InsertAround:" << __LINE__ << '\n';
-
-	/*ChunksLock.AccessL(sw_, TimeInsertGather0);
-	for (unsigned int i = 0; i < Chunks.Length(); i++)
+	std::cout << "newChunk: " << new_chunks.Count() << '\n';
+	if (new_chunks.Count() != 0)
 	{
-		if (Chunks[i] == nullptr) { continue; }
-		Chunk & chunk = *Chunks[i];
-		if (CareBox.IntersectVecInclusive(chunk.Index).All(true))
-		{
-			unsigned int j = box_size.Convert(chunk.Index - CareBox.Min);
-			arr[j] = &chunk;
-		}
+		AuxThread2.FindLoop = CenterIndexLoop3D();
+		AuxThread2.Poke();
 	}
-	ChunksLock.AccessU(sw_, TimeInsertGather0);*/
 
-//	std::cout << "InsertAround:" << __LINE__ << '\n';
-
-	/*ChunksToInsertLock.AccessL(sw_, TimeInsertGather1);
-	for (unsigned int i = 0; i < ChunksToInsert.Count(); i++)
-	{
-		if (ChunksToInsert[i] == nullptr) { continue; }
-		Chunk & chunk = *ChunksToInsert[i];
-		if (CareBox.IntersectVecInclusive(chunk.Index).All(true))
-		{
-			unsigned int j = box_size.Convert(chunk.Index - CareBox.Min);
-			arr[j] = &chunk;
-		}
-	}
-	ChunksToInsertLock.AccessU(sw_, TimeInsertGather1);*/
-
-//	std::cout << "InsertAround:" << __LINE__ << '\n';
-
-	/*ChunksToInsertLock.AssignL(sw_, TimeInsertNew);
-	LoopI3 loop(CareBox.Min, Bool3(false), CareBox.Max, Bool3(false));
-	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-	{
-		unsigned int j = box_size.Convert(i - CareBox.Min);
-		if (arr[j] == nullptr)
-		{
-			ChunksToInsert.Insert(new Chunk(i, *this));
-		}
-	}
-	ChunksToInsertLock.AssignU(sw_, TimeInsertNew);*/
-
-//	std::cout << "InsertAround:" << __LINE__ << '\n';
 	sw_total.Stop(); TimeInsert.DoTime.NewValue(sw_total.ElapsedTime());
 	TimeInsert.ThreadName = AuxThreadBase::ThreadName;
 }
@@ -407,9 +361,10 @@ void ChunkManager::RemoveAround()
 void ChunkManager::UpdateChunksContainer()
 {
 	StopWatch sw;
-//	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
+
+	//std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 	ChunksLock.AccessL(sw, TimeUpdate);
-//	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
+	//std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 
 	sw.Start();
 
@@ -460,9 +415,9 @@ void ChunkManager::UpdateChunksContainer()
 		}
 	}
 
-//	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
+	//std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 	ChunksLock.AccessU(sw, TimeUpdate);
-//	std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
+	//std::cout << "UpdateChunksContainer:" << __LINE__ << '\n';
 }
 
 
