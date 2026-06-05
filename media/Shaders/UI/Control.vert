@@ -44,7 +44,7 @@ void main()
 	vec2 pos = Main_Pos;
 	pos = vec2(+pos.x, -pos.y);
 	pos = (pos * SizeHalf) + Center;
-	pos = ((pos / DisplaySize.Buffer.Full) * 2) - 1;
+	pos = (pos - DisplaySize.Buffer.Half) / DisplaySize.Buffer.Half;
 	pos = vec2(+pos.x, -pos.y);
 
 	gl_Position = vec4(pos, Inst_Layer, 1);

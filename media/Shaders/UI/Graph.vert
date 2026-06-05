@@ -21,7 +21,7 @@ uniform sDisplaySize DisplaySize;
 layout(location = 0) in vec2 Box_Min;
 layout(location = 1) in vec2 Box_Max;
 
-layout(location = 2) in vec2 Pos;
+layout(location = 2) in vec2 Pos; // [-1;+1]
 layout(location = 3) in vec4 Col;
 
 out Vert_UI_Graph
@@ -39,7 +39,7 @@ void main()
 	vec2 pos = Pos;
 	pos = vec2(+pos.x, -pos.y);
 	pos = (pos * BoxSizeHalf) + BoxCenter;
-	pos = ((pos / DisplaySize.Buffer.Full) * 2) - 1;
+	pos = (pos - DisplaySize.Buffer.Half) / DisplaySize.Buffer.Half;
 	pos = vec2(+pos.x, -pos.y);
 
 	gl_Position = vec4(pos, 0, 1);

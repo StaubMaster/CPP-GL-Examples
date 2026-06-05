@@ -15,14 +15,12 @@ struct ObjectData
 	bool	Remove;
 	bool	Display;
 
-	// each Object should contain
-	// a Box of where the Graph is
-	// an Array of Values
-	// maybe some scaling info
+	BoxF2		Box;
+	float		Center;
+	float		Magnitede;
+	ColorF4		Col;
 
-	BoxF2						Box;
 	ValueAccumulator<float> *	Values;
-	ColorF4						Col;
 
 	~ObjectData();
 	ObjectData();

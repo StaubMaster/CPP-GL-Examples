@@ -15,6 +15,10 @@ namespace Control
 
 class Graph : public Base
 {
+	// multiple Lines per Graph
+	// show Center Line
+	// show Min/Max/Avg
+
 	public:
 	ValueAccumulator<float>		Values;
 	UI::Graph::Object			GraphObject;

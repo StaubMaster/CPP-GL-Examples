@@ -108,43 +108,30 @@ void UI::Graph::Manager::PlaceInstance(const ObjectData & obj)
 	data.Box = obj.Box;
 	data.Col = obj.Col;
 
-	/*	
-		what value should be in the middle
-		what is the scale ?
-		data.Pos is [0;1] should be [-1;+1]
-
-+1	#-------------------# Center + Magnitude
-	|					|
-	|					|
- 0	|-------------------| Center
-	|					|
-	|					|
--1	#-------------------# Center - Magnitude
-	*/
-
-	float Center = 60;
-	float Magnitede = 8;
-
 	float limit = obj.Values -> Limit - 1;
 
 	if (obj.Values -> Count != 0)
 	{
 		unsigned int i = obj.Values -> Index;
+		if (i != 0) { i--; }
+		else { i = obj.Values -> Count - 1; }
 
 		for (unsigned int j = 1; j < obj.Values -> Count; j++)
 		{
 			unsigned int i0 = i;
-			unsigned int i1 = (i + 1) % (obj.Values -> Count);
+			unsigned int i1 = i0;
+			if (i1 != 0) { i1--; }
+			else { i1 = obj.Values -> Count - 1; }
 
 			float val0 = obj.Values -> Data[i0];
 			float val1 = obj.Values -> Data[i1];
 
-			val0 = (val0 - Center) / Magnitede;
-			val1 = (val1 - Center) / Magnitede;
+			val0 = (val0 - obj.Center) / obj.Magnitede;
+			val1 = (val1 - obj.Center) / obj.Magnitede;
 
 			data.Pos = VectorF2((((j - 1) / limit) * 2) - 1, val0); Instances.Insert(data);
 			data.Pos = VectorF2((((j - 0) / limit) * 2) - 1, val1); Instances.Insert(data);
-			
+
 			i = i1;
 		}
 
