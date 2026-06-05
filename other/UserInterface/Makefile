@@ -24,6 +24,7 @@ FILES := \
 	Control/Slider.cpp \
 	Control/CheckBox.cpp \
 	Control/Label.cpp \
+	Control/Graph.cpp \
 \
 	Text/Data.cpp \
 	Text/Buffer.cpp \

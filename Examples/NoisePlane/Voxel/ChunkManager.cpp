@@ -592,12 +592,12 @@ void ChunkManager::BufferHave::QueuePut(Chunk * chunk)
 
 
 
-ValueAverager<float> ChunkManager::DrawTotal(64);
-ValueAverager<float> ChunkManager::DrawWait(64);
-ValueAverager<float> ChunkManager::DrawTextureBind(64);
-ValueAverager<float> ChunkManager::DrawShaderBind(64);
-ValueAverager<float> ChunkManager::DrawUpdateBind(64);
-ValueAverager<float> ChunkManager::DrawBufferDraw(64);
+ValueAccumulator<float> ChunkManager::DrawTotal(64);
+ValueAccumulator<float> ChunkManager::DrawWait(64);
+ValueAccumulator<float> ChunkManager::DrawTextureBind(64);
+ValueAccumulator<float> ChunkManager::DrawShaderBind(64);
+ValueAccumulator<float> ChunkManager::DrawUpdateBind(64);
+ValueAccumulator<float> ChunkManager::DrawBufferDraw(64);
 
 void ChunkManager::Draw()
 {

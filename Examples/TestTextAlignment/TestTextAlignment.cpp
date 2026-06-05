@@ -5,8 +5,8 @@
 #include "Graphics/Shader/Code.hpp"
 #include "Miscellaneous/Container/Array.hpp"
 
+#include "Telemetry/ValueAccumulator.hpp"
 #include "Telemetry/StopWatch.hpp"
-#include "Telemetry/ValueAverager.hpp"
 #include "UnitToString.hpp"
 
 
@@ -45,7 +45,7 @@ static void ShowTime(std::stringstream & ss, float time)
 {
 	ss << ToString(time) << 's';
 }
-static void ShowNameTimeLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
+static void ShowNameTimeLine(std::stringstream & ss, const char * name, const ValueAccumulator<float> & time)
 {
 	ss << name << ':';
 	ShowTime(ss, time.Min()); ss << ' ';
@@ -53,8 +53,8 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 	ShowTime(ss, time.Max()); ss << '\n';
 }
 
-static ValueAverager<float>		TimeData_TextMake(64);
-static ValueAverager<float>		TimeData_TextDraw(64);
+static ValueAccumulator<float>		TimeData_TextMake(64);
+static ValueAccumulator<float>		TimeData_TextDraw(64);
 
 
 
@@ -147,8 +147,8 @@ void ContextTestTextAlignment::TextAlignment()
 	}
 }
 
-static ValueAverager<float>		DLTAverageTime(64);
-static ValueAverager<int>		FPSAverageTime(64);
+static ValueAccumulator<float>		DLTAverageTime(64);
+static ValueAccumulator<int>		FPSAverageTime(64);
 
 void ContextTestTextAlignment::Frame(FrameTime frame_time)
 {

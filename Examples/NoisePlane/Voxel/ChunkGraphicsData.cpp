@@ -12,14 +12,14 @@
 #include "ValueType/LoopU3.hpp"
 
 #include "Telemetry/StopWatch.hpp"
-#include "Telemetry/ValueAverager.hpp"
+#include "Telemetry/ValueAccumulator.hpp"
 
 #include <iostream>
 #include <iomanip>
 
 
 
-static ValueAverager<float> AverageTotal(1024);
+static ValueAccumulator<float> AverageTotal(1024);
 static StopWatch TimeTotal;
 static StopWatch TimeIteration;
 static StopWatch TimeLoop;
@@ -27,7 +27,7 @@ static StopWatch TimeLoop;
 static StopWatch TimeVoxelRetrieve;
 static StopWatch TimeVoxelRetrieveData;
 
-static ValueAverager<float> AverageVisible(1024);
+static ValueAccumulator<float> AverageVisible(1024);
 static StopWatch TimeVisibleTotal;
 static StopWatch TimeVisibleAbsolute;
 static StopWatch TimeVisibleCheck;

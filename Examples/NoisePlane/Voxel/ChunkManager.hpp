@@ -19,7 +19,7 @@
 
 //# include "GridCast/GridCast3D.hpp"
 
-# include "Telemetry/ValueAverager.hpp"
+# include "Telemetry/ValueAccumulator.hpp"
 # include "Telemetry/StopWatch.hpp"
 
 # include <mutex>
@@ -173,12 +173,12 @@ struct ChunkManager
 	ChunkManager::BufferHave	BufferDataHave;
 
 	public:
-	static ValueAverager<float>		DrawTotal;
-	static ValueAverager<float>		DrawWait;
-	static ValueAverager<float>		DrawTextureBind;
-	static ValueAverager<float>		DrawShaderBind;
-	static ValueAverager<float>		DrawUpdateBind;
-	static ValueAverager<float>		DrawBufferDraw;
+	static ValueAccumulator<float>		DrawTotal;
+	static ValueAccumulator<float>		DrawWait;
+	static ValueAccumulator<float>		DrawTextureBind;
+	static ValueAccumulator<float>		DrawShaderBind;
+	static ValueAccumulator<float>		DrawUpdateBind;
+	static ValueAccumulator<float>		DrawBufferDraw;
 
 	public:
 	void	Draw();

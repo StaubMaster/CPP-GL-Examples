@@ -152,6 +152,7 @@ void UI::Manager::KeyBoardText(TextArgs args)
 
 
 
+// do this in MouseMove
 void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 {
 	CursorPosition = mouse_pos.Buffer.Corner;

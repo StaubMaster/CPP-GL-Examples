@@ -156,7 +156,7 @@ static unsigned int LineLength(const char * text, unsigned int i)
 }
 
 #include "../../Examples/Telemetry/StopWatch.hpp"
-#include "../../Examples/Telemetry/ValueAverager.hpp"
+#include "../../Examples/Telemetry/ValueAccumulator.hpp"
 #include "../../Examples/UnitToString.hpp"
 
 //#define TELEMETRY_TIME
@@ -178,19 +178,19 @@ static StopWatch				WatchArray;
 #endif
 
 #ifdef TELEMETRY_TIME
-static ValueAverager<float>		TimeTotal(64);
-static ValueAverager<float>		TimeClear(64);
-static ValueAverager<float>		TimeDisplay(64);
-static ValueAverager<float>		TimeRemove(64);
-static ValueAverager<float>		TimeAlign(64);
-static ValueAverager<float>		TimeLoop(64);
-static ValueAverager<float>		TimeOther(64);
-static ValueAverager<float>		TimeFind(64);
-static ValueAverager<float>		TimeAssign(64);
-static ValueAverager<float>		TimeInsert(64);
-static ValueAverager<float>		TimeNext0(64);
-static ValueAverager<float>		TimeNext1(64);
-static ValueAverager<float>		TimeArray(64);
+static ValueAccumulator<float>		TimeTotal(64);
+static ValueAccumulator<float>		TimeClear(64);
+static ValueAccumulator<float>		TimeDisplay(64);
+static ValueAccumulator<float>		TimeRemove(64);
+static ValueAccumulator<float>		TimeAlign(64);
+static ValueAccumulator<float>		TimeLoop(64);
+static ValueAccumulator<float>		TimeOther(64);
+static ValueAccumulator<float>		TimeFind(64);
+static ValueAccumulator<float>		TimeAssign(64);
+static ValueAccumulator<float>		TimeInsert(64);
+static ValueAccumulator<float>		TimeNext0(64);
+static ValueAccumulator<float>		TimeNext1(64);
+static ValueAccumulator<float>		TimeArray(64);
 #endif
 
 #ifdef TELEMETRY_TIME

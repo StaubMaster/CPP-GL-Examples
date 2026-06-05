@@ -31,40 +31,40 @@ InventoryShader::InventoryShader()
 
 
 
-static ValueAverager<float>		FrameTime_(64);
-static ValueAverager<float>		FrameTime_Input(64);
-static ValueAverager<float>		FrameTime_ViewUpdate(64);
-static ValueAverager<float>		FrameTime_ChunkBoxes(64);
-static ValueAverager<float>		FrameTime_ChunkHereBox(64);
-static ValueAverager<float>		FrameTime_Text(64);
-static ValueAverager<float>		FrameTime_Draw(64);
-static ValueAverager<float>		FrameTime_DrawThread(64);
+static ValueAccumulator<float>		FrameTime_(64);
+static ValueAccumulator<float>		FrameTime_Input(64);
+static ValueAccumulator<float>		FrameTime_ViewUpdate(64);
+static ValueAccumulator<float>		FrameTime_ChunkBoxes(64);
+static ValueAccumulator<float>		FrameTime_ChunkHereBox(64);
+static ValueAccumulator<float>		FrameTime_Text(64);
+static ValueAccumulator<float>		FrameTime_Draw(64);
+static ValueAccumulator<float>		FrameTime_DrawThread(64);
 
-static ValueAverager<float>		FrameTime_ViewUpdate_CollisionTime(64);
-static ValueAverager<float>		FrameTime_ViewUpdate_ChunksTime(64);
-static ValueAverager<float>		FrameTime_ViewUpdate_RayTime(64);
+static ValueAccumulator<float>		FrameTime_ViewUpdate_CollisionTime(64);
+static ValueAccumulator<float>		FrameTime_ViewUpdate_ChunksTime(64);
+static ValueAccumulator<float>		FrameTime_ViewUpdate_RayTime(64);
 
-static ValueAverager<float>		FrameTime_Text_Assamble(64);
-static ValueAverager<float>		FrameTime_Text_Instance(64);
+static ValueAccumulator<float>		FrameTime_Text_Assamble(64);
+static ValueAccumulator<float>		FrameTime_Text_Instance(64);
 
-static ValueAverager<float>		TextTime_TestFPS(64);
-static ValueAverager<float>		TextTime_ThreadTime(64);
-static ValueAverager<float>		TextTime_ChunkManagerTime(64);
-static ValueAverager<float>		TextTime_View(64);
-static ValueAverager<float>		TextTime_ChunkHere(64);
-static ValueAverager<float>		TextTime_ChunkRange(64);
-static ValueAverager<float>		TextTime_VoxelChunkMemory(64);
-static ValueAverager<float>		TextTime_VoxelChunkMemory_Wait(64);
-static ValueAverager<float>		TextTime_VoxelChunkMemory_Loop(64);
-static ValueAverager<float>		TextTime_VoxelChunkMemory_Show(64);
+static ValueAccumulator<float>		TextTime_TestFPS(64);
+static ValueAccumulator<float>		TextTime_ThreadTime(64);
+static ValueAccumulator<float>		TextTime_ChunkManagerTime(64);
+static ValueAccumulator<float>		TextTime_View(64);
+static ValueAccumulator<float>		TextTime_ChunkHere(64);
+static ValueAccumulator<float>		TextTime_ChunkRange(64);
+static ValueAccumulator<float>		TextTime_VoxelChunkMemory(64);
+static ValueAccumulator<float>		TextTime_VoxelChunkMemory_Wait(64);
+static ValueAccumulator<float>		TextTime_VoxelChunkMemory_Loop(64);
+static ValueAccumulator<float>		TextTime_VoxelChunkMemory_Show(64);
 
-static ValueAverager<float>		FrameTime_Draw_DrawTotal(64);
-static ValueAverager<float>		FrameTime_Draw_DrawPolyHedra(64);
-static ValueAverager<float>		FrameTime_Draw_UniformChunk(64);
-static ValueAverager<float>		FrameTime_Draw_DrawChunk(64);
-static ValueAverager<float>		FrameTime_Draw_DrawControl(64);
-static ValueAverager<float>		FrameTime_Draw_MakeText(64);
-static ValueAverager<float>		FrameTime_Draw_DrawText(64);
+static ValueAccumulator<float>		FrameTime_Draw_DrawTotal(64);
+static ValueAccumulator<float>		FrameTime_Draw_DrawPolyHedra(64);
+static ValueAccumulator<float>		FrameTime_Draw_UniformChunk(64);
+static ValueAccumulator<float>		FrameTime_Draw_DrawChunk(64);
+static ValueAccumulator<float>		FrameTime_Draw_DrawControl(64);
+static ValueAccumulator<float>		FrameTime_Draw_MakeText(64);
+static ValueAccumulator<float>		FrameTime_Draw_DrawText(64);
 
 
 
@@ -949,7 +949,7 @@ static void ShowTimeFreq(std::stringstream & ss, float time, int freq)
 {
 	ShowTimeFreq(ss, time, 1.0f / time);
 }*/
-/*static void ShowNameTimeFreqLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
+/*static void ShowNameTimeFreqLine(std::stringstream & ss, const char * name, const ValueAccumulator<float> & time)
 {
 	ss << name << ':';
 	ShowTimeFreq(ss, time.Min()); ss << ' ';
@@ -961,7 +961,7 @@ static void ShowTime(std::stringstream & ss, float time)
 {
 	ss << ToString(time, 6) << 's';
 }
-static void ShowNameTimeLine(std::stringstream & ss, const char * name, const ValueAverager<float> & time)
+static void ShowNameTimeLine(std::stringstream & ss, const char * name, const ValueAccumulator<float> & time)
 {
 	ss << name << ':';
 	ShowTime(ss, time.Min()); ss << ' ';
@@ -971,10 +971,10 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 
 
 
-static ValueAverager<float>		DLTAverageTime(64);
-static ValueAverager<int>		FPSAverageTime(64);
+static ValueAccumulator<float>		DLTAverageTime(64);
+static ValueAccumulator<int>		FPSAverageTime(64);
 #ifndef DISABLE_INVENTORY
-static ValueAverager<float>		InventoryCursorTime(64);
+static ValueAccumulator<float>		InventoryCursorTime(64);
 #endif
 
 struct VoxelChunkMemoryInfo

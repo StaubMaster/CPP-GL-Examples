@@ -70,6 +70,8 @@ class Manager
 	Manager(const Manager & other) = delete;
 	Manager & operator=(const Manager & other) = delete;
 
+
+
 	public:
 	void	MouseMove(MoveArgs args);
 	void	MouseClick(ClickArgs args);

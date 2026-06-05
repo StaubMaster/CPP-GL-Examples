@@ -3,6 +3,8 @@
 
 # include "Base/Base.hpp"
 
+# include "../../Examples/Telemetry/ValueAccumulator.hpp"
+
 namespace UI
 {
 
@@ -11,6 +13,7 @@ namespace Control
 
 class Graph : public Base
 {
+	ValueAccumulator<float>		Values;
 	// Graph object ?
 	// 
 

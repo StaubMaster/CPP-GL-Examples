@@ -24,7 +24,7 @@
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Container/Array.hpp"
 
-# include "Telemetry/ValueAverager.hpp"
+# include "Telemetry/ValueAccumulator.hpp"
 
 # include "ContainerLock.hpp"
 

@@ -1,8 +1,9 @@
-#ifndef  VALUE_AVERAGER_HPP
-# define VALUE_AVERAGER_HPP
+#ifndef  VALUE_ACCUMULATOR_HPP
+# define VALUE_ACCUMULATOR_HPP
 
+// take Count as template Parameter ?
 template<typename ValueType>
-class ValueAverager
+class ValueAccumulator
 {
 	public:
 	unsigned int	Limit;
@@ -72,19 +73,19 @@ class ValueAverager
 	}
 
 	public:
-	~ValueAverager()
+	~ValueAccumulator()
 	{
 		delete[] Data;
 	}
-	ValueAverager() = delete;
-	ValueAverager(unsigned int limit)
+	ValueAccumulator() = delete;
+	ValueAccumulator(unsigned int limit)
 		: Limit(limit)
 		, Count(0)
 		, Index(0)
 		, Data(new ValueType[Limit])
 	{ }
-	ValueAverager(const ValueAverager & other) = delete;
-	ValueAverager & operator=(const ValueAverager & other) = delete;
+	ValueAccumulator(const ValueAccumulator & other) = delete;
+	ValueAccumulator & operator=(const ValueAccumulator & other) = delete;
 };
 
 #endif
