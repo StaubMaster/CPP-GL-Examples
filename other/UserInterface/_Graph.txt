@@ -1,26 +1,27 @@
 
-FPS drops every few seconds
+Lines
+	X = Index   Y = Value
+	X = Value   Y = Index
+	arbitrary 2D Points ?
 
-make a Graph to show this stuff
-
-how to do a Graph
+Areas
+	like Lines but the area from the line to the origin axis
+	so Integral ?
 
 Bars
-	specific width
-Lines
-Areas
+	vertical, specific width
+	horizontal, specific height
 
 Graph Area
 	Pixel in Window
 	Normal in Window
+
+
 
 Node Pos
 	Pixel in GraphArea
 	Normal in GraphArea
 
 
-might be easiest to just draw to a texture ?
-might be easy to do that with Forms too ?
-not sure how slow that is
 
-
+convert Values to Nodes in Control or in Shader ?

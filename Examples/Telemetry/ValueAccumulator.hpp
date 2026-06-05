@@ -57,13 +57,13 @@ class ValueAccumulator
 		Data[Index] = value;
 		Index++;
 
-		if (Index == Limit)
-		{
-			Index = 0;
-		}
 		if (Count < Index)
 		{
 			Count = Index;
+		}
+		if (Index == Limit)
+		{
+			Index = 0;
 		}
 	}
 	void		Clear()

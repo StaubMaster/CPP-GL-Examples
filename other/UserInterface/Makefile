@@ -8,9 +8,9 @@ FILES := \
 	Anchor1D.cpp \
 	Anchor2D.cpp \
 \
-	Control/Base/Data.cpp \
-	Control/Base/Buffer.cpp \
 	Control/Base/ShaderLayout.cpp \
+	Control/Base/BufferLayout.cpp \
+	Control/Base/BufferData.cpp \
 	Control/Base/Manager.cpp \
 	Control/Base/ObjectData.cpp \
 	Control/Base/Object.cpp \
@@ -34,6 +34,13 @@ FILES := \
 	Text/Object.cpp \
 	Text/Font/Font.cpp \
 	Text/Font/Parsing.cpp \
+\
+	Graph/ShaderLayout.cpp \
+	Graph/BufferLayout.cpp \
+	Graph/BufferData.cpp \
+	Graph/Manager.cpp \
+	Graph/ObjectData.cpp \
+	Graph/Object.cpp \
 \
 	UIManager.cpp
 

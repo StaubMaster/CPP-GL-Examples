@@ -13,7 +13,8 @@ struct ObjectData
 	bool	Remove;
 	bool	Display;
 
-	BoxF2	Box;
+	// this is Inst::BufferData. just put that here ?
+	BoxF2		Box;
 	float		Layer;
 	ColorF4		Color;
 

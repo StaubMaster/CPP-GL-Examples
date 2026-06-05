@@ -3,6 +3,7 @@
 
 # include "Control/Base/Manager.hpp"
 # include "Text/Manager.hpp"
+# include "Graph/Manager.hpp"
 
 # include "Display/DisplaySize.hpp"
 # include "Control/Window.hpp"
@@ -20,7 +21,7 @@ class Manager
 	public:
 	Control::Manager	ControlManager;
 	Text::Manager		TextManager;
-	// Graph Manager
+	Graph::Manager		GraphManager;
 
 
 

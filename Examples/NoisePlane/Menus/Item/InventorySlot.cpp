@@ -2,6 +2,8 @@
 
 #include "Item/ItemVoxel.hpp"
 
+#include "Display/DisplaySize.hpp"
+
 
 
 ItemBase * InventorySlot::StaticItem = nullptr;

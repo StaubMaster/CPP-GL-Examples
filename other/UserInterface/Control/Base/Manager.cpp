@@ -1,10 +1,6 @@
 #include "Manager.hpp"
 #include "ObjectData.hpp"
 
-#include "User/MouseArgs.hpp"
-#include "User/KeyBoardArgs.hpp"
-#include "../Window.hpp"
-
 #include "Graphics/Shader/Code.hpp"
 #include "DirectoryInfo.hpp"
 
@@ -81,8 +77,8 @@ void UI::Control::Manager::ChangeMedia(const DirectoryInfo & dir)
 	}
 	{
 		BufferLayoutMain.Pos.Change(0);
-		BufferLayoutInst.Min.Change(1);
-		BufferLayoutInst.Max.Change(2);
+		BufferLayoutInst.Box.Min.Change(1);
+		BufferLayoutInst.Box.Max.Change(2);
 		BufferLayoutInst.Layer.Change(3);
 		BufferLayoutInst.Col.Change(4);
 	}
@@ -113,14 +109,14 @@ void UI::Control::Manager::GraphicsMain()
 {
 	if (!(GraphicsNeedMain && GraphicsExist)) { return; }
 
-	Container::Binary<Control::Main_Data> data;
+	Container::Binary<Control::Main::BufferData> data;
 
-	data.Insert(UI::Control::Main_Data(VectorF2(-1, -1)));
-	data.Insert(UI::Control::Main_Data(VectorF2(-1, +1)));
-	data.Insert(UI::Control::Main_Data(VectorF2(+1, -1)));
-	data.Insert(UI::Control::Main_Data(VectorF2(+1, -1)));
-	data.Insert(UI::Control::Main_Data(VectorF2(-1, +1)));
-	data.Insert(UI::Control::Main_Data(VectorF2(+1, +1)));
+	data.Insert(UI::Control::Main::BufferData(VectorF2(-1, -1)));
+	data.Insert(UI::Control::Main::BufferData(VectorF2(-1, +1)));
+	data.Insert(UI::Control::Main::BufferData(VectorF2(+1, -1)));
+	data.Insert(UI::Control::Main::BufferData(VectorF2(+1, -1)));
+	data.Insert(UI::Control::Main::BufferData(VectorF2(-1, +1)));
+	data.Insert(UI::Control::Main::BufferData(VectorF2(+1, +1)));
 
 	Buffer.MainBuffer.DataFull(data.ToVoid());
 
@@ -134,9 +130,8 @@ void UI::Control::Manager::GraphicsInst()
 
 void UI::Control::Manager::PlaceInstance(const ObjectData & obj)
 {
-	Inst_Data data;
-	data.Min = obj.Box.Min;
-	data.Max = obj.Box.Max;
+	Inst::BufferData data;
+	data.Box = obj.Box;
 	data.Layer = obj.Layer;
 	data.Col = obj.Color;
 	Instances.Insert(data);

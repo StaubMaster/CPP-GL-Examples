@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_BASE_HPP
 # define UI_CONTROL_BASE_HPP
 
-#include "Data.hpp"
+#include "BufferData.hpp"
 
 #include "Anchor2D.hpp"
 

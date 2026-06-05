@@ -1,0 +1,159 @@
+#include "Manager.hpp"
+#include "ObjectData.hpp"
+
+#include "Graphics/Shader/Code.hpp"
+#include "DirectoryInfo.hpp"
+
+#include "ValueType/_Include.hpp"
+
+#include "ValueType/_Show.hpp"
+#include <iostream>
+
+
+
+
+
+UI::Graph::Manager * UI::Graph::Manager::CurrentPointer = nullptr;
+UI::Graph::Manager & UI::Graph::Manager::Current() { return *CurrentPointer; }
+bool UI::Graph::Manager::CheckCurrent() { return (UI::Graph::Manager::CurrentPointer != nullptr); }
+void UI::Graph::Manager::ClearCurrent() { UI::Graph::Manager::CurrentPointer = nullptr; }
+bool UI::Graph::Manager::IsCurrent() const { return (UI::Graph::Manager::CurrentPointer == this); }
+void UI::Graph::Manager::MakeCurrent() { UI::Graph::Manager::CurrentPointer = this; }
+
+
+
+
+
+UI::Graph::Manager::~Manager()
+{
+	std::cout << "  ----  " << "UI::Graph::Manager::~Manager()" << "\n";
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		delete ObjectDatas[i];
+	}
+}
+UI::Graph::Manager::Manager()
+	: Shader()
+	, ShaderLayout()
+	, Buffer()
+	, GraphicsExist(false)
+{
+	std::cout << "  ++++  " << "UI::Graph::Manager::Manager()" << "\n";
+
+	Shader.UniformLayout = &ShaderLayout;
+	ShaderLayout.Shader = &Shader;
+
+	Buffer.MainBuffer.AttributeLayout = &BufferLayout;
+}
+
+
+
+UI::Graph::ObjectData * UI::Graph::Manager::PlaceObject()
+{
+	ObjectData * obj = new ObjectData();
+	ObjectDatas.Insert(obj);
+	return obj;
+}
+UI::Graph::ObjectData * UI::Graph::Manager::CopyObject(const ObjectData * obj)
+{
+	if (obj == nullptr) { return nullptr; }
+	ObjectData * ret = PlaceObject();
+	*ret = *obj;
+	return ret;
+}
+
+
+
+void UI::Graph::Manager::ChangeMedia(const DirectoryInfo & dir)
+{
+	{
+		Container::Array<Shader::Code> code({
+			Shader::Code(dir.File("Shaders/UI/Graph.vert")),
+			Shader::Code(dir.File("Shaders/UI/Graph.frag")),
+		});
+		Shader.Change(code);
+	}
+	{
+		BufferLayout.Box.Min.Change(0);
+		BufferLayout.Box.Max.Change(1);
+		BufferLayout.Pos.Change(2);
+		BufferLayout.Col.Change(3);
+	}
+}
+
+void UI::Graph::Manager::GraphicsCreate()
+{
+	if (GraphicsExist) { return; }
+
+	Buffer.Create();
+	Shader.Create();
+
+	GraphicsExist = true;
+}
+void UI::Graph::Manager::GraphicsDelete()
+{
+	if (!GraphicsExist) { return; }
+
+	Buffer.Delete();
+	Shader.Delete();
+
+	GraphicsExist = false;
+}
+
+#include "ValueType/_Show.hpp"
+#include <iostream>
+void UI::Graph::Manager::PlaceInstance(const ObjectData & obj)
+{
+	BufferData data;
+	data.Box = obj.Box;
+	data.Col = obj.Col;
+
+	VectorF2 limit(
+		obj.Values -> Limit - 1,
+		128
+	);
+	if (obj.Values -> Count != 0)
+	{
+		for (unsigned int i = 1; i < obj.Values -> Count; i++)
+		{
+			data.Pos = VectorF2(i - 1, obj.Values -> Data[i - 1]) / limit;
+			Instances.Insert(data);
+			data.Pos = VectorF2(i - 0, obj.Values -> Data[i - 0]) / limit;
+			Instances.Insert(data);
+		}
+	}
+}
+void UI::Graph::Manager::MakeInstances()
+{
+	Instances.Clear();
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		if (ObjectDatas[i] != nullptr)
+		{
+			ObjectData & obj = *ObjectDatas[i];
+			if (obj.Display)
+			{
+				PlaceInstance(obj);
+			}
+			if (obj.Remove)
+			{
+				ObjectDatas.RemoveAt(i);
+				delete &obj;
+				i--;
+			}
+		}
+	}
+}
+
+
+
+void UI::Graph::Manager::Draw()
+{
+	Buffer.MainBuffer.DataFull(Instances.ToVoid());
+
+	Shader.Bind();
+
+	Buffer.Bind();
+	Buffer.MainBuffer.Update();
+	Buffer.Draw();
+}

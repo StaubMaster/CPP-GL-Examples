@@ -99,6 +99,7 @@ UI::Manager::Manager()
 {
 	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
+	GraphManager.MakeCurrent();
 	WindowControl.Show();
 }
 
@@ -181,6 +182,7 @@ void UI::Manager::Resize(DisplaySize display_size)
 {
 	TextManager.ShaderLayout.DisplaySize.Put(display_size);
 	ControlManager.ShaderLayout.DisplaySize.Put(display_size);
+	GraphManager.ShaderLayout.DisplaySize.Put(display_size);
 
 	WindowSize = display_size;
 	WindowControl.UpdateWindowSize(WindowSize.Buffer.Full);
@@ -196,7 +198,9 @@ void UI::Manager::ChangeMedia(const DirectoryInfo & dir, GLFWwindow * glfw_windo
 	TextManager.TextFont = UI::Text::Font::Parse(
 		dir.File("Text/Font0.atlas")
 	);
-	
+
+	GraphManager.ChangeMedia(dir);
+
 	CursorsCreate(dir, glfw_window);
 
 	WindowControl.ChangeManager(this);
@@ -210,11 +214,13 @@ void UI::Manager::GraphicsCreate()
 	//ControlManager.CursorsCreate(MediaDirectory);
 	TextManager.GraphicsCreate();
 	TextManager.InitFont();
+	GraphManager.GraphicsCreate();
 }
 void UI::Manager::GraphicsDelete()
 {
 	ControlManager.GraphicsDelete();
 	TextManager.GraphicsDelete();
+	GraphManager.GraphicsDelete();
 	CursorsDelete();
 }
 
@@ -227,4 +233,8 @@ void UI::Manager::Draw()
 
 	TextManager.MakeInstances();
 	TextManager.Draw();
+
+	GL::Clear(GL::ClearMask::DepthBufferBit);
+	GraphManager.MakeInstances();
+	GraphManager.Draw();
 }

@@ -1,5 +1,5 @@
-#ifndef  UI_CONTROL_MANAGER_HPP
-# define UI_CONTROL_MANAGER_HPP
+#ifndef  UI_GRAPH_MANAGER_HPP
+# define UI_GRAPH_MANAGER_HPP
 
 # include "ShaderLayout.hpp"
 # include "BufferLayout.hpp"
@@ -17,10 +17,8 @@ class DirectoryInfo;
 namespace UI
 {
 
-namespace Control
+namespace Graph
 {
-class Base;
-class Form;
 
 struct ObjectData;
 
@@ -39,15 +37,14 @@ class Manager
 
 
 	public:
-	::Shader::Base					Shader;
-	UI::Control::ShaderLayout		ShaderLayout;
+	::Shader::Base				Shader;
+	UI::Graph::ShaderLayout		ShaderLayout;
 
-	UI::Control::Buffer					Buffer;
-	UI::Control::Main::BufferLayout		BufferLayoutMain;
-	UI::Control::Inst::BufferLayout		BufferLayoutInst;
+	UI::Graph::Buffer			Buffer;
+	UI::Graph::BufferLayout		BufferLayout;
 
-	Container::Binary<ObjectData*>					ObjectDatas;
-	Container::Binary<Control::Inst::BufferData>	Instances;
+	Container::Binary<ObjectData*>			ObjectDatas;
+	Container::Binary<Graph::BufferData>	Instances;
 
 	public:
 	~Manager();
@@ -69,13 +66,6 @@ class Manager
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
-
-	private:
-	bool	GraphicsNeedMain;
-
-	private:
-	void	GraphicsMain();
-	void	GraphicsInst();
 
 	private:
 	void	PlaceInstance(const ObjectData & obj);

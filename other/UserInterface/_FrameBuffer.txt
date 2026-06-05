@@ -1,0 +1,19 @@
+
+all Control Boxes are currently relative to the Window
+and calculate Normal position in the Shader
+
+Window Control is allways Transparent
+draw Form Controls to a FrameBuffer
+and then draw that to the Screen ?
+
+this might be slow ?
+only redraw when something changes ?
+
+things change often
+chaning FrameBuffer is slow
+it is currently easier to just keep the current system
+
+although FrameBuffer would fix the Layering problem
+caused by overlapping Forms
+
+
