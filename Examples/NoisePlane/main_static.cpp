@@ -73,16 +73,15 @@ static void DisplayBoxEntityVoxels(unsigned int p, ::ChunkManager & manager, Box
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		ChunkVoxelIndex idx(i);
-		Chunk * chunk = manager.FindLockOrNull(idx.Chunk);
-		if (chunk == nullptr) { continue; }
-		const Voxel * voxel = chunk -> FindVoxelOrNull(idx.Voxel);
+		AccessLockedChunk chunk = manager.FindAccess(idx.Chunk);
+		if (!chunk.Is()) { continue; }
+		const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
 		if (voxel != nullptr && !(voxel -> IsEmpty()))
 		{
 			PolyHedraObject voxel_obj(p);
 			voxel_obj.Trans().Position = i;
 			voxel_obj.ShowWire();
 		}
-		chunk -> AccessU();
 	}
 }
 #endif

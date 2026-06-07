@@ -16,6 +16,8 @@ struct Voxel
 	void	MakeEmpty();
 	void	Make(const VoxelPallet & pallet);
 
+	const VoxelPallet *		ToPallet() const;
+
 	~Voxel();
 	Voxel();
 

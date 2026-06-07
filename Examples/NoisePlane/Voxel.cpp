@@ -29,6 +29,11 @@ void Voxel::MakeEmpty()
 	//Pallet = pallet.
 }*/
 
+const VoxelPallet * Voxel::ToPallet() const
+{
+	return &VoxelPalletMap::All[Pallet];
+}
+
 
 
 Voxel::~Voxel() { }

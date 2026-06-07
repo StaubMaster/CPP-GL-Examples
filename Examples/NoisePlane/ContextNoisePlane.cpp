@@ -138,8 +138,20 @@ void ContextNoisePlane::ViewUpdateDone()
 	}
 #endif
 }
+void ContextNoisePlane::ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
+{
+	change.Position *= ViewSpeedNoClip;
+	if (window[Keys::LeftControl] == State::Down) { change.Position *= ViewFasterNoClip; }
+	view.Trans.Position += change.Position * frame_time.Delta;
 #ifndef DISABLE_VIEW_TANGIBLE
-void ViewUpdatePhysics(VectorF3 accel)
+	ViewEntity.Vel = change.Position;
+	ViewEntity.Pos = view.Trans.Position;
+#endif
+	view.Trans.Rotation += change.Rotation * frame_time.Delta;
+	view.Trans.Rotation.X1.clampPI();
+}
+#ifndef DISABLE_VIEW_TANGIBLE
+void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 {
 	VectorF3 decel;
 
@@ -183,20 +195,6 @@ void ViewUpdatePhysics(VectorF3 accel)
 
 	ViewEntity.Vel += PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f) + accel - decel;
 }
-#endif
-void ContextNoisePlane::ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
-{
-	change.Position *= ViewSpeedNoClip;
-	if (window[Keys::LeftControl] == State::Down) { change.Position *= ViewFasterNoClip; }
-	view.Trans.Position += change.Position * frame_time.Delta;
-#ifndef DISABLE_VIEW_TANGIBLE
-	ViewEntity.Vel = change.Position;
-	ViewEntity.Pos = view.Trans.Position;
-#endif
-	view.Trans.Rotation += change.Rotation * frame_time.Delta;
-	view.Trans.Rotation.X1.clampPI();
-}
-#ifndef DISABLE_VIEW_TANGIBLE
 void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 {
 	DisplayBoxEntityVoxels(PolyHedraManager.FindPolyHedra(VoxelCube), ChunkManager, ViewEntity, frame_time);
@@ -248,8 +246,50 @@ void ContextNoisePlane::ViewRayUpdate()
 		}
 	}
 }
-#endif
-#ifndef DISABLE_VIEW_RAY
+void ContextNoisePlane::ViewRayInfo()
+{
+	std::stringstream ss;
+	ss << "ViewRay\n";
+	ss << ViewRayAxis0 << " :RayAxis0\n";
+	ss << ViewRayAxis1 << " :RayAxis1\n";
+	ss << ViewRayAxis2 << " :RayAxis2\n";
+
+	if (ViewHit.Valid())
+	{
+		ChunkVoxelIndex idx(ViewHit.Index);
+		ss << ViewHit.Index << '\n';
+		ss << idx.Chunk << '\n';
+		ss << idx.Voxel << '\n';
+		ss << ViewHitAxis0 << " :HitAxis0\n";
+		ss << ViewHitAxis1 << " :HitAxis1\n";
+
+		// Voxel Info
+		{
+			AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
+			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
+			if (voxel != nullptr)
+			{
+				const VoxelPallet * pallet = voxel -> ToPallet();
+				ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
+				ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
+				ss << (pallet -> Name) << " :Pallet\n";
+			}
+			else
+			{
+				ss << "null";
+			}
+			ss << '\n';
+		}
+	}
+
+	UI::Text::Object text; text.Create();
+	text.Text() = ss.str();
+	text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
+	text.AlignTopRight(); // take DisplaySize
+	text.Bound().Min = VectorF2();
+	text.Bound().Max = window.Size.Buffer.Full;
+	text.Color() = ColorF4(1, 1, 1);
+}
 void ContextNoisePlane::ViewRayDo()
 {
 #ifndef DISABLE_INVENTORY
@@ -257,44 +297,12 @@ void ContextNoisePlane::ViewRayDo()
 #else
 	if (PauseMenu.IsInteractible() || OptionsMenu.IsInteractible()) { return; }
 #endif
-	std::stringstream ss;
-	{
-		ss << "ViewRay\n";
-		ss << ViewRayAxis0 << " :Look0\n";
-		ss << ViewRayAxis1 << " :Look1\n";
-		ss << ViewRayAxis2 << " :Look2\n";
-	}
 
 	if (ViewHit.Valid())
 	{
 		// Side: make part of VoxelHit ?
 		// determine place_axis_1 based on where on the face was clicked ?
 		// top of face orients to point to top and so on
-
-		// Text
-		/*{
-			VoxelIndex idx = ChunkManager.FindVoxelIndex(hit.Index);
-			ss << hit.Index << '\n';
-			ss << idx.Chunk << '\n';
-			ss << idx.Voxel << '\n';
-			ss << place_axis_0 << " :Place0\n";
-			ss << place_axis_1 << " :Place1\n";
-
-			// Voxel Info
-			{
-				const Voxel * voxel = ChunkManager.FindVoxelOrNull(hit.Index);
-				if (voxel != nullptr)
-				{
-					ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
-					ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
-				}
-				else
-				{
-					ss << "null";
-				}
-				ss << '\n';
-			}
-		}*/
 
 		if (window.MouseManager[MouseButtons::MouseL] == State::Press)
 		{
@@ -342,16 +350,6 @@ void ContextNoisePlane::ViewRayDo()
 #endif
 		}
 	}
-
-	{
-		UI::Text::Object text; text.Create();
-		text.Text() = ss.str();
-		text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
-		text.AlignTopRight(); // take DisplaySize
-		text.Bound().Min = VectorF2();
-		text.Bound().Max = window.Size.Buffer.Full;
-		text.Color() = ColorF4(1, 1, 1);
-	}
 }
 #endif
 void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
@@ -382,6 +380,7 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	sw.Clear(); sw.Start();
 #ifndef DISABLE_VIEW_RAY
 	ViewRayUpdate();
+	ViewRayInfo();
 	ViewRayDo();
 #endif
 	sw.Stop();

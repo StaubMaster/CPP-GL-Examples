@@ -81,7 +81,7 @@
 
 
 #define DISABLE_INVENTORY
-#define DISABLE_VIEW_TANGIBLE
+//#define DISABLE_VIEW_TANGIBLE
 //#define DISABLE_VIEW_RAY
 
 
@@ -144,14 +144,6 @@ ContextNoisePlane();
 
 ::PhysicsContext	PhysicsContext;
 
-/* View
-	the generic View3D stuff
-	Ray
-	RayHit ?
-	Physics Stuff
-	Collision Stuff
-*/
-
 View3D	view;
 
 #ifndef DISABLE_VIEW_TANGIBLE
@@ -182,17 +174,14 @@ AxisRel		ViewHitAxis1;
 #endif
 
 void ViewUpdateDone();
-#ifndef DISABLE_VIEW_TANGIBLE
-void ViewUpdatePhysics(VectorF3 accel);
-#endif
 void ViewUpdateIntangible(Trans3D change, FrameTime frame_time);
 #ifndef DISABLE_VIEW_TANGIBLE
+void ViewUpdatePhysics(VectorF3 accel);
 void ViewUpdateColliding(FrameTime frame_time);
 #endif
 #ifndef DISABLE_VIEW_RAY
 void ViewRayUpdate();
-#endif
-#ifndef DISABLE_VIEW_RAY
+void ViewRayInfo();
 void ViewRayDo();
 #endif
 void ViewUpdateAround(Trans3D change, FrameTime frame_time);
