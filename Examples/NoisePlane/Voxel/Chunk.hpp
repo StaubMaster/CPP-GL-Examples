@@ -26,7 +26,7 @@
 
 # include "Telemetry/ValueAccumulator.hpp"
 
-# include "ContainerLock.hpp"
+# include "ContainerLock/Lock.hpp"
 
 # include <mutex>
 
@@ -63,10 +63,14 @@ do the same with Chunks in ChunkManager
 */
 
 /* deleting Chunk
+how to make sure Chunk is not referanced anywhere else
 */
 
-# include "AssignLockedChunk.hpp"
-# include "AccessLockedChunk.hpp"
+template<typename TypeObject> struct ContainerAccessTypeGuard;
+template<typename TypeObject> struct ContainerAssignTypeGuard;
+
+typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
+typedef ContainerAssignTypeGuard<Chunk> AssignLockedChunk;
 
 // StructurePlacement ?
 // StructureOrientation ?
@@ -115,6 +119,8 @@ struct Chunk
 	AccessLockedChunk	ToAccessTry();
 	AssignLockedChunk	ToAssign();
 	//AssignLockedChunk	ToAssignTry();
+
+	static AccessLockedChunk	ToAccess(Chunk * chunk);
 
 
 

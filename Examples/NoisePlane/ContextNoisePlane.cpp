@@ -9,6 +9,10 @@
 #include "ValueType/_Show.hpp"
 #include "ValueType/_Include.hpp"
 
+// Voxel
+#include "ContainerLock/AccessTypeGuard.hpp"
+#include "ContainerLock/AssignTypeGuard.hpp"
+
 // Math
 #include <math.h>
 
@@ -41,7 +45,6 @@ static ValueAccumulator<float>		FrameTime_Draw(64);
 static ValueAccumulator<float>		FrameTime_DrawThread(64);
 
 static ValueAccumulator<float>		FrameTime_ViewUpdate_CollisionTime(64);
-static ValueAccumulator<float>		FrameTime_ViewUpdate_ChunksTime(64);
 static ValueAccumulator<float>		FrameTime_ViewUpdate_RayTime(64);
 
 static ValueAccumulator<float>		FrameTime_Text_Assamble(64);
@@ -185,12 +188,10 @@ void ContextNoisePlane::ViewUpdateIntangible(Trans3D change, FrameTime frame_tim
 {
 	change.Position *= ViewSpeedNoClip;
 	if (window[Keys::LeftControl] == State::Down) { change.Position *= ViewFasterNoClip; }
+	view.Trans.Position += change.Position * frame_time.Delta;
 #ifndef DISABLE_VIEW_TANGIBLE
 	ViewEntity.Vel = change.Position;
-	ViewEntity.Pos += ViewEntity.Vel * frame_time.Delta;
-	view.Trans.Position = ViewEntity.Pos;
-#else
-	view.Trans.Position += change.Position * frame_time.Delta;
+	ViewEntity.Pos = view.Trans.Position;
 #endif
 	view.Trans.Rotation += change.Rotation * frame_time.Delta;
 	view.Trans.Rotation.X1.clampPI();
@@ -207,6 +208,7 @@ void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 #ifndef DISABLE_VIEW_RAY
 void ContextNoisePlane::ViewRayUpdate()
 {
+	//std::cout << "ViewRayUpdate:" << __LINE__ << '\n';
 	if (ViewRaySync)
 	{
 		ViewRay.Pos = view.Trans.Position;
@@ -225,8 +227,9 @@ void ContextNoisePlane::ViewRayUpdate()
 			// what if same ranks ?
 		}
 	}
-
+	//std::cout << "ViewRayUpdate:" << __LINE__ << '\n';
 	ViewHit = ChunkManager.HitVoxel(ViewRay);
+	//std::cout << "ViewRayUpdate:" << __LINE__ << '\n';
 	if (ViewHit.Valid())
 	{
 		{
@@ -245,6 +248,7 @@ void ContextNoisePlane::ViewRayUpdate()
 			else { ViewHitAxis1 = AxisRel::None; }
 		}
 	}
+	//std::cout << "ViewRayUpdate:" << __LINE__ << '\n';
 }
 #endif
 #ifndef DISABLE_VIEW_RAY
@@ -309,24 +313,25 @@ void ContextNoisePlane::ViewRayDo()
 			}
 		}*/
 
-//		std::cout << "main:" << __LINE__ << '\n';
+		std::cout << "main:" << __LINE__ << '\n';
 		if (window.MouseManager[MouseButtons::MouseL] == State::Press)
 		{
 			Voxel voxel;
 			ChunkVoxelIndex idx(ViewHit.Index);
 			//ChunkManager.ClearVoxel(hit.Index, voxel);
-//			std::cout << "main:" << __LINE__ << '\n';
-			Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
-//			std::cout << "main:" << __LINE__ << '\n';
-			if (chunk != nullptr)
+			std::cout << "main:" << __LINE__ << '\n';
+			AccessLockedChunk chunk0 = ChunkManager.FindAccess(idx.Chunk);
+			std::cout << "main:" << __LINE__ << '\n';
+			if (chunk0.Is())
 			{
-//				std::cout << "main:" << __LINE__ << '\n';
-				chunk -> ClearVoxel(idx.Voxel, voxel);
-//				std::cout << "main:" << __LINE__ << '\n';
-				chunk -> AccessU();
-//				std::cout << "main:" << __LINE__ << '\n';
+				AssignLockedChunk chunk1 = chunk0.ToAssign();
+				std::cout << "main:" << __LINE__ << '\n';
+				(*chunk1).ClearVoxel(idx.Voxel, voxel);
+				std::cout << "main:" << __LINE__ << '\n';
 			}
-		}
+			std::cout << "main:" << __LINE__ << '\n';
+}
+		std::cout << "main:" << __LINE__ << '\n';
 		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
 		{
 			if (ViewHitAxis0 == AxisRel::NextX) { ViewHit.Index.X += 1; }
@@ -383,6 +388,9 @@ void ContextNoisePlane::ViewRayDo()
 #endif
 void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 {
+	// sperate applying change and moving
+	// when intangible, change view directly
+
 	StopWatch sw;
 	sw.Start();
 #ifndef DISABLE_VIEW_TANGIBLE
@@ -403,18 +411,6 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	sw.Stop();
 	FrameTime_ViewUpdate_CollisionTime.NewValue(sw.ElapsedTime());
 
-	// needs new View Position
-	// but Ray needs new Chunks ?
-	// they dont need eachother in the same frame
-	// so it should be fine to use a old View Position
-	// or Ray into old Chunks
-
-	sw.Clear(); sw.Start();
-	ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF()); // do this in Insert/Remove Thread
-	//ChangeCenter segfaults
-	sw.Stop();
-	FrameTime_ViewUpdate_ChunksTime.NewValue(sw.ElapsedTime());
-
 	sw.Clear(); sw.Start();
 #ifndef DISABLE_VIEW_RAY
 	ViewRayUpdate();
@@ -427,13 +423,6 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 
 
 
-
-/*
-put the Finding Functino into the Thread as well
-condition_variable is basically just a Poke
-move the condition_variable and Mutex into the Thread ?
-then the Chunks/Manager need to know bout the Thread to .Poke() it
-*/
 
 thread_local const char * AuxThreadBase::ThreadName = "ThreadName";
 
@@ -448,6 +437,7 @@ void ContextNoisePlane::AuxThread0Func()
 		if (!AuxThread0Idle)
 		{
 			sw.Clear(); sw.Start();
+			ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
 			//ChunkManager.RemoveAround();
 			//ChunkManager.InsertAround();
 			ChunkManager.UpdateChunksContainer();
@@ -456,39 +446,6 @@ void ContextNoisePlane::AuxThread0Func()
 		}
 	}
 }
-
-
-
-CenterIndexLoop3D CenterIndexLoop;
-
-static VectorI3 CenterIndexLoop_Center;
-static Container::Binary<VectorI3> CenterIndexLoop_List;
-static void CenterIndexLoop_Clear()
-{
-	CenterIndexLoop_Center = VectorI3(0, 0, 0);
-	CenterIndexLoop_List.Clear();
-
-	CenterIndexLoop.New(2);
-}
-static void CenterIndexLoop_Loop()
-{
-	if (!CenterIndexLoop.Done())
-	{
-		CenterIndexLoop_List.Insert(CenterIndexLoop.Index());
-		CenterIndexLoop.Continue();
-	}
-}
-static void CenterIndexLoop_Show(PolyHedra * polyhedra)
-{
-	for (unsigned int i = 0; i < CenterIndexLoop_List.Count(); i++)
-	{
-		PolyHedraObject obj(polyhedra);
-		obj.ShowFull();
-		obj.Trans().Position = (CenterIndexLoop_List[i] + CenterIndexLoop_Center);
-	}
-}
-
-
 
 
 
@@ -524,9 +481,9 @@ void ContextNoisePlane::Make()
 
 	// 3 Cuboids. implement Scaling for Transformations
 	{
-		//VoxelCube = new PolyHedra();
-		VoxelCube = PolyHedra::Generate::HexaHedron(0.5f);
-		//PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
+		VoxelCube = new PolyHedra();
+		//VoxelCube = PolyHedra::Generate::HexaHedron(0.5f);
+		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
 		PolyHedraManager.PlacePolyHedra(VoxelCube);
 	}
 	{
@@ -554,14 +511,10 @@ void ContextNoisePlane::Make()
 		Structure::Default();
 	}
 
-	{
+	/*{
 		ViewRayPolyHedra = PolyHedra::Generate::ConeC(8, 0.01f, 0.1f);
 		PolyHedraManager.PlacePolyHedra(ViewRayPolyHedra);
-	}
-	//Perlin2D::DebugShow();
-	//TestRandom();
-
-	CenterIndexLoop_Clear();
+	}*/
 }
 
 
@@ -799,63 +752,74 @@ void ContextNoisePlane::GraphicsDelete()
 
 void ContextNoisePlane::Init()
 {
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	Make();
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	ChangeMedia();
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	GraphicsCreate();
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	UIManager.TextManager.InitFont();
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	VoxelPalletMap::All.LoadTextures(ChunkManager);
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	VoxelPalletMap::All.MakePolyHedra();
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	VoxelGeometryPallet::Default();
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	MakeControls();
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	//ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
 	ChunkManager.ChangeSize(8, 6);
 	//ChunkManager.ChangeSize(16, 8);
 	//ChunkManager.ChangeSize(16, 12);
 	//ChunkManager.ChangeSize(32, 16);
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	Multiform_Depth.ChangeData(view.Depth);
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	Multiform_FOV.ChangeData(view.FOV);
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	AuxThread0Idle = false;
 	ChunkManager.AuxThread1.DoIdle = false;
 	ChunkManager.AuxThread2.DoIdle = false;
 	ChunkManager.AuxThread3.DoIdle = false;
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	ChunkManager.AuxThread1.Poke();
 	ChunkManager.AuxThread2.Poke();
 	ChunkManager.AuxThread3.Poke();
-	std::cout << "ContextNoisePlane::Init() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 }
 void ContextNoisePlane::Free()
 {
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	GraphicsDelete();
-
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	AuxThread0Term = true;
 	ChunkManager.AuxThread1.Term = true;
 	ChunkManager.AuxThread2.Term = true;
 	ChunkManager.AuxThread3.Term = true;
-
-	ChunkManager.AuxThread1.Poke();
-	ChunkManager.AuxThread2.Poke();
-	ChunkManager.AuxThread3.Poke();
-
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
+	while (
+		!ChunkManager.AuxThread1.Done ||
+		!ChunkManager.AuxThread2.Done ||
+		!ChunkManager.AuxThread3.Done)
+	{
+		if (!ChunkManager.AuxThread1.Done) { ChunkManager.AuxThread1.Poke(); }
+		if (!ChunkManager.AuxThread2.Done) { ChunkManager.AuxThread2.Poke(); }
+		if (!ChunkManager.AuxThread3.Done) { ChunkManager.AuxThread3.Poke(); }
+	}
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	AuxThread0.join();
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	ChunkManager.AuxThread1.Join();
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	ChunkManager.AuxThread2.Join();
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	ChunkManager.AuxThread3.Join();
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 }
 
 
@@ -1169,7 +1133,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ShowNameTimeLine(ss, "ViewUpdate      ", FrameTime_ViewUpdate);
 		/*ss << "{\n";
 		ShowNameTimeLine(ss, "CollisionTime   ", FrameTime_ViewUpdate_CollisionTime);
-		ShowNameTimeLine(ss, "ChunksTime      ", FrameTime_ViewUpdate_ChunksTime);
 		ss << "{\n";
 		ss << ChunkManager::TimeGraphicsCreate << '\n';
 		ss << ChunkManager::TimeGraphicsDelete << '\n';
@@ -1425,17 +1388,30 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	sw_total.Stop(); FrameTime_Text_Assamble.NewValue(sw_total.ElapsedTime());
 
 	sw_total.Clear(); sw_total.Start();
-	UI::Text::Object text; text.Create();
-	text.Text() = ss.str();
-	if (DebugMenu.IsVisible())
 	{
-		text.TextPosition().X = DebugMenu.Anchor.X.GetMinSize();
+		UI::Text::Object text; text.Create();
+		text.Text() = ss.str();
+		if (DebugMenu.IsVisible())
+		{
+			text.TextPosition().X = DebugMenu.Anchor.X.GetMinSize();
+		}
+		text.AlignTopLeft();
+		text.Color() = ColorF4(1, 1, 1);
+		text.Bound().Min = VectorF2();
+		text.Bound().Max = window.Size.Buffer.Full;
 	}
-	text.AlignTopLeft();
-	text.Color() = ColorF4(1, 1, 1);
-	text.Bound().Min = VectorF2();
-	text.Bound().Max = window.Size.Buffer.Full;
 	sw_total.Stop(); FrameTime_Text_Instance.NewValue(sw_total.ElapsedTime());
+
+	// CrossHair
+	{
+		UI::Text::Object text; text.Create();
+		text.Text() = "[+]";
+		text.AlignMiddleMiddle();
+		text.TextPosition() = window.Size.Buffer.Half;
+		text.Color() = ColorF4(1, 1, 1);
+		text.Bound().Min = VectorF2();
+		text.Bound().Max = window.Size.Buffer.Full;
+	}
 }
 #ifndef DISABLE_INVENTORY
 void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
@@ -1609,11 +1585,6 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	//LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
 	LightSpot.Pos = view.Trans.Position;
 	LightSpot.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
-
-	// this is general Update, not Draw specific
-	if (window[Keys::Delete] == State::Press) { CenterIndexLoop_Clear(); }
-	if (window[Keys::Insert] == State::Press) { CenterIndexLoop_Loop(); }
-	CenterIndexLoop_Show(VoxelCube);
 
 	StopWatch sw_total;
 	sw_total.Start();

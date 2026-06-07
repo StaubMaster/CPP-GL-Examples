@@ -27,6 +27,9 @@
 #include "Telemetry/StopWatch.hpp"
 #include "Telemetry/AuxThreadBase.hpp"
 
+#include "ContainerLock/AccessTypeGuard.hpp"
+#include "ContainerLock/AssignTypeGuard.hpp"
+
 
 
 #include <iostream>
@@ -74,33 +77,22 @@ void Chunk::AccessToAssign() { Lock.AccessToAssign(); }
 void Chunk::AssignL() { Lock.AssignL(); }
 void Chunk::AssignU() { Lock.AssignU(); }
 
-AccessLockedChunk Chunk::ToAccess()
-{
-	AccessL();
-	return AccessLockedChunk(this);
-}
-AccessLockedChunk Chunk::ToAccessTry()
-{
-	if (AccessT())
-	{
-		return AccessLockedChunk(this);
-	}
-	return AccessLockedChunk();
-}
+AccessLockedChunk Chunk::ToAccess() { return AccessLockedChunk::MakeLock(Lock, *this); }
+AccessLockedChunk Chunk::ToAccessTry() { return AccessLockedChunk::TryLock(Lock, *this); }
 AssignLockedChunk Chunk::ToAssign()
 {
 	AssignL();
-	return AssignLockedChunk(this);
+	return AssignLockedChunk::TakeLock(Lock, *this);
 }
-/*AssignLockedChunk Chunk::ToAssignTry()
-{
-	if (AssignT())
-	{
-		return AssignLockedChunk(this);
-	}
-	return AssignLockedChunk();
-}*/
 
+AccessLockedChunk Chunk::ToAccess(Chunk * chunk)
+{
+	if (chunk != nullptr)
+	{
+		return AccessLockedChunk::TakeLock(chunk -> Lock, *chunk);
+	}
+	return AccessLockedChunk();
+}
 
 
 

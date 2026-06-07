@@ -2,9 +2,11 @@
 
 #include "Voxel/ChunkManager.hpp"
 #include "Voxel/Chunk.hpp"
-#include "Voxel/AccessLockedChunk.hpp"
 #include "Voxel/VoxelPallet.hpp"
 #include "Voxel/Structure.hpp"
+
+#include "ContainerLock/AccessTypeGuard.hpp"
+#include "ContainerLock/AssignTypeGuard.hpp"
 
 
 
@@ -55,7 +57,7 @@ void AuxThread2::Func()
 			return false;
 		});
 
-		if (Term) { return; }
+		if (Term) { break; }
 
 		if (!chunk.Is()) { continue; }
 
@@ -70,6 +72,7 @@ void AuxThread2::Func()
 		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
 		TimeGenerate.ThreadName = AuxThreadBase::ThreadName;
 	}
+	Done = true;
 }
 
 
@@ -99,39 +102,9 @@ AccessLockedChunk AuxThread2::Find()
 		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); FindLoop = loop; continue; }
 		//if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
 
-		return AccessLockedChunk(ptr);
+		return Chunk::ToAccess(ptr);
 	}
 	return AccessLockedChunk();
-
-//	AccessLockedChunk found;
-	Chunk * found = nullptr;
-	float dist;
-	for (unsigned int i = 0; i < Manager.Chunks.Length(); i++)
-	{
-		Chunk * ptr = Manager.Chunks[i];
-		if (ptr == nullptr) { continue; }
-		const Chunk & ref = *ptr;
-
-		//AccessLockedChunk chunk = ptr -> ToAccess();
-		ptr -> AccessL();
-
-		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); continue; }
-		if (!Manager.CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
-
-		VectorF3 rel = ref.Index - Manager.Center;
-		float d = rel.length2();
-		//if (!found.Is() || d < dist)
-		if (found == nullptr || d < dist)
-		{
-			if (found != nullptr) { found -> AccessU(); }
-			found = ptr;
-			dist = d;
-		}
-		else { ptr -> AccessU(); }
-	}
-
-	//return found;
-	return AccessLockedChunk(found);
 }
 
 

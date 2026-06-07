@@ -29,7 +29,10 @@ std::ostream & operator<<(std::ostream & s, AxisRel axis);
 
 
 
-AxisAbs AxisRelToAxisAbs(AxisRel axis);
+AxisAbs		AxisRelToAxisAbs(AxisRel axis);
+
+struct VectorF3;
+VectorF3	AxisToVector(AxisRel axis);
 
 
 

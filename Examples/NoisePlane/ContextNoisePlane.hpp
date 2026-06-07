@@ -48,6 +48,7 @@
 #include "Voxel/ChunkVoxelIndex.hpp"
 #include "Voxel/VoxelGeometryPallet.hpp"
 #include "Voxel/Structure.hpp"
+#include "Voxel/VoxelHit.hpp"
 
 #include "BoxEntity.hpp"
 
@@ -77,7 +78,7 @@
 
 #define DISABLE_INVENTORY
 #define DISABLE_VIEW_TANGIBLE
-#define DISABLE_VIEW_RAY
+//#define DISABLE_VIEW_RAY
 
 
 
@@ -215,9 +216,8 @@ void						AuxThread0Func();
 
 
 
-PolyHedra *		VoxelCube;
+PolyHedra *		VoxelCube; // put this in PolyHedra Geometry Pallet
 PolyHedra *		VoxelChunkCube;
-PolyHedra *		ViewRayPolyHedra;
 
 void Make();
 

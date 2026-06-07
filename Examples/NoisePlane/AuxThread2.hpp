@@ -11,13 +11,16 @@
 
 struct ChunkManager;
 struct Chunk;
-struct AccessLockedChunk;
+
+template<typename TypeObject> struct ContainerAccessTypeGuard;
+typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
+
 struct Voxel;
 
 # include "ValueType/LoopU2.hpp"
 # include "ValueType/LoopU3.hpp"
 
-# include "CenterIndexLoop3D.hpp"
+# include "CenterIndexLoop/3D.hpp"
 # include "Voxel/ChunkGenerationNoise.hpp"
 
 /* make a Queue for Generating/Assambling ?

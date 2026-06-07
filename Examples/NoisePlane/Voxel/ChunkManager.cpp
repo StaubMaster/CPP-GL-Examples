@@ -16,7 +16,10 @@
 // Code
 #include "Telemetry/AuxThreadBase.hpp"
 #include "Telemetry/WaitDoTime.hpp"
-#include "ContainerLock.hpp"
+
+#include "ContainerLock/Lock.hpp"
+#include "ContainerLock/AccessTypeGuard.hpp"
+#include "ContainerLock/AssignTypeGuard.hpp"
 
 #include "ValueType/LoopU3.hpp"
 
@@ -176,8 +179,15 @@ Chunk * ChunkManager::FindAbsOrNull(VectorI3 idx)
 AccessLockedChunk ChunkManager::FindAccess(VectorI3 idx)
 {
 	VectorU3 udx = relative(idx);
-	if ((udx < Chunks.Size()).Any(false)) { return AccessLockedChunk(); }
-	return AccessLockedChunk(Chunks[udx]);
+	if (Chunks.Check(udx))
+	{
+		Chunk * chunk = Chunks[udx];
+		if (chunk != nullptr)
+		{
+			return chunk -> ToAccess();
+		}
+	}
+	return AccessLockedChunk();
 }
 
 /* change Insert/Remove
@@ -456,31 +466,25 @@ VoxelHit ChunkManager::HitVoxel(Ray3D ray)
 	//::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
 	//::ChunkBoxPolyHedra = ChunkBoxPolyHedra;
 	//ShowRay(ray);
-//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+
+	//std::cout << "HitVoxel:" << __LINE__ << '\n';
 	ChunksLock.AccessL();
-//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+	//std::cout << "HitVoxel:" << __LINE__ << '\n';
 	GridCast3D::Hit _hit = VoxelHit::Hit(*this, ray, 10.0f);
-//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+	//std::cout << "HitVoxel:" << __LINE__ << '\n';
 	ChunksLock.AccessU();
-//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+	//std::cout << "HitVoxel:" << __LINE__ << '\n';
+
 	VoxelHit hit;
-//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+	//std::cout << "HitVoxel:" << __LINE__ << '\n';
 	if (_hit.cardinal == AxisRel::None) { return hit; }
-//	std::cout << "HitVoxel:" << __LINE__ << '\n';
-	hit.Position = _hit.pos;
-	switch (_hit.cardinal)
-	{
-		case AxisRel::PrevX: hit.Normal = VectorF3(-1, 0, 0); break;
-		case AxisRel::PrevY: hit.Normal = VectorF3(0, -1, 0); break;
-		case AxisRel::PrevZ: hit.Normal = VectorF3(0, 0, -1); break;
-		case AxisRel::NextX: hit.Normal = VectorF3(+1, 0, 0); break;
-		case AxisRel::NextY: hit.Normal = VectorF3(0, +1, 0); break;
-		case AxisRel::NextZ: hit.Normal = VectorF3(0, 0, +1); break;
-		default: hit.Normal = VectorF3(0, 0, 0); break;
-	}
+	//std::cout << "HitVoxel:" << __LINE__ << '\n';
 	hit.Side = _hit.cardinal;
 	hit.Index = _hit.idx;
-//	std::cout << "HitVoxel:" << __LINE__ << '\n';
+	hit.Position = _hit.pos;
+	hit.Normal = AxisToVector(_hit.cardinal);
+	//std::cout << "HitVoxel:" << __LINE__ << '\n';
+
 	return hit;
 }
 

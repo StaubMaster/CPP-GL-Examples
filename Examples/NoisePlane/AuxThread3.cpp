@@ -2,10 +2,12 @@
 
 #include "Voxel/ChunkManager.hpp"
 #include "Voxel/Chunk.hpp"
-#include "Voxel/AccessLockedChunk.hpp"
 #include "Voxel/Structure.hpp"
 
 #include "ValueType/LoopU3.hpp"
+
+#include "ContainerLock/AssignTypeGuard.hpp"
+#include "ContainerLock/AccessTypeGuard.hpp"
 
 
 
@@ -50,7 +52,7 @@ void AuxThread3::Func()
 			return false;
 		});
 
-		if (Term) { return; }
+		if (Term) { break; }
 
 		if (!chunk.Is()) { continue; }
 
@@ -64,6 +66,7 @@ void AuxThread3::Func()
 		TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
 		TimeAssamble.ThreadName = AuxThreadBase::ThreadName;
 	}
+	Done = true;
 }
 
 
@@ -112,6 +115,7 @@ AccessLockedChunk AuxThread3::Find()
 		{
 			if (found != nullptr) { found -> AccessU(); }
 			//found = chunk;
+			//std::cout << "Aux3 Find Can " << &(found -> Lock) << '\n' << std::flush;
 			found = ptr;
 			dist = d;
 		}
@@ -120,7 +124,7 @@ AccessLockedChunk AuxThread3::Find()
 	FindCandidateCount = candidate_count;
 
 	//return found;
-	return AccessLockedChunk(found);
+	return Chunk::ToAccess(found);
 }
 
 

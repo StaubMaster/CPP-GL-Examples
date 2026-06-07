@@ -1,4 +1,5 @@
 #include "AxisEnums.hpp"
+#include "ValueType/Vector/F3.hpp"
 #include <sstream>
 
 
@@ -46,6 +47,20 @@ AxisAbs AxisRelToAxisAbs(AxisRel axis)
 		case AxisRel::PrevZ: return AxisAbs::Z;
 		case AxisRel::NextZ: return AxisAbs::Z;
 		default: return AxisAbs::None;
+	}
+}
+
+VectorF3 AxisToVector(AxisRel axis)
+{
+	switch (axis)
+	{
+		case AxisRel::PrevX: return VectorF3(-1, 0, 0);
+		case AxisRel::PrevY: return VectorF3(0, -1, 0);
+		case AxisRel::PrevZ: return VectorF3(0, 0, -1);
+		case AxisRel::NextX: return VectorF3(+1, 0, 0);
+		case AxisRel::NextY: return VectorF3(0, +1, 0);
+		case AxisRel::NextZ: return VectorF3(0, 0, +1);
+		default: return VectorF3(0, 0, 0);
 	}
 }
 

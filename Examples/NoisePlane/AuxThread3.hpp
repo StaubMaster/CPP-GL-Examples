@@ -8,7 +8,10 @@
 
 struct ChunkManager;
 struct Chunk;
-struct AccessLockedChunk;
+
+template<typename TypeObject> struct ContainerAccessTypeGuard;
+typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
+
 struct StructureObject;
 struct VectorI3;
 

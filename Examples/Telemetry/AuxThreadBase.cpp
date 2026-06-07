@@ -11,6 +11,7 @@ AuxThreadBase::AuxThreadBase()
 	, Term(false)
 	, DoIdle(true)
 	, IsIdle(false)
+	, Done(false)
 { }
 
 

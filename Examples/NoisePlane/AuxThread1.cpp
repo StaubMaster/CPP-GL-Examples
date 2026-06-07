@@ -2,7 +2,8 @@
 
 #include "Voxel/ChunkManager.hpp"
 #include "Voxel/Chunk.hpp"
-#include "Voxel/AccessLockedChunk.hpp"
+
+#include "ContainerLock/AccessTypeGuard.hpp"
 
 
 
@@ -51,7 +52,7 @@ void AuxThread1::Func()
 			return false;
 		});
 
-		if (Term) { return; }
+		if (Term) { break;; }
 
 		if (!chunk.Is()) { continue; }
 
@@ -62,6 +63,7 @@ void AuxThread1::Func()
 		TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
 		TimeMakeBuffer.ThreadName = AuxThreadBase::ThreadName;
 	}
+	Done = true;
 }
 
 
@@ -101,8 +103,8 @@ AccessLockedChunk AuxThread1::Find()
 	{
 		Chunk * ptr = Queue[i];
 		if (ptr == nullptr) { Queue.RemoveAt(i); i--; continue; }
-		QueueMutex.unlock();
 		const Chunk & ref = *ptr;
+		QueueMutex.unlock();
 
 		AccessLockedChunk chunk = ptr -> ToAccess();
 		//AccessLockedChunk chunk = ptr -> ToAccessTry();

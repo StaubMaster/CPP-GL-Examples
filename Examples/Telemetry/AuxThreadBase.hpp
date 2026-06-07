@@ -12,7 +12,7 @@ struct AuxThreadBase
 {
 	public:
 	static thread_local const char *	ThreadName;
-
+	
 	private:
 	std::thread		Thread;
 
@@ -24,6 +24,7 @@ struct AuxThreadBase
 	bool	Term;
 	bool	DoIdle;
 	bool	IsIdle;
+	bool	Done;
 
 	public:
 	~AuxThreadBase();

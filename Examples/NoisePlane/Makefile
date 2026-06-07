@@ -30,8 +30,6 @@ FILES := \
 	Voxel/ChunkGraphicsData.cpp \
 	Voxel/ChunkVoxelIndex.cpp \
 	Voxel/Chunk.cpp \
-	Voxel/AccessLockedChunk.cpp \
-	Voxel/AssignLockedChunk.cpp \
 	Voxel/ChunkNeighbours.cpp \
 	Voxel/ChunkManager.cpp \
 	\
@@ -41,10 +39,13 @@ FILES := \
 	AuxThread2.cpp \
 	AuxThread3.cpp \
 	\
-	CenterIndexLoop2D.cpp \
-	CenterIndexLoop3D.cpp \
+	CenterIndexLoop/2D.cpp \
+	CenterIndexLoop/3D.cpp \
 	\
-	ContainerLock.cpp \
+	ContainerLock/Lock.cpp \
+	ContainerLock/AccessGuard.cpp \
+	ContainerLock/AssignGuard.cpp \
+	\
 	BoxEntity.cpp \
 \
 	GridCast/GridCast3D.cpp \

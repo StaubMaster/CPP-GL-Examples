@@ -30,7 +30,10 @@ struct Voxel;
 struct Chunk;
 struct Chunk;
 struct ChunkGenerationNoise;
-struct AccessLockedChunk;
+
+template<typename TypeObject> struct ContainerAccessTypeGuard;
+typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
+
 enum class AxisRel : unsigned char;
 
 struct ChunkNeighbour;
@@ -44,7 +47,7 @@ struct VoxelHit;
 #include "ValueType/_Show.hpp"
 
 # include "Telemetry/WaitDoTime.hpp"
-# include "ContainerLock.hpp"
+# include "ContainerLock/Lock.hpp"
 # include "Miscellaneous/Container/Array3D.hpp"
 
 # include "Graphics/MultiBufferChunkU.hpp"

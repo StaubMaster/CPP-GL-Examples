@@ -3,6 +3,8 @@
 #include "Voxel/ChunkVoxelIndex.hpp"
 #include "Voxel/Chunk.hpp"
 
+#include "ContainerLock/AccessTypeGuard.hpp"
+
 
 
 VoxelBoxCollision::VoxelBoxCollision()
