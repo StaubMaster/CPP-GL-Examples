@@ -1,8 +1,8 @@
 #ifndef  VOXEL_GEOMETRY_PALLET_HPP
 # define VOXEL_GEOMETRY_PALLET_HPP
 
-# include "AxisOrientation.hpp"
-# include "VoxelGraphicsData.hpp"
+# include "Axis/Orientation.hpp"
+# include "GraphicsData.hpp"
 
 struct VoxelGeometryPallet
 {

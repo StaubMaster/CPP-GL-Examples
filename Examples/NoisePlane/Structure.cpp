@@ -1,5 +1,5 @@
 #include "Structure.hpp"
-#include "VoxelPallet.hpp"
+#include "Voxel/Pallet.hpp"
 
 #include "ValueType/LoopU3.hpp"
 

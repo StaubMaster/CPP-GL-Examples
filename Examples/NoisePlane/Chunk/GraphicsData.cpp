@@ -1,12 +1,12 @@
-#include "ChunkGraphicsData.hpp"
+#include "GraphicsData.hpp"
 
 #include "Chunk.hpp"
-#include "ChunkManager.hpp"
-#include "ChunkNeighbours.hpp"
+#include "Manager.hpp"
+#include "Neighbours.hpp"
 
-#include "VoxelGeometryPallet.hpp"
-#include "VoxelPallet.hpp"
 #include "Voxel.hpp"
+#include "Voxel/GeometryPallet.hpp"
+#include "Voxel/Pallet.hpp"
 
 #include "ValueType/Vector/U3.hpp"
 #include "ValueType/LoopU3.hpp"

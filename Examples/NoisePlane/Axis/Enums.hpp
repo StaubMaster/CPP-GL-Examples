@@ -36,6 +36,9 @@ VectorF3	AxisToVector(AxisRel axis);
 
 
 
+// put Diag and Flip into AxisOrientation ?
+// they dont even really make sense outside of that
+
 /*
 Diag::Here : (+X, +Y, +Z)
 Diag::Prev : (+Z, +X, +Y)

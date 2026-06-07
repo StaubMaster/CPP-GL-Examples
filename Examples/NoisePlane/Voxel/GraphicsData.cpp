@@ -1,4 +1,4 @@
-#include "VoxelGraphicsData.hpp"
+#include "GraphicsData.hpp"
 
 
 

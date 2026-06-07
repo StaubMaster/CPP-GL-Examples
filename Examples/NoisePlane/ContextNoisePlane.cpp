@@ -208,7 +208,6 @@ void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 #ifndef DISABLE_VIEW_RAY
 void ContextNoisePlane::ViewRayUpdate()
 {
-	//std::cout << "ViewRayUpdate:" << __LINE__ << '\n';
 	if (ViewRaySync)
 	{
 		ViewRay.Pos = view.Trans.Position;
@@ -227,9 +226,9 @@ void ContextNoisePlane::ViewRayUpdate()
 			// what if same ranks ?
 		}
 	}
-	//std::cout << "ViewRayUpdate:" << __LINE__ << '\n';
+
 	ViewHit = ChunkManager.HitVoxel(ViewRay);
-	//std::cout << "ViewRayUpdate:" << __LINE__ << '\n';
+
 	if (ViewHit.Valid())
 	{
 		{
@@ -248,7 +247,6 @@ void ContextNoisePlane::ViewRayUpdate()
 			else { ViewHitAxis1 = AxisRel::None; }
 		}
 	}
-	//std::cout << "ViewRayUpdate:" << __LINE__ << '\n';
 }
 #endif
 #ifndef DISABLE_VIEW_RAY
@@ -259,9 +257,6 @@ void ContextNoisePlane::ViewRayDo()
 #else
 	if (PauseMenu.IsInteractible() || OptionsMenu.IsInteractible()) { return; }
 #endif
-	// check if any Control is being hovered
-	// cast Ray at mouse
-
 	std::stringstream ss;
 	{
 		ss << "ViewRay\n";
@@ -272,22 +267,10 @@ void ContextNoisePlane::ViewRayDo()
 
 	if (ViewHit.Valid())
 	{
-//		std::cout << "main:" << __LINE__ << '\n';
-//		std::cout << "main:" << __LINE__ << '\n';
-		// Hit Indicator
-		/*{
-			PolyHedraObject voxel_dir_obj(ViewRayPolyHedra);
-			voxel_dir_obj.Trans().Position = hit.Pos;
-			voxel_dir_obj.Trans().Rotation = EulerAngle3D::PointToZ(hit.Dir);
-			voxel_dir_obj.ShowWire();
-		}*/
-
-//		std::cout << "main:" << __LINE__ << '\n';
 		// Side: make part of VoxelHit ?
 		// determine place_axis_1 based on where on the face was clicked ?
 		// top of face orients to point to top and so on
 
-//		std::cout << "main:" << __LINE__ << '\n';
 		// Text
 		/*{
 			VoxelIndex idx = ChunkManager.FindVoxelIndex(hit.Index);
@@ -313,7 +296,6 @@ void ContextNoisePlane::ViewRayDo()
 			}
 		}*/
 
-		std::cout << "main:" << __LINE__ << '\n';
 		if (window.MouseManager[MouseButtons::MouseL] == State::Press)
 		{
 			Voxel voxel;
@@ -330,8 +312,8 @@ void ContextNoisePlane::ViewRayDo()
 				std::cout << "main:" << __LINE__ << '\n';
 			}
 			std::cout << "main:" << __LINE__ << '\n';
-}
-		std::cout << "main:" << __LINE__ << '\n';
+		}
+
 		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
 		{
 			if (ViewHitAxis0 == AxisRel::NextX) { ViewHit.Index.X += 1; }
@@ -359,7 +341,6 @@ void ContextNoisePlane::ViewRayDo()
 			}
 #endif
 		}
-//		std::cout << "main:" << __LINE__ << '\n';
 	}
 
 	{
@@ -371,19 +352,6 @@ void ContextNoisePlane::ViewRayDo()
 		text.Bound().Max = window.Size.Buffer.Full;
 		text.Color() = ColorF4(1, 1, 1);
 	}
-
-	/*if (window[Keys::NumPadEnter] == State::Press)
-	{
-		// make a struct for VoxelIndex
-		// struct VoxelIndexAbs; VectorI3
-		// struct VoxelIndexRel; VectorI3 and VectorU3
-		// ChunkManager can convert between them
-		Chunk * view_chunk = ChunkManager.FindChunkOrNull((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
-		if (view_chunk != nullptr)
-		{
-			view_chunk -> TestOrientation();
-		}
-	}*/
 }
 #endif
 void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)

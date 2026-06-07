@@ -2,7 +2,8 @@
 # define VOXEL_GRAPHICS_DATA_HPP
 
 # include "Graphics/Main/Data.hpp"
-# include "AxisOrientation.hpp" // only for AxisRel
+
+# include "Axis/Orientation.hpp" // only for AxisRel
 
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Container/Array.hpp"

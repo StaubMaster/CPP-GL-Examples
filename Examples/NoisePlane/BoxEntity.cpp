@@ -1,7 +1,9 @@
 #include "BoxEntity.hpp"
-#include "Voxel/ChunkManager.hpp"
-#include "Voxel/ChunkVoxelIndex.hpp"
-#include "Voxel/Chunk.hpp"
+
+#include "Chunk.hpp"
+#include "Chunk/Manager.hpp"
+
+#include "ChunkVoxelIndex.hpp"
 
 #include "ContainerLock/AccessTypeGuard.hpp"
 

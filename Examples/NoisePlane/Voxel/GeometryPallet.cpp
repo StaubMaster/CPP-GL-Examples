@@ -1,4 +1,4 @@
-#include "VoxelGeometryPallet.hpp"
+#include "GeometryPallet.hpp"
 
 #include "ValueType/Box/F2.hpp"
 #include "ValueType/Box/U2.hpp"

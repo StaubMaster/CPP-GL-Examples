@@ -1,3 +1,0 @@
-
-sort by Voxel vs Chunk vs other
-

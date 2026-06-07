@@ -1,8 +1,8 @@
-#include "VoxelPallet.hpp"
-#include "AxisOrientation.hpp"
+#include "Pallet.hpp"
+#include "GeometryPallet.hpp"
 #include "Voxel.hpp"
 
-#include "VoxelGeometryPallet.hpp"
+#include "Axis/Orientation.hpp"
 
 
 
@@ -312,8 +312,13 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 	All["ConcreteCube"].TextureAll(MediaDirectory.File("Images/Voxel/Concrete_0.png"));
 	All["ConcreteCylinder"].TextureAll(MediaDirectory.File("Images/Voxel/Concrete_0.png"));
 }
+
+
+
 #include "ValueType/Vector/U2.hpp"
-#include "ChunkManager.hpp"
+
+#include "Chunk/Manager.hpp"
+
 void VoxelPalletMap::LoadTextures(ChunkManager & manager)
 {
 	std::cout << "LoadTextures ....\n";

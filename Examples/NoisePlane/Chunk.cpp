@@ -1,12 +1,12 @@
 #include "Chunk.hpp"
-#include "ChunkManager.hpp"
-#include "ChunkNeighbours.hpp"
+#include "Chunk/Manager.hpp"
+#include "Chunk/Neighbours.hpp"
 
-#include "VoxelPallet.hpp"
+#include "Voxel/Pallet.hpp"
 
 #include "Graphics/Inst/Data.hpp"
 
-#include "AxisOrientation.hpp"
+#include "Axis/Orientation.hpp"
 
 #include "Structure.hpp"
 

@@ -4,9 +4,9 @@
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Skin/Skin2DA.hpp"
 
-#include "Voxel/VoxelGraphicsData.hpp"
-#include "Voxel/VoxelGeometryPallet.hpp"
-#include "Voxel/VoxelPallet.hpp"
+#include "Voxel/GraphicsData.hpp"
+#include "Voxel/GeometryPallet.hpp"
+#include "Voxel/Pallet.hpp"
 
 
 

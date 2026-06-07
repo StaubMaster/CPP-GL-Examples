@@ -11,41 +11,42 @@ FANCY_NAME := NoisePlane
 #	Plane/PlaneManager.cpp \
 
 FILES := \
-	Voxel/Graphics/Main/Data.cpp \
-	Voxel/Graphics/Main/Buffer.cpp \
-	Voxel/Graphics/Inst/Data.cpp \
-	Voxel/Graphics/Inst/Buffer.cpp \
-	Voxel/Graphics/Buffer.cpp \
-	Voxel/Graphics/ShaderLayout.cpp \
-	Voxel/Graphics/MultiBufferChunkU.cpp \
-	\
-	Voxel/Voxel.cpp \
-	Voxel/VoxelGraphicsData.cpp \
-	Voxel/VoxelGeometryPallet.cpp \
-	Voxel/VoxelPallet.cpp \
-	Voxel/AxisOrientation.cpp \
-	Voxel/AxisEnums.cpp \
-	Voxel/VoxelHit.cpp \
-	\
-	Voxel/ChunkGraphicsData.cpp \
-	Voxel/ChunkVoxelIndex.cpp \
-	Voxel/Chunk.cpp \
-	Voxel/ChunkNeighbours.cpp \
-	Voxel/ChunkManager.cpp \
-	\
-	Voxel/Structure.cpp \
-	\
-	AuxThread1.cpp \
-	AuxThread2.cpp \
-	AuxThread3.cpp \
-	\
+	Graphics/Main/Data.cpp \
+	Graphics/Main/Buffer.cpp \
+	Graphics/Inst/Data.cpp \
+	Graphics/Inst/Buffer.cpp \
+	Graphics/Buffer.cpp \
+	Graphics/ShaderLayout.cpp \
+	Graphics/MultiBufferChunkU.cpp \
+\
+	Axis/Enums.cpp \
+	Axis/Orientation.cpp \
+\
+	Voxel.cpp \
+	Voxel/GraphicsData.cpp \
+	Voxel/GeometryPallet.cpp \
+	Voxel/Pallet.cpp \
+\
+	Chunk.cpp \
+	Chunk/GraphicsData.cpp \
+	Chunk/Neighbours.cpp \
+	Chunk/Manager.cpp \
+\
+	VoxelHit.cpp \
+	ChunkVoxelIndex.cpp \
+	Structure.cpp \
+\
+	AuxThread/AuxThread1.cpp \
+	AuxThread/AuxThread2.cpp \
+	AuxThread/AuxThread3.cpp \
+\
 	CenterIndexLoop/2D.cpp \
 	CenterIndexLoop/3D.cpp \
-	\
+\
 	ContainerLock/Lock.cpp \
 	ContainerLock/AccessGuard.cpp \
 	ContainerLock/AssignGuard.cpp \
-	\
+\
 	BoxEntity.cpp \
 \
 	GridCast/GridCast3D.cpp \

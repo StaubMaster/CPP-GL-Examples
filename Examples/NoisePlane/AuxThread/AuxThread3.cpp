@@ -1,8 +1,9 @@
 #include "AuxThread3.hpp"
 
-#include "Voxel/ChunkManager.hpp"
-#include "Voxel/Chunk.hpp"
-#include "Voxel/Structure.hpp"
+#include "Chunk.hpp"
+#include "Chunk/Manager.hpp"
+
+#include "Structure.hpp"
 
 #include "ValueType/LoopU3.hpp"
 

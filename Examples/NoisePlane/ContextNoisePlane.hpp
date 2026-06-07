@@ -40,15 +40,19 @@
 //#include "Plane/PlaneManager.hpp"
 
 // Voxel
-#include "Voxel/Chunk.hpp"
-#include "Voxel/ChunkManager.hpp"
-#include "Voxel/ChunkNeighbours.hpp"
-#include "Voxel/AxisOrientation.hpp"
-#include "Voxel/VoxelPallet.hpp"
-#include "Voxel/ChunkVoxelIndex.hpp"
-#include "Voxel/VoxelGeometryPallet.hpp"
-#include "Voxel/Structure.hpp"
-#include "Voxel/VoxelHit.hpp"
+#include "Axis/Orientation.hpp"
+
+#include "Chunk.hpp"
+#include "Chunk/Manager.hpp"
+#include "Chunk/Neighbours.hpp"
+
+#include "Voxel/Pallet.hpp"
+#include "Voxel/GeometryPallet.hpp"
+
+#include "ChunkVoxelIndex.hpp"
+#include "VoxelHit.hpp"
+
+#include "Structure.hpp"
 
 #include "BoxEntity.hpp"
 
@@ -66,7 +70,7 @@
 
 // Threads
 #include "Telemetry/AuxThreadBase.hpp"
-#include "AuxThread1.hpp"
+#include "AuxThread/AuxThread1.hpp"
 
 // 
 #include "PhysicsContext.hpp"

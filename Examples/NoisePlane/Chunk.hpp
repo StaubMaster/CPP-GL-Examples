@@ -11,8 +11,8 @@
 
 
 # include "Voxel.hpp"
-# include "VoxelGraphicsData.hpp"
-# include "ChunkGraphicsData.hpp"
+# include "Voxel/GraphicsData.hpp"
+# include "Chunk/GraphicsData.hpp"
 
 # include "Graphics/Buffer.hpp"
 # include "Graphics/Main/Data.hpp"
@@ -30,20 +30,13 @@
 
 # include <mutex>
 
-# include "ChunkGenerationNoise.hpp"
+# include "Chunk/GenerationNoise.hpp"
+# include "Chunk/Neighbours.hpp"
 
-// put all generation stuff into a seperate Generator object
-// do all the generation functions to the Voxels in that object
-// then put the new Voxels into the Chunk
-
+struct ChunkManager;
 struct Structure;
-//struct ChunkNeighbour;
-#include "ChunkNeighbours.hpp"
 
-//struct ChunkManager;
-#include "ChunkManager.hpp"
-
-struct Chunk;
+# include "Graphics/MultiBufferChunkU.hpp"
 
 /* Do I need Assign Lock ?
 
@@ -65,6 +58,8 @@ do the same with Chunks in ChunkManager
 /* deleting Chunk
 how to make sure Chunk is not referanced anywhere else
 */
+
+struct Chunk;
 
 template<typename TypeObject> struct ContainerAccessTypeGuard;
 template<typename TypeObject> struct ContainerAssignTypeGuard;

@@ -4,6 +4,13 @@
 # include "ValueType/Vector/I3.hpp"
 # include "ValueType/Vector/U3.hpp"
 
+// 
+/* Functions
+	void	AxisInc()
+	void	AxisDec()
+	Index	AxisAdd()
+	Index	AxisSub()
+*/
 struct ChunkVoxelIndex
 {
 	VectorI3	Chunk;

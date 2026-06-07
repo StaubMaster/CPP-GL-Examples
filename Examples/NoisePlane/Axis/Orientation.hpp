@@ -1,7 +1,8 @@
 #ifndef  AXIS_ORIENTATION_HPP
 # define AXIS_ORIENTATION_HPP
 
-# include "AxisEnums.hpp"
+# include "Enums.hpp"
+
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/Vector/U3.hpp"
 

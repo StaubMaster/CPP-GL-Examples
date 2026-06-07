@@ -21,7 +21,7 @@ struct Voxel;
 # include "ValueType/LoopU3.hpp"
 
 # include "CenterIndexLoop/3D.hpp"
-# include "Voxel/ChunkGenerationNoise.hpp"
+# include "Chunk/GenerationNoise.hpp"
 
 /* make a Queue for Generating/Assambling ?
 	Problem:

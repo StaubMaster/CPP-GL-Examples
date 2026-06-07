@@ -1,9 +1,12 @@
-#include "ChunkManager.hpp"
+#include "Manager.hpp"
+#include "Neighbours.hpp"
 #include "Chunk.hpp"
+
 #include "Voxel.hpp"
-#include "AxisOrientation.hpp"
+
+#include "Axis/Orientation.hpp"
+
 #include "ChunkVoxelIndex.hpp"
-#include "ChunkNeighbours.hpp"
 
 #include "ValueType/Bool3.hpp"
 #include "ValueType/Box/I3.hpp"

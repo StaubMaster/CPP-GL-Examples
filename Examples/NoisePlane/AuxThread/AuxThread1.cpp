@@ -1,7 +1,7 @@
 #include "AuxThread1.hpp"
 
-#include "Voxel/ChunkManager.hpp"
-#include "Voxel/Chunk.hpp"
+#include "Chunk.hpp"
+#include "Chunk/Manager.hpp"
 
 #include "ContainerLock/AccessTypeGuard.hpp"
 

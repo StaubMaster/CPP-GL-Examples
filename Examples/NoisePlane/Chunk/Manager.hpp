@@ -54,9 +54,9 @@ struct VoxelHit;
 
 
 
-# include "AuxThread1.hpp"
-# include "AuxThread2.hpp"
-# include "AuxThread3.hpp"
+# include "AuxThread/AuxThread1.hpp"
+# include "AuxThread/AuxThread2.hpp"
+# include "AuxThread/AuxThread3.hpp"
 
 struct ChunkManager
 {

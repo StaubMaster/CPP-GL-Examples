@@ -1,9 +1,10 @@
 #include "AuxThread2.hpp"
 
-#include "Voxel/ChunkManager.hpp"
-#include "Voxel/Chunk.hpp"
-#include "Voxel/VoxelPallet.hpp"
-#include "Voxel/Structure.hpp"
+#include "Chunk.hpp"
+#include "Chunk/Manager.hpp"
+#include "Voxel/Pallet.hpp"
+
+#include "Structure.hpp"
 
 #include "ContainerLock/AccessTypeGuard.hpp"
 #include "ContainerLock/AssignTypeGuard.hpp"

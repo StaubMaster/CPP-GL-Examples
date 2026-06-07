@@ -8,7 +8,7 @@
 # include "FrameTime.hpp"
 
 # include "ValueType/Vector/I3.hpp"
-# include "Voxel/Voxel.hpp"
+# include "Voxel.hpp"
 
 struct VoxelBoxCollision
 {
