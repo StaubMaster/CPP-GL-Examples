@@ -60,10 +60,8 @@ static void DisplayBoxEntity(BoxEntity & box_entity)
 	view_box_obj.Trans().Position = box_entity.Pos;
 	view_box_obj.ShowWire();
 }
-static void DisplayBoxEntityVoxels(unsigned int p, ::ChunkManager & manager, BoxEntity & box_entity, FrameTime frame_time)
+static void DisplayBoxEntityVoxels(::PolyHedraPalletManager * pallet, ::ChunkManager & manager, BoxEntity & box_entity, FrameTime frame_time)
 {
-//	unsigned int p = PolyHedraManager.FindPolyHedra(VoxelCube);
-
 	BoxF3 box = box_entity.Box + box_entity.Pos;
 	box.Consider(box_entity.Box.Min + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
 	box.Consider(box_entity.Box.Max + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
@@ -78,7 +76,7 @@ static void DisplayBoxEntityVoxels(unsigned int p, ::ChunkManager & manager, Box
 		const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
 		if (voxel != nullptr && !(voxel -> IsEmpty()))
 		{
-			PolyHedraObject voxel_obj(p);
+			PolyHedraObject voxel_obj(pallet);
 			voxel_obj.Trans().Position = i;
 			voxel_obj.ShowWire();
 		}

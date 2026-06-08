@@ -64,14 +64,13 @@ UI::Text::Manager::Manager()
 	std::cout << "  ++++  " << "UI::Text::Manager::Manager()" << '\n';
 }
 
-void UI::Text::Manager::InitMedia(const DirectoryInfo & media_dir)
+void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
 {
 	{
-		Container::Array<::Shader::Code> code({
-			::Shader::Code(media_dir.File("Shaders/UI/Text.vert")),
-			::Shader::Code(media_dir.File("Shaders/UI/Text.frag")),
+		Shader.Change({
+			media_dir.File("Shaders/UI/Text.vert"),
+			media_dir.File("Shaders/UI/Text.frag"),
 		});
-		Shader.Change(code);
 	}
 	{
 		LayoutMain.Pos.Change(0);

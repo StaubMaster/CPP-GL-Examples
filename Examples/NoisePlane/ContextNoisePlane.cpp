@@ -197,7 +197,7 @@ void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 }
 void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 {
-	DisplayBoxEntityVoxels(PolyHedraManager.FindPolyHedra(VoxelCube), ChunkManager, ViewEntity, frame_time);
+	DisplayBoxEntityVoxels(PolyHedraManager.FindPallet(VoxelCube), ChunkManager, ViewEntity, frame_time);
 	DisplayBoxEntity(ViewEntity);
 	ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
 	DisplayBoxEntity(ViewEntity);
@@ -451,18 +451,18 @@ void ContextNoisePlane::Make()
 		VoxelCube = new PolyHedra();
 		//VoxelCube = PolyHedra::Generate::HexaHedron(0.5f);
 		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
-		PolyHedraManager.PlacePolyHedra(VoxelCube);
+		PolyHedraManager.PlacePallet(VoxelCube);
 	}
 	{
 		VoxelChunkCube = new PolyHedra();
 		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
-		PolyHedraManager.PlacePolyHedra(VoxelChunkCube);
+		PolyHedraManager.PlacePallet(VoxelChunkCube);
 	}
 #ifndef DISABLE_VIEW_TANGIBLE
 	{
 		ViewEntity.PolyHedra = new PolyHedra();
 		PolyHedraBoxEdges(*ViewEntity.PolyHedra, ViewEntity.Box);
-		PolyHedraManager.PlacePolyHedra(ViewEntity.PolyHedra);
+		PolyHedraManager.PlacePallet(ViewEntity.PolyHedra);
 	}
 #endif
 
@@ -561,89 +561,10 @@ void ContextNoisePlane::MakeControls()
 void ContextNoisePlane::ChangeMedia()
 {
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-
-	// PolyHedraManager
-	PolyHedraManager.InitExternal(MediaDirectory);
-
-	// ControlManager
-	/*
+	PolyHedraManager.ChangeMedia(MediaDirectory);
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/UI/Control.frag")),
-		});
-		ControlManager.Shader.Change(code);
-	}
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	{
-		ControlManager.BufferLayoutMain.Pos.Change(0);
-		ControlManager.Buffer.MainBuffer.AttributeLayout = &ControlManager.BufferLayoutMain;
-		ControlManager.BufferLayoutInst.Min.Change(1);
-		ControlManager.BufferLayoutInst.Max.Change(2);
-		ControlManager.BufferLayoutInst.Layer.Change(3);
-		ControlManager.BufferLayoutInst.Col.Change(4);
-		ControlManager.Buffer.InstBuffer.AttributeLayout = &ControlManager.BufferLayoutInst;
-	}
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	{
-		ControlManager.WindowControl.ChangeManager(&ControlManager);
-		ControlManager.WindowControl.ChangeManager(&TextManager);
-	}
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	*/
-
-	// TextManager
-	/*
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	{
-		Container::Array<::Shader::Code> code({
-			::Shader::Code(MediaDirectory.File("Shaders/UI/Text.vert")),
-			::Shader::Code(MediaDirectory.File("Shaders/UI/Text.frag")),
-		});
-		TextManager.Shader.Change(code);
-	}
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	{
-		TextManager.LayoutMain.Pos.Change(0);
-		TextManager.Buffer.MainBuffer.AttributeLayout = &TextManager.LayoutMain;
-		TextManager.LayoutInst.Pos.Change(1);
-		TextManager.LayoutInst.PalletIdx.Change(2);
-		TextManager.LayoutInst.TextIdx.Change(3);
-		TextManager.Buffer.InstBuffer.AttributeLayout = &TextManager.LayoutInst;
-	}
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	{
-		TextManager.TextFont = UI::Text::Font::Parse(
-			MediaDirectory.File("Text/Font0.atlas")
-		);
-
-		std::cout << "TextFont\n";
-
-		std::cout << "Characters\n";
-		for (unsigned int i = 0; i < TextManager.TextFont -> Characters.Count(); i++)
-		{
-			std::cout << ' ' << (char)(TextManager.TextFont -> Characters[i].Code);
-		}
-		std::cout << '\n';
-
-		std::cout << "CharacterRanges\n";
-		for (unsigned int j = 0; j < TextManager.TextFont -> CharacterRanges.Count(); j++)
-		{
-			for (unsigned int i = 0; i < TextManager.TextFont -> CharacterRanges[j] -> Characters.Count(); i++)
-			{
-				std::cout << ' ' << (char)(TextManager.TextFont -> CharacterRanges[j] -> Characters[i].Code);
-			}
-			std::cout << '\n';
-		}
-		std::cout << '\n';
-	}
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	*/
-
 	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
-
-	// PlaneManager
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	/*{
 		Container::Array<::Shader::Code> code({
 			Shader::Code(MediaDirectory.File("Shaders/Plane/Plane.vert")),
@@ -651,23 +572,8 @@ void ContextNoisePlane::ChangeMedia()
 		});
 		PlaneManager.Shader.Change(code);
 	}*/
-
-	// ChunkManager
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	{
-		Container::Array<::Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/Voxel/VoxelU.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/Voxel/Voxel.frag")),
-		});
-		ChunkManager.ShaderU.Change(code);
-	}
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	{
-		ChunkManager.BufferU.Layout.Voxel.Change(0);
-		ChunkManager.BufferU.Layout.Texture.Change(1);
-		ChunkManager.BufferU.Layout.Chunk.Change(2);
-		ChunkManager.BufferU.Buffer.MainBuffer.AttributeLayout = &ChunkManager.BufferU.Layout;
-	}
+	ChunkManager.ChangeMedia(MediaDirectory);
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 
 	// Inventory
@@ -687,33 +593,38 @@ void ContextNoisePlane::ChangeMedia()
 // Valgrind is very slow here ?
 void ContextNoisePlane::GraphicsCreate()
 {
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	PolyHedraManager.GraphicsCreate();
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
-	PolyHedraManager.InitInternal(); // do this in GraphicsCreate ?
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	UIManager.GraphicsCreate();
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	//PlaneManager.GraphicsCreate();
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	ChunkManager.GraphicsCreate();
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
+	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 #ifndef DISABLE_INVENTORY
 	InventoryPolyHedraManager.GraphicsCreate();
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	InventoryShader.Create();
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n';
+//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 #endif
 }
 void ContextNoisePlane::GraphicsDelete()
 {
+	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	PolyHedraManager.GraphicsDelete();
+	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	UIManager.GraphicsDelete();
+	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	//PlaneManager.GraphicsDelete();
+	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	ChunkManager.GraphicsDelete();
+	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 #ifndef DISABLE_INVENTORY
 	InventoryPolyHedraManager.GraphicsDelete();
+	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	InventoryShader.Delete();
+	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 #endif
 }
 
@@ -809,8 +720,7 @@ void ContextNoisePlane::Draw()
 	GL::Enable(GL::Capability::CullFace);
 
 	sw.Clear(); sw.Start();
-	PolyHedraManager.ClearInstances();
-	PolyHedraManager.UpdateInstances();
+	PolyHedraManager.MakeInstances();
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
 	sw.Stop(); FrameTime_Draw_DrawPolyHedra.NewValue(sw.ElapsedTime());
@@ -1083,8 +993,10 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		obj_graph.Create();
 		obj_graph.Box().Min = VectorF2( 400,  75);
 		obj_graph.Box().Max = VectorF2(1200, 175);
-		obj_graph.Data -> Center = 512;
-		obj_graph.Data -> Magnitede = 512;
+		//obj_graph.Data -> Center = 512;
+		//obj_graph.Data -> Magnitede = 512;
+		obj_graph.Data -> Center = 60;
+		obj_graph.Data -> Magnitede = 8;
 		obj_graph.Data -> Col = ColorF4(1, 0, 1);
 		obj_graph.Data -> Values = &FPSAverageTime;
 	}
@@ -1594,12 +1506,12 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
 	{
-		unsigned int p = PolyHedraManager.FindPolyHedra(VoxelChunkCube);
+		PolyHedraPalletManager * pallet = PolyHedraManager.FindPallet(VoxelChunkCube);
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
 		{
 			Chunk * chunk = ChunkManager.Chunks[i];
 			if (chunk == nullptr) { continue; }
-			PolyHedraObject chunk_box(p);
+			PolyHedraObject chunk_box(pallet);
 			chunk_box.Trans().Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
 			chunk_box.ShowWire();
 		}

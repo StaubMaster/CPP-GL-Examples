@@ -58,6 +58,8 @@ struct VoxelHit;
 # include "AuxThread/AuxThread2.hpp"
 # include "AuxThread/AuxThread3.hpp"
 
+class DirectoryInfo;
+
 struct ChunkManager
 {
 	public:
@@ -141,6 +143,9 @@ struct ChunkManager
 	::AuxThread3	AuxThread3;
 
 
+
+	public:
+	void	ChangeMedia(const DirectoryInfo & dir);
 
 	public:
 	bool	GraphicsExist;

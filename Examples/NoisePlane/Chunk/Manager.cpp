@@ -493,7 +493,20 @@ VoxelHit ChunkManager::HitVoxel(Ray3D ray)
 
 
 
+#include "Graphics/Shader/Code.hpp"
+#include "DirectoryInfo.hpp"
+void ChunkManager::ChangeMedia(const DirectoryInfo & dir)
+{
+	ShaderU.Change({
+		dir.File("Shaders/Voxel/VoxelU.vert"),
+		dir.File("Shaders/Voxel/Voxel.frag"),
+	});
 
+	BufferU.Layout.Voxel.Change(0);
+	BufferU.Layout.Texture.Change(1);
+	BufferU.Layout.Chunk.Change(2);
+	BufferU.Buffer.MainBuffer.AttributeLayout = &BufferU.Layout;
+}
 
 void ChunkManager::GraphicsCreate()
 {

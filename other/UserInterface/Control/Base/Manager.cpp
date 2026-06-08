@@ -69,11 +69,10 @@ UI::Control::ObjectData * UI::Control::Manager::CopyObject(const ObjectData * ob
 void UI::Control::Manager::ChangeMedia(const DirectoryInfo & dir)
 {
 	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(dir.File("Shaders/UI/Control.vert")),
-			Shader::Code(dir.File("Shaders/UI/Control.frag")),
+		Shader.Change({
+			dir.File("Shaders/UI/Control.vert"),
+			dir.File("Shaders/UI/Control.frag"),
 		});
-		Shader.Change(code);
 	}
 	{
 		BufferLayoutMain.Pos.Change(0);

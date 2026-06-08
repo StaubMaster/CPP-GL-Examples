@@ -67,11 +67,10 @@ UI::Graph::ObjectData * UI::Graph::Manager::CopyObject(const ObjectData * obj)
 void UI::Graph::Manager::ChangeMedia(const DirectoryInfo & dir)
 {
 	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(dir.File("Shaders/UI/Graph.vert")),
-			Shader::Code(dir.File("Shaders/UI/Graph.frag")),
+		Shader.Change({
+			dir.File("Shaders/UI/Graph.vert"),
+			dir.File("Shaders/UI/Graph.frag"),
 		});
-		Shader.Change(code);
 	}
 	{
 		BufferLayout.Box.Min.Change(0);
