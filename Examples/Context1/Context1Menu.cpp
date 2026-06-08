@@ -96,6 +96,9 @@ Context1Menu::Context1Menu()
 	ChildInsert(QuitButton);
 }
 
+#include "Context0/new.hpp"
+#include "Context1/new.hpp"
+
 void Context1Menu::QuitFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
@@ -107,14 +110,14 @@ void Context1Menu::Context0Func(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::ChangeToContext0();
+		ContextBase::Change(newContext0);
 	}
 }
 void Context1Menu::Context1Func(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::ChangeToContext1();
+		ContextBase::Change(newContext1);
 	}
 }
 

@@ -61,6 +61,11 @@ Context0Menu::Context0Menu()
 	ChildInsert(TEST_GRAPH);
 }
 
+#include "Context0/new.hpp"
+#include "Context1/new.hpp"
+#include "TestTextAlignment/new.hpp"
+#include "NoisePlane/new.hpp"
+
 void Context0Menu::QuitFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
@@ -72,27 +77,27 @@ void Context0Menu::Context0Func(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::ChangeToContext0();
+		ContextBase::Change(newContext0);
 	}
 }
 void Context0Menu::Context1Func(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::ChangeToContext1();
+		ContextBase::Change(newContext1);
 	}
 }
 void Context0Menu::ContextNoisePlaneFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::ChangeToNoisePlane();
+		ContextBase::Change(newContextNoisePlane);
 	}
 }
 void Context0Menu::ContextTestTextAlignmentFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::ChangeToTestTextAlignment();
+		ContextBase::Change(newContextTestTextAlignment);
 	}
 }

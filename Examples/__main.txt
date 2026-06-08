@@ -1,9 +1,14 @@
 
 each Example should have its own Main
-but keep Selector for fun ?
 
 
 
+is the Selector good ?
+it shows how to change Context
+but thats it
 
+make a Selector example
+that goes between Context0 and Context1
+everything else should be its own thing
 
-
+have a general main

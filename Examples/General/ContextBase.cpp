@@ -32,25 +32,6 @@ void ContextBase::Change(StaticFunction<ContextBase*>::FunctionType new_context)
 	}
 }
 
-void ContextBase::ChangeToContext0()
-{
-	Change(newContext0);
-}
-void ContextBase::ChangeToContext1()
-{
-	Change(newContext1);
-}
-void ContextBase::ChangeToNoisePlane()
-{
-	Change(newContextNoisePlane);
-}
-void ContextBase::ChangeToTestTextAlignment()
-{
-	Change(newContextTestTextAlignment);
-}
-
-
-
 
 
 ContextBase::~ContextBase() { }

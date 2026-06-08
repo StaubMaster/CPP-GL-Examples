@@ -150,11 +150,12 @@ void ContextTestTextAlignment::TextAlignment()
 static ValueAccumulator<float>		DLTAverageTime(64);
 static ValueAccumulator<int>		FPSAverageTime(64);
 
+#include "Context0/new.hpp"
 void ContextTestTextAlignment::Frame(FrameTime frame_time)
 {
 	if (window.KeyBoardManager[Keys::Escape].State == State::Press)
 	{
-		ChangeToContext0();
+		ContextBase::Change(newContext0);
 		return;
 	}
 

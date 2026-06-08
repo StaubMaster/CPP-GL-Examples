@@ -86,8 +86,9 @@ void PauseMenu::DebugFunc(ClickArgs args)
 		Context.DebugMenu.Show();
 	}
 }
+#include "Context0/new.hpp"
 void PauseMenu::ExitFunc(ClickArgs args)
 {
 	if (args.Action != Action::Press) { return; }
-	ContextBase::ChangeToContext0();
+	ContextBase::Change(newContext0);
 }

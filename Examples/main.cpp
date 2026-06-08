@@ -14,6 +14,8 @@
 
 
 
+#include "Context0/new.hpp"
+
 int main(int argc, char * argv[])
 {
 	std::cout << "int main() ...\n";
@@ -28,7 +30,7 @@ int main(int argc, char * argv[])
 			Window window;
 			window.Create();
 			ContextBase::WindowPointer = &window;
-			ContextBase::ChangeToContext0();
+			ContextBase::Change(newContext0);
 			//ContextBase::ChangeToTestTextAlignment();
 			while (ContextBase::NewContext.Function != nullptr)
 			{

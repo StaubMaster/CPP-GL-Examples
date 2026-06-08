@@ -16,11 +16,6 @@ struct ContextBase
 	static void		Quit();
 	static void		Change(StaticFunction<ContextBase*>::FunctionType new_context);
 
-	static void		ChangeToContext0();
-	static void		ChangeToContext1();
-	static void		ChangeToNoisePlane();
-	static void		ChangeToTestTextAlignment();
-
 
 
 	::Window &		window;
