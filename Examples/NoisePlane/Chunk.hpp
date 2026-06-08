@@ -24,9 +24,9 @@
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Container/Array.hpp"
 
-# include "Telemetry/ValueAccumulator.hpp"
+# include "General/Telemetry/ValueAccumulator.hpp"
 
-# include "ContainerLock/Lock.hpp"
+# include "General/ContainerLock/Lock.hpp"
 
 # include <mutex>
 

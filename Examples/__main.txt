@@ -1,0 +1,9 @@
+
+each Example should have its own Main
+but keep Selector for fun ?
+
+
+
+
+
+

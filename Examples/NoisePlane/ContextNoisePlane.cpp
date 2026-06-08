@@ -10,8 +10,8 @@
 #include "ValueType/_Include.hpp"
 
 // Voxel
-#include "ContainerLock/AccessTypeGuard.hpp"
-#include "ContainerLock/AssignTypeGuard.hpp"
+#include "General/ContainerLock/AccessTypeGuard.hpp"
+#include "General/ContainerLock/AssignTypeGuard.hpp"
 
 // Math
 #include <math.h>

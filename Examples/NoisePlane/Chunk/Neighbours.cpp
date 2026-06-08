@@ -4,7 +4,7 @@
 
 #include "Voxel.hpp"
 
-#include "Axis/Enums.hpp"
+#include "General/Axis/Enums.hpp"
 
 #include "ValueType/Vector/U3.hpp"
 

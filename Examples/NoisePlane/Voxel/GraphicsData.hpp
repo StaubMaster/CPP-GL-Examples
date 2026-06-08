@@ -3,7 +3,7 @@
 
 # include "Graphics/Main/Data.hpp"
 
-# include "Axis/Orientation.hpp" // only for AxisRel
+# include "General/Axis/Orientation.hpp" // only for AxisRel
 
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Container/Array.hpp"

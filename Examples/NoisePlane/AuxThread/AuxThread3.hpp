@@ -1,8 +1,8 @@
 #ifndef  AUX_THREAD_3_HPP
 # define AUX_THREAD_3_HPP
 
-# include "Telemetry/AuxThreadBase.hpp"
-# include "Telemetry/WaitDoTime.hpp"
+# include "General/AuxThreadBase.hpp"
+# include "General/Telemetry/WaitDoTime.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
 

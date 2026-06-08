@@ -1,8 +1,8 @@
 #ifndef  CONTAINER_ASSIGN_TYPE_GUARD_HPP
 # define CONTAINER_ASSIGN_TYPE_GUARD_HPP
 
-#include "ContainerLock/AssignGuard.hpp"
-#include "ContainerLock/Lock.hpp"
+#include "General/ContainerLock/AssignGuard.hpp"
+#include "General/ContainerLock/Lock.hpp"
 
 template<typename TypeObject>
 struct ContainerAssignTypeGuard : public ContainerAssignGuard

@@ -1,8 +1,8 @@
 #ifndef  CONTAINER_ACCESS_TYPE_GUARD_HPP
 # define CONTAINER_ACCESS_TYPE_GUARD_HPP
 
-#include "ContainerLock/AccessGuard.hpp"
-#include "ContainerLock/Lock.hpp"
+#include "General/ContainerLock/AccessGuard.hpp"
+#include "General/ContainerLock/Lock.hpp"
 
 template<typename TypeObject>
 struct ContainerAssignTypeGuard;

@@ -5,9 +5,9 @@
 #include "Graphics/Shader/Code.hpp"
 #include "Miscellaneous/Container/Array.hpp"
 
-#include "Telemetry/ValueAccumulator.hpp"
-#include "Telemetry/StopWatch.hpp"
-#include "UnitToString.hpp"
+#include "General/Telemetry/ValueAccumulator.hpp"
+#include "General/Telemetry/StopWatch.hpp"
+#include "General/UnitToString.hpp"
 
 
 

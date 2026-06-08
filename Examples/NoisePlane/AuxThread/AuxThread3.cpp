@@ -7,8 +7,8 @@
 
 #include "ValueType/LoopU3.hpp"
 
-#include "ContainerLock/AssignTypeGuard.hpp"
-#include "ContainerLock/AccessTypeGuard.hpp"
+#include "General/ContainerLock/AssignTypeGuard.hpp"
+#include "General/ContainerLock/AccessTypeGuard.hpp"
 
 
 

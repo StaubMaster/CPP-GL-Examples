@@ -1,7 +1,7 @@
 #ifndef  CONTEXT_0_HPP
 # define CONTEXT_0_HPP
 
-# include "ContextBase.hpp"
+# include "General/ContextBase.hpp"
 # include "Context0Menu.hpp"
 
 # include "UIManager.hpp"

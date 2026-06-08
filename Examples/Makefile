@@ -5,18 +5,32 @@ FANCY_NAME := Selector
 ################################################################
 
 FILES := \
-	ContextBase.cpp \
+	General/ContextBase.cpp \
+	General/AuxThreadBase.cpp \
 \
-	ValueGen/Random.cpp \
-	ValueGen/Perlin2D.cpp \
-	ValueGen/Perlin3D.cpp \
+	General/ValueGen/Random.cpp \
+	General/ValueGen/Perlin2D.cpp \
+	General/ValueGen/Perlin3D.cpp \
 \
-	Telemetry/Time.cpp \
-	Telemetry/StopWatch.cpp \
-	Telemetry/WaitDoTime.cpp \
-	Telemetry/AuxThreadBase.cpp \
+	General/Telemetry/Time.cpp \
+	General/Telemetry/StopWatch.cpp \
+	General/Telemetry/WaitDoTime.cpp \
 \
-	UnitToString.cpp \
+	General/Axis/Enums.cpp \
+	General/Axis/Orientation.cpp \
+\
+	General/UnitToString.cpp \
+\
+	General/CenterIndexLoop/2D.cpp \
+	General/CenterIndexLoop/3D.cpp \
+\
+	General/ContainerLock/Lock.cpp \
+	General/ContainerLock/AccessGuard.cpp \
+	General/ContainerLock/AssignGuard.cpp \
+\
+	General/GridCast/GridCast3D.cpp \
+\
+	General/PhysicsContext.cpp \
 \
 	main.cpp \
 

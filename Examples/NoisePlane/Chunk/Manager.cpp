@@ -4,7 +4,7 @@
 
 #include "Voxel.hpp"
 
-#include "Axis/Orientation.hpp"
+#include "General/Axis/Orientation.hpp"
 
 #include "ChunkVoxelIndex.hpp"
 
@@ -17,12 +17,12 @@
 
 
 // Code
-#include "Telemetry/AuxThreadBase.hpp"
-#include "Telemetry/WaitDoTime.hpp"
+#include "General/AuxThreadBase.hpp"
+#include "General/Telemetry/WaitDoTime.hpp"
 
-#include "ContainerLock/Lock.hpp"
-#include "ContainerLock/AccessTypeGuard.hpp"
-#include "ContainerLock/AssignTypeGuard.hpp"
+#include "General/ContainerLock/Lock.hpp"
+#include "General/ContainerLock/AccessTypeGuard.hpp"
+#include "General/ContainerLock/AssignTypeGuard.hpp"
 
 #include "ValueType/LoopU3.hpp"
 

@@ -3,7 +3,7 @@
 
 # include "ValueType/Vector/I3.hpp"
 
-# include "CenterIndexLoop/2D.hpp"
+# include "General/CenterIndexLoop/2D.hpp"
 
 struct CenterIndexLoop3D
 {

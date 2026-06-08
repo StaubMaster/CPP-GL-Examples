@@ -1,5 +1,5 @@
-#include "ContainerLock/Lock.hpp"
-#include "Telemetry/AuxThreadBase.hpp"
+#include "General/ContainerLock/Lock.hpp"
+#include "General/AuxThreadBase.hpp"
 //#include <iostream>
 
 //#define LOG_THREAD_INFO

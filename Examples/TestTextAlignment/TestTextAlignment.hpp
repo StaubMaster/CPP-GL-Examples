@@ -1,7 +1,7 @@
 #ifndef  TEST_TEXT_ALIGNMENT_HPP
 # define TEST_TEXT_ALIGNMENT_HPP
 
-# include "ContextBase.hpp"
+# include "General/ContextBase.hpp"
 
 # include "UIManager.hpp"
 

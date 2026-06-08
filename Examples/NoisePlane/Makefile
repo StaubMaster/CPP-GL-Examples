@@ -19,9 +19,6 @@ FILES := \
 	Graphics/ShaderLayout.cpp \
 	Graphics/MultiBufferChunkU.cpp \
 \
-	Axis/Enums.cpp \
-	Axis/Orientation.cpp \
-\
 	Voxel.cpp \
 	Voxel/GraphicsData.cpp \
 	Voxel/GeometryPallet.cpp \
@@ -40,16 +37,7 @@ FILES := \
 	AuxThread/AuxThread2.cpp \
 	AuxThread/AuxThread3.cpp \
 \
-	CenterIndexLoop/2D.cpp \
-	CenterIndexLoop/3D.cpp \
-\
-	ContainerLock/Lock.cpp \
-	ContainerLock/AccessGuard.cpp \
-	ContainerLock/AssignGuard.cpp \
-\
 	BoxEntity.cpp \
-\
-	GridCast/GridCast3D.cpp \
 \
 	Menus/Main.cpp \
 	Menus/Pause.cpp \
@@ -59,12 +47,11 @@ FILES := \
 	Item/ItemBase.cpp \
 	Item/ItemVoxel.cpp \
 	Item/ItemContainer.cpp \
-	\
+\
 	Menus/Item/InventorySlot.cpp \
 	Menus/Item/Inventory.cpp \
 	Menus/Item/HotBar.cpp \
 \
-	PhysicsContext.cpp \
 	ContextNoisePlane.cpp \
 
 DIR_SRC := .

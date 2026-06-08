@@ -2,8 +2,6 @@
 #include "GeometryPallet.hpp"
 #include "Voxel.hpp"
 
-#include "Axis/Orientation.hpp"
-
 
 
 VoxelPallet::~VoxelPallet()

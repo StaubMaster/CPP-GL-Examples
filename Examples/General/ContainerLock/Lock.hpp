@@ -4,8 +4,8 @@
 # include <mutex>
 # include <atomic>
 
-# include "Telemetry/WaitDoTime.hpp"
-# include "Telemetry/StopWatch.hpp"
+# include "General/Telemetry/WaitDoTime.hpp"
+# include "General/Telemetry/StopWatch.hpp"
 
 struct ContainerLock
 {

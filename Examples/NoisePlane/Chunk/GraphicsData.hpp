@@ -2,7 +2,7 @@
 # define CHUNK_GRAPHICS_DATA_HPP
 
 # include "Graphics/Main/Data.hpp"
-# include "Axis/Enums.hpp"
+# include "General/Axis/Enums.hpp"
 
 # include "Miscellaneous/Container/Array.hpp"
 # include "Miscellaneous/Container/Array3D.hpp"
