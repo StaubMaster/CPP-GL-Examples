@@ -536,6 +536,25 @@ void Light3DContext::ViewRay()
 			PolyHedraObject obj(Cube);
 			obj.Trans().Position = hit.Pos();
 		}
+		{
+			PolyHedraObject & obj = Objects[hit.Index[0]];
+			//std::cout << '"' << obj.Pallet() -> File.Path << '"' << '\n';
+			/*
+				PolyHedra Info
+					File (when loaded, non File otherwise ? like "::HexaHedron(1.0f)")
+					Name ? optional, given in File / Generation
+				Skin ?
+					why is it a seperate File ?
+					theoretically, that if I want a Collision thing, that dosent need Skin
+					what if I want the same PolyHedra with a different Skin ?
+					just use a different Texture File ?
+					store a Container of Skins per PolyHedra
+					this can be empty if it has none
+				different Skins ?
+					currently Skin uses an Texture2DArray
+					will I ever need something else ?
+			*/
+		}
 	}
 }
 
@@ -572,6 +591,8 @@ void Light3DContext::Resize(DisplaySize display_size)
 	LightShader.Bind();
 	LightShaderLayout.DisplaySize.Put(display_size);
 }
+
+
 
 void Light3DContext::MouseMove(MoveArgs args) { (void)args; }
 void Light3DContext::MouseClick(ClickArgs args) { (void)args; }
