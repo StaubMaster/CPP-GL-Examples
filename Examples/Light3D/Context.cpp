@@ -289,9 +289,6 @@ void Light3DContext::Init()
 	RandomCubes();
 	Fancify();
 	FancyLights();
-	{
-		
-	}
 
 	GraphicsCreate();
 
@@ -310,11 +307,8 @@ void Light3DContext::Free()
 
 
 
-void Light3DContext::Frame(FrameTime frame_time)
+void Light3DContext::User(FrameTime frame_time)
 {
-	static float frameSum = 0;
-	frameSum += frame_time.Delta;
-
 	if (window.KeyBoardManager[Keys::Tab].State == State::Press) { window.MouseManager.CursorModeToggle(); }
 	if (window.MouseManager.CursorModeIsLocked())
 	{
@@ -346,17 +340,9 @@ void Light3DContext::Frame(FrameTime frame_time)
 	if (window.KeyBoardManager[Keys::D3].State == State::Press) { Light_Spot_Entry_Array[0].Toggle(); }
 	if (window.KeyBoardManager[Keys::D4].State == State::Press) { Light_Spot_Entry_Array[1].Toggle(); }
 	if (window.KeyBoardManager[Keys::D5].State == State::Press) { Light_Spot_Entry_Array[2].Toggle(); }
-
-	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
-	{
-		Light_Spot_Entry_Array[i].Update();
-	}
-
-	Objects[0].Trans().Position = VectorF3(0, 10, 0);
-	Objects[0].Trans().Rotation.Y2 += Angle::Radians(0.01f);
-
-
-
+}
+void Light3DContext::Draw()
+{
 	PolyHedraManager.ShaderFullDefault.Bind();
 	PolyHedraManager.ShaderLayoutFullDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
 
@@ -374,52 +360,47 @@ void Light3DContext::Frame(FrameTime frame_time)
 	LightShaderLayout.Light_Spot_Count.Put(Light_Spot_Count);
 
 	PolyHedraManager.MakeInstances();
-	/*std::cout << "Objects[" << PolyHedraManager.ObjectDatas.Count() << "]\n";
-	for (unsigned int i = 0; i < PolyHedraManager.ObjectDatas.Count(); i++)
-	{
-		std::cout << "Vis: ";
-		if (PolyHedraManager.ObjectDatas[i] != nullptr)
-		{
-			std::cout << PolyHedraManager.ObjectDatas[i] -> DrawFull;
-			std::cout << ' ';
-			std::cout << PolyHedraManager.ObjectDatas[i] -> DrawWire;
-			std::cout << ' ';
-			unsigned int p = 0xFFFFFFFF;
-			for (unsigned int j = 0; j < PolyHedraManager.InstanceManagers.Count(); j++)
-			{
-				if (PolyHedraManager.ObjectDatas[i] -> PalletManager == PolyHedraManager.InstanceManagers[j])
-				{
-					p = j;
-				}
-			}
-			if (p != 0xFFFFFFFF)
-			{
-				std::cout << p;
-			}
-		}
-		else
-		{
-			std::cout << "null";
-		}
-		std::cout << '\n';
-	}
-	std::cout << "Pallets[" << PolyHedraManager.InstanceManagers.Count() << "]\n";
-	for (unsigned int i = 0; i < PolyHedraManager.InstanceManagers.Count(); i++)
-	{
-		std::cout << "Data[";
-		std::cout << ToStringU32(PolyHedraManager.InstanceManagers[i] -> InstancesFull.Count(), 2);
-		std::cout << ' ';
-		std::cout << ToStringU32(PolyHedraManager.InstanceManagers[i] -> InstancesWire.Count(), 2);
-		std::cout << "] ";
-		std::cout << PolyHedraManager.InstanceManagers[i] -> DefaultVisibilityFull;
-		std::cout << ' ';
-		std::cout << PolyHedraManager.InstanceManagers[i] -> DefaultVisibilityWire;
-		std::cout << ' ';
-		std::cout << PolyHedraManager.InstanceManagers[i];
-		std::cout << '\n';
-	}
-	std::cout << '\n';*/
 	PolyHedraManager.DrawFull();
+}
+
+void Light3DContext::ViewRay()
+{
+	Ray3D ray(view.Trans.Position, view.Trans.Rotation.forward(VectorF3(0, 0, 1)));
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (Objects[i].Is())
+		{
+			const PolyHedra * polyhedra = Objects[i].Pallet();
+			const Trans3D & trans = Objects[i].Trans();
+			// check for Intersection
+			// get Distance
+			// needs Ray Triangle Intersection
+			// put a Intersection function into PolyHedra
+			// instread of transforming the PolyHedra, transform the ray ?
+			(void)polyhedra;
+			(void)trans;
+		}
+	}
+}
+
+void Light3DContext::Frame(FrameTime frame_time)
+{
+	static float frameSum = 0;
+	frameSum += frame_time.Delta;
+
+	User(frame_time);
+
+	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
+	{
+		Light_Spot_Entry_Array[i].Update();
+	}
+
+	Objects[0].Trans().Position = VectorF3(0, 10, 0);
+	Objects[0].Trans().Rotation.Y2 += Angle::Radians(0.01f);
+
+	ViewRay();
+
+	Draw();
 }
 
 void Light3DContext::Resize(DisplaySize display_size)

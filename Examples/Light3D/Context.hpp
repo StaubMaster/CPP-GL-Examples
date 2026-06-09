@@ -116,6 +116,11 @@ void	Fancify();
 void	Init() override;
 void	Free() override;
 
+void	User(FrameTime frame_time);
+void	Draw();
+
+void	ViewRay();
+
 void	Frame(FrameTime frame_time) override;
 void	Resize(DisplaySize display_size) override;
 
