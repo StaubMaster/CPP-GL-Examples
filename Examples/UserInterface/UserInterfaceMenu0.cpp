@@ -85,7 +85,7 @@ void UserInterfaceMenu0::BackFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::Change(newContext0);
+		ContextBase::Change(newSelectorContext);
 	}
 }
 

@@ -30,8 +30,7 @@ int main(int argc, char * argv[])
 			Window window;
 			window.Create();
 			ContextBase::WindowPointer = &window;
-			ContextBase::Change(newContext0);
-			//ContextBase::ChangeToTestTextAlignment();
+			ContextBase::Change(newSelectorContext);
 			while (ContextBase::NewContext.Function != nullptr)
 			{
 				ContextBase * context = ContextBase::NewContext.Invoke();

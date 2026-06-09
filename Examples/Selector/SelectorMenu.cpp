@@ -3,19 +3,19 @@
 
 
 
-Context0Menu::~Context0Menu() { }
-Context0Menu::Context0Menu()
+SelectorMenu::~SelectorMenu() { }
+SelectorMenu::SelectorMenu()
 	: UI::Control::Form()
-	, TitleText()
 	, QuitButton()
-	, Context0Button()
-	, Context1Button()
-	, ContextNoisePlaneButton()
-	, ContextLight3D()
+	, TitleText()
+	, SelectorButton()
+	, UserInterfaceButton()
+	, NoisePlaneButton()
+	, Light3D()
 {
 	QuitButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	QuitButton.Anchor.Y.AnchorMax(0.0f);
-	QuitButton.ClickFunc.Assign(this, &Context0Menu::QuitFunc);
+	QuitButton.ClickFunc.Assign(this, &SelectorMenu::QuitFunc);
 	QuitButton.SetText("Quit");
 
 	float y = 0.0f;
@@ -25,39 +25,39 @@ Context0Menu::Context0Menu()
 	TitleText.SetText("This is Context0");
 	y = TitleText.Anchor.Y.GetMinSize();
 
-	Context0Button.Anchor.X.AnchorBoth(0.0f, 0.0f);
-	Context0Button.Anchor.Y.AnchorMin(y);
-	Context0Button.SetText("Context0");
-	Context0Button.ClickFunc.Assign(this, &Context0Menu::Context0Func);
-	y = Context0Button.Anchor.Y.GetMinSize();
+	SelectorButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	SelectorButton.Anchor.Y.AnchorMin(y);
+	SelectorButton.SetText("Selector");
+	SelectorButton.ClickFunc.Assign(this, &SelectorMenu::SelectorFunc);
+	y = SelectorButton.Anchor.Y.GetMinSize();
 
-	Context1Button.Anchor.X.AnchorBoth(0.0f, 0.0f);
-	Context1Button.Anchor.Y.AnchorMin(y);
-	Context1Button.SetText("Context1");
-	Context1Button.ClickFunc.Assign(this, &Context0Menu::Context1Func);
-	y = Context1Button.Anchor.Y.GetMinSize();
+	UserInterfaceButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	UserInterfaceButton.Anchor.Y.AnchorMin(y);
+	UserInterfaceButton.SetText("UserInterface");
+	UserInterfaceButton.ClickFunc.Assign(this, &SelectorMenu::UserInterfaceFunc);
+	y = UserInterfaceButton.Anchor.Y.GetMinSize();
 
-	ContextNoisePlaneButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
-	ContextNoisePlaneButton.Anchor.Y.AnchorMin(y);
-	ContextNoisePlaneButton.SetText("NoisePlane");
-	ContextNoisePlaneButton.ClickFunc.Assign(this, &Context0Menu::ContextNoisePlaneFunc);
-	y = ContextNoisePlaneButton.Anchor.Y.GetMinSize();
+	NoisePlaneButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	NoisePlaneButton.Anchor.Y.AnchorMin(y);
+	NoisePlaneButton.SetText("NoisePlane");
+	NoisePlaneButton.ClickFunc.Assign(this, &SelectorMenu::NoisePlaneFunc);
+	y = NoisePlaneButton.Anchor.Y.GetMinSize();
 
-	ContextLight3D.Anchor.X.AnchorBoth(0.0f, 0.0f);
-	ContextLight3D.Anchor.Y.AnchorMin(y);
-	ContextLight3D.SetText("Light3D");
-	ContextLight3D.ClickFunc.Assign(this, &Context0Menu::ContextLight3DFunc);
-	y = ContextLight3D.Anchor.Y.GetMinSize();
+	Light3D.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	Light3D.Anchor.Y.AnchorMin(y);
+	Light3D.SetText("Light3D");
+	Light3D.ClickFunc.Assign(this, &SelectorMenu::Light3DFunc);
+	y = Light3D.Anchor.Y.GetMinSize();
 
 	TEST_GRAPH.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	TEST_GRAPH.Anchor.Y.AnchorBoth(y, QuitButton.Anchor.Y.GetMaxSize());
 
 	ChildInsert(TitleText);
 	ChildInsert(QuitButton);
-	ChildInsert(Context0Button);
-	ChildInsert(Context1Button);
-	ChildInsert(ContextNoisePlaneButton);
-	ChildInsert(ContextLight3D);
+	ChildInsert(SelectorButton);
+	ChildInsert(UserInterfaceButton);
+	ChildInsert(NoisePlaneButton);
+	ChildInsert(Light3D);
 	ChildInsert(TEST_GRAPH);
 }
 
@@ -66,35 +66,35 @@ Context0Menu::Context0Menu()
 #include "NoisePlane/new.hpp"
 #include "Light3D/new.hpp"
 
-void Context0Menu::QuitFunc(ClickArgs args)
+void SelectorMenu::QuitFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
 		ContextBase::Quit();
 	}
 }
-void Context0Menu::Context0Func(ClickArgs args)
+void SelectorMenu::SelectorFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::Change(newContext0);
+		ContextBase::Change(newSelectorContext);
 	}
 }
-void Context0Menu::Context1Func(ClickArgs args)
+void SelectorMenu::UserInterfaceFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
 		ContextBase::Change(newUserInterfaceContext);
 	}
 }
-void Context0Menu::ContextNoisePlaneFunc(ClickArgs args)
+void SelectorMenu::NoisePlaneFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
 		ContextBase::Change(newContextNoisePlane);
 	}
 }
-void Context0Menu::ContextLight3DFunc(ClickArgs args)
+void SelectorMenu::Light3DFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{

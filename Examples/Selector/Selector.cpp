@@ -5,19 +5,19 @@
 
 
 
-Context0::~Context0() { }
-Context0::Context0()
+SelectorContext::~SelectorContext() { }
+SelectorContext::SelectorContext()
 	: ContextBase()
 	, UIManager()
 	, Menu()
 { }
 
-void Context0::Make()
+void SelectorContext::Make()
 {
 	UIManager.WindowControl.ChildInsert(Menu);
 }
 
-void Context0::Init()
+void SelectorContext::Init()
 {
 	//window.DefaultColor = ColorF4(0, 0, 0);
 	window.DefaultColor = ColorF4(0.5f, 0, 0);
@@ -28,17 +28,17 @@ void Context0::Init()
 
 	Make();
 }
-void Context0::Free()
+void SelectorContext::Free()
 {
 	UIManager.GraphicsDelete();
 }
 
-void Context0::Resize(DisplaySize display_size)
+void SelectorContext::Resize(DisplaySize display_size)
 {
 	UIManager.Resize(display_size);
 }
 
-void Context0::Frame(FrameTime frame_time)
+void SelectorContext::Frame(FrameTime frame_time)
 {
 	Menu.TEST_GRAPH.Values.NewValue(frame_time.ActualFramesPerSecond);
 
@@ -46,16 +46,16 @@ void Context0::Frame(FrameTime frame_time)
 	UIManager.Draw();
 }
 
-void Context0::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
-void Context0::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
-void Context0::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
-void Context0::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
-void Context0::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
-void Context0::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
+void SelectorContext::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
+void SelectorContext::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
+void SelectorContext::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
+void SelectorContext::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
+void SelectorContext::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
+void SelectorContext::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
 
 
 
-ContextBase * newContext0()
+ContextBase * newSelectorContext()
 {
-	return new Context0();
+	return new SelectorContext();
 }

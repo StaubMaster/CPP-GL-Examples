@@ -91,6 +91,6 @@ void PauseMenu::DebugFunc(ClickArgs args)
 void PauseMenu::ExitFunc(ClickArgs args)
 {
 	if (args.Action != Action::Press) { return; }
-	ContextBase::Change(newContext0);
+	ContextBase::Change(newSelectorContext);
 
 }

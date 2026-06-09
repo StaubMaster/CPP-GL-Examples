@@ -1,3 +1,3 @@
 #include "General/ContextBase.hpp"
 
-ContextBase *	newContext0();
+ContextBase *	newSelectorContext();

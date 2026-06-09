@@ -1,28 +1,28 @@
-#ifndef  CONTEXT_0_MENU_HPP
-# define CONTEXT_0_MENU_HPP
+#ifndef  SELECTOR_CONTEXT_MENU_HPP
+# define SELECTOR_CONTEXT_MENU_HPP
 
 # include "ControlsInclude.hpp"
 
-struct Context0Menu : public UI::Control::Form
+struct SelectorMenu : public UI::Control::Form
 {
-	UI::Control::TextBox	TitleText;
-
 	UI::Control::Button		QuitButton;
-	UI::Control::Button		Context0Button;
-	UI::Control::Button		Context1Button;
-	UI::Control::Button		ContextNoisePlaneButton;
-	UI::Control::Button		ContextLight3D;
+	UI::Control::Label		TitleText;
+
+	UI::Control::Button		SelectorButton;
+	UI::Control::Button		UserInterfaceButton;
+	UI::Control::Button		NoisePlaneButton;
+	UI::Control::Button		Light3D;
 
 	UI::Control::Graph		TEST_GRAPH;
 
-	~Context0Menu();
-	Context0Menu();
+	~SelectorMenu();
+	SelectorMenu();
 
 	void	QuitFunc(ClickArgs args);
-	void	Context0Func(ClickArgs args);
-	void	Context1Func(ClickArgs args);
-	void	ContextNoisePlaneFunc(ClickArgs args);
-	void	ContextLight3DFunc(ClickArgs args);
+	void	SelectorFunc(ClickArgs args);
+	void	UserInterfaceFunc(ClickArgs args);
+	void	NoisePlaneFunc(ClickArgs args);
+	void	Light3DFunc(ClickArgs args);
 };
 
 #endif

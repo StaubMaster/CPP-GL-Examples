@@ -22,6 +22,9 @@ UI::Control::TextBox::TextBox()
 
 	ReadOnly = false;
 	MultiLine = false;
+
+	AlignmentX = UI::Text::Alignment::Min;
+	AlignmentY = UI::Text::Alignment::Min;
 }
 UI::Control::TextBox::~TextBox() { }
 

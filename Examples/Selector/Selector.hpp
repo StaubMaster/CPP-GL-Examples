@@ -1,19 +1,19 @@
-#ifndef  CONTEXT_0_HPP
-# define CONTEXT_0_HPP
+#ifndef  SELECTOR_CONTEXT_HPP
+# define SELECTOR_CONTEXT_HPP
 
 # include "General/ContextBase.hpp"
 # include "SelectorMenu.hpp"
 
 # include "UIManager.hpp"
 
-struct Context0 : public ContextBase
+struct SelectorContext : public ContextBase
 {
-UI::Manager				UIManager;
+UI::Manager		UIManager;
 
-Context0Menu			Menu;
+SelectorMenu	Menu;
 
-~Context0();
-Context0();
+~SelectorContext();
+SelectorContext();
 
 void	Make();
 
