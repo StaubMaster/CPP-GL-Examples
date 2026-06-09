@@ -1,0 +1,27 @@
+
+UI
+
+Select Objects
+{
+	Object Info with UI
+	change Object Propertys with UI
+	{
+		Position
+		Rotation
+		Light stuff
+	}
+	Remove Object
+}
+
+allow Inserting/Removing of Objects
+also Lights
+
+probably just have a UI that has a List of stuff to Place
+
+
+
+have a List of all Objects
+sort List by Type
+what if List gets long
+UI ScrollBar
+make Controls not draw outside of their Parents

@@ -1,4 +1,5 @@
 #include "Context.hpp"
+#include "General/UnitToString.hpp"
 
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/ObjectData.hpp"
@@ -12,7 +13,7 @@ SpotLightEntry::~SpotLightEntry()
 SpotLightEntry::SpotLightEntry() :
 	Position(),
 	Target(),
-	Light(NULL),
+	Light(nullptr),
 	EntryLight(),
 	EntryHolder()
 { }
@@ -26,7 +27,7 @@ void SpotLightEntry::Update()
 {
 	EulerAngle3D angle =EulerAngle3D::PointToZ(Target - Position);
 
-	if (Light != NULL)
+	if (Light != nullptr)
 	{
 		Light -> Pos = Position + angle.forward(VectorF3(0, 0, 3));
 		Light -> Dir = (Target - Position).normalize();
@@ -285,9 +286,12 @@ void Light3DContext::Init()
 
 	LightsInit();
 
-	//RandomCubes();
+	RandomCubes();
 	Fancify();
 	FancyLights();
+	{
+		
+	}
 
 	GraphicsCreate();
 
@@ -321,12 +325,6 @@ void Light3DContext::Frame(FrameTime frame_time)
 		view.ChangeFlatX(trans, frame_time.Delta);
 	}
 
-	PolyHedraManager.ShaderFullDefault.Bind();
-	PolyHedraManager.ShaderLayoutFullDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
-
-	LightShader.Bind();
-	LightShaderLayout.View.Put(Matrix4x4::TransformReverse(view.Trans));
-
 	//Light_Spot.Pos = ViewTrans.Pos;
 	//Light_Spot.Dir = ViewTrans.Rot.rotate(VectorF3(0, 0, 1));
 
@@ -354,10 +352,18 @@ void Light3DContext::Frame(FrameTime frame_time)
 		Light_Spot_Entry_Array[i].Update();
 	}
 
+	Objects[0].Trans().Position = VectorF3(0, 10, 0);
+	Objects[0].Trans().Rotation.Y2 += Angle::Radians(0.01f);
+
+
+
+	PolyHedraManager.ShaderFullDefault.Bind();
+	PolyHedraManager.ShaderLayoutFullDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
+
 	LightShader.Bind();
+	LightShaderLayout.View.Put(Matrix4x4::TransformReverse(view.Trans));
 	LightShaderLayout.Light_Ambient.Put(Light_Ambient);
 	LightShaderLayout.Light_Solar.Put(Light_Solar);
-
 	for (unsigned int i = 0; i < LightShaderLayout.Light_Spot_Array.Limit; i++)
 	{
 		if (Light_Spot_Entry_Array[i].Light != nullptr)
@@ -365,13 +371,7 @@ void Light3DContext::Frame(FrameTime frame_time)
 			LightShaderLayout.Light_Spot_Array[i].Put(*(Light_Spot_Entry_Array[i].Light));
 		}
 	}
-
 	LightShaderLayout.Light_Spot_Count.Put(Light_Spot_Count);
-
-	Objects[0].Trans().Position = VectorF3(0, 10, 0);
-	Objects[0].Trans().Rotation.Y2 += Angle::Radians(0.01f);
-
-
 
 	PolyHedraManager.MakeInstances();
 	/*std::cout << "Objects[" << PolyHedraManager.ObjectDatas.Count() << "]\n";
@@ -383,6 +383,19 @@ void Light3DContext::Frame(FrameTime frame_time)
 			std::cout << PolyHedraManager.ObjectDatas[i] -> DrawFull;
 			std::cout << ' ';
 			std::cout << PolyHedraManager.ObjectDatas[i] -> DrawWire;
+			std::cout << ' ';
+			unsigned int p = 0xFFFFFFFF;
+			for (unsigned int j = 0; j < PolyHedraManager.InstanceManagers.Count(); j++)
+			{
+				if (PolyHedraManager.ObjectDatas[i] -> PalletManager == PolyHedraManager.InstanceManagers[j])
+				{
+					p = j;
+				}
+			}
+			if (p != 0xFFFFFFFF)
+			{
+				std::cout << p;
+			}
 		}
 		else
 		{
@@ -394,27 +407,28 @@ void Light3DContext::Frame(FrameTime frame_time)
 	for (unsigned int i = 0; i < PolyHedraManager.InstanceManagers.Count(); i++)
 	{
 		std::cout << "Data[";
-		std::cout << PolyHedraManager.InstanceManagers[i].InstancesFull.Count();
+		std::cout << ToStringU32(PolyHedraManager.InstanceManagers[i] -> InstancesFull.Count(), 2);
 		std::cout << ' ';
-		std::cout << PolyHedraManager.InstanceManagers[i].InstancesWire.Count();
+		std::cout << ToStringU32(PolyHedraManager.InstanceManagers[i] -> InstancesWire.Count(), 2);
 		std::cout << "] ";
-		std::cout << PolyHedraManager.InstanceManagers[i].DefaultVisibilityFull;
+		std::cout << PolyHedraManager.InstanceManagers[i] -> DefaultVisibilityFull;
 		std::cout << ' ';
-		std::cout << PolyHedraManager.InstanceManagers[i].DefaultVisibilityWire;
+		std::cout << PolyHedraManager.InstanceManagers[i] -> DefaultVisibilityWire;
+		std::cout << ' ';
+		std::cout << PolyHedraManager.InstanceManagers[i];
 		std::cout << '\n';
 	}
-	std::cout << "Shader: " << PolyHedraManager.ShaderFullOther << '\n';
 	std::cout << '\n';*/
 	PolyHedraManager.DrawFull();
 }
 
 void Light3DContext::Resize(DisplaySize display_size)
 {
-	LightShader.Bind();
-	LightShaderLayout.DisplaySize.Put(display_size);
-
 	PolyHedraManager.ShaderFullDefault.Bind();
 	PolyHedraManager.ShaderLayoutFullDefault.DisplaySize.Put(display_size);
+
+	LightShader.Bind();
+	LightShaderLayout.DisplaySize.Put(display_size);
 }
 
 void Light3DContext::MouseMove(MoveArgs args) { (void)args; }

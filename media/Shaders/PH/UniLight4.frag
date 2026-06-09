@@ -47,9 +47,9 @@ uniform sampler2DArray texture0;
 uniform LightBase Ambient;
 uniform LightSolar Solar;
 
-const uint SpotLimit = uint(4);
+const uint SpotLimit = 4u;
 uniform LightSpot[SpotLimit] SpotArr;
-uniform uint SpotCount = uint(0);
+uniform uint SpotCount = 0u;
 
 
 
@@ -74,7 +74,7 @@ vec4 CalcLightFactor()
 	vec4 solar_factor = Solar.Base.Intensity * Solar.Base.Color * dot(Solar.Direction, normalize(-fs_inn.Normal));
 
 	vec4 spot_factor[SpotLimit];
-	for (uint i = uint(0); i < SpotCount; i++)
+	for (uint i = 0u; i < SpotCount; i++)
 	{
 		vec3 spot_rel = normalize(fs_inn.Absolute - SpotArr[i].Position);
 		float spot_dot;
@@ -89,7 +89,7 @@ vec4 CalcLightFactor()
 	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
 	light_factor = max(light_factor, ambient_factor);
 	light_factor = max(light_factor, solar_factor);
-	for (uint i = uint(0); i < SpotCount; i++)
+	for (uint i = 0u; i < SpotCount; i++)
 	{
 		light_factor = max(light_factor, spot_factor[i]);
 	}
@@ -126,6 +126,6 @@ void main()
 	col = col * light_factor;
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
-	//col = vec4(abs(normalize(fs_inn.Normal)), 1);
+	//Color = vec4(abs(normalize(fs_inn.Normal)), 1.0);
 	Color = vec4(col.rgb, 1.0);
 }
