@@ -17,6 +17,10 @@ class TextBox : public Base
 	bool	MultiLine;
 
 	public:
+	UI::Text::Alignment		AlignmentX;
+	UI::Text::Alignment		AlignmentY;
+
+	public:
 	~TextBox();
 	TextBox();
 
@@ -32,11 +36,14 @@ class TextBox : public Base
 	private:
 	Text::Object	TextObject;
 	void			PutCharactersEntrys();
+	public:
+	void			PutAlignment();
+
 	private:
 	std::string		Text;
 	public:
-	std::string	GetText() const;
-	void		SetText(std::string text);
+	std::string		GetText() const;
+	void			SetText(std::string text);
 };
 };
 };

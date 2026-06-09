@@ -27,14 +27,34 @@ UI::Control::TextBox::~TextBox() { }
 
 
 
+void UI::Control::TextBox::PutAlignment()
+{
+	if (TextObject.Is())
+	{
+		VectorF2 & pos = TextObject.TextPosition();
+
+		if (AlignmentX == UI::Text::Alignment::Min) { pos.X = ContainerBox.Min.X; }
+		if (AlignmentX == UI::Text::Alignment::Mid) { pos.X = ContainerBox.Center().X; }
+		if (AlignmentX == UI::Text::Alignment::Max) { pos.X = ContainerBox.Max.X; }
+
+		if (AlignmentY == UI::Text::Alignment::Min) { pos.Y = ContainerBox.Min.Y; }
+		if (AlignmentY == UI::Text::Alignment::Mid) { pos.Y = ContainerBox.Center().Y; }
+		if (AlignmentY == UI::Text::Alignment::Max) { pos.Y = ContainerBox.Max.Y; }
+
+		TextObject.TextAlignmentX() = AlignmentX;
+		TextObject.TextAlignmentY() = AlignmentY;
+
+		TextObject.CharacterAlignmentX() = AlignmentX;
+		TextObject.CharacterAlignmentY() = AlignmentY;
+	}
+}
 void UI::Control::TextBox::PutCharactersEntrys()
 {
 	if (TextObject.Is())
 	{
 		TextObject.Text() = Text;
-		TextObject.TextPosition() = ContainerBox.Min;
-		TextObject.AlignTopLeft();
 		TextObject.Bound() = ContainerBox;
+		PutAlignment();
 	}
 }
 

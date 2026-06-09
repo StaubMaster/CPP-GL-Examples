@@ -5,8 +5,12 @@ FANCY_NAME := UserInterface
 ################################################################
 
 FILES := \
-	UserInterface.cpp \
+	UserInterfaceContext.cpp \
 	UserInterfaceMenu0.cpp \
+	UserInterfaceMenu1.cpp \
+	UserInterfaceMenu2.cpp \
+	UserInterfaceMenu3.cpp \
+	new.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .

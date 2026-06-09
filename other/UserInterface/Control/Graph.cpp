@@ -5,7 +5,10 @@
 UI::Control::Graph::~Graph()
 { }
 UI::Control::Graph::Graph()
-	: Values(64)
+	: UI::Control::Base()
+	, Center(64)
+	, Magnitude(8)
+	, Values(64)
 	, GraphObject()
 {
 	ColorDefault = ColorF4(0.625f, 0.625f, 0.625f);
@@ -21,8 +24,8 @@ void UI::Control::Graph::RelayUpdateBox()
 	if (GraphObject.Is())
 	{
 		GraphObject.Box() = ContainerBox;
-		GraphObject.Data -> Center = 64;
-		GraphObject.Data -> Magnitede = 8;
+		GraphObject.Data -> Center = Center;
+		GraphObject.Data -> Magnitede = Magnitude;
 		GraphObject.Data -> Col = ColorF4(0, 1, 0);
 		GraphObject.Data -> Values = &Values;
 	}

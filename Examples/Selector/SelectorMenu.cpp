@@ -84,7 +84,7 @@ void Context0Menu::Context1Func(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::Change(newContext1);
+		ContextBase::Change(newUserInterfaceContext);
 	}
 }
 void Context0Menu::ContextNoisePlaneFunc(ClickArgs args)

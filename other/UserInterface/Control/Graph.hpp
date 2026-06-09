@@ -20,6 +20,10 @@ class Graph : public Base
 	// show Min/Max/Avg
 
 	public:
+	float	Center;
+	float	Magnitude;
+
+	public:
 	ValueAccumulator<float>		Values;
 	UI::Graph::Object			GraphObject;
 
