@@ -2,6 +2,22 @@
 
 
 
+struct PixelSize
+{
+	vec2 Full;
+	vec2 Half;
+};
+struct sDisplaySize
+{
+	vec2 Ratio;
+	PixelSize Window;
+	PixelSize Buffer;
+};
+
+uniform sDisplaySize DisplaySize;
+
+
+
 const float BoarderFactor = 0.05;
 const float BoarderSize = 2;
 

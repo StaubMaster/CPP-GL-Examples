@@ -44,14 +44,13 @@ void main()
 	vec2 pos = Main_Pos;
 	pos = vec2(+pos.x, -pos.y);
 	pos = (pos * SizeHalf) + Center;
+	vs_out.Pos = pos;
+
 	pos = (pos - DisplaySize.Buffer.Half) / DisplaySize.Buffer.Half;
 	pos = vec2(+pos.x, -pos.y);
-
 	gl_Position = vec4(pos, Inst_Layer, 1);
 
 	vs_out.Min = Inst_Min;
 	vs_out.Max = Inst_Max;
-	vs_out.Pos = pos;
-
 	vs_out.Col = Inst_Col;
 }
