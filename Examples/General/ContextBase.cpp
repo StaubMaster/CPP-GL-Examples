@@ -4,12 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-// Contexts
-#include "Context0/new.hpp"
-#include "Context1/new.hpp"
-#include "NoisePlane/new.hpp"
-#include "TestTextAlignment/new.hpp"
-
 
 
 ::Window *						ContextBase::WindowPointer = nullptr;

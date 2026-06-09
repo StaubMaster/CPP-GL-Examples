@@ -1,12 +1,12 @@
 
-NAME := Context1.a
-FANCY_NAME := Context1
+NAME := UserInterface.a
+FANCY_NAME := UserInterface
 
 ################################################################
 
 FILES := \
-	Context1.cpp \
-	Context1Menu.cpp \
+	UserInterface.cpp \
+	UserInterfaceMenu0.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .

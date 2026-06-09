@@ -1,27 +1,27 @@
-#ifndef  CONTEXT_0_HPP
-# define CONTEXT_0_HPP
+#ifndef  CONTEXT_1_HPP
+# define CONTEXT_1_HPP
 
 # include "General/ContextBase.hpp"
-# include "Context0Menu.hpp"
+# include "UserInterfaceMenu0.hpp"
 
 # include "UIManager.hpp"
 
-struct Context0 : public ContextBase
+struct Context1 : public ContextBase
 {
 UI::Manager				UIManager;
 
-Context0Menu			Menu;
+Context1Menu			Menu;
 
-~Context0();
-Context0();
+~Context1();
+Context1();
 
-void	Make();
+void Make();
 
-void	Init() override;
-void	Free() override;
+void Init() override;
+void Free() override;
 
-void	Resize(DisplaySize display_size) override;
-void	Frame(FrameTime frame_time) override;
+void Resize(DisplaySize display_size) override;
+void Frame(FrameTime frame_time) override;
 
 void	MouseMove(MoveArgs args) override;
 void	MouseClick(ClickArgs args) override;

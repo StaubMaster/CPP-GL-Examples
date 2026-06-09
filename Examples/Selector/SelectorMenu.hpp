@@ -11,7 +11,7 @@ struct Context0Menu : public UI::Control::Form
 	UI::Control::Button		Context0Button;
 	UI::Control::Button		Context1Button;
 	UI::Control::Button		ContextNoisePlaneButton;
-	UI::Control::Button		ContextTestTextAlignmentButton;
+	UI::Control::Button		ContextLight3D;
 
 	UI::Control::Graph		TEST_GRAPH;
 
@@ -22,7 +22,7 @@ struct Context0Menu : public UI::Control::Form
 	void	Context0Func(ClickArgs args);
 	void	Context1Func(ClickArgs args);
 	void	ContextNoisePlaneFunc(ClickArgs args);
-	void	ContextTestTextAlignmentFunc(ClickArgs args);
+	void	ContextLight3DFunc(ClickArgs args);
 };
 
 #endif

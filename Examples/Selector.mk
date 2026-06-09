@@ -1,9 +1,9 @@
 
 ################################################################
 
-OTHER_LIST += Context1/
-LIBRARYS   += Context1/Context1.a
-INCLUDES   += Context1/
+OTHER_LIST += ./Selector
+LIBRARYS   += ./Selector/Selector.a
+INCLUDES   += ./Selector
 ARGUMENTS  += 
 
 ################################################################

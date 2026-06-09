@@ -1,4 +1,4 @@
-#include "Context1Menu.hpp"
+#include "UserInterfaceMenu0.hpp"
 #include "General/ContextBase.hpp"
 
 
@@ -96,8 +96,8 @@ Context1Menu::Context1Menu()
 	ChildInsert(QuitButton);
 }
 
-#include "Context0/new.hpp"
-#include "Context1/new.hpp"
+#include "Selector/new.hpp"
+#include "UserInterface/new.hpp"
 
 void Context1Menu::QuitFunc(ClickArgs args)
 {

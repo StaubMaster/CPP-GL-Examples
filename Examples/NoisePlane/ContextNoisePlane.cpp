@@ -497,7 +497,7 @@ void ContextNoisePlane::MakeControls()
 	// Options
 	{
 		//OptionsMenu.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
-		OptionsMenu.FPS.SetValueX(1024);
+		OptionsMenu.FPS.SetValueX(64);
 		OptionsMenu.FOV.SetValueX(view.FOV.ToDegrees());
 
 		//OptionsMenu.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?

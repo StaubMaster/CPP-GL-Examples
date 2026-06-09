@@ -52,10 +52,10 @@ include $(BASE_DIR)fancy.mk
 
 ################################################################
 
-include Context0.mk
-include Context1.mk
+include Selector.mk
+include UserInterface.mk
 include NoisePlane.mk
-include TestTextAlignment.mk
+include Light3D.mk
 
 include $(OTHER_DIR)/UserInterface.mk
 

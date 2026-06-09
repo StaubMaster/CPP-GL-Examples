@@ -1,12 +1,12 @@
 
-NAME := TestTextAlignment.a
-FANCY_NAME := TestTextAlignment
+NAME := Selector.a
+FANCY_NAME := Selector
 
 ################################################################
 
 FILES := \
-	TestTextAlignment.cpp \
-	new.cpp
+	Selector.cpp \
+	SelectorMenu.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .

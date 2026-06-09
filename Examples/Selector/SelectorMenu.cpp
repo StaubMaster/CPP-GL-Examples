@@ -1,4 +1,4 @@
-#include "Context0Menu.hpp"
+#include "SelectorMenu.hpp"
 #include "General/ContextBase.hpp"
 
 
@@ -11,7 +11,7 @@ Context0Menu::Context0Menu()
 	, Context0Button()
 	, Context1Button()
 	, ContextNoisePlaneButton()
-	, ContextTestTextAlignmentButton()
+	, ContextLight3D()
 {
 	QuitButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	QuitButton.Anchor.Y.AnchorMax(0.0f);
@@ -43,11 +43,11 @@ Context0Menu::Context0Menu()
 	ContextNoisePlaneButton.ClickFunc.Assign(this, &Context0Menu::ContextNoisePlaneFunc);
 	y = ContextNoisePlaneButton.Anchor.Y.GetMinSize();
 
-	ContextTestTextAlignmentButton.Anchor.X.AnchorBoth(0.0f, 0.0f);
-	ContextTestTextAlignmentButton.Anchor.Y.AnchorMin(y);
-	ContextTestTextAlignmentButton.SetText("TestTextAlignment");
-	ContextTestTextAlignmentButton.ClickFunc.Assign(this, &Context0Menu::ContextTestTextAlignmentFunc);
-	y = ContextTestTextAlignmentButton.Anchor.Y.GetMinSize();
+	ContextLight3D.Anchor.X.AnchorBoth(0.0f, 0.0f);
+	ContextLight3D.Anchor.Y.AnchorMin(y);
+	ContextLight3D.SetText("Light3D");
+	ContextLight3D.ClickFunc.Assign(this, &Context0Menu::ContextLight3DFunc);
+	y = ContextLight3D.Anchor.Y.GetMinSize();
 
 	TEST_GRAPH.Anchor.X.AnchorBoth(0.0f, 0.0f);
 	TEST_GRAPH.Anchor.Y.AnchorBoth(y, QuitButton.Anchor.Y.GetMaxSize());
@@ -57,14 +57,14 @@ Context0Menu::Context0Menu()
 	ChildInsert(Context0Button);
 	ChildInsert(Context1Button);
 	ChildInsert(ContextNoisePlaneButton);
-	ChildInsert(ContextTestTextAlignmentButton);
+	ChildInsert(ContextLight3D);
 	ChildInsert(TEST_GRAPH);
 }
 
-#include "Context0/new.hpp"
-#include "Context1/new.hpp"
-#include "TestTextAlignment/new.hpp"
+#include "Selector/new.hpp"
+#include "UserInterface/new.hpp"
 #include "NoisePlane/new.hpp"
+#include "Light3D/new.hpp"
 
 void Context0Menu::QuitFunc(ClickArgs args)
 {
@@ -94,10 +94,10 @@ void Context0Menu::ContextNoisePlaneFunc(ClickArgs args)
 		ContextBase::Change(newContextNoisePlane);
 	}
 }
-void Context0Menu::ContextTestTextAlignmentFunc(ClickArgs args)
+void Context0Menu::ContextLight3DFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::Change(newContextTestTextAlignment);
+		ContextBase::Change(newLight3D);
 	}
 }

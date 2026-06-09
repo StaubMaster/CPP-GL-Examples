@@ -1,9 +1,9 @@
 
 ################################################################
 
-OTHER_LIST += TestTextAlignment/
-LIBRARYS   += TestTextAlignment/TestTextAlignment.a
-INCLUDES   += TestTextAlignment/
+OTHER_LIST += ./Light3D
+LIBRARYS   += ./Light3D/Light3D.a
+INCLUDES   += ./Light3D
 ARGUMENTS  += 
 
 ################################################################
