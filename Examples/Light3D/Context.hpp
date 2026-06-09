@@ -113,6 +113,7 @@ void	Fancify();
 
 
 
+void	Make();
 void	Init() override;
 void	Free() override;
 

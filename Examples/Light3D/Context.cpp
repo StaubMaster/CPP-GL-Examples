@@ -118,6 +118,8 @@ void Light3DContext::LightsFree()
 
 void Light3DContext::ChangeMedia()
 {
+	std::cout << "ChangeMedia 0\n";
+
 	PolyHedraManager.ChangeMedia(MediaDirectory);
 	{
 		Container::Array<Shader::Code> code({
@@ -131,6 +133,8 @@ void Light3DContext::ChangeMedia()
 
 		PolyHedraManager.ShaderFullOther = &LightShader;
 	}
+
+	std::cout << "ChangeMedia 1\n";
 }
 void Light3DContext::GraphicsCreate()
 {
@@ -141,6 +145,10 @@ void Light3DContext::GraphicsCreate()
 		PolyHedraManager.ShaderFullDefault.Bind();
 		PolyHedraManager.ShaderLayoutFullDefault.Depth.Put(view.Depth);
 		PolyHedraManager.ShaderLayoutFullDefault.FOV.Put(view.FOV);
+
+		PolyHedraManager.ShaderWireDefault.Bind();
+		PolyHedraManager.ShaderLayoutWireDefault.Depth.Put(view.Depth);
+		PolyHedraManager.ShaderLayoutWireDefault.FOV.Put(view.FOV);
 
 		LightShader.Bind();
 		LightShaderLayout.Depth.Put(view.Depth);
@@ -155,11 +163,14 @@ void Light3DContext::GraphicsDelete()
 
 
 
+static PolyHedra * Cube = nullptr;
 void Light3DContext::RandomCubes()
 {
-	PolyHedra * polyhedra = PolyHedra::Generate::HexaHedron();
+	Cube = PolyHedra::Generate::HexaHedron();
 
-	int Range_Size1 = 0x1FF;
+	Objects.Insert(PolyHedraObject(Cube));
+
+	/*int Range_Size1 = 0x1FF;
 	int Range_SizeH = 0x0FF;
 	int j_len = 16;
 	int i_len = 16;
@@ -178,7 +189,7 @@ void Light3DContext::RandomCubes()
 
 		for (int i = 0; i < i_len; i++)
 		{
-			Objects.Insert(PolyHedraObject(polyhedra, Trans3D(
+			Objects.Insert(PolyHedraObject(Cube, Trans3D(
 				center + VectorF3(
 					(std::rand() & Range_Size1) - Range_SizeH,
 					(std::rand() & Range_Size1) - Range_SizeH,
@@ -186,7 +197,7 @@ void Light3DContext::RandomCubes()
 				), rot
 			)));
 		}
-	}
+	}*/
 }
 
 void Light3DContext::FancyLights()
@@ -201,7 +212,6 @@ void Light3DContext::FancyLights()
 		Light_Spot_Entry_Array[i].EntryHolder = PolyHedraObject(stage_light_holder);
 	}
 }
-
 void Light3DContext::Fancify()
 {
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
@@ -274,32 +284,39 @@ void Light3DContext::Fancify()
 
 
 
-void Light3DContext::Init()
+void Light3DContext::Make()
 {
+	std::cout << "Make 0\n";
+	
 	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
 	view.Depth.Color = window.DefaultColor;
 	view.Trans = Trans3D(VectorF3(0, 10, -65), EulerAngle3D());
-
-	std::cout << "Init 0\n";
-
-	ChangeMedia();
-
-	LightsInit();
 
 	RandomCubes();
 	Fancify();
 	FancyLights();
 
+	std::cout << "Make 1\n";
+}
+
+void Light3DContext::Init()
+{
+	ChangeMedia();
+
+	std::cout << "Init 0\n";
+
 	GraphicsCreate();
+	LightsInit();
 
 	std::cout << "Init 1\n";
+
+	Make();
 }
 void Light3DContext::Free()
 {
 	std::cout << "Free 0\n";
 
 	GraphicsDelete();
-
 	LightsFree();
 
 	std::cout << "Free 1\n";
@@ -346,6 +363,9 @@ void Light3DContext::Draw()
 	PolyHedraManager.ShaderFullDefault.Bind();
 	PolyHedraManager.ShaderLayoutFullDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
 
+	PolyHedraManager.ShaderWireDefault.Bind();
+	PolyHedraManager.ShaderLayoutWireDefault.View.Put(Matrix4x4::TransformReverse(view.Trans));
+
 	LightShader.Bind();
 	LightShaderLayout.View.Put(Matrix4x4::TransformReverse(view.Trans));
 	LightShaderLayout.Light_Ambient.Put(Light_Ambient);
@@ -359,29 +379,167 @@ void Light3DContext::Draw()
 	}
 	LightShaderLayout.Light_Spot_Count.Put(Light_Spot_Count);
 
+
+
 	PolyHedraManager.MakeInstances();
 	PolyHedraManager.DrawFull();
+	PolyHedraManager.DrawWire();
+}
+
+
+
+#include "PolyHedra/Data.hpp"
+struct Ray3D_Hit
+{
+	const Ray3D *	Ray;
+	float			Interval;
+	unsigned int	Index[2];
+
+	bool	Is() const { return (Ray != nullptr); }
+
+	VectorF3	Pos() const
+	{
+		return (Ray -> Pos) + ((Ray -> Dir) * Interval);
+	}
+
+	~Ray3D_Hit()
+	{ }
+	Ray3D_Hit()
+		: Ray(nullptr)
+	{ }
+	Ray3D_Hit(const Ray3D_Hit & other)
+		: Ray(other.Ray)
+		, Interval(other.Interval)
+		, Index{
+			other.Index[0],
+			other.Index[1],
+		}
+	{ }
+	Ray3D_Hit & operator=(const Ray3D_Hit & other)
+	{
+		Ray = other.Ray;
+		Interval = other.Interval;
+		Index[0] = other.Index[0];
+		Index[1] = other.Index[1];
+		return *this;
+	}
+
+	Ray3D_Hit(const Ray3D & ray, float interval)
+		: Ray(&ray)
+		, Interval(interval)
+		, Index{
+			0xFFFFFFFF,
+			0xFFFFFFFF,
+		}
+	{ }
+
+	void	Consider(const Ray3D_Hit & other)
+	{
+		if (other.Is() && (!Is() || other.Interval < Interval))
+		{
+			*this = other;
+		}
+	}
+};
+static Ray3D_Hit IntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c)
+{
+	VectorF3 diff_a_b, diff_a_c, diff_nach_a;
+	diff_a_b = b - a;
+	diff_a_c = c - a;
+	diff_nach_a = ray.Pos - a;
+
+	float p, u, v, t;
+	VectorF3 normale_zu_;
+
+	normale_zu_ = VectorF3::cross(diff_a_c, ray.Dir);
+	p = VectorF3::dot(normale_zu_, diff_a_b);
+	u = VectorF3::dot(normale_zu_, diff_nach_a);
+
+	normale_zu_ = VectorF3::cross(diff_a_b, diff_nach_a);
+	v = VectorF3::dot(normale_zu_, ray.Dir);
+	t = VectorF3::dot(normale_zu_, diff_a_c);
+
+	u /= p;
+	v /= p;
+	t /= p;
+	if (0.0 <= u && u <= 1.0)
+	{
+		if (0.0 <= v && (u + v) <= 1.0)
+		{
+			return Ray3D_Hit(ray, t);
+		}
+	}
+	return Ray3D_Hit();
+}
+static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans)
+{
+	Ray3D_Hit hit_return;
+	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
+	{
+		const PolyHedra::Face & face = polyhedra.Faces[i];
+
+		VectorF3 a = polyhedra.Corners[face.udx[0]].Position;
+		VectorF3 b = polyhedra.Corners[face.udx[1]].Position;
+		VectorF3 c = polyhedra.Corners[face.udx[2]].Position;
+
+		a = trans.forward(a);
+		b = trans.forward(b);
+		c = trans.forward(c);
+
+		Ray3D_Hit hit = IntersectHit(ray, a, b, c);
+		hit.Index[1] = i;
+		hit_return.Consider(hit);
+	}
+	return hit_return;
+}
+static Ray3D_Hit IntersectHit(const Ray3D & ray, const Container::Array<PolyHedraObject> & objects)
+{
+	Ray3D_Hit hit_return;
+	for (unsigned int i = 0; i < objects.Length(); i++)
+	{
+		if (objects[i].Is())
+		{
+			const PolyHedra * polyhedra = objects[i].Pallet();
+			const Trans3D & trans = objects[i].Trans();
+
+			// this is slow
+			// check Box first ?
+
+			Ray3D_Hit hit = IntersectHit(ray, *polyhedra, trans);
+			hit.Index[0] = i;
+			hit_return.Consider(hit);
+		}
+	}
+	return hit_return;
 }
 
 void Light3DContext::ViewRay()
 {
-	Ray3D ray(view.Trans.Position, view.Trans.Rotation.forward(VectorF3(0, 0, 1)));
-	for (unsigned int i = 0; i < Objects.Count(); i++)
+	VectorF2 pos;
+	if (!window.MouseManager.CursorModeIsLocked())
 	{
-		if (Objects[i].Is())
+		pos = window.MouseManager.CursorPosition().Normal.Rel;
+		pos.X = +pos.X / window.Size.Ratio.Value.X;
+		pos.Y = -pos.Y / window.Size.Ratio.Value.Y;
+	}
+	Ray3D ray(view.Trans.Position, view.Trans.Rotation.forward(VectorF3(pos.X, pos.Y, 1)));
+
+	Ray3D_Hit hit = IntersectHit(ray, Objects.ToArray());
+	if (hit.Is())
+	{
 		{
-			const PolyHedra * polyhedra = Objects[i].Pallet();
-			const Trans3D & trans = Objects[i].Trans();
-			// check for Intersection
-			// get Distance
-			// needs Ray Triangle Intersection
-			// put a Intersection function into PolyHedra
-			// instread of transforming the PolyHedra, transform the ray ?
-			(void)polyhedra;
-			(void)trans;
+			PolyHedraObject obj = Objects[hit.Index[0]];
+			obj.HideFull();
+			obj.ShowWire();
+		}
+		{
+			PolyHedraObject obj(Cube);
+			obj.Trans().Position = hit.Pos();
 		}
 	}
 }
+
+
 
 void Light3DContext::Frame(FrameTime frame_time)
 {
@@ -407,6 +565,9 @@ void Light3DContext::Resize(DisplaySize display_size)
 {
 	PolyHedraManager.ShaderFullDefault.Bind();
 	PolyHedraManager.ShaderLayoutFullDefault.DisplaySize.Put(display_size);
+
+	PolyHedraManager.ShaderWireDefault.Bind();
+	PolyHedraManager.ShaderLayoutWireDefault.DisplaySize.Put(display_size);
 
 	LightShader.Bind();
 	LightShaderLayout.DisplaySize.Put(display_size);
