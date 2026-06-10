@@ -2,7 +2,7 @@
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Data.hpp"
-#include "PolyHedra/Skin/Skin2DA.hpp"
+#include "PolyHedra/Skin/Skin.hpp"
 
 #include "Voxel/GraphicsData.hpp"
 #include "Voxel/GeometryPallet.hpp"

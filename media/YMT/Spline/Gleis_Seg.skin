@@ -3,12 +3,11 @@ Format S_2025_10_27
 
 Normals calcF
 
-W 128
-H 128
+Size 128 128
 
-File Images/MetalRust_128x128.png
-File Images/Metal_128x128.png
-File Images/Concrete_128x128.png
+Img Images/MetalRust_128x128.png
+Img Images/Metal_128x128.png
+Img Images/Concrete_128x128.png
 
 
 

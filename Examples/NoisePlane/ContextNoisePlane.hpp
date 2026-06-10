@@ -11,8 +11,8 @@
 #include "PolyHedra/Object.hpp"
 #include "PolyHedra/Data.hpp"
 
-#include "PolyHedra/Skin/Skin2DA.hpp"
-#include "PolyHedra/Skin/Skin2D_Data.hpp"
+#include "PolyHedra/Skin/Skin.hpp"
+#include "PolyHedra/Skin/Data.hpp"
 
 // Graphics
 #include "Graphics/Shader/Code.hpp"

@@ -2,6 +2,8 @@
 #include "GeometryPallet.hpp"
 #include "Voxel.hpp"
 
+#include "PolyHedra/Skin/Skin.hpp"
+
 
 
 VoxelPallet::~VoxelPallet()
@@ -80,10 +82,10 @@ void VoxelPallet::TextureAll(FileInfo tex)
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Data.hpp"
-#include "PolyHedra/Skin/Skin2DA.hpp"
+#include "PolyHedra/Skin/Skin.hpp"
 static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsDataF & data)
 {
-	Skin2DA & skin = *((Skin2DA*)polyhedra.Skin);
+	Skin & skin = *(polyhedra.Skins[0]);
 	VectorF3 off(0.5f);
 	for (unsigned int i = 0; i < data.Data.Count(); i++)
 	{
@@ -96,9 +98,9 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsDat
 		polyhedra.Insert_Face3(ph_i + 0, ph_i + 1, ph_i + 2);
 
 		skin.Insert_Face3(
-			Skin2DFaceCorner(face.Vertexes[0].Tex),
-			Skin2DFaceCorner(face.Vertexes[1].Tex),
-			Skin2DFaceCorner(face.Vertexes[2].Tex)
+			face.Vertexes[0].Tex,
+			face.Vertexes[1].Tex,
+			face.Vertexes[2].Tex
 		);
 	}
 }
@@ -115,15 +117,14 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGraphicsDataF &
 void VoxelPallet::MakePolyHedra()
 {
 	PolyHedra = new ::PolyHedra();
-	PolyHedra -> Skin = new Skin2DA();
-	Skin2DA & skin = *((Skin2DA*)PolyHedra -> Skin);
-	skin.W = 128;
-	skin.H = 64;
+	Skin * skin = new ::Skin();
+	skin -> Size = VectorU2(128, 64);
 	for (unsigned int i = 0; i < 6; i++)
 	{
-		skin.Images.Insert(Textures[i].File.LoadImage());
+		skin -> Images.Insert(Textures[i].File.LoadImage());
 	}
-	skin.Done();
+	skin -> Done();
+	PolyHedra -> Skins.Insert(skin);
 	PolyHedraVoxelData(*PolyHedra, GeometryPallet -> Data);
 }
 

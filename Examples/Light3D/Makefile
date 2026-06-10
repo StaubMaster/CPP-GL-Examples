@@ -6,6 +6,7 @@ FANCY_NAME := Light3D
 
 FILES := \
 	Context.cpp \
+	PolyHedraObjectUI.cpp \
 	new.cpp
 
 DIR_SRC := .

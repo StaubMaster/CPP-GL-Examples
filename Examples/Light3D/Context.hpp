@@ -36,6 +36,11 @@
 #include "Image.hpp"
 
 
+// User Interface
+#include "UIManager.hpp"
+#include "PolyHedraObjectUI.hpp"
+
+
 
 struct SpotLightEntry
 {
@@ -74,7 +79,8 @@ View3D	view;
 ::PolyHedraManager					PolyHedraManager;
 Container::Binary<PolyHedraObject>	Objects;
 
-
+UI::Manager				UIManager;
+::PolyHedraObjectUI		PolyHedraObjectUI;
 
 ~Light3DContext();
 Light3DContext();

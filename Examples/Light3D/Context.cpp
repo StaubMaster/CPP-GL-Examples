@@ -75,6 +75,8 @@ Light3DContext::~Light3DContext()
 Light3DContext::Light3DContext()
 	: ContextBase()
 	, PolyHedraManager()
+	, UIManager()
+	, PolyHedraObjectUI()
 {
 	PolyHedraManager.MakeCurrent();
 }
@@ -134,12 +136,15 @@ void Light3DContext::ChangeMedia()
 		PolyHedraManager.ShaderFullOther = &LightShader;
 	}
 
+	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
+
 	std::cout << "ChangeMedia 1\n";
 }
 void Light3DContext::GraphicsCreate()
 {
 	PolyHedraManager.GraphicsCreate();
 	LightShader.Create();
+	UIManager.GraphicsCreate();
 
 	{
 		PolyHedraManager.ShaderFullDefault.Bind();
@@ -159,6 +164,7 @@ void Light3DContext::GraphicsDelete()
 {
 	PolyHedraManager.GraphicsDelete();
 	LightShader.Delete();
+	UIManager.GraphicsDelete();
 }
 
 
@@ -216,7 +222,8 @@ void Light3DContext::Fancify()
 {
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
 	PolyHedra * stage =					PolyHedra::Load(dir.File("Stage.polyhedra.ymt"));
-	PolyHedra * truss =					PolyHedra::Load(dir.File("Truss_Square40cm_Len200cm.polyhedra"));
+	//PolyHedra * truss =					PolyHedra::Load(dir.File("Truss_Square40cm_Len200cm.polyhedra"));
+	PolyHedra * truss =					PolyHedra::Load(MediaDirectory.File("YMT/Spline/Gleis_Seg.polyhedra"));
 	PolyHedra * truss_cube =			PolyHedra::Load(dir.File("Truss_Cube40cm.polyhedra"));
 	PolyHedra * chair =					PolyHedra::Load(dir.File("Chair.polyhedra"));
 
@@ -296,6 +303,8 @@ void Light3DContext::Make()
 	Fancify();
 	FancyLights();
 
+	UIManager.WindowControl.ChildInsert(PolyHedraObjectUI);
+
 	std::cout << "Make 1\n";
 }
 
@@ -357,6 +366,8 @@ void Light3DContext::User(FrameTime frame_time)
 	if (window.KeyBoardManager[Keys::D3].State == State::Press) { Light_Spot_Entry_Array[0].Toggle(); }
 	if (window.KeyBoardManager[Keys::D4].State == State::Press) { Light_Spot_Entry_Array[1].Toggle(); }
 	if (window.KeyBoardManager[Keys::D5].State == State::Press) { Light_Spot_Entry_Array[2].Toggle(); }
+
+	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 }
 void Light3DContext::Draw()
 {
@@ -381,14 +392,23 @@ void Light3DContext::Draw()
 
 
 
+	GL::Enable(GL::Capability::DepthTest);
+	GL::Enable(GL::Capability::CullFace);
 	PolyHedraManager.MakeInstances();
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
+
+	GL::Clear(GL::ClearMask::DepthBufferBit);
+	GL::Disable(GL::Capability::DepthTest);
+	GL::Disable(GL::Capability::CullFace);
+	UIManager.Draw();
 }
 
 
 
 #include "PolyHedra/Data.hpp"
+#include "PolyHedra/Skin/Skin.hpp"
+
 struct Ray3D_Hit
 {
 	const Ray3D *	Ray;
@@ -443,30 +463,33 @@ struct Ray3D_Hit
 };
 static Ray3D_Hit IntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c)
 {
-	VectorF3 diff_a_b, diff_a_c, diff_nach_a;
-	diff_a_b = b - a;
-	diff_a_c = c - a;
-	diff_nach_a = ray.Pos - a;
+	VectorF3 plane_vec_0 = b - a;
+	VectorF3 plane_vec_1 = c - a;
+	VectorF3 diff_plane_ray = ray.Pos - a;
 
 	float p, u, v, t;
-	VectorF3 normale_zu_;
+	VectorF3 normal;
 
-	normale_zu_ = VectorF3::cross(diff_a_c, ray.Dir);
-	p = VectorF3::dot(normale_zu_, diff_a_b);
-	u = VectorF3::dot(normale_zu_, diff_nach_a);
+	normal = VectorF3::cross(plane_vec_1, ray.Dir);
+	p = VectorF3::dot(normal, plane_vec_0);
+	u = VectorF3::dot(normal, diff_plane_ray);
 
-	normale_zu_ = VectorF3::cross(diff_a_b, diff_nach_a);
-	v = VectorF3::dot(normale_zu_, ray.Dir);
-	t = VectorF3::dot(normale_zu_, diff_a_c);
+	normal = VectorF3::cross(plane_vec_0, diff_plane_ray);
+	v = VectorF3::dot(normal, ray.Dir);
+	t = VectorF3::dot(normal, plane_vec_1);
 
 	u /= p;
 	v /= p;
 	t /= p;
-	if (0.0 <= u && u <= 1.0)
+
+	if (0.0f <= u && u <= 1.0f)
 	{
-		if (0.0 <= v && (u + v) <= 1.0)
+		if (0.0f <= v && (u + v) <= 1.0f)
 		{
-			return Ray3D_Hit(ray, t);
+			if (t > 0.0f)
+			{
+				return Ray3D_Hit(ray, t);
+			}
 		}
 	}
 	return Ray3D_Hit();
@@ -518,43 +541,27 @@ void Light3DContext::ViewRay()
 	VectorF2 pos;
 	if (!window.MouseManager.CursorModeIsLocked())
 	{
-		pos = window.MouseManager.CursorPosition().Normal.Rel;
-		pos.X = +pos.X / window.Size.Ratio.Value.X;
-		pos.Y = -pos.Y / window.Size.Ratio.Value.Y;
+		pos = window.Size.Convert(window.MouseManager.CursorPosition());
 	}
 	Ray3D ray(view.Trans.Position, view.Trans.Rotation.forward(VectorF3(pos.X, pos.Y, 1)));
 
 	Ray3D_Hit hit = IntersectHit(ray, Objects.ToArray());
 	if (hit.Is())
 	{
+		PolyHedraObjectUI.Change(&Objects[hit.Index[0]]);
 		{
 			PolyHedraObject obj = Objects[hit.Index[0]];
 			obj.HideFull();
 			obj.ShowWire();
 		}
-		{
+		/*{
 			PolyHedraObject obj(Cube);
 			obj.Trans().Position = hit.Pos();
-		}
-		{
-			PolyHedraObject & obj = Objects[hit.Index[0]];
-			//std::cout << '"' << obj.Pallet() -> File.Path << '"' << '\n';
-			/*
-				PolyHedra Info
-					File (when loaded, non File otherwise ? like "::HexaHedron(1.0f)")
-					Name ? optional, given in File / Generation
-				Skin ?
-					why is it a seperate File ?
-					theoretically, that if I want a Collision thing, that dosent need Skin
-					what if I want the same PolyHedra with a different Skin ?
-					just use a different Texture File ?
-					store a Container of Skins per PolyHedra
-					this can be empty if it has none
-				different Skins ?
-					currently Skin uses an Texture2DArray
-					will I ever need something else ?
-			*/
-		}
+		}*/
+	}
+	else
+	{
+		PolyHedraObjectUI.Change(nullptr);
 	}
 }
 
@@ -590,13 +597,15 @@ void Light3DContext::Resize(DisplaySize display_size)
 
 	LightShader.Bind();
 	LightShaderLayout.DisplaySize.Put(display_size);
+
+	UIManager.Resize(display_size);
 }
 
 
 
-void Light3DContext::MouseMove(MoveArgs args) { (void)args; }
-void Light3DContext::MouseClick(ClickArgs args) { (void)args; }
-void Light3DContext::MouseScroll(ScrollArgs args) { (void)args; }
-void Light3DContext::MouseDrag(DragArgs args) { (void)args; }
-void Light3DContext::KeyBoardKey(KeyArgs args) { (void)args; }
-void Light3DContext::KeyBoardText(TextArgs args) { (void)args; }
+void Light3DContext::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
+void Light3DContext::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
+void Light3DContext::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
+void Light3DContext::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
+void Light3DContext::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
+void Light3DContext::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
