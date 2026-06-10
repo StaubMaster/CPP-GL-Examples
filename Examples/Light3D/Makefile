@@ -5,8 +5,16 @@ FANCY_NAME := Light3D
 ################################################################
 
 FILES := \
+	ObjectControl/VectorF3.cpp \
+	ObjectControl/EulerAngle3D.cpp \
+	ObjectControl/ColorF4.cpp \
+	ObjectControl/LightBase.cpp \
+	ObjectControl/LightSpot.cpp \
+	\
+	UI/PolyHedraObject.cpp \
+	UI/LightObject.cpp \
+	\
 	Context.cpp \
-	PolyHedraObjectUI.cpp \
 	new.cpp
 
 DIR_SRC := .

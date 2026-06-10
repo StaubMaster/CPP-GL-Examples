@@ -38,7 +38,8 @@
 
 // User Interface
 #include "UIManager.hpp"
-#include "PolyHedraObjectUI.hpp"
+#include "UI/PolyHedraObject.hpp"
+#include "UI/LightObject.hpp"
 
 
 
@@ -80,7 +81,11 @@ View3D	view;
 Container::Binary<PolyHedraObject>	Objects;
 
 UI::Manager				UIManager;
-::PolyHedraObjectUI		PolyHedraObjectUI;
+
+UI::PolyHedraObject		UIPolyHedraObject;
+UI::SpotLightEntry		UISpotLightEntry;
+
+
 
 ~Light3DContext();
 Light3DContext();

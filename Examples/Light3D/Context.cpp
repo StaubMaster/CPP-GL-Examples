@@ -76,7 +76,8 @@ Light3DContext::Light3DContext()
 	: ContextBase()
 	, PolyHedraManager()
 	, UIManager()
-	, PolyHedraObjectUI()
+	, UIPolyHedraObject()
+	, UISpotLightEntry()
 {
 	PolyHedraManager.MakeCurrent();
 }
@@ -303,7 +304,8 @@ void Light3DContext::Make()
 	Fancify();
 	FancyLights();
 
-	UIManager.WindowControl.ChildInsert(PolyHedraObjectUI);
+	UIManager.WindowControl.ChildInsert(UIPolyHedraObject);
+	UIManager.WindowControl.ChildInsert(UISpotLightEntry);
 
 	std::cout << "Make 1\n";
 }
@@ -413,7 +415,7 @@ struct Ray3D_Hit
 {
 	const Ray3D *	Ray;
 	float			Interval;
-	unsigned int	Index[2];
+	unsigned int	Index[4];
 
 	bool	Is() const { return (Ray != nullptr); }
 
@@ -433,6 +435,8 @@ struct Ray3D_Hit
 		, Index{
 			other.Index[0],
 			other.Index[1],
+			other.Index[2],
+			other.Index[3],
 		}
 	{ }
 	Ray3D_Hit & operator=(const Ray3D_Hit & other)
@@ -441,6 +445,8 @@ struct Ray3D_Hit
 		Interval = other.Interval;
 		Index[0] = other.Index[0];
 		Index[1] = other.Index[1];
+		Index[2] = other.Index[2];
+		Index[3] = other.Index[3];
 		return *this;
 	}
 
@@ -448,6 +454,8 @@ struct Ray3D_Hit
 		: Ray(&ray)
 		, Interval(interval)
 		, Index{
+			0xFFFFFFFF,
+			0xFFFFFFFF,
 			0xFFFFFFFF,
 			0xFFFFFFFF,
 		}
@@ -510,31 +518,66 @@ static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, co
 		c = trans.forward(c);
 
 		Ray3D_Hit hit = IntersectHit(ray, a, b, c);
-		hit.Index[1] = i;
+		hit.Index[3] = i;
 		hit_return.Consider(hit);
 	}
 	return hit_return;
+}
+static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedraObject & object)
+{
+	if (object.Is())
+	{
+		const PolyHedra * polyhedra = object.Pallet();
+		const Trans3D & trans = object.Trans();
+
+		// this is slow
+		// check Box first ?
+
+		return IntersectHit(ray, *polyhedra, trans);
+	}
+	return Ray3D_Hit();
 }
 static Ray3D_Hit IntersectHit(const Ray3D & ray, const Container::Array<PolyHedraObject> & objects)
 {
 	Ray3D_Hit hit_return;
 	for (unsigned int i = 0; i < objects.Length(); i++)
 	{
-		if (objects[i].Is())
-		{
-			const PolyHedra * polyhedra = objects[i].Pallet();
-			const Trans3D & trans = objects[i].Trans();
-
-			// this is slow
-			// check Box first ?
-
-			Ray3D_Hit hit = IntersectHit(ray, *polyhedra, trans);
-			hit.Index[0] = i;
-			hit_return.Consider(hit);
-		}
+		Ray3D_Hit hit = IntersectHit(ray, objects[i]);
+		hit.Index[2] = i;
+		hit_return.Consider(hit);
 	}
 	return hit_return;
 }
+static Ray3D_Hit IntersectHit(const Ray3D & ray, const SpotLightEntry * lights)
+{
+	Ray3D_Hit hit_return;
+	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
+	{
+		Ray3D_Hit hit;
+
+		hit = IntersectHit(ray, lights[i].EntryLight);
+		hit.Index[2] = i;
+		hit.Index[1] = 0;
+		hit_return.Consider(hit);
+		
+		hit = IntersectHit(ray, lights[i].EntryHolder);
+		hit.Index[2] = i;
+		hit.Index[1] = 1;
+		hit_return.Consider(hit);
+	}
+	return hit_return;
+}
+
+/* different Objects ?
+
+*/
+
+/*static unsigned int SelectedIndex[4] = {
+	0xFFFFFFFF,
+	0xFFFFFFFF,
+	0xFFFFFFFF,
+	0xFFFFFFFF,
+};*/
 
 void Light3DContext::ViewRay()
 {
@@ -545,24 +588,73 @@ void Light3DContext::ViewRay()
 	}
 	Ray3D ray(view.Trans.Position, view.Trans.Rotation.forward(VectorF3(pos.X, pos.Y, 1)));
 
-	Ray3D_Hit hit = IntersectHit(ray, Objects.ToArray());
+	Ray3D_Hit hit;
+	{
+		Ray3D_Hit hit_temp = IntersectHit(ray, Objects.ToArray());
+		hit_temp.Index[0] = 0;
+		hit.Consider(hit_temp);
+	}
+	{
+		Ray3D_Hit hit_temp = IntersectHit(ray, Light_Spot_Entry_Array);
+		hit_temp.Index[0] = 1;
+		hit.Consider(hit_temp);
+	}
+
+	UIPolyHedraObject.Hide();
+	UISpotLightEntry.Hide();
+
 	if (hit.Is())
 	{
-		PolyHedraObjectUI.Change(&Objects[hit.Index[0]]);
+		if (hit.Index[0] == 0)
 		{
-			PolyHedraObject obj = Objects[hit.Index[0]];
+			UIPolyHedraObject.Show();
+			UIPolyHedraObject.Change(&Objects[hit.Index[2]]);
+			PolyHedraObject obj = Objects[hit.Index[2]];
 			obj.HideFull();
 			obj.ShowWire();
 		}
-		/*{
-			PolyHedraObject obj(Cube);
-			obj.Trans().Position = hit.Pos();
-		}*/
+		else if (hit.Index[0] == 1)
+		{
+			UISpotLightEntry.Show();
+			UISpotLightEntry.Change(&Light_Spot_Entry_Array[hit.Index[2]]);
+			if (hit.Index[1] == 0)
+			{
+				PolyHedraObject obj = Light_Spot_Entry_Array[hit.Index[2]].EntryLight;
+				obj.HideFull();
+				obj.ShowWire();
+			}
+			else if (hit.Index[1] == 1)
+			{
+				PolyHedraObject obj = Light_Spot_Entry_Array[hit.Index[2]].EntryHolder;
+				obj.HideFull();
+				obj.ShowWire();
+			}
+		}
 	}
-	else
+
+
+	/*if (window.MouseManager[MouseButtons::MouseL] == State::Press)
 	{
-		PolyHedraObjectUI.Change(nullptr);
-	}
+		if (hit.Is())
+		{
+			SelectedIndex = hit.Index[0];
+		}
+		else
+		{
+			SelectedIndex = 0xFFFFFFFF;
+			UIPolyHedraObject.Change(nullptr);
+		}
+	}*/
+
+	/*if (SelectedIndex != 0xFFFFFFFF)
+	{
+		UIPolyHedraObject.Change(&Objects[SelectedIndex]);
+		{
+			PolyHedraObject obj = Objects[SelectedIndex];
+			obj.HideFull();
+			obj.ShowWire();
+		}
+	}*/
 }
 
 
