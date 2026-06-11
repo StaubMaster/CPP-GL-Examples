@@ -1,9 +1,9 @@
 #ifndef  PROPERTY_CONTROL_LIGHT_BASE_HPP
 # define PROPERTY_CONTROL_LIGHT_BASE_HPP
 
-# include "Control/GroupBox.hpp"
+# include "PropertyControl.hpp"
 # include "PropertyControl/ColorF4.hpp"
-# include "Control/Label.hpp"
+# include "Control/Slider.hpp"
 
 struct LightBase;
 
@@ -11,16 +11,18 @@ namespace UI
 {
 namespace Control
 {
-struct LightBase : public GroupBox
+struct LightBase : public PropertyControl
 {
-	Label		Intensity;
+	Slider		Intensity;
 	ColorF4		Color;
 
 	~LightBase();
-	LightBase();
+	LightBase(const char * name);
 
 	::LightBase * Object;
 	void	Change(::LightBase * obj);
+
+	void	IntensityFunc(float val);
 };
 };
 };

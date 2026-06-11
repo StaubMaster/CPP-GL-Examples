@@ -2,7 +2,7 @@
 # define PROPERTY_CONTROL_COLOR_F_4_HPP
 
 # include "PropertyControl.hpp"
-# include "Control/Label.hpp"
+# include "Control/Slider.hpp"
 
 struct ColorF4;
 
@@ -12,9 +12,9 @@ namespace Control
 {
 struct ColorF4 : public PropertyControl
 {
-	Label	R;
-	Label	G;
-	Label	B;
+	Slider	R;
+	Slider	G;
+	Slider	B;
 	// A ?
 
 	~ColorF4();
@@ -22,6 +22,10 @@ struct ColorF4 : public PropertyControl
 
 	::ColorF4 * Object;
 	void	Change(::ColorF4 * obj);
+
+	void	RFunc(float val);
+	void	GFunc(float val);
+	void	BFunc(float val);
 };
 };
 };

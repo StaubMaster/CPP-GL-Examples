@@ -36,41 +36,42 @@
 #include "Image.hpp"
 
 
+// Hit
+#include "Ray3D_Hit.hpp"
+
+// 
+#include "LightShaderLayout.hpp"
+#include "SpotLightEntry.hpp"
+
 // User Interface
 #include "UIManager.hpp"
 #include "UI/PolyHedraObject.hpp"
-#include "UI/LightObject.hpp"
+#include "UI/SpotLightEntry.hpp"
 
 
 
-struct SpotLightEntry
+/* Objects
+PolyHedraObject
+	just a PolyHedra with a Transformation
+LightAmbient
+	the Ambient Light Contoller
+	is an Object with a Position so it can be Selected ?
+	or just have a list of Meta stuff ?
+LightSolar
+	the Solar Light Controller
+	same as with LightAmbient
+LightSpot
+	is a Spot Light Controller
+	there is a Limit for these
+SpotLightEntry
+	has a pointer to a LightSpot
+	has 2 PolyHedraObjects
+*/
+struct SceneObject
 {
-	VectorF3			Position;
-	VectorF3			Target;
-	LightSpot *			Light;
-	PolyHedraObject		EntryLight;
-	PolyHedraObject		EntryHolder;
-
-	~SpotLightEntry();
-	SpotLightEntry();
-
-	void	LookFromTo(VectorF3 from, VectorF3 to);
-	void	Update();
-
-	void	Toggle();
-};
-
-class LightShaderLayout : public PolyHedraFull::ShaderLayout
-{
-	public:
-	Uniform::LightBase								Light_Ambient;
-	Uniform::LightSolar								Light_Solar;
-	Uniform::GArray<Uniform::LightSpot, LightSpot>	Light_Spot_Array;
-	Uniform::UInt									Light_Spot_Count;
-
-	public:
-	~LightShaderLayout();
-	LightShaderLayout();
+	virtual ~SceneObject();
+	SceneObject();
+	Ray3D_Hit	Hit(const Ray3D & ray) const;
 };
 
 struct Light3DContext : public ContextBase

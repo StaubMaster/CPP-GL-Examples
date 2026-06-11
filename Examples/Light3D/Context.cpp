@@ -8,68 +8,6 @@
 
 
 
-SpotLightEntry::~SpotLightEntry()
-{ }
-SpotLightEntry::SpotLightEntry() :
-	Position(),
-	Target(),
-	Light(nullptr),
-	EntryLight(),
-	EntryHolder()
-{ }
-
-void SpotLightEntry::LookFromTo(VectorF3 from, VectorF3 to)
-{
-	Position = from;
-	Target = to;
-}
-void SpotLightEntry::Update()
-{
-	EulerAngle3D angle =EulerAngle3D::PointToZ(Target - Position);
-
-	if (Light != nullptr)
-	{
-		Light -> Pos = Position + angle.forward(VectorF3(0, 0, 3));
-		Light -> Dir = (Target - Position).normalize();
-	}
-
-	EntryLight.Trans().Position = Position;
-	EntryLight.Trans().Rotation = angle;
-
-	EntryHolder.Trans().Position = Position;
-	EntryHolder.Trans().Rotation = EulerAngle3D(Angle(), Angle(), angle.Y2);
-}
-
-void SpotLightEntry::Toggle()
-{
-	if (Light -> Base.Intensity == 0.0f)
-	{
-		Light -> Base.Intensity = 1.0f;
-	}
-	else
-	{
-		Light -> Base.Intensity = 0.0f;
-	}
-}
-
-
-
-
-
-LightShaderLayout::~LightShaderLayout()
-{ }
-LightShaderLayout::LightShaderLayout()
-	: PolyHedraFull::ShaderLayout()
-	, Light_Ambient(*this, "Ambient")
-	, Light_Solar(*this, "Solar")
-	, Light_Spot_Array(*this, "SpotArr", Light_Spot_Limit)
-	, Light_Spot_Count(*this, "SpotCount")
-{ }
-
-
-
-
-
 Light3DContext::~Light3DContext()
 { }
 Light3DContext::Light3DContext()
@@ -78,6 +16,7 @@ Light3DContext::Light3DContext()
 	, UIManager()
 	, UIPolyHedraObject()
 	, UISpotLightEntry()
+	, LightShaderLayout(Light_Spot_Limit)
 {
 	PolyHedraManager.MakeCurrent();
 }
@@ -101,10 +40,10 @@ void Light3DContext::LightsInit()
 	Light_Spot_Count = 3;
 
 	Light_Spot_Entry_Array = new SpotLightEntry[Light_Spot_Limit];
-	Light_Spot_Entry_Array[0].LookFromTo(VectorF3(+22, 30, -22), VectorF3(0, 0, 0));
-	Light_Spot_Entry_Array[1].LookFromTo(VectorF3(  0, 30, +22), VectorF3(0, 0, 0));
-	Light_Spot_Entry_Array[2].LookFromTo(VectorF3(-22, 30, -22), VectorF3(0, 0, 0));
-	Light_Spot_Entry_Array[3].LookFromTo(VectorF3(  0, 30, -22), VectorF3(0, 0, 0));
+	Light_Spot_Entry_Array[0].Look(VectorF3(+22, 30, -22), VectorF3(0, 0, 0));
+	Light_Spot_Entry_Array[1].Look(VectorF3(  0, 30, +22), VectorF3(0, 0, 0));
+	Light_Spot_Entry_Array[2].Look(VectorF3(-22, 30, -22), VectorF3(0, 0, 0));
+	Light_Spot_Entry_Array[3].Look(VectorF3(  0, 30, -22), VectorF3(0, 0, 0));
 
 	Light_Spot_Entry_Array[0].Light = &Light_Spot_Array[0];
 	Light_Spot_Entry_Array[1].Light = &Light_Spot_Array[1];
@@ -306,6 +245,8 @@ void Light3DContext::Make()
 
 	UIManager.WindowControl.ChildInsert(UIPolyHedraObject);
 	UIManager.WindowControl.ChildInsert(UISpotLightEntry);
+	UIPolyHedraObject.Hide();
+	UISpotLightEntry.Hide();
 
 	std::cout << "Make 1\n";
 }
@@ -411,167 +352,6 @@ void Light3DContext::Draw()
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Skin/Skin.hpp"
 
-struct Ray3D_Hit
-{
-	const Ray3D *	Ray;
-	float			Interval;
-	unsigned int	Index[4];
-
-	bool	Is() const { return (Ray != nullptr); }
-
-	VectorF3	Pos() const
-	{
-		return (Ray -> Pos) + ((Ray -> Dir) * Interval);
-	}
-
-	~Ray3D_Hit()
-	{ }
-	Ray3D_Hit()
-		: Ray(nullptr)
-	{ }
-	Ray3D_Hit(const Ray3D_Hit & other)
-		: Ray(other.Ray)
-		, Interval(other.Interval)
-		, Index{
-			other.Index[0],
-			other.Index[1],
-			other.Index[2],
-			other.Index[3],
-		}
-	{ }
-	Ray3D_Hit & operator=(const Ray3D_Hit & other)
-	{
-		Ray = other.Ray;
-		Interval = other.Interval;
-		Index[0] = other.Index[0];
-		Index[1] = other.Index[1];
-		Index[2] = other.Index[2];
-		Index[3] = other.Index[3];
-		return *this;
-	}
-
-	Ray3D_Hit(const Ray3D & ray, float interval)
-		: Ray(&ray)
-		, Interval(interval)
-		, Index{
-			0xFFFFFFFF,
-			0xFFFFFFFF,
-			0xFFFFFFFF,
-			0xFFFFFFFF,
-		}
-	{ }
-
-	void	Consider(const Ray3D_Hit & other)
-	{
-		if (other.Is() && (!Is() || other.Interval < Interval))
-		{
-			*this = other;
-		}
-	}
-};
-static Ray3D_Hit IntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c)
-{
-	VectorF3 plane_vec_0 = b - a;
-	VectorF3 plane_vec_1 = c - a;
-	VectorF3 diff_plane_ray = ray.Pos - a;
-
-	float p, u, v, t;
-	VectorF3 normal;
-
-	normal = VectorF3::cross(plane_vec_1, ray.Dir);
-	p = VectorF3::dot(normal, plane_vec_0);
-	u = VectorF3::dot(normal, diff_plane_ray);
-
-	normal = VectorF3::cross(plane_vec_0, diff_plane_ray);
-	v = VectorF3::dot(normal, ray.Dir);
-	t = VectorF3::dot(normal, plane_vec_1);
-
-	u /= p;
-	v /= p;
-	t /= p;
-
-	if (0.0f <= u && u <= 1.0f)
-	{
-		if (0.0f <= v && (u + v) <= 1.0f)
-		{
-			if (t > 0.0f)
-			{
-				return Ray3D_Hit(ray, t);
-			}
-		}
-	}
-	return Ray3D_Hit();
-}
-static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans)
-{
-	Ray3D_Hit hit_return;
-	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
-	{
-		const PolyHedra::Face & face = polyhedra.Faces[i];
-
-		VectorF3 a = polyhedra.Corners[face.udx[0]].Position;
-		VectorF3 b = polyhedra.Corners[face.udx[1]].Position;
-		VectorF3 c = polyhedra.Corners[face.udx[2]].Position;
-
-		a = trans.forward(a);
-		b = trans.forward(b);
-		c = trans.forward(c);
-
-		Ray3D_Hit hit = IntersectHit(ray, a, b, c);
-		hit.Index[3] = i;
-		hit_return.Consider(hit);
-	}
-	return hit_return;
-}
-static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedraObject & object)
-{
-	if (object.Is())
-	{
-		const PolyHedra * polyhedra = object.Pallet();
-		const Trans3D & trans = object.Trans();
-
-		// this is slow
-		// check Box first ?
-
-		return IntersectHit(ray, *polyhedra, trans);
-	}
-	return Ray3D_Hit();
-}
-static Ray3D_Hit IntersectHit(const Ray3D & ray, const Container::Array<PolyHedraObject> & objects)
-{
-	Ray3D_Hit hit_return;
-	for (unsigned int i = 0; i < objects.Length(); i++)
-	{
-		Ray3D_Hit hit = IntersectHit(ray, objects[i]);
-		hit.Index[2] = i;
-		hit_return.Consider(hit);
-	}
-	return hit_return;
-}
-static Ray3D_Hit IntersectHit(const Ray3D & ray, const SpotLightEntry * lights)
-{
-	Ray3D_Hit hit_return;
-	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
-	{
-		Ray3D_Hit hit;
-
-		hit = IntersectHit(ray, lights[i].EntryLight);
-		hit.Index[2] = i;
-		hit.Index[1] = 0;
-		hit_return.Consider(hit);
-		
-		hit = IntersectHit(ray, lights[i].EntryHolder);
-		hit.Index[2] = i;
-		hit.Index[1] = 1;
-		hit_return.Consider(hit);
-	}
-	return hit_return;
-}
-
-/* different Objects ?
-
-*/
-
 static unsigned int SelectedIndex[4] = {
 	0xFFFFFFFF,
 	0xFFFFFFFF,
@@ -581,6 +361,8 @@ static unsigned int SelectedIndex[4] = {
 
 void Light3DContext::ViewRay()
 {
+	// just dont cast ray if hovering ?
+
 	VectorF2 pos;
 	if (!window.MouseManager.CursorModeIsLocked())
 	{
@@ -590,17 +372,17 @@ void Light3DContext::ViewRay()
 
 	Ray3D_Hit hit;
 	{
-		Ray3D_Hit hit_temp = IntersectHit(ray, Objects.ToArray());
+		Ray3D_Hit hit_temp = Ray3D_Hit::IntersectHit(ray, Objects.ToArray());
 		hit_temp.Index[0] = 0;
 		hit.Consider(hit_temp);
 	}
 	{
-		Ray3D_Hit hit_temp = IntersectHit(ray, Light_Spot_Entry_Array);
+		Ray3D_Hit hit_temp = Ray3D_Hit::IntersectHit(ray, Light_Spot_Entry_Array, Light_Spot_Limit);
 		hit_temp.Index[0] = 1;
 		hit.Consider(hit_temp);
 	}
 
-	if (hit.Is())
+	if (UIManager.Hovering == &UIManager.WindowControl && hit.Is())
 	{
 		if (hit.Index[0] == 0)
 		{
@@ -644,6 +426,13 @@ void Light3DContext::ViewRay()
 				UISpotLightEntry.Show();
 			}
 		}
+		else
+		{
+			SelectedIndex[0] = 0xFFFFFFFF;
+			SelectedIndex[1] = 0xFFFFFFFF;
+			SelectedIndex[2] = 0xFFFFFFFF;
+			SelectedIndex[3] = 0xFFFFFFFF;
+		}
 	}
 
 	if (SelectedIndex[0] != 0xFFFFFFFF)
@@ -659,14 +448,27 @@ void Light3DContext::ViewRay()
 		}
 		else if (SelectedIndex[0] == 1)
 		{
-			UISpotLightEntry.Change(&Light_Spot_Entry_Array[SelectedIndex[2]]);
+			SpotLightEntry & light = Light_Spot_Entry_Array[SelectedIndex[2]];
+			UISpotLightEntry.Change(&light);
 			{
-				PolyHedraObject obj = Light_Spot_Entry_Array[SelectedIndex[2]].EntryLight;
+				PolyHedraObject obj(Cube);
+				obj.Trans().Position = light.Origin;
 				obj.HideFull();
 				obj.ShowWire();
 			}
 			{
-				PolyHedraObject obj = Light_Spot_Entry_Array[SelectedIndex[2]].EntryHolder;
+				PolyHedraObject obj(Cube);
+				obj.Trans().Position = light.Target;
+				obj.HideFull();
+				obj.ShowWire();
+			}
+			{
+				PolyHedraObject obj = light.EntryLight;
+				obj.HideFull();
+				obj.ShowWire();
+			}
+			{
+				PolyHedraObject obj = light.EntryHolder;
 				obj.HideFull();
 				obj.ShowWire();
 			}

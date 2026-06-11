@@ -4,14 +4,18 @@
 
 UI::Control::LightBase::~LightBase()
 { }
-UI::Control::LightBase::LightBase()
-	: GroupBox()
+UI::Control::LightBase::LightBase(const char * name)
+	: PropertyControl(name)
 	, Intensity()
 	, Color("Color")
 	, Object(nullptr)
 {
 	Intensity.Anchor.X.AnchorBoth(0, 0);
 	Color.Anchor.X.AnchorBoth(0, 0);
+
+	Intensity.ValueMin.X = 0.0f;
+	Intensity.ValueMax.X = 1.0f;
+	Intensity.ValueXChangedFunc.Assign(this, &LightBase::IntensityFunc);
 
 	ChildInsert(Intensity);
 	ChildInsert(Color);
@@ -29,8 +33,7 @@ void UI::Control::LightBase::Change(::LightBase * obj)
 	Object = obj;
 	if (Object != nullptr)
 	{
-		std::stringstream ss;
-		ss.str(std::string()); ss << "Intensity:" << ToString(Object -> Intensity); Intensity.SetText(ss.str());
+		Intensity.SetValueX(Object -> Intensity);
 		Color.Change(&(Object -> Color));
 	}
 	else
@@ -38,4 +41,15 @@ void UI::Control::LightBase::Change(::LightBase * obj)
 		Intensity.SetText("Intensity:");
 		Color.Change(nullptr);
 	}
+}
+
+
+
+void UI::Control::LightBase::IntensityFunc(float val)
+{
+	if (Object == nullptr) { return; }
+	Object -> Intensity = val;
+	std::stringstream ss;
+	ss << "Intensity:" << ToString(Object -> Intensity, 2);
+	Intensity.SetText(ss.str());
 }

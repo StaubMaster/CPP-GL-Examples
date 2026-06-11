@@ -4,9 +4,9 @@
 
 UI::Control::LightSpot::~LightSpot()
 { }
-UI::Control::LightSpot::LightSpot()
-	: GroupBox()
-	, Base()
+UI::Control::LightSpot::LightSpot(const char * name)
+	: PropertyControl(name)
+	, Base("Base")
 	, Pos("Pos")
 	, Dir("Dir")
 	, Object(nullptr)

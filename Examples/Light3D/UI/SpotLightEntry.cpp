@@ -1,4 +1,4 @@
-#include "UI/LightObject.hpp"
+#include "UI/SpotLightEntry.hpp"
 
 
 
@@ -6,18 +6,18 @@ UI::SpotLightEntry::~SpotLightEntry()
 { }
 UI::SpotLightEntry::SpotLightEntry()
 	: UI::Control::Form()
-	, Position("Position")
+	, Origin("Origin")
 	, Target("Target")
-	, Light()
+	, Light("Light")
 {
 	Anchor.X.AnchorMin(0, 400);
 	Anchor.Y.AnchorMin(0, 0);
 
-	Position.Anchor.X.AnchorBoth(0, 0);
+	Origin.Anchor.X.AnchorBoth(0, 0);
 	Target.Anchor.X.AnchorBoth(0, 0);
 	Light.Anchor.X.AnchorBoth(0, 0);
 
-	ChildInsert(Position);
+	ChildInsert(Origin);
 	ChildInsert(Target);
 	ChildInsert(Light);
 
@@ -28,20 +28,20 @@ UI::SpotLightEntry::SpotLightEntry()
 
 
 
-#include "Context.hpp"
+#include "../SpotLightEntry.hpp"
 
 void UI::SpotLightEntry::Change(::SpotLightEntry * obj)
 {
 	Object = obj;
 	if (Object != nullptr)
 	{
-		Position.Change(&(Object -> Position));
+		Origin.Change(&(Object -> Origin));
 		Target.Change(&(Object -> Target));
 		Light.Change(Object -> Light);
 	}
 	else
 	{
-		Position.Change(nullptr);
+		Origin.Change(nullptr);
 		Target.Change(nullptr);
 		Light.Change(nullptr);
 	}

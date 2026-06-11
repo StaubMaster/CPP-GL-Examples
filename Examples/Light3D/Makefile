@@ -14,7 +14,12 @@ FILES := \
 	PropertyControl/LightSpot.cpp \
 	\
 	UI/PolyHedraObject.cpp \
-	UI/LightObject.cpp \
+	UI/SpotLightEntry.cpp \
+	\
+	LightShaderLayout.cpp \
+	SpotLightEntry.cpp \
+	\
+	Ray3D_Hit.cpp \
 	\
 	Context.cpp \
 	new.cpp

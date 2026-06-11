@@ -1,5 +1,5 @@
-#ifndef  UI_LIGHT_OBJECT_HPP
-# define UI_LIGHT_OBJECT_HPP
+#ifndef  UI_SPOT_LIGHT_ENTRY_HPP
+# define UI_SPOT_LIGHT_ENTRY_HPP
 
 # include "ControlsInclude.hpp"
 # include "PropertyControl/VectorF3.hpp"
@@ -11,7 +11,7 @@ namespace UI
 {
 struct SpotLightEntry : public UI::Control::Form
 {
-	UI::Control::VectorF3		Position;
+	UI::Control::VectorF3		Origin;
 	UI::Control::VectorF3		Target;
 	UI::Control::LightSpot		Light;
 
