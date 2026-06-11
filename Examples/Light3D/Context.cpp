@@ -22,12 +22,13 @@ Light3DContext::Light3DContext()
 
 void Light3DContext::LightsInit()
 {
-	//Light_Ambient_Intensity = 0.01f;
-	//Light_Solar_Intensity = 0.2f;
-	Light_Ambient_Intensity = 0.1f;
-	Light_Solar_Intensity = 0.8f;
-	Light_Ambient = LightBase(Light_Ambient_Intensity, ColorF4(1.0f, 1.0f, 1.0f));
-	Light_Solar = LightSolar(Light_Solar_Intensity, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(+1, -3, +2).normalize());
+	Light_Ambient = LightBase(0.1f, ColorF4(1.0f, 1.0f, 1.0f));
+	LightAmbientObject.Light = &Light_Ambient;
+	Objects.Insert(&LightAmbientObject);
+
+	Light_Solar = LightSolar(0.8f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(+1, -3, +2).normalize());
+	LightSolarObject.Light = &Light_Solar;
+	Objects.Insert(&LightSolarObject);
 
 	Light_Spot_Array = new LightSpot[Light_Spot_Limit];
 	Light_Spot_Array[0] = LightSpot(1.0f, ColorF4(1.0f, 0.0f, 0.0f), VectorF3(), VectorF3(), Range(0.8, 0.95));
@@ -155,18 +156,24 @@ void Light3DContext::FancyLights()
 	PolyHedra * stage_light =			PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt"));
 	PolyHedra * stage_light_holder =	PolyHedra::Load(dir.File("Stage_Light_Holder.polyhedra.ymt"));
 
+	LightAmbientObject.Object.Create(stage_light);
+	LightAmbientObject.Object.Trans().Position.Y = 40.0f;
+	
+	LightSolarObject.Object.Create(stage_light);
+	LightSolarObject.Object.Trans().Position.Y = 45.0f;
+	LightSolarObject.Object.Trans().Rotation = EulerAngle3D::PointToZ(LightSolarObject.Light -> Dir);
+
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
-		Light_Spot_Entry_Array[i].Object.EntryLight = PolyHedraObject(stage_light);
-		Light_Spot_Entry_Array[i].Object.EntryHolder = PolyHedraObject(stage_light_holder);
+		Light_Spot_Entry_Array[i].Object.EntryLight.Create(stage_light);
+		Light_Spot_Entry_Array[i].Object.EntryHolder.Create(stage_light_holder);
 	}
 }
 void Light3DContext::Fancify()
 {
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
 	PolyHedra * stage =					PolyHedra::Load(dir.File("Stage.polyhedra.ymt"));
-	//PolyHedra * truss =					PolyHedra::Load(dir.File("Truss_Square40cm_Len200cm.polyhedra"));
-	PolyHedra * truss =					PolyHedra::Load(MediaDirectory.File("YMT/Spline/Gleis_Seg.polyhedra"));
+	PolyHedra * truss =					PolyHedra::Load(dir.File("Truss_Square40cm_Len200cm.polyhedra"));
 	PolyHedra * truss_cube =			PolyHedra::Load(dir.File("Truss_Cube40cm.polyhedra"));
 	PolyHedra * chair =					PolyHedra::Load(dir.File("Chair.polyhedra"));
 
@@ -293,23 +300,23 @@ void Light3DContext::User(FrameTime frame_time)
 	//Light_Spot.Dir = ViewTrans.Rot.rotate(VectorF3(0, 0, 1));
 
 	// change Lights with UI ?
-	if (window.KeyBoardManager[Keys::D1].State == State::Press)
+	/*if (window.KeyBoardManager[Keys::D1].State == State::Press)
 	{
 		if (Light_Ambient.Intensity == 0.0f)
 		{ Light_Ambient.Intensity = Light_Ambient_Intensity; }
 		else
 		{ Light_Ambient.Intensity = 0.0f; }
-	}
-	if (window.KeyBoardManager[Keys::D2].State == State::Press)
+	}*/
+	/*if (window.KeyBoardManager[Keys::D2].State == State::Press)
 	{
 		if (Light_Solar.Base.Intensity == 0.0f)
 		{ Light_Solar.Base.Intensity = Light_Solar_Intensity; }
 		else
 		{ Light_Solar.Base.Intensity = 0.0f; }
-	}
-	if (window.KeyBoardManager[Keys::D3].State == State::Press) { Light_Spot_Entry_Array[0].Object.Toggle(); }
-	if (window.KeyBoardManager[Keys::D4].State == State::Press) { Light_Spot_Entry_Array[1].Object.Toggle(); }
-	if (window.KeyBoardManager[Keys::D5].State == State::Press) { Light_Spot_Entry_Array[2].Object.Toggle(); }
+	}*/
+	//if (window.KeyBoardManager[Keys::D3].State == State::Press) { Light_Spot_Entry_Array[0].Object.Toggle(); }
+	//if (window.KeyBoardManager[Keys::D4].State == State::Press) { Light_Spot_Entry_Array[1].Object.Toggle(); }
+	//if (window.KeyBoardManager[Keys::D5].State == State::Press) { Light_Spot_Entry_Array[2].Object.Toggle(); }
 
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 }
@@ -382,6 +389,24 @@ void Light3DContext::ViewRay()
 		{
 			{
 				SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(base);
+				if (obj != nullptr)
+				{
+					PolyHedraObject display_obj = obj -> Object;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
+			}
+			{
+				SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(base);
+				if (obj != nullptr)
+				{
+					PolyHedraObject display_obj = obj -> Object;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
+			}
+			{
+				SceneObject_LightSolar * obj = dynamic_cast<SceneObject_LightSolar*>(base);
 				if (obj != nullptr)
 				{
 					PolyHedraObject display_obj = obj -> Object;

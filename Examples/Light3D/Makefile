@@ -11,6 +11,7 @@ FILES := \
 	PropertyControl/ColorF4.cpp \
 	PropertyControl/Trans3D.cpp \
 	PropertyControl/LightBase.cpp \
+	PropertyControl/LightSolar.cpp \
 	PropertyControl/LightSpot.cpp \
 	\
 	LightShaderLayout.cpp \
@@ -18,6 +19,8 @@ FILES := \
 	\
 	SceneObject/SceneObject.cpp \
 	SceneObject/PolyHedraObject.cpp \
+	SceneObject/LightAmbient.cpp \
+	SceneObject/LightSolar.cpp \
 	SceneObject/SpotLightEntry.cpp \
 	SceneObject/UI/SceneObject.cpp \
 	SceneObject/UI/PolyHedraObject.cpp \

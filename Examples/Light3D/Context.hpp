@@ -48,33 +48,13 @@
 
 
 
-/* Objects
-PolyHedraObject
-	just a PolyHedra with a Transformation
-LightAmbient
-	the Ambient Light Contoller
-	is an Object with a Position so it can be Selected ?
-	or just have a list of Meta stuff ?
-LightSolar
-	the Solar Light Controller
-	same as with LightAmbient
-LightSpot
-	is a Spot Light Controller
-	there is a Limit for these
-SpotLightEntry
-	has a pointer to a LightSpot
-	has 2 PolyHedraObjects
-*/
-
 // SceneObject
-# include "SceneObject/SceneObject.hpp"
-# include "SceneObject/PolyHedraObject.hpp"
-# include "SceneObject/SpotLightEntry.hpp"
-
-// SceneObject UI
+#include "SceneObject/SceneObject.hpp"
+#include "SceneObject/PolyHedraObject.hpp"
+#include "SceneObject/LightAmbient.hpp"
+#include "SceneObject/LightSolar.hpp"
+#include "SceneObject/SpotLightEntry.hpp"
 #include "SceneObject/UI/SceneObject.hpp"
-#include "SceneObject/UI/PolyHedraObject.hpp"
-#include "SceneObject/UI/SpotLightEntry.hpp"
 
 
 
@@ -100,11 +80,11 @@ SceneObject_PolyHedraObject		CenterCube;
 
 
 
-float Light_Ambient_Intensity;
 LightBase Light_Ambient;
+SceneObject_LightAmbient LightAmbientObject;
 
-float Light_Solar_Intensity;
 LightSolar Light_Solar;
+SceneObject_LightSolar LightSolarObject;
 
 #define Light_Spot_Limit 4
 LightSpot * Light_Spot_Array;
