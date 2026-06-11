@@ -16,6 +16,11 @@ struct Ray3D_Hit
 	float			Interval;
 	unsigned int	Index[4];
 
+	// Index[3] is Triangle
+	// Index[2] is Container Index
+	// Index[1] is Object Selector
+	// Index[0] is Object Type
+
 	bool	Is() const;
 
 	VectorF3	Pos() const;
@@ -33,6 +38,7 @@ struct Ray3D_Hit
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans);
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedraObject & object);
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const Container::Array<PolyHedraObject> & objects);
+	static Ray3D_Hit IntersectHit(const Ray3D & ray, const SpotLightEntry & light);
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const SpotLightEntry * lights, unsigned int count);
 };
 

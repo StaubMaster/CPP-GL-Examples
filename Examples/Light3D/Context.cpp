@@ -6,6 +6,42 @@
 
 
 
+SceneObject::~SceneObject()
+{ }
+SceneObject::SceneObject()
+{ }
+
+SceneObject_PolyHedraObject::~SceneObject_PolyHedraObject()
+{ }
+SceneObject_PolyHedraObject::SceneObject_PolyHedraObject()
+{ }
+SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(const PolyHedraObject & obj)
+	: Object(obj)
+{ }
+void SceneObject_PolyHedraObject::Update()
+{ }
+Ray3D_Hit SceneObject_PolyHedraObject::Hit(const Ray3D & ray) const
+{
+	Ray3D_Hit hit = Ray3D_Hit::IntersectHit(ray, Object);
+	hit.Index[0] = 0;
+	return hit;
+}
+
+SceneObject_SpotLightEntry::~SceneObject_SpotLightEntry()
+{ }
+SceneObject_SpotLightEntry::SceneObject_SpotLightEntry()
+{ }
+void SceneObject_SpotLightEntry::Update()
+{
+	Object.Update();
+}
+Ray3D_Hit SceneObject_SpotLightEntry::Hit(const Ray3D & ray) const
+{
+	Ray3D_Hit hit = Ray3D_Hit::IntersectHit(ray, Object);
+	hit.Index[0] = 1;
+	return hit;
+}
+
 
 
 Light3DContext::~Light3DContext()
@@ -39,20 +75,26 @@ void Light3DContext::LightsInit()
 	Light_Spot_Array[3] = LightSpot(1.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), Range(0.8, 0.95));
 	Light_Spot_Count = 3;
 
-	Light_Spot_Entry_Array = new SpotLightEntry[Light_Spot_Limit];
-	Light_Spot_Entry_Array[0].Look(VectorF3(+22, 30, -22), VectorF3(0, 0, 0));
-	Light_Spot_Entry_Array[1].Look(VectorF3(  0, 30, +22), VectorF3(0, 0, 0));
-	Light_Spot_Entry_Array[2].Look(VectorF3(-22, 30, -22), VectorF3(0, 0, 0));
-	Light_Spot_Entry_Array[3].Look(VectorF3(  0, 30, -22), VectorF3(0, 0, 0));
+	Light_Spot_Entry_Array = new SceneObject_SpotLightEntry[Light_Spot_Limit];
 
-	Light_Spot_Entry_Array[0].Light = &Light_Spot_Array[0];
-	Light_Spot_Entry_Array[1].Light = &Light_Spot_Array[1];
-	Light_Spot_Entry_Array[2].Light = &Light_Spot_Array[2];
-	Light_Spot_Entry_Array[3].Light = &Light_Spot_Array[3];
+	Light_Spot_Entry_Array[0].Object.Look(VectorF3(+22, 30, -22), VectorF3(0, 0, 0));
+	Light_Spot_Entry_Array[1].Object.Look(VectorF3(  0, 30, +22), VectorF3(0, 0, 0));
+	Light_Spot_Entry_Array[2].Object.Look(VectorF3(-22, 30, -22), VectorF3(0, 0, 0));
+	Light_Spot_Entry_Array[3].Object.Look(VectorF3(  0, 30, -22), VectorF3(0, 0, 0));
+
+	Light_Spot_Entry_Array[0].Object.Light = &Light_Spot_Array[0];
+	Light_Spot_Entry_Array[1].Object.Light = &Light_Spot_Array[1];
+	Light_Spot_Entry_Array[2].Object.Light = &Light_Spot_Array[2];
+	Light_Spot_Entry_Array[3].Object.Light = &Light_Spot_Array[3];
+
+	Objects.Insert(&Light_Spot_Entry_Array[0]);
+	Objects.Insert(&Light_Spot_Entry_Array[1]);
+	Objects.Insert(&Light_Spot_Entry_Array[2]);
+	Objects.Insert(&Light_Spot_Entry_Array[3]);
 }
 void Light3DContext::LightsFree()
 {
-	delete[] Light_Spot_Entry_Array;
+	//delete[] Light_Spot_Entry_Array;
 	delete[] Light_Spot_Array;
 }
 
@@ -113,8 +155,8 @@ static PolyHedra * Cube = nullptr;
 void Light3DContext::RandomCubes()
 {
 	Cube = PolyHedra::Generate::HexaHedron();
-
-	Objects.Insert(PolyHedraObject(Cube));
+	CenterCube.Object.Create(Cube);
+	Objects.Insert(&CenterCube);
 
 	/*int Range_Size1 = 0x1FF;
 	int Range_SizeH = 0x0FF;
@@ -135,7 +177,7 @@ void Light3DContext::RandomCubes()
 
 		for (int i = 0; i < i_len; i++)
 		{
-			Objects.Insert(PolyHedraObject(Cube, Trans3D(
+			Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(Cube, Trans3D)(
 				center + VectorF3(
 					(std::rand() & Range_Size1) - Range_SizeH,
 					(std::rand() & Range_Size1) - Range_SizeH,
@@ -154,8 +196,8 @@ void Light3DContext::FancyLights()
 
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
-		Light_Spot_Entry_Array[i].EntryLight = PolyHedraObject(stage_light);
-		Light_Spot_Entry_Array[i].EntryHolder = PolyHedraObject(stage_light_holder);
+		Light_Spot_Entry_Array[i].Object.EntryLight = PolyHedraObject(stage_light);
+		Light_Spot_Entry_Array[i].Object.EntryHolder = PolyHedraObject(stage_light_holder);
 	}
 }
 void Light3DContext::Fancify()
@@ -167,7 +209,7 @@ void Light3DContext::Fancify()
 	PolyHedra * truss_cube =			PolyHedra::Load(dir.File("Truss_Cube40cm.polyhedra"));
 	PolyHedra * chair =					PolyHedra::Load(dir.File("Chair.polyhedra"));
 
-	Objects.Insert(PolyHedraObject(stage, VectorF3(0, 0, 0)));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(stage, VectorF3(0, 0, 0))));
 
 	float truss_long = 20.0f;
 	float truss_wide = 4.5f;
@@ -182,50 +224,50 @@ void Light3DContext::Fancify()
 	float d0 = truss_long * 0.5f;
 	float d1 = truss_long * 1.0f + truss_wide * 0.5f;
 
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h0, -d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h1, -d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(PolyHedraObject(truss_cube, Trans3D(VectorF3(-w1, h2, -d1))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h0, -d1), EulerAngle3D::Degrees(0, 90, 0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h1, -d1), EulerAngle3D::Degrees(0, 90, 0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss_cube, Trans3D(VectorF3(-w1, h2, -d1)))));
 
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h0, -d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h1, -d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(PolyHedraObject(truss_cube, Trans3D(VectorF3(+w1, h2, -d1))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h0, -d1), EulerAngle3D::Degrees(0, 90, 0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h1, -d1), EulerAngle3D::Degrees(0, 90, 0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss_cube, Trans3D(VectorF3(+w1, h2, -d1)))));
 
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(-w0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(  0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(+w0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(-w0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(  0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(+w0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90)))));
 
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h2, -d0))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h2, -d0))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h2, +d0))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h2, +d0))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h2, -d0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h2, -d0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h2, +d0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h2, +d0)))));
 
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h0, +d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h1, +d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(PolyHedraObject(truss_cube, Trans3D(VectorF3(-w1, h2, +d1))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h0, +d1), EulerAngle3D::Degrees(0, 90, 0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h1, +d1), EulerAngle3D::Degrees(0, 90, 0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss_cube, Trans3D(VectorF3(-w1, h2, +d1)))));
 
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h0, +d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h1, +d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(PolyHedraObject(truss_cube, Trans3D(VectorF3(+w1, h2, +d1))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h0, +d1), EulerAngle3D::Degrees(0, 90, 0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h1, +d1), EulerAngle3D::Degrees(0, 90, 0)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss_cube, Trans3D(VectorF3(+w1, h2, +d1)))));
 
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(-w0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(  0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(PolyHedraObject(truss,      Trans3D(VectorF3(+w0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(-w0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(  0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90)))));
+	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(truss,      Trans3D(VectorF3(+w0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90)))));
 
 	for (int y = 0; y < 5; y++)
 	{
 		for (int x = -5; x <= +5; x++)
 		{
-			Objects.Insert(PolyHedraObject(chair, Trans3D(VectorF3(x * +5.0f, (y * 2.0f), (y * -7.5f) -50), EulerAngle3D())));
+			Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(chair, Trans3D(VectorF3(x * +5.0f, (y * 2.0f), (y * -7.5f) -50), EulerAngle3D()))));
 		}
 	}
 
 	for (int i = 0; i < 10; i++)
 	{
-		Objects.Insert(PolyHedraObject(chair, Trans3D(VectorF3(-50, i, -40), EulerAngle3D::Degrees(0, 0, 90))));
+		Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(chair, Trans3D(VectorF3(-50, i, -40), EulerAngle3D::Degrees(0, 0, 90)))));
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		Objects.Insert(PolyHedraObject(chair, Trans3D(VectorF3(-50, i, -45), EulerAngle3D::Degrees(0, 0, 90))));
+		Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(chair, Trans3D(VectorF3(-50, i, -45), EulerAngle3D::Degrees(0, 0, 90)))));
 	}
 }
 
@@ -306,9 +348,9 @@ void Light3DContext::User(FrameTime frame_time)
 		else
 		{ Light_Solar.Base.Intensity = 0.0f; }
 	}
-	if (window.KeyBoardManager[Keys::D3].State == State::Press) { Light_Spot_Entry_Array[0].Toggle(); }
-	if (window.KeyBoardManager[Keys::D4].State == State::Press) { Light_Spot_Entry_Array[1].Toggle(); }
-	if (window.KeyBoardManager[Keys::D5].State == State::Press) { Light_Spot_Entry_Array[2].Toggle(); }
+	if (window.KeyBoardManager[Keys::D3].State == State::Press) { Light_Spot_Entry_Array[0].Object.Toggle(); }
+	if (window.KeyBoardManager[Keys::D4].State == State::Press) { Light_Spot_Entry_Array[1].Object.Toggle(); }
+	if (window.KeyBoardManager[Keys::D5].State == State::Press) { Light_Spot_Entry_Array[2].Object.Toggle(); }
 
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 }
@@ -326,9 +368,9 @@ void Light3DContext::Draw()
 	LightShaderLayout.Light_Solar.Put(Light_Solar);
 	for (unsigned int i = 0; i < LightShaderLayout.Light_Spot_Array.Limit; i++)
 	{
-		if (Light_Spot_Entry_Array[i].Light != nullptr)
+		if (Light_Spot_Entry_Array[i].Object.Light != nullptr)
 		{
-			LightShaderLayout.Light_Spot_Array[i].Put(*(Light_Spot_Entry_Array[i].Light));
+			LightShaderLayout.Light_Spot_Array[i].Put(*(Light_Spot_Entry_Array[i].Object.Light));
 		}
 	}
 	LightShaderLayout.Light_Spot_Count.Put(Light_Spot_Count);
@@ -352,12 +394,7 @@ void Light3DContext::Draw()
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Skin/Skin.hpp"
 
-static unsigned int SelectedIndex[4] = {
-	0xFFFFFFFF,
-	0xFFFFFFFF,
-	0xFFFFFFFF,
-	0xFFFFFFFF,
-};
+SceneObject * SceneObject_Selected = nullptr;
 
 void Light3DContext::ViewRay()
 {
@@ -371,38 +408,45 @@ void Light3DContext::ViewRay()
 	Ray3D ray(view.Trans.Position, view.Trans.Rotation.forward(VectorF3(pos.X, pos.Y, 1)));
 
 	Ray3D_Hit hit;
+	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		Ray3D_Hit hit_temp = Ray3D_Hit::IntersectHit(ray, Objects.ToArray());
-		hit_temp.Index[0] = 0;
-		hit.Consider(hit_temp);
-	}
-	{
-		Ray3D_Hit hit_temp = Ray3D_Hit::IntersectHit(ray, Light_Spot_Entry_Array, Light_Spot_Limit);
-		hit_temp.Index[0] = 1;
+		if (Objects[i] == nullptr) { continue; }
+		Ray3D_Hit hit_temp = Objects[i] -> Hit(ray);
+		hit_temp.Index[2] = i;
 		hit.Consider(hit_temp);
 	}
 
 	if (UIManager.Hovering == &UIManager.WindowControl && hit.Is())
 	{
-		if (hit.Index[0] == 0)
+		SceneObject * base = Objects[hit.Index[2]];
+		if (base != nullptr)
 		{
-			PolyHedraObject obj = Objects[hit.Index[2]];
-			obj.HideFull();
-			obj.ShowWire();
-		}
-		else if (hit.Index[0] == 1)
-		{
-			if (hit.Index[1] == 0)
 			{
-				PolyHedraObject obj = Light_Spot_Entry_Array[hit.Index[2]].EntryLight;
-				obj.HideFull();
-				obj.ShowWire();
+				SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(base);
+				if (obj != nullptr)
+				{
+					PolyHedraObject display_obj = obj -> Object;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
 			}
-			else if (hit.Index[1] == 1)
 			{
-				PolyHedraObject obj = Light_Spot_Entry_Array[hit.Index[2]].EntryHolder;
-				obj.HideFull();
-				obj.ShowWire();
+				SceneObject_SpotLightEntry * obj = dynamic_cast<SceneObject_SpotLightEntry*>(base);
+				if (obj != nullptr)
+				{
+					if (hit.Index[1] == 0)
+					{
+						PolyHedraObject display_obj = obj -> Object.EntryLight;
+						display_obj.HideFull();
+						display_obj.ShowWire();
+					}
+					else if (hit.Index[1] == 1)
+					{
+						PolyHedraObject display_obj = obj -> Object.EntryHolder;
+						display_obj.HideFull();
+						display_obj.ShowWire();
+					}
+				}
 			}
 		}
 	}
@@ -413,64 +457,69 @@ void Light3DContext::ViewRay()
 		UISpotLightEntry.Hide();
 		if (hit.Is())
 		{
-			SelectedIndex[0] = hit.Index[0];
-			SelectedIndex[1] = hit.Index[1];
-			SelectedIndex[2] = hit.Index[2];
-			SelectedIndex[3] = hit.Index[3];
-			if (SelectedIndex[0] == 0)
+			SceneObject_Selected = Objects[hit.Index[2]];
 			{
-				UIPolyHedraObject.Show();
+				SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(SceneObject_Selected);
+				if (obj != nullptr)
+				{
+					UIPolyHedraObject.Show();
+				}
 			}
-			else if (SelectedIndex[0] == 1)
 			{
-				UISpotLightEntry.Show();
+				SceneObject_SpotLightEntry * obj = dynamic_cast<SceneObject_SpotLightEntry*>(SceneObject_Selected);
+				if (obj != nullptr)
+				{
+					UISpotLightEntry.Show();
+				}
 			}
 		}
 		else
 		{
-			SelectedIndex[0] = 0xFFFFFFFF;
-			SelectedIndex[1] = 0xFFFFFFFF;
-			SelectedIndex[2] = 0xFFFFFFFF;
-			SelectedIndex[3] = 0xFFFFFFFF;
+			SceneObject_Selected = nullptr;
 		}
 	}
 
-	if (SelectedIndex[0] != 0xFFFFFFFF)
+	if (SceneObject_Selected != nullptr)
 	{
-		if (SelectedIndex[0] == 0)
 		{
-			UIPolyHedraObject.Change(&Objects[SelectedIndex[2]]);
+			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(SceneObject_Selected);
+			if (obj != nullptr)
 			{
-				PolyHedraObject obj = Objects[SelectedIndex[2]];
-				obj.HideFull();
-				obj.ShowWire();
+				UIPolyHedraObject.Change(&(obj -> Object));
+				{
+					PolyHedraObject display_obj;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
 			}
 		}
-		else if (SelectedIndex[0] == 1)
 		{
-			SpotLightEntry & light = Light_Spot_Entry_Array[SelectedIndex[2]];
-			UISpotLightEntry.Change(&light);
+			SceneObject_SpotLightEntry * obj = dynamic_cast<SceneObject_SpotLightEntry*>(SceneObject_Selected);
+			if (obj != nullptr)
 			{
-				PolyHedraObject obj(Cube);
-				obj.Trans().Position = light.Origin;
-				obj.HideFull();
-				obj.ShowWire();
-			}
-			{
-				PolyHedraObject obj(Cube);
-				obj.Trans().Position = light.Target;
-				obj.HideFull();
-				obj.ShowWire();
-			}
-			{
-				PolyHedraObject obj = light.EntryLight;
-				obj.HideFull();
-				obj.ShowWire();
-			}
-			{
-				PolyHedraObject obj = light.EntryHolder;
-				obj.HideFull();
-				obj.ShowWire();
+				UISpotLightEntry.Change(&(obj -> Object));
+				{
+					PolyHedraObject display_obj(Cube);
+					display_obj.Trans().Position = obj -> Object.Origin;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
+				{
+					PolyHedraObject display_obj(Cube);
+					display_obj.Trans().Position = obj -> Object.Target;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
+				{
+					PolyHedraObject display_obj = obj -> Object.EntryLight;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
+				{
+					PolyHedraObject display_obj = obj -> Object.EntryHolder;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
 			}
 		}
 	}
@@ -485,13 +534,14 @@ void Light3DContext::Frame(FrameTime frame_time)
 
 	User(frame_time);
 
-	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
+	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		Light_Spot_Entry_Array[i].Update();
+		if (Objects[i] == nullptr) { continue; }
+		Objects[i] -> Update();
 	}
 
-	Objects[0].Trans().Position = VectorF3(0, 10, 0);
-	Objects[0].Trans().Rotation.Y2 += Angle::Radians(0.01f);
+	CenterCube.Object.Trans().Position = VectorF3(0, 10, 0);
+	CenterCube.Object.Trans().Rotation.Y2 += Angle::Radians(0.01f);
 
 	ViewRay();
 

@@ -140,21 +140,29 @@ Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const Container::Array<Poly
 	}
 	return hit_return;
 }
+Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const SpotLightEntry & light)
+{
+	Ray3D_Hit hit_return;
+	Ray3D_Hit hit;
+
+	hit = IntersectHit(ray, light.EntryLight);
+	hit.Index[1] = 0;
+	hit_return.Consider(hit);
+
+	hit = IntersectHit(ray, light.EntryHolder);
+	hit.Index[1] = 1;
+	hit_return.Consider(hit);
+
+	return hit_return;
+}
 Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const SpotLightEntry * lights, unsigned int count)
 {
 	Ray3D_Hit hit_return;
 	for (unsigned int i = 0; i < count; i++)
 	{
 		Ray3D_Hit hit;
-
-		hit = IntersectHit(ray, lights[i].EntryLight);
+		hit = IntersectHit(ray, lights[i]);
 		hit.Index[2] = i;
-		hit.Index[1] = 0;
-		hit_return.Consider(hit);
-		
-		hit = IntersectHit(ray, lights[i].EntryHolder);
-		hit.Index[2] = i;
-		hit.Index[1] = 1;
 		hit_return.Consider(hit);
 	}
 	return hit_return;

@@ -71,25 +71,49 @@ struct SceneObject
 {
 	virtual ~SceneObject();
 	SceneObject();
-	Ray3D_Hit	Hit(const Ray3D & ray) const;
+	virtual void	Update() = 0;
+	virtual Ray3D_Hit	Hit(const Ray3D & ray) const = 0;
 };
+struct SceneObject_PolyHedraObject : public SceneObject
+{
+	PolyHedraObject		Object;
+	~SceneObject_PolyHedraObject();
+	SceneObject_PolyHedraObject();
+	SceneObject_PolyHedraObject(const PolyHedraObject & obj);
+	void	Update() override;
+	Ray3D_Hit	Hit(const Ray3D & ray) const override;
+};
+struct SceneObject_SpotLightEntry : public SceneObject
+{
+	SpotLightEntry		Object;
+	~SceneObject_SpotLightEntry();
+	SceneObject_SpotLightEntry();
+	void	Update() override;
+	Ray3D_Hit	Hit(const Ray3D & ray) const override;
+};
+
+
 
 struct Light3DContext : public ContextBase
 {
 View3D	view;
 
-::PolyHedraManager					PolyHedraManager;
-Container::Binary<PolyHedraObject>	Objects;
+::PolyHedraManager		PolyHedraManager;
 
 UI::Manager				UIManager;
-
 UI::PolyHedraObject		UIPolyHedraObject;
 UI::SpotLightEntry		UISpotLightEntry;
+
+Container::Binary<SceneObject*>		Objects;
 
 
 
 ~Light3DContext();
 Light3DContext();
+
+
+
+SceneObject_PolyHedraObject		CenterCube;
 
 
 
@@ -101,7 +125,7 @@ LightSolar Light_Solar;
 
 #define Light_Spot_Limit 4
 LightSpot * Light_Spot_Array;
-SpotLightEntry * Light_Spot_Entry_Array;
+SceneObject_SpotLightEntry * Light_Spot_Entry_Array;
 
 unsigned int Light_Spot_Count;
 
