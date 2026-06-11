@@ -572,12 +572,12 @@ static Ray3D_Hit IntersectHit(const Ray3D & ray, const SpotLightEntry * lights)
 
 */
 
-/*static unsigned int SelectedIndex[4] = {
+static unsigned int SelectedIndex[4] = {
 	0xFFFFFFFF,
 	0xFFFFFFFF,
 	0xFFFFFFFF,
 	0xFFFFFFFF,
-};*/
+};
 
 void Light3DContext::ViewRay()
 {
@@ -600,23 +600,16 @@ void Light3DContext::ViewRay()
 		hit.Consider(hit_temp);
 	}
 
-	UIPolyHedraObject.Hide();
-	UISpotLightEntry.Hide();
-
 	if (hit.Is())
 	{
 		if (hit.Index[0] == 0)
 		{
-			UIPolyHedraObject.Show();
-			UIPolyHedraObject.Change(&Objects[hit.Index[2]]);
 			PolyHedraObject obj = Objects[hit.Index[2]];
 			obj.HideFull();
 			obj.ShowWire();
 		}
 		else if (hit.Index[0] == 1)
 		{
-			UISpotLightEntry.Show();
-			UISpotLightEntry.Change(&Light_Spot_Entry_Array[hit.Index[2]]);
 			if (hit.Index[1] == 0)
 			{
 				PolyHedraObject obj = Light_Spot_Entry_Array[hit.Index[2]].EntryLight;
@@ -632,29 +625,53 @@ void Light3DContext::ViewRay()
 		}
 	}
 
-
-	/*if (window.MouseManager[MouseButtons::MouseL] == State::Press)
+	if (UIManager.Hovering == &UIManager.WindowControl && window.MouseManager[MouseButtons::MouseL] == State::Press)
 	{
+		UIPolyHedraObject.Hide();
+		UISpotLightEntry.Hide();
 		if (hit.Is())
 		{
-			SelectedIndex = hit.Index[0];
+			SelectedIndex[0] = hit.Index[0];
+			SelectedIndex[1] = hit.Index[1];
+			SelectedIndex[2] = hit.Index[2];
+			SelectedIndex[3] = hit.Index[3];
+			if (SelectedIndex[0] == 0)
+			{
+				UIPolyHedraObject.Show();
+			}
+			else if (SelectedIndex[0] == 1)
+			{
+				UISpotLightEntry.Show();
+			}
 		}
-		else
-		{
-			SelectedIndex = 0xFFFFFFFF;
-			UIPolyHedraObject.Change(nullptr);
-		}
-	}*/
+	}
 
-	/*if (SelectedIndex != 0xFFFFFFFF)
+	if (SelectedIndex[0] != 0xFFFFFFFF)
 	{
-		UIPolyHedraObject.Change(&Objects[SelectedIndex]);
+		if (SelectedIndex[0] == 0)
 		{
-			PolyHedraObject obj = Objects[SelectedIndex];
-			obj.HideFull();
-			obj.ShowWire();
+			UIPolyHedraObject.Change(&Objects[SelectedIndex[2]]);
+			{
+				PolyHedraObject obj = Objects[SelectedIndex[2]];
+				obj.HideFull();
+				obj.ShowWire();
+			}
 		}
-	}*/
+		else if (SelectedIndex[0] == 1)
+		{
+			UISpotLightEntry.Change(&Light_Spot_Entry_Array[SelectedIndex[2]]);
+			{
+				PolyHedraObject obj = Light_Spot_Entry_Array[SelectedIndex[2]].EntryLight;
+				obj.HideFull();
+				obj.ShowWire();
+			}
+			{
+				PolyHedraObject obj = Light_Spot_Entry_Array[SelectedIndex[2]].EntryHolder;
+				obj.HideFull();
+				obj.ShowWire();
+			}
+		}
+	}
 }
 
 

@@ -1,11 +1,11 @@
-#include "ObjectControl/VectorF3.hpp"
+#include "PropertyControl/VectorF3.hpp"
 
 
 
 UI::Control::VectorF3::~VectorF3()
 { }
-UI::Control::VectorF3::VectorF3()
-	: GroupBox()
+UI::Control::VectorF3::VectorF3(const char * name)
+	: PropertyControl(name)
 	, X()
 	, Y()
 	, Z()
@@ -15,16 +15,11 @@ UI::Control::VectorF3::VectorF3()
 	Y.Anchor.X.AnchorBoth(0, 0);
 	Z.Anchor.X.AnchorBoth(0, 0);
 
-	X.Anchor.Y.AnchorMin(0);
-	Y.Anchor.Y.AnchorMin(X.Anchor.Y.GetMinSize());
-	Z.Anchor.Y.AnchorMin(Y.Anchor.Y.GetMinSize());
-
-	Anchor.X.AnchorBoth(0, 0);
-	Anchor.Y.AnchorMin(0, Z.Anchor.Y.GetMinSize() + Z.AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
-
 	ChildInsert(X);
 	ChildInsert(Y);
 	ChildInsert(Z);
+
+	AnchorFitChildrenY();
 }
 
 

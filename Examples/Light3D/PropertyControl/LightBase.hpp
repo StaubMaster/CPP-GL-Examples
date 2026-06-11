@@ -1,9 +1,9 @@
-#ifndef  OBJECT_CONTROL_LIGHT_BASE_HPP
-# define OBJECT_CONTROL_LIGHT_BASE_HPP
+#ifndef  PROPERTY_CONTROL_LIGHT_BASE_HPP
+# define PROPERTY_CONTROL_LIGHT_BASE_HPP
 
 # include "Control/GroupBox.hpp"
+# include "PropertyControl/ColorF4.hpp"
 # include "Control/Label.hpp"
-# include "ObjectControl/ColorF4.hpp"
 
 struct LightBase;
 

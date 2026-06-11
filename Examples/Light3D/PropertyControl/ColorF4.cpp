@@ -1,11 +1,11 @@
-#include "ObjectControl/ColorF4.hpp"
+#include "PropertyControl/ColorF4.hpp"
 
 
 
 UI::Control::ColorF4::~ColorF4()
 { }
-UI::Control::ColorF4::ColorF4()
-	: GroupBox()
+UI::Control::ColorF4::ColorF4(const char * name)
+	: PropertyControl(name)
 	, R()
 	, G()
 	, B()
@@ -15,16 +15,11 @@ UI::Control::ColorF4::ColorF4()
 	G.Anchor.X.AnchorBoth(0, 0);
 	B.Anchor.X.AnchorBoth(0, 0);
 
-	R.Anchor.Y.AnchorMin(0);
-	G.Anchor.Y.AnchorMin(R.Anchor.Y.GetMinSize());
-	B.Anchor.Y.AnchorMin(G.Anchor.Y.GetMinSize());
-
-	Anchor.X.AnchorBoth(0, 0);
-	Anchor.Y.AnchorMin(0, B.Anchor.Y.GetMinSize() + B.AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
-
 	ChildInsert(R);
 	ChildInsert(G);
 	ChildInsert(B);
+
+	AnchorFitChildrenY();
 }
 
 

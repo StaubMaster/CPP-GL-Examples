@@ -1,4 +1,4 @@
-#include "ObjectControl/LightBase.hpp"
+#include "PropertyControl/LightBase.hpp"
 
 
 
@@ -7,20 +7,16 @@ UI::Control::LightBase::~LightBase()
 UI::Control::LightBase::LightBase()
 	: GroupBox()
 	, Intensity()
-	, Color()
+	, Color("Color")
 	, Object(nullptr)
 {
 	Intensity.Anchor.X.AnchorBoth(0, 0);
 	Color.Anchor.X.AnchorBoth(0, 0);
 
-	Intensity.Anchor.Y.AnchorMin(0);
-	Color.Anchor.Y.AnchorMin(Intensity.Anchor.Y.GetMinSize());
-
-	Anchor.X.AnchorBoth(0, 0);
-	Anchor.Y.AnchorMin(0, Color.Anchor.Y.GetMinSize() + Color.AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
-
 	ChildInsert(Intensity);
 	ChildInsert(Color);
+
+	AnchorFitChildrenY();
 }
 
 

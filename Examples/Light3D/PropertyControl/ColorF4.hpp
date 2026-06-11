@@ -1,7 +1,7 @@
-#ifndef  OBJECT_CONTROL_COLOR_F_4_HPP
-# define OBJECT_CONTROL_COLOR_F_4_HPP
+#ifndef  PROPERTY_CONTROL_COLOR_F_4_HPP
+# define PROPERTY_CONTROL_COLOR_F_4_HPP
 
-# include "Control/GroupBox.hpp"
+# include "PropertyControl.hpp"
 # include "Control/Label.hpp"
 
 struct ColorF4;
@@ -10,7 +10,7 @@ namespace UI
 {
 namespace Control
 {
-struct ColorF4 : public GroupBox
+struct ColorF4 : public PropertyControl
 {
 	Label	R;
 	Label	G;
@@ -18,7 +18,7 @@ struct ColorF4 : public GroupBox
 	// A ?
 
 	~ColorF4();
-	ColorF4();
+	ColorF4(const char * name);
 
 	::ColorF4 * Object;
 	void	Change(::ColorF4 * obj);

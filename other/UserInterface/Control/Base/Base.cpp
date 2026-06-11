@@ -174,7 +174,29 @@ void UI::Control::Base::ChangeManager(UI::Manager & manager)
 	ChangeManager(&manager);
 }
 
+void UI::Control::Base::AnchorFitChildrenY()
+{
+	float y = 0.0f;
+	float m = 0.0f;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		if (Children[i] == nullptr) { continue; }
+		Base & control = *Children[i];
+		if (!control.IsVisible()) { continue; }
+		control.Anchor.Y.AnchorMin(y);
+		y = control.Anchor.Y.GetMinSize();
+		m = control.AnchorMargin.Max.Y;
+	}
+	Anchor.Y.SetSize(y + m + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
+	BoxWantUpdate();
 
+	Base * control = Parent;
+	while (control != nullptr)
+	{
+		control -> AnchorFitChildrenY();
+		control = control -> Parent;
+	}
+}
 
 
 

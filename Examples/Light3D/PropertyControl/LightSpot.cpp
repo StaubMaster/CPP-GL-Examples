@@ -1,4 +1,4 @@
-#include "ObjectControl/LightSpot.hpp"
+#include "PropertyControl/LightSpot.hpp"
 
 
 
@@ -7,24 +7,19 @@ UI::Control::LightSpot::~LightSpot()
 UI::Control::LightSpot::LightSpot()
 	: GroupBox()
 	, Base()
-	, Pos()
-	, Dir()
+	, Pos("Pos")
+	, Dir("Dir")
 	, Object(nullptr)
 {
 	Base.Anchor.X.AnchorBoth(0, 0);
 	Pos.Anchor.X.AnchorBoth(0, 0);
 	Dir.Anchor.X.AnchorBoth(0, 0);
 
-	Base.Anchor.Y.AnchorMin(0);
-	Pos.Anchor.Y.AnchorMin(Base.Anchor.Y.GetMinSize());
-	Dir.Anchor.Y.AnchorMin(Pos.Anchor.Y.GetMinSize());
-
-	Anchor.X.AnchorBoth(0, 0);
-	Anchor.Y.AnchorMin(0, Dir.Anchor.Y.GetMinSize() + Dir.AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
-
 	ChildInsert(Base);
 	ChildInsert(Pos);
 	ChildInsert(Dir);
+
+	AnchorFitChildrenY();
 }
 
 

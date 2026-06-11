@@ -131,7 +131,6 @@ class Base
 	VectorF2	AnchorNormal;
 	BoxF2		AnchorDist;
 	protected:
-	public: // made public to test fitting children. make a function for that
 	BoxF2		AnchorMargin;
 	BoxF2		AnchorBoarder;
 	BoxF2		AnchorPadding;
@@ -164,6 +163,10 @@ class Base
 	void	ChildInsert(Base * control);
 	void	ChangeManager(UI::Manager * manager);
 	void	ChangeManager(UI::Manager & manager);
+
+	// Automatic Sizing
+	public:
+	void	AnchorFitChildrenY();
 
 	// UpdateHandler that has referances to these functions
 

@@ -1,11 +1,11 @@
-#include "ObjectControl/EulerAngle3D.hpp"
+#include "PropertyControl/EulerAngle3D.hpp"
 
 
 
 UI::Control::EulerAngle3D::~EulerAngle3D()
 { }
-UI::Control::EulerAngle3D::EulerAngle3D()
-	: GroupBox()
+UI::Control::EulerAngle3D::EulerAngle3D(const char * name)
+	: PropertyControl(name)
 	, Z0()
 	, X1()
 	, Y2()
@@ -15,16 +15,11 @@ UI::Control::EulerAngle3D::EulerAngle3D()
 	X1.Anchor.X.AnchorBoth(0, 0);
 	Y2.Anchor.X.AnchorBoth(0, 0);
 
-	Z0.Anchor.Y.AnchorMin(0);
-	X1.Anchor.Y.AnchorMin(Z0.Anchor.Y.GetMinSize());
-	Y2.Anchor.Y.AnchorMin(X1.Anchor.Y.GetMinSize());
-
-	Anchor.X.AnchorBoth(0, 0);
-	Anchor.Y.AnchorMin(0, Y2.Anchor.Y.GetMinSize() + Y2.AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
-
 	ChildInsert(Z0);
 	ChildInsert(X1);
 	ChildInsert(Y2);
+
+	AnchorFitChildrenY();
 }
 
 

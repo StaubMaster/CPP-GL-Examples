@@ -5,11 +5,13 @@ FANCY_NAME := Light3D
 ################################################################
 
 FILES := \
-	ObjectControl/VectorF3.cpp \
-	ObjectControl/EulerAngle3D.cpp \
-	ObjectControl/ColorF4.cpp \
-	ObjectControl/LightBase.cpp \
-	ObjectControl/LightSpot.cpp \
+	PropertyControl/PropertyControl.cpp \
+	PropertyControl/VectorF3.cpp \
+	PropertyControl/EulerAngle3D.cpp \
+	PropertyControl/ColorF4.cpp \
+	PropertyControl/Trans3D.cpp \
+	PropertyControl/LightBase.cpp \
+	PropertyControl/LightSpot.cpp \
 	\
 	UI/PolyHedraObject.cpp \
 	UI/LightObject.cpp \

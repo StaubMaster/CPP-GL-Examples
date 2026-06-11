@@ -2,8 +2,8 @@
 # define UI_LIGHT_OBJECT_HPP
 
 # include "ControlsInclude.hpp"
-# include "ObjectControl/VectorF3.hpp"
-# include "ObjectControl/LightSpot.hpp"
+# include "PropertyControl/VectorF3.hpp"
+# include "PropertyControl/LightSpot.hpp"
 
 struct SpotLightEntry;
 

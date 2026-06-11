@@ -1,9 +1,9 @@
-#ifndef  OBJECT_CONTROL_LIGHT_SPOT_HPP
-# define OBJECT_CONTROL_LIGHT_SPOT_HPP
+#ifndef  PROPERTY_CONTROL_LIGHT_SPOT_HPP
+# define PROPERTY_CONTROL_LIGHT_SPOT_HPP
 
 # include "Control/GroupBox.hpp"
-# include "ObjectControl/LightBase.hpp"
-# include "ObjectControl/VectorF3.hpp"
+# include "PropertyControl/LightBase.hpp"
+# include "PropertyControl/VectorF3.hpp"
 
 struct LightSpot;
 

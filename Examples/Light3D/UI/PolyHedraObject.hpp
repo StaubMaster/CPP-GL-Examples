@@ -2,8 +2,7 @@
 # define UI_POLYHEDRA_OBJECT_HPP
 
 # include "ControlsInclude.hpp"
-# include "ObjectControl/VectorF3.hpp"
-# include "ObjectControl/EulerAngle3D.hpp"
+# include "PropertyControl/Trans3D.hpp"
 
 struct PolyHedraObject;
 
@@ -16,9 +15,7 @@ struct PolyHedraObject : public UI::Control::Form
 	UI::Control::Label		PalletFile;
 	UI::Control::Label		PalletSkinsCount;
 
-	UI::Control::GroupBox		Trans;
-	UI::Control::VectorF3		TransPos;
-	UI::Control::EulerAngle3D	TransRot;
+	UI::Control::Trans3D		Trans;
 
 	~PolyHedraObject();
 	PolyHedraObject();

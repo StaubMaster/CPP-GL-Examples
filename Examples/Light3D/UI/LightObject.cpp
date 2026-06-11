@@ -6,25 +6,22 @@ UI::SpotLightEntry::~SpotLightEntry()
 { }
 UI::SpotLightEntry::SpotLightEntry()
 	: UI::Control::Form()
-	, Position()
-	, Target()
+	, Position("Position")
+	, Target("Target")
 	, Light()
 {
-	Position.Anchor.X.AnchorBoth(0, 0);
-	Position.Anchor.Y.AnchorMin(0);
-
-	Target.Anchor.X.AnchorBoth(0, 0);
-	Target.Anchor.Y.AnchorMin(Position.Anchor.Y.GetMinSize());
-
-	Light.Anchor.X.AnchorBoth(0, 0);
-	Light.Anchor.Y.AnchorMin(Target.Anchor.Y.GetMinSize());
-
 	Anchor.X.AnchorMin(0, 400);
-	Anchor.Y.AnchorMin(0, Light.Anchor.Y.GetMinSize() + Light.AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
+	Anchor.Y.AnchorMin(0, 0);
+
+	Position.Anchor.X.AnchorBoth(0, 0);
+	Target.Anchor.X.AnchorBoth(0, 0);
+	Light.Anchor.X.AnchorBoth(0, 0);
 
 	ChildInsert(Position);
 	ChildInsert(Target);
 	ChildInsert(Light);
+
+	AnchorFitChildrenY();
 
 	Change(nullptr);
 }
