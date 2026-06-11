@@ -20,6 +20,7 @@ struct Trans3D : public PropertyControl
 	Trans3D(const char * name);
 
 	::Trans3D *	Object;
+	void	Update();
 	void	Change(::Trans3D * obj);
 
 };

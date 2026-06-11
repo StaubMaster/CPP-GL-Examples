@@ -1,18 +1,18 @@
-#include "UI/PolyHedraObject.hpp"
+#include "SceneObject/UI/PolyHedraObject.hpp"
 
 
 
-UI::PolyHedraObject::~PolyHedraObject()
+UI::Control::PolyHedraObject::~PolyHedraObject()
 { }
-UI::PolyHedraObject::PolyHedraObject()
-	: UI::Control::Form()
+UI::Control::PolyHedraObject::PolyHedraObject()
+	: GroupBox()
 	, Pallet()
 	, PalletName()
 	, PalletFile()
 	, PalletSkinsCount()
 	, Trans("Trans")
 {
-	Anchor.X.AnchorMin(0, 400);
+	Anchor.X.AnchorBoth(0, 0);
 	Anchor.Y.AnchorMin(0, 0);
 
 	Pallet.Anchor.X.AnchorBoth(0, 0);
@@ -42,25 +42,33 @@ UI::PolyHedraObject::PolyHedraObject()
 #include "General/UnitToString.hpp"
 #include <sstream>
 
-void UI::PolyHedraObject::Change(::PolyHedraObject * obj)
+void UI::Control::PolyHedraObject::Update()
 {
-	Object = obj;
 	if (Object != nullptr)
 	{
 		std::stringstream ss;
-
 		ss.str(std::string()); ss << "Name:" << (Object -> Pallet() -> Name); PalletName.SetText(ss.str());
 		ss.str(std::string()); ss << "File:" << (Object -> Pallet() -> File.Path); PalletFile.SetText(ss.str());
 		ss.str(std::string()); ss << "Skins :" << (Object -> Pallet() -> Skins.Count()); PalletSkinsCount.SetText(ss.str());
-
-		Trans.Change(&(Object -> Trans()));
 	}
 	else
 	{
 		PalletName.SetText("Name:");
 		PalletFile.SetText("File:");
 		PalletSkinsCount.SetText("Skins:");
+	}
+	Trans.Update();
+}
 
+void UI::Control::PolyHedraObject::Change(::PolyHedraObject * obj)
+{
+	Object = obj;
+	if (Object != nullptr)
+	{
+		Trans.Change(&(Object -> Trans()));
+	}
+	else
+	{
 		Trans.Change(nullptr);
 	}
 }

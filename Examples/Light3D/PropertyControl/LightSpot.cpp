@@ -24,6 +24,13 @@ UI::Control::LightSpot::LightSpot(const char * name)
 
 
 
+void UI::Control::LightSpot::Update()
+{
+	Base.Update();
+	Pos.Update();
+	Dir.Update();
+}
+
 void UI::Control::LightSpot::Change(::LightSpot * obj)
 {
 	Object = obj;

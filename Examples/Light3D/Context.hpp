@@ -45,8 +45,6 @@
 
 // User Interface
 #include "UIManager.hpp"
-#include "UI/PolyHedraObject.hpp"
-#include "UI/SpotLightEntry.hpp"
 
 
 
@@ -67,30 +65,16 @@ SpotLightEntry
 	has a pointer to a LightSpot
 	has 2 PolyHedraObjects
 */
-struct SceneObject
-{
-	virtual ~SceneObject();
-	SceneObject();
-	virtual void	Update() = 0;
-	virtual Ray3D_Hit	Hit(const Ray3D & ray) const = 0;
-};
-struct SceneObject_PolyHedraObject : public SceneObject
-{
-	PolyHedraObject		Object;
-	~SceneObject_PolyHedraObject();
-	SceneObject_PolyHedraObject();
-	SceneObject_PolyHedraObject(const PolyHedraObject & obj);
-	void	Update() override;
-	Ray3D_Hit	Hit(const Ray3D & ray) const override;
-};
-struct SceneObject_SpotLightEntry : public SceneObject
-{
-	SpotLightEntry		Object;
-	~SceneObject_SpotLightEntry();
-	SceneObject_SpotLightEntry();
-	void	Update() override;
-	Ray3D_Hit	Hit(const Ray3D & ray) const override;
-};
+
+// SceneObject
+# include "SceneObject/SceneObject.hpp"
+# include "SceneObject/PolyHedraObject.hpp"
+# include "SceneObject/SpotLightEntry.hpp"
+
+// SceneObject UI
+#include "SceneObject/UI/SceneObject.hpp"
+#include "SceneObject/UI/PolyHedraObject.hpp"
+#include "SceneObject/UI/SpotLightEntry.hpp"
 
 
 
@@ -101,8 +85,7 @@ View3D	view;
 ::PolyHedraManager		PolyHedraManager;
 
 UI::Manager				UIManager;
-UI::PolyHedraObject		UIPolyHedraObject;
-UI::SpotLightEntry		UISpotLightEntry;
+SceneObjectUI			UISceneObject;
 
 Container::Binary<SceneObject*>		Objects;
 

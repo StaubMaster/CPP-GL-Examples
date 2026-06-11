@@ -1,11 +1,11 @@
-#include "UI/SpotLightEntry.hpp"
+#include "SceneObject/UI/SpotLightEntry.hpp"
 
 
 
-UI::SpotLightEntry::~SpotLightEntry()
+UI::Control::SpotLightEntry::~SpotLightEntry()
 { }
-UI::SpotLightEntry::SpotLightEntry()
-	: UI::Control::Form()
+UI::Control::SpotLightEntry::SpotLightEntry()
+	: GroupBox()
 	, Origin("Origin")
 	, Target("Target")
 	, Light("Light")
@@ -30,7 +30,13 @@ UI::SpotLightEntry::SpotLightEntry()
 
 #include "../SpotLightEntry.hpp"
 
-void UI::SpotLightEntry::Change(::SpotLightEntry * obj)
+void UI::Control::SpotLightEntry::Update()
+{
+	Target.Update();
+	Light.Update();
+}
+
+void UI::Control::SpotLightEntry::Change(::SpotLightEntry * obj)
 {
 	Object = obj;
 	if (Object != nullptr)
@@ -46,5 +52,3 @@ void UI::SpotLightEntry::Change(::SpotLightEntry * obj)
 		Light.Change(nullptr);
 	}
 }
-
-

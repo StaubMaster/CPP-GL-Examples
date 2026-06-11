@@ -27,9 +27,8 @@ UI::Control::EulerAngle3D::EulerAngle3D(const char * name)
 #include "General/UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::EulerAngle3D::Change(::EulerAngle3D * obj)
+void UI::Control::EulerAngle3D::Update()
 {
-	Object = obj;
 	if (Object != nullptr)
 	{
 		std::stringstream ss;
@@ -43,4 +42,9 @@ void UI::Control::EulerAngle3D::Change(::EulerAngle3D * obj)
 		X1.SetText("X1:");
 		Y2.SetText("Y2:");
 	}
+}
+
+void UI::Control::EulerAngle3D::Change(::EulerAngle3D * obj)
+{
+	Object = obj;
 }

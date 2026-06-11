@@ -6,52 +6,13 @@
 
 
 
-SceneObject::~SceneObject()
-{ }
-SceneObject::SceneObject()
-{ }
-
-SceneObject_PolyHedraObject::~SceneObject_PolyHedraObject()
-{ }
-SceneObject_PolyHedraObject::SceneObject_PolyHedraObject()
-{ }
-SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(const PolyHedraObject & obj)
-	: Object(obj)
-{ }
-void SceneObject_PolyHedraObject::Update()
-{ }
-Ray3D_Hit SceneObject_PolyHedraObject::Hit(const Ray3D & ray) const
-{
-	Ray3D_Hit hit = Ray3D_Hit::IntersectHit(ray, Object);
-	hit.Index[0] = 0;
-	return hit;
-}
-
-SceneObject_SpotLightEntry::~SceneObject_SpotLightEntry()
-{ }
-SceneObject_SpotLightEntry::SceneObject_SpotLightEntry()
-{ }
-void SceneObject_SpotLightEntry::Update()
-{
-	Object.Update();
-}
-Ray3D_Hit SceneObject_SpotLightEntry::Hit(const Ray3D & ray) const
-{
-	Ray3D_Hit hit = Ray3D_Hit::IntersectHit(ray, Object);
-	hit.Index[0] = 1;
-	return hit;
-}
-
-
-
 Light3DContext::~Light3DContext()
 { }
 Light3DContext::Light3DContext()
 	: ContextBase()
 	, PolyHedraManager()
 	, UIManager()
-	, UIPolyHedraObject()
-	, UISpotLightEntry()
+	, UISceneObject()
 	, LightShaderLayout(Light_Spot_Limit)
 {
 	PolyHedraManager.MakeCurrent();
@@ -285,10 +246,8 @@ void Light3DContext::Make()
 	Fancify();
 	FancyLights();
 
-	UIManager.WindowControl.ChildInsert(UIPolyHedraObject);
-	UIManager.WindowControl.ChildInsert(UISpotLightEntry);
-	UIPolyHedraObject.Hide();
-	UISpotLightEntry.Hide();
+	UIManager.WindowControl.ChildInsert(UISceneObject);
+	UISceneObject.Hide();
 
 	std::cout << "Make 1\n";
 }
@@ -453,41 +412,28 @@ void Light3DContext::ViewRay()
 
 	if (UIManager.Hovering == &UIManager.WindowControl && window.MouseManager[MouseButtons::MouseL] == State::Press)
 	{
-		UIPolyHedraObject.Hide();
-		UISpotLightEntry.Hide();
 		if (hit.Is())
 		{
 			SceneObject_Selected = Objects[hit.Index[2]];
-			{
-				SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(SceneObject_Selected);
-				if (obj != nullptr)
-				{
-					UIPolyHedraObject.Show();
-				}
-			}
-			{
-				SceneObject_SpotLightEntry * obj = dynamic_cast<SceneObject_SpotLightEntry*>(SceneObject_Selected);
-				if (obj != nullptr)
-				{
-					UISpotLightEntry.Show();
-				}
-			}
+			UISceneObject.Show();
 		}
 		else
 		{
 			SceneObject_Selected = nullptr;
+			UISceneObject.Hide();
 		}
+		UISceneObject.Change(SceneObject_Selected);
 	}
 
 	if (SceneObject_Selected != nullptr)
 	{
+		UISceneObject.Update();
 		{
 			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(SceneObject_Selected);
 			if (obj != nullptr)
 			{
-				UIPolyHedraObject.Change(&(obj -> Object));
 				{
-					PolyHedraObject display_obj;
+					PolyHedraObject display_obj = obj -> Object;
 					display_obj.HideFull();
 					display_obj.ShowWire();
 				}
@@ -497,7 +443,6 @@ void Light3DContext::ViewRay()
 			SceneObject_SpotLightEntry * obj = dynamic_cast<SceneObject_SpotLightEntry*>(SceneObject_Selected);
 			if (obj != nullptr)
 			{
-				UISpotLightEntry.Change(&(obj -> Object));
 				{
 					PolyHedraObject display_obj(Cube);
 					display_obj.Trans().Position = obj -> Object.Origin;

@@ -39,9 +39,8 @@ UI::Control::ColorF4::ColorF4(const char * name)
 #include "General/UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::ColorF4::Change(::ColorF4 * obj)
+void UI::Control::ColorF4::Update()
 {
-	Object = obj;
 	if (Object != nullptr)
 	{
 		R.SetValueX(Object -> R);
@@ -54,6 +53,10 @@ void UI::Control::ColorF4::Change(::ColorF4 * obj)
 		G.SetText("G:");
 		B.SetText("B:");
 	}
+}
+void UI::Control::ColorF4::Change(::ColorF4 * obj)
+{
+	Object = obj;
 }
 
 

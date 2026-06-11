@@ -27,9 +27,8 @@ UI::Control::VectorF3::VectorF3(const char * name)
 #include "General/UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::VectorF3::Change(::VectorF3 * obj)
+void UI::Control::VectorF3::Update()
 {
-	Object = obj;
 	if (Object != nullptr)
 	{
 		std::stringstream ss;
@@ -43,4 +42,9 @@ void UI::Control::VectorF3::Change(::VectorF3 * obj)
 		Y.SetText("Y:");
 		Z.SetText("Z:");
 	}
+}
+
+void UI::Control::VectorF3::Change(::VectorF3 * obj)
+{
+	Object = obj;
 }

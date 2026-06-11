@@ -28,17 +28,28 @@ UI::Control::LightBase::LightBase(const char * name)
 #include "General/UnitToString.hpp"
 #include <sstream>
 
+void UI::Control::LightBase::Update()
+{
+	if (Object != nullptr)
+	{
+		Intensity.SetValueX(Object -> Intensity);
+	}
+	else
+	{
+		Intensity.SetText("Intensity:");
+	}
+	Color.Update();
+}
+
 void UI::Control::LightBase::Change(::LightBase * obj)
 {
 	Object = obj;
 	if (Object != nullptr)
 	{
-		Intensity.SetValueX(Object -> Intensity);
 		Color.Change(&(Object -> Color));
 	}
 	else
 	{
-		Intensity.SetText("Intensity:");
 		Color.Change(nullptr);
 	}
 }

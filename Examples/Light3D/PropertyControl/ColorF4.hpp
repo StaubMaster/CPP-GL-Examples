@@ -21,6 +21,7 @@ struct ColorF4 : public PropertyControl
 	ColorF4(const char * name);
 
 	::ColorF4 * Object;
+	void	Update();
 	void	Change(::ColorF4 * obj);
 
 	void	RFunc(float val);

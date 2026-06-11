@@ -21,6 +21,12 @@ UI::Control::Trans3D::Trans3D(const char * name)
 
 
 
+void UI::Control::Trans3D::Update()
+{
+	Position.Update();
+	Rotation.Update();
+}
+
 void UI::Control::Trans3D::Change(::Trans3D * obj)
 {
 	Object = obj;
