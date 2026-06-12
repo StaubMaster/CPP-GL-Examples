@@ -15,6 +15,8 @@ struct SceneObject_LightAmbient : public SceneObject
 
 	void	Update() override;
 
+	void	ShowWire() override;
+
 	Ray3D_Hit	Hit(const Ray3D & ray) const override;
 };
 

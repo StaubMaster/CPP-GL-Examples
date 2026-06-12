@@ -1,0 +1,63 @@
+
+make a Program
+
+./PolyHedraDisplay.exe file.polyhedra
+
+should display the PolyHedra
+should start and show any error that might occured while parsing
+should show information
+{
+	Name
+	File
+	Skins
+} togglable
+
+
+
+Display ?
+{
+	int the middle
+	maybe rotating ?
+	with a refernace Grid ?
+}
+
+MainControl
+{
+	Toggle	InfoControl
+	Toggle	ErrorControl
+	Toggle	GridControl
+
+	Default	View
+	Toggle	ViewMoveFlat
+	Toggle	ViewSpinFlat
+	Toggle	DisplayCenter
+}
+
+GridControl
+{
+	None
+	Show Axis
+	Show Axis Grid
+	Show Axis in Color
+	Show Axis Grid in Color
+}
+
+
+
+View
+{
+	Tab to to regular movement
+	CenterView
+	{
+		Scrolling	changes Distance from Center
+		Dragging	spins around Center
+		Keys		moves Center
+	}
+}
+
+Light
+{
+	ColorWindow
+	LightAmbient
+	LightSolar
+}

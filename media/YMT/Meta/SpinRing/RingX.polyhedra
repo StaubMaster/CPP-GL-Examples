@@ -1,0 +1,91 @@
+
+ math: in_0 = 0,00
+ math: in_1 = 0,50
+ math: in_2 = 0,87
+ math: in_3 = 1,00
+ math: ex_0 = 0,00
+ math: ex_1 = 0,60
+ math: ex_2 = 1,04
+ math: ex_3 = 1,20
+
+ math: in_0 = 0,000
+ math: in_1 = 0,495
+ math: in_2 = 0,860
+ math: in_3 = 0,990
+ math: ex_0 = 0,000
+ math: ex_1 = 0,505
+ math: ex_2 = 0,879
+ math: ex_3 = 1,010
+
+math: in_0 = 0,000
+math: in_1 = 0,475
+math: in_2 = 0,827
+math: in_3 = 0,950
+math: ex_0 = 0,000
+math: ex_1 = 0,525
+math: ex_2 = 0,914
+math: ex_3 = 1,050
+
+math: thick = 0,05
+
+vertex: -in_0 : -thick : -in_3
+vertex: -in_1 : -thick : -in_2
+vertex: -in_2 : -thick : -in_1
+vertex: -in_3 : -thick : +in_0
+vertex: -in_2 : -thick : +in_1
+vertex: -in_1 : -thick : +in_2
+vertex: +in_0 : -thick : +in_3
+vertex: +in_1 : -thick : +in_2
+vertex: +in_2 : -thick : +in_1
+vertex: +in_3 : -thick : -in_0
+vertex: +in_2 : -thick : -in_1
+vertex: +in_1 : -thick : -in_2
+
+vertex: -ex_0 : -thick : -ex_3
+vertex: -ex_1 : -thick : -ex_2
+vertex: -ex_2 : -thick : -ex_1
+vertex: -ex_3 : -thick : +ex_0
+vertex: -ex_2 : -thick : +ex_1
+vertex: -ex_1 : -thick : +ex_2
+vertex: +ex_0 : -thick : +1,50
+vertex: +ex_1 : -thick : +ex_2
+vertex: +ex_2 : -thick : +ex_1
+vertex: +ex_3 : -thick : -ex_0
+vertex: +ex_2 : -thick : -ex_1
+vertex: +ex_1 : -thick : -ex_2
+
+vertex: -ex_0 : +thick : -ex_3
+vertex: -ex_1 : +thick : -ex_2
+vertex: -ex_2 : +thick : -ex_1
+vertex: -ex_3 : +thick : +ex_0
+vertex: -ex_2 : +thick : +ex_1
+vertex: -ex_1 : +thick : +ex_2
+vertex: +ex_0 : +thick : +1,50
+vertex: +ex_1 : +thick : +ex_2
+vertex: +ex_2 : +thick : +ex_1
+vertex: +ex_3 : +thick : -ex_0
+vertex: +ex_2 : +thick : -ex_1
+vertex: +ex_1 : +thick : -ex_2
+
+vertex: -in_0 : +thick : -in_3
+vertex: -in_1 : +thick : -in_2
+vertex: -in_2 : +thick : -in_1
+vertex: -in_3 : +thick : +in_0
+vertex: -in_2 : +thick : +in_1
+vertex: -in_1 : +thick : +in_2
+vertex: +in_0 : +thick : +in_3
+vertex: +in_1 : +thick : +in_2
+vertex: +in_2 : +thick : +in_1
+vertex: +in_3 : +thick : -in_0
+vertex: +in_2 : +thick : -in_1
+vertex: +in_1 : +thick : -in_2
+
+belt1:+00:+01:+02:+03:+04:+05:+06:+07:+08:+09:+10:+11:+12:+13:+14:+15:+16:+17:+18:+19:+20:+21:+22:+23
+index:+12:+00
+belt1:+00:+01:+02:+03:+04:+05:+06:+07:+08:+09:+10:+11:+12:+13:+14:+15:+16:+17:+18:+19:+20:+21:+22:+23
+index:+12:+00
+belt1:+00:+01:+02:+03:+04:+05:+06:+07:+08:+09:+10:+11:+12:+13:+14:+15:+16:+17:+18:+19:+20:+21:+22:+23
+index:+00:+00
+belt1:+12:+13:+14:+15:+16:+17:+18:+19:+20:+21:+22:+23:00:01:02:03:04:05:06:07:08:09:10:11
+
+colorN:+00:+95:000:255:000

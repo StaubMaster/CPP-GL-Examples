@@ -1,27 +1,13 @@
 
-UI
+Move Object
+	copy Axis mover thing from my old C# Editor
 
-Select Objects
-{
-	Object Info with UI
-	change Object Propertys with UI
-	{
-		Position
-		Rotation
-		Light stuff
-	}
-	Remove Object
-}
+Spin Object
+	also from C# Editor
 
-allow Inserting/Removing of Objects
-also Lights
+Remove Object
+	add a Button to SceneObject UI
 
-probably just have a UI that has a List of stuff to Place
-
-
-
-have a List of all Objects
-sort List by Type
-what if List gets long
-UI ScrollBar
-make Controls not draw outside of their Parents
+Insert Object
+	make a Key Toggle a List of Buttons that make SceneObjects
+	at the View Position

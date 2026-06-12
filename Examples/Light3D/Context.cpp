@@ -360,54 +360,10 @@ void Light3DContext::ViewRay()
 
 	if (UIManager.Hovering == &UIManager.WindowControl && hit.Is())
 	{
-		SceneObject * base = Objects[hit.Index[2]];
-		if (base != nullptr)
+		SceneObject * obj = Objects[hit.Index[2]];
+		if (obj != nullptr)
 		{
-			{
-				SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(base);
-				if (obj != nullptr)
-				{
-					PolyHedraObject display_obj = obj -> Object;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-			}
-			{
-				SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(base);
-				if (obj != nullptr)
-				{
-					PolyHedraObject display_obj = obj -> Object;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-			}
-			{
-				SceneObject_LightSolar * obj = dynamic_cast<SceneObject_LightSolar*>(base);
-				if (obj != nullptr)
-				{
-					PolyHedraObject display_obj = obj -> Object;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-			}
-			{
-				SceneObject_LightSpot * obj = dynamic_cast<SceneObject_LightSpot*>(base);
-				if (obj != nullptr)
-				{
-					//if (hit.Index[1] == 0)
-					{
-						PolyHedraObject display_obj = obj -> Object0;
-						display_obj.HideFull();
-						display_obj.ShowWire();
-					}
-					//else if (hit.Index[1] == 1)
-					{
-						PolyHedraObject display_obj = obj -> Object1;
-						display_obj.HideFull();
-						display_obj.ShowWire();
-					}
-				}
-			}
+			obj -> ShowWire();
 		}
 	}
 
@@ -428,52 +384,8 @@ void Light3DContext::ViewRay()
 
 	if (SceneObject_Selected != nullptr)
 	{
+		SceneObject_Selected -> ShowWire();
 		UISceneObject.Update();
-		{
-			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(SceneObject_Selected);
-			if (obj != nullptr)
-			{
-				{
-					PolyHedraObject display_obj = obj -> Object;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-			}
-		}
-			{
-				SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(SceneObject_Selected);
-				if (obj != nullptr)
-				{
-					PolyHedraObject display_obj = obj -> Object;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-			}
-			{
-				SceneObject_LightSolar * obj = dynamic_cast<SceneObject_LightSolar*>(SceneObject_Selected);
-				if (obj != nullptr)
-				{
-					PolyHedraObject display_obj = obj -> Object;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-			}
-		{
-			SceneObject_LightSpot * obj = dynamic_cast<SceneObject_LightSpot*>(SceneObject_Selected);
-			if (obj != nullptr)
-			{
-				{
-					PolyHedraObject display_obj = obj -> Object0;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-				{
-					PolyHedraObject display_obj = obj -> Object1;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-			}
-		}
 	}
 }
 

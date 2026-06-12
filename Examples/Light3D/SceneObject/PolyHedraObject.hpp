@@ -7,10 +7,15 @@
 struct SceneObject_PolyHedraObject : public SceneObject
 {
 	PolyHedraObject		Object;
+
 	~SceneObject_PolyHedraObject();
 	SceneObject_PolyHedraObject();
 	SceneObject_PolyHedraObject(const PolyHedraObject & obj);
+
 	void	Update() override;
+
+	void	ShowWire() override;
+
 	Ray3D_Hit	Hit(const Ray3D & ray) const override;
 };
 

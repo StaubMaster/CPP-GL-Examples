@@ -17,6 +17,15 @@ void SceneObject_PolyHedraObject::Update()
 
 
 
+void SceneObject_PolyHedraObject::ShowWire()
+{
+	PolyHedraObject obj = Object;
+	obj.HideFull();
+	obj.ShowWire();
+}
+
+
+
 Ray3D_Hit SceneObject_PolyHedraObject::Hit(const Ray3D & ray) const
 {
 	Ray3D_Hit hit = Ray3D_Hit::IntersectHit(ray, Object);

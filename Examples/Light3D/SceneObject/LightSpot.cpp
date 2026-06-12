@@ -14,6 +14,19 @@ void SceneObject_LightSpot::Update()
 
 
 
+void SceneObject_LightSpot::ShowWire()
+{
+	PolyHedraObject obj0 = Object0;
+	obj0.HideFull();
+	obj0.ShowWire();
+
+	PolyHedraObject obj1 = Object1;
+	obj1.HideFull();
+	obj1.ShowWire();
+}
+
+
+
 Ray3D_Hit SceneObject_LightSpot::Hit(const Ray3D & ray) const
 {
 	Ray3D_Hit hit_return;
