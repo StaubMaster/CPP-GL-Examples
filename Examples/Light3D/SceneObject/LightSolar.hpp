@@ -7,11 +7,14 @@
 
 struct SceneObject_LightSolar : public SceneObject
 {
+	LightSolar *		Light;
 	PolyHedraObject		Object;
-	LightSolar *			Light;
+
 	~SceneObject_LightSolar();
 	SceneObject_LightSolar();
+
 	void	Update() override;
+
 	Ray3D_Hit	Hit(const Ray3D & ray) const override;
 };
 

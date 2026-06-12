@@ -5,6 +5,7 @@
 # include "PropertyControl/LightBase.hpp"
 # include "PropertyControl/VectorF3.hpp"
 
+// name conflicts. rename LightSolar to Light
 struct LightSolar;
 
 namespace UI

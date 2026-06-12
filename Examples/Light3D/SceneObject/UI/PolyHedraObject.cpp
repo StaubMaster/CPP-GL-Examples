@@ -39,6 +39,7 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 
 #include "PolyHedra/Object.hpp"
 #include "PolyHedra/PolyHedra.hpp"
+#include "SceneObject/PolyHedraObject.hpp"
 #include "General/UnitToString.hpp"
 #include <sstream>
 
@@ -60,15 +61,21 @@ void UI::Control::PolyHedraObject::Update()
 	Trans.Update();
 }
 
-void UI::Control::PolyHedraObject::Change(::PolyHedraObject * obj)
+void UI::Control::PolyHedraObject::Change(::SceneObject_PolyHedraObject * obj)
 {
-	Object = obj;
+	if (obj != nullptr)
+	{ Object = &(obj -> Object); }
+	else
+	{ Object = nullptr; }
+
 	if (Object != nullptr)
 	{
+		Show();
 		Trans.Change(&(Object -> Trans()));
 	}
 	else
 	{
+		Hide();
 		Trans.Change(nullptr);
 	}
 }

@@ -9,6 +9,7 @@ SceneObjectUI::SceneObjectUI()
 	: Form()
 	, LightAmbient("LightAmbient")
 	, LightSolar("LightSolar")
+	, LightSpot("LightSpot")
 {
 	Anchor.X.AnchorMin(0, 400);
 	Anchor.Y.AnchorMin(0, 0);
@@ -16,17 +17,17 @@ SceneObjectUI::SceneObjectUI()
 	PolyHedraObject.Anchor.X.AnchorBoth(0, 0);
 	LightAmbient.Anchor.X.AnchorBoth(0, 0);
 	LightSolar.Anchor.X.AnchorBoth(0, 0);
-	SpotLightEntry.Anchor.X.AnchorBoth(0, 0);
+	LightSpot.Anchor.X.AnchorBoth(0, 0);
 
 	PolyHedraObject.Hide();
 	LightAmbient.Hide();
 	LightSolar.Hide();
-	SpotLightEntry.Hide();
+	LightSpot.Hide();
 
 	ChildInsert(PolyHedraObject);
 	ChildInsert(LightAmbient);
 	ChildInsert(LightSolar);
-	ChildInsert(SpotLightEntry);
+	ChildInsert(LightSpot);
 
 	AnchorFitChildrenY();
 }
@@ -36,31 +37,23 @@ SceneObjectUI::SceneObjectUI()
 #include "SceneObject/PolyHedraObject.hpp"
 #include "SceneObject/LightAmbient.hpp"
 #include "SceneObject/LightSolar.hpp"
-#include "SceneObject/SpotLightEntry.hpp"
+#include "SceneObject/LightSpot.hpp"
 
 void SceneObjectUI::Change(::SceneObject * obj)
 {
 	Object = obj;
 	if (Object == nullptr) { return; }
 
-	PolyHedraObject.Hide();
+	PolyHedraObject.Change(dynamic_cast<SceneObject_PolyHedraObject*>(obj));
+
 	LightAmbient.Hide();
 	LightSolar.Hide();
-	SpotLightEntry.Hide();
+	LightSpot.Hide();
 
-	PolyHedraObject.Change(nullptr);
 	LightAmbient.Change(nullptr);
 	LightSolar.Change(nullptr);
-	SpotLightEntry.Change(nullptr);
+	LightSpot.Change(nullptr);
 
-	{
-		SceneObject_PolyHedraObject * obj_ = dynamic_cast<SceneObject_PolyHedraObject*>(obj);
-		if (obj_ != nullptr)
-		{
-			PolyHedraObject.Show();
-			PolyHedraObject.Change(&(obj_ -> Object));
-		}
-	}
 	{
 		SceneObject_LightAmbient * obj_ = dynamic_cast<SceneObject_LightAmbient*>(obj);
 		if (obj_ != nullptr)
@@ -78,13 +71,14 @@ void SceneObjectUI::Change(::SceneObject * obj)
 		}
 	}
 	{
-		SceneObject_SpotLightEntry * obj_ = dynamic_cast<SceneObject_SpotLightEntry*>(obj);
+		SceneObject_LightSpot * obj_ = dynamic_cast<SceneObject_LightSpot*>(obj);
 		if (obj_ != nullptr)
 		{
-			SpotLightEntry.Show();
-			SpotLightEntry.Change(&(obj_ -> Object));
+			LightSpot.Show();
+			LightSpot.Change((obj_ -> Light));
 		}
 	}
+
 	AnchorFitChildrenY();
 }
 void SceneObjectUI::Update()
@@ -92,5 +86,5 @@ void SceneObjectUI::Update()
 	PolyHedraObject.Update();
 	LightAmbient.Update();
 	LightSolar.Update();
-	SpotLightEntry.Update();
+	LightSpot.Update();
 }

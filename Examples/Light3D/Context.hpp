@@ -41,7 +41,6 @@
 
 // 
 #include "LightShaderLayout.hpp"
-#include "SpotLightEntry.hpp"
 
 // User Interface
 #include "UIManager.hpp"
@@ -53,7 +52,7 @@
 #include "SceneObject/PolyHedraObject.hpp"
 #include "SceneObject/LightAmbient.hpp"
 #include "SceneObject/LightSolar.hpp"
-#include "SceneObject/SpotLightEntry.hpp"
+#include "SceneObject/LightSpot.hpp"
 #include "SceneObject/UI/SceneObject.hpp"
 
 
@@ -80,20 +79,18 @@ SceneObject_PolyHedraObject		CenterCube;
 
 
 
-LightBase Light_Ambient;
-SceneObject_LightAmbient LightAmbientObject;
+LightBase		Light_Ambient;
+LightSolar		Light_Solar;
 
-LightSolar Light_Solar;
-SceneObject_LightSolar LightSolarObject;
+static const unsigned int		Light_Spot_Limit = 4;
+unsigned int			Light_Spot_Count;
+LightSpot				Light_Spot_Array[Light_Spot_Limit];
 
-#define Light_Spot_Limit 4
-LightSpot * Light_Spot_Array;
-SceneObject_SpotLightEntry * Light_Spot_Entry_Array;
+SceneObject_LightAmbient	LightAmbientObject;
+SceneObject_LightSolar		LightSolarObject;
+SceneObject_LightSpot		LightSpotObjects[Light_Spot_Limit];
 
-unsigned int Light_Spot_Count;
 
-void LightsInit();
-void LightsFree();
 
 ::Shader::Base			LightShader;
 ::LightShaderLayout		LightShaderLayout;
@@ -106,6 +103,7 @@ void	GraphicsDelete();
 
 
 
+void	LightsMake();
 void	RandomCubes();
 void	FancyLights();
 void	Fancify();

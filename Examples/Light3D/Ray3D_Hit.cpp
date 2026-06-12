@@ -59,7 +59,6 @@
 #include "ValueType/Trans3D.hpp"
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Object.hpp"
-#include "SpotLightEntry.hpp"
 
 Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c)
 {
@@ -135,33 +134,6 @@ Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const Container::Array<Poly
 	for (unsigned int i = 0; i < objects.Length(); i++)
 	{
 		Ray3D_Hit hit = IntersectHit(ray, objects[i]);
-		hit.Index[2] = i;
-		hit_return.Consider(hit);
-	}
-	return hit_return;
-}
-Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const SpotLightEntry & light)
-{
-	Ray3D_Hit hit_return;
-	Ray3D_Hit hit;
-
-	hit = IntersectHit(ray, light.EntryLight);
-	hit.Index[1] = 0;
-	hit_return.Consider(hit);
-
-	hit = IntersectHit(ray, light.EntryHolder);
-	hit.Index[1] = 1;
-	hit_return.Consider(hit);
-
-	return hit_return;
-}
-Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const SpotLightEntry * lights, unsigned int count)
-{
-	Ray3D_Hit hit_return;
-	for (unsigned int i = 0; i < count; i++)
-	{
-		Ray3D_Hit hit;
-		hit = IntersectHit(ray, lights[i]);
 		hit.Index[2] = i;
 		hit_return.Consider(hit);
 	}

@@ -15,16 +15,14 @@ FILES := \
 	PropertyControl/LightSpot.cpp \
 	\
 	LightShaderLayout.cpp \
-	SpotLightEntry.cpp \
 	\
 	SceneObject/SceneObject.cpp \
 	SceneObject/PolyHedraObject.cpp \
 	SceneObject/LightAmbient.cpp \
 	SceneObject/LightSolar.cpp \
-	SceneObject/SpotLightEntry.cpp \
+	SceneObject/LightSpot.cpp \
 	SceneObject/UI/SceneObject.cpp \
 	SceneObject/UI/PolyHedraObject.cpp \
-	SceneObject/UI/SpotLightEntry.cpp \
 	\
 	Ray3D_Hit.cpp \
 	\

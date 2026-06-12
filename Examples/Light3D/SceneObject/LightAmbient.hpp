@@ -7,11 +7,14 @@
 
 struct SceneObject_LightAmbient : public SceneObject
 {
-	PolyHedraObject		Object;
 	LightBase *			Light;
+	PolyHedraObject		Object;
+
 	~SceneObject_LightAmbient();
 	SceneObject_LightAmbient();
+
 	void	Update() override;
+
 	Ray3D_Hit	Hit(const Ray3D & ray) const override;
 };
 

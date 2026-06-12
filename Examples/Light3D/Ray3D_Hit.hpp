@@ -8,7 +8,6 @@ struct PolyHedra;
 struct Trans3D;
 struct PolyHedraObject;
 struct PolyHedra;
-struct SpotLightEntry;
 
 struct Ray3D_Hit
 {
@@ -38,8 +37,6 @@ struct Ray3D_Hit
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans);
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedraObject & object);
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const Container::Array<PolyHedraObject> & objects);
-	static Ray3D_Hit IntersectHit(const Ray3D & ray, const SpotLightEntry & light);
-	static Ray3D_Hit IntersectHit(const Ray3D & ray, const SpotLightEntry * lights, unsigned int count);
 };
 
 #endif

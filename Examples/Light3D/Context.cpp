@@ -20,48 +20,6 @@ Light3DContext::Light3DContext()
 
 
 
-void Light3DContext::LightsInit()
-{
-	Light_Ambient = LightBase(0.1f, ColorF4(1.0f, 1.0f, 1.0f));
-	LightAmbientObject.Light = &Light_Ambient;
-	Objects.Insert(&LightAmbientObject);
-
-	Light_Solar = LightSolar(0.8f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(+1, -3, +2).normalize());
-	LightSolarObject.Light = &Light_Solar;
-	Objects.Insert(&LightSolarObject);
-
-	Light_Spot_Array = new LightSpot[Light_Spot_Limit];
-	Light_Spot_Array[0] = LightSpot(1.0f, ColorF4(1.0f, 0.0f, 0.0f), VectorF3(), VectorF3(), Range(0.8, 0.95));
-	Light_Spot_Array[1] = LightSpot(1.0f, ColorF4(0.0f, 1.0f, 0.0f), VectorF3(), VectorF3(), Range(0.8, 0.95));
-	Light_Spot_Array[2] = LightSpot(1.0f, ColorF4(0.0f, 0.0f, 1.0f), VectorF3(), VectorF3(), Range(0.8, 0.95));
-	Light_Spot_Array[3] = LightSpot(1.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), Range(0.8, 0.95));
-	Light_Spot_Count = 3;
-
-	Light_Spot_Entry_Array = new SceneObject_SpotLightEntry[Light_Spot_Limit];
-
-	Light_Spot_Entry_Array[0].Object.Look(VectorF3(+22, 30, -22), VectorF3(0, 0, 0));
-	Light_Spot_Entry_Array[1].Object.Look(VectorF3(  0, 30, +22), VectorF3(0, 0, 0));
-	Light_Spot_Entry_Array[2].Object.Look(VectorF3(-22, 30, -22), VectorF3(0, 0, 0));
-	Light_Spot_Entry_Array[3].Object.Look(VectorF3(  0, 30, -22), VectorF3(0, 0, 0));
-
-	Light_Spot_Entry_Array[0].Object.Light = &Light_Spot_Array[0];
-	Light_Spot_Entry_Array[1].Object.Light = &Light_Spot_Array[1];
-	Light_Spot_Entry_Array[2].Object.Light = &Light_Spot_Array[2];
-	Light_Spot_Entry_Array[3].Object.Light = &Light_Spot_Array[3];
-
-	Objects.Insert(&Light_Spot_Entry_Array[0]);
-	Objects.Insert(&Light_Spot_Entry_Array[1]);
-	Objects.Insert(&Light_Spot_Entry_Array[2]);
-	Objects.Insert(&Light_Spot_Entry_Array[3]);
-}
-void Light3DContext::LightsFree()
-{
-	//delete[] Light_Spot_Entry_Array;
-	delete[] Light_Spot_Array;
-}
-
-
-
 void Light3DContext::ChangeMedia()
 {
 	std::cout << "ChangeMedia 0\n";
@@ -113,6 +71,41 @@ void Light3DContext::GraphicsDelete()
 
 
 
+static LightSpot LightSpotLook(LightBase base, Line3D line, Range range)
+{
+	LightSpot light;
+	light.Base = base;
+	light.Pos = line.Origin;
+	light.Dir = line.Differance().normalize();
+	light.Range = range;
+	return light;
+}
+
+void Light3DContext::LightsMake()
+{
+	Light_Ambient = LightBase(0.1f, ColorF4(1.0f, 1.0f, 1.0f));
+	Light_Solar = LightSolar(0.8f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(+1, -3, +2).normalize());
+	Light_Spot_Array[0] = LightSpotLook(LightBase(1.0f, ColorF4(1.0f, 0.0f, 0.0f)), Line3D(VectorF3(+22, 30, -22), VectorF3(0, 0, 0)), Range(0.8, 0.95));
+	Light_Spot_Array[1] = LightSpotLook(LightBase(1.0f, ColorF4(0.0f, 1.0f, 0.0f)), Line3D(VectorF3(  0, 30, +22), VectorF3(0, 0, 0)), Range(0.8, 0.95));
+	Light_Spot_Array[2] = LightSpotLook(LightBase(1.0f, ColorF4(0.0f, 0.0f, 1.0f)), Line3D(VectorF3(-22, 30, -22), VectorF3(0, 0, 0)), Range(0.8, 0.95));
+	Light_Spot_Array[3] = LightSpotLook(LightBase(1.0f, ColorF4(1.0f, 1.0f, 1.0f)), Line3D(VectorF3(  0, 30, -22), VectorF3(0, 0, 0)), Range(0.8, 0.95));
+	Light_Spot_Count = 3;
+
+	LightAmbientObject.Light = &Light_Ambient;
+	LightSolarObject.Light = &Light_Solar;
+	LightSpotObjects[0].Light = &Light_Spot_Array[0];
+	LightSpotObjects[1].Light = &Light_Spot_Array[1];
+	LightSpotObjects[2].Light = &Light_Spot_Array[2];
+	LightSpotObjects[3].Light = &Light_Spot_Array[3];
+	
+	Objects.Insert(&LightAmbientObject);
+	Objects.Insert(&LightSolarObject);
+	Objects.Insert(&LightSpotObjects[0]);
+	Objects.Insert(&LightSpotObjects[1]);
+	Objects.Insert(&LightSpotObjects[2]);
+	Objects.Insert(&LightSpotObjects[3]);
+}
+
 static PolyHedra * Cube = nullptr;
 void Light3DContext::RandomCubes()
 {
@@ -153,29 +146,37 @@ void Light3DContext::RandomCubes()
 void Light3DContext::FancyLights()
 {
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
-	PolyHedra * stage_light =			PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt"));
-	PolyHedra * stage_light_holder =	PolyHedra::Load(dir.File("Stage_Light_Holder.polyhedra.ymt"));
+	PolyHedraPalletManager * stage_light =			PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
+	PolyHedraPalletManager * stage_light_holder =	PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Stage_Light_Holder.polyhedra.ymt")));
 
-	LightAmbientObject.Object.Create(stage_light);
+	LightAmbientObject.Object.Create(Cube);
 	LightAmbientObject.Object.Trans().Position.Y = 40.0f;
-	
-	LightSolarObject.Object.Create(stage_light);
+
+	LightSolarObject.Object.Create(Cube);
 	LightSolarObject.Object.Trans().Position.Y = 45.0f;
 	LightSolarObject.Object.Trans().Rotation = EulerAngle3D::PointToZ(LightSolarObject.Light -> Dir);
 
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
-		Light_Spot_Entry_Array[i].Object.EntryLight.Create(stage_light);
-		Light_Spot_Entry_Array[i].Object.EntryHolder.Create(stage_light_holder);
+		const LightSpot * light = LightSpotObjects[i].Light;
+		EulerAngle3D angle = EulerAngle3D::PointToZ(light -> Dir);
+
+		LightSpotObjects[i].Object0.Create(stage_light);
+		LightSpotObjects[i].Object0.Trans().Position = light -> Pos;
+		LightSpotObjects[i].Object0.Trans().Rotation = angle;
+
+		LightSpotObjects[i].Object1.Create(stage_light_holder);
+		LightSpotObjects[i].Object1.Trans().Position = light -> Pos;
+		LightSpotObjects[i].Object1.Trans().Rotation = EulerAngle3D(Angle(), Angle(), angle.Y2);
 	}
 }
 void Light3DContext::Fancify()
 {
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
-	PolyHedra * stage =					PolyHedra::Load(dir.File("Stage.polyhedra.ymt"));
-	PolyHedra * truss =					PolyHedra::Load(dir.File("Truss_Square40cm_Len200cm.polyhedra"));
-	PolyHedra * truss_cube =			PolyHedra::Load(dir.File("Truss_Cube40cm.polyhedra"));
-	PolyHedra * chair =					PolyHedra::Load(dir.File("Chair.polyhedra"));
+	PolyHedraPalletManager * stage =		PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Stage.polyhedra.ymt")));
+	PolyHedraPalletManager * truss =		PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Truss_Square40cm_Len200cm.polyhedra")));
+	PolyHedraPalletManager * truss_cube =	PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Truss_Cube40cm.polyhedra")));
+	PolyHedraPalletManager * chair =		PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Chair.polyhedra")));
 
 	Objects.Insert(new SceneObject_PolyHedraObject(PolyHedraObject(stage, VectorF3(0, 0, 0))));
 
@@ -249,6 +250,8 @@ void Light3DContext::Make()
 	view.Depth.Color = window.DefaultColor;
 	view.Trans = Trans3D(VectorF3(0, 10, -65), EulerAngle3D());
 
+	LightsMake();
+
 	RandomCubes();
 	Fancify();
 	FancyLights();
@@ -266,7 +269,6 @@ void Light3DContext::Init()
 	std::cout << "Init 0\n";
 
 	GraphicsCreate();
-	LightsInit();
 
 	std::cout << "Init 1\n";
 
@@ -277,7 +279,6 @@ void Light3DContext::Free()
 	std::cout << "Free 0\n";
 
 	GraphicsDelete();
-	LightsFree();
 
 	std::cout << "Free 1\n";
 }
@@ -296,28 +297,6 @@ void Light3DContext::User(FrameTime frame_time)
 		view.ChangeFlatX(trans, frame_time.Delta);
 	}
 
-	//Light_Spot.Pos = ViewTrans.Pos;
-	//Light_Spot.Dir = ViewTrans.Rot.rotate(VectorF3(0, 0, 1));
-
-	// change Lights with UI ?
-	/*if (window.KeyBoardManager[Keys::D1].State == State::Press)
-	{
-		if (Light_Ambient.Intensity == 0.0f)
-		{ Light_Ambient.Intensity = Light_Ambient_Intensity; }
-		else
-		{ Light_Ambient.Intensity = 0.0f; }
-	}*/
-	/*if (window.KeyBoardManager[Keys::D2].State == State::Press)
-	{
-		if (Light_Solar.Base.Intensity == 0.0f)
-		{ Light_Solar.Base.Intensity = Light_Solar_Intensity; }
-		else
-		{ Light_Solar.Base.Intensity = 0.0f; }
-	}*/
-	//if (window.KeyBoardManager[Keys::D3].State == State::Press) { Light_Spot_Entry_Array[0].Object.Toggle(); }
-	//if (window.KeyBoardManager[Keys::D4].State == State::Press) { Light_Spot_Entry_Array[1].Object.Toggle(); }
-	//if (window.KeyBoardManager[Keys::D5].State == State::Press) { Light_Spot_Entry_Array[2].Object.Toggle(); }
-
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 }
 void Light3DContext::Draw()
@@ -332,12 +311,9 @@ void Light3DContext::Draw()
 	LightShaderLayout.View.Put(Matrix4x4::TransformReverse(view.Trans));
 	LightShaderLayout.Light_Ambient.Put(Light_Ambient);
 	LightShaderLayout.Light_Solar.Put(Light_Solar);
-	for (unsigned int i = 0; i < LightShaderLayout.Light_Spot_Array.Limit; i++)
+	for (unsigned int i = 0; i < Light_Spot_Count; i++)
 	{
-		if (Light_Spot_Entry_Array[i].Object.Light != nullptr)
-		{
-			LightShaderLayout.Light_Spot_Array[i].Put(*(Light_Spot_Entry_Array[i].Object.Light));
-		}
+		LightShaderLayout.Light_Spot_Array[i].Put(Light_Spot_Array[i]);
 	}
 	LightShaderLayout.Light_Spot_Count.Put(Light_Spot_Count);
 
@@ -415,18 +391,18 @@ void Light3DContext::ViewRay()
 				}
 			}
 			{
-				SceneObject_SpotLightEntry * obj = dynamic_cast<SceneObject_SpotLightEntry*>(base);
+				SceneObject_LightSpot * obj = dynamic_cast<SceneObject_LightSpot*>(base);
 				if (obj != nullptr)
 				{
-					if (hit.Index[1] == 0)
+					//if (hit.Index[1] == 0)
 					{
-						PolyHedraObject display_obj = obj -> Object.EntryLight;
+						PolyHedraObject display_obj = obj -> Object0;
 						display_obj.HideFull();
 						display_obj.ShowWire();
 					}
-					else if (hit.Index[1] == 1)
+					//else if (hit.Index[1] == 1)
 					{
-						PolyHedraObject display_obj = obj -> Object.EntryHolder;
+						PolyHedraObject display_obj = obj -> Object1;
 						display_obj.HideFull();
 						display_obj.ShowWire();
 					}
@@ -464,29 +440,35 @@ void Light3DContext::ViewRay()
 				}
 			}
 		}
+			{
+				SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(SceneObject_Selected);
+				if (obj != nullptr)
+				{
+					PolyHedraObject display_obj = obj -> Object;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
+			}
+			{
+				SceneObject_LightSolar * obj = dynamic_cast<SceneObject_LightSolar*>(SceneObject_Selected);
+				if (obj != nullptr)
+				{
+					PolyHedraObject display_obj = obj -> Object;
+					display_obj.HideFull();
+					display_obj.ShowWire();
+				}
+			}
 		{
-			SceneObject_SpotLightEntry * obj = dynamic_cast<SceneObject_SpotLightEntry*>(SceneObject_Selected);
+			SceneObject_LightSpot * obj = dynamic_cast<SceneObject_LightSpot*>(SceneObject_Selected);
 			if (obj != nullptr)
 			{
 				{
-					PolyHedraObject display_obj(Cube);
-					display_obj.Trans().Position = obj -> Object.Origin;
+					PolyHedraObject display_obj = obj -> Object0;
 					display_obj.HideFull();
 					display_obj.ShowWire();
 				}
 				{
-					PolyHedraObject display_obj(Cube);
-					display_obj.Trans().Position = obj -> Object.Target;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-				{
-					PolyHedraObject display_obj = obj -> Object.EntryLight;
-					display_obj.HideFull();
-					display_obj.ShowWire();
-				}
-				{
-					PolyHedraObject display_obj = obj -> Object.EntryHolder;
+					PolyHedraObject display_obj = obj -> Object1;
 					display_obj.HideFull();
 					display_obj.ShowWire();
 				}
