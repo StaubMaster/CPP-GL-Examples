@@ -41,9 +41,9 @@ PolyHedraObject GridXObj;
 PolyHedraObject GridYObj;
 PolyHedraObject GridZObj;
 
-FileInfo		PolyHedraFile;
-::PolyHedra *	PolyHedra;
-PolyHedraObject PolyHedraObj;
+Container::Array<FileInfo>			PolyHedraFile;
+Container::Array<::PolyHedra*>		PolyHedra;
+Container::Array<PolyHedraObject>	PolyHedraObj;
 
 ~Context()
 { }
@@ -57,11 +57,12 @@ void Make()
 {
 	Window.DefaultColor = ColorF4(0.0f, 0.0f, 0.0f);
 	View = View3D::Default();
+	View.Trans.Rotation = EulerAngle3D::Degrees(0, 45, 180 + 45);
 	//View.Depth.Factors.ChangeNear(0.01);
 	//View.Depth.Factors.ChangeFar(10.0f);
 	//View.Depth.Range.ChangeMax(1.0f);
 	//View.Depth.Range.ChangeMin(0.0f);
-	ViewDistance = 8.0f;
+	ViewDistance = 2.0f;
 
 	PolyHedraManager.MakeCurrent();
 
@@ -142,15 +143,30 @@ void Make()
 		//GridZObj.ShowWire();
 	}
 
-	if (PolyHedraFile.Exists())
+	if (PolyHedraFile.Length() != 0)
 	{
-		PolyHedra = ::PolyHedra::Load(PolyHedraFile);
+		PolyHedra = Container::Array<::PolyHedra*>(PolyHedraFile.Length());
+		PolyHedraObj = Container::Array<PolyHedraObject>(PolyHedraFile.Length());
+		for (unsigned int i = 0; i < PolyHedraFile.Length(); i++)
+		{
+			if (PolyHedraFile[i].Exists())
+			{
+				PolyHedra[i] = ::PolyHedra::Load(PolyHedraFile[i]);
+			}
+			else
+			{
+				PolyHedra[i] = ::PolyHedra::Generate::HexaHedron();
+			}
+			PolyHedraObj[i].Create(PolyHedra[i]);
+		}
 	}
 	else
 	{
-		PolyHedra = ::PolyHedra::Generate::HexaHedron();
+		PolyHedra = Container::Array<::PolyHedra*>(1);
+		PolyHedraObj = Container::Array<PolyHedraObject>(1);
+		PolyHedra[0] = ::PolyHedra::Generate::HexaHedron();
+		PolyHedraObj[0].Create(PolyHedra[0]);
 	}
-	PolyHedraObj.Create(PolyHedra);
 }
 
 void Init()
@@ -169,7 +185,10 @@ void Free()
 	delete GridY;
 	delete GridZ;
 
-	delete PolyHedra;
+	for (unsigned int i = 0; i < PolyHedra.Length(); i++)
+	{
+		delete PolyHedra[i];
+	}
 }
 
 void User(FrameTime frame_time)
@@ -247,9 +266,14 @@ int main(int argc, char * argv[])
 			window.Create();
 			{
 				Context * context = new Context(window);
-				if (argc >= 2)
+				if (argc >= 1)
 				{
-					context -> PolyHedraFile = argv[1];
+					unsigned int n = argc - 1;
+					context -> PolyHedraFile = Container::Array<FileInfo>(n);
+					for (unsigned int i = 0; i < n; i++)
+					{
+						context -> PolyHedraFile[i] = argv[i + 1];
+					}
 				}
 				window.CallBack_Frame.Assign(context, &Context::Frame);
 				window.CallBack_Resize.Assign(context, &Context::Resize);

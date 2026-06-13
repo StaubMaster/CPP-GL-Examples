@@ -1,6 +1,8 @@
 
 Name MetaIndicatorAxisY
 
+Skin AxisY.skin
+
 
 
 vertex   0   +1,0   0

@@ -61,3 +61,11 @@ Light
 	LightAmbient
 	LightSolar
 }
+
+
+
+Arguments
+{
+	specifying the full relative path for every file gets annoying if they are in similar locations
+	use Argument to specify directory, then look for file in directorys
+}
