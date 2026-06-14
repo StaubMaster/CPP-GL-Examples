@@ -9,6 +9,25 @@ SceneObject_LightSpot::SceneObject_LightSpot()
 
 
 
+Trans3D SceneObject_LightSpot::GetTrans() const
+{
+	return Trans3D(Position);
+}
+void SceneObject_LightSpot::SetTrans(const Trans3D & trans)
+{
+	Position = trans.Position;
+	if (Object0.Is())
+	{
+		Object0.Trans().Position = Position;
+	}
+	if (Object1.Is())
+	{
+		Object1.Trans().Position = Position;
+	}
+}
+
+
+
 void SceneObject_LightSpot::Update()
 { }
 

@@ -22,6 +22,10 @@
 #include "PolyHedra/Manager.hpp"
 #include "PolyHedra/Object.hpp"
 
+// PolyHedraUI
+#include "PolyHedraUI/Manager.hpp"
+#include "PolyHedraUI/Object.hpp"
+
 // Containers
 #include "Miscellaneous/Container/Array.hpp"
 #include "Miscellaneous/Container/Binary.hpp"
@@ -59,12 +63,16 @@
 
 struct Light3DContext : public ContextBase
 {
-View3D	view;
+View3D		View;
+Ray3D		ViewRay;
+Matrix4x4	ViewMatrix;
 
 ::PolyHedraManager		PolyHedraManager;
 
 UI::Manager				UIManager;
 SceneObjectUI			UISceneObject;
+
+::PolyHedraUIManager	PolyHedraUIManager;
 
 Container::Binary<SceneObject*>		Objects;
 
@@ -117,7 +125,9 @@ void	Free() override;
 void	User(FrameTime frame_time);
 void	Draw();
 
-void	ViewRay();
+void	ViewObjectFunc();
+void	ViewChangeTransFunc();
+void	ViewFunc();
 
 void	Frame(FrameTime frame_time) override;
 void	Resize(DisplaySize display_size) override;

@@ -6,11 +6,15 @@
 
 struct SceneObject_PolyHedraObject : public SceneObject
 {
+	Trans3D				Trans;
 	PolyHedraObject		Object;
 
 	~SceneObject_PolyHedraObject();
 	SceneObject_PolyHedraObject();
-	SceneObject_PolyHedraObject(const PolyHedraObject & obj);
+	SceneObject_PolyHedraObject(::PolyHedraPalletManager * pallet, Trans3D trans);
+
+	Trans3D		GetTrans() const override;
+	void		SetTrans(const Trans3D & trans) override;
 
 	void	Update() override;
 

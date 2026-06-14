@@ -9,6 +9,21 @@ SceneObject_LightSolar::SceneObject_LightSolar()
 
 
 
+Trans3D SceneObject_LightSolar::GetTrans() const
+{
+	return Trans3D(Position);
+}
+void SceneObject_LightSolar::SetTrans(const Trans3D & trans)
+{
+	Position = trans.Position;
+	if (Object.Is())
+	{
+		Object.Trans().Position = Position;
+	}
+}
+
+
+
 void SceneObject_LightSolar::Update()
 { }
 

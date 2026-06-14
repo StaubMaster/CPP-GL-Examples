@@ -8,6 +8,7 @@
 struct SceneObject_LightSpot : public SceneObject
 {
 	LightSpot *			Light;
+	VectorF3			Position;
 //	VectorF3			Origin;
 //	VectorF3			Target;
 	PolyHedraObject		Object0;
@@ -15,6 +16,9 @@ struct SceneObject_LightSpot : public SceneObject
 
 	~SceneObject_LightSpot();
 	SceneObject_LightSpot();
+
+	Trans3D		GetTrans() const override;
+	void		SetTrans(const Trans3D & trans) override;
 
 	void	Update() override;
 

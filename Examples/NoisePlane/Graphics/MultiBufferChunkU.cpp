@@ -47,7 +47,7 @@ MultiBufferChunkU::MultiBufferChunkU()
 	, Buffer()
 	, Layout()
 {
-	Buffer.MainBuffer.AttributeLayout = &Layout;
+	Buffer.MainBuffer.Init(Layout);
 }
 
 void MultiBufferChunkU::NewSize(unsigned int size)

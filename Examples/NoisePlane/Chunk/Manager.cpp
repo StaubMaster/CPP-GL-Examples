@@ -505,7 +505,7 @@ void ChunkManager::ChangeMedia(const DirectoryInfo & dir)
 	BufferU.Layout.Voxel.Change(0);
 	BufferU.Layout.Texture.Change(1);
 	BufferU.Layout.Chunk.Change(2);
-	BufferU.Buffer.MainBuffer.AttributeLayout = &BufferU.Layout;
+	BufferU.Buffer.MainBuffer.Init(BufferU.Layout);
 }
 
 void ChunkManager::GraphicsCreate()
@@ -516,7 +516,6 @@ void ChunkManager::GraphicsCreate()
 	ShaderU.Create();
 	BufferU.Buffer.Create();
 
-	BufferU.Buffer.MainBuffer.AttributesBound = false;
 	BufferU.NewSize(1024 * 1024 * 1024);
 	// Container::Void to Container::Array
 	// Container::Void constructor(size, data)

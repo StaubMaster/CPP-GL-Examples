@@ -2,14 +2,17 @@
 # define SCENE_OBJECT_HPP
 
 # include "Ray3D_Hit.hpp"
+# include "ValueType/Trans3D.hpp"
 
 struct SceneObject
 {
 	virtual ~SceneObject();
 	SceneObject();
 
-	virtual void	Update() = 0;
+	virtual Trans3D		GetTrans() const = 0;
+	virtual void		SetTrans(const Trans3D & trans) = 0;
 
+	virtual void	Update() = 0;
 	virtual void	ShowWire() = 0;
 
 	virtual Ray3D_Hit	Hit(const Ray3D & ray) const = 0;

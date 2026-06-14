@@ -6,8 +6,9 @@
 
 struct PolyHedra;
 struct Trans3D;
-struct PolyHedraObject;
 struct PolyHedra;
+struct PolyHedraObject;
+struct PolyHedraUIObject;
 
 struct Ray3D_Hit
 {
@@ -34,9 +35,14 @@ struct Ray3D_Hit
 	void	Consider(const Ray3D_Hit & other);
 	
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c);
+
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans);
+	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
+
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedraObject & object);
 	static Ray3D_Hit IntersectHit(const Ray3D & ray, const Container::Array<PolyHedraObject> & objects);
+
+	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedraUIObject & object);
 };
 
 #endif

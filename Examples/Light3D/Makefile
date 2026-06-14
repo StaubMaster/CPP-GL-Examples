@@ -26,6 +26,11 @@ FILES := \
 	\
 	Ray3D_Hit.cpp \
 	\
+	PolyHedraUI/ObjectData.cpp \
+	PolyHedraUI/PalletManager.cpp \
+	PolyHedraUI/Manager.cpp \
+	PolyHedraUI/Object.cpp \
+	\
 	Context.cpp \
 	new.cpp
 

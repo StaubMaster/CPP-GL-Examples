@@ -8,10 +8,14 @@
 struct SceneObject_LightAmbient : public SceneObject
 {
 	LightBase *			Light;
+	VectorF3			Position;
 	PolyHedraObject		Object;
 
 	~SceneObject_LightAmbient();
 	SceneObject_LightAmbient();
+
+	Trans3D		GetTrans() const override;
+	void		SetTrans(const Trans3D & trans) override;
 
 	void	Update() override;
 

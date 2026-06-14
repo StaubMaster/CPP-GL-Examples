@@ -44,8 +44,8 @@ UI::Control::Manager::Manager()
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
-	Buffer.MainBuffer.AttributeLayout = &BufferLayoutMain;
-	Buffer.InstBuffer.AttributeLayout = &BufferLayoutInst;
+	Buffer.MainBuffer.Init(BufferLayoutMain);
+	Buffer.InstBuffer.Init(BufferLayoutInst);
 }
 
 

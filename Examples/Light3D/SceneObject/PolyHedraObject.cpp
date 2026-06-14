@@ -6,9 +6,24 @@ SceneObject_PolyHedraObject::~SceneObject_PolyHedraObject()
 { }
 SceneObject_PolyHedraObject::SceneObject_PolyHedraObject()
 { }
-SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(const PolyHedraObject & obj)
-	: Object(obj)
-{ }
+SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(::PolyHedraPalletManager * pallet, Trans3D trans)
+	: Object(pallet)
+{
+	Trans = trans;
+	if (Object.Is()) { Object.Trans() = Trans; }
+}
+
+
+
+Trans3D SceneObject_PolyHedraObject::GetTrans() const
+{
+	return Trans;
+}
+void SceneObject_PolyHedraObject::SetTrans(const Trans3D & trans)
+{
+	Trans = trans;
+	if (Object.Is()) { Object.Trans() = Trans; }
+}
 
 
 

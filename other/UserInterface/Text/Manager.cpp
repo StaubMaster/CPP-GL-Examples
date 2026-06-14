@@ -77,8 +77,8 @@ void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
 		LayoutInst.Pos.Change(1);
 		LayoutInst.PalletIdx.Change(2);
 		LayoutInst.TextIdx.Change(3);
-		Buffer.MainBuffer.AttributeLayout = &LayoutMain;
-		Buffer.InstBuffer.AttributeLayout = &LayoutInst;
+		Buffer.MainBuffer.Init(LayoutMain);
+		Buffer.InstBuffer.Init(LayoutInst);
 	}
 }
 #include "Font/Font.hpp"

@@ -8,10 +8,14 @@
 struct SceneObject_LightSolar : public SceneObject
 {
 	LightSolar *		Light;
+	VectorF3			Position;
 	PolyHedraObject		Object;
 
 	~SceneObject_LightSolar();
 	SceneObject_LightSolar();
+
+	Trans3D		GetTrans() const override;
+	void		SetTrans(const Trans3D & trans) override;
 
 	void	Update() override;
 

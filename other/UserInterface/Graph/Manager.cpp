@@ -43,7 +43,7 @@ UI::Graph::Manager::Manager()
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
-	Buffer.MainBuffer.AttributeLayout = &BufferLayout;
+	Buffer.MainBuffer.Init(BufferLayout);
 }
 
 
