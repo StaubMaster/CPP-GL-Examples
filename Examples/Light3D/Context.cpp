@@ -41,6 +41,8 @@ static Ray3D_Hit IntersectHit(const Ray3D & ray, VectorF3 pos, VectorF3 norm)
 	}
 }
 
+
+
 struct UserTrans3DChange
 {
 	enum class EChangeType
@@ -59,11 +61,13 @@ struct UserTrans3DChange
 	VectorF3	AxisY;
 	VectorF3	AxisZ;
 
-	PolyHedraUIObject		AxisXIndicator;
-	PolyHedraUIObject		AxisYIndicator;
-	PolyHedraUIObject		AxisZIndicator;
+	PolyHedraUIObject	AxisXIndicator;
+	PolyHedraUIObject	AxisYIndicator;
+	PolyHedraUIObject	AxisZIndicator;
 
 	Trans3D		Trans;
+
+	VectorF3	Offset;
 
 	UserTrans3DChange()
 		: ChangeType(EChangeType::None)
@@ -118,11 +122,12 @@ struct UserTrans3DChange
 		{
 			switch (hit.Index[0])
 			{
-				case 0: ChangeType = EChangeType::AxisX; break;
-				case 1: ChangeType = EChangeType::AxisY; break;
-				case 2: ChangeType = EChangeType::AxisZ; break;
+				case 0:  ChangeType = EChangeType::AxisX; break;
+				case 1:  ChangeType = EChangeType::AxisY; break;
+				case 2:  ChangeType = EChangeType::AxisZ; break;
 				default: ChangeType = EChangeType::None; break;
 			}
+			Offset = Trans.Position - hit.Pos();
 		}
 		else
 		{
@@ -150,11 +155,12 @@ struct UserTrans3DChange
 		{
 			switch (hit.Index[0])
 			{
-				case 0: ChangeType = EChangeType::PlaneX; break;
-				case 1: ChangeType = EChangeType::PlaneY; break;
-				case 2: ChangeType = EChangeType::PlaneZ; break;
+				case 0:  ChangeType = EChangeType::PlaneX; break;
+				case 1:  ChangeType = EChangeType::PlaneY; break;
+				case 2:  ChangeType = EChangeType::PlaneZ; break;
 				default: ChangeType = EChangeType::None; break;
 			}
+			Offset = Trans.Position - hit.Pos();
 		}
 		else
 		{
@@ -164,26 +170,26 @@ struct UserTrans3DChange
 
 	Trans3D NewTransAxis(const Ray3D & ray, const VectorF3 & axis) const
 	{
-		Ray3D axis_ray(Trans.Position, axis);
+		Ray3D axis_ray(Trans.Position - Offset, axis);
 		Ray3D_Hit axis_hit;
 		Ray3D_Hit hit;
 		Approach(ray, hit, axis_ray, axis_hit);
 		if (hit.Interval < 0.0f) { return Trans; }
-		return Trans3D(axis_hit.Pos(), Trans.Rotation);
+		return Trans3D(axis_hit.Pos() + Offset, Trans.Rotation);
 	}
 	Trans3D NewTransPlane(const Ray3D & ray, const VectorF3 & axis) const
 	{
-		Ray3D_Hit hit = IntersectHit(ray, Trans.Position, axis);
+		Ray3D_Hit hit = IntersectHit(ray, Trans.Position - Offset, axis);
 		if (!hit.Is()) { return Trans; }
-		return Trans3D(hit.Pos(), Trans.Rotation);
+		return Trans3D(hit.Pos() + Offset, Trans.Rotation);
 	}
 
 	Trans3D NewTrans(const Ray3D & ray)
 	{
 		if (ChangeType == EChangeType::None) { return Trans; }
-		else if (ChangeType == EChangeType::AxisX) { return NewTransAxis(ray, AxisX); }
-		else if (ChangeType == EChangeType::AxisY) { return NewTransAxis(ray, AxisY); }
-		else if (ChangeType == EChangeType::AxisZ) { return NewTransAxis(ray, AxisZ); }
+		else if (ChangeType == EChangeType::AxisX)  { return NewTransAxis(ray, AxisX); }
+		else if (ChangeType == EChangeType::AxisY)  { return NewTransAxis(ray, AxisY); }
+		else if (ChangeType == EChangeType::AxisZ)  { return NewTransAxis(ray, AxisZ); }
 		else if (ChangeType == EChangeType::PlaneX) { return NewTransPlane(ray, AxisX); }
 		else if (ChangeType == EChangeType::PlaneY) { return NewTransPlane(ray, AxisY); }
 		else if (ChangeType == EChangeType::PlaneZ) { return NewTransPlane(ray, AxisZ); }
@@ -546,14 +552,19 @@ void Light3DContext::Draw()
 
 
 
+	PolyHedraManager.MakeInstances();
+	PolyHedraUIManager.MakeInstances();
+
+
+
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
 
-	PolyHedraManager.MakeInstances();
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
 
-	PolyHedraUIManager.MakeInstances();
+	GL::Clear(GL::ClearMask::DepthBufferBit);
+
 	PolyHedraUIManager.DrawFull();
 	PolyHedraUIManager.DrawWire();
 
@@ -639,11 +650,10 @@ void Light3DContext::ViewChangeTransFunc()
 	Trans3D trans = UserTrans3DChange.NewTrans(ViewRay);
 	trans.Position = trans.Position.round(0.1f);
 
+	UserTrans3DChange.Trans = trans;
 	if (!UserTrans3DChange.TypeIsNone() && SceneObject_Selected != nullptr)
 	{
 		SceneObject_Selected -> SetTrans(trans);
-		//PolyHedraUIObject obj(Cube);
-		//obj.Trans() = trans;
 	}
 }
 void Light3DContext::ViewFunc()
