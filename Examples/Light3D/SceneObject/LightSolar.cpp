@@ -36,6 +36,9 @@ void SceneObject_LightSolar::ShowWire()
 	obj.ShowWire();
 }
 
+void SceneObject_LightSolar::DisplayObject()
+{ }
+
 
 
 Ray3D_Hit SceneObject_LightSolar::Hit(const Ray3D & ray) const

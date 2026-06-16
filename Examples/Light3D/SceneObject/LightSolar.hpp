@@ -21,6 +21,8 @@ struct SceneObject_LightSolar : public SceneObject
 
 	void	ShowWire() override;
 
+	void	DisplayObject() override;
+
 	Ray3D_Hit	Hit(const Ray3D & ray) const override;
 };
 

@@ -350,7 +350,7 @@ static PolyHedra * Cube = nullptr;
 void Light3DContext::RandomCubes()
 {
 	Cube = PolyHedra::Generate::HexaHedron();
-	CenterCube.Object.Create(Cube);
+	CenterCube.Data.PalletManager = PolyHedraManager.PlacePallet(Cube);
 	Objects.Insert(&CenterCube);
 
 	/*int Range_Size1 = 0x1FF;
@@ -424,52 +424,70 @@ struct SceneParsingData
 	PolyHedraPalletManager *					MissingPolyHedra;
 	Container::Binary<PolyHedraPalletManager*>	PolyHedras;
 
-	struct VariableFloat
+	struct MapVariableFloat
 	{
-		std::string		Name;
-		float			Value;
+		struct Variable
+		{
+			std::string		Name;
+			float			Value;
+		};
+		Container::Binary<Variable>		Variables;
+		Variable * Find(std::string name)
+		{
+			for (unsigned int i = 0; i < Variables.Count(); i++)
+			{
+				if (Variables[i].Name == name)
+				{
+					return &Variables[i];
+				}
+			}
+			return nullptr;
+		}
+		void Put(const TextCommand & cmd)
+		{
+			if (!(cmd.Count() == 2)) { throw InvalidCommandArgumentCount(cmd, "n == 2"); }
+			Variable * var = Find(cmd.ToString(0));
+			if (var != nullptr)
+			{
+				var -> Value = cmd.ToFloat(1);
+			}
+			else
+			{
+				Variable v;
+				v.Name = cmd.ToString(0);
+				v.Value = cmd.ToFloat(1);
+				Variables.Insert(v);
+			}
+		}
+		float To(const TextCommand & cmd, unsigned int idx)
+		{
+			std::string str = cmd.ToString(idx);
+			char c = str[0];
+
+			bool s = false;
+			s = (c == '+' || c == '-');
+
+			if (s) { c = str[1]; }
+
+			if ((c >= '0' && c <= '9')) { return cmd.ToFloat(idx); }
+
+			if (s) { c = str[0]; str.erase(0, 1); }
+
+			Variable * var = Find(str);
+			if (var != nullptr)
+			{
+				float v = var -> Value;
+				if (s)
+				{
+					if (c == '+') { v = +v; }
+					if (c == '-') { v = -v; }
+				}
+				return v;
+			}
+			return 0.0f; // return NaN ?
+		}
 	};
-	Container::Binary<VariableFloat>	VariableFloats;
-	VariableFloat *		FindVarFloat(std::string name)
-	{
-		for (unsigned int i = 0; i < VariableFloats.Count(); i++)
-		{
-			if (VariableFloats[i].Name == name)
-			{
-				return &VariableFloats[i];
-			}
-		}
-		return nullptr;
-	}
-	float			ToFloat(const TextCommand & cmd, unsigned int idx)
-	{
-		std::string str = cmd.ToString(idx);
-		char c = str[0];
-
-		bool s = false;
-		s = (c == '+' || c == '-');
-
-		if (s) { c = str[1]; }
-
-		if ((c >= '0' && c <= '9')) { return cmd.ToFloat(idx); }
-
-		if (s) { c = str[0]; str.erase(0, 1); }
-
-		VariableFloat * var = FindVarFloat(str);
-		if (var != nullptr)
-		{
-			float v = var -> Value;
-			std::cout << "Value " << v << '\n';
-			if (s)
-			{
-				if (c == '+') { v = +v; }
-				if (c == '-') { v = -v; }
-			}
-			std::cout << "Value " << v << '\n';
-			return v;
-		}
-		return 0.0f; // return NaN ?
-	}
+	MapVariableFloat	VarsFloat;
 
 	~SceneParsingData()
 	{ }
@@ -489,7 +507,7 @@ struct SceneParsingData
 			std::string name = cmd.Name();
 			if (name == "") { /*std::cout << "empty\n";*/ }
 
-			else if (name == "varFloat")	{ Parse_Var_Float(cmd); }
+			else if (name == "varFloat")	{ VarsFloat.Put(cmd); }
 
 			else if (name == "polyhedra")	{ Parse_PolyHedra(cmd); }
 			else if (name == "place")		{ Parse_Place(cmd); }
@@ -500,24 +518,6 @@ struct SceneParsingData
 		{
 			std::cout << "Exception while Parsing Scene: " << ex.what() << '\n';
 			std::cout << "Exception on TextCommand: " << cmd << '\n';
-		}
-	}
-
-	void Parse_Var_Float(const TextCommand & cmd)
-	{
-		if (!(cmd.Count() == 2)) { throw InvalidCommandArgumentCount(cmd, "n == 2"); }
-
-		VariableFloat * var = FindVarFloat(cmd.ToString(0));
-		if (var != nullptr)
-		{
-			var -> Value = cmd.ToFloat(1);
-		}
-		else
-		{
-			VariableFloat v;
-			v.Name = cmd.ToString(0);
-			v.Value = cmd.ToFloat(1);
-			VariableFloats.Insert(v);
 		}
 	}
 
@@ -545,14 +545,14 @@ struct SceneParsingData
 
 		Trans3D trans(
 			VectorF3(
-				ToFloat(cmd, 1),
-				ToFloat(cmd, 2),
-				ToFloat(cmd, 3)
+				VarsFloat.To(cmd, 1),
+				VarsFloat.To(cmd, 2),
+				VarsFloat.To(cmd, 3)
 			),
 			EulerAngle3D::Degrees(
-				ToFloat(cmd, 4),
-				ToFloat(cmd, 5),
-				ToFloat(cmd, 6)
+				VarsFloat.To(cmd, 4),
+				VarsFloat.To(cmd, 5),
+				VarsFloat.To(cmd, 6)
 			)
 		);
 
@@ -688,6 +688,12 @@ void Light3DContext::Draw()
 
 	PolyHedraManager.MakeInstances();
 	PolyHedraUIManager.MakeInstances();
+
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (Objects[i] == nullptr) { continue; }
+		Objects[i] -> DisplayObject();
+	}
 
 
 
@@ -836,8 +842,8 @@ void Light3DContext::Frame(FrameTime frame_time)
 		Objects[i] -> Update();
 	}
 
-	CenterCube.Object.Trans().Position = VectorF3(0, 10, 0);
-	CenterCube.Object.Trans().Rotation.Y2 += Angle::Radians(0.01f);
+	CenterCube.Data.Trans.Position = VectorF3(0, 10, 0);
+	CenterCube.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
 
 	ViewFunc();
 

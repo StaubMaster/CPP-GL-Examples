@@ -2,12 +2,19 @@
 # define SCENE_OBJECT_POLYHEDRA_OBJECT_HPP
 
 # include "SceneObject.hpp"
-# include "PolyHedra/Object.hpp"
+# include "PolyHedra/ObjectData.hpp"
+
+/* PolyHedraObjects: temporary vs permanent
+
+current PolyHedra Objects are temporary
+so ObjectData like Trans only exists when Object .Is()
+
+but here, I need Trans even when the PolyHedra Manager does not know this
+*/
 
 struct SceneObject_PolyHedraObject : public SceneObject
 {
-	Trans3D				Trans;
-	PolyHedraObject		Object;
+	PolyHedraObjectData		Data;
 
 	~SceneObject_PolyHedraObject();
 	SceneObject_PolyHedraObject();
@@ -19,6 +26,8 @@ struct SceneObject_PolyHedraObject : public SceneObject
 	void	Update() override;
 
 	void	ShowWire() override;
+
+	void	DisplayObject() override;
 
 	Ray3D_Hit	Hit(const Ray3D & ray) const override;
 };

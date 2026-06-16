@@ -1,5 +1,8 @@
 #include "SceneObject/PolyHedraObject.hpp"
 
+#include "PolyHedra/PalletManager.hpp"
+#include "PolyHedra/Object.hpp"
+
 
 
 SceneObject_PolyHedraObject::~SceneObject_PolyHedraObject()
@@ -7,22 +10,20 @@ SceneObject_PolyHedraObject::~SceneObject_PolyHedraObject()
 SceneObject_PolyHedraObject::SceneObject_PolyHedraObject()
 { }
 SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(::PolyHedraPalletManager * pallet, Trans3D trans)
-	: Object(pallet)
+	: Data(pallet)
 {
-	Trans = trans;
-	if (Object.Is()) { Object.Trans() = Trans; }
+	Data.Trans = trans;
 }
 
 
 
 Trans3D SceneObject_PolyHedraObject::GetTrans() const
 {
-	return Trans;
+	return Data.Trans;
 }
 void SceneObject_PolyHedraObject::SetTrans(const Trans3D & trans)
 {
-	Trans = trans;
-	if (Object.Is()) { Object.Trans() = Trans; }
+	Data.Trans = trans;
 }
 
 
@@ -34,14 +35,20 @@ void SceneObject_PolyHedraObject::Update()
 
 void SceneObject_PolyHedraObject::ShowWire()
 {
-	PolyHedraObject obj = Object;
+	// do this with Data
+	PolyHedraObject obj(Data.PalletManager, Data.Trans);
 	obj.HideFull();
 	obj.ShowWire();
+}
+
+void SceneObject_PolyHedraObject::DisplayObject()
+{
+	Data.PalletManager -> InstancesFull.Insert(Instance::Basic3D::Data(Data.Trans));
 }
 
 
 
 Ray3D_Hit SceneObject_PolyHedraObject::Hit(const Ray3D & ray) const
 {
-	return RayIntersectHit(ray, Object);
+	return RayIntersectHit(ray, *(Data.PalletManager -> Pallet), Data.Trans);
 }

@@ -44,6 +44,9 @@ void SceneObject_LightSpot::ShowWire()
 	obj1.ShowWire();
 }
 
+void SceneObject_LightSpot::DisplayObject()
+{ }
+
 
 
 Ray3D_Hit SceneObject_LightSpot::Hit(const Ray3D & ray) const

@@ -64,7 +64,7 @@ void UI::Control::PolyHedraObject::Update()
 void UI::Control::PolyHedraObject::Change(::SceneObject_PolyHedraObject * obj)
 {
 	if (obj != nullptr)
-	{ Object = &(obj -> Object); }
+	{ /*Object = &(obj -> Object);*/ }
 	else
 	{ Object = nullptr; }
 
