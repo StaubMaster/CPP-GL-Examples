@@ -410,76 +410,165 @@ void Light3DContext::FancyLights()
 		LightSpotObjects[i].Object1.Trans().Rotation = EulerAngle3D(Angle(), Angle(), angle.Y2);
 	}
 }
-void Light3DContext::Fancify()
+
+
+
+#include "FileParsing/Text/Exceptions.hpp"
+struct SceneParsingData
 {
-	// put all this into a file
+	FileInfo		File;
 
-	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
-	PolyHedraPalletManager * stage =		PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Stage.polyhedra.ymt")));
-	PolyHedraPalletManager * truss =		PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Truss_Square40cm_Len200cm.polyhedra")));
-	PolyHedraPalletManager * truss_cube =	PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Truss_Cube40cm.polyhedra")));
-	PolyHedraPalletManager * chair =		PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Chair.polyhedra")));
+	::PolyHedraManager &				PolyHedraManager;
+	Container::Binary<SceneObject*> &	Objects;
 
-	(void)stage;
-	//Objects.Insert(new SceneObject_PolyHedraObject(stage, VectorF3(0, 0, 0)));
+	PolyHedraPalletManager *					MissingPolyHedra;
+	Container::Binary<PolyHedraPalletManager*>	PolyHedras;
 
-	float truss_long = 20.0f;
-	float truss_wide = 4.5f;
-
-	float w0 = truss_long * 1.0f;
-	float w1 = truss_long * 1.5f + truss_wide * 0.5f;
-
-	float h0 = truss_long * 0.5f;
-	float h1 = truss_long * 1.5f;
-	float h2 = truss_long * 2.0f + truss_wide * 0.5f;
-
-	float d0 = truss_long * 0.5f;
-	float d1 = truss_long * 1.0f + truss_wide * 0.5f;
-
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h0, -d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h1, -d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss_cube, Trans3D(VectorF3(-w1, h2, -d1))));
-
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h0, -d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h1, -d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss_cube, Trans3D(VectorF3(+w1, h2, -d1))));
-
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(-w0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(  0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(+w0, h2, -d1), EulerAngle3D::Degrees(0, 0, 90))));
-
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h2, -d0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h2, -d0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h2, +d0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h2, +d0))));
-
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h0, +d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(-w1, h1, +d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss_cube, Trans3D(VectorF3(-w1, h2, +d1))));
-
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h0, +d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(+w1, h1, +d1), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss_cube, Trans3D(VectorF3(+w1, h2, +d1))));
-
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(-w0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(  0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(new SceneObject_PolyHedraObject(truss,      Trans3D(VectorF3(+w0, h2, +d1), EulerAngle3D::Degrees(0, 0, 90))));
-
-	for (int y = 0; y < 5; y++)
+	struct VariableFloat
 	{
-		for (int x = -5; x <= +5; x++)
+		std::string		Name;
+		float			Value;
+	};
+	Container::Binary<VariableFloat>	VariableFloats;
+	VariableFloat *		FindVarFloat(std::string name)
+	{
+		for (unsigned int i = 0; i < VariableFloats.Count(); i++)
 		{
-			Objects.Insert(new SceneObject_PolyHedraObject(chair, Trans3D(VectorF3(x * +5.0f, (y * 2.0f), (y * -7.5f) -50), EulerAngle3D())));
+			if (VariableFloats[i].Name == name)
+			{
+				return &VariableFloats[i];
+			}
+		}
+		return nullptr;
+	}
+	float			ToFloat(const TextCommand & cmd, unsigned int idx)
+	{
+		std::string str = cmd.ToString(idx);
+		char c = str[0];
+
+		bool s = false;
+		s = (c == '+' || c == '-');
+
+		if (s) { c = str[1]; }
+
+		if ((c >= '0' && c <= '9')) { return cmd.ToFloat(idx); }
+
+		if (s) { c = str[0]; str.erase(0, 1); }
+
+		VariableFloat * var = FindVarFloat(str);
+		if (var != nullptr)
+		{
+			float v = var -> Value;
+			std::cout << "Value " << v << '\n';
+			if (s)
+			{
+				if (c == '+') { v = +v; }
+				if (c == '-') { v = -v; }
+			}
+			std::cout << "Value " << v << '\n';
+			return v;
+		}
+		return 0.0f; // return NaN ?
+	}
+
+	~SceneParsingData()
+	{ }
+	SceneParsingData(const FileInfo & file, ::PolyHedraManager & manager, Container::Binary<SceneObject*> & objects)
+		: File(file)
+		, PolyHedraManager(manager)
+		, Objects(objects)
+		, PolyHedras()
+	{
+		MissingPolyHedra = PolyHedraManager.PlacePallet(PolyHedra::Generate::HexaHedron(1.0f));
+	}
+
+	void Parse(const TextCommand & cmd)
+	{
+		try
+		{
+			std::string name = cmd.Name();
+			if (name == "") { /*std::cout << "empty\n";*/ }
+
+			else if (name == "varFloat")	{ Parse_Var_Float(cmd); }
+
+			else if (name == "polyhedra")	{ Parse_PolyHedra(cmd); }
+			else if (name == "place")		{ Parse_Place(cmd); }
+
+			else { std::cout << "unknown: " << cmd << '\n'; }
+		}
+		catch (std::exception & ex)
+		{
+			std::cout << "Exception while Parsing Scene: " << ex.what() << '\n';
+			std::cout << "Exception on TextCommand: " << cmd << '\n';
 		}
 	}
 
-	for (int i = 0; i < 10; i++)
+	void Parse_Var_Float(const TextCommand & cmd)
 	{
-		Objects.Insert(new SceneObject_PolyHedraObject(chair, Trans3D(VectorF3(-50, i, -40), EulerAngle3D::Degrees(0, 0, 90))));
+		if (!(cmd.Count() == 2)) { throw InvalidCommandArgumentCount(cmd, "n == 2"); }
+
+		VariableFloat * var = FindVarFloat(cmd.ToString(0));
+		if (var != nullptr)
+		{
+			var -> Value = cmd.ToFloat(1);
+		}
+		else
+		{
+			VariableFloat v;
+			v.Name = cmd.ToString(0);
+			v.Value = cmd.ToFloat(1);
+			VariableFloats.Insert(v);
+		}
 	}
-	for (int i = 0; i < 3; i++)
+
+	void Parse_PolyHedra(const TextCommand & cmd)
 	{
-		Objects.Insert(new SceneObject_PolyHedraObject(chair, Trans3D(VectorF3(-50, i, -45), EulerAngle3D::Degrees(0, 0, 90))));
+		if (!(cmd.Count() == 1)) { throw InvalidCommandArgumentCount(cmd, "n == 1"); }
+
+		FileInfo file((File.DirectoryString() + "/" + cmd.ToString(0)).c_str());
+		if (!file.Exists()) { std::cout << cmd.Name() << ": " << "Bad Skin File" << "\n"; return; }
+		PolyHedras.Insert(PolyHedraManager.PlacePallet(PolyHedra::Load(file)));
+	}
+	void Parse_Place(const TextCommand & cmd)
+	{
+		if (!(cmd.Count() == 7)) { throw InvalidCommandArgumentCount(cmd, "n == 7"); }
+
+		std::string name = cmd.ToString(0);
+		PolyHedraPalletManager * polyhedra = MissingPolyHedra;
+		for (unsigned int i = 0; i < PolyHedras.Count(); i++)
+		{
+			if (PolyHedras[i] -> Pallet -> Name == name)
+			{
+				polyhedra = PolyHedras[i];
+			}
+		}
+
+		Trans3D trans(
+			VectorF3(
+				ToFloat(cmd, 1),
+				ToFloat(cmd, 2),
+				ToFloat(cmd, 3)
+			),
+			EulerAngle3D::Degrees(
+				ToFloat(cmd, 4),
+				ToFloat(cmd, 5),
+				ToFloat(cmd, 6)
+			)
+		);
+
+		Objects.Insert(new SceneObject_PolyHedraObject(polyhedra, trans));
+	}
+};
+
+#include "FileParsing/Text/TextCommandStream.hpp"
+void Light3DContext::Fancify()
+{
+	SceneParsingData data(MediaDirectory.File("YMT/Light/Light.scene"), PolyHedraManager, Objects);
+	TextCommandStream stream(data.File.LoadText());
+	TextCommand cmd;
+	while (stream.Continue(cmd))
+	{
+		data.Parse(cmd);
 	}
 }
 

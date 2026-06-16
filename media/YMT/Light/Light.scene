@@ -1,0 +1,119 @@
+
+# Commands:
+# polyhedra "./filename"
+# polyhedra "./filename" "name" ?
+# place "name" {position} {rotation}
+# varFloat "name" {value}
+#   name should be alpha_numreic
+#   no whitespace, no digit at the start
+
+
+
+#polyhedra Stage.polyhedra.ymt                   stage
+#polyhedra Truss_Square40cm_Len200cm.polyhedra   truss
+#polyhedra Truss_Cube40cm.polyhedra              truss_cube
+#polyhedra Chair.polyhedra                       chair
+
+polyhedra Stage.polyhedra.ymt                
+polyhedra Truss_Square40cm_Len200cm.polyhedra
+polyhedra Truss_Cube40cm.polyhedra           
+polyhedra Chair.polyhedra                    
+
+
+
+place   Stage   0 0 0   0 0 0
+
+
+
+# truss_long = 20.0
+# truss_wide = 4.5
+#
+# w0 = (truss_long * 1.0)
+# w1 = (truss_long * 1.5) + (truss_wide * 0.5)
+#
+# h0 = (truss_long * 0.5)
+# h1 = (truss_long * 1.5)
+# h2 = (truss_long * 2.0) + (truss_wide * 0.5)
+#
+# d0 = (truss_long * 0.5)
+# d1 = (truss_long * 1.0) + (truss_wide * 0.5)
+
+# do Math, when to do math ?
+# math has to be in ()
+# everything inside () get evaluated as math
+# how to stop Splitter from splittig () way ?
+# this would require a rework of the TextCommandStrea
+# also at that point it would no longer be TextCommands
+# but just complex stuff
+
+
+
+varFloat w0 20.00
+varFloat w1 32.25
+
+varFloat h0 10.00
+varFloat h1 30.00
+varFloat h2 42.25
+
+varFloat d0 10.00
+varFloat d1 22.25
+
+
+
+place Truss_4_20   -w1 h0 -d1   00 90 00
+place Truss_4_20   -w1 h1 -d1   00 90 00
+place Truss_4      -w1 h2 -d1   00 00 00
+
+place Truss_4_20   +w1 h0 -d1   00 90 00
+place Truss_4_20   +w1 h1 -d1   00 90 00
+place Truss_4      +w1 h2 -d1   00 00 00
+
+place Truss_4_20   -w0 h2 -d1   00 00 90
+place Truss_4_20    00 h2 -d1   00 00 90
+place Truss_4_20   +w0 h2 -d1   00 00 90
+
+place Truss_4_20   -w1 h2 -d0   00 00 00
+place Truss_4_20   +w1 h2 -d0   00 00 00
+place Truss_4_20   -w1 h2 +d0   00 00 00
+place Truss_4_20   +w1 h2 +d0   00 00 00
+
+place Truss_4_20   -w1 h0 +d1   00 90 00
+place Truss_4_20   -w1 h1 +d1   00 90 00
+place Truss_4      -w1 h2 +d1   00 00 00
+
+place Truss_4_20   +w1 h0 +d1   00 90 00
+place Truss_4_20   +w1 h1 +d1   00 90 00
+place Truss_4      +w1 h2 +d1   00 00 00
+
+place Truss_4_20   -w0 h2 +d1   00 00 90
+place Truss_4_20    00 h2 +d1   00 00 90
+place Truss_4_20   +w0 h2 +d1   00 00 90
+
+
+
+# for (int y = 0; y < 5; y++)
+# {
+#   for (int x = -5; x <= +5; x++)
+#   {
+#     Objects.Insert(new SceneObject_PolyHedraObject(chair, Trans3D(VectorF3(x * +5.0f, (y * 2.0f), (y * -7.5f) -50), EulerAngle3D())));
+#   }
+# }
+
+
+
+place Chair   -50 0 -40   00 00 90
+place Chair   -50 1 -40   00 00 90
+place Chair   -50 2 -40   00 00 90
+place Chair   -50 3 -40   00 00 90
+place Chair   -50 4 -40   00 00 90
+place Chair   -50 5 -40   00 00 90
+place Chair   -50 6 -40   00 00 90
+place Chair   -50 7 -40   00 00 90
+place Chair   -50 8 -40   00 00 90
+place Chair   -50 9 -40   00 00 90
+
+place Chair   -50 0 -45   00 00 90
+place Chair   -50 1 -45   00 00 90
+place Chair   -50 2 -45   00 00 90
+
+
