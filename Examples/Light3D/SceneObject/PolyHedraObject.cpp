@@ -43,7 +43,5 @@ void SceneObject_PolyHedraObject::ShowWire()
 
 Ray3D_Hit SceneObject_PolyHedraObject::Hit(const Ray3D & ray) const
 {
-	Ray3D_Hit hit = Ray3D_Hit::IntersectHit(ray, Object);
-	hit.Index[0] = 0;
-	return hit;
+	return RayIntersectHit(ray, Object);
 }

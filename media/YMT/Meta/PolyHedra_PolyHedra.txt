@@ -1,0 +1,31 @@
+
+allow a PolyHedra to load another PolyHedra ?
+
+static vs dynamic
+
+static:
+	add everything from that one to this one
+	maybe apply a Transformation before adding ?
+
+dynamic:
+	the PolyHedra has a list of other PolyHedra
+	with Transformation ?
+
+dynamic would do the same as collection ?
+
+
+
+collection vs scene:
+a colleciton knows PolyHedra abstractly
+a scene knows PolyHedra places in specefic places
+
+polyhedra should be like collection
+just raw geometry
+make something else that takes PolyHedra and puts them together
+
+
+
+Parameters:
+the C# Parser has variable stuff and can do math
+use those as Parameters for child PolyHedra /
+have default Parameters

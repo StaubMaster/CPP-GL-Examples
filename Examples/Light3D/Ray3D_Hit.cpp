@@ -17,41 +17,27 @@ Ray3D_Hit::Ray3D_Hit()
 Ray3D_Hit::Ray3D_Hit(const Ray3D_Hit & other)
 	: Ray(other.Ray)
 	, Interval(other.Interval)
-	, Index{
-		other.Index[0],
-		other.Index[1],
-		other.Index[2],
-		other.Index[3],
-	}
 { }
 Ray3D_Hit & Ray3D_Hit::operator=(const Ray3D_Hit & other)
 {
 	Ray = other.Ray;
 	Interval = other.Interval;
-	Index[0] = other.Index[0];
-	Index[1] = other.Index[1];
-	Index[2] = other.Index[2];
-	Index[3] = other.Index[3];
 	return *this;
 }
 
 Ray3D_Hit::Ray3D_Hit(const Ray3D & ray, float interval)
 	: Ray(&ray)
 	, Interval(interval)
-	, Index{
-		0xFFFFFFFF,
-		0xFFFFFFFF,
-		0xFFFFFFFF,
-		0xFFFFFFFF,
-	}
 { }
 
-void Ray3D_Hit::Consider(const Ray3D_Hit & other)
+bool Ray3D_Hit::Consider(const Ray3D_Hit & other)
 {
 	if (other.Is() && (!Is() || other.Interval < Interval))
 	{
 		*this = other;
+		return true;
 	}
+	return false;
 }
 
 
@@ -63,7 +49,7 @@ void Ray3D_Hit::Consider(const Ray3D_Hit & other)
 #include "PolyHedra/Object.hpp"
 #include "PolyHedraUI/Object.hpp"
 
-Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c)
+Ray3D_Hit RayIntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c)
 {
 	VectorF3 plane_vec_0 = b - a;
 	VectorF3 plane_vec_1 = c - a;
@@ -97,9 +83,9 @@ Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const VectorF3 & a, const V
 	return Ray3D_Hit();
 }
 
-Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans)
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans)
 {
-	Ray3D_Hit hit_return;
+	Ray3D_Hit_Type<unsigned int> hit_return;
 	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
 	{
 		const PolyHedra::Face & face = polyhedra.Faces[i];
@@ -112,15 +98,14 @@ Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra
 		b = trans.forward(b);
 		c = trans.forward(c);
 
-		Ray3D_Hit hit = IntersectHit(ray, a, b, c);
-		hit.Index[3] = i;
-		hit_return.Consider(hit);
+		Ray3D_Hit hit = RayIntersectHit(ray, a, b, c);
+		hit_return.Consider(hit, i);
 	}
 	return hit_return;
 }
-Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale)
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale)
 {
-	Ray3D_Hit hit_return;
+	Ray3D_Hit_Type<unsigned int> hit_return;
 	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
 	{
 		const PolyHedra::Face & face = polyhedra.Faces[i];
@@ -133,38 +118,25 @@ Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra
 		b = trans.forward(b * scale);
 		c = trans.forward(c * scale);
 
-		Ray3D_Hit hit = IntersectHit(ray, a, b, c);
-		hit.Index[3] = i;
-		hit_return.Consider(hit);
+		Ray3D_Hit hit = RayIntersectHit(ray, a, b, c);
+		hit_return.Consider(hit, i);
 	}
 	return hit_return;
 }
 
-Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const PolyHedraObject & object)
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObject & object)
 {
 	if (object.Is())
 	{
-		return IntersectHit(ray, *object.Pallet(), object.Trans());
+		return RayIntersectHit(ray, *object.Pallet(), object.Trans());
 	}
-	return Ray3D_Hit();
+	return Ray3D_Hit_Type<unsigned int>();
 }
-Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const Container::Array<PolyHedraObject> & objects)
-{
-	Ray3D_Hit hit_return;
-	for (unsigned int i = 0; i < objects.Length(); i++)
-	{
-		Ray3D_Hit hit = IntersectHit(ray, objects[i]);
-		hit.Index[2] = i;
-		hit_return.Consider(hit);
-	}
-	return hit_return;
-}
-
-Ray3D_Hit Ray3D_Hit::IntersectHit(const Ray3D & ray, const PolyHedraUIObject & object)
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraUIObject & object)
 {
 	if (object.Is())
 	{
-		return IntersectHit(ray, *object.Pallet(), object.Trans(), object.Scale());
+		return RayIntersectHit(ray, *object.Pallet(), object.Trans(), object.Scale());
 	}
-	return Ray3D_Hit();
+	return Ray3D_Hit_Type<unsigned int>();
 }

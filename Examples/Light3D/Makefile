@@ -5,6 +5,9 @@ FANCY_NAME := Light3D
 ################################################################
 
 FILES := \
+	\
+	Ray3D_Hit.cpp \
+	\
 	PropertyControl/PropertyControl.cpp \
 	PropertyControl/VectorF3.cpp \
 	PropertyControl/EulerAngle3D.cpp \
@@ -23,8 +26,6 @@ FILES := \
 	SceneObject/LightSpot.cpp \
 	SceneObject/UI/SceneObject.cpp \
 	SceneObject/UI/PolyHedraObject.cpp \
-	\
-	Ray3D_Hit.cpp \
 	\
 	PolyHedraUI/ObjectData.cpp \
 	PolyHedraUI/PalletManager.cpp \

@@ -40,7 +40,5 @@ void SceneObject_LightSolar::ShowWire()
 
 Ray3D_Hit SceneObject_LightSolar::Hit(const Ray3D & ray) const
 {
-	Ray3D_Hit hit = Ray3D_Hit::IntersectHit(ray, Object);
-	hit.Index[0] = 1;
-	return hit;
+	return RayIntersectHit(ray, Object);
 }

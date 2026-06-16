@@ -45,6 +45,100 @@ static Ray3D_Hit IntersectHit(const Ray3D & ray, VectorF3 pos, VectorF3 norm)
 
 struct UserTrans3DChange
 {
+	enum class EIndicatorType
+	{
+		None,
+		MoveAxisX,
+		MoveAxisY,
+		MoveAxisZ,
+		SpinRingX,
+		SpinRingY,
+		SpinRingZ,
+	};
+	EIndicatorType	IndicatorHovering;
+	VectorF3		IndicatorOffset;
+
+	PolyHedraUIObject	MoveAxisXIndicator;
+	PolyHedraUIObject	MoveAxisYIndicator;
+	PolyHedraUIObject	MoveAxisZIndicator;
+
+	PolyHedraUIObject	SpinRingXIndicator;
+	PolyHedraUIObject	SpinRingYIndicator;
+	PolyHedraUIObject	SpinRingZIndicator;
+
+	void FindIndicator(const Ray3D & ray)
+	{
+		Ray3D_Hit_Type<EIndicatorType> hit(EIndicatorType::None);
+
+		hit.Consider(RayIntersectHit(ray, MoveAxisXIndicator), EIndicatorType::MoveAxisX);
+		hit.Consider(RayIntersectHit(ray, MoveAxisYIndicator), EIndicatorType::MoveAxisY);
+		hit.Consider(RayIntersectHit(ray, MoveAxisZIndicator), EIndicatorType::MoveAxisZ);
+
+		hit.Consider(RayIntersectHit(ray, SpinRingXIndicator), EIndicatorType::SpinRingX);
+		hit.Consider(RayIntersectHit(ray, SpinRingYIndicator), EIndicatorType::SpinRingY);
+		hit.Consider(RayIntersectHit(ray, SpinRingZIndicator), EIndicatorType::SpinRingZ);
+
+		if (hit.Is())
+		{
+			IndicatorOffset = hit.Pos();
+			IndicatorHovering = hit.Index;
+		}
+		else
+		{
+			IndicatorOffset = VectorF3();
+			IndicatorHovering = EIndicatorType::None;
+		}
+	}
+	void UpdateIndicator(const View3D & view)
+	{
+		float dist = (view.Trans.Position - Trans.Position).length();
+
+		if (IndicatorHovering == EIndicatorType::None)
+		{
+			MoveAxisXIndicator.Color() = ColorF4(1, 0, 0);
+			MoveAxisYIndicator.Color() = ColorF4(0, 1, 0);
+			MoveAxisZIndicator.Color() = ColorF4(0, 0, 1);
+			SpinRingXIndicator.Color() = ColorF4(1, 0, 0);
+			SpinRingYIndicator.Color() = ColorF4(0, 1, 0);
+			SpinRingZIndicator.Color() = ColorF4(0, 0, 1);
+		}
+		else
+		{
+			MoveAxisXIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+			MoveAxisYIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+			MoveAxisZIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+			SpinRingXIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+			SpinRingYIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+			SpinRingZIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+			switch (IndicatorHovering)
+			{
+				case EIndicatorType::MoveAxisX: MoveAxisXIndicator.Color() = ColorF4(1, 0, 0); break;
+				case EIndicatorType::MoveAxisY: MoveAxisYIndicator.Color() = ColorF4(0, 1, 0); break;
+				case EIndicatorType::MoveAxisZ: MoveAxisZIndicator.Color() = ColorF4(0, 0, 1); break;
+				case EIndicatorType::SpinRingX: SpinRingXIndicator.Color() = ColorF4(1, 0, 0); break;
+				case EIndicatorType::SpinRingY: SpinRingYIndicator.Color() = ColorF4(0, 1, 0); break;
+				case EIndicatorType::SpinRingZ: SpinRingZIndicator.Color() = ColorF4(0, 0, 1); break;
+				default: break;
+			}
+		}
+
+		MoveAxisXIndicator.Scale() = dist * 0.25f;
+		MoveAxisYIndicator.Scale() = dist * 0.25f;
+		MoveAxisZIndicator.Scale() = dist * 0.25f;
+		SpinRingXIndicator.Scale() = dist * 0.25f;
+		SpinRingYIndicator.Scale() = dist * 0.25f;
+		SpinRingZIndicator.Scale() = dist * 0.25f;
+
+		MoveAxisXIndicator.Trans().Position = Trans.Position;
+		MoveAxisYIndicator.Trans().Position = Trans.Position;
+		MoveAxisZIndicator.Trans().Position = Trans.Position;
+		SpinRingXIndicator.Trans().Position = Trans.Position;
+		SpinRingYIndicator.Trans().Position = Trans.Position;
+		SpinRingZIndicator.Trans().Position = Trans.Position;
+	}
+
+
+
 	enum class EChangeType
 	{
 		None,
@@ -61,111 +155,49 @@ struct UserTrans3DChange
 	VectorF3	AxisY;
 	VectorF3	AxisZ;
 
-	PolyHedraUIObject	AxisXIndicator;
-	PolyHedraUIObject	AxisYIndicator;
-	PolyHedraUIObject	AxisZIndicator;
-
 	Trans3D		Trans;
 
 	VectorF3	Offset;
 
 	UserTrans3DChange()
-		: ChangeType(EChangeType::None)
+		: IndicatorHovering(EIndicatorType::None)
+		, ChangeType(EChangeType::None)
 		, AxisX(1, 0, 0)
 		, AxisY(0, 1, 0)
 		, AxisZ(0, 0, 1)
 	{ }
 
-	void Update(const View3D & view)
-	{
-		float dist = (view.Trans.Position - Trans.Position).length();
-
-		AxisXIndicator.Color() = ColorF4(1, 0, 0);
-		AxisYIndicator.Color() = ColorF4(0, 1, 0);
-		AxisZIndicator.Color() = ColorF4(0, 0, 1);
-
-		AxisXIndicator.Scale() = dist * 0.25f;
-		AxisYIndicator.Scale() = dist * 0.25f;
-		AxisZIndicator.Scale() = dist * 0.25f;
-
-		AxisXIndicator.Trans().Position = Trans.Position;
-		AxisYIndicator.Trans().Position = Trans.Position;
-		AxisZIndicator.Trans().Position = Trans.Position;
-	}
-
 	bool TypeIsNone() const
 	{
 		return (ChangeType == EChangeType::None);
 	}
-	void TypeNone()
+	void TypeUseNone()
 	{
 		ChangeType = EChangeType::None;
 	}
-	void TypeFindL(const Ray3D & ray)
+	void TypeUseL()
 	{
-		Ray3D_Hit hit;
-		Ray3D_Hit hit_temp;
-
-		hit_temp = Ray3D_Hit::IntersectHit(ray, AxisXIndicator);
-		hit_temp.Index[0] = 0;
-		hit.Consider(hit_temp);
-
-		hit_temp = Ray3D_Hit::IntersectHit(ray, AxisYIndicator);
-		hit_temp.Index[0] = 1;
-		hit.Consider(hit_temp);
-
-		hit_temp = Ray3D_Hit::IntersectHit(ray, AxisZIndicator);
-		hit_temp.Index[0] = 2;
-		hit.Consider(hit_temp);
-
-		if (hit.Is())
+		if (IndicatorHovering == EIndicatorType::None) { return; }
+		switch (IndicatorHovering)
 		{
-			switch (hit.Index[0])
-			{
-				case 0:  ChangeType = EChangeType::AxisX; break;
-				case 1:  ChangeType = EChangeType::AxisY; break;
-				case 2:  ChangeType = EChangeType::AxisZ; break;
-				default: ChangeType = EChangeType::None; break;
-			}
-			Offset = Trans.Position - hit.Pos();
+			case EIndicatorType::MoveAxisX: ChangeType = EChangeType::AxisX; break;
+			case EIndicatorType::MoveAxisY: ChangeType = EChangeType::AxisY; break;
+			case EIndicatorType::MoveAxisZ: ChangeType = EChangeType::AxisZ; break;
+			default: ChangeType = EChangeType::None; break;
 		}
-		else
-		{
-			ChangeType = EChangeType::None;
-		}
+		Offset = Trans.Position - IndicatorOffset;
 	}
-	void TypeFindR(const Ray3D & ray)
+	void TypeUseR()
 	{
-		Ray3D_Hit hit;
-		Ray3D_Hit hit_temp;
-
-		hit_temp = Ray3D_Hit::IntersectHit(ray, AxisXIndicator);
-		hit_temp.Index[0] = 0;
-		hit.Consider(hit_temp);
-
-		hit_temp = Ray3D_Hit::IntersectHit(ray, AxisYIndicator);
-		hit_temp.Index[0] = 1;
-		hit.Consider(hit_temp);
-
-		hit_temp = Ray3D_Hit::IntersectHit(ray, AxisZIndicator);
-		hit_temp.Index[0] = 2;
-		hit.Consider(hit_temp);
-
-		if (hit.Is())
+		if (IndicatorHovering == EIndicatorType::None) { return; }
+		switch (IndicatorHovering)
 		{
-			switch (hit.Index[0])
-			{
-				case 0:  ChangeType = EChangeType::PlaneX; break;
-				case 1:  ChangeType = EChangeType::PlaneY; break;
-				case 2:  ChangeType = EChangeType::PlaneZ; break;
-				default: ChangeType = EChangeType::None; break;
-			}
-			Offset = Trans.Position - hit.Pos();
+			case EIndicatorType::MoveAxisX: ChangeType = EChangeType::PlaneX; break;
+			case EIndicatorType::MoveAxisY: ChangeType = EChangeType::PlaneY; break;
+			case EIndicatorType::MoveAxisZ: ChangeType = EChangeType::PlaneZ; break;
+			default: ChangeType = EChangeType::None; break;
 		}
-		else
-		{
-			ChangeType = EChangeType::None;
-		}
+		Offset = Trans.Position - IndicatorOffset;
 	}
 
 	Trans3D NewTransAxis(const Ray3D & ray, const VectorF3 & axis) const
@@ -183,7 +215,6 @@ struct UserTrans3DChange
 		if (!hit.Is()) { return Trans; }
 		return Trans3D(hit.Pos() + Offset, Trans.Rotation);
 	}
-
 	Trans3D NewTrans(const Ray3D & ray)
 	{
 		if (ChangeType == EChangeType::None) { return Trans; }
@@ -381,6 +412,8 @@ void Light3DContext::FancyLights()
 }
 void Light3DContext::Fancify()
 {
+	// put all this into a file
+
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
 	PolyHedraPalletManager * stage =		PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Stage.polyhedra.ymt")));
 	PolyHedraPalletManager * truss =		PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Truss_Square40cm_Len200cm.polyhedra")));
@@ -452,9 +485,12 @@ void Light3DContext::Fancify()
 
 
 
-static PolyHedra * AxisXIndicator = nullptr;
-static PolyHedra * AxisYIndicator = nullptr;
-static PolyHedra * AxisZIndicator = nullptr;
+static PolyHedra * MoveAxisXIndicator = nullptr;
+static PolyHedra * MoveAxisYIndicator = nullptr;
+static PolyHedra * MoveAxisZIndicator = nullptr;
+static PolyHedra * SpinRingXIndicator = nullptr;
+static PolyHedra * SpinRingYIndicator = nullptr;
+static PolyHedra * SpinRingZIndicator = nullptr;
 
 void Light3DContext::Make()
 {
@@ -474,17 +510,26 @@ void Light3DContext::Make()
 	UIManager.WindowControl.ChildInsert(UISceneObject);
 	UISceneObject.Hide();
 
-	AxisXIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisX.polyhedra"));
-	AxisYIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisY.polyhedra"));
-	AxisZIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisZ.polyhedra"));
+	MoveAxisXIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisX.polyhedra"));
+	MoveAxisYIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisY.polyhedra"));
+	MoveAxisZIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisZ.polyhedra"));
+	SpinRingXIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/SpinRing/RingX.polyhedra"));
+	SpinRingYIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/SpinRing/RingY.polyhedra"));
+	SpinRingZIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/SpinRing/RingZ.polyhedra"));
 
-	UserTrans3DChange.AxisXIndicator.Create(AxisXIndicator);
-	UserTrans3DChange.AxisYIndicator.Create(AxisYIndicator);
-	UserTrans3DChange.AxisZIndicator.Create(AxisZIndicator);
+	UserTrans3DChange.MoveAxisXIndicator.Create(MoveAxisXIndicator);
+	UserTrans3DChange.MoveAxisYIndicator.Create(MoveAxisYIndicator);
+	UserTrans3DChange.MoveAxisZIndicator.Create(MoveAxisZIndicator);
+	UserTrans3DChange.SpinRingXIndicator.Create(SpinRingXIndicator);
+	UserTrans3DChange.SpinRingYIndicator.Create(SpinRingYIndicator);
+	UserTrans3DChange.SpinRingZIndicator.Create(SpinRingZIndicator);
 
-	UserTrans3DChange.AxisXIndicator.HideFull();
-	UserTrans3DChange.AxisYIndicator.HideFull();
-	UserTrans3DChange.AxisZIndicator.HideFull();
+	UserTrans3DChange.MoveAxisXIndicator.HideFull();
+	UserTrans3DChange.MoveAxisYIndicator.HideFull();
+	UserTrans3DChange.MoveAxisZIndicator.HideFull();
+	UserTrans3DChange.SpinRingXIndicator.HideFull();
+	UserTrans3DChange.SpinRingYIndicator.HideFull();
+	UserTrans3DChange.SpinRingZIndicator.HideFull();
 
 	std::cout << "Make 1\n";
 }
@@ -586,18 +631,17 @@ void Light3DContext::ViewObjectFunc()
 {
 	// just dont cast ray if hovering ?
 
-	Ray3D_Hit hit;
+	Ray3D_Hit_Type<unsigned int> hit;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (Objects[i] == nullptr) { continue; }
 		Ray3D_Hit hit_temp = Objects[i] -> Hit(ViewRay);
-		hit_temp.Index[2] = i;
-		hit.Consider(hit_temp);
+		hit.Consider(hit_temp, i);
 	}
 
 	if (UIManager.Hovering == &UIManager.WindowControl && hit.Is())
 	{
-		SceneObject * obj = Objects[hit.Index[2]];
+		SceneObject * obj = Objects[hit.Index];
 		if (obj != nullptr)
 		{
 			obj -> ShowWire();
@@ -608,19 +652,25 @@ void Light3DContext::ViewObjectFunc()
 	{
 		if (hit.Is())
 		{
-			SceneObject_Selected = Objects[hit.Index[2]];
+			SceneObject_Selected = Objects[hit.Index];
 			UISceneObject.Show();
-			UserTrans3DChange.AxisXIndicator.ShowFull();
-			UserTrans3DChange.AxisYIndicator.ShowFull();
-			UserTrans3DChange.AxisZIndicator.ShowFull();
+			UserTrans3DChange.MoveAxisXIndicator.ShowFull();
+			UserTrans3DChange.MoveAxisYIndicator.ShowFull();
+			UserTrans3DChange.MoveAxisZIndicator.ShowFull();
+			UserTrans3DChange.SpinRingXIndicator.ShowFull();
+			UserTrans3DChange.SpinRingYIndicator.ShowFull();
+			UserTrans3DChange.SpinRingZIndicator.ShowFull();
 		}
 		else
 		{
 			SceneObject_Selected = nullptr;
 			UISceneObject.Hide();
-			UserTrans3DChange.AxisXIndicator.HideFull();
-			UserTrans3DChange.AxisYIndicator.HideFull();
-			UserTrans3DChange.AxisZIndicator.HideFull();
+			UserTrans3DChange.MoveAxisXIndicator.HideFull();
+			UserTrans3DChange.MoveAxisYIndicator.HideFull();
+			UserTrans3DChange.MoveAxisZIndicator.HideFull();
+			UserTrans3DChange.SpinRingXIndicator.HideFull();
+			UserTrans3DChange.SpinRingYIndicator.HideFull();
+			UserTrans3DChange.SpinRingZIndicator.HideFull();
 		}
 		UISceneObject.Change(SceneObject_Selected);
 
@@ -632,20 +682,25 @@ void Light3DContext::ViewObjectFunc()
 }
 void Light3DContext::ViewChangeTransFunc()
 {
-	UserTrans3DChange.Update(View);
+	if (UserTrans3DChange.TypeIsNone())
+	{
+		UserTrans3DChange.FindIndicator(ViewRay);
+		UserTrans3DChange.UpdateIndicator(View);
+	}
+
 	if (window.MouseManager[MouseButtons::MouseL] == State::Release ||
 		window.MouseManager[MouseButtons::MouseR] == State::Release)
 	{
-		UserTrans3DChange.TypeNone();
+		UserTrans3DChange.TypeUseNone();
 		if (SceneObject_Selected != nullptr)
 		{
 			UserTrans3DChange.Trans = SceneObject_Selected -> GetTrans();
 		}
 	}
 	else if (window.MouseManager[MouseButtons::MouseL] == State::Press)
-	{ UserTrans3DChange.TypeFindL(ViewRay); }
+	{ UserTrans3DChange.TypeUseL(); }
 	else if (window.MouseManager[MouseButtons::MouseR] == State::Press)
-	{ UserTrans3DChange.TypeFindR(ViewRay); }
+	{ UserTrans3DChange.TypeUseR(); }
 
 	Trans3D trans = UserTrans3DChange.NewTrans(ViewRay);
 	trans.Position = trans.Position.round(0.1f);

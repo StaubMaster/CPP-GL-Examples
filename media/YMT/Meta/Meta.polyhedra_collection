@@ -1,0 +1,25 @@
+
+# think of a better name ?
+
+# have this file to organize PolyHedra
+# find individual PolyHedra using Name
+
+# what if there are different PolyHedra with the same Name ?
+# avoid that.
+# if it does happen, display/throw an error
+# if they are in different collections, then they could still be accessed individually ?
+
+# also a colleciton should be able to hold more collections
+# when searching for a PolyHedra, search own first, then other collecitons in order
+# so that everything can be put into a single collection in the main
+
+# a collection is just a list of things
+# a scene would be things places in places
+
+MoveAxis/AxisX.polyhedra
+MoveAxis/AxisY.polyhedra
+MoveAxis/AxisZ.polyhedra
+
+SpinRing/RingX.polyhedra
+SpinRing/RingY.polyhedra
+SpinRing/RingZ.polyhedra

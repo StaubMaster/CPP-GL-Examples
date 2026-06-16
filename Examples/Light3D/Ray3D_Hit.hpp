@@ -14,12 +14,6 @@ struct Ray3D_Hit
 {
 	const Ray3D *	Ray;
 	float			Interval;
-	unsigned int	Index[4];
-
-	// Index[3] is Triangle
-	// Index[2] is Container Index
-	// Index[1] is Object Selector
-	// Index[0] is Object Type
 
 	bool	Is() const;
 
@@ -32,17 +26,39 @@ struct Ray3D_Hit
 
 	Ray3D_Hit(const Ray3D & ray, float interval);
 
-	void	Consider(const Ray3D_Hit & other);
-	
-	static Ray3D_Hit IntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c);
-
-	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans);
-	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
-
-	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedraObject & object);
-	static Ray3D_Hit IntersectHit(const Ray3D & ray, const Container::Array<PolyHedraObject> & objects);
-
-	static Ray3D_Hit IntersectHit(const Ray3D & ray, const PolyHedraUIObject & object);
+	bool	Consider(const Ray3D_Hit & other);
 };
+
+template<typename IndexType>
+struct Ray3D_Hit_Type : public Ray3D_Hit
+{
+	IndexType	Index;
+
+	Ray3D_Hit_Type()
+		: Ray3D_Hit()
+	{ }
+	Ray3D_Hit_Type(IndexType index)
+		: Ray3D_Hit()
+		, Index(index)
+	{ }
+
+	bool Consider(const Ray3D_Hit & other, IndexType index)
+	{
+		if (Ray3D_Hit::Consider(other))
+		{
+			Index = index;
+			return true;
+		}
+		return false;
+	}
+};
+
+Ray3D_Hit RayIntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c);
+
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans);
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
+
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObject & object);
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraUIObject & object);
 
 #endif

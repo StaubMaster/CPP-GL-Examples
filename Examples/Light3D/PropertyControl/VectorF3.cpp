@@ -32,9 +32,9 @@ void UI::Control::VectorF3::Update()
 	if (Object != nullptr)
 	{
 		std::stringstream ss;
-		ss.str(std::string()); ss << "X:" << ToString(Object -> X); X.SetText(ss.str());
-		ss.str(std::string()); ss << "Y:" << ToString(Object -> Y); Y.SetText(ss.str());
-		ss.str(std::string()); ss << "Z:" << ToString(Object -> Z); Z.SetText(ss.str());
+		ss.str(std::string()); ss << "X:" << ToString(Object -> X, 3); X.SetText(ss.str());
+		ss.str(std::string()); ss << "Y:" << ToString(Object -> Y, 3); Y.SetText(ss.str());
+		ss.str(std::string()); ss << "Z:" << ToString(Object -> Z, 3); Z.SetText(ss.str());
 	}
 	else
 	{
