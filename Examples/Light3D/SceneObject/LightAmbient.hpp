@@ -3,14 +3,12 @@
 
 # include "SceneObject.hpp"
 # include "ValueType/LightBase.hpp"
-
-struct PolyHedraPalletManager;
+# include "PolyHedra/ObjectData.hpp"
 
 struct SceneObject_LightAmbient : public SceneObject
 {
 	LightBase *		Light;
-	VectorF3		Position;
-	::PolyHedraPalletManager *	Pallet;
+	PolyHedraObjectData		Data;
 
 	~SceneObject_LightAmbient();
 	SceneObject_LightAmbient();

@@ -47,6 +47,8 @@ bool Ray3D_Hit::Consider(const Ray3D_Hit & other)
 #include "ValueType/Trans3D.hpp"
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Object.hpp"
+#include "PolyHedra/ObjectData.hpp"
+#include "PolyHedra/PalletManager.hpp"
 #include "PolyHedraUI/Object.hpp"
 
 Ray3D_Hit RayIntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c)
@@ -124,6 +126,10 @@ Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra 
 	return hit_return;
 }
 
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObjectData & object)
+{
+	return RayIntersectHit(ray, *(object.PalletManager -> Pallet), object.Trans);
+}
 Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObject & object)
 {
 	if (object.Is())

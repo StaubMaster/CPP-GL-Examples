@@ -399,21 +399,28 @@ void Light3DContext::FancyLights()
 	PolyHedraPalletManager * stage_light =			PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
 	PolyHedraPalletManager * stage_light_holder =	PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light_Holder.polyhedra.ymt")));
 
-	LightAmbientObject.Pallet = PolyHedraManager.MakePallet(Cube);
-	LightAmbientObject.Position.Y = 40.0f;
+	LightAmbientObject.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
+	LightAmbientObject.Data.Trans.Position.Y = 40.0f;
 
-	LightSolarObject.Pallet = PolyHedraManager.MakePallet(Cube);
-	LightSolarObject.Position.Y = 45.0f;
+	LightSolarObject.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
+	LightSolarObject.Data.Trans.Position.Y = 45.0f;
 
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
 		const LightSpot * light = LightSpotObjects[i].Light;
-		EulerAngle3D angle = EulerAngle3D::PointToZ(light -> Dir);
 
-		LightSpotObjects[i].Pallet0 = stage_light;
-		LightSpotObjects[i].Pallet1 = stage_light_holder;
-		LightSpotObjects[i].Trans.Position = light -> Pos;
-		LightSpotObjects[i].Trans.Rotation = angle;
+		VectorF3 pos = light -> Pos;
+		EulerAngle3D rot = EulerAngle3D::PointToZ(light -> Dir);
+
+		LightSpotObjects[i].Data0.PalletManager = stage_light;
+		LightSpotObjects[i].Data0.Trans.Position = pos;
+		LightSpotObjects[i].Data0.Trans.Rotation = rot;
+
+		rot.Z0 = Angle();
+		rot.X1 = Angle();
+		LightSpotObjects[i].Data1.PalletManager = stage_light_holder;
+		LightSpotObjects[i].Data1.Trans.Position = pos;
+		LightSpotObjects[i].Data1.Trans.Rotation = rot;
 	}
 }
 

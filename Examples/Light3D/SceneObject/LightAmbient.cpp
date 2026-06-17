@@ -15,11 +15,11 @@ SceneObject_LightAmbient::SceneObject_LightAmbient()
 
 Trans3D SceneObject_LightAmbient::GetTrans() const
 {
-	return Trans3D(Position);
+	return Data.Trans;
 }
 void SceneObject_LightAmbient::SetTrans(const Trans3D & trans)
 {
-	Position = trans.Position;
+	Data.Trans = trans;
 }
 
 
@@ -31,22 +31,18 @@ void SceneObject_LightAmbient::Update()
 
 void SceneObject_LightAmbient::ShowWire()
 {
-	PolyHedraObject obj(Pallet, Trans3D(Position));
-	obj.HideFull();
-	obj.ShowWire();
+	Data.DrawWire = true;
 }
 
 void SceneObject_LightAmbient::DisplayObject()
 {
-	PolyHedraObjectData data;
-	data.Trans.Position = Position;
-	Pallet -> PutInstance(data);
+	Data.PalletManager -> PutInstance(Data);
+	Data.DrawWire = false;
 }
 
 
 
 Ray3D_Hit SceneObject_LightAmbient::Hit(const Ray3D & ray) const
 {
-	//return RayIntersectHit(ray, Object);
-	return RayIntersectHit(ray, *(Pallet -> Pallet), Trans3D(Position));
+	return RayIntersectHit(ray, Data);
 }

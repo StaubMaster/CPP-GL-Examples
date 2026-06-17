@@ -8,6 +8,7 @@ struct PolyHedra;
 struct Trans3D;
 struct PolyHedra;
 struct PolyHedraObject;
+struct PolyHedraObjectData;
 struct PolyHedraUIObject;
 
 struct Ray3D_Hit
@@ -58,6 +59,7 @@ Ray3D_Hit RayIntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 
 Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans);
 Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
 
+Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObjectData & object);
 Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObject & object);
 Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraUIObject & object);
 

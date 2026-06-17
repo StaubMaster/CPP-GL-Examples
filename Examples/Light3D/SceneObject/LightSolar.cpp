@@ -15,11 +15,11 @@ SceneObject_LightSolar::SceneObject_LightSolar()
 
 Trans3D SceneObject_LightSolar::GetTrans() const
 {
-	return Trans3D(Position);
+	return Data.Trans;
 }
 void SceneObject_LightSolar::SetTrans(const Trans3D & trans)
 {
-	Position = trans.Position;
+	Data.Trans = trans;
 }
 
 
@@ -31,23 +31,18 @@ void SceneObject_LightSolar::Update()
 
 void SceneObject_LightSolar::ShowWire()
 {
-	PolyHedraObject obj(Pallet, Trans3D(Position));
-	obj.HideFull();
-	obj.ShowWire();
+	Data.DrawWire = true;
 }
 
 void SceneObject_LightSolar::DisplayObject()
 {
-	PolyHedraObjectData data;
-	data.Trans.Position = Position;
-	data.Trans.Rotation = EulerAngle3D::PointToZ(Light -> Dir);
-	Pallet -> PutInstance(data);
+	Data.PalletManager -> PutInstance(Data);
+	Data.DrawWire = false;
 }
 
 
 
 Ray3D_Hit SceneObject_LightSolar::Hit(const Ray3D & ray) const
 {
-	//return RayIntersectHit(ray, Object);
-	return RayIntersectHit(ray, *(Pallet -> Pallet), Trans3D(Position, EulerAngle3D::PointToZ(Light -> Dir)));
+	return RayIntersectHit(ray, Data);
 }
