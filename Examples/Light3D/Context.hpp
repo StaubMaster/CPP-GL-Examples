@@ -61,11 +61,27 @@
 
 
 
+#include "Graphics/Multiform/Layout.hpp"
+#include "Graphics/Multiform/_Include.hpp"
+struct MultiformLayout : public Multiform::Layout
+{
+	Multiform::DisplaySize	DisplaySize;
+	Multiform::Matrix4x4	View;
+	Multiform::Depth		Depth;
+	Multiform::Angle		FOV;
+	~MultiformLayout();
+	MultiformLayout();
+};
+
+
+
 struct Light3DContext : public ContextBase
 {
 View3D		View;
 Ray3D		ViewRay;
 Matrix4x4	ViewMatrix;
+
+::MultiformLayout	MultiformLayout;
 
 ::PolyHedraManager		PolyHedraManager;
 

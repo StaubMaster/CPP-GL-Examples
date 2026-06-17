@@ -43,7 +43,8 @@ void SceneObject_PolyHedraObject::ShowWire()
 
 void SceneObject_PolyHedraObject::DisplayObject()
 {
-	Data.PalletManager -> InstancesFull.Insert(Instance::Basic3D::Data(Data.Trans));
+	//Data.PalletManager -> PutInstance(Data);
+	Data.PalletManager -> InstancesFull.Insert(Data.ToData());
 }
 
 

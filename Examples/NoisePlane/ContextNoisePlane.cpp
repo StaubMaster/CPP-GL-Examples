@@ -451,18 +451,18 @@ void ContextNoisePlane::Make()
 		VoxelCube = new PolyHedra();
 		//VoxelCube = PolyHedra::Generate::HexaHedron(0.5f);
 		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
-		PolyHedraManager.PlacePallet(VoxelCube);
+		PolyHedraManager.MakePallet(VoxelCube);
 	}
 	{
 		VoxelChunkCube = new PolyHedra();
 		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
-		PolyHedraManager.PlacePallet(VoxelChunkCube);
+		PolyHedraManager.MakePallet(VoxelChunkCube);
 	}
 #ifndef DISABLE_VIEW_TANGIBLE
 	{
 		ViewEntity.PolyHedra = new PolyHedra();
 		PolyHedraBoxEdges(*ViewEntity.PolyHedra, ViewEntity.Box);
-		PolyHedraManager.PlacePallet(ViewEntity.PolyHedra);
+		PolyHedraManager.MakePallet(ViewEntity.PolyHedra);
 	}
 #endif
 

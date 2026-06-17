@@ -231,6 +231,23 @@ static ::UserTrans3DChange	UserTrans3DChange;
 
 
 
+MultiformLayout::~MultiformLayout()
+{ }
+MultiformLayout::MultiformLayout()
+	: Multiform::Layout()
+	, DisplaySize("DisplaySize")
+	, View("View")
+	, Depth("Depth")
+	, FOV("FOV")
+{
+	Multiforms.Insert(&DisplaySize);
+	Multiforms.Insert(&View);
+	Multiforms.Insert(&Depth);
+	Multiforms.Insert(&FOV);
+}
+
+
+
 Light3DContext::~Light3DContext()
 { }
 Light3DContext::Light3DContext()
@@ -243,6 +260,18 @@ Light3DContext::Light3DContext()
 {
 	PolyHedraManager.MakeCurrent();
 	PolyHedraUIManager.MakeCurrent();
+
+	Container::Array<Uniform::Layout*> layouts({
+		&PolyHedraManager.ShaderLayoutFullDefault,
+		&PolyHedraManager.ShaderLayoutWireDefault,
+		&UIManager.ControlManager.ShaderLayout,
+		&UIManager.TextManager.ShaderLayout,
+		&UIManager.GraphManager.ShaderLayout,
+		&LightShaderLayout,
+		&PolyHedraUIManager.ShaderLayoutFullDefault,
+		&PolyHedraUIManager.ShaderLayoutWireDefault,
+	});
+	MultiformLayout.Find(layouts);
 }
 
 
@@ -278,27 +307,8 @@ void Light3DContext::GraphicsCreate()
 	UIManager.GraphicsCreate();
 	PolyHedraUIManager.GraphicsCreate();
 
-	{
-		PolyHedraManager.ShaderFullDefault.Bind();
-		PolyHedraManager.ShaderLayoutFullDefault.Depth.Put(View.Depth);
-		PolyHedraManager.ShaderLayoutFullDefault.FOV.Put(View.FOV);
-
-		PolyHedraManager.ShaderWireDefault.Bind();
-		PolyHedraManager.ShaderLayoutWireDefault.Depth.Put(View.Depth);
-		PolyHedraManager.ShaderLayoutWireDefault.FOV.Put(View.FOV);
-
-		LightShader.Bind();
-		LightShaderLayout.Depth.Put(View.Depth);
-		LightShaderLayout.FOV.Put(View.FOV);
-
-		PolyHedraUIManager.ShaderFullDefault.Bind();
-		PolyHedraUIManager.ShaderLayoutFullDefault.Depth.Put(View.Depth);
-		PolyHedraUIManager.ShaderLayoutFullDefault.FOV.Put(View.FOV);
-
-		PolyHedraUIManager.ShaderWireDefault.Bind();
-		PolyHedraUIManager.ShaderLayoutWireDefault.Depth.Put(View.Depth);
-		PolyHedraUIManager.ShaderLayoutWireDefault.FOV.Put(View.FOV);
-	}
+	MultiformLayout.Depth.ChangeData(View.Depth);
+	MultiformLayout.FOV.ChangeData(View.FOV);
 }
 void Light3DContext::GraphicsDelete()
 {
@@ -350,7 +360,7 @@ static PolyHedra * Cube = nullptr;
 void Light3DContext::RandomCubes()
 {
 	Cube = PolyHedra::Generate::HexaHedron();
-	CenterCube.Data.PalletManager = PolyHedraManager.PlacePallet(Cube);
+	CenterCube.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
 	Objects.Insert(&CenterCube);
 
 	/*int Range_Size1 = 0x1FF;
@@ -386,28 +396,24 @@ void Light3DContext::RandomCubes()
 void Light3DContext::FancyLights()
 {
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
-	PolyHedraPalletManager * stage_light =			PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
-	PolyHedraPalletManager * stage_light_holder =	PolyHedraManager.PlacePallet(PolyHedra::Load(dir.File("Stage_Light_Holder.polyhedra.ymt")));
+	PolyHedraPalletManager * stage_light =			PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
+	PolyHedraPalletManager * stage_light_holder =	PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light_Holder.polyhedra.ymt")));
 
-	LightAmbientObject.Object.Create(Cube);
-	LightAmbientObject.Object.Trans().Position.Y = 40.0f;
+	LightAmbientObject.Pallet = PolyHedraManager.MakePallet(Cube);
+	LightAmbientObject.Position.Y = 40.0f;
 
-	LightSolarObject.Object.Create(Cube);
-	LightSolarObject.Object.Trans().Position.Y = 45.0f;
-	LightSolarObject.Object.Trans().Rotation = EulerAngle3D::PointToZ(LightSolarObject.Light -> Dir);
+	LightSolarObject.Pallet = PolyHedraManager.MakePallet(Cube);
+	LightSolarObject.Position.Y = 45.0f;
 
 	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
 	{
 		const LightSpot * light = LightSpotObjects[i].Light;
 		EulerAngle3D angle = EulerAngle3D::PointToZ(light -> Dir);
 
-		LightSpotObjects[i].Object0.Create(stage_light);
-		LightSpotObjects[i].Object0.Trans().Position = light -> Pos;
-		LightSpotObjects[i].Object0.Trans().Rotation = angle;
-
-		LightSpotObjects[i].Object1.Create(stage_light_holder);
-		LightSpotObjects[i].Object1.Trans().Position = light -> Pos;
-		LightSpotObjects[i].Object1.Trans().Rotation = EulerAngle3D(Angle(), Angle(), angle.Y2);
+		LightSpotObjects[i].Pallet0 = stage_light;
+		LightSpotObjects[i].Pallet1 = stage_light_holder;
+		LightSpotObjects[i].Trans.Position = light -> Pos;
+		LightSpotObjects[i].Trans.Rotation = angle;
 	}
 }
 
@@ -497,7 +503,7 @@ struct SceneParsingData
 		, Objects(objects)
 		, PolyHedras()
 	{
-		MissingPolyHedra = PolyHedraManager.PlacePallet(PolyHedra::Generate::HexaHedron(1.0f));
+		MissingPolyHedra = PolyHedraManager.MakePallet(PolyHedra::Generate::HexaHedron(1.0f));
 	}
 
 	void Parse(const TextCommand & cmd)
@@ -527,7 +533,7 @@ struct SceneParsingData
 
 		FileInfo file((File.DirectoryString() + "/" + cmd.ToString(0)).c_str());
 		if (!file.Exists()) { std::cout << cmd.Name() << ": " << "Bad Skin File" << "\n"; return; }
-		PolyHedras.Insert(PolyHedraManager.PlacePallet(PolyHedra::Load(file)));
+		PolyHedras.Insert(PolyHedraManager.MakePallet(PolyHedra::Load(file)));
 	}
 	void Parse_Place(const TextCommand & cmd)
 	{
@@ -662,14 +668,9 @@ void Light3DContext::User(FrameTime frame_time)
 }
 void Light3DContext::Draw()
 {
-	PolyHedraManager.ShaderFullDefault.Bind();
-	PolyHedraManager.ShaderLayoutFullDefault.View.Put(Matrix4x4::TransformReverse(View.Trans));
-
-	PolyHedraManager.ShaderWireDefault.Bind();
-	PolyHedraManager.ShaderLayoutWireDefault.View.Put(Matrix4x4::TransformReverse(View.Trans));
+	MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
 
 	LightShader.Bind();
-	LightShaderLayout.View.Put(Matrix4x4::TransformReverse(View.Trans));
 	LightShaderLayout.Light_Ambient.Put(Light_Ambient);
 	LightShaderLayout.Light_Solar.Put(Light_Solar);
 	for (unsigned int i = 0; i < Light_Spot_Count; i++)
@@ -677,12 +678,6 @@ void Light3DContext::Draw()
 		LightShaderLayout.Light_Spot_Array[i].Put(Light_Spot_Array[i]);
 	}
 	LightShaderLayout.Light_Spot_Count.Put(Light_Spot_Count);
-
-	PolyHedraUIManager.ShaderFullDefault.Bind();
-	PolyHedraUIManager.ShaderLayoutFullDefault.View.Put(Matrix4x4::TransformReverse(View.Trans));
-
-	PolyHedraUIManager.ShaderWireDefault.Bind();
-	PolyHedraUIManager.ShaderLayoutWireDefault.View.Put(Matrix4x4::TransformReverse(View.Trans));
 
 
 
@@ -852,22 +847,8 @@ void Light3DContext::Frame(FrameTime frame_time)
 
 void Light3DContext::Resize(DisplaySize display_size)
 {
-	PolyHedraManager.ShaderFullDefault.Bind();
-	PolyHedraManager.ShaderLayoutFullDefault.DisplaySize.Put(display_size);
-
-	PolyHedraManager.ShaderWireDefault.Bind();
-	PolyHedraManager.ShaderLayoutWireDefault.DisplaySize.Put(display_size);
-
-	LightShader.Bind();
-	LightShaderLayout.DisplaySize.Put(display_size);
-
+	MultiformLayout.DisplaySize.ChangeData(display_size);
 	UIManager.Resize(display_size);
-
-	PolyHedraUIManager.ShaderFullDefault.Bind();
-	PolyHedraUIManager.ShaderLayoutFullDefault.DisplaySize.Put(display_size);
-
-	PolyHedraUIManager.ShaderWireDefault.Bind();
-	PolyHedraUIManager.ShaderLayoutWireDefault.DisplaySize.Put(display_size);
 }
 
 

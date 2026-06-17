@@ -3,16 +3,16 @@
 
 # include "SceneObject.hpp"
 # include "ValueType/LightSpot.hpp"
-# include "PolyHedra/Object.hpp"
+# include "ValueType/Trans3D.hpp"
+
+struct PolyHedraPalletManager;
 
 struct SceneObject_LightSpot : public SceneObject
 {
 	LightSpot *			Light;
-	VectorF3			Position;
-//	VectorF3			Origin;
-//	VectorF3			Target;
-	PolyHedraObject		Object0;
-	PolyHedraObject		Object1;
+	Trans3D				Trans;
+	::PolyHedraPalletManager *	Pallet0;
+	::PolyHedraPalletManager *	Pallet1;
 
 	~SceneObject_LightSpot();
 	SceneObject_LightSpot();
