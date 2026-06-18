@@ -1,17 +1,32 @@
 #include "UserTrans3DChange.hpp"
 #include "Ray3D_Hit.hpp"
 
+
+
+UserTrans3DChange::UserTrans3DChange()
+	: IndicatorHovering(EIndicatorType::None)
+	, ChangeType(EChangeType::None)
+	, AxisX(1, 0, 0)
+	, AxisY(0, 1, 0)
+	, AxisZ(0, 0, 1)
+{ }
+
+
+
+#include <iostream>
+#include "ValueType/_Show.hpp"
+
 void UserTrans3DChange::FindIndicator(const Ray3D & ray)
 {
 	Ray3D_Hit_Type<EIndicatorType> hit(EIndicatorType::None);
 
-	hit.Consider(RayIntersectHit(ray, MoveAxisXIndicator), EIndicatorType::MoveAxisX);
-	hit.Consider(RayIntersectHit(ray, MoveAxisYIndicator), EIndicatorType::MoveAxisY);
-	hit.Consider(RayIntersectHit(ray, MoveAxisZIndicator), EIndicatorType::MoveAxisZ);
+	hit.Consider(RayHitObject(ray, MoveAxisXIndicator), EIndicatorType::MoveAxisX);
+	hit.Consider(RayHitObject(ray, MoveAxisYIndicator), EIndicatorType::MoveAxisY);
+	hit.Consider(RayHitObject(ray, MoveAxisZIndicator), EIndicatorType::MoveAxisZ);
 
-	hit.Consider(RayIntersectHit(ray, SpinRingXIndicator), EIndicatorType::SpinRingX);
-	hit.Consider(RayIntersectHit(ray, SpinRingYIndicator), EIndicatorType::SpinRingY);
-	hit.Consider(RayIntersectHit(ray, SpinRingZIndicator), EIndicatorType::SpinRingZ);
+	hit.Consider(RayHitObject(ray, SpinRingXIndicator), EIndicatorType::SpinRingX);
+	//hit.Consider(RayHitObject(ray, SpinRingYIndicator), EIndicatorType::SpinRingY);
+	//hit.Consider(RayHitObject(ray, SpinRingZIndicator), EIndicatorType::SpinRingZ);
 
 	if (hit.Is())
 	{
@@ -24,10 +39,8 @@ void UserTrans3DChange::FindIndicator(const Ray3D & ray)
 		IndicatorHovering = EIndicatorType::None;
 	}
 }
-void UserTrans3DChange::UpdateIndicator(const View3D & view)
+void UserTrans3DChange::UpdateIndicator(float scale)
 {
-	float dist = (view.Trans.Position - Trans.Position).length();
-
 	if (IndicatorHovering == EIndicatorType::None)
 	{
 		MoveAxisXIndicator.Color() = ColorF4(1, 0, 0);
@@ -57,30 +70,25 @@ void UserTrans3DChange::UpdateIndicator(const View3D & view)
 		}
 	}
 
-	MoveAxisXIndicator.Scale() = dist * 0.25f;
-	MoveAxisYIndicator.Scale() = dist * 0.25f;
-	MoveAxisZIndicator.Scale() = dist * 0.25f;
-	SpinRingXIndicator.Scale() = dist * 0.25f;
-	SpinRingYIndicator.Scale() = dist * 0.25f;
-	SpinRingZIndicator.Scale() = dist * 0.25f;
+	MoveAxisXIndicator.Scale() = scale * 0.25f;
+	MoveAxisYIndicator.Scale() = scale * 0.25f;
+	MoveAxisZIndicator.Scale() = scale * 0.25f;
+	SpinRingXIndicator.Scale() = scale * 0.25f;
+	SpinRingYIndicator.Scale() = scale * 0.25f;
+	SpinRingZIndicator.Scale() = scale * 0.25f;
 
 	MoveAxisXIndicator.Trans().Position = Trans.Position;
 	MoveAxisYIndicator.Trans().Position = Trans.Position;
 	MoveAxisZIndicator.Trans().Position = Trans.Position;
+
 	SpinRingXIndicator.Trans().Position = Trans.Position;
 	SpinRingYIndicator.Trans().Position = Trans.Position;
 	SpinRingZIndicator.Trans().Position = Trans.Position;
+
+	SpinRingXIndicator.Trans().Rotation = Trans.Rotation;
 }
 
 
-
-UserTrans3DChange::UserTrans3DChange()
-	: IndicatorHovering(EIndicatorType::None)
-	, ChangeType(EChangeType::None)
-	, AxisX(1, 0, 0)
-	, AxisY(0, 1, 0)
-	, AxisZ(0, 0, 1)
-{ }
 
 bool UserTrans3DChange::TypeIsNone() const
 {
@@ -95,9 +103,10 @@ void UserTrans3DChange::TypeUseL()
 	if (IndicatorHovering == EIndicatorType::None) { return; }
 	switch (IndicatorHovering)
 	{
-		case EIndicatorType::MoveAxisX: ChangeType = EChangeType::AxisX; break;
-		case EIndicatorType::MoveAxisY: ChangeType = EChangeType::AxisY; break;
-		case EIndicatorType::MoveAxisZ: ChangeType = EChangeType::AxisZ; break;
+		case EIndicatorType::MoveAxisX: ChangeType = EChangeType::LineX; break;
+		case EIndicatorType::MoveAxisY: ChangeType = EChangeType::LineY; break;
+		case EIndicatorType::MoveAxisZ: ChangeType = EChangeType::LineZ; break;
+		case EIndicatorType::SpinRingX: ChangeType = EChangeType::SpinX; break;
 		default: ChangeType = EChangeType::None; break;
 	}
 	Offset = Trans.Position - IndicatorOffset;
@@ -115,29 +124,43 @@ void UserTrans3DChange::TypeUseR()
 	Offset = Trans.Position - IndicatorOffset;
 }
 
-Trans3D UserTrans3DChange::NewTransAxis(const Ray3D & ray, const VectorF3 & axis) const
+
+
+VectorF3 UserTrans3DChange::NewPosAxis(const Ray3D & ray, const VectorF3 & axis) const
 {
 	Ray3D axis_ray(Trans.Position - Offset, axis);
 	Ray3D_Hit axis_hit;
 	Ray3D_Hit hit;
-	RayApproachHit(ray, hit, axis_ray, axis_hit);
-	if (hit.Interval < 0.0f) { return Trans; }
-	return Trans3D(axis_hit.Pos() + Offset, Trans.Rotation);
+	RaySkew(ray, hit, axis_ray, axis_hit);
+	if (hit.Interval < 0.0f) { return Trans.Position; }
+	return (axis_hit.Pos() + Offset);
 }
-Trans3D UserTrans3DChange::NewTransPlane(const Ray3D & ray, const VectorF3 & axis) const
+VectorF3 UserTrans3DChange::NewPosPlane(const Ray3D & ray, const VectorF3 & axis) const
 {
-	Ray3D_Hit hit = RayIntersectHit(ray, Trans.Position - Offset, axis);
-	if (!hit.Is()) { return Trans; }
-	return Trans3D(hit.Pos() + Offset, Trans.Rotation);
+	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position - Offset, axis));
+	if (!hit.Is()) { return Trans.Position; }
+	return (hit.Pos() + Offset);
 }
-Trans3D UserTrans3DChange::NewTrans(const Ray3D & ray)
+EulerAngle3D UserTrans3DChange::NewRotPlaneX(const Ray3D & ray) const
 {
-	if (ChangeType == EChangeType::None) { return Trans; }
-	else if (ChangeType == EChangeType::AxisX)  { return NewTransAxis(ray, AxisX); }
-	else if (ChangeType == EChangeType::AxisY)  { return NewTransAxis(ray, AxisY); }
-	else if (ChangeType == EChangeType::AxisZ)  { return NewTransAxis(ray, AxisZ); }
-	else if (ChangeType == EChangeType::PlaneX) { return NewTransPlane(ray, AxisX); }
-	else if (ChangeType == EChangeType::PlaneY) { return NewTransPlane(ray, AxisY); }
-	else if (ChangeType == EChangeType::PlaneZ) { return NewTransPlane(ray, AxisZ); }
-	else { return Trans; }
+	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position, AxisX));
+	if (!hit.Is()) { return Trans.Rotation; }
+	VectorF3 rel = !(hit.Pos() - Trans.Position);
+	Angle ang = Angle::aTan2(AxisX.dot(AxisY.cross(rel)), AxisY.dot(rel));
+	return EulerAngle3D(Trans.Rotation.Z0, ang, Trans.Rotation.Y2);
+}
+Trans3D UserTrans3DChange::NewTrans(const Ray3D & ray) const
+{
+	switch (ChangeType)
+	{
+		case EChangeType::None:   return Trans;
+		case EChangeType::LineX:  return Trans3D(NewPosAxis(ray, AxisX), Trans.Rotation);
+		case EChangeType::LineY:  return Trans3D(NewPosAxis(ray, AxisY), Trans.Rotation);
+		case EChangeType::LineZ:  return Trans3D(NewPosAxis(ray, AxisZ), Trans.Rotation);
+		case EChangeType::PlaneX: return Trans3D(NewPosPlane(ray, AxisX), Trans.Rotation);
+		case EChangeType::PlaneY: return Trans3D(NewPosPlane(ray, AxisY), Trans.Rotation);
+		case EChangeType::PlaneZ: return Trans3D(NewPosPlane(ray, AxisZ), Trans.Rotation);
+		case EChangeType::SpinX:  return Trans3D(Trans.Position, NewRotPlaneX(ray));
+		default: return Trans;
+	}
 }

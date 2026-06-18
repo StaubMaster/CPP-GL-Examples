@@ -44,5 +44,5 @@ void SceneObject_LightSolar::DisplayObject()
 
 Ray3D_Hit SceneObject_LightSolar::Hit(const Ray3D & ray) const
 {
-	return RayIntersectHit(ray, Data);
+	return RayHitObject(ray, Data);
 }

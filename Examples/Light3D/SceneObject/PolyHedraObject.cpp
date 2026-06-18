@@ -48,5 +48,5 @@ void SceneObject_PolyHedraObject::DisplayObject()
 
 Ray3D_Hit SceneObject_PolyHedraObject::Hit(const Ray3D & ray) const
 {
-	return RayIntersectHit(ray, Data);
+	return RayHitObject(ray, Data);
 }

@@ -419,7 +419,7 @@ void Light3DContext::ViewChangeTransFunc()
 	if (UserTrans3DChange.TypeIsNone())
 	{
 		UserTrans3DChange.FindIndicator(ViewRay);
-		UserTrans3DChange.UpdateIndicator(View);
+		UserTrans3DChange.UpdateIndicator((View.Trans.Position - UserTrans3DChange.Trans.Position).length());
 	}
 
 	if (window.MouseManager[MouseButtons::MouseL] == State::Release ||
@@ -438,6 +438,7 @@ void Light3DContext::ViewChangeTransFunc()
 
 	Trans3D trans = UserTrans3DChange.NewTrans(ViewRay);
 	trans.Position = trans.Position.round(0.1f);
+	trans.Rotation = trans.Rotation.round(Angle::Degrees(15));
 
 	UserTrans3DChange.Trans = trans;
 	if (!UserTrans3DChange.TypeIsNone() && SceneObject_Selected != nullptr)

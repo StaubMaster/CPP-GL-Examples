@@ -54,16 +54,32 @@ struct Ray3D_Hit_Type : public Ray3D_Hit
 	}
 };
 
-Ray3D_Hit RayIntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c);
+void RaySkew(const Ray3D & ray0, Ray3D_Hit & hit0 , const Ray3D & ray1, Ray3D_Hit & hit1);
 
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans);
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
+struct Plane3D
+{
+	VectorF3	Origin;
+	VectorF3	Normal;
+	Plane3D(VectorF3 origin, VectorF3 normal);
+};
+Ray3D_Hit RayHitPlane(const Ray3D & ray, const Plane3D & plane);
 
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObjectData & object);
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObject & object);
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraUIObject & object);
+struct Triangle3D
+{
+	VectorF3	A;
+	VectorF3	B;
+	VectorF3	C;
+	Triangle3D(VectorF3 a, VectorF3 b, VectorF3 c);
+};
+Ray3D_Hit RayHitTriangle(const Ray3D & ray, const Triangle3D & triangle);
 
-void RayApproachHit(const Ray3D & ray0, Ray3D_Hit & hit0 , const Ray3D & ray1, Ray3D_Hit & hit1);
-Ray3D_Hit RayIntersectHit(const Ray3D & ray, VectorF3 pos, VectorF3 norm);
+
+
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
+
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraObjectData & object);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraObject & object);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraUIObject & object);
 
 #endif

@@ -53,7 +53,7 @@ void SceneObject_LightSpot::DisplayObject()
 Ray3D_Hit SceneObject_LightSpot::Hit(const Ray3D & ray) const
 {
 	Ray3D_Hit hit;
-	hit.Consider(RayIntersectHit(ray, Data0));
-	hit.Consider(RayIntersectHit(ray, Data1));
+	hit.Consider(RayHitObject(ray, Data0));
+	hit.Consider(RayHitObject(ray, Data1));
 	return hit;
 }

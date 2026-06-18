@@ -51,11 +51,54 @@ bool Ray3D_Hit::Consider(const Ray3D_Hit & other)
 #include "PolyHedra/PalletManager.hpp"
 #include "PolyHedraUI/Object.hpp"
 
-Ray3D_Hit RayIntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 & b, const VectorF3 & c)
+void RaySkew(const Ray3D & ray0, Ray3D_Hit & hit0 , const Ray3D & ray1, Ray3D_Hit & hit1)
 {
-	VectorF3 plane_vec_0 = b - a;
-	VectorF3 plane_vec_1 = c - a;
-	VectorF3 diff_plane_ray = ray.Pos - a;
+	VectorF3 diff = ray1.Pos - ray0.Pos;
+	VectorF3 norm = VectorF3::cross(ray0.Dir, ray1.Dir);
+
+	float norm_inv = 1.0f / norm.length2();
+
+	if (norm_inv != 0.0f)
+	{
+		hit0 = Ray3D_Hit(ray0, ray1.Dir.cross(norm).dot(diff) * norm_inv);
+		hit1 = Ray3D_Hit(ray1, ray0.Dir.cross(norm).dot(diff) * norm_inv);
+	}
+	else
+	{
+		hit0 = Ray3D_Hit();
+		hit1 = Ray3D_Hit();
+	}
+}
+
+Plane3D::Plane3D(VectorF3 origin, VectorF3 normal)
+	: Origin(origin)
+	, Normal(normal)
+{ }
+Ray3D_Hit RayHitPlane(const Ray3D & ray, const Plane3D & plane)
+{
+	VectorF3 diff = plane.Origin - ray.Pos;
+
+	float dot = ray.Dir.dot(plane.Normal);
+	if (dot != 0.0f)
+	{
+		return Ray3D_Hit(ray, diff.dot(plane.Normal) / dot);
+	}
+	else
+	{
+		return Ray3D_Hit();
+	}
+}
+
+Triangle3D::Triangle3D(VectorF3 a, VectorF3 b, VectorF3 c)
+	: A(a)
+	, B(b)
+	, C(c)
+{ }
+Ray3D_Hit RayHitTriangle(const Ray3D & ray, const Triangle3D & triangle)
+{
+	VectorF3 plane_vec_0 = triangle.B - triangle.A;
+	VectorF3 plane_vec_1 = triangle.C - triangle.A;
+	VectorF3 diff_plane_ray = ray.Pos - triangle.A;
 
 	float p, u, v, t;
 	VectorF3 normal;
@@ -85,99 +128,70 @@ Ray3D_Hit RayIntersectHit(const Ray3D & ray, const VectorF3 & a, const VectorF3 
 	return Ray3D_Hit();
 }
 
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans)
+
+
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans)
 {
 	Ray3D_Hit_Type<unsigned int> hit_return;
 	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
 	{
 		const PolyHedra::Face & face = polyhedra.Faces[i];
 
-		VectorF3 a = polyhedra.Corners[face.udx[0]].Position;
-		VectorF3 b = polyhedra.Corners[face.udx[1]].Position;
-		VectorF3 c = polyhedra.Corners[face.udx[2]].Position;
+		Triangle3D triangle(
+			polyhedra.Corners[face.udx[0]].Position,
+			polyhedra.Corners[face.udx[1]].Position,
+			polyhedra.Corners[face.udx[2]].Position
+		);
 
-		a = trans.forward(a);
-		b = trans.forward(b);
-		c = trans.forward(c);
+		triangle.A = trans.forward(triangle.A);
+		triangle.B = trans.forward(triangle.B);
+		triangle.C = trans.forward(triangle.C);
 
-		Ray3D_Hit hit = RayIntersectHit(ray, a, b, c);
+		Ray3D_Hit hit = RayHitTriangle(ray, triangle);
 		hit_return.Consider(hit, i);
 	}
 	return hit_return;
 }
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale)
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale)
 {
 	Ray3D_Hit_Type<unsigned int> hit_return;
 	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
 	{
 		const PolyHedra::Face & face = polyhedra.Faces[i];
 
-		VectorF3 a = polyhedra.Corners[face.udx[0]].Position;
-		VectorF3 b = polyhedra.Corners[face.udx[1]].Position;
-		VectorF3 c = polyhedra.Corners[face.udx[2]].Position;
+		Triangle3D triangle(
+			polyhedra.Corners[face.udx[0]].Position,
+			polyhedra.Corners[face.udx[1]].Position,
+			polyhedra.Corners[face.udx[2]].Position
+		);
 
-		a = trans.forward(a * scale);
-		b = trans.forward(b * scale);
-		c = trans.forward(c * scale);
+		triangle.A = trans.forward(triangle.A * scale);
+		triangle.B = trans.forward(triangle.B * scale);
+		triangle.C = trans.forward(triangle.C * scale);
 
-		Ray3D_Hit hit = RayIntersectHit(ray, a, b, c);
+		Ray3D_Hit hit = RayHitTriangle(ray, triangle);
 		hit_return.Consider(hit, i);
 	}
 	return hit_return;
 }
 
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObjectData & object)
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraObjectData & object)
 {
-	return RayIntersectHit(ray, *(object.PalletManager -> Pallet), object.Trans);
+	return RayHitObject(ray, *(object.PalletManager -> Pallet), object.Trans);
 }
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObject & object)
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraObject & object)
 {
 	if (object.Is())
 	{
-		return RayIntersectHit(ray, *object.Pallet(), object.Trans());
+		return RayHitObject(ray, *object.Pallet(), object.Trans());
 	}
 	return Ray3D_Hit_Type<unsigned int>();
 }
-Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraUIObject & object)
+Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraUIObject & object)
 {
 	if (object.Is())
 	{
-		return RayIntersectHit(ray, *object.Pallet(), object.Trans(), object.Scale());
+		return RayHitObject(ray, *object.Pallet(), object.Trans(), object.Scale());
 	}
 	return Ray3D_Hit_Type<unsigned int>();
-}
-
-
-
-void RayApproachHit(const Ray3D & ray0, Ray3D_Hit & hit0 , const Ray3D & ray1, Ray3D_Hit & hit1)
-{
-	VectorF3 diff = ray1.Pos - ray0.Pos;
-	VectorF3 norm = VectorF3::cross(ray0.Dir, ray1.Dir);
-
-	float norm_inv = 1.0f / norm.length2();
-
-	if (norm_inv != 0.0f)
-	{
-		hit0 = Ray3D_Hit(ray0, ray1.Dir.cross(norm).dot(diff) * norm_inv);
-		hit1 = Ray3D_Hit(ray1, ray0.Dir.cross(norm).dot(diff) * norm_inv);
-	}
-	else
-	{
-		hit0 = Ray3D_Hit();
-		hit1 = Ray3D_Hit();
-	}
-}
-Ray3D_Hit RayIntersectHit(const Ray3D & ray, VectorF3 pos, VectorF3 norm)
-{
-	VectorF3 diff = pos - ray.Pos;
-
-	float dot = ray.Dir.dot(norm);
-	if (dot != 0.0f)
-	{
-		return Ray3D_Hit(ray, diff.dot(norm) / dot);
-	}
-	else
-	{
-		return Ray3D_Hit();
-	}
 }
