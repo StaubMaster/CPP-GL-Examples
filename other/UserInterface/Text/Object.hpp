@@ -25,7 +25,7 @@ struct Object
 
 	bool	Visibility() const;
 	void	Hide();
-	void	Full();
+	void	Show();
 
 	// change to get/set instead of returning referances ?
 
@@ -50,6 +50,11 @@ struct Object
 	void	AlignBottomLeft();
 	void	AlignBottomMiddle();
 	void	AlignBottomRight();
+
+	bool			TextCursorVisibility() const;
+	void			HideTextCursor();
+	void			ShowTextCursor();
+	unsigned int &	TextCursorIndex();
 
 	~Object();
 	Object();

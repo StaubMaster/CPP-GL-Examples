@@ -31,6 +31,9 @@ struct ObjectData
 	BoxF2			Bound;
 	ColorF4			Color;
 
+	bool			DisplayTextCursor;
+	unsigned int	TextCursorIndex;
+
 	~ObjectData();
 	ObjectData();
 	ObjectData(const ObjectData & other);

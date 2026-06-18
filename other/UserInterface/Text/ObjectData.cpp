@@ -16,6 +16,8 @@ UI::Text::ObjectData::ObjectData()
 	, CharacterAlignmentY(Alignment::Max)
 	, Bound()
 	, Color()
+	, DisplayTextCursor(false)
+	, TextCursorIndex(0)
 { }
 UI::Text::ObjectData::ObjectData(const ObjectData & other)
 	: Remove(other.Remove)
@@ -29,6 +31,8 @@ UI::Text::ObjectData::ObjectData(const ObjectData & other)
 	, CharacterAlignmentY(other.CharacterAlignmentY)
 	, Bound(other.Bound)
 	, Color(other.Color)
+	, DisplayTextCursor(other.DisplayTextCursor)
+	, TextCursorIndex(other.TextCursorIndex)
 { }
 UI::Text::ObjectData & UI::Text::ObjectData::operator=(const ObjectData & other)
 {
@@ -43,5 +47,7 @@ UI::Text::ObjectData & UI::Text::ObjectData::operator=(const ObjectData & other)
 	CharacterAlignmentY = other.CharacterAlignmentY;
 	Bound = other.Bound;
 	Color = other.Color;
+	DisplayTextCursor = other.DisplayTextCursor;
+	TextCursorIndex = other.TextCursorIndex;
 	return *this;
 }

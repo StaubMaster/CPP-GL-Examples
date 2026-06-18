@@ -30,14 +30,17 @@ class TextBox : public Base
 	void	RelayRemoveObject() override;
 
 	public:
-	void	RelayKey(KeyArgs params) override;
-	void	RelayText(TextArgs params) override;
+	void	RelayKey(KeyArgs args) override;
+	void	RelayText(TextArgs args) override;
 
 	private:
 	Text::Object	TextObject;
 	void			PutCharactersEntrys();
 	public:
 	void			PutAlignment();
+	private:
+	unsigned int	TextCursor;
+	void			PutCursor();
 
 	private:
 	std::string		Text;

@@ -8,7 +8,7 @@ bool UI::Text::Object::Is() const { return (Data != nullptr); }
 
 bool UI::Text::Object::Visibility() const { return (Data -> Display); }
 void UI::Text::Object::Hide() { (Data -> Display) = false; }
-void UI::Text::Object::Full() { (Data -> Display) = true; }
+void UI::Text::Object::Show() { (Data -> Display) = true; }
 
 
 
@@ -89,6 +89,13 @@ void UI::Text::Object::AlignBottomRight()
 	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
 	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
 }
+
+
+
+bool			UI::Text::Object::TextCursorVisibility() const { return (Data -> DisplayTextCursor); }
+void			UI::Text::Object::HideTextCursor() { (Data -> DisplayTextCursor) = false; }
+void			UI::Text::Object::ShowTextCursor() { (Data -> DisplayTextCursor) = true; }
+unsigned int &	UI::Text::Object::TextCursorIndex() { return (Data -> TextCursorIndex); }
 
 
 

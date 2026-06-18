@@ -308,16 +308,31 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 	WatchLoop.Start();
 #endif
 
+	VectorF2 cursor;
+	bool cursor_found = false;
+
 	for (unsigned int i = 0; i < obj.Text.length(); i++)
 	{
 		char c = obj.Text[i];
 		if (c == ' ')
 		{
+			if (obj.DisplayTextCursor && i == obj.TextCursorIndex)
+			{
+				rel_txt.X = (line_idx + text_alignment.X) - (line_len * text_alignment.X);
+				cursor = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
+				cursor_found = true;
+			}
 			line_idx++;
-			continue;;
+			continue;
 		}
 		if (c == '\n')
 		{
+			if (obj.DisplayTextCursor && i == obj.TextCursorIndex)
+			{
+				rel_txt.X = (line_idx + text_alignment.X) - (line_len * text_alignment.X);
+				cursor = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
+				cursor_found = true;
+			}
 			rel_txt.Y++;
 			line_idx = 0;
 			line_len = LineLength(obj.Text.c_str(), i + 1);
@@ -336,8 +351,8 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 		WatchOther.Start();
 #endif
 		rel_txt.X = (line_idx + text_alignment.X) - (line_len * text_alignment.X);
-		line_idx++;
 		data.Pos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
+
 #ifdef TELEMETRY_TIME
 		WatchOther.Stop();
 #endif
@@ -376,6 +391,28 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 #ifdef TELEMETRY_TIME
 		WatchNext1.Stop();
 #endif
+		line_idx++;
+
+		if (obj.DisplayTextCursor && i == obj.TextCursorIndex)
+		{
+			cursor = data.Pos;
+			cursor_found = true;
+		}
+	}
+
+	if (obj.DisplayTextCursor)
+	{
+		if (!cursor_found)
+		{
+			rel_txt.X = (line_idx + text_alignment.X) - (line_len * text_alignment.X);
+			cursor = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
+		}
+
+		UI::Text::Inst_Data & data = InstancesBlock.MakeNext();
+		data.Pos = cursor;
+		data.PalletIdx = (*TextFont).FindCodeIndex('^');
+		data.TextIdx = TextArrayIdx;
+		InstancesBlock.Next();
 	}
 
 	TextArrayIdx++;
