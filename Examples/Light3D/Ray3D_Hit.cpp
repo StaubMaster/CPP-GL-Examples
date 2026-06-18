@@ -146,3 +146,38 @@ Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraU
 	}
 	return Ray3D_Hit_Type<unsigned int>();
 }
+
+
+
+void RayApproachHit(const Ray3D & ray0, Ray3D_Hit & hit0 , const Ray3D & ray1, Ray3D_Hit & hit1)
+{
+	VectorF3 diff = ray1.Pos - ray0.Pos;
+	VectorF3 norm = VectorF3::cross(ray0.Dir, ray1.Dir);
+
+	float norm_inv = 1.0f / norm.length2();
+
+	if (norm_inv != 0.0f)
+	{
+		hit0 = Ray3D_Hit(ray0, ray1.Dir.cross(norm).dot(diff) * norm_inv);
+		hit1 = Ray3D_Hit(ray1, ray0.Dir.cross(norm).dot(diff) * norm_inv);
+	}
+	else
+	{
+		hit0 = Ray3D_Hit();
+		hit1 = Ray3D_Hit();
+	}
+}
+Ray3D_Hit RayIntersectHit(const Ray3D & ray, VectorF3 pos, VectorF3 norm)
+{
+	VectorF3 diff = pos - ray.Pos;
+
+	float dot = ray.Dir.dot(norm);
+	if (dot != 0.0f)
+	{
+		return Ray3D_Hit(ray, diff.dot(norm) / dot);
+	}
+	else
+	{
+		return Ray3D_Hit();
+	}
+}

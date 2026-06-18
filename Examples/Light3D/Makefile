@@ -7,6 +7,8 @@ FANCY_NAME := Light3D
 FILES := \
 	\
 	Ray3D_Hit.cpp \
+	UserTrans3DChange.cpp \
+	SceneParsingData.cpp \
 	\
 	PropertyControl/PropertyControl.cpp \
 	PropertyControl/VectorF3.cpp \

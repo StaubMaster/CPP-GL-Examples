@@ -63,4 +63,7 @@ Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraO
 Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraObject & object);
 Ray3D_Hit_Type<unsigned int> RayIntersectHit(const Ray3D & ray, const PolyHedraUIObject & object);
 
+void RayApproachHit(const Ray3D & ray0, Ray3D_Hit & hit0 , const Ray3D & ray1, Ray3D_Hit & hit1);
+Ray3D_Hit RayIntersectHit(const Ray3D & ray, VectorF3 pos, VectorF3 norm);
+
 #endif

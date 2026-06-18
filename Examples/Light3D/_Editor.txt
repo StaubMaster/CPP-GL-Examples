@@ -29,3 +29,22 @@ Object Insert
 	how to change Pallet of PolyHedra Object ?
 
 
+
+PolyHedra change
+{
+	click button to change
+	show UI that lists all Pallets
+		just an array of buttons
+		text of buttons are the names
+	ignore any other input
+	if escape is pressed
+		close UI, dont change object
+	if anything outside of the UI is clicked
+		close UI, dont change object
+	if a button is pressed
+		note whick button was pressed
+		that is the Pallet that was selected
+	close UI
+	change Pallet
+	input back to normal
+}
