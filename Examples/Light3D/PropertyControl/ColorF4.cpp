@@ -31,7 +31,7 @@ UI::Control::ColorF4::ColorF4(const char * name)
 	ChildInsert(G);
 	ChildInsert(B);
 
-	AnchorFitChildrenY();
+	HideProperty();
 }
 
 

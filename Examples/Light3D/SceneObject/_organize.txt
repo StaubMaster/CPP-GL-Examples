@@ -1,0 +1,29 @@
+
+PolyHeadra:
+	these are PolyHeadra
+
+Lights:
+	Ambient:
+		abstract
+		if represented as an object
+			meta Object (currently cube)
+		probably better represented in a Menu
+	Directional:
+		"position" is abstract
+		direction is concrete (it is relevant to the Scene)
+		there coule theoretically be multiple of these (sun and moon)
+	Cone:
+		concrete, has a position and direction in the Scene
+		also has a "angle" value
+			how to show angle ?
+			just draw lines ?
+		cone currently has range angle
+			a min where the light has no effect
+			a max where the light has full effect
+			and a transition area
+		cone light currently does not depend on distanct
+	Position:
+		concrete, has position in Scene, has no direction
+		currently does not exist
+
+

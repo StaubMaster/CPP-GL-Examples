@@ -5,7 +5,7 @@
 # include "Control/Label.hpp"
 # include "PropertyControl/Trans3D.hpp"
 
-struct PolyHedraObject;
+struct PolyHedraObjectData;
 struct SceneObject_PolyHedraObject;
 
 namespace UI
@@ -24,7 +24,7 @@ struct PolyHedraObject : public GroupBox
 	~PolyHedraObject();
 	PolyHedraObject();
 
-	::PolyHedraObject * Object;
+	::PolyHedraObjectData * Object;
 	void	Change(::SceneObject_PolyHedraObject * obj);
 	void	Update();
 };

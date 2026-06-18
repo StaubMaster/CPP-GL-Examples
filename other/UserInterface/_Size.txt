@@ -1,0 +1,15 @@
+
+UI is currently very big
+this is because of Text
+
+Text is big because it looks weired when scaled down
+	I remember this being due to Interpolation being nearest
+	try using Interpolation: Linear
+
+make better Font (again)
+
+
+
+display Text Cursor
+change Text Cursor with Arrow Keys
+change Text Cursor with Mouse Cursor

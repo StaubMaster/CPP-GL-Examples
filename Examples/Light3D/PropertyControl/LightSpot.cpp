@@ -19,7 +19,7 @@ UI::Control::LightSpot::LightSpot(const char * name)
 	ChildInsert(Pos);
 	ChildInsert(Dir);
 
-	AnchorFitChildrenY();
+	HideProperty();
 }
 
 

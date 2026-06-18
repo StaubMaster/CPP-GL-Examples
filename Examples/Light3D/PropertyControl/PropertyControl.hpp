@@ -16,6 +16,9 @@ struct PropertyControl : public GroupBox
 	~PropertyControl();
 	PropertyControl(const char * name);
 
+	void	ShowProperty();
+	void	HideProperty();
+
 	void	ToggleFunc(ClickArgs args);
 };
 };

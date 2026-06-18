@@ -16,7 +16,7 @@ UI::Control::Trans3D::Trans3D(const char * name)
 	ChildInsert(Position);
 	ChildInsert(Rotation);
 
-	AnchorFitChildrenY();
+	HideProperty();
 }
 
 

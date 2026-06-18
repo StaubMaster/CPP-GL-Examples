@@ -16,7 +16,7 @@ UI::Control::LightSolar::LightSolar(const char * name)
 	ChildInsert(Base);
 	ChildInsert(Dir);
 
-	AnchorFitChildrenY();
+	HideProperty();
 }
 
 

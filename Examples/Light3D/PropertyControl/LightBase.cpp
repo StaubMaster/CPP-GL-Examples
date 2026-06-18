@@ -20,7 +20,7 @@ UI::Control::LightBase::LightBase(const char * name)
 	ChildInsert(Intensity);
 	ChildInsert(Color);
 
-	AnchorFitChildrenY();
+	HideProperty();
 }
 
 

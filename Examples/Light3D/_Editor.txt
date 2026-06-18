@@ -1,13 +1,31 @@
 
 Move Object
 	copy Axis mover thing from my old C# Editor
+done ?
 
 Spin Object
 	also from C# Editor
+needs internals
 
-Remove Object
+
+
+Object Properties
+	get in the way sometimes
+	dont allways display, off at start
+	use Tab/Enter to toggle Properties UI
+
+	make all Properties collapsed by default
+
+
+
+Object Remove
 	add a Button to SceneObject UI
+	use Delete button
 
-Insert Object
+Object Insert
 	make a Key Toggle a List of Buttons that make SceneObjects
 	at the View Position
+	use Insert Button
+	how to change Pallet of PolyHedra Object ?
+
+

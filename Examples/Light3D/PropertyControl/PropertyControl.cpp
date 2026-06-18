@@ -17,32 +17,42 @@ UI::Control::PropertyControl::PropertyControl(const char * name)
 
 
 
+void UI::Control::PropertyControl::ShowProperty()
+{
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		if (Children[i] != &Toggle)
+		{
+			Children[i] -> Show();
+		}
+	}
+	Visible = true;
+	AnchorFitChildrenY();
+}
+void UI::Control::PropertyControl::HideProperty()
+{
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		if (Children[i] != &Toggle)
+		{
+			Children[i] -> Hide();
+		}
+	}
+	Visible = false;
+	AnchorFitChildrenY();
+}
+
 void UI::Control::PropertyControl::ToggleFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
 		if (Visible)
 		{
-			for (unsigned int i = 0; i < Children.Count(); i++)
-			{
-				if (Children[i] != &Toggle)
-				{
-					Children[i] -> Hide();
-				}
-			}
-			Visible = false;
+			HideProperty();
 		}
 		else
 		{
-			for (unsigned int i = 0; i < Children.Count(); i++)
-			{
-				if (Children[i] != &Toggle)
-				{
-					Children[i] -> Show();
-				}
-			}
-			Visible = true;
+			ShowProperty();
 		}
-		AnchorFitChildrenY();
 	}
 }
