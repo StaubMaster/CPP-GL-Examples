@@ -19,9 +19,9 @@ uniform sDisplaySize DisplaySize;
 uniform vec2 PalletArrayMin[128];
 uniform vec2 PalletArrayMax[128];
 
-uniform vec2 TextBoundArrayMin[32];
-uniform vec2 TextBoundArrayMax[32];
-uniform vec4 TextColorArray[32];
+uniform vec2 TextBoundArrayMin[64];
+uniform vec2 TextBoundArrayMax[64];
+uniform vec4 TextColorArray[64];
 
 //const vec2 PalletSize = vec2(32, 32);
 const vec2 PalletSize = vec2(20, 20);

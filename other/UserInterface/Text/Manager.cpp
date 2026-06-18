@@ -10,7 +10,6 @@
 #include "FileInfo.hpp"
 #include "Image.hpp"
 
-#include "ValueType/_Show.hpp"
 #include <iostream>
 
 
@@ -30,7 +29,6 @@ void UI::Text::Manager::MakeCurrent() { UI::Text::Manager::CurrentPointer = this
 
 UI::Text::Manager::~Manager()
 {
-	std::cout << "  ----  " << "UI::Text::Manager::~Manager()" << '\n';
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
 		delete ObjectDatas[i];
@@ -60,8 +58,6 @@ UI::Text::Manager::Manager()
 {
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
-
-	std::cout << "  ++++  " << "UI::Text::Manager::Manager()" << '\n';
 }
 
 void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
@@ -251,9 +247,9 @@ void UI::Text::Manager::ShowInstancesTime()
 
 void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 {
-	if (TextArrayIdx == 32)
+	if (TextArrayIdx == 64)
 	{
-		std::cerr << "!!!! Text Limit 32 reached !!!!\n";
+		std::cerr << "!!!! Text Limit 64 reached !!!!\n";
 		return;
 	}
 

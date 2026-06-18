@@ -6,9 +6,6 @@
 
 #include "ValueType/_Include.hpp"
 
-#include "ValueType/_Show.hpp"
-#include <iostream>
-
 
 
 
@@ -26,7 +23,6 @@ void UI::Graph::Manager::MakeCurrent() { UI::Graph::Manager::CurrentPointer = th
 
 UI::Graph::Manager::~Manager()
 {
-	std::cout << "  ----  " << "UI::Graph::Manager::~Manager()" << "\n";
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
 		delete ObjectDatas[i];
@@ -38,8 +34,6 @@ UI::Graph::Manager::Manager()
 	, Buffer()
 	, GraphicsExist(false)
 {
-	std::cout << "  ++++  " << "UI::Graph::Manager::Manager()" << "\n";
-
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 

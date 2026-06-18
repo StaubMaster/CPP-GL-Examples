@@ -22,9 +22,9 @@ class ShaderLayout : public Uniform::Layout
 	Uniform::VectorF2Array<128>		PalletArrayMax;
 
 	// make this a stuct / custom Uniform
-	Uniform::VectorF2Array<32>		TextBoundArrayMin;
-	Uniform::VectorF2Array<32>		TextBoundArrayMax;
-	Uniform::ColorF4Array<32>		TextColorArray;
+	Uniform::VectorF2Array<64>		TextBoundArrayMin;
+	Uniform::VectorF2Array<64>		TextBoundArrayMax;
+	Uniform::ColorF4Array<64>		TextColorArray;
 
 	public:
 	~ShaderLayout();

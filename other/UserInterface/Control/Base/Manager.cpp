@@ -6,9 +6,6 @@
 
 #include "ValueType/_Include.hpp"
 
-#include "ValueType/_Show.hpp"
-#include <iostream>
-
 
 
 
@@ -26,7 +23,6 @@ void UI::Control::Manager::MakeCurrent() { UI::Control::Manager::CurrentPointer 
 
 UI::Control::Manager::~Manager()
 {
-	std::cout << "  ----  " << "UI::Control::Manager::~Manager()" << "\n";
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
 		delete ObjectDatas[i];
@@ -39,8 +35,6 @@ UI::Control::Manager::Manager()
 	, GraphicsExist(false)
 	, GraphicsNeedMain(false)
 {
-	std::cout << "  ++++  " << "UI::Control::Manager::Manager()" << "\n";
-
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
