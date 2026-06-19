@@ -2,6 +2,8 @@
 # define SCENE_PARSING_HPP
 
 # include "FileInfo.hpp"
+# include "FileParsing/Variables/Float.hpp"
+
 # include "PolyHedra/Manager.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
@@ -19,19 +21,7 @@ struct SceneParsingData
 	PolyHedraPalletManager *					MissingPolyHedra;
 	Container::Binary<PolyHedraPalletManager*>	PolyHedras;
 
-	struct MapVariableFloat
-	{
-		struct Variable
-		{
-			std::string		Name;
-			float			Value;
-		};
-		Container::Binary<Variable>		Variables;
-		Variable *	Find(std::string name);
-		void	Put(const TextCommand & cmd);
-		float	To(const TextCommand & cmd, unsigned int idx);
-	};
-	MapVariableFloat	VarsFloat;
+	ParsingVariable::FloatMemory	VariableFloats;
 
 	~SceneParsingData();
 	SceneParsingData(const FileInfo & file, ::PolyHedraManager & manager, Container::Binary<SceneObject*> & objects);

@@ -66,9 +66,8 @@ void Light3DContext::ChangeMedia()
 	PolyHedraManager.ChangeMedia(MediaDirectory);
 	{
 		Container::Array<Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/PH/Simple3D.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/PH/UniLight4.frag")),
-			//Shader::Code(MediaDirectory.File("Shaders/PH/Direct.frag")),
+			Shader::Code(MediaDirectory.File("Shaders/PolyHedra/Default.vert")),
+			Shader::Code(MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag")),
 		});
 		LightShader.Change(code);
 		LightShader.UniformLayout = &LightShaderLayout;

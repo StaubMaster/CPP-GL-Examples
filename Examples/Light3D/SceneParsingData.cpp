@@ -11,63 +11,6 @@
 
 
 
-SceneParsingData::MapVariableFloat::Variable * SceneParsingData::MapVariableFloat::Find(std::string name)
-{
-	for (unsigned int i = 0; i < Variables.Count(); i++)
-	{
-		if (Variables[i].Name == name)
-		{
-			return &Variables[i];
-		}
-	}
-	return nullptr;
-}
-void SceneParsingData::MapVariableFloat::Put(const TextCommand & cmd)
-{
-	if (!(cmd.Count() == 2)) { throw InvalidCommandArgumentCount(cmd, "n == 2"); }
-	Variable * var = Find(cmd.ToString(0));
-	if (var != nullptr)
-	{
-		var -> Value = cmd.ToFloat(1);
-	}
-	else
-	{
-		Variable v;
-		v.Name = cmd.ToString(0);
-		v.Value = cmd.ToFloat(1);
-		Variables.Insert(v);
-	}
-}
-float SceneParsingData::MapVariableFloat::To(const TextCommand & cmd, unsigned int idx)
-{
-	std::string str = cmd.ToString(idx);
-	char c = str[0];
-
-	bool s = false;
-	s = (c == '+' || c == '-');
-
-	if (s) { c = str[1]; }
-
-	if ((c >= '0' && c <= '9')) { return cmd.ToFloat(idx); }
-
-	if (s) { c = str[0]; str.erase(0, 1); }
-
-	Variable * var = Find(str);
-	if (var != nullptr)
-	{
-		float v = var -> Value;
-		if (s)
-		{
-			if (c == '+') { v = +v; }
-			if (c == '-') { v = -v; }
-		}
-		return v;
-	}
-	return 0.0f; // return NaN ?
-}
-
-
-
 
 
 SceneParsingData::~SceneParsingData()
@@ -88,7 +31,7 @@ void SceneParsingData::Parse(const TextCommand & cmd)
 		std::string name = cmd.Name();
 		if (name == "") { /*std::cout << "empty\n";*/ }
 
-		else if (name == "varFloat")	{ VarsFloat.Put(cmd); }
+		else if (name == "varFloat")	{ VariableFloats.Put(cmd); }
 
 		else if (name == "polyhedra")	{ Parse_PolyHedra(cmd); }
 		else if (name == "place")		{ Parse_Place(cmd); }
@@ -126,14 +69,14 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 
 	Trans3D trans(
 		VectorF3(
-			VarsFloat.To(cmd, 1),
-			VarsFloat.To(cmd, 2),
-			VarsFloat.To(cmd, 3)
+			VariableFloats.To(cmd, 1),
+			VariableFloats.To(cmd, 2),
+			VariableFloats.To(cmd, 3)
 		),
 		EulerAngle3D::Degrees(
-			VarsFloat.To(cmd, 4),
-			VarsFloat.To(cmd, 5),
-			VarsFloat.To(cmd, 6)
+			VariableFloats.To(cmd, 4),
+			VariableFloats.To(cmd, 5),
+			VariableFloats.To(cmd, 6)
 		)
 	);
 

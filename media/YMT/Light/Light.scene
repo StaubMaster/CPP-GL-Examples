@@ -15,8 +15,8 @@
 #polyhedra Chair.polyhedra                       chair
 
 polyhedra Stage.polyhedra.ymt                
-polyhedra Truss_Square40cm_Len200cm.polyhedra
-polyhedra Truss_Cube40cm.polyhedra           
+polyhedra Truss/Square40cm_Len200cm.polyhedra
+polyhedra Truss/Cube40cm.polyhedra           
 polyhedra Chair.polyhedra                    
 
 
@@ -60,34 +60,34 @@ varFloat d1 22.25
 
 
 
-place Truss_4_20   -w1 h0 -d1   00 90 00
-place Truss_4_20   -w1 h1 -d1   00 90 00
-place Truss_4      -w1 h2 -d1   00 00 00
+place Truss_4_4_20   -w1 h0 -d1   00 90 00
+place Truss_4_4_20   -w1 h1 -d1   00 90 00
+place Truss_4_4_4    -w1 h2 -d1   00 00 00
 
-place Truss_4_20   +w1 h0 -d1   00 90 00
-place Truss_4_20   +w1 h1 -d1   00 90 00
-place Truss_4      +w1 h2 -d1   00 00 00
+place Truss_4_4_20   +w1 h0 -d1   00 90 00
+place Truss_4_4_20   +w1 h1 -d1   00 90 00
+place Truss_4_4_4    +w1 h2 -d1   00 00 00
 
-place Truss_4_20   -w0 h2 -d1   00 00 90
-place Truss_4_20    00 h2 -d1   00 00 90
-place Truss_4_20   +w0 h2 -d1   00 00 90
+place Truss_4_4_20   -w0 h2 -d1   00 00 90
+place Truss_4_4_20    00 h2 -d1   00 00 90
+place Truss_4_4_20   +w0 h2 -d1   00 00 90
 
-place Truss_4_20   -w1 h2 -d0   00 00 00
-place Truss_4_20   +w1 h2 -d0   00 00 00
-place Truss_4_20   -w1 h2 +d0   00 00 00
-place Truss_4_20   +w1 h2 +d0   00 00 00
+place Truss_4_4_20   -w1 h2 -d0   00 00 00
+place Truss_4_4_20   +w1 h2 -d0   00 00 00
+place Truss_4_4_20   -w1 h2 +d0   00 00 00
+place Truss_4_4_20   +w1 h2 +d0   00 00 00
 
-place Truss_4_20   -w1 h0 +d1   00 90 00
-place Truss_4_20   -w1 h1 +d1   00 90 00
-place Truss_4      -w1 h2 +d1   00 00 00
+place Truss_4_4_20   -w1 h0 +d1   00 90 00
+place Truss_4_4_20   -w1 h1 +d1   00 90 00
+place Truss_4_4_4    -w1 h2 +d1   00 00 00
 
-place Truss_4_20   +w1 h0 +d1   00 90 00
-place Truss_4_20   +w1 h1 +d1   00 90 00
-place Truss_4      +w1 h2 +d1   00 00 00
+place Truss_4_4_20   +w1 h0 +d1   00 90 00
+place Truss_4_4_20   +w1 h1 +d1   00 90 00
+place Truss_4_4_4    +w1 h2 +d1   00 00 00
 
-place Truss_4_20   -w0 h2 +d1   00 00 90
-place Truss_4_20    00 h2 +d1   00 00 90
-place Truss_4_20   +w0 h2 +d1   00 00 90
+place Truss_4_4_20   -w0 h2 +d1   00 00 90
+place Truss_4_4_20    00 h2 +d1   00 00 90
+place Truss_4_4_20   +w0 h2 +d1   00 00 90
 
 
 

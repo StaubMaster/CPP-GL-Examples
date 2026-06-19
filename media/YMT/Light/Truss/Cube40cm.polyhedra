@@ -1,0 +1,156 @@
+
+Name Truss_4_4_4
+
+
+
+varFloat Size 2.0
+varFloat Radius 0.25
+varFloat SizeRadius 2.25
+
+
+
+#	Z
+
+vertex -Size -Size -SizeRadius
+circle>   8 8 0   -Size -Size -SizeRadius   Radius   0,0 0,0 +1,0   0,00
+circle>   8 8 0   -Size -Size +SizeRadius   Radius   0,0 0,0 +1,0   0,00
+vertex -Size -Size +SizeRadius
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+vertex +Size -Size -SizeRadius
+circle>   8 8 0   +Size -Size -SizeRadius   Radius   0,0 0,0 +1,0   0,00
+circle>   8 8 0   +Size -Size +SizeRadius   Radius   0,0 0,0 +1,0   0,00
+vertex +Size -Size +SizeRadius
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+vertex -Size +Size -SizeRadius
+circle>   8 8 0   -Size +Size -SizeRadius   Radius   0,0 0,0 +1,0   0,00
+circle>   8 8 0   -Size +Size +SizeRadius   Radius   0,0 0,0 +1,0   0,00
+vertex -Size +Size +SizeRadius
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+vertex +Size +Size -SizeRadius
+circle>   8 8 0   +Size +Size -SizeRadius   Radius   0,0 0,0 +1,0   0,00
+circle>   8 8 0   +Size +Size +SizeRadius   Radius   0,0 0,0 +1,0   0,00
+vertex +Size +Size +SizeRadius
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+
+
+
+
+#	X
+
+vertex -SizeRadius -Size -Size
+circle>   8 8 0   -SizeRadius -Size -Size   Radius   +1,0 0,0 0,0   0,00
+circle>   8 8 0   +SizeRadius -Size -Size   Radius   +1,0 0,0 0,0   0,00
+vertex +SizeRadius -Size -Size
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+vertex -SizeRadius -Size +Size
+circle>   8 8 0   -SizeRadius -Size +Size   Radius   +1,0 0,0 0,0   0,00
+circle>   8 8 0   +SizeRadius -Size +Size   Radius   +1,0 0,0 0,0   0,00
+vertex +SizeRadius -Size +Size
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+vertex -SizeRadius +Size -Size
+circle>   8 8 0   -SizeRadius +Size -Size   Radius   +1,0 0,0 0,0   0,00
+circle>   8 8 0   +SizeRadius +Size -Size   Radius   +1,0 0,0 0,0   0,00
+vertex +SizeRadius +Size -Size
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+vertex -SizeRadius +Size +Size
+circle>   8 8 0   -SizeRadius +Size +Size   Radius   +1,0 0,0 0,0   0,00
+circle>   8 8 0   +SizeRadius +Size +Size   Radius   +1,0 0,0 0,0   0,00
+vertex +SizeRadius +Size +Size
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+
+
+
+
+#	Y
+
+vertex -Size -SizeRadius -Size
+circle>   8 8 0   -Size -SizeRadius -Size   Radius   0,0 +1,0 0,0   0,00
+circle>   8 8 0   -Size +SizeRadius -Size   Radius   0,0 +1,0 0,0   0,00
+vertex -Size +SizeRadius -Size
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+vertex -Size -SizeRadius +Size
+circle>   8 8 0   -Size -SizeRadius +Size   Radius   0,0 +1,0 0,0   0,00
+circle>   8 8 0   -Size +SizeRadius +Size   Radius   0,0 +1,0 0,0   0,00
+vertex -Size +SizeRadius +Size
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+vertex +Size -SizeRadius -Size
+circle>   8 8 0   +Size -SizeRadius -Size   Radius   0,0 +1,0 0,0   0,00
+circle>   8 8 0   +Size +SizeRadius -Size   Radius   0,0 +1,0 0,0   0,00
+vertex +Size +SizeRadius -Size
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8
+
+vertex +Size -SizeRadius +Size
+circle>   8 8 0   +Size -SizeRadius +Size   Radius   0,0 +1,0 0,0   0,00
+circle>   8 8 0   +Size +SizeRadius +Size   Radius   0,0 +1,0 0,0   0,00
+vertex +Size +SizeRadius +Size
+fan<1 +00 +01 +02 +03 +04 +05 +06 +07 +08
+index +1 +8
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +8 +16
+fan0 +08 +00 +01 +02 +03 +04 +05 +06 +07
+index +9 +8

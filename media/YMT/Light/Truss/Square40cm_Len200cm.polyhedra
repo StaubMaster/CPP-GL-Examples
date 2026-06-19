@@ -1,0 +1,194 @@
+
+Name Truss_4_4_20
+
+
+
+varFloat Size 2.0
+varFloat Length 10.0
+varFloat Radius 0.25
+
+
+
+#	LengthWise
+circle>   8 8 0   -Size -Size -Length   Radius   0,0 0,0 1,0   0,00
+circle>   8 8 0   -Size -Size +Length   Radius   0,0 0,0 1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +16 +16
+
+circle>   8 8 0   +Size -Size -Length   Radius   0,0 0,0 1,0   0,00
+circle>   8 8 0   +Size -Size +Length   Radius   0,0 0,0 1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +16 +16
+
+circle>   8 8 0   -Size +Size -Length   Radius   0,0 0,0 1,0   0,00
+circle>   8 8 0   -Size +Size +Length   Radius   0,0 0,0 1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +16 +16
+
+circle>   8 8 0   +Size +Size -Length   Radius   0,0 0,0 1,0   0,00
+circle>   8 8 0   +Size +Size +Length   Radius   0,0 0,0 1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15
+index +16 +16
+
+
+
+varFloat Radius 0.1
+
+
+
+#	Straight End	-
+circle>   4 4 0   +Size -Size -09,0   Radius   -1,0 0,0 0,0   0,00
+circle>   4 4 0   -Size -Size -09,0   Radius   -1,0 0,0 0,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size +Size -09,0   Radius   +1,0 0,0 0,0   0,00
+circle>   4 4 0   +Size +Size -09,0   Radius   +1,0 0,0 0,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size +Size -09,0   Radius   0,0 -1,0 0,0   0,00
+circle>   4 4 0   -Size -Size -09,0   Radius   0,0 -1,0 0,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size -Size -09,0   Radius   0,0 +1,0 0,0   0,00
+circle>   4 4 0   +Size +Size -09,0   Radius   0,0 +1,0 0,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+
+#	Straight End	+
+circle>   4 4 0   +Size -Size +09,0   Radius   -1,0 0,0 0,0   0,00
+circle>   4 4 0   -Size -Size +09,0   Radius   -1,0 0,0 0,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size +Size +09,0   Radius   +1,0 0,0 0,0   0,00
+circle>   4 4 0   +Size +Size +09,0   Radius   +1,0 0,0 0,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size +Size +09,0   Radius   0,0 -1,0 0,0   0,00
+circle>   4 4 0   -Size -Size +09,0   Radius   0,0 -1,0 0,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size -Size +09,0   Radius   0,0 +1,0 0,0   0,00
+circle>   4 4 0   +Size +Size +09,0   Radius   0,0 +1,0 0,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+
+
+#	Diagonal	X-
+circle>   4 4 0   -Size -Size -8,4   Radius   0,0 +1,0 +1,0   0,00
+circle>   4 4 0   -Size +Size -5,2   Radius   0,0 +1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size +Size -5,0   Radius   0,0 -1,0 +1,0   0,00
+circle>   4 4 0   -Size -Size -1,8   Radius   0,0 -1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size -Size -1,6   Radius   0,0 +1,0 +1,0   0,00
+circle>   4 4 0   -Size +Size +1,6   Radius   0,0 +1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size +Size +1,8   Radius   0,0 -1,0 +1,0   0,00
+circle>   4 4 0   -Size -Size +5,0   Radius   0,0 -1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size -Size +5,2   Radius   0,0 +1,0 +1,0   0,00
+circle>   4 4 0   -Size +Size +8,4   Radius   0,0 +1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+
+
+#	Diagonal	X+
+circle>   4 4 0   +Size +Size -8,4   Radius   0,0 -1,0 +1,0   0,00
+circle>   4 4 0   +Size -Size -5,2   Radius   0,0 -1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size -Size -5,0   Radius   0,0 +1,0 +1,0   0,00
+circle>   4 4 0   +Size +Size -1,8   Radius   0,0 +1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size +Size -1,6   Radius   0,0 -1,0 +1,0   0,00
+circle>   4 4 0   +Size -Size +1,6   Radius   0,0 -1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size -Size +1,8   Radius   0,0 +1,0 +1,0   0,00
+circle>   4 4 0   +Size +Size +5,0   Radius   0,0 +1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size +Size +5,2   Radius   0,0 -1,0 +1,0   0,00
+circle>   4 4 0   +Size -Size +8,4   Radius   0,0 -1,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+
+
+#	Diagonal	Y-
+circle>   4 4 0   +Size -Size -8,4   Radius   -1,0 0,0 +1,0   0,00
+circle>   4 4 0   -Size -Size -5,2   Radius   -1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size -Size -5,0   Radius   +1,0 0,0 +1,0   0,00
+circle>   4 4 0   +Size -Size -1,8   Radius   +1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size -Size -1,6   Radius   -1,0 0,0 +1,0   0,00
+circle>   4 4 0   -Size -Size +1,6   Radius   -1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size -Size +1,8   Radius   +1,0 0,0 +1,0   0,00
+circle>   4 4 0   +Size -Size +5,0   Radius   +1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size -Size +5,2   Radius   -1,0 0,0 +1,0   0,00
+circle>   4 4 0   -Size -Size +8,4   Radius   -1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+
+
+#	Diagonal	Y+
+circle>   4 4 0   -Size +Size -8,4   Radius   +1,0 0,0 +1,0   0,00
+circle>   4 4 0   +Size +Size -5,2   Radius   +1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size +Size -5,0   Radius   -1,0 0,0 +1,0   0,00
+circle>   4 4 0   -Size +Size -1,8   Radius   -1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size +Size -1,6   Radius   +1,0 0,0 +1,0   0,00
+circle>   4 4 0   +Size +Size +1,6   Radius   +1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   +Size +Size +1,8   Radius   -1,0 0,0 +1,0   0,00
+circle>   4 4 0   -Size +Size +5,0   Radius   -1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+circle>   4 4 0   -Size +Size +5,2   Radius   +1,0 0,0 +1,0   0,00
+circle>   4 4 0   +Size +Size +8,4   Radius   +1,0 0,0 +1,0   0,00
+belt>1 +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +8
+
+
