@@ -418,8 +418,8 @@ void Light3DContext::ViewChangeTransFunc()
 	if (UserTrans3DChange.TypeIsNone())
 	{
 		UserTrans3DChange.FindIndicator(ViewRay);
-		UserTrans3DChange.UpdateIndicator((View.Trans.Position - UserTrans3DChange.Trans.Position).length());
 	}
+	UserTrans3DChange.UpdateIndicator((View.Trans.Position - UserTrans3DChange.Trans.Position).length());
 
 	if (window.MouseManager[MouseButtons::MouseL] == State::Release ||
 		window.MouseManager[MouseButtons::MouseR] == State::Release)

@@ -59,18 +59,14 @@ struct UserTrans3DChange
 	void	TypeUseL();
 	void	TypeUseR();
 
-
-
-	VectorF3	AxisX;
-	VectorF3	AxisY;
-	VectorF3	AxisZ;
-
 	Trans3D		Trans;
 	Trans3D		Offset;
 
 	VectorF3		NewPosAxis(const Ray3D & ray, const VectorF3 & axis) const;
 	VectorF3		NewPosPlane(const Ray3D & ray, const VectorF3 & axis) const;
 	EulerAngle3D	NewRotPlaneX(const Ray3D & ray) const;
+	EulerAngle3D	NewRotPlaneY(const Ray3D & ray) const;
+	EulerAngle3D	NewRotPlaneZ(const Ray3D & ray) const;
 	Trans3D			NewTrans(const Ray3D & ray) const;
 };
 
