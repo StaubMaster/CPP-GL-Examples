@@ -24,7 +24,7 @@ struct UserTrans3DChange
 		SpinRingZ,
 	};
 	EIndicatorType	IndicatorHovering;
-	VectorF3		IndicatorOffset;
+	Trans3D			IndicatorOffset;
 
 	PolyHedraUIObject	MoveAxisXIndicator;
 	PolyHedraUIObject	MoveAxisYIndicator;
@@ -66,7 +66,7 @@ struct UserTrans3DChange
 	VectorF3	AxisZ;
 
 	Trans3D		Trans;
-	VectorF3	Offset;
+	Trans3D		Offset;
 
 	VectorF3		NewPosAxis(const Ray3D & ray, const VectorF3 & axis) const;
 	VectorF3		NewPosPlane(const Ray3D & ray, const VectorF3 & axis) const;

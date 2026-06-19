@@ -30,13 +30,15 @@ void UserTrans3DChange::FindIndicator(const Ray3D & ray)
 
 	if (hit.Is())
 	{
-		IndicatorOffset = hit.Pos();
 		IndicatorHovering = hit.Index;
+		IndicatorOffset.Position = hit.Pos();
+		VectorF3 rel = !(hit.Pos() - Trans.Position);
+		IndicatorOffset.Rotation.X1 = Angle::aTan2(AxisX.dot(AxisY.cross(rel)), AxisY.dot(rel));
 	}
 	else
 	{
-		IndicatorOffset = VectorF3();
 		IndicatorHovering = EIndicatorType::None;
+		IndicatorOffset = Trans3D();
 	}
 }
 void UserTrans3DChange::UpdateIndicator(float scale)
@@ -109,7 +111,8 @@ void UserTrans3DChange::TypeUseL()
 		case EIndicatorType::SpinRingX: ChangeType = EChangeType::SpinX; break;
 		default: ChangeType = EChangeType::None; break;
 	}
-	Offset = Trans.Position - IndicatorOffset;
+	Offset.Position = Trans.Position - IndicatorOffset.Position;
+	Offset.Rotation = Trans.Rotation - IndicatorOffset.Rotation;
 }
 void UserTrans3DChange::TypeUseR()
 {
@@ -121,25 +124,26 @@ void UserTrans3DChange::TypeUseR()
 		case EIndicatorType::MoveAxisZ: ChangeType = EChangeType::PlaneZ; break;
 		default: ChangeType = EChangeType::None; break;
 	}
-	Offset = Trans.Position - IndicatorOffset;
+	Offset.Position = Trans.Position - IndicatorOffset.Position;
+	Offset.Rotation = Trans.Rotation - IndicatorOffset.Rotation;
 }
 
 
 
 VectorF3 UserTrans3DChange::NewPosAxis(const Ray3D & ray, const VectorF3 & axis) const
 {
-	Ray3D axis_ray(Trans.Position - Offset, axis);
+	Ray3D axis_ray(Trans.Position - Offset.Position, axis);
 	Ray3D_Hit axis_hit;
 	Ray3D_Hit hit;
 	RaySkew(ray, hit, axis_ray, axis_hit);
 	if (hit.Interval < 0.0f) { return Trans.Position; }
-	return (axis_hit.Pos() + Offset);
+	return (axis_hit.Pos() + Offset.Position);
 }
 VectorF3 UserTrans3DChange::NewPosPlane(const Ray3D & ray, const VectorF3 & axis) const
 {
-	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position - Offset, axis));
+	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position - Offset.Position, axis));
 	if (!hit.Is()) { return Trans.Position; }
-	return (hit.Pos() + Offset);
+	return (hit.Pos() + Offset.Position);
 }
 EulerAngle3D UserTrans3DChange::NewRotPlaneX(const Ray3D & ray) const
 {
@@ -147,7 +151,7 @@ EulerAngle3D UserTrans3DChange::NewRotPlaneX(const Ray3D & ray) const
 	if (!hit.Is()) { return Trans.Rotation; }
 	VectorF3 rel = !(hit.Pos() - Trans.Position);
 	Angle ang = Angle::aTan2(AxisX.dot(AxisY.cross(rel)), AxisY.dot(rel));
-	return EulerAngle3D(Trans.Rotation.Z0, ang, Trans.Rotation.Y2);
+	return EulerAngle3D(Trans.Rotation.Z0, ang + Offset.Rotation.X1, Trans.Rotation.Y2);
 }
 Trans3D UserTrans3DChange::NewTrans(const Ray3D & ray) const
 {
