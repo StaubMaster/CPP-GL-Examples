@@ -47,13 +47,22 @@ uniform DepthData Depth;
 //  BumpMap
 uniform sampler2DArray TextureImage;
 
-// use Uniform Block for Light
-uniform LightBase Ambient;
-uniform LightSolar Solar;
+
 
 const uint SpotLimit = 4u;
-uniform LightSpot[SpotLimit] SpotArr;
-uniform uint SpotCount = 0u;
+
+//uniform LightBase Ambient;
+//uniform LightSolar Solar;
+//uniform LightSpot[SpotLimit] SpotArr;
+//uniform uint SpotCount = 0u;
+
+layout (std140) uniform ILights
+{
+	LightBase				Ambient;
+	LightSolar				Solar;
+	uint					SpotCount;
+	LightSpot[SpotLimit]	Spot;
+} Lights;
 
 
 
@@ -72,30 +81,43 @@ out vec4 Color;
 
 
 
+vec4 CalcLightFactor(LightBase light)
+{
+	return light.Intensity * light.Color;
+}
+vec4 CalcLightFactor(LightSolar light)
+{
+	float dot_factor = dot(light.Direction, normalize(-fs_inn.Normal));
+	return light.Base.Intensity * light.Base.Color * dot_factor;
+}
+vec4 CalcLightFactor(LightSpot light)
+{
+	vec3 spot_rel = normalize(fs_inn.Absolute - light.Position);
+
+	float spot_dot;
+	spot_dot = dot(spot_rel, light.Direction);
+
+	spot_dot = (spot_dot - light.Range.Min) / light.Range.Len;
+	spot_dot = min(1.0, max(0.0, spot_dot));
+
+	spot_dot = spot_dot * dot(spot_rel, normalize(-fs_inn.Normal));
+	//spot_dot = min(1.0, max(0.0, spot_dot));
+
+	return light.Base.Intensity * light.Base.Color * spot_dot;
+}
+void AccumulateLightFactor(inout vec4 factor, in vec4 new_factor)
+{
+	//factor = factor + new_factor;
+	factor = max(factor, new_factor);
+}
 vec4 CalcLightFactor()
 {
-	vec4 ambient_factor = Ambient.Intensity * Ambient.Color;
-	vec4 solar_factor = Solar.Base.Intensity * Solar.Base.Color * dot(Solar.Direction, normalize(-fs_inn.Normal));
-
-	vec4 spot_factor[SpotLimit];
-	for (uint i = 0u; i < SpotCount; i++)
-	{
-		vec3 spot_rel = normalize(fs_inn.Absolute - SpotArr[i].Position);
-		float spot_dot;
-		spot_dot = dot(spot_rel, SpotArr[i].Direction);
-		spot_dot = (spot_dot - SpotArr[i].Range.Min) / SpotArr[i].Range.Len;
-		spot_dot = min(1.0, max(0.0, spot_dot));
-		spot_dot = spot_dot * dot(spot_rel, normalize(-fs_inn.Normal));
-		spot_dot = min(1.0, max(0.0, spot_dot));
-		spot_factor[i] = SpotArr[i].Base.Intensity * SpotArr[i].Base.Color * spot_dot;
-	}
-
 	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
-	light_factor = max(light_factor, ambient_factor);
-	light_factor = max(light_factor, solar_factor);
-	for (uint i = 0u; i < SpotCount; i++)
+	AccumulateLightFactor(light_factor, CalcLightFactor(Lights.Ambient));
+	AccumulateLightFactor(light_factor, CalcLightFactor(Lights.Solar));
+	for (uint i = 0u; i < Lights.SpotCount; i++)
 	{
-		light_factor = max(light_factor, spot_factor[i]);
+		AccumulateLightFactor(light_factor, CalcLightFactor(Lights.Spot[i]));
 	}
 	return light_factor;
 }

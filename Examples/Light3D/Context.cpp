@@ -91,6 +91,10 @@ void Light3DContext::GraphicsCreate()
 
 	MultiformLayout.Depth.ChangeData(View.Depth);
 	MultiformLayout.FOV.ChangeData(View.FOV);
+
+	LightShaderLayout.Create();
+
+	LightShaderLayout.Find();
 }
 void Light3DContext::GraphicsDelete()
 {
@@ -98,6 +102,8 @@ void Light3DContext::GraphicsDelete()
 	LightShader.Delete();
 	UIManager.GraphicsDelete();
 	PolyHedraUIManager.GraphicsDelete();
+
+	LightShaderLayout.Delete();
 }
 
 
@@ -314,13 +320,23 @@ void Light3DContext::Draw()
 	MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
 
 	LightShader.Bind();
-	LightShaderLayout.Light_Ambient.Put(Light_Ambient);
-	LightShaderLayout.Light_Solar.Put(Light_Solar);
-	for (unsigned int i = 0; i < Light_Spot_Count; i++)
+	//LightShaderLayout.Light_Ambient.Put(Light_Ambient);
+	//LightShaderLayout.Light_Solar.Put(Light_Solar);
+	/*for (unsigned int i = 0; i < Light_Spot_Count; i++)
 	{
 		LightShaderLayout.Light_Spot_Array[i].Put(Light_Spot_Array[i]);
+	}*/
+	//LightShaderLayout.Light_Spot_Count.Put(Light_Spot_Count);
+
+	LightShaderLayout::LightData data;
+	data.Ambient = Light_Ambient;
+	data.Solar = Light_Solar;
+	for (unsigned int i = 0; i < Light_Spot_Count; i++)
+	{
+		data.Spot[i] = Light_Spot_Array[i];
 	}
-	LightShaderLayout.Light_Spot_Count.Put(Light_Spot_Count);
+	data.SpotCount = Light_Spot_Count;
+	LightShaderLayout.Put(data);
 
 
 
@@ -338,6 +354,7 @@ void Light3DContext::Draw()
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
 
+	GL::BindBuffer(GL::BufferTarget::UniformBuffer, LightShaderLayout.LightBuffer);
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
 
