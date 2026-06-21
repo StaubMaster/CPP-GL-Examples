@@ -14,4 +14,8 @@
 logs/
 *.log
 
+
+
+#	Visual Studio
 .vs/
+.vscode/

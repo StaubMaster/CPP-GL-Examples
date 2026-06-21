@@ -572,17 +572,18 @@ void UI::Text::Manager::Draw()
 {
 	if (!GraphicsExist) { return; }
 
+	Shader.Bind();
+	Pallet_Texture.Bind();
+
 	TextureAssign();
+
+	Buffer.Bind();
 
 	BufferMainAttributesBind();
 	BufferMainUpdateData();
 
 	BufferInstAttributesBind();
 	BufferInstUpdateData();
-
-	Shader.Bind();
-	Pallet_Texture.Bind();
-	Buffer.Bind();
 
 	Buffer.Draw();
 }

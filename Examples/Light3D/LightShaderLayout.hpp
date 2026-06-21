@@ -7,42 +7,32 @@
 # include "ValueType/ColorF4.hpp"
 # include "ValueType/Range.hpp"
 
-# include "Graphics/Buffer/Base.hpp"
-# include "Graphics/Shader/Base.hpp"
+# include "Graphics/Buffer/Uniform.hpp"
+# include "Graphics/Uniform/General/Buffer.hpp"
 
-namespace UniformBlock
+namespace PaddedBlock
 {
 	// Padded to be multiple of VectorF4
-	struct Float
+	// glsl std140 Interface Block
+
+	template<typename Type, unsigned int PaddingCount>
+	struct TypeBase
 	{
-		float	Value;
-		float	Padding[3];
-		Float & operator=(const float & object);
+		Type	Value;
+		float	Padding[PaddingCount];
+		TypeBase & operator=(const Type & object)
+		{
+			Value = object;
+			return *this;
+		}
 	};
-	struct UInt
-	{
-		unsigned int	Value;
-		float			Padding[3];
-		UInt & operator=(const unsigned int & object);
-	};
-	struct VectorF3
-	{
-		::VectorF3	Value;
-		float		Padding[1];
-		VectorF3 & operator=(const ::VectorF3 & object);
-	};
-	struct ColorF4
-	{
-		::ColorF4	Value;
-		float		Padding[0];
-		ColorF4 & operator=(const ::ColorF4 & object);
-	};
-	struct Range
-	{
-		::Range		Value;
-		float		Padding[1];
-		Range & operator=(const ::Range & object);
-	};
+
+	typedef TypeBase<float, 3> Float;
+	typedef TypeBase<unsigned int, 3> UInt;
+	typedef TypeBase<::VectorF3, 1> VectorF3;
+	typedef TypeBase<::ColorF4, 0> ColorF4;
+	typedef TypeBase<::Range, 1> Range;
+
 	struct LightBase
 	{
 		Float	Intensity;
@@ -68,33 +58,30 @@ namespace UniformBlock
 class LightShaderLayout : public PolyHedraFull::ShaderLayout
 {
 	public:
-	Uniform::LightBase								Light_Ambient;
-	Uniform::LightSolar								Light_Solar;
-	Uniform::GArray<Uniform::LightSpot, LightSpot>	Light_Spot_Array;
-	Uniform::UInt									Light_Spot_Count;
+	Buffer::Uniform			LightBuffer;
+	Uniform::Buffer			LightUniform;
 
-	public:
-	GL::BufferID			LightBuffer;
-	GL::UniformLocation		LightLocation;
-	GL::UniformLocation		LightBlockIndex;
-	GL::UniformLocation		LightBlockBinding;
+	//GL::BufferID			LightBuffer;
+	//GL::UniformLocation	LightBlockIndex;
+	//unsigned int			LightBlockBinding;
 	struct LightData
 	{
-		UniformBlock::LightBase		Ambient;
-		UniformBlock::LightSolar	Solar;
-		UniformBlock::UInt			SpotCount;
-		UniformBlock::LightSpot		Spot[4];
+		PaddedBlock::LightBase		Ambient;
+		PaddedBlock::LightSolar		Solar;
+		PaddedBlock::UInt			SpotCount;
+		PaddedBlock::LightSpot		Spot[4];
 	};
 
 	public:
 	~LightShaderLayout();
-	LightShaderLayout(unsigned int limit);
+	LightShaderLayout();
 
 	public:
-	void	Find();
+	void	BindBlock();
 	void	Create();
 	void	Delete();
 	void	Put(const LightData & data);
+	void	Info() const;
 };
 
 #endif

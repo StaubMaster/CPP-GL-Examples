@@ -6,24 +6,19 @@
 
 
 
-UniformBlock::Float & UniformBlock::Float::operator=(const float & object) { Value = object; return *this; }
-UniformBlock::UInt & UniformBlock::UInt::operator=(const unsigned int & object) { Value = object; return *this; }
-UniformBlock::VectorF3 & UniformBlock::VectorF3::operator=(const ::VectorF3 & object) { Value = object; return *this; }
-UniformBlock::ColorF4 & UniformBlock::ColorF4::operator=(const ::ColorF4 & object) { Value = object; return *this; }
-UniformBlock::Range & UniformBlock::Range::operator=(const ::Range & object) { Value = object; return *this; }
-UniformBlock::LightBase & UniformBlock::LightBase::operator=(const ::LightBase & object)
+PaddedBlock::LightBase & PaddedBlock::LightBase::operator=(const ::LightBase & object)
 {
 	Intensity = object.Intensity;
 	Color = object.Color;
 	return *this;
 }
-UniformBlock::LightSolar & UniformBlock::LightSolar::operator=(const ::LightSolar & object)
+PaddedBlock::LightSolar & PaddedBlock::LightSolar::operator=(const ::LightSolar & object)
 {
 	Base = object.Base;
 	Dir = object.Dir;
 	return *this;
 }
-UniformBlock::LightSpot & UniformBlock::LightSpot::operator=(const ::LightSpot & object)
+PaddedBlock::LightSpot & PaddedBlock::LightSpot::operator=(const ::LightSpot & object)
 {
 	Base = object.Base;
 	Pos = object.Pos;
@@ -36,32 +31,28 @@ UniformBlock::LightSpot & UniformBlock::LightSpot::operator=(const ::LightSpot &
 
 LightShaderLayout::~LightShaderLayout()
 { }
-LightShaderLayout::LightShaderLayout(unsigned int limit)
+LightShaderLayout::LightShaderLayout()
 	: PolyHedraFull::ShaderLayout()
-	, Light_Ambient(*this, "Ambient")
-	, Light_Solar(*this, "Solar")
-	, Light_Spot_Array(*this, "SpotArr", limit)
-	, Light_Spot_Count(*this, "SpotCount")
+	, LightBuffer(GL::BufferDataUsage::StreamDraw, 0)
+	, LightUniform(*this, "Lights")
 { }
 
 
 
-
+#include "Graphics/Shader/Base.hpp"
 #include "OpenGL.hpp"
 
-void LightShaderLayout::Find()
+void LightShaderLayout::BindBlock()
 {
-	LightBlockIndex = glGetUniformBlockIndex(Shader -> ID, "Lights");
-	LightBlockBinding = 0;
-	glUniformBlockBinding(Shader -> ID, LightBlockIndex, LightBlockBinding);
+	//LightUniform.BindBlock(LightBuffer.Binding);
 }
 void LightShaderLayout::Create()
 {
-	LightBuffer = GL::CreateBuffer();
+	LightBuffer.Create();
 }
 void LightShaderLayout::Delete()
 {
-	GL::DeleteBuffer(LightBuffer);
+	LightBuffer.Delete();
 }
 void LightShaderLayout::Put(const LightData & data)
 {
@@ -69,8 +60,19 @@ void LightShaderLayout::Put(const LightData & data)
 	void_data.Data = &data;
 	void_data.Size = sizeof(LightData);
 
-	GL::BindBuffer(GL::BufferTarget::UniformBuffer, LightBuffer);
-	GL::BufferData(GL::BufferTarget::UniformBuffer, void_data.Size, void_data.Data, GL::BufferDataUsage::DynamicDraw);
+	LightBuffer.DataFull(void_data);
+	LightBuffer.BindBase();
+}
 
-	glBindBufferBase((unsigned int)GL::BufferTarget::UniformBuffer, LightBlockBinding, LightBuffer);
+
+
+#include <iostream>
+void LightShaderLayout::Info() const
+{
+	std::cout << "MaxUniformBlockSize" << ' ' << GL::GetIntegerv(GL::ParameterName::MaxUniformBlockSize) << '\n';
+	std::cout << "MaxUniformBufferBindings" << ' ' << GL::GetIntegerv(GL::ParameterName::MaxUniformBufferBindings) << '\n';
+	std::cout << "MaxUniformLocations" << ' ' << GL::GetIntegerv(GL::ParameterName::MaxUniformLocations) << '\n';
+	std::cout << "MaxVertexUniformBlocks" << ' ' << GL::GetIntegerv(GL::ParameterName::MaxVertexUniformBlocks) << '\n';
+	std::cout << "MaxFragmentUniformBlocks" << ' ' << GL::GetIntegerv(GL::ParameterName::MaxFragmentUniformBlocks) << '\n';
+	std::cout << '\n';
 }

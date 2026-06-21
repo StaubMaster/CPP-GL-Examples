@@ -3,7 +3,7 @@
 
 # include "Graphics/Buffer/Array.hpp"
 # include "Graphics/Attribute/VectorF2.hpp"
-# include "Graphics/Attribute/Base/Float1.hpp"
+# include "Graphics/Attribute/General/Float1.hpp"
 
 namespace Grid2DGraphics
 {

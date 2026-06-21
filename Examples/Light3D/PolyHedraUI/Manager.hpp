@@ -15,7 +15,7 @@
 
 # include "ValueType/Undex.hpp"
 
-# include "Graphics/Attribute/Layout.hpp"
+# include "Graphics/Attribute/General/Layout.hpp"
 # include "Graphics/Attribute/TypeDefs/Matrix4x4.hpp"
 # include "Graphics/Attribute/TypeDefs/ColorF4.hpp"
 # include "Graphics/Attribute/TypeDefs/Float.hpp"

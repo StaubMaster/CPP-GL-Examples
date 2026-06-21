@@ -39,7 +39,7 @@ Light3DContext::Light3DContext()
 	, UIManager()
 	, UISceneObject()
 	, PolyHedraUIManager()
-	, LightShaderLayout(Light_Spot_Limit)
+	, LightShaderLayout()
 {
 	PolyHedraManager.MakeCurrent();
 	PolyHedraUIManager.MakeCurrent();
@@ -94,7 +94,9 @@ void Light3DContext::GraphicsCreate()
 
 	LightShaderLayout.Create();
 
-	LightShaderLayout.Find();
+	LightShaderLayout.BindBlock();
+
+	LightShaderLayout.Info();
 }
 void Light3DContext::GraphicsDelete()
 {
@@ -354,7 +356,7 @@ void Light3DContext::Draw()
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
 
-	GL::BindBuffer(GL::BufferTarget::UniformBuffer, LightShaderLayout.LightBuffer);
+	LightShaderLayout.LightBuffer.Bind();
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
 

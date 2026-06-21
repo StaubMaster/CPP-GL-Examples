@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_BUFFER_LAYOUT_HPP
 # define UI_CONTROL_BUFFER_LAYOUT_HPP
 
-# include "Graphics/Attribute/Layout.hpp"
+# include "Graphics/Attribute/General/Layout.hpp"
 # include "Graphics/Attribute/_Include.hpp"
 
 namespace UI

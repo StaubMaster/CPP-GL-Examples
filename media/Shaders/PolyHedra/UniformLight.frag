@@ -51,11 +51,6 @@ uniform sampler2DArray TextureImage;
 
 const uint SpotLimit = 4u;
 
-//uniform LightBase Ambient;
-//uniform LightSolar Solar;
-//uniform LightSpot[SpotLimit] SpotArr;
-//uniform uint SpotCount = 0u;
-
 layout (std140) uniform ILights
 {
 	LightBase				Ambient;
@@ -115,12 +110,14 @@ vec4 CalcLightFactor()
 	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
 	AccumulateLightFactor(light_factor, CalcLightFactor(Lights.Ambient));
 	AccumulateLightFactor(light_factor, CalcLightFactor(Lights.Solar));
-	for (uint i = 0u; i < Lights.SpotCount; i++)
+	for (uint i = 0u; i < min(SpotLimit, Lights.SpotCount); i++)
 	{
 		AccumulateLightFactor(light_factor, CalcLightFactor(Lights.Spot[i]));
 	}
 	return light_factor;
 }
+
+
 
 float CalcDepthFactor()
 {

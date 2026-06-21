@@ -2,7 +2,7 @@
 # define VOXEL_GRAPHICS_SHADER_HPP
 
 # include "Graphics/Shader/Base.hpp"
-# include "Graphics/Uniform/Layout.hpp"
+# include "Graphics/Uniform/General/Layout.hpp"
 # include "Graphics/Uniform/_Include.hpp"
 
 namespace VoxelGraphics

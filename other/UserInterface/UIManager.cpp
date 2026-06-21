@@ -180,8 +180,13 @@ void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 }
 void UI::Manager::Resize(DisplaySize display_size)
 {
+	TextManager.Shader.Bind();
 	TextManager.ShaderLayout.DisplaySize.Put(display_size);
+
+	ControlManager.Shader.Bind();
 	ControlManager.ShaderLayout.DisplaySize.Put(display_size);
+
+	GraphManager.Shader.Bind();
 	GraphManager.ShaderLayout.DisplaySize.Put(display_size);
 
 	WindowSize = display_size;

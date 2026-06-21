@@ -2,16 +2,11 @@
 # define VOXEL_GRAPHICS_MAIN_BUFFER_HPP
 
 # include "Graphics/Buffer/Array.hpp"
-# include "Graphics/Attribute/Layout.hpp"
+# include "Graphics/Attribute/General/Layout.hpp"
 # include "Graphics/Attribute/_Include.hpp"
 
 namespace VoxelGraphics
 {
-	struct MainBufferF : public ::Buffer::Array
-	{
-		~MainBufferF();
-		MainBufferF(::VertexArray & vertex_array);
-	};
 	struct MainLayoutF : public ::Attribute::Layout
 	{
 		::Attribute::VectorF3	Pos;
@@ -19,11 +14,6 @@ namespace VoxelGraphics
 		::Attribute::VectorF3	Normal;
 		~MainLayoutF();
 		MainLayoutF();
-	};
-	struct MainBufferU : public ::Buffer::Array
-	{
-		~MainBufferU();
-		MainBufferU(::VertexArray & vertex_array);
 	};
 	struct MainLayoutU : public ::Attribute::Layout
 	{

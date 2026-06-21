@@ -3,22 +3,12 @@
 
 
 
-VoxelGraphics::MainBufferF::~MainBufferF() { }
-VoxelGraphics::MainBufferF::MainBufferF(::VertexArray & vertex_array)
-	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw)
-{ }
-
 VoxelGraphics::MainLayoutF::~MainLayoutF() { }
 VoxelGraphics::MainLayoutF::MainLayoutF()
 	: ::Attribute::Layout(0, sizeof(MainDataF))
 	, Pos(*this)
 	, Tex(*this)
 	, Normal(*this)
-{ }
-
-VoxelGraphics::MainBufferU::~MainBufferU() { }
-VoxelGraphics::MainBufferU::MainBufferU(::VertexArray & vertex_array)
-	: ::Buffer::Array(vertex_array, GL::BufferDataUsage::StaticDraw)
 { }
 
 VoxelGraphics::MainLayoutU::~MainLayoutU() { }
