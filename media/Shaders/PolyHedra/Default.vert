@@ -92,5 +92,6 @@ void main()
 	gl_Position = proj(vs_out.Relative);
 
 	vs_out.Normal = (vec4(VNormal, 1) * INormal).xyz;
+	//vs_out.Normal = (vec4(VPos + VNormal, 1) * ITrans).xyz - vs_out.Absolute;
 	vs_out.Tex = VTex;
 }

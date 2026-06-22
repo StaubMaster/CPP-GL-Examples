@@ -145,6 +145,7 @@ void PolyHedraUIPalletManager::UpdateFullBufferMain()
 void PolyHedraUIPalletManager::DrawFull()
 {
 	if (!GraphicsExist) { return; }
+	BufferFull.Bind();
 	BufferFull.MainBuffer.Update();
 	BufferFull.InstBuffer.Update();
 	UpdateFullBufferMain();
@@ -177,6 +178,7 @@ void PolyHedraUIPalletManager::UpdateWireBufferMain()
 void PolyHedraUIPalletManager::DrawWire()
 {
 	if (!GraphicsExist) { return; }
+	BufferWire.Bind();
 	BufferWire.MainBuffer.Update();
 	BufferWire.InstBuffer.Update();
 	UpdateWireBufferMain();

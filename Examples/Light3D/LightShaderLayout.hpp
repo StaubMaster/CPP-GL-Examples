@@ -35,22 +35,22 @@ namespace PaddedBlock
 
 	struct LightBase
 	{
-		Float	Intensity;
-		ColorF4	Color;
+		PaddedBlock::Float		Intensity;
+		PaddedBlock::ColorF4	Color;
 		LightBase & operator=(const ::LightBase & object);
 	};
 	struct LightSolar
 	{
-		LightBase	Base;
-		VectorF3	Dir;
+		PaddedBlock::LightBase	Base;
+		PaddedBlock::VectorF3	Dir;
 		LightSolar & operator=(const ::LightSolar & object);
 	};
 	struct LightSpot
 	{
-		LightBase	Base;
-		VectorF3	Pos;
-		VectorF3	Dir;
-		Range		Range;
+		PaddedBlock::LightBase	Base;
+		PaddedBlock::VectorF3	Pos;
+		PaddedBlock::VectorF3	Dir;
+		PaddedBlock::Range		Range;
 		LightSpot & operator=(const ::LightSpot & object);
 	};
 };
@@ -61,9 +61,6 @@ class LightShaderLayout : public PolyHedraFull::ShaderLayout
 	Buffer::Uniform			LightBuffer;
 	Uniform::Buffer			LightUniform;
 
-	//GL::BufferID			LightBuffer;
-	//GL::UniformLocation	LightBlockIndex;
-	//unsigned int			LightBlockBinding;
 	struct LightData
 	{
 		PaddedBlock::LightBase		Ambient;

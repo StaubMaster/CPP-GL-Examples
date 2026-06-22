@@ -145,8 +145,10 @@ void PolyHedraUIManager::ChangeMedia(const DirectoryInfo & dir)
 {
 	{
 		ShaderFullDefault.Change({
-			dir.File("Shaders/Basic3D/FullUI.vert"),
-			dir.File("Shaders/Basic3D/FullUI.frag"),
+			//dir.File("Shaders/Basic3D/FullUI.vert"),
+			//dir.File("Shaders/Basic3D/FullUI.frag"),
+			dir.File("Shaders/PolyHedra/UserInterface.vert"),
+			dir.File("Shaders/PolyHedra/TexturedNoLight.frag"),
 		});
 	}
 	{

@@ -52,7 +52,43 @@ void UserTrans3DChange::FindIndicator(const Ray3D & ray)
 		IndicatorOffset = Trans3D();
 	}
 }
-void UserTrans3DChange::UpdateIndicator(float scale)
+
+
+
+#include "Display/DisplayPosition.hpp"
+/*static VectorF3 Project(
+	VectorF3 pos,
+	const Trans3D & trans,
+	const View3D & view,
+	const DisplaySize & display_size,
+	float scale
+)
+{
+	pos = trans.forward(pos);
+	pos = view.Trans.reverse(pos);
+
+	float s = 1.0f / (view.FOV * 0.5).Tan();
+
+	float w = pos.Z;
+
+	pos.X = pos.X * s;
+	pos.Y = pos.Y * s;
+	pos.Z = pos.Z;
+
+	pos.X = pos.X * display_size.Ratio.Value.X;
+	pos.Y = pos.Y * display_size.Ratio.Value.Y;
+
+	pos = pos / w;
+
+	pos.X = pos.X * (display_size.Buffer.Half.X / scale);
+	pos.Y = pos.Y * (display_size.Buffer.Half.Y / scale);
+
+	return pos;
+}*/
+
+
+
+void UserTrans3DChange::UpdateIndicator(const View3D & view, const DisplaySize & display_size)
 {
 	if (IndicatorHovering == EIndicatorType::None)
 	{
@@ -83,6 +119,8 @@ void UserTrans3DChange::UpdateIndicator(float scale)
 		}
 	}
 
+	float scale = (view.Trans.Position - Trans.Position).length();
+
 	MoveAxisXIndicator.Scale() = scale * 0.25f;
 	MoveAxisYIndicator.Scale() = scale * 0.25f;
 	MoveAxisZIndicator.Scale() = scale * 0.25f;
@@ -93,7 +131,6 @@ void UserTrans3DChange::UpdateIndicator(float scale)
 	MoveAxisXIndicator.Trans().Position = Trans.Position;
 	MoveAxisYIndicator.Trans().Position = Trans.Position;
 	MoveAxisZIndicator.Trans().Position = Trans.Position;
-
 	SpinRingXIndicator.Trans().Position = Trans.Position;
 	SpinRingYIndicator.Trans().Position = Trans.Position;
 	SpinRingZIndicator.Trans().Position = Trans.Position;
@@ -101,6 +138,29 @@ void UserTrans3DChange::UpdateIndicator(float scale)
 	SpinRingXIndicator.Trans().Rotation = EulerAngle3D(          Angle(), Trans.Rotation.X1, Trans.Rotation.Y2);
 	SpinRingYIndicator.Trans().Rotation = EulerAngle3D(          Angle(),           Angle(), Trans.Rotation.Y2);
 	SpinRingZIndicator.Trans().Rotation = EulerAngle3D(Trans.Rotation.Z0, Trans.Rotation.X1, Trans.Rotation.Y2);
+
+	(void)display_size;
+
+	/*float scale = 100.0f;
+
+	MoveAxisXIndicator.Scale() = scale;
+	MoveAxisYIndicator.Scale() = scale;
+	MoveAxisZIndicator.Scale() = scale;
+	SpinRingXIndicator.Scale() = scale;
+	SpinRingYIndicator.Scale() = scale;
+	SpinRingZIndicator.Scale() = scale;
+
+	VectorF3 pos = Project(VectorF3(), Trans, view, display_size, scale);
+
+	Trans3D trans(pos);
+
+	MoveAxisXIndicator.Trans() = trans;
+	MoveAxisYIndicator.Trans() = trans;
+	MoveAxisZIndicator.Trans() = trans;
+	SpinRingXIndicator.Trans() = trans;
+	SpinRingYIndicator.Trans() = trans;
+	SpinRingZIndicator.Trans() = trans;
+	*/
 }
 
 

@@ -7,6 +7,9 @@
 # include "ValueType/Vector/F3.hpp"
 # include "PolyHedraUI/Object.hpp"
 
+# include "ValueType/View3D.hpp"
+# include "Display/DisplaySize.hpp"
+
 struct UserTrans3DChange
 {
 	UserTrans3DChange();
@@ -35,7 +38,7 @@ struct UserTrans3DChange
 	PolyHedraUIObject	SpinRingZIndicator;
 
 	void	FindIndicator(const Ray3D & ray);
-	void	UpdateIndicator(float scale);
+	void	UpdateIndicator(const View3D & view, const DisplaySize & display_size);
 
 
 

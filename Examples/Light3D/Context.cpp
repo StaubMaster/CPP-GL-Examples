@@ -4,6 +4,9 @@
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/ObjectData.hpp"
 
+#include "PolyHedraUI/PalletManager.hpp"
+#include "PolyHedraUI/ObjectData.hpp"
+
 #include "ValueType/Intersect.hpp"
 
 #include "UserTrans3DChange.hpp"
@@ -438,7 +441,7 @@ void Light3DContext::ViewChangeTransFunc()
 	{
 		UserTrans3DChange.FindIndicator(ViewRay);
 	}
-	UserTrans3DChange.UpdateIndicator((View.Trans.Position - UserTrans3DChange.Trans.Position).length());
+	UserTrans3DChange.UpdateIndicator(View, window.Size);
 
 	if (window.MouseManager[MouseButtons::MouseL] == State::Release ||
 		window.MouseManager[MouseButtons::MouseR] == State::Release)
