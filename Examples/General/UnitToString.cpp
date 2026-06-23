@@ -85,12 +85,18 @@ const char * ToStringF32(float num, unsigned char digits_after, unsigned char di
 {
 	string_buffer_new();
 
+	char sign = '!';
+	if (num == 0.0f)     { sign = ' '; }
+	else if (num > 0.0f) { sign = '+'; }
+	else if (num < 0.0f) { sign = '-'; }
+
 	num = abs(num);
 	int full;
 
 	full = num;
 	num -= full;
 	string_buffer_uint32_rev(full, digits_before);
+	string_buffer_put(sign);
 	string_buffer_reverse();
 
 	string_buffer_put('.');

@@ -20,6 +20,21 @@
 #include "ValueType/Matrix3x3.hpp"
 
 #include "ValueType/_Show.hpp"
+#include "General/UnitToString.hpp"
+
+__attribute__((unused)) static Angle LoopAngle(Angle angle)
+{
+	while (angle.ToDegrees() > +180) { angle -= Angle::Degrees(360); }
+	while (angle.ToDegrees() < -180) { angle += Angle::Degrees(360); }
+	return angle;
+}
+__attribute__((unused)) static EulerAngle3D LoopAngle(EulerAngle3D angle)
+{
+	angle.Z0 = LoopAngle(angle.Z0);
+	angle.X1 = LoopAngle(angle.X1);
+	angle.Y2 = LoopAngle(angle.Y2);
+	return angle;
+}
 
 struct SAxiss
 {
@@ -139,125 +154,43 @@ struct SAxiss
 			default: return Angle();
 		}
 	}
-};
 
-/* ( 1 | 0 | 0 )
-axisX ( -0.99952 | -0.030986 | 0 )
-axisY ( 0.030986 | -0.99952 | 0 )
-axisZ ( 0 | 0 | 1 )
-
-178.224 000.000 000.000 
-sin(  X.X  ) = 088.224; sin(  X.Y  ) = 001.775; sin(  X.Z  ) = 000.000; sin(  Y.X  ) = 001.775; sin(  Y.Y  ) = 088.224; sin(  Y.Z  ) = 000.000; sin(  Z.X  ) = 000.000; sin(  Z.Y  ) = 000.000; sin(  Z.Z  ) = 090.000; 
-cos(  X.X  ) = 178.224; cos(  X.Y  ) = 091.775; cos(  X.Z  ) = 090.000; cos(  Y.X  ) = 088.224; cos(  Y.Y  ) = 178.224; cos(  Y.Z  ) = 090.000; cos(  Z.X  ) = 090.000; cos(  Z.Y  ) = 090.000; cos(  Z.Z  ) = 000.000; 
-tan(X.X X.X) = 135.000; tan(X.X X.Y) = 091.775; tan(X.X X.Z) = 090.000; tan(X.X Y.X) = 088.224; tan(X.X Y.Y) = 135.000; tan(X.X Y.Z) = 090.000; tan(X.X Z.X) = 090.000; tan(X.X Z.Y) = 090.000; tan(X.X Z.Z) = 044.986; 
-tan(X.Y X.X) = 178.224; tan(X.Y X.Y) = 135.000; tan(X.Y X.Z) = 090.000; tan(X.Y Y.X) = 045.000; tan(X.Y Y.Y) = 178.224; tan(X.Y Y.Z) = 090.000; tan(X.Y Z.X) = 090.000; tan(X.Y Z.Y) = 090.000; tan(X.Y Z.Z) = 001.774; 
-tan(X.Z X.X) = 180.000; tan(X.Z X.Y) = 180.000; tan(X.Z X.Z) = 000.000; tan(X.Z Y.X) = 000.000; tan(X.Z Y.Y) = 180.000; tan(X.Z Y.Z) = 000.000; tan(X.Z Z.X) = 000.000; tan(X.Z Z.Y) = 000.000; tan(X.Z Z.Z) = 000.000; 
-tan(Y.X X.X) = 178.224; tan(Y.X X.Y) = 135.000; tan(Y.X X.Z) = 090.000; tan(Y.X Y.X) = 045.000; tan(Y.X Y.Y) = 178.224; tan(Y.X Y.Z) = 090.000; tan(Y.X Z.X) = 090.000; tan(Y.X Z.Y) = 090.000; tan(Y.X Z.Z) = 001.774; 
-tan(Y.Y X.X) = 135.000; tan(Y.Y X.Y) = 091.775; tan(Y.Y X.Z) = 090.000; tan(Y.Y Y.X) = 088.224; tan(Y.Y Y.Y) = 135.000; tan(Y.Y Y.Z) = 090.000; tan(Y.Y Z.X) = 090.000; tan(Y.Y Z.Y) = 090.000; tan(Y.Y Z.Z) = 044.986; 
-tan(Y.Z X.X) = 180.000; tan(Y.Z X.Y) = 180.000; tan(Y.Z X.Z) = 000.000; tan(Y.Z Y.X) = 000.000; tan(Y.Z Y.Y) = 180.000; tan(Y.Z Y.Z) = 000.000; tan(Y.Z Z.X) = 000.000; tan(Y.Z Z.Y) = 000.000; tan(Y.Z Z.Z) = 000.000; 
-tan(Z.X X.X) = 180.000; tan(Z.X X.Y) = 180.000; tan(Z.X X.Z) = 000.000; tan(Z.X Y.X) = 000.000; tan(Z.X Y.Y) = 180.000; tan(Z.X Y.Z) = 000.000; tan(Z.X Z.X) = 000.000; tan(Z.X Z.Y) = 000.000; tan(Z.X Z.Z) = 000.000; 
-tan(Z.Y X.X) = 180.000; tan(Z.Y X.Y) = 180.000; tan(Z.Y X.Z) = 000.000; tan(Z.Y Y.X) = 000.000; tan(Z.Y Y.Y) = 180.000; tan(Z.Y Y.Z) = 000.000; tan(Z.Y Z.X) = 000.000; tan(Z.Y Z.Y) = 000.000; tan(Z.Y Z.Z) = 000.000; 
-tan(Z.Z X.X) = 134.986; tan(Z.Z X.Y) = 091.774; tan(Z.Z X.Z) = 090.000; tan(Z.Z Y.X) = 088.225; tan(Z.Z Y.Y) = 134.986; tan(Z.Z Y.Z) = 090.000; tan(Z.Z Z.X) = 090.000; tan(Z.Z Z.Y) = 090.000; tan(Z.Z Z.Z) = 045.000; 
-
-Candidates: 178.224
-cos(  X.X  ) = 178.224; cos(  Y.Y  ) = 178.224;
-tan(X.Y X.X) = 178.224; tan(X.Y Y.Y) = 178.224;
-tan(Y.X X.X) = 178.224; tan(Y.X Y.Y) = 178.224;
-*/
-
-/* ( 0 | 1 | 0 )
-axisX ( 1 | -0 | 0 )
-axisY ( 0 | -0.773632 | 0.633635 )
-axisZ ( 0 | -0.633635 | -0.773632 )
-
-180.000 039.318 180.000 
-sin(  X.X  ) = 090.000; sin(  X.Y  ) = 000.000; sin(  X.Z  ) = 000.000; sin(  Y.X  ) = 000.000; sin(  Y.Y  ) = 050.681; sin(  Y.Z  ) = 039.318; sin(  Z.X  ) = 000.000; sin(  Z.Y  ) = 039.318; sin(  Z.Z  ) = 050.681; 
-cos(  X.X  ) = 000.000; cos(  X.Y  ) = 090.000; cos(  X.Z  ) = 090.000; cos(  Y.X  ) = 090.000; cos(  Y.Y  ) = 140.681; cos(  Y.Z  ) = 050.681; cos(  Z.X  ) = 090.000; cos(  Z.Y  ) = 129.318; cos(  Z.Z  ) = 140.681; 
-tan(X.X X.X) = 045.000; tan(X.X X.Y) = 090.000; tan(X.X X.Z) = 090.000; tan(X.X Y.X) = 090.000; tan(X.X Y.Y) = 127.726; tan(X.X Y.Z) = 057.640; tan(X.X Z.X) = 090.000; tan(X.X Z.Y) = 122.359; tan(X.X Z.Z) = 127.726; 
-tan(X.Y X.X) = 000.000; tan(X.Y X.Y) = 180.000; tan(X.Y X.Z) = 000.000; tan(X.Y Y.X) = 000.000; tan(X.Y Y.Y) = 180.000; tan(X.Y Y.Z) = 000.000; tan(X.Y Z.X) = 000.000; tan(X.Y Z.Y) = 180.000; tan(X.Y Z.Z) = 180.000; 
-tan(X.Z X.X) = 000.000; tan(X.Z X.Y) = 180.000; tan(X.Z X.Z) = 000.000; tan(X.Z Y.X) = 000.000; tan(X.Z Y.Y) = 180.000; tan(X.Z Y.Z) = 000.000; tan(X.Z Z.X) = 000.000; tan(X.Z Z.Y) = 180.000; tan(X.Z Z.Z) = 180.000; 
-tan(Y.X X.X) = 000.000; tan(Y.X X.Y) = 180.000; tan(Y.X X.Z) = 000.000; tan(Y.X Y.X) = 000.000; tan(Y.X Y.Y) = 180.000; tan(Y.X Y.Z) = 000.000; tan(Y.X Z.X) = 000.000; tan(Y.X Z.Y) = 180.000; tan(Y.X Z.Z) = 180.000; 
-tan(Y.Y X.X) = 037.726; tan(Y.Y X.Y) = 090.000; tan(Y.Y X.Z) = 090.000; tan(Y.Y Y.X) = 090.000; tan(Y.Y Y.Y) = 135.000; tan(Y.Y Y.Z) = 050.681; tan(Y.Y Z.X) = 090.000; tan(Y.Y Z.Y) = 129.318; tan(Y.Y Z.Z) = 135.000; 
-tan(Y.Z X.X) = 032.359; tan(Y.Z X.Y) = 090.000; tan(Y.Z X.Z) = 090.000; tan(Y.Z Y.X) = 090.000; tan(Y.Z Y.Y) = 140.681; tan(Y.Z Y.Z) = 045.000; tan(Y.Z Z.X) = 090.000; tan(Y.Z Z.Y) = 135.000; tan(Y.Z Z.Z) = 140.681; 
-tan(Z.X X.X) = 000.000; tan(Z.X X.Y) = 180.000; tan(Z.X X.Z) = 000.000; tan(Z.X Y.X) = 000.000; tan(Z.X Y.Y) = 180.000; tan(Z.X Y.Z) = 000.000; tan(Z.X Z.X) = 000.000; tan(Z.X Z.Y) = 180.000; tan(Z.X Z.Z) = 180.000; 
-tan(Z.Y X.X) = 032.359; tan(Z.Y X.Y) = 090.000; tan(Z.Y X.Z) = 090.000; tan(Z.Y Y.X) = 090.000; tan(Z.Y Y.Y) = 140.681; tan(Z.Y Y.Z) = 045.000; tan(Z.Y Z.X) = 090.000; tan(Z.Y Z.Y) = 135.000; tan(Z.Y Z.Z) = 140.681; 
-tan(Z.Z X.X) = 037.726; tan(Z.Z X.Y) = 090.000; tan(Z.Z X.Z) = 090.000; tan(Z.Z Y.X) = 090.000; tan(Z.Z Y.Y) = 135.000; tan(Z.Z Y.Z) = 050.681; tan(Z.Z Z.X) = 090.000; tan(Z.Z Z.Y) = 129.318; tan(Z.Z Z.Z) = 135.000; 
-
-Candidates: 039.318
-sin(  Y.Z  ) = 039.318; sin(  Z.Y  ) = 039.318;
-*/
-
-/* ( 0 | 0 | 1 )
-axisX ( -0.0553256 | 0 | 0.998468 )
-axisY ( 0 | 1 | -0 )
-axisZ ( -0.998468 | 0 | -0.0553256 )
-
-000.000 000.000 093.171 
-sin(  X.X  ) = 003.171; sin(  X.Y  ) = 000.000; sin(  X.Z  ) = 086.828; sin(  Y.X  ) = 000.000; sin(  Y.Y  ) = 090.000; sin(  Y.Z  ) = 000.000; sin(  Z.X  ) = 086.828; sin(  Z.Y  ) = 000.000; sin(  Z.Z  ) = 003.171; 
-cos(  X.X  ) = 093.171; cos(  X.Y  ) = 090.000; cos(  X.Z  ) = 003.171; cos(  Y.X  ) = 090.000; cos(  Y.Y  ) = 000.000; cos(  Y.Z  ) = 090.000; cos(  Z.X  ) = 176.828; cos(  Z.Y  ) = 090.000; cos(  Z.Z  ) = 093.171; 
-tan(X.X X.X) = 135.000; tan(X.X X.Y) = 090.000; tan(X.X X.Z) = 003.171; tan(X.X Y.X) = 090.000; tan(X.X Y.Y) = 003.166; tan(X.X Y.Z) = 090.000; tan(X.X Z.X) = 176.828; tan(X.X Z.Y) = 090.000; tan(X.X Z.Z) = 135.000; 
-tan(X.Y X.X) = 180.000; tan(X.Y X.Y) = 000.000; tan(X.Y X.Z) = 000.000; tan(X.Y Y.X) = 000.000; tan(X.Y Y.Y) = 000.000; tan(X.Y Y.Z) = 180.000; tan(X.Y Z.X) = 180.000; tan(X.Y Z.Y) = 000.000; tan(X.Y Z.Z) = 180.000; 
-tan(X.Z X.X) = 093.171; tan(X.Z X.Y) = 090.000; tan(X.Z X.Z) = 045.000; tan(X.Z Y.X) = 090.000; tan(X.Z Y.Y) = 044.956; tan(X.Z Y.Z) = 090.000; tan(X.Z Z.X) = 135.000; tan(X.Z Z.Y) = 090.000; tan(X.Z Z.Z) = 093.171; 
-tan(Y.X X.X) = 180.000; tan(Y.X X.Y) = 000.000; tan(Y.X X.Z) = 000.000; tan(Y.X Y.X) = 000.000; tan(Y.X Y.Y) = 000.000; tan(Y.X Y.Z) = 180.000; tan(Y.X Z.X) = 180.000; tan(Y.X Z.Y) = 000.000; tan(Y.X Z.Z) = 180.000; 
-tan(Y.Y X.X) = 093.166; tan(Y.Y X.Y) = 090.000; tan(Y.Y X.Z) = 045.043; tan(Y.Y Y.X) = 090.000; tan(Y.Y Y.Y) = 045.000; tan(Y.Y Y.Z) = 090.000; tan(Y.Y Z.X) = 134.956; tan(Y.Y Z.Y) = 090.000; tan(Y.Y Z.Z) = 093.166; 
-tan(Y.Z X.X) = 180.000; tan(Y.Z X.Y) = 000.000; tan(Y.Z X.Z) = 000.000; tan(Y.Z Y.X) = 000.000; tan(Y.Z Y.Y) = 000.000; tan(Y.Z Y.Z) = 180.000; tan(Y.Z Z.X) = 180.000; tan(Y.Z Z.Y) = 000.000; tan(Y.Z Z.Z) = 180.000; 
-tan(Z.X X.X) = 093.171; tan(Z.X X.Y) = 090.000; tan(Z.X X.Z) = 045.000; tan(Z.X Y.X) = 090.000; tan(Z.X Y.Y) = 044.956; tan(Z.X Y.Z) = 090.000; tan(Z.X Z.X) = 135.000; tan(Z.X Z.Y) = 090.000; tan(Z.X Z.Z) = 093.171; 
-tan(Z.Y X.X) = 180.000; tan(Z.Y X.Y) = 000.000; tan(Z.Y X.Z) = 000.000; tan(Z.Y Y.X) = 000.000; tan(Z.Y Y.Y) = 000.000; tan(Z.Y Y.Z) = 180.000; tan(Z.Y Z.X) = 180.000; tan(Z.Y Z.Y) = 000.000; tan(Z.Y Z.Z) = 180.000; 
-tan(Z.Z X.X) = 135.000; tan(Z.Z X.Y) = 090.000; tan(Z.Z X.Z) = 003.171; tan(Z.Z Y.X) = 090.000; tan(Z.Z Y.Y) = 003.166; tan(Z.Z Y.Z) = 090.000; tan(Z.Z Z.X) = 176.828; tan(Z.Z Z.Y) = 090.000; tan(Z.Z Z.Z) = 135.000; 
-
-Candidates: 093.171
-cos(  X.X  ) = 093.171; cos(  Z.Z  ) = 093.171;
-tan(X.Z X.X) = 093.171; tan(X.Z Z.Z) = 093.171;
-tan(Z.X X.X) = 093.171; tan(Z.X Z.Z) = 093.171;
-*/
-
-#include "General/UnitToString.hpp"
-static EulerAngle3D forward(const EulerAngle3D & rot0, const EulerAngle3D & rot1)
-{
-	VectorF3 axisX = rot1.forward(rot0.forward(VectorF3(1, 0, 0)));
-	VectorF3 axisY = rot1.forward(rot0.forward(VectorF3(0, 1, 0)));
-	VectorF3 axisZ = rot1.forward(rot0.forward(VectorF3(0, 0, 1)));
-
-	std::cout << "axisX " << axisX << '\n';
-	std::cout << "axisY " << axisY << '\n';
-	std::cout << "axisZ " << axisZ << '\n';
-	std::cout << '\n';
-
-	Angle angX = Angle::aTan2(axisX.Y, axisY.Y);
-	Angle angY = Angle::aSin(axisY.Z);
-	Angle angZ = Angle::aTan2(axisZ.X, axisZ.Z);
-	std::cout << ToStringF32(angX.ToDegrees(), 3, 3) << ' ';
-	std::cout << ToStringF32(angY.ToDegrees(), 3, 3) << ' ';
-	std::cout << ToStringF32(angZ.ToDegrees(), 3, 3) << ' ';
-	std::cout << '\n';
-
+	Angle Find(unsigned int idx)
 	{
-		SAxiss axiss;
-		axiss.axisX = axisX;
-		axiss.axisY = axisY;
-		axiss.axisZ = axisZ;
-		const char * axis_str = "XYZXYZXYZ";
+		for (unsigned int idx1 = 0; idx1 < 3; idx1++)
+		{
+			for (unsigned int idx0 = 0; idx0 < 3; idx0++)
+			{
+				if (idx == 0)
+				{
+					return +TrySin(idx1, idx0);
+				}
+				idx--;
+				if (idx == 0)
+				{
+					return -TrySin(idx1, idx0);
+				}
+				idx--;
+			}
+		}
 
 		for (unsigned int idx1 = 0; idx1 < 3; idx1++)
 		{
 			for (unsigned int idx0 = 0; idx0 < 3; idx0++)
 			{
-				Angle rot = axiss.TrySin(idx1, idx0);
-				std::cout << "sin(  " << axis_str[idx1] << '.' << axis_str[idx0] << "  )";
-				std::cout << " = " << ToStringF32(rot.ToDegrees(), 3, 3) << "; ";
+				if (idx == 0)
+				{
+					return +TryCos(idx1, idx0);
+				}
+				idx--;
+				if (idx == 0)
+				{
+					return -TryCos(idx1, idx0);
+				}
+				idx--;
 			}
 		}
-		std::cout << '\n';
-		for (unsigned int idx1 = 0; idx1 < 3; idx1++)
-		{
-			for (unsigned int idx0 = 0; idx0 < 3; idx0++)
-			{
-				Angle rot = axiss.TryCos(idx1, idx0);
-				std::cout << "cos(  " << axis_str[idx1] << '.' << axis_str[idx0] << "  )";
-				std::cout << " = " << ToStringF32(rot.ToDegrees(), 3, 3) << "; ";
-			}
-		}
-		std::cout << '\n';
+
 		for (unsigned int idx3 = 0; idx3 < 3; idx3++)
 		{
 			for (unsigned int idx2 = 0; idx2 < 3; idx2++)
@@ -266,77 +199,416 @@ static EulerAngle3D forward(const EulerAngle3D & rot0, const EulerAngle3D & rot1
 				{
 					for (unsigned int idx0 = 0; idx0 < 3; idx0++)
 					{
-						Angle rot = axiss.TryTan(idx3, idx2, idx1, idx0);
-						std::cout << "tan(" << axis_str[idx3] << '.' << axis_str[idx2] << ' ' << axis_str[idx1] << '.' << axis_str[idx0] << ")";
-						std::cout << " = " << ToStringF32(rot.ToDegrees(), 3, 3) << "; ";
+						if (idx == 0)
+						{
+							return +TryTan(idx3, idx2, idx1, idx0);
+						}
+						idx--;
+						if (idx == 0)
+						{
+							return -TryTan(idx3, idx2, idx1, idx0);
+						}
+						idx--;
 					}
 				}
-				std::cout << '\n';
 			}
 		}
-		std::cout << '\n';
+
+		return Angle();
+	}
+	void Print(unsigned int idx)
+	{
+		const char * axis_str = "XYZ";
+
+		for (unsigned int idx1 = 0; idx1 < 3; idx1++)
+		{
+			for (unsigned int idx0 = 0; idx0 < 3; idx0++)
+			{
+				if (idx == 0)
+				{
+					std::cout << "+sin(  " << axis_str[idx1] << '.' << axis_str[idx0] << "  )";
+					return;
+				}
+				idx--;
+				if (idx == 0)
+				{
+					std::cout << "+sin(  " << axis_str[idx1] << '.' << axis_str[idx0] << "  )";
+					return;
+				}
+				idx--;
+			}
+		}
+
+		for (unsigned int idx1 = 0; idx1 < 3; idx1++)
+		{
+			for (unsigned int idx0 = 0; idx0 < 3; idx0++)
+			{
+				if (idx == 0)
+				{
+					std::cout << "+cos(  " << axis_str[idx1] << '.' << axis_str[idx0] << "  )";
+					return;
+				}
+				idx--;
+				if (idx == 0)
+				{
+					std::cout << "-cos(  " << axis_str[idx1] << '.' << axis_str[idx0] << "  )";
+					return;
+				}
+				idx--;
+			}
+		}
+
+		for (unsigned int idx3 = 0; idx3 < 3; idx3++)
+		{
+			for (unsigned int idx2 = 0; idx2 < 3; idx2++)
+			{
+				for (unsigned int idx1 = 0; idx1 < 3; idx1++)
+				{
+					for (unsigned int idx0 = 0; idx0 < 3; idx0++)
+					{
+						if (idx == 0)
+						{
+							std::cout << "+tan(" << axis_str[idx3] << '.' << axis_str[idx2] << ' ' << axis_str[idx1] << '.' << axis_str[idx0] << ")";
+							return;
+						}
+						idx--;
+						if (idx == 0)
+						{
+							std::cout << "-tan(" << axis_str[idx3] << '.' << axis_str[idx2] << ' ' << axis_str[idx1] << '.' << axis_str[idx0] << ")";
+							return;
+						}
+						idx--;
+					}
+				}
+			}
+		}
+
+		std::cout << "none(  " << idx << "  )";
 	}
 
-	return EulerAngle3D(
-		Angle::aTan2(axisX.Y, axisY.Y),
-		Angle::aSin(axisY.Z),
-		Angle::aTan2(axisZ.X, axisZ.Z)
+	void Find(Angle rot)
+	{
+		for (unsigned int i = 0; i < 198; i++)
+		{
+			Angle r = Find(i);
+			if (rot.ToRadians() != 0.0f)
+			{
+				float diff = abs(LoopAngle(r - rot).ToDegrees());
+				if (diff < 0.001f)
+				{
+					std::cout << '[' << ToStringU32(i, 3) << ']';
+					Print(i);
+					std::cout << '\n';
+				}
+			}
+		}
+	}
+};
 
-		//Angle::aTan2(axisX.Z, axisZ.Z)
-		//Angle::aSin(axisZ.Y)
-		//Angle::aTan2(axisY.X, axisY.Y)
-	);
+__attribute__((unused)) static void forward_1_Z0_Combinations(EulerAngle3D rot0, EulerAngle3D rot1)
+{
+	rot0.X1 = Angle();
+	rot1.X1 = Angle();
+
+	rot0.Y2 = Angle();
+	rot1.Y2 = Angle();
+
+	SAxiss axiss;
+	axiss.axisX = rot1.forward(rot0.forward(VectorF3(1, 0, 0)));
+	axiss.axisY = rot1.forward(rot0.forward(VectorF3(0, 1, 0)));
+	axiss.axisZ = rot1.forward(rot0.forward(VectorF3(0, 0, 1)));
+
+	Angle sum = LoopAngle(rot0.Z0 + rot1.Z0);
+	std::cout << "Z0: " << ToStringF32(sum.ToDegrees(), 3, 3) << '\n';
+	axiss.Find(sum);
+	std::cout << '\n';
+}
+__attribute__((unused)) static void forward_1_X1_Combinations(EulerAngle3D rot0, EulerAngle3D rot1)
+{
+	rot0.Z0 = Angle();
+	rot1.Z0 = Angle();
+
+	rot0.Y2 = Angle();
+	rot1.Y2 = Angle();
+
+	SAxiss axiss;
+	axiss.axisX = rot1.forward(rot0.forward(VectorF3(1, 0, 0)));
+	axiss.axisY = rot1.forward(rot0.forward(VectorF3(0, 1, 0)));
+	axiss.axisZ = rot1.forward(rot0.forward(VectorF3(0, 0, 1)));
+
+	Angle sum = LoopAngle(rot0.X1 + rot1.X1);
+	std::cout << "X1: " << ToStringF32(sum.ToDegrees(), 3, 3) << '\n';
+	axiss.Find(sum);
+	std::cout << '\n';
+}
+__attribute__((unused)) static void forward_1_Y2_Combinations(EulerAngle3D rot0, EulerAngle3D rot1)
+{
+	rot0.Z0 = Angle();
+	rot1.Z0 = Angle();
+
+	rot0.X1 = Angle();
+	rot1.X1 = Angle();
+
+	SAxiss axiss;
+	axiss.axisX = rot1.forward(rot0.forward(VectorF3(1, 0, 0)));
+	axiss.axisY = rot1.forward(rot0.forward(VectorF3(0, 1, 0)));
+	axiss.axisZ = rot1.forward(rot0.forward(VectorF3(0, 0, 1)));
+
+	Angle sum = LoopAngle(rot0.Y2 + rot1.Y2);
+	std::cout << "Y2: " << ToStringF32(sum.ToDegrees(), 3, 3) << '\n';
+	axiss.Find(sum);
+	std::cout << '\n';
 }
 
-int main(int argc, char * argv[])
+__attribute__((unused)) static unsigned int valid_Z0_num = 6;
+__attribute__((unused)) static unsigned int valid_X1_num = 6;
+__attribute__((unused)) static unsigned int valid_Y2_num = 8;
+
+__attribute__((unused)) static unsigned int valid_Z0[] = {
+ 19,
+ 27,
+ 54,
+ 62,
+ 91,
+ 99,
+};
+__attribute__((unused)) static unsigned int valid_X1[] = {
+ 26,
+ 34,
+134,
+142,
+171,
+179,
+};
+__attribute__((unused)) static unsigned int valid_Y2[] = {
+ 19,
+ 35,
+ 73,
+ 89,
+109,
+125,
+144,
+160,
+};
+
+__attribute__((unused)) static void forward_2_Z0_X1_Combinations(EulerAngle3D rot0, EulerAngle3D rot1, VectorF3 pos)
+{
+	rot0.Y2 = Angle();
+	rot1.Y2 = Angle();
+
+	SAxiss axiss;
+	axiss.axisX = rot1.forward(rot0.forward(VectorF3(1, 0, 0)));
+	axiss.axisY = rot1.forward(rot0.forward(VectorF3(0, 1, 0)));
+	axiss.axisZ = rot1.forward(rot0.forward(VectorF3(0, 0, 1)));
+
+	std::cout << "Z0 X1 __\n";
+
+	VectorF3 want = rot1.forward(rot0.forward(pos));
+	std::cout << want << '\n';
+	std::cout << '\n';
+
+	for (unsigned int i_z0 = 0; i_z0 < valid_Z0_num; i_z0++)
+	{
+		for (unsigned int i_x1 = 0; i_x1 < valid_X1_num; i_x1++)
+		{
+			unsigned int i0 = valid_Z0[i_z0];
+			unsigned int i1 = valid_X1[i_x1];
+
+			EulerAngle3D rot(
+				axiss.Find(i0),
+				axiss.Find(i1),
+				Angle()
+			);
+
+			VectorF3 have = rot.forward(pos);
+			VectorF3 diff = (want - have).abs();
+
+			std::cout << '[' << ToStringU32(i0, 3) << ']';
+			axiss.Print(i0);
+			std::cout << ' ';
+
+			std::cout << '[' << ToStringU32(i1, 3) << ']';
+			axiss.Print(i1);
+			std::cout << ' ';
+
+			if (diff.X < 0.001f && diff.Y < 0.001f && diff.Z < 0.001f)
+			{ std::cout << " yes"; }
+			else
+			{ std::cout << " no"; }
+			std::cout << '\n';
+		}
+	}
+
+	std::cout << '\n';
+}
+__attribute__((unused)) static void forward_2_X1_Y2_Combinations(EulerAngle3D rot0, EulerAngle3D rot1, VectorF3 pos)
+{
+	rot0.Z0 = Angle();
+	rot1.Z0 = Angle();
+
+	SAxiss axiss;
+	axiss.axisX = rot1.forward(rot0.forward(VectorF3(1, 0, 0)));
+	axiss.axisY = rot1.forward(rot0.forward(VectorF3(0, 1, 0)));
+	axiss.axisZ = rot1.forward(rot0.forward(VectorF3(0, 0, 1)));
+
+	std::cout << "__ X1 Y2\n";
+
+	VectorF3 want = rot1.forward(rot0.forward(pos));
+	std::cout << want << '\n';
+	std::cout << '\n';
+
+	for (unsigned int i_x1 = 0; i_x1 < valid_X1_num; i_x1++)
+	{
+		for (unsigned int i_y2 = 0; i_y2 < valid_Y2_num; i_y2++)
+		{
+			unsigned int i0 = valid_X1[i_x1];
+			unsigned int i1 = valid_Y2[i_y2];
+
+			EulerAngle3D rot(
+				Angle(),
+				axiss.Find(i0),
+				axiss.Find(i1)
+			);
+
+			VectorF3 have = rot.forward(pos);
+			VectorF3 diff = (want - have).abs();
+
+			std::cout << '[' << ToStringU32(i0, 3) << ']';
+			axiss.Print(i0);
+			std::cout << ' ';
+
+			std::cout << '[' << ToStringU32(i1, 3) << ']';
+			axiss.Print(i1);
+			std::cout << ' ';
+
+			if (diff.X < 0.001f && diff.Y < 0.001f && diff.Z < 0.001f)
+			{ std::cout << " yes"; }
+			else
+			{ std::cout << " no"; }
+			std::cout << '\n';
+		}
+	}
+
+	std::cout << '\n';
+}
+__attribute__((unused)) static void forward_2_Y2_Z0_Combinations(EulerAngle3D rot0, EulerAngle3D rot1, VectorF3 pos)
+{
+	rot0.X1 = Angle();
+	rot1.X1 = Angle();
+
+	SAxiss axiss;
+	axiss.axisX = rot1.forward(rot0.forward(VectorF3(1, 0, 0)));
+	axiss.axisY = rot1.forward(rot0.forward(VectorF3(0, 1, 0)));
+	axiss.axisZ = rot1.forward(rot0.forward(VectorF3(0, 0, 1)));
+
+	std::cout << "Z0 __ Y2\n";
+
+	VectorF3 want = rot1.forward(rot0.forward(pos));
+	std::cout << want << '\n';
+	std::cout << '\n';
+
+	for (unsigned int i_y2 = 0; i_y2 < valid_Y2_num; i_y2++)
+	{
+		for (unsigned int i_z0 = 0; i_z0 < valid_Z0_num; i_z0++)
+		{
+			unsigned int i0 = valid_Y2[i_y2];
+			unsigned int i1 = valid_Z0[i_z0];
+
+			EulerAngle3D rot(
+				axiss.Find(i1),
+				Angle(),
+				axiss.Find(i0)
+			);
+
+			VectorF3 have = rot.forward(pos);
+			VectorF3 diff = (want - have).abs();
+
+			std::cout << '[' << ToStringU32(i0, 3) << ']';
+			axiss.Print(i0);
+			std::cout << ' ';
+
+			std::cout << '[' << ToStringU32(i1, 3) << ']';
+			axiss.Print(i1);
+			std::cout << ' ';
+
+			if (diff.X < 0.001f && diff.Y < 0.001f && diff.Z < 0.001f)
+			{ std::cout << " yes"; }
+			else
+			{ std::cout << " no"; }
+			std::cout << '\n';
+		}
+	}
+
+	std::cout << '\n';
+}
+
+static void FindEulerAngle()
 {
 	VectorF3 pos(
 		(Random::Float01Ex() * 2) - 1,
 		(Random::Float01Ex() * 2) - 1,
 		(Random::Float01Ex() * 2) - 1
 	);
-	//std::cout << pos << '\n';
-	//std::cout << '\n';
-
-	//VectorF3 mul(0, 0, 0); // .
-	//VectorF3 mul(1, 0, 0); // .
-	//VectorF3 mul(0, 1, 0); // .
-	VectorF3 mul(0, 0, 1); // .
-	//VectorF3 mul(1, 1, 0); // !
-	//VectorF3 mul(1, 0, 1); // !
-	//VectorF3 mul(0, 1, 1); // !
-	//VectorF3 mul(1, 1, 1); // !
-
-	std::cout << mul << '\n';
-
 	EulerAngle3D rot0 = EulerAngle3D::Radians(
-		Random::Float01Ex() * PI * mul.X,
-		Random::Float01Ex() * PI * mul.Y,
-		Random::Float01Ex() * PI * mul.Z
+		Random::Float01Ex() * PI,
+		Random::Float01Ex() * PI,
+		Random::Float01Ex() * PI
 	);
 	EulerAngle3D rot1 = EulerAngle3D::Radians(
-		Random::Float01Ex() * PI * mul.X,
-		Random::Float01Ex() * PI * mul.Y,
-		Random::Float01Ex() * PI * mul.Z
+		Random::Float01Ex() * PI,
+		Random::Float01Ex() * PI,
+		Random::Float01Ex() * PI
 	);
 
-	//std::cout << rot0 << '\n';
-	//std::cout << rot1 << '\n';
-	//std::cout << '\n';
+	//forward_1_Z0_Combinations(rot0, rot1);
+	//forward_1_X1_Combinations(rot0, rot1);
+	//forward_1_Y2_Combinations(rot0, rot1);
 
-	Matrix3x3 mat0 = Matrix3x3::Rotation(rot0);
-	Matrix3x3 mat1 = Matrix3x3::Rotation(rot1);
+	//forward_2_Z0_X1_Combinations(rot0, rot1, pos);
+	//forward_2_X1_Y2_Combinations(rot0, rot1, pos);
+	//forward_2_Y2_Z0_Combinations(rot0, rot1, pos);
 
-	Matrix3x3 mat = Matrix3x3::Identity();
-	mat = mat * mat1;
-	mat = mat * mat0;
+	VectorF3 want = rot1.forward(rot0.forward(pos));
+	std::cout << want << '\n';
+	std::cout << '\n';
 
-	EulerAngle3D rot = forward(rot0, rot1);
+	SAxiss axiss;
+	axiss.axisX = rot1.forward(rot0.forward(VectorF3(1, 0, 0)));
+	axiss.axisY = rot1.forward(rot0.forward(VectorF3(0, 1, 0)));
+	axiss.axisZ = rot1.forward(rot0.forward(VectorF3(0, 0, 1)));
 
-	std::cout << (rot1.forward(rot0.forward(pos))) << '\n';
-	std::cout << (pos * mat) << '\n';
-	std::cout << (rot.forward(pos)) << '\n';
+	EulerAngle3D rot;
+	for (unsigned int idx_z0 = 0; idx_z0 < 198; idx_z0++)
+	{
+		rot.Z0 = axiss.Find(idx_z0);
+		for (unsigned int idx_x1 = 0; idx_x1 < 198; idx_x1++)
+		{
+			rot.X1 = axiss.Find(idx_x1);
+			for (unsigned int idx_y2 = 0; idx_y2 < 198; idx_y2++)
+			{
+				rot.Y2 = axiss.Find(idx_y2);
+				VectorF3 have = rot.forward(pos);
+				VectorF3 diff = (have - want).abs();
+				if (diff.X < 0.001f && diff.Y < 0.001f && diff.Z < 0.001f)
+				{
+					std::cout << '[' << ToStringU32(idx_z0, 3) << ']'; axiss.Print(idx_z0); std::cout << ' ';
+					std::cout << '[' << ToStringU32(idx_x1, 3) << ']'; axiss.Print(idx_x1); std::cout << ' ';
+					std::cout << '[' << ToStringU32(idx_y2, 3) << ']'; axiss.Print(idx_y2); std::cout << ' ';
+					std::cout << have;
+					std::cout << '\n';
+				}
+			}
+		}
+	}
 
+	// [062]+tan(X.Y Y.Y) [015]+sin(  Z.Y  ) [160]+tan(Z.X Z.Z) ( 0.758018 | 0.123519 | -0.82883 )
+}
+
+
+
+int main(int argc, char * argv[])
+{
+	FindEulerAngle();
 	return 0;
 
 
