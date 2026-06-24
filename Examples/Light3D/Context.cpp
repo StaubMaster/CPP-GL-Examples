@@ -312,10 +312,18 @@ void Light3DContext::User(FrameTime frame_time)
 	if (window.MouseManager.CursorModeIsLocked())
 	{
 		Trans3D trans = window.MoveSpinFromKeysCursor();
+
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { trans.Position *= 10; }
 		trans.Position *= 2;
 		trans.Rotation *= View.FOV.ToRadians() * 0.05f;
-		View.ChangeFlatX(trans, frame_time.Delta);
+
+		trans.Position *= frame_time.Delta;
+		trans.Rotation *= frame_time.Delta;
+
+		View.ChangeAbsoluteFlatY(trans);
+
+		//View.Trans.Position += View.Trans.Rotation.forward(trans.Position);
+		//View.Trans.Rotation = View.Trans.Rotation.reverse(trans.Rotation);
 	}
 
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
