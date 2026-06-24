@@ -391,6 +391,25 @@ void Light3DContext::User(FrameTime frame_time)
 		PolyHedraPalletManager * pallet = PolyHedraManager.FindPallet(Cube);
 		Objects.Insert(new SceneObject_PolyHedraObject(pallet, Trans3D()));
 	}
+
+	if (window[Keys::Menu] == State::Press)
+	{
+		std::cout << "Pallets: " << PolyHedraManager.InstanceManagers.Count() << '\n';
+		for (unsigned int i = 0; i < PolyHedraManager.InstanceManagers.Count(); i++)
+		{
+			PolyHedraPalletManager * pallet_manager = PolyHedraManager.InstanceManagers[i];
+			PolyHedra * pallet = pallet_manager -> Pallet;
+			std::cout << '[';
+			std::cout << ToStringU32(pallet_manager -> ObjectDatas.Count(), 2);
+			std::cout << ' ';
+			std::cout << ToStringU32(pallet_manager -> InstancesFull.Count(), 2);
+			std::cout << ' ';
+			std::cout << ToStringU32(pallet_manager -> InstancesWire.Count(), 2);
+			std::cout << ']';
+			std::cout << ' ' << (pallet -> Name) << '\n';
+		}
+		std::cout << '\n';
+	}
 }
 void Light3DContext::Draw()
 {
