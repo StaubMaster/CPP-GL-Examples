@@ -16,6 +16,27 @@ struct UserTrans3DChange
 
 
 
+	PolyHedraUIObject	MoveAxisXIndicator;
+	PolyHedraUIObject	MoveAxisYIndicator;
+	PolyHedraUIObject	MoveAxisZIndicator;
+
+	PolyHedraUIObject	SpinRingXIndicator;
+	PolyHedraUIObject	SpinRingYIndicator;
+	PolyHedraUIObject	SpinRingZIndicator;
+
+	void	ShowIndicator();
+	void	HideIndicator();
+
+	void	FindIndicator(const Ray3D & ray);
+
+	void	UpdateIndicatorColor();
+	void	UpdateIndicatorScale(float scale);
+	void	UpdateIndicatorTrans(const Trans3D & trans);
+
+	void	UpdateIndicator(const Trans3D & trans, const View3D & view, const DisplaySize & display_size);
+
+
+
 	enum class EIndicatorType
 	{
 		None,
@@ -26,21 +47,9 @@ struct UserTrans3DChange
 		SpinRingY,
 		SpinRingZ,
 	};
-	EIndicatorType	IndicatorHovering;
-	Trans3D			IndicatorOffset;
-
-	PolyHedraUIObject	MoveAxisXIndicator;
-	PolyHedraUIObject	MoveAxisYIndicator;
-	PolyHedraUIObject	MoveAxisZIndicator;
-
-	PolyHedraUIObject	SpinRingXIndicator;
-	PolyHedraUIObject	SpinRingYIndicator;
-	PolyHedraUIObject	SpinRingZIndicator;
-
-	void	FindIndicator(const Ray3D & ray);
-	void	UpdateIndicator(const View3D & view, const DisplaySize & display_size);
-
-
+	EIndicatorType		HoveringType;
+	bool				HoveringIsNone() const;
+	Trans3D				HoveringOffset;
 
 	enum class EChangeType
 	{
@@ -55,15 +64,19 @@ struct UserTrans3DChange
 		SpinY,
 		SpinZ,
 	};
-	EChangeType		ChangeType;
+	EChangeType		SelectedType;
+	bool			SelectedIsNone() const;
+	Trans3D			SelectedOffset;
 
-	bool	TypeIsNone() const;
-	void	TypeUseNone();
-	void	TypeUseL();
-	void	TypeUseR();
+
+
+	void	UseNone();
+	void	UseL();
+	void	UseR();
+
+
 
 	Trans3D		Trans;
-	Trans3D		Offset;
 
 	VectorF3		NewPosAxis(const Ray3D & ray, const VectorF3 & axis) const;
 	VectorF3		NewPosPlane(const Ray3D & ray, const VectorF3 & axis) const;

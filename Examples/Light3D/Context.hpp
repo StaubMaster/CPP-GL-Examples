@@ -88,9 +88,18 @@ Matrix4x4	ViewMatrix;
 UI::Manager				UIManager;
 SceneObjectUI			UISceneObject;
 
+bool	IsHoveringUI() const;
+
 ::PolyHedraUIManager	PolyHedraUIManager;
 
+
+
 Container::Binary<SceneObject*>		Objects;
+SceneObject *						Object_Selected;
+SceneObject *						Object_Hovering;
+
+SceneObject *	FindObject(const Ray3D & ray) const;
+unsigned int	FindObjectIndex(const SceneObject *) const;
 
 
 

@@ -4,9 +4,30 @@
 
 
 UserTrans3DChange::UserTrans3DChange()
-	: IndicatorHovering(EIndicatorType::None)
-	, ChangeType(EChangeType::None)
+	: HoveringType(EIndicatorType::None)
+	, SelectedType(EChangeType::None)
 { }
+
+
+
+void UserTrans3DChange::ShowIndicator()
+{
+	MoveAxisXIndicator.ShowFull();
+	MoveAxisYIndicator.ShowFull();
+	MoveAxisZIndicator.ShowFull();
+	SpinRingXIndicator.ShowFull();
+	SpinRingYIndicator.ShowFull();
+	SpinRingZIndicator.ShowFull();
+}
+void UserTrans3DChange::HideIndicator()
+{
+	MoveAxisXIndicator.HideFull();
+	MoveAxisYIndicator.HideFull();
+	MoveAxisZIndicator.HideFull();
+	SpinRingXIndicator.HideFull();
+	SpinRingYIndicator.HideFull();
+	SpinRingZIndicator.HideFull();
+}
 
 
 
@@ -27,30 +48,80 @@ void UserTrans3DChange::FindIndicator(const Ray3D & ray)
 
 	if (hit.Is())
 	{
-		IndicatorHovering = hit.Index;
-		IndicatorOffset.Position = hit.Pos();
+		HoveringType = hit.Index;
+		HoveringOffset.Position = hit.Pos();
 		VectorF3 rel = !(hit.Pos() - Trans.Position);
+		VectorF3 axisX(1, 0, 0);
+		VectorF3 axisY(0, 1, 0);
+		VectorF3 axisZ(0, 0, 1);
+		HoveringOffset.Rotation.Z0 = Angle::aTan2(axisZ.dot(axisX.cross(rel)), axisX.dot(rel));
+		HoveringOffset.Rotation.X1 = Angle::aTan2(axisX.dot(axisY.cross(rel)), axisY.dot(rel));
+		HoveringOffset.Rotation.Y2 = Angle::aTan2(axisY.dot(axisZ.cross(rel)), axisZ.dot(rel));
+	}
+	else
+	{
+		HoveringType = EIndicatorType::None;
+		HoveringOffset = Trans3D();
+	}
+
+	UpdateIndicatorColor();
+}
+
+void UserTrans3DChange::UpdateIndicatorColor()
+{
+	if (HoveringType != EIndicatorType::None)
+	{
+		MoveAxisXIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+		MoveAxisYIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+		MoveAxisZIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+		SpinRingXIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+		SpinRingYIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+		SpinRingZIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+
+		switch (HoveringType)
 		{
-			VectorF3 axis0(0, 0, 1);
-			VectorF3 axis1(1, 0, 0);
-			IndicatorOffset.Rotation.Z0 = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
-		}
-		{
-			VectorF3 axis0(1, 0, 0);
-			VectorF3 axis1(0, 1, 0);
-			IndicatorOffset.Rotation.X1 = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
-		}
-		{
-			VectorF3 axis0(0, 1, 0);
-			VectorF3 axis1(0, 0, 1);
-			IndicatorOffset.Rotation.Y2 = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
+			case EIndicatorType::MoveAxisX: MoveAxisXIndicator.Color() = ColorF4(1, 0, 0); break;
+			case EIndicatorType::MoveAxisY: MoveAxisYIndicator.Color() = ColorF4(0, 1, 0); break;
+			case EIndicatorType::MoveAxisZ: MoveAxisZIndicator.Color() = ColorF4(0, 0, 1); break;
+			case EIndicatorType::SpinRingX: SpinRingXIndicator.Color() = ColorF4(1, 0, 0); break;
+			case EIndicatorType::SpinRingY: SpinRingYIndicator.Color() = ColorF4(0, 1, 0); break;
+			case EIndicatorType::SpinRingZ: SpinRingZIndicator.Color() = ColorF4(0, 0, 1); break;
+			default: break;
 		}
 	}
 	else
 	{
-		IndicatorHovering = EIndicatorType::None;
-		IndicatorOffset = Trans3D();
+		MoveAxisXIndicator.Color() = ColorF4(1, 0, 0);
+		MoveAxisYIndicator.Color() = ColorF4(0, 1, 0);
+		MoveAxisZIndicator.Color() = ColorF4(0, 0, 1);
+		SpinRingXIndicator.Color() = ColorF4(1, 0, 0);
+		SpinRingYIndicator.Color() = ColorF4(0, 1, 0);
+		SpinRingZIndicator.Color() = ColorF4(0, 0, 1);
 	}
+}
+void UserTrans3DChange::UpdateIndicatorScale(float scale)
+{
+	MoveAxisXIndicator.Scale() = scale;
+	MoveAxisYIndicator.Scale() = scale;
+	MoveAxisZIndicator.Scale() = scale;
+	SpinRingXIndicator.Scale() = scale;
+	SpinRingYIndicator.Scale() = scale;
+	SpinRingZIndicator.Scale() = scale;
+}
+void UserTrans3DChange::UpdateIndicatorTrans(const Trans3D & trans)
+{
+	MoveAxisXIndicator.Trans().Position = trans.Position;
+	MoveAxisYIndicator.Trans().Position = trans.Position;
+	MoveAxisZIndicator.Trans().Position = trans.Position;
+
+	SpinRingXIndicator.Trans().Position = trans.Position;
+	SpinRingYIndicator.Trans().Position = trans.Position;
+	SpinRingZIndicator.Trans().Position = trans.Position;
+
+	EulerAngle3D rot;
+	rot.Y2 = trans.Rotation.Y2; SpinRingYIndicator.Trans().Rotation = rot;
+	rot.X1 = trans.Rotation.X1; SpinRingXIndicator.Trans().Rotation = rot;
+	rot.Z0 = trans.Rotation.Z0; SpinRingZIndicator.Trans().Rotation = rot;
 }
 
 
@@ -86,139 +157,96 @@ void UserTrans3DChange::FindIndicator(const Ray3D & ray)
 	return pos;
 }*/
 
-
-
-void UserTrans3DChange::UpdateIndicator(const View3D & view, const DisplaySize & display_size)
+void UserTrans3DChange::UpdateIndicator(const Trans3D & trans, const View3D & view, const DisplaySize & display_size)
 {
-	if (IndicatorHovering == EIndicatorType::None)
-	{
-		MoveAxisXIndicator.Color() = ColorF4(1, 0, 0);
-		MoveAxisYIndicator.Color() = ColorF4(0, 1, 0);
-		MoveAxisZIndicator.Color() = ColorF4(0, 0, 1);
-		SpinRingXIndicator.Color() = ColorF4(1, 0, 0);
-		SpinRingYIndicator.Color() = ColorF4(0, 1, 0);
-		SpinRingZIndicator.Color() = ColorF4(0, 0, 1);
-	}
-	else
-	{
-		MoveAxisXIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		MoveAxisYIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		MoveAxisZIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		SpinRingXIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		SpinRingYIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		SpinRingZIndicator.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		switch (IndicatorHovering)
-		{
-			case EIndicatorType::MoveAxisX: MoveAxisXIndicator.Color() = ColorF4(1, 0, 0); break;
-			case EIndicatorType::MoveAxisY: MoveAxisYIndicator.Color() = ColorF4(0, 1, 0); break;
-			case EIndicatorType::MoveAxisZ: MoveAxisZIndicator.Color() = ColorF4(0, 0, 1); break;
-			case EIndicatorType::SpinRingX: SpinRingXIndicator.Color() = ColorF4(1, 0, 0); break;
-			case EIndicatorType::SpinRingY: SpinRingYIndicator.Color() = ColorF4(0, 1, 0); break;
-			case EIndicatorType::SpinRingZ: SpinRingZIndicator.Color() = ColorF4(0, 0, 1); break;
-			default: break;
-		}
-	}
-
-	float scale = (view.Trans.Position - Trans.Position).length();
-
-	MoveAxisXIndicator.Scale() = scale * 0.25f;
-	MoveAxisYIndicator.Scale() = scale * 0.25f;
-	MoveAxisZIndicator.Scale() = scale * 0.25f;
-	SpinRingXIndicator.Scale() = scale * 0.25f;
-	SpinRingYIndicator.Scale() = scale * 0.25f;
-	SpinRingZIndicator.Scale() = scale * 0.25f;
-
-	MoveAxisXIndicator.Trans().Position = Trans.Position;
-	MoveAxisYIndicator.Trans().Position = Trans.Position;
-	MoveAxisZIndicator.Trans().Position = Trans.Position;
-	SpinRingXIndicator.Trans().Position = Trans.Position;
-	SpinRingYIndicator.Trans().Position = Trans.Position;
-	SpinRingZIndicator.Trans().Position = Trans.Position;
-
-	SpinRingXIndicator.Trans().Rotation = EulerAngle3D(          Angle(), Trans.Rotation.X1, Trans.Rotation.Y2);
-	SpinRingYIndicator.Trans().Rotation = EulerAngle3D(          Angle(),           Angle(), Trans.Rotation.Y2);
-	SpinRingZIndicator.Trans().Rotation = EulerAngle3D(Trans.Rotation.Z0, Trans.Rotation.X1, Trans.Rotation.Y2);
+	float scale = (view.Trans.Position - trans.Position).length() * 0.25f;
+	UpdateIndicatorScale(scale);
+	UpdateIndicatorTrans(trans);
 
 	(void)display_size;
 
-	/*float scale = 100.0f;
-
-	MoveAxisXIndicator.Scale() = scale;
-	MoveAxisYIndicator.Scale() = scale;
-	MoveAxisZIndicator.Scale() = scale;
-	SpinRingXIndicator.Scale() = scale;
-	SpinRingYIndicator.Scale() = scale;
-	SpinRingZIndicator.Scale() = scale;
-
-	VectorF3 pos = Project(VectorF3(), Trans, view, display_size, scale);
-
-	Trans3D trans(pos);
-
-	MoveAxisXIndicator.Trans() = trans;
-	MoveAxisYIndicator.Trans() = trans;
-	MoveAxisZIndicator.Trans() = trans;
-	SpinRingXIndicator.Trans() = trans;
-	SpinRingYIndicator.Trans() = trans;
-	SpinRingZIndicator.Trans() = trans;
-	*/
+//	float scale = 100.0f;
+//
+//	MoveAxisXIndicator.Scale() = scale;
+//	MoveAxisYIndicator.Scale() = scale;
+//	MoveAxisZIndicator.Scale() = scale;
+//	SpinRingXIndicator.Scale() = scale;
+//	SpinRingYIndicator.Scale() = scale;
+//	SpinRingZIndicator.Scale() = scale;
+//
+//	VectorF3 pos = Project(VectorF3(), Trans, view, display_size, scale);
+//
+//	Trans3D trans(pos);
+//
+//	MoveAxisXIndicator.Trans() = trans;
+//	MoveAxisYIndicator.Trans() = trans;
+//	MoveAxisZIndicator.Trans() = trans;
+//	SpinRingXIndicator.Trans() = trans;
+//	SpinRingYIndicator.Trans() = trans;
+//	SpinRingZIndicator.Trans() = trans;
 }
 
 
+bool UserTrans3DChange::HoveringIsNone() const
+{
+	return (HoveringType == EIndicatorType::None);
+}
 
-bool UserTrans3DChange::TypeIsNone() const
+bool UserTrans3DChange::SelectedIsNone() const
 {
-	return (ChangeType == EChangeType::None);
+	return (SelectedType == EChangeType::None);
 }
-void UserTrans3DChange::TypeUseNone()
+
+void UserTrans3DChange::UseNone()
 {
-	ChangeType = EChangeType::None;
+	SelectedType = EChangeType::None;
 }
-void UserTrans3DChange::TypeUseL()
+void UserTrans3DChange::UseL()
 {
-	if (IndicatorHovering == EIndicatorType::None) { return; }
-	switch (IndicatorHovering)
+	if (HoveringType == EIndicatorType::None) { return; }
+	switch (HoveringType)
 	{
-		case EIndicatorType::MoveAxisX: ChangeType = EChangeType::LineX; break;
-		case EIndicatorType::MoveAxisY: ChangeType = EChangeType::LineY; break;
-		case EIndicatorType::MoveAxisZ: ChangeType = EChangeType::LineZ; break;
-		case EIndicatorType::SpinRingX: ChangeType = EChangeType::SpinX; break;
-		case EIndicatorType::SpinRingY: ChangeType = EChangeType::SpinY; break;
-		case EIndicatorType::SpinRingZ: ChangeType = EChangeType::SpinZ; break;
-		default: ChangeType = EChangeType::None; break;
+		case EIndicatorType::MoveAxisX: SelectedType = EChangeType::LineX; break;
+		case EIndicatorType::MoveAxisY: SelectedType = EChangeType::LineY; break;
+		case EIndicatorType::MoveAxisZ: SelectedType = EChangeType::LineZ; break;
+		case EIndicatorType::SpinRingX: SelectedType = EChangeType::SpinX; break;
+		case EIndicatorType::SpinRingY: SelectedType = EChangeType::SpinY; break;
+		case EIndicatorType::SpinRingZ: SelectedType = EChangeType::SpinZ; break;
+		default: SelectedType = EChangeType::None; break;
 	}
-	Offset.Position = Trans.Position - IndicatorOffset.Position;
-	Offset.Rotation = Trans.Rotation - IndicatorOffset.Rotation;
+	SelectedOffset.Position = Trans.Position - HoveringOffset.Position;
+	SelectedOffset.Rotation = Trans.Rotation - HoveringOffset.Rotation;
 }
-void UserTrans3DChange::TypeUseR()
+void UserTrans3DChange::UseR()
 {
-	if (IndicatorHovering == EIndicatorType::None) { return; }
-	switch (IndicatorHovering)
+	if (HoveringType == EIndicatorType::None) { return; }
+	switch (HoveringType)
 	{
-		case EIndicatorType::MoveAxisX: ChangeType = EChangeType::PlaneX; break;
-		case EIndicatorType::MoveAxisY: ChangeType = EChangeType::PlaneY; break;
-		case EIndicatorType::MoveAxisZ: ChangeType = EChangeType::PlaneZ; break;
-		default: ChangeType = EChangeType::None; break;
+		case EIndicatorType::MoveAxisX: SelectedType = EChangeType::PlaneX; break;
+		case EIndicatorType::MoveAxisY: SelectedType = EChangeType::PlaneY; break;
+		case EIndicatorType::MoveAxisZ: SelectedType = EChangeType::PlaneZ; break;
+		default: SelectedType = EChangeType::None; break;
 	}
-	Offset.Position = Trans.Position - IndicatorOffset.Position;
-	Offset.Rotation = Trans.Rotation - IndicatorOffset.Rotation;
+	SelectedOffset.Position = Trans.Position - HoveringOffset.Position;
+	SelectedOffset.Rotation = Trans.Rotation - HoveringOffset.Rotation;
 }
 
 
 
 VectorF3 UserTrans3DChange::NewPosAxis(const Ray3D & ray, const VectorF3 & axis) const
 {
-	Ray3D axis_ray(Trans.Position - Offset.Position, axis);
+	Ray3D axis_ray(Trans.Position - SelectedOffset.Position, axis);
 	Ray3D_Hit axis_hit;
 	Ray3D_Hit hit;
 	RaySkew(ray, hit, axis_ray, axis_hit);
 	if (hit.Interval < 0.0f) { return Trans.Position; }
-	return (axis_hit.Pos() + Offset.Position);
+	return (axis_hit.Pos() + SelectedOffset.Position);
 }
 VectorF3 UserTrans3DChange::NewPosPlane(const Ray3D & ray, const VectorF3 & axis) const
 {
-	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position - Offset.Position, axis));
+	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position - SelectedOffset.Position, axis));
 	if (!hit.Is()) { return Trans.Position; }
-	return (hit.Pos() + Offset.Position);
+	return (hit.Pos() + SelectedOffset.Position);
 }
 EulerAngle3D UserTrans3DChange::NewRotPlaneX(const Ray3D & ray) const
 {
@@ -229,7 +257,7 @@ EulerAngle3D UserTrans3DChange::NewRotPlaneX(const Ray3D & ray) const
 	if (!hit.Is()) { return Trans.Rotation; }
 	VectorF3 rel = !(hit.Pos() - Trans.Position);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
-	return EulerAngle3D(Trans.Rotation.Z0, ang + Offset.Rotation.X1, Trans.Rotation.Y2);
+	return EulerAngle3D(Trans.Rotation.Z0, ang + SelectedOffset.Rotation.X1, Trans.Rotation.Y2);
 }
 EulerAngle3D UserTrans3DChange::NewRotPlaneY(const Ray3D & ray) const
 {
@@ -241,7 +269,7 @@ EulerAngle3D UserTrans3DChange::NewRotPlaneY(const Ray3D & ray) const
 	if (!hit.Is()) { return Trans.Rotation; }
 	VectorF3 rel = !(hit.Pos() - Trans.Position);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
-	return EulerAngle3D(Trans.Rotation.Z0, Trans.Rotation.X1, ang + Offset.Rotation.Y2);
+	return EulerAngle3D(Trans.Rotation.Z0, Trans.Rotation.X1, ang + SelectedOffset.Rotation.Y2);
 }
 EulerAngle3D UserTrans3DChange::NewRotPlaneZ(const Ray3D & ray) const
 {
@@ -252,11 +280,11 @@ EulerAngle3D UserTrans3DChange::NewRotPlaneZ(const Ray3D & ray) const
 	if (!hit.Is()) { return Trans.Rotation; }
 	VectorF3 rel = !(hit.Pos() - Trans.Position);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
-	return EulerAngle3D(ang + Offset.Rotation.Z0, Trans.Rotation.X1, Trans.Rotation.Y2);
+	return EulerAngle3D(ang + SelectedOffset.Rotation.Z0, Trans.Rotation.X1, Trans.Rotation.Y2);
 }
 Trans3D UserTrans3DChange::NewTrans(const Ray3D & ray) const
 {
-	switch (ChangeType)
+	switch (SelectedType)
 	{
 		case EChangeType::None:   return Trans;
 		case EChangeType::LineX:  return Trans3D(NewPosAxis(ray, VectorF3(1, 0, 0)), Trans.Rotation);

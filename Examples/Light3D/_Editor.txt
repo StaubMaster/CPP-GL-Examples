@@ -1,23 +1,4 @@
 
-Move Object
-	copy Axis mover thing from my old C# Editor
-done ?
-
-Spin Object
-	also from C# Editor
-needs internals
-
-
-
-Object Properties
-	get in the way sometimes
-	dont allways display, off at start
-	use Tab/Enter to toggle Properties UI
-
-	make all Properties collapsed by default
-
-
-
 Object Remove
 	add a Button to SceneObject UI
 	use Delete button

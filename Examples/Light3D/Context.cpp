@@ -9,12 +9,6 @@
 
 #include "ValueType/Intersect.hpp"
 
-#include "UserTrans3DChange.hpp"
-
-
-
-static ::UserTrans3DChange	UserTrans3DChange;
-
 
 
 MultiformLayout::~MultiformLayout()
@@ -34,6 +28,40 @@ MultiformLayout::MultiformLayout()
 
 
 
+bool Light3DContext::IsHoveringUI() const
+{
+	return (UIManager.Hovering != &UIManager.WindowControl);
+}
+
+SceneObject * Light3DContext::FindObject(const Ray3D & ray) const
+{
+	Ray3D_Hit_Type<unsigned int> hit;
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (Objects[i] == nullptr) { continue; }
+		Ray3D_Hit hit_temp = Objects[i] -> Hit(ray);
+		hit.Consider(hit_temp, i);
+	}
+	if (hit.Is())
+	{
+		return Objects[hit.Index];
+	}
+	return nullptr;
+}
+unsigned int Light3DContext::FindObjectIndex(const SceneObject * obj) const
+{
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		if (Objects[i] == obj)
+		{
+			return i;
+		}
+	}
+	return 0xFFFFFFFF;
+}
+
+
+
 Light3DContext::~Light3DContext()
 { }
 Light3DContext::Light3DContext()
@@ -42,6 +70,9 @@ Light3DContext::Light3DContext()
 	, UIManager()
 	, UISceneObject()
 	, PolyHedraUIManager()
+	, Objects()
+	, Object_Selected(nullptr)
+	, Object_Hovering(nullptr)
 	, LightShaderLayout()
 {
 	PolyHedraManager.MakeCurrent();
@@ -241,10 +272,13 @@ static PolyHedra * SpinRingXIndicator = nullptr;
 static PolyHedra * SpinRingYIndicator = nullptr;
 static PolyHedra * SpinRingZIndicator = nullptr;
 
+#include "UserTrans3DChange.hpp"
+static ::UserTrans3DChange UserTrans3DChange;
+
 void Light3DContext::Make()
 {
 	std::cout << "Make 0\n";
-	
+
 	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
 	View.Depth.Color = window.DefaultColor;
 	//View.Trans = Trans3D(VectorF3(0, 10, -65), EulerAngle3D());
@@ -321,12 +355,42 @@ void Light3DContext::User(FrameTime frame_time)
 		trans.Rotation *= frame_time.Delta;
 
 		View.ChangeAbsoluteFlatY(trans);
-
-		//View.Trans.Position += View.Trans.Rotation.forward(trans.Position);
-		//View.Trans.Rotation = View.Trans.Rotation.reverse(trans.Rotation);
 	}
 
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+
+	if (window[Keys::Enter] == State::Press)
+	{
+		if (UISceneObject.IsVisible())
+		{
+			UISceneObject.Hide();
+		}
+		else
+		{
+			UISceneObject.Show();
+		}
+	}
+
+	if (window[Keys::Delete] == State::Press)
+	{
+		if (Object_Selected != nullptr)
+		{
+			unsigned int idx = FindObjectIndex(Object_Selected);
+			if (idx != 0xFFFFFFFF)
+			{
+				Objects.RemoveAt(idx);
+				UserTrans3DChange.UseNone();
+				UserTrans3DChange.HideIndicator();
+				Object_Selected = nullptr;
+			}
+		}
+	}
+
+	if (window[Keys::Insert] == State::Press)
+	{
+		PolyHedraPalletManager * pallet = PolyHedraManager.FindPallet(Cube);
+		Objects.Insert(new SceneObject_PolyHedraObject(pallet, Trans3D()));
+	}
 }
 void Light3DContext::Draw()
 {
@@ -388,91 +452,99 @@ void Light3DContext::Draw()
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Skin/Skin.hpp"
 
-static SceneObject * SceneObject_Selected = nullptr;
+/* lots of repeating
+
+put functions in UserChange struct
+
+no change
+	to use then Object is selected
+	or when changing is done
+	sets Trans, moves Iniciators to Trans
+	FrameUpdate
+		scales Indicators
+
+start change
+	FrameUpdate
+		change Indicators to calculated trans
+		scales Indicators
+*/
 
 void Light3DContext::ViewObjectFunc()
 {
-	// just dont cast ray if hovering ?
+	if (IsHoveringUI()) { return; }
+	if (!UserTrans3DChange.HoveringIsNone()) { return; }
+	if (!UserTrans3DChange.SelectedIsNone()) { return; }
 
-	Ray3D_Hit_Type<unsigned int> hit;
-	for (unsigned int i = 0; i < Objects.Count(); i++)
+	Object_Hovering = FindObject(ViewRay);
+
+	if (Object_Hovering != nullptr)
 	{
-		if (Objects[i] == nullptr) { continue; }
-		Ray3D_Hit hit_temp = Objects[i] -> Hit(ViewRay);
-		hit.Consider(hit_temp, i);
+		Object_Hovering -> ShowWire();
 	}
 
-	if (UIManager.Hovering == &UIManager.WindowControl && hit.Is())
+	if (window.MouseManager[MouseButtons::MouseL].IsPress())
 	{
-		SceneObject * obj = Objects[hit.Index];
-		if (obj != nullptr)
+		if (Object_Hovering != nullptr)
 		{
-			obj -> ShowWire();
-		}
-	}
-
-	if (UIManager.Hovering == &UIManager.WindowControl && window.MouseManager[MouseButtons::MouseL] == State::Press)
-	{
-		if (hit.Is())
-		{
-			SceneObject_Selected = Objects[hit.Index];
-			UISceneObject.Show();
-			UserTrans3DChange.MoveAxisXIndicator.ShowFull();
-			UserTrans3DChange.MoveAxisYIndicator.ShowFull();
-			UserTrans3DChange.MoveAxisZIndicator.ShowFull();
-			UserTrans3DChange.SpinRingXIndicator.ShowFull();
-			UserTrans3DChange.SpinRingYIndicator.ShowFull();
-			UserTrans3DChange.SpinRingZIndicator.ShowFull();
+			UserTrans3DChange.ShowIndicator();
 		}
 		else
 		{
-			SceneObject_Selected = nullptr;
-			UISceneObject.Hide();
-			UserTrans3DChange.MoveAxisXIndicator.HideFull();
-			UserTrans3DChange.MoveAxisYIndicator.HideFull();
-			UserTrans3DChange.MoveAxisZIndicator.HideFull();
-			UserTrans3DChange.SpinRingXIndicator.HideFull();
-			UserTrans3DChange.SpinRingYIndicator.HideFull();
-			UserTrans3DChange.SpinRingZIndicator.HideFull();
+			UserTrans3DChange.HideIndicator();
 		}
-		UISceneObject.Change(SceneObject_Selected);
+		Object_Selected = Object_Hovering;
+		UISceneObject.Change(Object_Selected);
+	}
 
-		if (SceneObject_Selected != nullptr)
-		{
-			UserTrans3DChange.Trans = SceneObject_Selected -> GetTrans();
-		}
+	if (Object_Selected != nullptr)
+	{
+		UserTrans3DChange.Trans = Object_Selected -> GetTrans();
+		UserTrans3DChange.UpdateIndicator(UserTrans3DChange.Trans, View, window.Size);
 	}
 }
 void Light3DContext::ViewChangeTransFunc()
 {
-	if (UserTrans3DChange.TypeIsNone())
+	if (UserTrans3DChange.SelectedIsNone())
 	{
 		UserTrans3DChange.FindIndicator(ViewRay);
 	}
-	UserTrans3DChange.UpdateIndicator(View, window.Size);
 
-	if (window.MouseManager[MouseButtons::MouseL] == State::Release ||
-		window.MouseManager[MouseButtons::MouseR] == State::Release)
+	if (window[MouseButtons::MouseL].IsRelease() ||
+		window[MouseButtons::MouseR].IsRelease())
 	{
-		UserTrans3DChange.TypeUseNone();
-		if (SceneObject_Selected != nullptr)
+		UserTrans3DChange.UseNone();
+		if (Object_Selected != nullptr)
 		{
-			UserTrans3DChange.Trans = SceneObject_Selected -> GetTrans();
+			UserTrans3DChange.Trans = Object_Selected -> GetTrans();
+			UserTrans3DChange.UpdateIndicatorTrans(UserTrans3DChange.Trans);
 		}
 	}
-	else if (window.MouseManager[MouseButtons::MouseL] == State::Press)
-	{ UserTrans3DChange.TypeUseL(); }
-	else if (window.MouseManager[MouseButtons::MouseR] == State::Press)
-	{ UserTrans3DChange.TypeUseR(); }
+	else if (window[MouseButtons::MouseL].IsPress())
+	{ UserTrans3DChange.UseL(); }
+	else if (window[MouseButtons::MouseR].IsPress())
+	{ UserTrans3DChange.UseR(); }
 
-	Trans3D trans = UserTrans3DChange.NewTrans(ViewRay);
-	trans.Position = trans.Position.round(0.1f);
-	trans.Rotation = trans.Rotation.round(Angle::Degrees(15));
-
-	UserTrans3DChange.Trans = trans;
-	if (!UserTrans3DChange.TypeIsNone() && SceneObject_Selected != nullptr)
+	if (!UserTrans3DChange.SelectedIsNone())
 	{
-		SceneObject_Selected -> SetTrans(trans);
+		Trans3D trans = UserTrans3DChange.NewTrans(ViewRay);
+		trans.Position = trans.Position.round(0.1f);
+		trans.Rotation = trans.Rotation.round(Angle::Degrees(15));
+
+		if (Object_Selected != nullptr)
+		{
+			Object_Selected -> SetTrans(trans);
+		}
+
+		UserTrans3DChange.UpdateIndicator(trans, View, window.Size);
+	}
+	else
+	{
+		UserTrans3DChange.UpdateIndicator(UserTrans3DChange.Trans, View, window.Size);
+	}
+
+	if (UserTrans3DChange.SelectedIsNone())
+	{
+		ViewObjectFunc();
 	}
 }
 void Light3DContext::ViewFunc()
@@ -485,13 +557,9 @@ void Light3DContext::ViewFunc()
 	ViewRay = Ray3D(View.Trans.Position, View.Trans.Rotation.forward(VectorF3(pos.X, pos.Y, 1)));
 
 	ViewChangeTransFunc();
-	if (UserTrans3DChange.TypeIsNone())
+	if (Object_Selected != nullptr)
 	{
-		ViewObjectFunc();
-	}
-	if (SceneObject_Selected != nullptr)
-	{
-		SceneObject_Selected -> ShowWire();
+		Object_Selected -> ShowWire();
 		UISceneObject.Update();
 	}
 }

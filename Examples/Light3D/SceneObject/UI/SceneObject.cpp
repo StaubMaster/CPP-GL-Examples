@@ -42,17 +42,8 @@ SceneObjectUI::SceneObjectUI()
 void SceneObjectUI::Change(::SceneObject * obj)
 {
 	Object = obj;
-	if (Object == nullptr) { return; }
 
 	PolyHedraObject.Change(dynamic_cast<SceneObject_PolyHedraObject*>(obj));
-
-	LightAmbient.Hide();
-	LightSolar.Hide();
-	LightSpot.Hide();
-
-	LightAmbient.Change(nullptr);
-	LightSolar.Change(nullptr);
-	LightSpot.Change(nullptr);
 
 	{
 		SceneObject_LightAmbient * obj_ = dynamic_cast<SceneObject_LightAmbient*>(obj);
@@ -61,7 +52,13 @@ void SceneObjectUI::Change(::SceneObject * obj)
 			LightAmbient.Show();
 			LightAmbient.Change((obj_ -> Light));
 		}
+		else
+		{
+			LightAmbient.Hide();
+			LightAmbient.Change(nullptr);
+		}
 	}
+
 	{
 		SceneObject_LightSolar * obj_ = dynamic_cast<SceneObject_LightSolar*>(obj);
 		if (obj_ != nullptr)
@@ -69,13 +66,24 @@ void SceneObjectUI::Change(::SceneObject * obj)
 			LightSolar.Show();
 			LightSolar.Change((obj_ -> Light));
 		}
+		else
+		{
+			LightSolar.Hide();
+			LightSolar.Change(nullptr);
+		}
 	}
+
 	{
 		SceneObject_LightSpot * obj_ = dynamic_cast<SceneObject_LightSpot*>(obj);
 		if (obj_ != nullptr)
 		{
 			LightSpot.Show();
 			LightSpot.Change((obj_ -> Light));
+		}
+		else
+		{
+			LightSpot.Hide();
+			LightSpot.Change(nullptr);
 		}
 	}
 
