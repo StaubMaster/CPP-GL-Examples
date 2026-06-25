@@ -28,6 +28,69 @@ MultiformLayout::MultiformLayout()
 
 
 
+
+
+UIPolyHedraPalletItem::UIPolyHedraPalletItem(UIPolyHedraPalletList & list, PolyHedraPalletManager * pallet)
+	: List(list)
+	, Pallet(pallet)
+	, Button()
+{
+	Button.SetText(pallet -> Pallet -> File.Name());
+	Button.Anchor.X.AnchorBoth(0, 0);
+	Button.ClickFunc.Assign(this, UIPolyHedraPalletItem::Func);
+}
+void UIPolyHedraPalletItem::Func(ClickArgs args)
+{
+	if (args.Action == Action::Press)
+	{
+		List.Func(Pallet);
+	}
+}
+
+UIPolyHedraPalletList::UIPolyHedraPalletList()
+{ }
+void UIPolyHedraPalletList::Change(PolyHedraManager & manager)
+{
+	Children.Clear();
+	for (unsigned int i = 0; i < List.Count(); i++)
+	{
+		delete List[i];
+	}
+	List.Clear();
+
+	for (unsigned int i = 0; i < manager.InstanceManagers.Count(); i++)
+	{
+		PolyHedraPalletManager * pallet_manager = manager.InstanceManagers[i];
+		List.Insert(new UIPolyHedraPalletItem(*this, pallet_manager));
+		ChildInsert(List[i] -> Button);
+	}
+	AnchorFitChildrenY();
+}
+void UIPolyHedraPalletList::Func(PolyHedraPalletManager * pallet)
+{
+	Pallet = pallet;
+	Hide();
+}
+
+/* how to use this list ?
+
+Object UI
+	Button to change PolyHedra
+		set Flag that Pallet Change was requested
+		set List Pallet to null
+		show List
+		Change(PolyHedraManager) ?
+	during Update
+		if Pallet Chnage Flag was set
+			check if List is done (hidden)
+			if it is, take List Pallet
+			set Flat to false
+if Escape is pressed
+	if List is shown, hide
+*/
+
+
+
 bool Light3DContext::IsHoveringUI() const
 {
 	return (UIManager.Hovering != &UIManager.WindowControl);
@@ -60,6 +123,133 @@ unsigned int Light3DContext::FindObjectIndex(const SceneObject * obj) const
 	return 0xFFFFFFFF;
 }
 
+void Light3DContext::Objects_Change()
+{
+	Object_Hovering = nullptr;
+
+	if (IsHoveringUI()) { return; }
+	if (!UserTrans3DChange.HoveringIsNone()) { return; }
+	if (!UserTrans3DChange.SelectedIsNone()) { return; }
+
+	Object_Hovering = FindObject(ViewRay);
+
+	if (window.MouseManager[MouseButtons::MouseL].IsPress())
+	{
+		if (Object_Hovering != nullptr)
+		{
+			UserTrans3DChange.ShowIndicator();
+		}
+		else
+		{
+			UserTrans3DChange.HideIndicator();
+		}
+		Object_Selected = Object_Hovering;
+		UISceneObject.Change(Object_Selected);
+	}
+}
+void Light3DContext::Objects_Update()
+{
+	if (Object_Hovering != nullptr)
+	{
+		Object_Hovering -> ShowWire();
+	}
+
+	if (Object_Selected != nullptr)
+	{
+		Object_Selected -> ShowWire();
+		UISceneObject.Update();
+	}
+}
+
+
+
+void Light3DContext::UserChange_Change()
+{
+	UserTrans3DChange.HoveringType = UserTrans3DChange::EIndicatorType::None;
+	UserTrans3DChange.HoveringOffset = Trans3D();
+	UserTrans3DChange.UpdateIndicatorColor();
+
+	if (IsHoveringUI()) { return; }
+
+	if (UserTrans3DChange.SelectedIsNone())
+	{
+		UserTrans3DChange.FindIndicator(ViewRay);
+	}
+
+	if (window[MouseButtons::MouseL].IsRelease() ||
+		window[MouseButtons::MouseR].IsRelease())
+	{
+		UserTrans3DChange.UseNone();
+		if (Object_Selected != nullptr)
+		{
+			UserTrans3DChange.Trans = Object_Selected -> GetTrans();
+			UserTrans3DChange.UpdateIndicatorTrans(UserTrans3DChange.Trans);
+		}
+	}
+	else if (window[MouseButtons::MouseL].IsPress())
+	{
+		UserTrans3DChange.UseL();
+	}
+	else if (window[MouseButtons::MouseR].IsPress())
+	{
+		UserTrans3DChange.UseR();
+	}
+}
+void Light3DContext::UserChange_Update()
+{
+	if (!UserTrans3DChange.SelectedIsNone())
+	{
+		Trans3D trans = UserTrans3DChange.NewTrans(ViewRay);
+		trans.Position = trans.Position.round(0.1f);
+		trans.Rotation = trans.Rotation.round(Angle::Degrees(15));
+
+		if (Object_Selected != nullptr)
+		{
+			Object_Selected -> SetTrans(trans);
+		}
+
+		UserTrans3DChange.UpdateIndicator(trans, View, window.Size);
+	}
+	else
+	{
+		UserTrans3DChange.UpdateIndicator(UserTrans3DChange.Trans, View, window.Size);
+	}
+
+	if (Object_Selected != nullptr)
+	{
+		UserTrans3DChange.Trans = Object_Selected -> GetTrans();
+		UserTrans3DChange.UpdateIndicator(UserTrans3DChange.Trans, View, window.Size);
+	}
+}
+
+
+
+void Light3DContext::PolyHedraPalletChangeFunc(ClickArgs args)
+{
+	if (args.Action == Action::Press)
+	{
+		DoPolyHedraPalletChange = true;
+		UIPolyHedraPalletList.Pallet = nullptr;
+		UIPolyHedraPalletList.Show();
+		UIPolyHedraPalletList.Change(PolyHedraManager); // do { Pallet = null; } in here ?
+	}
+}
+void Light3DContext::PolyHedraPalletUpdate()
+{
+	if (DoPolyHedraPalletChange)
+	{
+		if (!UIPolyHedraPalletList.IsVisible())
+		{
+			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(Object_Selected);
+			if (UIPolyHedraPalletList.Pallet != nullptr && obj != nullptr)
+			{
+				obj -> Data.PalletManager = UIPolyHedraPalletList.Pallet;
+			}
+			DoPolyHedraPalletChange = false;
+		}
+	}
+}
+
 
 
 Light3DContext::~Light3DContext()
@@ -73,6 +263,8 @@ Light3DContext::Light3DContext()
 	, Objects()
 	, Object_Selected(nullptr)
 	, Object_Hovering(nullptr)
+	, UIPolyHedraPalletList()
+	, DoPolyHedraPalletChange(false)
 	, LightShaderLayout()
 {
 	PolyHedraManager.MakeCurrent();
@@ -272,9 +464,6 @@ static PolyHedra * SpinRingXIndicator = nullptr;
 static PolyHedra * SpinRingYIndicator = nullptr;
 static PolyHedra * SpinRingZIndicator = nullptr;
 
-#include "UserTrans3DChange.hpp"
-static ::UserTrans3DChange UserTrans3DChange;
-
 void Light3DContext::Make()
 {
 	std::cout << "Make 0\n";
@@ -291,8 +480,12 @@ void Light3DContext::Make()
 	FancyLights();
 
 	UIManager.WindowControl.ChildInsert(UISceneObject);
+	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, Light3DContext::PolyHedraPalletChangeFunc);
 	UISceneObject.Hide();
 
+	UIManager.WindowControl.ChildInsert(UIPolyHedraPalletList);
+	UIPolyHedraPalletList.Hide();
+	
 	MoveAxisXIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisX.polyhedra"));
 	MoveAxisYIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisY.polyhedra"));
 	MoveAxisZIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisZ.polyhedra"));
@@ -394,21 +587,7 @@ void Light3DContext::User(FrameTime frame_time)
 
 	if (window[Keys::Menu] == State::Press)
 	{
-		std::cout << "Pallets: " << PolyHedraManager.InstanceManagers.Count() << '\n';
-		for (unsigned int i = 0; i < PolyHedraManager.InstanceManagers.Count(); i++)
-		{
-			PolyHedraPalletManager * pallet_manager = PolyHedraManager.InstanceManagers[i];
-			PolyHedra * pallet = pallet_manager -> Pallet;
-			std::cout << '[';
-			std::cout << ToStringU32(pallet_manager -> ObjectDatas.Count(), 2);
-			std::cout << ' ';
-			std::cout << ToStringU32(pallet_manager -> InstancesFull.Count(), 2);
-			std::cout << ' ';
-			std::cout << ToStringU32(pallet_manager -> InstancesWire.Count(), 2);
-			std::cout << ']';
-			std::cout << ' ' << (pallet -> Name) << '\n';
-		}
-		std::cout << '\n';
+		//UIPolyHedraPalletList.Change(&PolyHedraManager);
 	}
 }
 void Light3DContext::Draw()
@@ -488,84 +667,6 @@ start change
 		scales Indicators
 */
 
-void Light3DContext::ViewObjectFunc()
-{
-	if (IsHoveringUI()) { return; }
-	if (!UserTrans3DChange.HoveringIsNone()) { return; }
-	if (!UserTrans3DChange.SelectedIsNone()) { return; }
-
-	Object_Hovering = FindObject(ViewRay);
-
-	if (Object_Hovering != nullptr)
-	{
-		Object_Hovering -> ShowWire();
-	}
-
-	if (window.MouseManager[MouseButtons::MouseL].IsPress())
-	{
-		if (Object_Hovering != nullptr)
-		{
-			UserTrans3DChange.ShowIndicator();
-		}
-		else
-		{
-			UserTrans3DChange.HideIndicator();
-		}
-		Object_Selected = Object_Hovering;
-		UISceneObject.Change(Object_Selected);
-	}
-
-	if (Object_Selected != nullptr)
-	{
-		UserTrans3DChange.Trans = Object_Selected -> GetTrans();
-		UserTrans3DChange.UpdateIndicator(UserTrans3DChange.Trans, View, window.Size);
-	}
-}
-void Light3DContext::ViewChangeTransFunc()
-{
-	if (UserTrans3DChange.SelectedIsNone())
-	{
-		UserTrans3DChange.FindIndicator(ViewRay);
-	}
-
-	if (window[MouseButtons::MouseL].IsRelease() ||
-		window[MouseButtons::MouseR].IsRelease())
-	{
-		UserTrans3DChange.UseNone();
-		if (Object_Selected != nullptr)
-		{
-			UserTrans3DChange.Trans = Object_Selected -> GetTrans();
-			UserTrans3DChange.UpdateIndicatorTrans(UserTrans3DChange.Trans);
-		}
-	}
-	else if (window[MouseButtons::MouseL].IsPress())
-	{ UserTrans3DChange.UseL(); }
-	else if (window[MouseButtons::MouseR].IsPress())
-	{ UserTrans3DChange.UseR(); }
-
-	if (!UserTrans3DChange.SelectedIsNone())
-	{
-		Trans3D trans = UserTrans3DChange.NewTrans(ViewRay);
-		trans.Position = trans.Position.round(0.1f);
-		trans.Rotation = trans.Rotation.round(Angle::Degrees(15));
-
-		if (Object_Selected != nullptr)
-		{
-			Object_Selected -> SetTrans(trans);
-		}
-
-		UserTrans3DChange.UpdateIndicator(trans, View, window.Size);
-	}
-	else
-	{
-		UserTrans3DChange.UpdateIndicator(UserTrans3DChange.Trans, View, window.Size);
-	}
-
-	if (UserTrans3DChange.SelectedIsNone())
-	{
-		ViewObjectFunc();
-	}
-}
 void Light3DContext::ViewFunc()
 {
 	VectorF2 pos;
@@ -575,12 +676,13 @@ void Light3DContext::ViewFunc()
 	}
 	ViewRay = Ray3D(View.Trans.Position, View.Trans.Rotation.forward(VectorF3(pos.X, pos.Y, 1)));
 
-	ViewChangeTransFunc();
-	if (Object_Selected != nullptr)
-	{
-		Object_Selected -> ShowWire();
-		UISceneObject.Update();
-	}
+
+
+	UserChange_Change();
+	Objects_Change();
+
+	UserChange_Update();	
+	Objects_Update();
 }
 
 
@@ -592,6 +694,7 @@ void Light3DContext::Frame(FrameTime frame_time)
 
 	User(frame_time);
 
+	PolyHedraPalletUpdate();
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (Objects[i] == nullptr) { continue; }

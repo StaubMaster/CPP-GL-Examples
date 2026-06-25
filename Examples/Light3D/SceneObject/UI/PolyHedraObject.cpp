@@ -10,6 +10,7 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 	, PalletName()
 	, PalletFile()
 	, PalletSkinsCount()
+	, PalletChange()
 	, Trans("Trans")
 {
 	Anchor.X.AnchorBoth(0, 0);
@@ -19,6 +20,9 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 	PalletName.Anchor.X.AnchorBoth(0, 0);
 	PalletFile.Anchor.X.AnchorBoth(0, 0);
 	PalletSkinsCount.Anchor.X.AnchorBoth(0, 0);
+	PalletChange.Anchor.X.AnchorBoth(0, 0);
+
+	PalletChange.SetText("Change Pallet");
 
 	Trans.Anchor.X.AnchorBoth(0, 0);
 
@@ -26,6 +30,7 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 	Pallet.ChildInsert(PalletName);
 	Pallet.ChildInsert(PalletFile);
 	Pallet.ChildInsert(PalletSkinsCount);
+	Pallet.ChildInsert(PalletChange);
 	ChildInsert(Trans);
 
 	Pallet.AnchorFitChildrenY();

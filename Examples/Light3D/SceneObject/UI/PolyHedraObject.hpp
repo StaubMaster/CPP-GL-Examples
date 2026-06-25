@@ -18,6 +18,7 @@ struct PolyHedraObject : public GroupBox
 	UI::Control::Label		PalletName;
 	UI::Control::Label		PalletFile;
 	UI::Control::Label		PalletSkinsCount;
+	UI::Control::Button		PalletChange;
 
 	UI::Control::Trans3D	Trans;
 

@@ -75,6 +75,31 @@ struct MultiformLayout : public Multiform::Layout
 
 
 
+struct UIPolyHedraPalletList;
+
+struct UIPolyHedraPalletItem
+{
+	UIPolyHedraPalletList &		List;
+	PolyHedraPalletManager *	Pallet;
+	UI::Control::Button			Button;
+	UIPolyHedraPalletItem(UIPolyHedraPalletList & list, PolyHedraPalletManager * pallet);
+	void	Func(ClickArgs args);
+};
+struct UIPolyHedraPalletList : public UI::Control::Form
+{
+	Container::Binary<UIPolyHedraPalletItem*>	List;
+	PolyHedraPalletManager *					Pallet;
+	UIPolyHedraPalletList();
+	void	Change(PolyHedraManager & manager);
+	void	Func(PolyHedraPalletManager * pallet);
+};
+
+
+
+#include "UserTrans3DChange.hpp"
+
+
+
 struct Light3DContext : public ContextBase
 {
 View3D		View;
@@ -85,8 +110,8 @@ Matrix4x4	ViewMatrix;
 
 ::PolyHedraManager		PolyHedraManager;
 
-UI::Manager				UIManager;
-SceneObjectUI			UISceneObject;
+UI::Manager					UIManager;
+SceneObjectUI				UISceneObject;
 
 bool	IsHoveringUI() const;
 
@@ -100,6 +125,23 @@ SceneObject *						Object_Hovering;
 
 SceneObject *	FindObject(const Ray3D & ray) const;
 unsigned int	FindObjectIndex(const SceneObject *) const;
+
+void	Objects_Change();
+void	Objects_Update();
+
+
+
+::UserTrans3DChange UserTrans3DChange;
+
+void	UserChange_Change();
+void	UserChange_Update();
+
+
+
+::UIPolyHedraPalletList		UIPolyHedraPalletList;
+bool	DoPolyHedraPalletChange;
+void	PolyHedraPalletChangeFunc(ClickArgs args);
+void	PolyHedraPalletUpdate();
 
 
 
@@ -150,8 +192,6 @@ void	Free() override;
 void	User(FrameTime frame_time);
 void	Draw();
 
-void	ViewObjectFunc();
-void	ViewChangeTransFunc();
 void	ViewFunc();
 
 void	Frame(FrameTime frame_time) override;
