@@ -1,8 +1,8 @@
 #include "General/ContextBase.hpp"
 
 // ValueType
-#include "ValueType/View3D.hpp"
-#include "ValueType/LoopI3.hpp"
+#include "ValueType/View/3D.hpp"
+#include "ValueType/Loop/I3.hpp"
 
 // PolyHedra
 #include "PolyHedra/PolyHedra.hpp"
@@ -162,7 +162,7 @@ float	ViewFasterNoClip = 10.0f;
 #ifndef DISABLE_VIEW_RAY
 bool		ViewRaySync = true;
 
-Ray3D		ViewRay;
+RayF3		ViewRay;
 AxisRel		ViewRayAxis0;
 AxisRel		ViewRayAxis1;
 AxisRel		ViewRayAxis2;
@@ -187,9 +187,9 @@ void ViewUpdateAround(Trans3D change, FrameTime frame_time);
 
 
 
-::LightBase		LightAmbient;
-::LightSolar	LightSolar;
-::LightSpot		LightSpot;
+::LightBase			LightAmbient;
+::LightDirection	LightSolar;
+::LightSpot			LightSpot;
 
 
 

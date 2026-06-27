@@ -26,7 +26,7 @@ typedef struct
 {
 	VectorF3 Pos;
 	VectorF3 Dir;
-} Ray3D;
+} RayF3;
 
 typedef struct
 {
@@ -313,7 +313,7 @@ kernel void Look(
 
 
 kernel void GravRay(
-	global const Ray3D * ray,
+	global const RayF3 * ray,
 	global Physics3D * buffer
 )
 {

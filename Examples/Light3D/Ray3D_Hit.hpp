@@ -1,7 +1,7 @@
 #ifndef  RAY_3D_HIT_HPP
 # define RAY_3D_HIT_HPP
 
-# include "ValueType/Ray3D.hpp"
+# include "ValueType/Ray/F3.hpp"
 # include "Miscellaneous/Container/Array.hpp"
 
 struct PolyHedra;
@@ -13,7 +13,7 @@ struct PolyHedraUIObject;
 
 struct Ray3D_Hit
 {
-	const Ray3D *	Ray;
+	const RayF3 *	Ray;
 	float			Interval;
 
 	bool	Is() const;
@@ -25,7 +25,7 @@ struct Ray3D_Hit
 	Ray3D_Hit(const Ray3D_Hit & other);
 	Ray3D_Hit & operator=(const Ray3D_Hit & other);
 
-	Ray3D_Hit(const Ray3D & ray, float interval);
+	Ray3D_Hit(const RayF3 & ray, float interval);
 
 	bool	Consider(const Ray3D_Hit & other);
 };
@@ -54,7 +54,7 @@ struct Ray3D_Hit_Type : public Ray3D_Hit
 	}
 };
 
-void RaySkew(const Ray3D & ray0, Ray3D_Hit & hit0 , const Ray3D & ray1, Ray3D_Hit & hit1);
+void RaySkew(const RayF3 & ray0, Ray3D_Hit & hit0 , const RayF3 & ray1, Ray3D_Hit & hit1);
 
 struct Plane3D
 {
@@ -62,7 +62,7 @@ struct Plane3D
 	VectorF3	Normal;
 	Plane3D(VectorF3 origin, VectorF3 normal);
 };
-Ray3D_Hit RayHitPlane(const Ray3D & ray, const Plane3D & plane);
+Ray3D_Hit RayHitPlane(const RayF3 & ray, const Plane3D & plane);
 
 struct Triangle3D
 {
@@ -71,15 +71,15 @@ struct Triangle3D
 	VectorF3	C;
 	Triangle3D(VectorF3 a, VectorF3 b, VectorF3 c);
 };
-Ray3D_Hit RayHitTriangle(const Ray3D & ray, const Triangle3D & triangle);
+Ray3D_Hit RayHitTriangle(const RayF3 & ray, const Triangle3D & triangle);
 
 
 
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans);
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
 
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraObjectData & object);
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraObject & object);
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraUIObject & object);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObjectData & object);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObject & object);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObject & object);
 
 #endif

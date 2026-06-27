@@ -59,8 +59,8 @@ void InteractionObjectMove::Update(SceneInteractionData & SceneData)
 		if (Arrows.Is())
 		{
 			Trans2D & now = SceneData.Manager.Objects[Object] -> ExtData.Now;
-			(Arrows[0] = ColorF4(1, 1, 1)) = Ray2D(now.Pos, Offset);
-			(Arrows[1] = ColorF4(1, 1, 1)) = Line2D(Origin, now.Pos);
+			(Arrows[0] = ColorF4(1, 1, 1)) = RayF2(now.Pos, Offset);
+			(Arrows[1] = ColorF4(1, 1, 1)) = LineF2(Origin, now.Pos);
 		}
 	}
 }

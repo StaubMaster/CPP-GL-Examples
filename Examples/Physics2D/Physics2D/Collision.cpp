@@ -5,7 +5,7 @@
 
 #include "ValueType/Intersect.hpp"
 #include "ValueType/VectorF3.hpp"
-#include "ValueType/Trans2D.hpp"
+#include "ValueType/Trans/2D.hpp"
 
 #include "ValueTypeShow.hpp"
 
@@ -37,9 +37,9 @@ void Physics2D::Collide(
 	//std::cout << '\n';
 
 	//Arrow2D::Object arrows(3);
-	//arrows[0] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, Line2D(obj0.ExtData.Now.Pos, contact_data.Position));
-	//arrows[1] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, Line2D(obj1.ExtData.Now.Pos, contact_data.Position));
-	//arrows[2] = Arrow2D::Inst::Data(ColorF4(0, 1, 0), 16.0f, Ray2D(contact_data.Position, contact_data.Normal));
+	//arrows[0] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, LineF2(obj0.ExtData.Now.Pos, contact_data.Position));
+	//arrows[1] = Arrow2D::Inst::Data(ColorF4(0, 0, 0), 16.0f, LineF2(obj1.ExtData.Now.Pos, contact_data.Position));
+	//arrows[2] = Arrow2D::Inst::Data(ColorF4(0, 1, 0), 16.0f, RayF2(contact_data.Position, contact_data.Normal));
 
 	if (timeDelta != 0.0f)
 	{
@@ -65,8 +65,8 @@ void Physics2D::Seperate(
 	if (!contact_data.Valid) { return; }
 
 	unsigned int IntersektCount = 0;
-	Line2D edge0;
-	Line2D edge1;
+	LineF2 edge0;
+	LineF2 edge1;
 
 	for (unsigned int i0 = 0; i0 < obj0.CornerCount(); i0++)
 	{
@@ -102,8 +102,8 @@ what does the current one do ?
 the current one does a Drag
 I dont want that, but it wants that
 */
-				Ray2D force0_ray(inter, obj0.ExtData.Now.Pos - inter);
-				Ray2D force1_ray(inter, obj1.ExtData.Now.Pos - inter);
+				RayF2 force0_ray(inter, obj0.ExtData.Now.Pos - inter);
+				RayF2 force1_ray(inter, obj1.ExtData.Now.Pos - inter);
 				ObjectForceData force0(obj0, force0_ray.Pos, force0_ray.Dir);
 				ObjectForceData force1(obj1, force1_ray.Pos, force1_ray.Dir);
 				force0.Apply(obj0);
@@ -112,8 +112,8 @@ I dont want that, but it wants that
 				//Arrow2D::Object arrows(4);
 				//arrows[0] = Arrow2D::Inst::Data(ColorF4(1.0f, 0.5f, 0.0f), 16.0f, force0_ray);
 				//arrows[1] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.5f, 1.0f), 16.0f, force1_ray);
-				//arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, Ray2D(inter, obj0.EdgeNormalOfIndex(i0)));
-				//arrows[3] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.5f), 16.0f, Ray2D(inter, obj1.EdgeNormalOfIndex(i1)));
+				//arrows[2] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 16.0f, RayF2(inter, obj0.EdgeNormalOfIndex(i0)));
+				//arrows[3] = Arrow2D::Inst::Data(ColorF4(0.0f, 0.0f, 0.5f), 16.0f, RayF2(inter, obj1.EdgeNormalOfIndex(i1)));
 /*
 for the Force, figure out the potential Energy that both objects have
 calculate the potential Energy to all Edges and choose the smallest
@@ -166,7 +166,7 @@ void Physics2D::ObjectForceData::Apply(Object & obj)
 
 
 
-VectorF2 Physics2D::DragObjectForce(Object & obj, Ray2D drag, float scalar)
+VectorF2 Physics2D::DragObjectForce(Object & obj, RayF2 drag, float scalar)
 {
 	// subtract the speed of the Contact
 	/*{
@@ -188,15 +188,15 @@ VectorF2 Physics2D::DragObjectForce(Object & obj, Ray2D drag, float scalar)
 	// but hight scalar makes things janky
 }
 
-Physics2D::ObjectDragForceData Physics2D::ApplyDragForce(float timeDelta, Object & obj, Ray2D drag, float scalar, bool change)
+Physics2D::ObjectDragForceData Physics2D::ApplyDragForce(float timeDelta, Object & obj, RayF2 drag, float scalar, bool change)
 {
 	ObjectDragForceData data;
 	data.Drag = drag;
 
 	VectorF2 Center = obj.ExtData.Now.Pos;
 	VectorF2 Origin = drag.Pos;
-	data.Contact = Line2D(Center, Origin);
-//	data.Contact = Line2D(Center, obj.AbsolutePositionOf(obj.IntData.CenterOfMass));
+	data.Contact = LineF2(Center, Origin);
+//	data.Contact = LineF2(Center, obj.AbsolutePositionOf(obj.IntData.CenterOfMass));
 
 	ObjectForceData force_data(obj, drag.Pos, DragObjectForce(obj, drag, scalar));
 

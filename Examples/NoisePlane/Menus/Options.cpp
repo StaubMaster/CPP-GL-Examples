@@ -106,7 +106,7 @@ void OptionsMenu::DepthFunc(float val)
 }
 void OptionsMenu::DepthRangeFunc(float val)
 {
-	Context.view.Depth.Range.ChangeMin(val);
+	Context.view.Depth.Range.SetMin(val);
 	Context.Multiform_Depth.ChangeData(Context.view.Depth);
 	Context.OptionsMenu.DepthRange.SetText("DepthRange:" + std::to_string(val));
 }

@@ -2,7 +2,7 @@
 # define PLANE_GRAPHICS_HPP
 
 # include "ValueType/VectorF3.hpp"
-# include "ValueType/ColorF4.hpp"
+# include "ValueType/Color/U4.hpp"
 
 # include "Graphics/Buffer/MainInst.hpp"
 # include "Graphics/Buffer/Array.hpp"

@@ -41,7 +41,7 @@ Window * win;
 
 Trans3D	ViewTrans;
 Depth	ViewDepth;
-Ray3D	ViewRay;
+RayF3	ViewRay;
 
 Texture::T2DArray * PH_Texture;
 
@@ -81,8 +81,8 @@ void CL_PrintError(cl_int err, bool printSuccess = false)
 
 cl::Program CL_Program;
 
-cl::SVMAllocator<Ray3D, cl::SVMTraitCoarse<cl::SVMTraitReadOnly<>>> SVM_Ray_Alloc;
-Ray3D * ViewRay_GPU_Ptr;
+cl::SVMAllocator<RayF3, cl::SVMTraitCoarse<cl::SVMTraitReadOnly<>>> SVM_Ray_Alloc;
+RayF3 * ViewRay_GPU_Ptr;
 
 cl::SVMAllocator<Physics3D_InstData, cl::SVMTraitFine<>> SVM_Physics3D_Alloc;
 unsigned int BufferSize = EntityCount * sizeof(Physics3D_InstData);
@@ -105,7 +105,7 @@ cl::KernelFunctor<
 > * Kernel_Look;
 
 cl::KernelFunctor<
-	Ray3D *,
+	RayF3 *,
 	Physics3D_InstData *
 > * Kernel_GravRay;
 
@@ -219,7 +219,7 @@ void CL_Init()
 		CL_PrintError(err);
 
 		Kernel_GravRay = new cl::KernelFunctor<
-			Ray3D *,
+			RayF3 *,
 			Physics3D_InstData *
 		>(CL_Program, "GravRay", &err);
 		CL_PrintError(err);

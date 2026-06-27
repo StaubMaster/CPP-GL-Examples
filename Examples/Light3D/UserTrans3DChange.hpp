@@ -1,13 +1,13 @@
 #ifndef  USER_TRANS_3D_CHANGE_HPP
 # define USER_TRANS_3D_CHANGE_HPP
 
-# include "ValueType/Ray3D.hpp"
-# include "ValueType/Trans3D.hpp"
+# include "ValueType/Ray/F3.hpp"
+# include "ValueType/Trans/3D.hpp"
 
 # include "ValueType/Vector/F3.hpp"
 # include "PolyHedraUI/Object.hpp"
 
-# include "ValueType/View3D.hpp"
+# include "ValueType/View/3D.hpp"
 # include "Display/DisplaySize.hpp"
 
 struct UserTrans3DChange
@@ -27,7 +27,7 @@ struct UserTrans3DChange
 	void	ShowIndicator();
 	void	HideIndicator();
 
-	void	FindIndicator(const Ray3D & ray);
+	void	FindIndicator(const RayF3 & ray);
 
 	void	UpdateIndicatorColor();
 	void	UpdateIndicatorScale(float scale);
@@ -78,12 +78,12 @@ struct UserTrans3DChange
 
 	Trans3D		Trans;
 
-	VectorF3		NewPosAxis(const Ray3D & ray, const VectorF3 & axis) const;
-	VectorF3		NewPosPlane(const Ray3D & ray, const VectorF3 & axis) const;
-	EulerAngle3D	NewRotPlaneX(const Ray3D & ray) const;
-	EulerAngle3D	NewRotPlaneY(const Ray3D & ray) const;
-	EulerAngle3D	NewRotPlaneZ(const Ray3D & ray) const;
-	Trans3D			NewTrans(const Ray3D & ray) const;
+	VectorF3		NewPosAxis(const RayF3 & ray, const VectorF3 & axis) const;
+	VectorF3		NewPosPlane(const RayF3 & ray, const VectorF3 & axis) const;
+	EulerAngle3D	NewRotPlaneX(const RayF3 & ray) const;
+	EulerAngle3D	NewRotPlaneY(const RayF3 & ray) const;
+	EulerAngle3D	NewRotPlaneZ(const RayF3 & ray) const;
+	Trans3D			NewTrans(const RayF3 & ray) const;
 };
 
 #endif

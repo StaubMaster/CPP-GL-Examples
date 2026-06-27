@@ -8,11 +8,11 @@
 
 #include "ChunkVoxelIndex.hpp"
 
-#include "ValueType/Bool3.hpp"
+#include "ValueType/Bool/3.hpp"
 #include "ValueType/Box/I3.hpp"
-#include "ValueType/LoopI3.hpp"
+#include "ValueType/Loop/I3.hpp"
 
-#include "ValueType/Ray3D.hpp"
+#include "ValueType/Ray/F3.hpp"
 
 
 
@@ -24,7 +24,7 @@
 #include "General/ContainerLock/AccessTypeGuard.hpp"
 #include "General/ContainerLock/AssignTypeGuard.hpp"
 
-#include "ValueType/LoopU3.hpp"
+#include "ValueType/Loop/U3.hpp"
 
 
 
@@ -463,7 +463,7 @@ ChunkManager::ChunkManager()
 
 
 #include "VoxelHit.hpp"
-VoxelHit ChunkManager::HitVoxel(Ray3D ray)
+VoxelHit ChunkManager::HitVoxel(RayF3 ray)
 {
 	//::ViewRayPolyHedra = ViewRayPolyHedra;
 	//::VoxelBoxPolyHedra = VoxelBoxPolyHedra;

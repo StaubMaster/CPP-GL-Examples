@@ -15,14 +15,11 @@ SceneObject_LightSpot::SceneObject_LightSpot()
 
 Trans3D SceneObject_LightSpot::GetTrans() const
 {
-	return Data0.Trans;
+	return Data.Trans;
 }
 void SceneObject_LightSpot::SetTrans(const Trans3D & trans)
 {
-	Data0.Trans = trans;
-	Data1.Trans = trans;
-	Data1.Trans.Rotation.Z0 = Angle();
-	Data1.Trans.Rotation.X1 = Angle();
+	Data.Trans = trans;
 	Light -> Pos = trans.Position;
 	Light -> Dir = trans.Rotation.forward(VectorF3(0, 0, 1));
 }
@@ -30,30 +27,30 @@ void SceneObject_LightSpot::SetTrans(const Trans3D & trans)
 
 
 void SceneObject_LightSpot::Update()
-{ }
+{
+	if (Light != nullptr)
+	{
+		Data.Trans.Position = Light -> Pos;
+		Data.Trans.Rotation = EulerAngle3D::PointToZ(Light -> Dir);
+	}
+}
 
 
 
 void SceneObject_LightSpot::ShowWire()
 {
-	Data0.DrawWire = true;
-	Data1.DrawWire = true;
+	Data.DrawWire = true;
 }
 
 void SceneObject_LightSpot::DisplayObject()
 {
-	Data0.PalletManager -> PutInstance(Data0);
-	Data1.PalletManager -> PutInstance(Data1);
-	Data0.DrawWire = false;
-	Data1.DrawWire = false;
+	Data.PalletManager -> PutInstance(Data);
+	Data.DrawWire = false;
 }
 
 
 
-Ray3D_Hit SceneObject_LightSpot::Hit(const Ray3D & ray) const
+Ray3D_Hit SceneObject_LightSpot::Hit(const RayF3 & ray) const
 {
-	Ray3D_Hit hit;
-	hit.Consider(RayHitObject(ray, Data0));
-	hit.Consider(RayHitObject(ray, Data1));
-	return hit;
+	return RayHitObject(ray, Data);
 }

@@ -9,7 +9,7 @@
 #include <iostream>
 
 // ValueType
-#include "ValueType/Matrix3x3.hpp"
+#include "ValueType/Matrix/3x3.hpp"
 
 // PolyGon
 #include "PolyGon/PolyGon.hpp"

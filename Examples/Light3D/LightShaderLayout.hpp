@@ -4,8 +4,8 @@
 # include "PolyHedra/Graphics/Full/ShaderLayout.hpp"
 
 # include "ValueType/Vector/F3.hpp"
-# include "ValueType/ColorF4.hpp"
-# include "ValueType/Range.hpp"
+# include "ValueType/Color/F4.hpp"
+# include "ValueType/RangeF.hpp"
 
 # include "Graphics/Buffer/Uniform.hpp"
 # include "Graphics/Uniform/General/Buffer.hpp"
@@ -31,7 +31,7 @@ namespace PaddedBlock
 	typedef TypeBase<unsigned int, 3> UInt;
 	typedef TypeBase<::VectorF3, 1> VectorF3;
 	typedef TypeBase<::ColorF4, 0> ColorF4;
-	typedef TypeBase<::Range, 1> Range;
+	typedef TypeBase<::RangeF, 1> RangeF;
 
 	struct LightBase
 	{
@@ -39,18 +39,18 @@ namespace PaddedBlock
 		PaddedBlock::ColorF4	Color;
 		LightBase & operator=(const ::LightBase & object);
 	};
-	struct LightSolar
+	struct LightDirection
 	{
 		PaddedBlock::LightBase	Base;
 		PaddedBlock::VectorF3	Dir;
-		LightSolar & operator=(const ::LightSolar & object);
+		LightDirection & operator=(const ::LightDirection & object);
 	};
 	struct LightSpot
 	{
 		PaddedBlock::LightBase	Base;
 		PaddedBlock::VectorF3	Pos;
 		PaddedBlock::VectorF3	Dir;
-		PaddedBlock::Range		Range;
+		PaddedBlock::RangeF		Range;
 		LightSpot & operator=(const ::LightSpot & object);
 	};
 };
@@ -64,7 +64,7 @@ class LightShaderLayout : public PolyHedraFull::ShaderLayout
 	struct LightData
 	{
 		PaddedBlock::LightBase		Ambient;
-		PaddedBlock::LightSolar		Solar;
+		PaddedBlock::LightDirection		Solar;
 		PaddedBlock::UInt			SpotCount;
 		PaddedBlock::LightSpot		Spot[4];
 	};

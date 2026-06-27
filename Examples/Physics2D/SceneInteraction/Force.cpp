@@ -46,7 +46,7 @@ void InteractionObjectDrag::Update(SceneInteractionData & SceneData)
 {
 	if (Object.IsValid())
 	{
-		Ray2D drag;
+		RayF2 drag;
 		drag.Pos = SceneData.Manager.Objects[Object] -> AbsolutePositionOf(Offset);
 		drag.Dir = Target - drag.Pos;
 

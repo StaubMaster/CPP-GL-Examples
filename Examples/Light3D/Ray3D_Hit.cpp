@@ -25,7 +25,7 @@ Ray3D_Hit & Ray3D_Hit::operator=(const Ray3D_Hit & other)
 	return *this;
 }
 
-Ray3D_Hit::Ray3D_Hit(const Ray3D & ray, float interval)
+Ray3D_Hit::Ray3D_Hit(const RayF3 & ray, float interval)
 	: Ray(&ray)
 	, Interval(interval)
 { }
@@ -44,14 +44,14 @@ bool Ray3D_Hit::Consider(const Ray3D_Hit & other)
 
 
 
-#include "ValueType/Trans3D.hpp"
+#include "ValueType/Trans/3D.hpp"
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Object.hpp"
 #include "PolyHedra/ObjectData.hpp"
 #include "PolyHedra/PalletManager.hpp"
 #include "PolyHedraUI/Object.hpp"
 
-void RaySkew(const Ray3D & ray0, Ray3D_Hit & hit0 , const Ray3D & ray1, Ray3D_Hit & hit1)
+void RaySkew(const RayF3 & ray0, Ray3D_Hit & hit0 , const RayF3 & ray1, Ray3D_Hit & hit1)
 {
 	VectorF3 diff = ray1.Pos - ray0.Pos;
 	VectorF3 norm = VectorF3::cross(ray0.Dir, ray1.Dir);
@@ -74,7 +74,7 @@ Plane3D::Plane3D(VectorF3 origin, VectorF3 normal)
 	: Origin(origin)
 	, Normal(normal)
 { }
-Ray3D_Hit RayHitPlane(const Ray3D & ray, const Plane3D & plane)
+Ray3D_Hit RayHitPlane(const RayF3 & ray, const Plane3D & plane)
 {
 	VectorF3 diff = plane.Origin - ray.Pos;
 
@@ -94,7 +94,7 @@ Triangle3D::Triangle3D(VectorF3 a, VectorF3 b, VectorF3 c)
 	, B(b)
 	, C(c)
 { }
-Ray3D_Hit RayHitTriangle(const Ray3D & ray, const Triangle3D & triangle)
+Ray3D_Hit RayHitTriangle(const RayF3 & ray, const Triangle3D & triangle)
 {
 	VectorF3 plane_vec_0 = triangle.B - triangle.A;
 	VectorF3 plane_vec_1 = triangle.C - triangle.A;
@@ -130,7 +130,7 @@ Ray3D_Hit RayHitTriangle(const Ray3D & ray, const Triangle3D & triangle)
 
 
 
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans)
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans)
 {
 	Ray3D_Hit_Type<unsigned int> hit_return;
 	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
@@ -152,7 +152,7 @@ Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & p
 	}
 	return hit_return;
 }
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale)
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale)
 {
 	Ray3D_Hit_Type<unsigned int> hit_return;
 	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
@@ -175,11 +175,11 @@ Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedra & p
 	return hit_return;
 }
 
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraObjectData & object)
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObjectData & object)
 {
 	return RayHitObject(ray, *(object.PalletManager -> Pallet), object.Trans);
 }
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraObject & object)
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObject & object)
 {
 	if (object.Is())
 	{
@@ -187,7 +187,7 @@ Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraObje
 	}
 	return Ray3D_Hit_Type<unsigned int>();
 }
-Ray3D_Hit_Type<unsigned int> RayHitObject(const Ray3D & ray, const PolyHedraUIObject & object)
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObject & object)
 {
 	if (object.Is())
 	{

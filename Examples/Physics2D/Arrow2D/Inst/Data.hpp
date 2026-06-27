@@ -2,9 +2,9 @@
 # define ARROW_2D_INST_DATA_HPP
 
 # include "ValueType/VectorF2.hpp"
-# include "ValueType/ColorF4.hpp"
-# include "ValueType/Line2D.hpp"
-# include "ValueType/Ray2D.hpp"
+# include "ValueType/Color/U4.hpp"
+# include "ValueType/Line/F2.hpp"
+# include "ValueType/Ray/F2.hpp"
 
 namespace Arrow2D
 {
@@ -21,13 +21,13 @@ struct Data
 	Data();
 
 	Data(ColorF4 color, float size, VectorF2 origin, VectorF2 target);
-	Data(ColorF4 color, float size, Line2D line);
-	Data(ColorF4 color, float size, Ray2D ray);
+	Data(ColorF4 color, float size, LineF2 line);
+	Data(ColorF4 color, float size, RayF2 ray);
 
 	Data & operator=(const float & size);
 	Data & operator=(const ColorF4 & color);
-	Data & operator=(const Line2D & line);
-	Data & operator=(const Ray2D & ray);
+	Data & operator=(const LineF2 & line);
+	Data & operator=(const RayF2 & ray);
 
 	void Clear();
 };

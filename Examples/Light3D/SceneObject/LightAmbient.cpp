@@ -42,7 +42,7 @@ void SceneObject_LightAmbient::DisplayObject()
 
 
 
-Ray3D_Hit SceneObject_LightAmbient::Hit(const Ray3D & ray) const
+Ray3D_Hit SceneObject_LightAmbient::Hit(const RayF3 & ray) const
 {
 	return RayHitObject(ray, Data);
 }

@@ -15,7 +15,7 @@ namespace VoxelGraphics
 		::Uniform::Angle			FOV;
 
 		::Uniform::LightBase		LightAmbient;
-		::Uniform::LightSolar		LightSolar;
+		::Uniform::LightDirection	LightSolar;
 		::Uniform::LightSpot		LightSpot;
 		::Uniform::UInt				LightSpotCount;
 

@@ -2,7 +2,7 @@
 #include "Random.hpp"
 
 #include "ValueType/Vector/I3.hpp"
-#include "ValueType/LoopU3.hpp"
+#include "ValueType/Loop/U3.hpp"
 #include "ValueType/EulerAngle3D.hpp"
 
 

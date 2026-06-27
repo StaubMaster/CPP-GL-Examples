@@ -55,7 +55,7 @@
 #include "SceneObject/SceneObject.hpp"
 #include "SceneObject/PolyHedraObject.hpp"
 #include "SceneObject/LightAmbient.hpp"
-#include "SceneObject/LightSolar.hpp"
+#include "SceneObject/LightDirection.hpp"
 #include "SceneObject/LightSpot.hpp"
 #include "SceneObject/UI/SceneObject.hpp"
 
@@ -76,13 +76,13 @@ struct MultiformLayout : public Multiform::Layout
 
 
 struct UIPolyHedraPalletList;
+struct UIPolyHedraPalletItem;
 
-struct UIPolyHedraPalletItem
+struct UIPolyHedraPalletItem : public UI::Control::Button
 {
 	UIPolyHedraPalletList &		List;
-	PolyHedraPalletManager *	Pallet;
-	UI::Control::Button			Button;
-	UIPolyHedraPalletItem(UIPolyHedraPalletList & list, PolyHedraPalletManager * pallet);
+	PolyHedraPalletManager *	Object;
+	UIPolyHedraPalletItem(UIPolyHedraPalletList & list, PolyHedraPalletManager * obj);
 	void	Func(ClickArgs args);
 };
 struct UIPolyHedraPalletList : public UI::Control::Form
@@ -90,8 +90,9 @@ struct UIPolyHedraPalletList : public UI::Control::Form
 	Container::Binary<UIPolyHedraPalletItem*>	List;
 	PolyHedraPalletManager *					Pallet;
 	UIPolyHedraPalletList();
+	void	Clear();
 	void	Change(PolyHedraManager & manager);
-	void	Func(PolyHedraPalletManager * pallet);
+	void	Func(ClickArgs args, PolyHedraPalletManager * obj);
 };
 
 
@@ -103,7 +104,7 @@ struct UIPolyHedraPalletList : public UI::Control::Form
 struct Light3DContext : public ContextBase
 {
 View3D		View;
-Ray3D		ViewRay;
+RayF3		ViewRay;
 Matrix4x4	ViewMatrix;
 
 ::MultiformLayout	MultiformLayout;
@@ -123,11 +124,22 @@ Container::Binary<SceneObject*>		Objects;
 SceneObject *						Object_Selected;
 SceneObject *						Object_Hovering;
 
-SceneObject *	FindObject(const Ray3D & ray) const;
+SceneObject *	FindObject(const RayF3 & ray) const;
 unsigned int	FindObjectIndex(const SceneObject *) const;
 
 void	Objects_Change();
 void	Objects_Update();
+
+
+
+void	SceneClear();
+
+void	SceneLoad(FileInfo file);
+void	SceneSave(FileInfo file);
+
+void	SceneInitCubes();
+void	SceneInitLights();
+
 
 
 
@@ -155,14 +167,14 @@ SceneObject_PolyHedraObject		CenterCube;
 
 
 LightBase		Light_Ambient;
-LightSolar		Light_Solar;
+LightDirection	Light_Solar;
 
-static const unsigned int		Light_Spot_Limit = 4;
-unsigned int			Light_Spot_Count;
-LightSpot				Light_Spot_Array[Light_Spot_Limit];
+static const unsigned int	Light_Spot_Limit = 4;
+unsigned int				Light_Spot_Count;
+LightSpot					Light_Spot_Array[Light_Spot_Limit];
 
 SceneObject_LightAmbient	LightAmbientObject;
-SceneObject_LightSolar		LightSolarObject;
+SceneObject_LightDirection	LightSolarObject;
 SceneObject_LightSpot		LightSpotObjects[Light_Spot_Limit];
 
 
@@ -175,13 +187,6 @@ SceneObject_LightSpot		LightSpotObjects[Light_Spot_Limit];
 void	ChangeMedia();
 void	GraphicsCreate();
 void	GraphicsDelete();
-
-
-
-void	LightsMake();
-void	RandomCubes();
-void	FancyLights();
-void	Fancify();
 
 
 

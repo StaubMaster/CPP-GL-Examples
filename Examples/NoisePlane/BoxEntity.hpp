@@ -3,7 +3,7 @@
 
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/Box/F3.hpp"
-# include "ValueType/LoopI3.hpp"
+# include "ValueType/Loop/I3.hpp"
 
 # include "FrameTime.hpp"
 

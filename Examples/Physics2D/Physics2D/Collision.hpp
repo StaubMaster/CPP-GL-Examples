@@ -6,9 +6,9 @@
 # include "ValueType/Box/F1.hpp"
 
 # include "ValueType/VectorF2.hpp"
-# include "ValueType/Ray2D.hpp"
+# include "ValueType/Ray/F2.hpp"
 
-# include "ValueType/Matrix3x3.hpp"
+# include "ValueType/Matrix/3x3.hpp"
 
 
 
@@ -52,26 +52,26 @@ struct ObjectForceData
 
 VectorF2 DragObjectForce(
 	Object & obj,
-	Ray2D drag,
+	RayF2 drag,
 	float scalar
 );
 
 struct ObjectDragForceData
 {
-	Ray2D Drag;
-	Line2D Contact;
+	RayF2 Drag;
+	LineF2 Contact;
 
-	Ray2D Force;
-	Ray2D ForcePos;
-	Ray2D ForceRot;
+	RayF2 Force;
+	RayF2 ForcePos;
+	RayF2 ForceRot;
 
-	Ray2D ChangePos;
-	Ray2D ChangeRot;
+	RayF2 ChangePos;
+	RayF2 ChangeRot;
 };
 ObjectDragForceData ApplyDragForce(
 	float timeDelta,
 	Object & obj,
-	Ray2D drag,
+	RayF2 drag,
 	float scalar,
 	bool change
 );

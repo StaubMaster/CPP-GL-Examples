@@ -424,11 +424,11 @@ void ContextNoisePlane::Make()
 		window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
 		//window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
 		view.Depth.Color = window.DefaultColor;
-		view.Depth.Range.ChangeMin(0.5f);
+		view.Depth.Range.SetMin(0.5f);
 
-		LightAmbient = ::LightBase(0.2f, ColorF4(1.0f, 1.0f, 1.0f));
-		LightSolar = ::LightSolar(1.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(1.0f, -1.0f, 0.0f));
-		LightSpot = ::LightSpot(0.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), Range(0.1f, 1.0f));
+		LightAmbient = LightBase(0.2f, ColorF4(1.0f, 1.0f, 1.0f));
+		LightSolar = LightDirection(1.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(1.0f, -1.0f, 0.0f));
+		LightSpot = ::LightSpot(0.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
 	}
 
 #ifndef DISABLE_VIEW_TANGIBLE
@@ -502,7 +502,7 @@ void ContextNoisePlane::MakeControls()
 
 		//OptionsMenu.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
 		OptionsMenu.Depth.SetValueX(1000.0f); // get Depth. also depth works weirdly ?
-		OptionsMenu.DepthRange.SetValueX(view.Depth.Range.Min);
+		OptionsMenu.DepthRange.SetValueX(view.Depth.Range.GetMin());
 
 		// Remove range should never be less then Insert
 		// make RemoveRange = InsertRange * 2 ?

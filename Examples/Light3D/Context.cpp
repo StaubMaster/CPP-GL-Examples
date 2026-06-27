@@ -30,26 +30,30 @@ MultiformLayout::MultiformLayout()
 
 
 
-UIPolyHedraPalletItem::UIPolyHedraPalletItem(UIPolyHedraPalletList & list, PolyHedraPalletManager * pallet)
-	: List(list)
-	, Pallet(pallet)
-	, Button()
+UIPolyHedraPalletItem::UIPolyHedraPalletItem(UIPolyHedraPalletList & list, PolyHedraPalletManager * obj)
+	: UI::Control::Button()
+	, List(list)
+	, Object(obj)
 {
-	Button.SetText(pallet -> Pallet -> File.Name());
-	Button.Anchor.X.AnchorBoth(0, 0);
-	Button.ClickFunc.Assign(this, UIPolyHedraPalletItem::Func);
+	AnchorMargin = BoxF2(VectorF2(0.0f), VectorF2(0.0f));
+	Anchor.X.AnchorBoth(0, 0);
+	if (obj != nullptr)
+	{
+		SetText(obj -> Pallet -> File.Name());
+	}
+	ClickFunc.Assign(this, UIPolyHedraPalletItem::Func);
 }
 void UIPolyHedraPalletItem::Func(ClickArgs args)
 {
-	if (args.Action == Action::Press)
-	{
-		List.Func(Pallet);
-	}
+	List.Func(args, Object);
 }
 
 UIPolyHedraPalletList::UIPolyHedraPalletList()
-{ }
-void UIPolyHedraPalletList::Change(PolyHedraManager & manager)
+	: UI::Control::Form()
+{
+	AnchorPadding = BoxF2(VectorF2(0.0f), VectorF2(0.0f));
+}
+void UIPolyHedraPalletList::Clear()
 {
 	Children.Clear();
 	for (unsigned int i = 0; i < List.Count(); i++)
@@ -57,37 +61,32 @@ void UIPolyHedraPalletList::Change(PolyHedraManager & manager)
 		delete List[i];
 	}
 	List.Clear();
+	Pallet = nullptr;
+}
+void UIPolyHedraPalletList::Change(PolyHedraManager & manager)
+{
+	Clear();
 
 	for (unsigned int i = 0; i < manager.InstanceManagers.Count(); i++)
 	{
 		PolyHedraPalletManager * pallet_manager = manager.InstanceManagers[i];
 		List.Insert(new UIPolyHedraPalletItem(*this, pallet_manager));
-		ChildInsert(List[i] -> Button);
+		ChildInsert(List[i]);
 	}
-	AnchorFitChildrenY();
+
+	Show();
+	AnchorFitChildrenY(); // this dosent work poperly if hidden
+	// generic Fitting Enum
+	// Flag to request Fitting
 }
-void UIPolyHedraPalletList::Func(PolyHedraPalletManager * pallet)
+void UIPolyHedraPalletList::Func(ClickArgs args, PolyHedraPalletManager * obj)
 {
-	Pallet = pallet;
-	Hide();
+	if (args.Action == Action::Press)
+	{
+		Pallet = obj;
+		Hide();
+	}
 }
-
-/* how to use this list ?
-
-Object UI
-	Button to change PolyHedra
-		set Flag that Pallet Change was requested
-		set List Pallet to null
-		show List
-		Change(PolyHedraManager) ?
-	during Update
-		if Pallet Chnage Flag was set
-			check if List is done (hidden)
-			if it is, take List Pallet
-			set Flat to false
-if Escape is pressed
-	if List is shown, hide
-*/
 
 
 
@@ -96,7 +95,7 @@ bool Light3DContext::IsHoveringUI() const
 	return (UIManager.Hovering != &UIManager.WindowControl);
 }
 
-SceneObject * Light3DContext::FindObject(const Ray3D & ray) const
+SceneObject * Light3DContext::FindObject(const RayF3 & ray) const
 {
 	Ray3D_Hit_Type<unsigned int> hit;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
@@ -163,6 +162,149 @@ void Light3DContext::Objects_Update()
 
 
 
+void Light3DContext::SceneClear()
+{
+	for (unsigned int i = 0; i < Objects.Count(); i++)
+	{
+		delete Objects[i];
+	}
+	Objects.Clear();
+}
+
+static PolyHedra * Cube = nullptr;
+static LightSpot LightSpotLook(LightBase base, LineF3 line, RangeF range)
+{
+	LightSpot light;
+	light.Base = base;
+	light.Pos = line.Origin;
+	light.Dir = line.Differance().normalize();
+	light.Range = range;
+	return light;
+}
+
+void Light3DContext::SceneInitCubes()
+{
+	Cube = PolyHedra::Generate::HexaHedron();
+	CenterCube.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
+	Objects.Insert(&CenterCube);
+
+	/*int Range_Size1 = 0x1FF;
+	int Range_SizeH = 0x0FF;
+	int j_len = 16;
+	int i_len = 16;
+	for (int j = 0; j < j_len; j++)
+	{
+		VectorF3 center(
+			(std::rand() & Range_Size1) - Range_SizeH,
+			(std::rand() & Range_Size1) - Range_SizeH,
+			(std::rand() & Range_Size1) - Range_SizeH
+		);
+		EulerAngle3D rot = EulerAngle3D::Radians(
+			(std::rand() & Range_Size1) - Range_SizeH,
+			(std::rand() & Range_Size1) - Range_SizeH,
+			(std::rand() & Range_Size1) - Range_SizeH
+		);
+
+		for (int i = 0; i < i_len; i++)
+		{
+			Objects.Insert(new SceneObject_PolyHedraObject(Cube, Trans3D(
+				center + VectorF3(
+					(std::rand() & Range_Size1) - Range_SizeH,
+					(std::rand() & Range_Size1) - Range_SizeH,
+					(std::rand() & Range_Size1) - Range_SizeH
+				), rot
+			)));
+		}
+	}*/
+}
+void Light3DContext::SceneInitLights()
+{
+	// seperate into PolyHedra and Light Objects
+	// put Light Objects in Scene File
+	// put Light Limits in Scene File ?
+
+	// Init Lights
+	Light_Ambient = LightBase(0.1f, ColorF4(1.0f, 1.0f, 1.0f));
+	Light_Solar = LightDirection(0.8f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(+1, -3, +2).normalize());
+	Light_Spot_Array[0] = LightSpotLook(LightBase(1.0f, ColorF4(1.0f, 0.0f, 0.0f)), LineF3(VectorF3(+22, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
+	Light_Spot_Array[1] = LightSpotLook(LightBase(1.0f, ColorF4(0.0f, 1.0f, 0.0f)), LineF3(VectorF3(  0, 30, +22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
+	Light_Spot_Array[2] = LightSpotLook(LightBase(1.0f, ColorF4(0.0f, 0.0f, 1.0f)), LineF3(VectorF3(-22, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
+	Light_Spot_Array[3] = LightSpotLook(LightBase(1.0f, ColorF4(1.0f, 1.0f, 1.0f)), LineF3(VectorF3(  0, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
+	Light_Spot_Count = 3;
+
+	// Assign Lights to Objects
+	LightAmbientObject.Light = &Light_Ambient;
+	LightSolarObject.Light = &Light_Solar;
+	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
+	{
+		LightSpotObjects[i].Light = &Light_Spot_Array[i];
+	}
+
+	// Assign Object PolyHedras
+	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
+	PolyHedraPalletManager * stage_light =			PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
+
+	/* Ambient
+		takes the color of the light
+		difficult to find when same color as background ?
+		Sphere / Cube
+	*/
+	/* Solar
+		takes the color of the light
+		difficult to find when same color as background ?
+		Sphere with Cone
+		Cone points toward direction
+	*/
+	/* Spot / Cone
+		multiple thin Lines
+		Lines start at Position
+		Center Line Points in direction
+		Ring Lines show Cone
+	*/
+	/* all these would be nice if they had both fixed Color and optional Color
+	*/
+
+	LightAmbientObject.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
+	LightSolarObject.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
+	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
+	{
+		LightSpotObjects[i].Data.PalletManager = stage_light;
+	}
+
+	// Assign Object Trans
+	LightAmbientObject.Data.Trans.Position.Y = 40.0f;
+	LightSolarObject.Data.Trans.Position.Y = 45.0f;
+
+	// Put Light Objects into Objects
+	Objects.Insert(&LightAmbientObject);
+	Objects.Insert(&LightSolarObject);
+	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
+	{
+		Objects.Insert(&LightSpotObjects[i]);
+	}
+}
+
+#include "SceneParsingData.hpp"
+#include "FileParsing/Text/TextCommandStream.hpp"
+void Light3DContext::SceneLoad(FileInfo file)
+{
+	SceneParsingData data(file, PolyHedraManager, Objects);
+	TextCommandStream stream(file.LoadText());
+	TextCommand cmd;
+	while (stream.Continue(cmd))
+	{
+		data.Parse(cmd);
+	}
+}
+void Light3DContext::SceneSave(FileInfo file)
+{
+	std::stringstream ss;
+
+	file.SaveText(ss.str());
+}
+
+
+
 void Light3DContext::UserChange_Change()
 {
 	UserTrans3DChange.HoveringType = UserTrans3DChange::EIndicatorType::None;
@@ -171,7 +313,7 @@ void Light3DContext::UserChange_Change()
 
 	if (IsHoveringUI()) { return; }
 
-	if (UserTrans3DChange.SelectedIsNone())
+	if (Object_Selected != nullptr && UserTrans3DChange.SelectedIsNone())
 	{
 		UserTrans3DChange.FindIndicator(ViewRay);
 	}
@@ -229,9 +371,7 @@ void Light3DContext::PolyHedraPalletChangeFunc(ClickArgs args)
 	if (args.Action == Action::Press)
 	{
 		DoPolyHedraPalletChange = true;
-		UIPolyHedraPalletList.Pallet = nullptr;
-		UIPolyHedraPalletList.Show();
-		UIPolyHedraPalletList.Change(PolyHedraManager); // do { Pallet = null; } in here ?
+		UIPolyHedraPalletList.Change(PolyHedraManager);
 	}
 }
 void Light3DContext::PolyHedraPalletUpdate()
@@ -336,127 +476,6 @@ void Light3DContext::GraphicsDelete()
 
 
 
-static LightSpot LightSpotLook(LightBase base, Line3D line, Range range)
-{
-	LightSpot light;
-	light.Base = base;
-	light.Pos = line.Origin;
-	light.Dir = line.Differance().normalize();
-	light.Range = range;
-	return light;
-}
-
-void Light3DContext::LightsMake()
-{
-	Light_Ambient = LightBase(0.1f, ColorF4(1.0f, 1.0f, 1.0f));
-	Light_Solar = LightSolar(0.8f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(+1, -3, +2).normalize());
-	Light_Spot_Array[0] = LightSpotLook(LightBase(1.0f, ColorF4(1.0f, 0.0f, 0.0f)), Line3D(VectorF3(+22, 30, -22), VectorF3(0, 0, 0)), Range(0.8, 0.95));
-	Light_Spot_Array[1] = LightSpotLook(LightBase(1.0f, ColorF4(0.0f, 1.0f, 0.0f)), Line3D(VectorF3(  0, 30, +22), VectorF3(0, 0, 0)), Range(0.8, 0.95));
-	Light_Spot_Array[2] = LightSpotLook(LightBase(1.0f, ColorF4(0.0f, 0.0f, 1.0f)), Line3D(VectorF3(-22, 30, -22), VectorF3(0, 0, 0)), Range(0.8, 0.95));
-	Light_Spot_Array[3] = LightSpotLook(LightBase(1.0f, ColorF4(1.0f, 1.0f, 1.0f)), Line3D(VectorF3(  0, 30, -22), VectorF3(0, 0, 0)), Range(0.8, 0.95));
-	Light_Spot_Count = 3;
-
-	LightAmbientObject.Light = &Light_Ambient;
-	LightSolarObject.Light = &Light_Solar;
-	LightSpotObjects[0].Light = &Light_Spot_Array[0];
-	LightSpotObjects[1].Light = &Light_Spot_Array[1];
-	LightSpotObjects[2].Light = &Light_Spot_Array[2];
-	LightSpotObjects[3].Light = &Light_Spot_Array[3];
-	
-	Objects.Insert(&LightAmbientObject);
-	Objects.Insert(&LightSolarObject);
-	Objects.Insert(&LightSpotObjects[0]);
-	Objects.Insert(&LightSpotObjects[1]);
-	Objects.Insert(&LightSpotObjects[2]);
-	Objects.Insert(&LightSpotObjects[3]);
-}
-
-static PolyHedra * Cube = nullptr;
-
-void Light3DContext::RandomCubes()
-{
-	Cube = PolyHedra::Generate::HexaHedron();
-	CenterCube.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
-	Objects.Insert(&CenterCube);
-
-	/*int Range_Size1 = 0x1FF;
-	int Range_SizeH = 0x0FF;
-	int j_len = 16;
-	int i_len = 16;
-	for (int j = 0; j < j_len; j++)
-	{
-		VectorF3 center(
-			(std::rand() & Range_Size1) - Range_SizeH,
-			(std::rand() & Range_Size1) - Range_SizeH,
-			(std::rand() & Range_Size1) - Range_SizeH
-		);
-		EulerAngle3D rot = EulerAngle3D::Radians(
-			(std::rand() & Range_Size1) - Range_SizeH,
-			(std::rand() & Range_Size1) - Range_SizeH,
-			(std::rand() & Range_Size1) - Range_SizeH
-		);
-
-		for (int i = 0; i < i_len; i++)
-		{
-			Objects.Insert(new SceneObject_PolyHedraObject(Cube, Trans3D(
-				center + VectorF3(
-					(std::rand() & Range_Size1) - Range_SizeH,
-					(std::rand() & Range_Size1) - Range_SizeH,
-					(std::rand() & Range_Size1) - Range_SizeH
-				), rot
-			)));
-		}
-	}*/
-}
-
-void Light3DContext::FancyLights()
-{
-	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
-	PolyHedraPalletManager * stage_light =			PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
-	PolyHedraPalletManager * stage_light_holder =	PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light_Holder.polyhedra.ymt")));
-
-	LightAmbientObject.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
-	LightAmbientObject.Data.Trans.Position.Y = 40.0f;
-
-	LightSolarObject.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
-	LightSolarObject.Data.Trans.Position.Y = 45.0f;
-
-	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
-	{
-		const LightSpot * light = LightSpotObjects[i].Light;
-
-		VectorF3 pos = light -> Pos;
-		EulerAngle3D rot = EulerAngle3D::PointToZ(light -> Dir);
-
-		LightSpotObjects[i].Data0.PalletManager = stage_light;
-		LightSpotObjects[i].Data0.Trans.Position = pos;
-		LightSpotObjects[i].Data0.Trans.Rotation = rot;
-
-		rot.Z0 = Angle();
-		rot.X1 = Angle();
-		LightSpotObjects[i].Data1.PalletManager = stage_light_holder;
-		LightSpotObjects[i].Data1.Trans.Position = pos;
-		LightSpotObjects[i].Data1.Trans.Rotation = rot;
-	}
-}
-
-
-
-#include "SceneParsingData.hpp"
-#include "FileParsing/Text/TextCommandStream.hpp"
-void Light3DContext::Fancify()
-{
-	SceneParsingData data(MediaDirectory.File("YMT/Light/Light.scene"), PolyHedraManager, Objects);
-	TextCommandStream stream(data.File.LoadText());
-	TextCommand cmd;
-	while (stream.Continue(cmd))
-	{
-		data.Parse(cmd);
-	}
-}
-
-
-
 static PolyHedra * MoveAxisXIndicator = nullptr;
 static PolyHedra * MoveAxisYIndicator = nullptr;
 static PolyHedra * MoveAxisZIndicator = nullptr;
@@ -473,11 +492,10 @@ void Light3DContext::Make()
 	//View.Trans = Trans3D(VectorF3(0, 10, -65), EulerAngle3D());
 	View.Trans = Trans3D(VectorF3(0, 0, -5), EulerAngle3D());
 
-	LightsMake();
-
-	RandomCubes();
-	Fancify();
-	FancyLights();
+	SceneClear();
+	SceneInitCubes();
+	SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
+	SceneInitLights();
 
 	UIManager.WindowControl.ChildInsert(UISceneObject);
 	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, Light3DContext::PolyHedraPalletChangeFunc);
@@ -674,7 +692,7 @@ void Light3DContext::ViewFunc()
 	{
 		pos = window.Size.Convert(window.MouseManager.CursorPosition());
 	}
-	ViewRay = Ray3D(View.Trans.Position, View.Trans.Rotation.forward(VectorF3(pos.X, pos.Y, 1)));
+	ViewRay = RayF3(View.Trans.Position, View.Trans.Rotation.forward(VectorF3(pos.X, pos.Y, 1)));
 
 
 

@@ -1,8 +1,8 @@
 #ifndef  UI_POLYHEDRA_OBJECT_HPP
 # define UI_POLYHEDRA_OBJECT_HPP
 
-# include "ValueType/Trans3D.hpp"
-# include "ValueType/ColorF4.hpp"
+# include "ValueType/Trans/3D.hpp"
+# include "ValueType/Color/F4.hpp"
 
 class PolyHedra;
 struct PolyHedraUIObjectData;

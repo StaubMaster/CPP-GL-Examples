@@ -105,8 +105,8 @@ Physics2D::Collision::ResolveData Physics2D::Collision::Resolve(
 	obj_data_1.ImpulseChange(ImpulseScalar, normal, data.Pos1, data.Rot1);
 
 	Arrow2D::Object arrows(2);
-	(arrows[0] = ColorF4(1, 1, 1)) = Ray2D(projection.Position, data.Pos0);
-	(arrows[1] = ColorF4(1, 1, 1)) = Ray2D(projection.Position, data.Pos1);
+	(arrows[0] = ColorF4(1, 1, 1)) = RayF2(projection.Position, data.Pos0);
+	(arrows[1] = ColorF4(1, 1, 1)) = RayF2(projection.Position, data.Pos1);
 
 	return data;
 }

@@ -5,7 +5,7 @@
 
 # include "ValueType/Vector/F2.hpp"
 # include "ValueType/Box/F2.hpp"
-# include "ValueType/ColorF4.hpp"
+# include "ValueType/Color/F4.hpp"
 
 # include <string>
 

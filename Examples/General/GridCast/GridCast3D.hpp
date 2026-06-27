@@ -6,7 +6,7 @@
 
 # include "General/Axis/Enums.hpp"
 
-# include "ValueType/Ray3D.hpp"
+# include "ValueType/Ray/F3.hpp"
 
 namespace GridCast3D
 {
@@ -34,9 +34,9 @@ struct Data
 	VectorI3	Index() const;
 	float		Distance() const;
 	float		Limit() const;
-	Ray3D		Ray() const;
+	RayF3		Ray() const;
 
-	Data(Ray3D ray, float limit, float scale);
+	Data(RayF3 ray, float limit, float scale);
 	bool	Iterate();
 };
 

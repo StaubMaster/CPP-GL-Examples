@@ -2,10 +2,10 @@
 
 #include "ValueType/Bool2D.hpp"
 #include "ValueType/Box/I2.hpp"
-#include "ValueType/LoopI2.hpp"
+#include "ValueType/Loop/I2.hpp"
 
 #include "ValueType/UndexBox2D.hpp"
-#include "ValueType/LoopU2.hpp"
+#include "ValueType/Loop/U2.hpp"
 
 
 

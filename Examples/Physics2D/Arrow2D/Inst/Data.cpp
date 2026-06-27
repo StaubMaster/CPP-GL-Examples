@@ -18,13 +18,13 @@ Arrow2D::Inst::Data::Data(ColorF4 col, float size, VectorF2 origin, VectorF2 tar
 	, Size(size)
 	, Color(col)
 { }
-Arrow2D::Inst::Data::Data(ColorF4 col, float size, Line2D line)
+Arrow2D::Inst::Data::Data(ColorF4 col, float size, LineF2 line)
 	: Origin(line.Origin)
 	, Target(line.Target)
 	, Size(size)
 	, Color(col)
 { }
-Arrow2D::Inst::Data::Data(ColorF4 col, float size, Ray2D ray)
+Arrow2D::Inst::Data::Data(ColorF4 col, float size, RayF2 ray)
 	: Origin(ray.Pos)
 	, Target(ray.Pos + ray.Dir)
 	, Size(size)
@@ -43,13 +43,13 @@ Arrow2D::Inst::Data & Arrow2D::Inst::Data::operator=(const ColorF4 & color)
 	Color = color;
 	return *this;
 }
-Arrow2D::Inst::Data & Arrow2D::Inst::Data::operator=(const Line2D & line)
+Arrow2D::Inst::Data & Arrow2D::Inst::Data::operator=(const LineF2 & line)
 {
 	Origin = line.Origin;
 	Target = line.Target;
 	return *this;
 }
-Arrow2D::Inst::Data & Arrow2D::Inst::Data::operator=(const Ray2D & ray)
+Arrow2D::Inst::Data & Arrow2D::Inst::Data::operator=(const RayF2 & ray)
 {
 	Origin = ray.Pos;
 	Target = ray.Pos + ray.Dir;

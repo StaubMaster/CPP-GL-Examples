@@ -2,7 +2,7 @@
 #include "Random.hpp"
 
 #include "ValueType/Vector/I2.hpp"
-#include "ValueType/LoopU2.hpp"
+#include "ValueType/Loop/U2.hpp"
 #include "ValueType/Angle.hpp"
 
 

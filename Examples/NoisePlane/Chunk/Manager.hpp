@@ -38,7 +38,7 @@ enum class AxisRel : unsigned char;
 
 struct ChunkNeighbour;
 
-struct Ray3D;
+struct RayF3;
 class PolyHedra;
 
 struct VoxelHit;
@@ -133,7 +133,7 @@ struct ChunkManager
 
 	private:
 	public:
-	VoxelHit		HitVoxel(Ray3D ray);
+	VoxelHit		HitVoxel(RayF3 ray);
 
 
 

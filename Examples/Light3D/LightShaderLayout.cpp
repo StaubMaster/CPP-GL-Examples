@@ -1,8 +1,8 @@
 #include "LightShaderLayout.hpp"
 
-#include "ValueType/LightBase.hpp"
-#include "ValueType/LightSolar.hpp"
-#include "ValueType/LightSpot.hpp"
+#include "ValueType/Light/Base.hpp"
+#include "ValueType/Light/Direction.hpp"
+#include "ValueType/Light/Spot.hpp"
 
 
 
@@ -12,7 +12,7 @@ PaddedBlock::LightBase & PaddedBlock::LightBase::operator=(const ::LightBase & o
 	Color = object.Color;
 	return *this;
 }
-PaddedBlock::LightSolar & PaddedBlock::LightSolar::operator=(const ::LightSolar & object)
+PaddedBlock::LightDirection & PaddedBlock::LightDirection::operator=(const ::LightDirection & object)
 {
 	Base = object.Base;
 	Dir = object.Dir;

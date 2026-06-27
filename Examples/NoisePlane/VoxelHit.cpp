@@ -12,7 +12,7 @@
 //static PolyHedra * ViewRayPolyHedra;
 //static PolyHedra * VoxelBoxPolyHedra;
 //static PolyHedra * ChunkBoxPolyHedra;
-/*static void ShowRay(Ray3D ray)
+/*static void ShowRay(RayF3 ray)
 {
 	if (ViewRayPolyHedra == nullptr) { return; }
 	PolyHedraObject obj(ViewRayPolyHedra);
@@ -33,9 +33,9 @@
 	obj.ShowWire();
 }*/
 
-GridCast3D::Hit VoxelHit::Hit(const Chunk & chunk, Ray3D ray3D, float limit)
+GridCast3D::Hit VoxelHit::Hit(const Chunk & chunk, RayF3 ray3D, float limit)
 {
-	//ShowRay(Ray3D(ray3D.Pos, ray3D.Dir));
+	//ShowRay(RayF3(ray3D.Pos, ray3D.Dir));
 	BoxI3 box(VectorI3(-1), VectorI3(CHUNK_VALUES_PER_SIDE));
 	GridCast3D::Data data(ray3D, limit, 1.0f);
 	do
@@ -55,7 +55,7 @@ GridCast3D::Hit VoxelHit::Hit(const Chunk & chunk, Ray3D ray3D, float limit)
 	while (data.Iterate());
 	return GridCast3D::Hit();
 }
-GridCast3D::Hit VoxelHit::Hit(ChunkManager & manager, Ray3D ray3D, float limit)
+GridCast3D::Hit VoxelHit::Hit(ChunkManager & manager, RayF3 ray3D, float limit)
 {
 	GridCast3D::Data data(ray3D, limit, CHUNK_VALUES_PER_SIDE);
 	do

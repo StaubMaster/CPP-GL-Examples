@@ -3,14 +3,14 @@
 
 //# include "Physics2D/InstanceManager.hpp"
 
-# include "ValueType/Trans2D.hpp"
+# include "ValueType/Trans/2D.hpp"
 # include "Arrow2D/Object.hpp"
 
 # include "PolyGon/Object.hpp"
 
 # include "Miscellaneous/EntryContainer/Entry.hpp"
 
-# include "ValueType/Trans2D.hpp"
+# include "ValueType/Trans/2D.hpp"
 
 # include "ExtrinsicData.hpp"
 # include "IntrinsicData.hpp"
@@ -81,7 +81,7 @@ struct Object
 		undefined if Corners.Count < 2
 		undefiend if idx >= Corners.Count
 	*/
-	Line2D		EdgeOfIndex(unsigned int idx) const;
+	LineF2		EdgeOfIndex(unsigned int idx) const;
 
 
 

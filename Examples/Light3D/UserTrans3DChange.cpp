@@ -34,7 +34,7 @@ void UserTrans3DChange::HideIndicator()
 #include <iostream>
 #include "ValueType/_Show.hpp"
 
-void UserTrans3DChange::FindIndicator(const Ray3D & ray)
+void UserTrans3DChange::FindIndicator(const RayF3 & ray)
 {
 	Ray3D_Hit_Type<EIndicatorType> hit(EIndicatorType::None);
 
@@ -233,22 +233,22 @@ void UserTrans3DChange::UseR()
 
 
 
-VectorF3 UserTrans3DChange::NewPosAxis(const Ray3D & ray, const VectorF3 & axis) const
+VectorF3 UserTrans3DChange::NewPosAxis(const RayF3 & ray, const VectorF3 & axis) const
 {
-	Ray3D axis_ray(Trans.Position - SelectedOffset.Position, axis);
+	RayF3 axis_ray(Trans.Position - SelectedOffset.Position, axis);
 	Ray3D_Hit axis_hit;
 	Ray3D_Hit hit;
 	RaySkew(ray, hit, axis_ray, axis_hit);
 	if (hit.Interval < 0.0f) { return Trans.Position; }
 	return (axis_hit.Pos() + SelectedOffset.Position);
 }
-VectorF3 UserTrans3DChange::NewPosPlane(const Ray3D & ray, const VectorF3 & axis) const
+VectorF3 UserTrans3DChange::NewPosPlane(const RayF3 & ray, const VectorF3 & axis) const
 {
 	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position - SelectedOffset.Position, axis));
 	if (!hit.Is()) { return Trans.Position; }
 	return (hit.Pos() + SelectedOffset.Position);
 }
-EulerAngle3D UserTrans3DChange::NewRotPlaneX(const Ray3D & ray) const
+EulerAngle3D UserTrans3DChange::NewRotPlaneX(const RayF3 & ray) const
 {
 	EulerAngle3D euler(Angle(), Angle(), Trans.Rotation.Y2);
 	VectorF3 axis0 = euler.forward(VectorF3(1, 0, 0));
@@ -259,7 +259,7 @@ EulerAngle3D UserTrans3DChange::NewRotPlaneX(const Ray3D & ray) const
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
 	return EulerAngle3D(Trans.Rotation.Z0, ang + SelectedOffset.Rotation.X1, Trans.Rotation.Y2);
 }
-EulerAngle3D UserTrans3DChange::NewRotPlaneY(const Ray3D & ray) const
+EulerAngle3D UserTrans3DChange::NewRotPlaneY(const RayF3 & ray) const
 {
 	//EulerAngle3D euler(Angle(), Angle(), Angle()); // how is this an error ?
 	EulerAngle3D euler;
@@ -271,7 +271,7 @@ EulerAngle3D UserTrans3DChange::NewRotPlaneY(const Ray3D & ray) const
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
 	return EulerAngle3D(Trans.Rotation.Z0, Trans.Rotation.X1, ang + SelectedOffset.Rotation.Y2);
 }
-EulerAngle3D UserTrans3DChange::NewRotPlaneZ(const Ray3D & ray) const
+EulerAngle3D UserTrans3DChange::NewRotPlaneZ(const RayF3 & ray) const
 {
 	EulerAngle3D euler(Angle(), Trans.Rotation.X1, Trans.Rotation.Y2);
 	VectorF3 axis0 = euler.forward(VectorF3(0, 0, 1));
@@ -282,7 +282,7 @@ EulerAngle3D UserTrans3DChange::NewRotPlaneZ(const Ray3D & ray) const
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
 	return EulerAngle3D(ang + SelectedOffset.Rotation.Z0, Trans.Rotation.X1, Trans.Rotation.Y2);
 }
-Trans3D UserTrans3DChange::NewTrans(const Ray3D & ray) const
+Trans3D UserTrans3DChange::NewTrans(const RayF3 & ray) const
 {
 	switch (SelectedType)
 	{

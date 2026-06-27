@@ -1,7 +1,7 @@
 #include "Structure.hpp"
 #include "Voxel/Pallet.hpp"
 
-#include "ValueType/LoopU3.hpp"
+#include "ValueType/Loop/U3.hpp"
 
 
 

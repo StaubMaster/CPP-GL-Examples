@@ -1,17 +1,17 @@
-#ifndef  SCENE_OBJECT_LIGHT_AMBIENT_HPP
-# define SCENE_OBJECT_LIGHT_AMBIENT_HPP
+#ifndef  SCENE_OBJECT_LIGHT_DIRECTION_HPP
+# define SCENE_OBJECT_LIGHT_DIRECTION_HPP
 
 # include "SceneObject.hpp"
-# include "ValueType/Light/Base.hpp"
+# include "ValueType/Light/Direction.hpp"
 # include "PolyHedra/ObjectData.hpp"
 
-struct SceneObject_LightAmbient : public SceneObject
+struct SceneObject_LightDirection : public SceneObject
 {
-	LightBase *		Light;
+	LightDirection *	Light;
 	PolyHedraObjectData		Data;
 
-	~SceneObject_LightAmbient();
-	SceneObject_LightAmbient();
+	~SceneObject_LightDirection();
+	SceneObject_LightDirection();
 
 	Trans3D		GetTrans() const override;
 	void		SetTrans(const Trans3D & trans) override;

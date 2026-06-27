@@ -61,8 +61,8 @@ void InteractionObjectSpin::Update(SceneInteractionData & SceneData)
 		if (Arrows.Is())
 		{
 			float len = (SceneData.Cursor - now.Pos).length();
-			(Arrows[0] = ColorF4(1, 1, 1)) = Ray2D(now.Pos, (Origin - Offset).forward(VectorF2(len, 0)));
-			(Arrows[1] = ColorF4(1, 1, 1)) = Ray2D(now.Pos, (Target - Offset).forward(VectorF2(len, 0)));
+			(Arrows[0] = ColorF4(1, 1, 1)) = RayF2(now.Pos, (Origin - Offset).forward(VectorF2(len, 0)));
+			(Arrows[1] = ColorF4(1, 1, 1)) = RayF2(now.Pos, (Target - Offset).forward(VectorF2(len, 0)));
 		}
 	}
 }

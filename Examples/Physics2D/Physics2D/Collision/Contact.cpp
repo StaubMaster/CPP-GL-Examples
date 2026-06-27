@@ -68,13 +68,13 @@ Physics2D::Collision::ContactData Physics2D::Collision::ContactData::Project(
 	if (Projection::DebugShow)
 	{
 		Arrow2D::Object normal_arrow(1);
-		(normal_arrow[0] = ColorF4(0, 1, 0)) = Ray2D(origin, normal);
+		(normal_arrow[0] = ColorF4(0, 1, 0)) = RayF2(origin, normal);
 
 		Arrow2D::Object projection_arrows(data.Projections.Count());
 		for (unsigned int i = 0; i < data.Projections.Count(); i++)
 		{
 			Projection & proj = data.Projections[i];
-			(projection_arrows[i] = ColorF4(0, 0.5f, 0)) = Line2D(proj.Position, origin + (normal * proj.Distance));
+			(projection_arrows[i] = ColorF4(0, 0.5f, 0)) = LineF2(proj.Position, origin + (normal * proj.Distance));
 		}
 	}
 
@@ -139,7 +139,7 @@ bool Physics2D::Collision::ContactData::Contact(
 
 	ContactData	temp;
 
-	Line2D		edge;
+	LineF2		edge;
 	VectorF2		origin;
 	VectorF2		normal;
 

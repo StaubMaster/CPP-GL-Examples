@@ -2,7 +2,7 @@
 #include "ValueGen/Perlin2D.hpp"
 
 #include "ValueType/Bool2D.hpp"
-#include "ValueType/LoopU2.hpp"
+#include "ValueType/Loop/U2.hpp"
 #include "Miscellaneous/Container/Binary.hpp"
 
 

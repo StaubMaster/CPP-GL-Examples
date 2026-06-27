@@ -1,10 +1,10 @@
-#include "PropertyControl/LightSolar.hpp"
+#include "PropertyControl/LightDirection.hpp"
 
 
 
-UI::Control::LightSolar::~LightSolar()
+UI::Control::LightDirection::~LightDirection()
 { }
-UI::Control::LightSolar::LightSolar(const char * name)
+UI::Control::LightDirection::LightDirection(const char * name)
 	: PropertyControl(name)
 	, Base("Base")
 	, Dir("Dir")
@@ -21,13 +21,13 @@ UI::Control::LightSolar::LightSolar(const char * name)
 
 
 
-void UI::Control::LightSolar::Update()
+void UI::Control::LightDirection::Update()
 {
 	Base.Update();
 	Dir.Update();
 }
 
-void UI::Control::LightSolar::Change(::LightSolar * obj)
+void UI::Control::LightDirection::Change(::LightDirection * obj)
 {
 	Object = obj;
 	if (Object != nullptr)

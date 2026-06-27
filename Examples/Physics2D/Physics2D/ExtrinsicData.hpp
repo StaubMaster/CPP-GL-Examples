@@ -3,7 +3,7 @@
 
 # include "ValueType/VectorF2.hpp"
 # include "ValueType/Angle.hpp"
-# include "ValueType/Trans2D.hpp"
+# include "ValueType/Trans/2D.hpp"
 
 namespace Physics2D
 {

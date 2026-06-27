@@ -9,7 +9,7 @@
 #include "Voxel/Pallet.hpp"
 
 #include "ValueType/Vector/U3.hpp"
-#include "ValueType/LoopU3.hpp"
+#include "ValueType/Loop/U3.hpp"
 
 #include "General/Telemetry/StopWatch.hpp"
 #include "General/Telemetry/ValueAccumulator.hpp"

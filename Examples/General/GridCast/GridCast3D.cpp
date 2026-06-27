@@ -7,11 +7,11 @@
 VectorI3	GridCast3D::Data::Index() const { return grid_idx; }
 float		GridCast3D::Data::Distance() const { return sum * scale; }
 float		GridCast3D::Data::Limit() const { return (limit - sum) * scale; }
-Ray3D		GridCast3D::Data::Ray() const { return Ray3D( (pos + (dir * sum)) * scale, dir * scale); }
+RayF3		GridCast3D::Data::Ray() const { return RayF3( (pos + (dir * sum)) * scale, dir * scale); }
 
 
 
-GridCast3D::Data::Data(Ray3D ray3D, float limit, float scale)
+GridCast3D::Data::Data(RayF3 ray3D, float limit, float scale)
 	: scale(scale)
 	, limit(limit / scale)
 	, pos(ray3D.Pos / scale)

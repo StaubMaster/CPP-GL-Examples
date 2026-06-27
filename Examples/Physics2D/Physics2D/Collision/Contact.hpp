@@ -8,9 +8,9 @@
 # include "ValueType/Box/F1.hpp"
 
 # include "ValueType/VectorF2.hpp"
-# include "ValueType/Ray2D.hpp"
+# include "ValueType/Ray/F2.hpp"
 
-# include "ValueType/Matrix3x3.hpp"
+# include "ValueType/Matrix/3x3.hpp"
 
 namespace Physics2D
 {

@@ -36,7 +36,7 @@ SceneObjectUI::SceneObjectUI()
 
 #include "SceneObject/PolyHedraObject.hpp"
 #include "SceneObject/LightAmbient.hpp"
-#include "SceneObject/LightSolar.hpp"
+#include "SceneObject/LightDirection.hpp"
 #include "SceneObject/LightSpot.hpp"
 
 void SceneObjectUI::Change(::SceneObject * obj)
@@ -60,7 +60,7 @@ void SceneObjectUI::Change(::SceneObject * obj)
 	}
 
 	{
-		SceneObject_LightSolar * obj_ = dynamic_cast<SceneObject_LightSolar*>(obj);
+		SceneObject_LightDirection * obj_ = dynamic_cast<SceneObject_LightDirection*>(obj);
 		if (obj_ != nullptr)
 		{
 			LightSolar.Show();

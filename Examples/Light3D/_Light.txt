@@ -2,8 +2,11 @@
 Lights
 	Base		Ambient
 	Direction	Solar/Lunar
-	Spot
 	Point
+	Spot/Cone
+
+Spot/Cone
+	currently has no falloff
 
 Effects
 	Diffuse

@@ -10,7 +10,7 @@
 
 # include "Miscellaneous/Container/Binary.hpp"
 
-# include "ValueType/ColorF4.hpp"
+# include "ValueType/Color/F4.hpp"
 
 class PolyHedra;
 struct PolyHedraUIObjectData;

@@ -12,7 +12,7 @@
 
 #include "Window.hpp"
 
-#include "ValueType/View3D.hpp"
+#include "ValueType/View/3D.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Data.hpp"

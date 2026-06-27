@@ -15,14 +15,14 @@
 
 #include "ValueType/Box/I3.hpp"
 
-#include "ValueType/Bool3.hpp"
+#include "ValueType/Bool/3.hpp"
 #include "ValueType/Vector/U3.hpp"
 
 #include "ValueType/Vector/U2.hpp"
-#include "ValueType/LoopU2.hpp"
+#include "ValueType/Loop/U2.hpp"
 
 #include "ValueType/Vector/U3.hpp"
-#include "ValueType/LoopU3.hpp"
+#include "ValueType/Loop/U3.hpp"
 
 #include "General/Telemetry/StopWatch.hpp"
 #include "General/AuxThreadBase.hpp"

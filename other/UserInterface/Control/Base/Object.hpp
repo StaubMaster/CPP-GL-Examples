@@ -2,7 +2,7 @@
 # define UI_CONTROL_OBJECT_HPP
 
 # include "ValueType/Box/F2.hpp"
-# include "ValueType/ColorF4.hpp"
+# include "ValueType/Color/U4.hpp"
 
 namespace UI
 {

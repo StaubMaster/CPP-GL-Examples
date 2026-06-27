@@ -39,18 +39,18 @@ VectorF2 Physics2D::Object::RelativePositionOfIndex(unsigned int idx) const { re
 VectorF2 Physics2D::Object::AbsolutePositionOfIndex(unsigned int idx) const { return AbsolutePositionOf(RelativePositionOfIndex(idx)); }
 VectorF2 Physics2D::Object::AbsoluteVelocityOfIndex(unsigned int idx) const { return AbsoluteVelocityOf(RelativePositionOfIndex(idx)); }
 
-Line2D Physics2D::Object::EdgeOfIndex(unsigned int idx) const
+LineF2 Physics2D::Object::EdgeOfIndex(unsigned int idx) const
 {
 	if (idx == 0)
 	{
-		return Line2D(
+		return LineF2(
 			AbsolutePositionOfIndex(CornerCount() - 1),
 			AbsolutePositionOfIndex(idx - 0)
 		);
 	}
 	else
 	{
-		return Line2D(
+		return LineF2(
 			AbsolutePositionOfIndex(idx - 1),
 			AbsolutePositionOfIndex(idx - 0)
 		);
@@ -95,15 +95,15 @@ void Physics2D::Object::GraphicsUpdate()
 		Trans2D & acl = ExtData.Acl;
 		unsigned int idx = 0;
 
-		(Arrows[idx] = ColorF4(0.0f, 0.5f, 0.0f)) = Ray2D(origin, vel.Pos); idx++;
-		(Arrows[idx] = ColorF4(0.0f, 0.5f, 0.0f)) = Ray2D(origin, VectorF2(0, vel.Rot.ToRadians())); idx++;
-		(Arrows[idx] = ColorF4(0.0f, 0.0f, 0.5f)) = Ray2D(origin, acl.Pos); idx++;
-		(Arrows[idx] = ColorF4(0.0f, 0.0f, 0.5f)) = Ray2D(origin, VectorF2(0, acl.Rot.ToRadians())); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.5f, 0.0f)) = RayF2(origin, vel.Pos); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.5f, 0.0f)) = RayF2(origin, VectorF2(0, vel.Rot.ToRadians())); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.0f, 0.5f)) = RayF2(origin, acl.Pos); idx++;
+		(Arrows[idx] = ColorF4(0.0f, 0.0f, 0.5f)) = RayF2(origin, VectorF2(0, acl.Rot.ToRadians())); idx++;
 
 		//VectorF2 gravity = InstanceManager -> Manager -> Gravity;
 		//if (now.Pos.Y > 0.0f) { gravity.Y = -(InstanceManager -> Manager -> GravityToY); }
 		//if (now.Pos.Y < 0.0f) { gravity.Y = +(InstanceManager -> Manager -> GravityToY); }
-		//Arrows[idx] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 12.0f, Ray2D(origin, gravity)); idx++;
+		//Arrows[idx] = Arrow2D::Inst::Data(ColorF4(0.5f, 0.0f, 0.0f), 12.0f, RayF2(origin, gravity)); idx++;
 	}
 }
 

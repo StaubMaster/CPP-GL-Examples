@@ -1,7 +1,7 @@
 #ifndef  PLANE_VALUE_HPP
 # define PLANE_VALUE_HPP
 
-# include "ValueType/ColorF4.hpp"
+# include "ValueType/Color/U4.hpp"
 
 struct PlaneValue
 {

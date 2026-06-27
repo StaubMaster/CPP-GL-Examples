@@ -17,8 +17,8 @@ struct VoxelHit
 	VoxelHit();
 
 	public:
-	static GridCast3D::Hit	Hit(const Chunk & chunk, Ray3D ray3D, float limit);
-	static GridCast3D::Hit	Hit(ChunkManager & manager, Ray3D ray3D, float limit);
+	static GridCast3D::Hit	Hit(const Chunk & chunk, RayF3 ray3D, float limit);
+	static GridCast3D::Hit	Hit(ChunkManager & manager, RayF3 ray3D, float limit);
 };
 
 #endif

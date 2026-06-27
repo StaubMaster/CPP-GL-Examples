@@ -2,7 +2,7 @@
 # define PHYSICS_2D_INTRINSIC_DATA_HPP
 
 # include "ValueType/VectorF2.hpp"
-# include "ValueType/Matrix3x3.hpp"
+# include "ValueType/Matrix/3x3.hpp"
 
 class PolyGon;
 

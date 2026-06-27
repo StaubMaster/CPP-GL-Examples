@@ -17,8 +17,8 @@ typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
 
 struct Voxel;
 
-# include "ValueType/LoopU2.hpp"
-# include "ValueType/LoopU3.hpp"
+# include "ValueType/Loop/U2.hpp"
+# include "ValueType/Loop/U3.hpp"
 
 # include "General/CenterIndexLoop/3D.hpp"
 # include "Chunk/GenerationNoise.hpp"
