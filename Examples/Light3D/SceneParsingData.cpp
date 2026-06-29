@@ -98,8 +98,7 @@ void SceneParsingData::Parse_LightAmbient(const TextCommand & cmd)
 	LightBase * light = Context.TakeLightAmbient();
 	if (light == nullptr)
 	{
-		std::cout << "All Light Ambient taken.";
-		return;
+		throw CommandInvalidState(cmd, "All Ambient Lights taken");
 	}
 	light -> Intensity = cmd.ToFloat(0);
 	light -> Color.R = cmd.ToFloat(1);
@@ -126,8 +125,7 @@ void SceneParsingData::Parse_LightDirectionD(const TextCommand & cmd)
 	LightDirection * light = Context.TakeLightSolar();
 	if (light == nullptr)
 	{
-		std::cout << "All Light Ambient taken.";
-		return;
+		throw CommandInvalidState(cmd, "All Directional Lights taken");
 	}
 	light -> Base.Intensity = cmd.ToFloat(0);
 	light -> Base.Color.R = cmd.ToFloat(1);
@@ -154,8 +152,7 @@ void SceneParsingData::Parse_LightSpotT(const TextCommand & cmd)
 	LightSpot * light = Context.TakeLightSpot();
 	if (light == nullptr)
 	{
-		std::cout << "All Light Ambient taken.";
-		return;
+		throw CommandInvalidState(cmd, "All Spot Lights taken");
 	}
 	light -> Base.Intensity = cmd.ToFloat(0);
 	light -> Base.Color.R = cmd.ToFloat(1);
