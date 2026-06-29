@@ -9,14 +9,15 @@
 # include "Miscellaneous/Container/Binary.hpp"
 # include "SceneObject/SceneObject.hpp"
 
+struct Light3DContext;
+
 class TextCommand;
 
 struct SceneParsingData
 {
 	FileInfo		File;
 
-	::PolyHedraManager &				PolyHedraManager;
-	Container::Binary<SceneObject*> &	Objects;
+	Light3DContext &	Context;
 
 	PolyHedraPalletManager *					MissingPolyHedra;
 	Container::Binary<PolyHedraPalletManager*>	PolyHedras;
@@ -24,12 +25,16 @@ struct SceneParsingData
 	ParsingVariable::FloatMemory	VariableFloats;
 
 	~SceneParsingData();
-	SceneParsingData(const FileInfo & file, ::PolyHedraManager & manager, Container::Binary<SceneObject*> & objects);
+	SceneParsingData(const FileInfo & file, Light3DContext & context);
 
 	void	Parse(const TextCommand & cmd);
 
 	void	Parse_PolyHedra(const TextCommand & cmd);
 	void	Parse_Place(const TextCommand & cmd);
+
+	void	Parse_LightAmbient(const TextCommand & cmd);
+	void	Parse_LightDirectionD(const TextCommand & cmd);
+	void	Parse_LightSpotT(const TextCommand & cmd);
 };
 
 #endif

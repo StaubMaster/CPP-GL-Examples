@@ -95,6 +95,41 @@ bool Light3DContext::IsHoveringUI() const
 	return (UIManager.Hovering != &UIManager.WindowControl);
 }
 
+
+
+LightBase * Light3DContext::TakeLightAmbient()
+{
+	if (Light_Ambient_Count < Light_Ambient_Limit)
+	{
+		LightBase * light = &Light_Ambient;
+		Light_Ambient_Count++;
+		return light;
+	}
+	return nullptr;
+}
+LightDirection * Light3DContext::TakeLightSolar()
+{
+	if (Light_Solar_Count < Light_Solar_Limit)
+	{
+		LightDirection * light = &Light_Solar;
+		Light_Solar_Count++;
+		return light;
+	}
+	return nullptr;
+}
+LightSpot * Light3DContext::TakeLightSpot()
+{
+	if (Light_Spot_Count < Light_Spot_Limit)
+	{
+		LightSpot * light = &Light_Spot_Array[Light_Spot_Count];
+		Light_Spot_Count++;
+		return light;
+	}
+	return nullptr;
+}
+
+
+
 SceneObject * Light3DContext::FindObject(const RayF3 & ray) const
 {
 	Ray3D_Hit_Type<unsigned int> hit;
@@ -169,6 +204,9 @@ void Light3DContext::SceneClear()
 		delete Objects[i];
 	}
 	Objects.Clear();
+	Light_Ambient_Count = 0;
+	Light_Solar_Count = 0;
+	Light_Spot_Count = 0;
 }
 
 static PolyHedra * Cube = nullptr;
@@ -219,7 +257,7 @@ void Light3DContext::SceneInitCubes()
 	//Torus = PolyHedraGenerate::TorusY(8, 2.0f, 16, 4.0f);
 	Torus = PolyHedraGenerate::TorusY(32, 3.0f, 64, 8.0f);
 
-	Sphere -> UseCornerNormals = true;
+	//Sphere -> UseCornerNormals = true;
 	Torus -> UseCornerNormals = true;
 	PolyHedraPalletManager * sphere_manager = PolyHedraManager.MakePallet(Sphere);
 	PolyHedraPalletManager * torus_manager = PolyHedraManager.MakePallet(Torus);
@@ -230,24 +268,12 @@ void Light3DContext::SceneInitCubes()
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 8, 0), EulerAngle3D::Degrees(0, 0, 90))));
-	//Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
+	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));
 }
 void Light3DContext::SceneInitLights()
 {
-	// seperate into PolyHedra and Light Objects
-	// put Light Objects in Scene File
-
-	// Init Lights
-	Light_Ambient = LightBase(0.1f, ColorF4(1.0f, 1.0f, 1.0f));
-	Light_Solar = LightDirection(0.8f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(+1, -3, +2).normalize());
-	Light_Spot_Array[0] = LightSpot(LightBase(1.0f, ColorF4(1.0f, 0.0f, 0.0f)), LineF3(VectorF3(+22, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
-	Light_Spot_Array[1] = LightSpot(LightBase(1.0f, ColorF4(0.0f, 1.0f, 0.0f)), LineF3(VectorF3(  0, 30, +22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
-	Light_Spot_Array[2] = LightSpot(LightBase(1.0f, ColorF4(0.0f, 0.0f, 1.0f)), LineF3(VectorF3(-22, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
-	Light_Spot_Array[3] = LightSpot(LightBase(1.0f, ColorF4(1.0f, 1.0f, 1.0f)), LineF3(VectorF3(  0, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
-	Light_Spot_Count = 3;
-
-	Light_Spot_Array[0] = LightSpot(
+	/*Light_Spot_Array[0] = LightSpot(
 		LightBase(1.0f, ColorF4(0.0f, 1.0f, 0.0f)),
 		LineF3(
 			//VectorF3(+32, 96, -32),
@@ -259,20 +285,16 @@ void Light3DContext::SceneInitLights()
 		//RangeF(0.80f, 0.80f)
 		//RangeF(0.95f, 0.95f)
 	);
-	Light_Spot_Count = 1;
-
-	// Assign Lights to Objects
-	LightAmbientObject.Light = &Light_Ambient;
-	LightSolarObject.Light = &Light_Solar;
-	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
-	{
-		LightSpotObjects[i].Light = &Light_Spot_Array[i];
-	}
+	Light_Spot_Count = 1;*/
 
 	// Assign Object PolyHedras
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
-	PolyHedraPalletManager * stage_light =			PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
+	PolyHedraPalletManager * stage_light = PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
+	PolyHedraPalletManager * Cube_manager = PolyHedraManager.MakePallet(Cube);;
 
+	/* Light Meta Indicators
+		LightBuld: LightPoint
+	*/
 	/* Ambient
 		takes the color of the light
 		difficult to find when same color as background ?
@@ -293,23 +315,30 @@ void Light3DContext::SceneInitLights()
 	/* all these would be nice if they had both fixed Color and optional Color
 	*/
 
-	LightAmbientObject.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
-	LightSolarObject.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
-	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
+	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
-		LightSpotObjects[i].Data.PalletManager = stage_light;
-	}
-
-	// Assign Object Trans
-	LightAmbientObject.Data.Trans.Position.Y = 40.0f;
-	LightSolarObject.Data.Trans.Position.Y = 45.0f;
-
-	// Put Light Objects into Objects
-	Objects.Insert(&LightAmbientObject);
-	Objects.Insert(&LightSolarObject);
-	for (unsigned int i = 0; i < Light_Spot_Limit; i++)
-	{
-		Objects.Insert(&LightSpotObjects[i]);
+		SceneObject * scene_obj = Objects[i];
+		{
+			SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(scene_obj);
+			if (obj != nullptr)
+			{
+				obj -> Data.PalletManager = Cube_manager;
+			}
+		}
+		{
+			SceneObject_LightDirection * obj = dynamic_cast<SceneObject_LightDirection*>(scene_obj);
+			if (obj != nullptr)
+			{
+				obj -> Data.PalletManager = Cube_manager;
+			}
+		}
+		{
+			SceneObject_LightSpot * obj = dynamic_cast<SceneObject_LightSpot*>(scene_obj);
+			if (obj != nullptr)
+			{
+				obj -> Data.PalletManager = stage_light;
+			}
+		}
 	}
 }
 
@@ -317,7 +346,7 @@ void Light3DContext::SceneInitLights()
 #include "FileParsing/Text/TextCommandStream.hpp"
 void Light3DContext::SceneLoad(FileInfo file)
 {
-	SceneParsingData data(file, PolyHedraManager, Objects);
+	SceneParsingData data(file, *this);
 	TextCommandStream stream(file.LoadText());
 	TextCommand cmd;
 	while (stream.Continue(cmd))

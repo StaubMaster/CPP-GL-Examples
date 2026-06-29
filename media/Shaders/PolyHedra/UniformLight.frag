@@ -24,10 +24,16 @@ struct LightBase
 	vec4	Color;
 };
 
-struct LightSolar
+struct LightDirection
 {
 	LightBase	Base;
 	vec3		Direction;
+};
+
+struct LightPoint
+{
+	LightBase	Base;
+	vec3		Position;
 };
 
 struct LightSpot
@@ -43,8 +49,10 @@ struct LightSpot
 uniform DepthData Depth;
 
 // more Textures
-//  Light Scattering
-//  BumpMap
+//   Light
+//     Diffuse
+//     Specular
+//   BumpMap
 uniform sampler2DArray TextureImage;
 
 
@@ -54,7 +62,7 @@ const uint SpotLimit = 4u;
 layout (std140) uniform ILights
 {
 	LightBase				Ambient;
-	LightSolar				Solar;
+	LightDirection			Solar;
 	uint					SpotCount;
 	LightSpot[SpotLimit]	Spot;
 } Lights;
@@ -76,12 +84,11 @@ out vec4 Color;
 
 
 
-// reflection coefficient
 vec4 CalcLightFactor(LightBase light)
 {
 	return light.Intensity * light.Color;
 }
-vec4 CalcLightFactor(LightSolar light)
+vec4 CalcLightFactor(LightDirection light)
 {
 	vec3 N = +normalize(fs_inn.Normal);
 	vec3 L = -normalize(light.Direction);
@@ -96,7 +103,6 @@ vec4 CalcLightFactor(LightSolar light)
 	factor_specular = dot(R, V);
 	factor_specular = clamp(factor_specular, 0.0, 1.0);
 	factor_specular = pow(factor_specular, 8);
-	// specular happens from back
 
 	float factor = (factor_diffuse + factor_specular);
 	return light.Base.Intensity * light.Base.Color * factor;
@@ -132,7 +138,7 @@ vec4 CalcLightFactor()
 	light_factor += CalcLightFactor(Lights.Solar);
 	for (uint i = 0u; i < min(SpotLimit, Lights.SpotCount); i++)
 	{
-		//light_factor += CalcLightFactor(Lights.Spot[i]);
+		light_factor += CalcLightFactor(Lights.Spot[i]);
 	}
 	//light_factor = vec4(1.0);
 	return light_factor;

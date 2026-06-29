@@ -120,6 +120,29 @@ bool	IsHoveringUI() const;
 
 
 
+static const unsigned int	Light_Ambient_Limit = 1;
+static const unsigned int	Light_Solar_Limit = 1;
+static const unsigned int	Light_Spot_Limit = 4;
+
+LightBase		Light_Ambient;
+unsigned int	Light_Ambient_Count;
+
+LightDirection	Light_Solar;
+unsigned int	Light_Solar_Count;
+
+LightSpot		Light_Spot_Array[Light_Spot_Limit];
+unsigned int	Light_Spot_Count;
+
+LightBase *			TakeLightAmbient();
+LightDirection *	TakeLightSolar();
+LightSpot *			TakeLightSpot();
+
+//SceneObject_LightAmbient	LightAmbientObject;
+//SceneObject_LightDirection	LightSolarObject;
+//SceneObject_LightSpot		LightSpotObjects[Light_Spot_Limit];
+
+
+
 Container::Binary<SceneObject*>		Objects;
 SceneObject *						Object_Selected;
 SceneObject *						Object_Hovering;
@@ -163,19 +186,6 @@ Light3DContext();
 
 
 SceneObject_PolyHedraObject		CenterCube;
-
-
-
-LightBase		Light_Ambient;
-LightDirection	Light_Solar;
-
-static const unsigned int	Light_Spot_Limit = 4;
-unsigned int				Light_Spot_Count;
-LightSpot					Light_Spot_Array[Light_Spot_Limit];
-
-SceneObject_LightAmbient	LightAmbientObject;
-SceneObject_LightDirection	LightSolarObject;
-SceneObject_LightSpot		LightSpotObjects[Light_Spot_Limit];
 
 
 
