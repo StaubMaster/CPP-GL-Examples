@@ -442,7 +442,7 @@ void ContextNoisePlane::Make()
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
 		Image img(VectorU2(1, 1));
-		PolyHedra * picture = PolyHedra::Generate::DuoHedra(img);
+		PolyHedra * picture = PolyHedraGenerate::ImageQuad(img);
 		delete picture;
 	}
 

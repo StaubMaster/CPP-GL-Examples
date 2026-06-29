@@ -130,7 +130,7 @@ void Light3DContext::Objects_Change()
 	if (!UserTrans3DChange.HoveringIsNone()) { return; }
 	if (!UserTrans3DChange.SelectedIsNone()) { return; }
 
-	Object_Hovering = FindObject(ViewRay);
+	//Object_Hovering = FindObject(ViewRay);
 
 	if (window.MouseManager[MouseButtons::MouseL].IsPress())
 	{
@@ -150,7 +150,7 @@ void Light3DContext::Objects_Update()
 {
 	if (Object_Hovering != nullptr)
 	{
-		Object_Hovering -> ShowWire();
+		//Object_Hovering -> ShowWire();
 	}
 
 	if (Object_Selected != nullptr)
@@ -172,23 +172,17 @@ void Light3DContext::SceneClear()
 }
 
 static PolyHedra * Cube = nullptr;
-static LightSpot LightSpotLook(LightBase base, LineF3 line, RangeF range)
-{
-	LightSpot light;
-	light.Base = base;
-	light.Pos = line.Origin;
-	light.Dir = line.Differance().normalize();
-	light.Range = range;
-	return light;
-}
+static PolyHedra * Sphere = nullptr;
+static PolyHedra * Torus = nullptr;
 
 void Light3DContext::SceneInitCubes()
 {
-	Cube = PolyHedra::Generate::HexaHedron();
+	Cube = PolyHedraGenerate::RegularHexaHedron();
 	CenterCube.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
 	Objects.Insert(&CenterCube);
 
-	/*int Range_Size1 = 0x1FF;
+	/* Random
+	int Range_Size1 = 0x1FF;
 	int Range_SizeH = 0x0FF;
 	int j_len = 16;
 	int i_len = 16;
@@ -216,21 +210,56 @@ void Light3DContext::SceneInitCubes()
 			)));
 		}
 	}*/
+
+	//Sphere = PolyHedraGenerate::SphereY(1, 4, 1.0f); // TetraHedron
+	//Sphere = PolyHedraGenerate::SphereY(2, 5, 1.0f); // IcosaHedron
+	//Sphere = PolyHedraGenerate::SphereY(6, 12, 4.0f);
+	Sphere = PolyHedra::Load(MediaDirectory.File("YMT/Light/Chair.polyhedra"));
+
+	//Torus = PolyHedraGenerate::TorusY(8, 2.0f, 16, 4.0f);
+	Torus = PolyHedraGenerate::TorusY(32, 3.0f, 64, 8.0f);
+
+	Sphere -> UseCornerNormals = true;
+	Torus -> UseCornerNormals = true;
+	PolyHedraPalletManager * sphere_manager = PolyHedraManager.MakePallet(Sphere);
+	PolyHedraPalletManager * torus_manager = PolyHedraManager.MakePallet(Torus);
+
+	VectorF3 pos(0, 64, 0);
+	Objects.Insert(new SceneObject_PolyHedraObject(sphere_manager, Trans3D(pos)));
+	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(0, 8, 0), EulerAngle3D::Degrees(0, 0, 90))));
+	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
+	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));
+	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 8, 0), EulerAngle3D::Degrees(0, 0, 90))));
+	//Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
+	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));
 }
 void Light3DContext::SceneInitLights()
 {
 	// seperate into PolyHedra and Light Objects
 	// put Light Objects in Scene File
-	// put Light Limits in Scene File ?
 
 	// Init Lights
 	Light_Ambient = LightBase(0.1f, ColorF4(1.0f, 1.0f, 1.0f));
 	Light_Solar = LightDirection(0.8f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(+1, -3, +2).normalize());
-	Light_Spot_Array[0] = LightSpotLook(LightBase(1.0f, ColorF4(1.0f, 0.0f, 0.0f)), LineF3(VectorF3(+22, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
-	Light_Spot_Array[1] = LightSpotLook(LightBase(1.0f, ColorF4(0.0f, 1.0f, 0.0f)), LineF3(VectorF3(  0, 30, +22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
-	Light_Spot_Array[2] = LightSpotLook(LightBase(1.0f, ColorF4(0.0f, 0.0f, 1.0f)), LineF3(VectorF3(-22, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
-	Light_Spot_Array[3] = LightSpotLook(LightBase(1.0f, ColorF4(1.0f, 1.0f, 1.0f)), LineF3(VectorF3(  0, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
+	Light_Spot_Array[0] = LightSpot(LightBase(1.0f, ColorF4(1.0f, 0.0f, 0.0f)), LineF3(VectorF3(+22, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
+	Light_Spot_Array[1] = LightSpot(LightBase(1.0f, ColorF4(0.0f, 1.0f, 0.0f)), LineF3(VectorF3(  0, 30, +22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
+	Light_Spot_Array[2] = LightSpot(LightBase(1.0f, ColorF4(0.0f, 0.0f, 1.0f)), LineF3(VectorF3(-22, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
+	Light_Spot_Array[3] = LightSpot(LightBase(1.0f, ColorF4(1.0f, 1.0f, 1.0f)), LineF3(VectorF3(  0, 30, -22), VectorF3(0, 0, 0)), RangeF(0.8, 0.95));
 	Light_Spot_Count = 3;
+
+	Light_Spot_Array[0] = LightSpot(
+		LightBase(1.0f, ColorF4(0.0f, 1.0f, 0.0f)),
+		LineF3(
+			//VectorF3(+32, 96, -32),
+			VectorF3(+16, 80, -16),
+			//VectorF3(+12, 76, -12),
+			VectorF3(0, 64, 0)
+		),
+		RangeF(0.80f, 0.95f)
+		//RangeF(0.80f, 0.80f)
+		//RangeF(0.95f, 0.95f)
+	);
+	Light_Spot_Count = 1;
 
 	// Assign Lights to Objects
 	LightAmbientObject.Light = &Light_Ambient;
@@ -490,7 +519,9 @@ void Light3DContext::Make()
 	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
 	View.Depth.Color = window.DefaultColor;
 	//View.Trans = Trans3D(VectorF3(0, 10, -65), EulerAngle3D());
-	View.Trans = Trans3D(VectorF3(0, 0, -5), EulerAngle3D());
+	//View.Trans = Trans3D(VectorF3(0, 0, -5), EulerAngle3D());
+	//View.Trans = Trans3D(VectorF3(0, 64, -16), EulerAngle3D());
+	View.Trans = Trans3D(VectorF3(0, 64, 0), EulerAngle3D());
 
 	SceneClear();
 	SceneInitCubes();
@@ -705,6 +736,8 @@ void Light3DContext::ViewFunc()
 
 
 
+// FPS sucks because Ray Hit is slow
+// check Bounding Box first
 void Light3DContext::Frame(FrameTime frame_time)
 {
 	static float frameSum = 0;

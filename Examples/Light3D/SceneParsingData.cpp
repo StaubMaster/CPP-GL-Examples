@@ -21,7 +21,7 @@ SceneParsingData::SceneParsingData(const FileInfo & file, ::PolyHedraManager & m
 	, Objects(objects)
 	, PolyHedras()
 {
-	MissingPolyHedra = PolyHedraManager.MakePallet(PolyHedra::Generate::HexaHedron(1.0f));
+	MissingPolyHedra = PolyHedraManager.MakePallet(PolyHedraGenerate::RegularHexaHedron(1.0f));
 }
 
 void SceneParsingData::Parse(const TextCommand & cmd)
@@ -51,7 +51,10 @@ void SceneParsingData::Parse_PolyHedra(const TextCommand & cmd)
 
 	FileInfo file((File.DirectoryString() + "/" + cmd.ToString(0)).c_str());
 	if (!file.Exists()) { std::cout << cmd.Name() << ": " << "Bad Skin File" << "\n"; return; }
-	PolyHedras.Insert(PolyHedraManager.MakePallet(PolyHedra::Load(file)));
+	PolyHedra * polyhedra = PolyHedra::Load(file);
+	//polyhedra -> UseCornerNormals = true;
+	PolyHedraPalletManager * manager = PolyHedraManager.MakePallet(polyhedra);
+	PolyHedras.Insert(manager);
 }
 void SceneParsingData::Parse_Place(const TextCommand & cmd)
 {

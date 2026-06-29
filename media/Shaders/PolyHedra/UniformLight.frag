@@ -76,44 +76,65 @@ out vec4 Color;
 
 
 
+// reflection coefficient
 vec4 CalcLightFactor(LightBase light)
 {
 	return light.Intensity * light.Color;
 }
 vec4 CalcLightFactor(LightSolar light)
 {
-	float dot_factor = dot(light.Direction, normalize(-fs_inn.Normal));
-	return light.Base.Intensity * light.Base.Color * dot_factor;
+	vec3 N = +normalize(fs_inn.Normal);
+	vec3 L = -normalize(light.Direction);
+	vec3 V = -normalize(fs_inn.Relative);
+	vec3 R = +normalize(reflect(light.Direction, N));
+
+	float factor_diffuse;
+	factor_diffuse = dot(L, N);
+	factor_diffuse = clamp(factor_diffuse, 0.0, 1.0);
+
+	float factor_specular;
+	factor_specular = dot(R, V);
+	factor_specular = clamp(factor_specular, 0.0, 1.0);
+	factor_specular = pow(factor_specular, 8);
+	// specular happens from back
+
+	float factor = (factor_diffuse + factor_specular);
+	return light.Base.Intensity * light.Base.Color * factor;
 }
 vec4 CalcLightFactor(LightSpot light)
 {
-	vec3 spot_rel = normalize(fs_inn.Absolute - light.Position);
+	vec3 N = +normalize(fs_inn.Normal);
+	vec3 L = +normalize(light.Position - fs_inn.Absolute);
+	vec3 V = -normalize(fs_inn.Relative);
+	vec3 R = +normalize(reflect(light.Direction, N));
 
-	float spot_dot;
-	spot_dot = dot(spot_rel, light.Direction);
+	float factor_intensity;
+	factor_intensity = dot(L, -normalize(light.Direction));
+	factor_intensity = (factor_intensity - light.Range.Min) / light.Range.Len;
+	factor_intensity = clamp(factor_intensity, 0.0, 1.0);
 
-	spot_dot = (spot_dot - light.Range.Min) / light.Range.Len;
-	spot_dot = min(1.0, max(0.0, spot_dot));
+	float factor_diffuse;
+	factor_diffuse = dot(L, N);
+	factor_diffuse = clamp(factor_diffuse, 0.0, 1.0);
 
-	spot_dot = spot_dot * dot(spot_rel, normalize(-fs_inn.Normal));
-	//spot_dot = min(1.0, max(0.0, spot_dot));
+	float factor_specular;
+	factor_specular = dot(R, V);
+	factor_specular = clamp(factor_specular, 0.0, 1.0);
+	factor_specular = pow(factor_specular, 8);
 
-	return light.Base.Intensity * light.Base.Color * spot_dot;
-}
-void AccumulateLightFactor(inout vec4 factor, in vec4 new_factor)
-{
-	//factor = factor + new_factor;
-	factor = max(factor, new_factor);
+	float factor = factor_intensity * (factor_diffuse + factor_specular);
+	return light.Base.Intensity * light.Base.Color * factor;
 }
 vec4 CalcLightFactor()
 {
 	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
-	AccumulateLightFactor(light_factor, CalcLightFactor(Lights.Ambient));
-	AccumulateLightFactor(light_factor, CalcLightFactor(Lights.Solar));
+	light_factor += CalcLightFactor(Lights.Ambient);
+	light_factor += CalcLightFactor(Lights.Solar);
 	for (uint i = 0u; i < min(SpotLimit, Lights.SpotCount); i++)
 	{
-		AccumulateLightFactor(light_factor, CalcLightFactor(Lights.Spot[i]));
+		//light_factor += CalcLightFactor(Lights.Spot[i]);
 	}
+	//light_factor = vec4(1.0);
 	return light_factor;
 }
 
