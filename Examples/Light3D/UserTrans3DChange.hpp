@@ -10,34 +10,65 @@
 # include "ValueType/View/3D.hpp"
 # include "Display/DisplaySize.hpp"
 
+/*
+using this is a bit convoluted ?
+take a Trans3D *
+	dont show indicators if null
+have a Update()
+	change Trans
+	round Trans
+	change Indicators
+
+make more members private
+so changing is done with functions
+
+make position and rotation changes seperate ?
+*/
+
+class DirectoryInfo;
+
 struct UserTrans3DChange
 {
+	public:
 	UserTrans3DChange();
 
 
 
-	PolyHedraUIObject	MoveAxisXIndicator;
-	PolyHedraUIObject	MoveAxisYIndicator;
-	PolyHedraUIObject	MoveAxisZIndicator;
+	private:
+	bool	IsVisible;
 
-	PolyHedraUIObject	SpinRingXIndicator;
-	PolyHedraUIObject	SpinRingYIndicator;
-	PolyHedraUIObject	SpinRingZIndicator;
+	PolyHedraUIObject	MoveAxisX;
+	PolyHedraUIObject	MoveAxisY;
+	PolyHedraUIObject	MoveAxisZ;
 
-	void	ShowIndicator();
-	void	HideIndicator();
+	PolyHedraUIObject	SpinRingX;
+	PolyHedraUIObject	SpinRingY;
+	PolyHedraUIObject	SpinRingZ;
 
-	void	FindIndicator(const RayF3 & ray);
+	// Center
+	//  L: move along Plane perpendicular to View Ray
+	//  R: rotate along Plane perpendicular to View Ray
 
-	void	UpdateIndicatorColor();
-	void	UpdateIndicatorScale(float scale);
-	void	UpdateIndicatorTrans(const Trans3D & trans);
+	public:
+	void	IndicatorsInit(const DirectoryInfo & dir);
+	bool	IndicatorsIsVisible() const;
+	void	IndicatorsShow();
+	void	IndicatorsHide();
 
-	void	UpdateIndicator(const Trans3D & trans, const View3D & view, const DisplaySize & display_size);
+	void	IndicatorsFind(const RayF3 & ray);
+
+	private:
+	void	IndicatorsUpdateColor();
+	void	IndicatorsUpdateScale(float scale);
+	void	IndicatorsUpdateTrans();
+
+	public:
+	void	IndicatorsUpdate(const View3D & view, const DisplaySize & display_size);
 
 
 
-	enum class EIndicatorType
+	private:
+	enum class EIndicatorType // EHoveringType
 	{
 		None,
 		MoveAxisX,
@@ -48,10 +79,16 @@ struct UserTrans3DChange
 		SpinRingZ,
 	};
 	EIndicatorType		HoveringType;
-	bool				HoveringIsNone() const;
 	Trans3D				HoveringOffset;
 
-	enum class EChangeType
+	public:
+	void	HoveringMakeNone();
+	bool	HoveringIsNone() const;
+
+
+
+	private:
+	enum class EChangeType // ESelectedType
 	{
 		None,
 		LineX,
@@ -65,25 +102,38 @@ struct UserTrans3DChange
 		SpinZ,
 	};
 	EChangeType		SelectedType;
-	bool			SelectedIsNone() const;
 	Trans3D			SelectedOffset;
 
+	public:
+	void	SelectedMakeNone();
+	bool	SelectedIsNone() const;
+
+	public:
+	void	SelectedMakeL();
+	void	SelectedMakeR();
+
+	public:
+	bool	IsIdle() const;
 
 
-	void	UseNone();
-	void	UseL();
-	void	UseR();
 
-
-
+	private:
 	Trans3D		Trans;
 
-	VectorF3		NewPosAxis(const RayF3 & ray, const VectorF3 & axis) const;
-	VectorF3		NewPosPlane(const RayF3 & ray, const VectorF3 & axis) const;
-	EulerAngle3D	NewRotPlaneX(const RayF3 & ray) const;
-	EulerAngle3D	NewRotPlaneY(const RayF3 & ray) const;
-	EulerAngle3D	NewRotPlaneZ(const RayF3 & ray) const;
-	Trans3D			NewTrans(const RayF3 & ray) const;
+	public:
+	Trans3D		GetTrans() const;
+	void		SetTrans(Trans3D trans);
+
+	private:
+	VectorF3		CalcPosAxis(const RayF3 & ray, const VectorF3 & axis) const;
+	VectorF3		CalcPosPlane(const RayF3 & ray, const VectorF3 & axis) const;
+	EulerAngle3D	CalcRotPlaneX(const RayF3 & ray) const;
+	EulerAngle3D	CalcRotPlaneY(const RayF3 & ray) const;
+	EulerAngle3D	CalcRotPlaneZ(const RayF3 & ray) const;
+	Trans3D			CalcTrans(const RayF3 & ray) const;
+
+	public:
+	void			NewTrans(const RayF3 & ray);
 };
 
 #endif

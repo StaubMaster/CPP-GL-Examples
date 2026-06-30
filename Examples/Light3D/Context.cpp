@@ -102,22 +102,23 @@ void Light3DContext::Objects_Change()
 	Object_Hovering = nullptr;
 
 	if (IsHoveringUI()) { return; }
-	if (!UserTrans3DChange.HoveringIsNone()) { return; }
-	if (!UserTrans3DChange.SelectedIsNone()) { return; }
+	if (!UserTrans3DChange.IsIdle()) { return; }
 
 	Object_Hovering = FindObject(ViewRay);
 
 	if (window.MouseManager[MouseButtons::MouseL].IsPress())
 	{
-		if (Object_Hovering != nullptr)
+		Object_Selected = Object_Hovering;
+		if (Object_Selected != nullptr)
 		{
-			UserTrans3DChange.ShowIndicator();
+			UserTrans3DChange.IndicatorsShow();
+			UserTrans3DChange.SetTrans(Object_Selected -> GetTrans());
 		}
 		else
 		{
-			UserTrans3DChange.HideIndicator();
+			UserTrans3DChange.SelectedMakeNone();
+			UserTrans3DChange.IndicatorsHide();
 		}
-		Object_Selected = Object_Hovering;
 		UISceneObject.Change(Object_Selected);
 	}
 }
@@ -305,61 +306,42 @@ void Light3DContext::SceneSave(FileInfo file)
 
 void Light3DContext::UserChange_Change()
 {
-	UserTrans3DChange.HoveringType = UserTrans3DChange::EIndicatorType::None;
-	UserTrans3DChange.HoveringOffset = Trans3D();
-	UserTrans3DChange.UpdateIndicatorColor();
+	UserTrans3DChange.HoveringMakeNone();
 
 	if (IsHoveringUI()) { return; }
 
-	if (Object_Selected != nullptr && UserTrans3DChange.SelectedIsNone())
-	{
-		UserTrans3DChange.FindIndicator(ViewRay);
-	}
+	UserTrans3DChange.IndicatorsFind(ViewRay);
 
+	// this is bad. check for release of the one being used ?
 	if (window[MouseButtons::MouseL].IsRelease() ||
 		window[MouseButtons::MouseR].IsRelease())
 	{
-		UserTrans3DChange.UseNone();
-		if (Object_Selected != nullptr)
-		{
-			UserTrans3DChange.Trans = Object_Selected -> GetTrans();
-			UserTrans3DChange.UpdateIndicatorTrans(UserTrans3DChange.Trans);
-		}
+		UserTrans3DChange.SelectedMakeNone();
 	}
 	else if (window[MouseButtons::MouseL].IsPress())
 	{
-		UserTrans3DChange.UseL();
+		UserTrans3DChange.SelectedMakeL();
 	}
 	else if (window[MouseButtons::MouseR].IsPress())
 	{
-		UserTrans3DChange.UseR();
+		UserTrans3DChange.SelectedMakeR();
 	}
 }
 void Light3DContext::UserChange_Update()
 {
-	if (!UserTrans3DChange.SelectedIsNone())
-	{
-		Trans3D trans = UserTrans3DChange.NewTrans(ViewRay);
-		trans.Position = trans.Position.round(0.1f);
-		trans.Rotation = trans.Rotation.round(Angle::Degrees(15));
-
-		if (Object_Selected != nullptr)
-		{
-			Object_Selected -> SetTrans(trans);
-		}
-
-		UserTrans3DChange.UpdateIndicator(trans, View, window.Size);
-	}
-	else
-	{
-		UserTrans3DChange.UpdateIndicator(UserTrans3DChange.Trans, View, window.Size);
-	}
-
+	UserTrans3DChange.NewTrans(ViewRay);
 	if (Object_Selected != nullptr)
 	{
-		UserTrans3DChange.Trans = Object_Selected -> GetTrans();
-		UserTrans3DChange.UpdateIndicator(UserTrans3DChange.Trans, View, window.Size);
+		if (!UserTrans3DChange.SelectedIsNone())
+		{
+			Object_Selected -> SetTrans(UserTrans3DChange.GetTrans());
+		}
+		else
+		{
+			UserTrans3DChange.SetTrans(Object_Selected -> GetTrans());
+		}
 	}
+	UserTrans3DChange.IndicatorsUpdate(View, window.Size);
 }
 
 
@@ -488,13 +470,6 @@ void Light3DContext::GraphicsDelete()
 
 
 
-static PolyHedra * MoveAxisXIndicator = nullptr;
-static PolyHedra * MoveAxisYIndicator = nullptr;
-static PolyHedra * MoveAxisZIndicator = nullptr;
-static PolyHedra * SpinRingXIndicator = nullptr;
-static PolyHedra * SpinRingYIndicator = nullptr;
-static PolyHedra * SpinRingZIndicator = nullptr;
-
 void Light3DContext::Make()
 {
 	std::cout << "Make 0\n";
@@ -517,27 +492,9 @@ void Light3DContext::Make()
 
 	UIManager.WindowControl.ChildInsert(UIPolyHedraPalletList);
 	UIPolyHedraPalletList.Hide();
-	
-	MoveAxisXIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisX.polyhedra"));
-	MoveAxisYIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisY.polyhedra"));
-	MoveAxisZIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/MoveAxis/AxisZ.polyhedra"));
-	SpinRingXIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/SpinRing/RingX.polyhedra"));
-	SpinRingYIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/SpinRing/RingY.polyhedra"));
-	SpinRingZIndicator = PolyHedra::Load(MediaDirectory.File("YMT/Meta/SpinRing/RingZ.polyhedra"));
 
-	UserTrans3DChange.MoveAxisXIndicator.Create(MoveAxisXIndicator);
-	UserTrans3DChange.MoveAxisYIndicator.Create(MoveAxisYIndicator);
-	UserTrans3DChange.MoveAxisZIndicator.Create(MoveAxisZIndicator);
-	UserTrans3DChange.SpinRingXIndicator.Create(SpinRingXIndicator);
-	UserTrans3DChange.SpinRingYIndicator.Create(SpinRingYIndicator);
-	UserTrans3DChange.SpinRingZIndicator.Create(SpinRingZIndicator);
-
-	UserTrans3DChange.MoveAxisXIndicator.HideFull();
-	UserTrans3DChange.MoveAxisYIndicator.HideFull();
-	UserTrans3DChange.MoveAxisZIndicator.HideFull();
-	UserTrans3DChange.SpinRingXIndicator.HideFull();
-	UserTrans3DChange.SpinRingYIndicator.HideFull();
-	UserTrans3DChange.SpinRingZIndicator.HideFull();
+	UserTrans3DChange.IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
+	UserTrans3DChange.IndicatorsHide();
 
 	std::cout << "Make 1\n";
 }
@@ -604,8 +561,8 @@ void Light3DContext::User(FrameTime frame_time)
 			if (idx != 0xFFFFFFFF)
 			{
 				Objects.RemoveAt(idx);
-				UserTrans3DChange.UseNone();
-				UserTrans3DChange.HideIndicator();
+				UserTrans3DChange.SelectedMakeNone();
+				UserTrans3DChange.IndicatorsHide();
 				Object_Selected = nullptr;
 			}
 		}
