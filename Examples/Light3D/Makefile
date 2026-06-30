@@ -34,6 +34,7 @@ FILES := \
 	PolyHedraUI/Manager.cpp \
 	PolyHedraUI/Object.cpp \
 	\
+	UI_Control_List.cpp \
 	Context.cpp \
 	new.cpp
 

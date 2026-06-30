@@ -75,27 +75,7 @@ struct MultiformLayout : public Multiform::Layout
 
 
 
-struct UIPolyHedraPalletList;
-struct UIPolyHedraPalletItem;
-
-struct UIPolyHedraPalletItem : public UI::Control::Button
-{
-	UIPolyHedraPalletList &		List;
-	PolyHedraPalletManager *	Object;
-	UIPolyHedraPalletItem(UIPolyHedraPalletList & list, PolyHedraPalletManager * obj);
-	void	Func(ClickArgs args);
-};
-struct UIPolyHedraPalletList : public UI::Control::Form
-{
-	Container::Binary<UIPolyHedraPalletItem*>	List;
-	PolyHedraPalletManager *					Pallet;
-	UIPolyHedraPalletList();
-	void	Clear();
-	void	Change(PolyHedraManager & manager);
-	void	Func(ClickArgs args, PolyHedraPalletManager * obj);
-};
-
-
+#include "UI_Control_List.hpp"
 
 #include "UserTrans3DChange.hpp"
 
@@ -109,10 +89,10 @@ Matrix4x4	ViewMatrix;
 
 ::MultiformLayout	MultiformLayout;
 
-::PolyHedraManager		PolyHedraManager;
+::PolyHedraManager	PolyHedraManager;
 
-UI::Manager					UIManager;
-SceneObjectUI				UISceneObject;
+UI::Manager			UIManager;
+SceneObjectUI		UISceneObject;
 
 bool	IsHoveringUI() const;
 
@@ -136,10 +116,6 @@ unsigned int	Light_Spot_Count;
 LightBase *			TakeLightAmbient();
 LightDirection *	TakeLightSolar();
 LightSpot *			TakeLightSpot();
-
-//SceneObject_LightAmbient	LightAmbientObject;
-//SceneObject_LightDirection	LightSolarObject;
-//SceneObject_LightSpot		LightSpotObjects[Light_Spot_Limit];
 
 
 
@@ -165,7 +141,6 @@ void	SceneInitLights();
 
 
 
-
 ::UserTrans3DChange UserTrans3DChange;
 
 void	UserChange_Change();
@@ -173,7 +148,7 @@ void	UserChange_Update();
 
 
 
-::UIPolyHedraPalletList		UIPolyHedraPalletList;
+UI::Control::List	UIPolyHedraPalletList;
 bool	DoPolyHedraPalletChange;
 void	PolyHedraPalletChangeFunc(ClickArgs args);
 void	PolyHedraPalletUpdate();

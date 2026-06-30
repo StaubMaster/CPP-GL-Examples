@@ -30,66 +30,6 @@ MultiformLayout::MultiformLayout()
 
 
 
-UIPolyHedraPalletItem::UIPolyHedraPalletItem(UIPolyHedraPalletList & list, PolyHedraPalletManager * obj)
-	: UI::Control::Button()
-	, List(list)
-	, Object(obj)
-{
-	AnchorMargin = BoxF2(VectorF2(0.0f), VectorF2(0.0f));
-	Anchor.X.AnchorBoth(0, 0);
-	if (obj != nullptr)
-	{
-		SetText(obj -> Pallet -> File.Name());
-	}
-	ClickFunc.Assign(this, UIPolyHedraPalletItem::Func);
-}
-void UIPolyHedraPalletItem::Func(ClickArgs args)
-{
-	List.Func(args, Object);
-}
-
-UIPolyHedraPalletList::UIPolyHedraPalletList()
-	: UI::Control::Form()
-{
-	AnchorPadding = BoxF2(VectorF2(0.0f), VectorF2(0.0f));
-}
-void UIPolyHedraPalletList::Clear()
-{
-	Children.Clear();
-	for (unsigned int i = 0; i < List.Count(); i++)
-	{
-		delete List[i];
-	}
-	List.Clear();
-	Pallet = nullptr;
-}
-void UIPolyHedraPalletList::Change(PolyHedraManager & manager)
-{
-	Clear();
-
-	for (unsigned int i = 0; i < manager.InstanceManagers.Count(); i++)
-	{
-		PolyHedraPalletManager * pallet_manager = manager.InstanceManagers[i];
-		List.Insert(new UIPolyHedraPalletItem(*this, pallet_manager));
-		ChildInsert(List[i]);
-	}
-
-	Show();
-	AnchorFitChildrenY(); // this dosent work poperly if hidden
-	// generic Fitting Enum
-	// Flag to request Fitting
-}
-void UIPolyHedraPalletList::Func(ClickArgs args, PolyHedraPalletManager * obj)
-{
-	if (args.Action == Action::Press)
-	{
-		Pallet = obj;
-		Hide();
-	}
-}
-
-
-
 bool Light3DContext::IsHoveringUI() const
 {
 	return (UIManager.Hovering != &UIManager.WindowControl);
@@ -165,7 +105,7 @@ void Light3DContext::Objects_Change()
 	if (!UserTrans3DChange.HoveringIsNone()) { return; }
 	if (!UserTrans3DChange.SelectedIsNone()) { return; }
 
-	//Object_Hovering = FindObject(ViewRay);
+	Object_Hovering = FindObject(ViewRay);
 
 	if (window.MouseManager[MouseButtons::MouseL].IsPress())
 	{
@@ -429,7 +369,21 @@ void Light3DContext::PolyHedraPalletChangeFunc(ClickArgs args)
 	if (args.Action == Action::Press)
 	{
 		DoPolyHedraPalletChange = true;
-		UIPolyHedraPalletList.Change(PolyHedraManager);
+		{
+			UIPolyHedraPalletList.Clear();
+			for (unsigned int i = 0; i < PolyHedraManager.InstanceManagers.Count(); i++)
+			{
+				PolyHedraPalletManager * pallet_manager = PolyHedraManager.InstanceManagers[i];
+				UI::Control::List::Item * item = new UI::Control::List::Item(UIPolyHedraPalletList, pallet_manager -> Pallet -> File.Path.ToString(), pallet_manager);
+				UIPolyHedraPalletList.Items.Insert(item);
+				UIPolyHedraPalletList.ChildInsert(item);
+			}
+			UIPolyHedraPalletList.Show();
+			UIPolyHedraPalletList.AnchorFitChildrenY(); // this dosent work poperly if hidden
+			// generic Fitting Enum
+			// Flag to request Fitting
+		}
+		//UIPolyHedraPalletList.Change(PolyHedraManager);
 	}
 }
 void Light3DContext::PolyHedraPalletUpdate()
@@ -439,9 +393,9 @@ void Light3DContext::PolyHedraPalletUpdate()
 		if (!UIPolyHedraPalletList.IsVisible())
 		{
 			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(Object_Selected);
-			if (UIPolyHedraPalletList.Pallet != nullptr && obj != nullptr)
+			if (UIPolyHedraPalletList.Object != nullptr && obj != nullptr)
 			{
-				obj -> Data.PalletManager = UIPolyHedraPalletList.Pallet;
+				obj -> Data.PalletManager = (PolyHedraPalletManager*)UIPolyHedraPalletList.Object;
 			}
 			DoPolyHedraPalletChange = false;
 		}
@@ -558,7 +512,7 @@ void Light3DContext::Make()
 	SceneInitLights();
 
 	UIManager.WindowControl.ChildInsert(UISceneObject);
-	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, Light3DContext::PolyHedraPalletChangeFunc);
+	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
 	UISceneObject.Hide();
 
 	UIManager.WindowControl.ChildInsert(UIPolyHedraPalletList);
