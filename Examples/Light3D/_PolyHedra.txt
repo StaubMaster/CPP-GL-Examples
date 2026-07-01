@@ -10,10 +10,11 @@ how to combine ?
 Manager
 {
 	Container of PolyHedraManager (per PolyHedra)
+	Pallet ?
 	{
-		PolyHedra
-		Buffer
-		Textures
+		PolyHedra	Object
+					Buffer
+					Textures
 	}
 
 	Container of ObjectManager (per ObjectData)
@@ -48,6 +49,8 @@ delete unused ?
 if a PolyHedraObjectManager has no Objects (for some time),
 delete it
 
+remove PolyHedra that have no Objects ?
+
 
 
 Draw order
@@ -58,3 +61,71 @@ dont allow dynamic making of ObjectManager
 specify all at the beginning
 have named Pointers to them
 so the user needs to specify how/when to draw them
+
+
+
+
+
+Make Instances
+
+PalletObjectManager
+{
+	Binar<PalletObjectData> Objects
+	Binar<> InstanceData
+	MakeInstances()
+	{
+		foreach Objects
+		{
+			put data into InstanceData
+		}
+	}
+}
+ObjectManager
+{
+	Binary<PalletObjectManager> Managers
+	MakeInstances()
+	{
+		foreach Managers
+		{
+			PalletObjectManager.MakeInstances()
+		}
+	}
+}
+
+or
+
+PalletObjectData
+{
+	PalletObjectManager Manager
+	ObjectData Data
+	PutInstance()
+	{
+		Manager.PutInstance(Data)
+	}
+}
+PalletObjectManager
+{
+	Binar<> InstanceData
+	PutInstance(ObjectData data)
+	{
+		put data into InstanceData
+	}
+}
+ObjectManager
+{
+	Binary<PalletObjectManager> Managers
+	Binar<ObjectData> Objects
+	MakeInstances()
+	{
+		foreach Objects
+		{
+			Objects.PutInstance()
+		}
+	}
+}
+
+the second would make it so all Objects of the same Type are in one place
+and putting external Objects is done by simply calling PutInstance()
+this means that Objects are no longer sorted by Pallet
+which was only done to make them not have to find where to go
+which they know internally anyway
