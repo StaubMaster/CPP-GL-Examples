@@ -13,16 +13,38 @@
 
 
 
-
+SceneParsingData::ParsingCommand::ParsingCommand(std::string name)
+	: Name(name)
+{ }
 
 SceneParsingData::~SceneParsingData()
-{ }
+{
+	for (unsigned int i = 0; i < Commands.Count(); i++)
+	{
+		delete Commands[i];
+	}
+}
 SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & context)
 	: File(file)
 	, Context(context)
 	, PolyHedras()
 {
 	MissingPolyHedra = Context.PolyHedraManager.MakePallet(PolyHedraGenerate::RegularHexaHedron(1.0f));
+
+	/* Problem
+		some commands like belt have variants
+		variants are somewhat normalized
+			> <   direction
+			0 1   closure
+	*/
+
+	ParsingCommand * cmd;
+	cmd = new ParsingCommand("varFloat");			cmd -> Func.Assign(&VariableFloats, &ParsingVariable::FloatMemory::Put);	Commands.Insert(cmd);
+	cmd = new ParsingCommand("polyhedra");			cmd -> Func.Assign(this, &SceneParsingData::Parse_PolyHedra);				Commands.Insert(cmd);
+	cmd = new ParsingCommand("place");				cmd -> Func.Assign(this, &SceneParsingData::Parse_Place);					Commands.Insert(cmd);
+	cmd = new ParsingCommand("LightAmbient");		cmd -> Func.Assign(this, &SceneParsingData::Parse_LightAmbient);			Commands.Insert(cmd);
+	cmd = new ParsingCommand("LightDirectionD");	cmd -> Func.Assign(this, &SceneParsingData::Parse_LightDirectionD);			Commands.Insert(cmd);
+	cmd = new ParsingCommand("LightSpotT");			cmd -> Func.Assign(this, &SceneParsingData::Parse_LightSpotT);				Commands.Insert(cmd);
 }
 
 void SceneParsingData::Parse(const TextCommand & cmd)
@@ -30,18 +52,33 @@ void SceneParsingData::Parse(const TextCommand & cmd)
 	try
 	{
 		std::string name = cmd.Name();
-		if (name == "") { /*std::cout << "empty\n";*/ }
+		if (name == "")
+		{
+			return;
+		}
+		for (unsigned int i = 0; i < Commands.Count(); i++)
+		{
+			ParsingCommand * cmd_func = Commands[i];
+			if (cmd_func -> Name == name)
+			{
+				cmd_func -> Func(cmd);
+				return;
+			}
+		}
+		std::cout << "unknown: " << cmd << '\n';
 
-		else if (name == "varFloat")	{ VariableFloats.Put(cmd); }
-
-		else if (name == "polyhedra")	{ Parse_PolyHedra(cmd); }
-		else if (name == "place")		{ Parse_Place(cmd); }
-
-		else if (name == "LightAmbient")		{ Parse_LightAmbient(cmd); }
-		else if (name == "LightDirectionD")		{ Parse_LightDirectionD(cmd); }
-		else if (name == "LightSpotT")			{ Parse_LightSpotT(cmd); }
-
-		else { std::cout << "unknown: " << cmd << '\n'; }
+//		if (name == "") { /*std::cout << "empty\n";*/ }
+//
+//		else if (name == "varFloat")	{ VariableFloats.Put(cmd); }
+//
+//		else if (name == "polyhedra")	{ Parse_PolyHedra(cmd); }
+//		else if (name == "place")		{ Parse_Place(cmd); }
+//
+//		else if (name == "LightAmbient")		{ Parse_LightAmbient(cmd); }
+//		else if (name == "LightDirectionD")		{ Parse_LightDirectionD(cmd); }
+//		else if (name == "LightSpotT")			{ Parse_LightSpotT(cmd); }
+//
+//		else { std::cout << "unknown: " << cmd << '\n'; }
 	}
 	catch (std::exception & ex)
 	{

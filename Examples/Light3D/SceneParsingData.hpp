@@ -7,17 +7,28 @@
 # include "PolyHedra/Manager.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
+# include "Miscellaneous/Function/Pointer.hpp"
 # include "SceneObject/SceneObject.hpp"
 
 struct Light3DContext;
 
-class TextCommand;
+class TextCommand; // TextCommandArguments
 
 struct SceneParsingData
 {
+	struct ParsingCommand // TextCommandFunction
+	{
+		std::string		Name;
+		FunctionPointer<const TextCommand &>	Func;
+		//ParsingCommand(std::string name, const FunctionPointer<const TextCommand &> func);
+		ParsingCommand(std::string name);
+	};
+
 	FileInfo		File;
 
 	Light3DContext &	Context;
+
+	Container::Binary<ParsingCommand*>	Commands;
 
 	PolyHedraPalletManager *					MissingPolyHedra;
 	Container::Binary<PolyHedraPalletManager*>	PolyHedras;

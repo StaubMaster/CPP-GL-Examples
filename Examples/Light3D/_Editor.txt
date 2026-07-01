@@ -1,31 +1,23 @@
 
-Object Remove
-	add a Button to SceneObject UI
-	use Delete button
+Indicators
+	Light
+		Ambient
+		Direction
+		Point
 
-Object Insert
-	make a Key Toggle a List of Buttons that make SceneObjects
-	at the View Position
-	use Insert Button
-	how to change Pallet of PolyHedra Object ?
+these are not real objects
+just representations
+
+dont light them ?
+	so like Trans Indicators
+	but those are visible through everything
 
 
 
-PolyHedra change
-{
-	click button to change
-	show UI that lists all Pallets
-		just an array of buttons
-		text of buttons are the names
-	ignore any other input
-	if escape is pressed
-		close UI, dont change object
-	if anything outside of the UI is clicked
-		close UI, dont change object
-	if a button is pressed
-		note whick button was pressed
-		that is the Pallet that was selected
-	close UI
-	change Pallet
-	input back to normal
-}
+Toggle display Indicators
+Toggle display Everything else
+
+
+
+Save Scene
+Load Scene (from arguments)
