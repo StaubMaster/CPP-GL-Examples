@@ -66,19 +66,6 @@ void SceneParsingData::Parse(const TextCommand & cmd)
 			}
 		}
 		std::cout << "unknown: " << cmd << '\n';
-
-//		if (name == "") { /*std::cout << "empty\n";*/ }
-//
-//		else if (name == "varFloat")	{ VariableFloats.Put(cmd); }
-//
-//		else if (name == "polyhedra")	{ Parse_PolyHedra(cmd); }
-//		else if (name == "place")		{ Parse_Place(cmd); }
-//
-//		else if (name == "LightAmbient")		{ Parse_LightAmbient(cmd); }
-//		else if (name == "LightDirectionD")		{ Parse_LightDirectionD(cmd); }
-//		else if (name == "LightSpotT")			{ Parse_LightSpotT(cmd); }
-//
-//		else { std::cout << "unknown: " << cmd << '\n'; }
 	}
 	catch (std::exception & ex)
 	{

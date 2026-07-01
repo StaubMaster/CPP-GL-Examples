@@ -10,6 +10,7 @@ struct PolyHedra;
 struct PolyHedraObject;
 struct PolyHedraObjectData;
 struct PolyHedraUIObject;
+struct PolyHedraUIObjectData;
 
 struct Ray3D_Hit
 {
@@ -80,6 +81,7 @@ Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & p
 
 Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObjectData & object);
 Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObject & object);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObjectData & object);
 Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObject & object);
 
 #endif

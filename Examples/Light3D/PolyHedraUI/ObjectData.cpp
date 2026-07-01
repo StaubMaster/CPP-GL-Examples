@@ -5,13 +5,15 @@
 
 PolyHedraUIObjectData::~PolyHedraUIObjectData()
 { }
-/*PolyHedraUIObjectData::PolyHedraUIObjectData()
+PolyHedraUIObjectData::PolyHedraUIObjectData()
 	: Remove(false)
 	, DrawFull(true)
 	, DrawWire(false)
 	, PalletManager(nullptr)
 	, Trans()
-{ }*/
+	, Scale(1.0f)
+	, Color()
+{ }
 /*PolyHedraUIObjectData::PolyHedraUIObjectData(const PolyHedraUIObjectData & other)
 	: Remove(other.Remove)
 	, DrawFull(other.DrawFull)

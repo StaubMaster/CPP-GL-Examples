@@ -46,10 +46,14 @@ bool Ray3D_Hit::Consider(const Ray3D_Hit & other)
 
 #include "ValueType/Trans/3D.hpp"
 #include "PolyHedra/Data.hpp"
+
 #include "PolyHedra/Object.hpp"
 #include "PolyHedra/ObjectData.hpp"
 #include "PolyHedra/PalletManager.hpp"
+
 #include "PolyHedraUI/Object.hpp"
+#include "PolyHedraUI/ObjectData.hpp"
+#include "PolyHedraUI/PalletManager.hpp"
 
 void RaySkew(const RayF3 & ray0, Ray3D_Hit & hit0 , const RayF3 & ray1, Ray3D_Hit & hit1)
 {
@@ -186,6 +190,11 @@ Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObje
 		return RayHitObject(ray, *object.Pallet(), object.Trans());
 	}
 	return Ray3D_Hit_Type<unsigned int>();
+}
+
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObjectData & object)
+{
+	return RayHitObject(ray, *(object.PalletManager -> Pallet), object.Trans, object.Scale);
 }
 Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObject & object)
 {

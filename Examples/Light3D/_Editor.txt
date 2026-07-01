@@ -12,6 +12,8 @@ dont light them ?
 	so like Trans Indicators
 	but those are visible through everything
 
+make Ambient Indicators visible through everything
+
 
 
 Toggle display Indicators

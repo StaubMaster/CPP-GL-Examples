@@ -3,12 +3,12 @@
 
 # include "SceneObject.hpp"
 # include "ValueType/Light/Base.hpp"
-# include "PolyHedra/ObjectData.hpp"
+# include "PolyHedraUI/ObjectData.hpp"
 
 struct SceneObject_LightAmbient : public SceneObject
 {
 	LightBase *		Light;
-	PolyHedraObjectData		Data;
+	PolyHedraUIObjectData		Data;
 
 	~SceneObject_LightAmbient();
 	SceneObject_LightAmbient();

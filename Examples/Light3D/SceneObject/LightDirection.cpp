@@ -1,8 +1,7 @@
 #include "SceneObject/LightDirection.hpp"
 
-#include "PolyHedra/ObjectData.hpp"
-#include "PolyHedra/PalletManager.hpp"
-#include "PolyHedra/Object.hpp"
+#include "PolyHedraUI/PalletManager.hpp"
+#include "PolyHedraUI/Object.hpp"
 
 
 

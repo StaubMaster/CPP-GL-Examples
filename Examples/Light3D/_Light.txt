@@ -8,18 +8,5 @@ Lights
 Spot/Cone
 	currently has no falloff
 
-Effects
-	Diffuse
-	Specular
-
-Effects is currently just based on dot product from Normal and LightDir/Pos
-
-it should be based on
-	Normal
-	LightDir/Pos
-	ViewDir ?
-
-	Coefficients ?
-		per PolyHedra (Instance Data)
-		in Skin (Vertex Data)
-		in Skin (seperate Texture ?)
+Coefficients ?
+	seperate Texture

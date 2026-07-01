@@ -60,6 +60,8 @@ struct PolyHedraUIPalletManager
 	Container::Binary<PolyHedraUIData>	InstancesFull;
 	Container::Binary<PolyHedraUIData>	InstancesWire;
 
+	void	PutInstance(const PolyHedraUIObjectData & obj);
+	void	PutInstance(const PolyHedraUIObjectData * obj);
 	void	MakeInstances();
 
 

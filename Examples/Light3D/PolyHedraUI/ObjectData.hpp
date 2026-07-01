@@ -20,7 +20,7 @@ struct PolyHedraUIObjectData
 	ColorF4		Color;
 
 	~PolyHedraUIObjectData();
-	PolyHedraUIObjectData() = delete;
+	PolyHedraUIObjectData();
 	PolyHedraUIObjectData(const PolyHedraUIObjectData & other) = delete;
 	PolyHedraUIObjectData & operator=(const PolyHedraUIObjectData & other);
 

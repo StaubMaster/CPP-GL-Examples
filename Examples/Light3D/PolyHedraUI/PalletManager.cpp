@@ -64,26 +64,41 @@ PolyHedraUIObjectData * PolyHedraUIPalletManager::TryCopyObject(PolyHedraUIPalle
 
 
 
+void PolyHedraUIPalletManager::PutInstance(const PolyHedraUIObjectData & obj)
+{
+	if (obj.DrawFull)
+	{
+		InstancesFull.Insert(obj.ToData());
+	}
+	if (obj.DrawWire)
+	{
+		InstancesWire.Insert(obj.ToData());
+	}
+}
+void PolyHedraUIPalletManager::PutInstance(const PolyHedraUIObjectData * obj)
+{
+	if (obj != nullptr)
+	{
+		PutInstance(*obj);
+	}
+}
 void PolyHedraUIPalletManager::MakeInstances()
 {
 	InstancesFull.Clear();
 	InstancesWire.Clear();
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
-		if (ObjectDatas[i] == nullptr) { continue; }
-		const PolyHedraUIObjectData & obj = *ObjectDatas[i];
-		if (obj.DrawFull)
-		{
-			InstancesFull.Insert(obj.ToData());
-		}
-		if (obj.DrawWire)
-		{
-			InstancesWire.Insert(obj.ToData());
-		}
-		if (obj.Remove)
+		PutInstance(ObjectDatas[i]);
+	}
+
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		const PolyHedraUIObjectData * obj = ObjectDatas[i];
+		if (obj == nullptr) { continue; }
+		if (obj -> Remove)
 		{
 			ObjectDatas.RemoveAt(i);
-			delete &obj;
+			delete obj;
 			i--;
 		}
 	}

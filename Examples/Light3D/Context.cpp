@@ -231,7 +231,8 @@ void Light3DContext::SceneInitLights()
 	// Assign Object PolyHedras
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
 	PolyHedraPalletManager * stage_light = PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
-	PolyHedraPalletManager * Cube_manager = PolyHedraManager.MakePallet(Cube);;
+	//PolyHedraPalletManager * Cube_manager = PolyHedraManager.MakePallet(Cube);
+	PolyHedraUIPalletManager * Cube_UI_manager = PolyHedraUIManager.PlacePallet(Cube);
 
 	/* Light Meta Indicators
 		LightBuld: LightPoint
@@ -263,14 +264,14 @@ void Light3DContext::SceneInitLights()
 			SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(scene_obj);
 			if (obj != nullptr)
 			{
-				obj -> Data.PalletManager = Cube_manager;
+				obj -> Data.PalletManager = Cube_UI_manager;
 			}
 		}
 		{
 			SceneObject_LightDirection * obj = dynamic_cast<SceneObject_LightDirection*>(scene_obj);
 			if (obj != nullptr)
 			{
-				obj -> Data.PalletManager = Cube_manager;
+				obj -> Data.PalletManager = Cube_UI_manager;
 			}
 		}
 		{

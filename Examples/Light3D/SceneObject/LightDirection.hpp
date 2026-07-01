@@ -3,12 +3,12 @@
 
 # include "SceneObject.hpp"
 # include "ValueType/Light/Direction.hpp"
-# include "PolyHedra/ObjectData.hpp"
+# include "PolyHedraUI/ObjectData.hpp"
 
 struct SceneObject_LightDirection : public SceneObject
 {
 	LightDirection *	Light;
-	PolyHedraObjectData		Data;
+	PolyHedraUIObjectData		Data;
 
 	~SceneObject_LightDirection();
 	SceneObject_LightDirection();
