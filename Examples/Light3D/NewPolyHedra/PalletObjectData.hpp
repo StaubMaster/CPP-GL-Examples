@@ -1,4 +1,3 @@
-#include "ObjectData.hpp"
 #ifndef  NEW_POLYHEDRA_PALLET_OBJECT_DATA_HPP
 # define NEW_POLYHEDRA_PALLET_OBJECT_DATA_HPP
 
@@ -7,6 +6,7 @@
 // or should ObjectData be a base Pointer ?
 
 struct NewPolyHedra_PalletObjectManager;
+struct NewPolyHedra_ObjectData;
 
 struct NewPolyHedra_PalletObjectData
 {

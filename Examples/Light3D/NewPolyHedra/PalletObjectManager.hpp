@@ -2,6 +2,8 @@
 # define NEW_POLYHEDRA_PALLET_OBJECT_MANAGER_HPP
 
 # include "Miscellaneous/Container/Binary.hpp"
+# include "Graphics/Buffer/VertexArray.hpp"
+# include "Graphics/Buffer/Array.hpp"
 
 struct NewPolyHedra_Pallet;
 struct NewPolyHedra_ObjectData;
@@ -9,21 +11,14 @@ struct NewPolyHedra_ObjectData;
 struct NewPolyHedra_PalletObjectManager
 {
 	NewPolyHedra_Pallet *	Pallet;
+	::VertexArray			BufferVertexArray;
+	::Buffer::Array			Buffer;
 
-	//Buffer;
-	//Container::Binary<void>		InstanceData;
+	NewPolyHedra_PalletObjectManager();
 
-	// InstanceData can not be done with Poitners
-	// so it needs to be specified with Template
-
-	// template code should be minimized
-
-	// accumulate InstanceData using BlockList
-	// InstancesDone() to turn BlockList into Array
-
-	void	InstancesClear();
-	void	InstancePut(const NewPolyHedra_ObjectData & data);
-	void	InstancePut(const NewPolyHedra_ObjectData * data);
+	virtual void	InstancesClear() = 0;
+	virtual void	InstancePut(const NewPolyHedra_ObjectData & data) = 0;
+	virtual void	InstancePut(const NewPolyHedra_ObjectData * data) = 0;
 };
 
 #endif

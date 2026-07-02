@@ -81,6 +81,20 @@ struct MultiformLayout : public Multiform::Layout
 
 
 
+// NewPolyHedra
+#include "NewPolyHedra/Manager.hpp"
+#include "NewPolyHedra/ObjectData.hpp"
+#include "NewPolyHedra/ObjectManager.hpp"
+#include "NewPolyHedra/Pallet.hpp"
+#include "NewPolyHedra/PalletObjectData.hpp"
+#include "NewPolyHedra/PalletObjectManager.hpp"
+#include "NewPolyHedra/Type/ObjectData.hpp"
+#include "NewPolyHedra/Type/ObjectManager.hpp"
+#include "NewPolyHedra/Type/PalletObjectManager.hpp"
+#include "NewPolyHedra/TestType/Basic3D.hpp"
+
+#include "PolyHedra/Graphics/Full/Main/Data.hpp"
+
 struct Light3DContext : public ContextBase
 {
 View3D		View;
@@ -152,6 +166,31 @@ UI::Control::List	UIPolyHedraPalletList;
 bool	DoPolyHedraPalletChange;
 void	PolyHedraPalletChangeFunc(ClickArgs args);
 void	PolyHedraPalletUpdate();
+
+
+
+struct NewPolyHedraStuff
+{
+	::PolyHedraFull::Main::Layout	PalletBufferLayout;
+
+	NewPolyHedra_Manager	Manager;
+	NewPolyHedra_Type_ObjectManager<TestBasic3D::ShaderLayout, TestBasic3D::BufferLayout>	ObjectManager;
+	NewPolyHedra_Type_PalletObjectManager<TestBasic3D::ObjectData, TestBasic3D::InstanceData>	PalletObjectManager;
+	NewPolyHedra_Type_ObjectData<TestBasic3D::ObjectData>	ObjectData;
+	NewPolyHedra_PalletObjectData	PalletObjectData;
+
+
+
+	void	Init();
+
+	void	ChangeMedia(const DirectoryInfo & dir);
+	void	GraphicsCreate();
+	void	GraphicsDelete();
+	void	GraphicsInit();
+
+	void	Draw();
+};
+Light3DContext::NewPolyHedraStuff	NewPolyHedraStuff;
 
 
 

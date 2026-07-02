@@ -34,6 +34,14 @@ FILES := \
 	PolyHedraUI/Manager.cpp \
 	PolyHedraUI/Object.cpp \
 	\
+	NewPolyHedra/Manager.cpp \
+	NewPolyHedra/ObjectData.cpp \
+	NewPolyHedra/ObjectManager.cpp \
+	NewPolyHedra/Pallet.cpp \
+	NewPolyHedra/PalletObjectData.cpp \
+	NewPolyHedra/PalletObjectManager.cpp \
+	NewPolyHedra/TestType/Basic3D.cpp \
+	\
 	UI_Control_List.cpp \
 	Context.cpp \
 	new.cpp
