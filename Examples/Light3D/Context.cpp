@@ -389,31 +389,26 @@ void Light3DContext::PolyHedraPalletUpdate()
 
 
 
+#include "PolyHedra/Skin/Skin.hpp"
 void Light3DContext::NewPolyHedraStuff::Init()
 {
-	NewPolyHedra_Pallet * pallet = new NewPolyHedra_Pallet();
-	pallet -> Object = PolyHedraGenerate::SphereY(2, 5, 12.0f);
-	Manager.Pallets.Insert(pallet);
-	PalletObjectManager.Pallet = pallet;
+	PolyHedra * polyhedra = PolyHedraGenerate::SphereY(2, 5, 12.0f);
+	polyhedra -> Skins[0] -> Images[0].Pixel(0) = ColorU4(255, 0, 255);
+
+	NewPolyHedra_Pallet * pallet = Manager.FindMakePallet(polyhedra);
 
 	Manager.ObjectManagers.Insert(&ObjectManager);
-	ObjectManager.Managers.Insert(&PalletObjectManager);
 
-	PalletObjectData.Data = &ObjectData;
-	PalletObjectData.Manager = &PalletObjectManager;
-	ObjectManager.Objects.Insert(&PalletObjectData);
+	NewPolyHedra_Type_Object<TestBasic3D::ObjectData> * object = new NewPolyHedra_Type_Object<TestBasic3D::ObjectData>();
+	object -> PalletObjectData = new NewPolyHedra_PalletObjectData();
+	object -> PalletObjectData -> Manager = ObjectManager.FindMakePalletObjectManager(pallet);
+	object -> PalletObjectData -> ObjectData = new NewPolyHedra_Type_ObjectData<TestBasic3D::ObjectData>();
+	ObjectManager.Objects.Insert(object -> PalletObjectData);
 }
 
 void Light3DContext::NewPolyHedraStuff::ChangeMedia(const DirectoryInfo & dir)
 {
-	{
-		ObjectManager.Shader.Change({
-			dir.File("Shaders/Basic3D/Full.vert"),
-			dir.File("Shaders/Basic3D/Full.frag"),
-		});
-		ObjectManager.Shader.UniformLayout = &ObjectManager.ShaderLayout;
-		ObjectManager.ShaderLayout.Shader = &ObjectManager.Shader;
-	}
+	// Pallet
 	{
 		PalletBufferLayout.Position.Change(0);
 		PalletBufferLayout.Normal.Change(1);
@@ -422,6 +417,15 @@ void Light3DContext::NewPolyHedraStuff::ChangeMedia(const DirectoryInfo & dir)
 	for (unsigned int i = 0; i < Manager.Pallets.Count(); i++)
 	{
 		Manager.Pallets[i] -> Buffer.Init(PalletBufferLayout);
+	}
+	// ObjectManager
+	{
+		ObjectManager.Shader.Change({
+			dir.File("Shaders/Basic3D/Full.vert"),
+			dir.File("Shaders/Basic3D/Full.frag"),
+		});
+		ObjectManager.Shader.UniformLayout = &ObjectManager.ShaderLayout;
+		ObjectManager.ShaderLayout.Shader = &ObjectManager.Shader;
 	}
 	{
 		ObjectManager.BufferLayout.Trans.Change(3);
@@ -434,40 +438,11 @@ void Light3DContext::NewPolyHedraStuff::ChangeMedia(const DirectoryInfo & dir)
 }
 void Light3DContext::NewPolyHedraStuff::GraphicsCreate()
 {
-	Debug::Log << "NewPolyHedra Pallet" << Debug::Done;
-	for (unsigned int i = 0; i < Manager.Pallets.Count(); i++)
-	{
-		Manager.Pallets[i] -> Buffer.Create();
-		Manager.Pallets[i] -> Buffer.LogInfo();
-	}
-	Debug::Log << "NewPolyHedra Object" << Debug::Done;
-	for (unsigned int i = 0; i < Manager.ObjectManagers.Count(); i++)
-	{
-		Manager.ObjectManagers[i] -> Shader.Create();
-		for (unsigned int j = 0; j < Manager.ObjectManagers[i] -> Managers.Count(); j++)
-		{
-			Manager.ObjectManagers[i] -> Managers[j] -> Buffer.Create();
-			Manager.ObjectManagers[i] -> Managers[j] -> Buffer.LogInfo();
-			Manager.ObjectManagers[i] -> Managers[j] -> BufferVertexArray.Create();
-		}
-	}
-	Debug::Log << "NewPolyHedra done" << Debug::Done;
+	Manager.GraphicsCreate();
 }
 void Light3DContext::NewPolyHedraStuff::GraphicsDelete()
 {
-	for (unsigned int i = 0; i < Manager.Pallets.Count(); i++)
-	{
-		Manager.Pallets[i] -> Buffer.Delete();
-	}
-	for (unsigned int i = 0; i < Manager.ObjectManagers.Count(); i++)
-	{
-		Manager.ObjectManagers[i] -> Shader.Delete();
-		for (unsigned int j = 0; j < Manager.ObjectManagers[i] -> Managers.Count(); j++)
-		{
-			Manager.ObjectManagers[i] -> Managers[j] -> Buffer.Delete();
-			Manager.ObjectManagers[i] -> Managers[j] -> BufferVertexArray.Delete();
-		}
-	}
+	Manager.GraphicsDelete();
 }
 void Light3DContext::NewPolyHedraStuff::GraphicsInit()
 {
@@ -476,17 +451,19 @@ void Light3DContext::NewPolyHedraStuff::GraphicsInit()
 	{
 		Manager.Pallets[i] -> Object -> CalcNormals();
 		Container::Array<PolyHedraFull::Main::Data> data = Manager.Pallets[i] -> Object -> ToMainData();
+
 		Manager.Pallets[i] -> Buffer.DataFull(data.ToVoid());
+		Manager.Pallets[i] -> Texture = Manager.Pallets[i] -> Object -> Skins[0] -> ToTexture();
 	}
 	for (unsigned int i = 0; i < Manager.ObjectManagers.Count(); i++)
 	{
 		for (unsigned int j = 0; j < Manager.ObjectManagers[i] -> Managers.Count(); j++)
 		{
 			Manager.ObjectManagers[i] -> Managers[j] -> BufferVertexArray.Bind();
-			Manager.ObjectManagers[i] -> Managers[j] -> Pallet -> Buffer.Bind();
-			Manager.ObjectManagers[i] -> Managers[j] -> Pallet -> Buffer.Update();
 			Manager.ObjectManagers[i] -> Managers[j] -> Buffer.Bind();
 			Manager.ObjectManagers[i] -> Managers[j] -> Buffer.Update();
+			Manager.ObjectManagers[i] -> Managers[j] -> Pallet -> Buffer.Bind();
+			Manager.ObjectManagers[i] -> Managers[j] -> Pallet -> Buffer.Update();
 		}
 	}
 	VertexArray::BindNone();
@@ -496,35 +473,7 @@ void Light3DContext::NewPolyHedraStuff::Draw()
 {
 	Manager.InstancesClear();
 	Manager.InstancesMake();
-
-	VertexArray::BindNone();
-	PalletObjectManager.Buffer.Update();
-	PalletObjectManager.Buffer.DataFull(PalletObjectManager.InstanceData.ToVoid());
-
-	//std::cout << "ObjectManagers: " << Manager.ObjectManagers.Count() << '\n';
-	for (unsigned int i = 0; i < Manager.ObjectManagers.Count(); i++)
-	{
-		//std::cout << "Managers: " << Manager.ObjectManagers[i] -> Managers.Count() << '\n';
-		Manager.ObjectManagers[i] -> Shader.Bind();
-		for (unsigned int j = 0; j < Manager.ObjectManagers[i] -> Managers.Count(); j++)
-		{
-			Manager.ObjectManagers[i] -> Managers[j] -> BufferVertexArray.Bind();
-			Manager.ObjectManagers[i] -> Managers[j] -> Pallet -> Buffer.Bind();
-			Manager.ObjectManagers[i] -> Managers[j] -> Buffer.Bind();
-			//std::cout << "Main: " << (Manager.ObjectManagers[i] -> Managers[j] -> Pallet -> Buffer.Count) << '\n';
-			//std::cout << "Inst: " << (Manager.ObjectManagers[i] -> Managers[j] -> Buffer.Count) << '\n';
-			GL::DrawArraysInstanced(GL::DrawMode::Triangles, 0
-				, Manager.ObjectManagers[i] -> Managers[j] -> Pallet -> Buffer.Count
-				, Manager.ObjectManagers[i] -> Managers[j] -> Buffer.Count
-			);
-			//std::cout << __LINE__ << ' ' << GL::GetError() << '\n';
-			//std::cout << '\n';
-		}
-		//std::cout << '\n';
-	}
-	//std::cout << '\n';
-
-	VertexArray::BindNone();
+	Manager.Draw();
 }
 
 
@@ -785,8 +734,6 @@ void Light3DContext::Draw()
 	PolyHedraUIManager.DrawWire();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
-	GL::Disable(GL::Capability::DepthTest);
-	GL::Disable(GL::Capability::CullFace);
 
 	NewPolyHedraStuff.Draw();
 

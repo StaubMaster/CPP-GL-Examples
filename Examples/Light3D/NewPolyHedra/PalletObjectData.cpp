@@ -7,6 +7,6 @@ void NewPolyHedra_PalletObjectData::InstancePut() const
 {
 	if (Manager != nullptr)
 	{
-		Manager -> InstancePut(Data);
+		Manager -> InstancePut(ObjectData);
 	}
 }

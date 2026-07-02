@@ -91,6 +91,7 @@ struct MultiformLayout : public Multiform::Layout
 #include "NewPolyHedra/Type/ObjectData.hpp"
 #include "NewPolyHedra/Type/ObjectManager.hpp"
 #include "NewPolyHedra/Type/PalletObjectManager.hpp"
+#include "NewPolyHedra/Type/Object.hpp"
 #include "NewPolyHedra/TestType/Basic3D.hpp"
 
 #include "PolyHedra/Graphics/Full/Main/Data.hpp"
@@ -174,10 +175,7 @@ struct NewPolyHedraStuff
 	::PolyHedraFull::Main::Layout	PalletBufferLayout;
 
 	NewPolyHedra_Manager	Manager;
-	NewPolyHedra_Type_ObjectManager<TestBasic3D::ShaderLayout, TestBasic3D::BufferLayout>	ObjectManager;
-	NewPolyHedra_Type_PalletObjectManager<TestBasic3D::ObjectData, TestBasic3D::InstanceData>	PalletObjectManager;
-	NewPolyHedra_Type_ObjectData<TestBasic3D::ObjectData>	ObjectData;
-	NewPolyHedra_PalletObjectData	PalletObjectData;
+	NewPolyHedra_Type_ObjectManager<TestBasic3D::ShaderLayout, TestBasic3D::BufferLayout, TestBasic3D::ObjectData, TestBasic3D::InstanceData>	ObjectManager;
 
 
 

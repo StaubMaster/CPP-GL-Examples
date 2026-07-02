@@ -7,13 +7,20 @@
 
 struct NewPolyHedra_PalletObjectManager;
 struct NewPolyHedra_ObjectData;
+struct NewPolyHedra_Pallet;
 
 struct NewPolyHedra_PalletObjectData
 {
 	NewPolyHedra_PalletObjectManager *	Manager;
-	NewPolyHedra_ObjectData *			Data;
+	NewPolyHedra_ObjectData *			ObjectData;
 
 	void	InstancePut() const;
+
+	/*
+	how to know which ObjectData Type this should be ?
+	*/
+	void	Create(NewPolyHedra_Pallet * pallet);
+	void	Delete();
 };
 
 #endif

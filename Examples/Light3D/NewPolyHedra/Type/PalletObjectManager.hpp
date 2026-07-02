@@ -4,7 +4,10 @@
 # include "PalletObjectManager.hpp"
 # include "ObjectData.hpp"
 
-template<typename DataType, typename TypeInstanceData>
+template<
+	typename TypeData,
+	typename TypeInstanceData
+>
 struct NewPolyHedra_Type_PalletObjectManager : public NewPolyHedra_PalletObjectManager
 {
 	Container::Binary<TypeInstanceData>		InstanceData;
@@ -25,11 +28,16 @@ struct NewPolyHedra_Type_PalletObjectManager : public NewPolyHedra_PalletObjectM
 	}
 	void	InstancePut(const NewPolyHedra_ObjectData * data) override
 	{
-		const NewPolyHedra_Type_ObjectData<DataType> * type_data = dynamic_cast<const NewPolyHedra_Type_ObjectData<DataType> *>(data);
+		const NewPolyHedra_Type_ObjectData<TypeData> * type_data = dynamic_cast<const NewPolyHedra_Type_ObjectData<TypeData> *>(data);
 		if (type_data != nullptr)
 		{
 			InstanceData.Insert(type_data -> Data.ToData());
 		}
+	}
+	void	InstancesToBuffer() override
+	{
+		Buffer.Update();
+		Buffer.DataFull(InstanceData.ToVoid());
 	}
 };
 

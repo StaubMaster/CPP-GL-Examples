@@ -13,10 +13,12 @@
 	ColorF4		Color;
 */
 
-template<typename DataType>
+template<
+	typename TypeData
+>
 struct NewPolyHedra_Type_ObjectData : public NewPolyHedra_ObjectData
 {
-	DataType	Data;
+	TypeData	Data;
 };
 
 #endif

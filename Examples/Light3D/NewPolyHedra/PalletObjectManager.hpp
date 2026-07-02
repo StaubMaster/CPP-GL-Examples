@@ -19,6 +19,12 @@ struct NewPolyHedra_PalletObjectManager
 	virtual void	InstancesClear() = 0;
 	virtual void	InstancePut(const NewPolyHedra_ObjectData & data) = 0;
 	virtual void	InstancePut(const NewPolyHedra_ObjectData * data) = 0;
+	virtual void	InstancesToBuffer() = 0;
+
+	void	Draw();
+
+	void	GraphicsCreate();
+	void	GraphicsDelete();
 };
 
 #endif
