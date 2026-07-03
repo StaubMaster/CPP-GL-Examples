@@ -59,12 +59,12 @@ void NewPolyHedra_ObjectManager::UpdatePalletObjectDatas()
 			PalletObjectDatas.RemoveAt(i);
 			i--;
 		}
-		/*else if (object == nullptr)
+		else if (object -> Remove)
 		{
 			delete object;
 			PalletObjectDatas.RemoveAt(i);
 			i--;
-		}*/
+		}
 	}
 }
 

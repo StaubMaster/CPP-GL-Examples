@@ -4,9 +4,22 @@
 
 
 
+NewPolyHedra_PalletObjectData::~NewPolyHedra_PalletObjectData()
+{
+	delete ObjectData;
+}
+NewPolyHedra_PalletObjectData::NewPolyHedra_PalletObjectData()
+	: Manager(nullptr)
+	, ObjectData(nullptr)
+	, Remove(false)
+	, Display(true)
+{ }
+
+
+
 void NewPolyHedra_PalletObjectData::InstancePut() const
 {
-	if (Manager != nullptr)
+	if (Manager != nullptr && Display)
 	{
 		Manager -> InstancePut(ObjectData);
 	}

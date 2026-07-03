@@ -390,17 +390,20 @@ void Light3DContext::PolyHedraPalletUpdate()
 
 
 #include "PolyHedra/Skin/Skin.hpp"
+PolyHedra * NewPolyHedraStuff_polyhedra = nullptr;
+NewPolyHedra_Pallet * NewPolyHedraStuff_pallet = nullptr;
 void Light3DContext::NewPolyHedraStuff::Init()
 {
 	Manager.ObjectManagers.Insert(&ObjectManager);
 
-	PolyHedra * polyhedra = PolyHedraGenerate::SphereY(2, 5, 12.0f);
-	polyhedra -> Skins[0] -> Images[0].Pixel(0) = ColorU4(255, 0, 255);
+	NewPolyHedraStuff_polyhedra = PolyHedraGenerate::SphereY(2, 5, 12.0f);
+	NewPolyHedraStuff_polyhedra -> Skins[0] -> Images[0].Pixel(0) = ColorU4(255, 0, 255);
 
-	NewPolyHedra_Pallet * pallet = Manager.FindMakePallet(polyhedra);
+	NewPolyHedraStuff_pallet = Manager.FindMakePallet(NewPolyHedraStuff_polyhedra);
 
-	NewPolyHedra_Type_Object<TestBasic3D::ObjectData> * object = new NewPolyHedra_Type_Object<TestBasic3D::ObjectData>();
-	object -> Create(pallet);
+	NewPolyHedra_Type_Object<TestBasic3D::ObjectData> * object = new NewPolyHedra_Type_Object<TestBasic3D::ObjectData>(NewPolyHedraStuff_pallet);
+	//(void)object;
+	delete object;
 }
 
 void Light3DContext::NewPolyHedraStuff::ChangeMedia(const DirectoryInfo & dir)
@@ -699,6 +702,12 @@ void Light3DContext::Draw()
 	{
 		if (Objects[i] == nullptr) { continue; }
 		Objects[i] -> DisplayObject();
+	}
+
+
+
+	{
+		NewPolyHedra_Type_Object<TestBasic3D::ObjectData> object(NewPolyHedraStuff_pallet);
 	}
 
 
