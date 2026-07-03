@@ -3,35 +3,34 @@
 
 struct NewPolyHedra_Pallet;
 
-/*template<
-	typename TypeData
->
-struct NewPolyHedra_Type_ObjectData;*/
-
 # include "ObjectData.hpp"
 # include "../PalletObjectData.hpp"
+# include "NewPalletObjectData.hpp"
 
 template<
 	typename TypeData
 >
 struct NewPolyHedra_Type_Object
 {
-	//NewPolyHedra_Type_ObjectData<TypeData> *	_Data;
-	//TypeData &	Data() { (_Data -> Data); }
-
-	NewPolyHedra_PalletObjectData *	PalletObjectData;
+	NewPolyHedra_PalletObjectData *		PalletObjectData;
 	TypeData &	Data()
 	{
 		return (((NewPolyHedra_Type_ObjectData<TypeData> *)(PalletObjectData -> ObjectData)) -> Data);
 	}
 
-	/*
-	these require the Managers
-	but i dont want including object to include too much other stuff
-	inheret from NewPolyHedra_PalletObjectData, put these there
-	*/
-	void	Create(NewPolyHedra_Pallet * pallet);
-	void	Delete();
+	//~NewPolyHedra_Type_Object()
+	//NewPolyHedra_Type_Object()
+
+	void	Create(NewPolyHedra_Pallet * pallet)
+	{
+		if (PalletObjectData != nullptr) { return; }
+		PalletObjectData = NewPalletObjectData<TypeData>(pallet);
+	}
+	void	Delete()
+	{
+		delete PalletObjectData = nullptr;
+		PalletObjectData = nullptr;
+	}
 };
 
 #endif

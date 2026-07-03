@@ -15,12 +15,6 @@ struct NewPolyHedra_PalletObjectData
 	NewPolyHedra_ObjectData *			ObjectData;
 
 	void	InstancePut() const;
-
-	/*
-	how to know which ObjectData Type this should be ?
-	*/
-	void	Create(NewPolyHedra_Pallet * pallet);
-	void	Delete();
 };
 
 #endif

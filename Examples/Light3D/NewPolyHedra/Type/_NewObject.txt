@@ -1,0 +1,24 @@
+
+Object<TypeData>
+{
+	PalletObjectData
+	Create()
+	{
+		Object<TypeData>.PalletObjectData = ObjectManager<TypeData>::Current.NewObject()
+	}
+}
+
+ObjectManager<TypeData>
+{
+	static Current
+	Container<PalletObjectData>
+
+	NewObject()
+	{
+		new PalletObjectData
+		PalletObjectData.Manager = MakeFindPalletObjectManager()
+		PalletObjectData.ObjectData = new ObjectData<TypeData>
+		Container<PalletObjectData>.Insert(PalletObjectData)
+		return PalletObjectData
+	}
+}

@@ -2,57 +2,59 @@
 # define NEW_POLYHEDRA_TYPE_OBJECT_MANAGER_HPP
 
 # include "ObjectManager.hpp"
-
-/*template<
-	typename TypeData,
-	typename TypeInstanceData
->
-struct NewPolyHedra_Type_PalletObjectManager;*/
-
 # include "PalletObjectManager.hpp"
 
 template<
-	typename TypeShaderLayout,
-	typename TypeBufferLayout,
+	typename TypeData
+>
+struct NewPolyHedra_Type_Data_ObjectManager : public NewPolyHedra_ObjectManager
+{
+	static NewPolyHedra_Type_Data_ObjectManager *	Current;
+
+	~NewPolyHedra_Type_Data_ObjectManager()
+	{
+		Current = nullptr;
+	}
+	NewPolyHedra_Type_Data_ObjectManager()
+	{
+		Current = this;
+	}
+};
+
+template<
+	typename TypeData
+>
+NewPolyHedra_Type_Data_ObjectManager<TypeData> * NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current = nullptr;
+
+# include "NewPalletObjectData.hpp"
+
+template<
+	typename TypeData
+>
+NewPolyHedra_PalletObjectData * NewPalletObjectData(NewPolyHedra_Pallet * pallet)
+{
+	if (NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current != nullptr)
+	{
+		return NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current -> NewPalletObjectData(pallet);
+	}
+	return nullptr;
+}
+
+
+
+template<
 	typename TypeData,
 	typename TypeInstanceData
 >
-struct NewPolyHedra_Type_ObjectManager : public NewPolyHedra_ObjectManager
+struct NewPolyHedra_Type_ObjectManager : public NewPolyHedra_Type_Data_ObjectManager<TypeData>
 {
-	TypeShaderLayout	ShaderLayout; // Full and Wire
-	TypeBufferLayout	BufferLayout; // Full and Wire
-
-	NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData> *	FindPalletObjectManager(NewPolyHedra_Pallet * pallet) const
+	NewPolyHedra_PalletObjectManager *	NewPalletObjectManager() override
 	{
-		if (pallet == nullptr) { return nullptr; }
-		for (unsigned int i = 0; i < Managers.Count(); i++)
-		{
-			NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData> * manager = (NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData> *)Managers[i];
-			if (manager == nullptr) { continue; }
-			if (manager -> Pallet == pallet)
-			{
-				return manager;
-			}
-		}
-		return nullptr;
+		return new NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData>();
 	}
-	NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData> *	MakePalletObjectManager(NewPolyHedra_Pallet * pallet)
+	NewPolyHedra_ObjectData *	NewObjectData() override
 	{
-		if (pallet == nullptr) { return nullptr; }
-		NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData> * manager = new NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData>();
-		manager -> Pallet = pallet;
-		Managers.Insert(manager);
-		return manager;
-	}
-	NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData> *	FindMakePalletObjectManager(NewPolyHedra_Pallet * pallet)
-	{
-		if (pallet == nullptr) { return nullptr; }
-		NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData> * manager = FindPalletObjectManager(pallet);
-		if (manager == nullptr)
-		{
-			manager = MakePalletObjectManager(pallet);
-		}
-		return manager;
+		return new NewPolyHedra_Type_ObjectData<TypeData>();
 	}
 };
 

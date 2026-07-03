@@ -20,6 +20,8 @@ struct NewPolyHedra_Manager
 
 	Container::Binary<NewPolyHedra_ObjectManager*>	ObjectManagers;
 
+	void	UpdatePalletObjectDatas();
+
 	void	InstancesClear();
 	void	InstancesMake();
 

@@ -175,18 +175,17 @@ struct NewPolyHedraStuff
 	::PolyHedraFull::Main::Layout	PalletBufferLayout;
 
 	NewPolyHedra_Manager	Manager;
-	NewPolyHedra_Type_ObjectManager<TestBasic3D::ShaderLayout, TestBasic3D::BufferLayout, TestBasic3D::ObjectData, TestBasic3D::InstanceData>	ObjectManager;
+
+	TestBasic3D::ShaderLayout ObjectManagerShaderLayout;
+	TestBasic3D::BufferLayout ObjectManagerBufferLayout;
+	NewPolyHedra_Type_ObjectManager<TestBasic3D::ObjectData, TestBasic3D::InstanceData>	ObjectManager;
 
 
 
 	void	Init();
 
 	void	ChangeMedia(const DirectoryInfo & dir);
-	void	GraphicsCreate();
-	void	GraphicsDelete();
 	void	GraphicsInit();
-
-	void	Draw();
 };
 Light3DContext::NewPolyHedraStuff	NewPolyHedraStuff;
 

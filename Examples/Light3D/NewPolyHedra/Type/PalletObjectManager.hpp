@@ -28,7 +28,7 @@ struct NewPolyHedra_Type_PalletObjectManager : public NewPolyHedra_PalletObjectM
 	}
 	void	InstancePut(const NewPolyHedra_ObjectData * data) override
 	{
-		const NewPolyHedra_Type_ObjectData<TypeData> * type_data = dynamic_cast<const NewPolyHedra_Type_ObjectData<TypeData> *>(data);
+		const NewPolyHedra_Type_ObjectData<TypeData> * type_data = (const NewPolyHedra_Type_ObjectData<TypeData> *)(data);
 		if (type_data != nullptr)
 		{
 			InstanceData.Insert(type_data -> Data.ToData());

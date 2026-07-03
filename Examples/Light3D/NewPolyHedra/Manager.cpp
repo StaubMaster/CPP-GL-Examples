@@ -39,6 +39,18 @@ NewPolyHedra_Pallet * NewPolyHedra_Manager::FindMakePallet(PolyHedra * polyhedra
 
 
 
+void NewPolyHedra_Manager::UpdatePalletObjectDatas()
+{
+	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
+	{
+		NewPolyHedra_ObjectManager * manager = ObjectManagers[i];
+		if (manager == nullptr) { continue; }
+		manager -> UpdatePalletObjectDatas();
+	}
+}
+
+
+
 void NewPolyHedra_Manager::InstancesClear()
 {
 	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
