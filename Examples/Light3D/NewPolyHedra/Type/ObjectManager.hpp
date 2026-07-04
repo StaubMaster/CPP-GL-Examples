@@ -26,6 +26,8 @@ template<
 >
 NewPolyHedra_Type_Data_ObjectManager<TypeData> * NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current = nullptr;
 
+
+
 # include "NewPalletObjectData.hpp"
 
 template<

@@ -5,6 +5,21 @@
 
 
 
+NewPolyHedra_PalletManager * NewPolyHedra_PalletManager::Current = nullptr;
+
+
+
+NewPolyHedra_PalletManager::~NewPolyHedra_PalletManager()
+{
+	Current = nullptr;
+}
+NewPolyHedra_PalletManager::NewPolyHedra_PalletManager()
+{
+	Current = this;
+}
+
+
+
 NewPolyHedra_Pallet * NewPolyHedra_PalletManager::FindPallet(PolyHedra * polyhedra) const
 {
 	if (polyhedra == nullptr) { return nullptr; }
@@ -59,4 +74,18 @@ void NewPolyHedra_PalletManager::GraphicsDelete()
 		if (pallet == nullptr) { continue; }
 		pallet -> GraphicsDelete();
 	}
+}
+
+
+
+#include "NewPallet.hpp"
+
+NewPolyHedra_Pallet * NewPallet(PolyHedra * polyhedra)
+{
+	if (polyhedra == nullptr) { return nullptr; }
+	if (NewPolyHedra_PalletManager::Current != nullptr)
+	{
+		return NewPolyHedra_PalletManager::Current -> FindMakePallet(polyhedra);
+	}
+	return nullptr;
 }

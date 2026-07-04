@@ -181,7 +181,7 @@ struct NewPolyHedraStuff
 	NewPolyHedra_Type_ObjectManager<TestBasic3D::ObjectData, TestBasic3D::InstanceData>	ObjectManager;
 
 	PolyHedra *				polyhedra = nullptr;
-	NewPolyHedra_Pallet *	pallet = nullptr;
+	//NewPolyHedra_Pallet *	pallet = nullptr;
 
 	void	Init();
 

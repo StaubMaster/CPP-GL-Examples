@@ -395,7 +395,7 @@ void Light3DContext::NewPolyHedraStuff::Init()
 	polyhedra = PolyHedraGenerate::SphereY(2, 5, 12.0f);
 	polyhedra -> Skins[0] -> Images[0].Pixel(0) = ColorU4(255, 0, 255);
 
-	pallet = Manager.PalletManager.FindMakePallet(polyhedra);
+	//pallet = Manager.PalletManager.FindMakePallet(polyhedra);
 }
 
 void Light3DContext::NewPolyHedraStuff::ChangeMedia(const DirectoryInfo & dir)
@@ -665,7 +665,8 @@ void Light3DContext::Draw()
 
 
 	{
-		NewPolyHedra_Type_Object<TestBasic3D::ObjectData> object(NewPolyHedraStuff.pallet);
+		NewPolyHedra_Type_Object<TestBasic3D::ObjectData> object(NewPolyHedraStuff.polyhedra);
+		//NewPolyHedra_Type_Object<TestBasic3D::ObjectData> object(NewPolyHedraStuff.pallet);
 		//object.Data().Trans.Position.X = -24.0f;
 	}
 

@@ -2,10 +2,12 @@
 # define NEW_POLYHEDRA_TYPE_OBJECT_HPP
 
 struct NewPolyHedra_Pallet;
+class PolyHedra;
 
 # include "ObjectData.hpp"
-# include "../PalletObjectData.hpp"
 # include "NewPalletObjectData.hpp"
+# include "../PalletObjectData.hpp"
+# include "../NewPallet.hpp"
 
 template<
 	typename TypeData
@@ -38,6 +40,9 @@ struct NewPolyHedra_Type_Object
 	{ }
 	NewPolyHedra_Type_Object(NewPolyHedra_Pallet * pallet)
 		: PalletObjectData(NewPalletObjectData<TypeData>(pallet))
+	{ }
+	NewPolyHedra_Type_Object(PolyHedra * polyhedra)
+		: PalletObjectData(NewPalletObjectData<TypeData>(NewPallet(polyhedra)))
 	{ }
 
 	NewPolyHedra_Type_Object(const NewPolyHedra_Type_Object & other) = delete;

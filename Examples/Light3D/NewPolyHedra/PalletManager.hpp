@@ -10,6 +10,13 @@ struct NewPolyHedra_Pallet;
 
 struct NewPolyHedra_PalletManager
 {
+	static NewPolyHedra_PalletManager *		Current;
+
+	~NewPolyHedra_PalletManager();
+	NewPolyHedra_PalletManager();
+
+
+
 	Container::Binary<NewPolyHedra_Pallet*>		Pallets;
 
 	NewPolyHedra_Pallet *	FindPallet(PolyHedra * polyhedra) const;

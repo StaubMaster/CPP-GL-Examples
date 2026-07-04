@@ -4,8 +4,6 @@
 struct NewPolyHedra_Pallet;
 struct NewPolyHedra_PalletObjectData;
 
-class PolyHedra;
-
 template<
 	typename TypeData
 >
