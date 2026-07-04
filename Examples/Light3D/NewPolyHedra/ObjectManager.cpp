@@ -4,7 +4,7 @@
 
 
 
-NewPolyHedra_PalletObjectManager *	NewPolyHedra_ObjectManager::FindPalletObjectManager(NewPolyHedra_Pallet * pallet) const
+NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindPalletObjectManager(NewPolyHedra_Pallet * pallet) const
 {
 	if (pallet == nullptr) { return nullptr; }
 	for (unsigned int i = 0; i < Managers.Count(); i++)
@@ -18,15 +18,21 @@ NewPolyHedra_PalletObjectManager *	NewPolyHedra_ObjectManager::FindPalletObjectM
 	}
 	return nullptr;
 }
-NewPolyHedra_PalletObjectManager *	NewPolyHedra_ObjectManager::MakePalletObjectManager(NewPolyHedra_Pallet * pallet)
+NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::MakePalletObjectManager(NewPolyHedra_Pallet * pallet)
 {
 	if (pallet == nullptr) { return nullptr; }
 	NewPolyHedra_PalletObjectManager * manager = NewPalletObjectManager();
 	manager -> Pallet = pallet;
+	if (BufferLayout != nullptr)
+	{
+		manager -> Buffer.Init(*BufferLayout);
+	}
+	manager -> GraphicsCreate();
+	manager -> VertexBufferInit();
 	Managers.Insert(manager);
 	return manager;
 }
-NewPolyHedra_PalletObjectManager*	NewPolyHedra_ObjectManager::FindMakePalletObjectManager(NewPolyHedra_Pallet * pallet)
+NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindMakePalletObjectManager(NewPolyHedra_Pallet * pallet)
 {
 	if (pallet == nullptr) { return nullptr; }
 	NewPolyHedra_PalletObjectManager * manager = FindPalletObjectManager(pallet);
@@ -91,20 +97,6 @@ void NewPolyHedra_ObjectManager::InstancesMake()
 
 
 
-void NewPolyHedra_ObjectManager::Draw()
-{
-	Shader.Bind();
-	for (unsigned int i = 0; i < Managers.Count(); i++)
-	{
-		NewPolyHedra_PalletObjectManager * manager = Managers[i];
-		if (manager == nullptr) { continue; }
-		manager -> Draw();
-	}
-	VertexArray::BindNone();
-}
-
-
-
 void NewPolyHedra_ObjectManager::GraphicsCreate()
 {
 	Shader.Create();
@@ -124,4 +116,15 @@ void NewPolyHedra_ObjectManager::GraphicsDelete()
 		if (manager == nullptr) { continue; }
 		manager -> GraphicsDelete();
 	}
+}
+void NewPolyHedra_ObjectManager::GraphicsDraw()
+{
+	Shader.Bind();
+	for (unsigned int i = 0; i < Managers.Count(); i++)
+	{
+		NewPolyHedra_PalletObjectManager * manager = Managers[i];
+		if (manager == nullptr) { continue; }
+		manager -> GraphicsDraw();
+	}
+	VertexArray::BindNone();
 }

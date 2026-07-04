@@ -2,40 +2,7 @@
 #include "Pallet.hpp"
 #include "ObjectManager.hpp"
 
-
-
-NewPolyHedra_Pallet * NewPolyHedra_Manager::FindPallet(PolyHedra * polyhedra) const
-{
-	if (polyhedra == nullptr) { return nullptr; }
-	for (unsigned int i = 0; i < Pallets.Count(); i++)
-	{
-		NewPolyHedra_Pallet * pallet = Pallets[i];
-		if (pallet == nullptr) { continue; }
-		if (pallet -> Object == polyhedra)
-		{
-			return pallet;
-		}
-	}
-	return nullptr;
-}
-NewPolyHedra_Pallet * NewPolyHedra_Manager::MakePallet(PolyHedra * polyhedra)
-{
-	if (polyhedra == nullptr) { return nullptr; }
-	NewPolyHedra_Pallet * pallet = new NewPolyHedra_Pallet();
-	pallet -> Object = polyhedra;
-	Pallets.Insert(pallet);
-	return pallet;
-}
-NewPolyHedra_Pallet * NewPolyHedra_Manager::FindMakePallet(PolyHedra * polyhedra)
-{
-	if (polyhedra == nullptr) { return nullptr; }
-	NewPolyHedra_Pallet * pallet = FindPallet(polyhedra);
-	if (pallet == nullptr)
-	{
-		pallet = MakePallet(polyhedra);
-	}
-	return pallet;
-}
+#include "Graphics/Buffer/VertexArray.hpp"
 
 
 
@@ -72,26 +39,9 @@ void NewPolyHedra_Manager::InstancesMake()
 
 
 
-void NewPolyHedra_Manager::Draw()
-{
-	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
-	{
-		NewPolyHedra_ObjectManager * manager = ObjectManagers[i];
-		if (manager == nullptr) { continue; }
-		manager -> Draw();
-	}
-}
-
-
-
 void NewPolyHedra_Manager::GraphicsCreate()
 {
-	for (unsigned int i = 0; i < Pallets.Count(); i++)
-	{
-		NewPolyHedra_Pallet * pallet = Pallets[i];
-		if (pallet == nullptr) { continue; }
-		pallet -> GraphicsCreate();
-	}
+	PalletManager.GraphicsCreate();
 	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
 	{
 		NewPolyHedra_ObjectManager * manager = ObjectManagers[i];
@@ -101,16 +51,20 @@ void NewPolyHedra_Manager::GraphicsCreate()
 }
 void NewPolyHedra_Manager::GraphicsDelete()
 {
-	for (unsigned int i = 0; i < Pallets.Count(); i++)
-	{
-		NewPolyHedra_Pallet * pallet = Pallets[i];
-		if (pallet == nullptr) { continue; }
-		pallet -> GraphicsDelete();
-	}
+	PalletManager.GraphicsDelete();
 	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
 	{
 		NewPolyHedra_ObjectManager * manager = ObjectManagers[i];
 		if (manager == nullptr) { continue; }
 		manager -> GraphicsDelete();
+	}
+}
+void NewPolyHedra_Manager::GraphicsDraw()
+{
+	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
+	{
+		NewPolyHedra_ObjectManager * manager = ObjectManagers[i];
+		if (manager == nullptr) { continue; }
+		manager -> GraphicsDraw();
 	}
 }

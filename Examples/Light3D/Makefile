@@ -38,6 +38,7 @@ FILES := \
 	NewPolyHedra/ObjectData.cpp \
 	NewPolyHedra/ObjectManager.cpp \
 	NewPolyHedra/Pallet.cpp \
+	NewPolyHedra/PalletManager.cpp \
 	NewPolyHedra/PalletObjectData.cpp \
 	NewPolyHedra/PalletObjectManager.cpp \
 	NewPolyHedra/TestType/Basic3D.cpp \

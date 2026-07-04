@@ -180,12 +180,12 @@ struct NewPolyHedraStuff
 	TestBasic3D::BufferLayout ObjectManagerBufferLayout;
 	NewPolyHedra_Type_ObjectManager<TestBasic3D::ObjectData, TestBasic3D::InstanceData>	ObjectManager;
 
-
+	PolyHedra *				polyhedra = nullptr;
+	NewPolyHedra_Pallet *	pallet = nullptr;
 
 	void	Init();
 
 	void	ChangeMedia(const DirectoryInfo & dir);
-	void	GraphicsInit();
 };
 Light3DContext::NewPolyHedraStuff	NewPolyHedraStuff;
 

@@ -8,12 +8,25 @@ class PolyHedra;
 
 struct NewPolyHedra_Pallet
 {
+	private:
 	PolyHedra *		Object;
-	::Buffer::Array		Buffer;
+
+	public:
+	::Buffer::Array			Buffer;
 	::Texture::Array2D		Texture;
+	::Attribute::Layout * 	Layout;
 
-	NewPolyHedra_Pallet();
+	public:
+	bool	Is(PolyHedra * object) const;
 
+	public:
+	~NewPolyHedra_Pallet();
+	NewPolyHedra_Pallet(PolyHedra * object);
+
+	public:
+	void	Put();
+
+	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 };

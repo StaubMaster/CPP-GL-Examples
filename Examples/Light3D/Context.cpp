@@ -390,35 +390,22 @@ void Light3DContext::PolyHedraPalletUpdate()
 
 
 #include "PolyHedra/Skin/Skin.hpp"
-PolyHedra * NewPolyHedraStuff_polyhedra = nullptr;
-NewPolyHedra_Pallet * NewPolyHedraStuff_pallet = nullptr;
 void Light3DContext::NewPolyHedraStuff::Init()
 {
-	Manager.ObjectManagers.Insert(&ObjectManager);
+	polyhedra = PolyHedraGenerate::SphereY(2, 5, 12.0f);
+	polyhedra -> Skins[0] -> Images[0].Pixel(0) = ColorU4(255, 0, 255);
 
-	NewPolyHedraStuff_polyhedra = PolyHedraGenerate::SphereY(2, 5, 12.0f);
-	NewPolyHedraStuff_polyhedra -> Skins[0] -> Images[0].Pixel(0) = ColorU4(255, 0, 255);
-
-	NewPolyHedraStuff_pallet = Manager.FindMakePallet(NewPolyHedraStuff_polyhedra);
-
-	NewPolyHedra_Type_Object<TestBasic3D::ObjectData> * object = new NewPolyHedra_Type_Object<TestBasic3D::ObjectData>(NewPolyHedraStuff_pallet);
-	//(void)object;
-	delete object;
+	pallet = Manager.PalletManager.FindMakePallet(polyhedra);
 }
 
 void Light3DContext::NewPolyHedraStuff::ChangeMedia(const DirectoryInfo & dir)
 {
-	// Pallet
 	{
 		PalletBufferLayout.Position.Change(0);
 		PalletBufferLayout.Normal.Change(1);
 		PalletBufferLayout.Texture.Change(2);
+		Manager.PalletManager.PalletBufferLayout = &PalletBufferLayout;
 	}
-	for (unsigned int i = 0; i < Manager.Pallets.Count(); i++)
-	{
-		Manager.Pallets[i] -> Buffer.Init(PalletBufferLayout);
-	}
-	// ObjectManager
 	{
 		ObjectManager.Shader.Change({
 			dir.File("Shaders/Basic3D/Full.vert"),
@@ -430,35 +417,8 @@ void Light3DContext::NewPolyHedraStuff::ChangeMedia(const DirectoryInfo & dir)
 	{
 		ObjectManagerBufferLayout.Trans.Change(3);
 		ObjectManagerBufferLayout.Normal.Change(7);
+		ObjectManager.BufferLayout = &ObjectManagerBufferLayout;
 	}
-	for (unsigned int i = 0; i < ObjectManager.Managers.Count(); i++)
-	{
-		ObjectManager.Managers[i] -> Buffer.Init(ObjectManagerBufferLayout);
-	}
-}
-void Light3DContext::NewPolyHedraStuff::GraphicsInit()
-{
-	VertexArray::BindNone();
-	for (unsigned int i = 0; i < Manager.Pallets.Count(); i++)
-	{
-		Manager.Pallets[i] -> Object -> CalcNormals();
-		Container::Array<PolyHedraFull::Main::Data> data = Manager.Pallets[i] -> Object -> ToMainData();
-
-		Manager.Pallets[i] -> Buffer.DataFull(data.ToVoid());
-		Manager.Pallets[i] -> Texture = Manager.Pallets[i] -> Object -> Skins[0] -> ToTexture();
-	}
-	for (unsigned int i = 0; i < Manager.ObjectManagers.Count(); i++)
-	{
-		for (unsigned int j = 0; j < Manager.ObjectManagers[i] -> Managers.Count(); j++)
-		{
-			Manager.ObjectManagers[i] -> Managers[j] -> BufferVertexArray.Bind();
-			Manager.ObjectManagers[i] -> Managers[j] -> Buffer.Bind();
-			Manager.ObjectManagers[i] -> Managers[j] -> Buffer.Update();
-			Manager.ObjectManagers[i] -> Managers[j] -> Pallet -> Buffer.Bind();
-			Manager.ObjectManagers[i] -> Managers[j] -> Pallet -> Buffer.Update();
-		}
-	}
-	VertexArray::BindNone();
 }
 
 
@@ -521,8 +481,6 @@ void Light3DContext::ChangeMedia()
 
 	PolyHedraUIManager.ChangeMedia(MediaDirectory);
 
-	NewPolyHedraStuff.ChangeMedia(MediaDirectory);
-
 	std::cout << "ChangeMedia 1\n";
 }
 void Light3DContext::GraphicsCreate()
@@ -540,8 +498,6 @@ void Light3DContext::GraphicsCreate()
 	LightShaderLayout.BindBlock();
 
 	LightShaderLayout.Info();
-
-	NewPolyHedraStuff.Manager.GraphicsCreate();
 }
 void Light3DContext::GraphicsDelete()
 {
@@ -551,8 +507,6 @@ void Light3DContext::GraphicsDelete()
 	PolyHedraUIManager.GraphicsDelete();
 
 	LightShaderLayout.Delete();
-
-	NewPolyHedraStuff.Manager.GraphicsDelete();
 }
 
 
@@ -566,7 +520,8 @@ void Light3DContext::Make()
 	//View.Trans = Trans3D(VectorF3(0, 10, -65), EulerAngle3D());
 	//View.Trans = Trans3D(VectorF3(0, 0, -5), EulerAngle3D());
 	//View.Trans = Trans3D(VectorF3(0, 64, -16), EulerAngle3D());
-	View.Trans = Trans3D(VectorF3(0, 64, 0), EulerAngle3D());
+	//View.Trans = Trans3D(VectorF3(0, 64, 0), EulerAngle3D());
+	View.Trans = Trans3D(VectorF3(0, 0, -16), EulerAngle3D());
 
 	SceneClear();
 	SceneInitCubes();
@@ -583,20 +538,22 @@ void Light3DContext::Make()
 	UserTrans3DChange.IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
 	UserTrans3DChange.IndicatorsHide();
 
-	NewPolyHedraStuff.GraphicsInit();
-
 	std::cout << "Make 1\n";
 }
 
 void Light3DContext::Init()
 {
-	NewPolyHedraStuff.Init();
+	NewPolyHedraStuff.Manager.ObjectManagers.Insert(&NewPolyHedraStuff.ObjectManager); // do this in constructor
 
 	ChangeMedia();
+	NewPolyHedraStuff.ChangeMedia(MediaDirectory);
 
 	std::cout << "Init 0\n";
 
 	GraphicsCreate();
+
+	NewPolyHedraStuff.Init();
+	NewPolyHedraStuff.Manager.GraphicsCreate();
 
 	std::cout << "Init 1\n";
 
@@ -607,6 +564,7 @@ void Light3DContext::Free()
 	std::cout << "Free 0\n";
 
 	GraphicsDelete();
+	NewPolyHedraStuff.Manager.GraphicsDelete();
 
 	std::cout << "Free 1\n";
 }
@@ -707,7 +665,8 @@ void Light3DContext::Draw()
 
 
 	{
-		NewPolyHedra_Type_Object<TestBasic3D::ObjectData> object(NewPolyHedraStuff_pallet);
+		NewPolyHedra_Type_Object<TestBasic3D::ObjectData> object(NewPolyHedraStuff.pallet);
+		//object.Data().Trans.Position.X = -24.0f;
 	}
 
 
@@ -728,7 +687,7 @@ void Light3DContext::Draw()
 
 	NewPolyHedraStuff.Manager.InstancesClear();
 	NewPolyHedraStuff.Manager.InstancesMake();
-	NewPolyHedraStuff.Manager.Draw();
+	NewPolyHedraStuff.Manager.GraphicsDraw();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
