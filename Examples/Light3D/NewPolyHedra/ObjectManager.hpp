@@ -4,6 +4,7 @@
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/Attribute/General/Layout.hpp"
+# include "Graphics/Buffer/Uniform.hpp"
 
 struct NewPolyHedra_Pallet;
 struct NewPolyHedra_PalletObjectManager;
@@ -35,6 +36,7 @@ struct NewPolyHedra_ObjectManager
 	::Shader::Base	Shader; // Full and Wire
 
 	::Attribute::Layout *	BufferLayout = nullptr;
+	::Buffer::Uniform *		BufferUniform = nullptr;
 
 	void	InstancesClear();
 	void	InstancesMake();

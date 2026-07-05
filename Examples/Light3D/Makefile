@@ -41,7 +41,11 @@ FILES := \
 	NewPolyHedra/PalletManager.cpp \
 	NewPolyHedra/PalletObjectData.cpp \
 	NewPolyHedra/PalletObjectManager.cpp \
-	NewPolyHedra/TestType/Basic3D.cpp \
+	\
+	NewPolyHedra/DataType/Basic3D/Layout.cpp \
+	NewPolyHedra/DataType/Basic3D/ObjectData.cpp \
+	NewPolyHedra/DataType/TransScaleColor3D/Layout.cpp \
+	NewPolyHedra/DataType/TransScaleColor3D/ObjectData.cpp \
 	\
 	UI_Control_List.cpp \
 	Context.cpp \

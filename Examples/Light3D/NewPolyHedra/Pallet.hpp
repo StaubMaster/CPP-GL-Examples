@@ -12,19 +12,19 @@ struct NewPolyHedra_Pallet
 	PolyHedra *		Object;
 
 	public:
-	::Buffer::Array			Buffer;
-	::Texture::Array2D		Texture;
-	::Attribute::Layout * 	Layout;
-
-	public:
 	bool	Is(PolyHedra * object) const;
+	void	Put();
 
 	public:
 	~NewPolyHedra_Pallet();
 	NewPolyHedra_Pallet(PolyHedra * object);
 
+
+
 	public:
-	void	Put();
+	::Buffer::Array			Buffer;
+	::Texture::Array2D		Texture;
+	::Attribute::Layout * 	Layout;
 
 	public:
 	void	GraphicsCreate();

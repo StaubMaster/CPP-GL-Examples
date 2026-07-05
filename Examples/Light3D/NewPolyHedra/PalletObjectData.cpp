@@ -9,10 +9,10 @@ NewPolyHedra_PalletObjectData::~NewPolyHedra_PalletObjectData()
 	delete ObjectData;
 }
 NewPolyHedra_PalletObjectData::NewPolyHedra_PalletObjectData()
-	: Manager(nullptr)
-	, ObjectData(nullptr)
-	, Remove(false)
+	: Remove(false)
 	, Display(true)
+	, Manager(nullptr)
+	, ObjectData(nullptr)
 { }
 
 

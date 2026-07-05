@@ -55,30 +55,24 @@ namespace PaddedBlock
 	};
 };
 
+struct LightBufferData
+{
+	PaddedBlock::LightBase			Ambient;
+	PaddedBlock::LightDirection		Solar;
+	PaddedBlock::UInt				SpotCount;
+	PaddedBlock::LightSpot			Spot[4];
+
+	void	Put(Buffer::Uniform & buffer);
+};
+
 class LightShaderLayout : public PolyHedraFull::ShaderLayout
 {
 	public:
-	Buffer::Uniform			LightBuffer;
-	Uniform::Buffer			LightUniform;
-
-	struct LightData
-	{
-		PaddedBlock::LightBase		Ambient;
-		PaddedBlock::LightDirection		Solar;
-		PaddedBlock::UInt			SpotCount;
-		PaddedBlock::LightSpot		Spot[4];
-	};
+	Uniform::Buffer		LightUniform;
 
 	public:
 	~LightShaderLayout();
 	LightShaderLayout();
-
-	public:
-	void	BindBlock();
-	void	Create();
-	void	Delete();
-	void	Put(const LightData & data);
-	void	Info() const;
 };
 
 #endif

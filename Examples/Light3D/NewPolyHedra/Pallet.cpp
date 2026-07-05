@@ -34,7 +34,7 @@ void NewPolyHedra_Pallet::Put()
 	VertexArray::BindNone();
 	if (Object != nullptr)
 	{
-		//Object -> CalcNormals();
+		Object -> CalcNormals();
 		Container::Array<PolyHedraFull::Main::Data> data = Object -> ToMainData();
 		Buffer.DataFull(data.ToVoid());
 		Buffer.Count = data.Length();

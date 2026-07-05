@@ -27,6 +27,10 @@ void NewPolyHedra_PalletObjectManager::VertexBufferInit()
 			Pallet -> Layout -> Bind();
 		}
 	}
+	if (BufferUniform != nullptr)
+	{
+		BufferUniform -> Bind();
+	}
 	VertexArray::BindNone();
 }
 

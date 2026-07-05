@@ -11,15 +11,19 @@ struct NewPolyHedra_Pallet;
 
 struct NewPolyHedra_PalletObjectData
 {
+	bool	Remove;
+	bool	Display;
+
+
+
 	NewPolyHedra_PalletObjectManager *	Manager; // (== null) means delete
 	NewPolyHedra_ObjectData *			ObjectData; // why is this a pointer ?
 	// because Datatype varies
 
-	bool	Remove;
-	bool	Display;
-
 	~NewPolyHedra_PalletObjectData();
 	NewPolyHedra_PalletObjectData();
+
+
 
 	void	InstancePut() const;
 };

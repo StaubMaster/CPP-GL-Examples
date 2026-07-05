@@ -27,6 +27,7 @@ NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::MakePalletObjectM
 	{
 		manager -> Buffer.Init(*BufferLayout);
 	}
+	manager -> BufferUniform = BufferUniform;
 	manager -> GraphicsCreate();
 	manager -> VertexBufferInit();
 	Managers.Insert(manager);

@@ -92,9 +92,14 @@ struct MultiformLayout : public Multiform::Layout
 #include "NewPolyHedra/Type/ObjectManager.hpp"
 #include "NewPolyHedra/Type/PalletObjectManager.hpp"
 #include "NewPolyHedra/Type/Object.hpp"
-#include "NewPolyHedra/TestType/Basic3D.hpp"
 
-#include "PolyHedra/Graphics/Full/Main/Data.hpp"
+#include "NewPolyHedra/DataType/Basic3D/Layout.hpp"
+#include "NewPolyHedra/DataType/Basic3D/Object.hpp"
+#include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
+
+#include "NewPolyHedra/DataType/TransScaleColor3D/Layout.hpp"
+#include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
+#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectManager.hpp"
 
 struct Light3DContext : public ContextBase
 {
@@ -170,24 +175,16 @@ void	PolyHedraPalletUpdate();
 
 
 
-struct NewPolyHedraStuff
-{
-	::PolyHedraFull::Main::Layout	PalletBufferLayout;
+NewPolyHedra_Manager			NewPolyHedra_Manager;
+::PolyHedraFull::Main::Layout	NewPolyHedra_PalletBufferLayout;
 
-	NewPolyHedra_Manager	Manager;
+Basic3D::ShaderLayout		ObjectManagerBasic_ShaderLayout;
+Basic3D::BufferLayout		ObjectManagerBasic_BufferLayout;
+Basic3D::ObjectManager		ObjectManagerBasic;
 
-	TestBasic3D::ShaderLayout ObjectManagerShaderLayout;
-	TestBasic3D::BufferLayout ObjectManagerBufferLayout;
-	NewPolyHedra_Type_ObjectManager<TestBasic3D::ObjectData, TestBasic3D::InstanceData>	ObjectManager;
-
-	PolyHedra *				polyhedra = nullptr;
-	//NewPolyHedra_Pallet *	pallet = nullptr;
-
-	void	Init();
-
-	void	ChangeMedia(const DirectoryInfo & dir);
-};
-Light3DContext::NewPolyHedraStuff	NewPolyHedraStuff;
+TransScaleColor3D::ShaderLayout		ObjectManagerTSC_ShaderLayout;
+TransScaleColor3D::BufferLayout		ObjectManagerTSC_BufferLayout;
+TransScaleColor3D::ObjectManager	ObjectManagerTSC;
 
 
 
@@ -199,6 +196,8 @@ Light3DContext();
 SceneObject_PolyHedraObject		CenterCube;
 
 
+
+Buffer::Uniform			LightBuffer;
 
 ::Shader::Base			LightShader;
 ::LightShaderLayout		LightShaderLayout;
