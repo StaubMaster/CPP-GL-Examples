@@ -4,14 +4,6 @@
 # include "ValueType/Ray/F3.hpp"
 # include "Miscellaneous/Container/Array.hpp"
 
-struct PolyHedra;
-struct Trans3D;
-struct PolyHedra;
-struct PolyHedraObject;
-struct PolyHedraObjectData;
-struct PolyHedraUIObject;
-struct PolyHedraUIObjectData;
-
 struct Ray3D_Hit
 {
 	const RayF3 *	Ray;
@@ -76,12 +68,38 @@ Ray3D_Hit RayHitTriangle(const RayF3 & ray, const Triangle3D & triangle);
 
 
 
+struct Trans3D;
+class PolyHedra;
+
+
+
+struct PolyHedraObject;
+struct PolyHedraObjectData;
+
+//struct PolyHedraUIObject;
+//struct PolyHedraUIObjectData;
+
+struct NewPolyHedra_Pallet;
+struct NewPolyHedra_PalletObjectManager;
+
+namespace Basic3D { struct ObjectData; };
+namespace TransScaleColor3D { struct ObjectData; };
+template<typename TypeData> struct NewPolyHedra_Type_Object;
+template<typename TypeData> struct NewPolyHedra_Type_PalletObjectData;
+
 Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans);
 Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
 
 Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObjectData & object);
 Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObject & object);
-Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObjectData & object);
-Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObject & object);
+
+//Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObjectData & object);
+//Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObject & object);
+
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_Object<Basic3D::ObjectData> & object);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_Object<TransScaleColor3D::ObjectData> & object);
+
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_PalletObjectData<Basic3D::ObjectData> & object);
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_PalletObjectData<TransScaleColor3D::ObjectData> & object);
 
 #endif

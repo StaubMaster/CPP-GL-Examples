@@ -29,11 +29,6 @@ FILES := \
 	SceneObject/UI/SceneObject.cpp \
 	SceneObject/UI/PolyHedraObject.cpp \
 	\
-	PolyHedraUI/ObjectData.cpp \
-	PolyHedraUI/PalletManager.cpp \
-	PolyHedraUI/Manager.cpp \
-	PolyHedraUI/Object.cpp \
-	\
 	NewPolyHedra/Manager.cpp \
 	NewPolyHedra/ObjectData.cpp \
 	NewPolyHedra/ObjectManager.cpp \

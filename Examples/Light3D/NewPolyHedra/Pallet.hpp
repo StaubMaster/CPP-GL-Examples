@@ -13,6 +13,9 @@ struct NewPolyHedra_Pallet
 
 	public:
 	bool	Is(PolyHedra * object) const;
+
+	PolyHedra *		Get() const;
+
 	void	Put();
 
 	public:

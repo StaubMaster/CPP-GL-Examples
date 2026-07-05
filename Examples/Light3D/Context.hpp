@@ -23,8 +23,8 @@
 #include "PolyHedra/Object.hpp"
 
 // PolyHedraUI
-#include "PolyHedraUI/Manager.hpp"
-#include "PolyHedraUI/Object.hpp"
+//#include "PolyHedraUI/Manager.hpp"
+//#include "PolyHedraUI/Object.hpp"
 
 // Containers
 #include "Miscellaneous/Container/Array.hpp"
@@ -116,7 +116,7 @@ SceneObjectUI		UISceneObject;
 
 bool	IsHoveringUI() const;
 
-::PolyHedraUIManager	PolyHedraUIManager;
+//::PolyHedraUIManager	PolyHedraUIManager;
 
 
 

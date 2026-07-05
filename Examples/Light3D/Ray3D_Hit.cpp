@@ -51,9 +51,19 @@ bool Ray3D_Hit::Consider(const Ray3D_Hit & other)
 #include "PolyHedra/ObjectData.hpp"
 #include "PolyHedra/PalletManager.hpp"
 
-#include "PolyHedraUI/Object.hpp"
-#include "PolyHedraUI/ObjectData.hpp"
-#include "PolyHedraUI/PalletManager.hpp"
+//#include "PolyHedraUI/Object.hpp"
+//#include "PolyHedraUI/ObjectData.hpp"
+//#include "PolyHedraUI/PalletManager.hpp"
+
+//#include "NewPolyHedra/DataType/Basic3D/Object.hpp"
+//#include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
+#include "NewPolyHedra/DataType/Basic3D/ObjectData.hpp"
+#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
+#include "NewPolyHedra/Type/ObjectData.hpp"
+#include "NewPolyHedra/Type/Object.hpp"
+#include "NewPolyHedra/Type/PalletObjectData.hpp"
+#include "NewPolyHedra/PalletObjectManager.hpp"
+#include "NewPolyHedra/Pallet.hpp"
 
 void RaySkew(const RayF3 & ray0, Ray3D_Hit & hit0 , const RayF3 & ray1, Ray3D_Hit & hit1)
 {
@@ -192,15 +202,45 @@ Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObje
 	return Ray3D_Hit_Type<unsigned int>();
 }
 
-Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObjectData & object)
+/*Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObjectData & object)
 {
 	return RayHitObject(ray, *(object.PalletManager -> Pallet), object.Trans, object.Scale);
-}
-Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObject & object)
+}*/
+/*Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraUIObject & object)
 {
 	if (object.Is())
 	{
 		return RayHitObject(ray, *object.Pallet(), object.Trans(), object.Scale());
+	}
+	return Ray3D_Hit_Type<unsigned int>();
+}*/
+
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_Object<Basic3D::ObjectData> & object)
+{
+	{
+		return RayHitObject(ray, *(object.PalletObjectData -> Manager -> Pallet -> Get()), object.Data().Trans);
+	}
+	return Ray3D_Hit_Type<unsigned int>();
+}
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_Object<TransScaleColor3D::ObjectData> & object)
+{
+	{
+		return RayHitObject(ray, *(object.PalletObjectData -> Manager -> Pallet -> Get()), object.Data().Trans, object.Data().Scale);
+	}
+	return Ray3D_Hit_Type<unsigned int>();
+}
+
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_PalletObjectData<Basic3D::ObjectData> & object)
+{
+	{
+		return RayHitObject(ray, *(object.Manager -> Pallet -> Get()), object.Data().Trans);
+	}
+	return Ray3D_Hit_Type<unsigned int>();
+}
+Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_PalletObjectData<TransScaleColor3D::ObjectData> & object)
+{
+	{
+		return RayHitObject(ray, *(object.Manager -> Pallet -> Get()), object.Data().Trans, object.Data().Scale);
 	}
 	return Ray3D_Hit_Type<unsigned int>();
 }

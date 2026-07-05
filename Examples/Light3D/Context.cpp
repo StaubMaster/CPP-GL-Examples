@@ -4,8 +4,8 @@
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/ObjectData.hpp"
 
-#include "PolyHedraUI/PalletManager.hpp"
-#include "PolyHedraUI/ObjectData.hpp"
+//#include "PolyHedraUI/PalletManager.hpp"
+//#include "PolyHedraUI/ObjectData.hpp"
 
 #include "ValueType/Intersect.hpp"
 
@@ -232,7 +232,9 @@ void Light3DContext::SceneInitLights()
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
 	PolyHedraPalletManager * stage_light = PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
 	//PolyHedraPalletManager * Cube_manager = PolyHedraManager.MakePallet(Cube);
-	PolyHedraUIPalletManager * Cube_UI_manager = PolyHedraUIManager.PlacePallet(Cube);
+	//PolyHedraUIPalletManager * Cube_UI_manager = PolyHedraUIManager.PlacePallet(Cube);
+	NewPolyHedra_Pallet * pallet = NewPolyHedra_Manager.PalletManager.FindMakePallet(Cube);
+	NewPolyHedra_PalletObjectManager * Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(pallet);
 
 	/* Light Meta Indicators
 		LightBuld: LightPoint
@@ -264,14 +266,16 @@ void Light3DContext::SceneInitLights()
 			SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(scene_obj);
 			if (obj != nullptr)
 			{
-				obj -> Data.PalletManager = Cube_UI_manager;
+				//obj -> Data.PalletManager = Cube_UI_manager;
+				obj -> Data.Manager = Cube_UI_manager;
 			}
 		}
 		{
 			SceneObject_LightDirection * obj = dynamic_cast<SceneObject_LightDirection*>(scene_obj);
 			if (obj != nullptr)
 			{
-				obj -> Data.PalletManager = Cube_UI_manager;
+				//obj -> Data.PalletManager = Cube_UI_manager;
+				obj -> Data.Manager = Cube_UI_manager;
 			}
 		}
 		{
@@ -394,7 +398,7 @@ Light3DContext::Light3DContext()
 	, PolyHedraManager()
 	, UIManager()
 	, UISceneObject()
-	, PolyHedraUIManager()
+	//, PolyHedraUIManager()
 	, Objects()
 	, Object_Selected(nullptr)
 	, Object_Hovering(nullptr)
@@ -405,7 +409,7 @@ Light3DContext::Light3DContext()
 	, LightShaderLayout()
 {
 	PolyHedraManager.MakeCurrent();
-	PolyHedraUIManager.MakeCurrent();
+	//PolyHedraUIManager.MakeCurrent();
 
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerBasic);
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerTSC);
@@ -417,8 +421,8 @@ Light3DContext::Light3DContext()
 		&UIManager.TextManager.ShaderLayout,
 		&UIManager.GraphManager.ShaderLayout,
 		&LightShaderLayout,
-		&PolyHedraUIManager.ShaderLayoutFullDefault,
-		&PolyHedraUIManager.ShaderLayoutWireDefault,
+		//&PolyHedraUIManager.ShaderLayoutFullDefault,
+		//&PolyHedraUIManager.ShaderLayoutWireDefault,
 		&ObjectManagerBasic_ShaderLayout,
 		&ObjectManagerTSC_ShaderLayout,
 	});
@@ -446,7 +450,7 @@ void Light3DContext::ChangeMedia()
 
 	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 
-	PolyHedraUIManager.ChangeMedia(MediaDirectory);
+	//PolyHedraUIManager.ChangeMedia(MediaDirectory);
 
 	// NewPolyHedra
 	{
@@ -496,7 +500,7 @@ void Light3DContext::GraphicsCreate()
 	PolyHedraManager.GraphicsCreate();
 	LightShader.Create();
 	UIManager.GraphicsCreate();
-	PolyHedraUIManager.GraphicsCreate();
+	//PolyHedraUIManager.GraphicsCreate();
 
 	MultiformLayout.Depth.ChangeData(View.Depth);
 	MultiformLayout.FOV.ChangeData(View.FOV);
@@ -508,7 +512,7 @@ void Light3DContext::GraphicsDelete()
 	PolyHedraManager.GraphicsDelete();
 	LightShader.Delete();
 	UIManager.GraphicsDelete();
-	PolyHedraUIManager.GraphicsDelete();
+	//PolyHedraUIManager.GraphicsDelete();
 
 	LightBuffer.Delete();
 }
@@ -655,16 +659,15 @@ void Light3DContext::Draw()
 	// Instances
 
 	PolyHedraManager.MakeInstances();
-	PolyHedraUIManager.MakeInstances();
+	//PolyHedraUIManager.MakeInstances();
 
+	NewPolyHedra_Manager.InstancesClear();
+	NewPolyHedra_Manager.InstancesMake();
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (Objects[i] == nullptr) { continue; }
 		Objects[i] -> DisplayObject();
 	}
-
-	NewPolyHedra_Manager.InstancesClear();
-	NewPolyHedra_Manager.InstancesMake();
 
 
 
@@ -682,8 +685,8 @@ void Light3DContext::Draw()
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 
-	PolyHedraUIManager.DrawFull();
-	PolyHedraUIManager.DrawWire();
+	//PolyHedraUIManager.DrawFull();
+	//PolyHedraUIManager.DrawWire();
 	ObjectManagerTSC.GraphicsDraw();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);

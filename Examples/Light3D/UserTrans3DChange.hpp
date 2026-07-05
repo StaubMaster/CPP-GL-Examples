@@ -5,7 +5,8 @@
 # include "ValueType/Trans/3D.hpp"
 
 # include "ValueType/Vector/F3.hpp"
-# include "PolyHedraUI/Object.hpp"
+//# include "PolyHedraUI/Object.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
 
 # include "ValueType/View/3D.hpp"
 # include "Display/DisplaySize.hpp"
@@ -37,13 +38,19 @@ struct UserTrans3DChange
 	private:
 	bool	IsVisible;
 
-	PolyHedraUIObject	MoveAxisX;
-	PolyHedraUIObject	MoveAxisY;
-	PolyHedraUIObject	MoveAxisZ;
+	//PolyHedraUIObject	MoveAxisX;
+	//PolyHedraUIObject	MoveAxisY;
+	//PolyHedraUIObject	MoveAxisZ;
+	//PolyHedraUIObject	SpinRingX;
+	//PolyHedraUIObject	SpinRingY;
+	//PolyHedraUIObject	SpinRingZ;
 
-	PolyHedraUIObject	SpinRingX;
-	PolyHedraUIObject	SpinRingY;
-	PolyHedraUIObject	SpinRingZ;
+	TransScaleColor3D::Object	MoveAxisX;
+	TransScaleColor3D::Object	MoveAxisY;
+	TransScaleColor3D::Object	MoveAxisZ;
+	TransScaleColor3D::Object	SpinRingX;
+	TransScaleColor3D::Object	SpinRingY;
+	TransScaleColor3D::Object	SpinRingZ;
 
 	// Center
 	//  L: move along Plane perpendicular to View Ray

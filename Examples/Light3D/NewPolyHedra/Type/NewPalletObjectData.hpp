@@ -7,6 +7,6 @@ struct NewPolyHedra_PalletObjectData;
 template<
 	typename TypeData
 >
-NewPolyHedra_PalletObjectData * NewPalletObjectData(const NewPolyHedra_Pallet * pallet);
+NewPolyHedra_PalletObjectData * NewPalletObjectData(NewPolyHedra_Pallet * pallet);
 
 #endif

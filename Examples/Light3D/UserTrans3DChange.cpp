@@ -2,7 +2,8 @@
 #include "Ray3D_Hit.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
-#include "PolyHedraUI/Manager.hpp"
+//#include "PolyHedraUI/Manager.hpp"
+//#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectManager.hpp"
 #include "DirectoryInfo.hpp"
 
 
@@ -31,22 +32,22 @@ bool UserTrans3DChange::IndicatorsIsVisible() const
 void UserTrans3DChange::IndicatorsShow()
 {
 	IsVisible = true;
-	MoveAxisX.ShowFull();
-	MoveAxisY.ShowFull();
-	MoveAxisZ.ShowFull();
-	SpinRingX.ShowFull();
-	SpinRingY.ShowFull();
-	SpinRingZ.ShowFull();
+	MoveAxisX.PalletObjectData -> Display = true;
+	MoveAxisY.PalletObjectData -> Display = true;
+	MoveAxisZ.PalletObjectData -> Display = true;
+	SpinRingX.PalletObjectData -> Display = true;
+	SpinRingY.PalletObjectData -> Display = true;
+	SpinRingZ.PalletObjectData -> Display = true;
 }
 void UserTrans3DChange::IndicatorsHide()
 {
 	IsVisible = false;
-	MoveAxisX.HideFull();
-	MoveAxisY.HideFull();
-	MoveAxisZ.HideFull();
-	SpinRingX.HideFull();
-	SpinRingY.HideFull();
-	SpinRingZ.HideFull();
+	MoveAxisX.PalletObjectData -> Display = false;
+	MoveAxisY.PalletObjectData -> Display = false;
+	MoveAxisZ.PalletObjectData -> Display = false;
+	SpinRingX.PalletObjectData -> Display = false;
+	SpinRingY.PalletObjectData -> Display = false;
+	SpinRingZ.PalletObjectData -> Display = false;
 }
 
 void UserTrans3DChange::IndicatorsFind(const RayF3 & ray)
@@ -87,57 +88,57 @@ void UserTrans3DChange::IndicatorsUpdateColor()
 {
 	if (HoveringType != EIndicatorType::None)
 	{
-		MoveAxisX.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		MoveAxisY.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		MoveAxisZ.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		SpinRingX.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		SpinRingY.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		SpinRingZ.Color() = ColorF4(0.5f, 0.5f, 0.5f);
+		MoveAxisX.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
+		MoveAxisY.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
+		MoveAxisZ.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
+		SpinRingX.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
+		SpinRingY.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
+		SpinRingZ.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
 
 		switch (HoveringType)
 		{
-			case EIndicatorType::MoveAxisX: MoveAxisX.Color() = ColorF4(1, 0, 0); break;
-			case EIndicatorType::MoveAxisY: MoveAxisY.Color() = ColorF4(0, 1, 0); break;
-			case EIndicatorType::MoveAxisZ: MoveAxisZ.Color() = ColorF4(0, 0, 1); break;
-			case EIndicatorType::SpinRingX: SpinRingX.Color() = ColorF4(1, 0, 0); break;
-			case EIndicatorType::SpinRingY: SpinRingY.Color() = ColorF4(0, 1, 0); break;
-			case EIndicatorType::SpinRingZ: SpinRingZ.Color() = ColorF4(0, 0, 1); break;
+			case EIndicatorType::MoveAxisX: MoveAxisX.Data().Color = ColorF4(1, 0, 0); break;
+			case EIndicatorType::MoveAxisY: MoveAxisY.Data().Color = ColorF4(0, 1, 0); break;
+			case EIndicatorType::MoveAxisZ: MoveAxisZ.Data().Color = ColorF4(0, 0, 1); break;
+			case EIndicatorType::SpinRingX: SpinRingX.Data().Color = ColorF4(1, 0, 0); break;
+			case EIndicatorType::SpinRingY: SpinRingY.Data().Color = ColorF4(0, 1, 0); break;
+			case EIndicatorType::SpinRingZ: SpinRingZ.Data().Color = ColorF4(0, 0, 1); break;
 			default: break;
 		}
 	}
 	else
 	{
-		MoveAxisX.Color() = ColorF4(1, 0, 0);
-		MoveAxisY.Color() = ColorF4(0, 1, 0);
-		MoveAxisZ.Color() = ColorF4(0, 0, 1);
-		SpinRingX.Color() = ColorF4(1, 0, 0);
-		SpinRingY.Color() = ColorF4(0, 1, 0);
-		SpinRingZ.Color() = ColorF4(0, 0, 1);
+		MoveAxisX.Data().Color = ColorF4(1, 0, 0);
+		MoveAxisY.Data().Color = ColorF4(0, 1, 0);
+		MoveAxisZ.Data().Color = ColorF4(0, 0, 1);
+		SpinRingX.Data().Color = ColorF4(1, 0, 0);
+		SpinRingY.Data().Color = ColorF4(0, 1, 0);
+		SpinRingZ.Data().Color = ColorF4(0, 0, 1);
 	}
 }
 void UserTrans3DChange::IndicatorsUpdateScale(float scale)
 {
-	MoveAxisX.Scale() = scale;
-	MoveAxisY.Scale() = scale;
-	MoveAxisZ.Scale() = scale;
-	SpinRingX.Scale() = scale;
-	SpinRingY.Scale() = scale;
-	SpinRingZ.Scale() = scale;
+	MoveAxisX.Data().Scale = scale;
+	MoveAxisY.Data().Scale = scale;
+	MoveAxisZ.Data().Scale = scale;
+	SpinRingX.Data().Scale = scale;
+	SpinRingY.Data().Scale = scale;
+	SpinRingZ.Data().Scale = scale;
 }
 void UserTrans3DChange::IndicatorsUpdateTrans()
 {
-	MoveAxisX.Trans().Position = Trans.Position;
-	MoveAxisY.Trans().Position = Trans.Position;
-	MoveAxisZ.Trans().Position = Trans.Position;
+	MoveAxisX.Data().Trans.Position = Trans.Position;
+	MoveAxisY.Data().Trans.Position = Trans.Position;
+	MoveAxisZ.Data().Trans.Position = Trans.Position;
 
-	SpinRingX.Trans().Position = Trans.Position;
-	SpinRingY.Trans().Position = Trans.Position;
-	SpinRingZ.Trans().Position = Trans.Position;
+	SpinRingX.Data().Trans.Position = Trans.Position;
+	SpinRingY.Data().Trans.Position = Trans.Position;
+	SpinRingZ.Data().Trans.Position = Trans.Position;
 
 	EulerAngle3D rot;
-	rot.Y2 = Trans.Rotation.Y2; SpinRingY.Trans().Rotation = rot;
-	rot.X1 = Trans.Rotation.X1; SpinRingX.Trans().Rotation = rot;
-	rot.Z0 = Trans.Rotation.Z0; SpinRingZ.Trans().Rotation = rot;
+	rot.Y2 = Trans.Rotation.Y2; SpinRingY.Data().Trans.Rotation = rot;
+	rot.X1 = Trans.Rotation.X1; SpinRingX.Data().Trans.Rotation = rot;
+	rot.Z0 = Trans.Rotation.Z0; SpinRingZ.Data().Trans.Rotation = rot;
 }
 
 #include "Display/DisplayPosition.hpp"
@@ -180,23 +181,23 @@ void UserTrans3DChange::IndicatorsUpdate(const View3D & view, const DisplaySize 
 
 //	float scale = 100.0f;
 //
-//	MoveAxisX.Scale() = scale;
-//	MoveAxisY.Scale() = scale;
-//	MoveAxisZ.Scale() = scale;
-//	SpinRingX.Scale() = scale;
-//	SpinRingY.Scale() = scale;
-//	SpinRingZ.Scale() = scale;
+//	MoveAxisX.Data().Scale = scale;
+//	MoveAxisY.Data().Scale = scale;
+//	MoveAxisZ.Data().Scale = scale;
+//	SpinRingX.Data().Scale = scale;
+//	SpinRingY.Data().Scale = scale;
+//	SpinRingZ.Data().Scale = scale;
 //
 //	VectorF3 pos = Project(VectorF3(), Trans, view, display_size, scale);
 //
 //	Trans3D trans(pos);
 //
-//	MoveAxisX.Trans() = trans;
-//	MoveAxisY.Trans() = trans;
-//	MoveAxisZ.Trans() = trans;
-//	SpinRingX.Trans() = trans;
-//	SpinRingY.Trans() = trans;
-//	SpinRingZ.Trans() = trans;
+//	MoveAxisX.Data().Trans = trans;
+//	MoveAxisY.Data().Trans = trans;
+//	MoveAxisZ.Data().Trans = trans;
+//	SpinRingX.Data().Trans = trans;
+//	SpinRingY.Data().Trans = trans;
+//	SpinRingZ.Data().Trans = trans;
 }
 
 

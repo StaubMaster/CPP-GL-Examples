@@ -1,7 +1,7 @@
 #ifndef  NEW_POLYHEDRA_TYPE_OBJECT_DATA_HPP
 # define NEW_POLYHEDRA_TYPE_OBJECT_DATA_HPP
 
-# include "ObjectData.hpp"
+# include "../ObjectData.hpp"
 
 /* PolyHedraObjectData
 	Trans3D		Trans;

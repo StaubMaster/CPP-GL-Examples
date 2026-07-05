@@ -13,6 +13,22 @@ bool NewPolyHedra_Pallet::Is(PolyHedra * object) const
 {
 	return (Object == object);
 }
+PolyHedra * NewPolyHedra_Pallet::Get() const
+{
+	return Object;
+}
+void NewPolyHedra_Pallet::Put()
+{
+	VertexArray::BindNone();
+	if (Object != nullptr)
+	{
+		Object -> CalcNormals();
+		Container::Array<PolyHedraFull::Main::Data> data = Object -> ToMainData();
+		Buffer.DataFull(data.ToVoid());
+		Buffer.Count = data.Length();
+		Texture = Object -> Skins[0] -> ToTexture();
+	}
+}
 
 
 
@@ -26,21 +42,6 @@ NewPolyHedra_Pallet::NewPolyHedra_Pallet(PolyHedra * object)
 	, Texture()
 	, Layout(nullptr)
 { }
-
-
-
-void NewPolyHedra_Pallet::Put()
-{
-	VertexArray::BindNone();
-	if (Object != nullptr)
-	{
-		Object -> CalcNormals();
-		Container::Array<PolyHedraFull::Main::Data> data = Object -> ToMainData();
-		Buffer.DataFull(data.ToVoid());
-		Buffer.Count = data.Length();
-		Texture = Object -> Skins[0] -> ToTexture();
-	}
-}
 
 
 

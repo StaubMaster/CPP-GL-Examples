@@ -19,6 +19,10 @@ struct NewPolyHedra_Type_Object
 	{
 		return (((NewPolyHedra_Type_ObjectData<TypeData> *)(PalletObjectData -> ObjectData)) -> Data);
 	}
+	const TypeData &	Data() const
+	{
+		return (((const NewPolyHedra_Type_ObjectData<TypeData> *)(PalletObjectData -> ObjectData)) -> Data);
+	}
 
 	~NewPolyHedra_Type_Object()
 	{
@@ -58,7 +62,11 @@ struct NewPolyHedra_Type_Object
 		if (PalletObjectData != nullptr) { return; }
 		PalletObjectData = NewPalletObjectData<TypeData>(pallet);
 	}
-	// Create(PolyHedra)
+	void	Create(PolyHedra * polyhedra)
+	{
+		if (PalletObjectData != nullptr) { return; }
+		PalletObjectData = NewPalletObjectData<TypeData>(NewPallet(polyhedra));
+	}  
 };
 
 #endif
