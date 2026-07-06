@@ -83,12 +83,12 @@ struct MultiformLayout : public Multiform::Layout
 
 // NewPolyHedra
 #include "NewPolyHedra/Manager.hpp"
-#include "NewPolyHedra/ObjectData.hpp"
+//#include "NewPolyHedra/ObjectData.hpp"
 #include "NewPolyHedra/ObjectManager.hpp"
 #include "NewPolyHedra/Pallet.hpp"
 #include "NewPolyHedra/PalletObjectData.hpp"
 #include "NewPolyHedra/PalletObjectManager.hpp"
-#include "NewPolyHedra/Type/ObjectData.hpp"
+//#include "NewPolyHedra/Type/ObjectData.hpp"
 #include "NewPolyHedra/Type/ObjectManager.hpp"
 #include "NewPolyHedra/Type/PalletObjectManager.hpp"
 #include "NewPolyHedra/Type/Object.hpp"

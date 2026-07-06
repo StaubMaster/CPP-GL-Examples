@@ -32,22 +32,22 @@ bool UserTrans3DChange::IndicatorsIsVisible() const
 void UserTrans3DChange::IndicatorsShow()
 {
 	IsVisible = true;
-	MoveAxisX.PalletObjectData -> Display = true;
-	MoveAxisY.PalletObjectData -> Display = true;
-	MoveAxisZ.PalletObjectData -> Display = true;
-	SpinRingX.PalletObjectData -> Display = true;
-	SpinRingY.PalletObjectData -> Display = true;
-	SpinRingZ.PalletObjectData -> Display = true;
+	MoveAxisX.ShowFull();
+	MoveAxisY.ShowFull();
+	MoveAxisZ.ShowFull();
+	SpinRingX.ShowFull();
+	SpinRingY.ShowFull();
+	SpinRingZ.ShowFull();
 }
 void UserTrans3DChange::IndicatorsHide()
 {
 	IsVisible = false;
-	MoveAxisX.PalletObjectData -> Display = false;
-	MoveAxisY.PalletObjectData -> Display = false;
-	MoveAxisZ.PalletObjectData -> Display = false;
-	SpinRingX.PalletObjectData -> Display = false;
-	SpinRingY.PalletObjectData -> Display = false;
-	SpinRingZ.PalletObjectData -> Display = false;
+	MoveAxisX.HideFull();
+	MoveAxisY.HideFull();
+	MoveAxisZ.HideFull();
+	SpinRingX.HideFull();
+	SpinRingY.HideFull();
+	SpinRingZ.HideFull();
 }
 
 void UserTrans3DChange::IndicatorsFind(const RayF3 & ray)
@@ -57,13 +57,13 @@ void UserTrans3DChange::IndicatorsFind(const RayF3 & ray)
 
 	Ray3D_Hit_Type<EIndicatorType> hit(EIndicatorType::None);
 
-	hit.Consider(RayHitObject(ray, MoveAxisX), EIndicatorType::MoveAxisX);
-	hit.Consider(RayHitObject(ray, MoveAxisY), EIndicatorType::MoveAxisY);
-	hit.Consider(RayHitObject(ray, MoveAxisZ), EIndicatorType::MoveAxisZ);
+	hit.Consider(RayHitObject1(ray, MoveAxisX), EIndicatorType::MoveAxisX);
+	hit.Consider(RayHitObject1(ray, MoveAxisY), EIndicatorType::MoveAxisY);
+	hit.Consider(RayHitObject1(ray, MoveAxisZ), EIndicatorType::MoveAxisZ);
 
-	hit.Consider(RayHitObject(ray, SpinRingX), EIndicatorType::SpinRingX);
-	hit.Consider(RayHitObject(ray, SpinRingY), EIndicatorType::SpinRingY);
-	hit.Consider(RayHitObject(ray, SpinRingZ), EIndicatorType::SpinRingZ);
+	hit.Consider(RayHitObject1(ray, SpinRingX), EIndicatorType::SpinRingX);
+	hit.Consider(RayHitObject1(ray, SpinRingY), EIndicatorType::SpinRingY);
+	hit.Consider(RayHitObject1(ray, SpinRingZ), EIndicatorType::SpinRingZ);
 
 	if (hit.Is())
 	{

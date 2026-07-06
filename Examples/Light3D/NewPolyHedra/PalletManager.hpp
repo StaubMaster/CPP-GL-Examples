@@ -25,7 +25,8 @@ struct NewPolyHedra_PalletManager
 
 
 
-	::Attribute::Layout *	PalletBufferLayout = nullptr;
+	::Attribute::Layout *	BufferFullLayout;
+	::Attribute::Layout *	BufferWireLayout;
 
 	void	GraphicsCreate();
 	void	GraphicsDelete();

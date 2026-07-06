@@ -19,7 +19,8 @@ struct NewPolyHedra_Manager
 
 	void	GraphicsCreate();
 	void	GraphicsDelete();
-	void	GraphicsDraw();
+	void	GraphicsDrawFull();
+	void	GraphicsDrawWire();
 };
 
 #endif

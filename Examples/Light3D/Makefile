@@ -30,7 +30,6 @@ FILES := \
 	SceneObject/UI/PolyHedraObject.cpp \
 	\
 	NewPolyHedra/Manager.cpp \
-	NewPolyHedra/ObjectData.cpp \
 	NewPolyHedra/ObjectManager.cpp \
 	NewPolyHedra/Pallet.cpp \
 	NewPolyHedra/PalletManager.cpp \

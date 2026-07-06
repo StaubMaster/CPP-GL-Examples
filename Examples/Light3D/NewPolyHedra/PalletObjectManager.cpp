@@ -8,54 +8,85 @@
 
 NewPolyHedra_PalletObjectManager::NewPolyHedra_PalletObjectManager()
 	: Pallet(nullptr)
-	, BufferVertexArray()
-	, Buffer(GL::BufferDataUsage::StreamDraw)
+	, BufferFullVertexArray()
+	, BufferWireVertexArray()
+	, BufferFull(GL::BufferDataUsage::StreamDraw)
+	, BufferWire(GL::BufferDataUsage::StreamDraw)
 { }
 
 
 
 void NewPolyHedra_PalletObjectManager::VertexBufferInit()
 {
-	BufferVertexArray.Bind();
-	Buffer.Bind();
-	Buffer.Update();
-	if (Pallet != nullptr)
+	BufferFullVertexArray.Bind();
 	{
-		Pallet -> Buffer.Bind();
-		if (Pallet -> Layout != nullptr)
+		BufferFull.Bind();
+		BufferFull.Update();
+		if (Pallet != nullptr)
 		{
-			Pallet -> Layout -> Bind();
+			Pallet -> BufferFull.Bind();
+			if (Pallet -> BufferFullLayout != nullptr)
+			{
+				Pallet -> BufferFullLayout -> Bind();
+			}
+		}
+		if (BufferUniform != nullptr)
+		{
+			BufferUniform -> Bind();
 		}
 	}
-	if (BufferUniform != nullptr)
+	BufferWireVertexArray.Bind();
 	{
-		BufferUniform -> Bind();
+		BufferWire.Bind();
+		BufferWire.Update();
+		if (Pallet != nullptr)
+		{
+			Pallet -> BufferWire.Bind();
+			if (Pallet -> BufferWireLayout != nullptr)
+			{
+				Pallet -> BufferWireLayout -> Bind();
+			}
+		}
 	}
 	VertexArray::BindNone();
 }
 
 void NewPolyHedra_PalletObjectManager::GraphicsCreate()
 {
-	Buffer.Create();
-	BufferVertexArray.Create();
+	BufferFullVertexArray.Create();
+	BufferWireVertexArray.Create();
+	BufferFull.Create();
+	BufferWire.Create();
 }
 void NewPolyHedra_PalletObjectManager::GraphicsDelete()
 {
-	Buffer.Delete();
-	BufferVertexArray.Delete();
+	BufferFullVertexArray.Delete();
+	BufferWireVertexArray.Delete();
+	BufferFull.Delete();
+	BufferWire.Delete();
 }
-void NewPolyHedra_PalletObjectManager::GraphicsDraw()
+void NewPolyHedra_PalletObjectManager::GraphicsDrawFull()
 {
-	InstancesToBuffer();
+	InstancesToBufferFull();
 	if (Pallet != nullptr)
 	{
-		BufferVertexArray.Bind();
-		Buffer.Bind();
-		Pallet -> Buffer.Bind();
+		BufferFullVertexArray.Bind();
 		Pallet -> Texture.Bind();
 		GL::DrawArraysInstanced(GL::DrawMode::Triangles, 0
-			, Pallet -> Buffer.Count
-			, Buffer.Count
+			, Pallet -> BufferFull.Count
+			, BufferFull.Count
+		);
+	}
+}
+void NewPolyHedra_PalletObjectManager::GraphicsDrawWire()
+{
+	InstancesToBufferWire();
+	if (Pallet != nullptr)
+	{
+		BufferWireVertexArray.Bind();
+		GL::DrawArraysInstanced(GL::DrawMode::Triangles, 0
+			, Pallet -> BufferWire.Count
+			, BufferWire.Count
 		);
 	}
 }

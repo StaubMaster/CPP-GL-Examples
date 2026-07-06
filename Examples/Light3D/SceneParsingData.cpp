@@ -116,7 +116,7 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 }
 
 #include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
-#include "NewPolyHedra/Type/ObjectData.hpp"
+//#include "NewPolyHedra/Type/ObjectData.hpp"
 #include "NewPolyHedra/PalletObjectData.hpp"
 
 void SceneParsingData::Parse_LightAmbient(const TextCommand & cmd)
@@ -143,7 +143,7 @@ void SceneParsingData::Parse_LightAmbient(const TextCommand & cmd)
 
 	SceneObject_LightAmbient * obj = new SceneObject_LightAmbient();
 	obj -> Light = light;
-	obj -> Data.Data().Trans = trans;
+	obj -> Data.Data.Trans = trans;
 	Context.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightDirectionD(const TextCommand & cmd)
@@ -170,7 +170,7 @@ void SceneParsingData::Parse_LightDirectionD(const TextCommand & cmd)
 
 	SceneObject_LightDirection * obj = new SceneObject_LightDirection();
 	obj -> Light = light;
-	obj -> Data.Data().Trans = trans;
+	obj -> Data.Data.Trans = trans;
 	Context.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightSpotT(const TextCommand & cmd)

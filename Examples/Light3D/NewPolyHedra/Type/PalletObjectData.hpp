@@ -2,25 +2,17 @@
 # define NEW_POLYHEDRA_TYPE_PALLET_OBJECT_DATA_HPP
 
 # include "../PalletObjectData.hpp"
-# include "ObjectData.hpp"
 
 template<
 	typename TypeData
 >
 struct NewPolyHedra_Type_PalletObjectData : public NewPolyHedra_PalletObjectData
 {
-	TypeData &	Data()
-	{
-		return ((NewPolyHedra_Type_ObjectData<TypeData> *)ObjectData) -> Data;
-	}
-	const TypeData &	Data() const
-	{
-		return ((const NewPolyHedra_Type_ObjectData<TypeData> *)ObjectData) -> Data;
-	}
+	TypeData	Data;
 
-	NewPolyHedra_Type_PalletObjectData()
+	const void *	DataVoid() const
 	{
-		ObjectData = new NewPolyHedra_Type_ObjectData<TypeData>();
+		return &Data;
 	}
 };
 

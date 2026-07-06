@@ -59,12 +59,21 @@ void NewPolyHedra_Manager::GraphicsDelete()
 		manager -> GraphicsDelete();
 	}
 }
-void NewPolyHedra_Manager::GraphicsDraw()
+void NewPolyHedra_Manager::GraphicsDrawFull()
 {
 	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
 	{
 		NewPolyHedra_ObjectManager * manager = ObjectManagers[i];
 		if (manager == nullptr) { continue; }
-		manager -> GraphicsDraw();
+		manager -> GraphicsDrawFull();
+	}
+}
+void NewPolyHedra_Manager::GraphicsDrawWire()
+{
+	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
+	{
+		NewPolyHedra_ObjectManager * manager = ObjectManagers[i];
+		if (manager == nullptr) { continue; }
+		manager -> GraphicsDrawWire();
 	}
 }

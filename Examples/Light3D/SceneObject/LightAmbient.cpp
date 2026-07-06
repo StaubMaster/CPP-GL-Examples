@@ -4,7 +4,7 @@
 //#include "PolyHedraUI/Object.hpp"
 
 #include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
-#include "NewPolyHedra/Type/ObjectData.hpp"
+//#include "NewPolyHedra/Type/ObjectData.hpp"
 #include "NewPolyHedra/PalletObjectData.hpp"
 #include "NewPolyHedra/PalletObjectManager.hpp"
 
@@ -19,12 +19,12 @@ SceneObject_LightAmbient::SceneObject_LightAmbient()
 
 Trans3D SceneObject_LightAmbient::GetTrans() const
 {
-	return Data.Data().Trans;
+	return Data.Data.Trans;
 	//return Data.Trans;
 }
 void SceneObject_LightAmbient::SetTrans(const Trans3D & trans)
 {
-	Data.Data().Trans = trans;
+	Data.Data.Trans = trans;
 	//Data.Trans = trans;
 }
 
@@ -51,5 +51,5 @@ void SceneObject_LightAmbient::DisplayObject()
 
 Ray3D_Hit SceneObject_LightAmbient::Hit(const RayF3 & ray) const
 {
-	return RayHitObject(ray, Data);
+	return RayHitObject1(ray, Data);
 }

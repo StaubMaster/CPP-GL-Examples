@@ -2,6 +2,7 @@
 # define NEW_POLYHEDRA_TYPE_OBJECT_MANAGER_HPP
 
 # include "ObjectManager.hpp"
+# include "PalletObjectData.hpp"
 # include "PalletObjectManager.hpp"
 
 template<
@@ -33,11 +34,11 @@ NewPolyHedra_Type_Data_ObjectManager<TypeData> * NewPolyHedra_Type_Data_ObjectMa
 template<
 	typename TypeData
 >
-NewPolyHedra_PalletObjectData * NewPalletObjectData(NewPolyHedra_Pallet * pallet)
+NewPolyHedra_Type_PalletObjectData<TypeData> * sNewPalletObjectData(NewPolyHedra_Pallet * pallet)
 {
 	if (NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current != nullptr)
 	{
-		return NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current -> NewPalletObjectData(pallet);
+		return (NewPolyHedra_Type_PalletObjectData<TypeData> *)NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current -> NewPalletObjectData(pallet);
 	}
 	return nullptr;
 }
@@ -54,10 +55,14 @@ struct NewPolyHedra_Type_ObjectManager : public NewPolyHedra_Type_Data_ObjectMan
 	{
 		return new NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData>();
 	}
-	NewPolyHedra_ObjectData *	NewObjectData() override
+	NewPolyHedra_PalletObjectData *	NewPalletObjectData() override
+	{
+		return new NewPolyHedra_Type_PalletObjectData<TypeData>();
+	}
+	/*NewPolyHedra_ObjectData *	NewObjectData() override
 	{
 		return new NewPolyHedra_Type_ObjectData<TypeData>();
-	}
+	}*/
 };
 
 #endif

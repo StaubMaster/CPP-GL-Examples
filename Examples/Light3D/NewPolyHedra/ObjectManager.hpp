@@ -25,17 +25,18 @@ struct NewPolyHedra_ObjectManager
 
 	Container::Binary<NewPolyHedra_PalletObjectData*>	PalletObjectDatas;
 
-	virtual NewPolyHedra_ObjectData *	NewObjectData() = 0;
-
-	NewPolyHedra_PalletObjectData *		NewPalletObjectData(NewPolyHedra_Pallet * pallet);
+	virtual NewPolyHedra_PalletObjectData *		NewPalletObjectData() = 0;
+	NewPolyHedra_PalletObjectData *				NewPalletObjectData(NewPolyHedra_Pallet * pallet);
 
 	void	UpdatePalletObjectDatas();
 
 
 
-	::Shader::Base	Shader; // Full and Wire
+	::Shader::Base	ShaderFull;
+	::Shader::Base	ShaderWire;
 
-	::Attribute::Layout *	BufferLayout = nullptr;
+	::Attribute::Layout *	BufferFullLayout = nullptr;
+	::Attribute::Layout *	BufferWireLayout = nullptr;
 	::Buffer::Uniform *		BufferUniform = nullptr;
 
 	void	InstancesClear();
@@ -43,7 +44,8 @@ struct NewPolyHedra_ObjectManager
 
 	void	GraphicsCreate();
 	void	GraphicsDelete();
-	void	GraphicsDraw();
+	void	GraphicsDrawFull();
+	void	GraphicsDrawWire();
 };
 
 #endif

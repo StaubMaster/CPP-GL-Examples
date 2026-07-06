@@ -1,26 +1,30 @@
 #include "PalletObjectData.hpp"
 #include "PalletObjectManager.hpp"
-#include "ObjectData.hpp"
 
 
 
 NewPolyHedra_PalletObjectData::~NewPolyHedra_PalletObjectData()
-{
-	delete ObjectData;
-}
+{ }
 NewPolyHedra_PalletObjectData::NewPolyHedra_PalletObjectData()
 	: Remove(false)
-	, Display(true)
+	, DisplayFull(true)
+	, DisplayWire(false)
 	, Manager(nullptr)
-	, ObjectData(nullptr)
 { }
 
 
 
 void NewPolyHedra_PalletObjectData::InstancePut() const
 {
-	if (Manager != nullptr && Display)
+	if (Manager != nullptr)
 	{
-		Manager -> InstancePut(ObjectData);
+		if (DisplayFull)
+		{
+			Manager -> InstancePutFull(DataVoid());
+		}
+		if (DisplayWire)
+		{
+			Manager -> InstancePutWire(DataVoid());
+		}
 	}
 }

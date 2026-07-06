@@ -8,15 +8,11 @@ class PolyHedra;
 
 struct NewPolyHedra_Pallet
 {
-	private:
-	PolyHedra *		Object;
-
 	public:
-	bool	Is(PolyHedra * object) const;
-
-	PolyHedra *		Get() const;
-
+	PolyHedra *		Object;
 	void	Put();
+
+
 
 	public:
 	~NewPolyHedra_Pallet();
@@ -25,9 +21,11 @@ struct NewPolyHedra_Pallet
 
 
 	public:
-	::Buffer::Array			Buffer;
+	::Buffer::Array			BufferFull;
+	::Buffer::Array			BufferWire;
+	::Attribute::Layout *	BufferFullLayout;
+	::Attribute::Layout *	BufferWireLayout;
 	::Texture::Array2D		Texture;
-	::Attribute::Layout * 	Layout;
 
 	public:
 	void	GraphicsCreate();

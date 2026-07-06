@@ -14,6 +14,9 @@ NewPolyHedra_PalletManager::~NewPolyHedra_PalletManager()
 	Current = nullptr;
 }
 NewPolyHedra_PalletManager::NewPolyHedra_PalletManager()
+	: Pallets()
+	, BufferFullLayout(nullptr)
+	, BufferWireLayout(nullptr)
 {
 	Current = this;
 }
@@ -27,7 +30,7 @@ NewPolyHedra_Pallet * NewPolyHedra_PalletManager::FindPallet(PolyHedra * polyhed
 	{
 		NewPolyHedra_Pallet * pallet = Pallets[i];
 		if (pallet == nullptr) { continue; }
-		if (pallet -> Is(polyhedra))
+		if (pallet -> Object == polyhedra)
 		{
 			return pallet;
 		}
@@ -38,7 +41,8 @@ NewPolyHedra_Pallet * NewPolyHedra_PalletManager::MakePallet(PolyHedra * polyhed
 {
 	if (polyhedra == nullptr) { return nullptr; }
 	NewPolyHedra_Pallet * pallet = new NewPolyHedra_Pallet(polyhedra);
-	pallet -> Layout = PalletBufferLayout;
+	pallet -> BufferFullLayout = BufferFullLayout;
+	pallet -> BufferWireLayout = BufferWireLayout;
 	pallet -> GraphicsCreate();
 	pallet -> Put();
 	Pallets.Insert(pallet);

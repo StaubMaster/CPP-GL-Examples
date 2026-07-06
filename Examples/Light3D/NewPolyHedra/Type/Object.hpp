@@ -4,9 +4,8 @@
 struct NewPolyHedra_Pallet;
 class PolyHedra;
 
-# include "ObjectData.hpp"
+# include "PalletObjectData.hpp"
 # include "NewPalletObjectData.hpp"
-# include "../PalletObjectData.hpp"
 # include "../NewPallet.hpp"
 
 template<
@@ -14,15 +13,26 @@ template<
 >
 struct NewPolyHedra_Type_Object
 {
-	NewPolyHedra_PalletObjectData *		PalletObjectData;
+	NewPolyHedra_Type_PalletObjectData<TypeData> *		PalletObjectData;
+
+	bool	Is() const { return (PalletObjectData != nullptr); }
+
 	TypeData &	Data()
 	{
-		return (((NewPolyHedra_Type_ObjectData<TypeData> *)(PalletObjectData -> ObjectData)) -> Data);
+		return PalletObjectData -> Data;
 	}
 	const TypeData &	Data() const
 	{
-		return (((const NewPolyHedra_Type_ObjectData<TypeData> *)(PalletObjectData -> ObjectData)) -> Data);
+		return PalletObjectData -> Data;
 	}
+
+	void	ShowFull() { PalletObjectData -> DisplayFull = true; }
+	void	HideFull() { PalletObjectData -> DisplayFull = false; }
+	bool	VisibleFull() const { return PalletObjectData -> DisplayFull; }
+	
+	void	ShowWire() { PalletObjectData -> DisplayWire = true; }
+	void	HideWire() { PalletObjectData -> DisplayWire = false; }
+	bool	VisibleWire() const { return PalletObjectData -> DisplayWire; }
 
 	~NewPolyHedra_Type_Object()
 	{
@@ -43,10 +53,10 @@ struct NewPolyHedra_Type_Object
 		: PalletObjectData(nullptr)
 	{ }
 	NewPolyHedra_Type_Object(NewPolyHedra_Pallet * pallet)
-		: PalletObjectData(NewPalletObjectData<TypeData>(pallet))
+		: PalletObjectData(sNewPalletObjectData<TypeData>(pallet))
 	{ }
 	NewPolyHedra_Type_Object(PolyHedra * polyhedra)
-		: PalletObjectData(NewPalletObjectData<TypeData>(NewPallet(polyhedra)))
+		: PalletObjectData(sNewPalletObjectData<TypeData>(NewPallet(polyhedra)))
 	{ }
 
 	NewPolyHedra_Type_Object(const NewPolyHedra_Type_Object & other) = delete;
@@ -60,12 +70,12 @@ struct NewPolyHedra_Type_Object
 	void	Create(NewPolyHedra_Pallet * pallet)
 	{
 		if (PalletObjectData != nullptr) { return; }
-		PalletObjectData = NewPalletObjectData<TypeData>(pallet);
+		PalletObjectData = sNewPalletObjectData<TypeData>(pallet);
 	}
 	void	Create(PolyHedra * polyhedra)
 	{
 		if (PalletObjectData != nullptr) { return; }
-		PalletObjectData = NewPalletObjectData<TypeData>(NewPallet(polyhedra));
+		PalletObjectData = sNewPalletObjectData<TypeData>(NewPallet(polyhedra));
 	}  
 };
 

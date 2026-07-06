@@ -11,28 +11,37 @@ struct NewPolyHedra_ObjectData;
 
 struct NewPolyHedra_PalletObjectManager
 {
+	public:
 	NewPolyHedra_Pallet *	Pallet;
 
+	public:
 	NewPolyHedra_PalletObjectManager();
 
 
 
+	public:
 	virtual void	InstancesClear() = 0;
-	virtual void	InstancePut(const NewPolyHedra_ObjectData & data) = 0;
-	virtual void	InstancePut(const NewPolyHedra_ObjectData * data) = 0;
-	virtual void	InstancesToBuffer() = 0;
+	virtual void	InstancePutFull(const void * data) = 0;
+	virtual void	InstancePutWire(const void * data) = 0;
+	virtual void	InstancesToBufferFull() = 0;
+	virtual void	InstancesToBufferWire() = 0;
 
 
 
-	::VertexArray			BufferVertexArray;
-	::Buffer::Array			Buffer;
+	public:
+	::VertexArray			BufferFullVertexArray;
+	::VertexArray			BufferWireVertexArray;
+	::Buffer::Array			BufferFull;
+	::Buffer::Array			BufferWire;
 	::Buffer::Uniform *		BufferUniform = nullptr;
-	
+
+	public:
 	void	VertexBufferInit();
 
 	void	GraphicsCreate();
 	void	GraphicsDelete();
-	void	GraphicsDraw();
+	void	GraphicsDrawFull();
+	void	GraphicsDrawWire();
 };
 
 #endif

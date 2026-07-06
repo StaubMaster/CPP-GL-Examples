@@ -2,7 +2,7 @@
 # define NEW_POLYHEDRA_TYPE_PALLET_OBJECT_MANAGER_HPP
 
 # include "PalletObjectManager.hpp"
-# include "ObjectData.hpp"
+//# include "ObjectData.hpp"
 
 template<
 	typename TypeData,
@@ -10,30 +10,33 @@ template<
 >
 struct NewPolyHedra_Type_PalletObjectManager : public NewPolyHedra_PalletObjectManager
 {
-	Container::Binary<TypeInstanceData>		InstanceData;
+	private:
+	Container::Binary<TypeInstanceData>		InstanceDataFull;
+	Container::Binary<TypeInstanceData>		InstanceDataWire;
 
-	// InstanceData can not be done with Poitners
-	// so it needs to be specified with Template
-
-	// accumulate InstanceData using BlockList
-	// InstancesDone() to turn BlockList into Array
-
+	public:
 	void	InstancesClear() override
 	{
-		InstanceData.Clear();
+		InstanceDataFull.Clear();
+		InstanceDataWire.Clear();
 	}
-	void	InstancePut(const NewPolyHedra_ObjectData & data) override
+	void	InstancePutFull(const void * data) override
 	{
-		InstancePut(&data);
+		InstanceDataFull.Insert(((const TypeData *)data) -> ToData());
 	}
-	void	InstancePut(const NewPolyHedra_ObjectData * data) override
+	void	InstancePutWire(const void * data) override
 	{
-		InstanceData.Insert(((const NewPolyHedra_Type_ObjectData<TypeData> *)data) -> Data.ToData());
+		InstanceDataWire.Insert(((const TypeData *)data) -> ToData());
 	}
-	void	InstancesToBuffer() override
+	void	InstancesToBufferFull() override
 	{
-		Buffer.Update();
-		Buffer.DataFull(InstanceData.ToVoid());
+		BufferFull.Update();
+		BufferFull.DataFull(InstanceDataFull.ToVoid());
+	}
+	void	InstancesToBufferWire() override
+	{
+		BufferWire.Update();
+		BufferWire.DataFull(InstanceDataWire.ToVoid());
 	}
 };
 

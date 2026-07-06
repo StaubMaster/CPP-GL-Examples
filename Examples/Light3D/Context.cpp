@@ -457,39 +457,39 @@ void Light3DContext::ChangeMedia()
 		NewPolyHedra_PalletBufferLayout.Position.Change(0);
 		NewPolyHedra_PalletBufferLayout.Normal.Change(1);
 		NewPolyHedra_PalletBufferLayout.Texture.Change(2);
-		NewPolyHedra_Manager.PalletManager.PalletBufferLayout = &NewPolyHedra_PalletBufferLayout;
+		NewPolyHedra_Manager.PalletManager.BufferFullLayout = &NewPolyHedra_PalletBufferLayout;
 	}
 	{
 		{
-			ObjectManagerBasic.Shader.Change({
+			ObjectManagerBasic.ShaderFull.Change({
 				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
 				MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
 			});
-			ObjectManagerBasic.Shader.UniformLayout = &ObjectManagerBasic_ShaderLayout;
-			ObjectManagerBasic_ShaderLayout.Shader = &ObjectManagerBasic.Shader;
+			ObjectManagerBasic.ShaderFull.UniformLayout = &ObjectManagerBasic_ShaderLayout;
+			ObjectManagerBasic_ShaderLayout.Shader = &ObjectManagerBasic.ShaderFull;
 		}
 		{
 			ObjectManagerBasic_BufferLayout.Trans.Change(3);
 			ObjectManagerBasic_BufferLayout.Normal.Change(7);
-			ObjectManagerBasic.BufferLayout = &ObjectManagerBasic_BufferLayout;
+			ObjectManagerBasic.BufferFullLayout = &ObjectManagerBasic_BufferLayout;
 		}
 		ObjectManagerBasic.BufferUniform = &LightBuffer;
 	}
 	{
 		{
-			ObjectManagerTSC.Shader.Change({
+			ObjectManagerTSC.ShaderFull.Change({
 				MediaDirectory.File("Shaders/PolyHedra/UserInterface.vert"),
 				MediaDirectory.File("Shaders/PolyHedra/TexturedNoLight.frag"),
 			});
-			ObjectManagerTSC.Shader.UniformLayout = &ObjectManagerTSC_ShaderLayout;
-			ObjectManagerTSC_ShaderLayout.Shader = &ObjectManagerTSC.Shader;
+			ObjectManagerTSC.ShaderFull.UniformLayout = &ObjectManagerTSC_ShaderLayout;
+			ObjectManagerTSC_ShaderLayout.Shader = &ObjectManagerTSC.ShaderFull;
 		}
 		{
 			ObjectManagerTSC_BufferLayout.Trans.Change(3);
 			ObjectManagerTSC_BufferLayout.Normal.Change(7);
 			ObjectManagerTSC_BufferLayout.Scale.Change(11);
 			ObjectManagerTSC_BufferLayout.Color.Change(12);
-			ObjectManagerTSC.BufferLayout = &ObjectManagerTSC_BufferLayout;
+			ObjectManagerTSC.BufferFullLayout = &ObjectManagerTSC_BufferLayout;
 		}
 	}
 
@@ -680,14 +680,13 @@ void Light3DContext::Draw()
 	PolyHedraManager.DrawFull();
 	PolyHedraManager.DrawWire();
 
-	//NewPolyHedra_Manager.GraphicsDraw();
-	ObjectManagerBasic.GraphicsDraw();
+	ObjectManagerBasic.GraphicsDrawFull();
+	ObjectManagerBasic.GraphicsDrawWire();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 
-	//PolyHedraUIManager.DrawFull();
-	//PolyHedraUIManager.DrawWire();
-	ObjectManagerTSC.GraphicsDraw();
+	ObjectManagerTSC.GraphicsDrawFull();
+	ObjectManagerTSC.GraphicsDrawWire();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
