@@ -12,6 +12,7 @@ struct ObjectData
 	Trans3D		Trans;
 	float		Scale;
 	ColorF4		Color;
+	ObjectData();
 	InstanceData	ToData() const;
 };
 };
