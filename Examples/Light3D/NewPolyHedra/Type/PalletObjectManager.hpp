@@ -1,8 +1,8 @@
 #ifndef  NEW_POLYHEDRA_TYPE_PALLET_OBJECT_MANAGER_HPP
 # define NEW_POLYHEDRA_TYPE_PALLET_OBJECT_MANAGER_HPP
 
-# include "PalletObjectManager.hpp"
-//# include "ObjectData.hpp"
+# include "../PalletObjectManager.hpp"
+# include "Miscellaneous/Container/Binary.hpp"
 
 template<
 	typename TypeData,

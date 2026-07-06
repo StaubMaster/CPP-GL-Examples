@@ -46,6 +46,7 @@ void NewPolyHedra_PalletObjectManager::VertexBufferInit()
 			{
 				Pallet -> BufferWireLayout -> Bind();
 			}
+			Pallet -> BufferWireElem.Bind();
 		}
 	}
 	VertexArray::BindNone();
@@ -84,8 +85,9 @@ void NewPolyHedra_PalletObjectManager::GraphicsDrawWire()
 	if (Pallet != nullptr)
 	{
 		BufferWireVertexArray.Bind();
-		GL::DrawArraysInstanced(GL::DrawMode::Triangles, 0
-			, Pallet -> BufferWire.Count
+		GL::DrawElementsInstanced(GL::DrawMode::Lines
+			, Pallet -> BufferWireElem.Count
+			, Pallet -> BufferWireElem.IndexType
 			, BufferWire.Count
 		);
 	}

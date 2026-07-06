@@ -409,7 +409,6 @@ Light3DContext::Light3DContext()
 	, LightShaderLayout()
 {
 	PolyHedraManager.MakeCurrent();
-	//PolyHedraUIManager.MakeCurrent();
 
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerBasic);
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerTSC);
@@ -421,10 +420,10 @@ Light3DContext::Light3DContext()
 		&UIManager.TextManager.ShaderLayout,
 		&UIManager.GraphManager.ShaderLayout,
 		&LightShaderLayout,
-		//&PolyHedraUIManager.ShaderLayoutFullDefault,
-		//&PolyHedraUIManager.ShaderLayoutWireDefault,
-		&ObjectManagerBasic_ShaderLayout,
-		&ObjectManagerTSC_ShaderLayout,
+		&ObjectManagerBasic_ShaderFullLayout,
+		&ObjectManagerBasic_ShaderWireLayout,
+		&ObjectManagerTSC_ShaderFullLayout,
+		&ObjectManagerTSC_ShaderWireLayout,
 	});
 	MultiformLayout.Find(layouts);
 }
@@ -450,46 +449,75 @@ void Light3DContext::ChangeMedia()
 
 	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 
-	//PolyHedraUIManager.ChangeMedia(MediaDirectory);
-
 	// NewPolyHedra
 	{
-		NewPolyHedra_PalletBufferLayout.Position.Change(0);
-		NewPolyHedra_PalletBufferLayout.Normal.Change(1);
-		NewPolyHedra_PalletBufferLayout.Texture.Change(2);
-		NewPolyHedra_Manager.PalletManager.BufferFullLayout = &NewPolyHedra_PalletBufferLayout;
+		NewPolyHedra_Pallet_BufferFullLayout.Position.Change(0);
+		NewPolyHedra_Pallet_BufferFullLayout.Normal.Change(1);
+		NewPolyHedra_Pallet_BufferFullLayout.Texture.Change(2);
+		NewPolyHedra_Manager.PalletManager.BufferFullLayout = &NewPolyHedra_Pallet_BufferFullLayout;
 	}
+	{
+		NewPolyHedra_Pallet_BufferWireLayout.Pos.Change(0);
+		NewPolyHedra_Pallet_BufferWireLayout.Col.Change(1);
+		NewPolyHedra_Manager.PalletManager.BufferWireLayout = &NewPolyHedra_Pallet_BufferWireLayout;
+	}
+
+	// Object Manager Basic
 	{
 		{
 			ObjectManagerBasic.ShaderFull.Change({
 				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
 				MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
 			});
-			ObjectManagerBasic.ShaderFull.UniformLayout = &ObjectManagerBasic_ShaderLayout;
-			ObjectManagerBasic_ShaderLayout.Shader = &ObjectManagerBasic.ShaderFull;
+			ObjectManagerBasic.ShaderFull.UniformLayout = &ObjectManagerBasic_ShaderFullLayout;
+			ObjectManagerBasic_ShaderFullLayout.Shader = &ObjectManagerBasic.ShaderFull;
 		}
 		{
-			ObjectManagerBasic_BufferLayout.Trans.Change(3);
-			ObjectManagerBasic_BufferLayout.Normal.Change(7);
-			ObjectManagerBasic.BufferFullLayout = &ObjectManagerBasic_BufferLayout;
+			ObjectManagerBasic.ShaderWire.Change({
+				MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
+				MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
+			});
+			ObjectManagerBasic.ShaderWire.UniformLayout = &ObjectManagerBasic_ShaderWireLayout;
+			ObjectManagerBasic_ShaderWireLayout.Shader = &ObjectManagerBasic.ShaderWire;
+		}
+		{
+			ObjectManagerBasic_BufferFullLayout.Trans.Change(3);
+			ObjectManagerBasic_BufferFullLayout.Normal.Change(7);
+			ObjectManagerBasic.BufferFullLayout = &ObjectManagerBasic_BufferFullLayout;
+		}
+		{
+			ObjectManagerBasic_BufferWireLayout.Trans.Change(3);
+			ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
+			ObjectManagerBasic.BufferWireLayout = &ObjectManagerBasic_BufferWireLayout;
 		}
 		ObjectManagerBasic.BufferUniform = &LightBuffer;
 	}
+
+	// Object Manager TSC
 	{
 		{
 			ObjectManagerTSC.ShaderFull.Change({
 				MediaDirectory.File("Shaders/PolyHedra/UserInterface.vert"),
 				MediaDirectory.File("Shaders/PolyHedra/TexturedNoLight.frag"),
 			});
-			ObjectManagerTSC.ShaderFull.UniformLayout = &ObjectManagerTSC_ShaderLayout;
-			ObjectManagerTSC_ShaderLayout.Shader = &ObjectManagerTSC.ShaderFull;
+			ObjectManagerTSC.ShaderFull.UniformLayout = &ObjectManagerTSC_ShaderFullLayout;
+			ObjectManagerTSC_ShaderFullLayout.Shader = &ObjectManagerTSC.ShaderFull;
 		}
 		{
-			ObjectManagerTSC_BufferLayout.Trans.Change(3);
-			ObjectManagerTSC_BufferLayout.Normal.Change(7);
-			ObjectManagerTSC_BufferLayout.Scale.Change(11);
-			ObjectManagerTSC_BufferLayout.Color.Change(12);
-			ObjectManagerTSC.BufferFullLayout = &ObjectManagerTSC_BufferLayout;
+			// no Shader
+			ObjectManagerTSC.ShaderWire.UniformLayout = &ObjectManagerTSC_ShaderWireLayout;
+			ObjectManagerTSC_ShaderWireLayout.Shader = &ObjectManagerTSC.ShaderWire;
+		}
+		{
+			ObjectManagerTSC_BufferFullLayout.Trans.Change(3);
+			ObjectManagerTSC_BufferFullLayout.Normal.Change(7);
+			ObjectManagerTSC_BufferFullLayout.Scale.Change(11);
+			ObjectManagerTSC_BufferFullLayout.Color.Change(12);
+			ObjectManagerTSC.BufferFullLayout = &ObjectManagerTSC_BufferFullLayout;
+		}
+		{
+			// no Shader
+			ObjectManagerTSC.BufferWireLayout = &ObjectManagerTSC_BufferWireLayout;
 		}
 	}
 
@@ -737,7 +765,7 @@ void Light3DContext::ViewFunc()
 	UserChange_Change();
 	Objects_Change();
 
-	UserChange_Update();	
+	UserChange_Update();
 	Objects_Update();
 }
 
@@ -766,11 +794,21 @@ void Light3DContext::Frame(FrameTime frame_time)
 
 	{
 		Basic3D::Object object(TestPolyHedraSphere);
+		object.ShowFull();
+	}
+	{
+		Basic3D::Object object(TestPolyHedraSphere);
+		object.Data().Trans.Position.Y = 20.0f;
+		object.HideFull();
+		object.ShowWire();
 	}
 	{
 		TransScaleColor3D::Object object(TestPolyHedraSphere);
+		object.Data().Trans.Position.Y = 20.0f;
 		object.Data().Scale = 0.5f;
 		object.Data().Color = ColorF4(1, 0, 1);
+		object.HideFull();
+		object.ShowWire();
 	}
 
 	Draw();

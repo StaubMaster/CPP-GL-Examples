@@ -1,7 +1,7 @@
 #ifndef  NEW_POLYHEDRA_TYPE_OBJECT_MANAGER_HPP
 # define NEW_POLYHEDRA_TYPE_OBJECT_MANAGER_HPP
 
-# include "ObjectManager.hpp"
+# include "../ObjectManager.hpp"
 # include "PalletObjectData.hpp"
 # include "PalletObjectManager.hpp"
 

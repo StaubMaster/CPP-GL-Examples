@@ -2,6 +2,7 @@
 # define NEW_POLYHEDRA_PALLET_HPP
 
 # include "Graphics/Buffer/Array.hpp"
+# include "Graphics/Buffer/Element.hpp"
 # include "Graphics/Texture/Array2D.hpp"
 
 class PolyHedra;
@@ -23,6 +24,7 @@ struct NewPolyHedra_Pallet
 	public:
 	::Buffer::Array			BufferFull;
 	::Buffer::Array			BufferWire;
+	::Buffer::Element		BufferWireElem;
 	::Attribute::Layout *	BufferFullLayout;
 	::Attribute::Layout *	BufferWireLayout;
 	::Texture::Array2D		Texture;

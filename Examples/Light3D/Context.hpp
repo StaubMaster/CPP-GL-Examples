@@ -176,15 +176,20 @@ void	PolyHedraPalletUpdate();
 
 
 NewPolyHedra_Manager			NewPolyHedra_Manager;
-::PolyHedraFull::Main::Layout	NewPolyHedra_PalletBufferLayout;
+::PolyHedraFull::Main::Layout	NewPolyHedra_Pallet_BufferFullLayout;
+::PolyHedraWire::Main::Layout	NewPolyHedra_Pallet_BufferWireLayout;
 
-Basic3D::ShaderLayout		ObjectManagerBasic_ShaderLayout;
-Basic3D::BufferLayout		ObjectManagerBasic_BufferLayout;
+Basic3D::ShaderFullLayout	ObjectManagerBasic_ShaderFullLayout;
+Basic3D::ShaderWireLayout	ObjectManagerBasic_ShaderWireLayout;
+Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
+Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
 Basic3D::ObjectManager		ObjectManagerBasic;
 
-TransScaleColor3D::ShaderLayout		ObjectManagerTSC_ShaderLayout;
-TransScaleColor3D::BufferLayout		ObjectManagerTSC_BufferLayout;
-TransScaleColor3D::ObjectManager	ObjectManagerTSC;
+TransScaleColor3D::ShaderFullLayout		ObjectManagerTSC_ShaderFullLayout;
+TransScaleColor3D::ShaderWireLayout		ObjectManagerTSC_ShaderWireLayout;
+TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferFullLayout;
+TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferWireLayout;
+TransScaleColor3D::ObjectManager		ObjectManagerTSC;
 
 
 

@@ -8,6 +8,10 @@ class PolyHedra;
 # include "NewPalletObjectData.hpp"
 # include "../NewPallet.hpp"
 
+// here because it works
+// try to remove
+# include "ObjectManager.hpp"
+
 template<
 	typename TypeData
 >
@@ -76,7 +80,7 @@ struct NewPolyHedra_Type_Object
 	{
 		if (PalletObjectData != nullptr) { return; }
 		PalletObjectData = sNewPalletObjectData<TypeData>(NewPallet(polyhedra));
-	}  
+	}
 };
 
 #endif
