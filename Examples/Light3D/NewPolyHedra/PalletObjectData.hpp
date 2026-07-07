@@ -3,6 +3,7 @@
 
 struct NewPolyHedra_PalletObjectManager;
 
+// rename to just "PalletObject"
 struct NewPolyHedra_PalletObjectData
 {
 	bool	Remove;

@@ -5,7 +5,20 @@
 # include "Control/Label.hpp"
 # include "PropertyControl/Trans3D.hpp"
 
-struct PolyHedraObjectData;
+template<
+	typename TypeData
+>
+struct NewPolyHedra_Type_PalletObjectData;
+
+namespace Basic3D
+{
+struct ObjectData;
+typedef NewPolyHedra_Type_PalletObjectData<
+	Basic3D::ObjectData
+> PalletObjectData;
+};
+
+//struct PolyHedraObjectData;
 struct SceneObject_PolyHedraObject;
 
 namespace UI
@@ -25,7 +38,8 @@ struct PolyHedraObject : public GroupBox
 	~PolyHedraObject();
 	PolyHedraObject();
 
-	::PolyHedraObjectData * Object;
+	//::PolyHedraObjectData * Object;
+	Basic3D::PalletObjectData * Object;
 	void	Change(::SceneObject_PolyHedraObject * obj);
 	void	Update();
 };

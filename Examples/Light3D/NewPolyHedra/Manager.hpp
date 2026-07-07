@@ -1,14 +1,14 @@
 #ifndef  NEW_POLYHEDRA_MANAGER_HPP
 # define NEW_POLYHEDRA_MANAGER_HPP
 
-# include "PalletManager.hpp"
 # include "Miscellaneous/Container/Binary.hpp"
 
+struct NewPolyHedra_PalletManager;
 struct NewPolyHedra_ObjectManager;
 
 struct NewPolyHedra_Manager
 {
-	NewPolyHedra_PalletManager	PalletManager;
+	NewPolyHedra_PalletManager *	PalletManager;
 
 	Container::Binary<NewPolyHedra_ObjectManager*>	ObjectManagers;
 

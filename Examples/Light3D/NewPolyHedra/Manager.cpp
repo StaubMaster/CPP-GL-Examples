@@ -1,8 +1,6 @@
 #include "Manager.hpp"
-#include "Pallet.hpp"
+#include "PalletManager.hpp"
 #include "ObjectManager.hpp"
-
-#include "Graphics/Buffer/VertexArray.hpp"
 
 
 
@@ -41,7 +39,10 @@ void NewPolyHedra_Manager::InstancesMake()
 
 void NewPolyHedra_Manager::GraphicsCreate()
 {
-	PalletManager.GraphicsCreate();
+	if (PalletManager != nullptr)
+	{
+		PalletManager -> GraphicsCreate();
+	}
 	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
 	{
 		NewPolyHedra_ObjectManager * manager = ObjectManagers[i];
@@ -51,7 +52,10 @@ void NewPolyHedra_Manager::GraphicsCreate()
 }
 void NewPolyHedra_Manager::GraphicsDelete()
 {
-	PalletManager.GraphicsDelete();
+	if (PalletManager != nullptr)
+	{
+		PalletManager -> GraphicsDelete();
+	}
 	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
 	{
 		NewPolyHedra_ObjectManager * manager = ObjectManagers[i];

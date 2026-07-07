@@ -4,7 +4,7 @@
 # include "FileInfo.hpp"
 # include "FileParsing/Variables/Float.hpp"
 
-# include "PolyHedra/Manager.hpp"
+//# include "PolyHedra/Manager.hpp"
 
 # include "Miscellaneous/Container/Binary.hpp"
 # include "Miscellaneous/Function/Pointer.hpp"
@@ -13,6 +13,8 @@
 struct Light3DContext;
 
 class TextCommand; // TextCommandArguments
+
+struct NewPolyHedra_PalletObjectManager;
 
 struct SceneParsingData
 {
@@ -30,8 +32,12 @@ struct SceneParsingData
 
 	Container::Binary<ParsingCommand*>	Commands;
 
-	PolyHedraPalletManager *					MissingPolyHedra;
-	Container::Binary<PolyHedraPalletManager*>	PolyHedras;
+	//PolyHedraPalletManager *						MissingPolyHedra;
+	//Container::Binary<PolyHedraPalletManager*>	PolyHedras;
+
+	// these should be Pallets ?
+	NewPolyHedra_PalletObjectManager *						MissingPolyHedra;
+	Container::Binary<NewPolyHedra_PalletObjectManager*>	PolyHedras;
 
 	ParsingVariable::FloatMemory	VariableFloats;
 

@@ -45,6 +45,10 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 #include "PolyHedra/ObjectData.hpp"
 #include "PolyHedra/PalletManager.hpp"
 #include "PolyHedra/PolyHedra.hpp"
+
+#include "NewPolyHedra/PalletObjectManager.hpp"
+#include "NewPolyHedra/Pallet.hpp"
+
 #include "SceneObject/PolyHedraObject.hpp"
 #include "General/UnitToString.hpp"
 #include <sstream>
@@ -53,7 +57,7 @@ void UI::Control::PolyHedraObject::Update()
 {
 	if (Object != nullptr)
 	{
-		const PolyHedra & polyhedra = *(Object -> PalletManager -> Pallet);
+		const PolyHedra & polyhedra = *(Object -> Manager -> Pallet -> Object);
 		std::stringstream ss;
 		ss.str(std::string()); ss << "Name:" << (polyhedra.Name); PalletName.SetText(ss.str());
 		ss.str(std::string()); ss << "File:" << (polyhedra.File.Path); PalletFile.SetText(ss.str());
@@ -78,7 +82,7 @@ void UI::Control::PolyHedraObject::Change(::SceneObject_PolyHedraObject * obj)
 	if (Object != nullptr)
 	{
 		Show();
-		Trans.Change(&(Object -> Trans));
+		Trans.Change(&(Object -> Data.Trans));
 	}
 	else
 	{

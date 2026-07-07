@@ -29,7 +29,8 @@ SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & conte
 	, Context(context)
 	, PolyHedras()
 {
-	MissingPolyHedra = Context.PolyHedraManager.MakePallet(PolyHedraGenerate::RegularHexaHedron(1.0f));
+	//MissingPolyHedra = Context.PolyHedraManager.MakePallet(PolyHedraGenerate::RegularHexaHedron(1.0f));
+	MissingPolyHedra = Context.ObjectManagerBasic.FindMakePalletObjectManager(NewPallet(PolyHedraGenerate::RegularHexaHedron(1.0f)));
 
 	/* Problem
 		some commands like belt have variants
@@ -82,7 +83,8 @@ void SceneParsingData::Parse_PolyHedra(const TextCommand & cmd)
 	if (!file.Exists()) { std::cout << cmd.Name() << ": " << "Bad Skin File" << "\n"; return; }
 	PolyHedra * polyhedra = PolyHedra::Load(file);
 	//polyhedra -> UseCornerNormals = true;
-	PolyHedraPalletManager * manager = Context.PolyHedraManager.MakePallet(polyhedra);
+	//PolyHedraPalletManager * manager = Context.PolyHedraManager.MakePallet(polyhedra);
+	NewPolyHedra_PalletObjectManager * manager = Context.ObjectManagerBasic.FindMakePalletObjectManager(NewPallet(polyhedra));
 	PolyHedras.Insert(manager);
 }
 void SceneParsingData::Parse_Place(const TextCommand & cmd)
@@ -90,10 +92,10 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 	if (!(cmd.Count() == 7)) { throw InvalidCommandArgumentCount(cmd, "n == 7"); }
 
 	std::string name = cmd.ToString(0);
-	PolyHedraPalletManager * polyhedra = MissingPolyHedra;
+	NewPolyHedra_PalletObjectManager * polyhedra = MissingPolyHedra;
 	for (unsigned int i = 0; i < PolyHedras.Count(); i++)
 	{
-		if (PolyHedras[i] -> Pallet -> Name == name)
+		if (PolyHedras[i] -> Pallet -> Object -> Name == name)
 		{
 			polyhedra = PolyHedras[i];
 		}
@@ -199,6 +201,6 @@ void SceneParsingData::Parse_LightSpotT(const TextCommand & cmd)
 
 	SceneObject_LightSpot * obj = new SceneObject_LightSpot();
 	obj -> Light = light;
-	obj -> Data.Trans = trans;
+	obj -> Data.Data.Trans = trans;
 	Context.Objects.Insert(obj);
 }

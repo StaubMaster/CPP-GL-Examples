@@ -83,12 +83,11 @@ struct MultiformLayout : public Multiform::Layout
 
 // NewPolyHedra
 #include "NewPolyHedra/Manager.hpp"
-//#include "NewPolyHedra/ObjectData.hpp"
 #include "NewPolyHedra/ObjectManager.hpp"
 #include "NewPolyHedra/Pallet.hpp"
+#include "NewPolyHedra/PalletManager.hpp"
 #include "NewPolyHedra/PalletObjectData.hpp"
 #include "NewPolyHedra/PalletObjectManager.hpp"
-//#include "NewPolyHedra/Type/ObjectData.hpp"
 #include "NewPolyHedra/Type/ObjectManager.hpp"
 #include "NewPolyHedra/Type/PalletObjectManager.hpp"
 #include "NewPolyHedra/Type/Object.hpp"
@@ -109,7 +108,7 @@ Matrix4x4	ViewMatrix;
 
 ::MultiformLayout	MultiformLayout;
 
-::PolyHedraManager	PolyHedraManager;
+//::PolyHedraManager	PolyHedraManager;
 
 UI::Manager			UIManager;
 SceneObjectUI		UISceneObject;
@@ -175,9 +174,11 @@ void	PolyHedraPalletUpdate();
 
 
 
-NewPolyHedra_Manager			NewPolyHedra_Manager;
-::PolyHedraFull::Main::Layout	NewPolyHedra_Pallet_BufferFullLayout;
-::PolyHedraWire::Main::Layout	NewPolyHedra_Pallet_BufferWireLayout;
+::NewPolyHedra_Manager			NewPolyHedra_Manager;
+
+::PolyHedraFull::Main::Layout	PalletManager_BufferFullLayout;
+::PolyHedraWire::Main::Layout	PalletManager_BufferWireLayout;
+NewPolyHedra_PalletManager		PalletManager;
 
 Basic3D::ShaderFullLayout	ObjectManagerBasic_ShaderFullLayout;
 Basic3D::ShaderWireLayout	ObjectManagerBasic_ShaderWireLayout;

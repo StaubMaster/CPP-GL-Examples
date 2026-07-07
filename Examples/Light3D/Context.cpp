@@ -157,7 +157,8 @@ static PolyHedra * Torus = nullptr;
 void Light3DContext::SceneInitCubes()
 {
 	Cube = PolyHedraGenerate::RegularHexaHedron();
-	CenterCube.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
+	//CenterCube.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
+	CenterCube.Data.Manager = ObjectManagerBasic.FindMakePalletObjectManager(PalletManager.FindMakePallet(Cube));
 	Objects.Insert(&CenterCube);
 
 	/* Random
@@ -200,8 +201,10 @@ void Light3DContext::SceneInitCubes()
 
 	//Sphere -> UseCornerNormals = true;
 	Torus -> UseCornerNormals = true;
-	PolyHedraPalletManager * sphere_manager = PolyHedraManager.MakePallet(Sphere);
-	PolyHedraPalletManager * torus_manager = PolyHedraManager.MakePallet(Torus);
+	//PolyHedraPalletManager * sphere_manager = PolyHedraManager.MakePallet(Sphere);
+	//PolyHedraPalletManager * torus_manager = PolyHedraManager.MakePallet(Torus);
+	NewPolyHedra_PalletObjectManager * sphere_manager = ObjectManagerBasic.FindMakePalletObjectManager(PalletManager.FindMakePallet(Sphere));
+	NewPolyHedra_PalletObjectManager * torus_manager = ObjectManagerBasic.FindMakePalletObjectManager(PalletManager.FindMakePallet(Torus));
 
 	VectorF3 pos(0, 64, 0);
 	Objects.Insert(new SceneObject_PolyHedraObject(sphere_manager, Trans3D(pos)));
@@ -230,11 +233,8 @@ void Light3DContext::SceneInitLights()
 
 	// Assign Object PolyHedras
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
-	PolyHedraPalletManager * stage_light = PolyHedraManager.MakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
-	//PolyHedraPalletManager * Cube_manager = PolyHedraManager.MakePallet(Cube);
-	//PolyHedraUIPalletManager * Cube_UI_manager = PolyHedraUIManager.PlacePallet(Cube);
-	NewPolyHedra_Pallet * pallet = NewPolyHedra_Manager.PalletManager.FindMakePallet(Cube);
-	NewPolyHedra_PalletObjectManager * Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(pallet);
+	NewPolyHedra_PalletObjectManager * stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(PalletManager.FindMakePallet(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt"))));
+	NewPolyHedra_PalletObjectManager * Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(PalletManager.FindMakePallet(Cube));
 
 	/* Light Meta Indicators
 		LightBuld: LightPoint
@@ -282,7 +282,7 @@ void Light3DContext::SceneInitLights()
 			SceneObject_LightSpot * obj = dynamic_cast<SceneObject_LightSpot*>(scene_obj);
 			if (obj != nullptr)
 			{
-				obj -> Data.PalletManager = stage_light;
+				obj -> Data.Manager = stage_light_manager;
 			}
 		}
 	}
@@ -358,10 +358,17 @@ void Light3DContext::PolyHedraPalletChangeFunc(ClickArgs args)
 		DoPolyHedraPalletChange = true;
 		{
 			UIPolyHedraPalletList.Clear();
-			for (unsigned int i = 0; i < PolyHedraManager.InstanceManagers.Count(); i++)
+			/*for (unsigned int i = 0; i < PolyHedraManager.InstanceManagers.Count(); i++)
 			{
 				PolyHedraPalletManager * pallet_manager = PolyHedraManager.InstanceManagers[i];
 				UI::Control::List::Item * item = new UI::Control::List::Item(UIPolyHedraPalletList, pallet_manager -> Pallet -> File.Path.ToString(), pallet_manager);
+				UIPolyHedraPalletList.Items.Insert(item);
+				UIPolyHedraPalletList.ChildInsert(item);
+			}*/
+			for (unsigned int i = 0; i < PalletManager.Pallets.Count(); i++)
+			{
+				NewPolyHedra_Pallet * pallet = PalletManager.Pallets[i];
+				UI::Control::List::Item * item = new UI::Control::List::Item(UIPolyHedraPalletList, pallet -> Object -> File.Path.ToString(), pallet);
 				UIPolyHedraPalletList.Items.Insert(item);
 				UIPolyHedraPalletList.ChildInsert(item);
 			}
@@ -382,7 +389,8 @@ void Light3DContext::PolyHedraPalletUpdate()
 			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(Object_Selected);
 			if (UIPolyHedraPalletList.Object != nullptr && obj != nullptr)
 			{
-				obj -> Data.PalletManager = (PolyHedraPalletManager*)UIPolyHedraPalletList.Object;
+				//obj -> Data.Manager = (NewPolyHedra_PalletObjectManager*)UIPolyHedraPalletList.Object;
+				obj -> Data.Manager = ObjectManagerBasic.FindMakePalletObjectManager((NewPolyHedra_Pallet*)UIPolyHedraPalletList.Object);
 			}
 			DoPolyHedraPalletChange = false;
 		}
@@ -395,7 +403,7 @@ Light3DContext::~Light3DContext()
 { }
 Light3DContext::Light3DContext()
 	: ContextBase()
-	, PolyHedraManager()
+	//, PolyHedraManager()
 	, UIManager()
 	, UISceneObject()
 	//, PolyHedraUIManager()
@@ -408,14 +416,15 @@ Light3DContext::Light3DContext()
 	, LightShader()
 	, LightShaderLayout()
 {
-	PolyHedraManager.MakeCurrent();
+	//PolyHedraManager.MakeCurrent();
 
+	NewPolyHedra_Manager.PalletManager = &PalletManager;
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerBasic);
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerTSC);
 
 	Container::Array<Uniform::Layout*> layouts({
-		&PolyHedraManager.ShaderLayoutFullDefault,
-		&PolyHedraManager.ShaderLayoutWireDefault,
+		//&PolyHedraManager.ShaderLayoutFullDefault,
+		//&PolyHedraManager.ShaderLayoutWireDefault,
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 		&UIManager.GraphManager.ShaderLayout,
@@ -434,7 +443,7 @@ void Light3DContext::ChangeMedia()
 {
 	std::cout << "ChangeMedia 0\n";
 
-	PolyHedraManager.ChangeMedia(MediaDirectory);
+	/*PolyHedraManager.ChangeMedia(MediaDirectory);
 	{
 		Container::Array<Shader::Code> code({
 			Shader::Code(MediaDirectory.File("Shaders/PolyHedra/Default.vert")),
@@ -445,21 +454,21 @@ void Light3DContext::ChangeMedia()
 		LightShaderLayout.Shader = &LightShader;
 
 		PolyHedraManager.ShaderFullOther = &LightShader;
-	}
+	}*/
 
 	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 
 	// NewPolyHedra
 	{
-		NewPolyHedra_Pallet_BufferFullLayout.Position.Change(0);
-		NewPolyHedra_Pallet_BufferFullLayout.Normal.Change(1);
-		NewPolyHedra_Pallet_BufferFullLayout.Texture.Change(2);
-		NewPolyHedra_Manager.PalletManager.BufferFullLayout = &NewPolyHedra_Pallet_BufferFullLayout;
+		PalletManager_BufferFullLayout.Position.Change(0);
+		PalletManager_BufferFullLayout.Normal.Change(1);
+		PalletManager_BufferFullLayout.Texture.Change(2);
+		PalletManager.BufferFullLayout = &PalletManager_BufferFullLayout;
 	}
 	{
-		NewPolyHedra_Pallet_BufferWireLayout.Pos.Change(0);
-		NewPolyHedra_Pallet_BufferWireLayout.Col.Change(1);
-		NewPolyHedra_Manager.PalletManager.BufferWireLayout = &NewPolyHedra_Pallet_BufferWireLayout;
+		PalletManager_BufferWireLayout.Pos.Change(0);
+		PalletManager_BufferWireLayout.Col.Change(1);
+		PalletManager.BufferWireLayout = &PalletManager_BufferWireLayout;
 	}
 
 	// Object Manager Basic
@@ -525,7 +534,7 @@ void Light3DContext::ChangeMedia()
 }
 void Light3DContext::GraphicsCreate()
 {
-	PolyHedraManager.GraphicsCreate();
+	//PolyHedraManager.GraphicsCreate();
 	LightShader.Create();
 	UIManager.GraphicsCreate();
 	//PolyHedraUIManager.GraphicsCreate();
@@ -537,7 +546,7 @@ void Light3DContext::GraphicsCreate()
 }
 void Light3DContext::GraphicsDelete()
 {
-	PolyHedraManager.GraphicsDelete();
+	//PolyHedraManager.GraphicsDelete();
 	LightShader.Delete();
 	UIManager.GraphicsDelete();
 	//PolyHedraUIManager.GraphicsDelete();
@@ -655,8 +664,10 @@ void Light3DContext::User(FrameTime frame_time)
 
 	if (window[Keys::Insert] == State::Press)
 	{
-		PolyHedraPalletManager * pallet = PolyHedraManager.FindPallet(Cube);
-		Objects.Insert(new SceneObject_PolyHedraObject(pallet, Trans3D()));
+		//PolyHedraPalletManager * pallet = PolyHedraManager.FindPallet(Cube);
+		//Objects.Insert(new SceneObject_PolyHedraObject(pallet, Trans3D()));
+		NewPolyHedra_PalletObjectManager * manager = ObjectManagerBasic.FindMakePalletObjectManager(NewPallet(Cube));
+		Objects.Insert(new SceneObject_PolyHedraObject(manager, Trans3D()));
 	}
 
 	if (window[Keys::Menu] == State::Press)
@@ -686,7 +697,7 @@ void Light3DContext::Draw()
 
 	// Instances
 
-	PolyHedraManager.MakeInstances();
+	//PolyHedraManager.MakeInstances();
 	//PolyHedraUIManager.MakeInstances();
 
 	NewPolyHedra_Manager.InstancesClear();
@@ -705,8 +716,8 @@ void Light3DContext::Draw()
 	GL::Enable(GL::Capability::CullFace);
 
 	LightBuffer.Bind();
-	PolyHedraManager.DrawFull();
-	PolyHedraManager.DrawWire();
+	//PolyHedraManager.DrawFull();
+	//PolyHedraManager.DrawWire();
 
 	ObjectManagerBasic.GraphicsDrawFull();
 	ObjectManagerBasic.GraphicsDrawWire();
@@ -787,8 +798,8 @@ void Light3DContext::Frame(FrameTime frame_time)
 		Objects[i] -> Update();
 	}
 
-	CenterCube.Data.Trans.Position = VectorF3(0, 10, 0);
-	CenterCube.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
+	CenterCube.Data.Data.Trans.Position = VectorF3(0, 10, 0);
+	CenterCube.Data.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
 
 	ViewFunc();
 
