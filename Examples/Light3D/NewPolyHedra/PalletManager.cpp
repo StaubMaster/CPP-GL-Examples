@@ -79,17 +79,3 @@ void NewPolyHedra_PalletManager::GraphicsDelete()
 		pallet -> GraphicsDelete();
 	}
 }
-
-
-
-#include "NewPallet.hpp"
-
-NewPolyHedra_Pallet * NewPallet(PolyHedra * polyhedra)
-{
-	if (polyhedra == nullptr) { return nullptr; }
-	if (NewPolyHedra_PalletManager::Current != nullptr)
-	{
-		return NewPolyHedra_PalletManager::Current -> FindMakePallet(polyhedra);
-	}
-	return nullptr;
-}

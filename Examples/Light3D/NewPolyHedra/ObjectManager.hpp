@@ -6,6 +6,7 @@
 # include "Graphics/Attribute/General/Layout.hpp"
 # include "Graphics/Buffer/Uniform.hpp"
 
+class PolyHedra;
 struct NewPolyHedra_Pallet;
 struct NewPolyHedra_PalletObjectManager;
 struct NewPolyHedra_PalletObjectData;
@@ -17,10 +18,13 @@ struct NewPolyHedra_ObjectManager
 
 	virtual NewPolyHedra_PalletObjectManager *	NewPalletObjectManager() = 0;
 
-	// take PolyHedra
 	NewPolyHedra_PalletObjectManager *	FindPalletObjectManager(NewPolyHedra_Pallet * pallet) const;
 	NewPolyHedra_PalletObjectManager *	MakePalletObjectManager(NewPolyHedra_Pallet * pallet);
 	NewPolyHedra_PalletObjectManager *	FindMakePalletObjectManager(NewPolyHedra_Pallet * pallet);
+
+	NewPolyHedra_PalletObjectManager *	FindPalletObjectManager(PolyHedra * polyhedra) const;
+	NewPolyHedra_PalletObjectManager *	MakePalletObjectManager(PolyHedra * polyhedra);
+	NewPolyHedra_PalletObjectManager *	FindMakePalletObjectManager(PolyHedra * polyhedra);
 
 
 

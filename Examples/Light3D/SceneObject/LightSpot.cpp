@@ -39,14 +39,13 @@ void SceneObject_LightSpot::Update()
 
 void SceneObject_LightSpot::ShowWire()
 {
-	Data.DisplayWire = true;
+	Data.ShowWire();
 }
 
 void SceneObject_LightSpot::DisplayObject()
 {
 	Data.InstancePut();
-	//Data.PalletManager -> PutInstance(Data);
-	Data.DisplayFull = false;
+	Data.HideWire();
 }
 
 

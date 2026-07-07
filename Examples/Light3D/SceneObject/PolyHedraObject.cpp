@@ -36,16 +36,13 @@ void SceneObject_PolyHedraObject::Update()
 
 void SceneObject_PolyHedraObject::ShowWire()
 {
-	//Data.DrawWire = true;
-	Data.DisplayWire = true;
+	Data.ShowWire();
 }
 
 void SceneObject_PolyHedraObject::DisplayObject()
 {
 	Data.InstancePut();
-	//Data.PalletManager -> PutInstance(Data);
-	//Data.DrawWire = false;
-	Data.DisplayWire = false;
+	Data.HideWire();
 }
 
 

@@ -3,6 +3,7 @@
 
 struct NewPolyHedra_Pallet;
 struct NewPolyHedra_PalletObjectData;
+class PolyHedra;
 
 template<
 	typename TypeData
@@ -13,5 +14,10 @@ template<
 	typename TypeData
 >
 NewPolyHedra_Type_PalletObjectData<TypeData> * sNewPalletObjectData(NewPolyHedra_Pallet * pallet);
+
+template<
+	typename TypeData
+>
+NewPolyHedra_Type_PalletObjectData<TypeData> * sNewPalletObjectData(PolyHedra * polyhedra);
 
 #endif

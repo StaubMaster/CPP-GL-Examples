@@ -3,6 +3,7 @@
 
 # include "SceneObject.hpp"
 # include "PolyHedra/ObjectData.hpp"
+
 # include "NewPolyHedra/DataType/Basic3D/PalletObjectData.hpp"
 
 /* PolyHedraObjects: temporary vs permanent
@@ -15,7 +16,6 @@ but here, I need Trans even when the PolyHedra Manager does not know this
 
 struct SceneObject_PolyHedraObject : public SceneObject
 {
-//	PolyHedraObjectData		Data;
 	Basic3D::PalletObjectData	Data;
 
 	~SceneObject_PolyHedraObject();

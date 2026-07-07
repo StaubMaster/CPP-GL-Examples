@@ -221,14 +221,14 @@ Ray3D_Hit_Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedraObje
 Ray3D_Hit_Type<unsigned int> RayHitObject0(const RayF3 & ray, const NewPolyHedra_Type_Object<Basic3D::ObjectData> & object)
 {
 	{
-		return RayHitObject(ray, *(object.PalletObjectData -> Manager -> Pallet -> Object), object.Data().Trans);
+		return RayHitObject(ray, *(object.Manager() -> Pallet -> Object), object.Data().Trans);
 	}
 	return Ray3D_Hit_Type<unsigned int>();
 }
 Ray3D_Hit_Type<unsigned int> RayHitObject1(const RayF3 & ray, const NewPolyHedra_Type_Object<TransScaleColor3D::ObjectData> & object)
 {
 	{
-		return RayHitObject(ray, *(object.PalletObjectData -> Manager -> Pallet -> Object), object.Data().Trans, object.Data().Scale);
+		return RayHitObject(ray, *(object.Manager() -> Pallet -> Object), object.Data().Trans, object.Data().Scale);
 	}
 	return Ray3D_Hit_Type<unsigned int>();
 }

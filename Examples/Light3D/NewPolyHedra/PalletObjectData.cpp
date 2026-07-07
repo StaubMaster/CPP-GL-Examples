@@ -3,6 +3,16 @@
 
 
 
+void NewPolyHedra_PalletObjectData::ShowFull() { DisplayFull = true; }
+void NewPolyHedra_PalletObjectData::HideFull() { DisplayFull = false; }
+bool NewPolyHedra_PalletObjectData::VisibleFull() const { return DisplayFull; }
+
+void NewPolyHedra_PalletObjectData::ShowWire() { DisplayWire = true; }
+void NewPolyHedra_PalletObjectData::HideWire() { DisplayWire = false; }
+bool NewPolyHedra_PalletObjectData::VisibleWire() const { return DisplayWire; }
+
+
+
 NewPolyHedra_PalletObjectData::~NewPolyHedra_PalletObjectData()
 { }
 NewPolyHedra_PalletObjectData::NewPolyHedra_PalletObjectData()

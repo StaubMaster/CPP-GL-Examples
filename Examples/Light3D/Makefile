@@ -39,8 +39,10 @@ FILES := \
 	\
 	NewPolyHedra/DataType/Basic3D/Layout.cpp \
 	NewPolyHedra/DataType/Basic3D/ObjectData.cpp \
+	NewPolyHedra/DataType/Basic3D/Special.cpp \
 	NewPolyHedra/DataType/TransScaleColor3D/Layout.cpp \
 	NewPolyHedra/DataType/TransScaleColor3D/ObjectData.cpp \
+	NewPolyHedra/DataType/TransScaleColor3D/Special.cpp \
 	\
 	UI_Control_List.cpp \
 	Context.cpp \

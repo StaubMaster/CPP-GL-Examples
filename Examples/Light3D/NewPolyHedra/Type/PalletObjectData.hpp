@@ -8,8 +8,10 @@ template<
 >
 struct NewPolyHedra_Type_PalletObjectData : public NewPolyHedra_PalletObjectData
 {
+	public:
 	TypeData	Data;
 
+	protected:
 	const void *	DataVoid() const
 	{
 		return &Data;

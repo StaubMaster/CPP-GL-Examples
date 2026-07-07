@@ -29,22 +29,6 @@ NewPolyHedra_Type_Data_ObjectManager<TypeData> * NewPolyHedra_Type_Data_ObjectMa
 
 
 
-# include "NewPalletObjectData.hpp"
-
-template<
-	typename TypeData
->
-NewPolyHedra_Type_PalletObjectData<TypeData> * sNewPalletObjectData(NewPolyHedra_Pallet * pallet)
-{
-	if (NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current != nullptr)
-	{
-		return (NewPolyHedra_Type_PalletObjectData<TypeData> *)NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current -> NewPalletObjectData(pallet);
-	}
-	return nullptr;
-}
-
-
-
 template<
 	typename TypeData,
 	typename TypeInstanceData
@@ -59,10 +43,6 @@ struct NewPolyHedra_Type_ObjectManager : public NewPolyHedra_Type_Data_ObjectMan
 	{
 		return new NewPolyHedra_Type_PalletObjectData<TypeData>();
 	}
-	/*NewPolyHedra_ObjectData *	NewObjectData() override
-	{
-		return new NewPolyHedra_Type_ObjectData<TypeData>();
-	}*/
 };
 
 #endif

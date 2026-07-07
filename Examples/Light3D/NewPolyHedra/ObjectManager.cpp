@@ -1,6 +1,8 @@
 #include "ObjectManager.hpp"
 #include "PalletObjectManager.hpp"
 #include "PalletObjectData.hpp"
+#include "Pallet.hpp"
+#include "PalletManager.hpp"
 
 
 
@@ -44,6 +46,33 @@ NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindMakePalletObj
 	if (manager == nullptr)
 	{
 		manager = MakePalletObjectManager(pallet);
+	}
+	return manager;
+}
+
+
+
+NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindPalletObjectManager(PolyHedra * polyhedra) const
+{
+	if (polyhedra == nullptr) { return nullptr; }
+	if (NewPolyHedra_PalletManager::Current == nullptr) { return nullptr; }
+	NewPolyHedra_Pallet * pallet = NewPolyHedra_PalletManager::Current -> FindPallet(polyhedra);
+	return FindPalletObjectManager(pallet);
+}
+NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::MakePalletObjectManager(PolyHedra * polyhedra)
+{
+	if (polyhedra == nullptr) { return nullptr; }
+	if (NewPolyHedra_PalletManager::Current == nullptr) { return nullptr; }
+	NewPolyHedra_Pallet * pallet = NewPolyHedra_PalletManager::Current -> FindMakePallet(polyhedra);
+	return MakePalletObjectManager(pallet);
+}
+NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindMakePalletObjectManager(PolyHedra * polyhedra)
+{
+	if (polyhedra == nullptr) { return nullptr; }
+	NewPolyHedra_PalletObjectManager * manager = FindPalletObjectManager(polyhedra);
+	if (manager == nullptr)
+	{
+		manager = MakePalletObjectManager(polyhedra);
 	}
 	return manager;
 }
