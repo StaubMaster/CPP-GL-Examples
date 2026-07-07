@@ -1,0 +1,25 @@
+
+# Command Specify a Directory
+#dir "relative directory to use for files"
+
+
+
+pallet Platform_8.polyhedra platform
+place platform   0 376 0   0 0 0
+place platform   0 412 0   0 0 0
+place platform   0 448 0   0 0 0
+place platform   0 484 0   0 0 0
+
+pallet Tower_Pipe_6m_R_100cm_80cm.polyhedra pipe0
+place pipe0   0 0 0   0 0 0
+
+pallet Tower_Pipe_10m_R_80cm_60cm.polyhedra pipe1
+place pipe1   0 60 0   0 0 0
+
+pallet Tower_Pipe_18m_R_60cm_60cm.polyhedra pipe2
+place pipe2   0 160 0   0 0 0
+place pipe2   0 340 0   0 0 0
+place pipe2   0 520 0   0 0 0
+
+pallet Tower_Pipe_Cap_R_60cm.polyhedra pipe3
+place pipe3   0 700 0   0 0 0

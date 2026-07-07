@@ -545,6 +545,7 @@ void Light3DContext::Make()
 	SceneClear();
 	SceneInitCubes();
 	SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
+	SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
 	SceneInitLights();
 
 	UIManager.WindowControl.ChildInsert(UISceneObject);
@@ -586,6 +587,8 @@ void Light3DContext::Free()
 
 
 
+// Scrolling to change move Speed
+// View Distance from View Center ?
 void Light3DContext::User(FrameTime frame_time)
 {
 	if (window.KeyBoardManager[Keys::Tab].State == State::Press) { window.MouseManager.CursorModeToggle(); }
@@ -594,7 +597,7 @@ void Light3DContext::User(FrameTime frame_time)
 		Trans3D trans = window.MoveSpinFromKeysCursor();
 
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { trans.Position *= 10; }
-		trans.Position *= 2;
+		trans.Position *= 20;
 		trans.Rotation *= View.FOV.ToRadians() * 0.05f;
 
 		trans.Position *= frame_time.Delta;

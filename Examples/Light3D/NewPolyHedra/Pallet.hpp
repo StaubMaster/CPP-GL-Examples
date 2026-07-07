@@ -5,6 +5,8 @@
 # include "Graphics/Buffer/Element.hpp"
 # include "Graphics/Texture/Array2D.hpp"
 
+# include <string>
+
 class PolyHedra;
 
 struct NewPolyHedra_Pallet
@@ -13,7 +15,8 @@ struct NewPolyHedra_Pallet
 	PolyHedra *		Object;
 	void	Put();
 
-
+	public:
+	std::string		Name;
 
 	public:
 	~NewPolyHedra_Pallet();

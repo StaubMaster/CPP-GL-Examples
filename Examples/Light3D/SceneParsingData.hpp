@@ -46,7 +46,7 @@ struct SceneParsingData
 
 	void	Parse(const TextCommand & cmd);
 
-	void	Parse_PolyHedra(const TextCommand & cmd);
+	void	Parse_Pallet(const TextCommand & cmd);
 	void	Parse_Place(const TextCommand & cmd);
 
 	void	Parse_LightAmbient(const TextCommand & cmd);

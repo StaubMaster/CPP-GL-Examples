@@ -6,20 +6,26 @@
 
 struct Ray3D_Hit
 {
-	const RayF3 *	Ray;
+	public:
+	const RayF3 *	Ray; // just store a ray ?
 	float			Interval;
 
-	bool	Is() const;
+	public:
+	bool	Is() const; // use NaN
 
+	public:
 	VectorF3	Pos() const;
 
+	public:
 	~Ray3D_Hit();
 	Ray3D_Hit();
 	Ray3D_Hit(const Ray3D_Hit & other);
 	Ray3D_Hit & operator=(const Ray3D_Hit & other);
 
+	public:
 	Ray3D_Hit(const RayF3 & ray, float interval);
 
+	public:
 	bool	Consider(const Ray3D_Hit & other);
 };
 
@@ -49,15 +55,30 @@ struct Ray3D_Hit_Type : public Ray3D_Hit
 
 void RaySkew(const RayF3 & ray0, Ray3D_Hit & hit0 , const RayF3 & ray1, Ray3D_Hit & hit1);
 
-struct Plane3D
+struct Plane3D // PlaneF3
 {
 	VectorF3	Origin;
 	VectorF3	Normal;
 	Plane3D(VectorF3 origin, VectorF3 normal);
 };
 Ray3D_Hit RayHitPlane(const RayF3 & ray, const Plane3D & plane);
+/*
+Plane can be done with a Normal or with 2 Direcitons
+  Plane3D
+    3D plane can only be done with Normal
+  PlaneF3
+    like Ray but with 2 Dir instread of 1
 
-struct Triangle3D
+SpaceF3
+  Origin with 3 Axis
+  like Ray and Plane but with 3 Dir instead of 1 or 2
+  transform Axis Factors from one Space to another
+  this could probably be done with a Matrix
+*/
+
+
+
+struct Triangle3D // TriangleF3
 {
 	VectorF3	A;
 	VectorF3	B;

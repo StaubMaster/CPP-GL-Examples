@@ -17,6 +17,15 @@ SceneParsingData::ParsingCommand::ParsingCommand(std::string name)
 	: Name(name)
 { }
 
+template<typename ObjectType>
+static void NewParsingCommand(SceneParsingData * parsing, const char * name, ObjectType * obj, void (ObjectType::*func)(const TextCommand &))
+{
+	SceneParsingData::ParsingCommand * cmd;
+	cmd = new SceneParsingData::ParsingCommand(name);
+	cmd -> Func.Assign(obj, func);
+	parsing -> Commands.Insert(cmd);
+}
+
 SceneParsingData::~SceneParsingData()
 {
 	for (unsigned int i = 0; i < Commands.Count(); i++)
@@ -39,13 +48,12 @@ SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & conte
 			0 1   closure
 	*/
 
-	ParsingCommand * cmd;
-	cmd = new ParsingCommand("varFloat");			cmd -> Func.Assign(&VariableFloats, &ParsingVariable::FloatMemory::Put);	Commands.Insert(cmd);
-	cmd = new ParsingCommand("polyhedra");			cmd -> Func.Assign(this, &SceneParsingData::Parse_PolyHedra);				Commands.Insert(cmd);
-	cmd = new ParsingCommand("place");				cmd -> Func.Assign(this, &SceneParsingData::Parse_Place);					Commands.Insert(cmd);
-	cmd = new ParsingCommand("LightAmbient");		cmd -> Func.Assign(this, &SceneParsingData::Parse_LightAmbient);			Commands.Insert(cmd);
-	cmd = new ParsingCommand("LightDirectionD");	cmd -> Func.Assign(this, &SceneParsingData::Parse_LightDirectionD);			Commands.Insert(cmd);
-	cmd = new ParsingCommand("LightSpotT");			cmd -> Func.Assign(this, &SceneParsingData::Parse_LightSpotT);				Commands.Insert(cmd);
+	NewParsingCommand(this, "varFloat",			&VariableFloats, &ParsingVariable::FloatMemory::Put);
+	NewParsingCommand(this, "pallet",			this, &SceneParsingData::Parse_Pallet);
+	NewParsingCommand(this, "place",			this, &SceneParsingData::Parse_Place);
+	NewParsingCommand(this, "LightAmbient",		this, &SceneParsingData::Parse_LightAmbient);
+	NewParsingCommand(this, "LightDirectionD",	this, &SceneParsingData::Parse_LightDirectionD);
+	NewParsingCommand(this, "LightSpotT",		this, &SceneParsingData::Parse_LightSpotT);
 }
 
 void SceneParsingData::Parse(const TextCommand & cmd)
@@ -75,16 +83,18 @@ void SceneParsingData::Parse(const TextCommand & cmd)
 	}
 }
 
-void SceneParsingData::Parse_PolyHedra(const TextCommand & cmd)
+void SceneParsingData::Parse_Pallet(const TextCommand & cmd)
 {
-	if (!(cmd.Count() == 1)) { throw InvalidCommandArgumentCount(cmd, "n == 1"); }
+	if (!(cmd.Count() == 2)) { throw InvalidCommandArgumentCount(cmd, "n == 2"); }
 
 	FileInfo file((File.DirectoryString() + "/" + cmd.ToString(0)).c_str());
-	if (!file.Exists()) { std::cout << cmd.Name() << ": " << "Bad Skin File" << "\n"; return; }
+
 	PolyHedra * polyhedra = PolyHedra::Load(file);
-	//polyhedra -> UseCornerNormals = true;
-	//PolyHedraPalletManager * manager = Context.PolyHedraManager.MakePallet(polyhedra);
-	NewPolyHedra_PalletObjectManager * manager = Context.ObjectManagerBasic.FindMakePalletObjectManager(polyhedra);
+
+	NewPolyHedra_Pallet * pallet = Context.PalletManager.FindMakePallet(polyhedra);
+	pallet -> Name = cmd.ToString(1);
+
+	NewPolyHedra_PalletObjectManager * manager = Context.ObjectManagerBasic.FindMakePalletObjectManager(pallet);
 	PolyHedras.Insert(manager);
 }
 void SceneParsingData::Parse_Place(const TextCommand & cmd)
@@ -95,7 +105,7 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 	NewPolyHedra_PalletObjectManager * polyhedra = MissingPolyHedra;
 	for (unsigned int i = 0; i < PolyHedras.Count(); i++)
 	{
-		if (PolyHedras[i] -> Pallet -> Object -> Name == name)
+		if (PolyHedras[i] -> Pallet -> Name == name)
 		{
 			polyhedra = PolyHedras[i];
 		}

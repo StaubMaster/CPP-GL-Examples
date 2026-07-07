@@ -1,7 +1,6 @@
 
 # Commands:
-# polyhedra "./filename"
-# polyhedra "./filename" "name" ?
+# pallet "./filename" "name"
 # place "name" {position} {rotation}
 # varFloat "name" {value}
 #   name should be alpha_numreic
@@ -36,19 +35,14 @@ LightSpotT        1.0   0.0 0.0 1.0   -22.0 30.0 -22.0   0.0 0.0 0.0   0.80 0.95
 
 
 
-#polyhedra Stage.polyhedra.ymt                   stage
-#polyhedra Truss_Square40cm_Len200cm.polyhedra   truss
-#polyhedra Truss_Cube40cm.polyhedra              truss_cube
-#polyhedra Chair.polyhedra                       chair
-
-polyhedra Stage.polyhedra.ymt                
-polyhedra Truss/Square40cm_Len200cm.polyhedra
-polyhedra Truss/Cube40cm.polyhedra           
-polyhedra Chair.polyhedra                    
+pallet Stage.polyhedra                       stage
+pallet Truss/Square40cm_Len200cm.polyhedra   truss
+pallet Truss/Cube40cm.polyhedra              truss_cube
+pallet chair.polyhedra                       chair
 
 
 
-place   Stage   0 0 0   0 0 0
+place   stage   0 0 0   0 0 0
 
 
 
@@ -87,34 +81,34 @@ varFloat d1 22.25
 
 
 
-place Truss_4_4_20   -w1 h0 -d1   00 90 00
-place Truss_4_4_20   -w1 h1 -d1   00 90 00
-place Truss_4_4_4    -w1 h2 -d1   00 00 00
+place truss        -w1 h0 -d1   00 90 00
+place truss        -w1 h1 -d1   00 90 00
+place truss_cube   -w1 h2 -d1   00 00 00
 
-place Truss_4_4_20   +w1 h0 -d1   00 90 00
-place Truss_4_4_20   +w1 h1 -d1   00 90 00
-place Truss_4_4_4    +w1 h2 -d1   00 00 00
+place truss        +w1 h0 -d1   00 90 00
+place truss        +w1 h1 -d1   00 90 00
+place truss_cube   +w1 h2 -d1   00 00 00
 
-place Truss_4_4_20   -w0 h2 -d1   00 00 90
-place Truss_4_4_20    00 h2 -d1   00 00 90
-place Truss_4_4_20   +w0 h2 -d1   00 00 90
+place truss        -w0 h2 -d1   00 00 90
+place truss         00 h2 -d1   00 00 90
+place truss        +w0 h2 -d1   00 00 90
 
-place Truss_4_4_20   -w1 h2 -d0   00 00 00
-place Truss_4_4_20   +w1 h2 -d0   00 00 00
-place Truss_4_4_20   -w1 h2 +d0   00 00 00
-place Truss_4_4_20   +w1 h2 +d0   00 00 00
+place truss        -w1 h2 -d0   00 00 00
+place truss        +w1 h2 -d0   00 00 00
+place truss        -w1 h2 +d0   00 00 00
+place truss        +w1 h2 +d0   00 00 00
 
-place Truss_4_4_20   -w1 h0 +d1   00 90 00
-place Truss_4_4_20   -w1 h1 +d1   00 90 00
-place Truss_4_4_4    -w1 h2 +d1   00 00 00
+place truss        -w1 h0 +d1   00 90 00
+place truss        -w1 h1 +d1   00 90 00
+place truss_cube   -w1 h2 +d1   00 00 00
 
-place Truss_4_4_20   +w1 h0 +d1   00 90 00
-place Truss_4_4_20   +w1 h1 +d1   00 90 00
-place Truss_4_4_4    +w1 h2 +d1   00 00 00
+place truss        +w1 h0 +d1   00 90 00
+place truss        +w1 h1 +d1   00 90 00
+place truss_cube   +w1 h2 +d1   00 00 00
 
-place Truss_4_4_20   -w0 h2 +d1   00 00 90
-place Truss_4_4_20    00 h2 +d1   00 00 90
-place Truss_4_4_20   +w0 h2 +d1   00 00 90
+place truss        -w0 h2 +d1   00 00 90
+place truss         00 h2 +d1   00 00 90
+place truss        +w0 h2 +d1   00 00 90
 
 
 
@@ -128,19 +122,19 @@ place Truss_4_4_20   +w0 h2 +d1   00 00 90
 
 
 
-place Chair   -50 0 -40   00 00 90
-place Chair   -50 1 -40   00 00 90
-place Chair   -50 2 -40   00 00 90
-place Chair   -50 3 -40   00 00 90
-place Chair   -50 4 -40   00 00 90
-place Chair   -50 5 -40   00 00 90
-place Chair   -50 6 -40   00 00 90
-place Chair   -50 7 -40   00 00 90
-place Chair   -50 8 -40   00 00 90
-place Chair   -50 9 -40   00 00 90
+place chair   -50 0 -40   00 00 90
+place chair   -50 1 -40   00 00 90
+place chair   -50 2 -40   00 00 90
+place chair   -50 3 -40   00 00 90
+place chair   -50 4 -40   00 00 90
+place chair   -50 5 -40   00 00 90
+place chair   -50 6 -40   00 00 90
+place chair   -50 7 -40   00 00 90
+place chair   -50 8 -40   00 00 90
+place chair   -50 9 -40   00 00 90
 
-place Chair   -50 0 -45   00 00 90
-place Chair   -50 1 -45   00 00 90
-place Chair   -50 2 -45   00 00 90
+place chair   -50 0 -45   00 00 90
+place chair   -50 1 -45   00 00 90
+place chair   -50 2 -45   00 00 90
 
 

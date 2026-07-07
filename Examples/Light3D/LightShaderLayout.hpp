@@ -45,6 +45,12 @@ namespace PaddedBlock
 		PaddedBlock::VectorF3	Dir;
 		LightDirection & operator=(const ::LightDirection & object);
 	};
+	struct LightPoint
+	{
+		PaddedBlock::LightBase	Base;
+		PaddedBlock::VectorF3	Pos;
+		LightPoint & operator=(const ::LightPoint & object);
+	};
 	struct LightSpot
 	{
 		PaddedBlock::LightBase	Base;
