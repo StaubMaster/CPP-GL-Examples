@@ -138,6 +138,7 @@ LightSpot *			TakeLightSpot();
 
 
 
+SceneObject::DisplayMode			SceneObject_DisplayMode;
 Container::Binary<SceneObject*>		Objects;
 SceneObject *						Object_Selected;
 SceneObject *						Object_Hovering;

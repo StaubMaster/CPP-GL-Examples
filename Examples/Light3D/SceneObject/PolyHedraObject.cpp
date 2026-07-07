@@ -39,9 +39,24 @@ void SceneObject_PolyHedraObject::ShowWire()
 	Data.ShowWire();
 }
 
-void SceneObject_PolyHedraObject::DisplayObject()
+void SceneObject_PolyHedraObject::DisplayObject(const DisplayMode & mode)
 {
-	Data.InstancePut();
+	if (mode.Objects == DisplayMode::EObjects::Full)
+	{
+		Data.InstancePut();
+	}
+	else if (mode.Objects == DisplayMode::EObjects::Wire)
+	{
+		bool full = Data.VisibleFull();
+		bool wire = Data.VisibleWire();
+
+		Data.HideFull();
+		Data.ShowWire();
+		Data.InstancePut();
+
+		if (full) { Data.ShowFull(); }
+		if (!wire) { Data.HideWire(); }
+	}
 	Data.HideWire();
 }
 

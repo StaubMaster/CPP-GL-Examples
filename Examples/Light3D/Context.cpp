@@ -419,6 +419,9 @@ Light3DContext::Light3DContext()
 		&ObjectManagerTSC_ShaderWireLayout,
 	});
 	MultiformLayout.Find(layouts);
+
+	SceneObject_DisplayMode.Indicators = SceneObject::DisplayMode::EIndicators::Show;
+	SceneObject_DisplayMode.Objects = SceneObject::DisplayMode::EObjects::Full;
 }
 
 
@@ -635,9 +638,22 @@ void Light3DContext::User(FrameTime frame_time)
 		Objects.Insert(new SceneObject_PolyHedraObject(manager, Trans3D()));
 	}
 
-	if (window[Keys::Menu] == State::Press)
+	if (window[Keys::D1] == State::Press)
 	{
-		//UIPolyHedraPalletList.Change(&PolyHedraManager);
+		switch (SceneObject_DisplayMode.Objects)
+		{
+			case SceneObject::DisplayMode::EObjects::Full: SceneObject_DisplayMode.Objects = SceneObject::DisplayMode::EObjects::Wire; break;
+			case SceneObject::DisplayMode::EObjects::Wire: SceneObject_DisplayMode.Objects = SceneObject::DisplayMode::EObjects::None; break;
+			case SceneObject::DisplayMode::EObjects::None: SceneObject_DisplayMode.Objects = SceneObject::DisplayMode::EObjects::Full; break;
+		}
+	}
+	if (window[Keys::D2] == State::Press)
+	{
+		switch (SceneObject_DisplayMode.Indicators)
+		{
+			case SceneObject::DisplayMode::EIndicators::Show: SceneObject_DisplayMode.Indicators = SceneObject::DisplayMode::EIndicators::Hide; break;
+			case SceneObject::DisplayMode::EIndicators::Hide: SceneObject_DisplayMode.Indicators = SceneObject::DisplayMode::EIndicators::Show; break;
+		}
 	}
 }
 void Light3DContext::Draw()
@@ -664,10 +680,11 @@ void Light3DContext::Draw()
 
 	NewPolyHedra_Manager.InstancesClear();
 	NewPolyHedra_Manager.InstancesMake();
+	
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (Objects[i] == nullptr) { continue; }
-		Objects[i] -> DisplayObject();
+		Objects[i] -> DisplayObject(SceneObject_DisplayMode);
 	}
 
 
@@ -760,25 +777,6 @@ void Light3DContext::Frame(FrameTime frame_time)
 	CenterCube.Data.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
 
 	ViewFunc();
-
-	{
-		Basic3D::Object object(TestPolyHedraSphere);
-		object.ShowFull();
-	}
-	{
-		Basic3D::Object object(TestPolyHedraSphere);
-		object.Data().Trans.Position.Y = 20.0f;
-		object.HideFull();
-		object.ShowWire();
-	}
-	{
-		TransScaleColor3D::Object object(TestPolyHedraSphere);
-		object.Data().Trans.Position.Y = 20.0f;
-		object.Data().Scale = 0.5f;
-		object.Data().Color = ColorF4(1, 0, 1);
-		object.HideFull();
-		object.ShowWire();
-	}
 
 	Draw();
 }

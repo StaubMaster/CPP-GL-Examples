@@ -22,7 +22,7 @@ struct SceneObject_LightDirection : public SceneObject
 
 	void	ShowWire() override;
 
-	void	DisplayObject() override;
+	void	DisplayObject(const DisplayMode & mode) override;
 
 	Ray3D_Hit	Hit(const RayF3 & ray) const override;
 };

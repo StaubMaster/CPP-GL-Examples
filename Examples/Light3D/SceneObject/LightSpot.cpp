@@ -42,9 +42,12 @@ void SceneObject_LightSpot::ShowWire()
 	Data.ShowWire();
 }
 
-void SceneObject_LightSpot::DisplayObject()
+void SceneObject_LightSpot::DisplayObject(const DisplayMode & mode)
 {
-	Data.InstancePut();
+	if (mode.Indicators == DisplayMode::EIndicators::Show)
+	{
+		Data.InstancePut();
+	}
 	Data.HideWire();
 }
 

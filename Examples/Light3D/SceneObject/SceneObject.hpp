@@ -8,6 +8,24 @@ struct PolyHedraManager;
 
 struct SceneObject
 {
+	struct DisplayMode
+	{
+		enum class EIndicators
+		{
+			Show,
+			Hide,
+		};
+		EIndicators		Indicators;
+
+		enum class EObjects
+		{
+			Full,
+			Wire,
+			None,
+		};
+		EObjects	Objects;
+	};
+
 	virtual ~SceneObject();
 	SceneObject();
 
@@ -18,7 +36,7 @@ struct SceneObject
 
 	virtual void	ShowWire() = 0;
 
-	virtual void	DisplayObject() = 0;
+	virtual void	DisplayObject(const DisplayMode & mode) = 0;
 
 	virtual Ray3D_Hit	Hit(const RayF3 & ray) const = 0;
 };
