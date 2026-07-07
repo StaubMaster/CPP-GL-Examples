@@ -1,4 +1,5 @@
 #include "SceneObject/LightAmbient.hpp"
+#include "Ray3D_Hit.hpp"
 
 #include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
 #include "NewPolyHedra/PalletObjectData.hpp"
@@ -45,7 +46,7 @@ void SceneObject_LightAmbient::DisplayObject(const DisplayMode & mode)
 
 
 
-Ray3D_Hit SceneObject_LightAmbient::Hit(const RayF3 & ray) const
+RayHitF3 SceneObject_LightAmbient::Hit(const RayF3 & ray) const
 {
 	return RayHitObject1(ray, Data);
 }

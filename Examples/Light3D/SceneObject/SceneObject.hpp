@@ -1,8 +1,8 @@
 #ifndef  SCENE_OBJECT_HPP
 # define SCENE_OBJECT_HPP
 
-# include "Ray3D_Hit.hpp"
 # include "ValueType/Trans/3D.hpp"
+# include "ValueType/Ray/Hit/F3.hpp"
 
 struct PolyHedraManager;
 
@@ -38,7 +38,7 @@ struct SceneObject
 
 	virtual void	DisplayObject(const DisplayMode & mode) = 0;
 
-	virtual Ray3D_Hit	Hit(const RayF3 & ray) const = 0;
+	virtual RayHitF3	Hit(const RayF3 & ray) const = 0;
 };
 
 #endif

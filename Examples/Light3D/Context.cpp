@@ -1,5 +1,6 @@
 #include "Context.hpp"
 #include "General/UnitToString.hpp"
+#include "ValueType/Ray/Hit/F3Type.hpp"
 
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/ObjectData.hpp"
@@ -72,16 +73,16 @@ LightSpot * Light3DContext::TakeLightSpot()
 
 SceneObject * Light3DContext::FindObject(const RayF3 & ray) const
 {
-	Ray3D_Hit_Type<unsigned int> hit;
+	RayHitF3Type<unsigned int> hit;
 	for (unsigned int i = 0; i < Objects.Count(); i++)
 	{
 		if (Objects[i] == nullptr) { continue; }
-		Ray3D_Hit hit_temp = Objects[i] -> Hit(ray);
+		RayHitF3 hit_temp = Objects[i] -> Hit(ray);
 		hit.Consider(hit_temp, i);
 	}
 	if (hit.Is())
 	{
-		return Objects[hit.Index];
+		return Objects[hit.Data];
 	}
 	return nullptr;
 }

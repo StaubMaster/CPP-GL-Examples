@@ -1,4 +1,5 @@
 #include "SceneObject/PolyHedraObject.hpp"
+#include "Ray3D_Hit.hpp"
 
 #include "PolyHedra/PalletManager.hpp"
 #include "PolyHedra/Object.hpp"
@@ -62,7 +63,7 @@ void SceneObject_PolyHedraObject::DisplayObject(const DisplayMode & mode)
 
 
 
-Ray3D_Hit SceneObject_PolyHedraObject::Hit(const RayF3 & ray) const
+RayHitF3 SceneObject_PolyHedraObject::Hit(const RayF3 & ray) const
 {
 	return RayHitObject0(ray, Data);
 }

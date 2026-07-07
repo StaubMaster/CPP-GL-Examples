@@ -1,9 +1,10 @@
 #include "UserTrans3DChange.hpp"
 #include "Ray3D_Hit.hpp"
+#include "ValueType/Ray/Hit/F3Type.hpp"
+#include "ValueType/InteractF3.hpp"
+#include "ValueType/NormalPlaneF3.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
-//#include "PolyHedraUI/Manager.hpp"
-//#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectManager.hpp"
 #include "DirectoryInfo.hpp"
 
 
@@ -55,7 +56,7 @@ void UserTrans3DChange::IndicatorsFind(const RayF3 & ray)
 	if (!IsVisible) { return; }
 	if (!SelectedIsNone()) { return; }
 
-	Ray3D_Hit_Type<EIndicatorType> hit(EIndicatorType::None);
+	RayHitF3Type<EIndicatorType> hit(EIndicatorType::None);
 
 	hit.Consider(RayHitObject1(ray, MoveAxisX), EIndicatorType::MoveAxisX);
 	hit.Consider(RayHitObject1(ray, MoveAxisY), EIndicatorType::MoveAxisY);
@@ -67,7 +68,7 @@ void UserTrans3DChange::IndicatorsFind(const RayF3 & ray)
 
 	if (hit.Is())
 	{
-		HoveringType = hit.Index;
+		HoveringType = hit.Data;
 		HoveringOffset.Position = hit.Pos();
 		VectorF3 rel = !(hit.Pos() - Trans.Position);
 		VectorF3 axisX(1, 0, 0);
@@ -286,15 +287,15 @@ void UserTrans3DChange::SetTrans(Trans3D trans)
 VectorF3 UserTrans3DChange::CalcPosAxis(const RayF3 & ray, const VectorF3 & axis) const
 {
 	RayF3 axis_ray(Trans.Position - SelectedOffset.Position, axis);
-	Ray3D_Hit axis_hit;
-	Ray3D_Hit hit;
-	RaySkew(ray, hit, axis_ray, axis_hit);
+	RayHitF3 axis_hit;
+	RayHitF3 hit;
+	InteractF3::Skew(ray, hit, axis_ray, axis_hit);
 	if (hit.Interval < 0.0f) { return Trans.Position; }
 	return (axis_hit.Pos() + SelectedOffset.Position);
 }
 VectorF3 UserTrans3DChange::CalcPosPlane(const RayF3 & ray, const VectorF3 & axis) const
 {
-	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position - SelectedOffset.Position, axis));
+	RayHitF3 hit = InteractF3::Plane(ray, NormalPlaneF3(Trans.Position - SelectedOffset.Position, axis));
 	if (!hit.Is()) { return Trans.Position; }
 	return (hit.Pos() + SelectedOffset.Position);
 }
@@ -303,7 +304,7 @@ EulerAngle3D UserTrans3DChange::CalcRotPlaneX(const RayF3 & ray) const
 	EulerAngle3D euler(Angle(), Angle(), Trans.Rotation.Y2);
 	VectorF3 axis0 = euler.forward(VectorF3(1, 0, 0));
 	VectorF3 axis1 = euler.forward(VectorF3(0, 1, 0));
-	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position, axis0));
+	RayHitF3 hit = InteractF3::Plane(ray, NormalPlaneF3(Trans.Position, axis0));
 	if (!hit.Is()) { return Trans.Rotation; }
 	VectorF3 rel = !(hit.Pos() - Trans.Position);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
@@ -315,7 +316,7 @@ EulerAngle3D UserTrans3DChange::CalcRotPlaneY(const RayF3 & ray) const
 	EulerAngle3D euler;
 	VectorF3 axis0 = euler.forward(VectorF3(0, 1, 0));
 	VectorF3 axis1 = euler.forward(VectorF3(0, 0, 1));
-	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position, axis0));
+	RayHitF3 hit = InteractF3::Plane(ray, NormalPlaneF3(Trans.Position, axis0));
 	if (!hit.Is()) { return Trans.Rotation; }
 	VectorF3 rel = !(hit.Pos() - Trans.Position);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
@@ -326,7 +327,7 @@ EulerAngle3D UserTrans3DChange::CalcRotPlaneZ(const RayF3 & ray) const
 	EulerAngle3D euler(Angle(), Trans.Rotation.X1, Trans.Rotation.Y2);
 	VectorF3 axis0 = euler.forward(VectorF3(0, 0, 1));
 	VectorF3 axis1 = euler.forward(VectorF3(1, 0, 0));
-	Ray3D_Hit hit = RayHitPlane(ray, Plane3D(Trans.Position, axis0));
+	RayHitF3 hit = InteractF3::Plane(ray, NormalPlaneF3(Trans.Position, axis0));
 	if (!hit.Is()) { return Trans.Rotation; }
 	VectorF3 rel = !(hit.Pos() - Trans.Position);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));

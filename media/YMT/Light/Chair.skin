@@ -6,8 +6,8 @@ Normals calcF
 Size 16 16
 
 Img ChairMetal.png
-#Img ChairCloth.png
-Img ChairClothOrient.png
+Img ChairCloth.png
+#Img ChairClothOrient.png
 
 
 

@@ -1,4 +1,5 @@
 #include "SceneObject/LightSpot.hpp"
+#include "Ray3D_Hit.hpp"
 
 #include "PolyHedra/ObjectData.hpp"
 #include "PolyHedra/PalletManager.hpp"
@@ -53,7 +54,7 @@ void SceneObject_LightSpot::DisplayObject(const DisplayMode & mode)
 
 
 
-Ray3D_Hit SceneObject_LightSpot::Hit(const RayF3 & ray) const
+RayHitF3 SceneObject_LightSpot::Hit(const RayF3 & ray) const
 {
 	return RayHitObject0(ray, Data);
 }

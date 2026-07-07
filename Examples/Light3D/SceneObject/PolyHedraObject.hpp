@@ -31,7 +31,7 @@ struct SceneObject_PolyHedraObject : public SceneObject
 
 	void	DisplayObject(const DisplayMode & mode) override;
 
-	Ray3D_Hit	Hit(const RayF3 & ray) const override;
+	RayHitF3	Hit(const RayF3 & ray) const override;
 };
 
 #endif
