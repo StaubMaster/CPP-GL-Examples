@@ -7,7 +7,7 @@ struct VectorU3;
 struct VectorI3;
 enum class AxisRel : unsigned char;
 
-# include "Miscellaneous/Container/Array3D.hpp"
+# include "Generics/Container/Array3D.hpp"
 
 /* these are Axis Neighbours
 instead store all Neighbours

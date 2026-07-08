@@ -27,8 +27,8 @@
 //#include "PolyHedraUI/Object.hpp"
 
 // Containers
-#include "Miscellaneous/Container/Array.hpp"
-#include "Miscellaneous/Container/Binary.hpp"
+#include "Generics/Container/Array.hpp"
+#include "Generics/Container/Binary.hpp"
 //#include "Miscellaneous/EntryContainer/Binary.hpp"
 
 //#include "Window.hpp"

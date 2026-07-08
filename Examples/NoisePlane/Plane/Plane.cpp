@@ -3,7 +3,7 @@
 
 #include "ValueType/Bool2D.hpp"
 #include "ValueType/Loop/U2.hpp"
-#include "Miscellaneous/Container/Binary.hpp"
+#include "Generics/Container/Binary.hpp"
 
 
 

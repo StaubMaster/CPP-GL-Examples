@@ -6,8 +6,8 @@
 
 //# include "PolyHedra/Manager.hpp"
 
-# include "Miscellaneous/Container/Binary.hpp"
-# include "Miscellaneous/Function/Pointer.hpp"
+# include "Generics/Container/Binary.hpp"
+# include "Generics/Function/Pointer.hpp"
 # include "SceneObject/SceneObject.hpp"
 
 struct Light3DContext;

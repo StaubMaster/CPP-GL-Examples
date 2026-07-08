@@ -65,7 +65,7 @@ struct VoxelPallet
 	Voxel	ToVoxel(AxisRel placeAxis0, AxisRel placeAxis1) const;
 };
 
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 
 class DirectoryInfo;
 struct ChunkManager;

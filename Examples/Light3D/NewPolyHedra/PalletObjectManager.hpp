@@ -1,7 +1,7 @@
 #ifndef  NEW_POLYHEDRA_PALLET_OBJECT_MANAGER_HPP
 # define NEW_POLYHEDRA_PALLET_OBJECT_MANAGER_HPP
 
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 # include "Graphics/Buffer/VertexArray.hpp"
 # include "Graphics/Buffer/Array.hpp"
 # include "Graphics/Buffer/Uniform.hpp"

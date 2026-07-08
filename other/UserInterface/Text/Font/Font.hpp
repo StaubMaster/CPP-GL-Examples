@@ -3,7 +3,7 @@
 
 # include "FileParsing/Text/TextCommand.hpp"
 # include "Image.hpp"
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 # include "ValueType/Box/F2.hpp"
 
 # include <string>

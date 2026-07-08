@@ -2,7 +2,7 @@
 # define CHAIN_NEIGHBOURS_3D_HPP
 
 # include "ValueType/VectorF3.hpp"
-# include "Miscellaneous/Container/Member.hpp"
+# include "Generics/Container/Member.hpp"
 
 struct ChainNeighbours3D
 {

@@ -24,7 +24,7 @@
 // General
 #include "Window.hpp"
 #include "FrameTime.hpp"
-#include "Miscellaneous/Function/Object.hpp"
+#include "Generics/Function/Object.hpp"
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 

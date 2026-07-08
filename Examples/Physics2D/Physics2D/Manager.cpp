@@ -4,8 +4,8 @@
 #include "DirectoryInfo.hpp"
 #include "FileInfo.hpp"
 
-#include "Miscellaneous/Container/Array.hpp"
-#include "Miscellaneous/Container/Fixed.hpp"
+#include "Generics/Container/Array.hpp"
+#include "Generics/Container/Fixed.hpp"
 
 #include "Graphics/Shader/Code.hpp"
 

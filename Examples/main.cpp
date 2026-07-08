@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
 			window.Create();
 			ContextBase::WindowPointer = &window;
 			ContextBase::Change(newSelectorContext);
-			while (ContextBase::NewContext.Function != nullptr)
+			while (ContextBase::NewContext.CanInvoke())
 			{
 				ContextBase * context = ContextBase::NewContext.Invoke();
 				ContextBase::NewContext.Assign(nullptr);

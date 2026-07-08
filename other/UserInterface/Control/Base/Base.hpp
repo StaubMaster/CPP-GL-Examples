@@ -10,7 +10,7 @@
 
 #include "ValueType/_Include.hpp"
 
-#include "Miscellaneous/Container/Binary.hpp"
+#include "Generics/Container/Binary.hpp"
 
 #include "Object.hpp"
 

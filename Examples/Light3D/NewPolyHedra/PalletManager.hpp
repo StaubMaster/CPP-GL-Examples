@@ -1,7 +1,7 @@
 #ifndef  NEW_POLYHEDRA_PALLET_MANAGER_HPP
 # define NEW_POLYHEDRA_PALLET_MANAGER_HPP
 
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 # include "Graphics/Attribute/General/Layout.hpp"
 
 class PolyHedra;

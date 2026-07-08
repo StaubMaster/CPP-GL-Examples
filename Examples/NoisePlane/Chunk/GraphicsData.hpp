@@ -4,9 +4,9 @@
 # include "Graphics/Main/Data.hpp"
 # include "General/Axis/Enums.hpp"
 
-# include "Miscellaneous/Container/Array.hpp"
-# include "Miscellaneous/Container/Array3D.hpp"
-# include "Miscellaneous/Container/BlockLinkedList.hpp"
+# include "Generics/Container/Array.hpp"
+# include "Generics/Container/Array3D.hpp"
+# include "Generics/Container/BlockLinkedList.hpp"
 
 struct VectorU3;
 struct VectorI3;

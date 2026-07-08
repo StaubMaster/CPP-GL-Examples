@@ -3,7 +3,7 @@
 
 # include "InterPolator3D.hpp"
 # include "CubicSpline3D.hpp"
-# include "Miscellaneous/Container/Array.hpp"
+# include "Generics/Container/Array.hpp"
 
 class CubicSplineCurve3D : public InterPolator3D
 {

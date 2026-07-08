@@ -2,7 +2,7 @@
 # define STRUCTURE_HPP
 
 # include "ValueType/Vector/I3.hpp"
-# include "Miscellaneous/Container/Array3D.hpp"
+# include "Generics/Container/Array3D.hpp"
 
 # include "Voxel.hpp"
 

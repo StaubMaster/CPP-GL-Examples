@@ -8,7 +8,7 @@
 
 # include "ValueType/Vector/I2.hpp"
 
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 
 /*
 Plane VectorU2 should be Index2D

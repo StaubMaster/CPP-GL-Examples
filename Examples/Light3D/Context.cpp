@@ -546,7 +546,7 @@ void Light3DContext::Make()
 	SceneClear();
 	SceneInitCubes();
 	SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
-	SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
+	//SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
 	SceneInitLights();
 
 	UIManager.WindowControl.ChildInsert(UISceneObject);

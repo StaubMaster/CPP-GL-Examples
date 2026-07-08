@@ -20,7 +20,7 @@
 
 // Window and User
 #include "Window.hpp"
-#include "Miscellaneous/Function/Object.hpp"
+#include "Generics/Function/Object.hpp"
 
 // File
 #include "DirectoryInfo.hpp"
@@ -29,8 +29,8 @@
 
 // Container
 #include "Graphics/Shader/Code.hpp"
-#include "Miscellaneous/Container/Array.hpp"
-#include "Miscellaneous/Container/Binary.hpp"
+#include "Generics/Container/Array.hpp"
+#include "Generics/Container/Binary.hpp"
 #include "Miscellaneous/EntryContainer/Binary.hpp"
 
 // PolyGon

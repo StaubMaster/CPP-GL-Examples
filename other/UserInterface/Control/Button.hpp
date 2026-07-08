@@ -2,7 +2,7 @@
 # define UI_CONTROL_BUTTON_HPP
 
 # include "Base/Base.hpp"
-# include "Miscellaneous/Function/Pointer.hpp"
+# include "Generics/Function/Pointer.hpp"
 
 # include "../Text/Object.hpp"
 

@@ -13,7 +13,7 @@
 # include "ValueType/Vector/I3.hpp"
 # include "ValueType/Box/I3.hpp"
 
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 
 # include "Graphics/Texture/Array2D.hpp"
 
@@ -49,7 +49,7 @@ struct VoxelHit;
 # include "General/Telemetry/WaitDoTime.hpp"
 # include "General/ContainerLock/Lock.hpp"
 
-# include "Miscellaneous/Container/Array3D.hpp"
+# include "Generics/Container/Array3D.hpp"
 
 # include "Graphics/MultiBufferChunkU.hpp"
 

@@ -5,8 +5,8 @@
 
 #include "DirectoryInfo.hpp"
 
-#include "Miscellaneous/Container/Binary.hpp"
-#include "Miscellaneous/Container/Array.hpp"
+#include "Generics/Container/Binary.hpp"
+#include "Generics/Container/Array.hpp"
 
 #include "Graphics/Shader/Code.hpp"
 

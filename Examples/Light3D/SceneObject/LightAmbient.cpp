@@ -48,5 +48,5 @@ void SceneObject_LightAmbient::DisplayObject(const DisplayMode & mode)
 
 RayHitF3 SceneObject_LightAmbient::Hit(const RayF3 & ray) const
 {
-	return RayHitObject1(ray, Data);
+	return RayHitObject(ray, Data);
 }

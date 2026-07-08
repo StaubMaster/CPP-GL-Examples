@@ -4,9 +4,9 @@
 # include "DirectoryInfo.hpp"
 
 # include "Window.hpp"
-# include "Miscellaneous/Function/Object.hpp"
+# include "Generics/Function/Object.hpp"
 
-# include "Miscellaneous/Function/Static.hpp"
+# include "Generics/Function/Static.hpp"
 
 struct ContextBase
 {

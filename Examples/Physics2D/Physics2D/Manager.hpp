@@ -1,7 +1,7 @@
 #ifndef  PHYSICS_2D_MANAGER_HPP
 # define PHYSICS_2D_MANAGER_HPP
 
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 
 # include "Physics2D/InstanceManager.hpp"
 # include "Physics2D/Object.hpp"

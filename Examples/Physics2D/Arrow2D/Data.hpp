@@ -3,7 +3,7 @@
 
 # include "Arrow2D/Inst/Data.hpp"
 //# include "Miscellaneous/EntryContainer/Entry.hpp"
-# include "Miscellaneous/Container/Array.hpp"
+# include "Generics/Container/Array.hpp"
 
 class DirectoryInfo;
 

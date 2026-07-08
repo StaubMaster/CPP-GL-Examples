@@ -7,7 +7,7 @@
 # include <mutex>
 # include <condition_variable>
 
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 
 struct ChunkManager;
 struct Chunk;

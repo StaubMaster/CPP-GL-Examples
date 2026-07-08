@@ -56,5 +56,5 @@ void SceneObject_LightSpot::DisplayObject(const DisplayMode & mode)
 
 RayHitF3 SceneObject_LightSpot::Hit(const RayF3 & ray) const
 {
-	return RayHitObject0(ray, Data);
+	return RayHitObject(ray, Data);
 }

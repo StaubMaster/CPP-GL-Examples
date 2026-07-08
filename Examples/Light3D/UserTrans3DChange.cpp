@@ -58,13 +58,13 @@ void UserTrans3DChange::IndicatorsFind(const RayF3 & ray)
 
 	RayHitF3Type<EIndicatorType> hit(EIndicatorType::None);
 
-	hit.Consider(RayHitObject1(ray, MoveAxisX), EIndicatorType::MoveAxisX);
-	hit.Consider(RayHitObject1(ray, MoveAxisY), EIndicatorType::MoveAxisY);
-	hit.Consider(RayHitObject1(ray, MoveAxisZ), EIndicatorType::MoveAxisZ);
+	hit.Consider(RayHitObject(ray, MoveAxisX), EIndicatorType::MoveAxisX);
+	hit.Consider(RayHitObject(ray, MoveAxisY), EIndicatorType::MoveAxisY);
+	hit.Consider(RayHitObject(ray, MoveAxisZ), EIndicatorType::MoveAxisZ);
 
-	hit.Consider(RayHitObject1(ray, SpinRingX), EIndicatorType::SpinRingX);
-	hit.Consider(RayHitObject1(ray, SpinRingY), EIndicatorType::SpinRingY);
-	hit.Consider(RayHitObject1(ray, SpinRingZ), EIndicatorType::SpinRingZ);
+	hit.Consider(RayHitObject(ray, SpinRingX), EIndicatorType::SpinRingX);
+	hit.Consider(RayHitObject(ray, SpinRingY), EIndicatorType::SpinRingY);
+	hit.Consider(RayHitObject(ray, SpinRingZ), EIndicatorType::SpinRingZ);
 
 	if (hit.Is())
 	{

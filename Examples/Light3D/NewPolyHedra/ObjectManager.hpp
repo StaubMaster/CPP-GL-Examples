@@ -1,7 +1,7 @@
 #ifndef  NEW_POLYHEDRA_OBJECT_MANAGER_HPP
 # define NEW_POLYHEDRA_OBJECT_MANAGER_HPP
 
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/Attribute/General/Layout.hpp"
 # include "Graphics/Buffer/Uniform.hpp"

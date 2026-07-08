@@ -3,7 +3,7 @@
 
 #include "ValueType/_Include.hpp"
 
-#include "Miscellaneous/Container/Array.hpp"
+#include "Generics/Container/Array.hpp"
 #include "Graphics/Shader/Code.hpp"
 
 #include "DirectoryInfo.hpp"

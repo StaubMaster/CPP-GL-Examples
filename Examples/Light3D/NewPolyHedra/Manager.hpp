@@ -1,7 +1,7 @@
 #ifndef  NEW_POLYHEDRA_MANAGER_HPP
 # define NEW_POLYHEDRA_MANAGER_HPP
 
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 
 struct NewPolyHedra_PalletManager;
 struct NewPolyHedra_ObjectManager;

@@ -2,7 +2,7 @@
 # define PHYSICS_2D_COLLISION_PROJECTION_HPP
 
 # include "Physics2D/Object.hpp"
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 
 namespace Physics2D
 {

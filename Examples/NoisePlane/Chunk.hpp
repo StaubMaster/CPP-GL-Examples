@@ -20,9 +20,9 @@
 # include "ValueType/Vector/I3.hpp"
 # include "ValueType/Vector/U3.hpp"
 
-# include "Miscellaneous/Container/Array3D.hpp"
-# include "Miscellaneous/Container/Binary.hpp"
-# include "Miscellaneous/Container/Array.hpp"
+# include "Generics/Container/Array3D.hpp"
+# include "Generics/Container/Binary.hpp"
+# include "Generics/Container/Array.hpp"
 
 # include "General/Telemetry/ValueAccumulator.hpp"
 

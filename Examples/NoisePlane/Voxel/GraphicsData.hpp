@@ -5,9 +5,9 @@
 
 # include "General/Axis/Orientation.hpp" // only for AxisRel
 
-# include "Miscellaneous/Container/Binary.hpp"
-# include "Miscellaneous/Container/Array.hpp"
-# include "Miscellaneous/Container/BlockLinkedList.hpp"
+# include "Generics/Container/Binary.hpp"
+# include "Generics/Container/Array.hpp"
+# include "Generics/Container/BlockLinkedList.hpp"
 
 struct VectorU3;
 struct Voxel;

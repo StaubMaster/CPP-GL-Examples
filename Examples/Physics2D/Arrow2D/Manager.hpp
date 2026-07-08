@@ -9,7 +9,7 @@
 //# include "Arrow2D/Inst/Data.hpp"
 # include "Arrow2D/Data.hpp"
 # include "Miscellaneous/EntryContainer/Binary.hpp"
-# include "Miscellaneous/Container/Binary.hpp"
+# include "Generics/Container/Binary.hpp"
 
 class DirectoryInfo;
 

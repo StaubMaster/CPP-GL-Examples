@@ -10,7 +10,7 @@
 # include "ValueType/Vector/U2.hpp"
 # include "Item/ItemContainer.hpp"
 
-# include "Miscellaneous/Container/Array2D.hpp"
+# include "Generics/Container/Array2D.hpp"
 
 struct Inventory : public UI::Control::Form
 {

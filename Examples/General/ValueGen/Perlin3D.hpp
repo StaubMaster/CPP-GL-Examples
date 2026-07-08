@@ -3,7 +3,7 @@
 
 # include "ValueType/Vector/U3.hpp"
 # include "ValueType/Vector/F3.hpp"
-# include "Miscellaneous/Container/Array3D.hpp"
+# include "Generics/Container/Array3D.hpp"
 
 struct Perlin3D
 {

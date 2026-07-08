@@ -6,9 +6,9 @@
 #include "ShaderLayout.hpp"
 #include "Graphics/Shader/Base.hpp"
 
-#include "Miscellaneous/Container/Binary.hpp"
-#include "Miscellaneous/Container/Array.hpp"
-#include "Miscellaneous/Container/BlockLinkedList.hpp"
+#include "Generics/Container/Binary.hpp"
+#include "Generics/Container/Array.hpp"
+#include "Generics/Container/BlockLinkedList.hpp"
 
 #include "Font/Font.hpp"
 #include "Graphics/Texture/Array2D.hpp"

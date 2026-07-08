@@ -38,7 +38,7 @@ LightSpotT        1.0   0.0 0.0 1.0   -22.0 30.0 -22.0   0.0 0.0 0.0   0.80 0.95
 pallet Stage.polyhedra                       stage
 pallet Truss/Square40cm_Len200cm.polyhedra   truss
 pallet Truss/Cube40cm.polyhedra              truss_cube
-pallet chair.polyhedra                       chair
+pallet Chair.polyhedra                       chair
 
 
 
