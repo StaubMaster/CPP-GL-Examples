@@ -200,7 +200,7 @@ Light3DContext();
 
 
 
-SceneObject_PolyHedraObject		CenterCube;
+SceneObject_PolyHedraObject *		CenterCube;
 
 
 

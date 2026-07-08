@@ -152,15 +152,15 @@ void Light3DContext::SceneClear()
 }
 
 static PolyHedra * Cube = nullptr;
-static PolyHedra * Sphere = nullptr;
-static PolyHedra * Torus = nullptr;
+//static PolyHedra * Sphere = nullptr;
+//static PolyHedra * Torus = nullptr;
 
 void Light3DContext::SceneInitCubes()
 {
 	Cube = PolyHedraGenerate::RegularHexaHedron();
-	//CenterCube.Data.PalletManager = PolyHedraManager.MakePallet(Cube);
-	CenterCube.Data.Manager = ObjectManagerBasic.FindMakePalletObjectManager(Cube);
-	Objects.Insert(&CenterCube);
+	CenterCube = new SceneObject_PolyHedraObject();
+	CenterCube -> Data.Manager = ObjectManagerBasic.FindMakePalletObjectManager(Cube);
+	Objects.Insert(CenterCube);
 
 	/* Random
 	int Range_Size1 = 0x1FF;
@@ -195,26 +195,24 @@ void Light3DContext::SceneInitCubes()
 	//Sphere = PolyHedraGenerate::SphereY(1, 4, 1.0f); // TetraHedron
 	//Sphere = PolyHedraGenerate::SphereY(2, 5, 1.0f); // IcosaHedron
 	//Sphere = PolyHedraGenerate::SphereY(6, 12, 4.0f);
-	Sphere = PolyHedra::Load(MediaDirectory.File("YMT/Light/Chair.polyhedra"));
+	//Sphere = PolyHedra::Load(MediaDirectory.File("YMT/Light/Chair.polyhedra"));
 
 	//Torus = PolyHedraGenerate::TorusY(8, 2.0f, 16, 4.0f);
-	Torus = PolyHedraGenerate::TorusY(32, 3.0f, 64, 8.0f);
+	//Torus = PolyHedraGenerate::TorusY(32, 3.0f, 64, 8.0f);
 
 	//Sphere -> UseCornerNormals = true;
-	Torus -> UseCornerNormals = true;
-	//PolyHedraPalletManager * sphere_manager = PolyHedraManager.MakePallet(Sphere);
-	//PolyHedraPalletManager * torus_manager = PolyHedraManager.MakePallet(Torus);
-	NewPolyHedra_PalletObjectManager * sphere_manager = ObjectManagerBasic.FindMakePalletObjectManager(Sphere);
-	NewPolyHedra_PalletObjectManager * torus_manager = ObjectManagerBasic.FindMakePalletObjectManager(Torus);
+	//Torus -> UseCornerNormals = true;
+	//NewPolyHedra_PalletObjectManager * sphere_manager = ObjectManagerBasic.FindMakePalletObjectManager(Sphere);
+	//NewPolyHedra_PalletObjectManager * torus_manager = ObjectManagerBasic.FindMakePalletObjectManager(Torus);
 
-	VectorF3 pos(0, 64, 0);
+	/*VectorF3 pos(0, 64, 0);
 	Objects.Insert(new SceneObject_PolyHedraObject(sphere_manager, Trans3D(pos)));
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(0, 8, 0), EulerAngle3D::Degrees(0, 0, 90))));
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 8, 0), EulerAngle3D::Degrees(0, 0, 90))));
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));
+	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));*/
 }
 void Light3DContext::SceneInitLights()
 {
@@ -234,8 +232,9 @@ void Light3DContext::SceneInitLights()
 
 	// Assign Object PolyHedras
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
-	NewPolyHedra_PalletObjectManager * stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
 	NewPolyHedra_PalletObjectManager * Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(Cube);
+	NewPolyHedra_PalletObjectManager * stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
+	NewPolyHedra_PalletObjectManager * light_ambient_manager = ObjectManagerTSC.FindMakePalletObjectManager(PolyHedra::Load(dir.File("LightBulb.polyhedra")));
 
 	/* Light Meta Indicators
 		LightBuld: LightPoint
@@ -267,7 +266,8 @@ void Light3DContext::SceneInitLights()
 			SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(scene_obj);
 			if (obj != nullptr)
 			{
-				obj -> Data.Manager = Cube_UI_manager;
+				//obj -> Data.Manager = Cube_UI_manager;
+				obj -> Data.Manager = light_ambient_manager;
 			}
 		}
 		{
@@ -535,11 +535,7 @@ void Light3DContext::Make()
 
 	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
 	View.Depth.Color = window.DefaultColor;
-	//View.Trans = Trans3D(VectorF3(0, 10, -65), EulerAngle3D());
-	//View.Trans = Trans3D(VectorF3(0, 0, -5), EulerAngle3D());
-	//View.Trans = Trans3D(VectorF3(0, 64, -16), EulerAngle3D());
-	//View.Trans = Trans3D(VectorF3(0, 64, 0), EulerAngle3D());
-	View.Trans = Trans3D(VectorF3(0, 0, -16), EulerAngle3D());
+	View.Trans = Trans3D(VectorF3(0, 64, -2), EulerAngle3D());
 
 	TestPolyHedraSphere = PolyHedraGenerate::SphereY(2, 5, 12.0f);
 
@@ -659,6 +655,15 @@ void Light3DContext::User(FrameTime frame_time)
 			case SceneObject::DisplayMode::EIndicators::Hide: SceneObject_DisplayMode.Indicators = SceneObject::DisplayMode::EIndicators::Show; break;
 		}
 	}
+
+	if (window[Keys::F5] == State::Press)
+	{
+		SceneClear();
+		SceneInitCubes();
+		SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
+		//SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
+		SceneInitLights();
+	}
 }
 void Light3DContext::Draw()
 {
@@ -775,8 +780,8 @@ void Light3DContext::Frame(FrameTime frame_time)
 		Objects[i] -> Update();
 	}
 
-	CenterCube.Data.Data.Trans.Position = VectorF3(0, 10, 0);
-	CenterCube.Data.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
+	CenterCube -> Data.Data.Trans.Position = VectorF3(0, 10, 0);
+	CenterCube -> Data.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
 
 	ViewFunc();
 

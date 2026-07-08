@@ -40,6 +40,9 @@ pallet Truss/Square40cm_Len200cm.polyhedra   truss
 pallet Truss/Cube40cm.polyhedra              truss_cube
 pallet Chair.polyhedra                       chair
 
+pallet LightBulb.polyhedra                   light_bulb
+place light_bulb   0 64 0   00 00 90
+
 
 
 place   stage   0 0 0   0 0 0
