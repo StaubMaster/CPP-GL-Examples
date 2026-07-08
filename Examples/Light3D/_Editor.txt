@@ -1,25 +1,110 @@
 
-Indicators
-	Light
-		Ambient
-		Direction
-		Point
-
-these are not real objects
-just representations
-
-dont light them ?
-	so like Trans Indicators
-	but those are visible through everything
-
-make Ambient Indicators visible through everything
+rename Light3D to Editor
+give this its own Main
+move Selector into its own thing
 
 
 
-Toggle display Indicators
-Toggle display Everything else
+Indicators:
+currently they all use the Cube
+make PolyHedra for them
+
+LightSpot:
+Indicator should be like the others
+should be bright so it is easily visible
+also currently has no FallOff
+
+LightPoint:
+currently does not exist
 
 
 
 Save Scene
 Load Scene (from arguments)
+
+
+
+Improve UI:
+finally make Text smaller
+make UI PolyHedra
+	not like the old ones
+	make them 2D, and give them a fixed Pixel scale
+	this can be done with the NewPolyHedra stuff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+what is the point of this ?

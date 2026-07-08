@@ -21,6 +21,9 @@ template<typename TypeData> struct NewPolyHedra_Type_PalletObjectData;
 RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans);
 RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale);
 
+// check Bounding Box
+// should that be stored in PolyHedra of Pallet
+
 template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const TypeData & data);
 template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Pallet & pallet, const TypeData & data);
 template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_PalletObjectManager & manager, const TypeData & data);

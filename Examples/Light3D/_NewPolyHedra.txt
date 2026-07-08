@@ -1,0 +1,27 @@
+
+move to Engine
+remove old stuff
+this would mean replacing all places that currently use the old thing
+dont do that for now
+
+rename
+maybe just replace NewPolyHedra_ with NameSpace:: ?
+
+
+
+remember File in Pallet
+should .polyhedra Files specify a Name ?
+because the .scene Files specify a different Name for Pallets
+should also store Bounding Box ?
+
+
+
+handle Loading/Generating in Pallet/PalletManager
+to avoid duplicates
+
+Generating needs to remember Parameters
+how to do that ?
+
+
+
+

@@ -761,8 +761,6 @@ void Light3DContext::ViewFunc()
 
 
 
-// FPS sucks because Ray Hit is slow
-// check Bounding Box first
 void Light3DContext::Frame(FrameTime frame_time)
 {
 	static float frameSum = 0;

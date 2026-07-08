@@ -38,7 +38,6 @@ SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & conte
 	, Context(context)
 	, PolyHedras()
 {
-	//MissingPolyHedra = Context.PolyHedraManager.MakePallet(PolyHedraGenerate::RegularHexaHedron(1.0f));
 	MissingPolyHedra = Context.ObjectManagerBasic.FindMakePalletObjectManager(PolyHedraGenerate::RegularHexaHedron(1.0f));
 
 	/* Problem
@@ -128,7 +127,6 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 }
 
 #include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
-//#include "NewPolyHedra/Type/ObjectData.hpp"
 #include "NewPolyHedra/PalletObjectData.hpp"
 
 void SceneParsingData::Parse_LightAmbient(const TextCommand & cmd)
