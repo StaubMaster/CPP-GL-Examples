@@ -6,16 +6,19 @@ move Selector into its own thing
 
 
 Indicators:
+moving
+can be inside of / behind other Indicators
+should allways be in front ?
+
+
 currently they all use the Cube
 make PolyHedra for them
+
 
 LightSpot:
 Indicator should be like the others
 should be bright so it is easily visible
 also currently has no FallOff
-
-LightPoint:
-currently does not exist
 
 
 

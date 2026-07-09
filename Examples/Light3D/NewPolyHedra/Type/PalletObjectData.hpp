@@ -3,8 +3,12 @@
 
 # include "../PalletObjectData.hpp"
 
+class PolyHedra;
+
 namespace NewPolyHedra
 {
+struct Pallet;
+
 template<
 	typename TypeData
 >
@@ -24,6 +28,10 @@ struct Type_PalletObjectData : public PalletObjectData
 	{
 		return &Data;
 	}
+
+	public:
+	static Type_PalletObjectData<TypeData> * Make(Pallet * pallet);
+	static Type_PalletObjectData<TypeData> * Make(PolyHedra * polyhedra);
 };
 };
 

@@ -2,7 +2,6 @@
 # define NEW_POLYHEDRA_TYPE_OBJECT_HPP
 
 # include "PalletObjectData.hpp"
-# include "NewPalletObjectData.hpp"
 
 class PolyHedra;
 
@@ -74,10 +73,10 @@ struct Type_Object
 		: PalletObjectData(nullptr)
 	{ }
 	Type_Object(Pallet * pallet)
-		: PalletObjectData(sNewPalletObjectData<TypeData>(pallet))
+		: PalletObjectData(Type_PalletObjectData<TypeData>::Make(pallet))
 	{ }
 	Type_Object(PolyHedra * polyhedra)
-		: PalletObjectData(sNewPalletObjectData<TypeData>(polyhedra))
+		: PalletObjectData(Type_PalletObjectData<TypeData>::Make(polyhedra))
 	{ }
 
 	public:
@@ -94,12 +93,12 @@ struct Type_Object
 	void	Create(Pallet * pallet)
 	{
 		if (PalletObjectData != nullptr) { return; }
-		PalletObjectData = sNewPalletObjectData<TypeData>(pallet);
+		PalletObjectData = Type_PalletObjectData<TypeData>::Make(pallet);
 	}
 	void	Create(PolyHedra * polyhedra)
 	{
 		if (PalletObjectData != nullptr) { return; }
-		PalletObjectData = sNewPalletObjectData<TypeData>(polyhedra);
+		PalletObjectData = Type_PalletObjectData<TypeData>::Make(polyhedra);
 	}
 };
 };
