@@ -14,17 +14,18 @@ namespace NewPolyHedra
 struct Pallet
 {
 	public:
-	PolyHedra *		Object;
-	void	Put();
-
-	public:
+	PolyHedra *		Object = nullptr;
 	std::string		Name;
 
 	public:
 	~Pallet();
-	Pallet(PolyHedra * object);
+	Pallet();
 	Pallet(const Pallet & other) = delete;
 	Pallet & operator=(const Pallet & other) = delete;
+
+	public:
+	Pallet(PolyHedra * object);
+	Pallet(PolyHedra * object, std::string name);
 
 
 
@@ -35,6 +36,9 @@ struct Pallet
 	::Attribute::Layout *	BufferFullLayout;
 	::Attribute::Layout *	BufferWireLayout;
 	::Texture::Array2D		Texture;
+
+	public:
+	void	GraphicsPut();
 
 	public:
 	void	GraphicsCreate();

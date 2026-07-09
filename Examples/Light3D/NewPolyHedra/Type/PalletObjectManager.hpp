@@ -6,10 +6,7 @@
 
 namespace NewPolyHedra
 {
-template<
-	typename TypeData,
-	typename TypeInstanceData
->
+template<typename TypeData, typename TypeInstanceData>
 struct Type_PalletObjectManager : public PalletObjectManager
 {
 	public:

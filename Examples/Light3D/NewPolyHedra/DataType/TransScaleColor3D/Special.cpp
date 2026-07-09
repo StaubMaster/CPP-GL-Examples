@@ -1,13 +1,11 @@
-#include "../../Type/Special.cpp"
-#include "../../Type/Special/Object.cpp"
 #include "ObjectData.hpp"
+#include "../../Type/PalletObjectData.cpp"
+#include "../../Type/Object.cpp"
 
 
 
 namespace NewPolyHedra
 {
-template Type_PalletObjectData<TransScaleColor3D::ObjectData> * Type_PalletObjectData<TransScaleColor3D::ObjectData>::Make(Pallet * pallet);
-template Type_PalletObjectData<TransScaleColor3D::ObjectData> * Type_PalletObjectData<TransScaleColor3D::ObjectData>::Make(PolyHedra * polyhedra);
-
+template struct Type_PalletObjectData<TransScaleColor3D::ObjectData>;
 template struct Type_Object<TransScaleColor3D::ObjectData>;
 };

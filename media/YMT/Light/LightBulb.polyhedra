@@ -47,10 +47,29 @@ index +8 +0
 
 vertex   0,0 -2,00 0,0
 fan<1   +08   +00 +01 +02 +03 +04 +05 +06 +07
+index +8 +0
+
 index +1 +0
 
 
 
+#vertex   -2,0 -2,0 -2,0   # 0   000
+#vertex   +2,0 -2,0 -2,0   # 1   001
+#vertex   -2,0 +2,0 -2,0   # 2   010
+#vertex   +2,0 +2,0 -2,0   # 3   011
+#vertex   -2,0 -2,0 +2,0   # 4   100
+#vertex   +2,0 -2,0 +2,0   # 5   101
+#vertex   -2,0 +2,0 +2,0   # 6   110
+#vertex   +2,0 +2,0 +2,0   # 7   111
+#
+#o +0 +1 +2 +3
+#o +0 +2 +4 +6
+#o +0 +4 +1 +5
+#
+#o +1 +5 +3 +7
+#o +2 +3 +6 +7
+#o +4 +6 +5 +7
+#
 # put an inverted cube around this to make it more visible
 # make it a unit cube
 # make light bulb smaller

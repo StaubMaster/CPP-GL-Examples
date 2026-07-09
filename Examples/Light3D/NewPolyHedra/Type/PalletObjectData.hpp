@@ -9,10 +9,7 @@ namespace NewPolyHedra
 {
 struct Pallet;
 
-template<
-	typename TypeData
->
-struct Type_PalletObjectData : public PalletObjectData
+template<typename TypeData> struct Type_PalletObjectData : public PalletObjectData
 {
 	public:
 	~Type_PalletObjectData() = default;
@@ -24,10 +21,7 @@ struct Type_PalletObjectData : public PalletObjectData
 	TypeData	Data;
 
 	protected:
-	const void *	DataVoid() const
-	{
-		return &Data;
-	}
+	const void *	DataVoid() const;
 
 	public:
 	static Type_PalletObjectData<TypeData> * Make(Pallet * pallet);

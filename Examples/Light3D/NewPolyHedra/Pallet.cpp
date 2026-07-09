@@ -11,7 +11,44 @@
 
 
 
-void NewPolyHedra::Pallet::Put()
+NewPolyHedra::Pallet::~Pallet()
+{
+	delete Object;
+}
+NewPolyHedra::Pallet::Pallet()
+	: Object(nullptr)
+	, Name()
+	, BufferFull(GL::BufferDataUsage::StaticDraw)
+	, BufferWire(GL::BufferDataUsage::StaticDraw)
+	, BufferWireElem(GL::BufferDataUsage::StaticDraw, GL::DrawIndexType::UnsignedInt)
+	, BufferFullLayout(nullptr)
+	, BufferWireLayout(nullptr)
+	, Texture()
+{ }
+NewPolyHedra::Pallet::Pallet(PolyHedra * object)
+	: Object(object)
+	, Name()
+	, BufferFull(GL::BufferDataUsage::StaticDraw)
+	, BufferWire(GL::BufferDataUsage::StaticDraw)
+	, BufferWireElem(GL::BufferDataUsage::StaticDraw, GL::DrawIndexType::UnsignedInt)
+	, BufferFullLayout(nullptr)
+	, BufferWireLayout(nullptr)
+	, Texture()
+{ }
+NewPolyHedra::Pallet::Pallet(PolyHedra * object, std::string name)
+	: Object(object)
+	, Name(name)
+	, BufferFull(GL::BufferDataUsage::StaticDraw)
+	, BufferWire(GL::BufferDataUsage::StaticDraw)
+	, BufferWireElem(GL::BufferDataUsage::StaticDraw, GL::DrawIndexType::UnsignedInt)
+	, BufferFullLayout(nullptr)
+	, BufferWireLayout(nullptr)
+	, Texture()
+{ }
+
+
+
+void NewPolyHedra::Pallet::GraphicsPut()
 {
 	VertexArray::BindNone();
 	if (Object != nullptr)
@@ -36,24 +73,6 @@ void NewPolyHedra::Pallet::Put()
 		Texture = Object -> Skins[0] -> ToTexture();
 	}
 }
-
-
-
-NewPolyHedra::Pallet::~Pallet()
-{
-	delete Object;
-}
-NewPolyHedra::Pallet::Pallet(PolyHedra * object)
-	: Object(object)
-	, BufferFull(GL::BufferDataUsage::StaticDraw)
-	, BufferWire(GL::BufferDataUsage::StaticDraw)
-	, BufferWireElem(GL::BufferDataUsage::StaticDraw, GL::DrawIndexType::UnsignedInt)
-	, BufferFullLayout(nullptr)
-	, BufferWireLayout(nullptr)
-	, Texture()
-{ }
-
-
 
 void NewPolyHedra::Pallet::GraphicsCreate()
 {

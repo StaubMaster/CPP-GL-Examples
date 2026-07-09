@@ -9,9 +9,9 @@ struct Pallet;
 
 struct PalletObjectManager;
 
-template <typename TypeData> struct Type_PalletObjectData;
+template<typename TypeData> struct Type_PalletObjectData;
 
-template <typename TypeData> struct Type_Object
+template<typename TypeData> struct Type_Object
 {
 	private:
 	Type_PalletObjectData<TypeData> *		PalletObjectData;

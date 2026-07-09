@@ -44,7 +44,7 @@ NewPolyHedra::Pallet * NewPolyHedra::PalletManager::MakePallet(PolyHedra * polyh
 	pallet -> BufferFullLayout = BufferFullLayout;
 	pallet -> BufferWireLayout = BufferWireLayout;
 	pallet -> GraphicsCreate();
-	pallet -> Put();
+	pallet -> GraphicsPut();
 	Pallets.Insert(pallet);
 	return pallet;
 }

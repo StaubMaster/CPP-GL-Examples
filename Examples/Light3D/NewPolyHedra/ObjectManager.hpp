@@ -8,6 +8,11 @@
 
 class PolyHedra;
 
+/* split ?
+PalletObjectManagerManager
+PalletObjectDataManager
+*/
+
 namespace NewPolyHedra
 {
 struct Pallet;
@@ -17,35 +22,51 @@ struct ObjectData;
 
 struct ObjectManager
 {
+	public:
 	~ObjectManager() = default;
 	ObjectManager() = default;
 	ObjectManager(const ObjectManager & other) = delete;
 	ObjectManager & operator=(const ObjectManager & other) = delete;
 
 
+
+	private:
 	Container::Binary<PalletObjectManager*>	Managers;
 
+	private:
 	virtual PalletObjectManager *	NewPalletObjectManager() = 0;
 
+	public:
 	PalletObjectManager *	FindPalletObjectManager(Pallet * pallet) const;
+	private:
 	PalletObjectManager *	MakePalletObjectManager(Pallet * pallet);
+	public:
 	PalletObjectManager *	FindMakePalletObjectManager(Pallet * pallet);
 
+	public:
 	PalletObjectManager *	FindPalletObjectManager(PolyHedra * polyhedra) const;
+	private:
 	PalletObjectManager *	MakePalletObjectManager(PolyHedra * polyhedra);
+	public:
 	PalletObjectManager *	FindMakePalletObjectManager(PolyHedra * polyhedra);
 
+	// FindName
 
 
+
+	private:
 	Container::Binary<PalletObjectData*>	PalletObjectDatas;
 
+	public:
 	virtual PalletObjectData *		NewPalletObjectData() = 0;
 	PalletObjectData *				NewPalletObjectData(Pallet * pallet);
 
+	public:
 	void	UpdatePalletObjectDatas(); // RemovePalletObjectDatas();
 
 
 
+	public:
 	::Shader::Base	ShaderFull;
 	::Shader::Base	ShaderWire;
 
