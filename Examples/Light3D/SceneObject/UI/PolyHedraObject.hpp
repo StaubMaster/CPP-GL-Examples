@@ -5,15 +5,18 @@
 # include "Control/Label.hpp"
 # include "PropertyControl/Trans3D.hpp"
 
+namespace NewPolyHedra
+{
 template<
 	typename TypeData
 >
-struct NewPolyHedra_Type_PalletObjectData;
+struct Type_PalletObjectData;
+};
 
 namespace Basic3D
 {
 struct ObjectData;
-typedef NewPolyHedra_Type_PalletObjectData<
+typedef NewPolyHedra::Type_PalletObjectData<
 	Basic3D::ObjectData
 > PalletObjectData;
 };

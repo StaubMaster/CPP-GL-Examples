@@ -7,7 +7,7 @@
 
 namespace Basic3D
 {
-typedef NewPolyHedra_Type_ObjectManager<
+typedef NewPolyHedra::Type_ObjectManager<
 	Basic3D::ObjectData,
 	Basic3D::InstanceData
 > ObjectManager;

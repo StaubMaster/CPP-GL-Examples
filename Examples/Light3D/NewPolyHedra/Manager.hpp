@@ -3,14 +3,21 @@
 
 # include "Generics/Container/Binary.hpp"
 
-struct NewPolyHedra_PalletManager;
-struct NewPolyHedra_ObjectManager;
-
-struct NewPolyHedra_Manager
+namespace NewPolyHedra
 {
-	NewPolyHedra_PalletManager *	PalletManager;
+struct PalletManager;
+struct ObjectManager;
 
-	Container::Binary<NewPolyHedra_ObjectManager*>	ObjectManagers;
+struct Manager
+{
+	~Manager() = default;
+	Manager() = default;
+	Manager(const Manager & other) = delete;
+	Manager & operator=(const Manager & other) = delete;
+
+	NewPolyHedra::PalletManager *	PalletManager = nullptr;
+
+	Container::Binary<ObjectManager*>	ObjectManagers;
 
 	void	UpdatePalletObjectDatas();
 
@@ -21,6 +28,7 @@ struct NewPolyHedra_Manager
 	void	GraphicsDelete();
 	void	GraphicsDrawFull();
 	void	GraphicsDrawWire();
+};
 };
 
 #endif

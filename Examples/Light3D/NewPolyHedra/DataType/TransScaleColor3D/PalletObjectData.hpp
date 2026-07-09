@@ -6,7 +6,7 @@
 
 namespace TransScaleColor3D
 {
-typedef NewPolyHedra_Type_PalletObjectData<
+typedef NewPolyHedra::Type_PalletObjectData<
 	TransScaleColor3D::ObjectData
 > PalletObjectData;
 };

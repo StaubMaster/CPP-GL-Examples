@@ -1,40 +1,49 @@
 #ifndef  NEW_POLYHEDRA_PALLET_OBJECT_DATA_HPP
 # define NEW_POLYHEDRA_PALLET_OBJECT_DATA_HPP
 
-struct NewPolyHedra_PalletObjectManager;
+
+namespace NewPolyHedra
+{
+struct PalletObjectManager;
 
 // rename to just "PalletObject"
-struct NewPolyHedra_PalletObjectData
+struct PalletObjectData
 {
 	public:
-	bool	Remove;
+	bool	Remove = false;
 
 	private:
-	bool	DisplayFull;
+	bool	DisplayFull = true;
 	public:
 	void	ShowFull();
 	void	HideFull();
 	bool	VisibleFull() const;
 
 	private:
-	bool	DisplayWire;
+	bool	DisplayWire = false;
 	public:
 	void	ShowWire();
 	void	HideWire();
 	bool	VisibleWire() const;
 
 	public:
-	NewPolyHedra_PalletObjectManager *	Manager;
+	PalletObjectManager *	Manager = nullptr;
 
 	public:
-	virtual ~NewPolyHedra_PalletObjectData();
-	NewPolyHedra_PalletObjectData();
+	virtual ~PalletObjectData() = default;
+	PalletObjectData() = default;
+	PalletObjectData(const PalletObjectData & other) = default;
+	PalletObjectData & operator=(const PalletObjectData & other) = default;
+
+	public:
+	PalletObjectData(PalletObjectManager * manager);
 
 	protected:
 	virtual const void *	DataVoid() const = 0;
 
 	public:
 	void	InstancePut() const;
+};
 };
 
 #endif

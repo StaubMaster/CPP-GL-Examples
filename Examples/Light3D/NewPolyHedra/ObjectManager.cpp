@@ -6,12 +6,12 @@
 
 
 
-NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindPalletObjectManager(NewPolyHedra_Pallet * pallet) const
+NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::FindPalletObjectManager(NewPolyHedra::Pallet * pallet) const
 {
 	if (pallet == nullptr) { return nullptr; }
 	for (unsigned int i = 0; i < Managers.Count(); i++)
 	{
-		NewPolyHedra_PalletObjectManager * manager = Managers[i];
+		NewPolyHedra::PalletObjectManager * manager = Managers[i];
 		if (manager == nullptr) { continue; }
 		if (manager -> Pallet == pallet)
 		{
@@ -20,10 +20,10 @@ NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindPalletObjectM
 	}
 	return nullptr;
 }
-NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::MakePalletObjectManager(NewPolyHedra_Pallet * pallet)
+NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::MakePalletObjectManager(NewPolyHedra::Pallet * pallet)
 {
 	if (pallet == nullptr) { return nullptr; }
-	NewPolyHedra_PalletObjectManager * manager = NewPalletObjectManager();
+	NewPolyHedra::PalletObjectManager * manager = NewPalletObjectManager();
 	manager -> Pallet = pallet;
 	if (BufferFullLayout != nullptr)
 	{
@@ -39,10 +39,10 @@ NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::MakePalletObjectM
 	Managers.Insert(manager);
 	return manager;
 }
-NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindMakePalletObjectManager(NewPolyHedra_Pallet * pallet)
+NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::FindMakePalletObjectManager(NewPolyHedra::Pallet * pallet)
 {
 	if (pallet == nullptr) { return nullptr; }
-	NewPolyHedra_PalletObjectManager * manager = FindPalletObjectManager(pallet);
+	NewPolyHedra::PalletObjectManager * manager = FindPalletObjectManager(pallet);
 	if (manager == nullptr)
 	{
 		manager = MakePalletObjectManager(pallet);
@@ -52,24 +52,24 @@ NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindMakePalletObj
 
 
 
-NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindPalletObjectManager(PolyHedra * polyhedra) const
+NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::FindPalletObjectManager(PolyHedra * polyhedra) const
 {
 	if (polyhedra == nullptr) { return nullptr; }
-	if (NewPolyHedra_PalletManager::Current == nullptr) { return nullptr; }
-	NewPolyHedra_Pallet * pallet = NewPolyHedra_PalletManager::Current -> FindPallet(polyhedra);
+	if (NewPolyHedra::PalletManager::Current == nullptr) { return nullptr; }
+	NewPolyHedra::Pallet * pallet = NewPolyHedra::PalletManager::Current -> FindPallet(polyhedra);
 	return FindPalletObjectManager(pallet);
 }
-NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::MakePalletObjectManager(PolyHedra * polyhedra)
+NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::MakePalletObjectManager(PolyHedra * polyhedra)
 {
 	if (polyhedra == nullptr) { return nullptr; }
-	if (NewPolyHedra_PalletManager::Current == nullptr) { return nullptr; }
-	NewPolyHedra_Pallet * pallet = NewPolyHedra_PalletManager::Current -> FindMakePallet(polyhedra);
+	if (NewPolyHedra::PalletManager::Current == nullptr) { return nullptr; }
+	NewPolyHedra::Pallet * pallet = NewPolyHedra::PalletManager::Current -> FindMakePallet(polyhedra);
 	return MakePalletObjectManager(pallet);
 }
-NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindMakePalletObjectManager(PolyHedra * polyhedra)
+NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::FindMakePalletObjectManager(PolyHedra * polyhedra)
 {
 	if (polyhedra == nullptr) { return nullptr; }
-	NewPolyHedra_PalletObjectManager * manager = FindPalletObjectManager(polyhedra);
+	NewPolyHedra::PalletObjectManager * manager = FindPalletObjectManager(polyhedra);
 	if (manager == nullptr)
 	{
 		manager = MakePalletObjectManager(polyhedra);
@@ -79,20 +79,20 @@ NewPolyHedra_PalletObjectManager * NewPolyHedra_ObjectManager::FindMakePalletObj
 
 
 
-NewPolyHedra_PalletObjectData * NewPolyHedra_ObjectManager::NewPalletObjectData(NewPolyHedra_Pallet * pallet)
+NewPolyHedra::PalletObjectData * NewPolyHedra::ObjectManager::NewPalletObjectData(NewPolyHedra::Pallet * pallet)
 {
 	if (pallet == nullptr) { return nullptr; }
-	NewPolyHedra_PalletObjectData * pallet_object_data = NewPalletObjectData();
+	NewPolyHedra::PalletObjectData * pallet_object_data = NewPalletObjectData();
 	pallet_object_data -> Manager = FindMakePalletObjectManager(pallet);
 	PalletObjectDatas.Insert(pallet_object_data);
 	return pallet_object_data;
 }
 
-void NewPolyHedra_ObjectManager::UpdatePalletObjectDatas()
+void NewPolyHedra::ObjectManager::UpdatePalletObjectDatas()
 {
 	for (unsigned int i = 0; i < PalletObjectDatas.Count(); i++)
 	{
-		NewPolyHedra_PalletObjectData * object = PalletObjectDatas[i];
+		NewPolyHedra::PalletObjectData * object = PalletObjectDatas[i];
 		if (object == nullptr)
 		{
 			PalletObjectDatas.RemoveAt(i);
@@ -109,20 +109,20 @@ void NewPolyHedra_ObjectManager::UpdatePalletObjectDatas()
 
 
 
-void NewPolyHedra_ObjectManager::InstancesClear()
+void NewPolyHedra::ObjectManager::InstancesClear()
 {
 	for (unsigned int i = 0; i < Managers.Count(); i++)
 	{
-		NewPolyHedra_PalletObjectManager * manager = Managers[i];
+		NewPolyHedra::PalletObjectManager * manager = Managers[i];
 		if (manager == nullptr) { continue; }
 		manager -> InstancesClear();
 	}
 }
-void NewPolyHedra_ObjectManager::InstancesMake()
+void NewPolyHedra::ObjectManager::InstancesMake()
 {
 	for (unsigned int i = 0; i < PalletObjectDatas.Count(); i++)
 	{
-		NewPolyHedra_PalletObjectData * object = PalletObjectDatas[i];
+		NewPolyHedra::PalletObjectData * object = PalletObjectDatas[i];
 		if (object == nullptr) { continue; }
 		object -> InstancePut();
 	}
@@ -130,45 +130,45 @@ void NewPolyHedra_ObjectManager::InstancesMake()
 
 
 
-void NewPolyHedra_ObjectManager::GraphicsCreate()
+void NewPolyHedra::ObjectManager::GraphicsCreate()
 {
 	ShaderFull.Create();
 	ShaderWire.Create();
 	for (unsigned int i = 0; i < Managers.Count(); i++)
 	{
-		NewPolyHedra_PalletObjectManager * manager = Managers[i];
+		NewPolyHedra::PalletObjectManager * manager = Managers[i];
 		if (manager == nullptr) { continue; }
 		manager -> GraphicsCreate();
 	}
 }
-void NewPolyHedra_ObjectManager::GraphicsDelete()
+void NewPolyHedra::ObjectManager::GraphicsDelete()
 {
 	ShaderFull.Delete();
 	ShaderWire.Delete();
 	for (unsigned int i = 0; i < Managers.Count(); i++)
 	{
-		NewPolyHedra_PalletObjectManager * manager = Managers[i];
+		NewPolyHedra::PalletObjectManager * manager = Managers[i];
 		if (manager == nullptr) { continue; }
 		manager -> GraphicsDelete();
 	}
 }
-void NewPolyHedra_ObjectManager::GraphicsDrawFull()
+void NewPolyHedra::ObjectManager::GraphicsDrawFull()
 {
 	ShaderFull.Bind();
 	for (unsigned int i = 0; i < Managers.Count(); i++)
 	{
-		NewPolyHedra_PalletObjectManager * manager = Managers[i];
+		NewPolyHedra::PalletObjectManager * manager = Managers[i];
 		if (manager == nullptr) { continue; }
 		manager -> GraphicsDrawFull();
 	}
 	VertexArray::BindNone();
 }
-void NewPolyHedra_ObjectManager::GraphicsDrawWire()
+void NewPolyHedra::ObjectManager::GraphicsDrawWire()
 {
 	ShaderWire.Bind();
 	for (unsigned int i = 0; i < Managers.Count(); i++)
 	{
-		NewPolyHedra_PalletObjectManager * manager = Managers[i];
+		NewPolyHedra::PalletObjectManager * manager = Managers[i];
 		if (manager == nullptr) { continue; }
 		manager -> GraphicsDrawWire();
 	}

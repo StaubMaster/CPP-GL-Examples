@@ -6,7 +6,7 @@
 
 namespace Basic3D
 {
-typedef NewPolyHedra_Type_PalletObjectData<
+typedef NewPolyHedra::Type_PalletObjectData<
 	Basic3D::ObjectData
 > PalletObjectData;
 };

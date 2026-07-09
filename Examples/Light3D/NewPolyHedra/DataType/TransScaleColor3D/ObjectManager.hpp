@@ -7,7 +7,7 @@
 
 namespace TransScaleColor3D
 {
-typedef NewPolyHedra_Type_ObjectManager<
+typedef NewPolyHedra::Type_ObjectManager<
 	TransScaleColor3D::ObjectData,
 	TransScaleColor3D::InstanceData
 > ObjectManager;

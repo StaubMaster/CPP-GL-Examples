@@ -5,27 +5,32 @@
 # include "PalletObjectData.hpp"
 # include "PalletObjectManager.hpp"
 
+namespace NewPolyHedra
+{
 template<
 	typename TypeData
 >
-struct NewPolyHedra_Type_Data_ObjectManager : public NewPolyHedra_ObjectManager
+struct Type_Data_ObjectManager : public ObjectManager
 {
-	static NewPolyHedra_Type_Data_ObjectManager *	Current;
+	static Type_Data_ObjectManager *	Current;
 
-	~NewPolyHedra_Type_Data_ObjectManager()
+	public:
+	~Type_Data_ObjectManager()
 	{
 		Current = nullptr;
 	}
-	NewPolyHedra_Type_Data_ObjectManager()
+	Type_Data_ObjectManager()
 	{
 		Current = this;
 	}
+	Type_Data_ObjectManager(const Type_Data_ObjectManager & other) = delete;
+	Type_Data_ObjectManager & operator=(const Type_Data_ObjectManager & other) = delete;
 };
 
 template<
 	typename TypeData
 >
-NewPolyHedra_Type_Data_ObjectManager<TypeData> * NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current = nullptr;
+Type_Data_ObjectManager<TypeData> * Type_Data_ObjectManager<TypeData>::Current = nullptr;
 
 
 
@@ -33,16 +38,23 @@ template<
 	typename TypeData,
 	typename TypeInstanceData
 >
-struct NewPolyHedra_Type_ObjectManager : public NewPolyHedra_Type_Data_ObjectManager<TypeData>
+struct Type_ObjectManager : public Type_Data_ObjectManager<TypeData>
 {
-	NewPolyHedra_PalletObjectManager *	NewPalletObjectManager() override
+	public:
+	~Type_ObjectManager() = default;
+	Type_ObjectManager() = default;
+	Type_ObjectManager(const Type_ObjectManager & other) = delete;
+	Type_ObjectManager & operator=(const Type_ObjectManager & other) = delete;
+
+	PalletObjectManager *	NewPalletObjectManager() override
 	{
-		return new NewPolyHedra_Type_PalletObjectManager<TypeData, TypeInstanceData>();
+		return new Type_PalletObjectManager<TypeData, TypeInstanceData>();
 	}
-	NewPolyHedra_PalletObjectData *	NewPalletObjectData() override
+	PalletObjectData *	NewPalletObjectData() override
 	{
-		return new NewPolyHedra_Type_PalletObjectData<TypeData>();
+		return new Type_PalletObjectData<TypeData>();
 	}
+};
 };
 
 #endif

@@ -6,8 +6,18 @@
 
 
 
-NewPolyHedra_PalletObjectManager::NewPolyHedra_PalletObjectManager()
+NewPolyHedra::PalletObjectManager::~PalletObjectManager()
+{ }
+NewPolyHedra::PalletObjectManager::PalletObjectManager()
 	: Pallet(nullptr)
+	, BufferFullVertexArray()
+	, BufferWireVertexArray()
+	, BufferFull(GL::BufferDataUsage::StreamDraw)
+	, BufferWire(GL::BufferDataUsage::StreamDraw)
+{ }
+
+NewPolyHedra::PalletObjectManager::PalletObjectManager(NewPolyHedra::Pallet * pallet)
+	: Pallet(pallet)
 	, BufferFullVertexArray()
 	, BufferWireVertexArray()
 	, BufferFull(GL::BufferDataUsage::StreamDraw)
@@ -16,7 +26,7 @@ NewPolyHedra_PalletObjectManager::NewPolyHedra_PalletObjectManager()
 
 
 
-void NewPolyHedra_PalletObjectManager::VertexBufferInit()
+void NewPolyHedra::PalletObjectManager::VertexBufferInit()
 {
 	BufferFullVertexArray.Bind();
 	{
@@ -52,21 +62,21 @@ void NewPolyHedra_PalletObjectManager::VertexBufferInit()
 	VertexArray::BindNone();
 }
 
-void NewPolyHedra_PalletObjectManager::GraphicsCreate()
+void NewPolyHedra::PalletObjectManager::GraphicsCreate()
 {
 	BufferFullVertexArray.Create();
 	BufferWireVertexArray.Create();
 	BufferFull.Create();
 	BufferWire.Create();
 }
-void NewPolyHedra_PalletObjectManager::GraphicsDelete()
+void NewPolyHedra::PalletObjectManager::GraphicsDelete()
 {
 	BufferFullVertexArray.Delete();
 	BufferWireVertexArray.Delete();
 	BufferFull.Delete();
 	BufferWire.Delete();
 }
-void NewPolyHedra_PalletObjectManager::GraphicsDrawFull()
+void NewPolyHedra::PalletObjectManager::GraphicsDrawFull()
 {
 	InstancesToBufferFull();
 	if (Pallet != nullptr)
@@ -79,7 +89,7 @@ void NewPolyHedra_PalletObjectManager::GraphicsDrawFull()
 		);
 	}
 }
-void NewPolyHedra_PalletObjectManager::GraphicsDrawWire()
+void NewPolyHedra::PalletObjectManager::GraphicsDrawWire()
 {
 	InstancesToBufferWire();
 	if (Pallet != nullptr)

@@ -3,28 +3,23 @@
 
 
 
-void NewPolyHedra_PalletObjectData::ShowFull() { DisplayFull = true; }
-void NewPolyHedra_PalletObjectData::HideFull() { DisplayFull = false; }
-bool NewPolyHedra_PalletObjectData::VisibleFull() const { return DisplayFull; }
+void NewPolyHedra::PalletObjectData::ShowFull() { DisplayFull = true; }
+void NewPolyHedra::PalletObjectData::HideFull() { DisplayFull = false; }
+bool NewPolyHedra::PalletObjectData::VisibleFull() const { return DisplayFull; }
 
-void NewPolyHedra_PalletObjectData::ShowWire() { DisplayWire = true; }
-void NewPolyHedra_PalletObjectData::HideWire() { DisplayWire = false; }
-bool NewPolyHedra_PalletObjectData::VisibleWire() const { return DisplayWire; }
+void NewPolyHedra::PalletObjectData::ShowWire() { DisplayWire = true; }
+void NewPolyHedra::PalletObjectData::HideWire() { DisplayWire = false; }
+bool NewPolyHedra::PalletObjectData::VisibleWire() const { return DisplayWire; }
 
 
 
-NewPolyHedra_PalletObjectData::~NewPolyHedra_PalletObjectData()
-{ }
-NewPolyHedra_PalletObjectData::NewPolyHedra_PalletObjectData()
-	: Remove(false)
-	, DisplayFull(true)
-	, DisplayWire(false)
-	, Manager(nullptr)
+NewPolyHedra::PalletObjectData::PalletObjectData(PalletObjectManager * manager)
+	: Manager(manager)
 { }
 
 
 
-void NewPolyHedra_PalletObjectData::InstancePut() const
+void NewPolyHedra::PalletObjectData::InstancePut() const
 {
 	if (Manager != nullptr)
 	{

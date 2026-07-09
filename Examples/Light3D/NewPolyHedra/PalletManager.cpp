@@ -5,15 +5,15 @@
 
 
 
-NewPolyHedra_PalletManager * NewPolyHedra_PalletManager::Current = nullptr;
+NewPolyHedra::PalletManager * NewPolyHedra::PalletManager::Current = nullptr;
 
 
 
-NewPolyHedra_PalletManager::~NewPolyHedra_PalletManager()
+NewPolyHedra::PalletManager::~PalletManager()
 {
 	Current = nullptr;
 }
-NewPolyHedra_PalletManager::NewPolyHedra_PalletManager()
+NewPolyHedra::PalletManager::PalletManager()
 	: Pallets()
 	, BufferFullLayout(nullptr)
 	, BufferWireLayout(nullptr)
@@ -23,12 +23,12 @@ NewPolyHedra_PalletManager::NewPolyHedra_PalletManager()
 
 
 
-NewPolyHedra_Pallet * NewPolyHedra_PalletManager::FindPallet(PolyHedra * polyhedra) const
+NewPolyHedra::Pallet * NewPolyHedra::PalletManager::FindPallet(PolyHedra * polyhedra) const
 {
 	if (polyhedra == nullptr) { return nullptr; }
 	for (unsigned int i = 0; i < Pallets.Count(); i++)
 	{
-		NewPolyHedra_Pallet * pallet = Pallets[i];
+		NewPolyHedra::Pallet * pallet = Pallets[i];
 		if (pallet == nullptr) { continue; }
 		if (pallet -> Object == polyhedra)
 		{
@@ -37,10 +37,10 @@ NewPolyHedra_Pallet * NewPolyHedra_PalletManager::FindPallet(PolyHedra * polyhed
 	}
 	return nullptr;
 }
-NewPolyHedra_Pallet * NewPolyHedra_PalletManager::MakePallet(PolyHedra * polyhedra)
+NewPolyHedra::Pallet * NewPolyHedra::PalletManager::MakePallet(PolyHedra * polyhedra)
 {
 	if (polyhedra == nullptr) { return nullptr; }
-	NewPolyHedra_Pallet * pallet = new NewPolyHedra_Pallet(polyhedra);
+	NewPolyHedra::Pallet * pallet = new NewPolyHedra::Pallet(polyhedra);
 	pallet -> BufferFullLayout = BufferFullLayout;
 	pallet -> BufferWireLayout = BufferWireLayout;
 	pallet -> GraphicsCreate();
@@ -48,10 +48,10 @@ NewPolyHedra_Pallet * NewPolyHedra_PalletManager::MakePallet(PolyHedra * polyhed
 	Pallets.Insert(pallet);
 	return pallet;
 }
-NewPolyHedra_Pallet * NewPolyHedra_PalletManager::FindMakePallet(PolyHedra * polyhedra)
+NewPolyHedra::Pallet * NewPolyHedra::PalletManager::FindMakePallet(PolyHedra * polyhedra)
 {
 	if (polyhedra == nullptr) { return nullptr; }
-	NewPolyHedra_Pallet * pallet = FindPallet(polyhedra);
+	NewPolyHedra::Pallet * pallet = FindPallet(polyhedra);
 	if (pallet == nullptr)
 	{
 		pallet = MakePallet(polyhedra);
@@ -61,20 +61,20 @@ NewPolyHedra_Pallet * NewPolyHedra_PalletManager::FindMakePallet(PolyHedra * pol
 
 
 
-void NewPolyHedra_PalletManager::GraphicsCreate()
+void NewPolyHedra::PalletManager::GraphicsCreate()
 {
 	for (unsigned int i = 0; i < Pallets.Count(); i++)
 	{
-		NewPolyHedra_Pallet * pallet = Pallets[i];
+		NewPolyHedra::Pallet * pallet = Pallets[i];
 		if (pallet == nullptr) { continue; }
 		pallet -> GraphicsCreate();
 	}
 }
-void NewPolyHedra_PalletManager::GraphicsDelete()
+void NewPolyHedra::PalletManager::GraphicsDelete()
 {
 	for (unsigned int i = 0; i < Pallets.Count(); i++)
 	{
-		NewPolyHedra_Pallet * pallet = Pallets[i];
+		NewPolyHedra::Pallet * pallet = Pallets[i];
 		if (pallet == nullptr) { continue; }
 		pallet -> GraphicsDelete();
 	}

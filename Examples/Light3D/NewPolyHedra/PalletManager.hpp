@@ -6,22 +6,26 @@
 
 class PolyHedra;
 
-struct NewPolyHedra_Pallet;
-
-struct NewPolyHedra_PalletManager
+namespace NewPolyHedra
 {
-	static NewPolyHedra_PalletManager *		Current;
+struct Pallet;
 
-	~NewPolyHedra_PalletManager();
-	NewPolyHedra_PalletManager();
+struct PalletManager
+{
+	static PalletManager *		Current;
+
+	~PalletManager();
+	PalletManager();
+	PalletManager(const PalletManager & other) = delete;
+	PalletManager & operator=(const PalletManager & other) = delete;
 
 
 
-	Container::Binary<NewPolyHedra_Pallet*>		Pallets;
+	Container::Binary<Pallet*>		Pallets;
 
-	NewPolyHedra_Pallet *	FindPallet(PolyHedra * polyhedra) const;
-	NewPolyHedra_Pallet *	MakePallet(PolyHedra * polyhedra);
-	NewPolyHedra_Pallet *	FindMakePallet(PolyHedra * polyhedra);
+	Pallet *	FindPallet(PolyHedra * polyhedra) const;
+	Pallet *	MakePallet(PolyHedra * polyhedra);
+	Pallet *	FindMakePallet(PolyHedra * polyhedra);
 
 
 
@@ -30,6 +34,7 @@ struct NewPolyHedra_PalletManager
 
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+};
 };
 
 #endif

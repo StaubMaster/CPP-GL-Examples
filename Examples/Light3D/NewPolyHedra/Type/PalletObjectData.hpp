@@ -3,11 +3,19 @@
 
 # include "../PalletObjectData.hpp"
 
+namespace NewPolyHedra
+{
 template<
 	typename TypeData
 >
-struct NewPolyHedra_Type_PalletObjectData : public NewPolyHedra_PalletObjectData
+struct Type_PalletObjectData : public PalletObjectData
 {
+	public:
+	~Type_PalletObjectData() = default;
+	Type_PalletObjectData() = default;
+	Type_PalletObjectData(const Type_PalletObjectData & other) = delete;
+	Type_PalletObjectData & operator=(const Type_PalletObjectData & other) = delete;
+
 	public:
 	TypeData	Data;
 
@@ -16,6 +24,7 @@ struct NewPolyHedra_Type_PalletObjectData : public NewPolyHedra_PalletObjectData
 	{
 		return &Data;
 	}
+};
 };
 
 #endif

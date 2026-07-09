@@ -90,10 +90,10 @@ void SceneParsingData::Parse_Pallet(const TextCommand & cmd)
 
 	PolyHedra * polyhedra = PolyHedra::Load(file);
 
-	NewPolyHedra_Pallet * pallet = Context.PalletManager.FindMakePallet(polyhedra);
+	NewPolyHedra::Pallet * pallet = Context.PalletManager.FindMakePallet(polyhedra);
 	pallet -> Name = cmd.ToString(1);
 
-	NewPolyHedra_PalletObjectManager * manager = Context.ObjectManagerBasic.FindMakePalletObjectManager(pallet);
+	NewPolyHedra::PalletObjectManager * manager = Context.ObjectManagerBasic.FindMakePalletObjectManager(pallet);
 	PolyHedras.Insert(manager);
 }
 void SceneParsingData::Parse_Place(const TextCommand & cmd)
@@ -101,7 +101,7 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 	if (!(cmd.Count() == 7)) { throw InvalidCommandArgumentCount(cmd, "n == 7"); }
 
 	std::string name = cmd.ToString(0);
-	NewPolyHedra_PalletObjectManager * polyhedra = MissingPolyHedra;
+	NewPolyHedra::PalletObjectManager * polyhedra = MissingPolyHedra;
 	for (unsigned int i = 0; i < PolyHedras.Count(); i++)
 	{
 		if (PolyHedras[i] -> Pallet -> Name == name)

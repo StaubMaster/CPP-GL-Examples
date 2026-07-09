@@ -4,21 +4,24 @@
 
 
 
+namespace NewPolyHedra
+{
 template<
 	typename TypeData
 >
-NewPolyHedra_Type_PalletObjectData<TypeData> * sNewPalletObjectData(NewPolyHedra_Pallet * pallet)
+Type_PalletObjectData<TypeData> * sNewPalletObjectData(Pallet * pallet)
 {
-	if (NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current == nullptr) { return nullptr; }
-	return (NewPolyHedra_Type_PalletObjectData<TypeData> *)NewPolyHedra_Type_Data_ObjectManager<TypeData>::Current -> NewPalletObjectData(pallet);
+	if (Type_Data_ObjectManager<TypeData>::Current == nullptr) { return nullptr; }
+	return (Type_PalletObjectData<TypeData> *)Type_Data_ObjectManager<TypeData>::Current -> NewPalletObjectData(pallet);
 }
 
 template<
 	typename TypeData
 >
-NewPolyHedra_Type_PalletObjectData<TypeData> * sNewPalletObjectData(PolyHedra * polyhedra)
+Type_PalletObjectData<TypeData> * sNewPalletObjectData(PolyHedra * polyhedra)
 {
-	if (NewPolyHedra_PalletManager::Current == nullptr) { return nullptr; }
-	NewPolyHedra_Pallet * pallet = NewPolyHedra_PalletManager::Current -> FindMakePallet(polyhedra);
+	if (PalletManager::Current == nullptr) { return nullptr; }
+	Pallet * pallet = PalletManager::Current -> FindMakePallet(polyhedra);
 	return sNewPalletObjectData<TypeData>(pallet);
 }
+};

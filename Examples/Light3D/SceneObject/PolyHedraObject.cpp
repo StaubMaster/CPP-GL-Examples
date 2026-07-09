@@ -10,7 +10,7 @@ SceneObject_PolyHedraObject::~SceneObject_PolyHedraObject()
 { }
 SceneObject_PolyHedraObject::SceneObject_PolyHedraObject()
 { }
-SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(::NewPolyHedra_PalletObjectManager * manager, Trans3D trans)
+SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(::NewPolyHedra::PalletObjectManager * manager, Trans3D trans)
 {
 	Data.Manager = manager;
 	Data.Data.Trans = trans;

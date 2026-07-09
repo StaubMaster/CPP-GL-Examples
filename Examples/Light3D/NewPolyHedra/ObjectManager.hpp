@@ -7,33 +7,42 @@
 # include "Graphics/Buffer/Uniform.hpp"
 
 class PolyHedra;
-struct NewPolyHedra_Pallet;
-struct NewPolyHedra_PalletObjectManager;
-struct NewPolyHedra_PalletObjectData;
-struct NewPolyHedra_ObjectData;
 
-struct NewPolyHedra_ObjectManager
+namespace NewPolyHedra
 {
-	Container::Binary<NewPolyHedra_PalletObjectManager*>	Managers;
+struct Pallet;
+struct PalletObjectManager;
+struct PalletObjectData;
+struct ObjectData;
 
-	virtual NewPolyHedra_PalletObjectManager *	NewPalletObjectManager() = 0;
-
-	NewPolyHedra_PalletObjectManager *	FindPalletObjectManager(NewPolyHedra_Pallet * pallet) const;
-	NewPolyHedra_PalletObjectManager *	MakePalletObjectManager(NewPolyHedra_Pallet * pallet);
-	NewPolyHedra_PalletObjectManager *	FindMakePalletObjectManager(NewPolyHedra_Pallet * pallet);
-
-	NewPolyHedra_PalletObjectManager *	FindPalletObjectManager(PolyHedra * polyhedra) const;
-	NewPolyHedra_PalletObjectManager *	MakePalletObjectManager(PolyHedra * polyhedra);
-	NewPolyHedra_PalletObjectManager *	FindMakePalletObjectManager(PolyHedra * polyhedra);
+struct ObjectManager
+{
+	~ObjectManager() = default;
+	ObjectManager() = default;
+	ObjectManager(const ObjectManager & other) = delete;
+	ObjectManager & operator=(const ObjectManager & other) = delete;
 
 
+	Container::Binary<PalletObjectManager*>	Managers;
 
-	Container::Binary<NewPolyHedra_PalletObjectData*>	PalletObjectDatas;
+	virtual PalletObjectManager *	NewPalletObjectManager() = 0;
 
-	virtual NewPolyHedra_PalletObjectData *		NewPalletObjectData() = 0;
-	NewPolyHedra_PalletObjectData *				NewPalletObjectData(NewPolyHedra_Pallet * pallet);
+	PalletObjectManager *	FindPalletObjectManager(Pallet * pallet) const;
+	PalletObjectManager *	MakePalletObjectManager(Pallet * pallet);
+	PalletObjectManager *	FindMakePalletObjectManager(Pallet * pallet);
 
-	void	UpdatePalletObjectDatas();
+	PalletObjectManager *	FindPalletObjectManager(PolyHedra * polyhedra) const;
+	PalletObjectManager *	MakePalletObjectManager(PolyHedra * polyhedra);
+	PalletObjectManager *	FindMakePalletObjectManager(PolyHedra * polyhedra);
+
+
+
+	Container::Binary<PalletObjectData*>	PalletObjectDatas;
+
+	virtual PalletObjectData *		NewPalletObjectData() = 0;
+	PalletObjectData *				NewPalletObjectData(Pallet * pallet);
+
+	void	UpdatePalletObjectDatas(); // RemovePalletObjectDatas();
 
 
 
@@ -51,6 +60,7 @@ struct NewPolyHedra_ObjectManager
 	void	GraphicsDelete();
 	void	GraphicsDrawFull();
 	void	GraphicsDrawWire();
+};
 };
 
 #endif

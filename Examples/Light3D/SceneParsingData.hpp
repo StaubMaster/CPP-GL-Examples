@@ -14,7 +14,10 @@ struct Light3DContext;
 
 class TextCommand; // TextCommandArguments
 
-struct NewPolyHedra_PalletObjectManager;
+namespace NewPolyHedra
+{
+struct PalletObjectManager;
+};
 
 struct SceneParsingData
 {
@@ -36,8 +39,8 @@ struct SceneParsingData
 	//Container::Binary<PolyHedraPalletManager*>	PolyHedras;
 
 	// these should be Pallets ?
-	NewPolyHedra_PalletObjectManager *						MissingPolyHedra;
-	Container::Binary<NewPolyHedra_PalletObjectManager*>	PolyHedras;
+	NewPolyHedra::PalletObjectManager *						MissingPolyHedra;
+	Container::Binary<NewPolyHedra::PalletObjectManager*>	PolyHedras;
 
 	ParsingVariable::FloatMemory	VariableFloats;
 

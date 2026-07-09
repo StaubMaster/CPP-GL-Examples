@@ -11,7 +11,7 @@
 
 
 
-void NewPolyHedra_Pallet::Put()
+void NewPolyHedra::Pallet::Put()
 {
 	VertexArray::BindNone();
 	if (Object != nullptr)
@@ -39,11 +39,11 @@ void NewPolyHedra_Pallet::Put()
 
 
 
-NewPolyHedra_Pallet::~NewPolyHedra_Pallet()
+NewPolyHedra::Pallet::~Pallet()
 {
 	delete Object;
 }
-NewPolyHedra_Pallet::NewPolyHedra_Pallet(PolyHedra * object)
+NewPolyHedra::Pallet::Pallet(PolyHedra * object)
 	: Object(object)
 	, BufferFull(GL::BufferDataUsage::StaticDraw)
 	, BufferWire(GL::BufferDataUsage::StaticDraw)
@@ -55,13 +55,13 @@ NewPolyHedra_Pallet::NewPolyHedra_Pallet(PolyHedra * object)
 
 
 
-void NewPolyHedra_Pallet::GraphicsCreate()
+void NewPolyHedra::Pallet::GraphicsCreate()
 {
 	BufferFull.Create();
 	BufferWire.Create();
 	BufferWireElem.Create();
 }
-void NewPolyHedra_Pallet::GraphicsDelete()
+void NewPolyHedra::Pallet::GraphicsDelete()
 {
 	BufferFull.Delete();
 	BufferWire.Delete();

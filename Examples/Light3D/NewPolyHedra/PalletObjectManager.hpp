@@ -6,16 +6,24 @@
 # include "Graphics/Buffer/Array.hpp"
 # include "Graphics/Buffer/Uniform.hpp"
 
-struct NewPolyHedra_Pallet;
-struct NewPolyHedra_ObjectData;
+namespace NewPolyHedra
+{
+struct Pallet;
+struct ObjectData;
 
-struct NewPolyHedra_PalletObjectManager
+struct PalletObjectManager
 {
 	public:
-	NewPolyHedra_Pallet *	Pallet;
+	NewPolyHedra::Pallet *	Pallet;
 
 	public:
-	NewPolyHedra_PalletObjectManager();
+	~PalletObjectManager();
+	PalletObjectManager();
+	PalletObjectManager(const PalletObjectManager & other) = delete;
+	PalletObjectManager & operator=(const PalletObjectManager & other) = delete;
+
+	public:
+	PalletObjectManager(NewPolyHedra::Pallet * pallet);
 
 
 
@@ -42,6 +50,7 @@ struct NewPolyHedra_PalletObjectManager
 	void	GraphicsDelete();
 	void	GraphicsDrawFull();
 	void	GraphicsDrawWire();
+};
 };
 
 #endif

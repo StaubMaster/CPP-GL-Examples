@@ -9,7 +9,9 @@
 
 class PolyHedra;
 
-struct NewPolyHedra_Pallet
+namespace NewPolyHedra
+{
+struct Pallet
 {
 	public:
 	PolyHedra *		Object;
@@ -19,8 +21,10 @@ struct NewPolyHedra_Pallet
 	std::string		Name;
 
 	public:
-	~NewPolyHedra_Pallet();
-	NewPolyHedra_Pallet(PolyHedra * object);
+	~Pallet();
+	Pallet(PolyHedra * object);
+	Pallet(const Pallet & other) = delete;
+	Pallet & operator=(const Pallet & other) = delete;
 
 
 
@@ -35,6 +39,7 @@ struct NewPolyHedra_Pallet
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+};
 };
 
 #endif

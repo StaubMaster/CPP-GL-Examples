@@ -3,5 +3,8 @@
 
 
 
-template NewPolyHedra_Type_PalletObjectData<TransScaleColor3D::ObjectData> * sNewPalletObjectData(NewPolyHedra_Pallet * pallet);
-template NewPolyHedra_Type_PalletObjectData<TransScaleColor3D::ObjectData> * sNewPalletObjectData(PolyHedra * polyhedra);
+namespace NewPolyHedra
+{
+template Type_PalletObjectData<TransScaleColor3D::ObjectData> * sNewPalletObjectData(Pallet * pallet);
+template Type_PalletObjectData<TransScaleColor3D::ObjectData> * sNewPalletObjectData(PolyHedra * polyhedra);
+};

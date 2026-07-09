@@ -74,37 +74,37 @@ template<> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const Poly
 	return RayHitObject(ray, polyhedra, data.Trans, data.Scale);
 }
 
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Pallet & pallet, const TypeData & data)
+template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Pallet & pallet, const TypeData & data)
 {
 	const PolyHedra * polyhedra = pallet.Object;
 	if (polyhedra == nullptr) { return RayHitF3Type<unsigned int>(); }
 	return RayHitObject(ray, *polyhedra, data);
 }
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_PalletObjectManager & manager, const TypeData & data)
+template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::PalletObjectManager & manager, const TypeData & data)
 {
-	const NewPolyHedra_Pallet * pallet = manager.Pallet;
+	const NewPolyHedra::Pallet * pallet = manager.Pallet;
 	if (pallet == nullptr) { return RayHitF3Type<unsigned int>(); }
 	return RayHitObject(ray, *pallet, data);
 }
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_Object<TypeData> & object)
+template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_Object<TypeData> & object)
 {
-	const NewPolyHedra_PalletObjectManager * manager = object.Manager();
+	const NewPolyHedra::PalletObjectManager * manager = object.Manager();
 	if (manager == nullptr) { return RayHitF3Type<unsigned int>(); }
 	return RayHitObject(ray, *manager, object.Data());
 }
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_PalletObjectData<TypeData> & object)
+template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_PalletObjectData<TypeData> & object)
 {
-	const NewPolyHedra_PalletObjectManager * manager = object.Manager;
+	const NewPolyHedra::PalletObjectManager * manager = object.Manager;
 	if (manager == nullptr) { return RayHitF3Type<unsigned int>(); }
 	return RayHitObject(ray, *manager, object.Data);
 }
 
-template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Pallet & pallet, const Basic3D::ObjectData & data);
-template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_PalletObjectManager & manager, const Basic3D::ObjectData & data);
-template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_Object<Basic3D::ObjectData> & object);
-template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_PalletObjectData<Basic3D::ObjectData> & object);
+template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Pallet & pallet, const Basic3D::ObjectData & data);
+template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::PalletObjectManager & manager, const Basic3D::ObjectData & data);
+template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_Object<Basic3D::ObjectData> & object);
+template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_PalletObjectData<Basic3D::ObjectData> & object);
 
-template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Pallet & pallet, const TransScaleColor3D::ObjectData & data);
-template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_PalletObjectManager & manager, const TransScaleColor3D::ObjectData & data);
-template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_Object<TransScaleColor3D::ObjectData> & object);
-template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_PalletObjectData<TransScaleColor3D::ObjectData> & object);
+template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Pallet & pallet, const TransScaleColor3D::ObjectData & data);
+template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::PalletObjectManager & manager, const TransScaleColor3D::ObjectData & data);
+template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_Object<TransScaleColor3D::ObjectData> & object);
+template RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_PalletObjectData<TransScaleColor3D::ObjectData> & object);

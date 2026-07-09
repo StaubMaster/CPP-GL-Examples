@@ -4,12 +4,20 @@
 # include "../PalletObjectManager.hpp"
 # include "Generics/Container/Binary.hpp"
 
+namespace NewPolyHedra
+{
 template<
 	typename TypeData,
 	typename TypeInstanceData
 >
-struct NewPolyHedra_Type_PalletObjectManager : public NewPolyHedra_PalletObjectManager
+struct Type_PalletObjectManager : public PalletObjectManager
 {
+	public:
+	~Type_PalletObjectManager() = default;
+	Type_PalletObjectManager() = default;
+	Type_PalletObjectManager(const Type_PalletObjectManager & other) = delete;
+	Type_PalletObjectManager & operator=(const Type_PalletObjectManager & other) = delete;
+
 	private:
 	Container::Binary<TypeInstanceData>		InstanceDataFull;
 	Container::Binary<TypeInstanceData>		InstanceDataWire;
@@ -38,6 +46,7 @@ struct NewPolyHedra_Type_PalletObjectManager : public NewPolyHedra_PalletObjectM
 		BufferWire.Update();
 		BufferWire.DataFull(InstanceDataWire.ToVoid());
 	}
+};
 };
 
 #endif

@@ -11,11 +11,14 @@
 struct Trans3D;
 class PolyHedra;
 
-struct NewPolyHedra_Pallet;
-struct NewPolyHedra_PalletObjectManager;
+namespace NewPolyHedra
+{
+struct Pallet;
+struct PalletObjectManager;
 
-template<typename TypeData> struct NewPolyHedra_Type_Object;
-template<typename TypeData> struct NewPolyHedra_Type_PalletObjectData;
+template<typename TypeData> struct Type_Object;
+template<typename TypeData> struct Type_PalletObjectData;
+};
 
 // these use Trans.forward()
 RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans);
@@ -25,9 +28,9 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 // should that be stored in PolyHedra of Pallet
 
 template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const TypeData & data);
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Pallet & pallet, const TypeData & data);
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_PalletObjectManager & manager, const TypeData & data);
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_Object<TypeData> & object);
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra_Type_PalletObjectData<TypeData> & object);
+template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Pallet & pallet, const TypeData & data);
+template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::PalletObjectManager & manager, const TypeData & data);
+template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_Object<TypeData> & object);
+template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_PalletObjectData<TypeData> & object);
 
 #endif

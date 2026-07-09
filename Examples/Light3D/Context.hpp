@@ -175,11 +175,11 @@ void	PolyHedraPalletUpdate();
 
 
 
-::NewPolyHedra_Manager		NewPolyHedra_Manager;
+NewPolyHedra::Manager		NewPolyHedra_Manager;
 
 ::PolyHedraFull::Main::Layout	PalletManager_BufferFullLayout;
 ::PolyHedraWire::Main::Layout	PalletManager_BufferWireLayout;
-NewPolyHedra_PalletManager		PalletManager;
+NewPolyHedra::PalletManager		PalletManager;
 
 Basic3D::ShaderFullLayout	ObjectManagerBasic_ShaderFullLayout;
 Basic3D::ShaderWireLayout	ObjectManagerBasic_ShaderWireLayout;
