@@ -36,7 +36,6 @@ FILES := \
 	NewPolyHedra/PalletManager.cpp \
 	NewPolyHedra/PalletObjectData.cpp \
 	NewPolyHedra/PalletObjectManager.cpp \
-	NewPolyHedra/Type/Special.cpp \
 	\
 	NewPolyHedra/DataType/Basic3D/Layout.cpp \
 	NewPolyHedra/DataType/Basic3D/ObjectData.cpp \
