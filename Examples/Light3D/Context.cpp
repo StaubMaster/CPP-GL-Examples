@@ -10,6 +10,14 @@
 
 #include "ValueType/Intersect.hpp"
 
+// SceneObject
+#include "SceneObject/SceneObject.hpp"
+#include "SceneObject/PolyHedraObject.hpp"
+#include "SceneObject/LightAmbient.hpp"
+#include "SceneObject/LightDirection.hpp"
+#include "SceneObject/LightPoint.hpp"
+#include "SceneObject/LightSpot.hpp"
+
 
 
 MultiformLayout::~MultiformLayout()
@@ -48,12 +56,22 @@ LightBase * Light3DContext::TakeLightAmbient()
 	}
 	return nullptr;
 }
-LightDirection * Light3DContext::TakeLightSolar()
+LightDirection * Light3DContext::TakeLightDirection()
 {
 	if (Light_Solar_Count < Light_Solar_Limit)
 	{
 		LightDirection * light = &Light_Solar;
 		Light_Solar_Count++;
+		return light;
+	}
+	return nullptr;
+}
+LightPoint * Light3DContext::TakeLightPoint()
+{
+	if (Light_Point_Count < Light_Point_Limit)
+	{
+		LightPoint * light = &Light_Point_Array[Light_Point_Count];
+		Light_Point_Count++;
 		return light;
 	}
 	return nullptr;
@@ -148,6 +166,7 @@ void Light3DContext::SceneClear()
 	Objects.Clear();
 	Light_Ambient_Count = 0;
 	Light_Solar_Count = 0;
+	Light_Point_Count = 0;
 	Light_Spot_Count = 0;
 }
 
@@ -234,7 +253,7 @@ void Light3DContext::SceneInitLights()
 	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
 	NewPolyHedra::PalletObjectManager * Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(Cube);
 	NewPolyHedra::PalletObjectManager * stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
-	NewPolyHedra::PalletObjectManager * light_ambient_manager = ObjectManagerTSC.FindMakePalletObjectManager(PolyHedra::Load(dir.File("LightBulb.polyhedra")));
+	NewPolyHedra::PalletObjectManager * light_bulb_manager = ObjectManagerTSC.FindMakePalletObjectManager(PolyHedra::Load(dir.File("LightBulb.polyhedra")));
 
 	/* Light Meta Indicators
 		LightBuld: LightPoint
@@ -266,8 +285,7 @@ void Light3DContext::SceneInitLights()
 			SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(scene_obj);
 			if (obj != nullptr)
 			{
-				//obj -> Data.Manager = Cube_UI_manager;
-				obj -> Data.Manager = light_ambient_manager;
+				obj -> Data.Manager = light_bulb_manager;
 			}
 		}
 		{
@@ -275,6 +293,13 @@ void Light3DContext::SceneInitLights()
 			if (obj != nullptr)
 			{
 				obj -> Data.Manager = Cube_UI_manager;
+			}
+		}
+		{
+			SceneObject_LightPoint * obj = dynamic_cast<SceneObject_LightPoint*>(scene_obj);
+			if (obj != nullptr)
+			{
+				obj -> Data.Manager = light_bulb_manager;
 			}
 		}
 		{
@@ -674,6 +699,11 @@ void Light3DContext::Draw()
 	LightBufferData data;
 	data.Ambient = Light_Ambient;
 	data.Solar = Light_Solar;
+	for (unsigned int i = 0; i < Light_Point_Count; i++)
+	{
+		data.Point[i] = Light_Point_Array[i];
+	}
+	data.PointCount = Light_Point_Count;
 	for (unsigned int i = 0; i < Light_Spot_Count; i++)
 	{
 		data.Spot[i] = Light_Spot_Array[i];

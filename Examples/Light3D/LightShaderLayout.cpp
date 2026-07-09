@@ -2,6 +2,7 @@
 
 #include "ValueType/Light/Base.hpp"
 #include "ValueType/Light/Direction.hpp"
+#include "ValueType/Light/Point.hpp"
 #include "ValueType/Light/Spot.hpp"
 
 
@@ -16,6 +17,12 @@ PaddedBlock::LightDirection & PaddedBlock::LightDirection::operator=(const ::Lig
 {
 	Base = object.Base;
 	Dir = object.Dir;
+	return *this;
+}
+PaddedBlock::LightPoint & PaddedBlock::LightPoint::operator=(const ::LightPoint & object)
+{
+	Base = object.Base;
+	Pos = object.Pos;
 	return *this;
 }
 PaddedBlock::LightSpot & PaddedBlock::LightSpot::operator=(const ::LightSpot & object)

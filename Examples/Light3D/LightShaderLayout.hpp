@@ -65,6 +65,8 @@ struct LightBufferData
 {
 	PaddedBlock::LightBase			Ambient;
 	PaddedBlock::LightDirection		Solar;
+	PaddedBlock::UInt				PointCount;
+	PaddedBlock::LightPoint			Point[1];
 	PaddedBlock::UInt				SpotCount;
 	PaddedBlock::LightSpot			Spot[4];
 

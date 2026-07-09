@@ -54,6 +54,7 @@ struct SceneParsingData
 
 	void	Parse_LightAmbient(const TextCommand & cmd);
 	void	Parse_LightDirectionD(const TextCommand & cmd);
+	void	Parse_LightPoint(const TextCommand & cmd);
 	void	Parse_LightSpotT(const TextCommand & cmd);
 };
 

@@ -53,10 +53,6 @@
 
 // SceneObject
 #include "SceneObject/SceneObject.hpp"
-#include "SceneObject/PolyHedraObject.hpp"
-#include "SceneObject/LightAmbient.hpp"
-#include "SceneObject/LightDirection.hpp"
-#include "SceneObject/LightSpot.hpp"
 #include "SceneObject/UI/SceneObject.hpp"
 
 
@@ -121,6 +117,7 @@ bool	IsHoveringUI() const;
 
 static const unsigned int	Light_Ambient_Limit = 1;
 static const unsigned int	Light_Solar_Limit = 1;
+static const unsigned int	Light_Point_Limit = 1;
 static const unsigned int	Light_Spot_Limit = 4;
 
 LightBase		Light_Ambient;
@@ -129,11 +126,15 @@ unsigned int	Light_Ambient_Count;
 LightDirection	Light_Solar;
 unsigned int	Light_Solar_Count;
 
+LightPoint		Light_Point_Array[Light_Point_Limit];
+unsigned int	Light_Point_Count;
+
 LightSpot		Light_Spot_Array[Light_Spot_Limit];
 unsigned int	Light_Spot_Count;
 
 LightBase *			TakeLightAmbient();
-LightDirection *	TakeLightSolar();
+LightDirection *	TakeLightDirection();
+LightPoint *		TakeLightPoint();
 LightSpot *			TakeLightSpot();
 
 

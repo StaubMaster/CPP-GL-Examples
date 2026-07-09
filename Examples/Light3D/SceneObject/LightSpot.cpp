@@ -21,8 +21,11 @@ Trans3D SceneObject_LightSpot::GetTrans() const
 void SceneObject_LightSpot::SetTrans(const Trans3D & trans)
 {
 	Data.Data.Trans = trans;
-	Light -> Pos = trans.Position;
-	Light -> Dir = trans.Rotation.forward(VectorF3(0, 0, 1));
+	if (Light != nullptr)
+	{
+		Light -> Pos = trans.Position;
+		Light -> Dir = trans.Rotation.forward(VectorF3(0, 0, 1));
+	}
 }
 
 

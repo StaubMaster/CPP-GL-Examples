@@ -7,7 +7,13 @@
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
+
+#include "SceneObject/SceneObject.hpp"
 #include "SceneObject/PolyHedraObject.hpp"
+#include "SceneObject/LightAmbient.hpp"
+#include "SceneObject/LightDirection.hpp"
+#include "SceneObject/LightPoint.hpp"
+#include "SceneObject/LightSpot.hpp"
 
 #include <iostream>
 
@@ -52,6 +58,7 @@ SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & conte
 	NewParsingCommand(this, "place",			this, &SceneParsingData::Parse_Place);
 	NewParsingCommand(this, "LightAmbient",		this, &SceneParsingData::Parse_LightAmbient);
 	NewParsingCommand(this, "LightDirectionD",	this, &SceneParsingData::Parse_LightDirectionD);
+	NewParsingCommand(this, "LightPoint",		this, &SceneParsingData::Parse_LightPoint);
 	NewParsingCommand(this, "LightSpotT",		this, &SceneParsingData::Parse_LightSpotT);
 }
 
@@ -160,7 +167,7 @@ void SceneParsingData::Parse_LightDirectionD(const TextCommand & cmd)
 {
 	if (!(cmd.Count() == 10)) { throw InvalidCommandArgumentCount(cmd, "n == 10"); }
 
-	LightDirection * light = Context.TakeLightSolar();
+	LightDirection * light = Context.TakeLightDirection();
 	if (light == nullptr)
 	{
 		throw CommandInvalidState(cmd, "All Directional Lights taken");
@@ -179,6 +186,33 @@ void SceneParsingData::Parse_LightDirectionD(const TextCommand & cmd)
 	trans.Position.Z = cmd.ToFloat(9);
 
 	SceneObject_LightDirection * obj = new SceneObject_LightDirection();
+	obj -> Light = light;
+	obj -> Data.Data.Trans = trans;
+	Context.Objects.Insert(obj);
+}
+void SceneParsingData::Parse_LightPoint(const TextCommand & cmd)
+{
+	if (!(cmd.Count() == 10)) { throw InvalidCommandArgumentCount(cmd, "n == 10"); }
+
+	LightPoint * light = Context.TakeLightPoint();
+	if (light == nullptr)
+	{
+		throw CommandInvalidState(cmd, "All Point Lights taken");
+	}
+	light -> Base.Intensity = cmd.ToFloat(0);
+	light -> Base.Color.R = cmd.ToFloat(1);
+	light -> Base.Color.G = cmd.ToFloat(2);
+	light -> Base.Color.B = cmd.ToFloat(3);
+	light -> Pos.X = cmd.ToFloat(4);
+	light -> Pos.Y = cmd.ToFloat(5);
+	light -> Pos.Z = cmd.ToFloat(6);
+
+	Trans3D trans;
+	trans.Rotation.Z0 = Angle::Degrees(cmd.ToFloat(7));
+	trans.Rotation.X1 = Angle::Degrees(cmd.ToFloat(8));
+	trans.Rotation.Y2 = Angle::Degrees(cmd.ToFloat(9));
+
+	SceneObject_LightPoint * obj = new SceneObject_LightPoint();
 	obj -> Light = light;
 	obj -> Data.Data.Trans = trans;
 	Context.Objects.Insert(obj);

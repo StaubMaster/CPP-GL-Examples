@@ -58,11 +58,14 @@ uniform sampler2DArray TextureImage;
 
 
 const uint SpotLimit = 4u;
+const uint PointLimit = 1u;
 
 layout (std140) uniform ILights
 {
 	LightBase				Ambient;
 	LightDirection			Solar;
+	uint					PointCount;
+	LightPoint[PointLimit]	Point;
 	uint					SpotCount;
 	LightSpot[SpotLimit]	Spot;
 } Lights;
@@ -81,6 +84,14 @@ in Vert {
 
 
 out vec4 Color;
+
+
+
+// rotating View changes Specular
+// I dont think it should do that
+// fs_inn.Relative includes roation
+// light.Position - fs_inn.Absolute is different
+// so it changing with rotation might be correct ?
 
 
 
@@ -105,6 +116,31 @@ vec4 CalcLightFactor(LightDirection light)
 	factor_specular = pow(factor_specular, 8);
 
 	float factor = (factor_diffuse + factor_specular);
+	return light.Base.Intensity * light.Base.Color * factor;
+}
+vec4 CalcLightFactor(LightPoint light)
+{
+	float strength = 128.0f;
+	vec3 rel = light.Position - fs_inn.Absolute;
+
+	float dist = length(rel);
+	float factor_dist = strength / (dist * dist); // just use length2 ?
+
+	vec3 N = +normalize(fs_inn.Normal);
+	vec3 L = +normalize(rel);
+	vec3 V = -normalize(fs_inn.Relative);
+	vec3 R = +normalize(reflect(rel, N));
+
+	float factor_diffuse;
+	factor_diffuse = dot(L, N);
+	factor_diffuse = clamp(factor_diffuse, 0.0, 1.0);
+
+	float factor_specular;
+	factor_specular = dot(R, V);
+	factor_specular = clamp(factor_specular, 0.0, 1.0);
+	factor_specular = pow(factor_specular, 8);
+
+	float factor = factor_dist * (factor_diffuse + factor_specular);
 	return light.Base.Intensity * light.Base.Color * factor;
 }
 vec4 CalcLightFactor(LightSpot light)
@@ -136,6 +172,10 @@ vec4 CalcLightFactor()
 	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
 	light_factor += CalcLightFactor(Lights.Ambient);
 	light_factor += CalcLightFactor(Lights.Solar);
+	for (uint i = 0u; i < min(PointLimit, Lights.PointCount); i++)
+	{
+		light_factor += CalcLightFactor(Lights.Point[i]);
+	}
 	for (uint i = 0u; i < min(SpotLimit, Lights.SpotCount); i++)
 	{
 		light_factor += CalcLightFactor(Lights.Spot[i]);

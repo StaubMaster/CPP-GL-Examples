@@ -25,6 +25,7 @@ FILES := \
 	SceneObject/PolyHedraObject.cpp \
 	SceneObject/LightAmbient.cpp \
 	SceneObject/LightDirection.cpp \
+	SceneObject/LightPoint.cpp \
 	SceneObject/LightSpot.cpp \
 	SceneObject/UI/SceneObject.cpp \
 	SceneObject/UI/PolyHedraObject.cpp \
