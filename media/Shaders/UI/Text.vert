@@ -16,17 +16,49 @@ struct sDisplaySize
 
 uniform sDisplaySize DisplaySize;
 
-// Uniform Buffer
-uniform vec2 PalletArrayMin[128];
-uniform vec2 PalletArrayMax[128];
 
-// Uniform Buffer
-uniform vec2 TextBoundArrayMin[64];
-uniform vec2 TextBoundArrayMax[64];
-uniform vec4 TextColorArray[64];
 
-//const vec2 PalletSize = vec2(32, 32);
-const vec2 PalletSize = vec2(20, 20); // do this with uniform
+struct BoxF2
+{
+	vec2	Min;
+	vec2	Max;
+};
+
+
+
+// Pallets
+const uint PalletLimit = 128u;
+uniform vec2 PalletArrayMin[PalletLimit];
+uniform vec2 PalletArrayMax[PalletLimit];
+/*layout(std140) uniform IPallets
+{
+	//uint	PalletCount;
+	BoxF2	PalletArray[PalletLimit];
+} Pallets;*/
+
+
+
+// Texts
+const uint TextLimit = 64u;
+uniform vec2 TextBoundArrayMin[TextLimit];
+uniform vec2 TextBoundArrayMax[TextLimit];
+uniform vec4 TextColorArray[TextLimit];
+struct TextData
+{
+	BoxF2	Bound;
+	vec4	Color;
+	//vec2	CharacterSize;
+};
+/*layout(std140) uniform ITexts
+{
+	//uint		TextCount;
+	TextData	TextArray[TextLimit];
+} Texts;*/
+
+
+
+//const vec2 CharacterSize = vec2(32, 32);
+const vec2 CharacterSize = vec2(20, 20);
 
 
 
@@ -54,7 +86,7 @@ void main()
 	main_pos.y = -main_pos.y;
 
 	vec2 Center = Inst_Pos;
-	vec2 SizeHalf = PalletSize / 2;
+	vec2 SizeHalf = CharacterSize / 2;
 	vec2 pos = (main_pos * SizeHalf) + Center;
 	vec2 pos_normal = ((pos / DisplaySize.Buffer.Full) * 2) - 1;
 	pos_normal.y = -pos_normal.y;

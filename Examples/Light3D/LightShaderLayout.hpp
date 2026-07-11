@@ -20,8 +20,6 @@ struct LightBufferData
 	PaddedBlock::LightPoint			Point[1];
 	PaddedBlock::UInt				SpotCount;
 	PaddedBlock::LightSpot			Spot[4];
-
-	void	Put(Buffer::Uniform & buffer);
 };
 
 class LightShaderLayout : public PolyHedraFull::ShaderLayout

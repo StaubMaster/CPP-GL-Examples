@@ -708,10 +708,13 @@ void Light3DContext::Draw()
 	data.SpotCount = Light_Spot_Count;
 
 	VertexArray::BindNone();
-	data.Put(LightBuffer);
+	LightBuffer.DataFull(Container::Void(data));
 
+	// do this stuff once
+	// after Create(). in Make() ?
+	ObjectManagerBasic.ShaderFull.Bind();
 	LightBuffer.BindBase(BindingLight);
-	ObjectManagerBasic_ShaderFullLayout.UniformBlockBinding(ObjectManagerBasic_ShaderFullLayout.LightUniform.Index, BindingLight);
+	ObjectManagerBasic_ShaderFullLayout.Bind(ObjectManagerBasic_ShaderFullLayout.LightUniform, BindingLight);
 
 	// Instances
 
