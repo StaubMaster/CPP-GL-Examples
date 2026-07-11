@@ -1,7 +1,8 @@
 #ifndef  UI_CONTROL_CHECKBOX_HPP
 # define UI_CONTROL_CHECKBOX_HPP
 
-# include "Base/Base.hpp"
+# include "Control/General/Base.hpp"
+
 # include "Generics/Function/Pointer.hpp"
 
 

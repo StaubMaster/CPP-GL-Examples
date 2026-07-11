@@ -1,10 +1,9 @@
 #ifndef  UI_CONTROL_LABEL_HPP
 # define UI_CONTROL_LABEL_HPP
 
-#include "Base/Base.hpp"
+# include "Control/General/Base.hpp"
 
-#include "../Text/Object.hpp"
-#include <string>
+#include "Text/Object.hpp"
 
 namespace UI
 {

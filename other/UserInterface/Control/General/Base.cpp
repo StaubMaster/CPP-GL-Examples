@@ -135,7 +135,11 @@ UI::Control::Base::Base()
 			AnchorPadding,
 			AnchorNormal
 		)
+	, AutoSizerXType(EAutoSizerType::None)
+	, AutoSizerYType(EAutoSizerType::None)
 {
+	AnchorSize = VectorF2(0, 0);
+	AnchorNormal = VectorF2(0, 0);
 	AnchorDist = BoxF2(VectorF2(0, 0), VectorF2(0, 0));
 
 	float margin = 5;
@@ -174,7 +178,27 @@ void UI::Control::Base::ChangeManager(UI::Manager & manager)
 	ChangeManager(&manager);
 }
 
-void UI::Control::Base::AnchorFitChildrenY()
+void UI::Control::Base::UpdateAutoSize()
+{
+	switch (AutoSizerXType)
+	{
+		case EAutoSizerType::None: break;
+		default: break;
+	}
+
+	switch (AutoSizerYType)
+	{
+		case EAutoSizerType::None: break;
+		case EAutoSizerType::FitFixed: UpdateAutoSizeGridY(); break;
+		default: break;
+	}
+
+	if (Parent != nullptr)
+	{
+		Parent -> UpdateAutoSize();
+	}
+}
+void UI::Control::Base::UpdateAutoSizeGridY()
 {
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -187,13 +211,6 @@ void UI::Control::Base::AnchorFitChildrenY()
 	}
 	Anchor.Y.SetSize(y + AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
 	BoxWantUpdate();
-
-	Base * control = Parent;
-	while (control != nullptr)
-	{
-		control -> AnchorFitChildrenY();
-		control = control -> Parent;
-	}
 }
 
 

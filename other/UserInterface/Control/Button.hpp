@@ -1,10 +1,11 @@
 #ifndef  UI_CONTROL_BUTTON_HPP
 # define UI_CONTROL_BUTTON_HPP
 
-# include "Base/Base.hpp"
+# include "Control/General/Base.hpp"
+
 # include "Generics/Function/Pointer.hpp"
 
-# include "../Text/Object.hpp"
+# include "Text/Object.hpp"
 
 namespace UI
 {

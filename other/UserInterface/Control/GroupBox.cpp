@@ -1,5 +1,4 @@
-#include "GroupBox.hpp"
-#include "Base/Manager.hpp"
+#include "Control/GroupBox.hpp"
 
 
 

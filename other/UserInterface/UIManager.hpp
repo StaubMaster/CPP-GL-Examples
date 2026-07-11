@@ -1,7 +1,7 @@
 #ifndef  UI_MANAGER_HPP
 # define UI_MANAGER_HPP
 
-# include "Control/Base/Manager.hpp"
+# include "Control/General/Manager.hpp"
 # include "Text/Manager.hpp"
 # include "Graph/Manager.hpp"
 

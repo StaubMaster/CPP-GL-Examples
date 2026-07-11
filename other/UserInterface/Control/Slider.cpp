@@ -1,5 +1,5 @@
 #include "Slider.hpp"
-#include "Base/Manager.hpp"
+#include "General/Manager.hpp"
 
 #include "User/MouseArgs.hpp"
 
@@ -39,66 +39,57 @@ float UI::Control::Slider::GetValueX() const { return Value.X; }
 float UI::Control::Slider::GetValueY() const { return Value.Y; }
 void UI::Control::Slider::SetValue(VectorF2 val)
 {
-	Value = val; /*SliderChanged = true;*/ ValueChangedFunc(Value); ValueXChangedFunc(Value.X); ValueYChangedFunc(Value.Y);
-	if (SliderObject.Is())
-		{
-			VectorF2 slider_size_half = NubSize / 2.0f;
-			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
-
-			VectorF2 slider_normal = Value;
-			slider_normal -= ValueMin;
-			slider_normal /= (ValueMax - ValueMin);
-
-			VectorF2 slider_value = slider_normal;
-			slider_value *= (slider_max - slider_min);
-			slider_value += slider_min;
-
-			SliderObject.Box().Min = slider_value - slider_size_half;
-			SliderObject.Box().Max = slider_value + slider_size_half;
-		}
+	Value = val;
+	//ClampValue();
+	/*SliderChanged = true;*/
+	ValueXChangedFunc.TryInvoke(Value.X);
+	ValueYChangedFunc.TryInvoke(Value.Y);
+	ValueChangedFunc.TryInvoke(Value);
+	PutSliderNub();
 }
 void UI::Control::Slider::SetValueX(float val)
 {
-	Value.X = val; /*SliderChanged = true;*/ ValueXChangedFunc(Value.X);
-	if (SliderObject.Is())
-		{
-			VectorF2 slider_size_half = NubSize / 2.0f;
-			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
-
-			VectorF2 slider_normal = Value;
-			slider_normal -= ValueMin;
-			slider_normal /= (ValueMax - ValueMin);
-
-			VectorF2 slider_value = slider_normal;
-			slider_value *= (slider_max - slider_min);
-			slider_value += slider_min;
-
-			SliderObject.Box().Min = slider_value - slider_size_half;
-			SliderObject.Box().Max = slider_value + slider_size_half;
-		}
+	Value.X = val;
+	//ClampValue();
+	/*SliderChanged = true;*/
+	ValueXChangedFunc.TryInvoke(Value.X);
+	PutSliderNub();
 }
 void UI::Control::Slider::SetValueY(float val)
 {
-	Value.Y = val; /*SliderChanged = true;*/ ValueYChangedFunc(Value.Y);
+	Value.Y = val;
+	//ClampValue();
+	/*SliderChanged = true;*/
+	ValueYChangedFunc.TryInvoke(Value.Y);
+	PutSliderNub();
+}
+
+void UI::Control::Slider::PutSliderNub()
+{
 	if (SliderObject.Is())
-		{
-			VectorF2 slider_size_half = NubSize / 2.0f;
-			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+	{
+		VectorF2 slider_size_half = NubSize / 2.0f;
+		VectorF2 slider_min = DisplayBox.Min + slider_size_half;
+		VectorF2 slider_max = DisplayBox.Max - slider_size_half;
 
-			VectorF2 slider_normal = Value;
-			slider_normal -= ValueMin;
-			slider_normal /= (ValueMax - ValueMin);
+		VectorF2 slider_normal = Value;
+		slider_normal -= ValueMin;
+		slider_normal /= (ValueMax - ValueMin);
 
-			VectorF2 slider_value = slider_normal;
-			slider_value *= (slider_max - slider_min);
-			slider_value += slider_min;
+		VectorF2 slider_value = slider_normal;
+		slider_value *= (slider_max - slider_min);
+		slider_value += slider_min;
 
-			SliderObject.Box().Min = slider_value - slider_size_half;
-			SliderObject.Box().Max = slider_value + slider_size_half;
-		}
+		SliderObject.Box().Min = slider_value - slider_size_half;
+		SliderObject.Box().Max = slider_value + slider_size_half;
+	}
+}
+void UI::Control::Slider::ClampValue()
+{
+	if (Value.X < ValueMin.X) { Value.X = ValueMin.X; }
+	if (Value.X > ValueMax.X) { Value.X = ValueMax.X; }
+	if (Value.Y < ValueMin.Y) { Value.Y = ValueMin.Y; }
+	if (Value.Y > ValueMax.Y) { Value.Y = ValueMax.Y; }
 }
 
 void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
@@ -119,36 +110,15 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 	slider_value = slider_value.round(); // Vector.round that takes Vector Size
 	slider_value *= ValueResolution;
 
-	// Min/Max Functions
-	if (slider_value.X < ValueMin.X) { slider_value.X = ValueMin.X; }
-	if (slider_value.Y < ValueMin.Y) { slider_value.Y = ValueMin.Y; }
-
-	if (slider_value.X > ValueMax.X) { slider_value.X = ValueMax.X; }
-	if (slider_value.Y > ValueMax.Y) { slider_value.Y = ValueMax.Y; }
-
 	Value = slider_value;
+	ClampValue();
+
 //	SliderChanged = true;
-	if (SliderObject.Is())
-		{
-			VectorF2 slider_size_half = NubSize / 2.0f;
-			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+	PutSliderNub();
 
-			VectorF2 slider_normal = Value;
-			slider_normal -= ValueMin;
-			slider_normal /= (ValueMax - ValueMin);
-
-			VectorF2 slider_value = slider_normal;
-			slider_value *= (slider_max - slider_min);
-			slider_value += slider_min;
-
-			SliderObject.Box().Min = slider_value - slider_size_half;
-			SliderObject.Box().Max = slider_value + slider_size_half;
-		}
-
-	ValueXChangedFunc(Value.X);
-	ValueYChangedFunc(Value.Y);
-	ValueChangedFunc(Value);
+	ValueXChangedFunc.TryInvoke(Value.X);
+	ValueYChangedFunc.TryInvoke(Value.Y);
+	ValueChangedFunc.TryInvoke(Value);
 }
 
 
@@ -188,23 +158,7 @@ void UI::Control::Slider::SetText(std::string text)
 void UI::Control::Slider::RelayUpdateBox()
 {
 	//SliderChanged = true;
-	if (SliderObject.Is())
-	{
-		VectorF2 slider_size_half = NubSize / 2.0f;
-		VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-		VectorF2 slider_max = DisplayBox.Max - slider_size_half;
-
-		VectorF2 slider_normal = Value;
-		slider_normal -= ValueMin;
-		slider_normal /= (ValueMax - ValueMin);
-
-		VectorF2 slider_value = slider_normal;
-		slider_value *= (slider_max - slider_min);
-		slider_value += slider_min;
-
-		SliderObject.Box().Min = slider_value - slider_size_half;
-		SliderObject.Box().Max = slider_value + slider_size_half;
-	}
+	PutSliderNub();
 	if (TextObject.Is())
 	{
 		PutCharactersEntrys();
@@ -218,23 +172,7 @@ void UI::Control::Slider::RelayInsertObject()
 		SliderObject.Color() = ColorF4(0.5f, 0.5f, 0.5f);
 		SliderObject.Layer() = Depth - 0.01f;
 		//SliderChanged = true;
-	if (SliderObject.Is())
-		{
-			VectorF2 slider_size_half = NubSize / 2.0f;
-			VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-			VectorF2 slider_max = DisplayBox.Max - slider_size_half;
-
-			VectorF2 slider_normal = Value;
-			slider_normal -= ValueMin;
-			slider_normal /= (ValueMax - ValueMin);
-
-			VectorF2 slider_value = slider_normal;
-			slider_value *= (slider_max - slider_min);
-			slider_value += slider_min;
-
-			SliderObject.Box().Min = slider_value - slider_size_half;
-			SliderObject.Box().Max = slider_value + slider_size_half;
-		}
+		PutSliderNub();
 	}
 	if (!TextObject.Is() && Manager != NULL)
 	{
@@ -265,4 +203,25 @@ void UI::Control::Slider::RelayClick(ClickArgs params)
 void UI::Control::Slider::RelayCursorDrag(DragArgs params)
 {
 	ChangeValue(params.Position);
+}
+void UI::Control::Slider::RelayKey(KeyArgs args)
+{
+	if (args.Action == Action::Press || args.Action == Action::Repeat)
+	{
+		if (args.Key == Keys::Left)		{ Value.X -= ValueResolution.X; }
+		if (args.Key == Keys::Right)	{ Value.X += ValueResolution.X; }
+		if (args.Key == Keys::Up)		{ Value.Y -= ValueResolution.Y; }
+		if (args.Key == Keys::Down)		{ Value.Y += ValueResolution.Y; }
+		ClampValue();
+		if (args.Key == Keys::Left || args.Key == Keys::Right)
+		{
+			ValueXChangedFunc.TryInvoke(Value.X);
+		}
+		if (args.Key == Keys::Up || args.Key == Keys::Down)
+		{
+			ValueYChangedFunc.TryInvoke(Value.Y);
+		}
+		ValueChangedFunc.TryInvoke(Value);
+		PutSliderNub();
+	}
 }

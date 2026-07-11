@@ -1,7 +1,7 @@
 #ifndef  DEBUG_MENU_HPP
 # define DEBUG_MENU_HPP
 
-# include "Control/Base/Manager.hpp"
+# include "Control/General/Manager.hpp"
 # include "ControlsInclude.hpp"
 
 struct ContextNoisePlane;

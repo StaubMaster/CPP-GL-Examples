@@ -1,7 +1,7 @@
 #ifndef  INVENTORY_SLOT_HPP
 # define INVENTORY_SLOT_HPP
 
-# include "Control/Base/Manager.hpp"
+# include "Control/General/Manager.hpp"
 # include "ControlsInclude.hpp"
 
 # include "PolyHedra/Object.hpp"

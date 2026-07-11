@@ -51,7 +51,7 @@ assamble other things correctly
 #include "SplineObject.hpp"
 
 // UI
-#include "Control/Base/Manager.hpp"
+#include "Control/General/Manager.hpp"
 #include "Text/Manager.hpp"
 #include "Text/Font/Font.hpp"
 #include "SplineSegment3DControl.hpp"

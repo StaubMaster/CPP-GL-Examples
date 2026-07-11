@@ -61,6 +61,7 @@ namespace PaddedBlock
 	};
 };
 
+# define LIGHT_BINDING 0
 struct LightBufferData
 {
 	PaddedBlock::LightBase			Ambient;

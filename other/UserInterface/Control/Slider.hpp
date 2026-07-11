@@ -1,11 +1,11 @@
 #ifndef  UI_CONTROL_SLIDER_HPP
 # define UI_CONTROL_SLIDER_HPP
 
-# include "Base/Base.hpp"
+# include "Control/General/Base.hpp"
+
 # include "Generics/Function/Pointer.hpp"
 
-# include "../Text/Object.hpp"
-# include <string>
+# include "Text/Object.hpp"
 
 namespace UI
 {
@@ -45,6 +45,10 @@ class Slider : public Base
 	void		SetValueY(float val);
 
 	private:
+	void	PutSliderNub();
+	void	ClampValue();
+
+	private:
 	void ChangeValue(DisplayPosition mouse_pos);
 
 	public:
@@ -61,8 +65,9 @@ class Slider : public Base
 	void	RelayInsertObject() override;
 	void	RelayRemoveObject() override;
 
-	void RelayClick(ClickArgs params) override;
-	void RelayCursorDrag(DragArgs params) override;
+	void	RelayClick(ClickArgs params) override;
+	void	RelayCursorDrag(DragArgs params) override;
+	void	RelayKey(KeyArgs args) override;
 
 	private:
 	Text::Object	TextObject;

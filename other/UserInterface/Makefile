@@ -8,13 +8,13 @@ FILES := \
 	Anchor1D.cpp \
 	Anchor2D.cpp \
 \
-	Control/Base/ShaderLayout.cpp \
-	Control/Base/BufferLayout.cpp \
-	Control/Base/BufferData.cpp \
-	Control/Base/Manager.cpp \
-	Control/Base/ObjectData.cpp \
-	Control/Base/Object.cpp \
-	Control/Base/Base.cpp \
+	Control/General/ShaderLayout.cpp \
+	Control/General/BufferLayout.cpp \
+	Control/General/BufferData.cpp \
+	Control/General/Manager.cpp \
+	Control/General/ObjectData.cpp \
+	Control/General/Object.cpp \
+	Control/General/Base.cpp \
 \
 	Control/Window.cpp \
 	Control/Form.cpp \

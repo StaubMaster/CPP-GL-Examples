@@ -13,6 +13,8 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 	, PalletChange()
 	, Trans("Trans")
 {
+	AutoSizerYType = EAutoSizerType::FitFixed;
+
 	Anchor.X.AnchorBoth(0, 0);
 	Anchor.Y.AnchorMin(0, 0);
 
@@ -33,9 +35,9 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 	Pallet.ChildInsert(PalletChange);
 	ChildInsert(Trans);
 
-	Pallet.AnchorFitChildrenY();
-	Trans.AnchorFitChildrenY();
-	AnchorFitChildrenY();
+	Pallet.UpdateAutoSize();
+	Trans.UpdateAutoSize();
+	UpdateAutoSize();
 
 	Change(nullptr);
 }

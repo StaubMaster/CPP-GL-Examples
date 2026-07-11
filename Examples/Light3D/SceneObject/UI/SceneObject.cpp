@@ -11,6 +11,8 @@ SceneObjectUI::SceneObjectUI()
 	, LightSolar("LightSolar")
 	, LightSpot("LightSpot")
 {
+	AutoSizerYType = EAutoSizerType::FitFixed;
+
 	Anchor.X.AnchorMin(0, 400);
 	Anchor.Y.AnchorMin(0, 0);
 
@@ -29,7 +31,7 @@ SceneObjectUI::SceneObjectUI()
 	ChildInsert(LightSolar);
 	ChildInsert(LightSpot);
 
-	AnchorFitChildrenY();
+	UpdateAutoSize();
 }
 
 
@@ -87,7 +89,7 @@ void SceneObjectUI::Change(::SceneObject * obj)
 		}
 	}
 
-	AnchorFitChildrenY();
+	UpdateAutoSize();
 }
 void SceneObjectUI::Update()
 {

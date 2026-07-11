@@ -19,8 +19,6 @@ UI::Control::Button::Button() : Base()
 	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
 
 	Text = "";
-
-	ClickFunc = nullptr;
 }
 UI::Control::Button::~Button()
 { }
@@ -84,5 +82,5 @@ void UI::Control::Button::RelayClick(ClickArgs params)
 {
 	if (!IsInteractible()) { return; }
 
-	ClickFunc(params);
+	ClickFunc.TryInvoke(params);
 }

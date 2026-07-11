@@ -58,8 +58,7 @@ UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 m
 	return EBoxChangeType::None;
 }
 
-#include <iostream>
-#include "Base/Manager.hpp"
+#include "Control/General/Manager.hpp"
 /* put into Manager
 	Cursors flicked when moving
 	put into Manager, Cursor should stay the same until changing ends

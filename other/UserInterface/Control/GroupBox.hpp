@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_GROUPBOX_HPP
 # define UI_CONTROL_GROUPBOX_HPP
 
-#include "Base/Base.hpp"
+# include "Control/General/Base.hpp"
 
 
 

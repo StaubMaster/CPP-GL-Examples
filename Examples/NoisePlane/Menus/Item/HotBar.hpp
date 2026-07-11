@@ -1,7 +1,7 @@
 /*#ifndef  HOT_BAR_HPP
 # define HOT_BAR_HPP
 
-# include "Control/Base/Manager.hpp"
+# include "Control/General/Manager.hpp"
 # include "ControlsInclude.hpp"
 
 # include "InventorySlot.hpp"

@@ -84,6 +84,6 @@ void UI::Control::CheckBox::RelayClick(ClickArgs params)
 	{
 		Checked = !Checked;
 		ObjectColorNeedAssign = true;
-		ClickFunc(params);
+		ClickFunc.TryInvoke(params);
 	}
 }

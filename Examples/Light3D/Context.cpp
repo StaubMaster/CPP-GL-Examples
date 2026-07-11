@@ -390,7 +390,7 @@ void Light3DContext::PolyHedraPalletChangeFunc(ClickArgs args)
 				UIPolyHedraPalletList.ChildInsert(item);
 			}
 			UIPolyHedraPalletList.Show();
-			UIPolyHedraPalletList.AnchorFitChildrenY(); // this dosent work poperly if hidden
+			UIPolyHedraPalletList.UpdateAutoSize(); // this dosent work poperly if hidden
 			// generic Fitting Enum
 			// Flag to request Fitting
 		}
@@ -426,13 +426,15 @@ Light3DContext::Light3DContext()
 	, Object_Hovering(nullptr)
 	, UIPolyHedraPalletList()
 	, DoPolyHedraPalletChange(false)
-	, LightBuffer(GL::BufferDataUsage::StreamDraw, 0)
+	, LightBuffer(GL::BufferDataUsage::StreamDraw, LIGHT_BINDING)
 	, LightShader()
 	, LightShaderLayout()
 {
 	NewPolyHedra_Manager.PalletManager = &PalletManager;
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerBasic);
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerTSC);
+
+	//LightShaderLayout.LightUniform.Index = LIGHT_BINDING;
 
 	Container::Array<Uniform::Layout*> layouts({
 		&UIManager.ControlManager.ShaderLayout,

@@ -1,7 +1,7 @@
 #ifndef  OPTIONS_MENU_HPP
 # define OPTIONS_MENU_HPP
 
-# include "Control/Base/Manager.hpp"
+# include "Control/General/Manager.hpp"
 # include "ControlsInclude.hpp"
 
 struct ContextNoisePlane;

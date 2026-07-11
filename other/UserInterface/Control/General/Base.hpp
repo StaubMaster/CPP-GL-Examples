@@ -79,14 +79,21 @@ class Base
 	UI::Manager *	Manager;
 
 	protected:
-	Object			ControlObject;
+	Object		ControlObject;
 
 	protected:
-	Base * Parent;
-	Container::Binary<Control::Base *> Children;
+	Base *								Parent;
+	Container::Binary<Control::Base *>	Children;
+
+	public:
+	void	ChildInsert(Base & control);
+	void	ChildInsert(Base * control);
+	void	ChangeManager(UI::Manager * manager);
+	void	ChangeManager(UI::Manager & manager);
 
 	public:
 	float	Depth; // make this unsigend char. 255 should be more then enough Layers
+	// why so greedy ? just make this a uint32
 	unsigned char	Layer() const;
 
 	protected:
@@ -154,23 +161,36 @@ class Base
 	//Color		ColorDisabled; // Gray Text
 	ColorF4		ColorHover;
 
+
+
 	public:
 	virtual ~Base();
 	Base();
 
-	public:
-	void	ChildInsert(Base & control);
-	void	ChildInsert(Base * control);
-	void	ChangeManager(UI::Manager * manager);
-	void	ChangeManager(UI::Manager & manager);
-
-	// Automatic Sizing
-	public:
-	void	AnchorFitChildrenY();
+	Base(const Base & other) = delete;
+	Base & operator=(const Base & other) = delete;
 
 	// UpdateHandler that has referances to these functions
-
 	// seperate functinos for changing internals vs changing Graphics Object
+
+
+
+	public:
+	enum class EAutoSizerType
+	{
+		None,
+		FitFixed,
+	};
+	EAutoSizerType		AutoSizerXType;
+	EAutoSizerType		AutoSizerYType;
+
+	public:
+	void	UpdateAutoSize();
+
+	private:
+	void	UpdateAutoSizeGridY();
+
+
 
 	public:
 	void	Update();

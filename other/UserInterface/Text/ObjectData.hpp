@@ -35,9 +35,9 @@ struct ObjectData
 	unsigned int	TextCursorIndex;
 
 	~ObjectData();
-	ObjectData();
-	ObjectData(const ObjectData & other);
-	ObjectData & operator=(const ObjectData & other);
+	ObjectData(); // make htis default as well
+	ObjectData(const ObjectData & other) = default;
+	ObjectData & operator=(const ObjectData & other) = default;
 };
 };
 };

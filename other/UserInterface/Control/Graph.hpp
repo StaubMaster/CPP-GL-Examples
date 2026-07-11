@@ -1,11 +1,11 @@
 #ifndef  UI_CONTROL_GRAPH_HPP
 # define UI_CONTROL_GRAPH_HPP
 
-# include "Base/Base.hpp"
+# include "Control/General/Base.hpp"
 
 # include "../../Examples/General/Telemetry/ValueAccumulator.hpp"
 
-# include "../Graph/Object.hpp"
+# include "Graph/Object.hpp"
 
 namespace UI
 {

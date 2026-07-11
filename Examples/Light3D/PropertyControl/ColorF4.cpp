@@ -66,7 +66,7 @@ void UI::Control::ColorF4::RFunc(float val)
 	if (Object == nullptr) { return; }
 	Object -> R = val;
 	std::stringstream ss;
-	ss << "R:" << ToString(Object -> R);
+	ss << "R:" << ToString(Object -> R, 2);
 	R.SetText(ss.str());
 }
 void UI::Control::ColorF4::GFunc(float val)
@@ -74,7 +74,7 @@ void UI::Control::ColorF4::GFunc(float val)
 	if (Object == nullptr) { return; }
 	Object -> G = val;
 	std::stringstream ss;
-	ss << "G:" << ToString(Object -> G);
+	ss << "G:" << ToString(Object -> G, 2);
 	G.SetText(ss.str());
 }
 void UI::Control::ColorF4::BFunc(float val)
@@ -82,6 +82,6 @@ void UI::Control::ColorF4::BFunc(float val)
 	if (Object == nullptr) { return; }
 	Object -> B = val;
 	std::stringstream ss;
-	ss << "B:" << ToString(Object -> B);
+	ss << "B:" << ToString(Object -> B, 2);
 	B.SetText(ss.str());
 }
