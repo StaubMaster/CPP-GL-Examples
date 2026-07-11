@@ -98,6 +98,8 @@ struct MultiformLayout : public Multiform::Layout
 
 struct Light3DContext : public ContextBase
 {
+static GL::BlockBinding		BindingLight;
+
 View3D		View;
 RayF3		ViewRay;
 Matrix4x4	ViewMatrix;
@@ -206,9 +208,6 @@ SceneObject_PolyHedraObject *		CenterCube;
 
 
 Buffer::Uniform			LightBuffer;
-
-::Shader::Base			LightShader;
-::LightShaderLayout		LightShaderLayout;
 
 
 

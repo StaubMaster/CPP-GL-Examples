@@ -37,6 +37,8 @@ MultiformLayout::MultiformLayout()
 
 
 
+GL::BlockBinding Light3DContext::BindingLight = 3;
+
 
 
 bool Light3DContext::IsHoveringUI() const
@@ -426,21 +428,16 @@ Light3DContext::Light3DContext()
 	, Object_Hovering(nullptr)
 	, UIPolyHedraPalletList()
 	, DoPolyHedraPalletChange(false)
-	, LightBuffer(GL::BufferDataUsage::StreamDraw, LIGHT_BINDING)
-	, LightShader()
-	, LightShaderLayout()
+	, LightBuffer(GL::BufferDataUsage::StreamDraw)
 {
 	NewPolyHedra_Manager.PalletManager = &PalletManager;
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerBasic);
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerTSC);
 
-	//LightShaderLayout.LightUniform.Index = LIGHT_BINDING;
-
 	Container::Array<Uniform::Layout*> layouts({
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 		&UIManager.GraphManager.ShaderLayout,
-		&LightShaderLayout,
 		&ObjectManagerBasic_ShaderFullLayout,
 		&ObjectManagerBasic_ShaderWireLayout,
 		&ObjectManagerTSC_ShaderFullLayout,
@@ -536,7 +533,6 @@ void Light3DContext::ChangeMedia()
 }
 void Light3DContext::GraphicsCreate()
 {
-	LightShader.Create();
 	UIManager.GraphicsCreate();
 
 	MultiformLayout.Depth.ChangeData(View.Depth);
@@ -546,7 +542,6 @@ void Light3DContext::GraphicsCreate()
 }
 void Light3DContext::GraphicsDelete()
 {
-	LightShader.Delete();
 	UIManager.GraphicsDelete();
 
 	LightBuffer.Delete();
@@ -715,7 +710,8 @@ void Light3DContext::Draw()
 	VertexArray::BindNone();
 	data.Put(LightBuffer);
 
-
+	LightBuffer.BindBase(BindingLight);
+	ObjectManagerBasic_ShaderFullLayout.UniformBlockBinding(ObjectManagerBasic_ShaderFullLayout.LightUniform.Index, BindingLight);
 
 	// Instances
 

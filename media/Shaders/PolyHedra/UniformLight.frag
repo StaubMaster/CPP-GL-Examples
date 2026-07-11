@@ -60,7 +60,7 @@ uniform sampler2DArray TextureImage;
 const uint SpotLimit = 4u;
 const uint PointLimit = 1u;
 
-layout (std140) uniform ILights
+layout(std140) uniform ILights
 {
 	LightBase				Ambient;
 	LightDirection			Solar;
