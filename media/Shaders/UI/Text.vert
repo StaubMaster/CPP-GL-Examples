@@ -28,45 +28,42 @@ struct BoxF2
 
 // Pallets
 const uint PalletLimit = 128u;
-uniform vec2 PalletArrayMin[PalletLimit];
-uniform vec2 PalletArrayMax[PalletLimit];
-/*layout(std140) uniform IPallets
+layout(std140) uniform IPallets
 {
-	//uint	PalletCount;
-	BoxF2	PalletArray[PalletLimit];
-} Pallets;*/
+	BoxF2	Array[PalletLimit];
+} Pallets;
 
 
 
 // Texts
 const uint TextLimit = 64u;
-uniform vec2 TextBoundArrayMin[TextLimit];
-uniform vec2 TextBoundArrayMax[TextLimit];
-uniform vec4 TextColorArray[TextLimit];
 struct TextData
 {
 	BoxF2	Bound;
 	vec4	Color;
-	//vec2	CharacterSize;
 };
-/*layout(std140) uniform ITexts
+layout(std140) uniform ITexts
 {
-	//uint		TextCount;
-	TextData	TextArray[TextLimit];
-} Texts;*/
+	TextData	Array[TextLimit];
+} Texts;
 
 
 
 //const vec2 CharacterSize = vec2(32, 32);
 const vec2 CharacterSize = vec2(20, 20);
+/* Character Size
+global ?
+per Text ?
+pre Inst ?
+*/
 
 
 
 layout(location = 0) in vec2 Main_Pos;	//	square in range [ -1 , +1 ]
 
 layout(location = 1) in vec2 Inst_Pos;
-layout(location = 2) in uint Inst_PalletIdx;
-layout(location = 3) in uint Inst_TextIdx;
+layout(location = 2) in uint Inst_Pallet_Idx;
+layout(location = 3) in uint Inst_Text_Idx;
 
 
 
@@ -95,15 +92,16 @@ void main()
 
 	vec2 pallet_t0 = ((vec2(-Main_Pos.x, +Main_Pos.y) + vec2(1, 1)) / 2);
 	vec2 pallet_t1 = vec2(1, 1) - pallet_t0;
-	vs_out.PalletPos = (PalletArrayMin[Inst_PalletIdx] * pallet_t0) + (PalletArrayMax[Inst_PalletIdx] * pallet_t1);
 
-	vec2 bound_min = TextBoundArrayMin[Inst_TextIdx];
-	vec2 bound_max = TextBoundArrayMax[Inst_TextIdx];
+	BoxF2 pallet_box = Pallets.Array[Inst_Pallet_Idx];
+	vs_out.PalletPos = (pallet_box.Min * pallet_t0) + (pallet_box.Max * pallet_t1);
 
-	vs_out.BoundMin.x = bound_min.x;
-	vs_out.BoundMin.y = DisplaySize.Buffer.Full.y - bound_max.y;
-	vs_out.BoundMax.x = bound_max.x;
-	vs_out.BoundMax.y = DisplaySize.Buffer.Full.y - bound_min.y;
+	BoxF2 bound = Texts.Array[Inst_Text_Idx].Bound;
 
-	vs_out.Color = TextColorArray[Inst_TextIdx];
+	vs_out.BoundMin.x = bound.Min.x;
+	vs_out.BoundMin.y = DisplaySize.Buffer.Full.y - bound.Max.y;
+	vs_out.BoundMax.x = bound.Max.x;
+	vs_out.BoundMax.y = DisplaySize.Buffer.Full.y - bound.Min.y;
+
+	vs_out.Color = Texts.Array[Inst_Text_Idx].Color;
 }

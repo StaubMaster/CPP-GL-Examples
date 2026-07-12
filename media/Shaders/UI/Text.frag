@@ -29,7 +29,6 @@ void main()
 	if (col.g >= 0.5) { discard; }
 	if (col.b >= 0.5) { discard; }
 
-//	col = vec4(1, 1, 1, 1);
 	col = col.a * fs_inn.Color;
 
 	if (gl_FragCoord.x >= fs_inn.BoundMin.x &&

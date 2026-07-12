@@ -1,10 +1,13 @@
 #ifndef  UI_TEXT_SHADER_HPP
 # define UI_TEXT_SHADER_HPP
 
-#include "Graphics/Uniform/General/Layout.hpp"
-#include "Graphics/Uniform/_Include.hpp"
+# include "Graphics/Uniform/General/Layout.hpp"
+# include "Graphics/Uniform/_Include.hpp"
+# include "Graphics/Uniform/General/Buffer.hpp"
 
-
+# include "Graphics/PaddedBlock/TypeDefs/VectorF2.hpp"
+# include "Graphics/PaddedBlock/TypeDefs/ColorF4.hpp"
+# include "ValueType/Box/F2.hpp"
 
 namespace UI
 {
@@ -12,19 +15,31 @@ namespace UI
 namespace Text
 {
 
+struct TextData
+{
+	BoxF2		Bound;
+	ColorF4		Color;
+};
+
+const static unsigned int	PalletsLimit = 128;
+const static unsigned int	TextsLimit = 64;
+
+struct PalletsBufferData
+{
+	BoxF2	Array[PalletsLimit];
+};
+struct TextsBufferData
+{
+	TextData	Array[TextsLimit];
+};
+
 class ShaderLayout : public Uniform::Layout
 {
 	public:
 	Uniform::DisplaySize		DisplaySize;
 
-	// make Uniform::BoxF2
-	Uniform::VectorF2Array<128>		PalletArrayMin;
-	Uniform::VectorF2Array<128>		PalletArrayMax;
-
-	// make this a stuct / custom Uniform
-	Uniform::VectorF2Array<64>		TextBoundArrayMin;
-	Uniform::VectorF2Array<64>		TextBoundArrayMax;
-	Uniform::ColorF4Array<64>		TextColorArray;
+	Uniform::Buffer		Pallets;
+	Uniform::Buffer		Texts;
 
 	public:
 	~ShaderLayout();

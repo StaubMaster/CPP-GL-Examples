@@ -14,6 +14,8 @@
 #include "Graphics/Texture/Array2D.hpp"
 
 
+#include "Graphics/Buffer/Uniform.hpp"
+
 
 class DirectoryInfo;
 
@@ -52,13 +54,11 @@ class Manager
 	Container::BlockLinkedList<1024, UI::Text::Inst_Data>	InstancesBlock;
 	Container::Array<UI::Text::Inst_Data>					InstancesArray;
 
-	Container::Array<VectorF2>	FontPalletMin;
-	Container::Array<VectorF2>	FontPalletMax;
+	Container::Binary<BoxF2>	PalletsList;
+	Container::Binary<TextData>	TextsList;
 
-	unsigned int				TextArrayIdx;
-	Container::Array<VectorF2>	TextBoundMin;
-	Container::Array<VectorF2>	TextBoundMax;
-	Container::Array<ColorF4>	TextColor;
+	::Buffer::Uniform	PalletsBuffer;
+	::Buffer::Uniform	TextsBuffer;
 
 	UI::Text::Font *	TextFont;
 	Texture::Array2D	Pallet_Texture;

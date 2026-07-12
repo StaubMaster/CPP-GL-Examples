@@ -11,6 +11,7 @@
 #include "Image.hpp"
 
 #include <iostream>
+#include "ValueType/_Show.hpp"
 
 
 
@@ -42,11 +43,8 @@ UI::Text::Manager::Manager()
 	, ObjectDatas()
 	, InstancesBlock()
 	, InstancesArray()
-	, FontPalletMin(128)
-	, FontPalletMax(128)
-	, TextBoundMin(32)
-	, TextBoundMax(32)
-	, TextColor(32)
+	, PalletsBuffer(GL::BufferDataUsage::StreamDraw)
+	, TextsBuffer(GL::BufferDataUsage::StreamDraw)
 	, TextFont(nullptr)
 	, Pallet_Texture()
 	, GraphicsExist(false)
@@ -86,25 +84,18 @@ void UI::Text::Manager::InitFont()
 	{
 		for (unsigned int i = 0; i < TextFont -> CharacterRanges[j] -> Characters.Count(); i++)
 		{
-			FontPalletMin[idx] = (TextFont -> CharacterRanges[j] -> Characters[i].Box.Min);
-			FontPalletMax[idx] = (TextFont -> CharacterRanges[j] -> Characters[i].Box.Max);
+			PalletsList.Insert(TextFont -> CharacterRanges[j] -> Characters[i].Box);
 			idx++;
 		}
 	}
 
 	for (unsigned int i = 0; i < TextFont -> Characters.Count(); i++)
 	{
-		FontPalletMin[idx] = (TextFont -> Characters[i].Box.Min);
-		FontPalletMax[idx] = (TextFont -> Characters[i].Box.Max);
+		PalletsList.Insert(TextFont -> Characters[i].Box);
 		idx++;
 	}
 
-	FontPalletMin[idx] = (TextFont -> DefaultCharacter.Box.Min);
-	FontPalletMax[idx] = (TextFont -> DefaultCharacter.Box.Max);
-
-	Shader.Bind();
-	ShaderLayout.PalletArrayMin.Put(FontPalletMin.Memory());
-	ShaderLayout.PalletArrayMax.Put(FontPalletMax.Memory());
+	PalletsList.Insert(TextFont -> DefaultCharacter.Box);
 }
 
 
@@ -247,12 +238,6 @@ void UI::Text::Manager::ShowInstancesTime()
 
 void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 {
-	if (TextArrayIdx == 64)
-	{
-		std::cerr << "!!!! Text Limit 64 reached !!!!\n";
-		return;
-	}
-
 #ifdef TELEMETRY_TIME
 	WatchAlign.Start();
 #endif
@@ -291,10 +276,6 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 
 	VectorF2 rel_txt;
 	rel_txt.Y = -(line_count * text_alignment.Y);
-
-	TextBoundMin[TextArrayIdx] = obj.Bound.Min;
-	TextBoundMax[TextArrayIdx] = obj.Bound.Max;
-	TextColor[TextArrayIdx] = obj.Color;
 
 #ifdef TELEMETRY_TIME
 	WatchAlign.Stop();
@@ -367,7 +348,7 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 #ifdef TELEMETRY_TIME
 		WatchAssign.Start();
 #endif
-		data.TextIdx = TextArrayIdx;
+		data.TextIdx = TextsList.Count();
 #ifdef TELEMETRY_TIME
 		WatchAssign.Stop();
 #endif
@@ -407,11 +388,14 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 		UI::Text::Inst_Data & data = InstancesBlock.MakeNext();
 		data.Pos = cursor;
 		data.PalletIdx = (*TextFont).FindCodeIndex('^');
-		data.TextIdx = TextArrayIdx;
+		data.TextIdx = TextsList.Count();
 		InstancesBlock.Next();
 	}
 
-	TextArrayIdx++;
+	TextData data;
+	data.Bound = obj.Bound;
+	data.Color = obj.Color;
+	TextsList.Insert(data);
 
 #ifdef TELEMETRY_TIME
 	WatchLoop.Stop();
@@ -427,7 +411,7 @@ void UI::Text::Manager::MakeInstances()
 #ifdef TELEMETRY_TIME
 	WatchClear.Start();
 #endif
-	TextArrayIdx = 0;
+	TextsList.Clear();
 	InstancesBlock.Clear();
 	InstancesArray.Clear();
 #ifdef TELEMETRY_TIME
@@ -465,11 +449,6 @@ void UI::Text::Manager::MakeInstances()
 	}
 	BufferInstNewData = true;
 
-	Shader.Bind();
-	ShaderLayout.TextBoundArrayMin.Put(TextBoundMin.Memory());
-	ShaderLayout.TextBoundArrayMax.Put(TextBoundMax.Memory());
-	ShaderLayout.TextColorArray.Put(TextColor.Memory());
-
 #ifdef TELEMETRY_TIME
 	WatchArray.Start();
 #endif
@@ -495,6 +474,8 @@ void UI::Text::Manager::GraphicsCreate()
 		Shader.Create();
 		Buffer.Create();
 		Pallet_Texture.Create();
+		PalletsBuffer.Create();
+		TextsBuffer.Create();
 		GraphicsExist = true;
 		TextureAssigned = false;
 		BufferMainAttributesBound = false;
@@ -509,6 +490,8 @@ void UI::Text::Manager::GraphicsDelete()
 		Buffer.Delete();
 		Shader.Delete();
 		Pallet_Texture.Delete();
+		PalletsBuffer.Delete();
+		TextsBuffer.Delete();
 		GraphicsExist = false;
 	}
 }
@@ -573,11 +556,36 @@ void UI::Text::Manager::Draw()
 	if (!GraphicsExist) { return; }
 
 	Shader.Bind();
-	Pallet_Texture.Bind();
-
-	TextureAssign();
-
 	Buffer.Bind();
+
+	// do this stuff once / somewhere else
+	// check for Limit, display error, dont throw
+	{
+		const unsigned int binding = 0;
+		PalletsBuffer.Bind();
+		PalletsBuffer.BindBase(binding);
+		PalletsBufferData data;
+		for (unsigned int i = 0; i < PalletsList.Count(); i++)
+		{
+			data.Array[i] = PalletsList[i];
+		}
+		PalletsBuffer.DataFull(Container::Void(data));
+		ShaderLayout.Bind(ShaderLayout.Pallets, binding);
+	}
+	{
+		const unsigned int binding = 1;
+		TextsBuffer.BindBase(binding);
+		TextsBufferData data;
+		for (unsigned int i = 0; i < TextsList.Count(); i++)
+		{
+			data.Array[i] = TextsList[i];
+		}
+		TextsBuffer.DataFull(Container::Void(data));
+		ShaderLayout.Bind(ShaderLayout.Texts, binding);
+	}
+
+	Pallet_Texture.Bind();
+	TextureAssign();
 
 	BufferMainAttributesBind();
 	BufferMainUpdateData();
@@ -585,5 +593,7 @@ void UI::Text::Manager::Draw()
 	BufferInstAttributesBind();
 	BufferInstUpdateData();
 
+	PalletsBuffer.Bind();
+	TextsBuffer.Bind();
 	Buffer.Draw();
 }
