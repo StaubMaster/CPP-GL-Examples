@@ -50,11 +50,13 @@ layout(std140) uniform ITexts
 
 
 //const vec2 CharacterSize = vec2(32, 32);
-const vec2 CharacterSize = vec2(20, 20);
+//const vec2 CharacterSize = vec2(20, 20);
+const vec2 CharacterSize = vec2(12, 12);
+
 /* Character Size
 global ?
 per Text ?
-pre Inst ?
+pre Char ?
 */
 
 

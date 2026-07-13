@@ -503,6 +503,9 @@ void UI::Text::Manager::TextureAssign()
 	Pallet_Texture.Bind();
 	Pallet_Texture.Assign(TextFont -> AtlasTexture);
 	Pallet_Texture.FilterMin(Texture::Base::FilterMinType::Linear);
+	Pallet_Texture.FilterMag(Texture::Base::FilterMagType::Linear);
+
+	//Pallet_Texture.
 
 	TextureAssigned = true;
 }
@@ -557,6 +560,21 @@ void UI::Text::Manager::Draw()
 
 	Shader.Bind();
 	Buffer.Bind();
+
+	/*{
+		Pallet_Texture.Bind();
+		int val;
+
+		glGetTexParameteriv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, &val);
+		if (val == (int)Texture::Base::FilterMagType::Linear ) { std::cout << "Mag: Linear \n"; }
+		if (val == (int)Texture::Base::FilterMagType::Nearest) { std::cout << "Mag: Nearest\n"; }
+
+		glGetTexParameteriv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, &val);
+		if (val == (int)Texture::Base::FilterMinType::Linear ) { std::cout << "Min: Linear \n"; }
+		if (val == (int)Texture::Base::FilterMinType::Nearest) { std::cout << "Min: Nearest\n"; }
+
+		std::cout << '\n';
+	}*/
 
 	// do this stuff once / somewhere else
 	// check for Limit, display error, dont throw
