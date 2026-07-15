@@ -25,29 +25,44 @@ NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::MakePalletObjec
 	if (pallet == nullptr) { return nullptr; }
 	NewPolyHedra::PalletObjectManager * manager = NewPalletObjectManager();
 	manager -> Pallet = pallet;
-	if (BufferFullLayout != nullptr)
+
+	manager -> BufferFull.MainChange(&(pallet -> BufferFull), pallet -> BufferFullLayout, pallet -> BufferFullLayout -> Stride);
+	manager -> BufferWire.MainChange(&(pallet -> BufferWire), pallet -> BufferWireLayout, pallet -> BufferWireLayout -> Stride);
+
+	manager -> BufferFull.InstChange(&(manager -> BufferFullInstance), BufferFullLayout, BufferFullLayout -> Stride);
+	manager -> BufferWire.InstChange(&(manager -> BufferWireInstance), BufferWireLayout, BufferWireLayout -> Stride);
+
+	/*if (BufferFullLayout != nullptr)
 	{
 		//manager -> BufferFull.Init(*BufferFullLayout);
 		//manager -> BufferFullVertexArray.ChangeAttributeLayoutMain(*BufferFullLayout);
 		manager -> BufferFull.SizeOf = BufferFullLayout -> Stride;
-	}
-	if (BufferWireLayout != nullptr)
+	}*/
+	/*if (BufferWireLayout != nullptr)
 	{
 		//manager -> BufferWire.Init(*BufferWireLayout);
 		//manager -> BufferWireVertexArray.ChangeAttributeLayoutMain(*BufferWireLayout);
 		manager -> BufferWire.SizeOf = BufferWireLayout -> Stride;
-	}
+	}*/
 	manager -> BufferUniform = BufferUniform;
 	manager -> GraphicsCreate();
 	manager -> VertexBufferInit();
 
-	manager -> BufferFullVertexArray.Bind();
-	manager -> BufferFull.Bind();
-	BufferFullLayout -> Bind();
+	manager -> BufferFull.Init();
+	//manager -> BufferFullVertexArray.Bind();
+	//manager -> BufferFull.Bind();
+	//BufferFullLayout -> Bind();
+	if (BufferUniform != nullptr)
+	{
+		BufferUniform -> Bind();
+	}
 
-	manager -> BufferWireVertexArray.Bind();
-	manager -> BufferWire.Bind();
-	BufferWireLayout -> Bind();
+	manager -> BufferWire.Init();
+	//manager -> BufferWireVertexArray.Bind();
+	//manager -> BufferWire.Bind();
+	//BufferWireLayout -> Bind();
+
+	VertexArray::Base::BindNone();
 
 	Managers.Insert(manager);
 	return manager;

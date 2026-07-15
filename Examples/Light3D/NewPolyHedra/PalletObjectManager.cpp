@@ -10,32 +10,32 @@ NewPolyHedra::PalletObjectManager::~PalletObjectManager()
 { }
 NewPolyHedra::PalletObjectManager::PalletObjectManager()
 	: Pallet(nullptr)
-	, BufferFullVertexArray()
-	, BufferWireVertexArray()
-	, BufferFull(GL::BufferDataUsage::StreamDraw)
-	, BufferWire(GL::BufferDataUsage::StreamDraw)
+	, BufferFull()
+	, BufferWire()
+	, BufferFullInstance(GL::BufferDataUsage::StreamDraw)
+	, BufferWireInstance(GL::BufferDataUsage::StreamDraw)
 { }
 
 NewPolyHedra::PalletObjectManager::PalletObjectManager(NewPolyHedra::Pallet * pallet)
 	: Pallet(pallet)
-	, BufferFullVertexArray()
-	, BufferWireVertexArray()
-	, BufferFull(GL::BufferDataUsage::StreamDraw)
-	, BufferWire(GL::BufferDataUsage::StreamDraw)
+	, BufferFull()
+	, BufferWire()
+	, BufferFullInstance(GL::BufferDataUsage::StreamDraw)
+	, BufferWireInstance(GL::BufferDataUsage::StreamDraw)
 { }
 
 
 
 void NewPolyHedra::PalletObjectManager::VertexBufferInit()
 {
-	BufferFullVertexArray.Bind();
-	//BufferFullVertexArray.InitAttributeLayoutInst(BufferFull);
+	/*BufferFull.Bind();
+	//BufferFull.InitAttributeLayoutInst(BufferFull);
 	{
-		BufferFull.Bind();
-		//BufferFull.Update();
+		BufferFullInstance.Bind();
+		//BufferFullInstance.Update();
 		if (Pallet != nullptr)
 		{
-			Pallet -> BufferFull.Bind();
+			Pallet -> BufferFullInstance.Bind();
 			if (Pallet -> BufferFullLayout != nullptr)
 			{
 				Pallet -> BufferFullLayout -> Bind();
@@ -45,49 +45,49 @@ void NewPolyHedra::PalletObjectManager::VertexBufferInit()
 		{
 			BufferUniform -> Bind();
 		}
-	}
-	BufferWireVertexArray.Bind();
-	//BufferWireVertexArray.InitAttributeLayoutInst(BufferWire);
+	}*/
+	/*BufferWire.Bind();
+	//BufferWire.InitAttributeLayoutInst(BufferWire);
 	{
-		BufferWire.Bind();
-		//BufferWire.Update();
+		BufferWireInstance.Bind();
+		//BufferWireInstance.Update();
 		if (Pallet != nullptr)
 		{
-			Pallet -> BufferWire.Bind();
+			Pallet -> BufferWireInstance.Bind();
 			if (Pallet -> BufferWireLayout != nullptr)
 			{
 				Pallet -> BufferWireLayout -> Bind();
 			}
 			Pallet -> BufferWireElem.Bind();
 		}
-	}
+	}*/
 	VertexArray::Base::BindNone();
 }
 
 void NewPolyHedra::PalletObjectManager::GraphicsCreate()
 {
-	BufferFullVertexArray.Create();
-	BufferWireVertexArray.Create();
 	BufferFull.Create();
 	BufferWire.Create();
+	BufferFullInstance.Create();
+	BufferWireInstance.Create();
 }
 void NewPolyHedra::PalletObjectManager::GraphicsDelete()
 {
-	BufferFullVertexArray.Delete();
-	BufferWireVertexArray.Delete();
 	BufferFull.Delete();
 	BufferWire.Delete();
+	BufferFullInstance.Delete();
+	BufferWireInstance.Delete();
 }
 void NewPolyHedra::PalletObjectManager::GraphicsDrawFull()
 {
 	InstancesToBufferFull();
 	if (Pallet != nullptr)
 	{
-		BufferFullVertexArray.Bind();
+		BufferFull.Bind();
 		Pallet -> Texture.Bind();
 		GL::DrawArraysInstanced(GL::DrawMode::Triangles, 0
 			, Pallet -> BufferFull.Count
-			, BufferFull.Count
+			, BufferFullInstance.Count
 		);
 	}
 }
@@ -96,11 +96,11 @@ void NewPolyHedra::PalletObjectManager::GraphicsDrawWire()
 	InstancesToBufferWire();
 	if (Pallet != nullptr)
 	{
-		BufferWireVertexArray.Bind();
+		BufferWire.Bind();
 		GL::DrawElementsInstanced(GL::DrawMode::Lines
 			, Pallet -> BufferWireElem.Count
 			, Pallet -> BufferWireElem.IndexType
-			, BufferWire.Count
+			, BufferWireInstance.Count
 		);
 	}
 }

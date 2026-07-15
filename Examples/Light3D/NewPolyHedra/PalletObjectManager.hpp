@@ -37,10 +37,10 @@ struct PalletObjectManager
 
 
 	public:
-	::VertexArray::MainInstEx	BufferFullVertexArray;
-	::VertexArray::MainInstEx	BufferWireVertexArray;
-	::Buffer::Array				BufferFull;
-	::Buffer::Array				BufferWire;
+	::VertexArray::MainInstEx	BufferFull;
+	::VertexArray::MainInstEx	BufferWire;
+	::Buffer::Array				BufferFullInstance;
+	::Buffer::Array				BufferWireInstance;
 	::Buffer::Uniform *			BufferUniform = nullptr;
 
 	public:

@@ -55,11 +55,12 @@ void NewPolyHedra::Pallet::GraphicsPut()
 	{
 		Object -> CalcNormals();
 		{
+			BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
 			Container::Array<PolyHedraFull::Main::Data> data = Object -> ToMainData();
 			BufferFull.DataFull(data.ToVoid());
-			BufferFull.Count = data.Length();
 		}
 		{
+			BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
 			Container::Binary<PolyHedraWire::Main::Data> data;
 			for (unsigned int i = 0; i < Object -> Corners.Count(); i++)
 			{
