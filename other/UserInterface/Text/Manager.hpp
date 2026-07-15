@@ -54,14 +54,13 @@ class Manager
 	Container::BlockLinkedList<1024, UI::Text::Inst_Data>	InstancesBlock;
 	Container::Array<UI::Text::Inst_Data>					InstancesArray;
 
-	Container::Binary<BoxF2>	PalletsList; // FontPallets
-	Container::Binary<TextData>	TextsList;
+	UI::Text::Font *			Font;
+	Texture::Array2D			FontTexture;
+	Container::Binary<BoxF2>	FontPalletsList;
+	::Buffer::Uniform			FontBuffer;
 
-	::Buffer::Uniform	PalletsBuffer; // FontBuffer
-	::Buffer::Uniform	TextsBuffer;
-
-	UI::Text::Font *	TextFont;
-	Texture::Array2D	Pallet_Texture; // FontTexture
+	Container::Binary<TextData>		TextsList;
+	::Buffer::Uniform				TextsBuffer;
 
 
 

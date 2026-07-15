@@ -19,8 +19,8 @@ struct Main_Data
 
 struct Inst_Data
 {
-	VectorF2		Pos;
-	unsigned int	PalletIdx;
+	VectorF2		TextPos;
+	unsigned int	CharIdx;
 	unsigned int	TextIdx;
 
 	Inst_Data();

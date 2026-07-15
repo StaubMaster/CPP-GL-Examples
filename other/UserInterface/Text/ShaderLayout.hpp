@@ -19,12 +19,14 @@ struct TextData
 {
 	BoxF2		Bound;
 	ColorF4		Color;
+	VectorF2	CharSize;
+	float		Padding[2];
 };
 
 const static unsigned int	PalletsLimit = 128;
 const static unsigned int	TextsLimit = 64;
 
-struct PalletsBufferData
+struct FontBufferData
 {
 	BoxF2	Array[PalletsLimit];
 };

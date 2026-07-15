@@ -25,8 +25,8 @@ class Main_Layout : public ::Attribute::Layout
 class Inst_Layout : public ::Attribute::Layout
 {
 	public:
-	::Attribute::VectorF2	Pos;
-	::Attribute::UInt		PalletIdx;
+	::Attribute::VectorF2	TextPos;
+	::Attribute::UInt		CharIdx;
 	::Attribute::UInt		TextIdx;
 	public:
 	Inst_Layout();

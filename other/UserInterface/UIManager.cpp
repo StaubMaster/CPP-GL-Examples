@@ -200,7 +200,7 @@ void UI::Manager::ChangeMedia(const DirectoryInfo & dir, GLFWwindow * glfw_windo
 	ControlManager.ChangeMedia(dir);
 
 	TextManager.ChangeMedia(dir);
-	TextManager.TextFont = UI::Text::Font::Parse(
+	TextManager.Font = UI::Text::Font::Parse(
 		dir.File("Text/Font0.atlas")
 	);
 

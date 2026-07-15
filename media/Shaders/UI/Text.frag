@@ -2,6 +2,14 @@
 
 
 
+struct BoxF2
+{
+	vec2	Min;
+	vec2	Max;
+};
+
+
+
 uniform sampler2DArray texture0;
 
 
@@ -9,8 +17,7 @@ uniform sampler2DArray texture0;
 in UI_Text
 {
 	vec2	PalletPos; // Font Pos
-	vec2	BoundMin; // make these a BoxF2 ?
-	vec2	BoundMax;
+	BoxF2	Bound;
 	vec4	Color;
 } fs_inn;
 
@@ -22,21 +29,26 @@ out vec4 Color;
 
 void main()
 {
-	if (gl_FragCoord.x < fs_inn.BoundMin.x ||
-		gl_FragCoord.x > fs_inn.BoundMax.x ||
-		gl_FragCoord.y < fs_inn.BoundMin.y ||
-		gl_FragCoord.y > fs_inn.BoundMax.y)
+	// if statement in Fragment Shader is bad ?
+	// figure out a better way of doing this ?
+	// maybe make it so outside values result in alpha <= 0
+
+	if (gl_FragCoord.x < fs_inn.Bound.Min.x ||
+		gl_FragCoord.x > fs_inn.Bound.Max.x ||
+		gl_FragCoord.y < fs_inn.Bound.Min.y ||
+		gl_FragCoord.y > fs_inn.Bound.Max.y)
 	{ discard; }
 
 	vec4 col = texture(texture0, vec3(fs_inn.PalletPos, 0));
+
+	// when loading Font Texture
+	// add Transparency to Pixels
+	// so only alpha gets filtered here
 
 	//if (col.a == 0) { discard; }
 	//if (col.r >= 0.5) { discard; }
 	//if (col.g >= 0.5) { discard; }
 	//if (col.b >= 0.5) { discard; }
-
-	//col = col.a * fs_inn.Color;
-	//col = col * fs_inn.Color;
 
 	Color = col;
 }

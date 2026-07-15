@@ -14,7 +14,7 @@ UI::Text::Main_Layout::Main_Layout()
 
 UI::Text::Inst_Layout::Inst_Layout()
 	: ::Attribute::Layout(1, sizeof(Inst_Data))
-	, Pos(*this)
-	, PalletIdx(*this)
+	, TextPos(*this)
+	, CharIdx(*this)
 	, TextIdx(*this)
 { }

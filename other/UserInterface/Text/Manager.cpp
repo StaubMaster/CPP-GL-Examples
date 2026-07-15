@@ -34,7 +34,7 @@ UI::Text::Manager::~Manager()
 	{
 		delete ObjectDatas[i];
 	}
-	delete TextFont;
+	delete Font;
 }
 UI::Text::Manager::Manager()
 	: Shader()
@@ -43,10 +43,12 @@ UI::Text::Manager::Manager()
 	, ObjectDatas()
 	, InstancesBlock()
 	, InstancesArray()
-	, PalletsBuffer(GL::BufferDataUsage::StreamDraw)
+	, Font(nullptr)
+	, FontTexture()
+	, FontPalletsList()
+	, FontBuffer(GL::BufferDataUsage::StreamDraw)
+	, TextsList()
 	, TextsBuffer(GL::BufferDataUsage::StreamDraw)
-	, TextFont(nullptr)
-	, Pallet_Texture()
 	, GraphicsExist(false)
 	, TextureAssigned(false)
 	, BufferMainAttributesBound(false)
@@ -68,8 +70,8 @@ void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
 	}
 	{
 		LayoutMain.Pos.Change(0);
-		LayoutInst.Pos.Change(1);
-		LayoutInst.PalletIdx.Change(2);
+		LayoutInst.TextPos.Change(1);
+		LayoutInst.CharIdx.Change(2);
 		LayoutInst.TextIdx.Change(3);
 		Buffer.MainBuffer.Init(LayoutMain);
 		Buffer.InstBuffer.Init(LayoutInst);
@@ -80,22 +82,22 @@ void UI::Text::Manager::InitFont()
 {
 	unsigned int idx = 0;
 
-	for (unsigned int j = 0; j < TextFont -> CharacterRanges.Count(); j++)
+	for (unsigned int j = 0; j < Font -> CharacterRanges.Count(); j++)
 	{
-		for (unsigned int i = 0; i < TextFont -> CharacterRanges[j] -> Characters.Count(); i++)
+		for (unsigned int i = 0; i < Font -> CharacterRanges[j] -> Characters.Count(); i++)
 		{
-			PalletsList.Insert(TextFont -> CharacterRanges[j] -> Characters[i].Box);
+			FontPalletsList.Insert(Font -> CharacterRanges[j] -> Characters[i].Box);
 			idx++;
 		}
 	}
 
-	for (unsigned int i = 0; i < TextFont -> Characters.Count(); i++)
+	for (unsigned int i = 0; i < Font -> Characters.Count(); i++)
 	{
-		PalletsList.Insert(TextFont -> Characters[i].Box);
+		FontPalletsList.Insert(Font -> Characters[i].Box);
 		idx++;
 	}
 
-	PalletsList.Insert(TextFont -> DefaultCharacter.Box);
+	FontPalletsList.Insert(Font -> DefaultCharacter.Box);
 }
 
 
@@ -328,7 +330,7 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 		WatchOther.Start();
 #endif
 		rel_txt.X = (line_idx + text_alignment.X) - (line_len * text_alignment.X);
-		data.Pos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
+		data.TextPos = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
 
 #ifdef TELEMETRY_TIME
 		WatchOther.Stop();
@@ -337,7 +339,7 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 #ifdef TELEMETRY_TIME
 		WatchFind.Start();
 #endif
-		data.PalletIdx = (*TextFont).FindCodeIndex(c);
+		data.CharIdx = Font -> FindCodeIndex(c);
 #ifdef TELEMETRY_TIME
 		WatchFind.Stop();
 #endif
@@ -372,7 +374,7 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 
 		if (obj.DisplayTextCursor && i == obj.TextCursorIndex)
 		{
-			cursor = data.Pos;
+			cursor = data.TextPos;
 			cursor_found = true;
 		}
 	}
@@ -386,8 +388,8 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 		}
 
 		UI::Text::Inst_Data & data = InstancesBlock.MakeNext();
-		data.Pos = cursor;
-		data.PalletIdx = (*TextFont).FindCodeIndex('^');
+		data.TextPos = cursor;
+		data.CharIdx = Font -> FindCodeIndex('^');
 		data.TextIdx = TextsList.Count();
 		InstancesBlock.Next();
 	}
@@ -395,6 +397,7 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 	TextData data;
 	data.Bound = obj.Bound;
 	data.Color = obj.Color;
+	data.CharSize = obj.CharacterSize;
 	TextsList.Insert(data);
 
 #ifdef TELEMETRY_TIME
@@ -473,8 +476,8 @@ void UI::Text::Manager::GraphicsCreate()
 	{
 		Shader.Create();
 		Buffer.Create();
-		Pallet_Texture.Create();
-		PalletsBuffer.Create();
+		FontTexture.Create();
+		FontBuffer.Create();
 		TextsBuffer.Create();
 		GraphicsExist = true;
 		TextureAssigned = false;
@@ -489,8 +492,8 @@ void UI::Text::Manager::GraphicsDelete()
 	{
 		Buffer.Delete();
 		Shader.Delete();
-		Pallet_Texture.Delete();
-		PalletsBuffer.Delete();
+		FontTexture.Delete();
+		FontBuffer.Delete();
 		TextsBuffer.Delete();
 		GraphicsExist = false;
 	}
@@ -500,12 +503,10 @@ void UI::Text::Manager::TextureAssign()
 {
 	if (!GraphicsExist || TextureAssigned) { return; }
 
-	Pallet_Texture.Bind();
-	Pallet_Texture.Assign(TextFont -> AtlasTexture);
-	Pallet_Texture.FilterMin(Texture::Base::FilterMinType::Linear);
-	Pallet_Texture.FilterMag(Texture::Base::FilterMagType::Linear);
-
-	//Pallet_Texture.
+	FontTexture.Bind();
+	FontTexture.Assign(Font -> AtlasTexture);
+	FontTexture.FilterMin(Texture::Base::FilterMinType::Linear);
+	FontTexture.FilterMag(Texture::Base::FilterMagType::Linear);
 
 	TextureAssigned = true;
 }
@@ -562,7 +563,7 @@ void UI::Text::Manager::Draw()
 	Buffer.Bind();
 
 	/*{
-		Pallet_Texture.Bind();
+		FontTexture.Bind();
 		int val;
 
 		glGetTexParameteriv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, &val);
@@ -580,14 +581,14 @@ void UI::Text::Manager::Draw()
 	// check for Limit, display error, dont throw
 	{
 		const unsigned int binding = 0;
-		PalletsBuffer.Bind();
-		PalletsBuffer.BindBase(binding);
-		PalletsBufferData data;
-		for (unsigned int i = 0; i < PalletsList.Count(); i++)
+		FontBuffer.Bind();
+		FontBuffer.BindBase(binding);
+		FontBufferData data;
+		for (unsigned int i = 0; i < FontPalletsList.Count(); i++)
 		{
-			data.Array[i] = PalletsList[i];
+			data.Array[i] = FontPalletsList[i];
 		}
-		PalletsBuffer.DataFull(Container::Void(data));
+		FontBuffer.DataFull(Container::Void(data));
 		ShaderLayout.Bind(ShaderLayout.Pallets, binding);
 	}
 	{
@@ -602,7 +603,7 @@ void UI::Text::Manager::Draw()
 		ShaderLayout.Bind(ShaderLayout.Texts, binding);
 	}
 
-	Pallet_Texture.Bind();
+	FontTexture.Bind();
 	TextureAssign();
 
 	BufferMainAttributesBind();
@@ -611,7 +612,7 @@ void UI::Text::Manager::Draw()
 	BufferInstAttributesBind();
 	BufferInstUpdateData();
 
-	PalletsBuffer.Bind();
+	FontBuffer.Bind();
 	TextsBuffer.Bind();
 	Buffer.Draw();
 }
