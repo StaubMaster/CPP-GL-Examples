@@ -2,7 +2,7 @@
 # define NEW_POLYHEDRA_PALLET_OBJECT_MANAGER_HPP
 
 # include "Generics/Container/Binary.hpp"
-# include "Graphics/Buffer/VertexArray.hpp"
+# include "Graphics/VertexArray/MainInstEx.hpp"
 # include "Graphics/Buffer/Array.hpp"
 # include "Graphics/Buffer/Uniform.hpp"
 
@@ -37,11 +37,11 @@ struct PalletObjectManager
 
 
 	public:
-	::VertexArray			BufferFullVertexArray;
-	::VertexArray			BufferWireVertexArray;
-	::Buffer::Array			BufferFull;
-	::Buffer::Array			BufferWire;
-	::Buffer::Uniform *		BufferUniform = nullptr;
+	::VertexArray::MainInstEx	BufferFullVertexArray;
+	::VertexArray::MainInstEx	BufferWireVertexArray;
+	::Buffer::Array				BufferFull;
+	::Buffer::Array				BufferWire;
+	::Buffer::Uniform *			BufferUniform = nullptr;
 
 	public:
 	void	VertexBufferInit();

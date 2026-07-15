@@ -9,7 +9,7 @@ namespace UI
 namespace Control
 {
 
-typedef ::BufferArray::MainInst<
+typedef ::VertexArray::MainInst<
 	GL::BufferDataUsage::StaticDraw,
 	GL::BufferDataUsage::StreamDraw,
 	GL::DrawMode::Triangles

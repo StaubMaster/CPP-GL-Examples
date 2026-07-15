@@ -26,6 +26,8 @@ void SelectorContext::Init()
 
 	UIManager.GraphicsCreate();
 
+	UIManager.GraphicsInit();
+
 	Make();
 }
 void SelectorContext::Free()

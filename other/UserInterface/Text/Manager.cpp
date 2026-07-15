@@ -40,6 +40,8 @@ UI::Text::Manager::Manager()
 	: Shader()
 	, ShaderLayout()
 	, Buffer()
+	, LayoutMain()
+	, LayoutInst()
 	, ObjectDatas()
 	, InstancesBlock()
 	, InstancesArray()
@@ -51,13 +53,15 @@ UI::Text::Manager::Manager()
 	, TextsBuffer(GL::BufferDataUsage::StreamDraw)
 	, GraphicsExist(false)
 	, TextureAssigned(false)
-	, BufferMainAttributesBound(false)
-	, BufferInstAttributesBound(false)
-	, BufferMainNewData(false)
-	, BufferInstNewData(false)
 {
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
+
+	Buffer.MainLayout = &LayoutMain;
+	Buffer.InstLayout = &LayoutInst;
+
+	Buffer.MainBuffer.SizeOf = sizeof(Main_Data);
+	Buffer.InstBuffer.SizeOf = sizeof(Inst_Data);
 }
 
 void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
@@ -73,8 +77,10 @@ void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
 		LayoutInst.TextPos.Change(1);
 		LayoutInst.CharIdx.Change(2);
 		LayoutInst.TextIdx.Change(3);
-		Buffer.MainBuffer.Init(LayoutMain);
-		Buffer.InstBuffer.Init(LayoutInst);
+		//Buffer.ChangeAttributeLayoutMain(LayoutMain);
+		//Buffer.ChangeAttributeLayoutInst(LayoutInst);
+		//Buffer.MainBuffer.SizeOf = sizeof(Main_Data);
+		//Buffer.InstBuffer.SizeOf = sizeof(Inst_Data);
 	}
 }
 #include "Font/Font.hpp"
@@ -450,7 +456,7 @@ void UI::Text::Manager::MakeInstances()
 			}
 		}
 	}
-	BufferInstNewData = true;
+	Buffer.InstBuffer.DataHave = true;
 
 #ifdef TELEMETRY_TIME
 	WatchArray.Start();
@@ -481,22 +487,28 @@ void UI::Text::Manager::GraphicsCreate()
 		TextsBuffer.Create();
 		GraphicsExist = true;
 		TextureAssigned = false;
-		BufferMainAttributesBound = false;
-		BufferInstAttributesBound = false;
-		BufferMainNewData = true;
+		Buffer.MainBuffer.DataWant = true;
+		Buffer.MainBuffer.DataHave = false;
+		Buffer.InstBuffer.DataWant = false;
+		Buffer.InstBuffer.DataHave = false;
 	}
 }
 void UI::Text::Manager::GraphicsDelete()
 {
 	if (GraphicsExist)
 	{
-		Buffer.Delete();
 		Shader.Delete();
+		Buffer.Delete();
 		FontTexture.Delete();
 		FontBuffer.Delete();
 		TextsBuffer.Delete();
 		GraphicsExist = false;
 	}
+}
+
+void UI::Text::Manager::GraphicsInit()
+{
+	Buffer.Init();
 }
 
 void UI::Text::Manager::TextureAssign()
@@ -510,26 +522,11 @@ void UI::Text::Manager::TextureAssign()
 
 	TextureAssigned = true;
 }
-void UI::Text::Manager::BufferMainAttributesBind()
-{
-	if (!GraphicsExist || BufferMainAttributesBound) { return; }
 
-	Buffer.MainBuffer.Update();
-
-	BufferMainAttributesBound = true;
-}
-void UI::Text::Manager::BufferInstAttributesBind()
-{
-	if (!GraphicsExist || BufferInstAttributesBound) { return; }
-
-	Buffer.InstBuffer.Update();
-
-	BufferInstAttributesBound = true;
-}
-
+// do this once in GraphicsInit ?
 void UI::Text::Manager::BufferMainUpdateData()
 {
-	if (!GraphicsExist || !BufferMainNewData) { return; }
+	if (!GraphicsExist || !Buffer.MainBuffer.DataWant) { return; }
 
 	Container::Binary<UI::Text::Main_Data> data;
 
@@ -540,17 +537,22 @@ void UI::Text::Manager::BufferMainUpdateData()
 	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
 	data.Insert(UI::Text::Main_Data(VectorF2(+1, +1)));
 
+	Buffer.MainBuffer.DataWant = false;
+	Buffer.MainBuffer.DataHave = true;
+
+	//Buffer.MainBuffer.DataFull(data.ToVoid());
 	Buffer.MainBuffer.DataFull(data.ToVoid());
 
-	BufferMainNewData = false;
+	Buffer.MainBuffer.DataHave = false;
 }
 void UI::Text::Manager::BufferInstUpdateData()
 {
-	if (!GraphicsExist || !BufferInstNewData) { return; }
+	if (!GraphicsExist || !Buffer.InstBuffer.DataHave) { return; }
 
+	//Buffer.InstBuffer.DataFull(InstancesArray.ToVoid());
 	Buffer.InstBuffer.DataFull(InstancesArray.ToVoid());
 
-	BufferInstNewData = false;
+	Buffer.InstBuffer.DataHave = false;
 }
 
 
@@ -561,6 +563,7 @@ void UI::Text::Manager::Draw()
 
 	Shader.Bind();
 	Buffer.Bind();
+	//Buffer.InitAttributes();
 
 	/*{
 		FontTexture.Bind();
@@ -606,10 +609,8 @@ void UI::Text::Manager::Draw()
 	FontTexture.Bind();
 	TextureAssign();
 
-	BufferMainAttributesBind();
 	BufferMainUpdateData();
 
-	BufferInstAttributesBind();
 	BufferInstUpdateData();
 
 	FontBuffer.Bind();

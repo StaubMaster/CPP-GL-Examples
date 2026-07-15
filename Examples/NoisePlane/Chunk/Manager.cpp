@@ -505,7 +505,7 @@ void ChunkManager::ChangeMedia(const DirectoryInfo & dir)
 	BufferU.Layout.Voxel.Change(0);
 	BufferU.Layout.Texture.Change(1);
 	BufferU.Layout.Chunk.Change(2);
-	BufferU.Buffer.MainBuffer.Init(BufferU.Layout);
+	//BufferU.Buffer.ChangeAttributeLayoutMain(BufferU.Layout);
 }
 
 void ChunkManager::GraphicsCreate()

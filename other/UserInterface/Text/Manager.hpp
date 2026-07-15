@@ -1,20 +1,23 @@
 #ifndef  UI_TEXT_MANAGER_HPP
 # define UI_TEXT_MANAGER_HPP
 
-#include "Data.hpp"
-#include "Buffer.hpp"
-#include "ShaderLayout.hpp"
-#include "Graphics/Shader/Base.hpp"
+# include "Data.hpp"
+# include "Buffer.hpp"
+# include "ShaderLayout.hpp"
+# include "Graphics/Shader/Base.hpp"
 
-#include "Generics/Container/Binary.hpp"
-#include "Generics/Container/Array.hpp"
-#include "Generics/Container/BlockLinkedList.hpp"
+# include "Graphics/VertexArray/MainInstIn.hpp"
+# include "Graphics/Buffer/Array.hpp"
 
-#include "Font/Font.hpp"
-#include "Graphics/Texture/Array2D.hpp"
+# include "Generics/Container/Binary.hpp"
+# include "Generics/Container/Array.hpp"
+# include "Generics/Container/BlockLinkedList.hpp"
+
+# include "Font/Font.hpp"
+# include "Graphics/Texture/Array2D.hpp"
 
 
-#include "Graphics/Buffer/Uniform.hpp"
+# include "Graphics/Buffer/Uniform.hpp"
 
 
 class DirectoryInfo;
@@ -46,9 +49,10 @@ class Manager
 	::Shader::Base			Shader;
 	UI::Text::ShaderLayout	ShaderLayout;
 
-	UI::Text::Buffer		Buffer;
-	UI::Text::Main_Layout	LayoutMain;
-	UI::Text::Inst_Layout	LayoutInst;
+	//UI::Text::Buffer		Buffer;
+	VertexArray::MainInstIn		Buffer;
+	UI::Text::Main_Layout		LayoutMain;
+	UI::Text::Inst_Layout		LayoutInst;
 
 	Container::Binary<UI::Text::ObjectData*>				ObjectDatas;
 	Container::BlockLinkedList<1024, UI::Text::Inst_Data>	InstancesBlock;
@@ -96,20 +100,13 @@ class Manager
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+	void	GraphicsInit();
 
 	private:
 	bool	TextureAssigned;
 	void	TextureAssign();
 
 	private:
-	bool	BufferMainAttributesBound;
-	bool	BufferInstAttributesBound;
-	void	BufferMainAttributesBind();
-	void	BufferInstAttributesBind();
-
-	private:
-	bool	BufferMainNewData;
-	bool	BufferInstNewData;
 	void	BufferMainUpdateData();
 	void	BufferInstUpdateData();
 

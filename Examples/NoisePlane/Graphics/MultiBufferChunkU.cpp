@@ -47,7 +47,8 @@ MultiBufferChunkU::MultiBufferChunkU()
 	, Buffer()
 	, Layout()
 {
-	Buffer.MainBuffer.Init(Layout);
+	//Buffer.ChangeAttributeLayoutMain(Layout);
+	Buffer.MainBuffer.SizeOf = sizeof(VoxelGraphics::MainDataU);
 }
 
 void MultiBufferChunkU::NewSize(unsigned int size)
@@ -133,6 +134,10 @@ void MultiBufferChunkU::Remove(Entry & entry)
 void MultiBufferChunkU::Draw()
 {
 	Buffer.Bind();
-	Buffer.MainBuffer.Update();
+	//Buffer.MainBuffer.Update();
+	//Buffer.InitAttributes();
+	//Buffer.InitAttributeLayoutMain(Buffer.MainBuffer);
+	throw "No Layout Binding";
+	// put this in GL
 	glMultiDrawArrays((unsigned int)GL::DrawMode::Triangles, Offsets.ToArray().Memory(), Lengths.ToArray().Memory(), Entrys.Count());
 }

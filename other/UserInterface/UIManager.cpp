@@ -228,6 +228,11 @@ void UI::Manager::GraphicsDelete()
 	GraphManager.GraphicsDelete();
 	CursorsDelete();
 }
+void UI::Manager::GraphicsInit()
+{
+	ControlManager.GraphicsInit();
+	TextManager.GraphicsInit();
+}
 
 void UI::Manager::Draw()
 {

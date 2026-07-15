@@ -707,7 +707,7 @@ void Light3DContext::Draw()
 	}
 	data.SpotCount = Light_Spot_Count;
 
-	VertexArray::BindNone();
+	VertexArray::Base::BindNone();
 	LightBuffer.DataFull(Container::Void(data));
 
 	// do this stuff once

@@ -32,14 +32,21 @@ UI::Control::Manager::Manager()
 	: Shader()
 	, ShaderLayout()
 	, Buffer()
+	, BufferLayoutMain()
+	, BufferLayoutInst()
+	, ObjectDatas()
+	, Instances()
 	, GraphicsExist(false)
 	, GraphicsNeedMain(false)
 {
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
-	Buffer.MainBuffer.Init(BufferLayoutMain);
-	Buffer.InstBuffer.Init(BufferLayoutInst);
+	Buffer.MainLayout = &BufferLayoutMain;
+	Buffer.InstLayout = &BufferLayoutInst;
+
+	Buffer.MainBuffer.SizeOf = sizeof(Main::BufferData);
+	Buffer.InstBuffer.SizeOf = sizeof(Inst::BufferData);
 }
 
 
@@ -98,6 +105,11 @@ void UI::Control::Manager::GraphicsDelete()
 	GraphicsExist = false;
 }
 
+void UI::Control::Manager::GraphicsInit()
+{
+	Buffer.Init();
+}
+
 void UI::Control::Manager::GraphicsMain()
 {
 	if (!(GraphicsNeedMain && GraphicsExist)) { return; }
@@ -111,6 +123,7 @@ void UI::Control::Manager::GraphicsMain()
 	data.Insert(UI::Control::Main::BufferData(VectorF2(-1, +1)));
 	data.Insert(UI::Control::Main::BufferData(VectorF2(+1, +1)));
 
+	//Buffer.MainBuffer.DataFull(data.ToVoid());
 	Buffer.MainBuffer.DataFull(data.ToVoid());
 
 	GraphicsNeedMain = false;
@@ -118,6 +131,7 @@ void UI::Control::Manager::GraphicsMain()
 void UI::Control::Manager::GraphicsInst()
 {
 	MakeInstances();
+	//Buffer.InstBuffer.DataFull(Instances.ToVoid());
 	Buffer.InstBuffer.DataFull(Instances.ToVoid());
 }
 
@@ -160,8 +174,21 @@ void UI::Control::Manager::Draw()
 
 	Shader.Bind();
 
-	Buffer.Bind();
-	Buffer.MainBuffer.Update();
-	Buffer.InstBuffer.Update();
+	//Buffer.Bind();
+	//Buffer.MainBuffer.Update();
+	//Buffer.InstBuffer.Update();
+
+	//Buffer.InitAttributeLayoutMain(Buffer.MainBuffer);
+	//Buffer.InitAttributeLayoutInst(Buffer.InstBuffer);
+
+	//Buffer.ChangeAttributeLayoutMain(BufferLayoutMain);
+	//Buffer.ChangeAttributeLayoutInst(BufferLayoutInst);
+
+//	Buffer.MainBuffer.Bind();
+//	BufferLayoutMain.Bind();
+//
+//	Buffer.InstBuffer.Bind();
+//	BufferLayoutInst.Bind();
+
 	Buffer.Draw();
 }

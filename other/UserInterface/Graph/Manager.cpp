@@ -37,7 +37,8 @@ UI::Graph::Manager::Manager()
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
-	Buffer.MainBuffer.Init(BufferLayout);
+	//Buffer.ChangeAttributeLayoutMain(BufferLayout);
+	Buffer.MainBuffer.SizeOf = sizeof(BufferData);
 }
 
 
@@ -184,6 +185,9 @@ void UI::Graph::Manager::Draw()
 	Shader.Bind();
 
 	Buffer.Bind();
-	Buffer.MainBuffer.Update();
+	//Buffer.MainBuffer.Update();
+	//Buffer.InitAttributeLayoutMain(Buffer.MainBuffer);
+	Buffer.MainBuffer.Bind();
+	BufferLayout.Bind();
 	Buffer.Draw();
 }

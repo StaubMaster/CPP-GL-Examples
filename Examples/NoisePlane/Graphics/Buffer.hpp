@@ -9,11 +9,11 @@
 
 namespace VoxelGraphics
 {
-	typedef ::BufferArray::Main<
+	typedef ::VertexArray::Main<
 		GL::BufferDataUsage::DynamicDraw,
 		GL::DrawMode::Triangles
 	> BufferU;
-	typedef ::BufferArray::MainInst<
+	typedef ::VertexArray::MainInst<
 		GL::BufferDataUsage::DynamicDraw,
 		GL::BufferDataUsage::StaticDraw,
 		GL::DrawMode::Triangles

@@ -32,7 +32,7 @@ class Inst_Layout : public ::Attribute::Layout
 	Inst_Layout();
 };
 
-typedef ::BufferArray::MainInst<
+typedef ::VertexArray::MainInst<
 	GL::BufferDataUsage::StaticDraw,
 	GL::BufferDataUsage::StreamDraw,
 	GL::DrawMode::Triangles

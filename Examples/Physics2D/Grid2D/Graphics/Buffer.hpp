@@ -8,7 +8,7 @@
 
 namespace Grid2DGraphics
 {
-typedef ::BufferArray::MainElemInst<
+typedef ::VertexArray::MainElemInst<
 	Grid2DGraphics::Main::Buffer,
 	Grid2DGraphics::Elem::Buffer,
 	Grid2DGraphics::Inst::Buffer

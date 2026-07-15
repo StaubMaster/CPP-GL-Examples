@@ -9,7 +9,7 @@ namespace UI
 namespace Graph
 {
 
-typedef ::BufferArray::Main<
+typedef ::VertexArray::Main<
 	GL::BufferDataUsage::StreamDraw,
 	GL::DrawMode::Lines
 > Buffer;

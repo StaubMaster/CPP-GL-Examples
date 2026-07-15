@@ -6,6 +6,9 @@
 # include "BufferData.hpp"
 # include "Buffer.hpp"
 
+# include "Graphics/VertexArray/MainInstIn.hpp"
+# include "Graphics/Buffer/Array.hpp"
+
 # include "Graphics/Shader/Base.hpp"
 
 # include "Generics/Container/Binary.hpp"
@@ -42,7 +45,8 @@ class Manager
 	::Shader::Base					Shader;
 	UI::Control::ShaderLayout		ShaderLayout;
 
-	UI::Control::Buffer					Buffer;
+	//UI::Control::Buffer					Buffer;
+	VertexArray::MainInstIn				Buffer;
 	UI::Control::Main::BufferLayout		BufferLayoutMain;
 	UI::Control::Inst::BufferLayout		BufferLayoutInst;
 
@@ -69,6 +73,7 @@ class Manager
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+	void	GraphicsInit();
 
 	private:
 	bool	GraphicsNeedMain;

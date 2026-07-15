@@ -93,6 +93,7 @@ class Manager
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+	void	GraphicsInit();
 
 	public:
 	void	Draw();

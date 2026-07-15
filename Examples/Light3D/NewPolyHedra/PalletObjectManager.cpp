@@ -29,9 +29,10 @@ NewPolyHedra::PalletObjectManager::PalletObjectManager(NewPolyHedra::Pallet * pa
 void NewPolyHedra::PalletObjectManager::VertexBufferInit()
 {
 	BufferFullVertexArray.Bind();
+	//BufferFullVertexArray.InitAttributeLayoutInst(BufferFull);
 	{
 		BufferFull.Bind();
-		BufferFull.Update();
+		//BufferFull.Update();
 		if (Pallet != nullptr)
 		{
 			Pallet -> BufferFull.Bind();
@@ -46,9 +47,10 @@ void NewPolyHedra::PalletObjectManager::VertexBufferInit()
 		}
 	}
 	BufferWireVertexArray.Bind();
+	//BufferWireVertexArray.InitAttributeLayoutInst(BufferWire);
 	{
 		BufferWire.Bind();
-		BufferWire.Update();
+		//BufferWire.Update();
 		if (Pallet != nullptr)
 		{
 			Pallet -> BufferWire.Bind();
@@ -59,7 +61,7 @@ void NewPolyHedra::PalletObjectManager::VertexBufferInit()
 			Pallet -> BufferWireElem.Bind();
 		}
 	}
-	VertexArray::BindNone();
+	VertexArray::Base::BindNone();
 }
 
 void NewPolyHedra::PalletObjectManager::GraphicsCreate()

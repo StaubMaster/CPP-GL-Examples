@@ -27,15 +27,28 @@ NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::MakePalletObjec
 	manager -> Pallet = pallet;
 	if (BufferFullLayout != nullptr)
 	{
-		manager -> BufferFull.Init(*BufferFullLayout);
+		//manager -> BufferFull.Init(*BufferFullLayout);
+		//manager -> BufferFullVertexArray.ChangeAttributeLayoutMain(*BufferFullLayout);
+		manager -> BufferFull.SizeOf = BufferFullLayout -> Stride;
 	}
 	if (BufferWireLayout != nullptr)
 	{
-		manager -> BufferWire.Init(*BufferWireLayout);
+		//manager -> BufferWire.Init(*BufferWireLayout);
+		//manager -> BufferWireVertexArray.ChangeAttributeLayoutMain(*BufferWireLayout);
+		manager -> BufferWire.SizeOf = BufferWireLayout -> Stride;
 	}
 	manager -> BufferUniform = BufferUniform;
 	manager -> GraphicsCreate();
 	manager -> VertexBufferInit();
+
+	manager -> BufferFullVertexArray.Bind();
+	manager -> BufferFull.Bind();
+	BufferFullLayout -> Bind();
+
+	manager -> BufferWireVertexArray.Bind();
+	manager -> BufferWire.Bind();
+	BufferWireLayout -> Bind();
+
 	Managers.Insert(manager);
 	return manager;
 }
@@ -161,7 +174,7 @@ void NewPolyHedra::ObjectManager::GraphicsDrawFull()
 		if (manager == nullptr) { continue; }
 		manager -> GraphicsDrawFull();
 	}
-	VertexArray::BindNone();
+	VertexArray::Base::BindNone();
 }
 void NewPolyHedra::ObjectManager::GraphicsDrawWire()
 {
@@ -172,5 +185,5 @@ void NewPolyHedra::ObjectManager::GraphicsDrawWire()
 		if (manager == nullptr) { continue; }
 		manager -> GraphicsDrawWire();
 	}
-	VertexArray::BindNone();
+	VertexArray::Base::BindNone();
 }

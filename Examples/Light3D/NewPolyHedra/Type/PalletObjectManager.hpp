@@ -35,12 +35,12 @@ struct Type_PalletObjectManager : public PalletObjectManager
 	}
 	void	InstancesToBufferFull() override
 	{
-		BufferFull.Update();
+		//BufferFull.Update();
 		BufferFull.DataFull(InstanceDataFull.ToVoid());
 	}
 	void	InstancesToBufferWire() override
 	{
-		BufferWire.Update();
+		//BufferWire.Update();
 		BufferWire.DataFull(InstanceDataWire.ToVoid());
 	}
 };

@@ -7,7 +7,7 @@
 #include "PolyHedra/Graphics/Full/Main/Data.hpp"
 #include "PolyHedra/Graphics/Wire/Main/Data.hpp"
 
-#include "Graphics/Buffer/VertexArray.hpp"
+#include "Graphics/VertexArray/Base.hpp"
 
 
 
@@ -50,7 +50,7 @@ NewPolyHedra::Pallet::Pallet(PolyHedra * object, std::string name)
 
 void NewPolyHedra::Pallet::GraphicsPut()
 {
-	VertexArray::BindNone();
+	VertexArray::Base::BindNone();
 	if (Object != nullptr)
 	{
 		Object -> CalcNormals();

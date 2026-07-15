@@ -1,7 +1,7 @@
 #include "PalletManager.hpp"
 #include "Pallet.hpp"
 
-#include "Graphics/Buffer/VertexArray.hpp"
+#include "Graphics/VertexArray/Base.hpp"
 
 
 

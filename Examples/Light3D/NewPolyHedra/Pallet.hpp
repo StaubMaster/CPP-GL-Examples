@@ -9,6 +9,8 @@
 
 class PolyHedra;
 
+namespace Attribute { class Layout; };
+
 namespace NewPolyHedra
 {
 struct Pallet
