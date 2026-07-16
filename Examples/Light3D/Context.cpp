@@ -498,7 +498,6 @@ void Light3DContext::ChangeMedia()
 			ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
 			ObjectManagerBasic.BufferWireLayout = &ObjectManagerBasic_BufferWireLayout;
 		}
-		ObjectManagerBasic.BufferUniform = &LightBuffer;
 	}
 
 	// Object Manager TSC

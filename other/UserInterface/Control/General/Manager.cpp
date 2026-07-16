@@ -42,8 +42,8 @@ UI::Control::Manager::Manager()
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
-	Buffer.MainChange(BufferLayoutMain, sizeof(Main::BufferData));
-	Buffer.InstChange(BufferLayoutInst, sizeof(Inst::BufferData));
+	Buffer.MainLayout = &BufferLayoutMain; Buffer.MainBuffer.SizeOf = sizeof(Main::BufferData);
+	Buffer.InstLayout = &BufferLayoutInst; Buffer.InstBuffer.SizeOf = sizeof(Inst::BufferData);
 }
 
 
@@ -120,14 +120,14 @@ void UI::Control::Manager::GraphicsMain()
 	data.Insert(UI::Control::Main::BufferData(VectorF2(-1, +1)));
 	data.Insert(UI::Control::Main::BufferData(VectorF2(+1, +1)));
 
-	Buffer.MainData(data.ToVoid());
+	Buffer.MainBuffer.DataFull(data.ToVoid());
 
 	GraphicsNeedMain = false;
 }
 void UI::Control::Manager::GraphicsInst()
 {
 	MakeInstances();
-	Buffer.InstData(Instances.ToVoid());
+	Buffer.InstBuffer.DataFull(Instances.ToVoid());
 }
 
 void UI::Control::Manager::PlaceInstance(const ObjectData & obj)

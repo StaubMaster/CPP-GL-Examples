@@ -8,6 +8,7 @@
 #include "PolyHedra/Graphics/Wire/Main/Data.hpp"
 
 #include "Graphics/VertexArray/Base.hpp"
+#include "Graphics/Attribute/General/Layout.hpp"
 
 
 
@@ -24,7 +25,10 @@ NewPolyHedra::Pallet::Pallet()
 	, BufferFullLayout(nullptr)
 	, BufferWireLayout(nullptr)
 	, Texture()
-{ }
+{
+	BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
+	BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
+}
 NewPolyHedra::Pallet::Pallet(PolyHedra * object)
 	: Object(object)
 	, Name()
@@ -34,7 +38,10 @@ NewPolyHedra::Pallet::Pallet(PolyHedra * object)
 	, BufferFullLayout(nullptr)
 	, BufferWireLayout(nullptr)
 	, Texture()
-{ }
+{
+	BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
+	BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
+}
 NewPolyHedra::Pallet::Pallet(PolyHedra * object, std::string name)
 	: Object(object)
 	, Name(name)
@@ -44,7 +51,10 @@ NewPolyHedra::Pallet::Pallet(PolyHedra * object, std::string name)
 	, BufferFullLayout(nullptr)
 	, BufferWireLayout(nullptr)
 	, Texture()
-{ }
+{
+	BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
+	BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
+}
 
 
 
@@ -55,16 +65,14 @@ void NewPolyHedra::Pallet::GraphicsPut()
 	{
 		Object -> CalcNormals();
 		{
-			BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
 			Container::Array<PolyHedraFull::Main::Data> data = Object -> ToMainData();
 			BufferFull.DataFull(data.ToVoid());
 		}
 		{
-			BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
-			Container::Binary<PolyHedraWire::Main::Data> data;
+			Container::Array<PolyHedraWire::Main::Data> data(Object -> Corners.Count());
 			for (unsigned int i = 0; i < Object -> Corners.Count(); i++)
 			{
-				data.Insert(PolyHedraWire::Main::Data(Object -> Corners[i].Position, ColorF4(1, 1, 1)));
+				data[i] = PolyHedraWire::Main::Data(Object -> Corners[i].Position, ColorF4(1, 1, 1));
 			}
 			BufferWire.DataFull(data.ToVoid());
 		}
@@ -73,6 +81,23 @@ void NewPolyHedra::Pallet::GraphicsPut()
 		}
 		Texture = Object -> Skins[0] -> ToTexture();
 	}
+}
+void NewPolyHedra::Pallet::GraphicsInitFull()
+{
+	BufferFull.Bind();
+	if (BufferFullLayout != nullptr)
+	{
+		BufferFullLayout -> Bind();
+	}
+}
+void NewPolyHedra::Pallet::GraphicsInitWire()
+{
+	BufferWire.Bind();
+	if (BufferWireLayout != nullptr)
+	{
+		BufferWireLayout -> Bind();
+	}
+	BufferWireElem.Bind();
 }
 
 void NewPolyHedra::Pallet::GraphicsCreate()

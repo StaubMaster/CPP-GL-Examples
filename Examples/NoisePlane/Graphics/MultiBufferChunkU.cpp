@@ -48,7 +48,8 @@ MultiBufferChunkU::MultiBufferChunkU()
 	, Layout()
 {
 	//Buffer.ChangeAttributeLayoutMain(Layout);
-	Buffer.MainBuffer.SizeOf = sizeof(VoxelGraphics::MainDataU);
+	//Buffer.MainBuffer.SizeOf = sizeof(VoxelGraphics::MainDataU);
+	Buffer.MainLayout = &Layout; Buffer.MainBuffer.SizeOf = sizeof(VoxelGraphics::MainDataU);
 }
 
 void MultiBufferChunkU::NewSize(unsigned int size)

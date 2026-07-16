@@ -57,8 +57,8 @@ UI::Text::Manager::Manager()
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
-	Buffer.MainChange(LayoutMain, sizeof(Main_Data));
-	Buffer.InstChange(LayoutInst, sizeof(Inst_Data));
+	Buffer.MainLayout = &LayoutMain; Buffer.MainBuffer.SizeOf = sizeof(Main_Data);
+	Buffer.InstLayout = &LayoutInst; Buffer.InstBuffer.SizeOf = sizeof(Inst_Data);
 }
 
 void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
@@ -533,7 +533,7 @@ void UI::Text::Manager::BufferMainUpdateData()
 	Buffer.MainDataWant = false;
 	Buffer.MainDataHave = true;
 
-	Buffer.MainData(data.ToVoid());
+	Buffer.MainBuffer.DataFull(data.ToVoid());
 
 	Buffer.MainDataHave = false;
 }
@@ -541,7 +541,7 @@ void UI::Text::Manager::BufferInstUpdateData()
 {
 	if (!GraphicsExist || !Buffer.InstDataHave) { return; }
 
-	Buffer.InstData(InstancesArray.ToVoid());
+	Buffer.InstBuffer.DataFull(InstancesArray.ToVoid());
 
 	Buffer.InstDataHave = false;
 }

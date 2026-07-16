@@ -37,8 +37,8 @@ UI::Graph::Manager::Manager()
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
-	//Buffer.ChangeAttributeLayoutMain(BufferLayout);
-	Buffer.MainBuffer.SizeOf = sizeof(BufferData);
+	Buffer.Mode	= GL::DrawMode::Lines;
+	Buffer.MainLayout = &BufferLayout; Buffer.MainBuffer.SizeOf = sizeof(BufferData);
 }
 
 
@@ -180,6 +180,7 @@ void UI::Graph::Manager::MakeInstances()
 
 void UI::Graph::Manager::Draw()
 {
+	Buffer.Init();
 	Buffer.MainBuffer.DataFull(Instances.ToVoid());
 
 	Shader.Bind();
@@ -187,7 +188,5 @@ void UI::Graph::Manager::Draw()
 	Buffer.Bind();
 	//Buffer.MainBuffer.Update();
 	//Buffer.InitAttributeLayoutMain(Buffer.MainBuffer);
-	Buffer.MainBuffer.Bind();
-	BufferLayout.Bind();
 	Buffer.Draw();
 }

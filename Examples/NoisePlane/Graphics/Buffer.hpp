@@ -4,20 +4,22 @@
 # include "Main/Buffer.hpp"
 # include "Inst/Buffer.hpp"
 
-# include "Graphics/Buffer/MainInst.hpp"
-# include "Graphics/Buffer/Main.hpp"
+# include "Graphics/VertexArray/Main.hpp"
+# include "Graphics/VertexArray/MainInst.hpp"
 
 namespace VoxelGraphics
 {
-	typedef ::VertexArray::Main<
+	typedef ::VertexArray::Main BufferU;
+	/*typedef ::VertexArray::Main<
 		GL::BufferDataUsage::DynamicDraw,
 		GL::DrawMode::Triangles
-	> BufferU;
-	typedef ::VertexArray::MainInst<
+	> BufferU;*/
+	typedef ::VertexArray::MainInst BufferF;
+	/*typedef ::VertexArray::MainInst<
 		GL::BufferDataUsage::DynamicDraw,
 		GL::BufferDataUsage::StaticDraw,
 		GL::DrawMode::Triangles
-	> BufferF;
+	> BufferF;*/
 };
 
 #endif

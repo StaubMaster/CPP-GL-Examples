@@ -1,7 +1,7 @@
 #ifndef  UI_TEXT_BUFFER
 # define UI_TEXT_BUFFER
 
-# include "Graphics/Buffer/MainInst.hpp"
+# include "Graphics/VertexArray/MainInst.hpp"
 
 # include "Graphics/Attribute/General/Layout.hpp"
 # include "Graphics/Attribute/_Include.hpp"
@@ -32,11 +32,11 @@ class Inst_Layout : public ::Attribute::Layout
 	Inst_Layout();
 };
 
-typedef ::VertexArray::MainInst<
+/*typedef ::VertexArray::MainInst<
 	GL::BufferDataUsage::StaticDraw,
 	GL::BufferDataUsage::StreamDraw,
 	GL::DrawMode::Triangles
-> Buffer;
+> Buffer;*/
 
 };
 

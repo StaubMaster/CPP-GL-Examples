@@ -26,44 +26,6 @@ NewPolyHedra::PalletObjectManager::PalletObjectManager(NewPolyHedra::Pallet * pa
 
 
 
-void NewPolyHedra::PalletObjectManager::VertexBufferInit()
-{
-	/*BufferFull.Bind();
-	//BufferFull.InitAttributeLayoutInst(BufferFull);
-	{
-		BufferFullInstance.Bind();
-		//BufferFullInstance.Update();
-		if (Pallet != nullptr)
-		{
-			Pallet -> BufferFullInstance.Bind();
-			if (Pallet -> BufferFullLayout != nullptr)
-			{
-				Pallet -> BufferFullLayout -> Bind();
-			}
-		}
-		if (BufferUniform != nullptr)
-		{
-			BufferUniform -> Bind();
-		}
-	}*/
-	/*BufferWire.Bind();
-	//BufferWire.InitAttributeLayoutInst(BufferWire);
-	{
-		BufferWireInstance.Bind();
-		//BufferWireInstance.Update();
-		if (Pallet != nullptr)
-		{
-			Pallet -> BufferWireInstance.Bind();
-			if (Pallet -> BufferWireLayout != nullptr)
-			{
-				Pallet -> BufferWireLayout -> Bind();
-			}
-			Pallet -> BufferWireElem.Bind();
-		}
-	}*/
-	VertexArray::Base::BindNone();
-}
-
 void NewPolyHedra::PalletObjectManager::GraphicsCreate()
 {
 	BufferFull.Create();
@@ -78,6 +40,7 @@ void NewPolyHedra::PalletObjectManager::GraphicsDelete()
 	BufferFullInstance.Delete();
 	BufferWireInstance.Delete();
 }
+
 void NewPolyHedra::PalletObjectManager::GraphicsDrawFull()
 {
 	InstancesToBufferFull();
@@ -85,10 +48,7 @@ void NewPolyHedra::PalletObjectManager::GraphicsDrawFull()
 	{
 		BufferFull.Bind();
 		Pallet -> Texture.Bind();
-		GL::DrawArraysInstanced(GL::DrawMode::Triangles, 0
-			, Pallet -> BufferFull.Count
-			, BufferFullInstance.Count
-		);
+		GL::DrawArraysInstanced(GL::DrawMode::Triangles, 0, Pallet -> BufferFull.Count, BufferFullInstance.Count);
 	}
 }
 void NewPolyHedra::PalletObjectManager::GraphicsDrawWire()

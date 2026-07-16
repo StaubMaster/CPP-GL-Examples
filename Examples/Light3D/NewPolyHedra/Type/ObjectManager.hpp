@@ -42,7 +42,10 @@ struct Type_ObjectManager : public Type_Data_ObjectManager<TypeData>
 	public:
 	PalletObjectManager *	NewPalletObjectManager() override
 	{
-		return new Type_PalletObjectManager<TypeData, TypeInstanceData>();
+		PalletObjectManager * manager = new Type_PalletObjectManager<TypeData, TypeInstanceData>();
+		manager -> BufferFullInstance.SizeOf = sizeof(TypeInstanceData);
+		manager -> BufferWireInstance.SizeOf = sizeof(TypeInstanceData);
+		return manager;
 	}
 	PalletObjectData *	NewPalletObjectData() override
 	{

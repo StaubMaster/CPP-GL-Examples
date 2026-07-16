@@ -6,7 +6,7 @@
 # include "ShaderLayout.hpp"
 # include "Graphics/Shader/Base.hpp"
 
-# include "Graphics/VertexArray/MainInstIn.hpp"
+# include "Graphics/VertexArray/MainInst.hpp"
 # include "Graphics/Buffer/Array.hpp"
 
 # include "Generics/Container/Binary.hpp"
@@ -50,7 +50,7 @@ class Manager
 	UI::Text::ShaderLayout	ShaderLayout;
 
 	//UI::Text::Buffer		Buffer;
-	VertexArray::MainInstIn		Buffer;
+	VertexArray::MainInst		Buffer;
 	UI::Text::Main_Layout		LayoutMain;
 	UI::Text::Inst_Layout		LayoutInst;
 

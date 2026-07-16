@@ -6,7 +6,7 @@
 # include "BufferData.hpp"
 # include "Buffer.hpp"
 
-# include "Graphics/VertexArray/MainInstIn.hpp"
+# include "Graphics/VertexArray/MainInst.hpp"
 # include "Graphics/Buffer/Array.hpp"
 
 # include "Graphics/Shader/Base.hpp"
@@ -45,8 +45,7 @@ class Manager
 	::Shader::Base					Shader;
 	UI::Control::ShaderLayout		ShaderLayout;
 
-	//UI::Control::Buffer					Buffer;
-	VertexArray::MainInstIn				Buffer;
+	VertexArray::MainInst				Buffer;
 	UI::Control::Main::BufferLayout		BufferLayoutMain;
 	UI::Control::Inst::BufferLayout		BufferLayoutInst;
 

@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_BUFFER_HPP
 # define UI_CONTROL_BUFFER_HPP
 
-# include "Graphics/Buffer/MainInst.hpp"
+# include "Graphics/VertexArray/MainInst.hpp"
 
 namespace UI
 {
@@ -9,11 +9,11 @@ namespace UI
 namespace Control
 {
 
-typedef ::VertexArray::MainInst<
+/*typedef ::VertexArray::MainInst<
 	GL::BufferDataUsage::StaticDraw,
 	GL::BufferDataUsage::StreamDraw,
 	GL::DrawMode::Triangles
-> Buffer;
+> Buffer;*/
 
 };
 

@@ -72,7 +72,6 @@ struct ObjectManager
 
 	::Attribute::Layout *	BufferFullLayout = nullptr;
 	::Attribute::Layout *	BufferWireLayout = nullptr;
-	::Buffer::Uniform *		BufferUniform = nullptr;
 
 	void	InstancesClear();
 	void	InstancesMake();

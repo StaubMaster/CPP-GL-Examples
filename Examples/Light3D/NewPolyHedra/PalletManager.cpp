@@ -43,8 +43,6 @@ NewPolyHedra::Pallet * NewPolyHedra::PalletManager::MakePallet(PolyHedra * polyh
 	NewPolyHedra::Pallet * pallet = new NewPolyHedra::Pallet(polyhedra);
 	pallet -> BufferFullLayout = BufferFullLayout;
 	pallet -> BufferWireLayout = BufferWireLayout;
-	pallet -> BufferFull.SizeOf = BufferFullLayout -> Stride;
-	pallet -> BufferWire.SizeOf = BufferWireLayout -> Stride;
 	pallet -> GraphicsCreate();
 	pallet -> GraphicsPut();
 	Pallets.Insert(pallet);

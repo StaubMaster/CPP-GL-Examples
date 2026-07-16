@@ -20,47 +20,41 @@ NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::FindPalletObjec
 	}
 	return nullptr;
 }
+/*
+Create VertexArrayBufferFull
+Bind Pallet.FullBuffer
+Bind Pallet.FullLayout
+Bind FullInstancesBuffer
+Bind FullInstancesLayout
+Bind UniformBuffer
+
+do same with Wire
+
+
+*/
 NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::MakePalletObjectManager(NewPolyHedra::Pallet * pallet)
 {
 	if (pallet == nullptr) { return nullptr; }
 	NewPolyHedra::PalletObjectManager * manager = NewPalletObjectManager();
 	manager -> Pallet = pallet;
 
-	manager -> BufferFull.MainChange(&(pallet -> BufferFull), pallet -> BufferFullLayout, pallet -> BufferFullLayout -> Stride);
-	manager -> BufferWire.MainChange(&(pallet -> BufferWire), pallet -> BufferWireLayout, pallet -> BufferWireLayout -> Stride);
-
-	manager -> BufferFull.InstChange(&(manager -> BufferFullInstance), BufferFullLayout, BufferFullLayout -> Stride);
-	manager -> BufferWire.InstChange(&(manager -> BufferWireInstance), BufferWireLayout, BufferWireLayout -> Stride);
-
-	/*if (BufferFullLayout != nullptr)
-	{
-		//manager -> BufferFull.Init(*BufferFullLayout);
-		//manager -> BufferFullVertexArray.ChangeAttributeLayoutMain(*BufferFullLayout);
-		manager -> BufferFull.SizeOf = BufferFullLayout -> Stride;
-	}*/
-	/*if (BufferWireLayout != nullptr)
-	{
-		//manager -> BufferWire.Init(*BufferWireLayout);
-		//manager -> BufferWireVertexArray.ChangeAttributeLayoutMain(*BufferWireLayout);
-		manager -> BufferWire.SizeOf = BufferWireLayout -> Stride;
-	}*/
-	manager -> BufferUniform = BufferUniform;
 	manager -> GraphicsCreate();
-	manager -> VertexBufferInit();
 
-	manager -> BufferFull.Init();
-	//manager -> BufferFullVertexArray.Bind();
-	//manager -> BufferFull.Bind();
-	//BufferFullLayout -> Bind();
-	if (BufferUniform != nullptr)
+	manager -> BufferFull.Bind();
+	manager -> BufferFullInstance.Bind();
+	if (BufferFullLayout != nullptr)
 	{
-		BufferUniform -> Bind();
+		BufferFullLayout -> Bind();
 	}
+	pallet -> GraphicsInitFull();
 
-	manager -> BufferWire.Init();
-	//manager -> BufferWireVertexArray.Bind();
-	//manager -> BufferWire.Bind();
-	//BufferWireLayout -> Bind();
+	manager -> BufferWire.Bind();
+	manager -> BufferWireInstance.Bind();
+	if (BufferWireLayout != nullptr)
+	{
+		BufferWireLayout -> Bind();
+	}
+	pallet -> GraphicsInitWire();
 
 	VertexArray::Base::BindNone();
 
