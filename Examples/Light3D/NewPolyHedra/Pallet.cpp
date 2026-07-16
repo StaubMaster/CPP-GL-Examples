@@ -26,8 +26,8 @@ NewPolyHedra::Pallet::Pallet()
 	, BufferWireLayout(nullptr)
 	, Texture()
 {
-	BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
-	BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
+	//BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
+	//BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
 }
 NewPolyHedra::Pallet::Pallet(PolyHedra * object)
 	: Object(object)
@@ -39,8 +39,8 @@ NewPolyHedra::Pallet::Pallet(PolyHedra * object)
 	, BufferWireLayout(nullptr)
 	, Texture()
 {
-	BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
-	BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
+	//BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
+	//BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
 }
 NewPolyHedra::Pallet::Pallet(PolyHedra * object, std::string name)
 	: Object(object)
@@ -52,8 +52,8 @@ NewPolyHedra::Pallet::Pallet(PolyHedra * object, std::string name)
 	, BufferWireLayout(nullptr)
 	, Texture()
 {
-	BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
-	BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
+	//BufferFull.SizeOf = sizeof(PolyHedraFull::Main::Data);
+	//BufferWire.SizeOf = sizeof(PolyHedraWire::Main::Data);
 }
 
 
@@ -67,6 +67,7 @@ void NewPolyHedra::Pallet::GraphicsPut()
 		{
 			Container::Array<PolyHedraFull::Main::Data> data = Object -> ToMainData();
 			BufferFull.DataFull(data.ToVoid());
+			CountFull = data.Length();
 		}
 		{
 			Container::Array<PolyHedraWire::Main::Data> data(Object -> Corners.Count());
@@ -77,7 +78,9 @@ void NewPolyHedra::Pallet::GraphicsPut()
 			BufferWire.DataFull(data.ToVoid());
 		}
 		{
-			BufferWireElem.DataFull(Object -> Edges.ToVoid());
+			Container::Array<PolyHedra::Edge> data = Object -> Edges.ToArray();
+			BufferWireElem.DataFull(data.ToVoid());
+			CountWire = data.Length();
 		}
 		Texture = Object -> Skins[0] -> ToTexture();
 	}

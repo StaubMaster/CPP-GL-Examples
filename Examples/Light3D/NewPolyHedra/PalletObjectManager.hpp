@@ -43,6 +43,9 @@ struct PalletObjectManager
 	::Buffer::Array		BufferFullInstance;
 	::Buffer::Array		BufferWireInstance;
 
+	unsigned int	CountFull;
+	unsigned int	CountWire;
+
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 

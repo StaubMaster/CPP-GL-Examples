@@ -38,6 +38,8 @@ struct Pallet
 	::Attribute::Layout *	BufferFullLayout;
 	::Attribute::Layout *	BufferWireLayout;
 	::Texture::Array2D		Texture;
+	unsigned	CountFull;
+	unsigned	CountWire;
 
 	public:
 	void	GraphicsPut();

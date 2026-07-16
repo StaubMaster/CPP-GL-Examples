@@ -57,8 +57,8 @@ UI::Text::Manager::Manager()
 	Shader.UniformLayout = &ShaderLayout;
 	ShaderLayout.Shader = &Shader;
 
-	Buffer.MainLayout = &LayoutMain; Buffer.MainBuffer.SizeOf = sizeof(Main_Data);
-	Buffer.InstLayout = &LayoutInst; Buffer.InstBuffer.SizeOf = sizeof(Inst_Data);
+	Buffer.MainBuffer.Layout = &LayoutMain;
+	Buffer.InstBuffer.Layout = &LayoutInst;
 }
 
 void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
@@ -449,7 +449,7 @@ void UI::Text::Manager::MakeInstances()
 			}
 		}
 	}
-	Buffer.InstDataHave = true;
+	Buffer.InstBuffer.DataHave = true;
 
 #ifdef TELEMETRY_TIME
 	WatchArray.Start();
@@ -480,10 +480,10 @@ void UI::Text::Manager::GraphicsCreate()
 		TextsBuffer.Create();
 		GraphicsExist = true;
 		TextureAssigned = false;
-		Buffer.MainDataWant = true;
-		Buffer.MainDataHave = false;
-		Buffer.InstDataWant = false;
-		Buffer.InstDataHave = false;
+		Buffer.MainBuffer.DataWant = true;
+		Buffer.MainBuffer.DataHave = false;
+		Buffer.InstBuffer.DataWant = false;
+		Buffer.InstBuffer.DataHave = false;
 	}
 }
 void UI::Text::Manager::GraphicsDelete()
@@ -519,7 +519,7 @@ void UI::Text::Manager::TextureAssign()
 // do this once in GraphicsInit ?
 void UI::Text::Manager::BufferMainUpdateData()
 {
-	if (!GraphicsExist || !Buffer.MainDataWant) { return; }
+	if (!GraphicsExist || !Buffer.MainBuffer.DataWant) { return; }
 
 	Container::Binary<UI::Text::Main_Data> data;
 
@@ -530,20 +530,22 @@ void UI::Text::Manager::BufferMainUpdateData()
 	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
 	data.Insert(UI::Text::Main_Data(VectorF2(+1, +1)));
 
-	Buffer.MainDataWant = false;
-	Buffer.MainDataHave = true;
+	Buffer.MainBuffer.DataWant = false;
+	Buffer.MainBuffer.DataHave = true;
 
 	Buffer.MainBuffer.DataFull(data.ToVoid());
+	Buffer.MainBuffer.Count = data.Count();
 
-	Buffer.MainDataHave = false;
+	Buffer.MainBuffer.DataHave = false;
 }
 void UI::Text::Manager::BufferInstUpdateData()
 {
-	if (!GraphicsExist || !Buffer.InstDataHave) { return; }
+	if (!GraphicsExist || !Buffer.InstBuffer.DataHave) { return; }
 
 	Buffer.InstBuffer.DataFull(InstancesArray.ToVoid());
+	Buffer.InstBuffer.Count = InstancesArray.Length();
 
-	Buffer.InstDataHave = false;
+	Buffer.InstBuffer.DataHave = false;
 }
 
 
@@ -555,21 +557,6 @@ void UI::Text::Manager::Draw()
 	Shader.Bind();
 	Buffer.Bind();
 	//Buffer.InitAttributes();
-
-	/*{
-		FontTexture.Bind();
-		int val;
-
-		glGetTexParameteriv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, &val);
-		if (val == (int)Texture::Base::FilterMagType::Linear ) { std::cout << "Mag: Linear \n"; }
-		if (val == (int)Texture::Base::FilterMagType::Nearest) { std::cout << "Mag: Nearest\n"; }
-
-		glGetTexParameteriv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, &val);
-		if (val == (int)Texture::Base::FilterMinType::Linear ) { std::cout << "Min: Linear \n"; }
-		if (val == (int)Texture::Base::FilterMinType::Nearest) { std::cout << "Min: Nearest\n"; }
-
-		std::cout << '\n';
-	}*/
 
 	// do this stuff once / somewhere else
 	// check for Limit, display error, dont throw

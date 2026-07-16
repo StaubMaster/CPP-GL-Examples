@@ -38,7 +38,7 @@ UI::Graph::Manager::Manager()
 	ShaderLayout.Shader = &Shader;
 
 	Buffer.Mode	= GL::DrawMode::Lines;
-	Buffer.MainLayout = &BufferLayout; Buffer.MainBuffer.SizeOf = sizeof(BufferData);
+	Buffer.MainBuffer.Layout = &BufferLayout;
 }
 
 
@@ -182,6 +182,7 @@ void UI::Graph::Manager::Draw()
 {
 	Buffer.Init();
 	Buffer.MainBuffer.DataFull(Instances.ToVoid());
+	Buffer.MainBuffer.Count = Instances.Count();
 
 	Shader.Bind();
 

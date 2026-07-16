@@ -48,7 +48,7 @@ void NewPolyHedra::PalletObjectManager::GraphicsDrawFull()
 	{
 		BufferFull.Bind();
 		Pallet -> Texture.Bind();
-		GL::DrawArraysInstanced(GL::DrawMode::Triangles, 0, Pallet -> BufferFull.Count, BufferFullInstance.Count);
+		GL::DrawArraysInstanced(GL::DrawMode::Triangles, 0, Pallet -> CountFull, CountFull);
 	}
 }
 void NewPolyHedra::PalletObjectManager::GraphicsDrawWire()
@@ -58,9 +58,9 @@ void NewPolyHedra::PalletObjectManager::GraphicsDrawWire()
 	{
 		BufferWire.Bind();
 		GL::DrawElementsInstanced(GL::DrawMode::Lines
-			, Pallet -> BufferWireElem.Count
+			, Pallet -> CountWire
 			, Pallet -> BufferWireElem.IndexType
-			, BufferWireInstance.Count
+			, CountWire
 		);
 	}
 }
