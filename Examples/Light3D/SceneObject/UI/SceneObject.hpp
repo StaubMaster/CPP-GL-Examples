@@ -3,9 +3,9 @@
 
 # include "Control/Form.hpp"
 # include "SceneObject/UI/PolyHedraObject.hpp"
-# include "PropertyControl/LightBase.hpp"
-# include "PropertyControl/LightDirection.hpp"
-# include "PropertyControl/LightSpot.hpp"
+# include "ValueTypeUI/LightBase.hpp"
+# include "ValueTypeUI/LightDirection.hpp"
+# include "ValueTypeUI/LightSpot.hpp"
 
 struct SceneObject;
 

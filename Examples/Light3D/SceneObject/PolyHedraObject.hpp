@@ -4,7 +4,7 @@
 # include "SceneObject.hpp"
 # include "PolyHedra/ObjectData.hpp"
 
-# include "NewPolyHedra/DataType/Basic3D/PalletObjectData.hpp"
+# include "NewPolyHedraDataType/Basic3D/PalletObjectData.hpp"
 
 /* PolyHedraObjects: temporary vs permanent
 

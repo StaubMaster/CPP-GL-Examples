@@ -4,7 +4,7 @@
 # include "SceneObject.hpp"
 # include "ValueType/Light/Base.hpp"
 
-# include "NewPolyHedra/DataType/TransScaleColor3D/PalletObjectData.hpp"
+# include "NewPolyHedraDataType/TransScaleColor3D/PalletObjectData.hpp"
 
 struct SceneObject_LightAmbient : public SceneObject
 {

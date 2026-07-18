@@ -11,8 +11,8 @@
 #include "ValueType/Vector/U3.hpp"
 #include "ValueType/Loop/U3.hpp"
 
-#include "General/Telemetry/StopWatch.hpp"
-#include "General/Telemetry/ValueAccumulator.hpp"
+#include "Telemetry/StopWatch.hpp"
+#include "Telemetry/ValueAccumulator.hpp"
 
 #include <iostream>
 #include <iomanip>

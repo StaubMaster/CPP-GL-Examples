@@ -3,7 +3,7 @@
 
 # include "Control/GroupBox.hpp"
 # include "Control/Label.hpp"
-# include "PropertyControl/Trans3D.hpp"
+# include "ValueTypeUI/Trans3D.hpp"
 
 namespace NewPolyHedra
 {

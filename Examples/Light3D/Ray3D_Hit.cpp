@@ -6,8 +6,8 @@
 
 #include "PolyHedra/Data.hpp"
 
-#include "NewPolyHedra/DataType/Basic3D/ObjectData.hpp"
-#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
+#include "NewPolyHedraDataType/Basic3D/ObjectData.hpp"
+#include "NewPolyHedraDataType/TransScaleColor3D/ObjectData.hpp"
 
 #include "NewPolyHedra/Type/Object.hpp"
 #include "NewPolyHedra/Type/PalletObjectData.hpp"

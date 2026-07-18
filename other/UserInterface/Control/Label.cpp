@@ -1,5 +1,6 @@
-#include "Label.hpp"
-#include "General/Manager.hpp"
+#include "Control/Label.hpp"
+#include "Control/General/Manager.hpp"
+
 #include "Text/Manager.hpp"
 #include <math.h>
 

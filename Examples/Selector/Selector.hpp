@@ -1,7 +1,7 @@
 #ifndef  SELECTOR_CONTEXT_HPP
 # define SELECTOR_CONTEXT_HPP
 
-# include "General/ContextBase.hpp"
+# include "ContextBase.hpp"
 # include "SelectorMenu.hpp"
 
 # include "UIManager.hpp"

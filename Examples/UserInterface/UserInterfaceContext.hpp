@@ -1,7 +1,7 @@
 #ifndef  USER_INTERFACE_CONTEXT_HPP
 # define USER_INTERFACE_CONTEXT_HPP
 
-# include "General/ContextBase.hpp"
+# include "ContextBase.hpp"
 # include "UserInterfaceMenu0.hpp"
 # include "UserInterfaceMenu1.hpp"
 # include "UserInterfaceMenu2.hpp"

@@ -1,11 +1,11 @@
 
-#include "General/ValueGen/Random.hpp"
+#include "ValueGen/Random.hpp"
 #include "ValueType/Vector/F3.hpp"
 #include "ValueType/EulerAngle3D.hpp"
 #include "ValueType/Matrix/3x3.hpp"
 
 #include "ValueType/_Show.hpp"
-#include "General/UnitToString.hpp"
+#include "UnitToString.hpp"
 
 __attribute__((unused)) static Angle LoopAngle(Angle angle)
 {

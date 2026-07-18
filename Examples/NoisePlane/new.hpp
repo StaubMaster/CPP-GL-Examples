@@ -1,3 +1,3 @@
-#include "General/ContextBase.hpp"
+#include "ContextBase.hpp"
 
 ContextBase *	newContextNoisePlane();

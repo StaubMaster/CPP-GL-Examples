@@ -1,8 +1,8 @@
 #ifndef  AUX_THREAD_2_HPP
 # define AUX_THREAD_2_HPP
 
-# include "General/AuxThreadBase.hpp"
-# include "General/Telemetry/WaitDoTime.hpp"
+# include "AuxThreadBase.hpp"
+# include "Telemetry/WaitDoTime.hpp"
 
 # include <mutex>
 # include <condition_variable>
@@ -20,7 +20,7 @@ struct Voxel;
 # include "ValueType/Loop/U2.hpp"
 # include "ValueType/Loop/U3.hpp"
 
-# include "General/CenterIndexLoop/3D.hpp"
+# include "CenterIndexLoop/3D.hpp"
 # include "Chunk/GenerationNoise.hpp"
 
 /* make a Queue for Generating/Assambling ?

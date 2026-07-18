@@ -1,8 +1,8 @@
 #ifndef  AUX_THREAD_1_HPP
 # define AUX_THREAD_1_HPP
 
-# include "General/AuxThreadBase.hpp"
-# include "General/Telemetry/WaitDoTime.hpp"
+# include "AuxThreadBase.hpp"
+# include "Telemetry/WaitDoTime.hpp"
 
 # include <mutex>
 # include <condition_variable>

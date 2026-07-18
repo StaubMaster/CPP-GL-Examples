@@ -6,8 +6,8 @@
 
 #include "Structure.hpp"
 
-#include "General/ContainerLock/AccessTypeGuard.hpp"
-#include "General/ContainerLock/AssignTypeGuard.hpp"
+#include "ContainerLock/AccessTypeGuard.hpp"
+#include "ContainerLock/AssignTypeGuard.hpp"
 
 
 

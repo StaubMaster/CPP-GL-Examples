@@ -142,9 +142,9 @@ static unsigned int LineLength(const char * text, unsigned int i)
 	return len;
 }
 
-#include "../../Examples/General/Telemetry/StopWatch.hpp"
-#include "../../Examples/General/Telemetry/ValueAccumulator.hpp"
-#include "../../Examples/General/UnitToString.hpp"
+#include "../Miscellaneous/Telemetry/StopWatch.hpp"
+#include "../Miscellaneous/Telemetry/ValueAccumulator.hpp"
+#include "../Miscellaneous/UnitToString.hpp"
 
 //#define TELEMETRY_TIME
 

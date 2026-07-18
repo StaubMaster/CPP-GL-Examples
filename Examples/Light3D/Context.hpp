@@ -1,64 +1,60 @@
 #ifndef  LIGHT_3D_CONTEXT_HPP
 # define LIGHT_3D_CONTEXT_HPP
 
-# include "General/ContextBase.hpp"
+# include "ContextBase.hpp"
 
 //
-#include <iostream>
-#include "OpenGL.hpp"
-#include "Debug.hpp"
+# include <iostream>
+# include "OpenGL.hpp"
+# include "Debug.hpp"
 
-#include "ValueType/_Include.hpp"
-#include "ValueType/_Show.hpp"
+# include "ValueType/_Include.hpp"
+# include "ValueType/_Show.hpp"
 
-#include "Graphics/Shader/Code.hpp"
+# include "Graphics/Shader/Code.hpp"
 
 // UniForm
-#include "Graphics/Uniform/_Include.hpp"
-#include "Graphics/Multiform/_Include.hpp"
+# include "Graphics/Uniform/_Include.hpp"
+# include "Graphics/Multiform/_Include.hpp"
 
 // PolyHedra
-#include "PolyHedra/PolyHedra.hpp"
-#include "PolyHedra/Manager.hpp"
-#include "PolyHedra/Object.hpp"
-
-// PolyHedraUI
-//#include "PolyHedraUI/Manager.hpp"
-//#include "PolyHedraUI/Object.hpp"
+# include "PolyHedra/PolyHedra.hpp"
+# include "PolyHedra/Manager.hpp"
+# include "PolyHedra/Object.hpp"
 
 // Containers
-#include "Generics/Container/Array.hpp"
-#include "Generics/Container/Binary.hpp"
-//#include "Miscellaneous/EntryContainer/Binary.hpp"
+# include "Generics/Container/Array.hpp"
+# include "Generics/Container/Binary.hpp"
+//# include "Miscellaneous/EntryContainer/Binary.hpp"
 
-//#include "Window.hpp"
-//#include "Function/Object.hpp"
-//#include "ValueType/View.hpp"
+//# include "Window.hpp"
+//# include "Function/Object.hpp"
+//# include "ValueType/View.hpp"
 
-#include "FileInfo.hpp"
-//#include "DirectoryInfo.hpp"
-#include "Image.hpp"
+# include "FileInfo.hpp"
+//# include "DirectoryInfo.hpp"
+# include "Image.hpp"
 
 
 // Hit
-#include "Ray3D_Hit.hpp"
+# include "Ray3D_Hit.hpp"
 
 // 
-#include "LightShaderLayout.hpp"
+# include "LightShaderLayout.hpp"
 
 // User Interface
-#include "UIManager.hpp"
+# include "UIManager.hpp"
 
 
 
 // SceneObject
-#include "SceneObject/SceneObject.hpp"
-#include "SceneObject/UI/SceneObject.hpp"
+# include "SceneObject/SceneObject.hpp"
+# include "SceneObject/UI/SceneObject.hpp"
 
 
 
-#include "Graphics/Multiform/Layout.hpp"
-#include "Graphics/Multiform/_Include.hpp"
+# include "Graphics/Multiform/Layout.hpp"
+# include "Graphics/Multiform/_Include.hpp"
 struct MultiformLayout : public Multiform::Layout
 {
 	Multiform::DisplaySize	DisplaySize;
@@ -71,30 +67,30 @@ struct MultiformLayout : public Multiform::Layout
 
 
 
-#include "UI_Control_List.hpp"
+# include "UI_Control_List.hpp"
 
-#include "UserTrans3DChange.hpp"
+# include "UserTrans3DChange.hpp"
 
 
 
 // NewPolyHedra
-#include "NewPolyHedra/Manager.hpp"
-#include "NewPolyHedra/ObjectManager.hpp"
-#include "NewPolyHedra/Pallet.hpp"
-#include "NewPolyHedra/PalletManager.hpp"
-#include "NewPolyHedra/PalletObjectData.hpp"
-#include "NewPolyHedra/PalletObjectManager.hpp"
-#include "NewPolyHedra/Type/ObjectManager.hpp"
-#include "NewPolyHedra/Type/PalletObjectManager.hpp"
-#include "NewPolyHedra/Type/Object.hpp"
+# include "NewPolyHedra/Manager.hpp"
+# include "NewPolyHedra/ObjectManager.hpp"
+# include "NewPolyHedra/Pallet.hpp"
+# include "NewPolyHedra/PalletManager.hpp"
+# include "NewPolyHedra/PalletObjectData.hpp"
+# include "NewPolyHedra/PalletObjectManager.hpp"
+# include "NewPolyHedra/Type/ObjectManager.hpp"
+# include "NewPolyHedra/Type/PalletObjectManager.hpp"
+# include "NewPolyHedra/Type/Object.hpp"
 
-#include "NewPolyHedra/DataType/Basic3D/Layout.hpp"
-#include "NewPolyHedra/DataType/Basic3D/Object.hpp"
-#include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
+# include "NewPolyHedraDataType/Basic3D/Layout.hpp"
+# include "NewPolyHedraDataType/Basic3D/Object.hpp"
+# include "NewPolyHedraDataType/Basic3D/ObjectManager.hpp"
 
-#include "NewPolyHedra/DataType/TransScaleColor3D/Layout.hpp"
-#include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
-#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectManager.hpp"
+# include "NewPolyHedraDataType/TransScaleColor3D/Layout.hpp"
+# include "NewPolyHedraDataType/TransScaleColor3D/Object.hpp"
+# include "NewPolyHedraDataType/TransScaleColor3D/ObjectManager.hpp"
 
 struct Light3DContext : public ContextBase
 {

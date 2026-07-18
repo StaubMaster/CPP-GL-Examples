@@ -12,7 +12,7 @@ DIR_SRC := .
 DIR_OBJ := .
 
 LIBRARYS :=
-INCLUDES := . ..
+INCLUDES := . .. ../General
 ARGUMENTS :=
 
 ################################################################
@@ -26,6 +26,7 @@ include $(BASE_DIR)fancy.mk
 
 ################################################################
 
+include $(OTHER_DIR)/Miscellaneous.mk
 include $(OTHER_DIR)/UserInterface.mk
 
 include $(REPOS_DIR)/Engine.mk

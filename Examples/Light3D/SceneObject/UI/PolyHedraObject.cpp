@@ -52,7 +52,7 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 #include "NewPolyHedra/Pallet.hpp"
 
 #include "SceneObject/PolyHedraObject.hpp"
-#include "General/UnitToString.hpp"
+#include "UnitToString.hpp"
 #include <sstream>
 
 void UI::Control::PolyHedraObject::Update()

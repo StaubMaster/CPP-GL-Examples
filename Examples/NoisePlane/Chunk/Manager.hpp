@@ -1,8 +1,8 @@
 #ifndef  CHUNK_MANAGER_HPP
 # define CHUNK_MANAGER_HPP
 
-# include "General/ValueGen/Perlin2D.hpp"
-# include "General/ValueGen/Perlin3D.hpp"
+# include "ValueGen/Perlin2D.hpp"
+# include "ValueGen/Perlin3D.hpp"
 
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/ShaderLayout.hpp"
@@ -19,8 +19,8 @@
 
 //# include "GridCast/GridCast3D.hpp"
 
-# include "General/Telemetry/ValueAccumulator.hpp"
-# include "General/Telemetry/StopWatch.hpp"
+# include "Telemetry/ValueAccumulator.hpp"
+# include "Telemetry/StopWatch.hpp"
 
 # include <mutex>
 # include <atomic>
@@ -46,8 +46,8 @@ struct VoxelHit;
 # include <iostream>
 # include "ValueType/_Show.hpp"
 
-# include "General/Telemetry/WaitDoTime.hpp"
-# include "General/ContainerLock/Lock.hpp"
+# include "Telemetry/WaitDoTime.hpp"
+# include "ContainerLock/Lock.hpp"
 
 # include "Generics/Container/Array3D.hpp"
 

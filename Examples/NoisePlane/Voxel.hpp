@@ -1,7 +1,7 @@
 #ifndef  VOXEL_HPP
 # define VOXEL_HPP
 
-# include "General/Axis/Orientation.hpp"
+# include "Axis/Orientation.hpp"
 
 struct VoxelPallet;
 

@@ -6,12 +6,12 @@
 
 #include "Graphics/Inst/Data.hpp"
 
-#include "General/Axis/Orientation.hpp"
+#include "Axis/Orientation.hpp"
 
 #include "Structure.hpp"
 
-#include "General/ValueGen/Perlin2D.hpp"
-#include "General/ValueGen/Perlin3D.hpp"
+#include "ValueGen/Perlin2D.hpp"
+#include "ValueGen/Perlin3D.hpp"
 
 #include "ValueType/Box/I3.hpp"
 
@@ -24,11 +24,11 @@
 #include "ValueType/Vector/U3.hpp"
 #include "ValueType/Loop/U3.hpp"
 
-#include "General/Telemetry/StopWatch.hpp"
-#include "General/AuxThreadBase.hpp"
+#include "Telemetry/StopWatch.hpp"
+#include "AuxThreadBase.hpp"
 
-#include "General/ContainerLock/AccessTypeGuard.hpp"
-#include "General/ContainerLock/AssignTypeGuard.hpp"
+#include "ContainerLock/AccessTypeGuard.hpp"
+#include "ContainerLock/AssignTypeGuard.hpp"
 
 
 

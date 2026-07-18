@@ -5,19 +5,8 @@ FANCY_NAME := Light3D
 ################################################################
 
 FILES := \
-	\
-	Ray3D_Hit.cpp \
 	UserTrans3DChange.cpp \
 	SceneParsingData.cpp \
-	\
-	PropertyControl/PropertyControl.cpp \
-	PropertyControl/VectorF3.cpp \
-	PropertyControl/EulerAngle3D.cpp \
-	PropertyControl/ColorF4.cpp \
-	PropertyControl/Trans3D.cpp \
-	PropertyControl/LightBase.cpp \
-	PropertyControl/LightDirection.cpp \
-	PropertyControl/LightSpot.cpp \
 	\
 	LightShaderLayout.cpp \
 	\
@@ -29,21 +18,16 @@ FILES := \
 	SceneObject/LightSpot.cpp \
 	SceneObject/UI/SceneObject.cpp \
 	SceneObject/UI/PolyHedraObject.cpp \
-	\
-	NewPolyHedra/Manager.cpp \
-	NewPolyHedra/ObjectManager.cpp \
-	NewPolyHedra/Pallet.cpp \
-	NewPolyHedra/PalletManager.cpp \
-	NewPolyHedra/PalletObjectData.cpp \
-	NewPolyHedra/PalletObjectManager.cpp \
-	\
-	NewPolyHedra/DataType/Basic3D/Layout.cpp \
-	NewPolyHedra/DataType/Basic3D/ObjectData.cpp \
-	NewPolyHedra/DataType/Basic3D/Special.cpp \
-	NewPolyHedra/DataType/TransScaleColor3D/Layout.cpp \
-	NewPolyHedra/DataType/TransScaleColor3D/ObjectData.cpp \
-	NewPolyHedra/DataType/TransScaleColor3D/Special.cpp \
-	\
+\
+	NewPolyHedraDataType/Basic3D/Layout.cpp \
+	NewPolyHedraDataType/Basic3D/ObjectData.cpp \
+	NewPolyHedraDataType/Basic3D/Special.cpp \
+	NewPolyHedraDataType/TransScaleColor3D/Layout.cpp \
+	NewPolyHedraDataType/TransScaleColor3D/ObjectData.cpp \
+	NewPolyHedraDataType/TransScaleColor3D/Special.cpp \
+\
+	Ray3D_Hit.cpp \
+\
 	UI_Control_List.cpp \
 	Context.cpp \
 	new.cpp
@@ -66,6 +50,7 @@ include $(BASE_DIR)fancy.mk
 
 ################################################################
 
+include $(OTHER_DIR)/Miscellaneous.mk
 include $(OTHER_DIR)/UserInterface.mk
 
 include $(REPOS_DIR)/Engine.mk

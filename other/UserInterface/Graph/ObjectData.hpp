@@ -4,7 +4,7 @@
 # include "ValueType/Box/F2.hpp"
 # include "ValueType/Color/F4.hpp"
 
-# include "../../Examples/General/Telemetry/ValueAccumulator.hpp"
+# include "../Miscellaneous/Telemetry/ValueAccumulator.hpp"
 
 namespace UI
 {

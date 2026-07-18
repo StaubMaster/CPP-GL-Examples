@@ -1,7 +1,7 @@
 #ifndef  VOXEL_HIT_HPP
 # define VOXEL_HIT_HPP
 
-#include "General/GridCast/GridCast3D.hpp"
+#include "GridCast/GridCast3D.hpp"
 
 struct Chunk;
 struct ChunkManager;

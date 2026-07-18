@@ -1,4 +1,4 @@
-#include "General/ContextBase.hpp"
+#include "ContextBase.hpp"
 
 // ValueType
 #include "ValueType/View/3D.hpp"
@@ -27,12 +27,12 @@
 #include "Text/Object.hpp"
 
 // Units
-#include "General/UnitToString.hpp"
+#include "UnitToString.hpp"
 
 // ValueGen
-#include "General/ValueGen/Random.hpp"
-#include "General/ValueGen/Perlin2D.hpp"
-#include "General/ValueGen/Perlin3D.hpp"
+#include "ValueGen/Random.hpp"
+#include "ValueGen/Perlin2D.hpp"
+#include "ValueGen/Perlin3D.hpp"
 
 // Plane
 //#include "Plane/Plane.hpp"
@@ -40,7 +40,7 @@
 //#include "Plane/PlaneManager.hpp"
 
 // Voxel
-#include "General/Axis/Orientation.hpp"
+#include "Axis/Orientation.hpp"
 
 #include "Chunk.hpp"
 #include "Chunk/Manager.hpp"
@@ -69,10 +69,10 @@
 #include "Menus/Item/Inventory.hpp"
 
 // Threads
-#include "General/AuxThreadBase.hpp"
+#include "AuxThreadBase.hpp"
 
 // 
-#include "General/PhysicsContext.hpp"
+#include "PhysicsContext.hpp"
 
 // Math
 #include <thread>

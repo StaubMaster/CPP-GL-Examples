@@ -3,7 +3,7 @@
 
 # include "FileInfo.hpp"
 
-# include "General/Axis/Orientation.hpp"
+# include "Axis/Orientation.hpp"
 
 struct Voxel;
 struct VoxelGeometryPallet;
