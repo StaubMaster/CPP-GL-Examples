@@ -1,4 +1,4 @@
-#include "UserInterfaceMenu0.hpp"
+#include "Menu0.hpp"
 #include "ContextBase.hpp"
 
 
@@ -64,8 +64,8 @@ UserInterfaceMenu0::UserInterfaceMenu0()
 	ChildInsert(Menu3Button);
 }
 
-#include "Selector/new.hpp"
-#include "UserInterface/new.hpp"
+//#include "Selector/new.hpp"
+#include "new.hpp"
 
 void UserInterfaceMenu0::QuitFunc(ClickArgs args)
 {
@@ -85,7 +85,7 @@ void UserInterfaceMenu0::BackFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ContextBase::Change(newSelectorContext);
+		//ContextBase::Change(newSelectorContext);
 	}
 }
 

@@ -1,0 +1,4 @@
+
+changing other Examples to make .exe instead of .a
+
+use execve to run the Contexts ?

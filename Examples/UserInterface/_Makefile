@@ -1,24 +1,22 @@
 
-NAME := UserInterface.exe
+NAME := UserInterface.a
 FANCY_NAME := UserInterface
 
 ################################################################
 
 FILES := \
-	Context.cpp \
-	Menu0.cpp \
-	Menu1.cpp \
-	Menu2.cpp \
-	Menu3.cpp \
-\
+	UserInterfaceContext.cpp \
+	UserInterfaceMenu0.cpp \
+	UserInterfaceMenu1.cpp \
+	UserInterfaceMenu2.cpp \
+	UserInterfaceMenu3.cpp \
 	new.cpp \
-	main.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .
 
 LIBRARYS :=
-INCLUDES := .
+INCLUDES := . ..
 ARGUMENTS :=
 
 ################################################################
@@ -41,6 +39,6 @@ include $(REPOS_DIR)/OpenGL.mk
 
 ################################################################
 
-include $(BASE_DIR)/MakefileCompiler.mk
+include $(BASE_DIR)/MakefileArchiver.mk
 
 ################################################################

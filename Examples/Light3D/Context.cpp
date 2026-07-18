@@ -430,6 +430,8 @@ Light3DContext::Light3DContext()
 	, DoPolyHedraPalletChange(false)
 	, LightBuffer(GL::BufferDataUsage::StreamDraw)
 {
+	MediaDirectory = DirectoryInfo("../../media/"); // Set Media Directory with MakeFile Macro ?
+
 	NewPolyHedra_Manager.PalletManager = &PalletManager;
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerBasic);
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerTSC);
@@ -590,6 +592,8 @@ void Light3DContext::Init()
 	NewPolyHedra_Manager.GraphicsCreate();
 
 	std::cout << "Init 1\n";
+
+	UIManager.GraphicsInit();
 
 	Make();
 }

@@ -1,4 +1,6 @@
-#include "UserInterfaceMenu2.hpp"
+#include "Menu2.hpp"
+
+
 
 void UserInterfaceMenu2::CheckBoxTile::ClickFunc(ClickArgs args)
 {
@@ -7,6 +9,8 @@ void UserInterfaceMenu2::CheckBoxTile::ClickFunc(ClickArgs args)
 		Func(Index);
 	}
 }
+
+
 
 UserInterfaceMenu2::~UserInterfaceMenu2() { }
 UserInterfaceMenu2::UserInterfaceMenu2()

@@ -2,10 +2,10 @@
 # define USER_INTERFACE_CONTEXT_HPP
 
 # include "ContextBase.hpp"
-# include "UserInterfaceMenu0.hpp"
-# include "UserInterfaceMenu1.hpp"
-# include "UserInterfaceMenu2.hpp"
-# include "UserInterfaceMenu3.hpp"
+# include "Menu0.hpp"
+# include "Menu1.hpp"
+# include "Menu2.hpp"
+# include "Menu3.hpp"
 
 # include "UIManager.hpp"
 

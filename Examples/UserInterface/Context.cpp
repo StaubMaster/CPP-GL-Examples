@@ -1,4 +1,4 @@
-#include "UserInterfaceContext.hpp"
+#include "Context.hpp"
 
 #include "Graphics/Shader/Code.hpp"
 #include "Generics/Container/Array.hpp"
@@ -12,7 +12,9 @@ UserInterfaceContext::UserInterfaceContext()
 	, Menu0()
 	, Menu1()
 	, Menu2()
-{ }
+{
+	MediaDirectory = DirectoryInfo("../../media/");
+}
 
 
 
@@ -69,6 +71,8 @@ void UserInterfaceContext::Init()
 
 	UIManager.GraphicsCreate();
 
+	UIManager.GraphicsInit();
+
 	Make();
 }
 void UserInterfaceContext::Free()
@@ -97,10 +101,3 @@ void UserInterfaceContext::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(
 void UserInterfaceContext::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
 void UserInterfaceContext::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
 void UserInterfaceContext::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
-
-
-
-ContextBase * newUserInterfaceContext()
-{
-	return new UserInterfaceContext();
-}

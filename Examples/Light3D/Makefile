@@ -1,5 +1,5 @@
 
-NAME := Light3D.a
+NAME := Light3D.exe
 FANCY_NAME := Light3D
 
 ################################################################
@@ -30,13 +30,14 @@ FILES := \
 \
 	UI_Control_List.cpp \
 	Context.cpp \
-	new.cpp
+	new.cpp \
+	main.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .
 
 LIBRARYS :=
-INCLUDES := . ..
+INCLUDES := .
 ARGUMENTS :=
 
 ################################################################
@@ -59,7 +60,6 @@ include $(REPOS_DIR)/OpenGL.mk
 
 ################################################################
 
-include $(BASE_DIR)/MakefileArchiver.mk
+include $(BASE_DIR)/MakefileCompiler.mk
 
 ################################################################
-
