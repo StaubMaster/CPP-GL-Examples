@@ -87,10 +87,11 @@ void PauseMenu::DebugFunc(ClickArgs args)
 	}
 }
 
-#include "Selector/new.hpp"
+//#include "Selector/new.hpp"
 void PauseMenu::ExitFunc(ClickArgs args)
 {
-	if (args.Action != Action::Press) { return; }
-	ContextBase::Change(newSelectorContext);
-
+	if (args.Action == Action::Press)
+	{
+		//ContextBase::Change(newSelectorContext);
+	}
 }

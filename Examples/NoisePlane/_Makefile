@@ -1,8 +1,14 @@
 
-NAME := NoisePlane.exe
+NAME := NoisePlane.a
 FANCY_NAME := NoisePlane
 
 ################################################################
+
+#	Plane/Plane.cpp \
+#	Plane/PlaneValue.cpp \
+#	Plane/PlaneNeighbours.cpp \
+#	Plane/PlaneGraphics.cpp \
+#	Plane/PlaneManager.cpp \
 
 FILES := \
 	Graphics/Main/Data.cpp \
@@ -11,6 +17,7 @@ FILES := \
 	Graphics/Inst/Buffer.cpp \
 	Graphics/Buffer.cpp \
 	Graphics/ShaderLayout.cpp \
+	Graphics/MultiBufferChunkU.cpp \
 \
 	Voxel.cpp \
 	Voxel/GraphicsData.cpp \
@@ -46,14 +53,12 @@ FILES := \
 	Menus/Item/HotBar.cpp \
 \
 	ContextNoisePlane.cpp \
-	new.cpp \
-	main.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .
 
 LIBRARYS :=
-INCLUDES := .
+INCLUDES := . ..
 ARGUMENTS :=
 
 ################################################################
@@ -76,6 +81,6 @@ include $(REPOS_DIR)/OpenGL.mk
 
 ################################################################
 
-include $(BASE_DIR)/MakefileCompiler.mk
+include $(BASE_DIR)/MakefileArchiver.mk
 
 ################################################################

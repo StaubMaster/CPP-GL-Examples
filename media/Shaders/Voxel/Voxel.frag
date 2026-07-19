@@ -127,7 +127,7 @@ void main()
 	vec4 col = texture(texture0, fs_inn.Tex);
 //	col = vec4(abs(normalize(fs_inn.Normal)), 1);
 
-	col = col * light_factor;
+//	col = col * light_factor;
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
 	Color = col;

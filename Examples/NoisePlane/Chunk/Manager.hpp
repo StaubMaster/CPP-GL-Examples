@@ -51,7 +51,7 @@ struct VoxelHit;
 
 # include "Generics/Container/Array3D.hpp"
 
-# include "Graphics/MultiBufferChunkU.hpp"
+# include "Graphics/Buffer.hpp"
 
 
 
@@ -157,7 +157,8 @@ struct ChunkManager
 	Texture::Array2D				Texture;
 	::Shader::Base					ShaderU;
 	VoxelGraphics::ShaderLayout		ShaderLayoutU;
-	MultiBufferChunkU				BufferU;
+	VoxelGraphics::BufferU			BufferU;
+	VoxelGraphics::MainLayoutU		BufferLayoutU;
 
 
 

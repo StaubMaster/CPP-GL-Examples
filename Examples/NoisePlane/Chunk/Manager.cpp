@@ -455,9 +455,12 @@ ChunkManager::ChunkManager()
 	, ShaderU()
 	, ShaderLayoutU()
 	, BufferU()
+	, BufferLayoutU()
 {
 	ShaderU.UniformLayout = &ShaderLayoutU;
 	ShaderLayoutU.Shader = &ShaderU;
+
+	BufferU.Buffer.Layout = &BufferLayoutU;
 }
 
 
@@ -502,10 +505,9 @@ void ChunkManager::ChangeMedia(const DirectoryInfo & dir)
 		dir.File("Shaders/Voxel/Voxel.frag"),
 	});
 
-	BufferU.Layout.Voxel.Change(0);
-	BufferU.Layout.Texture.Change(1);
-	BufferU.Layout.Chunk.Change(2);
-	//BufferU.Buffer.ChangeAttributeLayoutMain(BufferU.Layout);
+	BufferLayoutU.Voxel.Change(0);
+	BufferLayoutU.Texture.Change(1);
+	BufferLayoutU.Chunk.Change(2);
 }
 
 void ChunkManager::GraphicsCreate()
@@ -514,11 +516,11 @@ void ChunkManager::GraphicsCreate()
 
 	Texture.Create();
 	ShaderU.Create();
-	BufferU.Buffer.Create();
+	BufferU.Create();
 
-	BufferU.NewSize(1024 * 1024 * 1024);
-	// Container::Void to Container::Array
-	// Container::Void constructor(size, data)
+	BufferU.Init();
+	unsigned int count = 1024 * 1024 * 1024 / sizeof(VoxelGraphics::MainDataU);
+	BufferU.NewSize(sizeof(VoxelGraphics::MainDataU), count);
 
 	GraphicsExist = true;
 }
@@ -528,9 +530,9 @@ void ChunkManager::GraphicsDelete()
 
 	Texture.Delete();
 	ShaderU.Delete();
-	BufferU.Buffer.Delete();
+	BufferU.Delete();
 
-	BufferU.Size = 0;
+	BufferU.Buffer.Count = 0;
 
 	GraphicsExist = false;
 }
@@ -623,6 +625,7 @@ void ChunkManager::Draw()
 
 
 	sw_part.Clear(); sw_part.Start();
+	BufferU.Bind();
 	BufferU.Draw();
 	sw_part.Stop(); DrawBufferDraw.NewValue(sw_part.ElapsedTime());
 

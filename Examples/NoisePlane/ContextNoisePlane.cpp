@@ -99,6 +99,8 @@ ContextNoisePlane::ContextNoisePlane()
 	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 	, AuxThread0Time(64)
 {
+	MediaDirectory = DirectoryInfo("../../media/");
+
 	AuxThreadBase::ThreadName = "DrawThread";
 	PolyHedraManager.MakeCurrent();
 	Container::Array<Uniform::Layout *> layouts({
@@ -639,6 +641,8 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	UIManager.TextManager.InitFont();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	UIManager.GraphicsInit();
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	VoxelPalletMap::All.LoadTextures(ChunkManager);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	VoxelPalletMap::All.MakePolyHedra();
@@ -907,7 +911,7 @@ struct VoxelChunkMemoryInfo
 		{
 			buffer_data_memory += manager.BufferU.Entrys[i] -> Length;
 		}
-		buffer_data_limit = manager.BufferU.Size;
+		buffer_data_limit = manager.BufferU.Buffer.Count;
 	}
 	void	Show(std::stringstream & ss)
 	{
@@ -1569,11 +1573,3 @@ void ContextNoisePlane::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(arg
 void ContextNoisePlane::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
 void ContextNoisePlane::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
 void ContextNoisePlane::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
-
-
-
-ContextBase * newContextNoisePlane()
-{
-	return new ContextNoisePlane();
-}
-// 1858

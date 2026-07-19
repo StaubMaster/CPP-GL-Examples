@@ -36,7 +36,7 @@
 struct ChunkManager;
 struct Structure;
 
-# include "Graphics/MultiBufferChunkU.hpp"
+# include "Graphics/Buffer.hpp"
 
 /* Do I need Assign Lock ?
 
@@ -184,7 +184,7 @@ struct Chunk
 
 	public:
 	ChunkGraphicsData			BufferUData;
-	MultiBufferChunkU::Entry	BufferUData_Entry;
+	VoxelGraphics::BufferEntryU	BufferUData_Entry;
 	bool						BufferUData_Want;
 	void						BufferUData_Make();
 	bool						BufferUData_Have;
