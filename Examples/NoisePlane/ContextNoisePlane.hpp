@@ -7,9 +7,11 @@
 // PolyHedra
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
-#include "PolyHedra/Manager.hpp"
-#include "PolyHedra/Object.hpp"
-#include "PolyHedra/Data.hpp"
+//#include "PolyHedra/Manager.hpp"
+//#include "PolyHedra/Object.hpp"
+//#include "PolyHedra/Data.hpp"
+#include "PolyHedra/Graphics/Full/Main/Layout.hpp"
+#include "PolyHedra/Graphics/Wire/Main/Layout.hpp"
 
 #include "PolyHedra/Skin/Skin.hpp"
 #include "PolyHedra/Skin/Data.hpp"
@@ -87,6 +89,21 @@
 
 
 
+# include "Graphics/Uniform/General/Layout.hpp"
+# include "Graphics/Uniform/_Include.hpp"
+class ShaderLayoutView3D : public Uniform::Layout
+{
+	public:
+	Uniform::DisplaySize		DisplaySize;
+	Uniform::Matrix4x4			View;
+	Uniform::Depth				Depth;
+	Uniform::Angle				FOV;
+	public:
+	~ShaderLayoutView3D();
+	ShaderLayoutView3D();
+};
+
+
 #ifndef DISABLE_INVENTORY
 struct InventoryShader : public ::PolyHedraFull::Shader
 {
@@ -98,9 +115,31 @@ struct InventoryShader : public ::PolyHedraFull::Shader
 
 
 
+// New PolyHedra
+# include "NewPolyHedra/Manager.hpp"
+# include "NewPolyHedra/PalletManager.hpp"
+
+# include "NewPolyHedra/DataType/Basic3D/Layout.hpp"
+# include "NewPolyHedra/DataType/Basic3D/Object.hpp"
+# include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
+
+
+
 struct ContextNoisePlane : public ContextBase
 {
-::PolyHedraManager		PolyHedraManager;
+NewPolyHedra::Manager	PolyHedraManager;
+
+::PolyHedraFull::Main::Layout	PalletManager_BufferFullLayout; // put these directly in PalletManager ?
+::PolyHedraWire::Main::Layout	PalletManager_BufferWireLayout;
+NewPolyHedra::PalletManager		PalletManager;
+
+ShaderLayoutView3D						ObjectManagerBasic_ShaderFullLayout;
+ShaderLayoutView3D						ObjectManagerBasic_ShaderWireLayout;
+NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
+NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
+NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
+
+//::PolyHedraManager		PolyHedraManager;
 UI::Manager				UIManager;
 //::PlaneManager		PlaneManager;
 ::ChunkManager			ChunkManager;

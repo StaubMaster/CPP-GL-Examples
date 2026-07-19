@@ -6,7 +6,7 @@
 
 # include "ValueType/Vector/F3.hpp"
 //# include "PolyHedraUI/Object.hpp"
-# include "NewPolyHedraDataType/TransScaleColor3D/Object.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
 
 # include "ValueType/View/3D.hpp"
 # include "Display/DisplaySize.hpp"

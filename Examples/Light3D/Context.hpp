@@ -84,13 +84,13 @@ struct MultiformLayout : public Multiform::Layout
 # include "NewPolyHedra/Type/PalletObjectManager.hpp"
 # include "NewPolyHedra/Type/Object.hpp"
 
-# include "NewPolyHedraDataType/Basic3D/Layout.hpp"
-# include "NewPolyHedraDataType/Basic3D/Object.hpp"
-# include "NewPolyHedraDataType/Basic3D/ObjectManager.hpp"
+# include "NewPolyHedra/DataType/Basic3D/Layout.hpp"
+# include "NewPolyHedra/DataType/Basic3D/Object.hpp"
+# include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
 
-# include "NewPolyHedraDataType/TransScaleColor3D/Layout.hpp"
-# include "NewPolyHedraDataType/TransScaleColor3D/Object.hpp"
-# include "NewPolyHedraDataType/TransScaleColor3D/ObjectManager.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/Layout.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/ObjectManager.hpp"
 
 struct Light3DContext : public ContextBase
 {
@@ -180,11 +180,11 @@ NewPolyHedra::Manager		NewPolyHedra_Manager;
 ::PolyHedraWire::Main::Layout	PalletManager_BufferWireLayout;
 NewPolyHedra::PalletManager		PalletManager;
 
-Basic3D::ShaderFullLayout	ObjectManagerBasic_ShaderFullLayout;
-Basic3D::ShaderWireLayout	ObjectManagerBasic_ShaderWireLayout;
-Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
-Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
-Basic3D::ObjectManager		ObjectManagerBasic;
+ShaderLayoutLight3D						ObjectManagerBasic_ShaderFullLayout;
+ShaderLayoutView3D						ObjectManagerBasic_ShaderWireLayout;
+NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
+NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
+NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
 
 TransScaleColor3D::ShaderFullLayout		ObjectManagerTSC_ShaderFullLayout;
 TransScaleColor3D::ShaderWireLayout		ObjectManagerTSC_ShaderWireLayout;

@@ -18,6 +18,22 @@
 
 
 
+
+
+ShaderLayoutView3D::~ShaderLayoutView3D()
+{ }
+ShaderLayoutView3D::ShaderLayoutView3D()
+	: ::Uniform::Layout()
+	, DisplaySize(*this, "DisplaySize")
+	, View(*this, "View")
+	, Depth(*this, "Depth")
+	, FOV(*this, "FOV")
+{ }
+
+
+
+
+
 #ifndef DISABLE_INVENTORY
 InventoryShader::~InventoryShader()
 { }
@@ -78,6 +94,14 @@ ContextNoisePlane::~ContextNoisePlane()
 ContextNoisePlane::ContextNoisePlane()
 	: ContextBase()
 	, PolyHedraManager()
+	, PalletManager_BufferFullLayout()
+	, PalletManager_BufferWireLayout()
+	, PalletManager()
+	, ObjectManagerBasic_ShaderFullLayout()
+	, ObjectManagerBasic_ShaderWireLayout()
+	, ObjectManagerBasic_BufferFullLayout()
+	, ObjectManagerBasic_BufferWireLayout()
+	, ObjectManagerBasic()
 	, UIManager()
 //	, PlaneManager()
 	, ChunkManager()
@@ -101,11 +125,25 @@ ContextNoisePlane::ContextNoisePlane()
 {
 	MediaDirectory = DirectoryInfo("../../media/");
 
+	PolyHedraManager.PalletManager = &PalletManager;
+	PalletManager.BufferFullLayout = &PalletManager_BufferFullLayout;
+	PalletManager.BufferWireLayout = &PalletManager_BufferWireLayout;
+
+	PolyHedraManager.ObjectManagers.Insert(&ObjectManagerBasic);
+	ObjectManagerBasic.ShaderFull.UniformLayout = &ObjectManagerBasic_ShaderFullLayout;
+	ObjectManagerBasic_ShaderFullLayout.Shader = &ObjectManagerBasic.ShaderFull;
+	ObjectManagerBasic.ShaderWire.UniformLayout = &ObjectManagerBasic_ShaderWireLayout;
+	ObjectManagerBasic_ShaderWireLayout.Shader = &ObjectManagerBasic.ShaderWire;
+	ObjectManagerBasic.BufferFullLayout = &ObjectManagerBasic_BufferFullLayout;
+	ObjectManagerBasic.BufferWireLayout = &ObjectManagerBasic_BufferWireLayout;
+
 	AuxThreadBase::ThreadName = "DrawThread";
-	PolyHedraManager.MakeCurrent();
+	//PolyHedraManager.MakeCurrent();
 	Container::Array<Uniform::Layout *> layouts({
-		&PolyHedraManager.ShaderLayoutFullDefault,
-		&PolyHedraManager.ShaderLayoutWireDefault,
+		&ObjectManagerBasic_ShaderFullLayout,
+		&ObjectManagerBasic_ShaderWireLayout,
+		//&PolyHedraManager.ShaderLayoutFullDefault,
+		//&PolyHedraManager.ShaderLayoutWireDefault,
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 //		&PlaneManager.Shader,
@@ -199,7 +237,8 @@ void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 }
 void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 {
-	DisplayBoxEntityVoxels(PolyHedraManager.FindPallet(VoxelCube), ChunkManager, ViewEntity, frame_time);
+	//DisplayBoxEntityVoxels(PolyHedraManager.FindPallet(VoxelCube), ChunkManager, ViewEntity, frame_time);
+	DisplayBoxEntityVoxels(PalletManager.FindMakePallet(VoxelCube), ChunkManager, ViewEntity, frame_time);
 	DisplayBoxEntity(ViewEntity);
 	ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
 	DisplayBoxEntity(ViewEntity);
@@ -232,9 +271,11 @@ void ContextNoisePlane::ViewRayUpdate()
 	if (ViewHit.Valid())
 	{
 		{
-			PolyHedraObject voxel_box_obj(VoxelCube);
+			//PolyHedraObject voxel_box_obj(VoxelCube);
+			NewPolyHedra::Basic3D::Object voxel_box_obj(VoxelCube);
 			//voxel_box_obj.Trans().Position = idx;
-			voxel_box_obj.Trans().Position = ViewHit.Index;
+			//voxel_box_obj.Trans().Position = ViewHit.Index;
+			voxel_box_obj.Data().Trans.Position = ViewHit.Index;
 			voxel_box_obj.ShowWire();
 		}
 		{
@@ -453,18 +494,21 @@ void ContextNoisePlane::Make()
 		VoxelCube = new PolyHedra();
 		//VoxelCube = PolyHedra::Generate::HexaHedron(0.5f);
 		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
-		PolyHedraManager.MakePallet(VoxelCube);
+		//PolyHedraManager.MakePallet(VoxelCube);
+		PalletManager.FindMakePallet(VoxelCube);
 	}
 	{
 		VoxelChunkCube = new PolyHedra();
 		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
-		PolyHedraManager.MakePallet(VoxelChunkCube);
+		//PolyHedraManager.MakePallet(VoxelChunkCube);
+		PalletManager.FindMakePallet(VoxelChunkCube);
 	}
 #ifndef DISABLE_VIEW_TANGIBLE
 	{
 		ViewEntity.PolyHedra = new PolyHedra();
 		PolyHedraBoxEdges(*ViewEntity.PolyHedra, ViewEntity.Box);
-		PolyHedraManager.MakePallet(ViewEntity.PolyHedra);
+		//PolyHedraManager.MakePallet(ViewEntity.PolyHedra);
+		PalletManager.FindMakePallet(ViewEntity.PolyHedra);
 	}
 #endif
 
@@ -563,7 +607,44 @@ void ContextNoisePlane::MakeControls()
 void ContextNoisePlane::ChangeMedia()
 {
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	PolyHedraManager.ChangeMedia(MediaDirectory);
+	//PolyHedraManager.ChangeMedia(MediaDirectory);
+	/*{
+		// PalletManager
+		{
+			{
+				PalletManager_BufferFullLayout.Position.Change(0);
+				PalletManager_BufferFullLayout.Normal.Change(1);
+				PalletManager_BufferFullLayout.Texture.Change(2);
+			}
+			{
+				PalletManager_BufferWireLayout.Pos.Change(0);
+				PalletManager_BufferWireLayout.Col.Change(1);
+			}
+		}
+		// ObjectManagerBasic
+		{
+			{
+				ObjectManagerBasic.ShaderFull.Change({
+					MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
+					MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
+				});
+			}
+			{
+				ObjectManagerBasic.ShaderWire.Change({
+					MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
+					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
+				});
+			}
+			{
+				ObjectManagerBasic_BufferFullLayout.Trans.Change(3);
+				ObjectManagerBasic_BufferFullLayout.Normal.Change(7);
+			}
+			{
+				ObjectManagerBasic_BufferWireLayout.Trans.Change(3);
+				ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
+			}
+		}
+	}*/
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
@@ -596,7 +677,8 @@ void ContextNoisePlane::ChangeMedia()
 void ContextNoisePlane::GraphicsCreate()
 {
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
-	PolyHedraManager.GraphicsCreate();
+	//PolyHedraManager.GraphicsCreate();
+	//PolyHedraManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	UIManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
@@ -614,6 +696,7 @@ void ContextNoisePlane::GraphicsCreate()
 void ContextNoisePlane::GraphicsDelete()
 {
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
+	//PolyHedraManager.GraphicsDelete();
 	PolyHedraManager.GraphicsDelete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	UIManager.GraphicsDelete();
@@ -632,6 +715,46 @@ void ContextNoisePlane::GraphicsDelete()
 
 void ContextNoisePlane::Init()
 {
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	{
+		// PalletManager
+		{
+			{
+				PalletManager_BufferFullLayout.Position.Change(0);
+				PalletManager_BufferFullLayout.Normal.Change(1);
+				PalletManager_BufferFullLayout.Texture.Change(2);
+			}
+			{
+				PalletManager_BufferWireLayout.Pos.Change(0);
+				PalletManager_BufferWireLayout.Col.Change(1);
+			}
+		}
+		// ObjectManagerBasic
+		{
+			{
+				ObjectManagerBasic.ShaderFull.Change({
+					MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
+					MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
+				});
+			}
+			{
+				ObjectManagerBasic.ShaderWire.Change({
+					MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
+					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
+				});
+			}
+			{
+				ObjectManagerBasic_BufferFullLayout.Trans.Change(3);
+				ObjectManagerBasic_BufferFullLayout.Normal.Change(7);
+			}
+			{
+				ObjectManagerBasic_BufferWireLayout.Trans.Change(3);
+				ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
+			}
+		}
+	}
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	PolyHedraManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	Make();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
@@ -724,9 +847,13 @@ void ContextNoisePlane::Draw()
 	GL::Enable(GL::Capability::CullFace);
 
 	sw.Clear(); sw.Start();
-	PolyHedraManager.MakeInstances();
-	PolyHedraManager.DrawFull();
-	PolyHedraManager.DrawWire();
+	//PolyHedraManager.MakeInstances();
+	PolyHedraManager.InstancesClear();
+	PolyHedraManager.InstancesMake();
+	//PolyHedraManager.DrawFull();
+	//PolyHedraManager.DrawWire();
+	PolyHedraManager.GraphicsDrawFull();
+	PolyHedraManager.GraphicsDrawWire();
 	sw.Stop(); FrameTime_Draw_DrawPolyHedra.NewValue(sw.ElapsedTime());
 
 	//PlaneManager.Draw();
@@ -756,7 +883,7 @@ void ContextNoisePlane::Draw()
 		UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 		UIManager.ControlManager.MakeInstances();
 		UIManager.ControlManager.Draw();
-		PolyHedraManager.MakeCurrent();
+		//PolyHedraManager.MakeCurrent();
 		sw.Stop(); FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime());
 	}
 
@@ -783,6 +910,8 @@ void ContextNoisePlane::Draw()
 #endif
 
 	sw_total.Stop(); FrameTime_Draw_DrawTotal.NewValue(sw_total.ElapsedTime());
+
+	PolyHedraManager.UpdatePalletObjectDatas();
 }
 
 
@@ -1510,13 +1639,18 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
 	{
-		PolyHedraPalletManager * pallet = PolyHedraManager.FindPallet(VoxelChunkCube);
+		//PolyHedraPalletManager * pallet = PolyHedraManager.FindPallet(VoxelChunkCube);
+		//NewPolyHedra::PalletObjectManager * pallet = ObjectManagerBasic.FindMakePalletObjectManager(VoxelChunkCube);
+		NewPolyHedra::Pallet * pallet = PalletManager.FindMakePallet(VoxelChunkCube);
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
 		{
 			Chunk * chunk = ChunkManager.Chunks[i];
 			if (chunk == nullptr) { continue; }
-			PolyHedraObject chunk_box(pallet);
-			chunk_box.Trans().Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
+			//PolyHedraObject chunk_box(pallet);
+			NewPolyHedra::Basic3D::Object chunk_box(pallet);
+			//chunk_box.Trans().Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
+			chunk_box.Data().Trans.Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
+			//chunk_box.HideFull();
 			chunk_box.ShowWire();
 		}
 	}

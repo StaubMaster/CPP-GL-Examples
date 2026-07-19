@@ -1,9 +1,8 @@
 #ifndef  LIGHT_SHADER_LAYOUT_HPP
 # define LIGHT_SHADER_LAYOUT_HPP
 
-# include "PolyHedra/Graphics/Full/ShaderLayout.hpp"
-
-# include "Graphics/Buffer/Uniform.hpp"
+# include "Graphics/Uniform/General/Layout.hpp"
+# include "Graphics/Uniform/_Include.hpp"
 # include "Graphics/Uniform/General/Buffer.hpp"
 
 # include "Graphics/PaddedBlock/LightBase.hpp"
@@ -11,6 +10,18 @@
 # include "Graphics/PaddedBlock/LightPoint.hpp"
 # include "Graphics/PaddedBlock/LightSpot.hpp"
 # include "Graphics/PaddedBlock/TypeDefs/UInt.hpp"
+
+class ShaderLayoutView3D : public Uniform::Layout
+{
+	public:
+	Uniform::DisplaySize		DisplaySize;
+	Uniform::Matrix4x4			View;
+	Uniform::Depth				Depth;
+	Uniform::Angle				FOV;
+	public:
+	~ShaderLayoutView3D();
+	ShaderLayoutView3D();
+};
 
 struct LightBufferData
 {
@@ -22,14 +33,13 @@ struct LightBufferData
 	PaddedBlock::LightSpot			Spot[4];
 };
 
-class LightShaderLayout : public PolyHedraFull::ShaderLayout
+class ShaderLayoutLight3D : public ShaderLayoutView3D
 {
 	public:
 	Uniform::Buffer		LightUniform;
-
 	public:
-	~LightShaderLayout();
-	LightShaderLayout();
+	~ShaderLayoutLight3D();
+	ShaderLayoutLight3D();
 };
 
 #endif

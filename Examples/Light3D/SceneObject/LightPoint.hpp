@@ -4,7 +4,7 @@
 # include "SceneObject.hpp"
 # include "ValueType/Light/Point.hpp"
 
-# include "NewPolyHedraDataType/TransScaleColor3D/PalletObjectData.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/PalletObjectData.hpp"
 
 struct SceneObject_LightPoint : public SceneObject
 {

@@ -27,11 +27,11 @@ struct Type_PalletObjectManager : public PalletObjectManager
 	}
 	void	InstancePutFull(const void * data) override
 	{
-		InstanceDataFull.Insert(((const TypeData *)data) -> ToData());
+		InstanceDataFull.Insert(TypeInstanceData(*((const TypeData *)data)));
 	}
 	void	InstancePutWire(const void * data) override
 	{
-		InstanceDataWire.Insert(((const TypeData *)data) -> ToData());
+		InstanceDataWire.Insert(TypeInstanceData(*((const TypeData *)data)));
 	}
 	void	InstancesToBufferFull() override
 	{

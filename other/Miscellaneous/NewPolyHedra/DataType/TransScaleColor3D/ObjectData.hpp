@@ -6,14 +6,11 @@
 
 namespace TransScaleColor3D
 {
-struct InstanceData;
 struct ObjectData
 {
 	Trans3D		Trans;
-	float		Scale;
+	float		Scale = 1.0f;
 	ColorF4		Color;
-	ObjectData();
-	InstanceData	ToData() const;
 };
 };
 

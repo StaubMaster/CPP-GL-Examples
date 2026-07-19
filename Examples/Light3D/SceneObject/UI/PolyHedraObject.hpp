@@ -7,21 +7,15 @@
 
 namespace NewPolyHedra
 {
-template<
-	typename TypeData
->
-struct Type_PalletObjectData;
-};
+template<typename TypeData>struct Type_PalletObjectData;
 
 namespace Basic3D
 {
 struct ObjectData;
-typedef NewPolyHedra::Type_PalletObjectData<
-	Basic3D::ObjectData
-> PalletObjectData;
+typedef Type_PalletObjectData<Basic3D::ObjectData> PalletObjectData;
+};
 };
 
-//struct PolyHedraObjectData;
 struct SceneObject_PolyHedraObject;
 
 namespace UI
@@ -41,8 +35,7 @@ struct PolyHedraObject : public GroupBox
 	~PolyHedraObject();
 	PolyHedraObject();
 
-	//::PolyHedraObjectData * Object;
-	Basic3D::PalletObjectData * Object;
+	NewPolyHedra::Basic3D::PalletObjectData * Object;
 	void	Change(::SceneObject_PolyHedraObject * obj);
 	void	Update();
 };

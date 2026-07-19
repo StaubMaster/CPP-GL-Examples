@@ -133,7 +133,7 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 	Context.Objects.Insert(new SceneObject_PolyHedraObject(polyhedra, trans));
 }
 
-#include "NewPolyHedraDataType/TransScaleColor3D/ObjectData.hpp"
+#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
 #include "NewPolyHedra/PalletObjectData.hpp"
 
 void SceneParsingData::Parse_LightAmbient(const TextCommand & cmd)

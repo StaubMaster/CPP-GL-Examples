@@ -28,6 +28,14 @@ FILES := \
 	NewPolyHedra/PalletObjectData.cpp \
 	NewPolyHedra/PalletObjectManager.cpp \
 \
+	NewPolyHedra/DataType/Basic3D/Layout.cpp \
+	NewPolyHedra/DataType/Basic3D/InstanceData.cpp \
+	NewPolyHedra/DataType/Basic3D/Special.cpp \
+	\
+	NewPolyHedra/DataType/TransScaleColor3D/Layout.cpp \
+	NewPolyHedra/DataType/TransScaleColor3D/InstanceData.cpp \
+	NewPolyHedra/DataType/TransScaleColor3D/Special.cpp \
+\
 	Telemetry/Time.cpp \
 	Telemetry/StopWatch.cpp \
 	Telemetry/WaitDoTime.cpp \

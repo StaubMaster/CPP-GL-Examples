@@ -66,9 +66,12 @@ void NewPolyHedra::Pallet::GraphicsPut()
 		{
 			Container::Array<PolyHedra::Edge> data = Object -> Edges.ToArray();
 			BufferWireElem.DataFull(data.ToVoid());
-			BufferWireElem.Count = data.Length();
+			BufferWireElem.Count = data.Length() * 2;
 		}
-		Texture = Object -> Skins[0] -> ToTexture();
+		if (Object -> Skins.Count() != 0)
+		{
+			Texture = Object -> Skins[0] -> ToTexture();
+		}
 	}
 }
 void NewPolyHedra::Pallet::GraphicsInitFull()

@@ -19,13 +19,6 @@ FILES := \
 	SceneObject/UI/SceneObject.cpp \
 	SceneObject/UI/PolyHedraObject.cpp \
 \
-	NewPolyHedraDataType/Basic3D/Layout.cpp \
-	NewPolyHedraDataType/Basic3D/ObjectData.cpp \
-	NewPolyHedraDataType/Basic3D/Special.cpp \
-	NewPolyHedraDataType/TransScaleColor3D/Layout.cpp \
-	NewPolyHedraDataType/TransScaleColor3D/ObjectData.cpp \
-	NewPolyHedraDataType/TransScaleColor3D/Special.cpp \
-\
 	Ray3D_Hit.cpp \
 \
 	UI_Control_List.cpp \
