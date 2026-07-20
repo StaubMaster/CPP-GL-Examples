@@ -8,9 +8,7 @@ namespace NewPolyHedra
 {
 namespace Basic3D
 {
-typedef NewPolyHedra::Type_Object<
-	ObjectData
-> Object;
+typedef Type_Object<ObjectData> Object;
 };
 };
 

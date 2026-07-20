@@ -81,7 +81,7 @@
 
 
 
-#define DISABLE_INVENTORY
+//#define DISABLE_INVENTORY
 //#define DISABLE_VIEW_TANGIBLE
 //#define DISABLE_VIEW_RAY
 
@@ -91,27 +91,27 @@
 
 # include "Graphics/Uniform/General/Layout.hpp"
 # include "Graphics/Uniform/_Include.hpp"
-class ShaderLayoutView3D : public Uniform::Layout
-{
-	public:
-	Uniform::DisplaySize		DisplaySize;
-	Uniform::Matrix4x4			View;
-	Uniform::Depth				Depth;
-	Uniform::Angle				FOV;
-	public:
-	~ShaderLayoutView3D();
-	ShaderLayoutView3D();
-};
-
 
 #ifndef DISABLE_INVENTORY
-struct InventoryShader : public ::PolyHedraFull::Shader
+struct InventoryShader : public Uniform::Layout // rename: "ShaderLayoutDisplay"
 {
-	Uniform::DisplaySize		DisplaySize;
+	Uniform::DisplaySize	DisplaySize;
 	~InventoryShader();
 	InventoryShader();
 };
 #endif
+
+class ShaderLayoutView3D : public Uniform::Layout
+{
+	public:
+	Uniform::DisplaySize	DisplaySize;
+	Uniform::Matrix4x4		View;
+	Uniform::Depth			Depth;
+	Uniform::Angle			FOV;
+	public:
+	~ShaderLayoutView3D();
+	ShaderLayoutView3D();
+};
 
 
 
@@ -123,7 +123,7 @@ struct InventoryShader : public ::PolyHedraFull::Shader
 # include "NewPolyHedra/DataType/Basic3D/Object.hpp"
 # include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
 
-
+# include "NewPolyHedraUI.hpp"
 
 struct ContextNoisePlane : public ContextBase
 {
@@ -139,14 +139,20 @@ NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
 NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
 NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
 
+InventoryShader									ObjectManagerUI_ShaderFullLayout;
+InventoryShader									ObjectManagerUI_ShaderWireLayout;
+NewPolyHedra::UserInterface::BufferLayout		ObjectManagerUI_BufferFullLayout;
+NewPolyHedra::UserInterface::BufferLayout		ObjectManagerUI_BufferWireLayout;
+NewPolyHedra::UserInterface::ObjectManager		ObjectManagerUI;
+
 //::PolyHedraManager		PolyHedraManager;
 UI::Manager				UIManager;
 //::PlaneManager		PlaneManager;
 ::ChunkManager			ChunkManager;
 
 #ifndef DISABLE_INVENTORY
-::PolyHedraManager		InventoryPolyHedraManager;
-::InventoryShader		InventoryShader;
+//::PolyHedraManager		InventoryPolyHedraManager;
+//::InventoryShader		InventoryShader;
 #endif
 
 

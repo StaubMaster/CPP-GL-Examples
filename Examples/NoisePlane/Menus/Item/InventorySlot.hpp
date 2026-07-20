@@ -4,7 +4,8 @@
 # include "Control/General/Manager.hpp"
 # include "ControlsInclude.hpp"
 
-# include "PolyHedra/Object.hpp"
+//# include "PolyHedra/Object.hpp"
+# include "NewPolyHedraUI.hpp"
 
 struct ItemBase;
 
@@ -14,7 +15,8 @@ struct InventorySlot : public UI::Control::Base
 	static DisplaySize	WindowSize;
 
 	ItemBase **		Item; // ItemContainer holds Item Pointers, this is a Pointer to that
-	PolyHedraObject	Object;
+	//PolyHedraObject	Object;
+	NewPolyHedra::UserInterface::Object		Object;
 
 	~InventorySlot();
 	InventorySlot();

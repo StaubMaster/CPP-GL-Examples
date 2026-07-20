@@ -46,6 +46,7 @@ FILES := \
 	Menus/Item/HotBar.cpp \
 \
 	ContextNoisePlane.cpp \
+	NewPolyHedraUI.cpp \
 	new.cpp \
 	main.cpp \
 

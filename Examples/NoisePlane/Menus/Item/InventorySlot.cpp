@@ -51,19 +51,13 @@ void InventorySlot::RelayInsertObject()
 		if (item -> VoxelPallet != nullptr && item -> VoxelPallet -> PolyHedra != nullptr)
 		{
 			Object.Create(item -> VoxelPallet -> PolyHedra);
-
-			VectorF2 PixelSize(40, 40); // hardcoded in Shader
-			VectorF2 PixelPos = DisplayBox.Center();
-			VectorF2 size = WindowSize.Buffer.SizeFullToNormalRel(PixelSize);
-			VectorF2 pos = WindowSize.Buffer.PosFullToNormalRel(PixelPos);
-
-			std::cout << "PixelPos: " << PixelPos << '\n';
-			std::cout << "pos: " << pos << '\n';
-
-			Object.Trans().Position.X = (+pos.X / size.X);
-			Object.Trans().Position.Y = (-pos.Y / size.Y);
-			Object.Trans().Rotation.X1 = Angle::Degrees(30);
-			Object.Trans().Rotation.Y2 = Angle::Degrees(45);
+			if (Object.Is())
+			{
+				Object.Data().Size = VectorF2(40, 40);
+				Object.Data().Pos = DisplayBox.Center();
+				Object.Data().Rot.X1 = Angle::Degrees(30);
+				Object.Data().Rot.Y2 = Angle::Degrees(45);
+			}
 		}
 	}
 }

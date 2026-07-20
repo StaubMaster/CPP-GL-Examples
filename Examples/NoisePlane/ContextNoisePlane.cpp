@@ -20,6 +20,17 @@
 
 
 
+#ifndef DISABLE_INVENTORY
+InventoryShader::~InventoryShader()
+{ }
+InventoryShader::InventoryShader()
+	: ::Uniform::Layout()
+	, DisplaySize(*this, "DisplaySize")
+{ }
+#endif
+
+
+
 ShaderLayoutView3D::~ShaderLayoutView3D()
 { }
 ShaderLayoutView3D::ShaderLayoutView3D()
@@ -29,19 +40,6 @@ ShaderLayoutView3D::ShaderLayoutView3D()
 	, Depth(*this, "Depth")
 	, FOV(*this, "FOV")
 { }
-
-
-
-
-
-#ifndef DISABLE_INVENTORY
-InventoryShader::~InventoryShader()
-{ }
-InventoryShader::InventoryShader()
-	: ::PolyHedraFull::Shader()
-	, DisplaySize(*this, "DisplaySize")
-{ }
-#endif
 
 
 
@@ -102,6 +100,11 @@ ContextNoisePlane::ContextNoisePlane()
 	, ObjectManagerBasic_BufferFullLayout()
 	, ObjectManagerBasic_BufferWireLayout()
 	, ObjectManagerBasic()
+	, ObjectManagerUI_ShaderFullLayout()
+	, ObjectManagerUI_ShaderWireLayout()
+	, ObjectManagerUI_BufferFullLayout()
+	, ObjectManagerUI_BufferWireLayout()
+	, ObjectManagerUI()
 	, UIManager()
 //	, PlaneManager()
 	, ChunkManager()
@@ -137,6 +140,63 @@ ContextNoisePlane::ContextNoisePlane()
 	ObjectManagerBasic.BufferFullLayout = &ObjectManagerBasic_BufferFullLayout;
 	ObjectManagerBasic.BufferWireLayout = &ObjectManagerBasic_BufferWireLayout;
 
+	PolyHedraManager.ObjectManagers.Insert(&ObjectManagerUI);
+	ObjectManagerUI.ShaderFull.UniformLayout = &ObjectManagerUI_ShaderFullLayout;
+	ObjectManagerUI_ShaderFullLayout.Shader = &ObjectManagerUI.ShaderFull;
+	ObjectManagerUI.ShaderWire.UniformLayout = &ObjectManagerUI_ShaderWireLayout;
+	ObjectManagerUI_ShaderWireLayout.Shader = &ObjectManagerUI.ShaderWire;
+	ObjectManagerUI.BufferFullLayout = &ObjectManagerUI_BufferFullLayout;
+	ObjectManagerUI.BufferWireLayout = &ObjectManagerUI_BufferWireLayout;
+
+	{
+		{
+			{
+				PalletManager_BufferFullLayout.Position.Change(0);
+				PalletManager_BufferFullLayout.Normal.Change(1);
+				PalletManager_BufferFullLayout.Texture.Change(2);
+			}
+			{
+				PalletManager_BufferWireLayout.Pos.Change(0);
+				PalletManager_BufferWireLayout.Col.Change(1);
+			}
+		}
+		{
+			{
+				ObjectManagerBasic.ShaderFull.Change({
+					MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
+					MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
+				});
+			}
+			{
+				ObjectManagerBasic.ShaderWire.Change({
+					MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
+					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
+				});
+			}
+			{
+				ObjectManagerBasic_BufferFullLayout.Trans.Change(3);
+				ObjectManagerBasic_BufferFullLayout.Normal.Change(7);
+			}
+			{
+				ObjectManagerBasic_BufferWireLayout.Trans.Change(3);
+				ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
+			}
+		}
+		{
+			{
+				ObjectManagerUI.ShaderFull.Change({
+					MediaDirectory.File("Shaders/UI/PHFull.vert"),
+					MediaDirectory.File("Shaders/UI/PHFull.frag"),
+				});
+			}
+			{
+				ObjectManagerUI_BufferFullLayout.Size.Change(3);
+				ObjectManagerUI_BufferFullLayout.Pos.Change(4);
+				ObjectManagerUI_BufferFullLayout.Rot.Change(5);
+			}
+		}
+	}
+
 	AuxThreadBase::ThreadName = "DrawThread";
 	//PolyHedraManager.MakeCurrent();
 	Container::Array<Uniform::Layout *> layouts({
@@ -150,7 +210,9 @@ ContextNoisePlane::ContextNoisePlane()
 		&ChunkManager.ShaderLayoutU,
 //		&ChunkManager.ShaderLayoutF,
 #ifndef DISABLE_INVENTORY
-		&InventoryShader,
+//		&InventoryShader,
+		&ObjectManagerUI_ShaderFullLayout,
+		&ObjectManagerUI_ShaderWireLayout,
 #endif
 	});
 	Multiform_DisplaySize.FindUniforms(layouts);
@@ -382,11 +444,14 @@ void ContextNoisePlane::ViewRayDo()
 				{
 					Voxel voxel = item -> VoxelPallet -> ToVoxel(ViewHitAxis0, ViewHitAxis1);
 					ChunkVoxelIndex idx(ViewHit.Index);
-					Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
-					if (chunk != nullptr)
+					//Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
+					AssignLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk).ToAssign();
+					//if (chunk != nullptr)
+					if (chunk.Is())
 					{
-						chunk -> PlaceVoxel(idx.Voxel, voxel);
-						chunk -> AccessU();
+						//chunk -> PlaceVoxel(idx.Voxel, voxel);
+						//chunk -> AccessU();
+						(*chunk).PlaceVoxel(idx.Voxel, voxel);
 					}
 				}
 			}
@@ -568,7 +633,7 @@ void ContextNoisePlane::MakeControls()
 	// Inventory
 #ifndef DISABLE_INVENTORY
 	{
-		InventoryPolyHedraManager.MakeCurrent();
+		//InventoryPolyHedraManager.MakeCurrent();
 		for (unsigned int i = 0; i < VoxelPalletMap::All.Data.Count(); i++)
 		{
 			Inventory.Items[i] = new ItemVoxel(VoxelPalletMap::All.Data[i]);
@@ -584,18 +649,18 @@ void ContextNoisePlane::MakeControls()
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
 		UIManager.WindowControl.ChildInsert(InventoryUI);
-		PolyHedraManager.MakeCurrent();
+		//PolyHedraManager.MakeCurrent();
 	}
 #endif
 	// HotBar
 #ifndef DISABLE_INVENTORY
 	{
-		InventoryPolyHedraManager.MakeCurrent();
+		//InventoryPolyHedraManager.MakeCurrent();
 		HotBarUI.Anchor.Y.AnchorMax(0);
 		HotBarUI.Change(&HotBar);
 		//HotBarUI.Hide();
 		UIManager.WindowControl.ChildInsert(HotBarUI);
-		PolyHedraManager.MakeCurrent();
+		//PolyHedraManager.MakeCurrent();
 	}
 #endif
 }
@@ -606,45 +671,6 @@ void ContextNoisePlane::MakeControls()
 // make a Base ? to organize
 void ContextNoisePlane::ChangeMedia()
 {
-	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	//PolyHedraManager.ChangeMedia(MediaDirectory);
-	/*{
-		// PalletManager
-		{
-			{
-				PalletManager_BufferFullLayout.Position.Change(0);
-				PalletManager_BufferFullLayout.Normal.Change(1);
-				PalletManager_BufferFullLayout.Texture.Change(2);
-			}
-			{
-				PalletManager_BufferWireLayout.Pos.Change(0);
-				PalletManager_BufferWireLayout.Col.Change(1);
-			}
-		}
-		// ObjectManagerBasic
-		{
-			{
-				ObjectManagerBasic.ShaderFull.Change({
-					MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
-					MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
-				});
-			}
-			{
-				ObjectManagerBasic.ShaderWire.Change({
-					MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
-					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
-				});
-			}
-			{
-				ObjectManagerBasic_BufferFullLayout.Trans.Change(3);
-				ObjectManagerBasic_BufferFullLayout.Normal.Change(7);
-			}
-			{
-				ObjectManagerBasic_BufferWireLayout.Trans.Change(3);
-				ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
-			}
-		}
-	}*/
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
@@ -658,27 +684,11 @@ void ContextNoisePlane::ChangeMedia()
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	ChunkManager.ChangeMedia(MediaDirectory);
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-
-	// Inventory
-#ifndef DISABLE_INVENTORY
-	InventoryPolyHedraManager.InitExternal(MediaDirectory);
-	{
-		Container::Array<Shader::Code> code({
-			Shader::Code(MediaDirectory.File("Shaders/UI/PHFull.vert")),
-			Shader::Code(MediaDirectory.File("Shaders/UI/PHFull.frag")),
-		});
-		InventoryShader.Change(code);
-		InventoryPolyHedraManager.ShaderFullOther = &InventoryShader; // Others dosent need to be PolyHedraFullShader
-	}
-#endif
 }
 
 // Valgrind is very slow here ?
 void ContextNoisePlane::GraphicsCreate()
 {
-	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
-	//PolyHedraManager.GraphicsCreate();
-	//PolyHedraManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	UIManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
@@ -686,18 +696,9 @@ void ContextNoisePlane::GraphicsCreate()
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	ChunkManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
-#ifndef DISABLE_INVENTORY
-	InventoryPolyHedraManager.GraphicsCreate();
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
-	InventoryShader.Create();
-//	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
-#endif
 }
 void ContextNoisePlane::GraphicsDelete()
 {
-	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
-	//PolyHedraManager.GraphicsDelete();
-	PolyHedraManager.GraphicsDelete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	UIManager.GraphicsDelete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
@@ -705,54 +706,10 @@ void ContextNoisePlane::GraphicsDelete()
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	ChunkManager.GraphicsDelete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
-#ifndef DISABLE_INVENTORY
-	InventoryPolyHedraManager.GraphicsDelete();
-	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
-	InventoryShader.Delete();
-	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
-#endif
 }
 
 void ContextNoisePlane::Init()
 {
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	{
-		// PalletManager
-		{
-			{
-				PalletManager_BufferFullLayout.Position.Change(0);
-				PalletManager_BufferFullLayout.Normal.Change(1);
-				PalletManager_BufferFullLayout.Texture.Change(2);
-			}
-			{
-				PalletManager_BufferWireLayout.Pos.Change(0);
-				PalletManager_BufferWireLayout.Col.Change(1);
-			}
-		}
-		// ObjectManagerBasic
-		{
-			{
-				ObjectManagerBasic.ShaderFull.Change({
-					MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
-					MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
-				});
-			}
-			{
-				ObjectManagerBasic.ShaderWire.Change({
-					MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
-					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
-				});
-			}
-			{
-				ObjectManagerBasic_BufferFullLayout.Trans.Change(3);
-				ObjectManagerBasic_BufferFullLayout.Normal.Change(7);
-			}
-			{
-				ObjectManagerBasic_BufferWireLayout.Trans.Change(3);
-				ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
-			}
-		}
-	}
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	PolyHedraManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
@@ -800,6 +757,8 @@ void ContextNoisePlane::Init()
 void ContextNoisePlane::Free()
 {
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
+	PolyHedraManager.GraphicsDelete();
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	GraphicsDelete();
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	AuxThread0Term = true;
@@ -838,22 +797,34 @@ void ContextNoisePlane::Draw()
 	// instead just put them in a Container
 	// also Update/Draw all automatically
 
+	{
+		const VoxelPallet & pallet = VoxelPalletMap::All[(unsigned short)0];
+		NewPolyHedra::UserInterface::Object obj(pallet.PolyHedra);
+		obj.Data().Size = VectorF2(40, 40);
+		obj.Data().Pos = VectorF2(20, 20);
+		obj.Data().Rot.X1 = Angle::Degrees(30);
+		obj.Data().Rot.Y2 = Angle::Degrees(45);
+	}
+
 	StopWatch sw_total;
 	sw_total.Start();
 
 	StopWatch sw;
+
+	PolyHedraManager.InstancesClear();
+	PolyHedraManager.InstancesMake();
 
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
 
 	sw.Clear(); sw.Start();
 	//PolyHedraManager.MakeInstances();
-	PolyHedraManager.InstancesClear();
-	PolyHedraManager.InstancesMake();
 	//PolyHedraManager.DrawFull();
 	//PolyHedraManager.DrawWire();
-	PolyHedraManager.GraphicsDrawFull();
-	PolyHedraManager.GraphicsDrawWire();
+	//PolyHedraManager.GraphicsDrawFull();
+	//PolyHedraManager.GraphicsDrawWire();
+	ObjectManagerBasic.GraphicsDrawFull();
+	ObjectManagerBasic.GraphicsDrawWire();
 	sw.Stop(); FrameTime_Draw_DrawPolyHedra.NewValue(sw.ElapsedTime());
 
 	//PlaneManager.Draw();
@@ -875,7 +846,7 @@ void ContextNoisePlane::Draw()
 	GL::Disable(GL::Capability::CullFace);
 	{
 #ifndef DISABLE_INVENTORY
-		InventoryPolyHedraManager.MakeCurrent();
+		//InventoryPolyHedraManager.MakeCurrent();
 #endif
 		sw.Clear(); sw.Start();
 		UIManager.WindowControl.Update();
@@ -904,9 +875,11 @@ void ContextNoisePlane::Draw()
 #ifndef DISABLE_INVENTORY
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
-	InventoryPolyHedraManager.ClearInstances();
-	InventoryPolyHedraManager.UpdateInstances();
-	InventoryPolyHedraManager.DrawFull();
+	//InventoryPolyHedraManager.ClearInstances();
+	//InventoryPolyHedraManager.UpdateInstances();
+	//InventoryPolyHedraManager.DrawFull();
+	ObjectManagerUI.GraphicsDrawFull();
+	ObjectManagerUI.GraphicsDrawWire();
 #endif
 
 	sw_total.Stop(); FrameTime_Draw_DrawTotal.NewValue(sw_total.ElapsedTime());
@@ -1432,7 +1405,7 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 	sw.Start();
 
 	static float time_sum = 0.0f;
-	InventoryPolyHedraManager.MakeCurrent();
+	//InventoryPolyHedraManager.MakeCurrent();
 
 	VectorF2	PixelSize(40, 40); // hardcoded in Shader
 	VectorF2	size = window.Size.Buffer.SizeFullToNormalRel(PixelSize);
@@ -1446,11 +1419,13 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 		PixelPos.X = window.Size.Buffer.Full.X - 40;
 		PixelPos.Y = 40;
 		pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
-		PolyHedraObject obj(item -> VoxelPallet -> PolyHedra);
-		obj.Trans().Position.X = pos.X / size.X;
-		obj.Trans().Position.Y = pos.Y / size.Y;
-		obj.Trans().Rotation.X1 = Angle::Degrees(15);
-		obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
+		NewPolyHedra::UserInterface::Object obj(item -> VoxelPallet -> PolyHedra);
+		//obj.Trans().Position.X = pos.X / size.X;
+		//obj.Trans().Position.Y = pos.Y / size.Y;
+		//obj.Trans().Rotation.X1 = Angle::Degrees(15);
+		//obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
+		obj.Data().Size = size;
+		obj.Data().Pos = pos;
 	}
 
 	if (InventorySlot::StaticItem != nullptr)
@@ -1458,15 +1433,17 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 		ItemVoxel * item = (ItemVoxel*)InventorySlot::StaticItem;
 		PixelPos = window.MouseManager.CursorPosition().Buffer.Corner;
 		pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
-		PolyHedraObject obj(item -> VoxelPallet -> PolyHedra);
-		obj.Trans().Position.X = +pos.X / size.X;
-		obj.Trans().Position.Y = -pos.Y / size.Y;
-		obj.Trans().Rotation.X1 = Angle::Degrees(15);
-		obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
+		NewPolyHedra::UserInterface::Object obj(item -> VoxelPallet -> PolyHedra);
+		//obj.Trans().Position.X = +pos.X / size.X;
+		//obj.Trans().Position.Y = -pos.Y / size.Y;
+		//obj.Trans().Rotation.X1 = Angle::Degrees(15);
+		//obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
+		obj.Data().Size = size;
+		obj.Data().Pos = pos;
 	}
 
 	time_sum += frame_time.Delta;
-	PolyHedraManager.MakeCurrent();
+	//PolyHedraManager.MakeCurrent();
 
 	sw.Stop();
 	InventoryCursorTime.NewValue(sw.ElapsedTime());
@@ -1503,10 +1480,10 @@ void ContextNoisePlane::FrameInput()
 #ifndef DISABLE_INVENTORY
 			if (!InventoryUI.IsVisible())
 			{
-				InventoryPolyHedraManager.MakeCurrent();
+				//InventoryPolyHedraManager.MakeCurrent();
 				InventoryUI.Show();
 				//HotBarUI.Show();
-				PolyHedraManager.MakeCurrent();
+				//PolyHedraManager.MakeCurrent();
 			}
 			else
 			{
@@ -1661,8 +1638,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	if (DebugMenu.ChunkHere.Check.IsChecked())
 	{
 		ChunkVoxelIndex idx(view.Trans.Position.roundF());
-		PolyHedraObject chunk_box(VoxelChunkCube);
-		chunk_box.Trans().Position = idx.Chunk * CHUNK_VALUES_PER_SIDE;
+		NewPolyHedra::Basic3D::Object chunk_box(VoxelChunkCube);
+		chunk_box.Data().Trans.Position = idx.Chunk * CHUNK_VALUES_PER_SIDE;
 		chunk_box.ShowWire();
 	}
 	sw.Stop(); FrameTime_ChunkHereBox.NewValue(sw.ElapsedTime());
@@ -1696,11 +1673,11 @@ void ContextNoisePlane::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
 void ContextNoisePlane::MouseClick(ClickArgs args)
 {
 #ifndef DISABLE_INVENTORY
-	InventoryPolyHedraManager.MakeCurrent();
+	//InventoryPolyHedraManager.MakeCurrent();
 #endif
 	UIManager.MouseClick(args);
 #ifndef DISABLE_INVENTORY
-	PolyHedraManager.MakeCurrent();
+	//PolyHedraManager.MakeCurrent();
 #endif
 }
 void ContextNoisePlane::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }

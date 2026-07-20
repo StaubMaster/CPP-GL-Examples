@@ -8,9 +8,7 @@ namespace NewPolyHedra
 {
 namespace Basic3D
 {
-typedef Type_PalletObjectData<
-	ObjectData
-> PalletObjectData;
+typedef Type_PalletObjectData<ObjectData> PalletObjectData;
 };
 };
 

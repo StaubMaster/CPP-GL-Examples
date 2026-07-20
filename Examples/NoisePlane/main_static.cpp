@@ -56,8 +56,8 @@ static void Toggle(::PolyHedra * & polyhedra, ::PolyHedra * other)
 #ifndef DISABLE_VIEW_TANGIBLE
 static void DisplayBoxEntity(BoxEntity & box_entity)
 {
-	PolyHedraObject view_box_obj(box_entity.PolyHedra);
-	view_box_obj.Trans().Position = box_entity.Pos;
+	NewPolyHedra::Basic3D::Object view_box_obj(box_entity.PolyHedra);
+	view_box_obj.Data().Trans.Position = box_entity.Pos;
 	view_box_obj.ShowWire();
 }
 //static void DisplayBoxEntityVoxels(::PolyHedraPalletManager * pallet, ::ChunkManager & manager, BoxEntity & box_entity, FrameTime frame_time)

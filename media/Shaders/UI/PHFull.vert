@@ -50,8 +50,12 @@ layout(location = 0) in vec3 VPos;
 layout(location = 1) in vec3 VNormal;
 layout(location = 2) in vec3 VTex;
 
-layout(location = 3) in mat4 ITrans; // 3 4 5 6
-layout(location = 7) in mat4 INormal; // 7 8 9 10
+//layout(location = 3) in mat4 ITrans; // 3 4 5 6
+//layout(location = 7) in mat4 INormal; // 7 8 9 10
+
+layout(location = 3) in vec2 ISize;
+layout(location = 4) in vec2 IPos;
+layout(location = 5) in mat3 IRot; // 5 6 7
 
 
 
@@ -94,30 +98,17 @@ vec4 proj(in vec3 p_inn)
 
 	4 / 33 = 0.1212
 */
+
 void main()
 {
-	vec2 size = vec2(40, 40);
-	size = size / DisplaySize.Buffer.Full;
-	size = size * vec2(2, 2);
-
-// problem ?
-// need to scale before rotating
-// else depth dosent get scaled properly
-// but scaling needs to be done before moving ?
-// since moving relys on things being normalized ?
-// normalize the position outside ?
+	vec2 size = ISize / DisplaySize.Buffer.Half;
+	vec2 pos = IPos / DisplaySize.Buffer.Half; // this is from Center. should be from corner ?
 
 	vs_out.Original = VPos;
-//	vs_out.Original = VPos * vec3(size, 1);
-
-	vs_out.Absolute = (vec4(vs_out.Original, 1) * ITrans).xyz;
-
-//	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
-	vs_out.Relative = vs_out.Absolute * vec3(size, 1);
-//	vs_out.Relative = vs_out.Absolute;
-
+	vs_out.Absolute = vs_out.Original * IRot;
+	vs_out.Relative = (vs_out.Absolute * vec3(size, 1)) + vec3(pos, 0);
 	gl_Position = proj(vs_out.Relative);
 
-	vs_out.Normal = (vec4(VNormal, 1) * INormal).xyz;
+	vs_out.Normal = VNormal;
 	vs_out.Tex = VTex;
 }

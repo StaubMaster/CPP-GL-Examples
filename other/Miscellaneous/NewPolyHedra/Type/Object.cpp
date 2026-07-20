@@ -62,18 +62,18 @@ template<typename TypeData> const NewPolyHedra::PalletObjectManager * NewPolyHed
 
 template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::~Type_Object()
 {
-	PalletObjectData -> Remove = true;
-	/*if (PalletObjectData != nullptr)
+	if (PalletObjectData != nullptr)
 	{
-		if (!PalletObjectData -> Remove)
+		PalletObjectData -> Remove = true;
+		/*if (!PalletObjectData -> Remove)
 		{
 			PalletObjectData -> Remove = true;
 		}
 		else
 		{
 			delete PalletObjectData;
-		}
-	}*/
+		}*/
+	}
 }
 template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::Type_Object()
 	: PalletObjectData(nullptr)
