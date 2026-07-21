@@ -39,7 +39,6 @@ void Inventory::Change(ItemContainer * container)
 	}
 }
 
-#include <iostream>
 void Inventory::ShowItems()
 {
 	LoopU2 loop(VectorU2(), Slots.Size());
@@ -47,7 +46,6 @@ void Inventory::ShowItems()
 	{
 		Slots[u].Show();
 	}
-	std::cout << '\n';
 }
 void Inventory::HideItems()
 {

@@ -85,28 +85,15 @@ vec4 proj(in vec3 p_inn)
 	return p_out;
 }
 
-/*
-	#-------|---|-------------------# 33 Pixels
-			|---| 4 Pixels
-			| 9 Pixels
-				| 13 Pixels
-
-	0-------|---|-------------------1
-			| 9 / 33 = 0.2727
-				| 13 / 33 = 0.3939
-			|---| [0.2727;0.3939] = 0.1212
-
-	4 / 33 = 0.1212
-*/
-
 void main()
 {
 	vec2 size = ISize / DisplaySize.Buffer.Half;
-	vec2 pos = IPos / DisplaySize.Buffer.Half; // this is from Center. should be from corner ?
+	vec2 pos = (IPos / DisplaySize.Buffer.Half);
+	pos = vec2(pos.x - 1.0, 1.0 - pos.y);
 
 	vs_out.Original = VPos;
 	vs_out.Absolute = vs_out.Original * IRot;
-	vs_out.Relative = (vs_out.Absolute * vec3(size, 1)) + vec3(pos, 0);
+	vs_out.Relative = (vs_out.Absolute * vec3(size, 1.0)) + vec3(pos, 0.0);
 	gl_Position = proj(vs_out.Relative);
 
 	vs_out.Normal = VNormal;

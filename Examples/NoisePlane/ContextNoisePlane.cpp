@@ -797,15 +797,6 @@ void ContextNoisePlane::Draw()
 	// instead just put them in a Container
 	// also Update/Draw all automatically
 
-	{
-		const VoxelPallet & pallet = VoxelPalletMap::All[(unsigned short)0];
-		NewPolyHedra::UserInterface::Object obj(pallet.PolyHedra);
-		obj.Data().Size = VectorF2(40, 40);
-		obj.Data().Pos = VectorF2(20, 20);
-		obj.Data().Rot.X1 = Angle::Degrees(30);
-		obj.Data().Rot.Y2 = Angle::Degrees(45);
-	}
-
 	StopWatch sw_total;
 	sw_total.Start();
 
@@ -848,14 +839,14 @@ void ContextNoisePlane::Draw()
 #ifndef DISABLE_INVENTORY
 		//InventoryPolyHedraManager.MakeCurrent();
 #endif
-		sw.Clear(); sw.Start();
+		sw.Clear(); sw.Start(); // sw.ClearStart(); clear while running should keep running
 		UIManager.WindowControl.Update();
 		UIManager.Resize(window.Size);
 		UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 		UIManager.ControlManager.MakeInstances();
 		UIManager.ControlManager.Draw();
 		//PolyHedraManager.MakeCurrent();
-		sw.Stop(); FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime());
+		sw.Stop(); FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime()); // sw.StopElapsedTime(); dont need to stop to get time ?
 	}
 
 	sw.Clear(); sw.Start();
@@ -1407,39 +1398,30 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 	static float time_sum = 0.0f;
 	//InventoryPolyHedraManager.MakeCurrent();
 
-	VectorF2	PixelSize(40, 40); // hardcoded in Shader
-	VectorF2	size = window.Size.Buffer.SizeFullToNormalRel(PixelSize);
-
+	VectorF2	PixelSize(40, 40);
 	VectorF2	PixelPos;
-	VectorF2	pos;
 
 	if (HotBar.Items[VectorU2(0, 0)] != nullptr)
 	{
 		ItemVoxel * item = (ItemVoxel*)HotBar.Items[VectorU2(0, 0)];
 		PixelPos.X = window.Size.Buffer.Full.X - 40;
 		PixelPos.Y = 40;
-		pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
 		NewPolyHedra::UserInterface::Object obj(item -> VoxelPallet -> PolyHedra);
-		//obj.Trans().Position.X = pos.X / size.X;
-		//obj.Trans().Position.Y = pos.Y / size.Y;
-		//obj.Trans().Rotation.X1 = Angle::Degrees(15);
-		//obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
-		obj.Data().Size = size;
-		obj.Data().Pos = pos;
+		obj.Data().Size = PixelSize;
+		obj.Data().Pos = PixelPos;
+		obj.Data().Rot.X1 = Angle::Degrees(15);
+		obj.Data().Rot.Y2 = Angle::Radians(time_sum);
 	}
 
 	if (InventorySlot::StaticItem != nullptr)
 	{
 		ItemVoxel * item = (ItemVoxel*)InventorySlot::StaticItem;
 		PixelPos = window.MouseManager.CursorPosition().Buffer.Corner;
-		pos = window.Size.Buffer.PosFullToNormalRel(PixelPos);
 		NewPolyHedra::UserInterface::Object obj(item -> VoxelPallet -> PolyHedra);
-		//obj.Trans().Position.X = +pos.X / size.X;
-		//obj.Trans().Position.Y = -pos.Y / size.Y;
-		//obj.Trans().Rotation.X1 = Angle::Degrees(15);
-		//obj.Trans().Rotation.Y2 = Angle::Radians(time_sum);
-		obj.Data().Size = size;
-		obj.Data().Pos = pos;
+		obj.Data().Size = PixelSize;
+		obj.Data().Pos = PixelPos;
+		obj.Data().Rot.X1 = Angle::Degrees(15);
+		obj.Data().Rot.Y2 = Angle::Radians(time_sum);
 	}
 
 	time_sum += frame_time.Delta;

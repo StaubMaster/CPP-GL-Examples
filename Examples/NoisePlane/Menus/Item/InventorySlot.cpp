@@ -32,15 +32,8 @@ void InventorySlot::RelayUpdateBox()
 {
 	if (Object.Is())
 	{
-//		VectorF2 PixelSize(40, 40); // hardcoded in Shader
-//		VectorF2 PixelPos = DisplayBox.Center();
-//		VectorF2 size = WindowSize.Buffer.SizeFullToNormalRel(PixelSize);
-//		VectorF2 pos = WindowSize.Buffer.PosFullToNormalRel(PixelPos);
-//
-//		Object.Trans().Position.X = (+pos.X / size.X);
-//		Object.Trans().Position.Y = (-pos.Y / size.Y);
-//		Object.Trans().Rotation.X1 = Angle::Degrees(30);
-//		Object.Trans().Rotation.Y2 = Angle::Degrees(45);
+		Object.Data().Size = VectorF2(40, 40);
+		Object.Data().Pos = DisplayBox.Center();
 	}
 }
 void InventorySlot::RelayInsertObject()
@@ -55,6 +48,14 @@ void InventorySlot::RelayInsertObject()
 			{
 				Object.Data().Size = VectorF2(40, 40);
 				Object.Data().Pos = DisplayBox.Center();
+				// items should be rotated 45 degrees along Y. and then 30 degrees along X
+				// this rotation does X rotation first
+				// make angle with Y=45 and X=30 and then .invert() ?
+				// .invert() does not exist. it should make it so
+				//  ang.forward(p) == ang.invert().reverse(p)
+				// but also
+				//  ang.reverse(p) == ang.invert().forward(p)
+				// not sure if those are mutually exclusive
 				Object.Data().Rot.X1 = Angle::Degrees(30);
 				Object.Data().Rot.Y2 = Angle::Degrees(45);
 			}
@@ -74,11 +75,11 @@ void InventorySlot::RelayClick(ClickArgs args)
 	{
 		if (Item != nullptr)
 		{
-			Hide();
+			RelayRemoveObject();
 			ItemBase * temp = *Item;
 			*Item = StaticItem;
 			StaticItem = temp;
-			Show();
+			RelayInsertObject();
 		}
 	}
 }
