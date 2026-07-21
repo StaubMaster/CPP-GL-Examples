@@ -579,9 +579,9 @@ void ContextNoisePlane::Make()
 
 	// Voxels
 	{
-		VoxelGeometryPallet::Cube.InitCube();
-		VoxelGeometryPallet::Cylinder.InitCylinder();
-		VoxelGeometryPallet::Slope.InitSlope();
+		VoxelGeometryPallet::GeometryCube.InitCube();
+		VoxelGeometryPallet::GeometryCylinder.InitCylinder();
+		VoxelGeometryPallet::GeometrySlope.InitSlope();
 
 		VoxelPalletMap::All.Default(MediaDirectory);
 		//VoxelPalletMap::All.MakePolyHedra();
@@ -1040,9 +1040,9 @@ struct VoxelChunkMemoryInfo
 
 		ss << "DataU Entrys:" << buffer_data_entrys << '\n';
 		ss << "DataU Memory: ";
-		ss << Memory1000ToString(buffer_data_memory * sizeof(VoxelGraphics::MainFaceU));
+		ss << Memory1000ToString(buffer_data_memory * sizeof(VoxelGeometryDataU::Face));
 		ss << " / ";
-		ss << Memory1000ToString(buffer_data_limit * sizeof(VoxelGraphics::MainFaceU));
+		ss << Memory1000ToString(buffer_data_limit * sizeof(VoxelGeometryDataF::Face));
 		ss << '\n';
 
 		/*ss << "DataU Memory:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));

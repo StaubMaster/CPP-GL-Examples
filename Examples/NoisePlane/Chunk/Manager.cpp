@@ -519,8 +519,8 @@ void ChunkManager::GraphicsCreate()
 	BufferU.Create();
 
 	BufferU.Init();
-	unsigned int count = 1024 * 1024 * 1024 / sizeof(VoxelGraphics::MainDataU);
-	BufferU.NewSize(sizeof(VoxelGraphics::MainDataU), count);
+	unsigned int count = 1024 * 1024 * 1024 / sizeof(VoxelGraphicsDataU::Vertex);
+	BufferU.NewSize(sizeof(VoxelGraphicsDataU::Vertex), count);
 
 	GraphicsExist = true;
 }

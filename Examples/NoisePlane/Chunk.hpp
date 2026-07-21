@@ -11,11 +11,13 @@
 
 
 # include "Voxel.hpp"
-# include "Voxel/GraphicsData.hpp"
+# include "Voxel/GeometryDataU.hpp"
+# include "Voxel/GeometryDataF.hpp"
 # include "Chunk/GraphicsData.hpp"
 
 # include "Graphics/Buffer.hpp"
-# include "Graphics/Main/Data.hpp"
+# include "Graphics/DataU.hpp"
+# include "Graphics/DataF.hpp"
 
 # include "ValueType/Vector/I3.hpp"
 # include "ValueType/Vector/U3.hpp"

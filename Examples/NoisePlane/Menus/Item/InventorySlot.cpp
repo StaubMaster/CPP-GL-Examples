@@ -25,15 +25,18 @@ InventorySlot::InventorySlot()
 	ColorHover = ColorF4(0.9375f, 0.9375f, 0.9375f);
 }
 
-#include <iostream>
-#include "ValueType/_Show.hpp"
+
 
 void InventorySlot::RelayUpdateBox()
 {
-	if (Object.Is())
+	if (ItemObject.Is())
 	{
-		Object.Data().Size = VectorF2(40, 40);
-		Object.Data().Pos = DisplayBox.Center();
+		ItemObject.Data().Size = VectorF2(40, 40);
+		ItemObject.Data().Pos = DisplayBox.Center();
+	}
+	if (TextObject.Is())
+	{
+		TextObject.TextPosition() = DisplayBox.Center();
 	}
 }
 void InventorySlot::RelayInsertObject()
@@ -43,11 +46,11 @@ void InventorySlot::RelayInsertObject()
 		ItemVoxel * item = (ItemVoxel*)*Item;
 		if (item -> VoxelPallet != nullptr && item -> VoxelPallet -> PolyHedra != nullptr)
 		{
-			Object.Create(item -> VoxelPallet -> PolyHedra);
-			if (Object.Is())
+			ItemObject.Create(item -> VoxelPallet -> PolyHedra);
+			if (ItemObject.Is())
 			{
-				Object.Data().Size = VectorF2(40, 40);
-				Object.Data().Pos = DisplayBox.Center();
+				ItemObject.Data().Size = VectorF2(40, 40);
+				ItemObject.Data().Pos = DisplayBox.Center();
 				// items should be rotated 45 degrees along Y. and then 30 degrees along X
 				// this rotation does X rotation first
 				// make angle with Y=45 and X=30 and then .invert() ?
@@ -56,15 +59,29 @@ void InventorySlot::RelayInsertObject()
 				// but also
 				//  ang.reverse(p) == ang.invert().forward(p)
 				// not sure if those are mutually exclusive
-				Object.Data().Rot.X1 = Angle::Degrees(30);
-				Object.Data().Rot.Y2 = Angle::Degrees(45);
+				ItemObject.Data().Rot.X1 = Angle::Degrees(30);
+				ItemObject.Data().Rot.Y2 = Angle::Degrees(45);
+			}
+			if (Item != nullptr)
+			{
+				ItemVoxel * item = dynamic_cast<ItemVoxel*>(*Item);
+				if (item != nullptr)
+				{
+					TextObject.Create();
+					if (TextObject.Is())
+					{
+						TextObject.Text() = "";
+						TextObject.TextPosition() = DisplayBox.Center();
+					}
+				}
 			}
 		}
 	}
 }
 void InventorySlot::RelayRemoveObject()
 {
-	Object.Delete();
+	ItemObject.Delete();
+	TextObject.Delete();
 }
 
 

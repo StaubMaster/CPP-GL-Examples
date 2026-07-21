@@ -1,8 +1,8 @@
-#include "GraphicsData.hpp"
+#include "GeometryDataF.hpp"
 
 
 
-void VoxelAxisGraphicsDataF::Done()
+void VoxelGeometryDataF::Face::Done()
 {
 	for (unsigned int i = 0; i < Data.Count(); i++)
 	{
@@ -10,7 +10,7 @@ void VoxelAxisGraphicsDataF::Done()
 	}
 }
 
-void VoxelGraphicsDataF::Done()
+void VoxelGeometryDataF::Full::Done()
 {
 	Here.Done();
 	PrevX.Done();

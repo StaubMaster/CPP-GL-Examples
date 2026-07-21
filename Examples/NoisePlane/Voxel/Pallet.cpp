@@ -83,13 +83,13 @@ void VoxelPallet::TextureAll(FileInfo tex)
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Skin/Skin.hpp"
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsDataF & data)
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::Face & data)
 {
 	Skin & skin = *(polyhedra.Skins[0]);
 	VectorF3 off(0.5f);
 	for (unsigned int i = 0; i < data.Data.Count(); i++)
 	{
-		const VoxelGraphics::MainFaceF & face = data.Data[i];
+		const VoxelGraphicsDataF::Face & face = data.Data[i];
 
 		unsigned int ph_i = polyhedra.Corners.Count();
 		polyhedra.Insert_Corn(PolyHedra::Corner(face.Vertexes[0].Pos - off));
@@ -104,7 +104,7 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelAxisGraphicsDat
 		);
 	}
 }
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGraphicsDataF & voxel_graphics)
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::Full & voxel_graphics)
 {
 	PolyHedraVoxelData(polyhedra, voxel_graphics.Here);
 	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevX);
@@ -125,7 +125,7 @@ void VoxelPallet::MakePolyHedra()
 	}
 	skin -> Done();
 	PolyHedra -> Skins.Insert(skin);
-	PolyHedraVoxelData(*PolyHedra, GeometryPallet -> Data);
+	PolyHedraVoxelData(*PolyHedra, GeometryPallet -> GraphicsDataF);
 }
 
 Voxel VoxelPallet::ToVoxel() const
@@ -239,9 +239,9 @@ unsigned short VoxelPalletMap::FindIndex(const VoxelPallet & pallet) const
 #include "DirectoryInfo.hpp"
 void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 {
-	const VoxelGeometryPallet & cube = VoxelGeometryPallet::Cube;
-	const VoxelGeometryPallet & cylinder = VoxelGeometryPallet::Cylinder;
-	const VoxelGeometryPallet & slope = VoxelGeometryPallet::Slope;
+	const VoxelGeometryPallet & cube = VoxelGeometryPallet::GeometryCube;
+	const VoxelGeometryPallet & cylinder = VoxelGeometryPallet::GeometryCylinder;
+	const VoxelGeometryPallet & slope = VoxelGeometryPallet::GeometrySlope;
 
 	(void)cube;
 	(void)cylinder;

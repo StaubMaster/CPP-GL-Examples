@@ -1,7 +1,8 @@
 #ifndef  CHUNK_GRAPHICS_DATA_HPP
 # define CHUNK_GRAPHICS_DATA_HPP
 
-# include "Graphics/Main/Data.hpp"
+# include "Graphics/DataU.hpp"
+# include "Graphics/DataF.hpp"
 # include "Axis/Enums.hpp"
 
 # include "Generics/Container/Array.hpp"
@@ -12,7 +13,6 @@ struct VectorU3;
 struct VectorI3;
 struct AxisOrientation;
 struct VoxelPallet;
-struct VoxelAxisGraphicsDataF;
 struct ChunkNeighbour;
 
 struct Voxel;
@@ -38,8 +38,8 @@ struct ChunkGraphicsData
 
 
 	private:
-	Container::BlockLinkedList<1024, VoxelGraphics::MainFaceU>	BlockU;
-	Container::Array<VoxelGraphics::MainFaceU>	ArrayU;
+	Container::BlockLinkedList<1024, VoxelGraphicsDataU::Face>	BlockU;
+	Container::Array<VoxelGraphicsDataU::Face>	ArrayU;
 	public:
 	void	ClearU();
 	private:
@@ -47,19 +47,19 @@ struct ChunkGraphicsData
 	void	MakeU(const Chunk & chunk, const ChunkNeighbour & neighbours);
 	void	DoneU();
 	public:
-	const Container::Array<VoxelGraphics::MainFaceU> &	GraphicsDataU() const;
+	const Container::Array<VoxelGraphicsDataU::Face> &	GraphicsDataU() const;
 
 
 
 	private:
-	Container::BlockLinkedList<1024, VoxelGraphics::MainFaceF>	BlockF;
-	Container::Array<VoxelGraphics::MainFaceF>	ArrayF;
+	Container::BlockLinkedList<1024, VoxelGraphicsDataF::Face>	BlockF;
+	Container::Array<VoxelGraphicsDataF::Face>	ArrayF;
 	public:
 	void	ClearF();
 	private:
 	void	DoneF();
 	public:
-	const Container::Array<VoxelGraphics::MainFaceF> &	GraphicsDataF() const;
+	const Container::Array<VoxelGraphicsDataF::Face> &	GraphicsDataF() const;
 
 
 

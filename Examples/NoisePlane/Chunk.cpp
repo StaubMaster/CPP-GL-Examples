@@ -4,8 +4,6 @@
 
 #include "Voxel/Pallet.hpp"
 
-#include "Graphics/Inst/Data.hpp"
-
 #include "Axis/Orientation.hpp"
 
 #include "Structure.hpp"
@@ -287,8 +285,8 @@ void Chunk::BufferUData_Update()
 
 	BufferUData.ArrayLock.lock();
 	{
-		const Container::Array<VoxelGraphics::MainFaceU> & data = BufferUData.GraphicsDataU();
-		Manager.BufferU.Put(BufferUData_Entry, sizeof(VoxelGraphics::MainDataU), data.ToVoid(), data.Length() * 6);
+		const Container::Array<VoxelGraphicsDataU::Face> & data = BufferUData.GraphicsDataU();
+		Manager.BufferU.Put(BufferUData_Entry, sizeof(VoxelGraphicsDataU::Vertex), data.ToVoid(), data.Length() * 6);
 	}
 	BufferUData.ClearU();
 	BufferUData.ArrayLock.unlock();

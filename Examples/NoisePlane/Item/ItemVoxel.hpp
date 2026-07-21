@@ -7,9 +7,10 @@
 
 struct ItemVoxel : public ItemBase
 {
-	const ::VoxelPallet *		VoxelPallet;
-	~ItemVoxel();
-	ItemVoxel();
+	const ::VoxelPallet *	VoxelPallet = nullptr;
+	unsigned int			Count = 0;
+	~ItemVoxel() = default;
+	ItemVoxel() = default;
 	ItemVoxel(const ::VoxelPallet & voxel_pallet);
 	ItemVoxel(const ::VoxelPallet * voxel_pallet);
 };

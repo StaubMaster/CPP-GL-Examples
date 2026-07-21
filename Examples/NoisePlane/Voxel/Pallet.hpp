@@ -7,7 +7,6 @@
 
 struct Voxel;
 struct VoxelGeometryPallet;
-struct VoxelAxisGraphicsData;
 class PolyHedra;
 
 // All(all): same Texture on all sides

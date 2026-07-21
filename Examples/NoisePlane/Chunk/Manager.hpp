@@ -7,8 +7,9 @@
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/ShaderLayout.hpp"
 # include "Graphics/Buffer.hpp"
+# include "Graphics/LayoutU.hpp"
 
-# include "Graphics/Main/Data.hpp"
+//# include "Graphics/Data.hpp"
 
 # include "ValueType/Vector/I3.hpp"
 # include "ValueType/Box/I3.hpp"
@@ -158,7 +159,7 @@ struct ChunkManager
 	::Shader::Base					ShaderU;
 	VoxelGraphics::ShaderLayout		ShaderLayoutU;
 	VoxelGraphics::BufferU			BufferU;
-	VoxelGraphics::MainLayoutU		BufferLayoutU;
+	VoxelGraphics::LayoutU			BufferLayoutU;
 
 
 

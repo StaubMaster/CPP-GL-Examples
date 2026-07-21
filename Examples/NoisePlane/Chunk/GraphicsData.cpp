@@ -138,7 +138,7 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	#endif
 
 	// axis needs to be rotated
-	VoxelAxisGraphicsDataU axis_data_u = pallet.GeometryPallet -> AxisDataU(axis);
+	VoxelGeometryDataU::Face axis_data_u = pallet.GeometryPallet -> AxisDataU(axis);
 
 	#ifdef MEASURE_TIME
 	TimeDataRetrieveData.Stop();
@@ -178,18 +178,18 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	TimeDataCompress.Start();
 	#endif
 
-	VoxelGraphics::MainDataU data[4];
-	data[0] = VoxelGraphics::MainDataU(u, axis_data_u.Data[0].Pos, axis_data_u.Data[0].Tex, axis, chunk);
-	data[1] = VoxelGraphics::MainDataU(u, axis_data_u.Data[1].Pos, axis_data_u.Data[1].Tex, axis, chunk);
-	data[2] = VoxelGraphics::MainDataU(u, axis_data_u.Data[2].Pos, axis_data_u.Data[2].Tex, axis, chunk);
-	data[3] = VoxelGraphics::MainDataU(u, axis_data_u.Data[3].Pos, axis_data_u.Data[3].Tex, axis, chunk);
+	VoxelGraphicsDataU::Vertex data[4];
+	data[0] = VoxelGraphicsDataU::Vertex(u, axis_data_u.Data[0].Pos, axis_data_u.Data[0].Tex, axis, chunk);
+	data[1] = VoxelGraphicsDataU::Vertex(u, axis_data_u.Data[1].Pos, axis_data_u.Data[1].Tex, axis, chunk);
+	data[2] = VoxelGraphicsDataU::Vertex(u, axis_data_u.Data[2].Pos, axis_data_u.Data[2].Tex, axis, chunk);
+	data[3] = VoxelGraphicsDataU::Vertex(u, axis_data_u.Data[3].Pos, axis_data_u.Data[3].Tex, axis, chunk);
 
 	#ifdef MEASURE_TIME
 	TimeDataCompress.Stop();
 	TimeInsert.Start();
 	#endif
 
-	BlockU.Insert(VoxelGraphics::MainFaceU(data));
+	BlockU.Insert(VoxelGraphicsDataU::Face(data));
 
 	#ifdef MEASURE_TIME
 	TimeInsert.Stop();
@@ -282,7 +282,7 @@ void ChunkGraphicsData::DoneU()
 	ArrayU = BlockU.ToArray();
 	BlockU.Clear();
 }
-const Container::Array<VoxelGraphics::MainFaceU> & ChunkGraphicsData::GraphicsDataU() const { return ArrayU; }
+const Container::Array<VoxelGraphicsDataU::Face> & ChunkGraphicsData::GraphicsDataU() const { return ArrayU; }
 
 
 
@@ -295,7 +295,7 @@ void ChunkGraphicsData::DoneF()
 	ArrayF = BlockF.ToArray();
 	BlockF.Clear();
 }
-const Container::Array<VoxelGraphics::MainFaceF> & ChunkGraphicsData::GraphicsDataF() const { return ArrayF; }
+const Container::Array<VoxelGraphicsDataF::Face> & ChunkGraphicsData::GraphicsDataF() const { return ArrayF; }
 
 
 
