@@ -132,33 +132,33 @@ void AxisOrientation::make(AxisRel origin0, AxisRel target0, AxisRel origin1, Ax
 [31]
 */
 
-VectorU3 absoluteU_SwizzleFunc_00(const VectorU3 & u) { return VectorU3(+u.X, +u.Y, +u.Z); }
-VectorU3 absoluteU_SwizzleFunc_01(const VectorU3 & u) { return VectorU3(+u.X, +u.Y, +u.Z); }
-VectorU3 absoluteU_SwizzleFunc_02(const VectorU3 & u) { return VectorU3(+u.X, +u.Y, +u.Z); }
-VectorU3 absoluteU_SwizzleFunc_03(const VectorU3 & u) { return VectorU3(+u.X, +u.Y, +u.Z); }
-VectorU3 absoluteU_SwizzleFunc_04(const VectorU3 & u) { return VectorU3(+u.X, +u.Y, +u.Z); }
-VectorU3 absoluteU_SwizzleFunc_05(const VectorU3 & u) { return VectorU3(+u.X, +u.Y, +u.Z); }
+VectorU3 absoluteU_SwizzleFunc_00(const VectorU3 & u) { return VectorU3(0 + u.X, 0 + u.Y, 0 + u.Z); }
+VectorU3 absoluteU_SwizzleFunc_01(const VectorU3 & u) { return VectorU3(0 + u.Y, 0 + u.Z, 0 + u.X); }
+VectorU3 absoluteU_SwizzleFunc_02(const VectorU3 & u) { return VectorU3(0 + u.Z, 0 + u.X, 0 + u.Y); }
+VectorU3 absoluteU_SwizzleFunc_03(const VectorU3 & u) { return VectorU3(1 - u.X, 1 - u.Z, 1 - u.Y); }
+VectorU3 absoluteU_SwizzleFunc_04(const VectorU3 & u) { return VectorU3(1 - u.Z, 1 - u.Y, 1 - u.X); }
+VectorU3 absoluteU_SwizzleFunc_05(const VectorU3 & u) { return VectorU3(1 - u.Y, 1 - u.X, 1 - u.Z); }
 
-VectorU3 absoluteU_SwizzleFunc_08(const VectorU3 & u) { return VectorU3(+u.X, -u.Y, -u.Z); }
-VectorU3 absoluteU_SwizzleFunc_09(const VectorU3 & u) { return VectorU3(+u.Y, -u.Z, -u.X); }
-VectorU3 absoluteU_SwizzleFunc_10(const VectorU3 & u) { return VectorU3(+u.Z, -u.X, -u.Y); }
-VectorU3 absoluteU_SwizzleFunc_11(const VectorU3 & u) { return VectorU3(-u.X, +u.Z, +u.Y); }
-VectorU3 absoluteU_SwizzleFunc_12(const VectorU3 & u) { return VectorU3(-u.Z, +u.Y, +u.X); }
-VectorU3 absoluteU_SwizzleFunc_13(const VectorU3 & u) { return VectorU3(-u.Y, +u.X, +u.Z); }
+VectorU3 absoluteU_SwizzleFunc_08(const VectorU3 & u) { return VectorU3(0 + u.X, 1 - u.Y, 1 - u.Z); }
+VectorU3 absoluteU_SwizzleFunc_09(const VectorU3 & u) { return VectorU3(0 + u.Y, 1 - u.Z, 1 - u.X); }
+VectorU3 absoluteU_SwizzleFunc_10(const VectorU3 & u) { return VectorU3(0 + u.Z, 1 - u.X, 1 - u.Y); }
+VectorU3 absoluteU_SwizzleFunc_11(const VectorU3 & u) { return VectorU3(1 - u.X, 0 + u.Z, 0 + u.Y); }
+VectorU3 absoluteU_SwizzleFunc_12(const VectorU3 & u) { return VectorU3(1 - u.Z, 0 + u.Y, 0 + u.X); }
+VectorU3 absoluteU_SwizzleFunc_13(const VectorU3 & u) { return VectorU3(1 - u.Y, 0 + u.X, 0 + u.Z); }
 
-VectorU3 absoluteU_SwizzleFunc_16(const VectorU3 & u) { return VectorU3(-u.X, +u.Y, -u.Z); }
-VectorU3 absoluteU_SwizzleFunc_17(const VectorU3 & u) { return VectorU3(-u.Y, +u.Z, -u.X); }
-VectorU3 absoluteU_SwizzleFunc_18(const VectorU3 & u) { return VectorU3(-u.Z, +u.X, -u.Y); }
-VectorU3 absoluteU_SwizzleFunc_19(const VectorU3 & u) { return VectorU3(+u.X, -u.Z, +u.Y); }
-VectorU3 absoluteU_SwizzleFunc_20(const VectorU3 & u) { return VectorU3(+u.Z, -u.Y, +u.X); }
-VectorU3 absoluteU_SwizzleFunc_21(const VectorU3 & u) { return VectorU3(+u.Y, -u.X, +u.Z); }
+VectorU3 absoluteU_SwizzleFunc_16(const VectorU3 & u) { return VectorU3(1 - u.X, 0 + u.Y, 1 - u.Z); }
+VectorU3 absoluteU_SwizzleFunc_17(const VectorU3 & u) { return VectorU3(1 - u.Y, 0 + u.Z, 1 - u.X); }
+VectorU3 absoluteU_SwizzleFunc_18(const VectorU3 & u) { return VectorU3(1 - u.Z, 0 + u.X, 1 - u.Y); }
+VectorU3 absoluteU_SwizzleFunc_19(const VectorU3 & u) { return VectorU3(0 + u.X, 1 - u.Z, 0 + u.Y); }
+VectorU3 absoluteU_SwizzleFunc_20(const VectorU3 & u) { return VectorU3(0 + u.Z, 1 - u.Y, 0 + u.X); }
+VectorU3 absoluteU_SwizzleFunc_21(const VectorU3 & u) { return VectorU3(0 + u.Y, 1 - u.X, 0 + u.Z); }
 
-VectorU3 absoluteU_SwizzleFunc_24(const VectorU3 & u) { return VectorU3(-u.X, -u.Y, +u.Z); }
-VectorU3 absoluteU_SwizzleFunc_25(const VectorU3 & u) { return VectorU3(-u.Y, -u.Z, +u.X); }
-VectorU3 absoluteU_SwizzleFunc_26(const VectorU3 & u) { return VectorU3(-u.Z, -u.X, +u.Y); }
-VectorU3 absoluteU_SwizzleFunc_27(const VectorU3 & u) { return VectorU3(+u.X, +u.Z, -u.Y); }
-VectorU3 absoluteU_SwizzleFunc_28(const VectorU3 & u) { return VectorU3(+u.Z, +u.Y, -u.X); }
-VectorU3 absoluteU_SwizzleFunc_29(const VectorU3 & u) { return VectorU3(+u.Y, +u.X, -u.Z); }
+VectorU3 absoluteU_SwizzleFunc_24(const VectorU3 & u) { return VectorU3(1 - u.X, 1 - u.Y, 0 + u.Z); }
+VectorU3 absoluteU_SwizzleFunc_25(const VectorU3 & u) { return VectorU3(1 - u.Y, 1 - u.Z, 0 + u.X); }
+VectorU3 absoluteU_SwizzleFunc_26(const VectorU3 & u) { return VectorU3(1 - u.Z, 1 - u.X, 0 + u.Y); }
+VectorU3 absoluteU_SwizzleFunc_27(const VectorU3 & u) { return VectorU3(0 + u.X, 0 + u.Z, 1 - u.Y); }
+VectorU3 absoluteU_SwizzleFunc_28(const VectorU3 & u) { return VectorU3(0 + u.Z, 0 + u.Y, 1 - u.X); }
+VectorU3 absoluteU_SwizzleFunc_29(const VectorU3 & u) { return VectorU3(0 + u.Y, 0 + u.X, 1 - u.Z); }
 
 AxisOrientation::SwizzlerU_Ptr absoluteU_SwizzleFunc_Array[32] = {
 	&absoluteU_SwizzleFunc_00,

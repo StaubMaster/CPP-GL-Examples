@@ -137,31 +137,25 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	TimeDataRetrieveData.Start();
 	#endif
 
-	// axis needs to be rotated
-	VoxelGeometryDataU::Face axis_data_u = pallet.GeometryPallet -> AxisDataU(axis);
+	VoxelGeometryDataU::Face axis_data_u = pallet.GeometryPallet -> AxisDataU(orientation.relative(axis));
+
+	AxisOrientation::SwizzlerU_Ref func = orientation.absoluteU_Func();
+	// this function stays the same per Voxel
+	// get before CatU ?
+	axis_data_u.Data[0].Pos = func(axis_data_u.Data[0].Pos);
+	axis_data_u.Data[1].Pos = func(axis_data_u.Data[1].Pos);
+	axis_data_u.Data[2].Pos = func(axis_data_u.Data[2].Pos);
+	axis_data_u.Data[3].Pos = func(axis_data_u.Data[3].Pos);
 
 	#ifdef MEASURE_TIME
 	TimeDataRetrieveData.Stop();
 	TimeDataAbsoluteVertex.Start();
 	#endif
 
-	//axis_data_u.Data[0].Pos = orientation.absolute(axis_data_u.Data[0].Pos) + u;
-	//axis_data_u.Data[1].Pos = orientation.absolute(axis_data_u.Data[1].Pos) + u;
-	//axis_data_u.Data[2].Pos = orientation.absolute(axis_data_u.Data[2].Pos) + u;
-	//axis_data_u.Data[3].Pos = orientation.absolute(axis_data_u.Data[3].Pos) + u;
-
-	//AxisOrientation::SwizzlerU_Ref func = orientation.absoluteU_Func();
-	//axis_data_u.Data[0].Pos = func(axis_data_u.Data[0].Pos) + u;
-	//axis_data_u.Data[1].Pos = func(axis_data_u.Data[1].Pos) + u;
-	//axis_data_u.Data[2].Pos = func(axis_data_u.Data[2].Pos) + u;
-	//axis_data_u.Data[3].Pos = func(axis_data_u.Data[3].Pos) + u;
-
 	#ifdef MEASURE_TIME
 	TimeDataAbsoluteVertex.Stop();
 	TimeDataAbsoluteAxis.Start();
 	#endif
-
-	axis = orientation.absolute(axis);
 
 	#ifdef MEASURE_TIME
 	TimeDataAbsoluteAxis.Stop();
