@@ -5,6 +5,13 @@
 
 struct VoxelPallet;
 
+enum class VoxelType : unsigned char
+{
+	None,
+	DataU,
+	DataF,
+};
+
 struct Voxel
 {
 	unsigned short		Pallet;

@@ -17,6 +17,7 @@ struct ChunkNeighbour;
 
 struct Voxel;
 struct Chunk;
+enum class VoxelType : unsigned char;
 
 /* LOD ?
 use Float Data for those that want it
@@ -44,10 +45,10 @@ struct ChunkGraphicsData
 	void	ClearU();
 	private:
 	void	CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet);
-	void	MakeU(const Chunk & chunk, const ChunkNeighbour & neighbours);
+	void	MakeU(const Chunk & chunk, const Array3D<VoxelType> & voxel_types, const ChunkNeighbour & neighbours);
 	void	DoneU();
 	public:
-	const Container::Array<VoxelGraphicsDataU::Face> &	GraphicsDataU() const;
+	const Container::Array<VoxelGraphicsDataU::Face> &	DataU() const;
 
 
 
@@ -57,9 +58,11 @@ struct ChunkGraphicsData
 	public:
 	void	ClearF();
 	private:
+	void	CatF(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet);
+	void	MakeF(const Chunk & chunk, const Array3D<VoxelType> & voxel_types, const ChunkNeighbour & neighbours);
 	void	DoneF();
 	public:
-	const Container::Array<VoxelGraphicsDataF::Face> &	GraphicsDataF() const;
+	const Container::Array<VoxelGraphicsDataF::Face> &	DataF() const;
 
 
 

@@ -285,7 +285,7 @@ void Chunk::BufferUData_Update()
 
 	BufferUData.ArrayLock.lock();
 	{
-		const Container::Array<VoxelGraphicsDataU::Face> & data = BufferUData.GraphicsDataU();
+		const Container::Array<VoxelGraphicsDataU::Face> & data = BufferUData.DataU();
 		Manager.BufferU.Put(BufferUData_Entry, sizeof(VoxelGraphicsDataU::Vertex), data.ToVoid(), data.Length() * 6);
 	}
 	BufferUData.ClearU();

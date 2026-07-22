@@ -19,6 +19,7 @@ struct VoxelGeometryPallet
 	static void		Default();
 
 	// GraphicsDataF is allways the same, except not really
+	bool						UseF;
 	VoxelGeometryDataF::Full	GraphicsDataF; // this is Graphics Data. this whole struct is general VoxelTypeTemplate
 
 	const VoxelGeometryDataU::Face &	AxisDataU(AxisRel axis) const;

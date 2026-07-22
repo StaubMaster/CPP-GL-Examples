@@ -153,6 +153,8 @@ static void Quad1(VoxelGeometryDataF::Face & face_data, VectorF3 p00, VectorF3 p
 
 void VoxelGeometryPallet::InitCube()
 {
+	UseF = false;
+
 	HidePrevX = true;
 	HidePrevY = true;
 	HidePrevZ = true;
@@ -188,6 +190,8 @@ void VoxelGeometryPallet::InitCube()
 
 void VoxelGeometryPallet::InitCylinder()
 {
+	UseF = true;
+
 	HidePrevX = false;
 	HidePrevY = false;
 	HidePrevZ = false;
@@ -316,6 +320,8 @@ void VoxelGeometryPallet::InitCylinder()
 
 void VoxelGeometryPallet::InitSlope()
 {
+	UseF = false;
+
 	unsigned int Texture = 0;
 
 	HidePrevX = false;

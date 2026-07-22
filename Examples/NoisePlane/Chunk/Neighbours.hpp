@@ -6,6 +6,7 @@ struct ChunkManager;
 struct VectorU3;
 struct VectorI3;
 enum class AxisRel : unsigned char;
+enum class VoxelType : unsigned char;
 
 # include "Generics/Container/Array3D.hpp"
 
@@ -136,12 +137,13 @@ struct ChunkNeighbour
 	ChunkNeighbour(Chunk & chunk);
 
 	public:
-	bool	IsVisiblePrevX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
-	bool	IsVisiblePrevY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
-	bool	IsVisiblePrevZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
-	bool	IsVisibleNextX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
-	bool	IsVisibleNextY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
-	bool	IsVisibleNextZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const;
+	// do these need to take the full array ?
+	bool	IsVisiblePrevX(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const;
+	bool	IsVisiblePrevY(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const;
+	bool	IsVisiblePrevZ(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const;
+	bool	IsVisibleNextX(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const;
+	bool	IsVisibleNextY(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const;
+	bool	IsVisibleNextZ(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const;
 
 	public:
 	void	BufferDataWant();

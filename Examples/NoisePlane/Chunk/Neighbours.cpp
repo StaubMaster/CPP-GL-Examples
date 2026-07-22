@@ -85,7 +85,7 @@ ChunkNeighbour::ChunkNeighbour(Chunk & chunk)
 	}
 { }
 
-bool ChunkNeighbour::IsVisiblePrevX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const
+bool ChunkNeighbour::IsVisiblePrevX(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
 {
 	if (udx.X != 0)
 	{
@@ -100,7 +100,7 @@ bool ChunkNeighbour::IsVisiblePrevX(const Array3D<unsigned char> & is_empty, Vec
 	}
 	return false;
 }
-bool ChunkNeighbour::IsVisiblePrevY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const
+bool ChunkNeighbour::IsVisiblePrevY(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
 {
 	if (udx.Y != 0)
 	{
@@ -115,7 +115,7 @@ bool ChunkNeighbour::IsVisiblePrevY(const Array3D<unsigned char> & is_empty, Vec
 	}
 	return false;
 }
-bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const
+bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
 {
 	if (udx.Z != 0)
 	{
@@ -130,7 +130,7 @@ bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<unsigned char> & is_empty, Vec
 	}
 	return false;
 }
-bool ChunkNeighbour::IsVisibleNextX(const Array3D<unsigned char> & is_empty, VectorU3 udx) const
+bool ChunkNeighbour::IsVisibleNextX(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
 {
 	if (udx.X != n)
 	{
@@ -145,7 +145,7 @@ bool ChunkNeighbour::IsVisibleNextX(const Array3D<unsigned char> & is_empty, Vec
 	}
 	return false;
 }
-bool ChunkNeighbour::IsVisibleNextY(const Array3D<unsigned char> & is_empty, VectorU3 udx) const
+bool ChunkNeighbour::IsVisibleNextY(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
 {
 	if (udx.Y != n)
 	{
@@ -160,7 +160,7 @@ bool ChunkNeighbour::IsVisibleNextY(const Array3D<unsigned char> & is_empty, Vec
 	}
 	return false;
 }
-bool ChunkNeighbour::IsVisibleNextZ(const Array3D<unsigned char> & is_empty, VectorU3 udx) const
+bool ChunkNeighbour::IsVisibleNextZ(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
 {
 	if (udx.Z != n)
 	{

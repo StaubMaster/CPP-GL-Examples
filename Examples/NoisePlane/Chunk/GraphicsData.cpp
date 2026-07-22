@@ -189,14 +189,8 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	TimeInsert.Stop();
 	#endif
 }
-void ChunkGraphicsData::MakeU(const Chunk & chunk, const ChunkNeighbour & neighbours)
+void ChunkGraphicsData::MakeU(const Chunk & chunk, const Array3D<VoxelType> & voxel_types, const ChunkNeighbour & neighbours)
 {
-	Array3D<unsigned char> is_empty(VectorU3(CHUNK_VALUES_PER_SIDE));
-	for (unsigned int u = 0; u < CHUNK_VALUES_PER_VOLM; u++)
-	{
-		is_empty.At(u) = chunk.Voxels.At(u).IsEmpty();
-	}
-
 	//TimeTotal.Start();
 
 	#ifdef MEASURE_TIME
@@ -212,7 +206,9 @@ void ChunkGraphicsData::MakeU(const Chunk & chunk, const ChunkNeighbour & neighb
 		TimeVoxelRetrieve.Start();
 		#endif
 
-		if (is_empty.At(u))
+		// 
+
+		if (voxel_types.At(u) == VoxelType::None)
 		{
 			#ifdef MEASURE_TIME
 			TimeVoxelRetrieve.Stop();
@@ -233,12 +229,12 @@ void ChunkGraphicsData::MakeU(const Chunk & chunk, const ChunkNeighbour & neighb
 		TimeVoxelRetrieveData.TakeOver(TimeVisibleTotal);
 		#endif
 
-		bool is_visible_prev_x = neighbours.IsVisiblePrevX(is_empty, udx);
-		bool is_visible_prev_y = neighbours.IsVisiblePrevY(is_empty, udx);
-		bool is_visible_prev_z = neighbours.IsVisiblePrevZ(is_empty, udx);
-		bool is_visible_next_x = neighbours.IsVisibleNextX(is_empty, udx);
-		bool is_visible_next_y = neighbours.IsVisibleNextY(is_empty, udx);
-		bool is_visible_next_z = neighbours.IsVisibleNextZ(is_empty, udx);
+		bool is_visible_prev_x = neighbours.IsVisiblePrevX(voxel_types, udx);
+		bool is_visible_prev_y = neighbours.IsVisiblePrevY(voxel_types, udx);
+		bool is_visible_prev_z = neighbours.IsVisiblePrevZ(voxel_types, udx);
+		bool is_visible_next_x = neighbours.IsVisibleNextX(voxel_types, udx);
+		bool is_visible_next_y = neighbours.IsVisibleNextY(voxel_types, udx);
+		bool is_visible_next_z = neighbours.IsVisibleNextZ(voxel_types, udx);
 
 		#ifdef MEASURE_TIME
 		TimeVisibleTotal.TakeOver(TimeDataTotal);
@@ -276,7 +272,10 @@ void ChunkGraphicsData::DoneU()
 	ArrayU = BlockU.ToArray();
 	BlockU.Clear();
 }
-const Container::Array<VoxelGraphicsDataU::Face> & ChunkGraphicsData::GraphicsDataU() const { return ArrayU; }
+const Container::Array<VoxelGraphicsDataU::Face> & ChunkGraphicsData::DataU() const
+{
+	return ArrayU;
+}
 
 
 
@@ -284,12 +283,49 @@ void ChunkGraphicsData::ClearF()
 {
 	ArrayF.Clear();
 }
+void ChunkGraphicsData::MakeF(const Chunk & chunk, const Array3D<VoxelType> & voxel_types, const ChunkNeighbour & neighbours)
+{
+	for (unsigned int u = 0; u < CHUNK_VALUES_PER_VOLM; u++)
+	{
+		if (voxel_types.At(u) == VoxelType::None) { continue; }
+
+		VectorU3 udx = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
+
+		bool is_visible_prev_x = neighbours.IsVisiblePrevX(voxel_types, udx);
+		bool is_visible_prev_y = neighbours.IsVisiblePrevY(voxel_types, udx);
+		bool is_visible_prev_z = neighbours.IsVisiblePrevZ(voxel_types, udx);
+		bool is_visible_next_x = neighbours.IsVisibleNextX(voxel_types, udx);
+		bool is_visible_next_y = neighbours.IsVisibleNextY(voxel_types, udx);
+		bool is_visible_next_z = neighbours.IsVisibleNextZ(voxel_types, udx);
+
+		if (is_visible_prev_x || is_visible_prev_y || is_visible_prev_z ||
+			is_visible_next_x || is_visible_next_y || is_visible_next_z)
+		{
+			const Voxel & voxel = chunk.Voxels.At(u);
+			const AxisOrientation & orientation = voxel.Orientation;
+			const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
+
+			(void)orientation;
+			(void)pallet;
+
+			//if (is_visible_prev_x) { CatU(chunk.Index, udx, AxisRel::PrevX, orientation, pallet); }
+			//if (is_visible_prev_y) { CatU(chunk.Index, udx, AxisRel::PrevY, orientation, pallet); }
+			//if (is_visible_prev_z) { CatU(chunk.Index, udx, AxisRel::PrevZ, orientation, pallet); }
+			//if (is_visible_next_x) { CatU(chunk.Index, udx, AxisRel::NextX, orientation, pallet); }
+			//if (is_visible_next_y) { CatU(chunk.Index, udx, AxisRel::NextY, orientation, pallet); }
+			//if (is_visible_next_z) { CatU(chunk.Index, udx, AxisRel::NextZ, orientation, pallet); }
+		}
+	}
+}
 void ChunkGraphicsData::DoneF()
 {
 	ArrayF = BlockF.ToArray();
 	BlockF.Clear();
 }
-const Container::Array<VoxelGraphicsDataF::Face> & ChunkGraphicsData::GraphicsDataF() const { return ArrayF; }
+const Container::Array<VoxelGraphicsDataF::Face> & ChunkGraphicsData::DataF() const
+{
+	return ArrayF;
+}
 
 
 
@@ -299,13 +335,37 @@ void ChunkGraphicsData::Make(const Chunk & chunk, const ChunkNeighbour & neighbo
 
 	if (!chunk.IsEmpty())
 	{
-		MakeU(chunk, neighbours);
+		Array3D<VoxelType> voxel_types(VectorU3(CHUNK_VALUES_PER_SIDE));
+		for (unsigned int u = 0; u < CHUNK_VALUES_PER_VOLM; u++)
+		{
+			VoxelType & voxel_type = voxel_types.At(u);
+			const Voxel & voxel = chunk.Voxels.At(u);
+			if (voxel.IsEmpty())
+			{
+				voxel_type = VoxelType::None;
+			}
+			else
+			{
+				const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
+				if (pallet.GeometryPallet -> UseF)
+				{
+					voxel_type = VoxelType::DataF;
+				}
+				else
+				{
+					voxel_type = VoxelType::DataU;
+				}
+			}
+		}
+		MakeU(chunk, voxel_types, neighbours);
+		MakeF(chunk, voxel_types, neighbours);
 	}
 
 	// could unlock Chunk here
 
 	ArrayLock.lock();
 	DoneU();
+	DoneF();
 	ArrayLock.unlock();
 
 	ShowTime();
