@@ -88,6 +88,7 @@ const VoxelGeometryDataF::Face & VoxelGeometryPallet::AxisDataF(AxisRel axis) co
 		case AxisRel::NextZ: return GraphicsDataF.NextZ;
 		default: return GraphicsDataF.Here;
 	}
+	throw "VoxelGeometryPallet::AxisDataF: Invalid axis\n";
 }
 
 bool VoxelGeometryPallet::Visible(AxisRel axis) const

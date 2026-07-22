@@ -50,7 +50,7 @@ layout(location = 0) in vec3 Main_Pos;
 layout(location = 1) in vec3 Main_Tex;
 layout(location = 2) in vec3 Main_Normal;
 
-layout(location = 3) in vec3 Inst_Pos;
+//layout(location = 3) in vec3 Inst_Pos;
 
 
 
@@ -86,7 +86,8 @@ void main()
 {
 	vs_out.Original = Main_Pos;
 
-	vs_out.Absolute = vs_out.Original + Inst_Pos;
+	//vs_out.Absolute = vs_out.Original + Inst_Pos;
+	vs_out.Absolute = vs_out.Original;
 	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
 	gl_Position = proj(vs_out.Relative);
 

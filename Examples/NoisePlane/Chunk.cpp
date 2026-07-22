@@ -59,10 +59,11 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, Decorations()
 	, DecorationsGenerated(false)
 	, DecorationsAssambled(false)
-	, BufferUData()
+	, BufferData()
+	, BufferData_Want(false)
+	, BufferData_Have(false)
 	, BufferUData_Entry(manager.BufferU)
-	, BufferUData_Want(false)
-	, BufferUData_Have(false)
+	, BufferFData_Entry(manager.BufferF)
 { }
 
 
@@ -267,29 +268,45 @@ bool Chunk::GenerationDone() const
 
 
 
-void Chunk::BufferUData_Make()
+void Chunk::BufferData_Make()
 {
-	if (!BufferUData_Want) { return; }
+	if (!BufferData_Want) { return; }
 	if (!GenerationDone()) { return; }
 
-	BufferUData.Make(*this, Neighbours);
+	BufferData.Make(*this, Neighbours);
 
-	BufferUData_Want = false;
+	BufferData_Want = false;
 
 	Manager.BufferDataHave.QueuePut(this);
 }
 
-void Chunk::BufferUData_Update()
+#include <iostream>
+void Chunk::BufferData_Update()
 {
-	if (!BufferUData_Have) { return; }
+	if (!BufferData_Have) { return; }
 
-	BufferUData.ArrayLock.lock();
+	BufferData.ArrayLock.lock();
 	{
-		const Container::Array<VoxelGraphicsDataU::Face> & data = BufferUData.DataU();
-		Manager.BufferU.Put(BufferUData_Entry, sizeof(VoxelGraphicsDataU::Vertex), data.ToVoid(), data.Length() * 6);
+		{
+			const Container::Array<VoxelGraphicsDataU::Face> & data = BufferData.DataU();
+			Manager.BufferU.Put(BufferUData_Entry, sizeof(VoxelGraphicsDataU::Vertex), data.ToVoid(), data.Length() * 6);
+		}
+		BufferData.ClearU();
+		{
+			const Container::Array<VoxelGraphicsDataF::Face> & data = BufferData.DataF();
+			/*std::cout << "DataF: " << data.Length() << '\n';
+			for (unsigned int i = 0; i < data.Length(); i++)
+			{
+				std::cout << data[i].Vertexes[0].Pos << '\n';
+				std::cout << data[i].Vertexes[1].Pos << '\n';
+				std::cout << data[i].Vertexes[2].Pos << '\n';
+			}
+			std::cout << '\n';*/
+			Manager.BufferF.Put(BufferFData_Entry, sizeof(VoxelGraphicsDataF::Vertex), data.ToVoid(), data.Length() * 3);
+		}
+		BufferData.ClearF();
 	}
-	BufferUData.ClearU();
-	BufferUData.ArrayLock.unlock();
+	BufferData.ArrayLock.unlock();
 
-	BufferUData_Have = false;
+	BufferData_Have = false;
 }

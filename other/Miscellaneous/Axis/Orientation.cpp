@@ -203,9 +203,9 @@ VectorU3 AxisOrientation::absolute(VectorU3 v) const
 {
 	switch (GetDiag())
 	{
-		case Diag::Here : v = VectorU3(v.X, v.Y, v.Z); break;
-		case Diag::Prev : v = VectorU3(v.Z, v.X, v.Y); break;
-		case Diag::Next : v = VectorU3(v.Y, v.Z, v.X); break;
+		case Diag::Here : v = VectorU3(0 + v.X, 0 + v.Y, 0 + v.Z); break;
+		case Diag::Prev : v = VectorU3(0 + v.Z, 0 + v.X, 0 + v.Y); break;
+		case Diag::Next : v = VectorU3(0 + v.Y, 0 + v.Z, 0 + v.X); break;
 		case Diag::DiagX: v = VectorU3(1 - v.X, 1 - v.Z, 1 - v.Y); break;
 		case Diag::DiagY: v = VectorU3(1 - v.Z, 1 - v.Y, 1 - v.X); break;
 		case Diag::DiagZ: v = VectorU3(1 - v.Y, 1 - v.X, 1 - v.Z); break;
@@ -225,20 +225,20 @@ VectorF3 AxisOrientation::absolute(VectorF3 v) const
 {
 	switch (GetDiag())
 	{
-		case Diag::Here : v = VectorF3(v.X, v.Y, v.Z); break;
-		case Diag::Prev : v = VectorF3(v.Z, v.X, v.Y); break;
-		case Diag::Next : v = VectorF3(v.Y, v.Z, v.X); break;
-		case Diag::DiagX: v = VectorF3(1 - v.X, 1 - v.Z, 1 - v.Y); break;
-		case Diag::DiagY: v = VectorF3(1 - v.Z, 1 - v.Y, 1 - v.X); break;
-		case Diag::DiagZ: v = VectorF3(1 - v.Y, 1 - v.X, 1 - v.Z); break;
+		case Diag::Here : v = VectorF3(0.0f + v.X, 0.0f + v.Y, 0.0f + v.Z); break;
+		case Diag::Prev : v = VectorF3(0.0f + v.Z, 0.0f + v.X, 0.0f + v.Y); break;
+		case Diag::Next : v = VectorF3(0.0f + v.Y, 0.0f + v.Z, 0.0f + v.X); break;
+		case Diag::DiagX: v = VectorF3(1.0f - v.X, 1.0f - v.Z, 1.0f - v.Y); break;
+		case Diag::DiagY: v = VectorF3(1.0f - v.Z, 1.0f - v.Y, 1.0f - v.X); break;
+		case Diag::DiagZ: v = VectorF3(1.0f - v.Y, 1.0f - v.X, 1.0f - v.Z); break;
 	}
 
 	switch (GetFlip())
 	{
-		case Flip::None : v = VectorF3(0 + v.X, 0 + v.Y, 0 + v.Z); break;
-		case Flip::FlipX: v = VectorF3(0 + v.X, 1 - v.Y, 1 - v.Z); break;
-		case Flip::FlipY: v = VectorF3(1 - v.X, 0 + v.Y, 1 - v.Z); break;
-		case Flip::FlipZ: v = VectorF3(1 - v.X, 1 - v.Y, 0 + v.Z); break;
+		case Flip::None : v = VectorF3(0.0f + v.X, 0.0f + v.Y, 0.0f + v.Z); break;
+		case Flip::FlipX: v = VectorF3(0.0f + v.X, 1.0f - v.Y, 1.0f - v.Z); break;
+		case Flip::FlipY: v = VectorF3(1.0f - v.X, 0.0f + v.Y, 1.0f - v.Z); break;
+		case Flip::FlipZ: v = VectorF3(1.0f - v.X, 1.0f - v.Y, 0.0f + v.Z); break;
 	}
 
 	return v;

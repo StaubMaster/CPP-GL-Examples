@@ -453,15 +453,14 @@ ChunkManager::ChunkManager()
 	, GraphicsExist(false)
 	, Texture()
 	, ShaderU()
+	, ShaderF()
 	, ShaderLayoutU()
+	, ShaderLayoutF()
 	, BufferU()
+	, BufferF()
 	, BufferLayoutU()
-{
-	ShaderU.UniformLayout = &ShaderLayoutU;
-	ShaderLayoutU.Shader = &ShaderU;
-
-	BufferU.Buffer.Layout = &BufferLayoutU;
-}
+	, BufferLayoutF()
+{ }
 
 
 
@@ -504,10 +503,25 @@ void ChunkManager::ChangeMedia(const DirectoryInfo & dir)
 		dir.File("Shaders/Voxel/VoxelU.vert"),
 		dir.File("Shaders/Voxel/Voxel.frag"),
 	});
+	ShaderU.UniformLayout = &ShaderLayoutU;
+	ShaderLayoutU.Shader = &ShaderU;
+
+	ShaderF.Change({
+		dir.File("Shaders/Voxel/VoxelF.vert"),
+		dir.File("Shaders/Voxel/Voxel.frag"),
+	});
+	ShaderF.UniformLayout = &ShaderLayoutF;
+	ShaderLayoutF.Shader = &ShaderF;
 
 	BufferLayoutU.Voxel.Change(0);
 	BufferLayoutU.Texture.Change(1);
 	BufferLayoutU.Chunk.Change(2);
+	BufferU.Buffer.Layout = &BufferLayoutU;
+
+	BufferLayoutF.Pos.Change(0);
+	BufferLayoutF.Tex.Change(1);
+	BufferLayoutF.Normal.Change(2);
+	BufferF.Buffer.Layout = &BufferLayoutF;
 }
 
 void ChunkManager::GraphicsCreate()
@@ -516,11 +530,17 @@ void ChunkManager::GraphicsCreate()
 
 	Texture.Create();
 	ShaderU.Create();
+	ShaderF.Create();
 	BufferU.Create();
+	BufferF.Create();
 
 	BufferU.Init();
-	unsigned int count = 1024 * 1024 * 1024 / sizeof(VoxelGraphicsDataU::Vertex);
-	BufferU.NewSize(sizeof(VoxelGraphicsDataU::Vertex), count);
+	unsigned int count_u = 1024 * 1024 * 1024 / sizeof(VoxelGraphicsDataU::Vertex);
+	BufferU.NewSize(sizeof(VoxelGraphicsDataU::Vertex), count_u);
+
+	BufferF.Init();
+	unsigned int count_f = 1024 * 1024 * 1024 / sizeof(VoxelGraphicsDataF::Vertex);
+	BufferF.NewSize(sizeof(VoxelGraphicsDataF::Vertex), count_f);
 
 	GraphicsExist = true;
 }
@@ -530,9 +550,12 @@ void ChunkManager::GraphicsDelete()
 
 	Texture.Delete();
 	ShaderU.Delete();
+	ShaderF.Delete();
 	BufferU.Delete();
+	BufferF.Delete();
 
 	BufferU.Buffer.Count = 0;
+	BufferF.Buffer.Count = 0;
 
 	GraphicsExist = false;
 }
@@ -560,7 +583,7 @@ void ChunkManager::BufferHave::QueuePut(Chunk * chunk)
 			return;
 		}
 	}*/
-	chunk -> BufferUData_Have = true;
+	chunk -> BufferData_Have = true;
 	Queue.Insert(chunk);
 
 	QueueMutex.unlock();
@@ -575,6 +598,7 @@ ValueAccumulator<float> ChunkManager::DrawShaderBind(64);
 ValueAccumulator<float> ChunkManager::DrawUpdateBind(64);
 ValueAccumulator<float> ChunkManager::DrawBufferDraw(64);
 
+#include <iostream>
 void ChunkManager::Draw()
 {
 	if (!GraphicsExist) { return; }
@@ -588,46 +612,64 @@ void ChunkManager::Draw()
 
 	StopWatch sw;
 
-	sw_part.Clear(); sw_part.Start();
+	sw_part.Clear();
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
 	ChunksLock.AccessL(sw, TimeDraw);
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
-	sw_part.Stop(); DrawWait.NewValue(sw_part.ElapsedTime());
+	DrawWait.NewValue(sw_part.ElapsedTime());
 
 
 
-	sw_part.Clear(); sw_part.Start();
+	sw_part.Clear();
 	Texture.Bind();
-	sw_part.Stop(); DrawTextureBind.NewValue(sw_part.ElapsedTime());
+	DrawTextureBind.NewValue(sw_part.ElapsedTime());
 
 
 
-	sw_part.Clear(); sw_part.Start();
-	ShaderU.Bind();
-	sw_part.Stop(); DrawShaderBind.NewValue(sw_part.ElapsedTime());
-
-
-
-	sw_part.Clear(); sw_part.Start();
+	sw_part.Clear();
 	BufferDataHave.QueueMutex.lock();
 	for (unsigned int i = 0; i < BufferDataHave.Queue.Count(); i++)
 	{
 		Chunk * ptr = BufferDataHave.Queue[i];
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
-		if (!ref.BufferUData_Have) { continue; }
-		ptr -> BufferUData_Update();
+		if (!ref.BufferData_Have) { continue; }
+		ptr -> BufferData_Update();
 	}
 	BufferDataHave.Queue.Clear();
 	BufferDataHave.QueueMutex.unlock();
-	sw_part.Stop(); DrawUpdateBind.NewValue(sw_part.ElapsedTime());
+	DrawUpdateBind.NewValue(sw_part.ElapsedTime());
 
 
 
-	sw_part.Clear(); sw_part.Start();
+	sw_part.Clear();
+	ShaderU.Bind();
+	DrawShaderBind.NewValue(sw_part.ElapsedTime());
+
+	sw_part.Clear();
 	BufferU.Bind();
 	BufferU.Draw();
-	sw_part.Stop(); DrawBufferDraw.NewValue(sw_part.ElapsedTime());
+	DrawBufferDraw.NewValue(sw_part.ElapsedTime());
+
+
+
+	sw_part.Clear();
+	ShaderF.Bind();
+	DrawShaderBind.NewValue(sw_part.ElapsedTime());
+
+	/*{
+		std::cout << "Entrys: " << BufferF.Entrys.Count() << '\n';
+		for (unsigned int i = 0; i < BufferF.Entrys.Count(); i++)
+		{
+			std::cout << BufferF.Entrys[i] -> Offset << ' ';
+			std::cout << BufferF.Entrys[i] -> Length << '\n';
+		}
+		std::cout << '\n';
+	}*/
+	sw_part.Clear();
+	BufferF.Bind();
+	BufferF.Draw();
+	DrawBufferDraw.NewValue(sw_part.ElapsedTime());
 
 
 

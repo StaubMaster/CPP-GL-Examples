@@ -8,6 +8,7 @@
 # include "Graphics/ShaderLayout.hpp"
 # include "Graphics/Buffer.hpp"
 # include "Graphics/LayoutU.hpp"
+# include "Graphics/LayoutF.hpp"
 
 //# include "Graphics/Data.hpp"
 
@@ -156,10 +157,16 @@ struct ChunkManager
 
 	public:
 	Texture::Array2D				Texture;
+
 	::Shader::Base					ShaderU;
+	::Shader::Base					ShaderF;
 	VoxelGraphics::ShaderLayout		ShaderLayoutU;
+	VoxelGraphics::ShaderLayout		ShaderLayoutF;
+
 	VoxelGraphics::BufferU			BufferU;
+	VoxelGraphics::BufferF			BufferF;
 	VoxelGraphics::LayoutU			BufferLayoutU;
+	VoxelGraphics::LayoutF			BufferLayoutF;
 
 
 

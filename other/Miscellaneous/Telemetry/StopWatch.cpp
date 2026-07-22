@@ -29,7 +29,6 @@ StopWatch::StopWatch()
 
 void StopWatch::Clear()
 {
-	Running = false;
 	TimeStamp = 0.0;
 	TimeSum = 0.0;
 }

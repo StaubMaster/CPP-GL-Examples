@@ -7,7 +7,7 @@ struct VoxelPallet;
 
 enum class VoxelType : unsigned char
 {
-	None,
+	Empty,
 	DataU,
 	DataF,
 };

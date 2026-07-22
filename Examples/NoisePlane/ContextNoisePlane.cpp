@@ -128,37 +128,20 @@ ContextNoisePlane::ContextNoisePlane()
 {
 	MediaDirectory = DirectoryInfo("../../media/");
 
-	PolyHedraManager.PalletManager = &PalletManager;
-	PalletManager.BufferFullLayout = &PalletManager_BufferFullLayout;
-	PalletManager.BufferWireLayout = &PalletManager_BufferWireLayout;
-
-	PolyHedraManager.ObjectManagers.Insert(&ObjectManagerBasic);
-	ObjectManagerBasic.ShaderFull.UniformLayout = &ObjectManagerBasic_ShaderFullLayout;
-	ObjectManagerBasic_ShaderFullLayout.Shader = &ObjectManagerBasic.ShaderFull;
-	ObjectManagerBasic.ShaderWire.UniformLayout = &ObjectManagerBasic_ShaderWireLayout;
-	ObjectManagerBasic_ShaderWireLayout.Shader = &ObjectManagerBasic.ShaderWire;
-	ObjectManagerBasic.BufferFullLayout = &ObjectManagerBasic_BufferFullLayout;
-	ObjectManagerBasic.BufferWireLayout = &ObjectManagerBasic_BufferWireLayout;
-
-	PolyHedraManager.ObjectManagers.Insert(&ObjectManagerUI);
-	ObjectManagerUI.ShaderFull.UniformLayout = &ObjectManagerUI_ShaderFullLayout;
-	ObjectManagerUI_ShaderFullLayout.Shader = &ObjectManagerUI.ShaderFull;
-	ObjectManagerUI.ShaderWire.UniformLayout = &ObjectManagerUI_ShaderWireLayout;
-	ObjectManagerUI_ShaderWireLayout.Shader = &ObjectManagerUI.ShaderWire;
-	ObjectManagerUI.BufferFullLayout = &ObjectManagerUI_BufferFullLayout;
-	ObjectManagerUI.BufferWireLayout = &ObjectManagerUI_BufferWireLayout;
-
 	{
 		{
 			{
 				PalletManager_BufferFullLayout.Position.Change(0);
 				PalletManager_BufferFullLayout.Normal.Change(1);
 				PalletManager_BufferFullLayout.Texture.Change(2);
+				PalletManager.BufferFullLayout = &PalletManager_BufferFullLayout;
 			}
 			{
 				PalletManager_BufferWireLayout.Pos.Change(0);
 				PalletManager_BufferWireLayout.Col.Change(1);
+				PalletManager.BufferWireLayout = &PalletManager_BufferWireLayout;
 			}
+			PolyHedraManager.PalletManager = &PalletManager;
 		}
 		{
 			{
@@ -166,21 +149,28 @@ ContextNoisePlane::ContextNoisePlane()
 					MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
 					MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
 				});
+				ObjectManagerBasic.ShaderFull.UniformLayout = &ObjectManagerBasic_ShaderFullLayout;
+				ObjectManagerBasic_ShaderFullLayout.Shader = &ObjectManagerBasic.ShaderFull;
 			}
 			{
 				ObjectManagerBasic.ShaderWire.Change({
 					MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
 					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
 				});
+				ObjectManagerBasic.ShaderWire.UniformLayout = &ObjectManagerBasic_ShaderWireLayout;
+				ObjectManagerBasic_ShaderWireLayout.Shader = &ObjectManagerBasic.ShaderWire;
 			}
 			{
 				ObjectManagerBasic_BufferFullLayout.Trans.Change(3);
 				ObjectManagerBasic_BufferFullLayout.Normal.Change(7);
+				ObjectManagerBasic.BufferFullLayout = &ObjectManagerBasic_BufferFullLayout;
 			}
 			{
 				ObjectManagerBasic_BufferWireLayout.Trans.Change(3);
 				ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
+				ObjectManagerBasic.BufferWireLayout = &ObjectManagerBasic_BufferWireLayout;
 			}
+			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerBasic);
 		}
 		{
 			{
@@ -188,27 +178,35 @@ ContextNoisePlane::ContextNoisePlane()
 					MediaDirectory.File("Shaders/UI/PHFull.vert"),
 					MediaDirectory.File("Shaders/UI/PHFull.frag"),
 				});
+				ObjectManagerUI.ShaderFull.UniformLayout = &ObjectManagerUI_ShaderFullLayout;
+				ObjectManagerUI_ShaderFullLayout.Shader = &ObjectManagerUI.ShaderFull;
+			}
+			{
+				ObjectManagerUI.ShaderWire.UniformLayout = &ObjectManagerUI_ShaderWireLayout;
+				ObjectManagerUI_ShaderWireLayout.Shader = &ObjectManagerUI.ShaderWire;
 			}
 			{
 				ObjectManagerUI_BufferFullLayout.Size.Change(3);
 				ObjectManagerUI_BufferFullLayout.Pos.Change(4);
 				ObjectManagerUI_BufferFullLayout.Rot.Change(5);
+				ObjectManagerUI.BufferFullLayout = &ObjectManagerUI_BufferFullLayout;
 			}
+			{
+				ObjectManagerUI.BufferWireLayout = &ObjectManagerUI_BufferWireLayout;
+			}
+			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerUI);
 		}
 	}
 
 	AuxThreadBase::ThreadName = "DrawThread";
-	//PolyHedraManager.MakeCurrent();
 	Container::Array<Uniform::Layout *> layouts({
 		&ObjectManagerBasic_ShaderFullLayout,
 		&ObjectManagerBasic_ShaderWireLayout,
-		//&PolyHedraManager.ShaderLayoutFullDefault,
-		//&PolyHedraManager.ShaderLayoutWireDefault,
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 //		&PlaneManager.Shader,
 		&ChunkManager.ShaderLayoutU,
-//		&ChunkManager.ShaderLayoutF,
+		&ChunkManager.ShaderLayoutF,
 #ifndef DISABLE_INVENTORY
 //		&InventoryShader,
 		&ObjectManagerUI_ShaderFullLayout,
@@ -299,7 +297,6 @@ void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 }
 void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 {
-	//DisplayBoxEntityVoxels(PolyHedraManager.FindPallet(VoxelCube), ChunkManager, ViewEntity, frame_time);
 	DisplayBoxEntityVoxels(PalletManager.FindMakePallet(VoxelCube), ChunkManager, ViewEntity, frame_time);
 	DisplayBoxEntity(ViewEntity);
 	ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
@@ -557,22 +554,18 @@ void ContextNoisePlane::Make()
 	// 3 Cuboids. implement Scaling for Transformations
 	{
 		VoxelCube = new PolyHedra();
-		//VoxelCube = PolyHedra::Generate::HexaHedron(0.5f);
 		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
-		//PolyHedraManager.MakePallet(VoxelCube);
 		PalletManager.FindMakePallet(VoxelCube);
 	}
 	{
 		VoxelChunkCube = new PolyHedra();
 		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
-		//PolyHedraManager.MakePallet(VoxelChunkCube);
 		PalletManager.FindMakePallet(VoxelChunkCube);
 	}
 #ifndef DISABLE_VIEW_TANGIBLE
 	{
 		ViewEntity.PolyHedra = new PolyHedra();
 		PolyHedraBoxEdges(*ViewEntity.PolyHedra, ViewEntity.Box);
-		//PolyHedraManager.MakePallet(ViewEntity.PolyHedra);
 		PalletManager.FindMakePallet(ViewEntity.PolyHedra);
 	}
 #endif
@@ -633,34 +626,22 @@ void ContextNoisePlane::MakeControls()
 	// Inventory
 #ifndef DISABLE_INVENTORY
 	{
-		//InventoryPolyHedraManager.MakeCurrent();
 		for (unsigned int i = 0; i < VoxelPalletMap::All.Data.Count(); i++)
 		{
 			Inventory.Items[i] = new ItemVoxel(VoxelPalletMap::All.Data[i]);
 		}
-		//Inventory[VectorU2(0, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationCube"]);
-		//Inventory[VectorU2(1, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationCylinder"]);
-		////Inventory[VectorU2(2, 0)] = new ItemVoxel(VoxelPalletMap::All["OrientationSlope"]);
-		//Inventory[VectorU2(0, 1)] = new ItemVoxel(VoxelPalletMap::All["Gray"]);
-		//Inventory[VectorU2(1, 1)] = new ItemVoxel(VoxelPalletMap::All["Grass"]);
-		//Inventory[VectorU2(2, 1)] = new ItemVoxel(VoxelPalletMap::All["RedLog"]);
-		//Inventory[VectorU2(0, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCube"]);
-		//Inventory[VectorU2(1, 2)] = new ItemVoxel(VoxelPalletMap::All["ConcreteCylinder"]);
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
 		UIManager.WindowControl.ChildInsert(InventoryUI);
-		//PolyHedraManager.MakeCurrent();
 	}
 #endif
 	// HotBar
 #ifndef DISABLE_INVENTORY
 	{
-		//InventoryPolyHedraManager.MakeCurrent();
 		HotBarUI.Anchor.Y.AnchorMax(0);
 		HotBarUI.Change(&HotBar);
 		//HotBarUI.Hide();
 		UIManager.WindowControl.ChildInsert(HotBarUI);
-		//PolyHedraManager.MakeCurrent();
 	}
 #endif
 }
@@ -809,11 +790,6 @@ void ContextNoisePlane::Draw()
 	GL::Enable(GL::Capability::CullFace);
 
 	sw.Clear(); sw.Start();
-	//PolyHedraManager.MakeInstances();
-	//PolyHedraManager.DrawFull();
-	//PolyHedraManager.DrawWire();
-	//PolyHedraManager.GraphicsDrawFull();
-	//PolyHedraManager.GraphicsDrawWire();
 	ObjectManagerBasic.GraphicsDrawFull();
 	ObjectManagerBasic.GraphicsDrawWire();
 	sw.Stop(); FrameTime_Draw_DrawPolyHedra.NewValue(sw.ElapsedTime());
@@ -821,6 +797,7 @@ void ContextNoisePlane::Draw()
 	//PlaneManager.Draw();
 
 	sw.Clear(); sw.Start();
+	ChunkManager.ShaderU.Bind();
 	ChunkManager.ShaderLayoutU.LightAmbient.Put(LightAmbient);
 	ChunkManager.ShaderLayoutU.LightSolar.Put(LightSolar);
 	ChunkManager.ShaderLayoutU.LightSpot.Put(LightSpot);
@@ -836,16 +813,12 @@ void ContextNoisePlane::Draw()
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 	{
-#ifndef DISABLE_INVENTORY
-		//InventoryPolyHedraManager.MakeCurrent();
-#endif
 		sw.Clear(); sw.Start(); // sw.ClearStart(); clear while running should keep running
 		UIManager.WindowControl.Update();
 		UIManager.Resize(window.Size);
 		UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 		UIManager.ControlManager.MakeInstances();
 		UIManager.ControlManager.Draw();
-		//PolyHedraManager.MakeCurrent();
 		sw.Stop(); FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime()); // sw.StopElapsedTime(); dont need to stop to get time ?
 	}
 
@@ -863,15 +836,10 @@ void ContextNoisePlane::Draw()
 	UIManager.GraphManager.MakeInstances();
 	UIManager.GraphManager.Draw();
 
-#ifndef DISABLE_INVENTORY
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
-	//InventoryPolyHedraManager.ClearInstances();
-	//InventoryPolyHedraManager.UpdateInstances();
-	//InventoryPolyHedraManager.DrawFull();
 	ObjectManagerUI.GraphicsDrawFull();
 	ObjectManagerUI.GraphicsDrawWire();
-#endif
 
 	sw_total.Stop(); FrameTime_Draw_DrawTotal.NewValue(sw_total.ElapsedTime());
 
@@ -936,9 +904,12 @@ struct VoxelChunkMemoryInfo
 	unsigned int buffer_data_none;
 	unsigned int buffer_data_have[2];
 	unsigned int buffer_data_want[2];
-	unsigned long long buffer_data_entrys;
-	unsigned long long buffer_data_memory;
-	unsigned long long buffer_data_limit;
+	unsigned long long buffer_data_u_entrys;
+	unsigned long long buffer_data_u_memory;
+	unsigned long long buffer_data_u_limit;
+	unsigned long long buffer_data_f_entrys;
+	unsigned long long buffer_data_f_memory;
+	unsigned long long buffer_data_f_limit;
 
 	void	Clear()
 	{
@@ -955,9 +926,12 @@ struct VoxelChunkMemoryInfo
 		buffer_data_have[1] = 0;
 		buffer_data_want[0] = 0;
 		buffer_data_want[1] = 0;
-		buffer_data_entrys = 0;
-		buffer_data_memory = 0;
-		buffer_data_limit = 0;
+		buffer_data_u_entrys = 0;
+		buffer_data_u_memory = 0;
+		buffer_data_u_limit = 0;
+		buffer_data_f_entrys = 0;
+		buffer_data_f_memory = 0;
+		buffer_data_f_limit = 0;
 	}
 	void	Gather(ChunkManager & manager)
 	{
@@ -986,9 +960,9 @@ struct VoxelChunkMemoryInfo
 			// Edge Chunks dont Decorate because the outside Chunks are out of Bounds and assumed null
 			if (chunk.GenerationDone())
 			{
-				if (chunk.BufferUData_Want)		{ buffer_data_want[0]++; }
+				if (chunk.BufferData_Want)		{ buffer_data_want[0]++; }
 				else							{ buffer_data_want[1]++; }
-				if (chunk.BufferUData_Have)		{ buffer_data_have[0]++; }
+				if (chunk.BufferData_Have)		{ buffer_data_have[0]++; }
 				else							{ buffer_data_have[1]++; }
 			}
 			else
@@ -998,13 +972,21 @@ struct VoxelChunkMemoryInfo
 			}
 		}
 
-		buffer_data_entrys = manager.BufferU.Entrys.Count();
-		buffer_data_memory = 0;
-		for (unsigned int i = 0; i < buffer_data_entrys; i++)
+		buffer_data_u_entrys = manager.BufferU.Entrys.Count();
+		buffer_data_u_memory = 0;
+		for (unsigned int i = 0; i < buffer_data_u_entrys; i++)
 		{
-			buffer_data_memory += manager.BufferU.Entrys[i] -> Length;
+			buffer_data_u_memory += manager.BufferU.Entrys[i] -> Length;
 		}
-		buffer_data_limit = manager.BufferU.Buffer.Count;
+		buffer_data_u_limit = manager.BufferU.Buffer.Count;
+
+		buffer_data_f_entrys = manager.BufferF.Entrys.Count();
+		buffer_data_f_memory = 0;
+		for (unsigned int i = 0; i < buffer_data_f_entrys; i++)
+		{
+			buffer_data_f_memory += manager.BufferF.Entrys[i] -> Length;
+		}
+		buffer_data_f_limit = manager.BufferF.Buffer.Count;
 	}
 	void	Show(std::stringstream & ss)
 	{
@@ -1038,11 +1020,18 @@ struct VoxelChunkMemoryInfo
 		ss << " Have[" << buffer_data_have[0] << ':' << buffer_data_have[1] << ']';
 		ss << '\n';
 
-		ss << "DataU Entrys:" << buffer_data_entrys << '\n';
+		ss << "DataU Entrys:" << buffer_data_u_entrys << '\n';
 		ss << "DataU Memory: ";
-		ss << Memory1000ToString(buffer_data_memory * sizeof(VoxelGeometryDataU::Face));
+		ss << Memory1000ToString(buffer_data_u_memory * sizeof(VoxelGeometryDataU::Face));
 		ss << " / ";
-		ss << Memory1000ToString(buffer_data_limit * sizeof(VoxelGeometryDataF::Face));
+		ss << Memory1000ToString(buffer_data_u_limit * sizeof(VoxelGeometryDataU::Face));
+		ss << '\n';
+
+		ss << "DataF Entrys:" << buffer_data_f_entrys << '\n';
+		ss << "DataF Memory: ";
+		ss << Memory1000ToString(buffer_data_f_memory * sizeof(VoxelGeometryDataF::Face));
+		ss << " / ";
+		ss << Memory1000ToString(buffer_data_f_limit * sizeof(VoxelGeometryDataF::Face));
 		ss << '\n';
 
 		/*ss << "DataU Memory:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));
@@ -1247,11 +1236,11 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			if ((*chunk).GenerationDone()) { ss << "Done"; }
 			ss << '\n';
 
-			ss << "BufferUData_Want: " << (*chunk).BufferUData_Want << '\n';
-			ss << "BufferUData_Have: " << (*chunk).BufferUData_Have << '\n';
+			ss << "BufferData_Want: " << (*chunk).BufferData_Want << '\n';
+			ss << "BufferData_Have: " << (*chunk).BufferData_Have << '\n';
 
-			//ss << "BufferU: ";
-			//ss << Memory1000ToString(chunk.BufferU.Main.Count * sizeof(VoxelGraphics::MainDataU));
+			//ss << "Buffer: ";
+			//ss << Memory1000ToString(chunk.Buffer.Main.Count * sizeof(VoxelGraphics::MainDataU));
 			//ss << '\n';
 
 			/*ss << "BufferF: ";
@@ -1396,7 +1385,6 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 	sw.Start();
 
 	static float time_sum = 0.0f;
-	//InventoryPolyHedraManager.MakeCurrent();
 
 	VectorF2	PixelSize(40, 40);
 	VectorF2	PixelPos;
@@ -1425,7 +1413,6 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 	}
 
 	time_sum += frame_time.Delta;
-	//PolyHedraManager.MakeCurrent();
 
 	sw.Stop();
 	InventoryCursorTime.NewValue(sw.ElapsedTime());
@@ -1462,10 +1449,8 @@ void ContextNoisePlane::FrameInput()
 #ifndef DISABLE_INVENTORY
 			if (!InventoryUI.IsVisible())
 			{
-				//InventoryPolyHedraManager.MakeCurrent();
 				InventoryUI.Show();
 				//HotBarUI.Show();
-				//PolyHedraManager.MakeCurrent();
 			}
 			else
 			{
@@ -1598,18 +1583,13 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
 	{
-		//PolyHedraPalletManager * pallet = PolyHedraManager.FindPallet(VoxelChunkCube);
-		//NewPolyHedra::PalletObjectManager * pallet = ObjectManagerBasic.FindMakePalletObjectManager(VoxelChunkCube);
 		NewPolyHedra::Pallet * pallet = PalletManager.FindMakePallet(VoxelChunkCube);
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
 		{
 			Chunk * chunk = ChunkManager.Chunks[i];
 			if (chunk == nullptr) { continue; }
-			//PolyHedraObject chunk_box(pallet);
 			NewPolyHedra::Basic3D::Object chunk_box(pallet);
-			//chunk_box.Trans().Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
 			chunk_box.Data().Trans.Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
-			//chunk_box.HideFull();
 			chunk_box.ShowWire();
 		}
 	}
@@ -1654,13 +1634,7 @@ void ContextNoisePlane::Resize(DisplaySize display_size)
 void ContextNoisePlane::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
 void ContextNoisePlane::MouseClick(ClickArgs args)
 {
-#ifndef DISABLE_INVENTORY
-	//InventoryPolyHedraManager.MakeCurrent();
-#endif
 	UIManager.MouseClick(args);
-#ifndef DISABLE_INVENTORY
-	//PolyHedraManager.MakeCurrent();
-#endif
 }
 void ContextNoisePlane::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
 void ContextNoisePlane::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }

@@ -58,7 +58,7 @@ void AuxThread1::Func()
 
 		sw.Clear();
 		sw.Start();
-		((Chunk*)&(*chunk)) -> BufferUData_Make();
+		((Chunk*)&(*chunk)) -> BufferData_Make();
 		sw.Stop();
 		TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
 		TimeMakeBuffer.ThreadName = AuxThreadBase::ThreadName;
@@ -89,7 +89,7 @@ void AuxThread1::QueuePut(Chunk * chunk)
 			return;
 		}
 	}
-	chunk -> BufferUData_Want = true;
+	chunk -> BufferData_Want = true;
 	Queue.Insert(chunk);
 
 	QueueMutex.unlock();
@@ -110,7 +110,7 @@ AccessLockedChunk AuxThread1::Find()
 		//AccessLockedChunk chunk = ptr -> ToAccessTry();
 		//if (!chunk.Is()) { continue; }
 
-		if (!ref.BufferUData_Want) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
+		if (!ref.BufferData_Want) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
 		if (!ref.GenerationDone()) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
 		if (!ref.Neighbours.CanMakeBuffer()) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
 

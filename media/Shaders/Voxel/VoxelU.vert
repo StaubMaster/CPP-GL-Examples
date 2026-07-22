@@ -111,7 +111,7 @@ void main()
 	vs_out.Original.y += ((Main_Voxel >> 30) & 0x1u);
 	vs_out.Original.z += ((Main_Voxel >> 31) & 0x1u);
 
-	vs_out.Absolute = vs_out.Original + Main_Chunk * 32;
+	vs_out.Absolute = vs_out.Original + (Main_Chunk * 32);
 	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
 	gl_Position = proj(vs_out.Relative);
 

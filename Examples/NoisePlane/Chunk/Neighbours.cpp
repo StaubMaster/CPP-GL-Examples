@@ -90,7 +90,7 @@ bool ChunkNeighbour::IsVisiblePrevX(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.X != 0)
 	{
 		udx.X--;
-		return is_empty[udx];
+		return voxel_types[udx] != VoxelType::DataU;
 	}
 	else if (Cube[1][1][0] != nullptr && Cube[1][1][0] -> GenerationDone())
 	{
@@ -105,7 +105,7 @@ bool ChunkNeighbour::IsVisiblePrevY(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.Y != 0)
 	{
 		udx.Y--;
-		return is_empty[udx];
+		return voxel_types[udx] != VoxelType::DataU;
 	}
 	else if (Cube[1][0][1] != nullptr && Cube[1][0][1] -> GenerationDone())
 	{
@@ -120,7 +120,7 @@ bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.Z != 0)
 	{
 		udx.Z--;
-		return is_empty[udx];
+		return voxel_types[udx] != VoxelType::DataU;
 	}
 	else if (Cube[0][1][1] != nullptr && Cube[0][1][1] -> GenerationDone())
 	{
@@ -135,7 +135,7 @@ bool ChunkNeighbour::IsVisibleNextX(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.X != n)
 	{
 		udx.X++;
-		return is_empty[udx];
+		return voxel_types[udx] != VoxelType::DataU;
 	}
 	else if (Cube[1][1][2] != nullptr && Cube[1][1][2] -> GenerationDone())
 	{
@@ -150,7 +150,7 @@ bool ChunkNeighbour::IsVisibleNextY(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.Y != n)
 	{
 		udx.Y++;
-		return is_empty[udx];
+		return voxel_types[udx] != VoxelType::DataU;
 	}
 	else if (Cube[1][2][1] != nullptr && Cube[1][2][1] -> GenerationDone())
 	{
@@ -165,7 +165,7 @@ bool ChunkNeighbour::IsVisibleNextZ(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.Z != n)
 	{
 		udx.Z++;
-		return is_empty[udx];
+		return voxel_types[udx] != VoxelType::DataU;
 	}
 	else if (Cube[2][1][1] != nullptr && Cube[2][1][1] -> GenerationDone())
 	{

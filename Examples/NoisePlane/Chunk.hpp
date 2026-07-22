@@ -185,12 +185,15 @@ struct Chunk
 
 
 	public:
-	ChunkGraphicsData			BufferUData;
-	VoxelGraphics::BufferEntryU	BufferUData_Entry;
-	bool						BufferUData_Want;
-	void						BufferUData_Make();
-	bool						BufferUData_Have;
-	void						BufferUData_Update();
+	ChunkGraphicsData	BufferData;
+
+	bool	BufferData_Want;
+	void	BufferData_Make();
+	bool	BufferData_Have;
+	void	BufferData_Update();
+
+	VoxelGraphics::BufferEntryU		BufferUData_Entry;
+	VoxelGraphics::BufferEntryF		BufferFData_Entry;
 };
 
 #endif

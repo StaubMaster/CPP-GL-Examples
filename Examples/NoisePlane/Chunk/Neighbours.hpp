@@ -137,7 +137,6 @@ struct ChunkNeighbour
 	ChunkNeighbour(Chunk & chunk);
 
 	public:
-	// do these need to take the full array ?
 	bool	IsVisiblePrevX(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const;
 	bool	IsVisiblePrevY(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const;
 	bool	IsVisiblePrevZ(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const;
