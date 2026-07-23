@@ -92,8 +92,6 @@ ContextNoisePlane::~ContextNoisePlane()
 ContextNoisePlane::ContextNoisePlane()
 	: ContextBase()
 	, PolyHedraManager()
-	, PalletManager_BufferFullLayout()
-	, PalletManager_BufferWireLayout()
 	, PalletManager()
 	, ObjectManagerBasic_ShaderFullLayout()
 	, ObjectManagerBasic_ShaderWireLayout()
@@ -131,15 +129,13 @@ ContextNoisePlane::ContextNoisePlane()
 	{
 		{
 			{
-				PalletManager_BufferFullLayout.Position.Change(0);
-				PalletManager_BufferFullLayout.Normal.Change(1);
-				PalletManager_BufferFullLayout.Texture.Change(2);
-				PalletManager.BufferFullLayout = &PalletManager_BufferFullLayout;
+				PalletManager.BufferFullLayout.Position.Change(0);
+				PalletManager.BufferFullLayout.Normal.Change(1);
+				PalletManager.BufferFullLayout.Texture.Change(2);
 			}
 			{
-				PalletManager_BufferWireLayout.Pos.Change(0);
-				PalletManager_BufferWireLayout.Col.Change(1);
-				PalletManager.BufferWireLayout = &PalletManager_BufferWireLayout;
+				PalletManager.BufferWireLayout.Pos.Change(0);
+				PalletManager.BufferWireLayout.Col.Change(1);
 			}
 			PolyHedraManager.PalletManager = &PalletManager;
 		}

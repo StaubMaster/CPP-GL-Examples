@@ -24,6 +24,8 @@ FILES := \
 	NewPolyHedra/Manager.cpp \
 	NewPolyHedra/ObjectManager.cpp \
 	NewPolyHedra/Pallet.cpp \
+	NewPolyHedra/Pallet/Full/Layout.cpp \
+	NewPolyHedra/Pallet/Wire/Layout.cpp \
 	NewPolyHedra/PalletManager.cpp \
 	NewPolyHedra/PalletObjectData.cpp \
 	NewPolyHedra/PalletObjectManager.cpp \

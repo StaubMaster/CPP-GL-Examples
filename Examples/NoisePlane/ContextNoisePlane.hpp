@@ -7,11 +7,6 @@
 // PolyHedra
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
-//#include "PolyHedra/Manager.hpp"
-//#include "PolyHedra/Object.hpp"
-//#include "PolyHedra/Data.hpp"
-#include "PolyHedra/Graphics/Full/Main/Layout.hpp"
-#include "PolyHedra/Graphics/Wire/Main/Layout.hpp"
 
 #include "PolyHedra/Skin/Skin.hpp"
 #include "PolyHedra/Skin/Data.hpp"
@@ -129,8 +124,6 @@ struct ContextNoisePlane : public ContextBase
 {
 NewPolyHedra::Manager	PolyHedraManager;
 
-::PolyHedraFull::Main::Layout	PalletManager_BufferFullLayout; // put these directly in PalletManager ?
-::PolyHedraWire::Main::Layout	PalletManager_BufferWireLayout;
 NewPolyHedra::PalletManager		PalletManager;
 
 ShaderLayoutView3D						ObjectManagerBasic_ShaderFullLayout;

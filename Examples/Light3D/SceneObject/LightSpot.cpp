@@ -1,10 +1,6 @@
 #include "SceneObject/LightSpot.hpp"
 #include "Ray3D_Hit.hpp"
 
-#include "PolyHedra/ObjectData.hpp"
-#include "PolyHedra/PalletManager.hpp"
-#include "PolyHedra/Object.hpp"
-
 
 
 SceneObject_LightSpot::~SceneObject_LightSpot()

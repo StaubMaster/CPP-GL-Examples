@@ -4,6 +4,9 @@
 # include "Generics/Container/Binary.hpp"
 # include "Graphics/Attribute/General/Layout.hpp"
 
+#include "Pallet/Full/Layout.hpp"
+#include "Pallet/Wire/Layout.hpp"
+
 class PolyHedra;
 
 namespace NewPolyHedra
@@ -39,8 +42,10 @@ struct PalletManager
 
 
 	public:
-	::Attribute::Layout *	BufferFullLayout;
-	::Attribute::Layout *	BufferWireLayout;
+	PalletFull::Layout		BufferFullLayout;
+	PalletWire::Layout		BufferWireLayout;
+	//::Attribute::Layout *	BufferFullLayout;
+	//::Attribute::Layout *	BufferWireLayout;
 
 	public:
 	void	GraphicsCreate();

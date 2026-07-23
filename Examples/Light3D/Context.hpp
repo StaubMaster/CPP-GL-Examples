@@ -19,8 +19,8 @@
 
 // PolyHedra
 # include "PolyHedra/PolyHedra.hpp"
-# include "PolyHedra/Manager.hpp"
-# include "PolyHedra/Object.hpp"
+//# include "PolyHedra/Manager.hpp"
+//# include "PolyHedra/Object.hpp"
 
 // Containers
 # include "Generics/Container/Array.hpp"
@@ -176,8 +176,6 @@ void	PolyHedraPalletUpdate();
 
 NewPolyHedra::Manager		NewPolyHedra_Manager;
 
-::PolyHedraFull::Main::Layout	PalletManager_BufferFullLayout;
-::PolyHedraWire::Main::Layout	PalletManager_BufferWireLayout;
 NewPolyHedra::PalletManager		PalletManager;
 
 ShaderLayoutLight3D						ObjectManagerBasic_ShaderFullLayout;
@@ -186,8 +184,8 @@ NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
 NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
 NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
 
-TransScaleColor3D::ShaderFullLayout		ObjectManagerTSC_ShaderFullLayout;
-TransScaleColor3D::ShaderWireLayout		ObjectManagerTSC_ShaderWireLayout;
+ShaderLayoutView3D						ObjectManagerTSC_ShaderFullLayout;
+ShaderLayoutView3D						ObjectManagerTSC_ShaderWireLayout;
 TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferFullLayout;
 TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferWireLayout;
 TransScaleColor3D::ObjectManager		ObjectManagerTSC;

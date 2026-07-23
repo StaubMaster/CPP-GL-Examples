@@ -44,12 +44,10 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 
 
 
-#include "PolyHedra/ObjectData.hpp"
-#include "PolyHedra/PalletManager.hpp"
-#include "PolyHedra/PolyHedra.hpp"
-
 #include "NewPolyHedra/PalletObjectManager.hpp"
 #include "NewPolyHedra/Pallet.hpp"
+
+#include "PolyHedra/PolyHedra.hpp"
 
 #include "SceneObject/PolyHedraObject.hpp"
 #include "UnitToString.hpp"

@@ -86,3 +86,25 @@ include $(OTHER_DIR)/other.mk
 include $(REPOS_DIR)/repos.mk
 
 ################################################################
+
+ifndef NAME
+$(error NAME is not set)
+endif
+
+ifndef FANCY_NAME
+$(error FANCY_NAME is not set)
+endif
+
+ifndef FILES
+$(error FILES is not set)
+endif
+
+ifndef DIR_SRC
+$(error DIR_SRC is not set)
+endif
+
+ifndef DIR_OBJ
+$(error DIR_OBJ is not set)
+endif
+
+################################################################

@@ -8,7 +8,6 @@
 
 
 #include <math.h>
-#include "PolyHedra/Object.hpp"
 //static PolyHedra * ViewRayPolyHedra;
 //static PolyHedra * VoxelBoxPolyHedra;
 //static PolyHedra * ChunkBoxPolyHedra;

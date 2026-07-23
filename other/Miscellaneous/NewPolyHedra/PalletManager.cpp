@@ -15,8 +15,8 @@ NewPolyHedra::PalletManager::~PalletManager()
 }
 NewPolyHedra::PalletManager::PalletManager()
 	: Pallets()
-	, BufferFullLayout(nullptr)
-	, BufferWireLayout(nullptr)
+	, BufferFullLayout()
+	, BufferWireLayout()
 {
 	Current = this;
 }
@@ -41,8 +41,8 @@ NewPolyHedra::Pallet * NewPolyHedra::PalletManager::MakePallet(PolyHedra * polyh
 {
 	if (polyhedra == nullptr) { return nullptr; }
 	NewPolyHedra::Pallet * pallet = new NewPolyHedra::Pallet(polyhedra);
-	pallet -> BufferFull.Layout = BufferFullLayout;
-	pallet -> BufferWire.Layout = BufferWireLayout;
+	pallet -> BufferFull.Layout = &BufferFullLayout;
+	pallet -> BufferWire.Layout = &BufferWireLayout;
 	pallet -> GraphicsCreate();
 	pallet -> GraphicsPut();
 	Pallets.Insert(pallet);

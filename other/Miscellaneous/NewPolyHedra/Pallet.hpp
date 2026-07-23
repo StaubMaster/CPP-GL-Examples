@@ -39,6 +39,10 @@ struct Pallet
 
 	public:
 	void	GraphicsPut();
+	private:
+	void	GraphicsPutFull();
+	void	GraphicsPutWire();
+	public:
 	void	GraphicsInitFull();
 	void	GraphicsInitWire();
 

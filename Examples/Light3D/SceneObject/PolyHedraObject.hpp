@@ -2,7 +2,6 @@
 # define SCENE_OBJECT_POLYHEDRA_OBJECT_HPP
 
 # include "SceneObject.hpp"
-# include "PolyHedra/ObjectData.hpp"
 
 # include "NewPolyHedra/DataType/Basic3D/PalletObjectData.hpp"
 

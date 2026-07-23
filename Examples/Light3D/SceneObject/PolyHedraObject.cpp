@@ -1,9 +1,6 @@
 #include "SceneObject/PolyHedraObject.hpp"
 #include "Ray3D_Hit.hpp"
 
-#include "PolyHedra/PalletManager.hpp"
-#include "PolyHedra/Object.hpp"
-
 
 
 SceneObject_PolyHedraObject::~SceneObject_PolyHedraObject()
