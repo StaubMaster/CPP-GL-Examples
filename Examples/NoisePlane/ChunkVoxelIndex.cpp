@@ -4,17 +4,11 @@
 
 
 
-ChunkVoxelIndex::~ChunkVoxelIndex() { }
-ChunkVoxelIndex::ChunkVoxelIndex()
-{ }
-
-
-
-ChunkVoxelIndex::ChunkVoxelIndex(VectorI3 position)
+ChunkVoxelIndex::ChunkVoxelIndex(const VectorI3 & position)
 {
 	FromPosition(position);
 }
-ChunkVoxelIndex & ChunkVoxelIndex::operator=(VectorI3 position)
+ChunkVoxelIndex & ChunkVoxelIndex::operator=(const VectorI3 & position)
 {
 	FromPosition(position);
 	return *this;

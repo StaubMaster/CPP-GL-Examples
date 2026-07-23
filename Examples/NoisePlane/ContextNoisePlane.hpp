@@ -159,6 +159,11 @@ UI::Manager				UIManager;
 ::ItemContainer		Inventory;
 ::ItemContainer		HotBar;
 
+/* HotBar Index
+scroll should loop
+Slot Indicator
+Item Indicator
+*/
 ::Inventory			InventoryUI;
 ::Inventory			HotBarUI;
 #endif
@@ -208,6 +213,9 @@ AxisRel		ViewRayAxis2;
 VoxelHit	ViewHit;
 AxisRel		ViewHitAxis0;
 AxisRel		ViewHitAxis1;
+
+ChunkVoxelIndex		Voxel_Clear_Index;
+unsigned int		Voxel_Clear_Progress = 0xFFFFFFFF;
 #endif
 
 void ViewUpdateDone();

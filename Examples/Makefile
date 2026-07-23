@@ -6,7 +6,8 @@ FANCY_NAME := Examples
 
 FILES := \
 \
-	main.cpp \
+	FindAngle.cpp
+#	main.cpp
 
 DIR_SRC := .
 DIR_OBJ := .
@@ -26,10 +27,10 @@ include $(BASE_DIR)fancy.mk
 
 ################################################################
 
-include Selector.mk
-include UserInterface.mk
-include NoisePlane.mk
-include Light3D.mk
+#include Selector.mk
+#include UserInterface.mk
+#include NoisePlane.mk
+#include Light3D.mk
 
 include $(OTHER_DIR)/Miscellaneous.mk
 include $(OTHER_DIR)/UserInterface.mk

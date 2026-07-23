@@ -380,6 +380,14 @@ void ContextNoisePlane::ViewRayInfo()
 		}
 	}
 
+	if (Voxel_Clear_Progress != 0xFFFFFFFF)
+	{
+		ss << "Voxel_Clear:\n";
+		ss << Voxel_Clear_Index.Chunk << " :Chunk\n";
+		ss << Voxel_Clear_Index.Voxel << " :Voxel\n";
+		ss << Voxel_Clear_Progress << " :Progress\n";
+	}
+
 	UI::Text::Object text; text.Create();
 	text.Text() = ss.str();
 	text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
@@ -402,22 +410,43 @@ void ContextNoisePlane::ViewRayDo()
 		// determine place_axis_1 based on where on the face was clicked ?
 		// top of face orients to point to top and so on
 
-		if (window.MouseManager[MouseButtons::MouseL] == State::Press)
+		if (window.MouseManager[MouseButtons::MouseL] == State::Down)
 		{
-			Voxel voxel;
-			ChunkVoxelIndex idx(ViewHit.Index);
-			//ChunkManager.ClearVoxel(hit.Index, voxel);
-			std::cout << "main:" << __LINE__ << '\n';
-			AccessLockedChunk chunk0 = ChunkManager.FindAccess(idx.Chunk);
-			std::cout << "main:" << __LINE__ << '\n';
-			if (chunk0.Is())
+			if (Voxel_Clear_Progress != 0xFFFFFFFF)
 			{
-				AssignLockedChunk chunk1 = chunk0.ToAssign();
-				std::cout << "main:" << __LINE__ << '\n';
-				(*chunk1).ClearVoxel(idx.Voxel, voxel);
-				std::cout << "main:" << __LINE__ << '\n';
+				ChunkVoxelIndex idx = ViewHit.Index;
+				if ((idx.Chunk == Voxel_Clear_Index.Chunk).All(true) && (idx.Voxel == Voxel_Clear_Index.Voxel).All(true))
+				{
+					Voxel_Clear_Progress++;
+					if (Voxel_Clear_Progress >= 32)
+					{
+						Voxel voxel;
+						// why not .FindAssign() ?
+						AccessLockedChunk chunk0 = ChunkManager.FindAccess(idx.Chunk);
+						if (chunk0.Is())
+						{
+							AssignLockedChunk chunk1 = chunk0.ToAssign();
+							(*chunk1).ClearVoxel(idx.Voxel, voxel);
+						}
+						Voxel_Clear_Progress = 0;
+					}
+				}
+				else
+				{
+					Voxel_Clear_Progress = 0;
+					Voxel_Clear_Index = idx;
+				}
 			}
-			std::cout << "main:" << __LINE__ << '\n';
+			else
+			{
+				Voxel_Clear_Progress = 0;
+				Voxel_Clear_Index = ViewHit.Index;
+			}
+		}
+		else
+		{
+			Voxel_Clear_Progress = 0;
+			Voxel_Clear_Index = ViewHit.Index;
 		}
 
 		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
@@ -1382,30 +1411,22 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 
 	static float time_sum = 0.0f;
 
-	VectorF2	PixelSize(40, 40);
-	VectorF2	PixelPos;
-
 	if (HotBar.Items[VectorU2(0, 0)] != nullptr)
 	{
 		ItemVoxel * item = (ItemVoxel*)HotBar.Items[VectorU2(0, 0)];
-		PixelPos.X = window.Size.Buffer.Full.X - 40;
-		PixelPos.Y = 40;
 		NewPolyHedra::UserInterface::Object obj(item -> VoxelPallet -> PolyHedra);
-		obj.Data().Size = PixelSize;
-		obj.Data().Pos = PixelPos;
-		obj.Data().Rot.X1 = Angle::Degrees(15);
-		obj.Data().Rot.Y2 = Angle::Radians(time_sum);
+		obj.Data().Size = VectorF2(60, 60);
+		obj.Data().Pos = VectorF2(window.Size.Buffer.Full.X - 40, window.Size.Buffer.Full.Y - 40);
+		obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
 	}
 
 	if (InventorySlot::StaticItem != nullptr)
 	{
 		ItemVoxel * item = (ItemVoxel*)InventorySlot::StaticItem;
-		PixelPos = window.MouseManager.CursorPosition().Buffer.Corner;
 		NewPolyHedra::UserInterface::Object obj(item -> VoxelPallet -> PolyHedra);
-		obj.Data().Size = PixelSize;
-		obj.Data().Pos = PixelPos;
-		obj.Data().Rot.X1 = Angle::Degrees(15);
-		obj.Data().Rot.Y2 = Angle::Radians(time_sum);
+		obj.Data().Size = VectorF2(40, 40);
+		obj.Data().Pos = window.MouseManager.CursorPosition().Buffer.Corner;
+		obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
 	}
 
 	time_sum += frame_time.Delta;

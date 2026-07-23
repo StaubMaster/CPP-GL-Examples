@@ -31,7 +31,6 @@ void InventorySlot::RelayUpdateBox()
 {
 	if (ItemObject.Is())
 	{
-		ItemObject.Data().Size = VectorF2(40, 40);
 		ItemObject.Data().Pos = DisplayBox.Center();
 	}
 	if (TextObject.Is())
@@ -49,18 +48,9 @@ void InventorySlot::RelayInsertObject()
 			ItemObject.Create(item -> VoxelPallet -> PolyHedra);
 			if (ItemObject.Is())
 			{
-				ItemObject.Data().Size = VectorF2(40, 40);
+				ItemObject.Data().Size = VectorF2(32, 32);
 				ItemObject.Data().Pos = DisplayBox.Center();
-				// items should be rotated 45 degrees along Y. and then 30 degrees along X
-				// this rotation does X rotation first
-				// make angle with Y=45 and X=30 and then .invert() ?
-				// .invert() does not exist. it should make it so
-				//  ang.forward(p) == ang.invert().reverse(p)
-				// but also
-				//  ang.reverse(p) == ang.invert().forward(p)
-				// not sure if those are mutually exclusive
-				ItemObject.Data().Rot.X1 = Angle::Degrees(30);
-				ItemObject.Data().Rot.Y2 = Angle::Degrees(45);
+				ItemObject.Data().Rot = EulerAngle3D::Degrees(0, 30, 45).reverse();
 			}
 			if (Item != nullptr)
 			{

@@ -1,3 +1,4 @@
+#include <iostream>
 
 #include "ValueGen/Random.hpp"
 #include "ValueType/Vector/F3.hpp"
@@ -39,24 +40,26 @@ struct SAxiss
 	VectorF3	axisY;
 	VectorF3	axisZ;
 
-	static SAxiss forward(const EulerAngle3D & rot0, const EulerAngle3D & rot1)
+	SAxiss()
+		: axisX(1, 0, 0)
+		, axisY(0, 1, 0)
+		, axisZ(0, 0, 1)
+	{ }
+
+	void forward(const EulerAngle3D & e)
 	{
-		SAxiss axiss;
-		axiss.axisX = rot1.forward(rot0.forward(VectorF3(1, 0, 0)));
-		axiss.axisY = rot1.forward(rot0.forward(VectorF3(0, 1, 0)));
-		axiss.axisZ = rot1.forward(rot0.forward(VectorF3(0, 0, 1)));
-		return axiss;
+		axisX = e.forward(axisX);
+		axisY = e.forward(axisY);
+		axisZ = e.forward(axisZ);
 	}
-	static SAxiss reverse(const EulerAngle3D & rot0, const EulerAngle3D & rot1)
+	void reverse(const EulerAngle3D & e)
 	{
-		SAxiss axiss;
-		axiss.axisX = rot1.reverse(rot0.reverse(VectorF3(1, 0, 0)));
-		axiss.axisY = rot1.reverse(rot0.reverse(VectorF3(0, 1, 0)));
-		axiss.axisZ = rot1.reverse(rot0.reverse(VectorF3(0, 0, 1)));
-		return axiss;
+		axisX = e.reverse(axisX);
+		axisY = e.reverse(axisY);
+		axisZ = e.reverse(axisZ);
 	}
 
-	Angle TrySin(unsigned int idx1, unsigned int idx0)
+	Angle TrySin(unsigned int idx1, unsigned int idx0) const
 	{
 		switch (idx1)
 		{
@@ -84,7 +87,7 @@ struct SAxiss
 			default: return Angle();
 		}
 	}
-	Angle TryCos(unsigned int idx1, unsigned int idx0)
+	Angle TryCos(unsigned int idx1, unsigned int idx0) const
 	{
 		switch (idx1)
 		{
@@ -112,7 +115,7 @@ struct SAxiss
 			default: return Angle();
 		}
 	}
-	Angle TryTan(float val, unsigned int idx1, unsigned int idx0)
+	Angle TryTan(float val, unsigned int idx1, unsigned int idx0) const
 	{
 		switch (idx1)
 		{
@@ -140,7 +143,7 @@ struct SAxiss
 			default: return Angle();
 		}
 	}
-	Angle TryTan(unsigned int idx3, unsigned int idx2, unsigned int idx1, unsigned int idx0)
+	Angle TryTan(unsigned int idx3, unsigned int idx2, unsigned int idx1, unsigned int idx0) const
 	{
 		switch (idx3)
 		{
@@ -169,7 +172,7 @@ struct SAxiss
 		}
 	}
 
-	Angle Find(unsigned int idx)
+	Angle Find(unsigned int idx) const
 	{
 		for (unsigned int idx1 = 0; idx1 < 3; idx1++)
 		{
@@ -230,7 +233,7 @@ struct SAxiss
 
 		return Angle();
 	}
-	void Print(unsigned int idx)
+	void Print(unsigned int idx) const
 	{
 		const char * axis_str = "XYZ";
 
@@ -301,14 +304,26 @@ struct SAxiss
 	}
 };
 
-__attribute__((unused)) static void FindEulerAngle(const EulerAngle3D & rot0, const EulerAngle3D & rot1, const VectorF3 & pos)
+
+__attribute__((unused)) static EulerAngle3D RandomEulerAngle3D()
 {
-	VectorF3 need = rot1.reverse(rot0.reverse(pos));
-	//std::cout << need << '\n';
-	//std::cout << '\n';
+	return EulerAngle3D::Radians(
+		Random::Float01Ex() * Angle::Pi,
+		Random::Float01Ex() * Angle::Pi,
+		Random::Float01Ex() * Angle::Pi
+	);
+}
+__attribute__((unused)) static VectorF3 RandomVectorF3()
+{
+	return VectorF3(
+		(Random::Float01Ex() * 2) - 1,
+		(Random::Float01Ex() * 2) - 1,
+		(Random::Float01Ex() * 2) - 1
+	);
+}
 
-	SAxiss axiss = SAxiss::reverse(rot0, rot1);
-
+__attribute__((unused)) static void FindEulerAngleCombination(const SAxiss & axiss, const VectorF3 & comp, const VectorF3 & pos)
+{
 	unsigned int best_diff_z0 = 0xFFFFFFFF;
 	unsigned int best_diff_x1 = 0xFFFFFFFF;
 	unsigned int best_diff_y2 = 0xFFFFFFFF;
@@ -325,7 +340,7 @@ __attribute__((unused)) static void FindEulerAngle(const EulerAngle3D & rot0, co
 			{
 				rot.Y2 = axiss.Find(idx_y2);
 				VectorF3 have = rot.reverse(pos);
-				VectorF3 diff = (have - need).abs();
+				VectorF3 diff = (have - comp).abs();
 				float diff_sum = diff.X + diff.Y + diff.Z;
 				if (diff.X < 0.001f && diff.Y < 0.001f && diff.Z < 0.001f)
 				{
@@ -354,43 +369,33 @@ __attribute__((unused)) static void FindEulerAngle(const EulerAngle3D & rot0, co
 	std::cout << '\n';
 	//std::cout << '\n';
 }
-__attribute__((unused)) static void FindEulerAngleRandom()
+__attribute__((unused)) static void FindEulerAngle(const EulerAngle3D & rot, const VectorF3 & pos)
 {
-	FindEulerAngle(
-		EulerAngle3D::Radians(
-			Random::Float01Ex() * PI,
-			Random::Float01Ex() * PI,
-			Random::Float01Ex() * PI
-		),
-		EulerAngle3D::Radians(
-			Random::Float01Ex() * PI,
-			Random::Float01Ex() * PI,
-			Random::Float01Ex() * PI
-		),
-		VectorF3(
-			(Random::Float01Ex() * 2) - 1,
-			(Random::Float01Ex() * 2) - 1,
-			(Random::Float01Ex() * 2) - 1
-		)
-	);
+	//VectorF3 comp = rot.reverse(pos);
+	VectorF3 comp = rot.forward(pos);
+
+	SAxiss axiss;
+	//axiss.forward(rot);
+	axiss.reverse(rot);
+
+	FindEulerAngleCombination(axiss, comp, pos);
 }
+__attribute__((unused)) static void FindEulerAngle(const EulerAngle3D & rot0, const EulerAngle3D & rot1, const VectorF3 & pos)
+{
+	VectorF3 comp = rot1.reverse(rot0.reverse(pos));
+
+	SAxiss axiss;
+	axiss.reverse(rot0);
+	axiss.reverse(rot1);
+
+	FindEulerAngleCombination(axiss, comp, pos);
+}
+
 __attribute__((unused)) static void TryEulerAngle()
 {
-	VectorF3 pos(
-		(Random::Float01Ex() * 2) - 1,
-		(Random::Float01Ex() * 2) - 1,
-		(Random::Float01Ex() * 2) - 1
-	);
-	EulerAngle3D rot0 = EulerAngle3D::Radians(
-		Random::Float01Ex() * PI,
-		Random::Float01Ex() * PI,
-		Random::Float01Ex() * PI
-	);
-	EulerAngle3D rot1 = EulerAngle3D::Radians(
-		Random::Float01Ex() * PI,
-		Random::Float01Ex() * PI,
-		Random::Float01Ex() * PI
-	);
+	VectorF3 pos = RandomVectorF3();
+	EulerAngle3D rot0 = RandomEulerAngle3D();
+	EulerAngle3D rot1 = RandomEulerAngle3D();
 
 	EulerAngle3D rot = rot0.reverse(rot1);
 
@@ -398,16 +403,19 @@ __attribute__((unused)) static void TryEulerAngle()
 	std::cout << rot.reverse(pos) << '\n';
 	std::cout << '\n';
 }
-__attribute__((unused)) static void FindEulerAngle()
-{
-	//for (unsigned int i = 0; i < 10; i++)
-	//{
-	//	FindEulerAngleRandom();
-	//}
-	//std::cout << '\n';
 
+int main()
+{
 	for (unsigned int i = 0; i < 10; i++)
 	{
-		TryEulerAngle();
+		FindEulerAngle(RandomEulerAngle3D(), RandomVectorF3());
+		//FindEulerAngle(RandomEulerAngle3D(), RandomEulerAngle3D(), RandomVectorF3());
 	}
+
+	/*for (unsigned int i = 0; i < 10; i++)
+	{
+		TryEulerAngle();
+	}*/
+
+	return 0;
 }

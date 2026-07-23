@@ -16,14 +16,13 @@ struct ChunkVoxelIndex
 	VectorI3	Chunk;
 	VectorU3	Voxel;
 
-	~ChunkVoxelIndex();
-	ChunkVoxelIndex();
+	~ChunkVoxelIndex() = default;
+	ChunkVoxelIndex() = default;
+	ChunkVoxelIndex(const ChunkVoxelIndex & other) = default;
+	ChunkVoxelIndex & operator=(const ChunkVoxelIndex & other) = default;
 
-	ChunkVoxelIndex(const ChunkVoxelIndex & other) = delete;
-	ChunkVoxelIndex & operator=(const ChunkVoxelIndex & other) = delete;
-
-	ChunkVoxelIndex(VectorI3 position);
-	ChunkVoxelIndex & operator=(VectorI3 position);
+	ChunkVoxelIndex(const VectorI3 & position);
+	ChunkVoxelIndex & operator=(const VectorI3 & position);
 
 	void		FromPosition(VectorI3 position);
 	VectorI3	ToPosition() const;

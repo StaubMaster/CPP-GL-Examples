@@ -1,0 +1,30 @@
+make mining Voxel take time
+make placing Voxel take time ?
+
+tool should speed up mining
+	only of certain types of voxels ?
+	Voxel Pallet should store additional data
+
+
+
+how to take time ?
+
+Frame:
+cast ViewRay
+hit ChunkVoxelIndex
+if (mine button down)
+	if (progress)
+		compare ChunkVoxelIndex
+		if (same)
+			continue progress
+			if (done)
+				remove ChunkVoxelIndex
+		else
+			reset progress
+			store ChunkVoxelIndex
+	else
+		begin progress
+		store ChunkVoxelIndex
+else
+	clear progress
+	clear ChunkVoxelIndex
