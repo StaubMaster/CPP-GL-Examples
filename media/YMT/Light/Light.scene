@@ -41,8 +41,14 @@ pallet Truss/Square40cm_Len200cm.polyhedra   truss
 pallet Truss/Cube40cm.polyhedra              truss_cube
 pallet Chair.polyhedra                       chair
 
+
+
 #pallet LightBulb.polyhedra                   light_bulb
-#place light_bulb   0 64 0   00 00 90
+#place light_bulb   0 64 0   00 00 00
+
+#pallet ../Tools/Stick.polyhedra tool
+pallet ../Tools/Spade.polyhedra tool
+place tool   0 64 0   00 00 00
 
 
 

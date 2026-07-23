@@ -1,0 +1,117 @@
+
+# this uses Stick with stuff on it
+# have a way in read that .polyhedra file
+# and then add this stuff to it
+
+# make it so any .polyhedra file can be statically inserted into the current one
+# maybe apply a transformation (optional)
+#   move
+#   spin
+#   scale
+# recursion loop
+
+
+
+# PolyHedra Formats
+#  Legacy
+#   includes all the old stuff
+#   "p" "o" "v" ...
+#  Modern ?
+#   no Legacy stuff
+#   "vertex" "circle" "belt" ...
+
+
+
+vertex -0,00 -00 -0,00
+circle>   6 6 0   0,0 -00 0,0   0,30   0,0 +1,0 0,0   0,0
+circle>   6 6 0   0,0 -10 0,0   0,30   0,0 +1,0 0,0   0,0
+vertex -0,00 -10 -0,00
+
+fan>1   +00   +01 +02 +03 +04 +05 +06
+index +1 +0
+belt<1   +00 +01 +02 +03 +04 +05   +06 +07 +08 +09 +10 +11
+index +6 +0
+fan<1   +06   +00 +01 +02 +03 +04 +05
+index +6 +0
+index +1 +0
+
+
+
+vertex +1,00 +3,0 -0,21 # 0
+vertex +0,40 +3,2 -0,01 # 1
+vertex -0,40 +3,2 -0,01 # 2
+vertex -1,00 +3,0 -0,21 # 3
+vertex +1,00 +0,4 -0,21 # 4
+vertex +0,40 +0,4 -0,01 # 5
+vertex -0,40 +0,4 -0,01 # 6
+vertex -1,00 +0,4 -0,21 # 7
+
+vertex +1,00 +3,0 -0,19 # 08
+vertex +0,40 +3,2 +0,01 # 09
+vertex -0,40 +3,2 +0,01 # 10
+vertex -1,00 +3,0 -0,19 # 11
+vertex +1,00 +0,4 -0,19 # 12
+vertex +0,40 +0,4 +0,01 # 13
+vertex -0,40 +0,4 +0,01 # 14
+vertex -1,00 +0,4 -0,19 # 15
+
+o +00 +04 +01 +05
+o +01 +05 +02 +06
+o +02 +06 +03 +07
+o +10 +11 +14 +15
+o +09 +10 +13 +14
+o +08 +09 +12 +13
+#                
+o +00 +01 +08 +09
+o +01 +02 +09 +10
+o +02 +03 +10 +11
+o +03 +07 +11 +15
+o +07 +06 +15 +14
+o +06 +05 +14 +13
+o +05 +04 +13 +12
+o +04 +00 +12 +08
+
+v +16 +28
+
+
+
+# Halter
+vertex -0,36 +0,5 +0,00 # 0
+vertex -0,18 +0,5 +0,31 # 1
+vertex +0,18 +0,5 +0,31 # 2
+vertex +0,36 +0,5 -0,00 # 3
+vertex +0,18 +0,5 -0,31 # 4
+vertex -0,18 +0,5 -0,31 # 5
+
+vertex -0,36 -0,5 +0,00 # 06
+vertex -0,18 -0,5 +0,31 # 07
+vertex +0,18 -0,5 +0,31 # 08
+vertex +0,36 -0,5 -0,00 # 09
+vertex +0,18 -0,5 -0,31 # 10
+vertex -0,18 -0,5 -0,31 # 11
+
+o +00 +06 +01 +07
+o +01 +07 +02 +08
+o +02 +08 +03 +09
+o +03 +09 +04 +10
+o +04 +10 +05 +11
+o +05 +11 +00 +06
+
+vertex +0,00 +2,0 +0,00 # 12
+d +00 +01 +12
+d +01 +02 +12
+d +02 +03 +12
+d +03 +04 +12
+d +04 +05 +12
+d +05 +00 +12
+
+vertex +0,00 -0,5 +0,00 # 13
+d +07 +06 +13
+d +08 +07 +13
+d +09 +08 +13
+d +10 +09 +13
+d +11 +10 +13
+d +06 +11 +13
+
+#f 0 23 191 191 191
+v +14 +24

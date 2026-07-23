@@ -23,6 +23,13 @@ struct InventorySlot : public UI::Control::Base
 	~InventorySlot();
 	InventorySlot();
 
+	// should spin
+	// all spin syncronized
+	// do spin with Uniform ?
+	// what if I want other UI::PolyHedra with independant spin ?
+	// if this is done with Uniform, then there is no rotation in VertexData
+	// so it is seperate
+
 	protected:
 	void	RelayUpdateBox() override;
 	void	RelayInsertObject() override;

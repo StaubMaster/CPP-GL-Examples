@@ -1,4 +1,11 @@
 
+make this like others(Light3D and NoisePlane)
+use NewPolyHedra
+
+F5 to reload
+
+
+
 make a Program
 
 ./PolyHedraDisplay.exe file.polyhedra
@@ -16,7 +23,7 @@ should show information
 
 Display ?
 {
-	int the middle
+	in the middle
 	maybe rotating ?
 	with a refernace Grid ?
 }
