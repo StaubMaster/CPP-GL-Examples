@@ -11,6 +11,7 @@
 
 struct VectorU3;
 struct VectorI3;
+struct VectorF3;
 struct AxisOrientation;
 struct VoxelPallet;
 struct ChunkNeighbour;
@@ -58,7 +59,7 @@ struct ChunkGraphicsData
 	public:
 	void	ClearF();
 	private:
-	void	CatF(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet);
+	void	CatF(const VectorF3 & offset, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet);
 	void	MakeF(const Chunk & chunk, const Array3D<VoxelType> & voxel_types, const ChunkNeighbour & neighbours);
 	void	DoneF();
 	public:

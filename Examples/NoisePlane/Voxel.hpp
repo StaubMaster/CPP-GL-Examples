@@ -18,6 +18,7 @@ struct Voxel
 	AxisOrientation		Orientation;
 
 	bool	IsEmpty() const;
+	bool	IsFloat() const;
 	bool	Visible(AxisRel axis) const;
 
 	void	MakeEmpty();

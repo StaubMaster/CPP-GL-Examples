@@ -137,15 +137,15 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	TimeDataRetrieveData.Start();
 	#endif
 
-	VoxelGeometryDataU::Face axis_data_u = pallet.GeometryPallet -> AxisDataU(orientation.relative(axis));
+	VoxelGeometryDataU::Face geom_face = pallet.GeometryPallet -> AxisDataU(orientation.relative(axis));
 
 	AxisOrientation::SwizzlerU_Ref func = orientation.absoluteU_Func();
 	// this function stays the same per Voxel
 	// get before CatU ?
-	axis_data_u.Data[0].Pos = func(axis_data_u.Data[0].Pos);
-	axis_data_u.Data[1].Pos = func(axis_data_u.Data[1].Pos);
-	axis_data_u.Data[2].Pos = func(axis_data_u.Data[2].Pos);
-	axis_data_u.Data[3].Pos = func(axis_data_u.Data[3].Pos);
+	geom_face.Data[0].Pos = func(geom_face.Data[0].Pos);
+	geom_face.Data[1].Pos = func(geom_face.Data[1].Pos);
+	geom_face.Data[2].Pos = func(geom_face.Data[2].Pos);
+	geom_face.Data[3].Pos = func(geom_face.Data[3].Pos);
 
 	#ifdef MEASURE_TIME
 	TimeDataRetrieveData.Stop();
@@ -162,10 +162,10 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	TimeDataTexture.Start();
 	#endif
 
-	axis_data_u.Data[0].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[0].Tex.Z]).Index;
-	axis_data_u.Data[1].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[1].Tex.Z]).Index;
-	axis_data_u.Data[2].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[2].Tex.Z]).Index;
-	axis_data_u.Data[3].Tex.Z = (pallet.Textures[(int)axis_data_u.Data[3].Tex.Z]).Index;
+	geom_face.Data[0].Tex.Z = pallet.FindTextureFileIndex(geom_face.Data[0].Tex.Z).Index;
+	geom_face.Data[1].Tex.Z = pallet.FindTextureFileIndex(geom_face.Data[1].Tex.Z).Index;
+	geom_face.Data[2].Tex.Z = pallet.FindTextureFileIndex(geom_face.Data[2].Tex.Z).Index;
+	geom_face.Data[3].Tex.Z = pallet.FindTextureFileIndex(geom_face.Data[3].Tex.Z).Index;
 
 	#ifdef MEASURE_TIME
 	TimeDataTexture.Stop();
@@ -173,10 +173,10 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	#endif
 
 	VoxelGraphicsDataU::Vertex data[4];
-	data[0] = VoxelGraphicsDataU::Vertex(u, axis_data_u.Data[0].Pos, axis_data_u.Data[0].Tex, axis, chunk);
-	data[1] = VoxelGraphicsDataU::Vertex(u, axis_data_u.Data[1].Pos, axis_data_u.Data[1].Tex, axis, chunk);
-	data[2] = VoxelGraphicsDataU::Vertex(u, axis_data_u.Data[2].Pos, axis_data_u.Data[2].Tex, axis, chunk);
-	data[3] = VoxelGraphicsDataU::Vertex(u, axis_data_u.Data[3].Pos, axis_data_u.Data[3].Tex, axis, chunk);
+	data[0] = VoxelGraphicsDataU::Vertex(u, geom_face.Data[0].Pos, geom_face.Data[0].Tex, axis, chunk);
+	data[1] = VoxelGraphicsDataU::Vertex(u, geom_face.Data[1].Pos, geom_face.Data[1].Tex, axis, chunk);
+	data[2] = VoxelGraphicsDataU::Vertex(u, geom_face.Data[2].Pos, geom_face.Data[2].Tex, axis, chunk);
+	data[3] = VoxelGraphicsDataU::Vertex(u, geom_face.Data[3].Pos, geom_face.Data[3].Tex, axis, chunk);
 
 	#ifdef MEASURE_TIME
 	TimeDataCompress.Stop();
@@ -281,26 +281,35 @@ void ChunkGraphicsData::ClearF()
 {
 	ArrayF.Clear();
 }
-void ChunkGraphicsData::CatF(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet)
+void ChunkGraphicsData::CatF(const VectorF3 & offset, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet)
 {
 	if (axis == AxisRel::None) { return; }
 
-	VoxelGeometryDataF::Face axis_data_f = pallet.GeometryPallet -> AxisDataF(orientation.relative(axis));
+	const VoxelGeometryDataF::Axis geom_axis = pallet.GeometryPallet -> AxisDataF(orientation.relative(axis));
 
-	VectorF3 offset = VectorI3(u) + (chunk * 32);
-	for (unsigned int i = 0; i < axis_data_f.Data.Count(); i++)
+	for (unsigned int i = 0; i < geom_axis.Data.Count(); i++)
 	{
-		VoxelGraphicsDataF::Face & face = axis_data_f.Data[i];
+		const VoxelGraphicsDataF::Face & geom_face = geom_axis.Data[i];
 
-		face.Vertexes[0].Pos = orientation.absolute(face.Vertexes[0].Pos) + offset;
-		face.Vertexes[1].Pos = orientation.absolute(face.Vertexes[1].Pos) + offset;
-		face.Vertexes[2].Pos = orientation.absolute(face.Vertexes[2].Pos) + offset;
+		VoxelGraphicsDataF::Face & graph_face = BlockF.MakeNext();
 
-		face.Vertexes[0].Tex.Z = (pallet.Textures[(int)face.Vertexes[0].Tex.Z]).Index;
-		face.Vertexes[1].Tex.Z = (pallet.Textures[(int)face.Vertexes[1].Tex.Z]).Index;
-		face.Vertexes[2].Tex.Z = (pallet.Textures[(int)face.Vertexes[2].Tex.Z]).Index;
+		graph_face.Vertexes[0].Pos = orientation.absolute(geom_face.Vertexes[0].Pos) + offset;
+		graph_face.Vertexes[1].Pos = orientation.absolute(geom_face.Vertexes[1].Pos) + offset;
+		graph_face.Vertexes[2].Pos = orientation.absolute(geom_face.Vertexes[2].Pos) + offset;
 
-		BlockF.Insert(face);
+		graph_face.Vertexes[0].Normal = geom_face.Vertexes[0].Normal;
+		graph_face.Vertexes[1].Normal = geom_face.Vertexes[1].Normal;
+		graph_face.Vertexes[2].Normal = geom_face.Vertexes[2].Normal;
+
+		graph_face.Vertexes[0].Tex = geom_face.Vertexes[0].Tex;
+		graph_face.Vertexes[1].Tex = geom_face.Vertexes[1].Tex;
+		graph_face.Vertexes[2].Tex = geom_face.Vertexes[2].Tex;
+
+		graph_face.Vertexes[0].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[0].Tex.Z).Index;
+		graph_face.Vertexes[1].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[1].Tex.Z).Index;
+		graph_face.Vertexes[2].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[2].Tex.Z).Index;
+
+		BlockF.Next();
 	}
 }
 void ChunkGraphicsData::MakeF(const Chunk & chunk, const Array3D<VoxelType> & voxel_types, const ChunkNeighbour & neighbours)
@@ -310,29 +319,20 @@ void ChunkGraphicsData::MakeF(const Chunk & chunk, const Array3D<VoxelType> & vo
 		if (voxel_types.At(u) != VoxelType::DataF) { continue; }
 
 		VectorU3 udx = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
+		VectorF3 offset = VectorI3(udx) + (chunk.Index * 32);
 
-		(void)neighbours;
-		//bool is_visible_prev_x = neighbours.IsVisiblePrevX(voxel_types, udx);
-		//bool is_visible_prev_y = neighbours.IsVisiblePrevY(voxel_types, udx);
-		//bool is_visible_prev_z = neighbours.IsVisiblePrevZ(voxel_types, udx);
-		//bool is_visible_next_x = neighbours.IsVisibleNextX(voxel_types, udx);
-		//bool is_visible_next_y = neighbours.IsVisibleNextY(voxel_types, udx);
-		//bool is_visible_next_z = neighbours.IsVisibleNextZ(voxel_types, udx);
-
-		/*if (is_visible_prev_x || is_visible_prev_y || is_visible_prev_z ||
-			is_visible_next_x || is_visible_next_y || is_visible_next_z)*/
 		{
 			const Voxel & voxel = chunk.Voxels.At(u);
 			const AxisOrientation & orientation = voxel.Orientation;
 			const VoxelPallet & pallet = VoxelPalletMap::All[voxel.Pallet];
 
-			CatF(chunk.Index, udx, AxisRel::Here, orientation, pallet);
-			/*if (is_visible_prev_x)*/ { CatF(chunk.Index, udx, AxisRel::PrevX, orientation, pallet); }
-			/*if (is_visible_prev_y)*/ { CatF(chunk.Index, udx, AxisRel::PrevY, orientation, pallet); }
-			/*if (is_visible_prev_z)*/ { CatF(chunk.Index, udx, AxisRel::PrevZ, orientation, pallet); }
-			/*if (is_visible_next_x)*/ { CatF(chunk.Index, udx, AxisRel::NextX, orientation, pallet); }
-			/*if (is_visible_next_y)*/ { CatF(chunk.Index, udx, AxisRel::NextY, orientation, pallet); }
-			/*if (is_visible_next_z)*/ { CatF(chunk.Index, udx, AxisRel::NextZ, orientation, pallet); }
+			CatF(offset, AxisRel::Here, orientation, pallet);
+			if (neighbours.IsVisiblePrevX(voxel_types, udx)) { CatF(offset, AxisRel::PrevX, orientation, pallet); }
+			if (neighbours.IsVisiblePrevY(voxel_types, udx)) { CatF(offset, AxisRel::PrevY, orientation, pallet); }
+			if (neighbours.IsVisiblePrevZ(voxel_types, udx)) { CatF(offset, AxisRel::PrevZ, orientation, pallet); }
+			if (neighbours.IsVisibleNextX(voxel_types, udx)) { CatF(offset, AxisRel::NextX, orientation, pallet); }
+			if (neighbours.IsVisibleNextY(voxel_types, udx)) { CatF(offset, AxisRel::NextY, orientation, pallet); }
+			if (neighbours.IsVisibleNextZ(voxel_types, udx)) { CatF(offset, AxisRel::NextZ, orientation, pallet); }
 		}
 	}
 }

@@ -9,7 +9,7 @@
 
 namespace VoxelGeometryDataF
 {
-struct Face
+struct Axis
 {
 	Container::Binary<VoxelGraphicsDataF::Face>	Data;
 
@@ -22,13 +22,13 @@ struct Face
 };
 struct Full
 {
-	Face	Here;
-	Face	PrevX;
-	Face	PrevY;
-	Face	PrevZ;
-	Face	NextX;
-	Face	NextY;
-	Face	NextZ;
+	Axis	Here;
+	Axis	PrevX;
+	Axis	PrevY;
+	Axis	PrevZ;
+	Axis	NextX;
+	Axis	NextY;
+	Axis	NextZ;
 
 	void	Done();
 

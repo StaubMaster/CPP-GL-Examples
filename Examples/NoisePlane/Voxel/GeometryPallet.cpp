@@ -76,7 +76,7 @@ const VoxelGeometryDataU::Face & VoxelGeometryPallet::AxisDataU(AxisRel axis) co
 	}
 	throw "VoxelGeometryPallet::AxisDataU: Invalid axis\n";
 }
-const VoxelGeometryDataF::Face & VoxelGeometryPallet::AxisDataF(AxisRel axis) const
+const VoxelGeometryDataF::Axis & VoxelGeometryPallet::AxisDataF(AxisRel axis) const
 {
 	switch (axis)
 	{
@@ -116,7 +116,7 @@ AxisOrientation VoxelGeometryPallet::Orient(AxisRel placeAxis0, AxisRel placeAxi
 
 
 
-static void Quad0(VoxelGeometryDataF::Face & face_data, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
+static void Quad0(VoxelGeometryDataF::Axis & face_data, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
 {
 	VoxelGraphicsDataF::Face	face;
 	face.Vertexes[0] = VoxelGraphicsDataF::Vertex(p00, VectorF3(box.Min.X, box.Min.Y, tex));
@@ -128,7 +128,7 @@ static void Quad0(VoxelGeometryDataF::Face & face_data, VectorF3 p00, VectorF3 p
 	face.Vertexes[2] = VoxelGraphicsDataF::Vertex(p11, VectorF3(box.Max.X, box.Max.Y, tex));
 	face_data.Data.Insert(face);
 }
-static void Quad1(VoxelGeometryDataF::Face & face_data, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
+static void Quad1(VoxelGeometryDataF::Axis & face_data, VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, float tex)
 {
 	VoxelGraphicsDataF::Face	face;
 	face.Vertexes[0] = VoxelGraphicsDataF::Vertex(p00, VectorF3(box.Min.X, box.Min.Y, tex));

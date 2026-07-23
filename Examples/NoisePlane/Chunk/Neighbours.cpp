@@ -90,13 +90,15 @@ bool ChunkNeighbour::IsVisiblePrevX(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.X != 0)
 	{
 		udx.X--;
-		return voxel_types[udx] != VoxelType::DataU;
+		return (voxel_types[udx] != VoxelType::DataU);
 	}
-	else if (Cube[1][1][0] != nullptr && Cube[1][1][0] -> GenerationDone())
+	const Chunk * chunk = Cube[1][1][0];
+	if (chunk != nullptr && chunk -> GenerationDone())
 	{
-		if (Cube[1][1][0] -> IsEmpty()) { return true; }
+		if (chunk -> IsEmpty()) { return true; }
 		udx.X = n;
-		return Cube[1][1][0] -> Voxels[udx].IsEmpty();
+		const Voxel & voxel = chunk -> Voxels[udx];
+		return (voxel.IsEmpty() || voxel.IsFloat());
 	}
 	return false;
 }
@@ -105,13 +107,15 @@ bool ChunkNeighbour::IsVisiblePrevY(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.Y != 0)
 	{
 		udx.Y--;
-		return voxel_types[udx] != VoxelType::DataU;
+		return (voxel_types[udx] != VoxelType::DataU);
 	}
-	else if (Cube[1][0][1] != nullptr && Cube[1][0][1] -> GenerationDone())
+	const Chunk * chunk = Cube[1][0][1];
+	if (chunk != nullptr && chunk -> GenerationDone())
 	{
-		if (Cube[1][0][1] -> IsEmpty()) { return true; }
+		if (chunk -> IsEmpty()) { return true; }
 		udx.Y = n;
-		return Cube[1][0][1] -> Voxels[udx].IsEmpty();
+		const Voxel & voxel = chunk -> Voxels[udx];
+		return (voxel.IsEmpty() || voxel.IsFloat());
 	}
 	return false;
 }
@@ -120,13 +124,15 @@ bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.Z != 0)
 	{
 		udx.Z--;
-		return voxel_types[udx] != VoxelType::DataU;
+		return (voxel_types[udx] != VoxelType::DataU);
 	}
-	else if (Cube[0][1][1] != nullptr && Cube[0][1][1] -> GenerationDone())
+	const Chunk * chunk = Cube[0][1][1];
+	if (chunk != nullptr && chunk -> GenerationDone())
 	{
-		if (Cube[0][1][1] -> IsEmpty()) { return true; }
+		if (chunk -> IsEmpty()) { return true; }
 		udx.Z = n;
-		return Cube[0][1][1] -> Voxels[udx].IsEmpty();
+		const Voxel & voxel = chunk -> Voxels[udx];
+		return (voxel.IsEmpty() || voxel.IsFloat());
 	}
 	return false;
 }
@@ -135,13 +141,15 @@ bool ChunkNeighbour::IsVisibleNextX(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.X != n)
 	{
 		udx.X++;
-		return voxel_types[udx] != VoxelType::DataU;
+		return (voxel_types[udx] != VoxelType::DataU);
 	}
-	else if (Cube[1][1][2] != nullptr && Cube[1][1][2] -> GenerationDone())
+	const Chunk * chunk = Cube[1][1][2];
+	if (chunk != nullptr && chunk -> GenerationDone())
 	{
-		if (Cube[1][1][2] -> IsEmpty()) { return true; }
+		if (chunk -> IsEmpty()) { return true; }
 		udx.X = 0;
-		return Cube[1][1][2] -> Voxels[udx].IsEmpty();
+		const Voxel & voxel = chunk -> Voxels[udx];
+		return (voxel.IsEmpty() || voxel.IsFloat());
 	}
 	return false;
 }
@@ -150,13 +158,15 @@ bool ChunkNeighbour::IsVisibleNextY(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.Y != n)
 	{
 		udx.Y++;
-		return voxel_types[udx] != VoxelType::DataU;
+		return (voxel_types[udx] != VoxelType::DataU);
 	}
-	else if (Cube[1][2][1] != nullptr && Cube[1][2][1] -> GenerationDone())
+	const Chunk * chunk = Cube[1][2][1];
+	if (chunk != nullptr && chunk -> GenerationDone())
 	{
-		if (Cube[1][2][1] -> IsEmpty()) { return true; }
+		if (chunk -> IsEmpty()) { return true; }
 		udx.Y = 0;
-		return Cube[1][2][1] -> Voxels[udx].IsEmpty();
+		const Voxel & voxel = chunk -> Voxels[udx];
+		return (voxel.IsEmpty() || voxel.IsFloat());
 	}
 	return false;
 }
@@ -165,13 +175,15 @@ bool ChunkNeighbour::IsVisibleNextZ(const Array3D<VoxelType> & voxel_types, Vect
 	if (udx.Z != n)
 	{
 		udx.Z++;
-		return voxel_types[udx] != VoxelType::DataU;
+		return (voxel_types[udx] != VoxelType::DataU);
 	}
-	else if (Cube[2][1][1] != nullptr && Cube[2][1][1] -> GenerationDone())
+	const Chunk * chunk = Cube[2][1][1];
+	if (chunk != nullptr && chunk -> GenerationDone())
 	{
-		if (Cube[2][1][1] -> IsEmpty()) { return true; }
+		if (chunk -> IsEmpty()) { return true; }
 		udx.Z = 0;
-		return Cube[2][1][1] -> Voxels[udx].IsEmpty();
+		const Voxel & voxel = chunk -> Voxels[udx];
+		return (voxel.IsEmpty() || voxel.IsFloat());
 	}
 	return false;
 }

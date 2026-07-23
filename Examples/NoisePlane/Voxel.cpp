@@ -7,6 +7,13 @@
 
 
 bool Voxel::IsEmpty() const { return (Pallet == 0xFFFF); }
+bool Voxel::IsFloat() const
+{
+	if (IsEmpty()) { return false; }
+	const VoxelPallet & pallet = VoxelPalletMap::All[Pallet];
+	if (pallet.GeometryPallet == nullptr) { return false; }
+	return (pallet.GeometryPallet -> UseF);
+}
 bool Voxel::Visible(AxisRel axis) const
 {
 	if (IsEmpty()) { return true; }

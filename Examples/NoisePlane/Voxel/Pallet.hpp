@@ -25,28 +25,30 @@ class PolyHedra;
 struct TextureFileIndex
 {
 	FileInfo		File;
-	unsigned int	Index;
+	unsigned short	Index = 0xFFFF;
 };
 
 struct VoxelPallet
 {
-	const char *					Name;
-	const VoxelGeometryPallet *		GeometryPallet;
+	const char *					Name = nullptr;
+	const VoxelGeometryPallet *		GeometryPallet = nullptr;
 
 	TextureFileIndex	Textures[6];
-	::PolyHedra *		PolyHedra;
-	unsigned int		Index;
+	::PolyHedra *		PolyHedra = nullptr;
+	unsigned short		Index = 0xFFFF;
 
 
 
-	~VoxelPallet();
-	VoxelPallet();
+	~VoxelPallet() = default;
+	VoxelPallet() = default;
+	VoxelPallet(const VoxelPallet & other) = default;
+	VoxelPallet & operator=(const VoxelPallet & other) = default;
+
 	VoxelPallet(const char * name, const VoxelGeometryPallet & geometry_template, unsigned int idx);
 
-	VoxelPallet(const VoxelPallet & other);
-	VoxelPallet & operator=(const VoxelPallet & other);
 
 
+	TextureFileIndex	FindTextureFileIndex(int idx) const;
 
 	void	TextureAxis(
 		FileInfo prevX, FileInfo prevY, FileInfo prevZ,

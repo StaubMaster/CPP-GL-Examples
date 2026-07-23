@@ -23,7 +23,7 @@ struct VoxelGeometryPallet
 	VoxelGeometryDataF::Full	GraphicsDataF; // this is Graphics Data. this whole struct is general VoxelTypeTemplate
 
 	const VoxelGeometryDataU::Face &	AxisDataU(AxisRel axis) const;
-	const VoxelGeometryDataF::Face &	AxisDataF(AxisRel axis) const;
+	const VoxelGeometryDataF::Axis &	AxisDataF(AxisRel axis) const;
 
 	// Full Cube Dosent need these ?
 	bool	HidePrevX;

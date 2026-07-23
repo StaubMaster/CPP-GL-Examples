@@ -2,7 +2,7 @@
 
 
 
-void VoxelGeometryDataF::Face::Done()
+void VoxelGeometryDataF::Axis::Done()
 {
 	for (unsigned int i = 0; i < Data.Count(); i++)
 	{

@@ -6,84 +6,73 @@
 
 
 
-VoxelPallet::~VoxelPallet()
-{ }
-VoxelPallet::VoxelPallet()
-	: Name(nullptr)
-	, GeometryPallet(nullptr)
-	, PolyHedra(nullptr)
-	, Index(0xFFFF)
-{ }
 VoxelPallet::VoxelPallet(const char * name, const VoxelGeometryPallet & geometry_template, unsigned int idx)
 	: Name(name)
 	, GeometryPallet(&geometry_template)
+	, Textures()
 	, PolyHedra(nullptr)
 	, Index(idx)
 { }
 
-VoxelPallet::VoxelPallet(const VoxelPallet & other)
-	: Name(other.Name)
-	, GeometryPallet(other.GeometryPallet)
-	, PolyHedra(other.PolyHedra)
-	, Index(other.Index)
-{ }
-VoxelPallet & VoxelPallet::operator=(const VoxelPallet & other)
+
+
+TextureFileIndex VoxelPallet::FindTextureFileIndex(int idx) const
 {
-	Name = other.Name;
-	GeometryPallet = other.GeometryPallet;
-	PolyHedra = other.PolyHedra;
-	Index = other.Index;
-	return *this;
+	if (idx >= 0 && idx < 6)
+	{
+		return Textures[idx];
+	}
+	TextureFileIndex tex;
+	tex.Index = 0;
+	return tex;
 }
-
-
 
 void VoxelPallet::TextureAxis(
 	FileInfo prevX, FileInfo prevY, FileInfo prevZ,
 	FileInfo nextX, FileInfo nextY, FileInfo nextZ
 )
 {
-	Textures[0].File = prevX; Textures[0].Index = -1;
-	Textures[1].File = prevY; Textures[1].Index = -1;
-	Textures[2].File = prevZ; Textures[2].Index = -1;
-	Textures[3].File = nextX; Textures[3].Index = -1;
-	Textures[4].File = nextY; Textures[4].Index = -1;
-	Textures[5].File = nextZ; Textures[5].Index = -1;
+	Textures[0].File = prevX; Textures[0].Index = 0xFFFF;
+	Textures[1].File = prevY; Textures[1].Index = 0xFFFF;
+	Textures[2].File = prevZ; Textures[2].Index = 0xFFFF;
+	Textures[3].File = nextX; Textures[3].Index = 0xFFFF;
+	Textures[4].File = nextY; Textures[4].Index = 0xFFFF;
+	Textures[5].File = nextZ; Textures[5].Index = 0xFFFF;
 }
 void VoxelPallet::TextureAxis(
 	FileInfo axisX, FileInfo axisY, FileInfo axisZ
 )
 {
-	Textures[0].File = axisX; Textures[0].Index = -1;
-	Textures[1].File = axisY; Textures[1].Index = -1;
-	Textures[2].File = axisZ; Textures[2].Index = -1;
-	Textures[3].File = axisX; Textures[3].Index = -1;
-	Textures[4].File = axisY; Textures[4].Index = -1;
-	Textures[5].File = axisZ; Textures[5].Index = -1;
+	Textures[0].File = axisX; Textures[0].Index = 0xFFFF;
+	Textures[1].File = axisY; Textures[1].Index = 0xFFFF;
+	Textures[2].File = axisZ; Textures[2].Index = 0xFFFF;
+	Textures[3].File = axisX; Textures[3].Index = 0xFFFF;
+	Textures[4].File = axisY; Textures[4].Index = 0xFFFF;
+	Textures[5].File = axisZ; Textures[5].Index = 0xFFFF;
 }
 void VoxelPallet::TexturePrismY(FileInfo base, FileInfo belt)
 {
-	Textures[0].File = belt; Textures[0].Index = -1;
-	Textures[1].File = base; Textures[1].Index = -1;
-	Textures[2].File = belt; Textures[2].Index = -1;
-	Textures[3].File = belt; Textures[3].Index = -1;
-	Textures[4].File = base; Textures[4].Index = -1;
-	Textures[5].File = belt; Textures[5].Index = -1;
+	Textures[0].File = belt; Textures[0].Index = 0xFFFF;
+	Textures[1].File = base; Textures[1].Index = 0xFFFF;
+	Textures[2].File = belt; Textures[2].Index = 0xFFFF;
+	Textures[3].File = belt; Textures[3].Index = 0xFFFF;
+	Textures[4].File = base; Textures[4].Index = 0xFFFF;
+	Textures[5].File = belt; Textures[5].Index = 0xFFFF;
 }
 void VoxelPallet::TextureAll(FileInfo tex)
 {
-	Textures[0].File = tex; Textures[0].Index = -1;
-	Textures[1].File = tex; Textures[1].Index = -1;
-	Textures[2].File = tex; Textures[2].Index = -1;
-	Textures[3].File = tex; Textures[3].Index = -1;
-	Textures[4].File = tex; Textures[4].Index = -1;
-	Textures[5].File = tex; Textures[5].Index = -1;
+	Textures[0].File = tex; Textures[0].Index = 0xFFFF;
+	Textures[1].File = tex; Textures[1].Index = 0xFFFF;
+	Textures[2].File = tex; Textures[2].Index = 0xFFFF;
+	Textures[3].File = tex; Textures[3].Index = 0xFFFF;
+	Textures[4].File = tex; Textures[4].Index = 0xFFFF;
+	Textures[5].File = tex; Textures[5].Index = 0xFFFF;
 }
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Skin/Skin.hpp"
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::Face & data)
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::Axis & data)
 {
 	Skin & skin = *(polyhedra.Skins[0]);
 	VectorF3 off(0.5f);
@@ -318,15 +307,45 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 
 #include "Chunk/Manager.hpp"
 
+static unsigned short	FindFile(const Container::Binary<FileInfo> & files, const FileInfo & file)
+{
+	for (unsigned int i = 0; i < files.Count(); i++)
+	{
+		if (files[i].Name() == file.Name())
+		{
+			return i;
+		}
+	}
+	return 0xFFFF;
+}
+static unsigned short	MakeFile(Container::Binary<FileInfo> & files, const FileInfo & file)
+{
+	unsigned short idx = files.Count();
+	files.Insert(file);
+	return idx;
+}
+static unsigned short	FindMakeFile(Container::Binary<FileInfo> & files, const FileInfo & file)
+{
+	unsigned short idx = FindFile(files, file);
+	if (idx == 0xFFFF)
+	{
+		idx = MakeFile(files, file);
+	}
+	return idx;
+}
+
 void VoxelPalletMap::LoadTextures(ChunkManager & manager)
 {
 	std::cout << "LoadTextures ....\n";
 	Container::Binary<FileInfo> files;
 	for (unsigned int i = 0; i < VoxelPalletMap::All.Data.Count(); i++)
 	{
+		VoxelPallet & pallet = VoxelPalletMap::All.Data[i];
 		for (unsigned int k = 0; k < 6; k++)
 		{
-			unsigned int j = 0xFFFFFFFF;
+			TextureFileIndex & tex = pallet.Textures[k];
+			tex.Index = FindMakeFile(files, tex.File);
+			/*unsigned int j = 0xFFFFFFFF;
 			for (unsigned int f = 0; f < files.Count(); f++)
 			{
 				if (files[f].Name() == (VoxelPalletMap::All.Data[i].Textures[k].File.Name()))
@@ -340,7 +359,7 @@ void VoxelPalletMap::LoadTextures(ChunkManager & manager)
 				j = files.Count();
 				files.Insert(VoxelPalletMap::All.Data[i].Textures[k].File);
 			}
-			VoxelPalletMap::All.Data[i].Textures[k].Index = j;
+			VoxelPalletMap::All.Data[i].Textures[k].Index = j;*/
 		}
 	}
 	std::cout << "Textures: " << files.Count() << '\n';

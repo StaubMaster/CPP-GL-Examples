@@ -1029,9 +1029,9 @@ struct VoxelChunkMemoryInfo
 
 		ss << "DataF Entrys:" << buffer_data_f_entrys << '\n';
 		ss << "DataF Memory: ";
-		ss << Memory1000ToString(buffer_data_f_memory * sizeof(VoxelGeometryDataF::Face));
+		ss << Memory1000ToString(buffer_data_f_memory * sizeof(VoxelGeometryDataF::Axis));
 		ss << " / ";
-		ss << Memory1000ToString(buffer_data_f_limit * sizeof(VoxelGeometryDataF::Face));
+		ss << Memory1000ToString(buffer_data_f_limit * sizeof(VoxelGeometryDataF::Axis));
 		ss << '\n';
 
 		/*ss << "DataU Memory:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));
