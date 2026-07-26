@@ -43,12 +43,20 @@ pallet Chair.polyhedra                       chair
 
 
 
-#pallet LightBulb.polyhedra                   light_bulb
-#place light_bulb   0 64 0   00 00 00
+pallet LightBulb.polyhedra                   light_bulb
+place light_bulb   -10 64 0   00 00 00
 
-#pallet ../Tools/Stick.polyhedra tool
-pallet ../Tools/Spade.polyhedra tool
-place tool   0 64 0   00 00 00
+pallet ../Tools/Stick.polyhedra  tool0
+pallet ../Tools/Spade.polyhedra  tool1
+pallet ../Tools/Pick.polyhedra   tool2
+pallet ../Tools/Hammer.polyhedra tool3
+place tool0   05 64 0   00 00 00
+place tool1   10 64 0   00 00 00
+place tool2   15 64 0   00 00 00
+place tool3   20 64 0   00 00 00
+
+pallet ../OrderTest.polyhedra test
+place test   -05 64 0   00 00 00
 
 
 

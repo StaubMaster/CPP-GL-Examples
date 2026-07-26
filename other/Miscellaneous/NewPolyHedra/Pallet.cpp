@@ -109,11 +109,11 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 		const Skin * skin = Object -> Skins[0];
 		for (unsigned int f = 0; f < skin -> Faces.Count(); f++)
 		{
-			int c = f * 3;
+			unsigned int c = f * 3;
 			const Skin::Face & face = skin -> Faces[f];
-			data[c + 0].Texture = face.Corner[0];
-			data[c + 1].Texture = face.Corner[1];
-			data[c + 2].Texture = face.Corner[2];
+			if (c + 0 < data.Length()) { data[c + 0].Texture = face.Corner[0]; }
+			if (c + 1 < data.Length()) { data[c + 1].Texture = face.Corner[1]; }
+			if (c + 2 < data.Length()) { data[c + 2].Texture = face.Corner[2]; }
 		}
 	}
 

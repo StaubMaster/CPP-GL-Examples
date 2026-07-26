@@ -26,6 +26,7 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
 	{
 		const PolyHedra::Face & face = polyhedra.Faces[i];
+		if (!face.Check(polyhedra.Corners.Count())) { continue; }
 
 		TriangleF3 triangle(
 			polyhedra.Corners[face.udx[0]].Position,
@@ -37,8 +38,7 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 		triangle.B = trans.forward(triangle.B);
 		triangle.C = trans.forward(triangle.C);
 
-		RayHitF3 hit = InteractF3::Triangle(ray, triangle);
-		hit_return.Consider(hit, i);
+		hit_return.Consider(InteractF3::Triangle(ray, triangle), i);
 	}
 	return hit_return;
 }
@@ -48,6 +48,7 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
 	{
 		const PolyHedra::Face & face = polyhedra.Faces[i];
+		if (!face.Check(polyhedra.Corners.Count())) { continue; }
 
 		TriangleF3 triangle(
 			polyhedra.Corners[face.udx[0]].Position,
@@ -59,8 +60,7 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 		triangle.B = trans.forward(triangle.B * scale);
 		triangle.C = trans.forward(triangle.C * scale);
 
-		RayHitF3 hit = InteractF3::Triangle(ray, triangle);
-		hit_return.Consider(hit, i);
+		hit_return.Consider(InteractF3::Triangle(ray, triangle), i);
 	}
 	return hit_return;
 }
