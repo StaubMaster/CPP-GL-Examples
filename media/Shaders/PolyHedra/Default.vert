@@ -4,27 +4,27 @@
 
 struct Trans3D
 {
-	vec3 Pos;
-	mat3 Rot;
+	vec3	Pos;
+	mat3	Rot;
 };
 
 struct PixelSize
 {
-	vec2 Full;
-	vec2 Half;
+	vec2	Full;
+	vec2	Half;
 };
 struct sDisplaySize
 {
-	vec2 Ratio;
-	PixelSize Window;
-	PixelSize Buffer;
+	vec2		Ratio;
+	PixelSize	Window;
+	PixelSize	Buffer;
 };
 
 struct RangeData
 {
-	float Min;
-	float Len;
-	float Max;
+	float	Min;
+	float	Len;
+	float	Max;
 };
 
 struct DepthData
@@ -46,22 +46,24 @@ uniform float FOV;
 
 
 
-layout(location = 0) in vec3 VPos;
-layout(location = 1) in vec3 VNormal;
-layout(location = 2) in vec3 VTex;
+layout(location =  0) in vec3 VPos;
+layout(location =  1) in vec3 VNormal;
+layout(location =  2) in vec3 VTex;
+layout(location = 15) in vec4 VColor;
 
-layout(location = 3) in mat4 ITrans; // 3 4 5 6
-layout(location = 7) in mat4 INormal; // 7 8 9 10
+layout(location =  3) in mat4 ITrans; // 3 4 5 6
+layout(location =  7) in mat4 INormal; // 7 8 9 10
 
 
 
 out Vert {
-	vec3 Original;
-	vec3 Absolute;
-	vec3 Relative;
+	vec3	Original;
+	vec3	Absolute;
+	vec3	Relative;
 
-	vec3 Normal;
-	vec3 Tex;
+	vec3	Normal;
+	vec3	Tex;
+	vec4	Color;
 } vs_out;
 
 
@@ -94,4 +96,5 @@ void main()
 	vs_out.Normal = (vec4(VNormal, 1) * INormal).xyz;
 	//vs_out.Normal = (vec4(VPos + VNormal, 1) * ITrans).xyz - vs_out.Absolute;
 	vs_out.Tex = VTex;
+	vs_out.Color = VColor;
 }

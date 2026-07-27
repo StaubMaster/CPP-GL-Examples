@@ -3,6 +3,7 @@
 
 # include "Graphics/Attribute/General/Layout.hpp"
 # include "Graphics/Attribute/TypeDefs/VectorF3.hpp"
+# include "Graphics/Attribute/TypeDefs/ColorF4.hpp"
 
 namespace NewPolyHedra
 {
@@ -14,6 +15,7 @@ class Layout : public ::Attribute::Layout
 	::Attribute::VectorF3	Position;
 	::Attribute::VectorF3	Normal;
 	::Attribute::VectorF3	Texture;
+	::Attribute::ColorF4	Color;
 	public:
 	~Layout();
 	Layout();

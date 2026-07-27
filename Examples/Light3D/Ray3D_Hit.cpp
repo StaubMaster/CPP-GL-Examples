@@ -29,9 +29,9 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 		if (!face.Check(polyhedra.Corners.Count())) { continue; }
 
 		TriangleF3 triangle(
-			polyhedra.Corners[face.udx[0]].Position,
-			polyhedra.Corners[face.udx[1]].Position,
-			polyhedra.Corners[face.udx[2]].Position
+			polyhedra.Corners[face.idx[0]].Position,
+			polyhedra.Corners[face.idx[1]].Position,
+			polyhedra.Corners[face.idx[2]].Position
 		);
 
 		triangle.A = trans.forward(triangle.A);
@@ -51,9 +51,9 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 		if (!face.Check(polyhedra.Corners.Count())) { continue; }
 
 		TriangleF3 triangle(
-			polyhedra.Corners[face.udx[0]].Position,
-			polyhedra.Corners[face.udx[1]].Position,
-			polyhedra.Corners[face.udx[2]].Position
+			polyhedra.Corners[face.idx[0]].Position,
+			polyhedra.Corners[face.idx[1]].Position,
+			polyhedra.Corners[face.idx[2]].Position
 		);
 
 		triangle.A = trans.forward(triangle.A * scale);

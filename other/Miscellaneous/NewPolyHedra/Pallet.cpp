@@ -52,10 +52,9 @@ void NewPolyHedra::Pallet::GraphicsPut()
 		Object -> CalcNormals();
 		GraphicsPutFull();
 		GraphicsPutWire();
-		// why is this hardcoded to allways use Skins[0] ?
-		if (Object -> Skins.Count() != 0)
+		if (Object -> Skin != nullptr)
 		{
-			Texture = Object -> Skins[0] -> ToTexture();
+			Texture = Object -> Skin -> ToTexture();
 		}
 	}
 }
@@ -69,13 +68,13 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 		const PolyHedra::Face & face = Object -> Faces[f];
 		if (face.Check(Object -> Corners.Count()))
 		{
-			const PolyHedra::Corner & cornerX = Object -> Corners[face.udx[0]];
-			const PolyHedra::Corner & cornerY = Object -> Corners[face.udx[1]];
-			const PolyHedra::Corner & cornerZ = Object -> Corners[face.udx[2]];
+			const PolyHedra::Corner & corner0 = Object -> Corners[face.idx[0]];
+			const PolyHedra::Corner & corner1 = Object -> Corners[face.idx[1]];
+			const PolyHedra::Corner & corner2 = Object -> Corners[face.idx[2]];
 
-			data[c + 0].Position = cornerX.Position;
-			data[c + 1].Position = cornerY.Position;
-			data[c + 2].Position = cornerZ.Position;
+			data[c + 0].Position = corner0.Position;
+			data[c + 1].Position = corner1.Position;
+			data[c + 2].Position = corner2.Position;
 
 			if (!Object -> UseCornerNormals)
 			{
@@ -85,9 +84,9 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 			}
 			else
 			{
-				data[c + 0].Normal = cornerX.Normal;
-				data[c + 1].Normal = cornerY.Normal;
-				data[c + 2].Normal = cornerZ.Normal;
+				data[c + 0].Normal = corner0.Normal;
+				data[c + 1].Normal = corner1.Normal;
+				data[c + 2].Normal = corner2.Normal;
 			}
 		}
 		else
@@ -96,24 +95,30 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 		}
 	}
 
-	// why is this hardcoded to allways use Skins[0] ?
-	if (Object -> Skins.Count() == 0)
+	for (unsigned int i = 0; i < data.Length(); i++)
 	{
-		for (unsigned int i = 0; i < data.Length(); i++)
-		{
-			data[i].Texture = VectorF3();
-		}
+		data[i].Texture = VectorF3();
+		data[i].Color = ColorF4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
-	else
+	if (Object -> Skin != nullptr)
 	{
-		const Skin * skin = Object -> Skins[0];
-		for (unsigned int f = 0; f < skin -> Faces.Count(); f++)
+		const Skin & skin = *(Object -> Skin);
+		for (unsigned int f = 0; f < skin.Faces.Count(); f++)
 		{
-			unsigned int c = f * 3;
-			const Skin::Face & face = skin -> Faces[f];
-			if (c + 0 < data.Length()) { data[c + 0].Texture = face.Corner[0]; }
-			if (c + 1 < data.Length()) { data[c + 1].Texture = face.Corner[1]; }
-			if (c + 2 < data.Length()) { data[c + 2].Texture = face.Corner[2]; }
+			const Skin::Face & face = skin.Faces[f];
+			for (unsigned int c = 0; c < 3; c++)
+			{
+				const Skin::Corner & corner = skin.Corners[face.idx[c]];
+				unsigned int idx = (f * 3) + c;
+				if (idx < data.Length())
+				{
+					data[idx].Texture.X = corner.Coord.X;
+					data[idx].Texture.Y = corner.Coord.Y;
+					data[idx].Texture.Z = corner.Index;
+					data[idx].Color = corner.Color;
+					//data[idx].Color = ColorF4(0, 0, 1, 0.25f);
+				}
+			}
 		}
 	}
 

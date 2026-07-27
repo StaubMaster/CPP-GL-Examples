@@ -464,6 +464,7 @@ void Light3DContext::ChangeMedia()
 		PalletManager.BufferFullLayout.Position.Change(0);
 		PalletManager.BufferFullLayout.Normal.Change(1);
 		PalletManager.BufferFullLayout.Texture.Change(2);
+		PalletManager.BufferFullLayout.Color.Change(15);
 	}
 	{
 		PalletManager.BufferWireLayout.Pos.Change(0);

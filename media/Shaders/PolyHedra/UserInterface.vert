@@ -40,28 +40,26 @@ uniform float FOV;
 
 
 
-layout(location = 0) in vec3 MainPos;
-layout(location = 1) in vec3 MainNormal;
-layout(location = 2) in vec3 MainTex;
+layout(location =  0) in vec3 MainPos;
+layout(location =  1) in vec3 MainNormal;
+layout(location =  2) in vec3 MainTex;
 
-//layout(location = 3) in vec3 InstPos; // 3
-//layout(location = 4) in mat3 InstRot; // 4 5 6
-layout(location = 3) in mat4 InstTrans; // 3 4 5 6
+layout(location =  3) in mat4 InstTrans; // 3 4 5 6
 
-layout(location = 7) in mat4 InstNormal; // 7 8 9 10
+layout(location =  7) in mat4  InstNormal; // 7 8 9 10
 layout(location = 11) in float InstScale;
-layout(location = 12) in vec4 InstColor;
+layout(location = 12) in vec4  InstColor;
 
 
 
 out Vert {
-	vec3 Original;
-	vec3 Absolute;
-	vec3 Relative;
+	vec3	Original;
+	vec3	Absolute;
+	vec3	Relative;
 
-	vec3 Normal;
-	vec3 Tex;
-	vec4 Color;
+	vec3	Normal;
+	vec3	Tex;
+	vec4	Color;
 } vs_out;
 
 

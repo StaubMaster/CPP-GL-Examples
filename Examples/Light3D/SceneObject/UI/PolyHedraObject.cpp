@@ -61,7 +61,7 @@ void UI::Control::PolyHedraObject::Update()
 		std::stringstream ss;
 		ss.str(std::string()); ss << "Name:" << (polyhedra.Name); PalletName.SetText(ss.str());
 		ss.str(std::string()); ss << "File:" << (polyhedra.File.Path); PalletFile.SetText(ss.str());
-		ss.str(std::string()); ss << "Skins :" << (polyhedra.Skins.Count()); PalletSkinsCount.SetText(ss.str());
+		ss.str(std::string()); ss << "Skin:" << (polyhedra.Skin); PalletSkinsCount.SetText(ss.str());
 	}
 	else
 	{

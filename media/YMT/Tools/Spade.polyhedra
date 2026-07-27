@@ -1,6 +1,8 @@
 Type PolyHedra
 Format Normal
 
+Skin Spade.skin
+
 # this uses Stick with stuff on it
 # have a way in read that .polyhedra file
 # and then add this stuff to it
@@ -52,6 +54,7 @@ p -1,00 +0,4 -0,19 # 15
 o +00 +01 +04 +05
 o +01 +02 +05 +06
 o +02 +03 +06 +07
+
 o +10 +14 +11 +15
 o +09 +13 +10 +14
 o +08 +12 +09 +13
