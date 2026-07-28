@@ -215,7 +215,7 @@ void main()
 	vec4 col = texture(TextureImage, fs_inn.Tex);
 	col = (col * (1.0 - fs_inn.Color.a)) + (fs_inn.Color.a * fs_inn.Color);
 
-//	col = col * light_factor;
+	col = col * light_factor;
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
 //	Color = vec4(abs(normalize(fs_inn.Normal)), 1.0);

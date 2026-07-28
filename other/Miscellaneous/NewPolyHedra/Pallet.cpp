@@ -89,10 +89,6 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 				data[c + 2].Normal = corner2.Normal;
 			}
 		}
-		else
-		{
-			//std::cout << "Invalid Face\n";
-		}
 	}
 
 	for (unsigned int i = 0; i < data.Length(); i++)
@@ -116,7 +112,6 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 					data[idx].Texture.Y = corner.Coord.Y;
 					data[idx].Texture.Z = corner.Index;
 					data[idx].Color = corner.Color;
-					//data[idx].Color = ColorF4(0, 0, 1, 0.25f);
 				}
 			}
 		}

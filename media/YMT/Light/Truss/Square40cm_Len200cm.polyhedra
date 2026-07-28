@@ -84,6 +84,8 @@ offset +8
 
 
 default } # didnt feel like inverting circle direcitons
+# this reverses both circle and belt. so it dosent do anything
+
 
 
 #	Diagonal	X-
