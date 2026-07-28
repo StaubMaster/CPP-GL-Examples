@@ -49,6 +49,7 @@ uniform sDisplaySize DisplaySize;
 layout(location = 0) in vec3 VPos;
 layout(location = 1) in vec3 VNormal;
 layout(location = 2) in vec3 VTex;
+layout(location = 15) in vec4 VColor;
 
 //layout(location = 3) in mat4 ITrans; // 3 4 5 6
 //layout(location = 7) in mat4 INormal; // 7 8 9 10
@@ -60,12 +61,13 @@ layout(location = 5) in mat3 IRot; // 5 6 7
 
 
 out Vert {
-	vec3 Original;
-	vec3 Absolute;
-	vec3 Relative;
+	vec3	Original;
+	vec3	Absolute;
+	vec3	Relative;
 
-	vec3 Normal;
-	vec3 Tex;
+	vec3	Normal;
+	vec3	Tex;
+	vec4	Color;
 } vs_out;
 
 
@@ -98,4 +100,5 @@ void main()
 
 	vs_out.Normal = VNormal;
 	vs_out.Tex = VTex;
+	vs_out.Color = VColor;
 }

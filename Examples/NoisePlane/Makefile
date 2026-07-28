@@ -40,6 +40,7 @@ FILES := \
 \
 	Item/ItemBase.cpp \
 	Item/ItemVoxel.cpp \
+	Item/ItemTool.cpp \
 	Item/ItemContainer.cpp \
 \
 	Menus/Item/InventorySlot.cpp \

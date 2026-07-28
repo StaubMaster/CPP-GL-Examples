@@ -72,9 +72,10 @@ void VoxelPallet::TextureAll(FileInfo tex)
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Skin/Skin.hpp"
+#include "PolyHedra/Skin/Data.hpp"
 static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::Axis & data)
 {
-	Skin & skin = *(polyhedra.Skins[0]);
+	Skin & skin = *polyhedra.Skin;
 	VectorF3 off(0.5f);
 	for (unsigned int i = 0; i < data.Data.Count(); i++)
 	{
@@ -86,11 +87,11 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::
 		polyhedra.Insert_Corn(PolyHedra::Corner(face.Vertexes[2].Pos - off));
 		polyhedra.Insert_Face3(ph_i + 0, ph_i + 1, ph_i + 2);
 
-		skin.Insert_Face3(
-			face.Vertexes[0].Tex,
-			face.Vertexes[1].Tex,
-			face.Vertexes[2].Tex
-		);
+		unsigned int sk_i = skin.Corners.Count();
+		skin.Corners.Insert(Skin::Corner(face.Vertexes[0].Tex.X, face.Vertexes[0].Tex.Y, face.Vertexes[0].Tex.Z));
+		skin.Corners.Insert(Skin::Corner(face.Vertexes[1].Tex.X, face.Vertexes[1].Tex.Y, face.Vertexes[1].Tex.Z));
+		skin.Corners.Insert(Skin::Corner(face.Vertexes[2].Tex.X, face.Vertexes[2].Tex.Y, face.Vertexes[2].Tex.Z));
+		skin.Insert_Face3(sk_i + 0, sk_i + 1, sk_i + 2);
 	}
 }
 static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::Full & voxel_graphics)
@@ -113,7 +114,7 @@ void VoxelPallet::MakePolyHedra()
 		skin -> Images.Insert(Textures[i].File.LoadImage());
 	}
 	skin -> Done();
-	PolyHedra -> Skins.Insert(skin);
+	PolyHedra -> Skin = skin;
 	PolyHedraVoxelData(*PolyHedra, GeometryPallet -> GraphicsDataF);
 }
 

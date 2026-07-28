@@ -62,6 +62,7 @@
 // Item
 #include "Item/ItemBase.hpp"
 #include "Item/ItemVoxel.hpp"
+#include "Item/ItemTool.hpp"
 #include "Item/ItemContainer.hpp"
 #include "Menus/Item/Inventory.hpp"
 

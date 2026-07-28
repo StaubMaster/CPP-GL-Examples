@@ -93,5 +93,6 @@ void PauseMenu::ExitFunc(ClickArgs args)
 	if (args.Action == Action::Press)
 	{
 		//ContextBase::Change(newSelectorContext);
+		ContextBase::Quit();
 	}
 }

@@ -1,6 +1,7 @@
 #include "InventorySlot.hpp"
 
 #include "Item/ItemVoxel.hpp"
+#include "Item/ItemTool.hpp"
 
 #include "Display/DisplaySize.hpp"
 
@@ -40,29 +41,49 @@ void InventorySlot::RelayUpdateBox()
 }
 void InventorySlot::RelayInsertObject()
 {
-	if (Item != nullptr && *Item != nullptr)
+	if (Item != nullptr)
 	{
-		ItemVoxel * item = (ItemVoxel*)*Item;
-		if (item -> VoxelPallet != nullptr && item -> VoxelPallet -> PolyHedra != nullptr)
 		{
-			ItemObject.Create(item -> VoxelPallet -> PolyHedra);
-			if (ItemObject.Is())
+			ItemVoxel * item = dynamic_cast<ItemVoxel*>(*Item);
+			if (item != nullptr && item -> VoxelPallet != nullptr && item -> VoxelPallet -> PolyHedra != nullptr)
 			{
-				ItemObject.Data().Size = VectorF2(32, 32);
-				ItemObject.Data().Pos = DisplayBox.Center();
-				ItemObject.Data().Rot = EulerAngle3D::Degrees(0, 30, 45).reverse();
-			}
-			if (Item != nullptr)
-			{
-				ItemVoxel * item = dynamic_cast<ItemVoxel*>(*Item);
-				if (item != nullptr)
+				ItemObject.Create(item -> VoxelPallet -> PolyHedra);
+				if (ItemObject.Is())
 				{
-					TextObject.Create();
-					if (TextObject.Is())
-					{
-						TextObject.Text() = "";
-						TextObject.TextPosition() = DisplayBox.Center();
-					}
+					ItemObject.Data().Size = VectorF2(32, 32);
+					ItemObject.Data().Pos = DisplayBox.Center();
+					ItemObject.Data().Rot = EulerAngle3D::Degrees(0, 30, 45).reverse();
+				}
+				TextObject.Create();
+				if (TextObject.Is())
+				{
+					TextObject.Text() = "";
+					TextObject.TextPosition() = DisplayBox.Center();
+				}
+			}
+		}
+		{
+			ItemTool * item = dynamic_cast<ItemTool*>(*Item);
+			if (item != nullptr && item -> Pallet != nullptr)
+			{
+				ItemObject.Create(item -> Pallet);
+				if (ItemObject.Is())
+				{
+					ItemObject.Data().Size = VectorF2(32, 32);
+					// this scales the [-1;+1] box
+					// but anything outside of the box is still culled
+					// just give everything a seperate scale factor ?
+
+					// also depth in general is wrong
+
+					ItemObject.Data().Pos = DisplayBox.Center();
+					ItemObject.Data().Rot = EulerAngle3D::Degrees(0, 30, 45).reverse();
+				}
+				TextObject.Create();
+				if (TextObject.Is())
+				{
+					TextObject.Text() = "";
+					TextObject.TextPosition() = DisplayBox.Center();
 				}
 			}
 		}
