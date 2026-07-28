@@ -62,12 +62,16 @@ float CalcDepthFactor()
 
 void main()
 {
-	float	depth_factor = CalcDepthFactor();
+//	float	depth_factor = CalcDepthFactor();
 
 	vec4 col = texture(texture0, fs_inn.Tex);
 	col = (col * (1.0 - fs_inn.Color.a)) + (fs_inn.Color.a * fs_inn.Color);
 
-	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
+	vec3 light_dir = normalize(vec3(-1, -2, +5));
+	float light_factor = dot(fs_inn.Normal, -light_dir);
+	col = col * light_factor;
+
+//	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
 	Color = col;
 }

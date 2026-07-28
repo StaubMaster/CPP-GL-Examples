@@ -51,12 +51,10 @@ layout(location = 1) in vec3 VNormal;
 layout(location = 2) in vec3 VTex;
 layout(location = 15) in vec4 VColor;
 
-//layout(location = 3) in mat4 ITrans; // 3 4 5 6
-//layout(location = 7) in mat4 INormal; // 7 8 9 10
-
 layout(location = 3) in vec2 ISize;
 layout(location = 4) in vec2 IPos;
 layout(location = 5) in mat3 IRot; // 5 6 7
+layout(location = 8) in float IScale;
 
 
 
@@ -93,12 +91,12 @@ void main()
 	vec2 pos = (IPos / DisplaySize.Buffer.Half);
 	pos = vec2(pos.x - 1.0, 1.0 - pos.y);
 
-	vs_out.Original = VPos;
+	vs_out.Original = VPos * IScale;
 	vs_out.Absolute = vs_out.Original * IRot;
 	vs_out.Relative = (vs_out.Absolute * vec3(size, 1.0)) + vec3(pos, 0.0);
 	gl_Position = proj(vs_out.Relative);
 
-	vs_out.Normal = VNormal;
+	vs_out.Normal = VNormal * IRot;
 	vs_out.Tex = VTex;
 	vs_out.Color = VColor;
 }

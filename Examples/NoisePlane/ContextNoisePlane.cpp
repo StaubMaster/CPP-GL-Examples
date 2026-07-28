@@ -186,6 +186,7 @@ ContextNoisePlane::ContextNoisePlane()
 				ObjectManagerUI_BufferFullLayout.Size.Change(3);
 				ObjectManagerUI_BufferFullLayout.Pos.Change(4);
 				ObjectManagerUI_BufferFullLayout.Rot.Change(5);
+				ObjectManagerUI_BufferFullLayout.Scale.Change(8);
 				ObjectManagerUI.BufferFullLayout = &ObjectManagerUI_BufferFullLayout;
 			}
 			{
@@ -661,6 +662,9 @@ void ContextNoisePlane::MakeControls()
 		}
 		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Stick.polyhedra"))); idx++;
 		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Spade.polyhedra"))); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Pick.polyhedra"))); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Hammer.polyhedra"))); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraGenerate::SphereY(6, 12, 4.0f)); idx++;
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
 		UIManager.WindowControl.ChildInsert(InventoryUI);
@@ -868,7 +872,7 @@ void ContextNoisePlane::Draw()
 	UIManager.GraphManager.MakeInstances();
 	UIManager.GraphManager.Draw();
 
-	GL::Disable(GL::Capability::DepthClamp);
+	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
 	ObjectManagerUI.GraphicsDrawFull();
@@ -1419,51 +1423,56 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 
 	static float time_sum = 0.0f;
 
-	if (HotBar.Items[VectorU2(0, 0)] != nullptr)
+	ItemBase * item_base = HotBar.Items[VectorU2(0, 0)];
+	if (item_base != nullptr)
 	{
+		NewPolyHedra::UserInterface::Object obj;
 		{
-			ItemVoxel * item = dynamic_cast<ItemVoxel*>(HotBar.Items[VectorU2(0, 0)]);
+			ItemVoxel * item = dynamic_cast<ItemVoxel*>(item_base);
 			if (item != nullptr)
 			{
-				NewPolyHedra::UserInterface::Object obj(item -> VoxelPallet -> PolyHedra);
-				obj.Data().Size = VectorF2(60, 60);
-				obj.Data().Pos = VectorF2(window.Size.Buffer.Full.X - 40, window.Size.Buffer.Full.Y - 40);
-				obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
+				obj.Create(item -> VoxelPallet -> PolyHedra);
 			}
 		}
 		{
-			ItemTool * item = dynamic_cast<ItemTool*>(HotBar.Items[VectorU2(0, 0)]);
+			ItemTool * item = dynamic_cast<ItemTool*>(item_base);
 			if (item != nullptr)
 			{
-				NewPolyHedra::UserInterface::Object obj(item -> Pallet);
-				obj.Data().Size = VectorF2(60, 60);
-				obj.Data().Pos = VectorF2(window.Size.Buffer.Full.X - 40, window.Size.Buffer.Full.Y - 40);
-				obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
+				obj.Create(item -> Pallet);
+				obj.Data().Scale = 0.25f;
 			}
+		}
+		if (obj.Is())
+		{
+			obj.Data().Size = VectorF2(240, 240);
+			obj.Data().Pos = VectorF2(window.Size.Buffer.Full.X - 120, window.Size.Buffer.Full.Y - 120);
+			obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
 		}
 	}
 
 	if (InventorySlot::StaticItem != nullptr)
 	{
+		NewPolyHedra::UserInterface::Object obj;
 		{
 			ItemVoxel * item = dynamic_cast<ItemVoxel*>(InventorySlot::StaticItem);
 			if (item != nullptr)
 			{
-				NewPolyHedra::UserInterface::Object obj(item -> VoxelPallet -> PolyHedra);
-				obj.Data().Size = VectorF2(40, 40);
-				obj.Data().Pos = window.MouseManager.CursorPosition().Buffer.Corner;
-				obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
+				obj.Create(item -> VoxelPallet -> PolyHedra);
 			}
 		}
 		{
 			ItemTool * item = dynamic_cast<ItemTool*>(InventorySlot::StaticItem);
 			if (item != nullptr)
 			{
-				NewPolyHedra::UserInterface::Object obj(item -> Pallet);
-				obj.Data().Size = VectorF2(40, 40);
-				obj.Data().Pos = window.MouseManager.CursorPosition().Buffer.Corner;
-				obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
+				obj.Create(item -> Pallet);
+				obj.Data().Scale = 0.25f;
 			}
+		}
+		if (obj.Is())
+		{
+			obj.Data().Size = VectorF2(40, 40);
+			obj.Data().Pos = window.MouseManager.CursorPosition().Buffer.Corner;
+			obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
 		}
 	}
 

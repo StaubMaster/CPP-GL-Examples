@@ -8,6 +8,7 @@
 # include "Graphics/Attribute/General/Layout.hpp"
 # include "Graphics/Attribute/TypeDefs/VectorF2.hpp"
 # include "Graphics/Attribute/TypeDefs/Matrix3x3.hpp"
+# include "Graphics/Attribute/TypeDefs/Float.hpp"
 
 # include "NewPolyHedra/Type/Object.hpp"
 # include "NewPolyHedra/Type/PalletObjectData.hpp"
@@ -22,12 +23,14 @@ struct ObjectData
 	VectorF2		Size;
 	VectorF2		Pos;
 	EulerAngle3D	Rot;
+	float			Scale = 1.0f;
 };
 struct InstanceData
 {
 	VectorF2	Size;
 	VectorF2	Pos;
 	Matrix3x3	Rot;
+	float		Scale = 1.0f;
 	~InstanceData() = default;
 	InstanceData() = default;
 	InstanceData(const ObjectData & data);
@@ -38,6 +41,7 @@ class BufferLayout : public ::Attribute::Layout
 	::Attribute::VectorF2	Size;
 	::Attribute::VectorF2	Pos;
 	::Attribute::Matrix3x3	Rot;
+	::Attribute::Float		Scale;
 	public:
 	~BufferLayout();
 	BufferLayout();

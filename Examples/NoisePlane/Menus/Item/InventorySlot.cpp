@@ -73,11 +73,10 @@ void InventorySlot::RelayInsertObject()
 					// this scales the [-1;+1] box
 					// but anything outside of the box is still culled
 					// just give everything a seperate scale factor ?
-
 					// also depth in general is wrong
-
 					ItemObject.Data().Pos = DisplayBox.Center();
 					ItemObject.Data().Rot = EulerAngle3D::Degrees(0, 30, 45).reverse();
+					ItemObject.Data().Scale = 0.25f;
 				}
 				TextObject.Create();
 				if (TextObject.Is())

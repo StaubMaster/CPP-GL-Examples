@@ -6,6 +6,7 @@ NewPolyHedra::UserInterface::InstanceData::InstanceData(const ObjectData & data)
 	: Size(data.Size)
 	, Pos(data.Pos)
 	, Rot(Matrix3x3::Rotation(data.Rot))
+	, Scale(data.Scale)
 { }
 
 NewPolyHedra::UserInterface::BufferLayout::~BufferLayout()
@@ -15,6 +16,7 @@ NewPolyHedra::UserInterface::BufferLayout::BufferLayout()
 	, Size(*this)
 	, Pos(*this)
 	, Rot(*this)
+	, Scale(*this)
 { }
 
 
