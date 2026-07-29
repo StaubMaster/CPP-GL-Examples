@@ -124,11 +124,39 @@ static void ShowTime()
 
 // 0.010
 
+ChunkGraphicsData::VoxelData::VoxelData(const ::Voxel & voxel, const VectorI3 & chunk, const VectorU3 & undex, const VectorF3 & offset)
+	: Voxel(voxel)
+	, Orientation(voxel.Orientation)
+	, Pallet(voxel.ToPallet())
+	, Geometry(*Pallet.Geometry)
+	, Chunk(chunk)
+	, Undex(undex)
+	, Offset(offset)
+{ }
+
+
+
 void ChunkGraphicsData::ClearU()
 {
 	ArrayU.Clear();
 }
-void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet)
+const Container::Array<VoxelGraphicsDataU::Face> & ChunkGraphicsData::DataU() const
+{
+	return ArrayU;
+}
+
+void ChunkGraphicsData::ClearF()
+{
+	ArrayF.Clear();
+}
+const Container::Array<VoxelGraphicsDataF::Face> & ChunkGraphicsData::DataF() const
+{
+	return ArrayF;
+}
+
+
+
+void ChunkGraphicsData::CatU(const VoxelData & voxel_data, AxisRel axis)
 {
 	if (axis == AxisRel::Here || axis == AxisRel::None) { return; }
 	CountData++;
@@ -137,22 +165,9 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	TimeDataRetrieveData.Start();
 	#endif
 
-	const VoxelPalletGeometry & geometry = *pallet.Geometry;
-	AxisRel axis_temp = orientation.relative(axis);
-	switch (axis_temp)
-	{
-		case AxisRel::PrevX: if (geometry.UseF_PrevX) { return; } break;
-		case AxisRel::PrevY: if (geometry.UseF_PrevY) { return; } break;
-		case AxisRel::PrevZ: if (geometry.UseF_PrevZ) { return; } break;
-		case AxisRel::NextX: if (geometry.UseF_NextX) { return; } break;
-		case AxisRel::NextY: if (geometry.UseF_NextY) { return; } break;
-		case AxisRel::NextZ: if (geometry.UseF_NextZ) { return; } break;
-		default: break;
-	}
+	VoxelGeometryDataU::Face geom_face = voxel_data.Geometry.AxisDataU(voxel_data.Orientation.relative(axis));
 
-	VoxelGeometryDataU::Face geom_face = geometry.AxisDataU(axis_temp);
-
-	AxisOrientation::SwizzlerU_Ref func = orientation.absoluteU_Func();
+	AxisOrientation::SwizzlerU_Ref func = voxel_data.Orientation.absoluteU_Func();
 	// this function stays the same per Voxel
 	// get before CatU ?
 	geom_face.Vertexes[0].Pos = func(geom_face.Vertexes[0].Pos);
@@ -175,10 +190,10 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	TimeDataTexture.Start();
 	#endif
 
-	geom_face.Vertexes[0].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[0].Tex.Z).Index;
-	geom_face.Vertexes[1].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[1].Tex.Z).Index;
-	geom_face.Vertexes[2].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[2].Tex.Z).Index;
-	geom_face.Vertexes[3].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[3].Tex.Z).Index;
+	geom_face.Vertexes[0].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[0].Tex.Z).Index;
+	geom_face.Vertexes[1].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[1].Tex.Z).Index;
+	geom_face.Vertexes[2].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[2].Tex.Z).Index;
+	geom_face.Vertexes[3].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[3].Tex.Z).Index;
 
 	#ifdef MEASURE_TIME
 	TimeDataTexture.Stop();
@@ -186,10 +201,10 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	#endif
 
 	VoxelGraphicsDataU::Vertex data[4];
-	data[0] = VoxelGraphicsDataU::Vertex(u, geom_face.Vertexes[0].Pos, geom_face.Vertexes[0].Tex, axis, chunk);
-	data[1] = VoxelGraphicsDataU::Vertex(u, geom_face.Vertexes[1].Pos, geom_face.Vertexes[1].Tex, axis, chunk);
-	data[2] = VoxelGraphicsDataU::Vertex(u, geom_face.Vertexes[2].Pos, geom_face.Vertexes[2].Tex, axis, chunk);
-	data[3] = VoxelGraphicsDataU::Vertex(u, geom_face.Vertexes[3].Pos, geom_face.Vertexes[3].Tex, axis, chunk);
+	data[0] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[0].Pos, geom_face.Vertexes[0].Tex, axis, voxel_data.Chunk);
+	data[1] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[1].Pos, geom_face.Vertexes[1].Tex, axis, voxel_data.Chunk);
+	data[2] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[2].Pos, geom_face.Vertexes[2].Tex, axis, voxel_data.Chunk);
+	data[3] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[3].Pos, geom_face.Vertexes[3].Tex, axis, voxel_data.Chunk);
 
 	#ifdef MEASURE_TIME
 	TimeDataCompress.Stop();
@@ -202,7 +217,60 @@ void ChunkGraphicsData::CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel
 	TimeInsert.Stop();
 	#endif
 }
-void ChunkGraphicsData::MakeU(const Chunk & chunk, const Array3D<bool> & voxel_is_empty, const ChunkNeighbour & neighbours)
+void ChunkGraphicsData::CatF(const VoxelData & voxel_data, AxisRel axis)
+{
+	if (axis == AxisRel::None) { return; }
+
+	const VoxelGeometryDataF::Axis geom_axis = voxel_data.Geometry.AxisDataF(voxel_data.Orientation.relative(axis));
+
+	for (unsigned int i = 0; i < geom_axis.Data.Count(); i++)
+	{
+		const VoxelGraphicsDataF::Face & geom_face = geom_axis.Data[i];
+
+		VoxelGraphicsDataF::Face & graph_face = BlockF.MakeNext();
+
+		graph_face.Vertexes[0].Pos = voxel_data.Orientation.absolute(geom_face.Vertexes[0].Pos) + voxel_data.Offset;
+		graph_face.Vertexes[1].Pos = voxel_data.Orientation.absolute(geom_face.Vertexes[1].Pos) + voxel_data.Offset;
+		graph_face.Vertexes[2].Pos = voxel_data.Orientation.absolute(geom_face.Vertexes[2].Pos) + voxel_data.Offset;
+
+		graph_face.Vertexes[0].Normal = geom_face.Vertexes[0].Normal;
+		graph_face.Vertexes[1].Normal = geom_face.Vertexes[1].Normal;
+		graph_face.Vertexes[2].Normal = geom_face.Vertexes[2].Normal;
+
+		graph_face.Vertexes[0].Tex = geom_face.Vertexes[0].Tex;
+		graph_face.Vertexes[1].Tex = geom_face.Vertexes[1].Tex;
+		graph_face.Vertexes[2].Tex = geom_face.Vertexes[2].Tex;
+
+		graph_face.Vertexes[0].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[0].Tex.Z).Index;
+		graph_face.Vertexes[1].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[1].Tex.Z).Index;
+		graph_face.Vertexes[2].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[2].Tex.Z).Index;
+
+		BlockF.Next();
+	}
+}
+void ChunkGraphicsData::Cat(const VoxelData & voxel_data, AxisRel axis)
+{
+	switch (voxel_data.Orientation.relative(axis))
+	{
+		case AxisRel::PrevX: if (voxel_data.Geometry.UseF_PrevX) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case AxisRel::PrevY: if (voxel_data.Geometry.UseF_PrevY) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case AxisRel::PrevZ: if (voxel_data.Geometry.UseF_PrevZ) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case AxisRel::NextX: if (voxel_data.Geometry.UseF_NextX) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case AxisRel::NextY: if (voxel_data.Geometry.UseF_NextY) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case AxisRel::NextZ: if (voxel_data.Geometry.UseF_NextZ) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		default: break;
+	}
+}
+
+void ChunkGraphicsData::Done()
+{
+	ArrayU = BlockU.ToArray();
+	ArrayF = BlockF.ToArray();
+
+	BlockU.Clear();
+	BlockF.Clear();
+}
+void ChunkGraphicsData::Make(const Chunk & chunk, const Array3D<bool> & voxel_is_empty, const ChunkNeighbour & neighbours)
 {
 	//TimeTotal.Start();
 
@@ -235,6 +303,7 @@ void ChunkGraphicsData::MakeU(const Chunk & chunk, const Array3D<bool> & voxel_i
 		#endif
 
 		VectorU3 udx = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
+		VectorF3 offset = VectorI3(udx) + (chunk.Index * 32);
 
 		#ifdef MEASURE_TIME
 		TimeVoxelRetrieveData.TakeOver(TimeVisibleTotal);
@@ -251,19 +320,18 @@ void ChunkGraphicsData::MakeU(const Chunk & chunk, const Array3D<bool> & voxel_i
 		TimeVisibleTotal.TakeOver(TimeDataTotal);
 		#endif
 
-		if (is_visible_prev_x || is_visible_prev_y || is_visible_prev_z ||
-			is_visible_next_x || is_visible_next_y || is_visible_next_z)
+		// this check only works if there is no Here
+		/*if (is_visible_prev_x || is_visible_prev_y || is_visible_prev_z ||
+			is_visible_next_x || is_visible_next_y || is_visible_next_z)*/
 		{
-			const Voxel & voxel = chunk.Voxels.At(u);
-			const AxisOrientation & orientation = voxel.Orientation;
-			const VoxelPallet & pallet = voxel.ToPallet();
-
-			if (is_visible_prev_x) { CatU(chunk.Index, udx, AxisRel::PrevX, orientation, pallet); }
-			if (is_visible_prev_y) { CatU(chunk.Index, udx, AxisRel::PrevY, orientation, pallet); }
-			if (is_visible_prev_z) { CatU(chunk.Index, udx, AxisRel::PrevZ, orientation, pallet); }
-			if (is_visible_next_x) { CatU(chunk.Index, udx, AxisRel::NextX, orientation, pallet); }
-			if (is_visible_next_y) { CatU(chunk.Index, udx, AxisRel::NextY, orientation, pallet); }
-			if (is_visible_next_z) { CatU(chunk.Index, udx, AxisRel::NextZ, orientation, pallet); }
+			VoxelData voxel_data(chunk.Voxels.At(u), chunk.Index, udx, offset);
+			if (is_visible_prev_x) { Cat(voxel_data, AxisRel::PrevX); }
+			if (is_visible_prev_y) { Cat(voxel_data, AxisRel::PrevY); }
+			if (is_visible_prev_z) { Cat(voxel_data, AxisRel::PrevZ); }
+			if (is_visible_next_x) { Cat(voxel_data, AxisRel::NextX); }
+			if (is_visible_next_y) { Cat(voxel_data, AxisRel::NextY); }
+			if (is_visible_next_z) { Cat(voxel_data, AxisRel::NextZ); }
+			CatF(voxel_data, AxisRel::Here);
 		}
 
 		#ifdef MEASURE_TIME
@@ -278,89 +346,6 @@ void ChunkGraphicsData::MakeU(const Chunk & chunk, const Array3D<bool> & voxel_i
 
 	//TimeTotal.Stop();
 }
-void ChunkGraphicsData::DoneU()
-{
-	ArrayU = BlockU.ToArray();
-	BlockU.Clear();
-}
-const Container::Array<VoxelGraphicsDataU::Face> & ChunkGraphicsData::DataU() const
-{
-	return ArrayU;
-}
-
-
-
-void ChunkGraphicsData::ClearF()
-{
-	ArrayF.Clear();
-}
-void ChunkGraphicsData::CatF(const VectorF3 & offset, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet)
-{
-	if (axis == AxisRel::None) { return; }
-
-	const VoxelGeometryDataF::Axis geom_axis = pallet.Geometry -> AxisDataF(orientation.relative(axis));
-
-	for (unsigned int i = 0; i < geom_axis.Data.Count(); i++)
-	{
-		const VoxelGraphicsDataF::Face & geom_face = geom_axis.Data[i];
-
-		VoxelGraphicsDataF::Face & graph_face = BlockF.MakeNext();
-
-		graph_face.Vertexes[0].Pos = orientation.absolute(geom_face.Vertexes[0].Pos) + offset;
-		graph_face.Vertexes[1].Pos = orientation.absolute(geom_face.Vertexes[1].Pos) + offset;
-		graph_face.Vertexes[2].Pos = orientation.absolute(geom_face.Vertexes[2].Pos) + offset;
-
-		graph_face.Vertexes[0].Normal = geom_face.Vertexes[0].Normal;
-		graph_face.Vertexes[1].Normal = geom_face.Vertexes[1].Normal;
-		graph_face.Vertexes[2].Normal = geom_face.Vertexes[2].Normal;
-
-		graph_face.Vertexes[0].Tex = geom_face.Vertexes[0].Tex;
-		graph_face.Vertexes[1].Tex = geom_face.Vertexes[1].Tex;
-		graph_face.Vertexes[2].Tex = geom_face.Vertexes[2].Tex;
-
-		graph_face.Vertexes[0].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[0].Tex.Z).Index;
-		graph_face.Vertexes[1].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[1].Tex.Z).Index;
-		graph_face.Vertexes[2].Tex.Z = pallet.FindTextureFileIndex(geom_face.Vertexes[2].Tex.Z).Index;
-
-		BlockF.Next();
-	}
-}
-void ChunkGraphicsData::MakeF(const Chunk & chunk, const Array3D<bool> & voxel_is_empty, const ChunkNeighbour & neighbours)
-{
-	for (unsigned int u = 0; u < CHUNK_VALUES_PER_VOLM; u++)
-	{
-		if (voxel_is_empty.At(u)) { continue; }
-
-		VectorU3 udx = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
-		VectorF3 offset = VectorI3(udx) + (chunk.Index * 32);
-
-		{
-			const Voxel & voxel = chunk.Voxels.At(u);
-			const AxisOrientation & orientation = voxel.Orientation;
-			const VoxelPallet & pallet = voxel.ToPallet();
-
-			CatF(offset, AxisRel::Here, orientation, pallet);
-			if (neighbours.IsVisiblePrevX(voxel_is_empty, udx)) { CatF(offset, AxisRel::PrevX, orientation, pallet); }
-			if (neighbours.IsVisiblePrevY(voxel_is_empty, udx)) { CatF(offset, AxisRel::PrevY, orientation, pallet); }
-			if (neighbours.IsVisiblePrevZ(voxel_is_empty, udx)) { CatF(offset, AxisRel::PrevZ, orientation, pallet); }
-			if (neighbours.IsVisibleNextX(voxel_is_empty, udx)) { CatF(offset, AxisRel::NextX, orientation, pallet); }
-			if (neighbours.IsVisibleNextY(voxel_is_empty, udx)) { CatF(offset, AxisRel::NextY, orientation, pallet); }
-			if (neighbours.IsVisibleNextZ(voxel_is_empty, udx)) { CatF(offset, AxisRel::NextZ, orientation, pallet); }
-		}
-	}
-}
-void ChunkGraphicsData::DoneF()
-{
-	ArrayF = BlockF.ToArray();
-	BlockF.Clear();
-}
-const Container::Array<VoxelGraphicsDataF::Face> & ChunkGraphicsData::DataF() const
-{
-	return ArrayF;
-}
-
-
-
 void ChunkGraphicsData::Make(const Chunk & chunk, const ChunkNeighbour & neighbours)
 {
 	TimeClear();
@@ -372,15 +357,12 @@ void ChunkGraphicsData::Make(const Chunk & chunk, const ChunkNeighbour & neighbo
 		{
 			voxel_is_empty.At(u) = chunk.Voxels.At(u).IsEmpty();
 		}
-		MakeU(chunk, voxel_is_empty, neighbours);
-		MakeF(chunk, voxel_is_empty, neighbours);
+		Make(chunk, voxel_is_empty, neighbours);
 	}
-
 	// could unlock Chunk here
 
 	ArrayLock.lock();
-	DoneU();
-	DoneF();
+	Done();
 	ArrayLock.unlock();
 
 	ShowTime();

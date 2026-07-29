@@ -14,6 +14,7 @@ struct VectorI3;
 struct VectorF3;
 struct AxisOrientation;
 struct VoxelPallet;
+struct VoxelPalletGeometry;
 struct ChunkNeighbour;
 
 struct Voxel;
@@ -36,41 +37,48 @@ struct ChunkGraphicsData
 	public:
 	std::mutex	ArrayLock;
 
+	struct VoxelData
+	{
+		const ::Voxel & Voxel;
+		const ::AxisOrientation & Orientation;
+		const ::VoxelPallet & Pallet;
+		const ::VoxelPalletGeometry & Geometry;
+		const ::VectorI3 & Chunk;
+		const ::VectorU3 & Undex;
+		const ::VectorF3 & Offset;
+		VoxelData(const ::Voxel & voxel, const VectorI3 & chunk, const VectorU3 & undex, const VectorF3 & offset);
+	};
+
 
 
 	private:
 	Container::BlockLinkedList<1024, VoxelGraphicsDataU::Face>	BlockU;
 	Container::Array<VoxelGraphicsDataU::Face>	ArrayU;
+	public:
+	void	ClearU();
+	const Container::Array<VoxelGraphicsDataF::Face> &	DataF() const;
+
+
 
 	private:
 	Container::BlockLinkedList<1024, VoxelGraphicsDataF::Face>	BlockF;
 	Container::Array<VoxelGraphicsDataF::Face>	ArrayF;
-
-
-
 	public:
-	void	ClearU();
-
-	private:
-	void	CatU(const VectorI3 & chunk, const VectorU3 & u, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet);
-	void	MakeU(const Chunk & chunk, const Array3D<bool> & voxel_is_empty, const ChunkNeighbour & neighbours);
-	void	DoneU();
-	public:
+	void	ClearF();
 	const Container::Array<VoxelGraphicsDataU::Face> &	DataU() const;
 
 
 
-	public:
-	void	ClearF();
+	private:
+	void	CatU(const VoxelData & voxel_data, AxisRel axis);
+	void	CatF(const VoxelData & voxel_data, AxisRel axis);
+	void	Cat(const VoxelData & voxel_data, AxisRel axis);
+
+
 
 	private:
-	void	CatF(const VectorF3 & offset, AxisRel axis, const AxisOrientation & orientation, const VoxelPallet & pallet);
-	void	MakeF(const Chunk & chunk, const Array3D<bool> & voxel_is_empty, const ChunkNeighbour & neighbours);
-	void	DoneF();
-	public:
-	const Container::Array<VoxelGraphicsDataF::Face> &	DataF() const;
-
-
+	void	Done();
+	void	Make(const Chunk & chunk, const Array3D<bool> & voxel_is_empty, const ChunkNeighbour & neighbours);
 
 	public:
 	void	Make(const Chunk & chunk, const ChunkNeighbour & neighbours);
