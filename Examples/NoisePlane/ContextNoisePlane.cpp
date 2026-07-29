@@ -369,10 +369,10 @@ void ContextNoisePlane::ViewRayInfo()
 			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
 			if (voxel != nullptr)
 			{
-				const VoxelPallet * pallet = voxel -> ToPallet();
+				const VoxelPallet & pallet = voxel -> ToPallet();
 				ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
 				ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
-				ss << (pallet -> Name) << " :Pallet\n";
+				ss << (pallet.Name) << " :Pallet\n";
 			}
 			else
 			{
@@ -419,8 +419,8 @@ void ContextNoisePlane::ViewRayDo()
 				ChunkVoxelIndex idx = ViewHit.Index;
 				if ((idx.Chunk == Voxel_Clear_Index.Chunk).All(true) && (idx.Voxel == Voxel_Clear_Index.Voxel).All(true))
 				{
-					Voxel_Clear_Progress++;
-					if (Voxel_Clear_Progress >= 32)
+					//if (Voxel_Clear_Progress >= 0)
+					if (true)
 					{
 						Voxel voxel;
 						// why not .FindAssign() ?
@@ -431,6 +431,10 @@ void ContextNoisePlane::ViewRayDo()
 							(*chunk1).ClearVoxel(idx.Voxel, voxel);
 						}
 						Voxel_Clear_Progress = 0;
+					}
+					else
+					{
+						Voxel_Clear_Progress++;
 					}
 				}
 				else
@@ -601,11 +605,14 @@ void ContextNoisePlane::Make()
 
 	// Voxels
 	{
-		VoxelGeometryPallet::GeometryCube.InitCube();
-		VoxelGeometryPallet::GeometryCylinder.InitCylinder();
-		VoxelGeometryPallet::GeometrySlope.InitSlope();
+		VoxelPalletGeometry::Cube.InitU();
+		VoxelPalletGeometry::Cube.InitFCube();
+		VoxelPalletGeometry::Cylinder.InitU();
+		VoxelPalletGeometry::Cylinder.InitFCylinder();
+		VoxelPalletGeometry::Slope.InitU();
+		VoxelPalletGeometry::Slope.InitFSlope();
 
-		VoxelPalletMap::All.Default(MediaDirectory);
+		VoxelPalletMap::StaticMap.Default(MediaDirectory);
 		//VoxelPalletMap::All.MakePolyHedra();
 
 		Structure::Default();
@@ -647,7 +654,7 @@ void ContextNoisePlane::MakeControls()
 	// Debug
 	{
 		DebugMenu.FPS.Check.Check(true);
-		DebugMenu.VoxelChunkMemory.Check.Check(true);
+		//DebugMenu.VoxelChunkMemory.Check.Check(true);
 
 		DebugMenu.Hide();
 		UIManager.WindowControl.ChildInsert(DebugMenu);
@@ -656,9 +663,9 @@ void ContextNoisePlane::MakeControls()
 #ifndef DISABLE_INVENTORY
 	{
 		unsigned int idx = 0;
-		for (unsigned int i = 0; i < VoxelPalletMap::All.Data.Count(); i++)
+		for (unsigned int i = 0; i < VoxelPalletMap::StaticMap.Data.Count(); i++)
 		{
-			Inventory.Items[idx] = new ItemVoxel(VoxelPalletMap::All.Data[i]); idx++;
+			Inventory.Items[idx] = new ItemVoxel(VoxelPalletMap::StaticMap.Data[i]); idx++;
 		}
 		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Stick.polyhedra"))); idx++;
 		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Spade.polyhedra"))); idx++;
@@ -739,11 +746,9 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	UIManager.GraphicsInit();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	VoxelPalletMap::All.LoadTextures(ChunkManager);
+	VoxelPalletMap::StaticMap.TexturesAssign(ChunkManager);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	VoxelPalletMap::All.MakePolyHedra();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	VoxelGeometryPallet::Default();
+	VoxelPalletMap::StaticMap.MakePolyHedras();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	MakeControls();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
@@ -804,7 +809,7 @@ void ContextNoisePlane::Free()
 
 
 
-static unsigned int				TextCharCount = 0;
+static unsigned int		TextCharCount = 0;
 
 void ContextNoisePlane::Draw()
 {
@@ -848,15 +853,15 @@ void ContextNoisePlane::Draw()
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
-	{
-		sw.Clear(); sw.Start(); // sw.ClearStart(); clear while running should keep running
-		UIManager.WindowControl.Update();
-		UIManager.Resize(window.Size);
-		UIManager.UpdateMouse(window.MouseManager.CursorPosition());
-		UIManager.ControlManager.MakeInstances();
-		UIManager.ControlManager.Draw();
-		sw.Stop(); FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime()); // sw.StopElapsedTime(); dont need to stop to get time ?
-	}
+
+	sw.Clear(); sw.Start(); // sw.ClearStart(); clear while running should keep running
+	// everything before Draw can be done somewhere else befor ?
+	UIManager.WindowControl.Update();
+	UIManager.Resize(window.Size);
+	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+	UIManager.ControlManager.MakeInstances();
+	UIManager.ControlManager.Draw();
+	sw.Stop(); FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime()); // sw.StopElapsedTime(); dont need to stop to get time ?
 
 	sw.Clear(); sw.Start();
 	UIManager.TextManager.MakeInstances();

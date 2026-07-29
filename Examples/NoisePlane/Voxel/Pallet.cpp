@@ -1,14 +1,14 @@
 #include "Pallet.hpp"
-#include "GeometryPallet.hpp"
+#include "PalletGeometry.hpp"
 #include "Voxel.hpp"
 
 #include "PolyHedra/Skin/Skin.hpp"
 
 
 
-VoxelPallet::VoxelPallet(const char * name, const VoxelGeometryPallet & geometry_template, unsigned int idx)
+VoxelPallet::VoxelPallet(const char * name, const VoxelPalletGeometry & geometry, VoxelPalletIndex idx)
 	: Name(name)
-	, GeometryPallet(&geometry_template)
+	, Geometry(&geometry)
 	, Textures()
 	, PolyHedra(nullptr)
 	, Index(idx)
@@ -94,7 +94,7 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::
 		skin.Insert_Face3(sk_i + 0, sk_i + 1, sk_i + 2);
 	}
 }
-static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::Full & voxel_graphics)
+/*static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::Full & voxel_graphics)
 {
 	PolyHedraVoxelData(polyhedra, voxel_graphics.Here);
 	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevX);
@@ -103,7 +103,38 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::
 	PolyHedraVoxelData(polyhedra, voxel_graphics.NextX);
 	PolyHedraVoxelData(polyhedra, voxel_graphics.NextY);
 	PolyHedraVoxelData(polyhedra, voxel_graphics.NextZ);
+}*/
+static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataU::Face & data)
+{
+	Skin & skin = *polyhedra.Skin;
+	VectorF3 off(0.5f);
+	{
+		unsigned int ph_i = polyhedra.Corners.Count();
+		polyhedra.Insert_Corn(PolyHedra::Corner(VectorF3(data.Vertexes[0].Pos) - off));
+		polyhedra.Insert_Corn(PolyHedra::Corner(VectorF3(data.Vertexes[1].Pos) - off));
+		polyhedra.Insert_Corn(PolyHedra::Corner(VectorF3(data.Vertexes[2].Pos) - off));
+		polyhedra.Insert_Corn(PolyHedra::Corner(VectorF3(data.Vertexes[3].Pos) - off));
+		polyhedra.Insert_Face3(ph_i + 0, ph_i + 1, ph_i + 2);
+		polyhedra.Insert_Face3(ph_i + 2, ph_i + 1, ph_i + 3);
+
+		unsigned int sk_i = skin.Corners.Count();
+		skin.Corners.Insert(Skin::Corner(data.Vertexes[0].Tex.X, data.Vertexes[0].Tex.Y, data.Vertexes[0].Tex.Z));
+		skin.Corners.Insert(Skin::Corner(data.Vertexes[1].Tex.X, data.Vertexes[1].Tex.Y, data.Vertexes[1].Tex.Z));
+		skin.Corners.Insert(Skin::Corner(data.Vertexes[2].Tex.X, data.Vertexes[2].Tex.Y, data.Vertexes[2].Tex.Z));
+		skin.Corners.Insert(Skin::Corner(data.Vertexes[3].Tex.X, data.Vertexes[3].Tex.Y, data.Vertexes[3].Tex.Z));
+		skin.Insert_Face3(sk_i + 0, sk_i + 1, sk_i + 2);
+		skin.Insert_Face3(sk_i + 2, sk_i + 1, sk_i + 3);
+	}
 }
+/*static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataU::Cube & voxel_graphics)
+{
+	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevX);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevY);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.PrevZ);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.NextX);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.NextY);
+	PolyHedraVoxelData(polyhedra, voxel_graphics.NextZ);
+}*/
 void VoxelPallet::MakePolyHedra()
 {
 	PolyHedra = new ::PolyHedra();
@@ -115,265 +146,29 @@ void VoxelPallet::MakePolyHedra()
 	}
 	skin -> Done();
 	PolyHedra -> Skin = skin;
-	PolyHedraVoxelData(*PolyHedra, GeometryPallet -> GraphicsDataF);
+
+	const VoxelPalletGeometry & geometry = *Geometry;
+	const VoxelGeometryDataU::Cube & dataU = geometry.DataU;
+	const VoxelGeometryDataF::Full & dataF = geometry.DataF;
+	if (geometry.UseF_PrevX) { PolyHedraVoxelData(*PolyHedra, dataF.PrevX); } else { PolyHedraVoxelData(*PolyHedra, dataU.PrevX); }
+	if (geometry.UseF_PrevY) { PolyHedraVoxelData(*PolyHedra, dataF.PrevY); } else { PolyHedraVoxelData(*PolyHedra, dataU.PrevY); }
+	if (geometry.UseF_PrevZ) { PolyHedraVoxelData(*PolyHedra, dataF.PrevZ); } else { PolyHedraVoxelData(*PolyHedra, dataU.PrevZ); }
+	if (geometry.UseF_NextX) { PolyHedraVoxelData(*PolyHedra, dataF.NextX); } else { PolyHedraVoxelData(*PolyHedra, dataU.NextX); }
+	if (geometry.UseF_NextY) { PolyHedraVoxelData(*PolyHedra, dataF.NextY); } else { PolyHedraVoxelData(*PolyHedra, dataU.NextY); }
+	if (geometry.UseF_NextZ) { PolyHedraVoxelData(*PolyHedra, dataF.NextZ); } else { PolyHedraVoxelData(*PolyHedra, dataU.NextZ); }
+	PolyHedraVoxelData(*PolyHedra, dataF.Here);
 }
 
 Voxel VoxelPallet::ToVoxel() const
 {
 	Voxel voxel;
-	//voxel.Pallet = VoxelPalletMap::All.FindIndex(this);
-	voxel.Pallet = Index;
+	voxel.MakePallet(*this);
 	return voxel;
 }
 Voxel VoxelPallet::ToVoxel(AxisRel placeAxis0, AxisRel placeAxis1) const
 {
 	Voxel voxel;
-	//voxel.Pallet = VoxelPalletMap::All.FindIndex(this);
-	voxel.Pallet = Index;
-	voxel.Orientation = GeometryPallet -> Orient(placeAxis0, placeAxis1);
+	voxel.MakePallet(*this);
+	voxel.Orientation = Geometry -> Orient(placeAxis0, placeAxis1);
 	return voxel;
-}
-
-
-
-
-
-VoxelPalletMap VoxelPalletMap::All;
-
-#include <string>
-#include <iostream>
-VoxelPallet & VoxelPalletMap::operator[](unsigned short idx)
-{
-	return Data[idx];
-}
-const VoxelPallet & VoxelPalletMap::operator[](unsigned short idx) const
-{
-	return Data[idx];
-}
-VoxelPallet & VoxelPalletMap::operator[](const char * name)
-{
-	std::string str(name);
-	for (unsigned int i = 0; i < Data.Count(); i++)
-	{
-		if (str == Data[i].Name)
-		{
-			return Data[i];
-		}
-	}
-	std::cout << "not Found: " << name << '\n';
-	for (unsigned int i = 0; i < Data.Count(); i++)
-	{
-		std::cout << ' ' << Data[i].Name << '\n';
-	}
-	throw "VoxelPalletMap::operator[]";
-}
-const VoxelPallet & VoxelPalletMap::operator[](const char * name) const
-{
-	std::string str(name);
-	for (unsigned int i = 0; i < Data.Count(); i++)
-	{
-		if (str == Data[i].Name)
-		{
-			return Data[i];
-		}
-	}
-	std::cout << "not Found: " << name << '\n';
-	for (unsigned int i = 0; i < Data.Count(); i++)
-	{
-		std::cout << ' ' << Data[i].Name << '\n';
-	}
-	throw "VoxelPalletMap::operator[]";
-}
-
-unsigned short VoxelPalletMap::FindIndex(const char * name) const
-{
-	std::string str(name);
-	for (unsigned int i = 0; i < Data.Count(); i++)
-	{
-		if (str == Data[i].Name)
-		{
-			return i;
-		}
-	}
-	return 0xFFFF;
-}
-unsigned short VoxelPalletMap::FindIndex(const VoxelPallet * pallet) const
-{
-	for (unsigned int i = 0; i < Data.Count(); i++)
-	{
-		if (pallet == &Data[i])
-		{
-			return i;
-		}
-	}
-	return 0xFFFF;
-}
-unsigned short VoxelPalletMap::FindIndex(const VoxelPallet & pallet) const
-{
-	return FindIndex(&pallet);
-}
-
-/*VoxelPallet * VoxelPalletMap::FindOrNull(const char * name)
-{
-	std::string str(name);
-	for (unsigned int i = 0; i < Data.Count(); i++)
-	{
-		if (str == Data[i].Name)
-		{
-			return &Data[i];
-		}
-	}
-	return nullptr;
-}*/
-
-#include "DirectoryInfo.hpp"
-void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
-{
-	const VoxelGeometryPallet & cube = VoxelGeometryPallet::GeometryCube;
-	const VoxelGeometryPallet & cylinder = VoxelGeometryPallet::GeometryCylinder;
-	const VoxelGeometryPallet & slope = VoxelGeometryPallet::GeometrySlope;
-
-	(void)cube;
-	(void)cylinder;
-	(void)slope;
-
-	All.Data.Insert(VoxelPallet("DebugR", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("DebugG", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("DebugB", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("OrientationCube", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("OrientationCylinder", cylinder, All.Data.Count()));
-//	All.Data.Insert(VoxelPallet("OrientationSlope", slope, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("Gray", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("Grass", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("Dirt", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("RedLog", cylinder, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("Log", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("Leaves", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("Sand", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("Snow", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("Water", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("ConcreteCube", cube, All.Data.Count()));
-	All.Data.Insert(VoxelPallet("ConcreteCylinder", cylinder, All.Data.Count()));
-
-	// JSON ?
-	// or another specifici Parser ?
-	All["DebugR"].TextureAll(MediaDirectory.File("Images/Voxel/Debug/R.png"));
-	All["DebugG"].TextureAll(MediaDirectory.File("Images/Voxel/Debug/G.png"));
-	All["DebugB"].TextureAll(MediaDirectory.File("Images/Voxel/Debug/B.png"));
-
-	All["OrientationCube"].TextureAxis(
-		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
-	);
-	All["OrientationCylinder"].TextureAxis(
-		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
-		MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
-	);
-
-	All["Gray"].TextureAll(MediaDirectory.File("Images/Voxel/Gray.png"));
-
-	All["Grass"].TextureAll(MediaDirectory.File("Images/Voxel/Grass.png"));
-	All["Dirt"].TextureAll(MediaDirectory.File("Images/Voxel/Dirt.png"));
-
-	All["RedLog"].TexturePrismY(
-		MediaDirectory.File("Images/Voxel/fancy_RedWood_Base.png"),
-		MediaDirectory.File("Images/Voxel/fancy_RedWood_Belt.png")
-	);
-
-	All["Log"].TexturePrismY(
-		MediaDirectory.File("Images/Voxel/Log_Base.png"),
-		MediaDirectory.File("Images/Voxel/Log_Belt.png")
-	);
-	All["Leaves"].TextureAll(MediaDirectory.File("Images/Voxel/Leave1.png"));
-
-	All["Sand"].TextureAll(MediaDirectory.File("Images/Voxel/Sand.png"));
-	All["Snow"].TextureAll(MediaDirectory.File("Images/Voxel/Snow.png"));
-	All["Water"].TextureAll(MediaDirectory.File("Images/Voxel/Water.png"));
-
-	All["ConcreteCube"].TextureAll(MediaDirectory.File("Images/Voxel/Concrete_0.png"));
-	All["ConcreteCylinder"].TextureAll(MediaDirectory.File("Images/Voxel/Concrete_0.png"));
-}
-
-
-
-#include "ValueType/Vector/U2.hpp"
-
-#include "Chunk/Manager.hpp"
-
-static unsigned short	FindFile(const Container::Binary<FileInfo> & files, const FileInfo & file)
-{
-	for (unsigned int i = 0; i < files.Count(); i++)
-	{
-		if (files[i].Name() == file.Name())
-		{
-			return i;
-		}
-	}
-	return 0xFFFF;
-}
-static unsigned short	MakeFile(Container::Binary<FileInfo> & files, const FileInfo & file)
-{
-	unsigned short idx = files.Count();
-	files.Insert(file);
-	return idx;
-}
-static unsigned short	FindMakeFile(Container::Binary<FileInfo> & files, const FileInfo & file)
-{
-	unsigned short idx = FindFile(files, file);
-	if (idx == 0xFFFF)
-	{
-		idx = MakeFile(files, file);
-	}
-	return idx;
-}
-
-void VoxelPalletMap::LoadTextures(ChunkManager & manager)
-{
-	std::cout << "LoadTextures ....\n";
-	Container::Binary<FileInfo> files;
-	for (unsigned int i = 0; i < VoxelPalletMap::All.Data.Count(); i++)
-	{
-		VoxelPallet & pallet = VoxelPalletMap::All.Data[i];
-		for (unsigned int k = 0; k < 6; k++)
-		{
-			TextureFileIndex & tex = pallet.Textures[k];
-			tex.Index = FindMakeFile(files, tex.File);
-			/*unsigned int j = 0xFFFFFFFF;
-			for (unsigned int f = 0; f < files.Count(); f++)
-			{
-				if (files[f].Name() == (VoxelPalletMap::All.Data[i].Textures[k].File.Name()))
-				{
-					j = f;
-					break;
-				}
-			}
-			if (j == 0xFFFFFFFF)
-			{
-				j = files.Count();
-				files.Insert(VoxelPalletMap::All.Data[i].Textures[k].File);
-			}
-			VoxelPalletMap::All.Data[i].Textures[k].Index = j;*/
-		}
-	}
-	std::cout << "Textures: " << files.Count() << '\n';
-	manager.Texture.Bind();
-	manager.Texture.Assign(VectorU2(32, 32), files.ToArray());
-	std::cout << "LoadTextures done\n";
-}
-void VoxelPalletMap::MakePolyHedra()
-{
-	std::cout << "MakePolyHedra ....\n";
-	for (unsigned int i = 0; i < Data.Count(); i++)
-	{
-		Data[i].MakePolyHedra();
-	}
-	std::cout << "MakePolyHedra done\n";
 }

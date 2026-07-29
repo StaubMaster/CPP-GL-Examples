@@ -253,6 +253,14 @@ PrevX to PrevZ is rotate right
 
 rotate only the lowest 3 bits
 
+
+
+PrevX(001)
+PrevY(010)
+PrevZ(100)
+NextX(110)
+NextY(101)
+NextZ(011)
 */
 
 AxisRel AxisOrientation::absolute(AxisRel axis) const

@@ -15,8 +15,9 @@ FILES := \
 	Voxel.cpp \
 	Voxel/GeometryDataU.cpp \
 	Voxel/GeometryDataF.cpp \
-	Voxel/GeometryPallet.cpp \
+	Voxel/PalletGeometry.cpp \
 	Voxel/Pallet.cpp \
+	Voxel/PalletMap.cpp \
 \
 	Chunk.cpp \
 	Chunk/GraphicsData.cpp \

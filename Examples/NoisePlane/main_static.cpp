@@ -6,7 +6,7 @@
 
 #include "Voxel/GeometryDataU.hpp"
 #include "Voxel/GeometryDataF.hpp"
-#include "Voxel/GeometryPallet.hpp"
+#include "Voxel/PalletGeometry.hpp"
 #include "Voxel/Pallet.hpp"
 
 

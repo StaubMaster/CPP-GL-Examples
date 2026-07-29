@@ -1,61 +1,35 @@
 #include "Voxel.hpp"
 #include "Voxel/Pallet.hpp"
-#include "Voxel/GeometryPallet.hpp"
+#include "Voxel/PalletMap.hpp"
+#include "Voxel/PalletGeometry.hpp"
 
 #include "ValueType/Vector/U3.hpp"
 
 
 
-bool Voxel::IsEmpty() const { return (Pallet == 0xFFFF); }
-bool Voxel::IsFloat() const
+bool Voxel::IsEmpty() const
 {
-	if (IsEmpty()) { return false; }
-	const VoxelPallet & pallet = VoxelPalletMap::All[Pallet];
-	if (pallet.GeometryPallet == nullptr) { return false; }
-	return (pallet.GeometryPallet -> UseF);
+	return (Pallet == 0xFFFF);
 }
-bool Voxel::Visible(AxisRel axis) const
-{
-	if (IsEmpty()) { return true; }
-	const VoxelPallet & pallet = VoxelPalletMap::All[Pallet];
-	if (pallet.GeometryPallet == nullptr) { return true; }
-	//return Pallet -> GeometryPallet -> Visible(Orientation.relative(axis));
-	return pallet.GeometryPallet -> Visible(axis);
-	//return false; (void)axis;
-}
-
-
-
 void Voxel::MakeEmpty()
 {
 	Pallet = 0xFFFF;
 }
-/*void Voxel::Make(const VoxelPallet & pallet)
+const VoxelPallet & Voxel::ToPallet() const
 {
-	(void)pallet;
-	//Pallet = pallet.
-}*/
-
-const VoxelPallet * Voxel::ToPallet() const
+	return VoxelPalletMap::StaticMap[Pallet];
+}
+void Voxel::MakePallet(const VoxelPallet & pallet)
 {
-	return &VoxelPalletMap::All[Pallet];
+	Pallet = pallet.Index;
 }
 
 
 
-Voxel::~Voxel() { }
-Voxel::Voxel()
-	: Pallet(0xFFFF)
-	, Orientation()
-{ }
-
-Voxel::Voxel(const Voxel & other)
-	: Pallet(other.Pallet)
-	, Orientation(other.Orientation)
-{ }
-Voxel & Voxel::operator=(const Voxel & other)
+bool Voxel::IsAxisVisible(AxisRel axis) const
 {
-	Pallet = other.Pallet;
-	Orientation = other.Orientation;
-	return *this;
+	if (IsEmpty()) { return true; }
+	const VoxelPallet & pallet = ToPallet();
+	if (pallet.Geometry == nullptr) { return true; }
+	return pallet.Geometry -> IsAxisVisible(Orientation.relative(axis));
 }

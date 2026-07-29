@@ -85,107 +85,119 @@ ChunkNeighbour::ChunkNeighbour(Chunk & chunk)
 	}
 { }
 
-bool ChunkNeighbour::IsVisiblePrevX(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
+bool ChunkNeighbour::IsVisiblePrevX(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
-	if (udx.X != 0)
+	const Chunk * chunk = nullptr;
+	unsigned int & u = udx.X;
+	if (u != 0)
 	{
-		udx.X--;
-		return (voxel_types[udx] != VoxelType::DataU);
+		u--;
+		if (voxel_is_empty[udx]) { return true; }
+		chunk = Cube[1][1][1];
 	}
-	const Chunk * chunk = Cube[1][1][0];
-	if (chunk != nullptr && chunk -> GenerationDone())
+	else
 	{
+		chunk = Cube[1][1][0];
+		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
-		udx.X = n;
-		const Voxel & voxel = chunk -> Voxels[udx];
-		return (voxel.IsEmpty() || voxel.IsFloat());
+		u = n;
 	}
-	return false;
+	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::PrevX));
 }
-bool ChunkNeighbour::IsVisiblePrevY(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
+bool ChunkNeighbour::IsVisiblePrevY(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
-	if (udx.Y != 0)
+	const Chunk * chunk = nullptr;
+	unsigned int & u = udx.Y;
+	if (u != 0)
 	{
-		udx.Y--;
-		return (voxel_types[udx] != VoxelType::DataU);
+		u--;
+		if (voxel_is_empty[udx]) { return true; }
+		chunk = Cube[1][1][1];
 	}
-	const Chunk * chunk = Cube[1][0][1];
-	if (chunk != nullptr && chunk -> GenerationDone())
+	else
 	{
+		chunk = Cube[1][0][1];
+		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
-		udx.Y = n;
-		const Voxel & voxel = chunk -> Voxels[udx];
-		return (voxel.IsEmpty() || voxel.IsFloat());
+		u = n;
 	}
-	return false;
+	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::PrevY));
 }
-bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
+bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
-	if (udx.Z != 0)
+	const Chunk * chunk = nullptr;
+	unsigned int & u = udx.Z;
+	if (u != 0)
 	{
-		udx.Z--;
-		return (voxel_types[udx] != VoxelType::DataU);
+		u--;
+		if (voxel_is_empty[udx]) { return true; }
+		chunk = Cube[1][1][1];
 	}
-	const Chunk * chunk = Cube[0][1][1];
-	if (chunk != nullptr && chunk -> GenerationDone())
+	else
 	{
+		chunk = Cube[0][1][1];
+		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
-		udx.Z = n;
-		const Voxel & voxel = chunk -> Voxels[udx];
-		return (voxel.IsEmpty() || voxel.IsFloat());
+		u = n;
 	}
-	return false;
+	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::PrevZ));
 }
-bool ChunkNeighbour::IsVisibleNextX(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
+bool ChunkNeighbour::IsVisibleNextX(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
-	if (udx.X != n)
+	const Chunk * chunk = nullptr;
+	unsigned int & u = udx.X;
+	if (u != n)
 	{
-		udx.X++;
-		return (voxel_types[udx] != VoxelType::DataU);
+		u++;
+		if (voxel_is_empty[udx]) { return true; }
+		chunk = Cube[1][1][1];
 	}
-	const Chunk * chunk = Cube[1][1][2];
-	if (chunk != nullptr && chunk -> GenerationDone())
+	else
 	{
+		chunk = Cube[1][1][2];
+		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
-		udx.X = 0;
-		const Voxel & voxel = chunk -> Voxels[udx];
-		return (voxel.IsEmpty() || voxel.IsFloat());
+		u = 0;
 	}
-	return false;
+	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::NextX));
 }
-bool ChunkNeighbour::IsVisibleNextY(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
+bool ChunkNeighbour::IsVisibleNextY(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
-	if (udx.Y != n)
+	const Chunk * chunk = nullptr;
+	unsigned int & u = udx.Y;
+	if (u != n)
 	{
-		udx.Y++;
-		return (voxel_types[udx] != VoxelType::DataU);
+		u++;
+		if (voxel_is_empty[udx]) { return true; }
+		chunk = Cube[1][1][1];
 	}
-	const Chunk * chunk = Cube[1][2][1];
-	if (chunk != nullptr && chunk -> GenerationDone())
+	else
 	{
+		chunk = Cube[1][2][1];
+		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
-		udx.Y = 0;
-		const Voxel & voxel = chunk -> Voxels[udx];
-		return (voxel.IsEmpty() || voxel.IsFloat());
+		u = 0;
 	}
-	return false;
+	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::NextY));
 }
-bool ChunkNeighbour::IsVisibleNextZ(const Array3D<VoxelType> & voxel_types, VectorU3 udx) const
+bool ChunkNeighbour::IsVisibleNextZ(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
-	if (udx.Z != n)
+	const Chunk * chunk = nullptr;
+	unsigned int & u = udx.Z;
+	if (u != n)
 	{
-		udx.Z++;
-		return (voxel_types[udx] != VoxelType::DataU);
+		u++;
+		if (voxel_is_empty[udx]) { return true; }
+		chunk = Cube[1][1][1];
 	}
-	const Chunk * chunk = Cube[2][1][1];
-	if (chunk != nullptr && chunk -> GenerationDone())
+	else
 	{
+		chunk = Cube[2][1][1];
+		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
-		udx.Z = 0;
-		const Voxel & voxel = chunk -> Voxels[udx];
-		return (voxel.IsEmpty() || voxel.IsFloat());
+		u = 0;
 	}
-	return false;
+	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::NextZ));
 }
 
 void ChunkNeighbour::BufferDataWant()

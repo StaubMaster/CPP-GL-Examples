@@ -6,7 +6,7 @@
 # include "Axis/Orientation.hpp"
 
 struct Voxel;
-struct VoxelGeometryPallet;
+struct VoxelPalletGeometry;
 class PolyHedra;
 
 // All(all): same Texture on all sides
@@ -22,20 +22,22 @@ class PolyHedra;
 // Cube Texture Coordinates go from 0 to 5
 // use those as Index for actual TextureIndex
 
+typedef unsigned short VoxelPalletIndex;
+
 struct TextureFileIndex
 {
-	FileInfo		File;
-	unsigned short	Index = 0xFFFF;
+	FileInfo			File;
+	VoxelPalletIndex	Index = 0xFFFF;
 };
 
 struct VoxelPallet
 {
 	const char *					Name = nullptr;
-	const VoxelGeometryPallet *		GeometryPallet = nullptr;
+	const VoxelPalletGeometry *		Geometry = nullptr;
 
 	TextureFileIndex	Textures[6];
 	::PolyHedra *		PolyHedra = nullptr;
-	unsigned short		Index = 0xFFFF;
+	VoxelPalletIndex	Index = 0xFFFF;
 
 
 
@@ -44,7 +46,7 @@ struct VoxelPallet
 	VoxelPallet(const VoxelPallet & other) = default;
 	VoxelPallet & operator=(const VoxelPallet & other) = default;
 
-	VoxelPallet(const char * name, const VoxelGeometryPallet & geometry_template, unsigned int idx);
+	VoxelPallet(const char * name, const VoxelPalletGeometry & geometry, VoxelPalletIndex idx);
 
 
 
@@ -64,35 +66,6 @@ struct VoxelPallet
 
 	Voxel	ToVoxel() const;
 	Voxel	ToVoxel(AxisRel placeAxis0, AxisRel placeAxis1) const;
-};
-
-# include "Generics/Container/Binary.hpp"
-
-class DirectoryInfo;
-struct ChunkManager;
-struct VoxelPalletMap
-{
-	static VoxelPalletMap	All;
-
-	Container::Binary<VoxelPallet>	Data;
-
-	// have a default to return if name is not found
-
-	// use unsigned short instead of Pointer
-
-	VoxelPallet &			operator[](unsigned short idx);
-	const VoxelPallet &		operator[](unsigned short idx) const;
-
-	VoxelPallet &			operator[](const char * name);
-	const VoxelPallet &		operator[](const char * name) const;
-
-	unsigned short			FindIndex(const char * name) const;
-	unsigned short			FindIndex(const VoxelPallet * pallet) const;
-	unsigned short			FindIndex(const VoxelPallet & pallet) const;
-
-	void	Default(const DirectoryInfo & MediaDirectory);
-	void	LoadTextures(ChunkManager & manager);
-	void	MakePolyHedra();
 };
 
 #endif

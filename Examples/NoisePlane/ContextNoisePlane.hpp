@@ -44,7 +44,8 @@
 #include "Chunk/Neighbours.hpp"
 
 #include "Voxel/Pallet.hpp"
-#include "Voxel/GeometryPallet.hpp"
+#include "Voxel/PalletMap.hpp"
+#include "Voxel/PalletGeometry.hpp"
 
 #include "ChunkVoxelIndex.hpp"
 #include "VoxelHit.hpp"

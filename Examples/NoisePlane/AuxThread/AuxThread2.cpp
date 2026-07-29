@@ -3,6 +3,7 @@
 #include "Chunk.hpp"
 #include "Chunk/Manager.hpp"
 #include "Voxel/Pallet.hpp"
+#include "Voxel/PalletMap.hpp"
 
 #include "Structure.hpp"
 
@@ -147,8 +148,8 @@ void AuxThread2::TerrainFlat(ChunkData & data, int y_chunk, unsigned int y_voxel
 {
 	// 0.016s
 
-	const VoxelPallet & pallet_dirt = VoxelPalletMap::All["Dirt"];
-	const VoxelPallet & pallet_grass = VoxelPalletMap::All["Grass"];
+	const VoxelPallet & pallet_dirt = VoxelPalletMap::StaticMap["Dirt"];
+	const VoxelPallet & pallet_grass = VoxelPalletMap::StaticMap["Grass"];
 
 	(void)pallet_dirt;
 	(void)pallet_grass;
@@ -187,8 +188,8 @@ void AuxThread2::TerrainPillars(ChunkData & data)
 	//0123456789ABCDEF0123456789ABCDEF
 	//       #                #       
 
-	const VoxelPallet & pallet0 = VoxelPalletMap::All["ConcreteCube"];
-	const VoxelPallet & pallet1 = VoxelPalletMap::All["ConcreteCylinder"];
+	const VoxelPallet & pallet0 = VoxelPalletMap::StaticMap["ConcreteCube"];
+	const VoxelPallet & pallet1 = VoxelPalletMap::StaticMap["ConcreteCylinder"];
 
 	for (VectorU3 u = Loop3.Min(); Loop3.Check(u).All(true); Loop3.Next(u))
 	{
@@ -202,10 +203,10 @@ void AuxThread2::TerrainPillars(ChunkData & data)
 
 void AuxThread2::TerrainPlane(ChunkData & data, const Perlin2D & noise)
 {
-	const VoxelPallet & pallet_gray = VoxelPalletMap::All["Gray"];
-	const VoxelPallet & pallet_dirt = VoxelPalletMap::All["Dirt"];
-	const VoxelPallet & pallet_grass = VoxelPalletMap::All["Grass"];
-	const VoxelPallet & pallet_water = VoxelPalletMap::All["Water"];
+	const VoxelPallet & pallet_gray = VoxelPalletMap::StaticMap["Gray"];
+	const VoxelPallet & pallet_dirt = VoxelPalletMap::StaticMap["Dirt"];
+	const VoxelPallet & pallet_grass = VoxelPalletMap::StaticMap["Grass"];
+	const VoxelPallet & pallet_water = VoxelPalletMap::StaticMap["Water"];
 
 	(void)pallet_gray;
 	(void)pallet_dirt;
@@ -276,9 +277,9 @@ void AuxThread2::TerrainCaveNoodle(ChunkData & data, const Perlin3D & noise0, co
 	(void)noise0;
 	(void)noise1;
 
-	const VoxelPallet & pallet_r = VoxelPalletMap::All["DebugR"];
-	const VoxelPallet & pallet_g = VoxelPalletMap::All["DebugG"];
-	const VoxelPallet & pallet_b = VoxelPalletMap::All["DebugB"];
+	const VoxelPallet & pallet_r = VoxelPalletMap::StaticMap["DebugR"];
+	const VoxelPallet & pallet_g = VoxelPalletMap::StaticMap["DebugG"];
+	const VoxelPallet & pallet_b = VoxelPalletMap::StaticMap["DebugB"];
 
 	(void)pallet_r;
 	(void)pallet_g;
@@ -343,16 +344,16 @@ void AuxThread2::TerrainGrid(ChunkData & data)
 		VectorF3 grid_pos = voxel_pos.round(256);
 		VectorF3 grid_rel = voxel_pos - grid_pos + VectorF3(0.5f);
 
-		if (grid_rel.length() < 4.0f) { data.Voxels[u] = VoxelPalletMap::All["OrientationCube"].ToVoxel(); }
-		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { data.Voxels[u] = VoxelPalletMap::All["OrientationCube"].ToVoxel(); }
-		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { data.Voxels[u] = VoxelPalletMap::All["OrientationCube"].ToVoxel(); }
-		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { data.Voxels[u] = VoxelPalletMap::All["OrientationCube"].ToVoxel(); }
+		if (grid_rel.length() < 4.0f) { data.Voxels[u] = VoxelPalletMap::StaticMap["OrientationCube"].ToVoxel(); }
+		if (VectorF3(grid_rel.X, grid_rel.Y, 0.0f).length() < 2.0f) { data.Voxels[u] = VoxelPalletMap::StaticMap["OrientationCube"].ToVoxel(); }
+		if (VectorF3(grid_rel.X, 0.0f, grid_rel.Z).length() < 2.0f) { data.Voxels[u] = VoxelPalletMap::StaticMap["OrientationCube"].ToVoxel(); }
+		if (VectorF3(0.0f, grid_rel.Y, grid_rel.Z).length() < 2.0f) { data.Voxels[u] = VoxelPalletMap::StaticMap["OrientationCube"].ToVoxel(); }
 	}
 }
 
 void AuxThread2::TerrainCity(ChunkData & data)
 {
-	const VoxelPallet & pallet = VoxelPalletMap::All["ConcreteCube"];
+	const VoxelPallet & pallet = VoxelPalletMap::StaticMap["ConcreteCube"];
 
 	for (VectorU3 u = Loop3.Min(); Loop3.Check(u).All(true); Loop3.Next(u))
 	{
@@ -448,9 +449,9 @@ void AuxThread2::DecorateTrees(Chunk & chunk, const Perlin2D & noise)
 
 	(void)noise;
 
-	const VoxelPallet & pallet_r = VoxelPalletMap::All["DebugR"];
-	const VoxelPallet & pallet_g = VoxelPalletMap::All["DebugG"];
-	const VoxelPallet & pallet_b = VoxelPalletMap::All["DebugB"];
+	const VoxelPallet & pallet_r = VoxelPalletMap::StaticMap["DebugR"];
+	const VoxelPallet & pallet_g = VoxelPalletMap::StaticMap["DebugG"];
+	const VoxelPallet & pallet_b = VoxelPalletMap::StaticMap["DebugB"];
 
 	(void)pallet_r;
 	(void)pallet_g;
@@ -461,7 +462,7 @@ void AuxThread2::DecorateTrees(Chunk & chunk, const Perlin2D & noise)
 	//const float min = center - range;
 	//const float max = center + range;
 
-	const VoxelPallet & pallet = VoxelPalletMap::All["OrientationCube"];
+	const VoxelPallet & pallet = VoxelPalletMap::StaticMap["OrientationCube"];
 	(void)pallet;
 
 	VectorI3 Offset = chunk.Index * (int)CHUNK_VALUES_PER_SIDE;

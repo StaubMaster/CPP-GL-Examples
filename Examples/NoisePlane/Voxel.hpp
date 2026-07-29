@@ -5,32 +5,27 @@
 
 struct VoxelPallet;
 
-enum class VoxelType : unsigned char
-{
-	Empty,
-	DataU,
-	DataF,
-};
-
 struct Voxel
 {
-	unsigned short		Pallet;
+	public:
 	AxisOrientation		Orientation;
 
-	bool	IsEmpty() const;
-	bool	IsFloat() const;
-	bool	Visible(AxisRel axis) const;
+	private:
+	unsigned short	Pallet = 0xFFFF;
+	public:
+	bool					IsEmpty() const;
+	void					MakeEmpty();
+	const VoxelPallet &		ToPallet() const;
+	void					MakePallet(const VoxelPallet & pallet);
 
-	void	MakeEmpty();
-	void	Make(const VoxelPallet & pallet);
+	bool	IsAxisVisible(AxisRel axis) const;
 
-	const VoxelPallet *		ToPallet() const;
 
-	~Voxel();
-	Voxel();
 
-	Voxel(const Voxel & other);
-	Voxel & operator=(const Voxel & other);
+	~Voxel() = default;
+	Voxel() = default;
+	Voxel(const Voxel & other) = default;
+	Voxel & operator=(const Voxel & other) = default;
 };
 
 #endif

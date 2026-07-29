@@ -12,7 +12,7 @@ struct Vertex
 };
 struct Face
 {
-	Vertex	Data[4];
+	Vertex	Vertexes[4];
 };
 struct Cube
 {
