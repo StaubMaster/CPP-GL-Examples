@@ -103,20 +103,19 @@ VoxelPallet & VoxelPalletMap::NewPallet(const char * name, const VoxelPalletGeom
 void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 {
 	const VoxelPalletGeometry & cube = VoxelPalletGeometry::Cube;
-	const VoxelPalletGeometry & cylinder = VoxelPalletGeometry::Cylinder;
+	const VoxelPalletGeometry & axis_star = VoxelPalletGeometry::AxisStar;
+	const VoxelPalletGeometry & cylinder = VoxelPalletGeometry::PrismY8;
 	const VoxelPalletGeometry & slope = VoxelPalletGeometry::Slope;
 
-	NewPallet("DebugR", cube).TextureAll(
-		MediaDirectory.File("Images/Voxel/Debug/R.png")
-	);
-	NewPallet("DebugG", cube).TextureAll(
-		MediaDirectory.File("Images/Voxel/Debug/G.png")
-	);
-	NewPallet("DebugB", cube).TextureAll(
-		MediaDirectory.File("Images/Voxel/Debug/B.png")
-	);
-
 	NewPallet("OrientationCube", cube).TextureAxis(
+		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
+		MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
+		MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
+		MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
+		MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
+		MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
+	);
+	NewPallet("OrientationAxisStar", axis_star).TextureAxis(
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
@@ -139,6 +138,16 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 		MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
+	);
+
+	NewPallet("DebugR", cube).TextureAll(
+		MediaDirectory.File("Images/Voxel/Debug/R.png")
+	);
+	NewPallet("DebugG", cube).TextureAll(
+		MediaDirectory.File("Images/Voxel/Debug/G.png")
+	);
+	NewPallet("DebugB", cube).TextureAll(
+		MediaDirectory.File("Images/Voxel/Debug/B.png")
 	);
 
 	NewPallet("Gray", cube).TextureAll(

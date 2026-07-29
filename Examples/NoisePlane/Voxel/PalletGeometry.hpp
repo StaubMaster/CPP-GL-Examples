@@ -8,7 +8,8 @@
 struct VoxelPalletGeometry
 {
 	static VoxelPalletGeometry	Cube;
-	static VoxelPalletGeometry	Cylinder;
+	static VoxelPalletGeometry	AxisStar;
+	static VoxelPalletGeometry	PrismY8;
 	static VoxelPalletGeometry	Slope;
 
 	// Textures are aligned to the Diagonal
@@ -17,13 +18,6 @@ struct VoxelPalletGeometry
 
 	VoxelGeometryDataU::Cube	DataU;
 	VoxelGeometryDataF::Full	DataF;
-	/* mixed ?
-		Slope:
-			2 Bases that are like DataU
-			2 Sides that are DataF but can be hidden
-			1 Side that is DataF and allways visible
-		HideAxis should indicate weather that side if U or F
-	*/
 
 	bool	UseF_PrevX;
 	bool	UseF_PrevY;
@@ -42,9 +36,10 @@ struct VoxelPalletGeometry
 	AxisOrientation	Orient(AxisRel placeAxis0, AxisRel placeAxis1) const;
 
 
+
 	void	InitU();
 
-	void	InitFCube();
+	void	InitF_Cube();
 	/*DefaultCube()
 		Textures are oriented around the Diagonal
 	*/
@@ -53,8 +48,10 @@ struct VoxelPalletGeometry
 		belts are rotated so the Y axis of the Textures goes between the bases
 		should all Y face the same way, or should every other be spun 180 degrees ?
 	*/
-	void	InitFCylinder(); // CylinderY() PrismY8()
-	void	InitFSlope();
+
+	void	InitF_AxisStar();
+	void	InitF_PrismY8();
+	void	InitF_Slope();
 };
 
 #endif

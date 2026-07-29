@@ -39,6 +39,13 @@ struct VoxelPallet
 	::PolyHedra *		PolyHedra = nullptr;
 	VoxelPalletIndex	Index = 0xFFFF;
 
+	/* VoxelMaterialType
+		None
+		Dirt
+		Stone
+		Wood
+	*/
+
 
 
 	~VoxelPallet() = default;

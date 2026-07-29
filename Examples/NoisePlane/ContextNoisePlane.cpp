@@ -412,15 +412,27 @@ void ContextNoisePlane::ViewRayDo()
 		// determine place_axis_1 based on where on the face was clicked ?
 		// top of face orients to point to top and so on
 
-		if (window.MouseManager[MouseButtons::MouseL] == State::Down)
+		if (window.MouseManager[MouseButtons::MouseL] == State::Press)
+		{
+			ChunkVoxelIndex idx = ViewHit.Index;
+			Voxel voxel;
+			// why not .FindAssign() ?
+			AccessLockedChunk chunk0 = ChunkManager.FindAccess(idx.Chunk);
+			if (chunk0.Is())
+			{
+				AssignLockedChunk chunk1 = chunk0.ToAssign();
+				(*chunk1).ClearVoxel(idx.Voxel, voxel);
+			}
+			Voxel_Clear_Progress = 0;
+		}
+		/*if (window.MouseManager[MouseButtons::MouseL] == State::Down)
 		{
 			if (Voxel_Clear_Progress != 0xFFFFFFFF)
 			{
 				ChunkVoxelIndex idx = ViewHit.Index;
 				if ((idx.Chunk == Voxel_Clear_Index.Chunk).All(true) && (idx.Voxel == Voxel_Clear_Index.Voxel).All(true))
 				{
-					//if (Voxel_Clear_Progress >= 0)
-					if (true)
+					if (Voxel_Clear_Progress >= 32)
 					{
 						Voxel voxel;
 						// why not .FindAssign() ?
@@ -453,7 +465,7 @@ void ContextNoisePlane::ViewRayDo()
 		{
 			Voxel_Clear_Progress = 0;
 			Voxel_Clear_Index = ViewHit.Index;
-		}
+		}*/
 
 		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
 		{
@@ -606,11 +618,13 @@ void ContextNoisePlane::Make()
 	// Voxels
 	{
 		VoxelPalletGeometry::Cube.InitU();
-		VoxelPalletGeometry::Cube.InitFCube();
-		VoxelPalletGeometry::Cylinder.InitU();
-		VoxelPalletGeometry::Cylinder.InitFCylinder();
+		VoxelPalletGeometry::Cube.InitF_Cube();
+		VoxelPalletGeometry::AxisStar.InitU();
+		VoxelPalletGeometry::AxisStar.InitF_AxisStar();
+		VoxelPalletGeometry::PrismY8.InitU();
+		VoxelPalletGeometry::PrismY8.InitF_PrismY8();
 		VoxelPalletGeometry::Slope.InitU();
-		VoxelPalletGeometry::Slope.InitFSlope();
+		VoxelPalletGeometry::Slope.InitF_Slope();
 
 		VoxelPalletMap::StaticMap.Default(MediaDirectory);
 		//VoxelPalletMap::All.MakePolyHedra();
@@ -754,7 +768,8 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	//ChunkManager.ChangeSize(0, 0);
 	//ChunkManager.ChangeSize(2, 1);
-	ChunkManager.ChangeSize(8, 6);
+	ChunkManager.ChangeSize(4, 3);
+//	ChunkManager.ChangeSize(8, 6);
 	//ChunkManager.ChangeSize(16, 8);
 	//ChunkManager.ChangeSize(16, 12);
 	//ChunkManager.ChangeSize(32, 16);
@@ -823,67 +838,77 @@ void ContextNoisePlane::Draw()
 
 	StopWatch sw;
 
+
+
 	PolyHedraManager.InstancesClear();
 	PolyHedraManager.InstancesMake();
+
+	UIManager.WindowControl.Update();
+	UIManager.Resize(window.Size);
+	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+	UIManager.ControlManager.MakeInstances();
+
+	UIManager.GraphManager.MakeInstances();
+
+
 
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
 	GL::Enable(GL::Capability::DepthClamp);
 
-	sw.Clear(); sw.Start();
+	sw.Clear();
 	ObjectManagerBasic.GraphicsDrawFull();
 	ObjectManagerBasic.GraphicsDrawWire();
-	sw.Stop(); FrameTime_Draw_DrawPolyHedra.NewValue(sw.ElapsedTime());
+	FrameTime_Draw_DrawPolyHedra.NewValue(sw.ElapsedTime());
 
 	//PlaneManager.Draw();
 
-	sw.Clear(); sw.Start();
+	sw.Clear();
 	ChunkManager.ShaderU.Bind();
 	ChunkManager.ShaderLayoutU.LightAmbient.Put(LightAmbient);
 	ChunkManager.ShaderLayoutU.LightSolar.Put(LightSolar);
 	ChunkManager.ShaderLayoutU.LightSpot.Put(LightSpot);
 	ChunkManager.ShaderLayoutU.LightSpotCount.Put(1);
-	sw.Stop(); FrameTime_Draw_UniformChunk.NewValue(sw.ElapsedTime());
+	FrameTime_Draw_UniformChunk.NewValue(sw.ElapsedTime());
 
-	sw.Clear(); sw.Start();
+	sw.Clear();
 	ChunkManager.Draw();
-	sw.Stop(); FrameTime_Draw_DrawChunk.NewValue(sw.ElapsedTime());
-//	ChunkManager.UpdateChunksArrayDraw();
+	FrameTime_Draw_DrawChunk.NewValue(sw.ElapsedTime());
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 
-	sw.Clear(); sw.Start(); // sw.ClearStart(); clear while running should keep running
-	// everything before Draw can be done somewhere else befor ?
-	UIManager.WindowControl.Update();
-	UIManager.Resize(window.Size);
-	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
-	UIManager.ControlManager.MakeInstances();
+	sw.Clear();
 	UIManager.ControlManager.Draw();
-	sw.Stop(); FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime()); // sw.StopElapsedTime(); dont need to stop to get time ?
+	FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime());
 
-	sw.Clear(); sw.Start();
+	sw.Clear();
 	UIManager.TextManager.MakeInstances();
-	sw.Stop(); FrameTime_Draw_MakeText.NewValue(sw.ElapsedTime());
+	FrameTime_Draw_MakeText.NewValue(sw.ElapsedTime());
 
 	UIManager.TextManager.ShowInstancesTime();
 
-	sw.Clear(); sw.Start();
+	sw.Clear();
 	UIManager.TextManager.Draw();
-	TextCharCount = UIManager.TextManager.InstancesArray.Length();
-	sw.Stop(); FrameTime_Draw_DrawText.NewValue(sw.ElapsedTime());
+	FrameTime_Draw_DrawText.NewValue(sw.ElapsedTime());
 
-	UIManager.GraphManager.MakeInstances();
+	TextCharCount = UIManager.TextManager.InstancesArray.Length();
+
 	UIManager.GraphManager.Draw();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
+
 	ObjectManagerUI.GraphicsDrawFull();
 	ObjectManagerUI.GraphicsDrawWire();
 
-	sw_total.Stop(); FrameTime_Draw_DrawTotal.NewValue(sw_total.ElapsedTime());
+
+
+	FrameTime_Draw_DrawTotal.NewValue(sw_total.ElapsedTime());
+
+
 
 	PolyHedraManager.UpdatePalletObjectDatas();
 }
