@@ -5,14 +5,19 @@
 
 # include "PolyHedra/PolyHedra.hpp"
 
+# include "Voxel/Pallet.hpp"
+
 struct ItemTool : public ItemBase
 {
 	::PolyHedra *		Pallet = nullptr;
-	unsigned int		Count = 0;
+
+	VoxelMaterialType	Material = VoxelMaterialType::None;
+	float				Multiplier = 1.0f;
+
 	~ItemTool() = default;
 	ItemTool() = default;
-	ItemTool(::PolyHedra & pallet);
-	ItemTool(::PolyHedra * pallet);
+	ItemTool(::PolyHedra & pallet, VoxelMaterialType material, float multiplier);
+	ItemTool(::PolyHedra * pallet, VoxelMaterialType material, float multiplier);
 };
 
 #endif

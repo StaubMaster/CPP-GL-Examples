@@ -219,6 +219,96 @@ ContextNoisePlane::ContextNoisePlane()
 
 
 
+bool ContextNoisePlane::VoxelClear_Is() const
+{
+	return (VoxelClear_Progress != 0xFFFFFFFF);
+}
+void ContextNoisePlane::VoxelClear_None()
+{
+	VoxelClear_Progress = 0xFFFFFFFF;
+	VoxelClear_Pallet = nullptr;
+	VoxelClear_Tool = nullptr;
+}
+void ContextNoisePlane::VoxelClear_Clear(ChunkVoxelIndex idx)
+{
+	VoxelClear_Progress = 0;
+	VoxelClear_Index = idx;
+	VoxelClear_Tool = dynamic_cast<ItemTool*>(HotBar.Items[0]);
+
+	AccessLockedChunk chunk = ChunkManager.FindAccess(VoxelClear_Index.Chunk);
+	const Voxel & voxel = (*chunk).Voxels[VoxelClear_Index.Voxel];
+	if (!voxel.IsEmpty())
+	{
+		VoxelClear_Pallet = &voxel.ToPallet();
+	}
+	else
+	{
+		VoxelClear_Pallet = nullptr;
+	}
+}
+void ContextNoisePlane::VoxelClear_Continue(const ChunkVoxelIndex & other)
+{
+	if (VoxelClear_Is())
+	{
+		if (
+			(other.Chunk == VoxelClear_Index.Chunk).All(true) &&
+			(other.Voxel == VoxelClear_Index.Voxel).All(true)
+		)
+		{
+			if (VoxelClear_Progress >= 64)
+			{
+				Voxel voxel;
+				// why not .FindAssign() ?
+				AccessLockedChunk chunk_access = ChunkManager.FindAccess(VoxelClear_Index.Chunk);
+				if (chunk_access.Is())
+				{
+					AssignLockedChunk chunk_assign = chunk_access.ToAssign();
+					(*chunk_assign).ClearVoxel(VoxelClear_Index.Voxel, voxel);
+				}
+				VoxelClear_None();
+			}
+			else
+			{
+				if (VoxelClear_Tool != nullptr && VoxelClear_Pallet != nullptr)
+				{
+					if (VoxelClear_Tool -> Material == VoxelClear_Pallet -> Material)
+					{
+						VoxelClear_Progress += VoxelClear_Tool -> Multiplier;
+					}
+					else
+					{
+						VoxelClear_Progress++;
+					}
+				}
+				else
+				{
+					VoxelClear_Progress++;
+				}
+			}
+		}
+		else
+		{
+			VoxelClear_Clear(other);
+		}
+	}
+	else
+	{
+		VoxelClear_Clear(other);
+	}
+}
+void ContextNoisePlane::VoxelClear_Show(std::stringstream & ss) const
+{
+	if (VoxelClear_Is())
+	{
+		ss << "VoxelClear:\n";
+		ss << VoxelClear_Index.Chunk << " :Chunk\n";
+		ss << VoxelClear_Index.Voxel << " :Voxel\n";
+		ss << VoxelClear_Progress << " :Progress\n";
+	}
+}
+
+
+
 void ContextNoisePlane::ViewUpdateDone()
 {
 #ifndef DISABLE_VIEW_TANGIBLE
@@ -382,13 +472,7 @@ void ContextNoisePlane::ViewRayInfo()
 		}
 	}
 
-	if (Voxel_Clear_Progress != 0xFFFFFFFF)
-	{
-		ss << "Voxel_Clear:\n";
-		ss << Voxel_Clear_Index.Chunk << " :Chunk\n";
-		ss << Voxel_Clear_Index.Voxel << " :Voxel\n";
-		ss << Voxel_Clear_Progress << " :Progress\n";
-	}
+	VoxelClear_Show(ss);
 
 	UI::Text::Object text; text.Create();
 	text.Text() = ss.str();
@@ -398,6 +482,7 @@ void ContextNoisePlane::ViewRayInfo()
 	text.Bound().Max = window.Size.Buffer.Full;
 	text.Color() = ColorF4(1, 1, 1);
 }
+
 void ContextNoisePlane::ViewRayDo()
 {
 #ifndef DISABLE_INVENTORY
@@ -412,7 +497,7 @@ void ContextNoisePlane::ViewRayDo()
 		// determine place_axis_1 based on where on the face was clicked ?
 		// top of face orients to point to top and so on
 
-		if (window.MouseManager[MouseButtons::MouseL] == State::Press)
+		/*if (window.MouseManager[MouseButtons::MouseL] == State::Press)
 		{
 			ChunkVoxelIndex idx = ViewHit.Index;
 			Voxel voxel;
@@ -424,48 +509,15 @@ void ContextNoisePlane::ViewRayDo()
 				(*chunk1).ClearVoxel(idx.Voxel, voxel);
 			}
 			Voxel_Clear_Progress = 0;
-		}
-		/*if (window.MouseManager[MouseButtons::MouseL] == State::Down)
+		}*/
+		if (window.MouseManager[MouseButtons::MouseL] == State::Down)
 		{
-			if (Voxel_Clear_Progress != 0xFFFFFFFF)
-			{
-				ChunkVoxelIndex idx = ViewHit.Index;
-				if ((idx.Chunk == Voxel_Clear_Index.Chunk).All(true) && (idx.Voxel == Voxel_Clear_Index.Voxel).All(true))
-				{
-					if (Voxel_Clear_Progress >= 32)
-					{
-						Voxel voxel;
-						// why not .FindAssign() ?
-						AccessLockedChunk chunk0 = ChunkManager.FindAccess(idx.Chunk);
-						if (chunk0.Is())
-						{
-							AssignLockedChunk chunk1 = chunk0.ToAssign();
-							(*chunk1).ClearVoxel(idx.Voxel, voxel);
-						}
-						Voxel_Clear_Progress = 0;
-					}
-					else
-					{
-						Voxel_Clear_Progress++;
-					}
-				}
-				else
-				{
-					Voxel_Clear_Progress = 0;
-					Voxel_Clear_Index = idx;
-				}
-			}
-			else
-			{
-				Voxel_Clear_Progress = 0;
-				Voxel_Clear_Index = ViewHit.Index;
-			}
+			VoxelClear_Continue(ViewHit.Index);
 		}
 		else
 		{
-			Voxel_Clear_Progress = 0;
-			Voxel_Clear_Index = ViewHit.Index;
-		}*/
+			VoxelClear_Clear(ViewHit.Index);
+		}
 
 		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
 		{
@@ -681,11 +733,13 @@ void ContextNoisePlane::MakeControls()
 		{
 			Inventory.Items[idx] = new ItemVoxel(VoxelPalletMap::StaticMap.Data[i]); idx++;
 		}
-		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Stick.polyhedra"))); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Spade.polyhedra"))); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Pick.polyhedra"))); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Hammer.polyhedra"))); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedraGenerate::SphereY(6, 12, 4.0f)); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Stick.polyhedra")),  VoxelMaterialType::None,  1.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Spade.polyhedra")),  VoxelMaterialType::Dirt,  4.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Pick.polyhedra")),   VoxelMaterialType::Stone, 4.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Hammer.polyhedra")), VoxelMaterialType::None,  4.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraGenerate::SphereY(6, 12, 4.0f), VoxelMaterialType::None, 1.0f); idx++;
+		InventoryUI.IsResizable = false;
+		InventoryUI.IsMovable = false;
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
 		UIManager.WindowControl.ChildInsert(InventoryUI);
@@ -694,6 +748,8 @@ void ContextNoisePlane::MakeControls()
 	// HotBar
 #ifndef DISABLE_INVENTORY
 	{
+		HotBarUI.IsResizable = false;
+		HotBarUI.IsMovable = false;
 		HotBarUI.Anchor.Y.AnchorMax(0);
 		HotBarUI.Change(&HotBar);
 		//HotBarUI.Hide();
@@ -745,6 +801,7 @@ void ContextNoisePlane::GraphicsDelete()
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 }
 
+#include "Voxel/TextureFileMap.hpp"
 void ContextNoisePlane::Init()
 {
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
@@ -760,7 +817,14 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	UIManager.GraphicsInit();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	VoxelPalletMap::StaticMap.TexturesAssign(ChunkManager);
+	{
+		TextureFileMap tex_map;
+		std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+		VoxelPalletMap::StaticMap.TexturesAssign(tex_map);
+		std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+		ChunkManager.Texture.Bind();
+		ChunkManager.Texture.Assign(VectorU2(32, 32), tex_map.Files.ToArray());
+	}
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	VoxelPalletMap::StaticMap.MakePolyHedras();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';

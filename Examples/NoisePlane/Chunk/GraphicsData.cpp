@@ -190,10 +190,10 @@ void ChunkGraphicsData::CatU(const VoxelData & voxel_data, AxisRel axis)
 	TimeDataTexture.Start();
 	#endif
 
-	geom_face.Vertexes[0].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[0].Tex.Z).Index;
-	geom_face.Vertexes[1].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[1].Tex.Z).Index;
-	geom_face.Vertexes[2].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[2].Tex.Z).Index;
-	geom_face.Vertexes[3].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[3].Tex.Z).Index;
+	geom_face.Vertexes[0].Idx = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[0].Idx).Index;
+	geom_face.Vertexes[1].Idx = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[1].Idx).Index;
+	geom_face.Vertexes[2].Idx = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[2].Idx).Index;
+	geom_face.Vertexes[3].Idx = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[3].Idx).Index;
 
 	#ifdef MEASURE_TIME
 	TimeDataTexture.Stop();
@@ -201,10 +201,10 @@ void ChunkGraphicsData::CatU(const VoxelData & voxel_data, AxisRel axis)
 	#endif
 
 	VoxelGraphicsDataU::Vertex data[4];
-	data[0] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[0].Pos, geom_face.Vertexes[0].Tex, axis, voxel_data.Chunk);
-	data[1] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[1].Pos, geom_face.Vertexes[1].Tex, axis, voxel_data.Chunk);
-	data[2] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[2].Pos, geom_face.Vertexes[2].Tex, axis, voxel_data.Chunk);
-	data[3] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[3].Pos, geom_face.Vertexes[3].Tex, axis, voxel_data.Chunk);
+	data[0] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[0], axis, voxel_data.Chunk);
+	data[1] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[1], axis, voxel_data.Chunk);
+	data[2] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[2], axis, voxel_data.Chunk);
+	data[3] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[3], axis, voxel_data.Chunk);
 
 	#ifdef MEASURE_TIME
 	TimeDataCompress.Stop();

@@ -2,13 +2,15 @@
 # define VOXEL_GEOMETRY_DATA_U_HPP
 
 # include "ValueType/Vector/U3.hpp"
+# include "ValueType/Vector/U2.hpp"
 
 namespace VoxelGeometryDataU
 {
 struct Vertex
 {
-	VectorU3	Pos;
-	VectorU3	Tex;
+	VectorU3		Pos;
+	VectorU2		Tex;
+	unsigned int	Idx; // Texture Index
 };
 struct Face
 {

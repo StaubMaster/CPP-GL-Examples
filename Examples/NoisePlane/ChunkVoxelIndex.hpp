@@ -21,6 +21,7 @@ struct ChunkVoxelIndex
 	ChunkVoxelIndex(const ChunkVoxelIndex & other) = default;
 	ChunkVoxelIndex & operator=(const ChunkVoxelIndex & other) = default;
 
+	// make these named function
 	ChunkVoxelIndex(const VectorI3 & position);
 	ChunkVoxelIndex & operator=(const VectorI3 & position);
 

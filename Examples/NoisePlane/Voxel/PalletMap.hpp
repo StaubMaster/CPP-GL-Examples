@@ -8,7 +8,10 @@ struct VoxelPalletGeometry;
 class DirectoryInfo;
 struct ChunkManager;
 
+struct TextureFileMap;
+
 typedef unsigned short VoxelPalletIndex;
+enum class VoxelMaterialType;
 
 struct VoxelPalletMap
 {
@@ -26,9 +29,13 @@ struct VoxelPalletMap
 	VoxelPalletIndex		FindIndex(const VoxelPallet * pallet) const;
 	VoxelPalletIndex		FindIndex(const VoxelPallet & pallet) const;
 
-	VoxelPallet &	NewPallet(const char * name, const VoxelPalletGeometry & geometry);
+	VoxelPallet &	NewPallet(const char * name, const VoxelPalletGeometry & geometry, VoxelMaterialType material);
+
+	// do this in Context
 	void	Default(const DirectoryInfo & MediaDirectory);
-	void	TexturesAssign(ChunkManager & manager);
+
+	void	TexturesAssign(TextureFileMap & tex_map);
+
 	void	MakePolyHedras();
 };
 

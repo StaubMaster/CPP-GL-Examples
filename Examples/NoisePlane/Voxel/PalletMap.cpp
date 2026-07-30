@@ -8,6 +8,7 @@ VoxelPalletMap VoxelPalletMap::StaticMap;
 
 #include <string>
 #include <iostream>
+
 VoxelPallet & VoxelPalletMap::operator[](VoxelPalletIndex idx)
 {
 	return Data[idx];
@@ -16,6 +17,7 @@ const VoxelPallet & VoxelPalletMap::operator[](VoxelPalletIndex idx) const
 {
 	return Data[idx];
 }
+
 VoxelPallet & VoxelPalletMap::operator[](const char * name)
 {
 	std::string str(name);
@@ -79,27 +81,15 @@ VoxelPalletIndex VoxelPalletMap::FindIndex(const VoxelPallet & pallet) const
 	return FindIndex(&pallet);
 }
 
-/*VoxelPallet * VoxelPalletMap::FindOrNull(const char * name)
-{
-	std::string str(name);
-	for (unsigned int i = 0; i < Data.Count(); i++)
-	{
-		if (str == Data[i].Name)
-		{
-			return &Data[i];
-		}
-	}
-	return nullptr;
-}*/
-
-#include "DirectoryInfo.hpp"
-// do this in Context
-VoxelPallet & VoxelPalletMap::NewPallet(const char * name, const VoxelPalletGeometry & geometry)
+VoxelPallet & VoxelPalletMap::NewPallet(const char * name, const VoxelPalletGeometry & geometry, VoxelMaterialType material)
 {
 	VoxelPalletIndex idx = Data.Count();
-	Data.Insert(VoxelPallet(name, geometry, idx));
+	Data.Insert(VoxelPallet(idx, name, geometry, material));
 	return Data[idx];
 }
+
+// do this in Context
+#include "DirectoryInfo.hpp"
 void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 {
 	const VoxelPalletGeometry & cube = VoxelPalletGeometry::Cube;
@@ -107,7 +97,7 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 	const VoxelPalletGeometry & cylinder = VoxelPalletGeometry::PrismY8;
 	const VoxelPalletGeometry & slope = VoxelPalletGeometry::Slope;
 
-	NewPallet("OrientationCube", cube).TextureAxis(
+	NewPallet("OrientationCube", cube, VoxelMaterialType::None).TextureAxis(
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
@@ -115,7 +105,7 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 		MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
 	);
-	NewPallet("OrientationAxisStar", axis_star).TextureAxis(
+	NewPallet("OrientationAxisStar", axis_star, VoxelMaterialType::None).TextureAxis(
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
@@ -123,7 +113,7 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 		MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
 	);
-	NewPallet("OrientationCylinder", cylinder).TextureAxis(
+	NewPallet("OrientationCylinder", cylinder, VoxelMaterialType::None).TextureAxis(
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
@@ -131,7 +121,7 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 		MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
 	);
-	NewPallet("OrientationSlope", slope).TextureAxis(
+	NewPallet("OrientationSlope", slope, VoxelMaterialType::None).TextureAxis(
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
@@ -140,53 +130,53 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 		MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
 	);
 
-	NewPallet("DebugR", cube).TextureAll(
+	NewPallet("DebugR", cube, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Debug/R.png")
 	);
-	NewPallet("DebugG", cube).TextureAll(
+	NewPallet("DebugG", cube, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Debug/G.png")
 	);
-	NewPallet("DebugB", cube).TextureAll(
+	NewPallet("DebugB", cube, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Debug/B.png")
 	);
 
-	NewPallet("Gray", cube).TextureAll(
+	NewPallet("Gray", cube, VoxelMaterialType::Stone).TextureAll(
 		MediaDirectory.File("Images/Voxel/Gray.png")
 	);
 
-	NewPallet("Grass", cube).TextureAll(
+	NewPallet("Grass", cube, VoxelMaterialType::Dirt).TextureAll(
 		MediaDirectory.File("Images/Voxel/Grass.png")
 	);
-	NewPallet("Dirt", cube).TextureAll(
+	NewPallet("Dirt", cube, VoxelMaterialType::Dirt).TextureAll(
 		MediaDirectory.File("Images/Voxel/Dirt.png")
 	);
 
-	NewPallet("RedLog", cylinder).TexturePrismY(
+	NewPallet("RedLog", cylinder, VoxelMaterialType::Wood).TexturePrismY(
 		MediaDirectory.File("Images/Voxel/fancy_RedWood_Base.png"),
 		MediaDirectory.File("Images/Voxel/fancy_RedWood_Belt.png")
 	);
-	NewPallet("Log", cube).TexturePrismY(
+	NewPallet("Log", cube, VoxelMaterialType::Wood).TexturePrismY(
 		MediaDirectory.File("Images/Voxel/Log_Base.png"),
 		MediaDirectory.File("Images/Voxel/Log_Belt.png")
 	);
-	NewPallet("Leaves", cube).TextureAll(
+	NewPallet("Leaves", cube, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Leave1.png")
 	);
 
-	NewPallet("Sand", cube).TextureAll(
+	NewPallet("Sand", cube, VoxelMaterialType::Powder).TextureAll(
 		MediaDirectory.File("Images/Voxel/Sand.png")
 	);
-	NewPallet("Snow", cube).TextureAll(
+	NewPallet("Snow", cube, VoxelMaterialType::Powder).TextureAll(
 		MediaDirectory.File("Images/Voxel/Snow.png")
 	);
-	NewPallet("Water", cube).TextureAll(
+	NewPallet("Water", cube, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Water.png")
 	);
 
-	NewPallet("ConcreteCube", cube).TextureAll(
+	NewPallet("ConcreteCube", cube, VoxelMaterialType::Stone).TextureAll(
 		MediaDirectory.File("Images/Voxel/Concrete_0.png")
 	);
-	NewPallet("ConcreteCylinder", cylinder).TextureAll(
+	NewPallet("ConcreteCylinder", cylinder, VoxelMaterialType::Stone).TextureAll(
 		MediaDirectory.File("Images/Voxel/Concrete_0.png")
 	);
 }
@@ -195,53 +185,22 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 
 #include "ValueType/Vector/U2.hpp"
 
-#include "Chunk/Manager.hpp"
+#include "TextureFileMap.hpp"
 
-static unsigned short	FindFile(const Container::Binary<FileInfo> & files, const FileInfo & file)
-{
-	for (unsigned int i = 0; i < files.Count(); i++)
-	{
-		if (files[i].Name() == file.Name())
-		{
-			return i;
-		}
-	}
-	return 0xFFFF;
-}
-static unsigned short	MakeFile(Container::Binary<FileInfo> & files, const FileInfo & file)
-{
-	unsigned short idx = files.Count();
-	files.Insert(file);
-	return idx;
-}
-static unsigned short	FindMakeFile(Container::Binary<FileInfo> & files, const FileInfo & file)
-{
-	unsigned short idx = FindFile(files, file);
-	if (idx == 0xFFFF)
-	{
-		idx = MakeFile(files, file);
-	}
-	return idx;
-}
-
-void VoxelPalletMap::TexturesAssign(ChunkManager & manager)
+void VoxelPalletMap::TexturesAssign(TextureFileMap & tex_map)
 {
 	std::cout << "VoxelPalletMap::TexturesAssign() ....\n";
-	Container::Binary<FileInfo> files;
 	for (unsigned int i = 0; i < Data.Count(); i++)
 	{
 		VoxelPallet & pallet = Data[i];
-		for (unsigned int k = 0; k < 6; k++)
+		for (unsigned int j = 0; j < 6; j++)
 		{
-			TextureFileIndex & tex = pallet.Textures[k];
-			tex.Index = FindMakeFile(files, tex.File);
+			tex_map.Assign(pallet.Textures[j]);
 		}
 	}
-	std::cout << "Textures: " << files.Count() << '\n';
-	manager.Texture.Bind();
-	manager.Texture.Assign(VectorU2(32, 32), files.ToArray());
 	std::cout << "VoxelPalletMap::TexturesAssign() done\n";
 }
+
 void VoxelPalletMap::MakePolyHedras()
 {
 	std::cout << "VoxelPalletMap::MakePolyHedras() ....\n";

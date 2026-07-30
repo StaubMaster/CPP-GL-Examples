@@ -77,10 +77,15 @@ static void Quad0(VoxelGeometryDataU::Face & face_data,
 	face_data.Vertexes[0b10].Pos = p01;
 	face_data.Vertexes[0b11].Pos = p11;
 
-	face_data.Vertexes[0b00].Tex = VectorU3(box.Min.X, box.Min.Y, tex);
-	face_data.Vertexes[0b01].Tex = VectorU3(box.Min.X, box.Max.Y, tex);
-	face_data.Vertexes[0b10].Tex = VectorU3(box.Max.X, box.Min.Y, tex);
-	face_data.Vertexes[0b11].Tex = VectorU3(box.Max.X, box.Max.Y, tex);
+	face_data.Vertexes[0b00].Tex = VectorU2(box.Min.X, box.Min.Y);
+	face_data.Vertexes[0b01].Tex = VectorU2(box.Min.X, box.Max.Y);
+	face_data.Vertexes[0b10].Tex = VectorU2(box.Max.X, box.Min.Y);
+	face_data.Vertexes[0b11].Tex = VectorU2(box.Max.X, box.Max.Y);
+
+	face_data.Vertexes[0b00].Idx = tex;
+	face_data.Vertexes[0b01].Idx = tex;
+	face_data.Vertexes[0b10].Idx = tex;
+	face_data.Vertexes[0b11].Idx = tex;
 }
 static void Quad1(VoxelGeometryDataU::Face & face_data,
 	VectorU3 p00, VectorU3 p01, VectorU3 p10, VectorU3 p11,
@@ -91,10 +96,15 @@ static void Quad1(VoxelGeometryDataU::Face & face_data,
 	face_data.Vertexes[0b10].Pos = p01;
 	face_data.Vertexes[0b11].Pos = p11;
 
-	face_data.Vertexes[0b00].Tex = VectorU3(box.Min.X, box.Min.Y, tex);
-	face_data.Vertexes[0b01].Tex = VectorU3(box.Max.X, box.Min.Y, tex);
-	face_data.Vertexes[0b10].Tex = VectorU3(box.Min.X, box.Max.Y, tex);
-	face_data.Vertexes[0b11].Tex = VectorU3(box.Max.X, box.Max.Y, tex);
+	face_data.Vertexes[0b00].Tex = VectorU2(box.Min.X, box.Min.Y);
+	face_data.Vertexes[0b01].Tex = VectorU2(box.Max.X, box.Min.Y);
+	face_data.Vertexes[0b10].Tex = VectorU2(box.Min.X, box.Max.Y);
+	face_data.Vertexes[0b11].Tex = VectorU2(box.Max.X, box.Max.Y);
+
+	face_data.Vertexes[0b00].Idx = tex;
+	face_data.Vertexes[0b01].Idx = tex;
+	face_data.Vertexes[0b10].Idx = tex;
+	face_data.Vertexes[0b11].Idx = tex;
 }
 
 void VoxelPalletGeometry::InitU()

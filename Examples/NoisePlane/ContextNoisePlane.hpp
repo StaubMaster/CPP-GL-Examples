@@ -216,8 +216,18 @@ VoxelHit	ViewHit;
 AxisRel		ViewHitAxis0;
 AxisRel		ViewHitAxis1;
 
-ChunkVoxelIndex		Voxel_Clear_Index;
-unsigned int		Voxel_Clear_Progress = 0xFFFFFFFF;
+// VoxelClear
+unsigned int		VoxelClear_Progress = 0xFFFFFFFF;
+ChunkVoxelIndex		VoxelClear_Index;
+const VoxelPallet *		VoxelClear_Pallet = nullptr;
+const ItemTool *		VoxelClear_Tool = nullptr;
+
+bool	VoxelClear_Is() const;
+void	VoxelClear_None();
+void	VoxelClear_Clear(ChunkVoxelIndex idx);
+void	VoxelClear_Continue(const ChunkVoxelIndex & other);
+void	VoxelClear_Show(std::stringstream & ss) const;
+
 #endif
 
 void ViewUpdateDone();

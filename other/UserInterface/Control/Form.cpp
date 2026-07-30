@@ -41,19 +41,25 @@ UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 m
 
 	if (MinX_Hovering || MaxX_Hovering || MinY_Hovering || MaxY_Hovering)
 	{
-		if (MinX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { return EBoxChangeType::ResizeMinX; }
-		if (MaxX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { return EBoxChangeType::ResizeMaxX; }
-		if (MinY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { return EBoxChangeType::ResizeMinY; }
-		if (MaxY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { return EBoxChangeType::ResizeMaxY; }
-
-		if (MinX_Hovering && MinY_Hovering) { return EBoxChangeType::ResizeMinMin; }
-		if (MinX_Hovering && MaxY_Hovering) { return EBoxChangeType::ResizeMinMax; }
-		if (MaxX_Hovering && MinY_Hovering) { return EBoxChangeType::ResizeMaxMin; }
-		if (MaxX_Hovering && MaxY_Hovering) { return EBoxChangeType::ResizeMaxMax; }
+		if (IsResizable)
+		{
+			if (MinX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { return EBoxChangeType::ResizeMinX; }
+			if (MaxX_Hovering && !(MinY_Hovering || MaxY_Hovering)) { return EBoxChangeType::ResizeMaxX; }
+			if (MinY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { return EBoxChangeType::ResizeMinY; }
+			if (MaxY_Hovering && !(MinX_Hovering || MaxX_Hovering)) { return EBoxChangeType::ResizeMaxY; }
+			
+			if (MinX_Hovering && MinY_Hovering) { return EBoxChangeType::ResizeMinMin; }
+			if (MinX_Hovering && MaxY_Hovering) { return EBoxChangeType::ResizeMinMax; }
+			if (MaxX_Hovering && MinY_Hovering) { return EBoxChangeType::ResizeMaxMin; }
+			if (MaxX_Hovering && MaxY_Hovering) { return EBoxChangeType::ResizeMaxMax; }
+		}
 	}
 	else
 	{
-		return EBoxChangeType::Move;
+		if (IsMovable)
+		{
+			return EBoxChangeType::Move;
+		}
 	}
 	return EBoxChangeType::None;
 }

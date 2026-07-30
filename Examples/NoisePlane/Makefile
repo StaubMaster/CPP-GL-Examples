@@ -12,6 +12,8 @@ FILES := \
 	Graphics/Buffer.cpp \
 	Graphics/ShaderLayout.cpp \
 \
+	Voxel/TextureFileMap.cpp \
+\
 	Voxel.cpp \
 	Voxel/GeometryDataU.cpp \
 	Voxel/GeometryDataF.cpp \

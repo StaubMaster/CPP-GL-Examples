@@ -42,6 +42,7 @@ class Manager
 
 	GLFWwindow *	glfw_window;
 
+	// make CursorManager ?
 	// put these in MouseManager ?
 	GLFWcursor *	glfw_cursorArrowC;
 	GLFWcursor *	glfw_cursorArrowH;

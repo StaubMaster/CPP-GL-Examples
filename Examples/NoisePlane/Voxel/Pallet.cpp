@@ -6,12 +6,13 @@
 
 
 
-VoxelPallet::VoxelPallet(const char * name, const VoxelPalletGeometry & geometry, VoxelPalletIndex idx)
-	: Name(name)
+VoxelPallet::VoxelPallet(VoxelPalletIndex idx, const char * name, const VoxelPalletGeometry & geometry, VoxelMaterialType material)
+	: Index(idx)
+	, Name(name)
 	, Geometry(&geometry)
+	, Material(material)
 	, Textures()
 	, PolyHedra(nullptr)
-	, Index(idx)
 { }
 
 
@@ -118,10 +119,10 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataU::
 		polyhedra.Insert_Face3(ph_i + 2, ph_i + 1, ph_i + 3);
 
 		unsigned int sk_i = skin.Corners.Count();
-		skin.Corners.Insert(Skin::Corner(data.Vertexes[0].Tex.X, data.Vertexes[0].Tex.Y, data.Vertexes[0].Tex.Z));
-		skin.Corners.Insert(Skin::Corner(data.Vertexes[1].Tex.X, data.Vertexes[1].Tex.Y, data.Vertexes[1].Tex.Z));
-		skin.Corners.Insert(Skin::Corner(data.Vertexes[2].Tex.X, data.Vertexes[2].Tex.Y, data.Vertexes[2].Tex.Z));
-		skin.Corners.Insert(Skin::Corner(data.Vertexes[3].Tex.X, data.Vertexes[3].Tex.Y, data.Vertexes[3].Tex.Z));
+		skin.Corners.Insert(Skin::Corner(data.Vertexes[0].Tex.X, data.Vertexes[0].Tex.Y, data.Vertexes[0].Idx));
+		skin.Corners.Insert(Skin::Corner(data.Vertexes[1].Tex.X, data.Vertexes[1].Tex.Y, data.Vertexes[1].Idx));
+		skin.Corners.Insert(Skin::Corner(data.Vertexes[2].Tex.X, data.Vertexes[2].Tex.Y, data.Vertexes[2].Idx));
+		skin.Corners.Insert(Skin::Corner(data.Vertexes[3].Tex.X, data.Vertexes[3].Tex.Y, data.Vertexes[3].Idx));
 		skin.Insert_Face3(sk_i + 0, sk_i + 1, sk_i + 2);
 		skin.Insert_Face3(sk_i + 2, sk_i + 1, sk_i + 3);
 	}

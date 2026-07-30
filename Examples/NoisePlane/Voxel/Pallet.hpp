@@ -22,29 +22,48 @@ class PolyHedra;
 // Cube Texture Coordinates go from 0 to 5
 // use those as Index for actual TextureIndex
 
+# include "TextureFileIndex.hpp"
+
 typedef unsigned short VoxelPalletIndex;
 
-struct TextureFileIndex
+enum class VoxelMaterialType
 {
-	FileInfo			File;
-	VoxelPalletIndex	Index = 0xFFFF;
+	None,
+	Dirt,
+	Stone,
+	Wood,
+	Powder,
 };
+
+/* Grain
+	Solid
+		Stone
+		Wood
+	Rough
+		Dirt
+	Powder
+		Sand
+*/
+
+/* Hardness
+	Hard
+		Stone
+		Sand
+	Soft
+		Wood
+		Dirt
+*/
 
 struct VoxelPallet
 {
+	VoxelPalletIndex				Index = 0xFFFF;
+
 	const char *					Name = nullptr;
 	const VoxelPalletGeometry *		Geometry = nullptr;
+	VoxelMaterialType				Material = VoxelMaterialType::None;
 
 	TextureFileIndex	Textures[6];
 	::PolyHedra *		PolyHedra = nullptr;
-	VoxelPalletIndex	Index = 0xFFFF;
-
-	/* VoxelMaterialType
-		None
-		Dirt
-		Stone
-		Wood
-	*/
 
 
 
@@ -53,11 +72,13 @@ struct VoxelPallet
 	VoxelPallet(const VoxelPallet & other) = default;
 	VoxelPallet & operator=(const VoxelPallet & other) = default;
 
-	VoxelPallet(const char * name, const VoxelPalletGeometry & geometry, VoxelPalletIndex idx);
+	VoxelPallet(VoxelPalletIndex idx, const char * name, const VoxelPalletGeometry & geometry, VoxelMaterialType material);
 
 
 
 	TextureFileIndex	FindTextureFileIndex(int idx) const;
+
+
 
 	void	TextureAxis(
 		FileInfo prevX, FileInfo prevY, FileInfo prevZ,
@@ -68,6 +89,8 @@ struct VoxelPallet
 	);
 	void	TexturePrismY(FileInfo base, FileInfo belt);
 	void	TextureAll(FileInfo tex);
+
+
 
 	void	MakePolyHedra();
 

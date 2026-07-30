@@ -1,13 +1,12 @@
 #ifndef  VOXEL_GRAPHICS_DATA_U_HPP
 # define VOXEL_GRAPHICS_DATA_U_HPP
 
+# include "Voxel/GeometryDataU.hpp"
 # include "ValueType/Vector/I3.hpp"
 
 struct VectorU3;
 enum class AxisRel : unsigned char;
 
-namespace VoxelGraphicsDataU
-{
 /* Vertex
 	|------||------||------||------| 32 Bits in 4 Bytes
 	[--PX--][--PY--][--PZ--]TTNNNVVV
@@ -26,6 +25,9 @@ namespace VoxelGraphicsDataU
 	4Byte (sint) Chunk Position Y
 	4Byte (sint) Chunk Position Z
 */
+
+namespace VoxelGraphicsDataU
+{
 struct Vertex
 {
 	unsigned int	Voxel = 0;
@@ -37,8 +39,7 @@ struct Vertex
 	Vertex(const Vertex & other) = default;
 	Vertex & operator=(const Vertex & other) = default;
 
-	// take GeometryDataU Vertex ?
-	Vertex(const VectorU3 & pos, const VectorU3 & vert, const VectorU3 & tex, const AxisRel & axis, const VectorI3 & chunk);
+	Vertex(const VectorU3 & udx, const VoxelGeometryDataU::Vertex & vert, const AxisRel & axis, const VectorI3 & chunk);
 };
 struct Face
 {
