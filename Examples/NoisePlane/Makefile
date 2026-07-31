@@ -51,6 +51,7 @@ FILES := \
 	Menus/Item/HotBar.cpp \
 \
 	ContextNoisePlane.cpp \
+	Shaders.cpp \
 	NewPolyHedraUI.cpp \
 	new.cpp \
 	main.cpp \

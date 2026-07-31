@@ -78,32 +78,6 @@
 
 
 
-
-
-# include "Graphics/Uniform/General/Layout.hpp"
-# include "Graphics/Uniform/_Include.hpp"
-
-struct InventoryShader : public Uniform::Layout // rename: "ShaderLayoutDisplay"
-{
-	Uniform::DisplaySize	DisplaySize;
-	~InventoryShader();
-	InventoryShader();
-};
-
-class ShaderLayoutView3D : public Uniform::Layout
-{
-	public:
-	Uniform::DisplaySize	DisplaySize;
-	Uniform::Matrix4x4		View;
-	Uniform::Depth			Depth;
-	Uniform::Angle			FOV;
-	public:
-	~ShaderLayoutView3D();
-	ShaderLayoutView3D();
-};
-
-
-
 // New PolyHedra
 # include "NewPolyHedra/Manager.hpp"
 # include "NewPolyHedra/PalletManager.hpp"
@@ -113,6 +87,8 @@ class ShaderLayoutView3D : public Uniform::Layout
 # include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
 
 # include "NewPolyHedraUI.hpp"
+
+# include "Shaders.hpp"
 
 struct ContextNoisePlane : public ContextBase
 {
@@ -126,8 +102,8 @@ NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
 NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
 NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
 
-InventoryShader									ObjectManagerUI_ShaderFullLayout;
-InventoryShader									ObjectManagerUI_ShaderWireLayout;
+ShaderLayoutDisplay								ObjectManagerUI_ShaderFullLayout;
+ShaderLayoutDisplay								ObjectManagerUI_ShaderWireLayout;
 NewPolyHedra::UserInterface::BufferLayout		ObjectManagerUI_BufferFullLayout;
 NewPolyHedra::UserInterface::BufferLayout		ObjectManagerUI_BufferWireLayout;
 NewPolyHedra::UserInterface::ObjectManager		ObjectManagerUI;
@@ -174,7 +150,10 @@ ContextNoisePlane();
 
 
 
-::PhysicsContext	PhysicsContext;
+//::PhysicsContext	PhysicsContext;
+Physics::GravityContext	PhysicsGravityContext;
+Physics::FluidContext	PhysicsFluidContext;
+Physics::SurfaceContext	PhysicsSurfaceContext;
 
 View3D	view;
 
@@ -203,8 +182,9 @@ AxisRel		ViewHitAxis0;
 AxisRel		ViewHitAxis1;
 
 // VoxelClear
-unsigned int		VoxelClear_Progress = 0xFFFFFFFF;
-ChunkVoxelIndex		VoxelClear_Index;
+unsigned int			VoxelClear_Progress = 0xFFFFFFFF;
+unsigned int			VoxelClear_Required = 64;
+ChunkVoxelIndex			VoxelClear_Index;
 const VoxelPallet *		VoxelClear_Pallet = nullptr;
 const ItemTool *		VoxelClear_Tool = nullptr;
 

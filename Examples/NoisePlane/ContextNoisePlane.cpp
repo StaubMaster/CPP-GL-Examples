@@ -18,29 +18,6 @@
 
 
 
-
-
-InventoryShader::~InventoryShader()
-{ }
-InventoryShader::InventoryShader()
-	: ::Uniform::Layout()
-	, DisplaySize(*this, "DisplaySize")
-{ }
-
-
-
-ShaderLayoutView3D::~ShaderLayoutView3D()
-{ }
-ShaderLayoutView3D::ShaderLayoutView3D()
-	: ::Uniform::Layout()
-	, DisplaySize(*this, "DisplaySize")
-	, View(*this, "View")
-	, Depth(*this, "Depth")
-	, FOV(*this, "FOV")
-{ }
-
-
-
 #include "main_static.cpp"
 
 
@@ -249,7 +226,7 @@ void ContextNoisePlane::VoxelClear_Continue(const ChunkVoxelIndex & other)
 			(other.Voxel == VoxelClear_Index.Voxel).All(true)
 		)
 		{
-			if (VoxelClear_Progress >= 64)
+			if (VoxelClear_Progress >= VoxelClear_Required)
 			{
 				Voxel voxel;
 				// why not .FindAssign() ?
@@ -332,15 +309,20 @@ void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 
 	// Physics stuff
 	float jump = 0.0f;
-	if (ViewCollisionSide.PrevY && accel.Y > 0.0f) { jump = 15.0f; }
+	if (ViewCollisionSide.PrevY && accel.Y > 0.0f) { jump = 15.0f; } // jumping
 	accel.Y = 0.0f;
 
 	if (ViewCollisionSide.PrevY)
 	{
 		accel *= ViewSpeed;
-		// find this earlier, pass a bool
-		if (window[Keys::LeftControl] == State::Down) { accel *= ViewFaster; }
+		if (window[Keys::LeftControl] == State::Down) { accel *= ViewFaster; } // find this earlier, pass a bool
 
+		/* accel and decel
+			both rely on surface friction
+			how to make sure they dont cancel out ?
+			decel should be opposite of vel
+			accel should be in direction of movement
+		*/
 		{
 			float dot = VectorF3::dot(decel, accel);
 			//if (dot < 0.0f)
@@ -355,9 +337,9 @@ void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 			}
 		}
 
-		float friction_force = PhysicsContext.CalcFriction(1.0f);
-		accel = PhysicsContext.CalcFriction(accel * 1.0f, friction_force) / 1.0f;
-		decel = PhysicsContext.CalcFriction(decel * 1.0f, friction_force) / 1.0f;
+		float friction_force = PhysicsSurfaceContext.FrictionStaticForce(1.0f, PhysicsGravityContext.Acceleration);
+		accel = PhysicsSurfaceContext.FrictionCounterForce(accel * 1.0f, friction_force) / 1.0f;
+		decel = PhysicsSurfaceContext.FrictionCounterForce(decel * 1.0f, friction_force) / 1.0f;
 	}
 	else
 	{
@@ -368,7 +350,12 @@ void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 
 	if (ViewCollisionSide.PrevY) { accel.Y = jump; }
 
-	ViewEntity.Vel += PhysicsContext.CalculateVel(ViewEntity.Vel, 1.0f, 1.0f) + accel - decel;
+	ViewEntity.Vel = ViewEntity.Vel
+		- PhysicsFluidContext.Drag(ViewEntity.Vel, 1.0f, 1.0f)
+		+ PhysicsGravityContext.Vector()
+		+ accel
+		- decel
+	;
 }
 void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 {
@@ -1488,6 +1475,19 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	{
 		UI::Text::Object text; text.Create();
 		text.Text() = "[+]";
+		text.AlignMiddleMiddle();
+		text.TextPosition() = window.Size.Buffer.Half;
+		text.Color() = ColorF4(1, 1, 1);
+		text.Bound().Min = VectorF2();
+		text.Bound().Max = window.Size.Buffer.Full;
+	}
+	if (VoxelClear_Is())
+	{
+		std::stringstream ss;
+		ss << "\n\n";
+		ss << VoxelClear_Progress << '/' << VoxelClear_Required;
+		UI::Text::Object text; text.Create();
+		text.Text() = ss.str();
 		text.AlignMiddleMiddle();
 		text.TextPosition() = window.Size.Buffer.Half;
 		text.Color() = ColorF4(1, 1, 1);

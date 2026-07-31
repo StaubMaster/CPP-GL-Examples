@@ -3,30 +3,47 @@
 
 # include "ValueType/Vector/F3.hpp"
 
-struct PhysicsContext
+typedef float Mass;		// kg
+
+typedef float Length;	// m
+typedef float Area;		// m*m
+typedef float Volume;	// m*m*m
+typedef float Density;	// kg/m*m*m
+
+typedef float Time;		// s
+typedef float Speed;	// m/s
+typedef float Accel;	// m/s*s
+typedef float Force;	// kg*m/s*s
+
+namespace Physics
 {
-	VectorF3	GravityDirection = VectorF3(0.0f, -1.0f, 0.0f);
-	float		GravityAcl = 1.0f;
+	struct GravityContext
+	{
+		VectorF3	Direction = VectorF3(0.0f, -1.0f, 0.0f);
+		float		Acceleration = 1.0f;
 
-	VectorF3	CalcGravityVec() const;
+		VectorF3	Vector() const; // Force
+	};
 
+	struct FluidContext
+	{
+		float		Density = 0.001f; // Air
+		float		DragCoefficient = 1.0f;
 
+		// DragVelLimit
+		float		DragLimit(float mass, float area, float accel) const;
 
-	float	DragFluidDensity = 0.001f;
-	float	DragCoefficient = 1.0f;
+		// DragForec
+		float		Drag(float vel, float mass, float area) const;		// DragVel
+		VectorF3	Drag(VectorF3 vel, float mass, float area) const;	// DragVel
+	};
 
-	float	CalcDragLimit(float mass, float area, float accel) const;
-	float	CalcTerminalVel(float mass, float area) const;
-
-	float		CalcDrag(float vel, float mass, float area) const;
-	VectorF3	CalcDragVec(VectorF3 vel, float mass, float area) const;
-
-	// static Friction
-	float	FrictionCoefficient = 0.5f; // kinetic Friction
-	float		CalcFriction(float mass) const;
-	VectorF3	CalcFriction(VectorF3 force, float friction_force) const;
-
-	VectorF3	CalculateVel(VectorF3 vel, float mass, float area) const;
+	struct SurfaceContext
+	{
+		float		FrictionCoefficient = 0.5f; // kinetic Friction
+		float		FrictionStaticForce(float mass, float accel) const; // also Vector ?
+		VectorF3	FrictionCounterForce(VectorF3 force, float friction_force) const; // ?
+	};
 };
 
 #endif

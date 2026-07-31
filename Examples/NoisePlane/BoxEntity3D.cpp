@@ -95,7 +95,7 @@ BoxEntity3D_CollisionSide BoxEntity3D::Collide(const Container::Array<BoxF3> & b
 			float dot = collision.Normal.dot(Vel);
 			if (dot < 0.0f)
 			{
-				Pos += (collision.Normal * 0.01f);
+				Pos += (collision.Normal * 0.001f);
 				Vel -= (collision.Normal * dot);
 			}
 			side.Consider(collision.Normal);

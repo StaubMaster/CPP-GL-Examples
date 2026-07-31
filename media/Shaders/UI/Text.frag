@@ -45,10 +45,11 @@ void main()
 	// add Transparency to Pixels
 	// so only alpha gets filtered here
 
-	//if (col.a == 0) { discard; }
-	//if (col.r >= 0.5) { discard; }
-	//if (col.g >= 0.5) { discard; }
-	//if (col.b >= 0.5) { discard; }
+	if (col.a == 0) { discard; }
+	if (col.r >= 0.25) { discard; }
+	if (col.g >= 0.25) { discard; }
+	if (col.b >= 0.25) { discard; }
 
-	Color = col;
+	Color = fs_inn.Color;
+//	Color = col;
 }

@@ -3,30 +3,29 @@
 
 
 
-VectorF3 PhysicsContext::CalcGravityVec() const
+VectorF3 Physics::GravityContext::Vector() const
 {
-	return GravityDirection * GravityAcl;
+	return Direction * Acceleration;
 }
 
-float PhysicsContext::CalcDragLimit(float mass, float area, float accel) const
+
+
+float Physics::FluidContext::DragLimit(float mass, float area, float accel) const
 {
-	return sqrt((2 * mass * accel) / (DragFluidDensity * area * DragCoefficient));
-}
-float PhysicsContext::CalcTerminalVel(float mass, float area) const
-{
-	return CalcDragLimit(mass, area, GravityAcl);
+	return sqrt((2 * mass * accel) / (Density * area * DragCoefficient));
 }
 
-float PhysicsContext::CalcDrag(float vel, float mass, float area) const
+// are these how much drag is produced, or how much remains ?
+float Physics::FluidContext::Drag(float vel, float mass, float area) const
 {
-	float force = 0.5f * DragFluidDensity * vel * vel * area * DragCoefficient;
+	float force = 0.5f * Density * vel * vel * area * DragCoefficient;
 	return force / mass;
 }
-VectorF3 PhysicsContext::CalcDragVec(VectorF3 vel, float mass, float area) const
+VectorF3 Physics::FluidContext::Drag(VectorF3 vel, float mass, float area) const
 {
 	float vel_len;
 	vel = vel.normalize(vel_len);
-	return vel * CalcDrag(vel_len, mass, area);
+	return vel * Drag(vel_len, mass, area);
 }
 
 /*
@@ -50,13 +49,14 @@ VectorF3 PhysicsContext::CalcDragVec(VectorF3 vel, float mass, float area) const
 	Ff = u * N (sliding)
 */
 
-// static Friction
-float PhysicsContext::CalcFriction(float mass) const
+// static Friction / kinetic Friction
+float Physics::SurfaceContext::FrictionStaticForce(float mass, float accel) const
 {
-	float normal = mass * GravityAcl;
-	return FrictionCoefficient * normal;
+	float normal = mass * accel; // Weight(Force)
+	return FrictionCoefficient * normal; // Force ?
 }
-VectorF3 PhysicsContext::CalcFriction(VectorF3 force, float friction_force) const
+
+VectorF3 Physics::SurfaceContext::FrictionCounterForce(VectorF3 force, float friction_force) const
 {
 	float    force_length;
 	VectorF3 force_normal = force.normalize(force_length);
@@ -68,9 +68,4 @@ VectorF3 PhysicsContext::CalcFriction(VectorF3 force, float friction_force) cons
 	{
 		return force_normal * friction_force;
 	}
-}
-
-VectorF3 PhysicsContext::CalculateVel(VectorF3 vel, float mass, float area) const
-{
-	return CalcGravityVec() - CalcDragVec(vel, mass, area);
 }
