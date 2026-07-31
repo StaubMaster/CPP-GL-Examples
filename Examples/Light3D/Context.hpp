@@ -158,6 +158,8 @@ void	SceneSave(FileInfo file);
 void	SceneInitCubes();
 void	SceneInitLights();
 
+void	SceneReMake();
+
 
 
 ::UserTrans3DChange UserTrans3DChange;

@@ -333,6 +333,15 @@ void Light3DContext::SceneSave(FileInfo file)
 	file.SaveText(ss.str());
 }
 
+void Light3DContext::SceneReMake()
+{
+	SceneClear();
+	SceneInitCubes();
+	//SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
+	SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
+	SceneInitLights();
+}
+
 
 
 void Light3DContext::UserChange_Change()
@@ -557,15 +566,12 @@ void Light3DContext::Make()
 
 	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
 	View.Depth.Color = window.DefaultColor;
-	View.Trans = Trans3D(VectorF3(0, 64, -2), EulerAngle3D());
+//	View.Trans = Trans3D(VectorF3(0, 64, -2), EulerAngle3D());
+	View.Trans = Trans3D(VectorF3(0, 430, -24), EulerAngle3D());
 
 	TestPolyHedraSphere = PolyHedraGenerate::SphereY(2, 5, 12.0f);
 
-	SceneClear();
-	SceneInitCubes();
-	SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
-	//SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
-	SceneInitLights();
+	SceneReMake();
 
 	UIManager.WindowControl.ChildInsert(UISceneObject);
 	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
@@ -682,11 +688,7 @@ void Light3DContext::User(FrameTime frame_time)
 
 	if (window[Keys::F5] == State::Press)
 	{
-		SceneClear();
-		SceneInitCubes();
-		SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
-		//SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
-		SceneInitLights();
+		SceneReMake();
 	}
 }
 void Light3DContext::Draw()
