@@ -34,7 +34,7 @@ FILES := \
 	AuxThread/AuxThread2.cpp \
 	AuxThread/AuxThread3.cpp \
 \
-	BoxEntity.cpp \
+	BoxEntity3D.cpp \
 \
 	Menus/Main.cpp \
 	Menus/Pause.cpp \

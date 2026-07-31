@@ -52,7 +52,7 @@
 
 #include "Structure.hpp"
 
-#include "BoxEntity.hpp"
+#include "BoxEntity3D.hpp"
 
 // Menus
 #include "Menus/Main.hpp"
@@ -78,25 +78,17 @@
 
 
 
-//#define DISABLE_INVENTORY
-//#define DISABLE_VIEW_TANGIBLE
-//#define DISABLE_VIEW_RAY
-
-
-
 
 
 # include "Graphics/Uniform/General/Layout.hpp"
 # include "Graphics/Uniform/_Include.hpp"
 
-#ifndef DISABLE_INVENTORY
 struct InventoryShader : public Uniform::Layout // rename: "ShaderLayoutDisplay"
 {
 	Uniform::DisplaySize	DisplaySize;
 	~InventoryShader();
 	InventoryShader();
 };
-#endif
 
 class ShaderLayoutView3D : public Uniform::Layout
 {
@@ -145,10 +137,8 @@ UI::Manager				UIManager;
 //::PlaneManager		PlaneManager;
 ::ChunkManager			ChunkManager;
 
-#ifndef DISABLE_INVENTORY
 //::PolyHedraManager		InventoryPolyHedraManager;
 //::InventoryShader		InventoryShader;
-#endif
 
 
 
@@ -157,7 +147,6 @@ UI::Manager				UIManager;
 ::OptionsMenu	OptionsMenu;
 ::DebugMenu		DebugMenu;
 
-#ifndef DISABLE_INVENTORY
 ::ItemContainer		Inventory;
 ::ItemContainer		HotBar;
 
@@ -168,7 +157,6 @@ Item Indicator
 */
 ::Inventory			InventoryUI;
 ::Inventory			HotBarUI;
-#endif
 
 
 
@@ -190,21 +178,19 @@ ContextNoisePlane();
 
 View3D	view;
 
-#ifndef DISABLE_VIEW_TANGIBLE
 float	ViewDistance = 0.0f;
 bool	ViewTangible = false;
 
 float	ViewSpeed = 0.1f;	// force when moving
 float	ViewFaster = 3.0f;	// force multiplier when moving faster
 
-BoxEntity		ViewEntity;
-CollisionSide	ViewCollisionSide;
-#endif
+PolyHedra *					ViewEntity_PolyHedra;
+BoxEntity3D					ViewEntity;
+BoxEntity3D_CollisionSide	ViewCollisionSide;
 
 float	ViewSpeedNoClip = 10.0f;
 float	ViewFasterNoClip = 10.0f;
 
-#ifndef DISABLE_VIEW_RAY
 bool		ViewRaySync = true;
 
 RayF3		ViewRay;
@@ -228,19 +214,13 @@ void	VoxelClear_Clear(ChunkVoxelIndex idx);
 void	VoxelClear_Continue(const ChunkVoxelIndex & other);
 void	VoxelClear_Show(std::stringstream & ss) const;
 
-#endif
-
 void ViewUpdateDone();
 void ViewUpdateIntangible(Trans3D change, FrameTime frame_time);
-#ifndef DISABLE_VIEW_TANGIBLE
 void ViewUpdatePhysics(VectorF3 accel);
 void ViewUpdateColliding(FrameTime frame_time);
-#endif
-#ifndef DISABLE_VIEW_RAY
 void ViewRayUpdate();
 void ViewRayInfo();
 void ViewRayDo();
-#endif
 void ViewUpdateAround(Trans3D change, FrameTime frame_time);
 
 
@@ -307,9 +287,7 @@ void Draw();
 
 
 void FrameText(FrameTime frame_time);
-#ifndef DISABLE_INVENTORY
 void InventoryCursor(FrameTime frame_time);
-#endif
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
 void FrameInput();;
 

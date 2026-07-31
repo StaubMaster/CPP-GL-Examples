@@ -20,14 +20,12 @@
 
 
 
-#ifndef DISABLE_INVENTORY
 InventoryShader::~InventoryShader()
 { }
 InventoryShader::InventoryShader()
 	: ::Uniform::Layout()
 	, DisplaySize(*this, "DisplaySize")
 { }
-#endif
 
 
 
@@ -110,12 +108,10 @@ ContextNoisePlane::ContextNoisePlane()
 	, PauseMenu(*this)
 	, OptionsMenu(*this)
 	, DebugMenu(*this)
-#ifndef DISABLE_INVENTORY
 	, Inventory(VectorU2(10, 5))
 	, HotBar(VectorU2(10, 1))
 	, InventoryUI()
 	, HotBarUI()
-#endif
 	, Multiform_DisplaySize("DisplaySize")
 	, Multiform_View("View")
 	, Multiform_Depth("Depth")
@@ -205,11 +201,9 @@ ContextNoisePlane::ContextNoisePlane()
 //		&PlaneManager.Shader,
 		&ChunkManager.ShaderLayoutU,
 		&ChunkManager.ShaderLayoutF,
-#ifndef DISABLE_INVENTORY
 //		&InventoryShader,
 		&ObjectManagerUI_ShaderFullLayout,
 		&ObjectManagerUI_ShaderWireLayout,
-#endif
 	});
 	Multiform_DisplaySize.FindUniforms(layouts);
 	Multiform_View.FindUniforms(layouts);
@@ -311,34 +305,27 @@ void ContextNoisePlane::VoxelClear_Show(std::stringstream & ss) const
 
 void ContextNoisePlane::ViewUpdateDone()
 {
-#ifndef DISABLE_VIEW_TANGIBLE
 	if (ViewDistance == 0.0f)
-#endif
 	{
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
 	}
-#ifndef DISABLE_VIEW_TANGIBLE
 	else
 	{
 		Multiform_View.ChangeData(Matrix4x4::TransformReverse(
 			Trans3D(view.Trans.Position - view.Trans.Rotation.forward(VectorF3(0, 0, ViewDistance)), view.Trans.Rotation)
 		));
 	}
-#endif
 }
 void ContextNoisePlane::ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
 {
 	change.Position *= ViewSpeedNoClip;
 	if (window[Keys::LeftControl] == State::Down) { change.Position *= ViewFasterNoClip; }
 	view.Trans.Position += change.Position * frame_time.Delta;
-#ifndef DISABLE_VIEW_TANGIBLE
 	ViewEntity.Vel = change.Position;
 	ViewEntity.Pos = view.Trans.Position;
-#endif
 	view.Trans.Rotation += change.Rotation * frame_time.Delta;
 	view.Trans.Rotation.X1.clampPI();
 }
-#ifndef DISABLE_VIEW_TANGIBLE
 void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 {
 	VectorF3 decel;
@@ -386,12 +373,37 @@ void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 {
 	DisplayBoxEntityVoxels(PalletManager.FindMakePallet(VoxelCube), ChunkManager, ViewEntity, frame_time);
-	DisplayBoxEntity(ViewEntity);
-	ViewCollisionSide = ViewEntity.Collide(ChunkManager, frame_time);
-	DisplayBoxEntity(ViewEntity);
+	DisplayBoxEntity(ViewEntity, *ViewEntity_PolyHedra);
+	{
+		Container::Binary<BoxF3> boxes;
+
+		BoxF3 collision_range = ViewEntity.Box + ViewEntity.Pos;
+		collision_range.Consider(ViewEntity.Box.Min + ViewEntity.Pos + (ViewEntity.Vel * frame_time.Delta));
+		collision_range.Consider(ViewEntity.Box.Max + ViewEntity.Pos + (ViewEntity.Vel * frame_time.Delta));
+		collision_range = collision_range - VectorF3(0.5f);
+
+		LoopI3 loop(collision_range.Min.round(), Bool3(false), collision_range.Max.round(), Bool3(false));
+		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+		{
+			ChunkVoxelIndex idx(i);
+			AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
+			if (!chunk.Is()) { continue; }
+			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
+			if (voxel != nullptr && !(voxel -> IsEmpty()))
+			{
+				boxes.Insert(
+					BoxF3(
+						i + VectorI3(0, 0, 0),
+						i + VectorI3(1, 1, 1)
+					)
+				);
+			}
+		}
+
+		ViewCollisionSide = ViewEntity.Collide(boxes.ToArray(), frame_time.Delta);
+	}
+	DisplayBoxEntity(ViewEntity, *ViewEntity_PolyHedra);
 }
-#endif
-#ifndef DISABLE_VIEW_RAY
 void ContextNoisePlane::ViewRayUpdate()
 {
 	if (ViewRaySync)
@@ -482,14 +494,9 @@ void ContextNoisePlane::ViewRayInfo()
 	text.Bound().Max = window.Size.Buffer.Full;
 	text.Color() = ColorF4(1, 1, 1);
 }
-
 void ContextNoisePlane::ViewRayDo()
 {
-#ifndef DISABLE_INVENTORY
 	if (PauseMenu.IsInteractible() || OptionsMenu.IsInteractible() || InventoryUI.IsInteractible()) { return; }
-#else
-	if (PauseMenu.IsInteractible() || OptionsMenu.IsInteractible()) { return; }
-#endif
 
 	if (ViewHit.Valid())
 	{
@@ -528,7 +535,6 @@ void ContextNoisePlane::ViewRayDo()
 			if (ViewHitAxis0 == AxisRel::PrevY) { ViewHit.Index.Y -= 1; }
 			if (ViewHitAxis0 == AxisRel::PrevZ) { ViewHit.Index.Z -= 1; }
 
-#ifndef DISABLE_INVENTORY
 			if (HotBar.Items[VectorU2(0, 0)] != nullptr)
 			{
 				{
@@ -549,11 +555,9 @@ void ContextNoisePlane::ViewRayDo()
 					}
 				}
 			}
-#endif
 		}
 	}
 }
-#endif
 void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 {
 	// sperate applying change and moving
@@ -561,7 +565,6 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 
 	StopWatch sw;
 	sw.Start();
-#ifndef DISABLE_VIEW_TANGIBLE
 	if (ViewTangible)
 	{
 		ViewUpdatePhysics(change.Position);
@@ -571,7 +574,6 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 		view.Trans.Position = ViewEntity.Pos;
 	}
 	else
-#endif
 	{
 		ViewUpdateIntangible(change, frame_time);
 	}
@@ -580,11 +582,9 @@ void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
 	FrameTime_ViewUpdate_CollisionTime.NewValue(sw.ElapsedTime());
 
 	sw.Clear(); sw.Start();
-#ifndef DISABLE_VIEW_RAY
 	ViewRayUpdate();
 	ViewRayInfo();
 	ViewRayDo();
-#endif
 	sw.Stop();
 	FrameTime_ViewUpdate_RayTime.NewValue(sw.ElapsedTime());
 }
@@ -633,13 +633,11 @@ void ContextNoisePlane::Make()
 		LightSpot = ::LightSpot(0.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
 	}
 
-#ifndef DISABLE_VIEW_TANGIBLE
 	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
 	ViewEntity.Box = BoxF3(
 		VectorF3(-0.4f, -1.7f, -0.4f),
 		VectorF3(+0.4f, +0.1f, +0.4f)
 	);
-#endif
 
 	{
 		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
@@ -659,13 +657,11 @@ void ContextNoisePlane::Make()
 		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
 		PalletManager.FindMakePallet(VoxelChunkCube);
 	}
-#ifndef DISABLE_VIEW_TANGIBLE
 	{
-		ViewEntity.PolyHedra = new PolyHedra();
-		PolyHedraBoxEdges(*ViewEntity.PolyHedra, ViewEntity.Box);
-		PalletManager.FindMakePallet(ViewEntity.PolyHedra);
+		ViewEntity_PolyHedra = new PolyHedra();
+		PolyHedraBoxEdges(*ViewEntity_PolyHedra, ViewEntity.Box);
+		PalletManager.FindMakePallet(ViewEntity_PolyHedra);
 	}
-#endif
 
 	// Voxels
 	{
@@ -726,7 +722,6 @@ void ContextNoisePlane::MakeControls()
 		UIManager.WindowControl.ChildInsert(DebugMenu);
 	}
 	// Inventory
-#ifndef DISABLE_INVENTORY
 	{
 		unsigned int idx = 0;
 		for (unsigned int i = 0; i < VoxelPalletMap::StaticMap.Data.Count(); i++)
@@ -744,9 +739,7 @@ void ContextNoisePlane::MakeControls()
 		InventoryUI.Hide();
 		UIManager.WindowControl.ChildInsert(InventoryUI);
 	}
-#endif
 	// HotBar
-#ifndef DISABLE_INVENTORY
 	{
 		HotBarUI.IsResizable = false;
 		HotBarUI.IsMovable = false;
@@ -755,7 +748,6 @@ void ContextNoisePlane::MakeControls()
 		//HotBarUI.Hide();
 		UIManager.WindowControl.ChildInsert(HotBarUI);
 	}
-#endif
 }
 
 
@@ -1015,9 +1007,7 @@ static void ShowNameTimeLine(std::stringstream & ss, const char * name, const Va
 
 static ValueAccumulator<float>		DLTAverageTime(1024);
 static ValueAccumulator<float>		FPSAverageTime(1024);
-#ifndef DISABLE_INVENTORY
 static ValueAccumulator<float>		InventoryCursorTime(64);
-#endif
 
 struct VoxelChunkMemoryInfo
 {
@@ -1267,9 +1257,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ShowNameTimeLine(ss, "DrawThread      ", FrameTime_DrawThread);
 		ss << "}\n";
 
-#ifndef DISABLE_INVENTORY
 		ShowNameTimeLine(ss, "Inventory  Cursor", InventoryCursorTime);
-#endif
 		ShowNameTimeLine(ss, "AuxThread       0", AuxThread0Time);
 		ss << '\n';
 	}
@@ -1326,7 +1314,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	if (DebugMenu.View.Check.IsChecked())
 	{
 		ss << "View " << view.Trans.Position << '\n';
-#ifndef DISABLE_VIEW_TANGIBLE
 		ss << "View " << ViewEntity.Vel << ' ' << ViewEntity.Vel.length() << '\n';
 		ss << "None : " << (ViewCollisionSide.None) << '\n';
 		ss << "PrevX: " << (ViewCollisionSide.PrevX) << '\n';
@@ -1335,7 +1322,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "NextX: " << (ViewCollisionSide.NextX) << '\n';
 		ss << "NextY: " << (ViewCollisionSide.NextY) << '\n';
 		ss << "NextZ: " << (ViewCollisionSide.NextZ) << '\n';
-#endif
 		ss << '\n';
 	}
 	sw.Stop(); TextTime_View.NewValue(sw.ElapsedTime());
@@ -1509,7 +1495,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		text.Bound().Max = window.Size.Buffer.Full;
 	}
 }
-#ifndef DISABLE_INVENTORY
 void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 {
 	StopWatch sw;
@@ -1575,7 +1560,6 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 	sw.Stop();
 	InventoryCursorTime.NewValue(sw.ElapsedTime());
 }
-#endif
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
 void ContextNoisePlane::FrameInput()
 {
@@ -1585,9 +1569,7 @@ void ContextNoisePlane::FrameInput()
 	if (window[Keys::Escape] == State::Press)
 	{
 		OptionsMenu.Hide();
-#ifndef DISABLE_INVENTORY
 		InventoryUI.Hide();
-#endif
 		//HotBarUI.Hide();
 		if (PauseMenu.IsVisible())
 		{
@@ -1604,7 +1586,6 @@ void ContextNoisePlane::FrameInput()
 	{
 		if (!PauseMenu.IsVisible() && !OptionsMenu.IsVisible())
 		{
-#ifndef DISABLE_INVENTORY
 			if (!InventoryUI.IsVisible())
 			{
 				InventoryUI.Show();
@@ -1615,15 +1596,12 @@ void ContextNoisePlane::FrameInput()
 				InventoryUI.Hide();
 				//HotBarUI.Hide();
 			}
-#endif
 		}
 	}
 
-#ifndef DISABLE_VIEW_RAY
 	if (window[Keys::D1] == State::Press) { Toggle(ViewRaySync); }
 	//if (window[Keys::D2] == State::Press) { Toggle(ChunkManager.ViewRayPolyHedra, ViewRayPolyHedra); }
 	//if (window[Keys::D3] == State::Press) { Toggle(ChunkManager.VoxelBoxPolyHedra, VoxelCube); }
-#endif
 
 	if (window[Keys::F7] == State::Press)
 	{
@@ -1637,17 +1615,13 @@ void ContextNoisePlane::FrameInput()
 		}
 	}
 
-#ifndef DISABLE_VIEW_TANGIBLE
 	if (window[Keys::F2] == State::Press) { Toggle(ViewTangible); }
-#endif
 	if (window[Keys::F3] == State::Press)
 	{
-#ifndef DISABLE_VIEW_TANGIBLE
 		if (ViewDistance == 0.0f)
 		{ ViewDistance = 2.0f; }
 		else
 		{ ViewDistance = 0.0f; }
-#endif
 	}
 	/*if (window[Keys::F4] == State::Press)
 	{
@@ -1660,11 +1634,7 @@ void ContextNoisePlane::FrameInput()
 		ChunkManager.Clear();
 	}
 
-#ifndef DISABLE_INVENTORY
 	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible() || InventoryUI.IsVisible())
-#else
-	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible())
-#endif
 	{
 		if (window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeFree(); }
 	}
@@ -1769,9 +1739,7 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	FrameText(frame_time);
 	sw.Stop(); FrameTime_Text.NewValue(sw.ElapsedTime());
 
-#ifndef DISABLE_INVENTORY
 	InventoryCursor(frame_time);
-#endif
 
 	sw.Clear(); sw.Start();
 	Draw();

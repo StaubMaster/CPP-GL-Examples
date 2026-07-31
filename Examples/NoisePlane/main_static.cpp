@@ -54,15 +54,14 @@ static void Toggle(::PolyHedra * & polyhedra, ::PolyHedra * other)
 	}
 }
 
-#ifndef DISABLE_VIEW_TANGIBLE
-static void DisplayBoxEntity(BoxEntity & box_entity)
+static void DisplayBoxEntity(BoxEntity3D & box_entity, PolyHedra & polyhedra)
 {
-	NewPolyHedra::Basic3D::Object view_box_obj(box_entity.PolyHedra);
+	NewPolyHedra::Basic3D::Object view_box_obj(&polyhedra);
 	view_box_obj.Data().Trans.Position = box_entity.Pos;
 	view_box_obj.ShowWire();
 }
 //static void DisplayBoxEntityVoxels(::PolyHedraPalletManager * pallet, ::ChunkManager & manager, BoxEntity & box_entity, FrameTime frame_time)
-static void DisplayBoxEntityVoxels(NewPolyHedra::Pallet * pallet, ::ChunkManager & manager, BoxEntity & box_entity, FrameTime frame_time)
+static void DisplayBoxEntityVoxels(NewPolyHedra::Pallet * pallet, ::ChunkManager & manager, BoxEntity3D & box_entity, FrameTime frame_time)
 {
 	BoxF3 box = box_entity.Box + box_entity.Pos;
 	box.Consider(box_entity.Box.Min + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
@@ -86,4 +85,3 @@ static void DisplayBoxEntityVoxels(NewPolyHedra::Pallet * pallet, ::ChunkManager
 		}
 	}
 }
-#endif
