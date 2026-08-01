@@ -335,11 +335,13 @@ void Light3DContext::SceneSave(FileInfo file)
 
 void Light3DContext::SceneReMake()
 {
+	std::cout << "Scene ReMake ....\n";
 	SceneClear();
 	SceneInitCubes();
 	//SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
 	SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
 	SceneInitLights();
+	std::cout << "Scene ReMake done\n";
 }
 
 

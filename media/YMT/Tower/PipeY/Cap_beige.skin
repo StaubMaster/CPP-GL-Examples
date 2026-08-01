@@ -1,0 +1,16 @@
+Type Skin
+Format S_2025_10_27
+
+# beige
+
+
+
+vIndex here
+
+colD 255 255 255 255
+colD 210 190 160 255
+
+multi +0 48
+multi +0 48
+multi +1 48
+multi +1 24

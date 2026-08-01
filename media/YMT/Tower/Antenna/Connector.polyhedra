@@ -1,6 +1,8 @@
 Type PolyHedra
 Format Normal
 
+Skin Connector.skin
+
 # clamp thing
 # that connects to a standard holding thing
 # that holds the antenna

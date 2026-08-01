@@ -60,65 +60,89 @@ void NewPolyHedra::Pallet::GraphicsPut()
 }
 void NewPolyHedra::Pallet::GraphicsPutFull()
 {
-	Container::Array<PalletFull::Data> data(Object -> Faces.Count() * 3);
+	Container::Array<PalletFull::Triangle> data(Object -> Faces.Count());
 
-	for (unsigned int f = 0; f < Object -> Faces.Count(); f++)
+	for (unsigned int i = 0; i < Object -> Faces.Count(); i++)
 	{
-		int c = f * 3;
-		const PolyHedra::Face & face = Object -> Faces[f];
+		const PolyHedra::Face & face = Object -> Faces[i];
 		if (face.Check(Object -> Corners.Count()))
 		{
+			PalletFull::Triangle & tri = data[i];
+
 			const PolyHedra::Corner & corner0 = Object -> Corners[face.idx[0]];
 			const PolyHedra::Corner & corner1 = Object -> Corners[face.idx[1]];
 			const PolyHedra::Corner & corner2 = Object -> Corners[face.idx[2]];
 
-			data[c + 0].Position = corner0.Position;
-			data[c + 1].Position = corner1.Position;
-			data[c + 2].Position = corner2.Position;
+			PalletFull::Vertex & vert0 = tri.Data[0];
+			PalletFull::Vertex & vert1 = tri.Data[1];
+			PalletFull::Vertex & vert2 = tri.Data[2];
+
+			vert0.Position = corner0.Position;
+			vert1.Position = corner1.Position;
+			vert2.Position = corner2.Position;
 
 			if (!Object -> UseCornerNormals)
 			{
-				data[c + 0].Normal = face.Normal;
-				data[c + 1].Normal = face.Normal;
-				data[c + 2].Normal = face.Normal;
+				vert0.Normal = face.Normal;
+				vert1.Normal = face.Normal;
+				vert2.Normal = face.Normal;
 			}
 			else
 			{
-				data[c + 0].Normal = corner0.Normal;
-				data[c + 1].Normal = corner1.Normal;
-				data[c + 2].Normal = corner2.Normal;
+				vert0.Normal = corner0.Normal;
+				vert1.Normal = corner1.Normal;
+				vert2.Normal = corner2.Normal;
 			}
 		}
 	}
 
-	for (unsigned int i = 0; i < data.Length(); i++)
-	{
-		data[i].Texture = VectorF3();
-		data[i].Color = ColorF4(1.0f, 1.0f, 1.0f, 1.0f);
-	}
 	if (Object -> Skin != nullptr)
 	{
 		const Skin & skin = *(Object -> Skin);
-		for (unsigned int f = 0; f < skin.Faces.Count(); f++)
+		for (unsigned int i = 0; i < data.Length(); i++)
 		{
-			const Skin::Face & face = skin.Faces[f];
-			for (unsigned int c = 0; c < 3; c++)
+			PalletFull::Triangle & tri = data[i];
+			for (unsigned int j = 0; j < 3; j++)
 			{
-				const Skin::Corner & corner = skin.Corners[face.idx[c]];
-				unsigned int idx = (f * 3) + c;
-				if (idx < data.Length())
+				PalletFull::Vertex & vert = tri.Data[j];
+				vert.Texture = VectorF3();
+				vert.Color = skin.Color;
+			}
+		}
+		for (unsigned int i = 0; i < skin.Faces.Count(); i++)
+		{
+			const Skin::Face & face = skin.Faces[i];
+			if (i < data.Length())
+			{
+				PalletFull::Triangle & tri = data[i];
+				for (unsigned int j = 0; j < 3; j++)
 				{
-					data[idx].Texture.X = corner.Coord.X;
-					data[idx].Texture.Y = corner.Coord.Y;
-					data[idx].Texture.Z = corner.Index;
-					data[idx].Color = corner.Color;
+					const Skin::Corner & corner = skin.Corners[face.idx[j]];
+					PalletFull::Vertex & vert = tri.Data[j];
+					vert.Texture.X = corner.Coord.X;
+					vert.Texture.Y = corner.Coord.Y;
+					vert.Texture.Z = corner.Index;
+					vert.Color = corner.Color;
 				}
+			}
+		}
+	}
+	else
+	{
+		for (unsigned int i = 0; i < data.Length(); i++)
+		{
+			PalletFull::Triangle & tri = data[i];
+			for (unsigned int j = 0; j < 3; j++)
+			{
+				PalletFull::Vertex & vert = tri.Data[j];
+				vert.Texture = VectorF3();
+				vert.Color = ColorF4(1.0f, 1.0f, 1.0f, 1.0f);;
 			}
 		}
 	}
 
 	BufferFull.DataFull(data.ToVoid());
-	BufferFull.Count = data.Length();
+	BufferFull.Count = data.Length() * 3;
 }
 void NewPolyHedra::Pallet::GraphicsPutWire()
 {

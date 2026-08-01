@@ -5,7 +5,7 @@
 
 NewPolyHedra::PalletFull::Layout::~Layout() { }
 NewPolyHedra::PalletFull::Layout::Layout()
-	: ::Attribute::Layout(0, sizeof(NewPolyHedra::PalletFull::Data))
+	: ::Attribute::Layout(0, sizeof(NewPolyHedra::PalletFull::Vertex))
 	, Position(*this)
 	, Normal(*this)
 	, Texture(*this)

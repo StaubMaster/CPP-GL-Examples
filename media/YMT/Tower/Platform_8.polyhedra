@@ -1,6 +1,9 @@
 Type PolyHedra
 Format Legacy
 
+Skin Platform_8.skin
+#Skin without file should look for file with same name as this .polyhedra file but with .skin extension
+
 
 
 p +18,29 +0,5 +08,10

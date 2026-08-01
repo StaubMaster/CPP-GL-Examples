@@ -8,7 +8,7 @@ namespace NewPolyHedra
 {
 namespace PalletFull
 {
-struct Data
+struct Vertex
 {
 	VectorF3	Position;
 	VectorF3	Normal;
@@ -20,6 +20,10 @@ struct Data
 //		should Interpolation use alpha of Color or of Texture ?
 //		use both and add ?
 //		
+};
+struct Triangle
+{
+	Vertex	Data[3];
 };
 };
 };
