@@ -35,12 +35,11 @@
 //# include "DirectoryInfo.hpp"
 # include "Image.hpp"
 
-
 // Hit
 # include "Ray3D_Hit.hpp"
 
 // 
-# include "LightShaderLayout.hpp"
+# include "ShaderLayouts.hpp"
 
 // User Interface
 # include "UIManager.hpp"

@@ -1,29 +1,34 @@
 
-rename Light3D to Editor
-give this its own Main
-move Selector into its own thing
+combine this with PolyHedraDisplay
+
+take command line arguments
+shold parse the file and display it
+.polyhedra
+	toggle for not showing skin
+	reload
+.scene
+	toggle for lights
+	toggle skin for polyhedra
+	reload single polyhedra
+
+
 
 
 
 Indicators:
-moving
+moving/spinning
 can be inside of / behind other Indicators
 should allways be in front ?
 
-
-currently they all use the Cube
-make PolyHedra for them
-
-
-LightSpot:
-Indicator should be like the others
-should be bright so it is easily visible
-also currently has no FallOff
+toggle display
+	none
+	move
+	spin
+	both ?
 
 
 
-Save Scene
-Load Scene (from arguments)
+
 
 
 

@@ -1,0 +1,29 @@
+some stuff to finish and put int other/UserInterface
+
+
+
+List (of strings)
+	needs scroll ?
+
+
+
+Scrollable Control
+	change GroupBox
+	dont show child Controls outside of parent Control ?
+
+
+
+DirectoryNavigator
+	shows wanted directory
+	all files and directorys
+	click to select file/direcotry
+	button to go into selected directory
+	button to go into parent directory (if exists)
+	button to "open" file
+		this just remenbers that file and closes navigator
+		whatever is outside can then use that file
+	button to close
+		sets a flag or something so whatever is outside knows that nothing was selected
+
+DirectoryTree
+	uses a Tree to show direcotrys

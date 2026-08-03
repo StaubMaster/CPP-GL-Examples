@@ -11,18 +11,6 @@
 # include "Graphics/PaddedBlock/LightSpot.hpp"
 # include "Graphics/PaddedBlock/TypeDefs/UInt.hpp"
 
-class ShaderLayoutView3D : public Uniform::Layout
-{
-	public:
-	Uniform::DisplaySize		DisplaySize;
-	Uniform::Matrix4x4			View;
-	Uniform::Depth				Depth;
-	Uniform::Angle				FOV;
-	public:
-	~ShaderLayoutView3D();
-	ShaderLayoutView3D();
-};
-
 struct LightBufferData
 {
 	PaddedBlock::LightBase			Ambient;

@@ -335,6 +335,7 @@ void Light3DContext::SceneSave(FileInfo file)
 
 void Light3DContext::SceneReMake()
 {
+	// segfault when something is selected
 	std::cout << "Scene ReMake ....\n";
 	SceneClear();
 	SceneInitCubes();

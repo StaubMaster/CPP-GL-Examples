@@ -1,6 +1,6 @@
 
-NAME := Light3D.exe
-FANCY_NAME := Light3D
+NAME := Editor3D.exe
+FANCY_NAME := Editor3D
 
 ################################################################
 
@@ -8,7 +8,7 @@ FILES := \
 	UserTrans3DChange.cpp \
 	SceneParsingData.cpp \
 	\
-	LightShaderLayout.cpp \
+	ShaderLayouts.cpp \
 	\
 	SceneObject/SceneObject.cpp \
 	SceneObject/PolyHedraObject.cpp \

@@ -9,6 +9,8 @@ namespace UI
 {
 namespace Control
 {
+// improve this stuff
+// put in other/UserInterface
 struct List : public UI::Control::Form
 {
 	struct Item : public UI::Control::Button
