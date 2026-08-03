@@ -1,4 +1,4 @@
-#include "InventorySlot.hpp"
+#include "ItemSlotUI.hpp"
 
 #include "Item/ItemVoxel.hpp"
 #include "Item/ItemTool.hpp"
@@ -7,16 +7,16 @@
 
 
 
-ItemBase * InventorySlot::StaticItem = nullptr;
-DisplaySize InventorySlot::WindowSize;
+ItemBase *		ItemSlotUI::StaticItem = nullptr;
+DisplaySize		ItemSlotUI::WindowSize;
 
 
 
 //	ItemBase *		Item;
 //	unsigned int	Count;
-InventorySlot::~InventorySlot()
+ItemSlotUI::~ItemSlotUI()
 { }
-InventorySlot::InventorySlot()
+ItemSlotUI::ItemSlotUI()
 	: UI::Control::Base()
 	, Item(nullptr)
 {
@@ -28,7 +28,7 @@ InventorySlot::InventorySlot()
 
 
 
-void InventorySlot::RelayUpdateBox()
+void ItemSlotUI::RelayUpdateBox()
 {
 	if (ItemObject.Is())
 	{
@@ -39,7 +39,7 @@ void InventorySlot::RelayUpdateBox()
 		TextObject.TextPosition() = DisplayBox.Center();
 	}
 }
-void InventorySlot::RelayInsertObject()
+void ItemSlotUI::RelayInsertObject()
 {
 	if (Item != nullptr)
 	{
@@ -88,7 +88,7 @@ void InventorySlot::RelayInsertObject()
 		}
 	}
 }
-void InventorySlot::RelayRemoveObject()
+void ItemSlotUI::RelayRemoveObject()
 {
 	ItemObject.Delete();
 	TextObject.Delete();
@@ -96,7 +96,7 @@ void InventorySlot::RelayRemoveObject()
 
 
 
-void InventorySlot::RelayClick(ClickArgs args)
+void ItemSlotUI::RelayClick(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{

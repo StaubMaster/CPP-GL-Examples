@@ -53,37 +53,37 @@ PauseMenu::PauseMenu(ContextNoisePlane & context)
 void PauseMenu::ContinueFunc(ClickArgs args)
 {
 	if (args.Action != Action::Press) { return; }
-	if (!Context.PauseMenu.IsVisible())
+	if (!Context.MenuPause.IsVisible())
 	{
-		Context.PauseMenu.Show();
+		Context.MenuPause.Show();
 	}
 	else
 	{
-		Context.PauseMenu.Hide();
+		Context.MenuPause.Hide();
 	}
 }
 void PauseMenu::OptionsFunc(ClickArgs args)
 {
 	if (args.Action != Action::Press) { return; }
-	if (!Context.OptionsMenu.IsVisible())
+	if (!Context.MenuOptions.IsVisible())
 	{
-		Context.OptionsMenu.Show();
+		Context.MenuOptions.Show();
 	}
-	if (Context.PauseMenu.IsVisible())
+	if (Context.MenuPause.IsVisible())
 	{
-		Context.PauseMenu.Hide();
+		Context.MenuPause.Hide();
 	}
 }
 void PauseMenu::DebugFunc(ClickArgs args)
 {
 	if (args.Action != Action::Press) { return; }
-	if (Context.DebugMenu.IsVisible())
+	if (Context.MenuDebug.IsVisible())
 	{
-		Context.DebugMenu.Hide();
+		Context.MenuDebug.Hide();
 	}
 	else
 	{
-		Context.DebugMenu.Show();
+		Context.MenuDebug.Show();
 	}
 }
 

@@ -40,9 +40,10 @@ namespace Physics
 
 	struct SurfaceContext
 	{
-		float		FrictionCoefficient = 0.5f; // kinetic Friction
-		float		FrictionStaticForce(float mass, float accel) const; // also Vector ?
-		VectorF3	FrictionCounterForce(VectorF3 force, float friction_force) const; // ?
+		float		FrictionCoefficient = 0.5f;
+
+		float		FlatFrictionForce(float force_hori, float force_vert, float mass, float gravity) const;
+		VectorF3	FlatFrictionForce(VectorF3 force, float mass, float gravity) const;
 	};
 };
 

@@ -86,47 +86,47 @@ void OptionsMenu::FPSFunc(float val)
 	Context.window.FrameTime = FrameTime(val, 1.0f / 0.0f);
 
 	unsigned int v = val;
-	Context.OptionsMenu.FPS.SetText("FPS:" + std::to_string(v));
+	Context.MenuOptions.FPS.SetText("FPS:" + std::to_string(v));
 }
 void OptionsMenu::FOVFunc(float val)
 {
-	Context.view.FOV = Angle::Degrees(val);
-	Context.Multiform_FOV.ChangeData(Context.view.FOV);
+	Context.View.FOV = Angle::Degrees(val);
+	Context.MultiformLayout.FOV.ChangeData(Context.View.FOV);
 
 	unsigned int v = val;
-	Context.OptionsMenu.FOV.SetText("FOV:" + std::to_string(v));
+	Context.MenuOptions.FOV.SetText("FOV:" + std::to_string(v));
 }
 void OptionsMenu::DepthFunc(float val)
 {
-	Context.view.Depth.Factors.ChangeFar(val);
-	Context.Multiform_Depth.ChangeData(Context.view.Depth);
+	Context.View.Depth.Factors.ChangeFar(val);
+	Context.MultiformLayout.Depth.ChangeData(Context.View.Depth);
 
 	unsigned int v = val;
-	Context.OptionsMenu.Depth.SetText("Depth:" + std::to_string(v));
+	Context.MenuOptions.Depth.SetText("Depth:" + std::to_string(v));
 }
 void OptionsMenu::DepthRangeFunc(float val)
 {
-	Context.view.Depth.Range.SetMin(val);
-	Context.Multiform_Depth.ChangeData(Context.view.Depth);
-	Context.OptionsMenu.DepthRange.SetText("DepthRange:" + std::to_string(val));
+	Context.View.Depth.Range.SetMin(val);
+	Context.MultiformLayout.Depth.ChangeData(Context.View.Depth);
+	Context.MenuOptions.DepthRange.SetText("DepthRange:" + std::to_string(val));
 }
 void OptionsMenu::Chunk_InsertFunc(float val)
 {
-	Context.OptionsMenu.ChunkInsert.SetText("Insert:" + std::to_string(val));
+	Context.MenuOptions.ChunkInsert.SetText("Insert:" + std::to_string(val));
 }
 void OptionsMenu::Chunk_RemoveFunc(float val)
 {
-	Context.OptionsMenu.ChunkRemove.SetText("Remove:" + std::to_string(val));
+	Context.MenuOptions.ChunkRemove.SetText("Remove:" + std::to_string(val));
 }
 void OptionsMenu::BackFunc(ClickArgs args)
 {
 	if (args.Action != Action::Press) { return; }
-	if (Context.OptionsMenu.IsVisible())
+	if (Context.MenuOptions.IsVisible())
 	{
-		Context.OptionsMenu.Hide();
+		Context.MenuOptions.Hide();
 	}
-	if (!Context.PauseMenu.IsVisible())
+	if (!Context.MenuPause.IsVisible())
 	{
-		Context.PauseMenu.Show();
+		Context.MenuPause.Show();
 	}
 }

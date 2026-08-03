@@ -1,6 +1,10 @@
 #include "ContextNoisePlane.hpp"
 #include "new.hpp"
 
+// Graphics
+#include "Graphics/Shader/Code.hpp"
+#include "Generics/Container/Array.hpp"
+
 // Debug
 #include <iostream>
 #include <iomanip>
@@ -66,40 +70,30 @@ ContextNoisePlane::~ContextNoisePlane()
 { }
 ContextNoisePlane::ContextNoisePlane()
 	: ContextBase()
+	, MultiformLayout()
 	, PolyHedraManager()
 	, PalletManager()
-	, ObjectManagerBasic_ShaderFullLayout()
-	, ObjectManagerBasic_ShaderWireLayout()
-	, ObjectManagerBasic_BufferFullLayout()
-	, ObjectManagerBasic_BufferWireLayout()
 	, ObjectManagerBasic()
-	, ObjectManagerUI_ShaderFullLayout()
-	, ObjectManagerUI_ShaderWireLayout()
-	, ObjectManagerUI_BufferFullLayout()
-	, ObjectManagerUI_BufferWireLayout()
 	, ObjectManagerUI()
 	, UIManager()
 //	, PlaneManager()
 	, ChunkManager()
-	, MainMenu()
-	, PauseMenu(*this)
-	, OptionsMenu(*this)
-	, DebugMenu(*this)
+	, MenuMain()
+	, MenuPause(*this)
+	, MenuOptions(*this)
+	, MenuDebug(*this)
 	, Inventory(VectorU2(10, 5))
-	, HotBar(VectorU2(10, 1))
 	, InventoryUI()
+	, HotBar(VectorU2(10, 1))
 	, HotBarUI()
-	, Multiform_DisplaySize("DisplaySize")
-	, Multiform_View("View")
-	, Multiform_Depth("Depth")
-	, Multiform_FOV("FOV")
-	, view()
 	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 	, AuxThread0Time(64)
 {
 	MediaDirectory = DirectoryInfo("../../media/");
 
+	// NewPolyHedra
 	{
+		// PolyHedraManager
 		{
 			{
 				PalletManager.BufferFullLayout.Position.Change(0);
@@ -113,57 +107,67 @@ ContextNoisePlane::ContextNoisePlane()
 			}
 			PolyHedraManager.PalletManager = &PalletManager;
 		}
+		// ObjectManagerBasic
 		{
 			{
 				ObjectManagerBasic.ShaderFull.Change({
 					MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
 					MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
 				});
-				ObjectManagerBasic.ShaderFull.UniformLayout = &ObjectManagerBasic_ShaderFullLayout;
-				ObjectManagerBasic_ShaderFullLayout.Shader = &ObjectManagerBasic.ShaderFull;
+				ShaderLayoutView3D * layout = new ShaderLayoutView3D();
+				ObjectManagerBasic.ShaderFull.UniformLayout = layout;
+				layout -> Shader = &ObjectManagerBasic.ShaderFull;
 			}
 			{
 				ObjectManagerBasic.ShaderWire.Change({
 					MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
 					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
 				});
-				ObjectManagerBasic.ShaderWire.UniformLayout = &ObjectManagerBasic_ShaderWireLayout;
-				ObjectManagerBasic_ShaderWireLayout.Shader = &ObjectManagerBasic.ShaderWire;
+				ShaderLayoutView3D * layout = new ShaderLayoutView3D();
+				ObjectManagerBasic.ShaderWire.UniformLayout = layout;
+				layout -> Shader = &ObjectManagerBasic.ShaderWire;
 			}
 			{
-				ObjectManagerBasic_BufferFullLayout.Trans.Change(3);
-				ObjectManagerBasic_BufferFullLayout.Normal.Change(7);
-				ObjectManagerBasic.BufferFullLayout = &ObjectManagerBasic_BufferFullLayout;
+				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
+				layout -> Trans.Change(3);
+				layout -> Normal.Change(7);
+				ObjectManagerBasic.BufferFullLayout = layout;
 			}
 			{
-				ObjectManagerBasic_BufferWireLayout.Trans.Change(3);
-				ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
-				ObjectManagerBasic.BufferWireLayout = &ObjectManagerBasic_BufferWireLayout;
+				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
+				layout -> Trans.Change(3);
+				layout -> Normal.Change(-1);
+				ObjectManagerBasic.BufferWireLayout = layout;
 			}
 			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerBasic);
 		}
+		// ObjectManagerUI
 		{
 			{
 				ObjectManagerUI.ShaderFull.Change({
 					MediaDirectory.File("Shaders/UI/PHFull.vert"),
 					MediaDirectory.File("Shaders/UI/PHFull.frag"),
 				});
-				ObjectManagerUI.ShaderFull.UniformLayout = &ObjectManagerUI_ShaderFullLayout;
-				ObjectManagerUI_ShaderFullLayout.Shader = &ObjectManagerUI.ShaderFull;
+				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
+				ObjectManagerUI.ShaderFull.UniformLayout = layout;
+				layout -> Shader = &ObjectManagerUI.ShaderFull;
 			}
 			{
-				ObjectManagerUI.ShaderWire.UniformLayout = &ObjectManagerUI_ShaderWireLayout;
-				ObjectManagerUI_ShaderWireLayout.Shader = &ObjectManagerUI.ShaderWire;
+				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
+				ObjectManagerUI.ShaderWire.UniformLayout = layout;
+				layout -> Shader = &ObjectManagerUI.ShaderWire;
 			}
 			{
-				ObjectManagerUI_BufferFullLayout.Size.Change(3);
-				ObjectManagerUI_BufferFullLayout.Pos.Change(4);
-				ObjectManagerUI_BufferFullLayout.Rot.Change(5);
-				ObjectManagerUI_BufferFullLayout.Scale.Change(8);
-				ObjectManagerUI.BufferFullLayout = &ObjectManagerUI_BufferFullLayout;
+				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
+				layout -> Size.Change(3);
+				layout -> Pos.Change(4);
+				layout -> Rot.Change(5);
+				layout -> Scale.Change(8);
+				ObjectManagerUI.BufferFullLayout = layout;
 			}
 			{
-				ObjectManagerUI.BufferWireLayout = &ObjectManagerUI_BufferWireLayout;
+				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
+				ObjectManagerUI.BufferWireLayout = layout;
 			}
 			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerUI);
 		}
@@ -171,21 +175,20 @@ ContextNoisePlane::ContextNoisePlane()
 
 	AuxThreadBase::ThreadName = "DrawThread";
 	Container::Array<Uniform::Layout *> layouts({
-		&ObjectManagerBasic_ShaderFullLayout,
-		&ObjectManagerBasic_ShaderWireLayout,
+		ObjectManagerBasic.ShaderFull.UniformLayout,
+		ObjectManagerBasic.ShaderWire.UniformLayout,
+		ObjectManagerUI.ShaderFull.UniformLayout,
+		ObjectManagerUI.ShaderWire.UniformLayout,
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 //		&PlaneManager.Shader,
 		&ChunkManager.ShaderLayoutU,
 		&ChunkManager.ShaderLayoutF,
-//		&InventoryShader,
-		&ObjectManagerUI_ShaderFullLayout,
-		&ObjectManagerUI_ShaderWireLayout,
 	});
-	Multiform_DisplaySize.FindUniforms(layouts);
-	Multiform_View.FindUniforms(layouts);
-	Multiform_Depth.FindUniforms(layouts);
-	Multiform_FOV.FindUniforms(layouts);
+	MultiformLayout.DisplaySize.FindUniforms(layouts);
+	MultiformLayout.View.FindUniforms(layouts);
+	MultiformLayout.Depth.FindUniforms(layouts);
+	MultiformLayout.FOV.FindUniforms(layouts);
 }
 
 
@@ -280,50 +283,147 @@ void ContextNoisePlane::VoxelClear_Show(std::stringstream & ss) const
 
 
 
-void ContextNoisePlane::ViewUpdateDone()
+void ContextNoisePlane::ViewUpdate_Done()
 {
-	if (ViewDistance == 0.0f)
+	if (View_Distance == 0.0f)
 	{
-		Multiform_View.ChangeData(Matrix4x4::TransformReverse(view.Trans));
+		MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
 	}
 	else
 	{
-		Multiform_View.ChangeData(Matrix4x4::TransformReverse(
-			Trans3D(view.Trans.Position - view.Trans.Rotation.forward(VectorF3(0, 0, ViewDistance)), view.Trans.Rotation)
+		MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(
+			Trans3D(View.Trans.Position - View.Trans.Rotation.forward(VectorF3(0, 0, View_Distance)), View.Trans.Rotation)
 		));
 	}
 }
-void ContextNoisePlane::ViewUpdateIntangible(Trans3D change, FrameTime frame_time)
+void ContextNoisePlane::ViewUpdate_Intangible(Trans3D change, FrameTime frame_time)
 {
-	change.Position *= ViewSpeedNoClip;
-	if (window[Keys::LeftControl] == State::Down) { change.Position *= ViewFasterNoClip; }
-	view.Trans.Position += change.Position * frame_time.Delta;
+	change.Position *= View_MoveSpeed;
+	if (window[Keys::LeftControl] == State::Down)
+	{
+		change.Position *= View_MoveSpeedMultiplier;
+	}
+
+	View.Trans.Position += change.Position * frame_time.Delta;
+	View.Trans.Rotation += change.Rotation * frame_time.Delta;
+	View.Trans.Rotation.X1.clampPI();
+
+	ViewEntity.Pos = View.Trans.Position;
 	ViewEntity.Vel = change.Position;
-	ViewEntity.Pos = view.Trans.Position;
-	view.Trans.Rotation += change.Rotation * frame_time.Delta;
-	view.Trans.Rotation.X1.clampPI();
 }
-void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
+void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 {
-	VectorF3 decel;
+	//VectorF3 accel = change;
+	//VectorF3 decel;
 
 	// Physics stuff
 	float jump = 0.0f;
-	if (ViewCollisionSide.PrevY && accel.Y > 0.0f) { jump = 15.0f; } // jumping
-	accel.Y = 0.0f;
+	if (ViewEntity_CollisionSide.PrevY && change.Y > 0.0f) { jump = 15.0f; } // jumping
+	change.Y = 0.0f;
 
-	if (ViewCollisionSide.PrevY)
+	if (ViewEntity_CollisionSide.PrevY)
 	{
-		accel *= ViewSpeed;
-		if (window[Keys::LeftControl] == State::Down) { accel *= ViewFaster; } // find this earlier, pass a bool
+		// Acceleration should not lead to doing above Speed limit
+		// Acceleration from other sources should not be limited
+		// should this only consider Horizontal Movement ?
 
-		/* accel and decel
-			both rely on surface friction
-			how to make sure they dont cancel out ?
-			decel should be opposite of vel
-			accel should be in direction of movement
+		VectorF3 flat(ViewEntity.Vel.X, 0.0f, ViewEntity.Vel.Z);
+
+		float limit = 0.0f;
+		if (change.length() != 0.0f)
+		{
+			if (window[Keys::LeftControl] == State::Down)
+			{
+				limit = ViewEntity_MoveLimitFast;
+			}
+			else
+			{
+				limit = ViewEntity_MoveLimitSlow;
+			}
+		}
+		std::cout << "limit: " << limit << '\n';
+
+		/*
+			vel
+				+ accel
+				- decel
+
+			accel = chang * MoveChange
+			decel = vel * MoveChange
+
+			how to make sure accel dosent go above limit ?
+				diff = limit - speed
+				if diff < 0
+					diff = 0
+				if diff > change
+					diff = change
+				accel = diff
+		*/
+
+		VectorF3 accel;
+		VectorF3 decel;
+
+		/*float speed = flat.length();
+		{
+			float diff = limit - speed;
+			if (diff < 0.0f)
+			{
+				diff = 0.0f;
+			}
+			if (diff > ViewEntity_MoveChange)
+			{
+				diff = ViewEntity_MoveChange;
+			}
+			accel = change * diff;
+		}
+		{
+			float diff = speed;
+			if (diff < 0.0f)
+			{
+				diff = 0.0f;
+			}
+			if (diff > ViewEntity_MoveChange)
+			{
+				diff = ViewEntity_MoveChange;
+			}
+			decel = flat.normalize() * diff;
+		}
+		ViewEntity.Vel = ViewEntity.Vel + accel - decel;*/
+
+		/* dot
+			take component of vel that goes in same direction as change
+			the part that goes in the same direciton is speed
+			the part that goes in the other direction is slowed down
 		*/
 		{
+			float flat_len2 = flat.length2();
+			if (flat_len2 != 0.0f)
+			{
+				float len2 = change.length2();
+				if (len2 != 0.0f)
+				{
+					float dot = VectorF3::dot(flat, change);
+					accel = (change / len2) * dot;
+					decel = flat - accel;
+				}
+				else
+				{
+					decel = flat;
+				}
+			}
+			else
+			{
+				accel = change;
+			}
+
+			accel = accel.normalize() * ViewEntity_MoveChange;
+			decel = decel.normalize() * ViewEntity_MoveChange;
+
+			decel = VectorF3();
+		}
+		ViewEntity.Vel = ViewEntity.Vel + accel - decel;
+
+		/*{
 			float dot = VectorF3::dot(decel, accel);
 			//if (dot < 0.0f)
 			//if (dot != 0.0f)
@@ -335,29 +435,36 @@ void ContextNoisePlane::ViewUpdatePhysics(VectorF3 accel)
 			{
 				decel = ViewEntity.Vel;
 			}
-		}
+		}*/
 
-		float friction_force = PhysicsSurfaceContext.FrictionStaticForce(1.0f, PhysicsGravityContext.Acceleration);
-		accel = PhysicsSurfaceContext.FrictionCounterForce(accel * 1.0f, friction_force) / 1.0f;
-		decel = PhysicsSurfaceContext.FrictionCounterForce(decel * 1.0f, friction_force) / 1.0f;
+		//float friction_force = PhysicsContext_Surface.FrictionStaticForce(1.0f, PhysicsContext_Gravity.Acceleration);
+		//accel = PhysicsContext_Surface.FrictionCounterForce(accel * 1.0f, friction_force) / 1.0f;
+		//decel = PhysicsContext_Surface.FrictionCounterForce(decel * 1.0f, friction_force) / 1.0f;
+
+		//PhysicsContext_Surface.FrictionCoefficient = 0.2f;
+		//accel = -PhysicsContext_Surface.FlatFrictionForce(accel, 1.0f, PhysicsContext_Gravity.Acceleration);
+		//decel = -PhysicsContext_Surface.FlatFrictionForce(decel, 1.0f, PhysicsContext_Gravity.Acceleration);
+
+		//accel = accel;
+		//decel = decel;
 	}
 	else
 	{
 		// use air friciton for movement
-		accel.Y = 0.0f;
-		accel *= 0.1f;
+		change.Y = 0.0f;
+		change *= 0.1f;
 	}
 
-	if (ViewCollisionSide.PrevY) { accel.Y = jump; }
+	if (ViewEntity_CollisionSide.PrevY) { change.Y = jump; }
 
 	ViewEntity.Vel = ViewEntity.Vel
-		- PhysicsFluidContext.Drag(ViewEntity.Vel, 1.0f, 1.0f)
-		+ PhysicsGravityContext.Vector()
-		+ accel
-		- decel
+		- PhysicsContext_Fluid.Drag(ViewEntity.Vel, 1.0f, 1.0f)
+		+ PhysicsContext_Gravity.Vector()
+		//+ accel
+		//- decel
 	;
 }
-void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
+void ContextNoisePlane::ViewUpdate_Colliding(FrameTime frame_time)
 {
 	DisplayBoxEntityVoxels(PalletManager.FindMakePallet(VoxelCube), ChunkManager, ViewEntity, frame_time);
 	DisplayBoxEntity(ViewEntity, *ViewEntity_PolyHedra);
@@ -387,33 +494,32 @@ void ContextNoisePlane::ViewUpdateColliding(FrameTime frame_time)
 			}
 		}
 
-		ViewCollisionSide = ViewEntity.Collide(boxes.ToArray(), frame_time.Delta);
+		ViewEntity_CollisionSide = ViewEntity.Collide(boxes.ToArray(), frame_time.Delta);
 	}
 	DisplayBoxEntity(ViewEntity, *ViewEntity_PolyHedra);
 }
-void ContextNoisePlane::ViewRayUpdate()
+
+void ContextNoisePlane::ViewRay_Update()
 {
-	if (ViewRaySync)
+	ViewRay.Pos = View.Trans.Position;
+	ViewRay.Dir = View.Trans.Rotation.forward(VectorF3(0, 0, 1));
 	{
-		ViewRay.Pos = view.Trans.Position;
-		ViewRay.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
-		{
-			VectorI3 ranks = ViewRay.Dir.abs().RankDimensions();
-			     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { ViewRayAxis0 = AxisRel::NextX; } else { ViewRayAxis0 = AxisRel::PrevX; } }
-			else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { ViewRayAxis0 = AxisRel::NextY; } else { ViewRayAxis0 = AxisRel::PrevY; } }
-			else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { ViewRayAxis0 = AxisRel::NextZ; } else { ViewRayAxis0 = AxisRel::PrevZ; } }
-			if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { ViewRayAxis1 = AxisRel::NextX; } else { ViewRayAxis1 = AxisRel::PrevX; } }
-			else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { ViewRayAxis1 = AxisRel::NextY; } else { ViewRayAxis1 = AxisRel::PrevY; } }
-			else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { ViewRayAxis1 = AxisRel::NextZ; } else { ViewRayAxis1 = AxisRel::PrevZ; } }
-			if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { ViewRayAxis2 = AxisRel::NextX; } else { ViewRayAxis2 = AxisRel::PrevX; } }
-			else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { ViewRayAxis2 = AxisRel::NextY; } else { ViewRayAxis2 = AxisRel::PrevY; } }
-			else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { ViewRayAxis2 = AxisRel::NextZ; } else { ViewRayAxis2 = AxisRel::PrevZ; } }
-			// what if same ranks ?
-		}
+		VectorI3 ranks = ViewRay.Dir.abs().RankDimensions();
+		     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { ViewRay_Axis0 = AxisRel::NextX; } else { ViewRay_Axis0 = AxisRel::PrevX; } }
+		else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis0 = AxisRel::NextY; } else { ViewRay_Axis0 = AxisRel::PrevY; } }
+		else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis0 = AxisRel::NextZ; } else { ViewRay_Axis0 = AxisRel::PrevZ; } }
+		if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { ViewRay_Axis1 = AxisRel::NextX; } else { ViewRay_Axis1 = AxisRel::PrevX; } }
+		else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis1 = AxisRel::NextY; } else { ViewRay_Axis1 = AxisRel::PrevY; } }
+		else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis1 = AxisRel::NextZ; } else { ViewRay_Axis1 = AxisRel::PrevZ; } }
+		if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { ViewRay_Axis2 = AxisRel::NextX; } else { ViewRay_Axis2 = AxisRel::PrevX; } }
+		else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis2 = AxisRel::NextY; } else { ViewRay_Axis2 = AxisRel::PrevY; } }
+		else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis2 = AxisRel::NextZ; } else { ViewRay_Axis2 = AxisRel::PrevZ; } }
+		// what if same ranks ?
 	}
-
+}
+void ContextNoisePlane::ViewRay_Hit()
+{
 	ViewHit = ChunkManager.HitVoxel(ViewRay);
-
 	if (ViewHit.Valid())
 	{
 		{
@@ -425,65 +531,19 @@ void ContextNoisePlane::ViewRayUpdate()
 			voxel_box_obj.ShowWire();
 		}
 		{
-			ViewHitAxis0 = ViewHit.Side;
-			AxisAbs axis = AxisRelToAxisAbs(ViewHitAxis0);
-			if (axis == AxisAbs::None) { ViewHitAxis1 = AxisRel::None; }
-			else if (axis != AxisRelToAxisAbs(ViewRayAxis2)) { ViewHitAxis1 = ViewRayAxis2; }
-			else if (axis != AxisRelToAxisAbs(ViewRayAxis1)) { ViewHitAxis1 = ViewRayAxis1; }
-			else if (axis != AxisRelToAxisAbs(ViewRayAxis0)) { ViewHitAxis1 = ViewRayAxis0; }
-			else { ViewHitAxis1 = AxisRel::None; }
+			ViewHit_Axis0 = ViewHit.Side;
+			AxisAbs axis = AxisRelToAxisAbs(ViewHit_Axis0);
+			if (axis == AxisAbs::None) { ViewHit_Axis1 = AxisRel::None; }
+			else if (axis != AxisRelToAxisAbs(ViewRay_Axis2)) { ViewHit_Axis1 = ViewRay_Axis2; }
+			else if (axis != AxisRelToAxisAbs(ViewRay_Axis1)) { ViewHit_Axis1 = ViewRay_Axis1; }
+			else if (axis != AxisRelToAxisAbs(ViewRay_Axis0)) { ViewHit_Axis1 = ViewRay_Axis0; }
+			else { ViewHit_Axis1 = AxisRel::None; }
 		}
 	}
 }
-void ContextNoisePlane::ViewRayInfo()
+void ContextNoisePlane::ViewRay_HitDo()
 {
-	std::stringstream ss;
-	ss << "ViewRay\n";
-	ss << ViewRayAxis0 << " :RayAxis0\n";
-	ss << ViewRayAxis1 << " :RayAxis1\n";
-	ss << ViewRayAxis2 << " :RayAxis2\n";
-
-	if (ViewHit.Valid())
-	{
-		ChunkVoxelIndex idx(ViewHit.Index);
-		ss << ViewHit.Index << '\n';
-		ss << idx.Chunk << '\n';
-		ss << idx.Voxel << '\n';
-		ss << ViewHitAxis0 << " :HitAxis0\n";
-		ss << ViewHitAxis1 << " :HitAxis1\n";
-
-		// Voxel Info
-		{
-			AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
-			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
-			if (voxel != nullptr)
-			{
-				const VoxelPallet & pallet = voxel -> ToPallet();
-				ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
-				ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
-				ss << (pallet.Name) << " :Pallet\n";
-			}
-			else
-			{
-				ss << "null";
-			}
-			ss << '\n';
-		}
-	}
-
-	VoxelClear_Show(ss);
-
-	UI::Text::Object text; text.Create();
-	text.Text() = ss.str();
-	text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
-	text.AlignTopRight(); // take DisplaySize
-	text.Bound().Min = VectorF2();
-	text.Bound().Max = window.Size.Buffer.Full;
-	text.Color() = ColorF4(1, 1, 1);
-}
-void ContextNoisePlane::ViewRayDo()
-{
-	if (PauseMenu.IsInteractible() || OptionsMenu.IsInteractible() || InventoryUI.IsInteractible()) { return; }
+	if (MenuPause.IsInteractible() || MenuOptions.IsInteractible() || InventoryUI.IsInteractible()) { return; }
 
 	if (ViewHit.Valid())
 	{
@@ -515,12 +575,13 @@ void ContextNoisePlane::ViewRayDo()
 
 		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
 		{
-			if (ViewHitAxis0 == AxisRel::NextX) { ViewHit.Index.X += 1; }
-			if (ViewHitAxis0 == AxisRel::NextY) { ViewHit.Index.Y += 1; }
-			if (ViewHitAxis0 == AxisRel::NextZ) { ViewHit.Index.Z += 1; }
-			if (ViewHitAxis0 == AxisRel::PrevX) { ViewHit.Index.X -= 1; }
-			if (ViewHitAxis0 == AxisRel::PrevY) { ViewHit.Index.Y -= 1; }
-			if (ViewHitAxis0 == AxisRel::PrevZ) { ViewHit.Index.Z -= 1; }
+			VectorI3 hit_idx = ViewHit.Index;
+			if (ViewHit_Axis0 == AxisRel::NextX) { hit_idx.X += 1; }
+			if (ViewHit_Axis0 == AxisRel::NextY) { hit_idx.Y += 1; }
+			if (ViewHit_Axis0 == AxisRel::NextZ) { hit_idx.Z += 1; }
+			if (ViewHit_Axis0 == AxisRel::PrevX) { hit_idx.X -= 1; }
+			if (ViewHit_Axis0 == AxisRel::PrevY) { hit_idx.Y -= 1; }
+			if (ViewHit_Axis0 == AxisRel::PrevZ) { hit_idx.Z -= 1; }
 
 			if (HotBar.Items[VectorU2(0, 0)] != nullptr)
 			{
@@ -528,15 +589,11 @@ void ContextNoisePlane::ViewRayDo()
 					ItemVoxel * item = dynamic_cast<ItemVoxel*>(HotBar.Items[VectorU2(0, 0)]);
 					if (item != nullptr && item -> VoxelPallet != nullptr)
 					{
-						Voxel voxel = item -> VoxelPallet -> ToVoxel(ViewHitAxis0, ViewHitAxis1);
-						ChunkVoxelIndex idx(ViewHit.Index);
-						//Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
+						Voxel voxel = item -> VoxelPallet -> ToVoxel(ViewHit_Axis0, ViewHit_Axis1);
+						ChunkVoxelIndex idx(hit_idx);
 						AssignLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk).ToAssign();
-						//if (chunk != nullptr)
 						if (chunk.Is())
 						{
-							//chunk -> PlaceVoxel(idx.Voxel, voxel);
-							//chunk -> AccessU();
 							(*chunk).PlaceVoxel(idx.Voxel, voxel);
 						}
 					}
@@ -545,33 +602,81 @@ void ContextNoisePlane::ViewRayDo()
 		}
 	}
 }
-void ContextNoisePlane::ViewUpdateAround(Trans3D change, FrameTime frame_time)
+void ContextNoisePlane::ViewRay_Show()
+{
+	std::stringstream ss;
+	ss << "ViewRay\n";
+	ss << ViewRay_Axis0 << " :RayAxis0\n";
+	ss << ViewRay_Axis1 << " :RayAxis1\n";
+	ss << ViewRay_Axis2 << " :RayAxis2\n";
+
+	if (ViewHit.Valid())
+	{
+		ChunkVoxelIndex idx(ViewHit.Index);
+		ss << ViewHit.Index << '\n';
+		ss << idx.Chunk << '\n';
+		ss << idx.Voxel << '\n';
+		ss << ViewHit_Axis0 << " :HitAxis0\n";
+		ss << ViewHit_Axis1 << " :HitAxis1\n";
+
+		// Voxel Info
+		{
+			AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
+			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
+			if (voxel != nullptr)
+			{
+				const VoxelPallet & pallet = voxel -> ToPallet();
+				ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
+				ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
+				ss << (pallet.Name) << " :Pallet\n";
+			}
+			else
+			{
+				ss << "null";
+			}
+			ss << '\n';
+		}
+	}
+
+	VoxelClear_Show(ss);
+
+	UI::Text::Object text; text.Create();
+	text.Text() = ss.str();
+	text.TextPosition() = VectorF2(window.Size.Buffer.Full.X, 0);
+	text.AlignTopRight(); // take DisplaySize
+	text.Bound().Min = VectorF2();
+	text.Bound().Max = window.Size.Buffer.Full;
+	text.Color() = ColorF4(1, 1, 1);
+}
+
+void ContextNoisePlane::ViewUpdate(Trans3D change, FrameTime frame_time)
 {
 	// sperate applying change and moving
 	// when intangible, change view directly
 
 	StopWatch sw;
 	sw.Start();
-	if (ViewTangible)
+	if (View_IsTangible)
 	{
-		ViewUpdatePhysics(change.Position);
-		view.Trans.Rotation += change.Rotation * frame_time.Delta;
-		view.Trans.Rotation.X1.clampPI();
-		ViewUpdateColliding(frame_time);
-		view.Trans.Position = ViewEntity.Pos;
+		ViewUpdate_Physics(change.Position);
+		View.Trans.Rotation += change.Rotation * frame_time.Delta;
+		View.Trans.Rotation.X1.clampPI();
+		ViewUpdate_Colliding(frame_time);
+		View.Trans.Position = ViewEntity.Pos;
 	}
 	else
 	{
-		ViewUpdateIntangible(change, frame_time);
+		ViewUpdate_Intangible(change, frame_time);
 	}
-	ViewUpdateDone();
+	ViewUpdate_Done();
 	sw.Stop();
 	FrameTime_ViewUpdate_CollisionTime.NewValue(sw.ElapsedTime());
 
 	sw.Clear(); sw.Start();
-	ViewRayUpdate();
-	ViewRayInfo();
-	ViewRayDo();
+	ViewRay_Update();
+	ViewRay_Hit();
+	ViewRay_HitDo();
+	ViewRay_Show();
 	sw.Stop();
 	FrameTime_ViewUpdate_RayTime.NewValue(sw.ElapsedTime());
 }
@@ -593,7 +698,7 @@ void ContextNoisePlane::AuxThread0Func()
 		if (!AuxThread0Idle)
 		{
 			sw.Clear(); sw.Start();
-			ChunkManager.ChangeCenter((view.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
+			ChunkManager.ChangeCenter((View.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
 			//ChunkManager.RemoveAround();
 			//ChunkManager.InsertAround();
 			ChunkManager.UpdateChunksContainer();
@@ -612,8 +717,8 @@ void ContextNoisePlane::Make()
 		//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
 		window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
 		//window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
-		view.Depth.Color = window.DefaultColor;
-		view.Depth.Range.SetMin(0.5f);
+		View.Depth.Color = window.DefaultColor;
+		View.Depth.Range.SetMin(0.5f);
 
 		LightAmbient = LightBase(0.2f, ColorF4(1.0f, 1.0f, 1.0f));
 		LightSolar = LightDirection(1.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(1.0f, -1.0f, 0.0f));
@@ -680,33 +785,33 @@ void ContextNoisePlane::MakeControls()
 	std::cerr << "MakeControls()\n";
 	// Pause
 	{
-		PauseMenu.Show();
-		UIManager.WindowControl.ChildInsert(PauseMenu);
+		MenuPause.Show();
+		UIManager.WindowControl.ChildInsert(MenuPause);
 	}
 	// Options
 	{
-		//OptionsMenu.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
-		OptionsMenu.FPS.SetValueX(64);
-		OptionsMenu.FOV.SetValueX(view.FOV.ToDegrees());
+		//MenuOptions.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
+		MenuOptions.FPS.SetValueX(64);
+		MenuOptions.FOV.SetValueX(View.FOV.ToDegrees());
 
-		//OptionsMenu.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
-		OptionsMenu.Depth.SetValueX(1000.0f); // get Depth. also depth works weirdly ?
-		OptionsMenu.DepthRange.SetValueX(view.Depth.Range.GetMin());
+		//MenuOptions.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
+		MenuOptions.Depth.SetValueX(1000.0f); // get Depth. also depth works weirdly ?
+		MenuOptions.DepthRange.SetValueX(View.Depth.Range.GetMin());
 
 		// Remove range should never be less then Insert
 		// make RemoveRange = InsertRange * 2 ?
 		// make RemoveRange = InsertRange + n ?
 
-		OptionsMenu.Hide();
-		UIManager.WindowControl.ChildInsert(OptionsMenu);
+		MenuOptions.Hide();
+		UIManager.WindowControl.ChildInsert(MenuOptions);
 	}
 	// Debug
 	{
-		DebugMenu.FPS.Check.Check(true);
-		//DebugMenu.VoxelChunkMemory.Check.Check(true);
+		MenuDebug.FPS.Check.Check(true);
+		//MenuDebug.VoxelChunkMemory.Check.Check(true);
 
-		DebugMenu.Hide();
-		UIManager.WindowControl.ChildInsert(DebugMenu);
+		MenuDebug.Hide();
+		UIManager.WindowControl.ChildInsert(MenuDebug);
 	}
 	// Inventory
 	{
@@ -817,9 +922,9 @@ void ContextNoisePlane::Init()
 	//ChunkManager.ChangeSize(16, 12);
 	//ChunkManager.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	Multiform_Depth.ChangeData(view.Depth);
+	MultiformLayout.Depth.ChangeData(View.Depth);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	Multiform_FOV.ChangeData(view.FOV);
+	MultiformLayout.FOV.ChangeData(View.FOV);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
@@ -1172,7 +1277,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 	// FPS
 	sw.Clear(); sw.Start();
-	if (DebugMenu.FPS.Check.IsChecked())
+	if (MenuDebug.FPS.Check.IsChecked())
 	{
 		ss << "Frame (" << (int)frame_time.WantedFramesPerSecond << '|' << (int)frame_time.ActualFramesPerSecond << ")Hz\n";
 		ss << "Frame (" << frame_time.WantedFrameTime << '|' << frame_time.ActualFrameTime << ")s\n";
@@ -1198,7 +1303,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 	// Thread Time
 	sw.Clear(); sw.Start();
-	if (DebugMenu.TimeThreads.Check.IsChecked())
+	if (MenuDebug.TimeThreads.Check.IsChecked())
 	{
 		ShowNameTimeLine(ss, "Frame           ", FrameTime_);
 		ss << "{\n";
@@ -1252,7 +1357,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 	// ChunkManager Time
 	sw.Clear(); sw.Start();
-	if (DebugMenu.TimeWaitDo.Check.IsChecked())
+	if (MenuDebug.TimeWaitDo.Check.IsChecked())
 	{
 		ss << ChunkManager::TimeInsert << '\n';
 		ss << ChunkManager::TimeInsertNew << '\n';
@@ -1298,27 +1403,35 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 	// View
 	sw.Clear(); sw.Start();
-	if (DebugMenu.View.Check.IsChecked())
+	if (MenuDebug.View.Check.IsChecked())
 	{
-		ss << "View " << view.Trans.Position << '\n';
-		ss << "View " << ViewEntity.Vel << ' ' << ViewEntity.Vel.length() << '\n';
-		ss << "None : " << (ViewCollisionSide.None) << '\n';
-		ss << "PrevX: " << (ViewCollisionSide.PrevX) << '\n';
-		ss << "PrevY: " << (ViewCollisionSide.PrevY) << '\n';
-		ss << "PrevZ: " << (ViewCollisionSide.PrevZ) << '\n';
-		ss << "NextX: " << (ViewCollisionSide.NextX) << '\n';
-		ss << "NextY: " << (ViewCollisionSide.NextY) << '\n';
-		ss << "NextZ: " << (ViewCollisionSide.NextZ) << '\n';
+		ss << "View.Pos.X: " << View.Trans.Position.X << '\n';
+		ss << "View.Pos.Y: " << View.Trans.Position.Y << '\n';
+		ss << "View.Pos.Z: " << View.Trans.Position.Z << '\n';
+		ss << "ViewEntity.Pos.X: " << ViewEntity.Pos.X << '\n';
+		ss << "ViewEntity.Pos.Y: " << ViewEntity.Pos.Y << '\n';
+		ss << "ViewEntity.Pos.Z: " << ViewEntity.Pos.Z << '\n';
+		ss << "ViewEntity.Vel.X: " << ViewEntity.Vel.X << '\n';
+		ss << "ViewEntity.Vel.Y: " << ViewEntity.Vel.Y << '\n';
+		ss << "ViewEntity.Vel.Z: " << ViewEntity.Vel.Z << '\n';
+		ss << "ViewEntity.|Vel|: " << ViewEntity.Vel.length() << '\n';
+		ss << "None : " << (ViewEntity_CollisionSide.None) << '\n';
+		ss << "PrevX: " << (ViewEntity_CollisionSide.PrevX) << '\n';
+		ss << "PrevY: " << (ViewEntity_CollisionSide.PrevY) << '\n';
+		ss << "PrevZ: " << (ViewEntity_CollisionSide.PrevZ) << '\n';
+		ss << "NextX: " << (ViewEntity_CollisionSide.NextX) << '\n';
+		ss << "NextY: " << (ViewEntity_CollisionSide.NextY) << '\n';
+		ss << "NextZ: " << (ViewEntity_CollisionSide.NextZ) << '\n';
 		ss << '\n';
 	}
 	sw.Stop(); TextTime_View.NewValue(sw.ElapsedTime());
 
 	// ChunkHere
 	sw.Clear(); sw.Start();
-	if (DebugMenu.ChunkHere.Check.IsChecked())
+	if (MenuDebug.ChunkHere.Check.IsChecked())
 	{
-		//VoxelIndex idx = ChunkManager.FindVoxelIndex(view.Trans.Position);
-		ChunkVoxelIndex idx(view.Trans.Position.roundF());
+		//VoxelIndex idx = ChunkManager.FindVoxelIndex(View.Trans.Position);
+		ChunkVoxelIndex idx(View.Trans.Position.roundF());
 		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
 		//ChunkManager.ChunksInUse.lock();
 		AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
@@ -1387,7 +1500,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 	// ChunkRange
 	sw.Clear(); sw.Start();
-	if (DebugMenu.ChunkRange.Check.IsChecked())
+	if (MenuDebug.ChunkRange.Check.IsChecked())
 	{
 		ss << "Chunk Ranges:" << '\n';
 		ss << "Chunk Know: " << ChunkManager.KnowSize << '\n';
@@ -1421,7 +1534,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 
 	// VoxelChunkMemory
 	sw.Clear(); sw.Start();
-	if (DebugMenu.VoxelChunkMemory.Check.IsChecked())
+	if (MenuDebug.VoxelChunkMemory.Check.IsChecked())
 	{
 		sw_part.Clear(); sw_part.Start();
 		ChunkManager.ChunksLock.AccessL();
@@ -1460,9 +1573,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	{
 		UI::Text::Object text; text.Create();
 		text.Text() = ss.str();
-		if (DebugMenu.IsVisible())
+		if (MenuDebug.IsVisible())
 		{
-			text.TextPosition().X = DebugMenu.Anchor.X.GetMinSize();
+			text.TextPosition().X = MenuDebug.Anchor.X.GetMinSize();
 		}
 		text.AlignTopLeft();
 		text.Color() = ColorF4(1, 1, 1);
@@ -1529,18 +1642,18 @@ void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
 		}
 	}
 
-	if (InventorySlot::StaticItem != nullptr)
+	if (ItemSlotUI::StaticItem != nullptr)
 	{
 		NewPolyHedra::UserInterface::Object obj;
 		{
-			ItemVoxel * item = dynamic_cast<ItemVoxel*>(InventorySlot::StaticItem);
+			ItemVoxel * item = dynamic_cast<ItemVoxel*>(ItemSlotUI::StaticItem);
 			if (item != nullptr)
 			{
 				obj.Create(item -> VoxelPallet -> PolyHedra);
 			}
 		}
 		{
-			ItemTool * item = dynamic_cast<ItemTool*>(InventorySlot::StaticItem);
+			ItemTool * item = dynamic_cast<ItemTool*>(ItemSlotUI::StaticItem);
 			if (item != nullptr)
 			{
 				obj.Create(item -> Pallet);
@@ -1568,23 +1681,23 @@ void ContextNoisePlane::FrameInput()
 
 	if (window[Keys::Escape] == State::Press)
 	{
-		OptionsMenu.Hide();
+		MenuOptions.Hide();
 		InventoryUI.Hide();
 		//HotBarUI.Hide();
-		if (PauseMenu.IsVisible())
+		if (MenuPause.IsVisible())
 		{
 			//AuxThreadBase::Idle = false;
-			PauseMenu.Hide();
+			MenuPause.Hide();
 		}
 		else
 		{
 			//AuxThreadBase::Idle = true;
-			PauseMenu.Show();
+			MenuPause.Show();
 		}
 	}
 	if (window[Keys::E] == State::Press)
 	{
-		if (!PauseMenu.IsVisible() && !OptionsMenu.IsVisible())
+		if (!MenuPause.IsVisible() && !MenuOptions.IsVisible())
 		{
 			if (!InventoryUI.IsVisible())
 			{
@@ -1599,29 +1712,29 @@ void ContextNoisePlane::FrameInput()
 		}
 	}
 
-	if (window[Keys::D1] == State::Press) { Toggle(ViewRaySync); }
+	//if (window[Keys::D1] == State::Press) { Toggle(ViewRaySync); }
 	//if (window[Keys::D2] == State::Press) { Toggle(ChunkManager.ViewRayPolyHedra, ViewRayPolyHedra); }
 	//if (window[Keys::D3] == State::Press) { Toggle(ChunkManager.VoxelBoxPolyHedra, VoxelCube); }
 
 	if (window[Keys::F7] == State::Press)
 	{
-		if (DebugMenu.IsVisible())
+		if (MenuDebug.IsVisible())
 		{
-			DebugMenu.Hide();
+			MenuDebug.Hide();
 		}
 		else
 		{
-			DebugMenu.Show();
+			MenuDebug.Show();
 		}
 	}
 
-	if (window[Keys::F2] == State::Press) { Toggle(ViewTangible); }
+	if (window[Keys::F2] == State::Press) { Toggle(View_IsTangible); }
 	if (window[Keys::F3] == State::Press)
 	{
-		if (ViewDistance == 0.0f)
-		{ ViewDistance = 2.0f; }
+		if (View_Distance == 0.0f)
+		{ View_Distance = 2.0f; }
 		else
-		{ ViewDistance = 0.0f; }
+		{ View_Distance = 0.0f; }
 	}
 	/*if (window[Keys::F4] == State::Press)
 	{
@@ -1634,7 +1747,7 @@ void ContextNoisePlane::FrameInput()
 		ChunkManager.Clear();
 	}
 
-	if (PauseMenu.IsVisible() || OptionsMenu.IsVisible() || InventoryUI.IsVisible())
+	if (MenuPause.IsVisible() || MenuOptions.IsVisible() || InventoryUI.IsVisible())
 	{
 		if (window.MouseManager.CursorModeIsLocked()) { window.MouseManager.CursorModeFree(); }
 	}
@@ -1645,7 +1758,7 @@ void ContextNoisePlane::FrameInput()
 
 	/*if (window[Keys::P] == State::Press)
 	{
-		ChunkVoxelIndex idx(view.Trans.Position.roundF());
+		ChunkVoxelIndex idx(View.Trans.Position.roundF());
 		Chunk * chunk = ChunkManager.FindLockOrNull(idx.Chunk);
 		if (chunk != nullptr)
 		{
@@ -1667,8 +1780,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 	// this is general Update, not Draw specific
 	//LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
-	LightSpot.Pos = view.Trans.Position;
-	LightSpot.Dir = view.Trans.Rotation.forward(VectorF3(0, 0, 1));
+	LightSpot.Pos = View.Trans.Position;
+	LightSpot.Dir = View.Trans.Rotation.forward(VectorF3(0, 0, 1));
 
 	StopWatch sw_total;
 	sw_total.Start();
@@ -1682,19 +1795,19 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 	// this is general Update, not Draw specific, except View Matrix Uniform
 	sw.Clear(); sw.Start();
-	if (!OptionsMenu.IsVisible())
+	if (!MenuOptions.IsVisible())
 	{
 		Trans3D change;
 		if (window.MouseManager.CursorModeIsLocked())
 		{
 			change = window.MoveSpinFromKeysCursor();
-			change.Rotation *= view.FOV.ToRadians() * 0.05f;
+			change.Rotation *= View.FOV.ToRadians() * 0.05f;
 			{
-				EulerAngle3D e(Angle(), Angle(), view.Trans.Rotation.Y2);
+				EulerAngle3D e(Angle(), Angle(), View.Trans.Rotation.Y2);
 				change.Position = e.forward(change.Position);
 			}
 		}
-		ViewUpdateAround(change, frame_time);
+		ViewUpdate(change, frame_time);
 	}
 	sw.Stop(); FrameTime_ViewUpdate.NewValue(sw.ElapsedTime());
 
@@ -1709,7 +1822,7 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 	// rechnically not Draw related, but PolyHedraManager is currently not intended for different Threads
 	sw.Clear(); sw.Start();
-	if (DebugMenu.VoxelChunkBoxes.Check.IsChecked())
+	if (MenuDebug.VoxelChunkBoxes.Check.IsChecked())
 	{
 		NewPolyHedra::Pallet * pallet = PalletManager.FindMakePallet(VoxelChunkCube);
 		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
@@ -1725,9 +1838,9 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	
 	// rechnically not Draw related, but PolyHedraManager is currently not intended for different Threads
 	sw.Clear(); sw.Start();
-	if (DebugMenu.ChunkHere.Check.IsChecked())
+	if (MenuDebug.ChunkHere.Check.IsChecked())
 	{
-		ChunkVoxelIndex idx(view.Trans.Position.roundF());
+		ChunkVoxelIndex idx(View.Trans.Position.roundF());
 		NewPolyHedra::Basic3D::Object chunk_box(VoxelChunkCube);
 		chunk_box.Data().Trans.Position = idx.Chunk * CHUNK_VALUES_PER_SIDE;
 		chunk_box.ShowWire();
@@ -1750,8 +1863,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 void ContextNoisePlane::Resize(DisplaySize display_size)
 {
-	::InventorySlot::WindowSize = display_size;
-	Multiform_DisplaySize.ChangeData(display_size);
+	::ItemSlotUI::WindowSize = display_size;
+	MultiformLayout.DisplaySize.ChangeData(display_size);
 }
 
 

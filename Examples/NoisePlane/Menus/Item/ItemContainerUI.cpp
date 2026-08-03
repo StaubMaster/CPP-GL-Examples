@@ -1,10 +1,10 @@
-#include "Inventory.hpp"
+#include "ItemContainerUI.hpp"
 
 
 
-Inventory::~Inventory()
+ItemContainerUI::~ItemContainerUI()
 { }
-Inventory::Inventory()
+ItemContainerUI::ItemContainerUI()
 	: UI::Control::Form()
 	, Container(nullptr)
 	, Slots()
@@ -12,13 +12,10 @@ Inventory::Inventory()
 
 
 
-#include <iostream>
-void Inventory::Change(ItemContainer * container)
+void ItemContainerUI::Change(ItemContainer * container)
 {
 	if (!Slots.IsNull()) { return; }
 	// need to Remove Children
-
-
 
 	Container = container;
 
@@ -39,7 +36,7 @@ void Inventory::Change(ItemContainer * container)
 	}
 }
 
-void Inventory::ShowItems()
+void ItemContainerUI::ShowItems()
 {
 	LoopU2 loop(VectorU2(), Slots.Size());
 	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
@@ -47,7 +44,7 @@ void Inventory::ShowItems()
 		Slots[u].Show();
 	}
 }
-void Inventory::HideItems()
+void ItemContainerUI::HideItems()
 {
 	LoopU2 loop(VectorU2(), Slots.Size());
 	for (VectorU2 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
@@ -56,11 +53,11 @@ void Inventory::HideItems()
 	}
 }
 
-void Inventory::RelayInsertObject()
+void ItemContainerUI::RelayInsertObject()
 {
 	ShowItems();
 }
-void Inventory::RelayRemoveObject()
+void ItemContainerUI::RelayRemoveObject()
 {
 	HideItems();
 }

@@ -11,11 +11,6 @@
 #include "PolyHedra/Skin/Skin.hpp"
 #include "PolyHedra/Skin/Data.hpp"
 
-// Graphics
-#include "Graphics/Shader/Code.hpp"
-#include "Generics/Container/Array.hpp"
-#include "Graphics/Multiform/_Include.hpp"
-
 // FileManager
 #include "Image.hpp"
 
@@ -62,19 +57,17 @@
 
 // Item
 #include "Item/ItemBase.hpp"
-#include "Item/ItemVoxel.hpp"
 #include "Item/ItemTool.hpp"
+#include "Item/ItemVoxel.hpp"
 #include "Item/ItemContainer.hpp"
-#include "Menus/Item/Inventory.hpp"
+#include "Menus/Item/ItemContainerUI.hpp"
 
 // Threads
 #include "AuxThreadBase.hpp"
+#include <thread>
 
 // 
 #include "PhysicsContext.hpp"
-
-// Math
-#include <thread>
 
 
 
@@ -88,98 +81,78 @@
 
 # include "NewPolyHedraUI.hpp"
 
-# include "Shaders.hpp"
+// Graphics
+# include "ShaderLayouts.hpp"
+# include "MultiformLayouts.hpp"
+
+
 
 struct ContextNoisePlane : public ContextBase
 {
+MultiformLayoutView3D	MultiformLayout;
+
 NewPolyHedra::Manager	PolyHedraManager;
-
 NewPolyHedra::PalletManager		PalletManager;
-
-ShaderLayoutView3D						ObjectManagerBasic_ShaderFullLayout;
-ShaderLayoutView3D						ObjectManagerBasic_ShaderWireLayout;
-NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
-NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
 NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
-
-ShaderLayoutDisplay								ObjectManagerUI_ShaderFullLayout;
-ShaderLayoutDisplay								ObjectManagerUI_ShaderWireLayout;
-NewPolyHedra::UserInterface::BufferLayout		ObjectManagerUI_BufferFullLayout;
-NewPolyHedra::UserInterface::BufferLayout		ObjectManagerUI_BufferWireLayout;
 NewPolyHedra::UserInterface::ObjectManager		ObjectManagerUI;
 
-//::PolyHedraManager		PolyHedraManager;
-UI::Manager				UIManager;
-//::PlaneManager		PlaneManager;
-::ChunkManager			ChunkManager;
-
-//::PolyHedraManager		InventoryPolyHedraManager;
-//::InventoryShader		InventoryShader;
+UI::Manager			UIManager;
+//::PlaneManager	PlaneManager;
+::ChunkManager		ChunkManager;
 
 
 
-::MainMenu		MainMenu;
-::PauseMenu		PauseMenu;
-::OptionsMenu	OptionsMenu;
-::DebugMenu		DebugMenu;
+::MainMenu		MenuMain;
+::PauseMenu		MenuPause;
+::OptionsMenu	MenuOptions;
+::DebugMenu		MenuDebug;
+
+
 
 ::ItemContainer		Inventory;
-::ItemContainer		HotBar;
-
+::ItemContainerUI	InventoryUI;
 /* HotBar Index
 scroll should loop
 Slot Indicator
 Item Indicator
 */
-::Inventory			InventoryUI;
-::Inventory			HotBarUI;
+::ItemContainer		HotBar;
+::ItemContainerUI	HotBarUI;
 
 
 
-// make a Layout for Multiforms
-// it takes an array of shaders
-// or singular shaders, one a fter another
-// and tries to get the names
-Multiform::DisplaySize		Multiform_DisplaySize;
-::Multiform::Matrix4x4		Multiform_View;
-::Multiform::Depth			Multiform_Depth;
-::Multiform::Angle			Multiform_FOV;
+Physics::GravityContext		PhysicsContext_Gravity;
+Physics::FluidContext		PhysicsContext_Fluid;
+Physics::SurfaceContext		PhysicsContext_Surface;
+
+
 
 ~ContextNoisePlane();
 ContextNoisePlane();
 
 
 
-//::PhysicsContext	PhysicsContext;
-Physics::GravityContext	PhysicsGravityContext;
-Physics::FluidContext	PhysicsFluidContext;
-Physics::SurfaceContext	PhysicsSurfaceContext;
+View3D	View;
+float	View_Distance = 0.0f;
+float	View_MoveSpeed = 10.0f;
+float	View_MoveSpeedMultiplier = 10.0f;
+bool	View_IsTangible = false;
 
-View3D	view;
-
-float	ViewDistance = 0.0f;
-bool	ViewTangible = false;
-
-float	ViewSpeed = 0.1f;	// force when moving
-float	ViewFaster = 3.0f;	// force multiplier when moving faster
-
-PolyHedra *					ViewEntity_PolyHedra;
 BoxEntity3D					ViewEntity;
-BoxEntity3D_CollisionSide	ViewCollisionSide;
-
-float	ViewSpeedNoClip = 10.0f;
-float	ViewFasterNoClip = 10.0f;
-
-bool		ViewRaySync = true;
+BoxEntity3D_CollisionSide	ViewEntity_CollisionSide;
+PolyHedra *					ViewEntity_PolyHedra = nullptr;
+float						ViewEntity_MoveChange = 0.1f;
+float						ViewEntity_MoveLimitSlow = 5.0f;
+float						ViewEntity_MoveLimitFast = 10.0f;
 
 RayF3		ViewRay;
-AxisRel		ViewRayAxis0;
-AxisRel		ViewRayAxis1;
-AxisRel		ViewRayAxis2;
+AxisRel		ViewRay_Axis0;
+AxisRel		ViewRay_Axis1;
+AxisRel		ViewRay_Axis2;
 
 VoxelHit	ViewHit;
-AxisRel		ViewHitAxis0;
-AxisRel		ViewHitAxis1;
+AxisRel		ViewHit_Axis0;
+AxisRel		ViewHit_Axis1;
 
 // VoxelClear
 unsigned int			VoxelClear_Progress = 0xFFFFFFFF;
@@ -194,14 +167,17 @@ void	VoxelClear_Clear(ChunkVoxelIndex idx);
 void	VoxelClear_Continue(const ChunkVoxelIndex & other);
 void	VoxelClear_Show(std::stringstream & ss) const;
 
-void ViewUpdateDone();
-void ViewUpdateIntangible(Trans3D change, FrameTime frame_time);
-void ViewUpdatePhysics(VectorF3 accel);
-void ViewUpdateColliding(FrameTime frame_time);
-void ViewRayUpdate();
-void ViewRayInfo();
-void ViewRayDo();
-void ViewUpdateAround(Trans3D change, FrameTime frame_time);
+void	ViewUpdate_Done();
+void	ViewUpdate_Intangible(Trans3D change, FrameTime frame_time);
+void	ViewUpdate_Physics(VectorF3 accel);
+void	ViewUpdate_Colliding(FrameTime frame_time);
+
+void	ViewRay_Update();
+void	ViewRay_Hit();
+void	ViewRay_HitDo();
+void	ViewRay_Show();
+
+void	ViewUpdate(Trans3D change, FrameTime frame_time);
 
 
 

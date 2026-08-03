@@ -1,27 +1,24 @@
-#ifndef  INVENTORY_SLOT_HPP
-# define INVENTORY_SLOT_HPP
+#ifndef  ITEM_SLOT_UI_HPP
+# define ITEM_SLOT_UI_HPP
 
-# include "Control/General/Manager.hpp"
-# include "ControlsInclude.hpp"
-
-//# include "PolyHedra/Object.hpp"
-# include "NewPolyHedraUI.hpp"
+# include "Control/Form.hpp"
 # include "Text/Object.hpp"
+
+# include "NewPolyHedraUI.hpp"
 
 struct ItemBase;
 
-struct InventorySlot : public UI::Control::Base
+struct ItemSlotUI : public UI::Control::Base
 {
 	static ItemBase *	StaticItem;
 	static DisplaySize	WindowSize;
 
 	ItemBase **		Item; // ItemContainer holds Item Pointers, this is a Pointer to that
-	//PolyHedraObject	Object;
 	NewPolyHedra::UserInterface::Object		ItemObject;
 	UI::Text::Object						TextObject; // Text is not in front of ItemObject
 
-	~InventorySlot();
-	InventorySlot();
+	~ItemSlotUI();
+	ItemSlotUI();
 
 	// should spin
 	// all spin syncronized

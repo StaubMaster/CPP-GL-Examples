@@ -1,5 +1,5 @@
-#ifndef  SHADERS_HPP
-# define SHADERS_HPP
+#ifndef  SHADER_LAYOUTS_HPP
+# define SHADER_LAYOUTS_HPP
 
 # include "Graphics/Uniform/General/Layout.hpp"
 # include "Graphics/Uniform/_Include.hpp"

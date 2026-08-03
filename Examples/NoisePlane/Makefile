@@ -46,12 +46,12 @@ FILES := \
 	Item/ItemTool.cpp \
 	Item/ItemContainer.cpp \
 \
-	Menus/Item/InventorySlot.cpp \
-	Menus/Item/Inventory.cpp \
-	Menus/Item/HotBar.cpp \
+	Menus/Item/ItemSlotUI.cpp \
+	Menus/Item/ItemContainerUI.cpp \
 \
 	ContextNoisePlane.cpp \
-	Shaders.cpp \
+	ShaderLayouts.cpp \
+	MultiformLayouts.cpp \
 	NewPolyHedraUI.cpp \
 	new.cpp \
 	main.cpp \
