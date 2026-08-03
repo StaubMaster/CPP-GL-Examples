@@ -11,7 +11,12 @@
 struct ItemContainerUI : public UI::Control::Form
 {
 	ItemContainer *			Container;
-	Array2D<ItemSlotUI>	Slots;
+	Array2D<ItemSlotUI>		Slots;
+
+	/* Slot Indicator ?
+		use Index to Indicate any Slot
+		use None to hide Indicator
+	*/
 
 	~ItemContainerUI();
 	ItemContainerUI();

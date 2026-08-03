@@ -283,6 +283,15 @@ void ContextNoisePlane::VoxelClear_Show(std::stringstream & ss) const
 
 
 
+/*static void VectorComponents(const VectorF3 & vec, const VectorF3 & other, VectorF3 & parallel, VectorF3 & perpendicular)
+{
+	float dot = vec.dot(other);
+	parallel = (vec / vec.length2()) * dot;
+	perpendicular = other - parallel;
+}*/
+
+
+
 void ContextNoisePlane::ViewUpdate_Done()
 {
 	if (View_Distance == 0.0f)
@@ -313,19 +322,13 @@ void ContextNoisePlane::ViewUpdate_Intangible(Trans3D change, FrameTime frame_ti
 }
 void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 {
-	//VectorF3 accel = change;
-	//VectorF3 decel;
-
-	// Physics stuff
-	float jump = 0.0f;
-	if (ViewEntity_CollisionSide.PrevY && change.Y > 0.0f) { jump = 15.0f; } // jumping
-	change.Y = 0.0f;
-
 	if (ViewEntity_CollisionSide.PrevY)
 	{
-		// Acceleration should not lead to doing above Speed limit
-		// Acceleration from other sources should not be limited
-		// should this only consider Horizontal Movement ?
+		if (change.Y > 0.0f)
+		{
+			ViewEntity.Vel.Y += 16.0f;
+		}
+		change.Y = 0.0f;
 
 		VectorF3 flat(ViewEntity.Vel.X, 0.0f, ViewEntity.Vel.Z);
 
@@ -341,70 +344,37 @@ void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 				limit = ViewEntity_MoveLimitSlow;
 			}
 		}
-		std::cout << "limit: " << limit << '\n';
+		(void)limit;
 
-		/*
-			vel
-				+ accel
-				- decel
+		/* accel and decel
+			accel:
+				should be change
+				so it moves in the direction that is wanted
+			decel:
+				should slow you down
+				when turing
+				it currently slows you down based on how fast you turn
+				so if you turn 90 degreees, your speed goes to 0
+				this feels terrible
+			the current speed should be redirected towards change
 
-			accel = chang * MoveChange
-			decel = vel * MoveChange
-
-			how to make sure accel dosent go above limit ?
-				diff = limit - speed
-				if diff < 0
-					diff = 0
-				if diff > change
-					diff = change
-				accel = diff
+			just add change to speed and limit ?
+			this feels floaty
 		*/
 
-		VectorF3 accel;
-		VectorF3 decel;
+		//VectorF3 accel;
+		//VectorF3 decel;
 
-		/*float speed = flat.length();
-		{
-			float diff = limit - speed;
-			if (diff < 0.0f)
-			{
-				diff = 0.0f;
-			}
-			if (diff > ViewEntity_MoveChange)
-			{
-				diff = ViewEntity_MoveChange;
-			}
-			accel = change * diff;
-		}
-		{
-			float diff = speed;
-			if (diff < 0.0f)
-			{
-				diff = 0.0f;
-			}
-			if (diff > ViewEntity_MoveChange)
-			{
-				diff = ViewEntity_MoveChange;
-			}
-			decel = flat.normalize() * diff;
-		}
-		ViewEntity.Vel = ViewEntity.Vel + accel - decel;*/
-
-		/* dot
-			take component of vel that goes in same direction as change
-			the part that goes in the same direciton is speed
-			the part that goes in the other direction is slowed down
-		*/
-		{
+		/*{
 			float flat_len2 = flat.length2();
 			if (flat_len2 != 0.0f)
 			{
 				float len2 = change.length2();
 				if (len2 != 0.0f)
 				{
-					float dot = VectorF3::dot(flat, change);
-					accel = (change / len2) * dot;
-					decel = flat - accel;
+					float dot = flat.dot(change);
+					accel = change;
+					decel = flat - (change / len2) * dot;
 				}
 				else
 				{
@@ -415,38 +385,55 @@ void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 			{
 				accel = change;
 			}
-
-			accel = accel.normalize() * ViewEntity_MoveChange;
-			decel = decel.normalize() * ViewEntity_MoveChange;
-
-			decel = VectorF3();
-		}
-		ViewEntity.Vel = ViewEntity.Vel + accel - decel;
-
-		/*{
-			float dot = VectorF3::dot(decel, accel);
-			//if (dot < 0.0f)
-			//if (dot != 0.0f)
-			if (accel.length2() != 0.0f)
-			{
-				decel = decel - (accel * (dot / accel.length2()));
-			}
-			else
-			{
-				decel = ViewEntity.Vel;
-			}
 		}*/
 
-		//float friction_force = PhysicsContext_Surface.FrictionStaticForce(1.0f, PhysicsContext_Gravity.Acceleration);
-		//accel = PhysicsContext_Surface.FrictionCounterForce(accel * 1.0f, friction_force) / 1.0f;
-		//decel = PhysicsContext_Surface.FrictionCounterForce(decel * 1.0f, friction_force) / 1.0f;
+		/*{
+			float accel_speed = ViewEntity_MoveChange;
+			float decel_speed = ViewEntity_MoveChange * 8.0f;
+			float flat_speed = flat.length();
+			{
+				float diff = limit - flat_speed;
+				if (diff < 0.0f)
+				{
+					diff = 0.0f;
+				}
+				if (diff > accel_speed)
+				{
+					diff = accel_speed;
+				}
+				accel = accel.normalize() * diff;
+			}
+			{
+				float diff = flat_speed;
+				if (diff < 0.0f)
+				{
+					diff = 0.0f;
+				}
+				if (diff > decel_speed)
+				{
+					diff = decel_speed;
+				}
+				decel = decel.normalize() * diff;
+			}
+			// this feels terrible
+		}*/
 
-		//PhysicsContext_Surface.FrictionCoefficient = 0.2f;
-		//accel = -PhysicsContext_Surface.FlatFrictionForce(accel, 1.0f, PhysicsContext_Gravity.Acceleration);
-		//decel = -PhysicsContext_Surface.FlatFrictionForce(decel, 1.0f, PhysicsContext_Gravity.Acceleration);
+		//ViewEntity.Vel = ViewEntity.Vel + accel - decel;
 
-		//accel = accel;
-		//decel = decel;
+		float flat_speed = flat.length();
+		float change_speed = ViewEntity_MoveChange;
+		float diff_speed = limit - flat_speed;
+		if (diff_speed < 0.0f)
+		{
+			diff_speed = 0.0f;
+		}
+		if (diff_speed > change_speed)
+		{
+			diff_speed = change_speed;
+		}
+		change = change.normalize() * diff_speed;
+
+		ViewEntity.Vel += change;
 	}
 	else
 	{
@@ -455,13 +442,9 @@ void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 		change *= 0.1f;
 	}
 
-	if (ViewEntity_CollisionSide.PrevY) { change.Y = jump; }
-
 	ViewEntity.Vel = ViewEntity.Vel
 		- PhysicsContext_Fluid.Drag(ViewEntity.Vel, 1.0f, 1.0f)
 		+ PhysicsContext_Gravity.Vector()
-		//+ accel
-		//- decel
 	;
 }
 void ContextNoisePlane::ViewUpdate_Colliding(FrameTime frame_time)

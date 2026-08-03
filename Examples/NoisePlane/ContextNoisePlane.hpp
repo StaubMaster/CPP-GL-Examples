@@ -169,7 +169,7 @@ void	VoxelClear_Show(std::stringstream & ss) const;
 
 void	ViewUpdate_Done();
 void	ViewUpdate_Intangible(Trans3D change, FrameTime frame_time);
-void	ViewUpdate_Physics(VectorF3 accel);
+void	ViewUpdate_Physics(VectorF3 change);
 void	ViewUpdate_Colliding(FrameTime frame_time);
 
 void	ViewRay_Update();
