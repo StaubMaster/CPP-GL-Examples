@@ -10,6 +10,10 @@ UserInterfaceMenu0::UserInterfaceMenu0()
 	, QuitButton()
 	, ReButton()
 	, BackButton()
+	, Menu1Button()
+	, Menu2Button()
+	, Menu3Button()
+	, TestScrollButton()
 {
 	//float x = 0.0f;
 	float y = 0.0f;
@@ -37,6 +41,13 @@ UserInterfaceMenu0::UserInterfaceMenu0()
 	BackButton.ClickFunc.Assign(this, &UserInterfaceMenu0::BackFunc);
 	y = BackButton.Anchor.Y.GetMinSize();
 
+	ChildInsert(TitleText);
+	ChildInsert(QuitButton);
+	ChildInsert(ReButton);
+	ChildInsert(BackButton);
+
+
+
 	Menu1Button.Anchor.X.AnchorBoth(0, 0);
 	Menu1Button.Anchor.Y.AnchorMin(y);
 	Menu1Button.SetText("Menu1");
@@ -52,16 +63,15 @@ UserInterfaceMenu0::UserInterfaceMenu0()
 	Menu3Button.SetText("Menu3");
 	y = Menu3Button.Anchor.Y.GetMinSize();
 
-
-
-	ChildInsert(TitleText);
-	ChildInsert(QuitButton);
-	ChildInsert(ReButton);
-	ChildInsert(BackButton);
+	TestScrollButton.Anchor.X.AnchorBoth(0, 0);
+	TestScrollButton.Anchor.Y.AnchorMin(y);
+	TestScrollButton.SetText("TestScroll");
+	y = TestScrollButton.Anchor.Y.GetMinSize();
 
 	ChildInsert(Menu1Button);
 	ChildInsert(Menu2Button);
 	ChildInsert(Menu3Button);
+	ChildInsert(TestScrollButton);
 }
 
 //#include "Selector/new.hpp"

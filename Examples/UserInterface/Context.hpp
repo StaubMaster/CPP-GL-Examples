@@ -6,6 +6,7 @@
 # include "Menu1.hpp"
 # include "Menu2.hpp"
 # include "Menu3.hpp"
+# include "TestScroll.hpp"
 
 # include "UIManager.hpp"
 
@@ -17,6 +18,7 @@ struct UserInterfaceContext : public ContextBase
 	UserInterfaceMenu1		Menu1;
 	UserInterfaceMenu2		Menu2;
 	UserInterfaceMenu3		Menu3;
+	::TestScroll	TestScroll;
 
 	~UserInterfaceContext();
 	UserInterfaceContext();
@@ -25,6 +27,7 @@ struct UserInterfaceContext : public ContextBase
 	void	Menu1Toggle(ClickArgs args);
 	void	Menu2Toggle(ClickArgs args);
 	void	Menu3Toggle(ClickArgs args);
+	void	TestScrollToggle(ClickArgs args);
 	
 	void	Init() override;
 	void	Free() override;

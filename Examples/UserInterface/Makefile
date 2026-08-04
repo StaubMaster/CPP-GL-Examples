@@ -10,6 +10,7 @@ FILES := \
 	Menu1.cpp \
 	Menu2.cpp \
 	Menu3.cpp \
+	TestScroll.cpp \
 \
 	new.cpp \
 	main.cpp \

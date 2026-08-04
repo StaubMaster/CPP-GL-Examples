@@ -45,6 +45,7 @@ class Slider : public Base
 	void		SetValueY(float val);
 
 	private:
+	public:
 	void	PutSliderNub();
 	void	ClampValue();
 

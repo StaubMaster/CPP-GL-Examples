@@ -151,6 +151,7 @@ class Base
 	protected:
 	bool		ObjectBoxNeedAssign;
 	protected:
+	public:
 	BoxF2		DisplayBox;
 	BoxF2		ContainerBox;
 

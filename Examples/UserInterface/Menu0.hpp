@@ -13,6 +13,7 @@ struct UserInterfaceMenu0 : public UI::Control::Form
 	UI::Control::Button		Menu1Button;
 	UI::Control::Button		Menu2Button;
 	UI::Control::Button		Menu3Button;
+	UI::Control::Button		TestScrollButton;
 
 	~UserInterfaceMenu0();
 	UserInterfaceMenu0();
