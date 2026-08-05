@@ -32,45 +32,45 @@ bool UI::Control::CheckBox::IsChecked()
 void UI::Control::CheckBox::Toggle()
 {
 	Checked = !Checked;
-	ObjectColorNeedAssign = true;
+	ObjectNewColor = true;
 }
 void UI::Control::CheckBox::Check(bool state)
 {
 	Checked = state;
-	ObjectColorNeedAssign = true;
+	ObjectNewColor = true;
 }
 
 
 
-void UI::Control::CheckBox::RelayAssignObjectColor()
+void UI::Control::CheckBox::RelayObjectAssignColor()
 {
 	if (Manager -> Hovering != this)
 	{
 		if (!Checked)
 		{
-			ControlObject.Color() = ColorDefault;
+			Object.Color() = ColorDefault;
 		}
 		else
 		{
-			ControlObject.Color() = ColorChecked;
+			Object.Color() = ColorChecked;
 		}
 	}
 	else
 	{
 		if (!Checked)
 		{
-			ControlObject.Color() = ColorHover;
+			Object.Color() = ColorHover;
 		}
 		else
 		{
-			ControlObject.Color() = ColorCheckedHover;
+			Object.Color() = ColorCheckedHover;
 		}
 	}
 }
 void UI::Control::CheckBox::RelayHover(HoverArgs args)
 {
 	(void)args;
-	ObjectColorNeedAssign = true;
+	ObjectNewColor = true;
 }
 
 
@@ -83,7 +83,7 @@ void UI::Control::CheckBox::RelayClick(ClickArgs params)
 	if (params.Action == Action::Press)
 	{
 		Checked = !Checked;
-		ObjectColorNeedAssign = true;
+		ObjectNewColor = true;
 		ClickFunc.TryInvoke(params);
 	}
 }

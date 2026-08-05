@@ -31,9 +31,9 @@ void UI::Control::Label::PutCharactersEntrys()
 	if (TextObject.Is())
 	{
 		TextObject.Text() = Text;
-		TextObject.TextPosition() = ContainerBox.Min;
+		TextObject.TextPosition() = BoxContent.Min;
 		TextObject.AlignTopLeft();
-		TextObject.Bound() = ContainerBox;
+		TextObject.Bound() = BoxContent;
 	}
 }
 
@@ -51,7 +51,7 @@ void UI::Control::Label::SetText(std::string text)
 
 
 
-void UI::Control::Label::RelayUpdateBox()
+void UI::Control::Label::RelayBoxUpdate()
 {
 	if (TextObject.Is())
 	{
@@ -59,14 +59,14 @@ void UI::Control::Label::RelayUpdateBox()
 	}
 }
 
-void UI::Control::Label::RelayInsertObject()
+void UI::Control::Label::RelayObjectInsert()
 {
 	if (!TextObject.Is() && Manager != NULL)
 	{
 		TextObject.Create();
 	}
 }
-void UI::Control::Label::RelayRemoveObject()
+void UI::Control::Label::RelayObjectRemove()
 {
 	if (TextObject.Is() || Manager == NULL)
 	{

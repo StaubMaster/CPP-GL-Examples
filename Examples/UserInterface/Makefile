@@ -12,6 +12,8 @@ FILES := \
 	Menu3.cpp \
 	TestScroll.cpp \
 \
+	Control/ScrollBox.cpp \
+\
 	new.cpp \
 	main.cpp \
 

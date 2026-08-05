@@ -19,25 +19,25 @@ UI::Control::Graph::Graph()
 
 #include "../Graph/ObjectData.hpp"
 
-void UI::Control::Graph::RelayUpdateBox()
+void UI::Control::Graph::RelayBoxUpdate()
 {
 	if (GraphObject.Is())
 	{
-		GraphObject.Box() = ContainerBox;
+		GraphObject.Box() = BoxContent;
 		GraphObject.Data -> Center = Center;
 		GraphObject.Data -> Magnitede = Magnitude;
 		GraphObject.Data -> Col = ColorF4(0, 1, 0);
 		GraphObject.Data -> Values = &Values;
 	}
 }
-void UI::Control::Graph::RelayInsertObject()
+void UI::Control::Graph::RelayObjectInsert()
 {
 	if (!GraphObject.Is() && Manager != nullptr)
 	{
 		GraphObject.Create();
 	}
 }
-void UI::Control::Graph::RelayRemoveObject()
+void UI::Control::Graph::RelayObjectRemove()
 {
 	if (GraphObject.Is() || Manager == nullptr)
 	{

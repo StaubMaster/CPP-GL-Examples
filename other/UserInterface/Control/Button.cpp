@@ -34,8 +34,8 @@ void UI::Control::Button::PutCharactersEntrys()
 		TextObject.TextAlignmentY() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentX() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentY() = Text::Alignment::Mid;
-		TextObject.TextPosition() = ContainerBox.Center();
-		TextObject.Bound() = ContainerBox;
+		TextObject.TextPosition() = BoxContent.Center();
+		TextObject.Bound() = BoxContent;
 	}
 }
 
@@ -53,7 +53,7 @@ void UI::Control::Button::SetText(std::string text)
 
 
 
-void UI::Control::Button::RelayUpdateBox()
+void UI::Control::Button::RelayBoxUpdate()
 {
 	if (TextObject.Is())
 	{
@@ -61,14 +61,14 @@ void UI::Control::Button::RelayUpdateBox()
 	}
 }
 
-void UI::Control::Button::RelayInsertObject()
+void UI::Control::Button::RelayObjectInsert()
 {
 	if (!TextObject.Is() && Manager != nullptr)
 	{
 		TextObject.Create();
 	}
 }
-void UI::Control::Button::RelayRemoveObject()
+void UI::Control::Button::RelayObjectRemove()
 {
 	if (TextObject.Is() || Manager == nullptr)
 	{

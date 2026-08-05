@@ -16,7 +16,7 @@ namespace Control
 class Slider : public Base
 {
 	private:
-	Object		SliderObject;
+	Control::Object		SliderObject;
 	// Area Slider naturally creates a "dot"
 	// make a Cross instead ?
 	// meaning different Slider Objects for Vert and Hori ?
@@ -45,7 +45,7 @@ class Slider : public Base
 	void		SetValueY(float val);
 
 	private:
-	public:
+	public: // temp
 	void	PutSliderNub();
 	void	ClampValue();
 
@@ -62,9 +62,9 @@ class Slider : public Base
 	~Slider();
 
 	public:
-	void	RelayUpdateBox() override;
-	void	RelayInsertObject() override;
-	void	RelayRemoveObject() override;
+	void	RelayBoxUpdate() override;
+	void	RelayObjectInsert() override;
+	void	RelayObjectRemove() override;
 
 	void	RelayClick(ClickArgs params) override;
 	void	RelayCursorDrag(DragArgs params) override;

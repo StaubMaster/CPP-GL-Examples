@@ -25,14 +25,14 @@ UI::Control::Form::Form()
 
 UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 mouse) const
 {
-	BoxF2 BoarderBox;
-	BoarderBox.Min = DisplayBox.Min + 10.0f;
-	BoarderBox.Max = DisplayBox.Max - 10.0f;
+	BoxF2 BoxBoarder;
+	BoxBoarder.Min = BoxDisplay.Min + 10.0f;
+	BoxBoarder.Max = BoxDisplay.Max - 10.0f;
 
-	BoxF2 MinX_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(BoarderBox.Min.X, DisplayBox.Max.Y));
-	BoxF2 MaxX_Box(VectorF2(BoarderBox.Max.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
-	BoxF2 MinY_Box(VectorF2(DisplayBox.Min.X, DisplayBox.Min.Y), VectorF2(DisplayBox.Max.X, BoarderBox.Min.Y));
-	BoxF2 MaxY_Box(VectorF2(DisplayBox.Min.X, BoarderBox.Max.Y), VectorF2(DisplayBox.Max.X, DisplayBox.Max.Y));
+	BoxF2 MinX_Box(VectorF2(BoxDisplay.Min.X, BoxDisplay.Min.Y), VectorF2(BoxBoarder.Min.X, BoxDisplay.Max.Y));
+	BoxF2 MaxX_Box(VectorF2(BoxBoarder.Max.X, BoxDisplay.Min.Y), VectorF2(BoxDisplay.Max.X, BoxDisplay.Max.Y));
+	BoxF2 MinY_Box(VectorF2(BoxDisplay.Min.X, BoxDisplay.Min.Y), VectorF2(BoxDisplay.Max.X, BoxBoarder.Min.Y));
+	BoxF2 MaxY_Box(VectorF2(BoxDisplay.Min.X, BoxBoarder.Max.Y), VectorF2(BoxDisplay.Max.X, BoxDisplay.Max.Y));
 
 	bool MinX_Hovering = MinX_Box.IntersectInclusive(mouse).All(true);
 	bool MinY_Hovering = MinY_Box.IntersectInclusive(mouse).All(true);
@@ -99,8 +99,8 @@ void UI::Control::Form::RelayCursorDrag(DragArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ChangingBoxRel.Min = args.Position.Buffer.Corner - DisplayBox.Min;
-		ChangingBoxRel.Max = args.Position.Buffer.Corner - DisplayBox.Max;
+		ChangingBoxRel.Min = args.Position.Buffer.Corner - BoxDisplay.Min;
+		ChangingBoxRel.Max = args.Position.Buffer.Corner - BoxDisplay.Max;
 
 		/* Resize area
 			in vscode, the cursor needs to be a bit inside of the window to resize
@@ -120,7 +120,7 @@ void UI::Control::Form::RelayCursorDrag(DragArgs args)
 		if (ChangingBoxType != EBoxChangeType::None)
 		{
 			const VectorF2 & mouse = args.Position.Buffer.Corner;
-			BoxF2 box = DisplayBox;
+			BoxF2 box = BoxDisplay;
 			if (ChangingBoxType == EBoxChangeType::Move)
 			{
 				box.Min = mouse - ChangingBoxRel.Min;

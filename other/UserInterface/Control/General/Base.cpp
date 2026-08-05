@@ -4,10 +4,22 @@
 #include "User/MouseArgs.hpp"
 
 
-
-unsigned char UI::Control::Base::Layer() const
+void UI::Control::Base::ChangeManager(UI::Manager * manager)
 {
-	unsigned char layer = 0;
+	Manager = manager;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> ChangeManager(manager);
+	}
+}
+void UI::Control::Base::ChangeManager(UI::Manager & manager)
+{
+	ChangeManager(&manager);
+}
+
+unsigned int UI::Control::Base::Layer() const
+{
+	unsigned int layer = 0;
 	const Base * control = this;
 	while (control -> Parent != nullptr)
 	{
@@ -17,6 +29,43 @@ unsigned char UI::Control::Base::Layer() const
 	return layer;
 }
 
+void UI::Control::Base::ChildInsert(Base & control)
+{
+	Children.Insert(&control);
+	control.Parent = this;
+	control.ChangeManager(Manager);
+	control.ObjectChangeRequest();
+	control.BoxUpdateRequest();
+}
+void UI::Control::Base::ChildInsert(Base * control)
+{
+	if (control != nullptr)
+	{
+		ChildInsert(*control);
+	}
+}
+
+void UI::Control::Base::ChildRemove(Base & control)
+{
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		if (Children[i] == &control)
+		{
+			Children.RemoveAt(i);
+			i--;
+		}
+	}
+}
+void UI::Control::Base::ChildRemove(Base * control)
+{
+	if (control != nullptr)
+	{
+		ChildRemove(*control);
+	}
+}
+
+
+
 bool UI::Control::Base::IsEnabled() const
 {
 	return _Enabled;
@@ -24,12 +73,12 @@ bool UI::Control::Base::IsEnabled() const
 void UI::Control::Base::MakeEnabled()
 {
 	_Enabled = true;
-	ObjectColorNeedAssign = true;
+	ObjectNewColor = true;
 }
 void UI::Control::Base::MakeDisabled()
 {
 	_Enabled = false;
-	ObjectColorNeedAssign = true;
+	ObjectNewColor = true;
 }
 
 bool UI::Control::Base::IsThisVisible() const
@@ -39,12 +88,12 @@ bool UI::Control::Base::IsThisVisible() const
 void UI::Control::Base::Show()
 {
 	_Visible = true;
-	DrawableWantUpdate();
+	ObjectChangeRequest();
 }
 void UI::Control::Base::Hide()
 {
 	_Visible = false;
-	DrawableWantUpdate();
+	ObjectChangeRequest();
 }
 
 bool UI::Control::Base::IsTransparent() const
@@ -58,12 +107,12 @@ bool UI::Control::Base::IsOpaque() const
 void UI::Control::Base::MakeTransparent()
 {
 	_Opaque = false;
-	DrawableWantUpdate();
+	ObjectChangeRequest();
 }
 void UI::Control::Base::MakeOpaque()
 {
 	_Opaque = true;
-	DrawableWantUpdate();
+	ObjectChangeRequest();
 }
 
 bool UI::Control::Base::IsVisible() const
@@ -92,91 +141,39 @@ bool UI::Control::Base::IsInteractible() const
 
 
 
-void UI::Control::Base::DrawableWantUpdate()
+void UI::Control::Base::BoxUpdate()
 {
-	DrawableNeedUpdate = true;
+	if (Parent != nullptr)
+	{
+		BoxDisplay = Anchor.Calculate(Parent -> BoxContent);
+		BoxContent.Min = BoxDisplay.Min + AnchorBoarder.Min + AnchorPadding.Min;
+		BoxContent.Max = BoxDisplay.Max - AnchorBoarder.Max - AnchorPadding.Max;
+		BoxUpdateIsRequested = false;
+		ObjectNewBox = true;
+	}
+	RelayBoxUpdate();
+}
+
+void UI::Control::Base::BoxUpdateRequest()
+{
+	BoxUpdateIsRequested = true;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> DrawableWantUpdate();
+		Children[i] -> BoxUpdateRequest();
+	}
+	// do this in BoxUpdate ?
+}
+void UI::Control::Base::BoxUpdateResolve()
+{
+	if (BoxUpdateIsRequested)
+	{
+		BoxUpdate();
 	}
 }
-void UI::Control::Base::BoxWantUpdate()
-{
-	BoxNeedUpdate = true;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> BoxWantUpdate();
-	}
-}
+
+void UI::Control::Base::RelayBoxUpdate() { }
 
 
-
-UI::Control::Base::~Base()
-{
-	/*for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		delete Children[i];
-	}*/
-}
-UI::Control::Base::Base()
-	: Manager(nullptr)
-	, ControlObject()
-	, Parent(nullptr)
-	, Children()
-	, Depth(0.0f)
-	, _Enabled(true)
-	, _Visible(true)
-	, _Opaque(true)
-	, Anchor(
-			AnchorSize,
-			AnchorDist,
-			AnchorMargin,
-			AnchorBoarder,
-			AnchorPadding,
-			AnchorNormal
-		)
-	, AutoSizerXType(EAutoSizerType::None)
-	, AutoSizerYType(EAutoSizerType::None)
-{
-	AnchorSize = VectorF2(0, 0);
-	AnchorNormal = VectorF2(0, 0);
-	AnchorDist = BoxF2(VectorF2(0, 0), VectorF2(0, 0));
-
-	float margin = 5;
-	float boarder = 2;
-	float padding = 5;
-
-	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
-	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));
-	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
-}
-
-
-
-void UI::Control::Base::ChildInsert(Base & control)
-{
-	Children.Insert(&control);
-	control.Parent = this;
-	control.ChangeManager(Manager);
-	control.DrawableWantUpdate();
-	control.BoxWantUpdate();
-}
-void UI::Control::Base::ChildInsert(Base * control)
-{
-	ChildInsert(*control);
-}
-void UI::Control::Base::ChangeManager(UI::Manager * manager)
-{
-	Manager = manager;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> ChangeManager(manager);
-	}
-}
-void UI::Control::Base::ChangeManager(UI::Manager & manager)
-{
-	ChangeManager(&manager);
-}
 
 void UI::Control::Base::UpdateAutoSize()
 {
@@ -210,50 +207,165 @@ void UI::Control::Base::UpdateAutoSizeGridY()
 		y = control.Anchor.Y.GetMinSize();
 	}
 	Anchor.Y.SetSize(y + AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
-	BoxWantUpdate();
+	BoxUpdateRequest();
 }
 
 
 
-void UI::Control::Base::Update()
+void UI::Control::Base::ObjectChangeRequest()
 {
-	if (DrawableNeedUpdate)
+	ObjectChangeIsRequested = true;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> ObjectChangeRequest();
+	}
+}
+void UI::Control::Base::ObjectChangeResolve()
+{
+	if (ObjectChangeIsRequested)
 	{
 		if (IsDrawable())
-		{ InsertObject(); }
+		{
+			ObjectInsert();
+		}
 		else
-		{ RemoveObject(); }
-		DrawableNeedUpdate = false;
+		{
+			ObjectRemove();
+		}
+		ObjectChangeIsRequested = false;
 	}
+}
+
+void UI::Control::Base::ObjectInsert()
+{
+	if (!Object.Is() && Manager != nullptr)
+	{
+		Object.Create();
+		Object.Layer() = Depth;
+
+		BoxUpdateIsRequested = true;
+		ObjectNewBox = true; // this is set then Box Request is resolved
+		ObjectNewColor = true;
+	}
+	RelayObjectInsert();
+}
+void UI::Control::Base::ObjectRemove()
+{
+	if (Object.Is() || Manager == nullptr)
+	{
+		if (Object.Is())
+		{
+			Object.Hide();
+		}
+		Object.Delete();
+	}
+	RelayObjectRemove();
+}
+void UI::Control::Base::ObjectAssignBox()
+{
+	Object.Box() = BoxDisplay;
+	RelayObjectAssignBox();
+}
+void UI::Control::Base::ObjectAssignColor()
+{
+	if (Manager -> Hovering != this)
+	{
+		Object.Color() = ColorDefault;
+	}
+	else
+	{
+		Object.Color() = ColorHover;
+	}
+	RelayObjectAssignColor();
+}
+
+void UI::Control::Base::ObjectAssign()
+{
+	if (Object.Is())
+	{
+		if (ObjectNewBox)
+		{
+			ObjectAssignBox();
+			ObjectNewBox = false;
+		}
+		if (ObjectNewColor)
+		{
+			ObjectAssignColor();
+			ObjectNewColor = false;
+		}
+	}
+}
+
+void UI::Control::Base::RelayObjectInsert() { }
+void UI::Control::Base::RelayObjectRemove() { }
+void UI::Control::Base::RelayObjectAssignBox() { }
+void UI::Control::Base::RelayObjectAssignColor() { }
+
+
+
+UI::Control::Base::~Base()
+{
+	/*for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		delete Children[i];
+	}*/
+}
+UI::Control::Base::Base()
+	: Manager(nullptr)
+	, Parent(nullptr)
+	, Children()
+	, Depth(0.0f)
+	, _Enabled(true)
+	, _Visible(true)
+	, _Opaque(true)
+	, Anchor(
+			AnchorSize,
+			AnchorDist,
+			AnchorMargin,
+			AnchorBoarder,
+			AnchorPadding,
+			AnchorNormal
+		)
+	, BoxDisplay()
+	, BoxContent()
+	, BoxUpdateIsRequested(false)
+	, AutoSizerXType(EAutoSizerType::None)
+	, AutoSizerYType(EAutoSizerType::None)
+	, Object()
+	, ObjectNewBox(false)
+	, ObjectNewColor(false)
+{
+	AnchorSize = VectorF2(0, 0);
+	AnchorNormal = VectorF2(0, 0);
+	AnchorDist = BoxF2(VectorF2(0, 0), VectorF2(0, 0));
+
+	float margin = 5;
+	float boarder = 2;
+	float padding = 5;
+
+	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
+	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));
+	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
+}
+
+void UI::Control::Base::Update()
+{
+	ObjectChangeResolve();
 
 	if (IsVisible())
 	{
-		if (BoxNeedUpdate)
-		{
-			UpdateBox();
-			BoxNeedUpdate = false;
-		}
+		BoxUpdateResolve();
 	}
 
-	if (ControlObject.Is())
-	{
-		if (ObjectBoxNeedAssign)
-		{
-			AssignObjectBox();
-			ObjectBoxNeedAssign = false;
-		}
-		if (ObjectColorNeedAssign)
-		{
-			AssignObjectColor();
-			ObjectColorNeedAssign = false;
-		}
-	}
+	ObjectAssign();
 
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> Update();
 	}
 }
+
+
 
 void UI::Control::Base::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 {
@@ -264,8 +376,8 @@ void UI::Control::Base::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 		// when resizing, keep other side
 
 		BoxF2 other_box;
-		other_box.Min = (Parent -> ContainerBox.Min) + AnchorMargin.Min;
-		other_box.Max = (Parent -> ContainerBox.Max) - AnchorMargin.Max;
+		other_box.Min = (Parent -> BoxContent.Min) + AnchorMargin.Min;
+		other_box.Max = (Parent -> BoxContent.Max) - AnchorMargin.Max;
 
 		Bool2 limit_min = box.Min <= other_box.Min;
 		Bool2 limit_max = box.Max >= other_box.Max;
@@ -298,70 +410,10 @@ void UI::Control::Base::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 
 		Anchor.X.Anchor = anchor_type_x;
 		Anchor.Y.Anchor = anchor_type_y;
-		Anchor.Calculate(Parent -> ContainerBox, box);
-		BoxWantUpdate();
+		Anchor.Calculate(Parent -> BoxContent, box);
+		BoxUpdateRequest();
 	}
 }
-
-void UI::Control::Base::UpdateBox()
-{
-	if (Parent != nullptr)
-	{
-		DisplayBox = Anchor.Calculate(Parent -> ContainerBox);
-		ContainerBox.Min = DisplayBox.Min + AnchorBoarder.Min + AnchorPadding.Min;
-		ContainerBox.Max = DisplayBox.Max - AnchorBoarder.Max - AnchorPadding.Max;
-		ObjectBoxNeedAssign = true;
-	}
-	RelayUpdateBox();
-}
-void UI::Control::Base::InsertObject()
-{
-	if (!ControlObject.Is() && Manager != nullptr)
-	{
-		ControlObject.Create();
-		ControlObject.Layer() = Depth;
-
-		BoxNeedUpdate = true;
-		ObjectBoxNeedAssign = true;
-		ObjectColorNeedAssign = true;
-	}
-	RelayInsertObject();
-}
-void UI::Control::Base::RemoveObject()
-{
-	if (ControlObject.Is() || Manager == nullptr)
-	{
-		if (ControlObject.Is())
-		{
-			ControlObject.Hide();
-		}
-		ControlObject.Delete();
-	}
-	RelayRemoveObject();
-}
-void UI::Control::Base::AssignObjectBox()
-{
-	ControlObject.Box() = DisplayBox;
-	RelayAssignObjectBox();
-}
-void UI::Control::Base::AssignObjectColor()
-{
-	if (Manager -> Hovering != this)
-	{
-		ControlObject.Color() = ColorDefault;
-	}
-	else
-	{
-		ControlObject.Color() = ColorHover;
-	}
-	RelayAssignObjectColor();
-}
-
-void UI::Control::Base::RelayUpdateBox() { }
-void UI::Control::Base::RelayInsertObject() { }
-void UI::Control::Base::RelayRemoveObject() { }
-void UI::Control::Base::RelayAssignObjectBox() { }
-void UI::Control::Base::RelayAssignObjectColor() { }
 
 
 
@@ -369,9 +421,9 @@ UI::Control::Base * UI::Control::Base::CheckHover(VectorF2 mouse)
 {
 	if (!_Visible) { return nullptr; }
 	if (!_Enabled) { return nullptr; }
-	if (DisplayBox.Intersekt(mouse))
+	if (BoxDisplay.Intersekt(mouse))
 	{
-		// check ContainerBox before checking children ?
+		// check BoxContent before checking children ?
 		Base * control = nullptr;
 		for (unsigned int i = 0; i < Children.Count(); i++)
 		{
@@ -392,16 +444,16 @@ void UI::Control::Base::ChangeHover(HoverArgs args)
 {
 	if (args == HoverArgs::Enter)
 	{
-		if (IsEnabled() && ControlObject.Is())
+		if (IsEnabled() && Object.Is())
 		{
-			ControlObject.Color() = ColorHover;
+			Object.Color() = ColorHover;
 		}
 	}
 	if (args == HoverArgs::Leave)
 	{
-		if (IsEnabled() && ControlObject.Is())
+		if (IsEnabled() && Object.Is())
 		{
-			ControlObject.Color() = ColorDefault;
+			Object.Color() = ColorDefault;
 		}
 	}
 	RelayHover(args);

@@ -78,23 +78,38 @@ class Base
 	protected:
 	UI::Manager *	Manager;
 
-	protected:
-	Object		ControlObject;
+	public:
+	void	ChangeManager(UI::Manager * manager);
+	void	ChangeManager(UI::Manager & manager);
+
+
 
 	protected:
-	Base *								Parent;
-	Container::Binary<Control::Base *>	Children;
+	Base *		Parent;
+
+	public:
+	unsigned int	Layer() const;
+
+	public: // temp
+	Container::Binary<Base *>	Children;
 
 	public:
 	void	ChildInsert(Base & control);
 	void	ChildInsert(Base * control);
-	void	ChangeManager(UI::Manager * manager);
-	void	ChangeManager(UI::Manager & manager);
+	public:
+	void	ChildRemove(Base & control);
+	void	ChildRemove(Base * control);
+
+
+
+	public:
+	bool	Deletable;		//should be deleted when Parent is deleted
+
+
 
 	public:
 	float	Depth; // make this unsigend char. 255 should be more then enough Layers
 	// why so greedy ? just make this a uint32
-	unsigned char	Layer() const;
 
 	protected:
 	bool	_Enabled;
@@ -124,55 +139,38 @@ class Base
 	bool	IsThisInteractible() const;
 	bool	IsInteractible() const;
 
-	private:
-	void	DrawableWantUpdate();
-	protected:
-	bool	DrawableNeedUpdate;
 
-	public:
-	bool	Deletable;		//should be deleted when Parent is deleted
 
 	protected:
-	// DisplayBox needs to change if these change ?
 	VectorF2	AnchorSize;
 	VectorF2	AnchorNormal;
 	BoxF2		AnchorDist;
-	protected:
+	public: //protected:
 	BoxF2		AnchorMargin;
 	BoxF2		AnchorBoarder;
 	BoxF2		AnchorPadding;
+	// ContentOffset ?
 	public:
 	Anchor2D	Anchor;
 
-	protected:
-	void		BoxWantUpdate();
-	public:
-	bool		BoxNeedUpdate;
-	protected:
-	bool		ObjectBoxNeedAssign;
-	protected:
-	public:
-	BoxF2		DisplayBox;
-	BoxF2		ContainerBox;
+
+
+	public: //protected:
+	BoxF2	BoxDisplay;
+	BoxF2	BoxContent;
+
+	public: //private:
+	void	BoxUpdate();
+
+	public: //protected:
+	bool	BoxUpdateIsRequested;
+	public: //private:
+	void	BoxUpdateRequest();
+	private:
+	void	BoxUpdateResolve();
 
 	protected:
-	bool		ObjectColorNeedAssign;
-	public:
-	ColorF4		ColorDefault;
-	//Color		ColorDisabled; // Gray Text
-	ColorF4		ColorHover;
-
-
-
-	public:
-	virtual ~Base();
-	Base();
-
-	Base(const Base & other) = delete;
-	Base & operator=(const Base & other) = delete;
-
-	// UpdateHandler that has referances to these functions
-	// seperate functinos for changing internals vs changing Graphics Object
+	virtual void	RelayBoxUpdate();
 
 
 
@@ -194,8 +192,50 @@ class Base
 
 
 	public:
+	ColorF4		ColorDefault;
+	//Color		ColorDisabled; // Gray Text
+	ColorF4		ColorHover;
+
+
+
+	protected:
+	Control::Object		Object;
+	bool				ObjectNewBox;
+	bool				ObjectNewColor;
+
+	private:
+	bool	ObjectChangeIsRequested;
+	void	ObjectChangeRequest();
+	void	ObjectChangeResolve(); // combine this with ObjectAssign() ?
+
+	private:
+	void	ObjectInsert();
+	void	ObjectRemove();
+	void	ObjectAssign(); // combine this with ObjectChangeResolve() ?
+	void	ObjectAssignBox();
+	void	ObjectAssignColor();
+
+	protected:
+	virtual void	RelayObjectInsert();
+	virtual void	RelayObjectRemove();
+	virtual void	RelayObjectAssignBox();
+	virtual void	RelayObjectAssignColor();
+
+
+
+	public:
+	virtual ~Base();
+	Base();
+
+	Base(const Base & other) = delete;
+	Base & operator=(const Base & other) = delete;
+
+	public:
 	void	Update();
 
+
+
+	// Changing is only done with Forms. move this there
 	protected:
 	enum class EBoxChangeType : unsigned char
 	{
@@ -210,22 +250,8 @@ class Base
 		ResizeMaxMin,
 		ResizeMaxMax,
 	};
+	// this is here to have access to Box
 	void	ChangeAnchorBox(BoxF2 box, EBoxChangeType type);
-
-	private:
-	void	UpdateBox();
-	void	InsertObject();
-	void	RemoveObject();
-	void	AssignObjectBox();
-	void	AssignObjectColor();
-
-	// Relay Auto
-	protected:
-	virtual void	RelayUpdateBox();
-	virtual void	RelayInsertObject();
-	virtual void	RelayRemoveObject();
-	virtual void	RelayAssignObjectBox();
-	virtual void	RelayAssignObjectColor();
 
 	public:
 	enum class HoverArgs
@@ -241,6 +267,9 @@ class Base
 	void	ChangeHover(HoverArgs args);
 
 	// Relay User
+	// should take Pointer to Invoker ?
+	//   (const void *) or (const Control::Base *)
+	//   should these even be const ?
 	virtual void	RelayHover(HoverArgs args);
 	virtual void	RelayClick(ClickArgs args);
 	virtual void	RelayScroll(ScrollArgs args);

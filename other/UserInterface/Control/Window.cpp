@@ -20,7 +20,7 @@ UI::Control::Window::~Window()
 
 void UI::Control::Window::UpdateWindowSize(VectorF2 size)
 {
-	DisplayBox = BoxF2(VectorF2(), size);
-	ContainerBox = DisplayBox;
-	BoxWantUpdate();
+	BoxDisplay = BoxF2(VectorF2(), size);
+	BoxContent = BoxDisplay;
+	BoxUpdateRequest();
 }

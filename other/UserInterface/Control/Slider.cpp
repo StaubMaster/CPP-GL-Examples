@@ -69,8 +69,8 @@ void UI::Control::Slider::PutSliderNub()
 	if (SliderObject.Is())
 	{
 		VectorF2 slider_size_half = NubSize / 2.0f;
-		VectorF2 slider_min = DisplayBox.Min + slider_size_half;
-		VectorF2 slider_max = DisplayBox.Max - slider_size_half;
+		VectorF2 slider_min = BoxDisplay.Min + slider_size_half;
+		VectorF2 slider_max = BoxDisplay.Max - slider_size_half;
 
 		VectorF2 slider_normal = Value;
 		slider_normal -= ValueMin;
@@ -97,8 +97,8 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 	if (!IsInteractible()) { return; }
 
 	VectorF2 slider_size_half = NubSize / 2.0f;
-	VectorF2 slider_pos_min = DisplayBox.Min + slider_size_half;
-	VectorF2 slider_pos_max = DisplayBox.Max - slider_size_half;
+	VectorF2 slider_pos_min = BoxDisplay.Min + slider_size_half;
+	VectorF2 slider_pos_max = BoxDisplay.Max - slider_size_half;
 
 	VectorF2 slider_value = mouse_pos.Buffer.Corner;
 	slider_value -= slider_pos_min;
@@ -125,8 +125,8 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 void UI::Control::Slider::PutCharactersEntrys()
 {
-	VectorF2 min = ContainerBox.Min;
-	VectorF2 max = ContainerBox.Max;
+	VectorF2 min = BoxContent.Min;
+	VectorF2 max = BoxContent.Max;
 	VectorF2 center = (max + min) / 2.0f;
 
 	if (TextObject.Is())
@@ -137,7 +137,7 @@ void UI::Control::Slider::PutCharactersEntrys()
 		TextObject.CharacterAlignmentX() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentY() = Text::Alignment::Mid;
 		TextObject.TextPosition() = center;
-		TextObject.Bound() = ContainerBox;
+		TextObject.Bound() = BoxContent;
 	}
 }
 
@@ -155,7 +155,7 @@ void UI::Control::Slider::SetText(std::string text)
 
 
 
-void UI::Control::Slider::RelayUpdateBox()
+void UI::Control::Slider::RelayBoxUpdate()
 {
 	//SliderChanged = true;
 	PutSliderNub();
@@ -164,7 +164,7 @@ void UI::Control::Slider::RelayUpdateBox()
 		PutCharactersEntrys();
 	}
 }
-void UI::Control::Slider::RelayInsertObject()
+void UI::Control::Slider::RelayObjectInsert()
 {
 	if (!SliderObject.Is() && Manager != NULL)
 	{
@@ -179,7 +179,7 @@ void UI::Control::Slider::RelayInsertObject()
 		TextObject.Create();
 	}
 }
-void UI::Control::Slider::RelayRemoveObject()
+void UI::Control::Slider::RelayObjectRemove()
 {
 	if (SliderObject.Is() || Manager == NULL)
 	{

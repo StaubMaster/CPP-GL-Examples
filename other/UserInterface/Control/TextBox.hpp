@@ -24,9 +24,9 @@ class TextBox : public Base
 	TextBox();
 
 	public:
-	void	RelayUpdateBox() override;
-	void	RelayInsertObject() override;
-	void	RelayRemoveObject() override;
+	void	RelayBoxUpdate() override;
+	void	RelayObjectInsert() override;
+	void	RelayObjectRemove() override;
 
 	public:
 	void	RelayKey(KeyArgs args) override;

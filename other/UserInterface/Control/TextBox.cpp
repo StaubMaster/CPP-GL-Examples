@@ -38,13 +38,13 @@ void UI::Control::TextBox::PutAlignment()
 	{
 		VectorF2 & pos = TextObject.TextPosition();
 
-		if (AlignmentX == UI::Text::Alignment::Min) { pos.X = ContainerBox.Min.X; }
-		if (AlignmentX == UI::Text::Alignment::Mid) { pos.X = ContainerBox.Center().X; }
-		if (AlignmentX == UI::Text::Alignment::Max) { pos.X = ContainerBox.Max.X; }
+		if (AlignmentX == UI::Text::Alignment::Min) { pos.X = BoxContent.Min.X; }
+		if (AlignmentX == UI::Text::Alignment::Mid) { pos.X = BoxContent.Center().X; }
+		if (AlignmentX == UI::Text::Alignment::Max) { pos.X = BoxContent.Max.X; }
 
-		if (AlignmentY == UI::Text::Alignment::Min) { pos.Y = ContainerBox.Min.Y; }
-		if (AlignmentY == UI::Text::Alignment::Mid) { pos.Y = ContainerBox.Center().Y; }
-		if (AlignmentY == UI::Text::Alignment::Max) { pos.Y = ContainerBox.Max.Y; }
+		if (AlignmentY == UI::Text::Alignment::Min) { pos.Y = BoxContent.Min.Y; }
+		if (AlignmentY == UI::Text::Alignment::Mid) { pos.Y = BoxContent.Center().Y; }
+		if (AlignmentY == UI::Text::Alignment::Max) { pos.Y = BoxContent.Max.Y; }
 
 		TextObject.TextAlignmentX() = AlignmentX;
 		TextObject.TextAlignmentY() = AlignmentY;
@@ -58,7 +58,7 @@ void UI::Control::TextBox::PutCharactersEntrys()
 	if (TextObject.Is())
 	{
 		TextObject.Text() = Text;
-		TextObject.Bound() = ContainerBox;
+		TextObject.Bound() = BoxContent;
 	}
 	PutAlignment();
 }
@@ -79,7 +79,7 @@ void UI::Control::TextBox::SetText(std::string text)
 
 
 
-void UI::Control::TextBox::RelayUpdateBox()
+void UI::Control::TextBox::RelayBoxUpdate()
 {
 	if (TextObject.Is())
 	{
@@ -88,14 +88,14 @@ void UI::Control::TextBox::RelayUpdateBox()
 	}
 }
 
-void UI::Control::TextBox::RelayInsertObject()
+void UI::Control::TextBox::RelayObjectInsert()
 {
 	if (Manager != nullptr)
 	{
 		if (!TextObject.Is()) { TextObject.Create(); }
 	}
 }
-void UI::Control::TextBox::RelayRemoveObject()
+void UI::Control::TextBox::RelayObjectRemove()
 {
 	if (Manager == nullptr)
 	{
