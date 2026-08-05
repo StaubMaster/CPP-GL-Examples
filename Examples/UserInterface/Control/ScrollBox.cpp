@@ -83,15 +83,9 @@ void ScrollBox::ScrollFunc(float val)
 {
 	//ContentSize
 
+	// child Bound dosnt update properly ?
+
 	Content.AnchorPadding.Min.Y = 5.0f - val;
 	Content.AnchorPadding.Max.Y = 5.0f + val;
 	Content.BoxUpdateRequest();
-
-	/*Content.BoxContent.Min.Y
-		= Content.BoxDisplay.Min.Y
-		+ Content.AnchorBoarder.Min.Y
-		+ Content.AnchorPadding.Min.Y
-		- val; // change Padding ?
-	Content.BoxUpdateRequest();
-	Content.BoxUpdateIsRequested = false;*/
 }

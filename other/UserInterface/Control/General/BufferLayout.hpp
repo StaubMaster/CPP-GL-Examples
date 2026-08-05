@@ -29,7 +29,8 @@ class BufferLayout : public ::Attribute::Layout
 	public:
 	::Attribute::BoxF2		Box;
 	::Attribute::Float		Layer;
-	::Attribute::ColorF4	Col;
+	::Attribute::ColorF4	Color;
+	::Attribute::BoxF2		Bound;
 	public:
 	~BufferLayout();
 	BufferLayout();

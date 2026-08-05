@@ -5,7 +5,6 @@
 
 namespace UI
 {
-
 namespace Control
 {
 
@@ -15,7 +14,11 @@ struct BufferData
 {
 	VectorF2	Pos;
 
-	BufferData();
+	~BufferData() = default;
+	BufferData() = default;
+	BufferData(const BufferData & other) = default;
+	BufferData & operator=(const BufferData & other) = default;
+
 	BufferData(VectorF2 pos);
 };
 };
@@ -26,15 +29,20 @@ struct BufferData
 {
 	BoxF2		Box;
 	float		Layer;
-	ColorF4		Col;
+	ColorF4		Color;
+	BoxF2		Bound;
 
-	BufferData();
-	BufferData(BoxF2 box, float layer, ColorF4 col);
+	~BufferData() = default;
+	BufferData() = default;
+	BufferData(const BufferData & other) = default;
+	BufferData & operator=(const BufferData & other) = default;
+
+//	BufferData(BoxF2 box, float layer, ColorF4 color, BoxF2 bound);
+	// make from ObjectData
 };
 };
 
 };
-
 };
 
 #endif

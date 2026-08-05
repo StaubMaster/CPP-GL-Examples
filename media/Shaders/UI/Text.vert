@@ -2,6 +2,12 @@
 
 
 
+struct BoxF2
+{
+	vec2	Min;
+	vec2	Max;
+};
+
 struct PixelSize
 {
 	vec2 Full;
@@ -15,14 +21,6 @@ struct sDisplaySize
 };
 
 uniform sDisplaySize DisplaySize;
-
-
-
-struct BoxF2
-{
-	vec2	Min;
-	vec2	Max;
-};
 
 
 

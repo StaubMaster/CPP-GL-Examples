@@ -10,18 +10,18 @@ namespace Control
 {
 struct ObjectData
 {
-	bool	Remove;
-	bool	Display;
+	bool	Remove = false;
+	bool	Display = true;
 
-	// this is Inst::BufferData. just put that here ?
 	BoxF2		Box;
-	float		Layer;
+	float		Layer = 0.0f;
 	ColorF4		Color;
+	BoxF2		Bound;
 
-	~ObjectData();
-	ObjectData();
-	ObjectData(const ObjectData & other);
-	ObjectData & operator=(const ObjectData & other);
+	~ObjectData() = default;
+	ObjectData() = default;
+	ObjectData(const ObjectData & other) = default;
+	ObjectData & operator=(const ObjectData & other) = default;
 };
 };
 };

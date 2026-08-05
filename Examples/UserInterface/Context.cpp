@@ -90,6 +90,8 @@ void UserInterfaceContext::Free()
 
 
 
+#include <iostream>
+#include "ValueType/_Show.hpp"
 void UserInterfaceContext::Resize(DisplaySize display_size)
 {
 	UIManager.Resize(display_size);
@@ -97,6 +99,7 @@ void UserInterfaceContext::Resize(DisplaySize display_size)
 void UserInterfaceContext::Frame(FrameTime frame_time)
 {
 	(void)frame_time;
+//	std::cout << "Mouse: " << window.MouseManager.CursorPosition().Window.Corner << '\n';
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 	UIManager.Draw();
 }

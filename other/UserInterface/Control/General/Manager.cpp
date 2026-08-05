@@ -77,7 +77,9 @@ void UI::Control::Manager::ChangeMedia(const DirectoryInfo & dir)
 		BufferLayoutInst.Box.Min.Change(1);
 		BufferLayoutInst.Box.Max.Change(2);
 		BufferLayoutInst.Layer.Change(3);
-		BufferLayoutInst.Col.Change(4);
+		BufferLayoutInst.Color.Change(4);
+		BufferLayoutInst.Bound.Min.Change(5);
+		BufferLayoutInst.Bound.Max.Change(6);
 	}
 }
 
@@ -114,10 +116,10 @@ void UI::Control::Manager::GraphicsMain()
 	Container::Binary<Control::Main::BufferData> data;
 
 	data.Insert(UI::Control::Main::BufferData(VectorF2(-1, -1)));
-	data.Insert(UI::Control::Main::BufferData(VectorF2(-1, +1)));
-	data.Insert(UI::Control::Main::BufferData(VectorF2(+1, -1)));
 	data.Insert(UI::Control::Main::BufferData(VectorF2(+1, -1)));
 	data.Insert(UI::Control::Main::BufferData(VectorF2(-1, +1)));
+	data.Insert(UI::Control::Main::BufferData(VectorF2(-1, +1)));
+	data.Insert(UI::Control::Main::BufferData(VectorF2(+1, -1)));
 	data.Insert(UI::Control::Main::BufferData(VectorF2(+1, +1)));
 
 	Buffer.MainBuffer.DataFull(data.ToVoid());
@@ -137,7 +139,8 @@ void UI::Control::Manager::PlaceInstance(const ObjectData & obj)
 	Inst::BufferData data;
 	data.Box = obj.Box;
 	data.Layer = obj.Layer;
-	data.Col = obj.Color;
+	data.Color = obj.Color;
+	data.Bound = obj.Bound;
 	Instances.Insert(data);
 }
 void UI::Control::Manager::MakeInstances()

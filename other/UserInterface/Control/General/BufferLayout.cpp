@@ -18,5 +18,6 @@ UI::Control::Inst::BufferLayout::BufferLayout()
 	: ::Attribute::Layout(1, sizeof(Inst::BufferData))
 	, Box(*this)
 	, Layer(*this)
-	, Col(*this)
+	, Color(*this)
+	, Bound(*this)
 { }

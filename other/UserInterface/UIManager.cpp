@@ -157,7 +157,7 @@ void UI::Manager::KeyBoardText(TextArgs args)
 void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 {
 	CursorPosition = mouse_pos.Buffer.Corner;
-	UI::Control::Base * control = WindowControl.CheckHover(mouse_pos.Buffer.Corner);
+	UI::Control::Base * control = WindowControl.FindHover(mouse_pos.Buffer.Corner);
 
 	if (control != Hovering)
 	{
@@ -168,14 +168,24 @@ void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 		// store hovering this and hovering child ?
 		// and hovering parent ?
 		// or just dont update color until later ?
-		UI::Control::Base * temp = Hovering;
+		if (Hovering != nullptr)
+		{
+			Hovering -> ObjectNewColor = true;
+			Hovering -> RelayHover(UI::Control::Base::HoverArgs::Leave);
+		}
 		Hovering = control;
-		if (temp != nullptr) { temp -> ChangeHover(UI::Control::Base::HoverArgs::Leave); }
-		if (Hovering != nullptr) { Hovering -> ChangeHover(UI::Control::Base::HoverArgs::Enter); }
+		if (Hovering != nullptr)
+		{
+			Hovering -> ObjectNewColor = true;
+			Hovering -> RelayHover(UI::Control::Base::HoverArgs::Enter);
+		}
 	}
-	if (Hovering != nullptr)
+	else
 	{
-		Hovering -> ChangeHover(UI::Control::Base::HoverArgs::Move);
+		if (Hovering != nullptr)
+		{
+			Hovering -> RelayHover(UI::Control::Base::HoverArgs::Move);
+		}
 	}
 }
 void UI::Manager::Resize(DisplaySize display_size)

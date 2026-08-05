@@ -162,9 +162,9 @@ class Base
 	public: //private:
 	void	BoxUpdate();
 
-	public: //protected:
+	protected:
 	bool	BoxUpdateIsRequested;
-	public: //private:
+	public:
 	void	BoxUpdateRequest();
 	private:
 	void	BoxUpdateResolve();
@@ -201,6 +201,7 @@ class Base
 	protected:
 	Control::Object		Object;
 	bool				ObjectNewBox;
+	public:
 	bool				ObjectNewColor;
 
 	private:
@@ -253,6 +254,11 @@ class Base
 	// this is here to have access to Box
 	void	ChangeAnchorBox(BoxF2 box, EBoxChangeType type);
 
+
+
+	public:
+	Base *	FindHover(const VectorF2 & mouse);
+
 	public:
 	enum class HoverArgs
 	{
@@ -261,10 +267,7 @@ class Base
 		Leave,
 	}; // should be a struct that also stores position
 
-	//	for automatic Updating. should not be called by User
-	public:
-	Base *	CheckHover(VectorF2 mouse);
-	void	ChangeHover(HoverArgs args);
+
 
 	// Relay User
 	// should take Pointer to Invoker ?

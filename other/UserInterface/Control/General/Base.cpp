@@ -4,6 +4,7 @@
 #include "User/MouseArgs.hpp"
 
 
+
 void UI::Control::Base::ChangeManager(UI::Manager * manager)
 {
 	Manager = manager;
@@ -212,6 +213,10 @@ void UI::Control::Base::UpdateAutoSizeGridY()
 
 
 
+#include "ObjectData.hpp"
+#include "ValueType/_Show.hpp"
+#include <iostream>
+
 void UI::Control::Base::ObjectChangeRequest()
 {
 	ObjectChangeIsRequested = true;
@@ -264,6 +269,14 @@ void UI::Control::Base::ObjectRemove()
 void UI::Control::Base::ObjectAssignBox()
 {
 	Object.Box() = BoxDisplay;
+	if (Parent != nullptr)
+	{
+		Object.Data -> Bound = Parent -> BoxContent;
+	}
+	else
+	{
+		Object.Data -> Bound = BoxF2();
+	}
 	RelayObjectAssignBox();
 }
 void UI::Control::Base::ObjectAssignColor()
@@ -417,30 +430,31 @@ void UI::Control::Base::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 
 
 
-UI::Control::Base * UI::Control::Base::CheckHover(VectorF2 mouse)
+UI::Control::Base * UI::Control::Base::FindHover(const VectorF2 & mouse)
 {
 	if (!_Visible) { return nullptr; }
 	if (!_Enabled) { return nullptr; }
-	if (BoxDisplay.Intersekt(mouse))
+	if (!BoxDisplay.Intersekt(mouse)) { return nullptr; }
+
+	// check BoxContent before checking children ?
+	Base * control = nullptr;
+	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		// check BoxContent before checking children ?
-		Base * control = nullptr;
-		for (unsigned int i = 0; i < Children.Count(); i++)
+		Base * c = Children[i] -> FindHover(mouse);
+		if (c == nullptr) { continue; }
+		if (control == nullptr || ((c -> Depth) < (control -> Depth)))
 		{
-			Base * c = Children[i] -> CheckHover(mouse);
-			if (c != nullptr && (control == nullptr || c -> Depth < control -> Depth))
-			{
-				control = c;
-			}
+			control = c;
 		}
-		if (control != nullptr)
-		{ return control; }
-		return this;
 	}
-	return nullptr;
+	if (control != nullptr)
+	{
+		return control;
+	}
+	return this;
 }
 
-void UI::Control::Base::ChangeHover(HoverArgs args)
+/*void UI::Control::Base::ChangeHover(HoverArgs args)
 {
 	if (args == HoverArgs::Enter)
 	{
@@ -456,8 +470,7 @@ void UI::Control::Base::ChangeHover(HoverArgs args)
 			Object.Color() = ColorDefault;
 		}
 	}
-	RelayHover(args);
-}
+}*/
 
 
 
