@@ -3,10 +3,10 @@
 
 
 
-ScrollBox::~ScrollBox()
+UI::Control::ScrollBox::~ScrollBox()
 { }
-ScrollBox::ScrollBox()
-	: UI::Control::Base()
+UI::Control::ScrollBox::ScrollBox()
+	: Base()
 	, Content()
 	, ScrollBar()
 {
@@ -33,13 +33,12 @@ ScrollBox::ScrollBox()
 	ChildInsert(ScrollBar);
 }
 
-void ScrollBox::RelayBoxUpdate()
+void UI::Control::ScrollBox::RelayBoxUpdate()
 {
 	CalcScroll();
 }
 
-#include <iostream>
-void ScrollBox::CalcScroll()
+void UI::Control::ScrollBox::CalcScroll()
 {
 	// BoxDisplay and BoxContent use WindowPixel Coodrinates
 	// these are undefined/infinite if the Control has no Parent
@@ -76,16 +75,19 @@ void ScrollBox::CalcScroll()
 
 	ScrollBar.PutSliderNub();
 }
-/*
-	children are placed on top of eachother based on Y (AutoSize FitY)
-*/
-void ScrollBox::ScrollFunc(float val)
+void UI::Control::ScrollBox::ScrollFunc(float val)
 {
-	//ContentSize
-
 	// child Bound dosnt update properly ?
 
 	Content.AnchorPadding.Min.Y = 5.0f - val;
 	Content.AnchorPadding.Max.Y = 5.0f + val;
 	Content.BoxUpdateRequest();
+}
+
+void UI::Control::ScrollBox::RelayScroll(ScrollArgs args)
+{
+	float val = ScrollBar.GetValueY();
+	val -= args.Y * 5;
+	ScrollBar.SetValueY(val);
+	ScrollBar.ClampValue();
 }

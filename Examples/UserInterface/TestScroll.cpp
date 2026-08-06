@@ -24,7 +24,7 @@ TestScroll::TestScroll()
 		Labels[i].Anchor.X.AnchorBoth(0, 0);
 		Labels[i].Anchor.Y.AnchorMin(y);
 		y = Labels[i].Anchor.Y.GetMinSize();
-		// this is like AutoSize FitY
+		// this is like AutoSize FitFixed
 		ScrollBox.Content.ChildInsert(Labels[i]);
 
 		std::stringstream ss;

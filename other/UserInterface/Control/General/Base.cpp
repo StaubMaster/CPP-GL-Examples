@@ -187,7 +187,8 @@ void UI::Control::Base::UpdateAutoSize()
 	switch (AutoSizerYType)
 	{
 		case EAutoSizerType::None: break;
-		case EAutoSizerType::FitFixed: UpdateAutoSizeGridY(); break;
+		case EAutoSizerType::StackMin:		UpdateAutoSize_Y_StackMin(); break;
+		case EAutoSizerType::StackMinFit:	UpdateAutoSize_Y_StackMinFit(); break;
 		default: break;
 	}
 
@@ -196,7 +197,20 @@ void UI::Control::Base::UpdateAutoSize()
 		Parent -> UpdateAutoSize();
 	}
 }
-void UI::Control::Base::UpdateAutoSizeGridY()
+void UI::Control::Base::UpdateAutoSize_Y_StackMin()
+{
+	float y = 0.0f;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		if (Children[i] == nullptr) { continue; }
+		Base & control = *Children[i];
+		if (!control.IsVisible()) { continue; }
+		control.Anchor.Y.AnchorMin(y);
+		y = control.Anchor.Y.GetMinSize();
+		control.BoxUpdateRequest();
+	}
+}
+void UI::Control::Base::UpdateAutoSize_Y_StackMinFit()
 {
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -212,10 +226,6 @@ void UI::Control::Base::UpdateAutoSizeGridY()
 }
 
 
-
-#include "ObjectData.hpp"
-#include "ValueType/_Show.hpp"
-#include <iostream>
 
 void UI::Control::Base::ObjectChangeRequest()
 {
@@ -266,32 +276,6 @@ void UI::Control::Base::ObjectRemove()
 	}
 	RelayObjectRemove();
 }
-void UI::Control::Base::ObjectAssignBox()
-{
-	Object.Box() = BoxDisplay;
-	if (Parent != nullptr)
-	{
-		Object.Data -> Bound = Parent -> BoxContent;
-	}
-	else
-	{
-		Object.Data -> Bound = BoxF2();
-	}
-	RelayObjectAssignBox();
-}
-void UI::Control::Base::ObjectAssignColor()
-{
-	if (Manager -> Hovering != this)
-	{
-		Object.Color() = ColorDefault;
-	}
-	else
-	{
-		Object.Color() = ColorHover;
-	}
-	RelayObjectAssignColor();
-}
-
 void UI::Control::Base::ObjectAssign()
 {
 	if (Object.Is())
@@ -307,6 +291,32 @@ void UI::Control::Base::ObjectAssign()
 			ObjectNewColor = false;
 		}
 	}
+}
+void UI::Control::Base::ObjectAssignBox()
+{
+	Object.Box() = BoxDisplay;
+	if (Parent != nullptr)
+	{
+		Object.Bound().Min = Parent -> BoxDisplay.Min + Parent -> AnchorBoarder.Min;
+		Object.Bound().Max = Parent -> BoxDisplay.Max - Parent -> AnchorBoarder.Max;
+	}
+	else
+	{
+		Object.Bound() = BoxF2();
+	}
+	RelayObjectAssignBox();
+}
+void UI::Control::Base::ObjectAssignColor()
+{
+	if (Manager -> Hovering != this)
+	{
+		Object.Color() = ColorDefault;
+	}
+	else
+	{
+		Object.Color() = ColorHover;
+	}
+	RelayObjectAssignColor();
 }
 
 void UI::Control::Base::RelayObjectInsert() { }

@@ -7,6 +7,7 @@
 # include "Menu2.hpp"
 # include "Menu3.hpp"
 # include "TestScroll.hpp"
+# include "TestList.hpp"
 
 # include "UIManager.hpp"
 
@@ -19,15 +20,17 @@ struct UserInterfaceContext : public ContextBase
 	UserInterfaceMenu2		Menu2;
 	UserInterfaceMenu3		Menu3;
 	::TestScroll	TestScroll;
+	::TestList		TestList;
 
 	~UserInterfaceContext();
 	UserInterfaceContext();
 	
 	void	Make();
-	void	Menu1Toggle(ClickArgs args);
-	void	Menu2Toggle(ClickArgs args);
-	void	Menu3Toggle(ClickArgs args);
-	void	TestScrollToggle(ClickArgs args);
+	void	ToggleMenu1(ClickArgs args);
+	void	ToggleMenu2(ClickArgs args);
+	void	ToggleMenu3(ClickArgs args);
+	void	ToggleTestScroll(ClickArgs args);
+	void	ToggleTestList(ClickArgs args);
 	
 	void	Init() override;
 	void	Free() override;

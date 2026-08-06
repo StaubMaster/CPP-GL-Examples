@@ -21,7 +21,6 @@ UI::Control::Slider::Slider() : Base()
 	ColorDefault = ColorF4(0.375f, 0.375f, 0.375f);
 	ColorHover = ColorF4(0.25f, 0.25f, 0.25f);
 
-//	SliderChanged = true;
 	NubSize = VectorF2(10, 25);
 
 	Value = VectorF2(0.0f, 0.0f);
@@ -41,7 +40,6 @@ void UI::Control::Slider::SetValue(VectorF2 val)
 {
 	Value = val;
 	//ClampValue();
-	/*SliderChanged = true;*/
 	ValueXChangedFunc.TryInvoke(Value.X);
 	ValueYChangedFunc.TryInvoke(Value.Y);
 	ValueChangedFunc.TryInvoke(Value);
@@ -51,7 +49,6 @@ void UI::Control::Slider::SetValueX(float val)
 {
 	Value.X = val;
 	//ClampValue();
-	/*SliderChanged = true;*/
 	ValueXChangedFunc.TryInvoke(Value.X);
 	PutSliderNub();
 }
@@ -59,7 +56,6 @@ void UI::Control::Slider::SetValueY(float val)
 {
 	Value.Y = val;
 	//ClampValue();
-	/*SliderChanged = true;*/
 	ValueYChangedFunc.TryInvoke(Value.Y);
 	PutSliderNub();
 }
@@ -82,6 +78,8 @@ void UI::Control::Slider::PutSliderNub()
 
 		SliderObject.Box().Min = slider_value - slider_size_half;
 		SliderObject.Box().Max = slider_value + slider_size_half;
+
+		SliderObject.Bound() = Object.Bound();
 	}
 }
 void UI::Control::Slider::ClampValue()
@@ -157,12 +155,8 @@ void UI::Control::Slider::SetText(std::string text)
 
 void UI::Control::Slider::RelayBoxUpdate()
 {
-	//SliderChanged = true;
 	PutSliderNub();
-	if (TextObject.Is())
-	{
-		PutCharactersEntrys();
-	}
+	PutCharactersEntrys();
 }
 void UI::Control::Slider::RelayObjectInsert()
 {
@@ -171,7 +165,6 @@ void UI::Control::Slider::RelayObjectInsert()
 		SliderObject.Create();
 		SliderObject.Color() = ColorF4(0.5f, 0.5f, 0.5f);
 		SliderObject.Layer() = Depth - 0.01f;
-		//SliderChanged = true;
 		PutSliderNub();
 	}
 	if (!TextObject.Is() && Manager != NULL)

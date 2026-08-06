@@ -51,6 +51,11 @@ out vec4 Pixel;
 
 void main()
 {
+	if (fs_inn.Pos.x < fs_inn.Bound.Min.x) { discard; }
+	if (fs_inn.Pos.y < fs_inn.Bound.Min.y) { discard; }
+	if (fs_inn.Pos.x > fs_inn.Bound.Max.x) { discard; }
+	if (fs_inn.Pos.y > fs_inn.Bound.Max.y) { discard; }
+
 	BoxF2 diff;
 	diff.Min = abs(fs_inn.Box.Min - fs_inn.Pos);
 	diff.Max = abs(fs_inn.Box.Max - fs_inn.Pos);
@@ -69,11 +74,6 @@ void main()
 	if (min_y) { col = vec4(1, 0, 0, 1); }
 	if (max_x) { col = vec4(0, 1, 0, 1); }
 	if (max_y) { col = vec4(0, 0, 1, 1); }
-
-	if (fs_inn.Pos.x < fs_inn.Bound.Min.x) { col = vec4(0, 0, 0, 1); }
-	if (fs_inn.Pos.y < fs_inn.Bound.Min.y) { col = vec4(0, 0, 0, 1); }
-	if (fs_inn.Pos.x > fs_inn.Bound.Max.x) { col = vec4(0, 0, 0, 1); }
-	if (fs_inn.Pos.y > fs_inn.Bound.Max.y) { col = vec4(0, 0, 0, 1); }
 
 	Pixel = col;
 

@@ -1,0 +1,16 @@
+
+2 Types of List
+
+ListBox
+{
+	shows the whole list in a Box
+	if there are too many Items to fit
+	the Box becoms scrollable
+}
+
+ListDrop
+{
+	there is a Button sized thing that shows the current Item
+	when clicked, the all Items are shows in a Drop down list
+	these are sometimes also scrollable
+}

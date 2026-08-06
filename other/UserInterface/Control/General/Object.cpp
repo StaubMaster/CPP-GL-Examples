@@ -13,8 +13,9 @@ void UI::Control::Object::Full() { (Data -> Display) = true; }
 
 
 BoxF2 &		UI::Control::Object::Box() { return (Data -> Box); }
-float &			UI::Control::Object::Layer() { return (Data -> Layer); }
-ColorF4 &		UI::Control::Object::Color() { return (Data -> Color); }
+float &		UI::Control::Object::Layer() { return (Data -> Layer); }
+ColorF4 &	UI::Control::Object::Color() { return (Data -> Color); }
+BoxF2 &		UI::Control::Object::Bound() { return (Data -> Bound); }
 
 
 

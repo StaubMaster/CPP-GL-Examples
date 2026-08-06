@@ -10,9 +10,13 @@ FILES := \
 	Menu1.cpp \
 	Menu2.cpp \
 	Menu3.cpp \
-	TestScroll.cpp \
 \
+	Control/BaseText.cpp \
 	Control/ScrollBox.cpp \
+	Control/List.cpp \
+\
+	TestScroll.cpp \
+	TestList.cpp \
 \
 	new.cpp \
 	main.cpp \

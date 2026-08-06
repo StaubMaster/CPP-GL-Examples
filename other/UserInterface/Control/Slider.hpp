@@ -17,13 +17,15 @@ class Slider : public Base
 {
 	private:
 	Control::Object		SliderObject;
-	// Area Slider naturally creates a "dot"
-	// make a Cross instead ?
-	// meaning different Slider Objects for Vert and Hori ?
-	// dont display the unused one, since it would cover the whole Control
+	/* Area Slider
+		naturally creates a "dot"
+		make a Cross instead ?
+		meaning different Slider Objects for Vert and Hori ?
+		dont display the unused one, since it would cover the whole Control
+	*/
 
 	private:
-	bool		SliderChanged;
+	bool		SliderChanged; // request/resolve ?
 	public:
 	VectorF2	NubSize;
 
@@ -35,6 +37,7 @@ class Slider : public Base
 	VectorF2	ValueMin;
 	VectorF2	ValueMax;
 	// Get/Set for these
+	// ValueScrollChange ? how much does the value change from Scrolling
 
 	public:
 	VectorF2	GetValue() const;
@@ -50,7 +53,7 @@ class Slider : public Base
 	void	ClampValue();
 
 	private:
-	void ChangeValue(DisplayPosition mouse_pos);
+	void	ChangeValue(DisplayPosition mouse_pos);
 
 	public:
 	FunctionPointer<float>		ValueXChangedFunc;
@@ -69,6 +72,7 @@ class Slider : public Base
 	void	RelayClick(ClickArgs params) override;
 	void	RelayCursorDrag(DragArgs params) override;
 	void	RelayKey(KeyArgs args) override;
+	// Scroll
 
 	private:
 	Text::Object	TextObject;

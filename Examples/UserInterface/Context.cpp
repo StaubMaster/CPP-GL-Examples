@@ -14,6 +14,7 @@ UserInterfaceContext::UserInterfaceContext()
 	, Menu2()
 	, Menu3()
 	, TestScroll()
+	, TestList()
 {
 	MediaDirectory = DirectoryInfo("../../media/");
 }
@@ -27,18 +28,21 @@ void UserInterfaceContext::Make()
 	UIManager.WindowControl.ChildInsert(Menu2);
 	UIManager.WindowControl.ChildInsert(Menu3);
 	UIManager.WindowControl.ChildInsert(TestScroll);
+	UIManager.WindowControl.ChildInsert(TestList);
 	Menu1.Hide();
 	Menu2.Hide();
 	Menu3.Hide();
 	Menu3.Hide();
 	TestScroll.Hide();
-	Menu0.Menu1Button.ClickFunc.Assign(this, &UserInterfaceContext::Menu1Toggle);
-	Menu0.Menu2Button.ClickFunc.Assign(this, &UserInterfaceContext::Menu2Toggle);
-	Menu0.Menu3Button.ClickFunc.Assign(this, &UserInterfaceContext::Menu3Toggle);
-	Menu0.TestScrollButton.ClickFunc.Assign(this, &UserInterfaceContext::TestScrollToggle);
+	TestList.Hide();
+	Menu0.Menu1Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu1);
+	Menu0.Menu2Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu2);
+	Menu0.Menu3Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu3);
+	Menu0.TestScrollButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestScroll);
+	Menu0.TestListButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestList);
 }
 
-void UserInterfaceContext::Menu1Toggle(ClickArgs args)
+void UserInterfaceContext::ToggleMenu1(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
@@ -46,7 +50,7 @@ void UserInterfaceContext::Menu1Toggle(ClickArgs args)
 		Menu1.Show();
 	}
 }
-void UserInterfaceContext::Menu2Toggle(ClickArgs args)
+void UserInterfaceContext::ToggleMenu2(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
@@ -54,7 +58,7 @@ void UserInterfaceContext::Menu2Toggle(ClickArgs args)
 		Menu2.Show();
 	}
 }
-void UserInterfaceContext::Menu3Toggle(ClickArgs args)
+void UserInterfaceContext::ToggleMenu3(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
@@ -62,12 +66,20 @@ void UserInterfaceContext::Menu3Toggle(ClickArgs args)
 		Menu3.Show();
 	}
 }
-void UserInterfaceContext::TestScrollToggle(ClickArgs args)
+void UserInterfaceContext::ToggleTestScroll(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
 		Menu0.Hide();
 		TestScroll.Show();
+	}
+}
+void UserInterfaceContext::ToggleTestList(ClickArgs args)
+{
+	if (args.Action == Action::Press)
+	{
+		Menu0.Hide();
+		TestList.Show();
 	}
 }
 

@@ -121,12 +121,36 @@ void UI::Manager::MouseClick(ClickArgs args)
 }
 void UI::Manager::MouseScroll(ScrollArgs args)
 {
-	// scroll hovering
-	// if hovering does not have a scroll
-	// scroll selected
-	if (Selected != nullptr)
+	/*
+		try scroll on Hovering
+		if no scroll
+			try scroll Parent
+			loop until scroll or no Parent
+		if no Parent
+			try scroll Selected
+			if no scroll
+				try scroll Parent
+				loop until scroll or no Parent
+	currently no way to determin if have scroll */
+
+	// do loop in Base::RelayScroll
+	// no. RelayScroll gets overridden
+	// would need a seperate InvokeRelayScroll
 	{
-		Selected -> RelayScroll(args);
+		UI::Control::Base * control = Hovering;
+		while (control != nullptr)
+		{
+			control -> RelayScroll(args);
+			control = control -> Parent;
+		}
+	}
+	{
+		UI::Control::Base * control = Selected;
+		while (control != nullptr)
+		{
+			control -> RelayScroll(args);
+			control = control -> Parent;
+		}
 	}
 }
 void UI::Manager::MouseDrag(DragArgs args)

@@ -14,6 +14,7 @@ UserInterfaceMenu0::UserInterfaceMenu0()
 	, Menu2Button()
 	, Menu3Button()
 	, TestScrollButton()
+	, TestListButton()
 {
 	//float x = 0.0f;
 	float y = 0.0f;
@@ -68,10 +69,16 @@ UserInterfaceMenu0::UserInterfaceMenu0()
 	TestScrollButton.SetText("TestScroll");
 	y = TestScrollButton.Anchor.Y.GetMinSize();
 
+	TestListButton.Anchor.X.AnchorBoth(0, 0);
+	TestListButton.Anchor.Y.AnchorMin(y);
+	TestListButton.SetText("TestList");
+	y = TestListButton.Anchor.Y.GetMinSize();
+
 	ChildInsert(Menu1Button);
 	ChildInsert(Menu2Button);
 	ChildInsert(Menu3Button);
 	ChildInsert(TestScrollButton);
+	ChildInsert(TestListButton);
 }
 
 //#include "Selector/new.hpp"

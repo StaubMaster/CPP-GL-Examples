@@ -21,8 +21,9 @@ struct Object
 	void	Full();
 
 	BoxF2 &		Box();
-	float &			Layer();
-	ColorF4 &		Color();
+	float &		Layer();
+	ColorF4 &	Color();
+	BoxF2 &		Bound();
 
 	~Object();
 	Object();

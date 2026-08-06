@@ -9,7 +9,7 @@ UI::Control::PropertyControl::PropertyControl(const char * name)
 	, Visible(true)
 	, Toggle()
 {
-	AutoSizerYType = EAutoSizerType::FitFixed;
+	AutoSizerYType = EAutoSizerType::StackMinFit;
 
 	Toggle.Anchor.X.AnchorBoth(0, 0);
 	Toggle.SetText(name);

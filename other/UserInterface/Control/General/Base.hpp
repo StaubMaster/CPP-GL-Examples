@@ -84,8 +84,8 @@ class Base
 
 
 
-	protected:
-	Base *		Parent;
+	protected: public:
+	Base *	Parent;
 
 	public:
 	unsigned int	Layer() const;
@@ -175,19 +175,36 @@ class Base
 
 
 	public:
+	/* Anchor vs AutoSizer ?
+		Anchor changes this
+		AutoSizer aranges Children
+
+		Anchor and StackMinFit both try to resize this
+		what if Parent of this also tries to Fit children
+		Box Update would need to be done in reverse
+		might cause infinite loop ?
+
+	*/
 	enum class EAutoSizerType
 	{
 		None,
-		FitFixed,
+		/* AnchorTypes ?
+			Min
+			Max
+			Both
+		*/
+		StackMin, //MinDist of next = MinSize of prev
+		StackMinFit, //StackMin but this Control is resized to fit Children
 	};
 	EAutoSizerType		AutoSizerXType;
 	EAutoSizerType		AutoSizerYType;
 
 	public:
-	void	UpdateAutoSize();
+	void	UpdateAutoSize(); // call this in Update ?
 
 	private:
-	void	UpdateAutoSizeGridY();
+	void	UpdateAutoSize_Y_StackMin();
+	void	UpdateAutoSize_Y_StackMinFit();
 
 
 
@@ -269,16 +286,28 @@ class Base
 
 
 
-	// Relay User
-	// should take Pointer to Invoker ?
-	//   (const void *) or (const Control::Base *)
-	//   should these even be const ?
+	/* User Relay Invoker
+		(const void *) or (const Control::Base *)
+		not const ?
+		? the Invoker Control is this
+		the Control Pointer would be needed for Func Pointers
+	*/
+	/* User Relay return
+		0: dont try to relay to parent
+		1: try to relay this event to parent
+	*/
 	virtual void	RelayHover(HoverArgs args);
 	virtual void	RelayClick(ClickArgs args);
 	virtual void	RelayScroll(ScrollArgs args);
 	virtual void	RelayCursorDrag(DragArgs args);
 	virtual void	RelayKey(KeyArgs args);
 	virtual void	RelayText(TextArgs args);
+	/* User Relay vs Func Pointer
+		Relays:		internal
+		Pointers:	external
+
+		put all FuncPointer for these here ?
+	*/
 };
 };
 };

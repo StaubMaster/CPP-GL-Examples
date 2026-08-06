@@ -6,9 +6,8 @@
 
 struct TestScroll : public UI::Control::Form
 {
-	ScrollBox	ScrollBox;
-
-	UI::Control::Label *	Labels;
+	UI::Control::ScrollBox		ScrollBox;
+	UI::Control::Label *		Labels;
 
 	~TestScroll();
 	TestScroll();
