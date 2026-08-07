@@ -189,36 +189,21 @@ class Base
 
 
 	public:
-	/* Anchor vs AutoSizer ?
-		Anchor changes this
-		AutoSizer aranges Children
-
-		Anchor and StackMinFit both try to resize this
-		what if Parent of this also tries to Fit children
-		Box Update would need to be done in reverse
-		might cause infinite loop ?
-
-	*/
-	enum class EAutoSizerType
+	enum class EAutoAnchorType
 	{
 		None,
-		/* AnchorTypes ?
-			Min
-			Max
-			Both
-		*/
 		StackMin, //MinDist of next = MinSize of prev
 		StackMinFit, //StackMin but this Control is resized to fit Children
 	};
-	EAutoSizerType		AutoSizerXType;
-	EAutoSizerType		AutoSizerYType;
+	EAutoAnchorType		AutoAnchorXType;
+	EAutoAnchorType		AutoAnchorYType;
 
 	public:
-	void	UpdateAutoSize(); // call this in Update ?
+	void	UpdateAutoAnchor(); // call this in Update ?
 
 	private:
-	void	UpdateAutoSize_Y_StackMin();
-	void	UpdateAutoSize_Y_StackMinFit();
+	void	UpdateAutoAnchor_Y_StackMin();
+	void	UpdateAutoAnchor_Y_StackMinFit();
 
 
 

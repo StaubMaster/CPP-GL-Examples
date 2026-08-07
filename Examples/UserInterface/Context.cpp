@@ -133,6 +133,7 @@ void UserInterfaceContext::KeyBoardKey(KeyArgs args)
 			Menu2.Hide();
 			Menu3.Hide();
 			TestScroll.Hide();
+			TestList.Hide();
 		}
 	}
 	else

@@ -40,11 +40,15 @@ void UI::Control::ScrollBox::RelayBoxUpdate()
 
 void UI::Control::ScrollBox::CalcScroll()
 {
-	// BoxDisplay and BoxContent use WindowPixel Coodrinates
-	// these are undefined/infinite if the Control has no Parent
-	// Scroll Nub Size depends on Parent Size
-	// so this depends on both Parent Size and Children Sizes
-	// how to call this automatically ?
+	if (Content.Children.Count() == 0)
+	{
+		ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay.Max.Y - ScrollBar.BoxDisplay.Min.Y) / 2.0f;
+		ScrollBar.ValueMin.Y = 0.0f;
+		ScrollBar.ValueMax.Y = 1.0f;
+		ScrollBar.SetValueY(0.5f);
+		ScrollBar.MakeDisabled();
+		return;
+	}
 
 	BoxF1 content_range;
 	for (unsigned int i = 0; i < Content.Children.Count(); i++)
@@ -67,9 +71,10 @@ void UI::Control::ScrollBox::CalcScroll()
 	}
 	else
 	{
-		ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay.Max.Y - ScrollBar.BoxDisplay.Min.Y);
+		ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay.Max.Y - ScrollBar.BoxDisplay.Min.Y) / 2.0f;
 		ScrollBar.ValueMin.Y = 0.0f;
 		ScrollBar.ValueMax.Y = 1.0f;
+		ScrollBar.SetValueY(0.5f);
 		ScrollBar.MakeDisabled();
 	}
 
@@ -86,7 +91,10 @@ void UI::Control::ScrollBox::ScrollFunc(float val)
 
 void UI::Control::ScrollBox::RelayScroll(ScrollArgs args)
 {
-	float val = ScrollBar.GetValueY();
-	val -= args.Y * 5;
-	ScrollBar.SetValueY(val);
+	if (ScrollBar.IsEnabled())
+	{
+		float val = ScrollBar.GetValueY();
+		val -= args.Y * 5;
+		ScrollBar.SetValueY(val);
+	}
 }

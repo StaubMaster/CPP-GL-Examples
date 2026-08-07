@@ -18,9 +18,11 @@ struct List : public UI::Control::ScrollBox
 	{
 		UI::Control::List &		List;
 
+		unsigned int	Index;
+
 		void *	Object;
 
-		Item(UI::Control::List & list, const char * name, void * obj);
+		Item(UI::Control::List & list, unsigned int idx , const char * name, void * obj);
 
 		void	RelayClick(ClickArgs args) override;
 	};
@@ -30,13 +32,14 @@ struct List : public UI::Control::ScrollBox
 
 	void *		ClickedObject = nullptr;
 
-	FunctionPointer<void*>	ItemClickFunc;
+	FunctionPointer<const Item &>	ItemFunc;
 
 	List();
 
 	void	ItemsClear();
 	void	ItemNew(const char * name, void * obj);
-	void	ClickFunc(ClickArgs args, void * obj);
+
+	void	ItemClickFunc(ClickArgs args, const Item & item);
 };
 };
 };

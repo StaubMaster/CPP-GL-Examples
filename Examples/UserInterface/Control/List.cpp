@@ -2,9 +2,10 @@
 
 
 
-UI::Control::List::Item::Item(UI::Control::List & list, const char * name, void * obj)
+UI::Control::List::Item::Item(UI::Control::List & list, unsigned int idx, const char * name, void * obj)
 	: BaseText()
 	, List(list)
+	, Index(idx)
 	, Object(obj)
 {
 	Depth = 0.1f;
@@ -12,8 +13,14 @@ UI::Control::List::Item::Item(UI::Control::List & list, const char * name, void 
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(75, 25);
 
-	ColorDefault = ColorF4(0.625f, 0.625f, 0.625f);
-	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
+
+
+//	ColorDefault = ColorF4(0.125f * 5, 0.125f * 5, 0.125f * 5);
+//	ColorHover   = ColorF4(0.125f * 4, 0.125f * 4, 0.125f * 4);
+
+	ColorDefault = ColorF4(0.125f * 6, 0.125f * 6, 0.125f * 6);
+	ColorHover   = ColorF4(0.125f * 5, 0.125f * 5, 0.125f * 5);
+//	ColorHover   = ColorF4(0.125f * 4, 0.125f * 4, 0.125f * 8);
 
 
 
@@ -25,7 +32,7 @@ UI::Control::List::Item::Item(UI::Control::List & list, const char * name, void 
 
 void UI::Control::List::Item::RelayClick(ClickArgs args)
 {
-	List.ClickFunc(args, Object);
+	List.ItemClickFunc(args, *this);
 }
 
 
@@ -45,18 +52,25 @@ void UI::Control::List::ItemsClear()
 	}
 	Items.Clear();
 	ClickedObject = nullptr;
+
+	Content.UpdateAutoAnchor();
+	CalcScroll();
 }
 void UI::Control::List::ItemNew(const char * name, void * obj)
 {
-	Item * item = new Item(*this, name, obj);
+	Item * item = new Item(*this, Items.Count(), name, obj);
 	Items.Insert(item);
 	Content.ChildInsert(item);
+
+	Content.UpdateAutoAnchor();
+	item -> BoxUpdate();
+	CalcScroll();
 }
-void UI::Control::List::ClickFunc(ClickArgs args, void * obj)
+void UI::Control::List::ItemClickFunc(ClickArgs args, const Item & item)
 {
 	if (args.Action == Action::Press)
 	{
-		ClickedObject = obj;
-		ItemClickFunc.TryInvoke(obj);
+		ClickedObject = item.Object;
+		ItemFunc.TryInvoke(item);
 	}
 }

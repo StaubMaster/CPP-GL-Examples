@@ -184,28 +184,28 @@ void UI::Control::Base::BoxUpdateResolve()
 
 
 
-void UI::Control::Base::UpdateAutoSize()
+void UI::Control::Base::UpdateAutoAnchor()
 {
-	switch (AutoSizerXType)
+	switch (AutoAnchorXType)
 	{
-		case EAutoSizerType::None: break;
+		case EAutoAnchorType::None: break;
 		default: break;
 	}
 
-	switch (AutoSizerYType)
+	switch (AutoAnchorYType)
 	{
-		case EAutoSizerType::None: break;
-		case EAutoSizerType::StackMin:		UpdateAutoSize_Y_StackMin(); break;
-		case EAutoSizerType::StackMinFit:	UpdateAutoSize_Y_StackMinFit(); break;
+		case EAutoAnchorType::None: break;
+		case EAutoAnchorType::StackMin:		UpdateAutoAnchor_Y_StackMin(); break;
+		case EAutoAnchorType::StackMinFit:	UpdateAutoAnchor_Y_StackMinFit(); break;
 		default: break;
 	}
 
 	if (Parent != nullptr)
 	{
-		Parent -> UpdateAutoSize();
+		Parent -> UpdateAutoAnchor();
 	}
 }
-void UI::Control::Base::UpdateAutoSize_Y_StackMin()
+void UI::Control::Base::UpdateAutoAnchor_Y_StackMin()
 {
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -218,7 +218,7 @@ void UI::Control::Base::UpdateAutoSize_Y_StackMin()
 		control.BoxUpdateRequest();
 	}
 }
-void UI::Control::Base::UpdateAutoSize_Y_StackMinFit()
+void UI::Control::Base::UpdateAutoAnchor_Y_StackMinFit()
 {
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -414,8 +414,8 @@ UI::Control::Base::Base()
 	, BoxDisplay()
 	, BoxContent()
 	, BoxUpdateIsRequested(false)
-	, AutoSizerXType(EAutoSizerType::None)
-	, AutoSizerYType(EAutoSizerType::None)
+	, AutoAnchorXType(EAutoAnchorType::None)
+	, AutoAnchorYType(EAutoAnchorType::None)
 	, Object()
 	, ObjectChangeIsRequested(false)
 	, ObjectAssignBoxIsRequested(false)
