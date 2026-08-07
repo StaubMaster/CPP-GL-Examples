@@ -6,17 +6,18 @@ FANCY_NAME := UserInterface
 
 FILES := \
 	Context.cpp \
-	Menu0.cpp \
-	Menu1.cpp \
-	Menu2.cpp \
-	Menu3.cpp \
 \
-	Control/BaseText.cpp \
+	Menu/0.cpp \
+	Menu/1.cpp \
+	Menu/2.cpp \
+	Menu/3.cpp \
+\
+	Control/General/BaseText.cpp \
 	Control/ScrollBox.cpp \
 	Control/List.cpp \
 \
-	TestScroll.cpp \
-	TestList.cpp \
+	Test/Scroll.cpp \
+	Test/List.cpp \
 \
 	new.cpp \
 	main.cpp \

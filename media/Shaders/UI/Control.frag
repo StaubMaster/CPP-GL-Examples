@@ -33,7 +33,7 @@ uniform sDisplaySize DisplaySize;
 
 
 const float BoarderFactor = 0.05;
-const float BoarderSize = 2;
+const float BoarderSize = 10;
 
 
 
@@ -57,37 +57,41 @@ void main()
 	if (fs_inn.Pos.y > fs_inn.Bound.Max.y) { discard; }
 
 	BoxF2 diff;
-	diff.Min = abs(fs_inn.Box.Min - fs_inn.Pos);
-	diff.Max = abs(fs_inn.Box.Max - fs_inn.Pos);
+	diff.Min = fs_inn.Pos - fs_inn.Box.Min;
+	diff.Max = fs_inn.Box.Max - fs_inn.Pos;
 
-//	float mul_min = min(diff.Min.x, diff.Min.y);
-//	float mul_max = min(diff.Max.x, diff.Max.y);
-
-	bool min_x = (diff.Min.x < BoarderSize);
-	bool min_y = (diff.Min.y < BoarderSize);
-	bool max_x = (diff.Max.x < BoarderSize);
-	bool max_y = (diff.Max.y < BoarderSize);
+	bool is_min_x = (diff.Min.x < BoarderSize);
+	bool is_max_x = (diff.Max.x < BoarderSize);
+	bool is_min_y = (diff.Min.y < BoarderSize);
+	bool is_max_y = (diff.Max.y < BoarderSize);
 
 	vec4 col = fs_inn.Color;
 
-	if (min_x) { col = vec4(0, 0, 0, 1); }
-	if (min_y) { col = vec4(1, 0, 0, 1); }
-	if (max_x) { col = vec4(0, 1, 0, 1); }
-	if (max_y) { col = vec4(0, 0, 1, 1); }
+	if (is_min_x) { col = vec4(0, 0, 0, 1); }
+	if (is_max_x) { col = vec4(1, 0, 0, 1); }
+	if (is_min_y) { col = vec4(0, 1, 0, 1); }
+	if (is_max_y) { col = vec4(0, 0, 1, 1); }
+
+	if (is_min_x && is_min_y)
+	{
+		if (diff.Min.x < diff.Min.y)	{ col = vec4(0, 0, 0, 1); }
+		else							{ col = vec4(0, 1, 0, 1); }
+	}
+	if (is_min_x && is_max_y)
+	{
+		if (diff.Min.x < diff.Max.y)	{ col = vec4(0, 0, 0, 1); }
+		else							{ col = vec4(0, 0, 1, 1); }
+	}
+	if (is_max_x && is_min_y)
+	{
+		if (diff.Max.x < diff.Min.y)	{ col = vec4(1, 0, 0, 1); }
+		else							{ col = vec4(0, 1, 0, 1); }
+	}
+	if (is_max_x && is_max_y)
+	{
+		if (diff.Max.x < diff.Max.y)	{ col = vec4(1, 0, 0, 1); }
+		else							{ col = vec4(0, 0, 1, 1); }
+	}
 
 	Pixel = col;
-
-	/*float factor = 1.0;
-	if (mul_min < BoarderSize && mul_max < BoarderSize)
-	{
-		if (mul_min < mul_max)
-		{ factor += BoarderFactor; factor = 0.0f; }
-		else
-		{ factor -= BoarderFactor; factor = 0.0f; }
-	}
-	else if (mul_min < BoarderSize && mul_max > BoarderSize)
-	{ factor += BoarderFactor; factor = 0.0f; }
-	else if (mul_min > BoarderSize && mul_max < BoarderSize)
-	{ factor -= BoarderFactor; factor = 0.0f; }
-	Pixel = fs_inn.Color * factor;*/
 }

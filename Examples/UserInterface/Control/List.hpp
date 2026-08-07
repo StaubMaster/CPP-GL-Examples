@@ -2,8 +2,9 @@
 # define UI_CONTROL_LIST_HPP
 
 # include "Control/General/Base.hpp"
-# include "ScrollBox.hpp"
-# include "BaseText.hpp"
+# include "Control/General/BaseText.hpp"
+# include "Control/ScrollBox.hpp"
+
 # include "Generics/Function/Pointer.hpp"
 # include "Generics/Container/Binary.hpp"
 

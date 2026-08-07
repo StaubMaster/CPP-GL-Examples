@@ -162,7 +162,7 @@ class Base
 	public: //private:
 	void	BoxUpdate();
 
-	protected:
+	private:
 	bool	BoxUpdateIsRequested;
 	public:
 	void	BoxUpdateRequest();
@@ -213,31 +213,66 @@ class Base
 	//Color		ColorDisabled; // Gray Text
 	ColorF4		ColorHover;
 
+	protected:
+	virtual ColorF4		ColorMake() const;
+
+
+
+	public:
+	void	Update();
+
+	protected:
+	virtual void	RelayUpdate();
+
 
 
 	protected:
 	Control::Object		Object;
-	bool				ObjectNewBox;
-	public:
-	bool				ObjectNewColor;
 
 	private:
 	bool	ObjectChangeIsRequested;
 	void	ObjectChangeRequest();
-	void	ObjectChangeResolve(); // combine this with ObjectAssign() ?
+	void	ObjectChangeResolve();
 
 	private:
 	void	ObjectInsert();
 	void	ObjectRemove();
-	void	ObjectAssign(); // combine this with ObjectChangeResolve() ?
-	void	ObjectAssignBox();
-	void	ObjectAssignColor();
 
 	protected:
 	virtual void	RelayObjectInsert();
 	virtual void	RelayObjectRemove();
-	virtual void	RelayObjectAssignBox();
-	virtual void	RelayObjectAssignColor();
+
+
+
+	private:
+	void	ObjectAssignBox();
+
+	private:
+	bool	ObjectAssignBoxIsRequested;
+	protected:
+	void	ObjectAssignBoxRequest();
+	private:
+	void	ObjectAssignBoxResolve();
+
+
+
+	private:
+	void	ObjectAssignColor();
+
+	private:
+	bool	ObjectAssignColorIsRequested;
+	public:
+	void	ObjectAssignColorRequest();
+	private:
+	void	ObjectAssignColorResolve();
+
+
+
+	public:
+	void	Assign();
+
+	protected:
+	virtual void	RelayAssign();
 
 
 
@@ -247,9 +282,6 @@ class Base
 
 	Base(const Base & other) = delete;
 	Base & operator=(const Base & other) = delete;
-
-	public:
-	void	Update();
 
 
 

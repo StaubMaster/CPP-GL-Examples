@@ -32,45 +32,40 @@ bool UI::Control::CheckBox::IsChecked()
 void UI::Control::CheckBox::Toggle()
 {
 	Checked = !Checked;
-	ObjectNewColor = true;
+	ObjectAssignColorRequest();
 }
 void UI::Control::CheckBox::Check(bool state)
 {
 	Checked = state;
-	ObjectNewColor = true;
+	ObjectAssignColorRequest();
 }
 
 
 
-void UI::Control::CheckBox::RelayObjectAssignColor()
+ColorF4 UI::Control::CheckBox::ColorMake() const
 {
 	if (Manager -> Hovering != this)
 	{
 		if (!Checked)
 		{
-			Object.Color() = ColorDefault;
+			return ColorDefault;
 		}
 		else
 		{
-			Object.Color() = ColorChecked;
+			return ColorChecked;
 		}
 	}
 	else
 	{
 		if (!Checked)
 		{
-			Object.Color() = ColorHover;
+			return ColorHover;
 		}
 		else
 		{
-			Object.Color() = ColorCheckedHover;
+			return ColorCheckedHover;
 		}
 	}
-}
-void UI::Control::CheckBox::RelayHover(HoverArgs args)
-{
-	(void)args;
-	ObjectNewColor = true;
 }
 
 
@@ -79,11 +74,10 @@ void UI::Control::CheckBox::RelayClick(ClickArgs params)
 {
 	if (!IsInteractible()) { return; }
 
-	//if (params.Action == Action::Press || params.Action == Action::Release)
 	if (params.Action == Action::Press)
 	{
 		Checked = !Checked;
-		ObjectNewColor = true;
+		ObjectAssignColorRequest();
 		ClickFunc.TryInvoke(params);
 	}
 }

@@ -174,22 +174,6 @@ void UI::Control::Manager::Draw()
 
 	Shader.Bind();
 
-	//Buffer.Bind();
-	//Buffer.MainBuffer.Update();
-	//Buffer.InstBuffer.Update();
-
-	//Buffer.InitAttributeLayoutMain(Buffer.MainBuffer);
-	//Buffer.InitAttributeLayoutInst(Buffer.InstBuffer);
-
-	//Buffer.ChangeAttributeLayoutMain(BufferLayoutMain);
-	//Buffer.ChangeAttributeLayoutInst(BufferLayoutInst);
-
-//	Buffer.MainBuffer.Bind();
-//	BufferLayoutMain.Bind();
-//
-//	Buffer.InstBuffer.Bind();
-//	BufferLayoutInst.Bind();
-
 	Buffer.Bind();
 	Buffer.Draw();
 }

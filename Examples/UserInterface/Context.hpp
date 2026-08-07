@@ -2,12 +2,14 @@
 # define USER_INTERFACE_CONTEXT_HPP
 
 # include "ContextBase.hpp"
-# include "Menu0.hpp"
-# include "Menu1.hpp"
-# include "Menu2.hpp"
-# include "Menu3.hpp"
-# include "TestScroll.hpp"
-# include "TestList.hpp"
+
+# include "Menu/0.hpp"
+# include "Menu/1.hpp"
+# include "Menu/2.hpp"
+# include "Menu/3.hpp"
+
+# include "Test/Scroll.hpp"
+# include "Test/List.hpp"
 
 # include "UIManager.hpp"
 

@@ -35,10 +35,9 @@ class CheckBox : public Base
 	void	Check(bool state);
 
 	protected:
-	void	RelayObjectAssignColor() override;
-	void	RelayHover(HoverArgs args) override;
+	ColorF4		ColorMake() const override;
 
-	public:
+	protected:
 	void	RelayClick(ClickArgs params) override;
 };
 

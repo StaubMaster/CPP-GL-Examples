@@ -74,12 +74,12 @@ bool UI::Control::Base::IsEnabled() const
 void UI::Control::Base::MakeEnabled()
 {
 	_Enabled = true;
-	ObjectNewColor = true;
+	ObjectAssignColorRequest();
 }
 void UI::Control::Base::MakeDisabled()
 {
 	_Enabled = false;
-	ObjectNewColor = true;
+	ObjectAssignColorRequest();
 }
 
 bool UI::Control::Base::IsThisVisible() const
@@ -150,7 +150,7 @@ void UI::Control::Base::BoxUpdate()
 		BoxContent.Min = BoxDisplay.Min + AnchorBoarder.Min + AnchorPadding.Min;
 		BoxContent.Max = BoxDisplay.Max - AnchorBoarder.Max - AnchorPadding.Max;
 		BoxUpdateIsRequested = false;
-		ObjectNewBox = true;
+		ObjectAssignBoxRequest();
 	}
 	RelayBoxUpdate();
 }
@@ -227,6 +227,38 @@ void UI::Control::Base::UpdateAutoSize_Y_StackMinFit()
 
 
 
+ColorF4 UI::Control::Base::ColorMake() const
+{
+	if (Manager -> Hovering != this)
+	{
+		return ColorDefault;
+	}
+	else
+	{
+		return ColorHover;
+	}
+}
+
+
+
+void UI::Control::Base::Update()
+{
+	if (IsVisible())
+	{
+		BoxUpdateResolve();
+	}
+
+	RelayUpdate();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> Update();
+	}
+}
+
+void UI::Control::Base::RelayUpdate() { }
+
+
+
 void UI::Control::Base::ObjectChangeRequest()
 {
 	ObjectChangeIsRequested = true;
@@ -258,9 +290,8 @@ void UI::Control::Base::ObjectInsert()
 		Object.Create();
 		Object.Layer() = Depth;
 
-		BoxUpdateIsRequested = true;
-		ObjectNewBox = true; // this is set then Box Request is resolved
-		ObjectNewColor = true;
+		BoxUpdateRequest();
+		ObjectAssignColorRequest();
 	}
 	RelayObjectInsert();
 }
@@ -276,22 +307,12 @@ void UI::Control::Base::ObjectRemove()
 	}
 	RelayObjectRemove();
 }
-void UI::Control::Base::ObjectAssign()
-{
-	if (Object.Is())
-	{
-		if (ObjectNewBox)
-		{
-			ObjectAssignBox();
-			ObjectNewBox = false;
-		}
-		if (ObjectNewColor)
-		{
-			ObjectAssignColor();
-			ObjectNewColor = false;
-		}
-	}
-}
+
+void UI::Control::Base::RelayObjectInsert() { }
+void UI::Control::Base::RelayObjectRemove() { }
+
+
+
 void UI::Control::Base::ObjectAssignBox()
 {
 	Object.Box() = BoxDisplay;
@@ -304,25 +325,61 @@ void UI::Control::Base::ObjectAssignBox()
 	{
 		Object.Bound() = BoxF2();
 	}
-	RelayObjectAssignBox();
-}
-void UI::Control::Base::ObjectAssignColor()
-{
-	if (Manager -> Hovering != this)
-	{
-		Object.Color() = ColorDefault;
-	}
-	else
-	{
-		Object.Color() = ColorHover;
-	}
-	RelayObjectAssignColor();
 }
 
-void UI::Control::Base::RelayObjectInsert() { }
-void UI::Control::Base::RelayObjectRemove() { }
-void UI::Control::Base::RelayObjectAssignBox() { }
-void UI::Control::Base::RelayObjectAssignColor() { }
+void UI::Control::Base::ObjectAssignBoxRequest()
+{
+	ObjectAssignBoxIsRequested = true;
+}
+void UI::Control::Base::ObjectAssignBoxResolve()
+{
+	if (ObjectAssignBoxIsRequested)
+	{
+		ObjectAssignBox();
+		ObjectAssignBoxIsRequested = false;
+	}
+}
+
+
+
+void UI::Control::Base::ObjectAssignColor()
+{
+	Object.Color() = ColorMake();
+}
+
+void UI::Control::Base::ObjectAssignColorRequest()
+{
+	ObjectAssignColorIsRequested = true;
+}
+void UI::Control::Base::ObjectAssignColorResolve()
+{
+	if (ObjectAssignColorIsRequested)
+	{
+		ObjectAssignColor();
+		ObjectAssignColorIsRequested = false;
+	}
+}
+
+
+
+void UI::Control::Base::Assign()
+{
+	ObjectChangeResolve();
+
+	if (Object.Is())
+	{
+		ObjectAssignBoxResolve();
+		ObjectAssignColorResolve();
+	}
+
+	RelayAssign();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> Assign();
+	}
+}
+
+void UI::Control::Base::RelayAssign() { }
 
 
 
@@ -355,8 +412,8 @@ UI::Control::Base::Base()
 	, AutoSizerXType(EAutoSizerType::None)
 	, AutoSizerYType(EAutoSizerType::None)
 	, Object()
-	, ObjectNewBox(false)
-	, ObjectNewColor(false)
+	, ObjectAssignBoxIsRequested(false)
+	, ObjectAssignColorIsRequested(false)
 {
 	AnchorSize = VectorF2(0, 0);
 	AnchorNormal = VectorF2(0, 0);
@@ -369,23 +426,6 @@ UI::Control::Base::Base()
 	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
 	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
-}
-
-void UI::Control::Base::Update()
-{
-	ObjectChangeResolve();
-
-	if (IsVisible())
-	{
-		BoxUpdateResolve();
-	}
-
-	ObjectAssign();
-
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> Update();
-	}
 }
 
 

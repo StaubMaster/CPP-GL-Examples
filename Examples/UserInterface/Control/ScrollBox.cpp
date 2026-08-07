@@ -1,4 +1,4 @@
-#include "ScrollBox.hpp"
+#include "Control/ScrollBox.hpp"
 #include "ValueType/Box/F1.hpp"
 
 
@@ -89,5 +89,6 @@ void UI::Control::ScrollBox::RelayScroll(ScrollArgs args)
 	float val = ScrollBar.GetValueY();
 	val -= args.Y * 5;
 	ScrollBar.SetValueY(val);
-	ScrollBar.ClampValue();
+//	ScrollBar.ClampValue();
+//	ScrollBar.PutSliderNub();
 }
