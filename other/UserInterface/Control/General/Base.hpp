@@ -68,6 +68,20 @@ change in Box
 	changes children
 */
 
+enum class HoverType
+{
+	Enter,
+	Move,
+	Leave,
+};
+struct HoverArgs
+{
+	HoverType			Type;
+	DisplayPosition		Position;
+
+	HoverArgs(HoverType type, DisplayPosition position);
+};
+
 namespace UI
 {
 class Manager;
@@ -163,14 +177,14 @@ class Base
 	void	BoxUpdate();
 
 	protected:
+	virtual void	RelayBoxUpdate();
+
+	protected:
 	bool	BoxUpdateIsRequested;
 	public:
 	void	BoxUpdateRequest();
 	private:
 	void	BoxUpdateResolve();
-
-	protected:
-	virtual void	RelayBoxUpdate();
 
 
 
@@ -213,31 +227,66 @@ class Base
 	//Color		ColorDisabled; // Gray Text
 	ColorF4		ColorHover;
 
+	protected:
+	virtual ColorF4		ColorMake() const;
+
+
+
+	public:
+	void	Update();
+
+	protected:
+	virtual void	RelayUpdate();
+
 
 
 	protected:
 	Control::Object		Object;
-	bool				ObjectNewBox;
-	public:
-	bool				ObjectNewColor;
-
-	private:
-	bool	ObjectChangeIsRequested;
-	void	ObjectChangeRequest();
-	void	ObjectChangeResolve(); // combine this with ObjectAssign() ?
 
 	private:
 	void	ObjectInsert();
 	void	ObjectRemove();
-	void	ObjectAssign(); // combine this with ObjectChangeResolve() ?
-	void	ObjectAssignBox();
-	void	ObjectAssignColor();
 
 	protected:
 	virtual void	RelayObjectInsert();
 	virtual void	RelayObjectRemove();
-	virtual void	RelayObjectAssignBox();
-	virtual void	RelayObjectAssignColor();
+
+	private:
+	bool	ObjectChangeIsRequested;
+	void	ObjectChangeRequest();
+	void	ObjectChangeResolve();
+
+
+
+	private:
+	void	ObjectAssignBox();
+
+	private:
+	bool	ObjectAssignBoxIsRequested;
+	protected:
+	void	ObjectAssignBoxRequest();
+	private:
+	void	ObjectAssignBoxResolve();
+
+
+
+	private:
+	void	ObjectAssignColor();
+
+	private:
+	bool	ObjectAssignColorIsRequested;
+	public:
+	void	ObjectAssignColorRequest();
+	private:
+	void	ObjectAssignColorResolve();
+
+
+
+	public:
+	void	ObjectAssign();
+
+	protected:
+	virtual void	RelayObjectAssign();
 
 
 
@@ -247,9 +296,6 @@ class Base
 
 	Base(const Base & other) = delete;
 	Base & operator=(const Base & other) = delete;
-
-	public:
-	void	Update();
 
 
 
@@ -276,14 +322,6 @@ class Base
 	public:
 	Base *	FindHover(const VectorF2 & mouse);
 
-	public:
-	enum class HoverArgs
-	{
-		Enter,
-		Move,
-		Leave,
-	}; // should be a struct that also stores position
-
 
 
 	/* User Relay Invoker
@@ -299,7 +337,7 @@ class Base
 	virtual void	RelayHover(HoverArgs args);
 	virtual void	RelayClick(ClickArgs args);
 	virtual void	RelayScroll(ScrollArgs args);
-	virtual void	RelayCursorDrag(DragArgs args);
+	virtual void	RelayDrag(DragArgs args);
 	virtual void	RelayKey(KeyArgs args);
 	virtual void	RelayText(TextArgs args);
 	/* User Relay vs Func Pointer

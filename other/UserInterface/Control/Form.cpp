@@ -76,11 +76,11 @@ void UI::Control::Form::RelayHover(HoverArgs args)
 	{
 		Manager -> CursorsUseResizeH();
 	}*/
-	if (args == HoverArgs::Leave)
+	if (args.Type == HoverType::Leave)
 	{
 		Manager -> CursorsUseDefault();
 	}
-	if (args == HoverArgs::Move)
+	if (args.Type == HoverType::Move)
 	{
 		EBoxChangeType type = FindChangingArea(Manager -> CursorPosition);
 		if (type == EBoxChangeType::Move) { Manager -> CursorsUseDefault(); }
@@ -95,7 +95,7 @@ void UI::Control::Form::RelayHover(HoverArgs args)
 		else { Manager -> CursorsUseDefault(); }
 	}
 }
-void UI::Control::Form::RelayCursorDrag(DragArgs args)
+void UI::Control::Form::RelayDrag(DragArgs args)
 {
 	if (args.Action == Action::Press)
 	{

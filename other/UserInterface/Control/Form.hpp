@@ -41,7 +41,7 @@ class Form : public Base
 
 	public:
 	void	RelayHover(HoverArgs args) override;
-	void	RelayCursorDrag(DragArgs args) override;
+	void	RelayDrag(DragArgs args) override;
 };
 
 };

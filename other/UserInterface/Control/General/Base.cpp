@@ -5,6 +5,13 @@
 
 
 
+HoverArgs::HoverArgs(HoverType type, DisplayPosition position)
+	: Type(type)
+	, Position(position)
+{ }
+
+
+
 void UI::Control::Base::ChangeManager(UI::Manager * manager)
 {
 	Manager = manager;
@@ -74,12 +81,12 @@ bool UI::Control::Base::IsEnabled() const
 void UI::Control::Base::MakeEnabled()
 {
 	_Enabled = true;
-	ObjectNewColor = true;
+	ObjectAssignColorRequest();
 }
 void UI::Control::Base::MakeDisabled()
 {
 	_Enabled = false;
-	ObjectNewColor = true;
+	ObjectAssignColorRequest();
 }
 
 bool UI::Control::Base::IsThisVisible() const
@@ -149,11 +156,13 @@ void UI::Control::Base::BoxUpdate()
 		BoxDisplay = Anchor.Calculate(Parent -> BoxContent);
 		BoxContent.Min = BoxDisplay.Min + AnchorBoarder.Min + AnchorPadding.Min;
 		BoxContent.Max = BoxDisplay.Max - AnchorBoarder.Max - AnchorPadding.Max;
-		BoxUpdateIsRequested = false;
-		ObjectNewBox = true;
+
+		ObjectAssignBoxRequest();
 	}
 	RelayBoxUpdate();
 }
+
+void UI::Control::Base::RelayBoxUpdate() { }
 
 void UI::Control::Base::BoxUpdateRequest()
 {
@@ -169,10 +178,9 @@ void UI::Control::Base::BoxUpdateResolve()
 	if (BoxUpdateIsRequested)
 	{
 		BoxUpdate();
+		BoxUpdateIsRequested = false;
 	}
 }
-
-void UI::Control::Base::RelayBoxUpdate() { }
 
 
 
@@ -227,6 +235,67 @@ void UI::Control::Base::UpdateAutoSize_Y_StackMinFit()
 
 
 
+ColorF4 UI::Control::Base::ColorMake() const
+{
+	if (Manager -> Hovering != this)
+	{
+		return ColorDefault;
+	}
+	else
+	{
+		return ColorHover;
+	}
+}
+
+
+
+void UI::Control::Base::Update()
+{
+	if (IsVisible())
+	{
+		BoxUpdateResolve();
+	}
+
+	RelayUpdate();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> Update();
+	}
+}
+
+void UI::Control::Base::RelayUpdate() { }
+
+
+
+void UI::Control::Base::ObjectInsert()
+{
+	if (!Object.Is() && Manager != nullptr)
+	{
+		Object.Create();
+		Object.Layer() = Depth;
+
+		BoxUpdateIsRequested = true;
+		ObjectAssignBoxRequest(); // this is set then Box Request is resolved
+		ObjectAssignColorRequest();
+	}
+	RelayObjectInsert();
+}
+void UI::Control::Base::ObjectRemove()
+{
+	if (Object.Is() || Manager == nullptr)
+	{
+		if (Object.Is())
+		{
+			Object.Hide();
+		}
+		Object.Delete();
+	}
+	RelayObjectRemove();
+}
+
+void UI::Control::Base::RelayObjectInsert() { }
+void UI::Control::Base::RelayObjectRemove() { }
+
 void UI::Control::Base::ObjectChangeRequest()
 {
 	ObjectChangeIsRequested = true;
@@ -251,47 +320,8 @@ void UI::Control::Base::ObjectChangeResolve()
 	}
 }
 
-void UI::Control::Base::ObjectInsert()
-{
-	if (!Object.Is() && Manager != nullptr)
-	{
-		Object.Create();
-		Object.Layer() = Depth;
 
-		BoxUpdateIsRequested = true;
-		ObjectNewBox = true; // this is set then Box Request is resolved
-		ObjectNewColor = true;
-	}
-	RelayObjectInsert();
-}
-void UI::Control::Base::ObjectRemove()
-{
-	if (Object.Is() || Manager == nullptr)
-	{
-		if (Object.Is())
-		{
-			Object.Hide();
-		}
-		Object.Delete();
-	}
-	RelayObjectRemove();
-}
-void UI::Control::Base::ObjectAssign()
-{
-	if (Object.Is())
-	{
-		if (ObjectNewBox)
-		{
-			ObjectAssignBox();
-			ObjectNewBox = false;
-		}
-		if (ObjectNewColor)
-		{
-			ObjectAssignColor();
-			ObjectNewColor = false;
-		}
-	}
-}
+
 void UI::Control::Base::ObjectAssignBox()
 {
 	Object.Box() = BoxDisplay;
@@ -304,25 +334,57 @@ void UI::Control::Base::ObjectAssignBox()
 	{
 		Object.Bound() = BoxF2();
 	}
-	RelayObjectAssignBox();
 }
-void UI::Control::Base::ObjectAssignColor()
+void UI::Control::Base::ObjectAssignBoxRequest()
 {
-	if (Manager -> Hovering != this)
+	ObjectAssignBoxIsRequested = true;
+}
+void UI::Control::Base::ObjectAssignBoxResolve()
+{
+	if (ObjectAssignBoxIsRequested)
 	{
-		Object.Color() = ColorDefault;
+		ObjectAssignBox();
+		ObjectAssignBoxIsRequested = false;
 	}
-	else
-	{
-		Object.Color() = ColorHover;
-	}
-	RelayObjectAssignColor();
 }
 
-void UI::Control::Base::RelayObjectInsert() { }
-void UI::Control::Base::RelayObjectRemove() { }
-void UI::Control::Base::RelayObjectAssignBox() { }
-void UI::Control::Base::RelayObjectAssignColor() { }
+void UI::Control::Base::ObjectAssignColor()
+{
+	Object.Color() = ColorMake();
+}
+void UI::Control::Base::ObjectAssignColorRequest()
+{
+	ObjectAssignColorIsRequested = true;
+}
+void UI::Control::Base::ObjectAssignColorResolve()
+{
+	if (ObjectAssignColorIsRequested)
+	{
+		ObjectAssignColor();
+		ObjectAssignColorIsRequested = false;
+	}
+}
+
+
+
+void UI::Control::Base::ObjectAssign()
+{
+	ObjectChangeResolve();
+
+	if (Object.Is())
+	{
+		ObjectAssignBoxResolve();
+		ObjectAssignColorResolve();
+	}
+
+	RelayObjectAssign();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> ObjectAssign();
+	}
+}
+
+void UI::Control::Base::RelayObjectAssign() { }
 
 
 
@@ -355,8 +417,9 @@ UI::Control::Base::Base()
 	, AutoSizerXType(EAutoSizerType::None)
 	, AutoSizerYType(EAutoSizerType::None)
 	, Object()
-	, ObjectNewBox(false)
-	, ObjectNewColor(false)
+	, ObjectChangeIsRequested(false)
+	, ObjectAssignBoxIsRequested(false)
+	, ObjectAssignColorIsRequested(false)
 {
 	AnchorSize = VectorF2(0, 0);
 	AnchorNormal = VectorF2(0, 0);
@@ -369,23 +432,6 @@ UI::Control::Base::Base()
 	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
 	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
-}
-
-void UI::Control::Base::Update()
-{
-	ObjectChangeResolve();
-
-	if (IsVisible())
-	{
-		BoxUpdateResolve();
-	}
-
-	ObjectAssign();
-
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> Update();
-	}
 }
 
 
@@ -487,6 +533,6 @@ UI::Control::Base * UI::Control::Base::FindHover(const VectorF2 & mouse)
 void UI::Control::Base::RelayHover(HoverArgs args) { (void)args; }
 void UI::Control::Base::RelayClick(ClickArgs args) { (void)args; }
 void UI::Control::Base::RelayScroll(ScrollArgs args) { (void)args; }
-void UI::Control::Base::RelayCursorDrag(DragArgs args) { (void)args; }
+void UI::Control::Base::RelayDrag(DragArgs args) { (void)args; }
 void UI::Control::Base::RelayKey(KeyArgs args) { (void)args; }
 void UI::Control::Base::RelayText(TextArgs args) { (void)args; }

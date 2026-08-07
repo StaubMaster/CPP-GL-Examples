@@ -39,25 +39,25 @@ float UI::Control::Slider::GetValueY() const { return Value.Y; }
 void UI::Control::Slider::SetValue(VectorF2 val)
 {
 	Value = val;
-	//ClampValue();
+	ClampValue();
+	PutSliderNub();
 	ValueXChangedFunc.TryInvoke(Value.X);
 	ValueYChangedFunc.TryInvoke(Value.Y);
 	ValueChangedFunc.TryInvoke(Value);
-	PutSliderNub();
 }
 void UI::Control::Slider::SetValueX(float val)
 {
 	Value.X = val;
-	//ClampValue();
-	ValueXChangedFunc.TryInvoke(Value.X);
+	ClampValue();
 	PutSliderNub();
+	ValueXChangedFunc.TryInvoke(Value.X);
 }
 void UI::Control::Slider::SetValueY(float val)
 {
 	Value.Y = val;
-	//ClampValue();
-	ValueYChangedFunc.TryInvoke(Value.Y);
+	ClampValue();
 	PutSliderNub();
+	ValueYChangedFunc.TryInvoke(Value.Y);
 }
 
 void UI::Control::Slider::PutSliderNub()
@@ -110,8 +110,6 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 	Value = slider_value;
 	ClampValue();
-
-//	SliderChanged = true;
 	PutSliderNub();
 
 	ValueXChangedFunc.TryInvoke(Value.X);
@@ -186,16 +184,16 @@ void UI::Control::Slider::RelayObjectRemove()
 
 
 
-void UI::Control::Slider::RelayClick(ClickArgs params)
+void UI::Control::Slider::RelayClick(ClickArgs args)
 {
-	if (params.Action == Action::Press)
+	if (args.Action == Action::Press)
 	{
-		ChangeValue(params.Position);
+		ChangeValue(args.Position);
 	}
 }
-void UI::Control::Slider::RelayCursorDrag(DragArgs params)
+void UI::Control::Slider::RelayDrag(DragArgs args)
 {
-	ChangeValue(params.Position);
+	ChangeValue(args.Position);
 }
 void UI::Control::Slider::RelayKey(KeyArgs args)
 {
@@ -206,6 +204,7 @@ void UI::Control::Slider::RelayKey(KeyArgs args)
 		if (args.Key == Keys::Up)		{ Value.Y -= ValueResolution.Y; }
 		if (args.Key == Keys::Down)		{ Value.Y += ValueResolution.Y; }
 		ClampValue();
+		PutSliderNub();
 		if (args.Key == Keys::Left || args.Key == Keys::Right)
 		{
 			ValueXChangedFunc.TryInvoke(Value.X);
@@ -215,6 +214,5 @@ void UI::Control::Slider::RelayKey(KeyArgs args)
 			ValueYChangedFunc.TryInvoke(Value.Y);
 		}
 		ValueChangedFunc.TryInvoke(Value);
-		PutSliderNub();
 	}
 }

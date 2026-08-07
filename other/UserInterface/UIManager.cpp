@@ -157,7 +157,7 @@ void UI::Manager::MouseDrag(DragArgs args)
 {
 	if (Selected != nullptr)
 	{
-		Selected -> RelayCursorDrag(args);
+		Selected -> RelayDrag(args);
 	}
 }
 void UI::Manager::KeyBoardKey(KeyArgs args)
@@ -194,21 +194,21 @@ void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 		// or just dont update color until later ?
 		if (Hovering != nullptr)
 		{
-			Hovering -> ObjectNewColor = true;
-			Hovering -> RelayHover(UI::Control::Base::HoverArgs::Leave);
+			Hovering -> ObjectAssignColorRequest();
+			Hovering -> RelayHover(HoverArgs(HoverType::Leave, mouse_pos));
 		}
 		Hovering = control;
 		if (Hovering != nullptr)
 		{
-			Hovering -> ObjectNewColor = true;
-			Hovering -> RelayHover(UI::Control::Base::HoverArgs::Enter);
+			Hovering -> ObjectAssignColorRequest();
+			Hovering -> RelayHover(HoverArgs(HoverType::Enter, mouse_pos));
 		}
 	}
 	else
 	{
 		if (Hovering != nullptr)
 		{
-			Hovering -> RelayHover(UI::Control::Base::HoverArgs::Move);
+			Hovering -> RelayHover(HoverArgs(HoverType::Move, mouse_pos));
 		}
 	}
 }
@@ -271,6 +271,7 @@ void UI::Manager::GraphicsInit()
 void UI::Manager::Draw()
 {
 	WindowControl.Update();
+	WindowControl.ObjectAssign();
 
 	ControlManager.MakeInstances();
 	ControlManager.Draw();

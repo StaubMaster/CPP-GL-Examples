@@ -1,5 +1,5 @@
-#ifndef  UI_CONTROL_BASE_TEXT_HPP
-# define UI_CONTROL_BASE_TEXT_HPP
+#ifndef  UI_CONTROL_GENERAL_BASE_TEXT_HPP
+# define UI_CONTROL_GENERAL_BASE_TEXT_HPP
 
 # include "Control/General/Base.hpp"
 

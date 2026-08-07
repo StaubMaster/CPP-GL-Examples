@@ -69,8 +69,8 @@ class Slider : public Base
 	void	RelayObjectInsert() override;
 	void	RelayObjectRemove() override;
 
-	void	RelayClick(ClickArgs params) override;
-	void	RelayCursorDrag(DragArgs params) override;
+	void	RelayClick(ClickArgs args) override;
+	void	RelayDrag(DragArgs args) override;
 	void	RelayKey(KeyArgs args) override;
 	// Scroll
 

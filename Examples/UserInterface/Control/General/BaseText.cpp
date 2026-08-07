@@ -54,7 +54,14 @@ void UI::Control::BaseText::TextObjectAssignText()
 void UI::Control::BaseText::TextObjectAssignBound()
 {
 	TextObject.TextPosition() = BoxContent.Center();
-	TextObject.Bound() = BoxContent;
+	if (Object.Is())
+	{
+		TextObject.Bound() = Object.Bound().InnerBox(BoxContent);
+	}
+	else
+	{
+		TextObject.Bound() = BoxContent;
+	}
 }
 
 
