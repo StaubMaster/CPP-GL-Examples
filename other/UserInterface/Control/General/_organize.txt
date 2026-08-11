@@ -2,3 +2,43 @@
 move Manager/Object into Control/
 move all the Controls into Control/Controls
 change ControlsInclude.hpp to Control/Include.hpp
+
+
+
+Depth
+	Intersecting DisplayBox-es
+		if different Layer()
+			higher Layer() should have a lower Depth (drawn above)
+			lower Layer() should have a higher Depth (drawn below)
+		if same Layer()
+			drawing Depth is undefined
+Forms
+	Depth ranges of different Forms should not overlap
+	everything in a Form should be drawn above or below everything in a different Form
+	Form Layering should be based on creation / Selection
+	Form created last is in front
+	Form selected last is in front
+
+
+
+Depth Range for Forms
+
+LayerSum = 0
+for each Form
+	LayerSum += LayerLimit
+
+DepthSize = 1 / LayerSum
+DepthOffset = 0
+for each Form
+	for each Child
+		Depth = (Layer * DepthSize) + DepthOffset
+	DepthOffset += LayerLimit * DepthSize
+
+
+
+or
+
+
+
+LayerIndex
+LayerTotalIndex

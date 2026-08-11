@@ -33,8 +33,9 @@ UI::Control::ScrollBox::ScrollBox()
 	ChildInsert(ScrollBar);
 }
 
-void UI::Control::ScrollBox::RelayBoxUpdate()
+void UI::Control::ScrollBox::BoxUpdate()
 {
+	Base::BoxUpdate();
 	CalcScroll();
 }
 

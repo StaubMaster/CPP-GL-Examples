@@ -23,10 +23,12 @@ class TextBox : public Base
 	~TextBox();
 	TextBox();
 
+	protected:
+	void	RelayAssignDepth() override;
 	public:
-	void	RelayBoxUpdate() override;
-	void	RelayObjectInsert() override;
-	void	RelayObjectRemove() override;
+	void	BoxUpdate() override;
+	void	ObjectInsert() override;
+	void	ObjectRemove() override;
 
 	public:
 	void	RelayKey(KeyArgs args) override;

@@ -20,7 +20,7 @@ class ScrollBox : public Base
 	ScrollBox();
 
 	public:
-	void	RelayBoxUpdate() override;
+	void	BoxUpdate() override;
 
 	public:
 	/* CalcScroll

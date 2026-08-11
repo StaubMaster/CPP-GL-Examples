@@ -194,13 +194,13 @@ void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 		// or just dont update color until later ?
 		if (Hovering != nullptr)
 		{
-			Hovering -> ObjectAssignColorRequest();
+			Hovering -> ColorUpdateRequest();
 			Hovering -> RelayHover(HoverArgs(HoverType::Leave, mouse_pos));
 		}
 		Hovering = control;
 		if (Hovering != nullptr)
 		{
-			Hovering -> ObjectAssignColorRequest();
+			Hovering -> ColorUpdateRequest();
 			Hovering -> RelayHover(HoverArgs(HoverType::Enter, mouse_pos));
 		}
 	}
@@ -270,8 +270,8 @@ void UI::Manager::GraphicsInit()
 
 void UI::Manager::Draw()
 {
-	WindowControl.Update();
-	WindowControl.ObjectAssign();
+	WindowControl.RecursiveUpdate();
+	WindowControl.RecursiveObjectAssign();
 
 	ControlManager.MakeInstances();
 	ControlManager.Draw();

@@ -40,6 +40,7 @@ struct Object
 
 	BoxF2 &			Bound();
 	ColorF4 &		Color();
+	float &			Depth();
 
 	void	AlignTopLeft();
 	void	AlignTopMiddle();

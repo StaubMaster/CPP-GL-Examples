@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_LABEL_HPP
 # define UI_CONTROL_LABEL_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/General/BaseText.hpp"
 
 #include "Text/Object.hpp"
 
@@ -9,25 +9,14 @@ namespace UI
 {
 namespace Control
 {
-class Label : public Base
+class Label : public BaseText
 {
 	public:
 	~Label();
 	Label();
 
-	public:
-	void	RelayBoxUpdate() override;
-	void	RelayObjectInsert() override;
-	void	RelayObjectRemove() override;
-
 	private:
-	Text::Object	TextObject;
-	void			PutCharactersEntrys();
-	private:
-	std::string		Text;
-	public:
-	std::string	GetText() const;
-	void		SetText(std::string text);
+	void	TextObjectAssignPosition() override;
 };
 };
 };

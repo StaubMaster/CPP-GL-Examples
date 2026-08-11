@@ -29,12 +29,15 @@ void UserInterfaceContext::Make()
 	UIManager.WindowControl.ChildInsert(Menu3);
 	UIManager.WindowControl.ChildInsert(TestScroll);
 	UIManager.WindowControl.ChildInsert(TestList);
+	UIManager.WindowControl.UpdateDepth();
+
 	Menu1.Hide();
 	Menu2.Hide();
 	Menu3.Hide();
 	Menu3.Hide();
 	TestScroll.Hide();
 	TestList.Hide();
+
 	Menu0.Menu1Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu1);
 	Menu0.Menu2Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu2);
 	Menu0.Menu3Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu3);
@@ -78,7 +81,7 @@ void UserInterfaceContext::ToggleTestList(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		Menu0.Hide();
+		//Menu0.Hide();
 		TestList.Show();
 	}
 }

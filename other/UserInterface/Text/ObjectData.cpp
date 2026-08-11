@@ -18,6 +18,7 @@ UI::Text::ObjectData::ObjectData()
 	, CharacterAlignmentY(Alignment::Max)
 	, Bound()
 	, Color()
+	, Depth(1.0f)
 	, DisplayTextCursor(false)
 	, TextCursorIndex(0)
 { }

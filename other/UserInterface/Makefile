@@ -15,6 +15,7 @@ FILES := \
 	Control/General/ObjectData.cpp \
 	Control/General/Object.cpp \
 	Control/General/Base.cpp \
+	Control/General/BaseText.cpp \
 \
 	Control/Window.cpp \
 	Control/Form.cpp \

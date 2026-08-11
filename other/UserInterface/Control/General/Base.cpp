@@ -25,18 +25,6 @@ void UI::Control::Base::ChangeManager(UI::Manager & manager)
 	ChangeManager(&manager);
 }
 
-unsigned int UI::Control::Base::Layer() const
-{
-	unsigned int layer = 0;
-	const Base * control = this;
-	while (control -> Parent != nullptr)
-	{
-		layer++;
-		control = control -> Parent;
-	}
-	return layer;
-}
-
 void UI::Control::Base::ChildInsert(Base & control)
 {
 	Children.Insert(&control);
@@ -44,6 +32,7 @@ void UI::Control::Base::ChildInsert(Base & control)
 	control.ChangeManager(Manager);
 	control.ObjectChangeRequest();
 	control.BoxUpdateRequest();
+	control.ColorUpdateRequest();
 }
 void UI::Control::Base::ChildInsert(Base * control)
 {
@@ -72,6 +61,57 @@ void UI::Control::Base::ChildRemove(Base * control)
 	}
 }
 
+unsigned int UI::Control::Base::Layer() const
+{
+	if (Parent != nullptr)
+	{
+		return 1 + Parent -> Layer();
+	}
+	return 0;
+
+	unsigned int layer = 0;
+	const Base * control = this;
+	while (control -> Parent != nullptr)
+	{
+		layer++;
+		control = control -> Parent;
+	}
+	return layer;
+}
+unsigned int UI::Control::Base::LayerLimit() const
+{
+	if (Children.Count() != 0)
+	{
+		unsigned int limit = 0;
+		for (unsigned int i = 0; i < Children.Count(); i++)
+		{
+			const Base * control = Children[i];
+			if (control == nullptr) { continue; }
+			unsigned int l = control -> LayerLimit();
+			if (l > limit) { limit = l; }
+		}
+		return 1 + limit;
+	}
+	return 0;
+}
+
+#include <iostream>
+void UI::Control::Base::AssignDepth(float offset, float size, unsigned int layer)
+{
+	std::cout << "Layer:Depth: " << layer << ':' << ((layer * size) + offset) << '\n';
+	Depth = 1.0f - ((layer * size) + offset);
+	RelayAssignDepth();
+
+	layer++;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Base * control = Children[i];
+		if (control == nullptr) { continue; }
+		control -> AssignDepth(offset, size, layer);
+	}
+}
+void UI::Control::Base::RelayAssignDepth() { }
+
 
 
 bool UI::Control::Base::IsEnabled() const
@@ -81,12 +121,12 @@ bool UI::Control::Base::IsEnabled() const
 void UI::Control::Base::MakeEnabled()
 {
 	_Enabled = true;
-	ObjectAssignColorRequest();
+	ColorUpdateRequest();
 }
 void UI::Control::Base::MakeDisabled()
 {
 	_Enabled = false;
-	ObjectAssignColorRequest();
+	ColorUpdateRequest();
 }
 
 bool UI::Control::Base::IsThisVisible() const
@@ -154,15 +194,16 @@ void UI::Control::Base::BoxUpdate()
 	if (Parent != nullptr)
 	{
 		BoxDisplay = Anchor.Calculate(Parent -> BoxContent);
+
+		BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
+		BoxBoarder.Max = BoxDisplay.Max - AnchorBoarder.Max;
+
 		BoxContent.Min = BoxDisplay.Min + AnchorBoarder.Min + AnchorPadding.Min;
 		BoxContent.Max = BoxDisplay.Max - AnchorBoarder.Max - AnchorPadding.Max;
 
 		ObjectAssignBoxRequest();
 	}
-	RelayBoxUpdate();
 }
-
-void UI::Control::Base::RelayBoxUpdate() { }
 
 void UI::Control::Base::BoxUpdateRequest()
 {
@@ -235,15 +276,29 @@ void UI::Control::Base::UpdateAutoAnchor_Y_StackMinFit()
 
 
 
-ColorF4 UI::Control::Base::ColorMake() const
+void UI::Control::Base::ColorUpdate()
 {
 	if (Manager -> Hovering != this)
 	{
-		return ColorDefault;
+		Color = ColorDefault;
 	}
 	else
 	{
-		return ColorHover;
+		Color = ColorHover;
+	}
+	ObjectAssignColorRequest();
+}
+
+void UI::Control::Base::ColorUpdateRequest()
+{
+	ColorUpdateIsRequested = true;
+}
+void UI::Control::Base::ColorUpdateResolve()
+{
+	if (ColorUpdateIsRequested)
+	{
+		ColorUpdate();
+		ColorUpdateIsRequested = false;
 	}
 }
 
@@ -255,15 +310,17 @@ void UI::Control::Base::Update()
 	{
 		BoxUpdateResolve();
 	}
-
-	RelayUpdate();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> Update();
-	}
+	ColorUpdateResolve();
 }
 
-void UI::Control::Base::RelayUpdate() { }
+void UI::Control::Base::RecursiveUpdate()
+{
+	Update();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> RecursiveUpdate();
+	}
+}
 
 
 
@@ -272,13 +329,11 @@ void UI::Control::Base::ObjectInsert()
 	if (!Object.Is() && Manager != nullptr)
 	{
 		Object.Create();
-		Object.Layer() = Depth;
+		Object.Depth() = Depth;
 
 		BoxUpdateIsRequested = true;
-		ObjectAssignBoxRequest(); // this is set then Box Request is resolved
-		ObjectAssignColorRequest();
+		ColorUpdateRequest();
 	}
-	RelayObjectInsert();
 }
 void UI::Control::Base::ObjectRemove()
 {
@@ -290,11 +345,7 @@ void UI::Control::Base::ObjectRemove()
 		}
 		Object.Delete();
 	}
-	RelayObjectRemove();
 }
-
-void UI::Control::Base::RelayObjectInsert() { }
-void UI::Control::Base::RelayObjectRemove() { }
 
 void UI::Control::Base::ObjectChangeRequest()
 {
@@ -327,8 +378,7 @@ void UI::Control::Base::ObjectAssignBox()
 	Object.Box() = BoxDisplay;
 	if (Parent != nullptr)
 	{
-		Object.Bound().Min = Parent -> BoxDisplay.Min + Parent -> AnchorBoarder.Min;
-		Object.Bound().Max = Parent -> BoxDisplay.Max - Parent -> AnchorBoarder.Max;
+		Object.Bound() = Parent -> BoxBoarder;
 	}
 	else
 	{
@@ -350,7 +400,7 @@ void UI::Control::Base::ObjectAssignBoxResolve()
 
 void UI::Control::Base::ObjectAssignColor()
 {
-	Object.Color() = ColorMake();
+	Object.Color() = Color;
 }
 void UI::Control::Base::ObjectAssignColorRequest()
 {
@@ -370,21 +420,21 @@ void UI::Control::Base::ObjectAssignColorResolve()
 void UI::Control::Base::ObjectAssign()
 {
 	ObjectChangeResolve();
-
 	if (Object.Is())
 	{
 		ObjectAssignBoxResolve();
 		ObjectAssignColorResolve();
 	}
-
-	RelayObjectAssign();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> ObjectAssign();
-	}
 }
 
-void UI::Control::Base::RelayObjectAssign() { }
+void UI::Control::Base::RecursiveObjectAssign()
+{
+	ObjectAssign();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> RecursiveObjectAssign();
+	}
+}
 
 
 
@@ -416,6 +466,7 @@ UI::Control::Base::Base()
 	, BoxUpdateIsRequested(false)
 	, AutoAnchorXType(EAutoAnchorType::None)
 	, AutoAnchorYType(EAutoAnchorType::None)
+	, ColorUpdateIsRequested(false)
 	, Object()
 	, ObjectChangeIsRequested(false)
 	, ObjectAssignBoxIsRequested(false)

@@ -53,7 +53,7 @@ void UI::Control::BaseText::TextObjectAssignText()
 }
 void UI::Control::BaseText::TextObjectAssignBound()
 {
-	TextObject.TextPosition() = BoxContent.Center();
+	TextObjectAssignPosition();
 	if (Object.Is())
 	{
 		TextObject.Bound() = Object.Bound().InnerBox(BoxContent);
@@ -63,33 +63,54 @@ void UI::Control::BaseText::TextObjectAssignBound()
 		TextObject.Bound() = BoxContent;
 	}
 }
-
-
-
-void UI::Control::BaseText::RelayBoxUpdate()
+void UI::Control::BaseText::TextObjectAssignPosition()
 {
+	// Middle
+	TextObject.TextPosition() = BoxContent.Center();
+}
+
+
+
+void UI::Control::BaseText::RelayAssignDepth()
+{
+	if (TextObject.Is())
+	{
+		TextObject.Depth() = Depth - 0.001f;
+	}
+}
+
+
+
+void UI::Control::BaseText::BoxUpdate()
+{
+	Base::BoxUpdate();
 	TextObjectNewBound = true;
 	TextObjectAssign();
 }
 
 // is Checking Manager needed ?
-void UI::Control::BaseText::RelayObjectInsert()
+void UI::Control::BaseText::ObjectInsert()
 {
+	Base::ObjectInsert();
 	if (!TextObject.Is() && Manager != nullptr)
 	{
 		TextObject.Create();
 
+		// Middle
 		TextObject.TextAlignmentX() = Text::Alignment::Mid;
 		TextObject.TextAlignmentY() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentX() = Text::Alignment::Mid;
 		TextObject.CharacterAlignmentY() = Text::Alignment::Mid;
 
+		TextObject.Depth() = Depth - 0.001f;
+
 		TextObjectNewText = true;
 		TextObjectNewBound = true;
 	}
 }
-void UI::Control::BaseText::RelayObjectRemove()
+void UI::Control::BaseText::ObjectRemove()
 {
+	Base::ObjectRemove();
 	if (TextObject.Is() || Manager == nullptr)
 	{
 		TextObject.Delete();

@@ -13,6 +13,8 @@
 #include "Generics/Container/Binary.hpp"
 
 #include "Object.hpp"
+#include "ObjectData.hpp"
+
 
 #include "AnchorEnum.hpp"
 
@@ -96,13 +98,8 @@ class Base
 	void	ChangeManager(UI::Manager * manager);
 	void	ChangeManager(UI::Manager & manager);
 
-
-
 	protected: public:
 	Base *	Parent;
-
-	public:
-	unsigned int	Layer() const;
 
 	public: // temp
 	Container::Binary<Base *>	Children;
@@ -114,16 +111,26 @@ class Base
 	void	ChildRemove(Base & control);
 	void	ChildRemove(Base * control);
 
+	public:
+	unsigned int	Layer() const;
+	unsigned int	LayerLimit() const;
+
+	public:
+	float	Depth; // make this unsigend char. 255 should be more then enough Layers
+	// why so greedy ? just make this a uint32
+
+	public:
+	void	AssignDepth(float offset, float size, unsigned int layer);
+
+	protected:
+	virtual void	RelayAssignDepth();
+
 
 
 	public:
 	bool	Deletable;		//should be deleted when Parent is deleted
 
 
-
-	public:
-	float	Depth; // make this unsigend char. 255 should be more then enough Layers
-	// why so greedy ? just make this a uint32
 
 	protected:
 	bool	_Enabled;
@@ -170,14 +177,12 @@ class Base
 
 
 	public: //protected:
-	BoxF2	BoxDisplay;
-	BoxF2	BoxContent;
+	BoxF2	BoxDisplay; // used for displaying Control
+	BoxF2	BoxBoarder; // used for culling Children
+	BoxF2	BoxContent; // used for anchoring Children
 
-	public: //private:
-	void	BoxUpdate();
-
-	protected:
-	virtual void	RelayBoxUpdate();
+	public: //protected:
+	virtual void	BoxUpdate();
 
 	protected:
 	bool	BoxUpdateIsRequested;
@@ -213,28 +218,42 @@ class Base
 	ColorF4		ColorHover;
 
 	protected:
-	virtual ColorF4		ColorMake() const;
-
-
-
-	public:
-	void	Update();
+	ColorF4		Color;
 
 	protected:
-	virtual void	RelayUpdate();
+	virtual void	ColorUpdate();
+
+	private:
+	bool	ColorUpdateIsRequested;
+	public:
+	void	ColorUpdateRequest();
+	private:
+	void	ColorUpdateResolve();
+
+//	protected:
+//	virtual ColorF4		ColorMake() const;
 
 
+
+	protected:
+	virtual void	Update();
+
+	public:
+	void	RecursiveUpdate();
+
+
+
+//	protected: public:
+//	Control::ObjectData		Data;
+//	protected: public:
+//	void	PlaceInstance() const;
 
 	protected:
 	Control::Object		Object;
 
-	private:
-	void	ObjectInsert();
-	void	ObjectRemove();
-
 	protected:
-	virtual void	RelayObjectInsert();
-	virtual void	RelayObjectRemove();
+	virtual void	ObjectInsert();
+	virtual void	ObjectRemove();
 
 	private:
 	bool	ObjectChangeIsRequested;
@@ -267,11 +286,11 @@ class Base
 
 
 
-	public:
-	void	ObjectAssign();
-
 	protected:
-	virtual void	RelayObjectAssign();
+	virtual void	ObjectAssign();
+
+	public:
+	void	RecursiveObjectAssign();
 
 
 

@@ -13,10 +13,10 @@ struct ObjectData
 	bool	Remove = false;
 	bool	Display = true;
 
-	BoxF2		Box;
-	float		Layer = 0.0f;
+	float		Depth = 0.0f;
+	BoxF2		Box; // DisplayBox
 	ColorF4		Color;
-	BoxF2		Bound;
+	BoxF2		Bound; // BoarderBox
 
 	~ObjectData() = default;
 	ObjectData() = default;

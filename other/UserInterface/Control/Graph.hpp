@@ -32,9 +32,9 @@ class Graph : public Base
 	Graph();
 
 	public:
-	void	RelayBoxUpdate() override;
-	void	RelayObjectInsert() override;
-	void	RelayObjectRemove() override;
+	void	BoxUpdate() override;
+	void	ObjectInsert() override;
+	void	ObjectRemove() override;
 
 };
 

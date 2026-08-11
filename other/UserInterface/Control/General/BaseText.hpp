@@ -26,8 +26,9 @@ class BaseText : public Base
 	std::string		GetText() const;
 	void			SetText(std::string text);
 
-	private:
+	protected:
 	Text::Object	TextObject;
+	protected:
 	bool			TextObjectNewText;
 	bool			TextObjectNewBound;
 
@@ -35,13 +36,16 @@ class BaseText : public Base
 	void	TextObjectAssign();
 	void	TextObjectAssignText();
 	void	TextObjectAssignBound();
+	protected:
+	virtual void	TextObjectAssignPosition();
 
-
+	protected:
+	void	RelayAssignDepth() override;
 
 	public:
-	void	RelayBoxUpdate() override;
-	void	RelayObjectInsert() override;
-	void	RelayObjectRemove() override;
+	void	BoxUpdate() override;
+	void	ObjectInsert() override;
+	void	ObjectRemove() override;
 };
 };
 };

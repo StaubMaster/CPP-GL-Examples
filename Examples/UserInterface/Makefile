@@ -12,7 +12,6 @@ FILES := \
 	Menu/2.cpp \
 	Menu/3.cpp \
 \
-	Control/General/BaseText.cpp \
 	Control/ScrollBox.cpp \
 	Control/List.cpp \
 \

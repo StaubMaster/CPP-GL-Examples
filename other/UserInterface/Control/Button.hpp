@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_BUTTON_HPP
 # define UI_CONTROL_BUTTON_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/General/BaseText.hpp"
 
 # include "Generics/Function/Pointer.hpp"
 
@@ -13,7 +13,7 @@ namespace UI
 namespace Control
 {
 
-class Button : public Base
+class Button : public BaseText
 {
 	public:
 	FunctionPointer<ClickArgs>	ClickFunc;
@@ -22,22 +22,11 @@ class Button : public Base
 	~Button();
 	Button();
 
-	public:
-	void	RelayBoxUpdate() override;
-	void	RelayObjectInsert() override;
-	void	RelayObjectRemove() override;
+	private:
+	void	TextObjectAssignPosition() override;
 
 	public:
 	void	RelayClick(ClickArgs args) override;
-
-	private:
-	Text::Object	TextObject;
-	void			PutCharactersEntrys();
-	private:
-	std::string		Text;
-	public:
-	std::string	GetText() const;
-	void		SetText(std::string text);
 };
 
 };

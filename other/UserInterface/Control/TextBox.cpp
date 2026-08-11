@@ -79,8 +79,19 @@ void UI::Control::TextBox::SetText(std::string text)
 
 
 
-void UI::Control::TextBox::RelayBoxUpdate()
+void UI::Control::TextBox::RelayAssignDepth()
 {
+	if (TextObject.Is())
+	{
+		TextObject.Depth() = Depth - 0.001f;
+	}
+}
+
+
+
+void UI::Control::TextBox::BoxUpdate()
+{
+	Base::BoxUpdate();
 	if (TextObject.Is())
 	{
 		PutCharactersEntrys();
@@ -88,18 +99,27 @@ void UI::Control::TextBox::RelayBoxUpdate()
 	}
 }
 
-void UI::Control::TextBox::RelayObjectInsert()
+void UI::Control::TextBox::ObjectInsert()
 {
+	Base::ObjectInsert();
 	if (Manager != nullptr)
 	{
-		if (!TextObject.Is()) { TextObject.Create(); }
+		if (!TextObject.Is())
+		{
+			TextObject.Create();
+			TextObject.Depth() = Depth - 0.001f;
+		}
 	}
 }
-void UI::Control::TextBox::RelayObjectRemove()
+void UI::Control::TextBox::ObjectRemove()
 {
+	Base::ObjectRemove();
 	if (Manager == nullptr)
 	{
-		if (TextObject.Is()) { TextObject.Delete(); }
+		if (TextObject.Is())
+		{
+			TextObject.Delete();
+		}
 	}
 }
 
