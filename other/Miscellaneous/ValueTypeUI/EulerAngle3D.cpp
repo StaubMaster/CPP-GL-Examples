@@ -27,7 +27,7 @@ UI::Control::EulerAngle3D::EulerAngle3D(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::EulerAngle3D::Update()
+void UI::Control::EulerAngle3D::Syncronize()
 {
 	if (Object != nullptr)
 	{

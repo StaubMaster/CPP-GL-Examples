@@ -67,6 +67,7 @@ struct MultiformLayout : public Multiform::Layout
 
 
 # include "UI_Control_List.hpp"
+//# include "Control/ListBox.hpp"
 
 # include "UserTrans3DChange.hpp"
 
@@ -168,7 +169,7 @@ void	UserChange_Update();
 
 
 
-UI::Control::List	UIPolyHedraPalletList;
+ListForm	UIPolyHedraPalletList;
 bool	DoPolyHedraPalletChange;
 void	PolyHedraPalletChangeFunc(ClickArgs args);
 void	PolyHedraPalletUpdate();

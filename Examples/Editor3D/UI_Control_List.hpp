@@ -1,19 +1,21 @@
-#ifndef  UI_CONTROL_LIST
-# define UI_CONTROL_LIST
+#ifndef  LIST_FORM_HPP
+# define LIST_FORM_HPP
 
 # include "Control/Form.hpp"
-# include "Control/Button.hpp"
-# include "Generics/Container/Binary.hpp"
+# include "Control/ListBox.hpp"
 
-namespace UI
+struct ListForm : public UI::Control::Form
 {
-namespace Control
-{
-// improve this stuff
-// put in other/UserInterface
-struct List : public UI::Control::Form
-{
-	struct Item : public UI::Control::Button
+	UI::Control::ListBox	List;
+
+	void *		Object = nullptr;
+
+	~ListForm();
+	ListForm();
+
+	void	ItemFunc(const UI::Control::ListBox::Item & item);
+
+	/*struct Item : public UI::Control::Button
 	{
 		UI::Control::List &		List;
 		void *					Object;
@@ -24,9 +26,7 @@ struct List : public UI::Control::Form
 	void *						Object;
 	List();
 	void	Clear();
-	void	Func(ClickArgs args, void * obj);
-};
-};
+	void	Func(ClickArgs args, void * obj);*/
 };
 
 #endif

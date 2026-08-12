@@ -21,10 +21,10 @@ UI::Control::Trans3D::Trans3D(const char * name)
 
 
 
-void UI::Control::Trans3D::Update()
+void UI::Control::Trans3D::Syncronize()
 {
-	Position.Update();
-	Rotation.Update();
+	Position.Syncronize();
+	Rotation.Syncronize();
 }
 
 void UI::Control::Trans3D::Change(::Trans3D * obj)

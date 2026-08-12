@@ -37,7 +37,7 @@ struct PolyHedraObject : public GroupBox
 
 	NewPolyHedra::Basic3D::PalletObjectData * Object;
 	void	Change(::SceneObject_PolyHedraObject * obj);
-	void	Update();
+	void	Syncronize();
 };
 };
 };

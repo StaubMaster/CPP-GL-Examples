@@ -20,7 +20,7 @@ struct LightBase : public PropertyControl
 	LightBase(const char * name);
 
 	::LightBase * Object;
-	void	Update();
+	void	Syncronize();
 	void	Change(::LightBase * obj);
 
 	void	IntensityFunc(float val);

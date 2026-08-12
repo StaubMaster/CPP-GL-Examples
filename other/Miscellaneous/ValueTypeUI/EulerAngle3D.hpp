@@ -20,7 +20,7 @@ struct EulerAngle3D : public PropertyControl
 	EulerAngle3D(const char * name);
 
 	::EulerAngle3D * Object;
-	void	Update();
+	void	Syncronize();
 	void	Change(::EulerAngle3D * obj);
 };
 };

@@ -7,11 +7,12 @@ SceneObjectUI::~SceneObjectUI()
 { }
 SceneObjectUI::SceneObjectUI()
 	: Form()
+	, PolyHedraObject()
 	, LightAmbient("LightAmbient")
 	, LightSolar("LightSolar")
 	, LightSpot("LightSpot")
 {
-	AutoSizerYType = EAutoSizerType::FitFixed;
+	AutoAnchorYType = EAutoAnchorType::StackMinFit;
 
 	Anchor.X.AnchorMin(0, 400);
 	Anchor.Y.AnchorMin(0, 0);
@@ -31,7 +32,7 @@ SceneObjectUI::SceneObjectUI()
 	ChildInsert(LightSolar);
 	ChildInsert(LightSpot);
 
-	UpdateAutoSize();
+	UpdateAutoAnchor();
 }
 
 
@@ -89,12 +90,12 @@ void SceneObjectUI::Change(::SceneObject * obj)
 		}
 	}
 
-	UpdateAutoSize();
+	UpdateAutoAnchor();
 }
-void SceneObjectUI::Update()
+void SceneObjectUI::Syncronize()
 {
-	PolyHedraObject.Update();
-	LightAmbient.Update();
-	LightSolar.Update();
-	LightSpot.Update();
+	PolyHedraObject.Syncronize();
+	LightAmbient.Syncronize();
+	LightSolar.Syncronize();
+	LightSpot.Syncronize();
 }

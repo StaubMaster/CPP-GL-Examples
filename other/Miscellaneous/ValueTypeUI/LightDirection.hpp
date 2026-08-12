@@ -21,7 +21,7 @@ struct LightDirection : public PropertyControl
 	LightDirection(const char * name);
 
 	::LightDirection * Object;
-	void	Update();
+	void	Syncronize();
 	void	Change(::LightDirection * obj);
 };
 };

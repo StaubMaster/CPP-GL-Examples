@@ -21,10 +21,10 @@ UI::Control::LightDirection::LightDirection(const char * name)
 
 
 
-void UI::Control::LightDirection::Update()
+void UI::Control::LightDirection::Syncronize()
 {
-	Base.Update();
-	Dir.Update();
+	Base.Syncronize();
+	Dir.Syncronize();
 }
 
 void UI::Control::LightDirection::Change(::LightDirection * obj)
