@@ -15,19 +15,21 @@ resizable
 	bool resizableY
 */
 
+/* TopBar
+	X Button in Top Right to "close" Form
+	the Top Bar in general is used to move
+		currently any part of the Form, except those used for resizing, are used for moving
+*/
+
 namespace UI
 {
-
 namespace Control
 {
-
 class Form : public Base
 {
 	public:
-	~Form();
+	virtual ~Form();
 	Form();
-
-
 
 	public:
 	bool	IsMovable;
@@ -43,9 +45,7 @@ class Form : public Base
 	void	RelayHover(HoverArgs args) override;
 	void	RelayDrag(DragArgs args) override;
 };
-
 };
-
 };
 
 #endif

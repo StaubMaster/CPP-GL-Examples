@@ -9,7 +9,6 @@
 UI::Control::Label::Label()
 	: BaseText()
 {
-	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(50, 25);

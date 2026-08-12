@@ -8,7 +8,6 @@
 UI::Control::Button::Button()
 	: BaseText()
 {
-	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(75, 25);

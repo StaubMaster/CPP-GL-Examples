@@ -5,14 +5,10 @@
 
 # include "Generics/Function/Pointer.hpp"
 
-
-
 namespace UI
 {
-
 namespace Control
 {
-
 class CheckBox : public Base
 {
 	public:
@@ -40,9 +36,7 @@ class CheckBox : public Base
 	public:
 	void	RelayClick(ClickArgs params) override;
 };
-
 };
-
 };
 
 #endif

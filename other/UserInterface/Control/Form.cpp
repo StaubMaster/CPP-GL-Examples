@@ -12,7 +12,6 @@ UI::Control::Form::Form()
 	, ChangingBoxType(EBoxChangeType::None)
 {
 	// give this stuff to Base ?
-	Depth = 0.9f;
 	Anchor.X.Anchor = AnchorType::None;
 	Anchor.Y.Anchor = AnchorType::None;
 	AnchorSize = VectorF2(480, 360);

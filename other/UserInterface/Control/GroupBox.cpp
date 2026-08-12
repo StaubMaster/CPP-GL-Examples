@@ -4,7 +4,6 @@
 
 UI::Control::GroupBox::GroupBox() : Base()
 {
-	Depth = 0.8f;
 	Anchor.X.Anchor = AnchorType::None;
 	Anchor.Y.Anchor = AnchorType::None;
 	AnchorSize = VectorF2(120, 120);

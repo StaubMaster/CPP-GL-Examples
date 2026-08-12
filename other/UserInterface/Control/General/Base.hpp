@@ -328,6 +328,13 @@ class Base
 
 
 
+	/* User Relay
+		these should only be called automatically by the Window/Manager
+		these change the Controll internally,
+		and might call Function Pointers for external stuff
+		they should not be accessible to the outside
+		they should not be called from inside the Control
+	*/
 	/* User Relay Invoker
 		(const void *) or (const Control::Base *)
 		not const ?
@@ -338,12 +345,14 @@ class Base
 		0: dont try to relay to parent
 		1: try to relay this event to parent
 	*/
+
 	virtual void	RelayHover(HoverArgs args);
 	virtual void	RelayClick(ClickArgs args);
 	virtual void	RelayScroll(ScrollArgs args);
 	virtual void	RelayDrag(DragArgs args);
 	virtual void	RelayKey(KeyArgs args);
 	virtual void	RelayText(TextArgs args);
+
 	/* User Relay vs Func Pointer
 		Relays:		internal
 		Pointers:	external

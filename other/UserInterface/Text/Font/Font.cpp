@@ -60,10 +60,14 @@ unsigned int UI::Text::Font::FindCodeIndex(unsigned int code) const
 
 
 
-UI::Text::Font::Font() :
-	AtlasTexture()
-{ }
 UI::Text::Font::~Font()
 {
 	AtlasTexture.Dispose();
+	for (unsigned int i = 0; i < CharacterRanges.Count(); i++)
+	{
+		delete CharacterRanges[i];
+	}
 }
+UI::Text::Font::Font()
+	: AtlasTexture()
+{ }

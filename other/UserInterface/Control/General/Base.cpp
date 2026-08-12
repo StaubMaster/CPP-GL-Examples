@@ -95,10 +95,8 @@ unsigned int UI::Control::Base::LayerLimit() const
 	return 0;
 }
 
-#include <iostream>
 void UI::Control::Base::AssignDepth(float offset, float size, unsigned int layer)
 {
-	std::cout << "Layer:Depth: " << layer << ':' << ((layer * size) + offset) << '\n';
 	Depth = 1.0f - ((layer * size) + offset);
 	RelayAssignDepth();
 

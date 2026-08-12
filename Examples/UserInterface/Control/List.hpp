@@ -17,23 +17,26 @@ struct List : public UI::Control::ScrollBox
 	struct Item : public UI::Control::BaseText
 	{
 		UI::Control::List &		List;
-
 		unsigned int	Index;
 
 		void *	Object;
+
+		~Item();
+		Item() = delete;
+		Item(const Item & other) = delete;
+		Item & operator=(const Item & other) = delete;
 
 		Item(UI::Control::List & list, unsigned int idx , const char * name, void * obj);
 
 		void	RelayClick(ClickArgs args) override;
 	};
-
-	Container::Binary<Item*>	Items; // these are already stored in Children
-	// Children are (Base*) this is (Item*)
+	Container::Binary<Item*>	Items;
 
 	void *		ClickedObject = nullptr;
 
 	FunctionPointer<const Item &>	ItemFunc;
 
+	~List();
 	List();
 
 	void	ItemsClear();

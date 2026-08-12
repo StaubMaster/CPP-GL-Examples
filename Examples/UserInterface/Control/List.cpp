@@ -2,13 +2,15 @@
 
 
 
+UI::Control::List::Item::~Item()
+{ }
+
 UI::Control::List::Item::Item(UI::Control::List & list, unsigned int idx, const char * name, void * obj)
 	: BaseText()
 	, List(list)
 	, Index(idx)
 	, Object(obj)
 {
-	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(75, 25);
@@ -37,6 +39,13 @@ void UI::Control::List::Item::RelayClick(ClickArgs args)
 
 
 
+UI::Control::List::~List()
+{
+	for (unsigned int i = 0; i < Items.Count(); i++)
+	{
+		delete Items[i];
+	}
+}
 UI::Control::List::List()
 	: UI::Control::ScrollBox()
 { }
@@ -66,6 +75,9 @@ void UI::Control::List::ItemNew(const char * name, void * obj)
 	item -> BoxUpdate();
 	CalcScroll();
 }
+
+
+
 void UI::Control::List::ItemClickFunc(ClickArgs args, const Item & item)
 {
 	if (args.Action == Action::Press)

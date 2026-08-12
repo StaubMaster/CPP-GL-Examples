@@ -3,8 +3,6 @@
 
 # include "Control/General/BaseText.hpp"
 
-#include "Text/Object.hpp"
-
 namespace UI
 {
 namespace Control

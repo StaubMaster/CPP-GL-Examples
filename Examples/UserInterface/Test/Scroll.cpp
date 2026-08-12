@@ -5,7 +5,9 @@
 
 
 TestScroll::~TestScroll()
-{ }
+{
+	delete[] Labels;
+}
 TestScroll::TestScroll()
 	: UI::Control::Form()
 	, ScrollBox()

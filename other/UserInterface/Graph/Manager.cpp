@@ -102,23 +102,26 @@ void UI::Graph::Manager::PlaceInstance(const ObjectData & obj)
 	data.Box = obj.Box;
 	data.Col = obj.Col;
 
-	float limit = obj.Values -> Limit - 1;
+	if (obj.Values == nullptr) { return; }
+	const ValueAccumulator<float> & values = *obj.Values;
 
-	if (obj.Values -> Count != 0)
+	float limit = values.Limit - 1;
+
+	if (values.Count != 0)
 	{
-		unsigned int i = obj.Values -> Index;
+		unsigned int i = values.Index;
 		if (i != 0) { i--; }
-		else { i = obj.Values -> Count - 1; }
+		else { i = values.Count - 1; }
 
-		for (unsigned int j = 1; j < obj.Values -> Count; j++)
+		for (unsigned int j = 1; j < values.Count; j++)
 		{
 			unsigned int i0 = i;
 			unsigned int i1 = i0;
 			if (i1 != 0) { i1--; }
-			else { i1 = obj.Values -> Count - 1; }
+			else { i1 = values.Count - 1; }
 
-			float val0 = obj.Values -> Data[i0];
-			float val1 = obj.Values -> Data[i1];
+			float val0 = values.Data[i0];
+			float val1 = values.Data[i1];
 
 			val0 = (val0 - obj.Center) / obj.Magnitede;
 			val1 = (val1 - obj.Center) / obj.Magnitede;

@@ -5,14 +5,10 @@
 
 # include "Generics/Function/Pointer.hpp"
 
-# include "Text/Object.hpp"
-
 namespace UI
 {
-
 namespace Control
 {
-
 class Slider : public BaseText
 {
 	private:
@@ -77,9 +73,7 @@ class Slider : public BaseText
 	void	RelayKey(KeyArgs args) override;
 	// Scroll
 };
-
 };
-
 };
 
 #endif

@@ -4,7 +4,6 @@
 
 UI::Control::Window::Window()
 {
-	Depth = 1.0f;
 	Anchor.X.Anchor = AnchorType::Both;
 	Anchor.Y.Anchor = AnchorType::Both;
 	AnchorDist.Min = VectorF2(0, 0);

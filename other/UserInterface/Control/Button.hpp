@@ -5,18 +5,14 @@
 
 # include "Generics/Function/Pointer.hpp"
 
-# include "Text/Object.hpp"
-
 namespace UI
 {
-
 namespace Control
 {
-
 class Button : public BaseText
 {
 	public:
-	FunctionPointer<ClickArgs>	ClickFunc;
+	FunctionPointer<ClickArgs>	ClickFunc; // FuncClick
 
 	public:
 	~Button();
@@ -25,12 +21,10 @@ class Button : public BaseText
 	private:
 	void	TextObjectAssignPosition() override;
 
-	public:
+	public: // does this need to be public ?
 	void	RelayClick(ClickArgs args) override;
 };
-
 };
-
 };
 
 #endif

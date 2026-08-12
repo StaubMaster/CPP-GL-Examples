@@ -10,11 +10,9 @@ UI::Control::ScrollBox::ScrollBox()
 	, Content()
 	, ScrollBar()
 {
-	Depth = 0.8f;
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 
-	Content.Depth = 0.75f;
 	Content.ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	Content.ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 
