@@ -10,7 +10,7 @@ namespace Control
 {
 class ScrollBox : public Base
 {
-	public:
+	private:
 	Base		Content;
 	float		ContentSize;
 	Slider		ScrollBar;
@@ -20,7 +20,15 @@ class ScrollBox : public Base
 	ScrollBox();
 
 	public:
+	void	ChildInsert(Base & control) override;
+	void	ChildRemove(Base & control) override;
+	void	ChildClear() override;
+
+	public:
 	void	BoxUpdate() override;
+
+//	protected:
+//	void	Update() override;
 
 	public:
 	/* CalcScroll

@@ -2,7 +2,7 @@
 # define OPTIONS_MENU_HPP
 
 # include "Control/General/Manager.hpp"
-# include "ControlsInclude.hpp"
+# include "Control/_Include.hpp"
 
 struct ContextNoisePlane;
 

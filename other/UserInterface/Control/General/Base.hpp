@@ -92,23 +92,29 @@ namespace Control
 class Base
 {
 	protected:
-	UI::Manager *	Manager;
+	UI::Manager *	Manager = nullptr;
 
 	public:
-	void	ChangeManager(UI::Manager * manager);
-	void	ChangeManager(UI::Manager & manager);
+	virtual void	ChangeManager(UI::Manager * manager);
+
+	public:
+	void	ChangeManagerRecursive(UI::Manager * manager);
 
 	protected: public:
-	Base *	Parent;
+	Base *	Parent = nullptr;
 
 	public: // temp
 	Container::Binary<Base *>	Children;
+	// dynamic Children
+	// builtin Children
 
 	public:
-	void	ChildInsert(Base & control);
-	void	ChildInsert(Base * control);
+	virtual void	ChildInsert(Base & control);
+	virtual void	ChildRemove(Base & control);
+	virtual void	ChildClear();
+
 	public:
-	void	ChildRemove(Base & control);
+	void	ChildInsert(Base * control);
 	void	ChildRemove(Base * control);
 
 	public:
@@ -116,7 +122,7 @@ class Base
 	unsigned int	LayerLimit() const;
 
 	public:
-	float	Depth; // make this unsigend char. 255 should be more then enough Layers
+	float	Depth = 0.0f; // make this unsigend char. 255 should be more then enough Layers
 	// why so greedy ? just make this a uint32
 
 	public:
@@ -128,26 +134,26 @@ class Base
 
 
 	public:
-	bool	Deletable;		//should be deleted when Parent is deleted
+	bool	Deletable = false;	//should be deleted when Parent is deleted
 
 
 
 	protected:
-	bool	_Enabled;
+	bool	_Enabled = true;
 	public:
 	bool	IsEnabled() const;
 	void	MakeEnabled();
 	void	MakeDisabled();
 
 	protected:
-	bool	_Visible;
+	bool	_Visible = true;
 	public:
 	bool	IsThisVisible() const;
 	void	Show();
 	void	Hide();
 
 	protected:
-	bool	_Opaque;
+	bool	_Opaque = true;
 	public:
 	bool	IsTransparent() const;
 	bool	IsOpaque() const;
@@ -185,7 +191,7 @@ class Base
 	virtual void	BoxUpdate();
 
 	protected:
-	bool	BoxUpdateIsRequested;
+	bool	BoxUpdateIsRequested = false;
 	public:
 	void	BoxUpdateRequest();
 	private:
@@ -200,8 +206,8 @@ class Base
 		StackMin, //MinDist of next = MinSize of prev
 		StackMinFit, //StackMin but this Control is resized to fit Children
 	};
-	EAutoAnchorType		AutoAnchorXType;
-	EAutoAnchorType		AutoAnchorYType;
+	EAutoAnchorType		AutoAnchorXType = EAutoAnchorType::None;
+	EAutoAnchorType		AutoAnchorYType = EAutoAnchorType::None;
 
 	public:
 	void	UpdateAutoAnchor(); // call this in Update ?
@@ -224,7 +230,7 @@ class Base
 	virtual void	ColorUpdate();
 
 	private:
-	bool	ColorUpdateIsRequested;
+	bool	ColorUpdateIsRequested = false;
 	public:
 	void	ColorUpdateRequest();
 	private:
@@ -256,7 +262,7 @@ class Base
 	virtual void	ObjectRemove();
 
 	private:
-	bool	ObjectChangeIsRequested;
+	bool	ObjectChangeIsRequested = false;
 	void	ObjectChangeRequest();
 	void	ObjectChangeResolve();
 
@@ -266,7 +272,7 @@ class Base
 	void	ObjectAssignBox();
 
 	private:
-	bool	ObjectAssignBoxIsRequested;
+	bool	ObjectAssignBoxIsRequested = false;
 	protected:
 	void	ObjectAssignBoxRequest();
 	private:
@@ -278,7 +284,7 @@ class Base
 	void	ObjectAssignColor();
 
 	private:
-	bool	ObjectAssignColorIsRequested;
+	bool	ObjectAssignColorIsRequested = false;
 	public:
 	void	ObjectAssignColorRequest();
 	private:
@@ -300,26 +306,6 @@ class Base
 
 	Base(const Base & other) = delete;
 	Base & operator=(const Base & other) = delete;
-
-
-
-	// Changing is only done with Forms. move this there
-	protected:
-	enum class EBoxChangeType : unsigned char
-	{
-		None,
-		Move,
-		ResizeMinX,
-		ResizeMaxX,
-		ResizeMinY,
-		ResizeMaxY,
-		ResizeMinMin,
-		ResizeMinMax,
-		ResizeMaxMin,
-		ResizeMaxMax,
-	};
-	// this is here to have access to Box
-	void	ChangeAnchorBox(BoxF2 box, EBoxChangeType type);
 
 
 

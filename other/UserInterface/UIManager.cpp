@@ -242,7 +242,7 @@ void UI::Manager::ChangeMedia(const DirectoryInfo & dir, GLFWwindow * glfw_windo
 
 	CursorsCreate(dir, glfw_window);
 
-	WindowControl.ChangeManager(this);
+	WindowControl.ChangeManagerRecursive(this);
 }
 
 

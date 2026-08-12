@@ -63,6 +63,56 @@ UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 m
 	return EBoxChangeType::None;
 }
 
+void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
+{
+	if (type == EBoxChangeType::None) { return; }
+	if (Parent != nullptr)
+	{
+		// when moving, keep size
+		// when resizing, keep other side
+
+		BoxF2 other_box;
+		other_box.Min = (Parent -> BoxContent.Min) + AnchorMargin.Min;
+		other_box.Max = (Parent -> BoxContent.Max) - AnchorMargin.Max;
+
+		Bool2 limit_min = box.Min <= other_box.Min;
+		Bool2 limit_max = box.Max >= other_box.Max;
+
+		AnchorType anchor_type_x = Anchor.X.Anchor;
+		AnchorType anchor_type_y = Anchor.Y.Anchor;
+
+		if (type != EBoxChangeType::Move)
+		{
+			if      ( limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Both; box.Min.X = other_box.Min.X; box.Max.X = other_box.Max.X; }
+			else if ( limit_min.GetX() && !limit_max.GetX()) { anchor_type_x = AnchorType::Min;  box.Min.X = other_box.Min.X;                              }
+			else if (!limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Max;  box.Max.X = other_box.Max.X;                              }
+
+			if      ( limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Both; box.Min.Y = other_box.Min.Y; box.Max.Y = other_box.Max.Y; }
+			else if ( limit_min.GetY() && !limit_max.GetY()) { anchor_type_y = AnchorType::Min;  box.Min.Y = other_box.Min.Y;                              }
+			else if (!limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Max;  box.Max.Y = other_box.Max.Y;                              }
+		}
+		else
+		{
+			VectorF2 size = box.Max - box.Min;
+
+			if      ( limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Both; box.Min.X = other_box.Min.X; box.Max.X = other_box.Max.X;    }
+			else if ( limit_min.GetX() && !limit_max.GetX()) { anchor_type_x = AnchorType::Min;  box.Min.X = other_box.Min.X; box.Max.X = box.Min.X + size.X; }
+			else if (!limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Max;  box.Max.X = other_box.Max.X; box.Min.X = box.Max.X - size.X; }
+
+			if      ( limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Both; box.Min.Y = other_box.Min.Y; box.Max.Y = other_box.Max.Y;    }
+			else if ( limit_min.GetY() && !limit_max.GetY()) { anchor_type_y = AnchorType::Min;  box.Min.Y = other_box.Min.Y; box.Max.Y = box.Min.Y + size.Y; }
+			else if (!limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Max;  box.Max.Y = other_box.Max.Y; box.Min.Y = box.Max.Y - size.Y; }
+		}
+
+		Anchor.X.Anchor = anchor_type_x;
+		Anchor.Y.Anchor = anchor_type_y;
+		Anchor.Calculate(Parent -> BoxContent, box);
+		BoxUpdateRequest();
+	}
+}
+
+
+
 #include "Control/General/Manager.hpp"
 /* put into Manager
 	Cursors flicked when moving

@@ -15,10 +15,16 @@ resizable
 	bool resizableY
 */
 
-/* TopBar
+/* ControlBar
 	X Button in Top Right to "close" Form
 	the Top Bar in general is used to move
 		currently any part of the Form, except those used for resizing, are used for moving
+
+	make Optional ?
+	area for Children should not include Bar
+	BoxBoarder is different not default
+	BoxContent is determined calculated from BoxBoarder
+	override BoxUpdate
 */
 
 namespace UI
@@ -36,10 +42,30 @@ class Form : public Base
 	bool	IsResizable;
 	//BoxF2	SizeLimit;
 
+
+
+	private:
+	enum class EBoxChangeType : unsigned char
+	{
+		None,
+		Move,
+		ResizeMinX,
+		ResizeMaxX,
+		ResizeMinY,
+		ResizeMaxY,
+		ResizeMinMin,
+		ResizeMinMax,
+		ResizeMaxMin,
+		ResizeMaxMax,
+	};
+
 	private:
 	EBoxChangeType	FindChangingArea(VectorF2 mouse) const;
 	EBoxChangeType	ChangingBoxType;
 	BoxF2			ChangingBoxRel;
+
+	private:
+	void	ChangeAnchorBox(BoxF2 box, EBoxChangeType type);
 
 	public:
 	void	RelayHover(HoverArgs args) override;

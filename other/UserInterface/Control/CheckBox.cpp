@@ -43,26 +43,33 @@ void UI::Control::CheckBox::Check(bool state)
 
 void UI::Control::CheckBox::ColorUpdate()
 {
-	if (Manager -> Hovering != this)
+	if (Manager == nullptr)
 	{
-		if (!Checked)
-		{
-			Color = ColorDefault;
-		}
-		else
-		{
-			Color = ColorChecked;
-		}
+		Color = ColorDefault;
 	}
 	else
 	{
-		if (!Checked)
+		if (Manager -> Hovering != this)
 		{
-			Color = ColorHover;
+			if (!Checked)
+			{
+				Color = ColorDefault;
+			}
+			else
+			{
+				Color = ColorChecked;
+			}
 		}
 		else
 		{
-			Color = ColorCheckedHover;
+			if (!Checked)
+			{
+				Color = ColorHover;
+			}
+			else
+			{
+				Color = ColorCheckedHover;
+			}
 		}
 	}
 	ObjectAssignColorRequest();

@@ -32,7 +32,6 @@ TestList::TestList()
 
 	List.Anchor.X.AnchorBoth(0, 0);
 	List.Anchor.Y.AnchorBoth(0, y);
-	List.Content.AutoAnchorYType = Base::EAutoAnchorType::StackMin;
 	List.ItemFunc.Assign(this, &TestList::ItemFunc);
 	ChildInsert(List);
 
@@ -49,7 +48,7 @@ TestList::TestList()
 
 
 
-void TestList::ItemFunc(const UI::Control::List::Item & item)
+void TestList::ItemFunc(const UI::Control::ListBox::Item & item)
 {
 	std::cout << "Item: " << '[' << item.Index << ']' << ' ' << '"' << (const char *)item.Object << '"' << '\n';
 }

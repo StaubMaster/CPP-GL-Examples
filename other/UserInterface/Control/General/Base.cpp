@@ -15,33 +15,28 @@ HoverArgs::HoverArgs(HoverType type, DisplayPosition position)
 void UI::Control::Base::ChangeManager(UI::Manager * manager)
 {
 	Manager = manager;
+}
+
+void UI::Control::Base::ChangeManagerRecursive(UI::Manager * manager)
+{
+	ChangeManager(manager);
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> ChangeManager(manager);
+		Children[i] -> ChangeManagerRecursive(manager);
 	}
 }
-void UI::Control::Base::ChangeManager(UI::Manager & manager)
-{
-	ChangeManager(&manager);
-}
+
+
 
 void UI::Control::Base::ChildInsert(Base & control)
 {
 	Children.Insert(&control);
 	control.Parent = this;
-	control.ChangeManager(Manager);
+	control.ChangeManagerRecursive(Manager);
 	control.ObjectChangeRequest();
 	control.BoxUpdateRequest();
 	control.ColorUpdateRequest();
 }
-void UI::Control::Base::ChildInsert(Base * control)
-{
-	if (control != nullptr)
-	{
-		ChildInsert(*control);
-	}
-}
-
 void UI::Control::Base::ChildRemove(Base & control)
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -51,6 +46,18 @@ void UI::Control::Base::ChildRemove(Base & control)
 			Children.RemoveAt(i);
 			i--;
 		}
+	}
+}
+void UI::Control::Base::ChildClear()
+{
+	Children.Clear();
+}
+
+void UI::Control::Base::ChildInsert(Base * control)
+{
+	if (control != nullptr)
+	{
+		ChildInsert(*control);
 	}
 }
 void UI::Control::Base::ChildRemove(Base * control)
@@ -189,28 +196,28 @@ bool UI::Control::Base::IsInteractible() const
 
 void UI::Control::Base::BoxUpdate()
 {
-	if (Parent != nullptr)
-	{
-		BoxDisplay = Anchor.Calculate(Parent -> BoxContent);
+	if (Parent == nullptr) { return; }
 
-		BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
-		BoxBoarder.Max = BoxDisplay.Max - AnchorBoarder.Max;
+	BoxDisplay = Anchor.Calculate(Parent -> BoxContent);
 
-		BoxContent.Min = BoxDisplay.Min + AnchorBoarder.Min + AnchorPadding.Min;
-		BoxContent.Max = BoxDisplay.Max - AnchorBoarder.Max - AnchorPadding.Max;
+	BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
+	BoxBoarder.Max = BoxDisplay.Max - AnchorBoarder.Max;
 
-		ObjectAssignBoxRequest();
-	}
+	BoxContent.Min = BoxBoarder.Min + AnchorPadding.Min;
+	BoxContent.Max = BoxBoarder.Max - AnchorPadding.Max;
+
+	ObjectAssignBoxRequest();
 }
 
 void UI::Control::Base::BoxUpdateRequest()
 {
 	BoxUpdateIsRequested = true;
+
+	// do this in BoxUpdate ?
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> BoxUpdateRequest();
 	}
-	// do this in BoxUpdate ?
 }
 void UI::Control::Base::BoxUpdateResolve()
 {
@@ -220,6 +227,7 @@ void UI::Control::Base::BoxUpdateResolve()
 		BoxUpdateIsRequested = false;
 	}
 }
+//void UI::Control::Base::BoxUpdateRequestRecursive()
 
 
 
@@ -276,13 +284,20 @@ void UI::Control::Base::UpdateAutoAnchor_Y_StackMinFit()
 
 void UI::Control::Base::ColorUpdate()
 {
-	if (Manager -> Hovering != this)
+	if (Manager == nullptr)
 	{
 		Color = ColorDefault;
 	}
 	else
 	{
-		Color = ColorHover;
+		if (Manager -> Hovering != this)
+		{
+			Color = ColorDefault;
+		}
+		else
+		{
+			Color = ColorHover;
+		}
 	}
 	ObjectAssignColorRequest();
 }
@@ -368,6 +383,7 @@ void UI::Control::Base::ObjectChangeResolve()
 		ObjectChangeIsRequested = false;
 	}
 }
+//void UI::Control::Base::ObjectChangeRequestRecursive()
 
 
 
@@ -444,14 +460,7 @@ UI::Control::Base::~Base()
 	}*/
 }
 UI::Control::Base::Base()
-	: Manager(nullptr)
-	, Parent(nullptr)
-	, Children()
-	, Depth(0.0f)
-	, _Enabled(true)
-	, _Visible(true)
-	, _Opaque(true)
-	, Anchor(
+	: Anchor(
 			AnchorSize,
 			AnchorDist,
 			AnchorMargin,
@@ -459,16 +468,6 @@ UI::Control::Base::Base()
 			AnchorPadding,
 			AnchorNormal
 		)
-	, BoxDisplay()
-	, BoxContent()
-	, BoxUpdateIsRequested(false)
-	, AutoAnchorXType(EAutoAnchorType::None)
-	, AutoAnchorYType(EAutoAnchorType::None)
-	, ColorUpdateIsRequested(false)
-	, Object()
-	, ObjectChangeIsRequested(false)
-	, ObjectAssignBoxIsRequested(false)
-	, ObjectAssignColorIsRequested(false)
 {
 	AnchorSize = VectorF2(0, 0);
 	AnchorNormal = VectorF2(0, 0);
@@ -481,56 +480,6 @@ UI::Control::Base::Base()
 	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
 	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
-}
-
-
-
-void UI::Control::Base::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
-{
-	if (type == EBoxChangeType::None) { return; }
-	if (Parent != nullptr)
-	{
-		// when moving, keep size
-		// when resizing, keep other side
-
-		BoxF2 other_box;
-		other_box.Min = (Parent -> BoxContent.Min) + AnchorMargin.Min;
-		other_box.Max = (Parent -> BoxContent.Max) - AnchorMargin.Max;
-
-		Bool2 limit_min = box.Min <= other_box.Min;
-		Bool2 limit_max = box.Max >= other_box.Max;
-
-		AnchorType anchor_type_x = Anchor.X.Anchor;
-		AnchorType anchor_type_y = Anchor.Y.Anchor;
-
-		if (type != EBoxChangeType::Move)
-		{
-			if      ( limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Both; box.Min.X = other_box.Min.X; box.Max.X = other_box.Max.X; }
-			else if ( limit_min.GetX() && !limit_max.GetX()) { anchor_type_x = AnchorType::Min;  box.Min.X = other_box.Min.X;                              }
-			else if (!limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Max;  box.Max.X = other_box.Max.X;                              }
-
-			if      ( limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Both; box.Min.Y = other_box.Min.Y; box.Max.Y = other_box.Max.Y; }
-			else if ( limit_min.GetY() && !limit_max.GetY()) { anchor_type_y = AnchorType::Min;  box.Min.Y = other_box.Min.Y;                              }
-			else if (!limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Max;  box.Max.Y = other_box.Max.Y;                              }
-		}
-		else
-		{
-			VectorF2 size = box.Max - box.Min;
-
-			if      ( limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Both; box.Min.X = other_box.Min.X; box.Max.X = other_box.Max.X;    }
-			else if ( limit_min.GetX() && !limit_max.GetX()) { anchor_type_x = AnchorType::Min;  box.Min.X = other_box.Min.X; box.Max.X = box.Min.X + size.X; }
-			else if (!limit_min.GetX() &&  limit_max.GetX()) { anchor_type_x = AnchorType::Max;  box.Max.X = other_box.Max.X; box.Min.X = box.Max.X - size.X; }
-
-			if      ( limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Both; box.Min.Y = other_box.Min.Y; box.Max.Y = other_box.Max.Y;    }
-			else if ( limit_min.GetY() && !limit_max.GetY()) { anchor_type_y = AnchorType::Min;  box.Min.Y = other_box.Min.Y; box.Max.Y = box.Min.Y + size.Y; }
-			else if (!limit_min.GetY() &&  limit_max.GetY()) { anchor_type_y = AnchorType::Max;  box.Max.Y = other_box.Max.Y; box.Min.Y = box.Max.Y - size.Y; }
-		}
-
-		Anchor.X.Anchor = anchor_type_x;
-		Anchor.Y.Anchor = anchor_type_y;
-		Anchor.Calculate(Parent -> BoxContent, box);
-		BoxUpdateRequest();
-	}
 }
 
 

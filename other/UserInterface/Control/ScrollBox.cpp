@@ -26,16 +26,45 @@ UI::Control::ScrollBox::ScrollBox()
 
 	Content.Anchor.X.AnchorBoth(0, ScrollBar.Anchor.X.GetMaxSize());
 	Content.Anchor.Y.AnchorBoth(0, 0); // Content Y is not determined by Anchor ?
+	Content.AutoAnchorYType = Base::EAutoAnchorType::StackMin;
 
-	ChildInsert(Content);
-	ChildInsert(ScrollBar);
+	Base::ChildInsert(Content);
+	Base::ChildInsert(ScrollBar);
 }
+
+
+
+void UI::Control::ScrollBox::ChildInsert(Base & control)
+{
+	Content.ChildInsert(control);
+	Content.UpdateAutoAnchor();
+}
+void UI::Control::ScrollBox::ChildRemove(Base & control)
+{
+	Content.ChildRemove(control);
+	Content.UpdateAutoAnchor();
+}
+void UI::Control::ScrollBox::ChildClear()
+{
+	Content.ChildClear();
+	Content.UpdateAutoAnchor();
+}
+
+
 
 void UI::Control::ScrollBox::BoxUpdate()
 {
 	Base::BoxUpdate();
 	CalcScroll();
 }
+
+/*void UI::Control::ScrollBox::Update()
+{
+	Base::Update();
+	//ScrollBar.Update();
+}*/
+
+
 
 void UI::Control::ScrollBox::CalcScroll()
 {

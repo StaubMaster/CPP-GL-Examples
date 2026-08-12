@@ -1,7 +1,7 @@
 #ifndef  USER_INTERFACE_MENU_2_HPP
 # define USER_INTERFACE_MENU_2_HPP
 
-# include "ControlsInclude.hpp"
+# include "Control/_Include.hpp"
 
 struct UserInterfaceMenu2 : public UI::Control::Form
 {

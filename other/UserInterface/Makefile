@@ -26,6 +26,8 @@ FILES := \
 	Control/CheckBox.cpp \
 	Control/Label.cpp \
 	Control/Graph.cpp \
+	Control/ScrollBox.cpp \
+	Control/ListBox.cpp \
 \
 	Text/Data.cpp \
 	Text/Buffer.cpp \

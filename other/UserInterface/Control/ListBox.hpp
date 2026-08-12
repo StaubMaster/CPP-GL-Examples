@@ -1,5 +1,5 @@
-#ifndef  UI_CONTROL_LIST_HPP
-# define UI_CONTROL_LIST_HPP
+#ifndef  UI_CONTROL_LIST_BOX_HPP
+# define UI_CONTROL_LIST_BOX_HPP
 
 # include "Control/General/Base.hpp"
 # include "Control/General/BaseText.hpp"
@@ -12,11 +12,11 @@ namespace UI
 {
 namespace Control
 {
-struct List : public UI::Control::ScrollBox
+struct ListBox : public UI::Control::ScrollBox
 {
 	struct Item : public UI::Control::BaseText
 	{
-		UI::Control::List &		List;
+		UI::Control::ListBox &		ListBox;
 		unsigned int	Index;
 
 		void *	Object;
@@ -26,7 +26,7 @@ struct List : public UI::Control::ScrollBox
 		Item(const Item & other) = delete;
 		Item & operator=(const Item & other) = delete;
 
-		Item(UI::Control::List & list, unsigned int idx , const char * name, void * obj);
+		Item(UI::Control::ListBox & listBox, unsigned int idx , const char * name, void * obj);
 
 		void	RelayClick(ClickArgs args) override;
 	};
@@ -36,8 +36,8 @@ struct List : public UI::Control::ScrollBox
 
 	FunctionPointer<const Item &>	ItemFunc;
 
-	~List();
-	List();
+	~ListBox();
+	ListBox();
 
 	void	ItemsClear();
 	void	ItemNew(const char * name, void * obj);

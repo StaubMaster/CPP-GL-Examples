@@ -1,13 +1,13 @@
-#include "List.hpp"
+#include "ListBox.hpp"
 
 
 
-UI::Control::List::Item::~Item()
+UI::Control::ListBox::Item::~Item()
 { }
 
-UI::Control::List::Item::Item(UI::Control::List & list, unsigned int idx, const char * name, void * obj)
+UI::Control::ListBox::Item::Item(UI::Control::ListBox & listBox, unsigned int idx, const char * name, void * obj)
 	: BaseText()
-	, List(list)
+	, ListBox(listBox)
 	, Index(idx)
 	, Object(obj)
 {
@@ -32,29 +32,29 @@ UI::Control::List::Item::Item(UI::Control::List & list, unsigned int idx, const 
 	SetText(name);
 }
 
-void UI::Control::List::Item::RelayClick(ClickArgs args)
+void UI::Control::ListBox::Item::RelayClick(ClickArgs args)
 {
-	List.ItemClickFunc(args, *this);
+	ListBox.ItemClickFunc(args, *this);
 }
 
 
 
-UI::Control::List::~List()
+UI::Control::ListBox::~ListBox()
 {
 	for (unsigned int i = 0; i < Items.Count(); i++)
 	{
 		delete Items[i];
 	}
 }
-UI::Control::List::List()
+UI::Control::ListBox::ListBox()
 	: UI::Control::ScrollBox()
 { }
 
 
 
-void UI::Control::List::ItemsClear()
+void UI::Control::ListBox::ItemsClear()
 {
-	Content.Children.Clear();
+	ChildClear();
 	for (unsigned int i = 0; i < Items.Count(); i++)
 	{
 		delete Items[i];
@@ -62,23 +62,21 @@ void UI::Control::List::ItemsClear()
 	Items.Clear();
 	ClickedObject = nullptr;
 
-	Content.UpdateAutoAnchor();
 	CalcScroll();
 }
-void UI::Control::List::ItemNew(const char * name, void * obj)
+void UI::Control::ListBox::ItemNew(const char * name, void * obj)
 {
 	Item * item = new Item(*this, Items.Count(), name, obj);
 	Items.Insert(item);
-	Content.ChildInsert(item);
+	ChildInsert(*item);
 
-	Content.UpdateAutoAnchor();
 	item -> BoxUpdate();
 	CalcScroll();
 }
 
 
 
-void UI::Control::List::ItemClickFunc(ClickArgs args, const Item & item)
+void UI::Control::ListBox::ItemClickFunc(ClickArgs args, const Item & item)
 {
 	if (args.Action == Action::Press)
 	{
