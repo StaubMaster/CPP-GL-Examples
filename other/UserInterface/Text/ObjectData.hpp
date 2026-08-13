@@ -30,6 +30,7 @@ struct ObjectData
 
 	BoxF2			Bound;
 	ColorF4			Color;
+	float			Depth;
 
 	bool			DisplayTextCursor;
 	unsigned int	TextCursorIndex;

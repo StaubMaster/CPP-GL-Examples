@@ -9,7 +9,7 @@ UI::Control::PropertyControl::PropertyControl(const char * name)
 	, Visible(true)
 	, Toggle()
 {
-	AutoSizerYType = EAutoSizerType::StackMinFit;
+	AutoAnchorYType = EAutoAnchorType::StackMinFit;
 
 	Toggle.Anchor.X.AnchorBoth(0, 0);
 	Toggle.SetText(name);
@@ -29,7 +29,7 @@ void UI::Control::PropertyControl::ShowProperty()
 		}
 	}
 	Visible = true;
-	UpdateAutoSize();
+	UpdateAutoAnchor();
 }
 void UI::Control::PropertyControl::HideProperty()
 {
@@ -41,7 +41,7 @@ void UI::Control::PropertyControl::HideProperty()
 		}
 	}
 	Visible = false;
-	UpdateAutoSize();
+	UpdateAutoAnchor();
 }
 
 void UI::Control::PropertyControl::ToggleFunc(ClickArgs args)

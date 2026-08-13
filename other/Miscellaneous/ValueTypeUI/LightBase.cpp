@@ -28,7 +28,7 @@ UI::Control::LightBase::LightBase(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::LightBase::Update()
+void UI::Control::LightBase::Syncronize()
 {
 	if (Object != nullptr)
 	{
@@ -38,7 +38,7 @@ void UI::Control::LightBase::Update()
 	{
 		Intensity.SetText("Intensity:");
 	}
-	Color.Update();
+	Color.Syncronize();
 }
 
 void UI::Control::LightBase::Change(::LightBase * obj)

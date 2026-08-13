@@ -1,19 +1,15 @@
 #ifndef  UI_CONTROL_SLIDER_HPP
 # define UI_CONTROL_SLIDER_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/General/BaseText.hpp"
 
 # include "Generics/Function/Pointer.hpp"
 
-# include "Text/Object.hpp"
-
 namespace UI
 {
-
 namespace Control
 {
-
-class Slider : public Base
+class Slider : public BaseText
 {
 	private:
 	Control::Object		SliderObject;
@@ -64,28 +60,20 @@ class Slider : public Base
 	Slider();
 	~Slider();
 
+	protected:
+	void	RelayAssignDepth() override;
 	public:
-	void	RelayBoxUpdate() override;
-	void	RelayObjectInsert() override;
-	void	RelayObjectRemove() override;
-
-	void	RelayClick(ClickArgs params) override;
-	void	RelayCursorDrag(DragArgs params) override;
+	void	BoxUpdate() override;
+	void	ObjectInsert() override;
+	void	ObjectRemove() override;
+	
+	public:
+	void	RelayClick(ClickArgs args) override;
+	void	RelayDrag(DragArgs args) override;
 	void	RelayKey(KeyArgs args) override;
 	// Scroll
-
-	private:
-	Text::Object	TextObject;
-	std::string		Text;
-	private:
-	void	PutCharactersEntrys();
-	public:
-	std::string		GetText() const;
-	void			SetText(std::string text);
 };
-
 };
-
 };
 
 #endif

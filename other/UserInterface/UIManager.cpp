@@ -157,7 +157,7 @@ void UI::Manager::MouseDrag(DragArgs args)
 {
 	if (Selected != nullptr)
 	{
-		Selected -> RelayCursorDrag(args);
+		Selected -> RelayDrag(args);
 	}
 }
 void UI::Manager::KeyBoardKey(KeyArgs args)
@@ -208,7 +208,7 @@ void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 	{
 		if (Hovering != nullptr)
 		{
-			Hovering -> RelayHover(UI::Control::Base::HoverArgs::Move);
+			Hovering -> RelayHover(HoverArgs(HoverType::Move, mouse_pos));
 		}
 	}
 }
@@ -242,7 +242,7 @@ void UI::Manager::ChangeMedia(const DirectoryInfo & dir, GLFWwindow * glfw_windo
 
 	CursorsCreate(dir, glfw_window);
 
-	WindowControl.ChangeManager(this);
+	WindowControl.ChangeManagerRecursive(this);
 }
 
 

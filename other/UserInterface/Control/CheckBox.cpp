@@ -7,7 +7,6 @@
 
 UI::Control::CheckBox::CheckBox() : Base()
 {
-	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(25, 25);
@@ -32,40 +31,48 @@ bool UI::Control::CheckBox::IsChecked()
 void UI::Control::CheckBox::Toggle()
 {
 	Checked = !Checked;
-	ObjectAssignColorRequest();
+	ColorUpdateRequest();
 }
 void UI::Control::CheckBox::Check(bool state)
 {
 	Checked = state;
-	ObjectAssignColorRequest();
+	ColorUpdateRequest();
 }
 
 
 
-ColorF4 UI::Control::CheckBox::ColorMake() const
+void UI::Control::CheckBox::ColorUpdate()
 {
-	if (Manager -> Hovering != this)
+	if (Manager == nullptr)
 	{
-		if (!Checked)
-		{
-			return ColorDefault;
-		}
-		else
-		{
-			return ColorChecked;
-		}
+		Color = ColorDefault;
 	}
 	else
 	{
-		if (!Checked)
+		if (Manager -> Hovering != this)
 		{
-			return ColorHover;
+			if (!Checked)
+			{
+				Color = ColorDefault;
+			}
+			else
+			{
+				Color = ColorChecked;
+			}
 		}
 		else
 		{
-			return ColorCheckedHover;
+			if (!Checked)
+			{
+				Color = ColorHover;
+			}
+			else
+			{
+				Color = ColorCheckedHover;
+			}
 		}
 	}
+	ObjectAssignColorRequest();
 }
 
 
@@ -77,7 +84,7 @@ void UI::Control::CheckBox::RelayClick(ClickArgs params)
 	if (params.Action == Action::Press)
 	{
 		Checked = !Checked;
-		ObjectAssignColorRequest();
+		ColorUpdateRequest();
 		ClickFunc.TryInvoke(params);
 	}
 }

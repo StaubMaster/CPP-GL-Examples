@@ -13,11 +13,11 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 	, PalletChange()
 	, Trans("Trans")
 {
-	AutoSizerYType = EAutoSizerType::FitFixed;
-
+	AutoAnchorYType = EAutoAnchorType::StackMinFit;
 	Anchor.X.AnchorBoth(0, 0);
 	Anchor.Y.AnchorMin(0, 0);
 
+	Pallet.AutoAnchorYType = EAutoAnchorType::StackMinFit;
 	Pallet.Anchor.X.AnchorBoth(0, 0);
 	PalletName.Anchor.X.AnchorBoth(0, 0);
 	PalletFile.Anchor.X.AnchorBoth(0, 0);
@@ -35,9 +35,9 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 	Pallet.ChildInsert(PalletChange);
 	ChildInsert(Trans);
 
-	Pallet.UpdateAutoSize();
-	Trans.UpdateAutoSize();
-	UpdateAutoSize();
+	Pallet.UpdateAutoAnchor();
+	Trans.UpdateAutoAnchor();
+	UpdateAutoAnchor();
 
 	Change(nullptr);
 }
@@ -53,7 +53,7 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::PolyHedraObject::Update()
+void UI::Control::PolyHedraObject::Syncronize()
 {
 	if (Object != nullptr)
 	{
@@ -69,7 +69,7 @@ void UI::Control::PolyHedraObject::Update()
 		PalletFile.SetText("File:");
 		PalletSkinsCount.SetText("Skins:");
 	}
-	Trans.Update();
+	Trans.Syncronize();
 }
 
 void UI::Control::PolyHedraObject::Change(::SceneObject_PolyHedraObject * obj)

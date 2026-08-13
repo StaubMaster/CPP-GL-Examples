@@ -20,7 +20,7 @@ struct VectorF3 : public PropertyControl
 	VectorF3(const char * name);
 
 	::VectorF3 * Object;
-	void	Update();
+	void	Syncronize();
 	void	Change(::VectorF3 * obj);
 };
 };

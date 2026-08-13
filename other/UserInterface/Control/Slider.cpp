@@ -8,9 +8,9 @@
 
 
 
-UI::Control::Slider::Slider() : Base()
+UI::Control::Slider::Slider()
+	: BaseText()
 {
-	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(75, 25);
@@ -120,81 +120,58 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 
 
-void UI::Control::Slider::PutCharactersEntrys()
+void UI::Control::Slider::RelayAssignDepth()
 {
-	VectorF2 min = BoxContent.Min;
-	VectorF2 max = BoxContent.Max;
-	VectorF2 center = (max + min) / 2.0f;
-
+	BaseText::RelayAssignDepth();
 	if (TextObject.Is())
 	{
-		TextObject.Text() = Text;
-		TextObject.TextAlignmentX() = Text::Alignment::Mid;
-		TextObject.TextAlignmentY() = Text::Alignment::Mid;
-		TextObject.CharacterAlignmentX() = Text::Alignment::Mid;
-		TextObject.CharacterAlignmentY() = Text::Alignment::Mid;
-		TextObject.TextPosition() = center;
-		TextObject.Bound() = BoxContent;
+		TextObject.Depth() = Depth - 0.001f;
+	}
+	if (SliderObject.Is())
+	{
+		SliderObject.Depth() = Depth - 0.0005f;
 	}
 }
 
 
 
-std::string UI::Control::Slider::GetText() const
+void UI::Control::Slider::BoxUpdate()
 {
-	return Text;
-}
-void UI::Control::Slider::SetText(std::string text)
-{
-	Text = text;
-	PutCharactersEntrys();
-}
-
-
-
-void UI::Control::Slider::RelayBoxUpdate()
-{
+	BaseText::BoxUpdate();
 	PutSliderNub();
-	PutCharactersEntrys();
 }
-void UI::Control::Slider::RelayObjectInsert()
+void UI::Control::Slider::ObjectInsert()
 {
+	BaseText::ObjectInsert();
 	if (!SliderObject.Is() && Manager != NULL)
 	{
 		SliderObject.Create();
 		SliderObject.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		SliderObject.Layer() = Depth - 0.01f;
+		SliderObject.Depth() = Depth - 0.0005f;
 		PutSliderNub();
 	}
-	if (!TextObject.Is() && Manager != NULL)
-	{
-		TextObject.Create();
-	}
 }
-void UI::Control::Slider::RelayObjectRemove()
+void UI::Control::Slider::ObjectRemove()
 {
+	BaseText::ObjectRemove();
 	if (SliderObject.Is() || Manager == NULL)
 	{
 		SliderObject.Delete();
 	}
-	if (TextObject.Is() || Manager == NULL)
-	{
-		TextObject.Delete();
-	}
 }
 
 
 
-void UI::Control::Slider::RelayClick(ClickArgs params)
+void UI::Control::Slider::RelayClick(ClickArgs args)
 {
-	if (params.Action == Action::Press)
+	if (args.Action == Action::Press)
 	{
-		ChangeValue(params.Position);
+		ChangeValue(args.Position);
 	}
 }
-void UI::Control::Slider::RelayCursorDrag(DragArgs params)
+void UI::Control::Slider::RelayDrag(DragArgs args)
 {
-	ChangeValue(params.Position);
+	ChangeValue(args.Position);
 }
 void UI::Control::Slider::RelayKey(KeyArgs args)
 {
@@ -205,6 +182,7 @@ void UI::Control::Slider::RelayKey(KeyArgs args)
 		if (args.Key == Keys::Up)		{ Value.Y -= ValueResolution.Y; }
 		if (args.Key == Keys::Down)		{ Value.Y += ValueResolution.Y; }
 		ClampValue();
+		PutSliderNub();
 		if (args.Key == Keys::Left || args.Key == Keys::Right)
 		{
 			ValueXChangedFunc.TryInvoke(Value.X);
@@ -214,6 +192,5 @@ void UI::Control::Slider::RelayKey(KeyArgs args)
 			ValueYChangedFunc.TryInvoke(Value.Y);
 		}
 		ValueChangedFunc.TryInvoke(Value);
-		PutSliderNub();
 	}
 }

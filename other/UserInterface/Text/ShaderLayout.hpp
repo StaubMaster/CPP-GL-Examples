@@ -20,7 +20,8 @@ struct TextData
 	BoxF2		Bound;
 	ColorF4		Color;
 	VectorF2	CharSize;
-	float		Padding[2];
+	float		Depth;
+	float		Padding[1];
 };
 
 const static unsigned int	PalletsLimit = 128;

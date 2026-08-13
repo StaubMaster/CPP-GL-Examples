@@ -13,6 +13,8 @@
 #include "Generics/Container/Binary.hpp"
 
 #include "Object.hpp"
+#include "ObjectData.hpp"
+
 
 #include "AnchorEnum.hpp"
 
@@ -68,6 +70,20 @@ change in Box
 	changes children
 */
 
+enum class HoverType
+{
+	Enter,
+	Move,
+	Leave,
+};
+struct HoverArgs
+{
+	HoverType			Type;
+	DisplayPosition		Position;
+
+	HoverArgs(HoverType type, DisplayPosition position);
+};
+
 namespace UI
 {
 class Manager;
@@ -76,57 +92,68 @@ namespace Control
 class Base
 {
 	protected:
-	UI::Manager *	Manager;
+	UI::Manager *	Manager = nullptr;
 
 	public:
-	void	ChangeManager(UI::Manager * manager);
-	void	ChangeManager(UI::Manager & manager);
+	virtual void	ChangeManager(UI::Manager * manager);
 
-
+	public:
+	void	ChangeManagerRecursive(UI::Manager * manager);
 
 	protected: public:
-	Base *	Parent;
-
-	public:
-	unsigned int	Layer() const;
+	Base *	Parent = nullptr;
 
 	public: // temp
 	Container::Binary<Base *>	Children;
+	// dynamic Children
+	// builtin Children
 
 	public:
-	void	ChildInsert(Base & control);
-	void	ChildInsert(Base * control);
+	virtual void	ChildInsert(Base & control);
+	virtual void	ChildRemove(Base & control);
+	virtual void	ChildClear();
+
 	public:
-	void	ChildRemove(Base & control);
+	void	ChildInsert(Base * control);
 	void	ChildRemove(Base * control);
 
-
+	public:
+	unsigned int	Layer() const;
+	unsigned int	LayerLimit() const;
 
 	public:
-	bool	Deletable;		//should be deleted when Parent is deleted
-
-
-
-	public:
-	float	Depth; // make this unsigend char. 255 should be more then enough Layers
+	float	Depth = 0.0f; // make this unsigend char. 255 should be more then enough Layers
 	// why so greedy ? just make this a uint32
 
+	public:
+	void	AssignDepth(float offset, float size, unsigned int layer);
+
 	protected:
-	bool	_Enabled;
+	virtual void	RelayAssignDepth();
+
+
+
+	public:
+	bool	Deletable = false;	//should be deleted when Parent is deleted
+
+
+
+	protected:
+	bool	_Enabled = true;
 	public:
 	bool	IsEnabled() const;
 	void	MakeEnabled();
 	void	MakeDisabled();
 
 	protected:
-	bool	_Visible;
+	bool	_Visible = true;
 	public:
 	bool	IsThisVisible() const;
 	void	Show();
 	void	Hide();
 
 	protected:
-	bool	_Opaque;
+	bool	_Opaque = true;
 	public:
 	bool	IsTransparent() const;
 	bool	IsOpaque() const;
@@ -156,55 +183,38 @@ class Base
 
 
 	public: //protected:
-	BoxF2	BoxDisplay;
-	BoxF2	BoxContent;
+	BoxF2	BoxDisplay; // used for displaying Control
+	BoxF2	BoxBoarder; // used for culling Children
+	BoxF2	BoxContent; // used for anchoring Children
 
-	public: //private:
-	void	BoxUpdate();
+	public: //protected:
+	virtual void	BoxUpdate();
 
-	private:
-	bool	BoxUpdateIsRequested;
+	protected:
+	bool	BoxUpdateIsRequested = false;
 	public:
 	void	BoxUpdateRequest();
 	private:
 	void	BoxUpdateResolve();
 
-	protected:
-	virtual void	RelayBoxUpdate();
-
 
 
 	public:
-	/* Anchor vs AutoSizer ?
-		Anchor changes this
-		AutoSizer aranges Children
-
-		Anchor and StackMinFit both try to resize this
-		what if Parent of this also tries to Fit children
-		Box Update would need to be done in reverse
-		might cause infinite loop ?
-
-	*/
-	enum class EAutoSizerType
+	enum class EAutoAnchorType
 	{
 		None,
-		/* AnchorTypes ?
-			Min
-			Max
-			Both
-		*/
 		StackMin, //MinDist of next = MinSize of prev
 		StackMinFit, //StackMin but this Control is resized to fit Children
 	};
-	EAutoSizerType		AutoSizerXType;
-	EAutoSizerType		AutoSizerYType;
+	EAutoAnchorType		AutoAnchorXType = EAutoAnchorType::None;
+	EAutoAnchorType		AutoAnchorYType = EAutoAnchorType::None;
 
 	public:
-	void	UpdateAutoSize(); // call this in Update ?
+	void	UpdateAutoAnchor(); // call this in Update ?
 
 	private:
-	void	UpdateAutoSize_Y_StackMin();
-	void	UpdateAutoSize_Y_StackMinFit();
+	void	UpdateAutoAnchor_Y_StackMin();
+	void	UpdateAutoAnchor_Y_StackMinFit();
 
 
 
@@ -214,33 +224,47 @@ class Base
 	ColorF4		ColorHover;
 
 	protected:
-	virtual ColorF4		ColorMake() const;
-
-
-
-	public:
-	void	Update();
+	ColorF4		Color;
 
 	protected:
-	virtual void	RelayUpdate();
+	virtual void	ColorUpdate();
+
+	private:
+	bool	ColorUpdateIsRequested = false;
+	public:
+	void	ColorUpdateRequest();
+	private:
+	void	ColorUpdateResolve();
+
+//	protected:
+//	virtual ColorF4		ColorMake() const;
 
 
+
+	protected:
+	virtual void	Update();
+
+	public:
+	void	RecursiveUpdate();
+
+
+
+//	protected: public:
+//	Control::ObjectData		Data;
+//	protected: public:
+//	void	PlaceInstance() const;
 
 	protected:
 	Control::Object		Object;
 
+	protected:
+	virtual void	ObjectInsert();
+	virtual void	ObjectRemove();
+
 	private:
-	bool	ObjectChangeIsRequested;
+	bool	ObjectChangeIsRequested = false;
 	void	ObjectChangeRequest();
 	void	ObjectChangeResolve();
-
-	private:
-	void	ObjectInsert();
-	void	ObjectRemove();
-
-	protected:
-	virtual void	RelayObjectInsert();
-	virtual void	RelayObjectRemove();
 
 
 
@@ -248,7 +272,7 @@ class Base
 	void	ObjectAssignBox();
 
 	private:
-	bool	ObjectAssignBoxIsRequested;
+	bool	ObjectAssignBoxIsRequested = false;
 	protected:
 	void	ObjectAssignBoxRequest();
 	private:
@@ -260,7 +284,7 @@ class Base
 	void	ObjectAssignColor();
 
 	private:
-	bool	ObjectAssignColorIsRequested;
+	bool	ObjectAssignColorIsRequested = false;
 	public:
 	void	ObjectAssignColorRequest();
 	private:
@@ -268,11 +292,11 @@ class Base
 
 
 
-	public:
-	void	Assign();
-
 	protected:
-	virtual void	RelayAssign();
+	virtual void	ObjectAssign();
+
+	public:
+	void	RecursiveObjectAssign();
 
 
 
@@ -285,39 +309,18 @@ class Base
 
 
 
-	// Changing is only done with Forms. move this there
-	protected:
-	enum class EBoxChangeType : unsigned char
-	{
-		None,
-		Move,
-		ResizeMinX,
-		ResizeMaxX,
-		ResizeMinY,
-		ResizeMaxY,
-		ResizeMinMin,
-		ResizeMinMax,
-		ResizeMaxMin,
-		ResizeMaxMax,
-	};
-	// this is here to have access to Box
-	void	ChangeAnchorBox(BoxF2 box, EBoxChangeType type);
-
-
-
 	public:
 	Base *	FindHover(const VectorF2 & mouse);
 
-	public:
-	enum class HoverArgs
-	{
-		Enter,
-		Move,
-		Leave,
-	}; // should be a struct that also stores position
 
 
-
+	/* User Relay
+		these should only be called automatically by the Window/Manager
+		these change the Controll internally,
+		and might call Function Pointers for external stuff
+		they should not be accessible to the outside
+		they should not be called from inside the Control
+	*/
 	/* User Relay Invoker
 		(const void *) or (const Control::Base *)
 		not const ?
@@ -328,12 +331,14 @@ class Base
 		0: dont try to relay to parent
 		1: try to relay this event to parent
 	*/
+
 	virtual void	RelayHover(HoverArgs args);
 	virtual void	RelayClick(ClickArgs args);
 	virtual void	RelayScroll(ScrollArgs args);
-	virtual void	RelayCursorDrag(DragArgs args);
+	virtual void	RelayDrag(DragArgs args);
 	virtual void	RelayKey(KeyArgs args);
 	virtual void	RelayText(TextArgs args);
+
 	/* User Relay vs Func Pointer
 		Relays:		internal
 		Pointers:	external

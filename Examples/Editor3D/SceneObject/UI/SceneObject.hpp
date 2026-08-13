@@ -21,7 +21,7 @@ struct SceneObjectUI : public UI::Control::Form
 
 	::SceneObject * Object;
 	void	Change(::SceneObject * obj);
-	void	Update();
+	void	Syncronize();
 };
 
 #endif

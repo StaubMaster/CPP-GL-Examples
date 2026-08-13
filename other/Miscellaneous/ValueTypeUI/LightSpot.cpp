@@ -24,11 +24,11 @@ UI::Control::LightSpot::LightSpot(const char * name)
 
 
 
-void UI::Control::LightSpot::Update()
+void UI::Control::LightSpot::Syncronize()
 {
-	Base.Update();
-	Pos.Update();
-	Dir.Update();
+	Base.Syncronize();
+	Pos.Syncronize();
+	Dir.Syncronize();
 }
 
 void UI::Control::LightSpot::Change(::LightSpot * obj)

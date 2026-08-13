@@ -137,8 +137,8 @@ void UI::Control::Manager::GraphicsInst()
 void UI::Control::Manager::PlaceInstance(const ObjectData & obj)
 {
 	Inst::BufferData data;
+	data.Layer = obj.Depth;
 	data.Box = obj.Box;
-	data.Layer = obj.Layer;
 	data.Color = obj.Color;
 	data.Bound = obj.Bound;
 	Instances.Insert(data);

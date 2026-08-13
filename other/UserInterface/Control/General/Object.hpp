@@ -20,8 +20,8 @@ struct Object
 	void	Hide();
 	void	Full();
 
+	float &		Depth();
 	BoxF2 &		Box();
-	float &		Layer();
 	ColorF4 &	Color();
 	BoxF2 &		Bound();
 

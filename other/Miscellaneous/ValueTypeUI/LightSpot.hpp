@@ -21,7 +21,7 @@ struct LightSpot : public PropertyControl
 	LightSpot(const char * name);
 
 	::LightSpot * Object;
-	void	Update();
+	void	Syncronize();
 	void	Change(::LightSpot * obj);
 };
 };

@@ -40,6 +40,7 @@ struct TextData
 	BoxF2	Bound;
 	vec4	Color;
 	vec2	CharSize;
+	float	Depth;
 };
 layout(std140) uniform ITexts
 {
@@ -88,6 +89,7 @@ void main()
 	pos_normal.y = -pos_normal.y;
 
 	gl_Position = vec4(pos_normal, 0.01, 1);
+	gl_Position = vec4(pos_normal, text_data.Depth, 1);
 
 	vec2 pallet_t0 = NormalRelToAbs(main_pos);
 	vec2 pallet_t1 = vec2(1, 1) - pallet_t0;

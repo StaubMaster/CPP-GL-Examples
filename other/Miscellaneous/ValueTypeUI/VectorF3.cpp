@@ -27,7 +27,7 @@ UI::Control::VectorF3::VectorF3(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::VectorF3::Update()
+void UI::Control::VectorF3::Syncronize()
 {
 	if (Object != nullptr)
 	{

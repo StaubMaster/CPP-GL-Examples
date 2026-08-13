@@ -397,6 +397,7 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 	data.Bound = obj.Bound;
 	data.Color = obj.Color;
 	data.CharSize = obj.CharacterSize;
+	data.Depth = obj.Depth;
 	TextsList.Insert(data);
 
 #ifdef TELEMETRY_TIME

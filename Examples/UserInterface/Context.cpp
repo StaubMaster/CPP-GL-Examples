@@ -29,12 +29,15 @@ void UserInterfaceContext::Make()
 	UIManager.WindowControl.ChildInsert(Menu3);
 	UIManager.WindowControl.ChildInsert(TestScroll);
 	UIManager.WindowControl.ChildInsert(TestList);
+	UIManager.WindowControl.UpdateDepth();
+
 	Menu1.Hide();
 	Menu2.Hide();
 	Menu3.Hide();
 	Menu3.Hide();
 	TestScroll.Hide();
 	TestList.Hide();
+
 	Menu0.Menu1Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu1);
 	Menu0.Menu2Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu2);
 	Menu0.Menu3Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu3);
@@ -42,44 +45,51 @@ void UserInterfaceContext::Make()
 	Menu0.TestListButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestList);
 }
 
+static void MenuToggleVisible(UI::Control::Form & form)
+{
+	if (form.IsVisible())
+	{
+		form.Hide();
+	}
+	else
+	{
+		form.Show();
+	}
+}
+
 void UserInterfaceContext::ToggleMenu1(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		Menu0.Hide();
-		Menu1.Show();
+		MenuToggleVisible(Menu1);
 	}
 }
 void UserInterfaceContext::ToggleMenu2(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		Menu0.Hide();
-		Menu2.Show();
+		MenuToggleVisible(Menu2);
 	}
 }
 void UserInterfaceContext::ToggleMenu3(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		Menu0.Hide();
-		Menu3.Show();
+		MenuToggleVisible(Menu3);
 	}
 }
 void UserInterfaceContext::ToggleTestScroll(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		Menu0.Hide();
-		TestScroll.Show();
+		MenuToggleVisible(TestScroll);
 	}
 }
 void UserInterfaceContext::ToggleTestList(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		Menu0.Hide();
-		TestList.Show();
+		MenuToggleVisible(TestList);
 	}
 }
 
@@ -102,8 +112,6 @@ void UserInterfaceContext::Free()
 
 
 
-#include <iostream>
-#include "ValueType/_Show.hpp"
 void UserInterfaceContext::Resize(DisplaySize display_size)
 {
 	UIManager.Resize(display_size);
@@ -111,7 +119,6 @@ void UserInterfaceContext::Resize(DisplaySize display_size)
 void UserInterfaceContext::Frame(FrameTime frame_time)
 {
 	(void)frame_time;
-//	std::cout << "Mouse: " << window.MouseManager.CursorPosition().Window.Corner << '\n';
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 	UIManager.Draw();
 }
@@ -128,7 +135,6 @@ void UserInterfaceContext::KeyBoardKey(KeyArgs args)
 	{
 		if (args.Action == Action::Press)
 		{
-			Menu0.Show();
 			Menu1.Hide();
 			Menu2.Hide();
 			Menu3.Hide();

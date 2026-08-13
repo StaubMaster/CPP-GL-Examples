@@ -39,7 +39,7 @@ UI::Control::ColorF4::ColorF4(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::ColorF4::Update()
+void UI::Control::ColorF4::Syncronize()
 {
 	if (Object != nullptr)
 	{

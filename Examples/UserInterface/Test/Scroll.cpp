@@ -4,7 +4,9 @@
 
 
 TestScroll::~TestScroll()
-{ }
+{
+	delete[] Labels;
+}
 TestScroll::TestScroll()
 	: UI::Control::Form()
 	, ScrollBox()
@@ -25,7 +27,7 @@ TestScroll::TestScroll()
 		Labels[i].Anchor.Y.AnchorMin(y);
 		y = Labels[i].Anchor.Y.GetMinSize();
 		// this is like AutoSize FitFixed
-		ScrollBox.Content.ChildInsert(Labels[i]);
+		ScrollBox.ChildInsert(Labels[i]);
 
 		std::stringstream ss;
 		ss << "idx: " << i;

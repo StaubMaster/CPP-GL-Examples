@@ -7,9 +7,8 @@
 
 
 UI::Control::Label::Label()
-	: Base()
+	: BaseText()
 {
-	Depth = 0.1f;
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
 	AnchorSize = VectorF2(50, 25);
@@ -19,57 +18,17 @@ UI::Control::Label::Label()
 
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
-
-	Text = "";
 }
-UI::Control::Label::~Label() { }
+UI::Control::Label::~Label()
+{ }
 
 
 
-void UI::Control::Label::PutCharactersEntrys()
+void UI::Control::Label::TextObjectAssignPosition()
 {
 	if (TextObject.Is())
 	{
-		TextObject.Text() = Text;
-		TextObject.TextPosition() = BoxContent.Min;
 		TextObject.AlignTopLeft();
-		TextObject.Bound() = BoxContent;
-	}
-}
-
-
-
-std::string UI::Control::Label::GetText() const
-{
-	return Text;
-}
-void UI::Control::Label::SetText(std::string text)
-{
-	Text = text;
-	PutCharactersEntrys();
-}
-
-
-
-void UI::Control::Label::RelayBoxUpdate()
-{
-	if (TextObject.Is())
-	{
-		PutCharactersEntrys();
-	}
-}
-
-void UI::Control::Label::RelayObjectInsert()
-{
-	if (!TextObject.Is() && Manager != NULL)
-	{
-		TextObject.Create();
-	}
-}
-void UI::Control::Label::RelayObjectRemove()
-{
-	if (TextObject.Is() || Manager == NULL)
-	{
-		TextObject.Delete();
+		TextObject.TextPosition() = BoxContent.Min;
 	}
 }

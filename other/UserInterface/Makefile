@@ -15,6 +15,7 @@ FILES := \
 	Control/General/ObjectData.cpp \
 	Control/General/Object.cpp \
 	Control/General/Base.cpp \
+	Control/General/BaseText.cpp \
 \
 	Control/Window.cpp \
 	Control/Form.cpp \
@@ -25,6 +26,8 @@ FILES := \
 	Control/CheckBox.cpp \
 	Control/Label.cpp \
 	Control/Graph.cpp \
+	Control/ScrollBox.cpp \
+	Control/ListBox.cpp \
 \
 	Text/Data.cpp \
 	Text/Buffer.cpp \

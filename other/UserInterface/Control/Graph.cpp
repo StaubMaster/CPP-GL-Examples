@@ -19,8 +19,9 @@ UI::Control::Graph::Graph()
 
 #include "../Graph/ObjectData.hpp"
 
-void UI::Control::Graph::RelayBoxUpdate()
+void UI::Control::Graph::BoxUpdate()
 {
+	Base::BoxUpdate();
 	if (GraphObject.Is())
 	{
 		GraphObject.Box() = BoxContent;
@@ -30,15 +31,17 @@ void UI::Control::Graph::RelayBoxUpdate()
 		GraphObject.Data -> Values = &Values;
 	}
 }
-void UI::Control::Graph::RelayObjectInsert()
+void UI::Control::Graph::ObjectInsert()
 {
+	Base::ObjectInsert();
 	if (!GraphObject.Is() && Manager != nullptr)
 	{
 		GraphObject.Create();
 	}
 }
-void UI::Control::Graph::RelayObjectRemove()
+void UI::Control::Graph::ObjectRemove()
 {
+	Base::ObjectRemove();
 	if (GraphObject.Is() || Manager == nullptr)
 	{
 		GraphObject.Delete();

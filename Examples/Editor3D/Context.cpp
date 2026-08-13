@@ -153,7 +153,7 @@ void Light3DContext::Objects_Update()
 	if (Object_Selected != nullptr)
 	{
 		Object_Selected -> ShowWire();
-		UISceneObject.Update();
+		UISceneObject.Syncronize();
 	}
 }
 
@@ -395,18 +395,16 @@ void Light3DContext::PolyHedraPalletChangeFunc(ClickArgs args)
 	{
 		DoPolyHedraPalletChange = true;
 		{
-			UIPolyHedraPalletList.Clear();
+			UIPolyHedraPalletList.Show();
+			UIPolyHedraPalletList.List.ItemsClear();
+			UIPolyHedraPalletList.Object = nullptr;
 			for (unsigned int i = 0; i < PalletManager.Pallets.Count(); i++)
 			{
 				NewPolyHedra::Pallet * pallet = PalletManager.Pallets[i];
-				UI::Control::List::Item * item = new UI::Control::List::Item(UIPolyHedraPalletList, pallet -> Object -> File.Path.ToString(), pallet);
-				UIPolyHedraPalletList.Items.Insert(item);
-				UIPolyHedraPalletList.ChildInsert(item);
+				//UIPolyHedraPalletList.List.ItemNew(pallet -> Object -> File.Path.ToString(), pallet);
+				UIPolyHedraPalletList.List.ItemNew(pallet -> Object -> File.Path.Name(), pallet);
 			}
-			UIPolyHedraPalletList.Show();
-			UIPolyHedraPalletList.UpdateAutoSize(); // this dosent work poperly if hidden
-			// generic Fitting Enum
-			// Flag to request Fitting
+			UIPolyHedraPalletList.UpdateAutoAnchor();
 		}
 		//UIPolyHedraPalletList.Change(PolyHedraManager);
 	}
@@ -577,11 +575,13 @@ void Light3DContext::Make()
 	SceneReMake();
 
 	UIManager.WindowControl.ChildInsert(UISceneObject);
-	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
-	UISceneObject.Hide();
-
 	UIManager.WindowControl.ChildInsert(UIPolyHedraPalletList);
+	UIManager.WindowControl.UpdateDepth();
+	
+	UISceneObject.Hide();
 	UIPolyHedraPalletList.Hide();
+
+	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
 
 	UserTrans3DChange.IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
 	UserTrans3DChange.IndicatorsHide();
@@ -642,10 +642,12 @@ void Light3DContext::User(FrameTime frame_time)
 	{
 		if (UISceneObject.IsVisible())
 		{
+			std::cout << "UISceneObject.Hide();\n";
 			UISceneObject.Hide();
 		}
 		else
 		{
+			std::cout << "UISceneObject.Show();\n";
 			UISceneObject.Show();
 		}
 	}

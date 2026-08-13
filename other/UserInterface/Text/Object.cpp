@@ -23,6 +23,7 @@ UI::Text::Alignment &	UI::Text::Object::CharacterAlignmentY() { return (Data -> 
 
 BoxF2 &					UI::Text::Object::Bound() { return (Data -> Bound); }
 ColorF4 &				UI::Text::Object::Color() { return (Data -> Color); }
+float &					UI::Text::Object::Depth() { return (Data -> Depth); }
 
 
 

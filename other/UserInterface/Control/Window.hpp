@@ -18,7 +18,8 @@ class Window : public Base
 	~Window();
 
 	public:
-	void UpdateWindowSize(VectorF2 size);
+	void	UpdateWindowSize(VectorF2 size);
+	void	UpdateDepth();
 };
 
 };

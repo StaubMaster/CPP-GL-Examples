@@ -5,14 +5,10 @@
 
 # include "Generics/Function/Pointer.hpp"
 
-
-
 namespace UI
 {
-
 namespace Control
 {
-
 class CheckBox : public Base
 {
 	public:
@@ -35,14 +31,12 @@ class CheckBox : public Base
 	void	Check(bool state);
 
 	protected:
-	ColorF4		ColorMake() const override;
+	void	ColorUpdate() override;
 
 	protected:
 	void	RelayClick(ClickArgs params) override;
 };
-
 };
-
 };
 
 #endif
