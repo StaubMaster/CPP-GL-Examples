@@ -34,11 +34,10 @@ UI::Graph::Manager::Manager()
 	, Buffer()
 	, GraphicsExist(false)
 {
-	Shader.UniformLayout = &ShaderLayout;
-	ShaderLayout.Shader = &Shader;
+	Shader.AssignLayout(ShaderLayout);
 
 	Buffer.Mode	= GL::DrawMode::Lines;
-	Buffer.MainBuffer.Layout = &BufferLayout;
+	Buffer.MainBuffer.AssignLayout(BufferLayout);
 }
 
 

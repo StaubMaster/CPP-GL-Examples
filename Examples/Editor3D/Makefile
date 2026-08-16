@@ -5,12 +5,17 @@ FANCY_NAME := Editor3D
 ################################################################
 
 FILES := \
-	UserTrans3DChange.cpp \
-	SceneParsingData.cpp \
-	\
-	ShaderLayouts.cpp \
-	\
+	LightManager.cpp \
+\
+	Layout/Shader.cpp \
+	Layout/Multiform.cpp \
+	Layout/Parser/Uniform.cpp \
+	Layout/Parser/Attribute.cpp \
+\
 	SceneObject/SceneObject.cpp \
+	SceneObject/DisplayMode.cpp \
+	SceneObject/Collection.cpp \
+	\
 	SceneObject/PolyHedraObject.cpp \
 	SceneObject/LightAmbient.cpp \
 	SceneObject/LightDirection.cpp \
@@ -18,10 +23,16 @@ FILES := \
 	SceneObject/LightSpot.cpp \
 	SceneObject/UI/SceneObject.cpp \
 	SceneObject/UI/PolyHedraObject.cpp \
+	\
+	SceneParsingData.cpp \
 \
 	Ray3D_Hit.cpp \
 \
-	UI_Control_List.cpp \
+	UI/ListForm.cpp \
+	UI/Change3D/Base.cpp \
+	UI/Change3D/VectorF3.cpp \
+	UI/Change3D/EulerAngle3D.cpp \
+\
 	Context.cpp \
 	new.cpp \
 	main.cpp \

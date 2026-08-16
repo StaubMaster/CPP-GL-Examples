@@ -130,7 +130,7 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 		)
 	);
 
-	Context.Objects.Insert(new SceneObject_PolyHedraObject(polyhedra, trans));
+	Context.Collection.Objects.Insert(new SceneObject_PolyHedraObject(polyhedra, trans));
 }
 
 #include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
@@ -140,7 +140,7 @@ void SceneParsingData::Parse_LightAmbient(const TextCommand & cmd)
 {
 	if (!(cmd.Count() == 10)) { throw InvalidCommandArgumentCount(cmd, "n == 10"); }
 
-	LightBase * light = Context.TakeLightAmbient();
+	LightBase * light = Context.LightManager.TakeAmbient();
 	if (light == nullptr)
 	{
 		throw CommandInvalidState(cmd, "All Ambient Lights taken");
@@ -161,13 +161,13 @@ void SceneParsingData::Parse_LightAmbient(const TextCommand & cmd)
 	SceneObject_LightAmbient * obj = new SceneObject_LightAmbient();
 	obj -> Light = light;
 	obj -> Data.Data.Trans = trans;
-	Context.Objects.Insert(obj);
+	Context.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightDirectionD(const TextCommand & cmd)
 {
 	if (!(cmd.Count() == 10)) { throw InvalidCommandArgumentCount(cmd, "n == 10"); }
 
-	LightDirection * light = Context.TakeLightDirection();
+	LightDirection * light = Context.LightManager.TakeDirection();
 	if (light == nullptr)
 	{
 		throw CommandInvalidState(cmd, "All Directional Lights taken");
@@ -188,13 +188,13 @@ void SceneParsingData::Parse_LightDirectionD(const TextCommand & cmd)
 	SceneObject_LightDirection * obj = new SceneObject_LightDirection();
 	obj -> Light = light;
 	obj -> Data.Data.Trans = trans;
-	Context.Objects.Insert(obj);
+	Context.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightPoint(const TextCommand & cmd)
 {
 	if (!(cmd.Count() == 10)) { throw InvalidCommandArgumentCount(cmd, "n == 10"); }
 
-	LightPoint * light = Context.TakeLightPoint();
+	LightPoint * light = Context.LightManager.TakePoint();
 	if (light == nullptr)
 	{
 		throw CommandInvalidState(cmd, "All Point Lights taken");
@@ -215,13 +215,13 @@ void SceneParsingData::Parse_LightPoint(const TextCommand & cmd)
 	SceneObject_LightPoint * obj = new SceneObject_LightPoint();
 	obj -> Light = light;
 	obj -> Data.Data.Trans = trans;
-	Context.Objects.Insert(obj);
+	Context.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightSpotT(const TextCommand & cmd)
 {
 	if (!(cmd.Count() == 12)) { throw InvalidCommandArgumentCount(cmd, "n == 12"); }
 
-	LightSpot * light = Context.TakeLightSpot();
+	LightSpot * light = Context.LightManager.TakeSpot();
 	if (light == nullptr)
 	{
 		throw CommandInvalidState(cmd, "All Spot Lights taken");
@@ -244,5 +244,5 @@ void SceneParsingData::Parse_LightSpotT(const TextCommand & cmd)
 	SceneObject_LightSpot * obj = new SceneObject_LightSpot();
 	obj -> Light = light;
 	obj -> Data.Data.Trans = trans;
-	Context.Objects.Insert(obj);
+	Context.Collection.Objects.Insert(obj);
 }

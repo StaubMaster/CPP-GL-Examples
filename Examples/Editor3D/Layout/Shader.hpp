@@ -1,5 +1,5 @@
-#ifndef  SHADER_LAYOUTS_HPP
-# define SHADER_LAYOUTS_HPP
+#ifndef  LAYOUT_SHADER_HPP
+# define LAYOUT_SHADER_HPP
 
 # include "Graphics/Uniform/General/Layout.hpp"
 # include "Graphics/Uniform/_Include.hpp"
@@ -29,7 +29,7 @@ class ShaderLayoutView3D : public ShaderLayoutDisplay
 class ShaderLayoutLight3D : public ShaderLayoutView3D
 {
 	public:
-	Uniform::Buffer		LightUniform;
+	Uniform::Buffer		Lights;
 	public:
 	~ShaderLayoutLight3D();
 	ShaderLayoutLight3D();

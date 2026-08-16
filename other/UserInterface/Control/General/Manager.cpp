@@ -39,11 +39,10 @@ UI::Control::Manager::Manager()
 	, GraphicsExist(false)
 	, GraphicsNeedMain(false)
 {
-	Shader.UniformLayout = &ShaderLayout;
-	ShaderLayout.Shader = &Shader;
+	Shader.AssignLayout(ShaderLayout);
 
-	Buffer.MainBuffer.Layout = &BufferLayoutMain;
-	Buffer.InstBuffer.Layout = &BufferLayoutInst;
+	Buffer.MainBuffer.AssignLayout(BufferLayoutMain);
+	Buffer.InstBuffer.AssignLayout(BufferLayoutInst);
 }
 
 

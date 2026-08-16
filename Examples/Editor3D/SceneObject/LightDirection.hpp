@@ -6,6 +6,7 @@
 
 # include "NewPolyHedra/DataType/TransScaleColor3D/PalletObjectData.hpp"
 
+struct SceneObjectDisplayMode;
 struct SceneObject_LightDirection : public SceneObject
 {
 	LightDirection *	Light;
@@ -22,7 +23,7 @@ struct SceneObject_LightDirection : public SceneObject
 
 	void	ShowWire() override;
 
-	void	DisplayObject(const DisplayMode & mode) override;
+	void	DisplayObject(const SceneObjectDisplayMode & mode) override;
 
 	RayHitF3	Hit(const RayF3 & ray) const override;
 };

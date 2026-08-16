@@ -1,4 +1,6 @@
 #include "SceneObject/LightSpot.hpp"
+#include "SceneObject/DisplayMode.hpp"
+
 #include "Ray3D_Hit.hpp"
 
 
@@ -42,9 +44,9 @@ void SceneObject_LightSpot::ShowWire()
 	Data.ShowWire();
 }
 
-void SceneObject_LightSpot::DisplayObject(const DisplayMode & mode)
+void SceneObject_LightSpot::DisplayObject(const SceneObjectDisplayMode & mode)
 {
-	if (mode.Indicators == DisplayMode::EIndicators::Show)
+	if (mode.Indicators == SceneObjectDisplayMode::EIndicators::Show)
 	{
 		Data.InstancePut();
 	}

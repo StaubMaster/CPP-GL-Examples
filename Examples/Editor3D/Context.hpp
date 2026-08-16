@@ -3,75 +3,39 @@
 
 # include "ContextBase.hpp"
 
+// Layout
+# include "Layout/Shader.hpp"
+# include "Layout/Multiform.hpp"
+
 //
-# include <iostream>
-# include "OpenGL.hpp"
-# include "Debug.hpp"
-
-# include "ValueType/_Include.hpp"
-# include "ValueType/_Show.hpp"
-
-# include "Graphics/Shader/Code.hpp"
-
-// UniForm
-# include "Graphics/Uniform/_Include.hpp"
-# include "Graphics/Multiform/_Include.hpp"
+# include "LightManager.hpp"
 
 // PolyHedra
 # include "PolyHedra/PolyHedra.hpp"
-//# include "PolyHedra/Manager.hpp"
-//# include "PolyHedra/Object.hpp"
 
 // Containers
 # include "Generics/Container/Array.hpp"
 # include "Generics/Container/Binary.hpp"
-//# include "Miscellaneous/EntryContainer/Binary.hpp"
 
-//# include "Window.hpp"
-//# include "Function/Object.hpp"
-//# include "ValueType/View.hpp"
-
+// File Manager
 # include "FileInfo.hpp"
-//# include "DirectoryInfo.hpp"
 # include "Image.hpp"
 
 // Hit
 # include "Ray3D_Hit.hpp"
 
-// 
-# include "ShaderLayouts.hpp"
-
-// User Interface
-# include "UIManager.hpp"
-
-
-
 // SceneObject
 # include "SceneObject/SceneObject.hpp"
 # include "SceneObject/UI/SceneObject.hpp"
+# include "SceneObject/DisplayMode.hpp"
+# include "SceneObject/Collection.hpp"
 
-
-
-# include "Graphics/Multiform/Layout.hpp"
-# include "Graphics/Multiform/_Include.hpp"
-struct MultiformLayout : public Multiform::Layout
-{
-	Multiform::DisplaySize	DisplaySize;
-	Multiform::Matrix4x4	View;
-	Multiform::Depth		Depth;
-	Multiform::Angle		FOV;
-	~MultiformLayout();
-	MultiformLayout();
-};
-
-
-
-# include "UI_Control_List.hpp"
-//# include "Control/ListBox.hpp"
-
-# include "UserTrans3DChange.hpp"
-
-
+// User Interface
+# include "UIManager.hpp"
+# include "UI/ListForm.hpp"
+//# include "UI/UserTrans3DChange.hpp"
+# include "UI/Change3D/VectorF3.hpp"
+# include "UI/Change3D/EulerAngle3D.hpp"
 
 // NewPolyHedra
 # include "NewPolyHedra/Manager.hpp"
@@ -94,56 +58,102 @@ struct MultiformLayout : public Multiform::Layout
 
 struct Light3DContext : public ContextBase
 {
-static GL::BlockBinding		BindingLight;
-
 View3D		View;
 RayF3		ViewRay;
 Matrix4x4	ViewMatrix;
 
+
+
+NewPolyHedra::Manager		NewPolyHedra_Manager;
+
+NewPolyHedra::PalletManager		PalletManager;
+
+//ShaderLayoutLight3D						ObjectManagerBasic_ShaderFullLayout;
+//ShaderLayoutView3D						ObjectManagerBasic_ShaderWireLayout;
+//NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
+//NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
+
+Uniform::Buffer *						ObjectManagerBasic_ShaderFull_Lights;
+NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
+
+ShaderLayoutView3D						ObjectManagerTSC_ShaderFullLayout;
+ShaderLayoutView3D						ObjectManagerTSC_ShaderWireLayout;
+TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferFullLayout;
+TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferWireLayout;
+TransScaleColor3D::ObjectManager		ObjectManagerTSC;
+
+void	PolyHedra_ChangeMedia();
+
+
+
 ::MultiformLayout	MultiformLayout;
 
-//::PolyHedraManager	PolyHedraManager;
+
 
 UI::Manager			UIManager;
 SceneObjectUI		UISceneObject;
-
-bool	IsHoveringUI() const;
-
-//::PolyHedraUIManager	PolyHedraUIManager;
+bool	IsHoveringControl() const;
 
 
 
-static const unsigned int	Light_Ambient_Limit = 1;
-static const unsigned int	Light_Solar_Limit = 1;
-static const unsigned int	Light_Point_Limit = 1;
-static const unsigned int	Light_Spot_Limit = 4;
+static GL::BlockBinding		BindingLight;
 
-LightBase		Light_Ambient;
-unsigned int	Light_Ambient_Count;
-
-LightDirection	Light_Solar;
-unsigned int	Light_Solar_Count;
-
-LightPoint		Light_Point_Array[Light_Point_Limit];
-unsigned int	Light_Point_Count;
-
-LightSpot		Light_Spot_Array[Light_Spot_Limit];
-unsigned int	Light_Spot_Count;
-
-LightBase *			TakeLightAmbient();
-LightDirection *	TakeLightDirection();
-LightPoint *		TakeLightPoint();
-LightSpot *			TakeLightSpot();
+::LightManager		LightManager;
+Buffer::Uniform		LightBuffer;
 
 
 
-SceneObject::DisplayMode			SceneObject_DisplayMode;
-Container::Binary<SceneObject*>		Objects;
-SceneObject *						Object_Selected;
-SceneObject *						Object_Hovering;
+/*
+InVisible
+	dont do anything
+Visible
+	Inactive
+		syncronize Changer with Object
+		Hover Indicator
+			Indicate Color
+	Select
+		syncronize Changer with Object
+		Update Changer
+		syncronize Object with Changer
+*/
 
-SceneObject *	FindObject(const RayF3 & ray) const;
-unsigned int	FindObjectIndex(const SceneObject *) const;
+//::UserTrans3DChange		UserTrans3DChange;
+::Change3D::VectorF3		Change3DVectorF3;
+::Change3D::EulerAngle3D	Change3DEulerAngle3D;
+
+void	UserChange_Change();
+void	UserChange_Update();
+
+void	UserChange_IndicatorsInit();
+void	UserChange_IndicatorsHide();
+void	UserChange_IndicatorsShow();
+
+bool	UserChange_IsNone_All();
+
+void	UserChange_HoveringMakeNone();
+
+unsigned int	UserChange_IndicatorsFind();
+void	UserChange_SelectedMakeNone();
+void	UserChange_SelectedMakeL(unsigned int idx);
+void	UserChange_SelectedMakeR(unsigned int idx);
+
+void	UserChange_ChangeValue();
+void	UserChange_IndicatorsUpdate();
+
+
+
+ListForm	UIPolyHedraPalletList;
+bool	DoPolyHedraPalletChange = false;
+void	PolyHedraPalletChangeFunc(ClickArgs args);
+void	PolyHedraPalletUpdate();
+
+
+
+SceneObjectDisplayMode				DisplayMode;
+SceneObjectCollection				Collection;
+SceneObject *						Object_Selected = nullptr;
+SceneObject *						Object_Hovering = nullptr;
+SceneObject_PolyHedraObject *		CenterCube = nullptr;
 
 void	Objects_Change();
 void	Objects_Update();
@@ -162,48 +172,8 @@ void	SceneReMake();
 
 
 
-::UserTrans3DChange UserTrans3DChange;
-
-void	UserChange_Change();
-void	UserChange_Update();
-
-
-
-ListForm	UIPolyHedraPalletList;
-bool	DoPolyHedraPalletChange;
-void	PolyHedraPalletChangeFunc(ClickArgs args);
-void	PolyHedraPalletUpdate();
-
-
-
-NewPolyHedra::Manager		NewPolyHedra_Manager;
-
-NewPolyHedra::PalletManager		PalletManager;
-
-ShaderLayoutLight3D						ObjectManagerBasic_ShaderFullLayout;
-ShaderLayoutView3D						ObjectManagerBasic_ShaderWireLayout;
-NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
-NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
-NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
-
-ShaderLayoutView3D						ObjectManagerTSC_ShaderFullLayout;
-ShaderLayoutView3D						ObjectManagerTSC_ShaderWireLayout;
-TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferFullLayout;
-TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferWireLayout;
-TransScaleColor3D::ObjectManager		ObjectManagerTSC;
-
-
-
 ~Light3DContext();
 Light3DContext();
-
-
-
-SceneObject_PolyHedraObject *		CenterCube;
-
-
-
-Buffer::Uniform			LightBuffer;
 
 
 
@@ -222,8 +192,12 @@ void	Draw();
 
 void	ViewFunc();
 
+
+
 void	Frame(FrameTime frame_time) override;
 void	Resize(DisplaySize display_size) override;
+
+
 
 void	MouseMove(MoveArgs args) override;
 void	MouseClick(ClickArgs args) override;
