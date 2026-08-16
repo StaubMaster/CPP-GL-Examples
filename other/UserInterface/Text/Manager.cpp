@@ -54,11 +54,10 @@ UI::Text::Manager::Manager()
 	, GraphicsExist(false)
 	, TextureAssigned(false)
 {
-	Shader.UniformLayout = &ShaderLayout;
-	ShaderLayout.Shader = &Shader;
+	Shader.AssignLayout(ShaderLayout);
 
-	Buffer.MainBuffer.Layout = &LayoutMain;
-	Buffer.InstBuffer.Layout = &LayoutInst;
+	Buffer.MainBuffer.AssignLayout(LayoutMain);
+	Buffer.InstBuffer.AssignLayout(LayoutInst);
 }
 
 void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)

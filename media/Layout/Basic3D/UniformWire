@@ -1,0 +1,9 @@
+
+#File Shaders/Basic3D/Wire.vert
+#File Shaders/Basic3D/Wire.frag
+#FilesDone
+
+DisplaySize		DisplaySize
+Matrix4x4		View
+Depth			Depth
+Angle			FOV

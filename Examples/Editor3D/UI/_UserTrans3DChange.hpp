@@ -24,11 +24,14 @@ make more members private
 so changing is done with functions
 
 make position and rotation changes seperate ?
+yes
+
+allow both at the same time to do both
 */
 
 class DirectoryInfo;
 
-struct UserTrans3DChange
+struct UserTrans3DChange // Trans3D
 {
 	public:
 	UserTrans3DChange();
@@ -37,13 +40,6 @@ struct UserTrans3DChange
 
 	private:
 	bool	IsVisible;
-
-	//PolyHedraUIObject	MoveAxisX;
-	//PolyHedraUIObject	MoveAxisY;
-	//PolyHedraUIObject	MoveAxisZ;
-	//PolyHedraUIObject	SpinRingX;
-	//PolyHedraUIObject	SpinRingY;
-	//PolyHedraUIObject	SpinRingZ;
 
 	TransScaleColor3D::Object	MoveAxisX;
 	TransScaleColor3D::Object	MoveAxisY;

@@ -1,4 +1,4 @@
-#include "ShaderLayouts.hpp"
+#include "Layout/Shader.hpp"
 
 
 
@@ -26,5 +26,5 @@ ShaderLayoutLight3D::~ShaderLayoutLight3D()
 { }
 ShaderLayoutLight3D::ShaderLayoutLight3D()
 	: ShaderLayoutView3D()
-	, LightUniform(*this, "ILights")
+	, Lights(*this, "ILights")
 { }

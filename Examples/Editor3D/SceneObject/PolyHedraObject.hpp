@@ -13,6 +13,7 @@ so ObjectData like Trans only exists when Object .Is()
 but here, I need Trans even when the PolyHedra Manager does not know this
 */
 
+struct SceneObjectDisplayMode;
 struct SceneObject_PolyHedraObject : public SceneObject
 {
 	NewPolyHedra::Basic3D::PalletObjectData		Data;
@@ -28,7 +29,7 @@ struct SceneObject_PolyHedraObject : public SceneObject
 
 	void	ShowWire() override;
 
-	void	DisplayObject(const DisplayMode & mode) override;
+	void	DisplayObject(const SceneObjectDisplayMode & mode) override;
 
 	RayHitF3	Hit(const RayF3 & ray) const override;
 };

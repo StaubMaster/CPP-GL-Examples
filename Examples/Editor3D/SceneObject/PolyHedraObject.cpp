@@ -1,4 +1,6 @@
 #include "SceneObject/PolyHedraObject.hpp"
+#include "SceneObject/DisplayMode.hpp"
+
 #include "Ray3D_Hit.hpp"
 
 
@@ -36,13 +38,13 @@ void SceneObject_PolyHedraObject::ShowWire()
 	Data.ShowWire();
 }
 
-void SceneObject_PolyHedraObject::DisplayObject(const DisplayMode & mode)
+void SceneObject_PolyHedraObject::DisplayObject(const SceneObjectDisplayMode & mode)
 {
-	if (mode.Objects == DisplayMode::EObjects::Full)
+	if (mode.Objects == SceneObjectDisplayMode::EObjects::Full)
 	{
 		Data.InstancePut();
 	}
-	else if (mode.Objects == DisplayMode::EObjects::Wire)
+	else if (mode.Objects == SceneObjectDisplayMode::EObjects::Wire)
 	{
 		bool full = Data.VisibleFull();
 		bool wire = Data.VisibleWire();

@@ -1,4 +1,6 @@
 #include "SceneObject/LightPoint.hpp"
+#include "SceneObject/DisplayMode.hpp"
+
 #include "Ray3D_Hit.hpp"
 
 #include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
@@ -44,9 +46,9 @@ void SceneObject_LightPoint::ShowWire()
 	Data.ShowWire();
 }
 
-void SceneObject_LightPoint::DisplayObject(const DisplayMode & mode)
+void SceneObject_LightPoint::DisplayObject(const SceneObjectDisplayMode & mode)
 {
-	if (mode.Indicators == DisplayMode::EIndicators::Show)
+	if (mode.Indicators == SceneObjectDisplayMode::EIndicators::Show)
 	{
 		Data.InstancePut();
 	}

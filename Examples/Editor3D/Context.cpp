@@ -1,14 +1,21 @@
 #include "Context.hpp"
 #include "UnitToString.hpp"
-#include "ValueType/Ray/Hit/F3Type.hpp"
 
 #include "PolyHedra/Generate.hpp"
 
-//#include "PolyHedra/ObjectData.hpp"
-//#include "PolyHedraUI/PalletManager.hpp"
-//#include "PolyHedraUI/ObjectData.hpp"
+//
+#include <iostream>
+#include "OpenGL.hpp"
+#include "Debug.hpp"
 
+// ValueType
+#include "ValueType/_Include.hpp"
 #include "ValueType/Intersect.hpp"
+#include "ValueType/_Show.hpp"
+#include "ValueType/Ray/Hit/F3Type.hpp"
+
+//
+#include "Graphics/Shader/Code.hpp"
 
 // SceneObject
 #include "SceneObject/SceneObject.hpp"
@@ -20,125 +27,159 @@
 
 
 
-MultiformLayout::~MultiformLayout()
-{ }
-MultiformLayout::MultiformLayout()
-	: Multiform::Layout()
-	, DisplaySize("DisplaySize")
-	, View("View")
-	, Depth("Depth")
-	, FOV("FOV")
-{
-	Multiforms.Insert(&DisplaySize);
-	Multiforms.Insert(&View);
-	Multiforms.Insert(&Depth);
-	Multiforms.Insert(&FOV);
-}
-
-
-
 GL::BlockBinding Light3DContext::BindingLight = 3;
 
 
 
-bool Light3DContext::IsHoveringUI() const
+void Light3DContext::PolyHedra_ChangeMedia()
 {
-	return (UIManager.Hovering != &UIManager.WindowControl);
-}
 
-
-
-LightBase * Light3DContext::TakeLightAmbient()
-{
-	if (Light_Ambient_Count < Light_Ambient_Limit)
+	// NewPolyHedra
 	{
-		LightBase * light = &Light_Ambient;
-		Light_Ambient_Count++;
-		return light;
-	}
-	return nullptr;
-}
-LightDirection * Light3DContext::TakeLightDirection()
-{
-	if (Light_Solar_Count < Light_Solar_Limit)
-	{
-		LightDirection * light = &Light_Solar;
-		Light_Solar_Count++;
-		return light;
-	}
-	return nullptr;
-}
-LightPoint * Light3DContext::TakeLightPoint()
-{
-	if (Light_Point_Count < Light_Point_Limit)
-	{
-		LightPoint * light = &Light_Point_Array[Light_Point_Count];
-		Light_Point_Count++;
-		return light;
-	}
-	return nullptr;
-}
-LightSpot * Light3DContext::TakeLightSpot()
-{
-	if (Light_Spot_Count < Light_Spot_Limit)
-	{
-		LightSpot * light = &Light_Spot_Array[Light_Spot_Count];
-		Light_Spot_Count++;
-		return light;
-	}
-	return nullptr;
-}
-
-
-
-SceneObject * Light3DContext::FindObject(const RayF3 & ray) const
-{
-	RayHitF3Type<unsigned int> hit;
-	for (unsigned int i = 0; i < Objects.Count(); i++)
-	{
-		if (Objects[i] == nullptr) { continue; }
-		RayHitF3 hit_temp = Objects[i] -> Hit(ray);
-		hit.Consider(hit_temp, i);
-	}
-	if (hit.Is())
-	{
-		return Objects[hit.Data];
-	}
-	return nullptr;
-}
-unsigned int Light3DContext::FindObjectIndex(const SceneObject * obj) const
-{
-	for (unsigned int i = 0; i < Objects.Count(); i++)
-	{
-		if (Objects[i] == obj)
 		{
-			return i;
+			PalletManager.BufferFullLayout.Position.Change(0);
+			PalletManager.BufferFullLayout.Normal.Change(1);
+			PalletManager.BufferFullLayout.Texture.Change(2);
+			PalletManager.BufferFullLayout.Color.Change(15);
+		}
+		{
+			PalletManager.BufferWireLayout.Pos.Change(0);
+			PalletManager.BufferWireLayout.Col.Change(1);
 		}
 	}
-	return 0xFFFFFFFF;
+
+	// Object Manager Basic
+	{
+		{
+			ObjectManagerBasic.ShaderFull.Change({
+				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
+				MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
+			});
+			/*{
+				ObjectManagerBasic.ShaderFull.AssignLayout(ObjectManagerBasic_ShaderFullLayout);
+			}*/
+			{
+				Uniform::Layout * layout = new Uniform::Layout(ObjectManagerBasic.ShaderFull);
+				new Uniform::DisplaySize	(*layout, "DisplaySize");
+				new Uniform::Matrix4x4		(*layout, "View");
+				new Uniform::Depth			(*layout, "Depth");
+				new Uniform::Angle			(*layout, "FOV");
+				ObjectManagerBasic_ShaderFull_Lights = new Uniform::Buffer(*layout, "ILights");
+				ObjectManagerBasic.ShaderFull.AssignLayout(layout);
+			}
+			{
+				Attribute::Layout * layout = new Attribute::Layout(1, sizeof(NewPolyHedra::Basic3D::InstanceData));
+				new Attribute::Matrix4x4	(*layout, 3);
+				new Attribute::Matrix4x4	(*layout, 7);
+				ObjectManagerBasic.BufferFullLayout = layout;
+			}
+
+			ObjectManagerBasic.ShaderWire.Change({
+				MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
+				MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
+			});
+			{
+				Uniform::Layout * layout = new Uniform::Layout(ObjectManagerBasic.ShaderWire);
+				new Uniform::DisplaySize	(*layout, "DisplaySize");
+				new Uniform::Matrix4x4		(*layout, "View");
+				new Uniform::Depth			(*layout, "Depth");
+				new Uniform::Angle			(*layout, "FOV");
+				ObjectManagerBasic.ShaderWire.AssignLayout(layout);
+			}
+			{
+				Attribute::Layout * layout = new Attribute::Layout(1, sizeof(NewPolyHedra::Basic3D::InstanceData));
+				new Attribute::Matrix4x4	(*layout, 3);
+				new Attribute::Matrix4x4	(*layout, -1);
+				ObjectManagerBasic.BufferWireLayout = layout;
+			}
+		}
+		/*{
+			ObjectManagerBasic.ShaderFull.Change({
+				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
+				MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
+			});
+			{
+				ObjectManagerBasic.ShaderFull.AssignLayout(ObjectManagerBasic_ShaderFullLayout);
+			}
+			{
+				ObjectManagerBasic.BufferFullLayout = AttributeLayoutParser::Parse(MediaDirectory.File("Layout/Basic3D/AttributeFull"));
+			}
+
+			ObjectManagerBasic.ShaderWire.Change({
+				MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
+				MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
+			});
+			{
+				Uniform::Layout * layout = UniformLayoutParser::Parse(MediaDirectory.File("Layout/Basic3D/UniformWire"));
+				ObjectManagerBasic.ShaderWire.AssignLayout(layout);
+			}
+			{
+				ObjectManagerBasic.BufferWireLayout = AttributeLayoutParser::Parse(MediaDirectory.File("Layout/Basic3D/AttributeWire"));
+			}
+		}*/
+	}
+
+	// Object Manager TSC
+	{
+		{
+			ObjectManagerTSC.ShaderFull.Change({
+				MediaDirectory.File("Shaders/PolyHedra/UserInterface.vert"),
+				MediaDirectory.File("Shaders/PolyHedra/TexturedNoLight.frag"),
+			});
+			ObjectManagerTSC.ShaderFull.AssignLayout(ObjectManagerTSC_ShaderFullLayout);
+		}
+		{
+			// no Shader
+			ObjectManagerTSC.ShaderWire.AssignLayout(ObjectManagerTSC_ShaderWireLayout);
+		}
+		{
+			ObjectManagerTSC_BufferFullLayout.Trans.Change(3);
+			ObjectManagerTSC_BufferFullLayout.Normal.Change(7);
+			ObjectManagerTSC_BufferFullLayout.Scale.Change(11);
+			ObjectManagerTSC_BufferFullLayout.Color.Change(12);
+			ObjectManagerTSC.BufferFullLayout = &ObjectManagerTSC_BufferFullLayout;
+		}
+		{
+			// no Shader
+			ObjectManagerTSC.BufferWireLayout = &ObjectManagerTSC_BufferWireLayout;
+		}
+	}
+}
+
+
+
+bool Light3DContext::IsHoveringControl() const
+{
+	return (UIManager.Hovering != nullptr && UIManager.Hovering != &UIManager.WindowControl);
 }
 
 void Light3DContext::Objects_Change()
 {
 	Object_Hovering = nullptr;
 
-	if (IsHoveringUI()) { return; }
-	if (!UserTrans3DChange.IsIdle()) { return; }
+	if (IsHoveringControl()) { return; }
+	if (!UserChange_IsNone_All()) { return; }
 
-	Object_Hovering = FindObject(ViewRay);
+	Object_Hovering = Collection.FindObject(ViewRay);
 
 	if (window.MouseManager[MouseButtons::MouseL].IsPress())
 	{
 		Object_Selected = Object_Hovering;
 		if (Object_Selected != nullptr)
 		{
-			UserTrans3DChange.IndicatorsShow();
-			UserTrans3DChange.SetTrans(Object_Selected -> GetTrans());
+			UserChange_IndicatorsShow();
+
+			Trans3D trans = Object_Selected -> GetTrans();
+
+			Change3DVectorF3.Set(trans.Position);
+
+			Change3DEulerAngle3D.Set(trans.Rotation);
+			Change3DEulerAngle3D.Center = trans.Position;
 		}
 		else
 		{
-			UserTrans3DChange.SelectedMakeNone();
-			UserTrans3DChange.IndicatorsHide();
+			UserChange_SelectedMakeNone();
+			UserChange_IndicatorsHide();
 		}
 		UISceneObject.Change(Object_Selected);
 	}
@@ -161,27 +202,22 @@ void Light3DContext::Objects_Update()
 
 void Light3DContext::SceneClear()
 {
-	for (unsigned int i = 0; i < Objects.Count(); i++)
-	{
-		delete Objects[i];
-	}
-	Objects.Clear();
-	Light_Ambient_Count = 0;
-	Light_Solar_Count = 0;
-	Light_Point_Count = 0;
-	Light_Spot_Count = 0;
+	Object_Selected = nullptr;
+	Object_Hovering = nullptr;
+	Collection.Clear();
+	LightManager.Clear();
+//	UserTrans3DChange.HoveringMakeNone();
+//	UserTrans3DChange.SelectedMakeNone();
 }
 
 static PolyHedra * Cube = nullptr;
-//static PolyHedra * Sphere = nullptr;
-//static PolyHedra * Torus = nullptr;
 
 void Light3DContext::SceneInitCubes()
 {
 	Cube = PolyHedraGenerate::RegularHexaHedron();
 	CenterCube = new SceneObject_PolyHedraObject();
 	CenterCube -> Data.Manager = ObjectManagerBasic.FindMakePalletObjectManager(Cube);
-	Objects.Insert(CenterCube);
+	Collection.Objects.Insert(CenterCube);
 
 	/* Random
 	int Range_Size1 = 0x1FF;
@@ -280,9 +316,10 @@ void Light3DContext::SceneInitLights()
 	/* all these would be nice if they had both fixed Color and optional Color
 	*/
 
-	for (unsigned int i = 0; i < Objects.Count(); i++)
+	// set Bodys of Light Objects
+	for (unsigned int i = 0; i < Collection.Objects.Count(); i++)
 	{
-		SceneObject * scene_obj = Objects[i];
+		SceneObject * scene_obj = Collection.Objects[i];
 		{
 			SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(scene_obj);
 			if (obj != nullptr)
@@ -349,42 +386,224 @@ void Light3DContext::SceneReMake()
 
 void Light3DContext::UserChange_Change()
 {
-	UserTrans3DChange.HoveringMakeNone();
+	UserChange_HoveringMakeNone();
 
-	if (IsHoveringUI()) { return; }
+	if (IsHoveringControl()) { return; }
 
-	UserTrans3DChange.IndicatorsFind(ViewRay);
+	unsigned int idx = UserChange_IndicatorsFind();
 
-	// this is bad. check for release of the one being used ?
 	if (window[MouseButtons::MouseL].IsRelease() ||
 		window[MouseButtons::MouseR].IsRelease())
 	{
-		UserTrans3DChange.SelectedMakeNone();
+		UserChange_SelectedMakeNone();
 	}
 	else if (window[MouseButtons::MouseL].IsPress())
 	{
-		UserTrans3DChange.SelectedMakeL();
+		UserChange_SelectedMakeL(idx);
 	}
 	else if (window[MouseButtons::MouseR].IsPress())
 	{
-		UserTrans3DChange.SelectedMakeR();
+		UserChange_SelectedMakeR(idx);
 	}
 }
 void Light3DContext::UserChange_Update()
 {
-	UserTrans3DChange.NewTrans(ViewRay);
+	UserChange_ChangeValue();
 	if (Object_Selected != nullptr)
 	{
-		if (!UserTrans3DChange.SelectedIsNone())
+		Trans3D trans = Object_Selected -> GetTrans();
+
+
+	
+		trans.Position = Change3DVectorF3.Get();
+		trans.Rotation = Change3DEulerAngle3D.Get();
+
+
+	
+		Change3DVectorF3.Set(trans.Position);
+
+		Change3DEulerAngle3D.Set(trans.Rotation);
+		Change3DEulerAngle3D.Center = trans.Position;
+
+
+	
+		Object_Selected -> SetTrans(trans);
+	}
+	UserChange_IndicatorsUpdate();
+}
+
+void Light3DContext::UserChange_IndicatorsInit()
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		change3D[i] -> IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
+	}
+}
+void Light3DContext::UserChange_IndicatorsShow()
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		change3D[i] -> IndicatorsShow();
+	}
+}
+void Light3DContext::UserChange_IndicatorsHide()
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		change3D[i] -> IndicatorsHide();
+	}
+}
+
+bool Light3DContext::UserChange_IsNone_All()
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		if (!change3D[i] -> IsNone())
 		{
-			Object_Selected -> SetTrans(UserTrans3DChange.GetTrans());
-		}
-		else
-		{
-			UserTrans3DChange.SetTrans(Object_Selected -> GetTrans());
+			return false;
 		}
 	}
-	UserTrans3DChange.IndicatorsUpdate(View, window.Size);
+
+	return true;
+}
+
+void Light3DContext::UserChange_HoveringMakeNone()
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		change3D[i] -> HoveringMakeNone();
+	}
+}
+
+unsigned int Light3DContext::UserChange_IndicatorsFind()
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	RayHitF3Type<unsigned int> hit;
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		hit.Consider(change3D[i] -> IndicatorsFind(ViewRay), i);
+	}
+
+	if (hit.Is())
+	{
+		for (unsigned int i = 0; i < n; i++)
+		{
+			if (hit.Data != i)
+			{
+				change3D[i] -> HoveringMakeOther();
+			}
+		}
+	}
+
+	return hit.Data;
+}
+void Light3DContext::UserChange_SelectedMakeNone()
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		change3D[i] -> SelectedMakeNone();
+	}
+}
+void Light3DContext::UserChange_SelectedMakeL(unsigned int idx)
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		if (i == idx)
+		{
+			change3D[i] -> SelectedMakeL();
+		}
+	}
+}
+void Light3DContext::UserChange_SelectedMakeR(unsigned int idx)
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		if (i == idx)
+		{
+			change3D[i] -> SelectedMakeR();
+		}
+	}
+}
+
+void Light3DContext::UserChange_ChangeValue()
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		change3D[i] -> ChangeValue(ViewRay);
+	}
+}
+void Light3DContext::UserChange_IndicatorsUpdate()
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		change3D[i] -> IndicatorsUpdate(View, window.Size);
+	}
 }
 
 
@@ -431,13 +650,6 @@ Light3DContext::~Light3DContext()
 { }
 Light3DContext::Light3DContext()
 	: ContextBase()
-	, UIManager()
-	, UISceneObject()
-	, Objects()
-	, Object_Selected(nullptr)
-	, Object_Hovering(nullptr)
-	, UIPolyHedraPalletList()
-	, DoPolyHedraPalletChange(false)
 	, LightBuffer(GL::BufferDataUsage::StreamDraw)
 {
 	MediaDirectory = DirectoryInfo("../../media/"); // Set Media Directory with MakeFile Macro ?
@@ -446,98 +658,34 @@ Light3DContext::Light3DContext()
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerBasic);
 	NewPolyHedra_Manager.ObjectManagers.Insert(&ObjectManagerTSC);
 
-	Container::Array<Uniform::Layout*> layouts({
-		&UIManager.ControlManager.ShaderLayout,
-		&UIManager.TextManager.ShaderLayout,
-		&UIManager.GraphManager.ShaderLayout,
-		&ObjectManagerBasic_ShaderFullLayout,
-		&ObjectManagerBasic_ShaderWireLayout,
-		&ObjectManagerTSC_ShaderFullLayout,
-		&ObjectManagerTSC_ShaderWireLayout,
-	});
-	MultiformLayout.Find(layouts);
-
-	SceneObject_DisplayMode.Indicators = SceneObject::DisplayMode::EIndicators::Show;
-	SceneObject_DisplayMode.Objects = SceneObject::DisplayMode::EObjects::Full;
+	DisplayMode.Indicators = SceneObjectDisplayMode::EIndicators::Show;
+	DisplayMode.Objects = SceneObjectDisplayMode::EObjects::Full;
 }
 
 
 
+#include "Layout/Parser/Attribute.hpp"
+#include "Layout/Parser/Uniform.hpp"
 void Light3DContext::ChangeMedia()
 {
 	std::cout << "ChangeMedia 0\n";
 
 	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 
-	// NewPolyHedra
-	{
-		PalletManager.BufferFullLayout.Position.Change(0);
-		PalletManager.BufferFullLayout.Normal.Change(1);
-		PalletManager.BufferFullLayout.Texture.Change(2);
-		PalletManager.BufferFullLayout.Color.Change(15);
-	}
-	{
-		PalletManager.BufferWireLayout.Pos.Change(0);
-		PalletManager.BufferWireLayout.Col.Change(1);
-	}
+	PolyHedra_ChangeMedia();
 
-	// Object Manager Basic
-	{
-		{
-			ObjectManagerBasic.ShaderFull.Change({
-				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
-				MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
-			});
-			ObjectManagerBasic.ShaderFull.UniformLayout = &ObjectManagerBasic_ShaderFullLayout;
-			ObjectManagerBasic_ShaderFullLayout.Shader = &ObjectManagerBasic.ShaderFull;
-		}
-		{
-			ObjectManagerBasic.ShaderWire.Change({
-				MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
-				MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
-			});
-			ObjectManagerBasic.ShaderWire.UniformLayout = &ObjectManagerBasic_ShaderWireLayout;
-			ObjectManagerBasic_ShaderWireLayout.Shader = &ObjectManagerBasic.ShaderWire;
-		}
-		{
-			ObjectManagerBasic_BufferFullLayout.Trans.Change(3);
-			ObjectManagerBasic_BufferFullLayout.Normal.Change(7);
-			ObjectManagerBasic.BufferFullLayout = &ObjectManagerBasic_BufferFullLayout;
-		}
-		{
-			ObjectManagerBasic_BufferWireLayout.Trans.Change(3);
-			ObjectManagerBasic_BufferWireLayout.Normal.Change(-1);
-			ObjectManagerBasic.BufferWireLayout = &ObjectManagerBasic_BufferWireLayout;
-		}
-	}
-
-	// Object Manager TSC
-	{
-		{
-			ObjectManagerTSC.ShaderFull.Change({
-				MediaDirectory.File("Shaders/PolyHedra/UserInterface.vert"),
-				MediaDirectory.File("Shaders/PolyHedra/TexturedNoLight.frag"),
-			});
-			ObjectManagerTSC.ShaderFull.UniformLayout = &ObjectManagerTSC_ShaderFullLayout;
-			ObjectManagerTSC_ShaderFullLayout.Shader = &ObjectManagerTSC.ShaderFull;
-		}
-		{
-			// no Shader
-			ObjectManagerTSC.ShaderWire.UniformLayout = &ObjectManagerTSC_ShaderWireLayout;
-			ObjectManagerTSC_ShaderWireLayout.Shader = &ObjectManagerTSC.ShaderWire;
-		}
-		{
-			ObjectManagerTSC_BufferFullLayout.Trans.Change(3);
-			ObjectManagerTSC_BufferFullLayout.Normal.Change(7);
-			ObjectManagerTSC_BufferFullLayout.Scale.Change(11);
-			ObjectManagerTSC_BufferFullLayout.Color.Change(12);
-			ObjectManagerTSC.BufferFullLayout = &ObjectManagerTSC_BufferFullLayout;
-		}
-		{
-			// no Shader
-			ObjectManagerTSC.BufferWireLayout = &ObjectManagerTSC_BufferWireLayout;
-		}
-	}
+	Container::Array<Uniform::Layout*> layouts({
+		&UIManager.ControlManager.ShaderLayout,
+		&UIManager.TextManager.ShaderLayout,
+		&UIManager.GraphManager.ShaderLayout,
+		//&ObjectManagerBasic_ShaderFullLayout,
+		//&ObjectManagerBasic_ShaderWireLayout,
+		ObjectManagerBasic.ShaderFull.Layout,
+		ObjectManagerBasic.ShaderWire.Layout,
+		&ObjectManagerTSC_ShaderFullLayout,
+		&ObjectManagerTSC_ShaderWireLayout,
+	});
+	MultiformLayout.Find(layouts);
 
 	std::cout << "ChangeMedia 1\n";
 }
@@ -549,12 +697,16 @@ void Light3DContext::GraphicsCreate()
 	MultiformLayout.FOV.ChangeData(View.FOV);
 
 	LightBuffer.Create();
+
+	NewPolyHedra_Manager.GraphicsCreate();
 }
 void Light3DContext::GraphicsDelete()
 {
 	UIManager.GraphicsDelete();
 
 	LightBuffer.Delete();
+
+	NewPolyHedra_Manager.GraphicsDelete();
 }
 
 
@@ -563,7 +715,7 @@ static ::PolyHedra * TestPolyHedraSphere;
 
 void Light3DContext::Make()
 {
-	std::cout << "Make 0\n";
+	std::cout << "Light3DContext::Make() ....\n";
 
 	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
 	View.Depth.Color = window.DefaultColor;
@@ -577,42 +729,45 @@ void Light3DContext::Make()
 	UIManager.WindowControl.ChildInsert(UISceneObject);
 	UIManager.WindowControl.ChildInsert(UIPolyHedraPalletList);
 	UIManager.WindowControl.UpdateDepth();
-	
+
 	UISceneObject.Hide();
 	UIPolyHedraPalletList.Hide();
 
 	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
 
-	UserTrans3DChange.IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
-	UserTrans3DChange.IndicatorsHide();
+	UserChange_IndicatorsInit();
+	UserChange_IndicatorsHide();
 
-	std::cout << "Make 1\n";
+	Shader::Base::BindNone();
+	LightBuffer.BindBase(BindingLight);
+
+	ObjectManagerBasic.ShaderFull.Bind();
+	ObjectManagerBasic.ShaderFull.BindUniformBlockIndex(ObjectManagerBasic_ShaderFull_Lights -> Index, BindingLight);
+
+	std::cout << "Light3DContext::Make() done\n";
 }
 
 void Light3DContext::Init()
 {
 	ChangeMedia();
 
-	std::cout << "Init 0\n";
+	std::cout << "Light3DContext::Init() ....\n";
 
 	GraphicsCreate();
 
-	NewPolyHedra_Manager.GraphicsCreate();
-
-	std::cout << "Init 1\n";
-
 	UIManager.GraphicsInit();
+
+	std::cout << "Light3DContext::Init() done\n";
 
 	Make();
 }
 void Light3DContext::Free()
 {
-	std::cout << "Free 0\n";
+	std::cout << "Light3DContext::Free() ....\n";
 
 	GraphicsDelete();
-	NewPolyHedra_Manager.GraphicsDelete();
 
-	std::cout << "Free 1\n";
+	std::cout << "Light3DContext::Free() done\n";
 }
 
 
@@ -656,12 +811,12 @@ void Light3DContext::User(FrameTime frame_time)
 	{
 		if (Object_Selected != nullptr)
 		{
-			unsigned int idx = FindObjectIndex(Object_Selected);
+			unsigned int idx = Collection.FindObjectIndex(Object_Selected);
 			if (idx != 0xFFFFFFFF)
 			{
-				Objects.RemoveAt(idx);
-				UserTrans3DChange.SelectedMakeNone();
-				UserTrans3DChange.IndicatorsHide();
+				Collection.Objects.RemoveAt(idx);
+				UserChange_SelectedMakeNone();
+				UserChange_IndicatorsHide();
 				Object_Selected = nullptr;
 			}
 		}
@@ -670,24 +825,24 @@ void Light3DContext::User(FrameTime frame_time)
 	if (window[Keys::Insert] == State::Press)
 	{
 		NewPolyHedra::PalletObjectManager * manager = ObjectManagerBasic.FindMakePalletObjectManager(Cube);
-		Objects.Insert(new SceneObject_PolyHedraObject(manager, Trans3D()));
+		Collection.Objects.Insert(new SceneObject_PolyHedraObject(manager, Trans3D()));
 	}
 
 	if (window[Keys::D1] == State::Press)
 	{
-		switch (SceneObject_DisplayMode.Objects)
+		switch (DisplayMode.Objects)
 		{
-			case SceneObject::DisplayMode::EObjects::Full: SceneObject_DisplayMode.Objects = SceneObject::DisplayMode::EObjects::Wire; break;
-			case SceneObject::DisplayMode::EObjects::Wire: SceneObject_DisplayMode.Objects = SceneObject::DisplayMode::EObjects::None; break;
-			case SceneObject::DisplayMode::EObjects::None: SceneObject_DisplayMode.Objects = SceneObject::DisplayMode::EObjects::Full; break;
+			case SceneObjectDisplayMode::EObjects::Full: DisplayMode.Objects = SceneObjectDisplayMode::EObjects::Wire; break;
+			case SceneObjectDisplayMode::EObjects::Wire: DisplayMode.Objects = SceneObjectDisplayMode::EObjects::None; break;
+			case SceneObjectDisplayMode::EObjects::None: DisplayMode.Objects = SceneObjectDisplayMode::EObjects::Full; break;
 		}
 	}
 	if (window[Keys::D2] == State::Press)
 	{
-		switch (SceneObject_DisplayMode.Indicators)
+		switch (DisplayMode.Indicators)
 		{
-			case SceneObject::DisplayMode::EIndicators::Show: SceneObject_DisplayMode.Indicators = SceneObject::DisplayMode::EIndicators::Hide; break;
-			case SceneObject::DisplayMode::EIndicators::Hide: SceneObject_DisplayMode.Indicators = SceneObject::DisplayMode::EIndicators::Show; break;
+			case SceneObjectDisplayMode::EIndicators::Show: DisplayMode.Indicators = SceneObjectDisplayMode::EIndicators::Hide; break;
+			case SceneObjectDisplayMode::EIndicators::Hide: DisplayMode.Indicators = SceneObjectDisplayMode::EIndicators::Show; break;
 		}
 	}
 
@@ -703,38 +858,28 @@ void Light3DContext::Draw()
 	MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
 
 	LightBufferData data;
-	data.Ambient = Light_Ambient;
-	data.Solar = Light_Solar;
-	for (unsigned int i = 0; i < Light_Point_Count; i++)
+	data.Ambient = LightManager.Ambient;
+	data.Solar = LightManager.Solar;
+	for (unsigned int i = 0; i < LightManager.Point_Count; i++)
 	{
-		data.Point[i] = Light_Point_Array[i];
+		data.Point[i] = LightManager.Point_Array[i];
 	}
-	data.PointCount = Light_Point_Count;
-	for (unsigned int i = 0; i < Light_Spot_Count; i++)
+	data.PointCount = LightManager.Point_Count;
+	for (unsigned int i = 0; i < LightManager.Spot_Count; i++)
 	{
-		data.Spot[i] = Light_Spot_Array[i];
+		data.Spot[i] = LightManager.Spot_Array[i];
 	}
-	data.SpotCount = Light_Spot_Count;
+	data.SpotCount = LightManager.Spot_Count;
 
 	VertexArray::Base::BindNone();
 	LightBuffer.DataFull(Container::Void(data));
-
-	// do this stuff once
-	// after Create(). in Make() ?
-	ObjectManagerBasic.ShaderFull.Bind();
-	LightBuffer.BindBase(BindingLight);
-	ObjectManagerBasic_ShaderFullLayout.Bind(ObjectManagerBasic_ShaderFullLayout.LightUniform, BindingLight);
 
 	// Instances
 
 	NewPolyHedra_Manager.InstancesClear();
 	NewPolyHedra_Manager.InstancesMake();
-	
-	for (unsigned int i = 0; i < Objects.Count(); i++)
-	{
-		if (Objects[i] == nullptr) { continue; }
-		Objects[i] -> DisplayObject(SceneObject_DisplayMode);
-	}
+
+	Collection.Display(DisplayMode);
 
 
 
@@ -814,11 +959,7 @@ void Light3DContext::Frame(FrameTime frame_time)
 	User(frame_time);
 
 	PolyHedraPalletUpdate();
-	for (unsigned int i = 0; i < Objects.Count(); i++)
-	{
-		if (Objects[i] == nullptr) { continue; }
-		Objects[i] -> Update();
-	}
+	Collection.Update();
 
 	CenterCube -> Data.Data.Trans.Position = VectorF3(0, 10, 0);
 	CenterCube -> Data.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
