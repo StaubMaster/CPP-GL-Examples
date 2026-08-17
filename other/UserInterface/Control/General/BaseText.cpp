@@ -67,7 +67,6 @@ void UI::Control::BaseText::TextObjectAssignPosition()
 {
 	// Middle
 	TextObject.TextPosition() = BoxContent.Center();
-<<<<<<<< HEAD:Examples/UserInterface/Control/General/BaseText.cpp
 	if (Object.Is())
 	{
 		TextObject.Bound() = Object.Bound().InnerBox(BoxContent);
@@ -76,8 +75,6 @@ void UI::Control::BaseText::TextObjectAssignPosition()
 	{
 		TextObject.Bound() = BoxContent;
 	}
-========
->>>>>>>> b2e64cb9bf03df4d428eb94929acdc70f3966638:other/UserInterface/Control/General/BaseText.cpp
 }
 
 

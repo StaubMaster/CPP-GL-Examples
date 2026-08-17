@@ -103,42 +103,35 @@ Buffer::Uniform		LightBuffer;
 
 
 
-/*
-InVisible
-	dont do anything
-Visible
-	Inactive
-		syncronize Changer with Object
-		Hover Indicator
-			Indicate Color
-	Select
-		syncronize Changer with Object
-		Update Changer
-		syncronize Object with Changer
-*/
+struct UserChange
+{
+	::Change3D::VectorF3		Change3DVectorF3;
+	::Change3D::EulerAngle3D	Change3DEulerAngle3D;
 
-//::UserTrans3DChange		UserTrans3DChange;
-::Change3D::VectorF3		Change3DVectorF3;
-::Change3D::EulerAngle3D	Change3DEulerAngle3D;
+	void	IndicatorsHide();
+	void	IndicatorsShow();
+	void	IndicatorsInit(const DirectoryInfo & dir);
 
-void	UserChange_Change();
+	unsigned int	IndicatorsFind(const RayF3 & ray);
+
+	void	IndicatorsUpdate(const View3D & view, const DisplaySize & display_size);
+
+	bool	IsNone_All();
+
+	void	HoveringMakeNone();
+
+	void	SelectedMakeNone();
+	void	SelectedMakeL(unsigned int idx);
+	void	SelectedMakeR(unsigned int idx);
+
+	void	ChangeValue(const RayF3 & ray);
+};
+Light3DContext::UserChange	UserChange;
+
+void	UserChange_ChangeObject(SceneObject * obj);
+
+void	UserChange_HoverSelect();
 void	UserChange_Update();
-
-void	UserChange_IndicatorsInit();
-void	UserChange_IndicatorsHide();
-void	UserChange_IndicatorsShow();
-
-bool	UserChange_IsNone_All();
-
-void	UserChange_HoveringMakeNone();
-
-unsigned int	UserChange_IndicatorsFind();
-void	UserChange_SelectedMakeNone();
-void	UserChange_SelectedMakeL(unsigned int idx);
-void	UserChange_SelectedMakeR(unsigned int idx);
-
-void	UserChange_ChangeValue();
-void	UserChange_IndicatorsUpdate();
 
 
 

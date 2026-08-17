@@ -195,13 +195,13 @@ void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 		if (Hovering != nullptr)
 		{
 			Hovering -> ObjectAssignColorRequest();;
-			Hovering -> RelayHover(UI::Control::Base::HoverArgs::Leave);
+			Hovering -> RelayHover(HoverArgs(HoverType::Leave, mouse_pos));
 		}
 		Hovering = control;
 		if (Hovering != nullptr)
 		{
 			Hovering -> ObjectAssignColorRequest();
-			Hovering -> RelayHover(UI::Control::Base::HoverArgs::Enter);
+			Hovering -> RelayHover(HoverArgs(HoverType::Enter, mouse_pos));
 		}
 	}
 	else
@@ -270,8 +270,8 @@ void UI::Manager::GraphicsInit()
 
 void UI::Manager::Draw()
 {
-	WindowControl.Update();
-	WindowControl.Assign();
+	WindowControl.RecursiveUpdate();
+	WindowControl.RecursiveObjectAssign();
 
 	ControlManager.MakeInstances();
 	ControlManager.Draw();

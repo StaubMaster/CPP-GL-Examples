@@ -158,29 +158,14 @@ void Light3DContext::Objects_Change()
 	Object_Hovering = nullptr;
 
 	if (IsHoveringControl()) { return; }
-	if (!UserChange_IsNone_All()) { return; }
+	if (!UserChange.IsNone_All()) { return; }
 
 	Object_Hovering = Collection.FindObject(ViewRay);
 
 	if (window.MouseManager[MouseButtons::MouseL].IsPress())
 	{
 		Object_Selected = Object_Hovering;
-		if (Object_Selected != nullptr)
-		{
-			UserChange_IndicatorsShow();
-
-			Trans3D trans = Object_Selected -> GetTrans();
-
-			Change3DVectorF3.Set(trans.Position);
-
-			Change3DEulerAngle3D.Set(trans.Rotation);
-			Change3DEulerAngle3D.Center = trans.Position;
-		}
-		else
-		{
-			UserChange_SelectedMakeNone();
-			UserChange_IndicatorsHide();
-		}
+		UserChange_ChangeObject(Object_Selected);
 		UISceneObject.Change(Object_Selected);
 	}
 }
@@ -384,68 +369,7 @@ void Light3DContext::SceneReMake()
 
 
 
-void Light3DContext::UserChange_Change()
-{
-	UserChange_HoveringMakeNone();
-
-	if (IsHoveringControl()) { return; }
-
-	unsigned int idx = UserChange_IndicatorsFind();
-
-	if (window[MouseButtons::MouseL].IsRelease() ||
-		window[MouseButtons::MouseR].IsRelease())
-	{
-		UserChange_SelectedMakeNone();
-	}
-	else if (window[MouseButtons::MouseL].IsPress())
-	{
-		UserChange_SelectedMakeL(idx);
-	}
-	else if (window[MouseButtons::MouseR].IsPress())
-	{
-		UserChange_SelectedMakeR(idx);
-	}
-}
-void Light3DContext::UserChange_Update()
-{
-	UserChange_ChangeValue();
-	if (Object_Selected != nullptr)
-	{
-		Trans3D trans = Object_Selected -> GetTrans();
-
-
-	
-		trans.Position = Change3DVectorF3.Get();
-		trans.Rotation = Change3DEulerAngle3D.Get();
-
-
-	
-		Change3DVectorF3.Set(trans.Position);
-
-		Change3DEulerAngle3D.Set(trans.Rotation);
-		Change3DEulerAngle3D.Center = trans.Position;
-
-
-	
-		Object_Selected -> SetTrans(trans);
-	}
-	UserChange_IndicatorsUpdate();
-}
-
-void Light3DContext::UserChange_IndicatorsInit()
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
-	}
-}
-void Light3DContext::UserChange_IndicatorsShow()
+void Light3DContext::UserChange::IndicatorsShow()
 {
 	unsigned int n = 2;
 	Change3D::Base * change3D[n] = {
@@ -458,7 +382,7 @@ void Light3DContext::UserChange_IndicatorsShow()
 		change3D[i] -> IndicatorsShow();
 	}
 }
-void Light3DContext::UserChange_IndicatorsHide()
+void Light3DContext::UserChange::IndicatorsHide()
 {
 	unsigned int n = 2;
 	Change3D::Base * change3D[n] = {
@@ -471,8 +395,64 @@ void Light3DContext::UserChange_IndicatorsHide()
 		change3D[i] -> IndicatorsHide();
 	}
 }
+void Light3DContext::UserChange::IndicatorsInit(const DirectoryInfo & dir)
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
 
-bool Light3DContext::UserChange_IsNone_All()
+	for (unsigned int i = 0; i < n; i++)
+	{
+		change3D[i] -> IndicatorsInit(dir);
+	}
+}
+
+unsigned int Light3DContext::UserChange::IndicatorsFind(const RayF3 & ray)
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	RayHitF3Type<unsigned int> hit;
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		hit.Consider(change3D[i] -> IndicatorsFind(ray), i);
+	}
+
+	if (hit.Is())
+	{
+		for (unsigned int i = 0; i < n; i++)
+		{
+			if (hit.Data != i)
+			{
+				change3D[i] -> HoveringMakeOther();
+			}
+		}
+	}
+
+	return hit.Data;
+}
+
+void Light3DContext::UserChange::IndicatorsUpdate(const View3D & view, const DisplaySize & display_size)
+{
+	unsigned int n = 2;
+	Change3D::Base * change3D[n] = {
+		&Change3DVectorF3,
+		&Change3DEulerAngle3D,
+	};
+
+	for (unsigned int i = 0; i < n; i++)
+	{
+		change3D[i] -> IndicatorsUpdate(view, display_size);
+	}
+}
+
+bool Light3DContext::UserChange::IsNone_All()
 {
 	unsigned int n = 2;
 	Change3D::Base * change3D[n] = {
@@ -491,7 +471,7 @@ bool Light3DContext::UserChange_IsNone_All()
 	return true;
 }
 
-void Light3DContext::UserChange_HoveringMakeNone()
+void Light3DContext::UserChange::HoveringMakeNone()
 {
 	unsigned int n = 2;
 	Change3D::Base * change3D[n] = {
@@ -505,35 +485,7 @@ void Light3DContext::UserChange_HoveringMakeNone()
 	}
 }
 
-unsigned int Light3DContext::UserChange_IndicatorsFind()
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	RayHitF3Type<unsigned int> hit;
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		hit.Consider(change3D[i] -> IndicatorsFind(ViewRay), i);
-	}
-
-	if (hit.Is())
-	{
-		for (unsigned int i = 0; i < n; i++)
-		{
-			if (hit.Data != i)
-			{
-				change3D[i] -> HoveringMakeOther();
-			}
-		}
-	}
-
-	return hit.Data;
-}
-void Light3DContext::UserChange_SelectedMakeNone()
+void Light3DContext::UserChange::SelectedMakeNone()
 {
 	unsigned int n = 2;
 	Change3D::Base * change3D[n] = {
@@ -546,7 +498,7 @@ void Light3DContext::UserChange_SelectedMakeNone()
 		change3D[i] -> SelectedMakeNone();
 	}
 }
-void Light3DContext::UserChange_SelectedMakeL(unsigned int idx)
+void Light3DContext::UserChange::SelectedMakeL(unsigned int idx)
 {
 	unsigned int n = 2;
 	Change3D::Base * change3D[n] = {
@@ -562,7 +514,7 @@ void Light3DContext::UserChange_SelectedMakeL(unsigned int idx)
 		}
 	}
 }
-void Light3DContext::UserChange_SelectedMakeR(unsigned int idx)
+void Light3DContext::UserChange::SelectedMakeR(unsigned int idx)
 {
 	unsigned int n = 2;
 	Change3D::Base * change3D[n] = {
@@ -579,7 +531,7 @@ void Light3DContext::UserChange_SelectedMakeR(unsigned int idx)
 	}
 }
 
-void Light3DContext::UserChange_ChangeValue()
+void Light3DContext::UserChange::ChangeValue(const RayF3 & ray)
 {
 	unsigned int n = 2;
 	Change3D::Base * change3D[n] = {
@@ -589,21 +541,94 @@ void Light3DContext::UserChange_ChangeValue()
 
 	for (unsigned int i = 0; i < n; i++)
 	{
-		change3D[i] -> ChangeValue(ViewRay);
+		change3D[i] -> ChangeValue(ray);
 	}
 }
-void Light3DContext::UserChange_IndicatorsUpdate()
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
 
-	for (unsigned int i = 0; i < n; i++)
+
+
+void Light3DContext::UserChange_ChangeObject(SceneObject * obj)
+{
+	if (obj != nullptr)
 	{
-		change3D[i] -> IndicatorsUpdate(View, window.Size);
+		UserChange.IndicatorsShow();
+
+		Trans3D trans = obj -> GetTrans();
+
+		UserChange.Change3DVectorF3.Set(trans.Position);
+
+		UserChange.Change3DEulerAngle3D.Set(trans.Rotation);
+		UserChange.Change3DEulerAngle3D.Center = trans.Position;
 	}
+	else
+	{
+		UserChange.SelectedMakeNone();
+		UserChange.IndicatorsHide();
+	}
+}
+
+void Light3DContext::UserChange_HoverSelect()
+{
+	//if (UserChange.IsNone_All())
+	{
+		if (IsHoveringControl())
+		{
+			UserChange.HoveringMakeNone();
+		}
+		else
+		{
+			unsigned int idx = UserChange.IndicatorsFind(ViewRay);
+			if (window[MouseButtons::MouseL].IsPress())
+			{
+				UserChange.SelectedMakeL(idx);
+			}
+			if (window[MouseButtons::MouseR].IsPress())
+			{
+				UserChange.SelectedMakeR(idx);
+			}
+		}
+	}
+	//else
+	{
+		if (IsHoveringControl())
+		{
+		}
+		else
+		{
+			if (window[MouseButtons::MouseL].IsRelease())
+			{
+				UserChange.SelectedMakeNone();
+			}
+			if (window[MouseButtons::MouseR].IsRelease())
+			{
+				UserChange.SelectedMakeNone();
+			}
+		}
+	}
+}
+void Light3DContext::UserChange_Update()
+{
+	// skip this if
+	//  Object_Selected == nullptr
+	//  UserChange_IsNone_All()
+
+	UserChange.ChangeValue(ViewRay);
+
+	Trans3D trans;
+
+	trans.Position = UserChange.Change3DVectorF3.Get();
+	trans.Rotation = UserChange.Change3DEulerAngle3D.Get();
+
+	UserChange.Change3DVectorF3.Set(trans.Position);
+	UserChange.Change3DEulerAngle3D.Set(trans.Rotation);
+	UserChange.Change3DEulerAngle3D.Center = trans.Position;
+
+	if (Object_Selected != nullptr)
+	{
+		Object_Selected -> SetTrans(trans);
+	}
+
+	UserChange.IndicatorsUpdate(View, window.Size);
 }
 
 
@@ -735,8 +760,8 @@ void Light3DContext::Make()
 
 	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
 
-	UserChange_IndicatorsInit();
-	UserChange_IndicatorsHide();
+	UserChange.IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
+	UserChange.IndicatorsHide();
 
 	Shader::Base::BindNone();
 	LightBuffer.BindBase(BindingLight);
@@ -815,8 +840,8 @@ void Light3DContext::User(FrameTime frame_time)
 			if (idx != 0xFFFFFFFF)
 			{
 				Collection.Objects.RemoveAt(idx);
-				UserChange_SelectedMakeNone();
-				UserChange_IndicatorsHide();
+				UserChange.SelectedMakeNone();
+				UserChange.IndicatorsHide();
 				Object_Selected = nullptr;
 			}
 		}
@@ -942,7 +967,7 @@ void Light3DContext::ViewFunc()
 
 
 
-	UserChange_Change();
+	UserChange_HoverSelect();
 	Objects_Change();
 
 	UserChange_Update();
