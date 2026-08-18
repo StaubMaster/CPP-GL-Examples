@@ -1,7 +1,7 @@
 #include "SceneParsingData.hpp"
 
+#include "FileParsing/Text/TextCommandArgs.hpp"
 #include "FileParsing/Text/Exceptions.hpp"
-#include "FileParsing/Text/TextCommand.hpp"
 
 #include "Context.hpp"
 
@@ -24,12 +24,12 @@ SceneParsingData::ParsingCommand::ParsingCommand(std::string name)
 { }
 
 template<typename ObjectType>
-static void NewParsingCommand(SceneParsingData * parsing, const char * name, ObjectType * obj, void (ObjectType::*func)(const TextCommand &))
+static void NewParsingCommand(SceneParsingData * parsing, const char * name, ObjectType * obj, void (ObjectType::*func)(const TextCommandArgs &))
 {
-	SceneParsingData::ParsingCommand * cmd;
-	cmd = new SceneParsingData::ParsingCommand(name);
-	cmd -> Func.Assign(obj, func);
-	parsing -> Commands.Insert(cmd);
+	SceneParsingData::ParsingCommand * cmd_func;
+	cmd_func = new SceneParsingData::ParsingCommand(name);
+	cmd_func -> Func.Assign(obj, func);
+	parsing -> Commands.Insert(cmd_func);
 }
 
 SceneParsingData::~SceneParsingData()
@@ -62,11 +62,11 @@ SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & conte
 	NewParsingCommand(this, "LightSpotT",		this, &SceneParsingData::Parse_LightSpotT);
 }
 
-void SceneParsingData::Parse(const TextCommand & cmd)
+void SceneParsingData::Parse(const TextCommandArgs & cmd_args)
 {
 	try
 	{
-		std::string name = cmd.Name();
+		std::string name = cmd_args.Name();
 		if (name == "")
 		{
 			return;
@@ -76,38 +76,38 @@ void SceneParsingData::Parse(const TextCommand & cmd)
 			ParsingCommand * cmd_func = Commands[i];
 			if (cmd_func -> Name == name)
 			{
-				cmd_func -> Func(cmd);
+				cmd_func -> Func(cmd_args);
 				return;
 			}
 		}
-		std::cout << "unknown: " << cmd << '\n';
+		throw TextCommand::Unknown(cmd_args);
 	}
 	catch (std::exception & ex)
 	{
 		std::cout << "Exception while Parsing Scene: " << ex.what() << '\n';
-		std::cout << "Exception on TextCommand: " << cmd << '\n';
+		std::cout << "Exception on TextCommand: " << cmd_args << '\n';
 	}
 }
 
-void SceneParsingData::Parse_Pallet(const TextCommand & cmd)
+void SceneParsingData::Parse_Pallet(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 2)) { throw InvalidCommandArgumentCount(cmd, "n == 2"); }
+	if (!(cmd_args.Count() == 2)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 2"); }
 
-	FileInfo file((File.DirectoryString() + "/" + cmd.ToString(0)).c_str());
+	FileInfo file((File.DirectoryString() + "/" + cmd_args.ToString(0)).c_str());
 
 	PolyHedra * polyhedra = PolyHedra::Load(file);
 
 	NewPolyHedra::Pallet * pallet = Context.PalletManager.FindMakePallet(polyhedra);
-	pallet -> Name = cmd.ToString(1);
+	pallet -> Name = cmd_args.ToString(1);
 
 	NewPolyHedra::PalletObjectManager * manager = Context.ObjectManagerBasic.FindMakePalletObjectManager(pallet);
 	PolyHedras.Insert(manager);
 }
-void SceneParsingData::Parse_Place(const TextCommand & cmd)
+void SceneParsingData::Parse_Place(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 7)) { throw InvalidCommandArgumentCount(cmd, "n == 7"); }
+	if (!(cmd_args.Count() == 7)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 7"); }
 
-	std::string name = cmd.ToString(0);
+	std::string name = cmd_args.ToString(0);
 	NewPolyHedra::PalletObjectManager * polyhedra = MissingPolyHedra;
 	for (unsigned int i = 0; i < PolyHedras.Count(); i++)
 	{
@@ -119,14 +119,14 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 
 	Trans3D trans(
 		VectorF3(
-			VariableFloats.To(cmd, 1),
-			VariableFloats.To(cmd, 2),
-			VariableFloats.To(cmd, 3)
+			VariableFloats.To(cmd_args, 1),
+			VariableFloats.To(cmd_args, 2),
+			VariableFloats.To(cmd_args, 3)
 		),
 		EulerAngle3D::Degrees(
-			VariableFloats.To(cmd, 4),
-			VariableFloats.To(cmd, 5),
-			VariableFloats.To(cmd, 6)
+			VariableFloats.To(cmd_args, 4),
+			VariableFloats.To(cmd_args, 5),
+			VariableFloats.To(cmd_args, 6)
 		)
 	);
 
@@ -136,108 +136,108 @@ void SceneParsingData::Parse_Place(const TextCommand & cmd)
 #include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
 #include "NewPolyHedra/PalletObjectData.hpp"
 
-void SceneParsingData::Parse_LightAmbient(const TextCommand & cmd)
+void SceneParsingData::Parse_LightAmbient(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 10)) { throw InvalidCommandArgumentCount(cmd, "n == 10"); }
+	if (!(cmd_args.Count() == 10)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 10"); }
 
 	LightBase * light = Context.LightManager.TakeAmbient();
 	if (light == nullptr)
 	{
-		throw CommandInvalidState(cmd, "All Ambient Lights taken");
+		throw TextCommand::InvalidState(cmd_args, "All Ambient Lights taken");
 	}
-	light -> Intensity = cmd.ToFloat(0);
-	light -> Color.R = cmd.ToFloat(1);
-	light -> Color.G = cmd.ToFloat(2);
-	light -> Color.B = cmd.ToFloat(3);
+	light -> Intensity = cmd_args.ToFloat(0);
+	light -> Color.R = cmd_args.ToFloat(1);
+	light -> Color.G = cmd_args.ToFloat(2);
+	light -> Color.B = cmd_args.ToFloat(3);
 
 	Trans3D trans;
-	trans.Position.X = cmd.ToFloat(4);
-	trans.Position.Y = cmd.ToFloat(5);
-	trans.Position.Z = cmd.ToFloat(6);
-	trans.Rotation.Z0 = Angle::Degrees(cmd.ToFloat(7));
-	trans.Rotation.X1 = Angle::Degrees(cmd.ToFloat(8));
-	trans.Rotation.Y2 = Angle::Degrees(cmd.ToFloat(9));
+	trans.Position.X = cmd_args.ToFloat(4);
+	trans.Position.Y = cmd_args.ToFloat(5);
+	trans.Position.Z = cmd_args.ToFloat(6);
+	trans.Rotation.Z0 = Angle::Degrees(cmd_args.ToFloat(7));
+	trans.Rotation.X1 = Angle::Degrees(cmd_args.ToFloat(8));
+	trans.Rotation.Y2 = Angle::Degrees(cmd_args.ToFloat(9));
 
 	SceneObject_LightAmbient * obj = new SceneObject_LightAmbient();
 	obj -> Light = light;
 	obj -> Data.Data.Trans = trans;
 	Context.Collection.Objects.Insert(obj);
 }
-void SceneParsingData::Parse_LightDirectionD(const TextCommand & cmd)
+void SceneParsingData::Parse_LightDirectionD(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 10)) { throw InvalidCommandArgumentCount(cmd, "n == 10"); }
+	if (!(cmd_args.Count() == 10)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 10"); }
 
 	LightDirection * light = Context.LightManager.TakeDirection();
 	if (light == nullptr)
 	{
-		throw CommandInvalidState(cmd, "All Directional Lights taken");
+		throw TextCommand::InvalidState(cmd_args, "All Directional Lights taken");
 	}
-	light -> Base.Intensity = cmd.ToFloat(0);
-	light -> Base.Color.R = cmd.ToFloat(1);
-	light -> Base.Color.G = cmd.ToFloat(2);
-	light -> Base.Color.B = cmd.ToFloat(3);
-	light -> Dir.X = cmd.ToFloat(4);
-	light -> Dir.Y = cmd.ToFloat(5);
-	light -> Dir.Z = cmd.ToFloat(6);
+	light -> Base.Intensity = cmd_args.ToFloat(0);
+	light -> Base.Color.R = cmd_args.ToFloat(1);
+	light -> Base.Color.G = cmd_args.ToFloat(2);
+	light -> Base.Color.B = cmd_args.ToFloat(3);
+	light -> Dir.X = cmd_args.ToFloat(4);
+	light -> Dir.Y = cmd_args.ToFloat(5);
+	light -> Dir.Z = cmd_args.ToFloat(6);
 
 	Trans3D trans;
-	trans.Position.X = cmd.ToFloat(7);
-	trans.Position.Y = cmd.ToFloat(8);
-	trans.Position.Z = cmd.ToFloat(9);
+	trans.Position.X = cmd_args.ToFloat(7);
+	trans.Position.Y = cmd_args.ToFloat(8);
+	trans.Position.Z = cmd_args.ToFloat(9);
 
 	SceneObject_LightDirection * obj = new SceneObject_LightDirection();
 	obj -> Light = light;
 	obj -> Data.Data.Trans = trans;
 	Context.Collection.Objects.Insert(obj);
 }
-void SceneParsingData::Parse_LightPoint(const TextCommand & cmd)
+void SceneParsingData::Parse_LightPoint(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 10)) { throw InvalidCommandArgumentCount(cmd, "n == 10"); }
+	if (!(cmd_args.Count() == 10)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 10"); }
 
 	LightPoint * light = Context.LightManager.TakePoint();
 	if (light == nullptr)
 	{
-		throw CommandInvalidState(cmd, "All Point Lights taken");
+		throw TextCommand::InvalidState(cmd_args, "All Point Lights taken");
 	}
-	light -> Base.Intensity = cmd.ToFloat(0);
-	light -> Base.Color.R = cmd.ToFloat(1);
-	light -> Base.Color.G = cmd.ToFloat(2);
-	light -> Base.Color.B = cmd.ToFloat(3);
-	light -> Pos.X = cmd.ToFloat(4);
-	light -> Pos.Y = cmd.ToFloat(5);
-	light -> Pos.Z = cmd.ToFloat(6);
+	light -> Base.Intensity = cmd_args.ToFloat(0);
+	light -> Base.Color.R = cmd_args.ToFloat(1);
+	light -> Base.Color.G = cmd_args.ToFloat(2);
+	light -> Base.Color.B = cmd_args.ToFloat(3);
+	light -> Pos.X = cmd_args.ToFloat(4);
+	light -> Pos.Y = cmd_args.ToFloat(5);
+	light -> Pos.Z = cmd_args.ToFloat(6);
 
 	Trans3D trans;
-	trans.Rotation.Z0 = Angle::Degrees(cmd.ToFloat(7));
-	trans.Rotation.X1 = Angle::Degrees(cmd.ToFloat(8));
-	trans.Rotation.Y2 = Angle::Degrees(cmd.ToFloat(9));
+	trans.Rotation.Z0 = Angle::Degrees(cmd_args.ToFloat(7));
+	trans.Rotation.X1 = Angle::Degrees(cmd_args.ToFloat(8));
+	trans.Rotation.Y2 = Angle::Degrees(cmd_args.ToFloat(9));
 
 	SceneObject_LightPoint * obj = new SceneObject_LightPoint();
 	obj -> Light = light;
 	obj -> Data.Data.Trans = trans;
 	Context.Collection.Objects.Insert(obj);
 }
-void SceneParsingData::Parse_LightSpotT(const TextCommand & cmd)
+void SceneParsingData::Parse_LightSpotT(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 12)) { throw InvalidCommandArgumentCount(cmd, "n == 12"); }
+	if (!(cmd_args.Count() == 12)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 12"); }
 
 	LightSpot * light = Context.LightManager.TakeSpot();
 	if (light == nullptr)
 	{
-		throw CommandInvalidState(cmd, "All Spot Lights taken");
+		throw TextCommand::InvalidState(cmd_args, "All Spot Lights taken");
 	}
-	light -> Base.Intensity = cmd.ToFloat(0);
-	light -> Base.Color.R = cmd.ToFloat(1);
-	light -> Base.Color.G = cmd.ToFloat(2);
-	light -> Base.Color.B = cmd.ToFloat(3);
-	light -> Range = RangeF(cmd.ToFloat(10), cmd.ToFloat(11));
+	light -> Base.Intensity = cmd_args.ToFloat(0);
+	light -> Base.Color.R = cmd_args.ToFloat(1);
+	light -> Base.Color.G = cmd_args.ToFloat(2);
+	light -> Base.Color.B = cmd_args.ToFloat(3);
+	light -> Range = RangeF(cmd_args.ToFloat(10), cmd_args.ToFloat(11));
 
-	light -> Pos.X = cmd.ToFloat(4);
-	light -> Pos.Y = cmd.ToFloat(5);
-	light -> Pos.Z = cmd.ToFloat(6);
-	light -> Dir.X = cmd.ToFloat(7) - (light -> Pos.X);
-	light -> Dir.Y = cmd.ToFloat(8) - (light -> Pos.Y);
-	light -> Dir.Z = cmd.ToFloat(9) - (light -> Pos.Z);
+	light -> Pos.X = cmd_args.ToFloat(4);
+	light -> Pos.Y = cmd_args.ToFloat(5);
+	light -> Pos.Z = cmd_args.ToFloat(6);
+	light -> Dir.X = cmd_args.ToFloat(7) - (light -> Pos.X);
+	light -> Dir.Y = cmd_args.ToFloat(8) - (light -> Pos.Y);
+	light -> Dir.Z = cmd_args.ToFloat(9) - (light -> Pos.Z);
 
 	Trans3D trans;
 

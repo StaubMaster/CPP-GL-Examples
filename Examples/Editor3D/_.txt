@@ -1,5 +1,27 @@
+this cannot currently Edit Files
+just display them and then change them in Memory
+no File saving
+
+a lot of the Files are handmade
+these files use a lot of oragnization to be smaller
+saving a PolyHedra would mean storing
+	all vertexes
+	all triangles
+which would be unreadable and take more space
+dont allow overriding of Manual Files
+only allow overriding of Automatic Files
+.polyhedra should be allowed to include other .polyhedra
+including Manual Files
+
+
+
+
+
+
 
 combine this with PolyHedraDisplay
+
+
 
 take command line arguments
 shold parse the file and display it

@@ -1,6 +1,6 @@
 #include "Text/Font/Parsing.hpp"
 
-#include "FileParsing/Text/TextCommand.hpp"
+#include "FileParsing/Text/TextCommandArgs.hpp"
 #include "FileParsing/Text/TextCommandStream.hpp"
 #include "FileParsing/Text/Exceptions.hpp"
 
@@ -22,31 +22,32 @@ UI::Text::Font::ParsingData::~ParsingData()
 
 
 
-void UI::Text::Font::ParsingData::Parse(const TextCommand & cmd)
+void UI::Text::Font::ParsingData::Parse(const TextCommandArgs & cmd_args)
 {
-	std::string name = cmd.Name();
+	std::string name = cmd_args.Name();
+
 	if (name == "")				{ /*std::cout << "empty\n";*/ }
-	else if (name == "Type")	{ Parse_Type(cmd); }
+	else if (name == "Type")	{ Parse_Type(cmd_args); }
 
-	else if (name == "Image")		{ Parse_Image(cmd); }
-	else if (name == "Scale")		{ Parse_Scale(cmd); }
-	else if (name == "Character")	{ Parse_Character(cmd); }
-	else if (name == "Range")		{ Parse_Range(cmd); }
+	else if (name == "Image")		{ Parse_Image(cmd_args); }
+	else if (name == "Scale")		{ Parse_Scale(cmd_args); }
+	else if (name == "Character")	{ Parse_Character(cmd_args); }
+	else if (name == "Range")		{ Parse_Range(cmd_args); }
 
-	else							{ Debug::Log << "unknown: " << cmd << Debug::Done; }
+	else							{ throw TextCommand::Unknown(cmd_args); }
 }
 
-void UI::Text::Font::ParsingData::Parse_Type(const TextCommand & cmd)
+void UI::Text::Font::ParsingData::Parse_Type(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 1)) { throw InvalidCommandArgumentCount(cmd, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
 }
 
-void UI::Text::Font::ParsingData::Parse_Image(const TextCommand & cmd)
+void UI::Text::Font::ParsingData::Parse_Image(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 1)) { throw InvalidCommandArgumentCount(cmd, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
 
 	DirectoryInfo dir(File.Directory());
-	FileInfo imgFile(dir.File(cmd.ToString(0).c_str()));
+	FileInfo imgFile(dir.File(cmd_args.ToString(0).c_str()));
 	if (imgFile.Exists())
 	{
 		Image img = imgFile.LoadImage();
@@ -56,20 +57,20 @@ void UI::Text::Font::ParsingData::Parse_Image(const TextCommand & cmd)
 		}
 	}
 }
-void UI::Text::Font::ParsingData::Parse_Scale(const TextCommand & cmd)
+void UI::Text::Font::ParsingData::Parse_Scale(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 2)) { throw InvalidCommandArgumentCount(cmd, "n == 2"); }
+	if (!(cmd_args.Count() == 2)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 2"); }
 
-	Scale = VectorF2(cmd.ToFloat(0), cmd.ToFloat(1));
+	Scale = VectorF2(cmd_args.ToFloat(0), cmd_args.ToFloat(1));
 }
-void UI::Text::Font::ParsingData::Parse_Character(const TextCommand & cmd)
+void UI::Text::Font::ParsingData::Parse_Character(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 5)) { throw InvalidCommandArgumentCount(cmd, "n == 5"); }
+	if (!(cmd_args.Count() == 5)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 5"); }
 
-	VectorF2 pos(cmd.ToFloat(1), cmd.ToFloat(2));
-	VectorF2 size(cmd.ToFloat(3), cmd.ToFloat(4));
+	VectorF2 pos(cmd_args.ToFloat(1), cmd_args.ToFloat(2));
+	VectorF2 size(cmd_args.ToFloat(3), cmd_args.ToFloat(4));
 
-	if (cmd.ToString(0) == "Default")
+	if (cmd_args.ToString(0) == "Default")
 	{
 		Data -> DefaultCharacter.Box.Min = pos / Scale;
 		Data -> DefaultCharacter.Box.Max = (pos + size) / Scale;
@@ -77,7 +78,7 @@ void UI::Text::Font::ParsingData::Parse_Character(const TextCommand & cmd)
 	else
 	{
 		Character chr;
-		chr.Code = cmd.ToUInt32(0);
+		chr.Code = cmd_args.ToUInt32(0);
 		chr.Box.Min = (pos / Scale);
 		chr.Box.Max = (pos + size) / Scale;
 		if (Range == nullptr)
@@ -91,11 +92,11 @@ void UI::Text::Font::ParsingData::Parse_Character(const TextCommand & cmd)
 	}
 }
 
-void UI::Text::Font::ParsingData::Parse_Range(const TextCommand & cmd)
+void UI::Text::Font::ParsingData::Parse_Range(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd.Count() == 0 || cmd.Count() == 2)) { throw InvalidCommandArgumentCount(cmd, "n == 0 || n == 2"); }
+	if (!(cmd_args.Count() == 0 || cmd_args.Count() == 2)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 0 || n == 2"); }
 
-	if (cmd.Count() == 0)
+	if (cmd_args.Count() == 0)
 	{
 		if (Range != nullptr)
 		{
@@ -110,8 +111,8 @@ void UI::Text::Font::ParsingData::Parse_Range(const TextCommand & cmd)
 			Range -> Characters.Trim();
 		}
 		Range = new CharacterRange();
-		Range -> CodeMin = cmd.ToUInt32(0);
-		Range -> CodeMax = cmd.ToUInt32(1);
+		Range -> CodeMin = cmd_args.ToUInt32(0);
+		Range -> CodeMax = cmd_args.ToUInt32(1);
 		Data -> CharacterRanges.Insert(Range);
 	}
 }
@@ -124,10 +125,10 @@ UI::Text::Font * UI::Text::Font::Parse(const FileInfo & file)
 	data.Data = new UI::Text::Font();
 
 	TextCommandStream stream(file.LoadText());
-	TextCommand cmd;
-	while (stream.Continue(cmd))
+	TextCommandArgs cmd_args;
+	while (stream.Continue(cmd_args))
 	{
-		data.Parse(cmd);
+		data.Parse(cmd_args);
 	}
 
 	data.Data -> Characters.Trim();

@@ -342,10 +342,10 @@ void Light3DContext::SceneLoad(FileInfo file)
 {
 	SceneParsingData data(file, *this);
 	TextCommandStream stream(file.LoadText());
-	TextCommand cmd;
-	while (stream.Continue(cmd))
+	TextCommandArgs cmd_args;
+	while (stream.Continue(cmd_args))
 	{
-		data.Parse(cmd);
+		data.Parse(cmd_args);
 	}
 }
 void Light3DContext::SceneSave(FileInfo file)

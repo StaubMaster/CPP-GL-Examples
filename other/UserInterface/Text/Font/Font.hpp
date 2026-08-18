@@ -1,7 +1,6 @@
 #ifndef  UI_TEXT_FONT_HPP
 # define UI_TEXT_FONT_HPP
 
-# include "FileParsing/Text/TextCommand.hpp"
 # include "Image.hpp"
 # include "Generics/Container/Binary.hpp"
 # include "ValueType/Box/F2.hpp"

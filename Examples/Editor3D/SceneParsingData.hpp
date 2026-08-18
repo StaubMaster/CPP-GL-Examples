@@ -12,7 +12,7 @@
 
 struct Light3DContext;
 
-class TextCommand; // TextCommandArguments
+class TextCommandArgs;
 
 namespace NewPolyHedra
 {
@@ -21,11 +21,10 @@ struct PalletObjectManager;
 
 struct SceneParsingData
 {
-	struct ParsingCommand // TextCommandFunction
+	struct ParsingCommand // TextCommandFunc ?
 	{
 		std::string		Name;
-		FunctionPointer<const TextCommand &>	Func;
-		//ParsingCommand(std::string name, const FunctionPointer<const TextCommand &> func);
+		FunctionPointer<const TextCommandArgs &>	Func;
 		ParsingCommand(std::string name);
 	};
 
@@ -47,15 +46,15 @@ struct SceneParsingData
 	~SceneParsingData();
 	SceneParsingData(const FileInfo & file, Light3DContext & context);
 
-	void	Parse(const TextCommand & cmd);
+	void	Parse(const TextCommandArgs & cmd_args);
 
-	void	Parse_Pallet(const TextCommand & cmd);
-	void	Parse_Place(const TextCommand & cmd);
+	void	Parse_Pallet(const TextCommandArgs & cmd_args);
+	void	Parse_Place(const TextCommandArgs & cmd_args);
 
-	void	Parse_LightAmbient(const TextCommand & cmd);
-	void	Parse_LightDirectionD(const TextCommand & cmd);
-	void	Parse_LightPoint(const TextCommand & cmd);
-	void	Parse_LightSpotT(const TextCommand & cmd);
+	void	Parse_LightAmbient(const TextCommandArgs & cmd_args);
+	void	Parse_LightDirectionD(const TextCommandArgs & cmd_args);
+	void	Parse_LightPoint(const TextCommandArgs & cmd_args);
+	void	Parse_LightSpotT(const TextCommandArgs & cmd_args);
 };
 
 #endif

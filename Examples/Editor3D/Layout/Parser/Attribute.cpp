@@ -3,7 +3,7 @@
 #include "Graphics/Attribute/General/Layout.hpp"
 #include "Graphics/Attribute/_Include.hpp"
 
-#include "FileParsing/Text/TextCommand.hpp"
+#include "FileParsing/Text/TextCommandArgs.hpp"
 #include "FileParsing/Text/TextCommandStream.hpp"
 #include "FileParsing/Text/Exceptions.hpp"
 
@@ -31,9 +31,9 @@ void AttributeLayoutParser::Parse(const TextCommandArgs & cmd_args)
 
 void AttributeLayoutParser::PutDivisor(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw InvalidCommandArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
 
-	if (Layout != nullptr) { throw CommandInvalidState(cmd_args, "Layout already"); }
+	if (Layout != nullptr) { throw TextCommand::InvalidState(cmd_args, "Layout already"); }
 
 	Layout = new Attribute::Layout(cmd_args.ToUInt32(0));
 }
@@ -42,9 +42,9 @@ void AttributeLayoutParser::PutDivisor(const TextCommandArgs & cmd_args)
 
 void AttributeLayoutParser::PutMatrix4x4(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw InvalidCommandArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
 
-	if (Layout == nullptr) { throw CommandInvalidState(cmd_args, "Layout missing"); }
+	if (Layout == nullptr) { throw TextCommand::InvalidState(cmd_args, "Layout missing"); }
 
 	Attribute::Matrix4x4 * attribute = new Attribute::Matrix4x4(*Layout);
 	attribute -> Change(cmd_args.ToInt32(0));
@@ -59,10 +59,10 @@ Attribute::Layout * AttributeLayoutParser::Parse(const FileInfo & file)
 	AttributeLayoutParser data;
 
 	TextCommandStream stream(file.LoadText());
-	TextCommand cmd;
-	while (stream.Continue(cmd))
+	TextCommandArgs cmd_args;
+	while (stream.Continue(cmd_args))
 	{
-		data.Parse(cmd);
+		data.Parse(cmd_args);
 	}
 
 	if (data.Layout != nullptr)

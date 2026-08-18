@@ -3,8 +3,7 @@
 
 # include "FileInfo.hpp"
 
-class TextCommand;
-typedef TextCommand TextCommandArgs;
+class TextCommandArgs;
 
 namespace Attribute
 {

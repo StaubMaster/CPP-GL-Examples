@@ -3,7 +3,7 @@
 #include "Graphics/Uniform/General/Layout.hpp"
 #include "Graphics/Uniform/_Include.hpp"
 
-#include "FileParsing/Text/TextCommand.hpp"
+#include "FileParsing/Text/TextCommandArgs.hpp"
 #include "FileParsing/Text/TextCommandStream.hpp"
 #include "FileParsing/Text/Exceptions.hpp"
 
@@ -38,7 +38,7 @@ void UniformLayoutParser::Parse(const TextCommandArgs & cmd_args)
 
 /*void UniformLayoutParser::File(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw InvalidCommandArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
 }*/
 /*void UniformLayoutParser::FilesDone(const TextCommandArgs & cmd_args)
 { }*/
@@ -47,9 +47,9 @@ void UniformLayoutParser::Parse(const TextCommandArgs & cmd_args)
 
 void UniformLayoutParser::Matrix4x4(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw InvalidCommandArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
 
-	if (Layout == nullptr) { throw CommandInvalidState(cmd_args, "Layout missing"); }
+	if (Layout == nullptr) { throw TextCommand::InvalidState(cmd_args, "Layout missing"); }
 
 	Uniform::Matrix4x4 * uniform = new Uniform::Matrix4x4(*Layout, cmd_args.ToString(0));
 //	uniform -> Change(cmd_args.ToString(0));
@@ -57,9 +57,9 @@ void UniformLayoutParser::Matrix4x4(const TextCommandArgs & cmd_args)
 }
 void UniformLayoutParser::Angle(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw InvalidCommandArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
 
-	if (Layout == nullptr) { throw CommandInvalidState(cmd_args, "Layout missing"); }
+	if (Layout == nullptr) { throw TextCommand::InvalidState(cmd_args, "Layout missing"); }
 
 	Uniform::Angle * uniform = new Uniform::Angle(*Layout, cmd_args.ToString(0));
 //	uniform -> Change(cmd_args.ToString(0));
@@ -70,9 +70,9 @@ void UniformLayoutParser::Angle(const TextCommandArgs & cmd_args)
 
 void UniformLayoutParser::DisplaySize(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw InvalidCommandArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
 
-	if (Layout == nullptr) { throw CommandInvalidState(cmd_args, "Layout missing"); }
+	if (Layout == nullptr) { throw TextCommand::InvalidState(cmd_args, "Layout missing"); }
 
 	Uniform::DisplaySize * uniform = new Uniform::DisplaySize(*Layout, cmd_args.ToString(0));
 //	uniform -> Change(cmd_args.ToString(0));
@@ -80,9 +80,9 @@ void UniformLayoutParser::DisplaySize(const TextCommandArgs & cmd_args)
 }
 void UniformLayoutParser::Depth(const TextCommandArgs & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw InvalidCommandArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
 
-	if (Layout == nullptr) { throw CommandInvalidState(cmd_args, "Layout missing"); }
+	if (Layout == nullptr) { throw TextCommand::InvalidState(cmd_args, "Layout missing"); }
 
 	Uniform::Depth * uniform = new Uniform::Depth(*Layout, cmd_args.ToString(0));
 //	uniform -> Change(cmd_args.ToString(0));
@@ -99,10 +99,10 @@ Uniform::Layout * UniformLayoutParser::Parse(const FileInfo & file)
 	data.Layout = new Uniform::Layout();
 
 	TextCommandStream stream(file.LoadText());
-	TextCommand cmd;
-	while (stream.Continue(cmd))
+	TextCommandArgs cmd_args;
+	while (stream.Continue(cmd_args))
 	{
-		data.Parse(cmd);
+		data.Parse(cmd_args);
 	}
 
 	return data.Layout;
