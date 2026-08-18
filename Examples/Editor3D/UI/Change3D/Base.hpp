@@ -13,6 +13,9 @@ namespace Change3D
 {
 struct Base
 {
+	public:
+	virtual void	IndicatorsInit(const DirectoryInfo & dir) = 0;
+
 	private:
 	bool	IsVisible = false;
 
@@ -20,7 +23,6 @@ struct Base
 	bool			IndicatorsIsVisible() const;
 	virtual void	IndicatorsShow();
 	virtual void	IndicatorsHide();
-	virtual void	IndicatorsInit(const DirectoryInfo & dir) = 0;
 
 	public:
 	virtual RayHitF3	IndicatorsFind(const RayF3 & ray) = 0;

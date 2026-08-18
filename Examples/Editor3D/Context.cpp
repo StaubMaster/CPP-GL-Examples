@@ -158,7 +158,7 @@ void Light3DContext::Objects_Change()
 	Object_Hovering = nullptr;
 
 	if (IsHoveringControl()) { return; }
-	if (!UserChange.IsNone_All()) { return; }
+	if (!UserChange.IsNone()) { return; }
 
 	Object_Hovering = Collection.FindObject(ViewRay);
 
@@ -369,184 +369,6 @@ void Light3DContext::SceneReMake()
 
 
 
-void Light3DContext::UserChange::IndicatorsShow()
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> IndicatorsShow();
-	}
-}
-void Light3DContext::UserChange::IndicatorsHide()
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> IndicatorsHide();
-	}
-}
-void Light3DContext::UserChange::IndicatorsInit(const DirectoryInfo & dir)
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> IndicatorsInit(dir);
-	}
-}
-
-unsigned int Light3DContext::UserChange::IndicatorsFind(const RayF3 & ray)
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	RayHitF3Type<unsigned int> hit;
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		hit.Consider(change3D[i] -> IndicatorsFind(ray), i);
-	}
-
-	if (hit.Is())
-	{
-		for (unsigned int i = 0; i < n; i++)
-		{
-			if (hit.Data != i)
-			{
-				change3D[i] -> HoveringMakeOther();
-			}
-		}
-	}
-
-	return hit.Data;
-}
-
-void Light3DContext::UserChange::IndicatorsUpdate(const View3D & view, const DisplaySize & display_size)
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> IndicatorsUpdate(view, display_size);
-	}
-}
-
-bool Light3DContext::UserChange::IsNone_All()
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		if (!change3D[i] -> IsNone())
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-void Light3DContext::UserChange::HoveringMakeNone()
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> HoveringMakeNone();
-	}
-}
-
-void Light3DContext::UserChange::SelectedMakeNone()
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> SelectedMakeNone();
-	}
-}
-void Light3DContext::UserChange::SelectedMakeL(unsigned int idx)
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		if (i == idx)
-		{
-			change3D[i] -> SelectedMakeL();
-		}
-	}
-}
-void Light3DContext::UserChange::SelectedMakeR(unsigned int idx)
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		if (i == idx)
-		{
-			change3D[i] -> SelectedMakeR();
-		}
-	}
-}
-
-void Light3DContext::UserChange::ChangeValue(const RayF3 & ray)
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&Change3DVectorF3,
-		&Change3DEulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> ChangeValue(ray);
-	}
-}
-
-
-
 void Light3DContext::UserChange_ChangeObject(SceneObject * obj)
 {
 	if (obj != nullptr)
@@ -555,10 +377,10 @@ void Light3DContext::UserChange_ChangeObject(SceneObject * obj)
 
 		Trans3D trans = obj -> GetTrans();
 
-		UserChange.Change3DVectorF3.Set(trans.Position);
+		UserChange.VectorF3.Set(trans.Position);
 
-		UserChange.Change3DEulerAngle3D.Set(trans.Rotation);
-		UserChange.Change3DEulerAngle3D.Center = trans.Position;
+		UserChange.EulerAngle3D.Set(trans.Rotation);
+		UserChange.EulerAngle3D.Center = trans.Position;
 	}
 	else
 	{
@@ -569,7 +391,7 @@ void Light3DContext::UserChange_ChangeObject(SceneObject * obj)
 
 void Light3DContext::UserChange_HoverSelect()
 {
-	//if (UserChange.IsNone_All())
+	if (UserChange.SelectedIsNone())
 	{
 		if (IsHoveringControl())
 		{
@@ -588,7 +410,7 @@ void Light3DContext::UserChange_HoverSelect()
 			}
 		}
 	}
-	//else
+	else
 	{
 		if (IsHoveringControl())
 		{
@@ -610,24 +432,27 @@ void Light3DContext::UserChange_Update()
 {
 	// skip this if
 	//  Object_Selected == nullptr
-	//  UserChange_IsNone_All()
+	//  UserChange.SelectedIsNone()
 
 	UserChange.ChangeValue(ViewRay);
 
 	Trans3D trans;
 
-	trans.Position = UserChange.Change3DVectorF3.Get();
-	trans.Rotation = UserChange.Change3DEulerAngle3D.Get();
+	trans.Position = UserChange.VectorF3.Get();
+	trans.Rotation = UserChange.EulerAngle3D.Get();
 
-	UserChange.Change3DVectorF3.Set(trans.Position);
-	UserChange.Change3DEulerAngle3D.Set(trans.Rotation);
-	UserChange.Change3DEulerAngle3D.Center = trans.Position;
+	UserChange.VectorF3.Set(trans.Position);
+	UserChange.EulerAngle3D.Set(trans.Rotation);
+	UserChange.EulerAngle3D.Center = trans.Position;
 
 	if (Object_Selected != nullptr)
 	{
 		Object_Selected -> SetTrans(trans);
 	}
 
+	// UserChange.EulerAngle3D Indicators Update Scale 1 frame later
+	// noticable when Scale changes a lot between frames
+	// like when moving something far away
 	UserChange.IndicatorsUpdate(View, window.Size);
 }
 

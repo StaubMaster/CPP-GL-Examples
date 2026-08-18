@@ -1,15 +1,8 @@
-some stuff to finish and put int other/UserInterface
+some stuff to finish and put in other/UserInterface
 
 
 
-List (of strings)
-	needs scroll ?
-
-
-
-Scrollable Control
-	change GroupBox
-	dont show child Controls outside of parent Control ?
+make Text smaller
 
 
 
@@ -27,3 +20,5 @@ DirectoryNavigator
 
 DirectoryTree
 	uses a Tree to show direcotrys
+
+general Tree Control

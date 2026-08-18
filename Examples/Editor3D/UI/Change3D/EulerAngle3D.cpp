@@ -115,6 +115,29 @@ void Change3D::EulerAngle3D::IndicatorsUpdate(const View3D & view, const Display
 
 
 
+const ::EulerAngle3D & Change3D::EulerAngle3D::Get() const
+{
+	return Value;
+}
+void Change3D::EulerAngle3D::Set(const ::EulerAngle3D & val)
+{
+	Value = val;
+	IndicatorsUpdateTrans();
+}
+
+void Change3D::EulerAngle3D::RoundValue()
+{
+	Value = Value.round(Angle::Degrees(15));
+}
+void Change3D::EulerAngle3D::ChangeValue(const RayF3 & ray)
+{
+	Value = Calculate(ray);
+	RoundValue();
+	IndicatorsUpdateTrans();
+}
+
+
+
 bool Change3D::EulerAngle3D::HoveringIsNone() const
 {
 	return (HoveringType == EIndicatorType::None);
@@ -131,6 +154,8 @@ void Change3D::EulerAngle3D::HoveringMakeOther()
 	HoveringOffset = ::EulerAngle3D();
 	IndicatorsUpdateColor();
 }
+
+
 
 bool Change3D::EulerAngle3D::SelectedIsNone() const
 {
@@ -168,18 +193,6 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 		default: SelectedType = EChangeType::None; break;
 	}
 	SelectedOffset = Value - HoveringOffset;
-}
-
-
-
-const ::EulerAngle3D & Change3D::EulerAngle3D::Get() const
-{
-	return Value;
-}
-void Change3D::EulerAngle3D::Set(const ::EulerAngle3D & val)
-{
-	Value = val;
-	IndicatorsUpdateTrans();
 }
 
 
@@ -237,15 +250,4 @@ void Change3D::EulerAngle3D::Set(const ::EulerAngle3D & val)
 		default: return value;
 	}
 	return value;
-}
-
-void Change3D::EulerAngle3D::RoundValue()
-{
-	Value = Value.round(Angle::Degrees(15));
-}
-void Change3D::EulerAngle3D::ChangeValue(const RayF3 & ray)
-{
-	Value = Calculate(ray);
-	RoundValue();
-	IndicatorsUpdateTrans();
 }

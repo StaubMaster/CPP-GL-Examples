@@ -36,6 +36,7 @@
 //# include "UI/UserTrans3DChange.hpp"
 # include "UI/Change3D/VectorF3.hpp"
 # include "UI/Change3D/EulerAngle3D.hpp"
+# include "UI/Change3D/Trans3D.hpp"
 
 // NewPolyHedra
 # include "NewPolyHedra/Manager.hpp"
@@ -96,6 +97,7 @@ bool	IsHoveringControl() const;
 
 
 
+// Light
 static GL::BlockBinding		BindingLight;
 
 ::LightManager		LightManager;
@@ -103,30 +105,8 @@ Buffer::Uniform		LightBuffer;
 
 
 
-struct UserChange
-{
-	::Change3D::VectorF3		Change3DVectorF3;
-	::Change3D::EulerAngle3D	Change3DEulerAngle3D;
-
-	void	IndicatorsHide();
-	void	IndicatorsShow();
-	void	IndicatorsInit(const DirectoryInfo & dir);
-
-	unsigned int	IndicatorsFind(const RayF3 & ray);
-
-	void	IndicatorsUpdate(const View3D & view, const DisplaySize & display_size);
-
-	bool	IsNone_All();
-
-	void	HoveringMakeNone();
-
-	void	SelectedMakeNone();
-	void	SelectedMakeL(unsigned int idx);
-	void	SelectedMakeR(unsigned int idx);
-
-	void	ChangeValue(const RayF3 & ray);
-};
-Light3DContext::UserChange	UserChange;
+// User Change
+Change3D::Trans3D	UserChange;
 
 void	UserChange_ChangeObject(SceneObject * obj);
 

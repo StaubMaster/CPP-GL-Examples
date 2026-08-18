@@ -6,15 +6,7 @@
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/EulerAngle3D.hpp"
 
-# include "ValueType/Ray/F3.hpp"
-# include "ValueType/Ray/Hit/F3.hpp"
-
-# include "ValueType/View/3D.hpp"
-# include "Display/DisplaySize.hpp"
-
 # include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
-
-class DirectoryInfo;
 
 namespace Change3D
 {
@@ -27,31 +19,6 @@ struct EulerAngle3D : public Base
 
 	public:
 	::VectorF3	Center;
-
-	private:
-	enum class EIndicatorType // EHoveringType
-	{
-		None,
-		Other,
-		SpinRingX,
-		SpinRingY,
-		SpinRingZ,
-	};
-	EIndicatorType		HoveringType = EIndicatorType::None;
-	::EulerAngle3D		HoveringOffset;
-
-	private:
-	enum class EChangeType // ESelectedType
-	{
-		None,
-		SpinX,
-		SpinY,
-		SpinZ,
-	};
-	EChangeType		SelectedType = EChangeType::None;
-	::EulerAngle3D	SelectedOffset;
-
-
 
 	public:
 	void	IndicatorsInit(const DirectoryInfo & dir) override;
@@ -73,10 +40,49 @@ struct EulerAngle3D : public Base
 
 
 
+	private:
+	::EulerAngle3D	Value;
+
+	public:
+	const ::EulerAngle3D &	Get() const;
+	void					Set(const ::EulerAngle3D & val);
+
+	private:
+	void	RoundValue() override;
+	public:
+	void	ChangeValue(const RayF3 & ray) override;
+
+
+
+	private:
+	enum class EIndicatorType // EHoveringType
+	{
+		None,
+		Other,
+		SpinRingX,
+		SpinRingY,
+		SpinRingZ,
+	};
+	EIndicatorType		HoveringType = EIndicatorType::None;
+	::EulerAngle3D		HoveringOffset;
+
 	public:
 	bool	HoveringIsNone() const override;
 	void	HoveringMakeNone() override;
 	void	HoveringMakeOther() override;
+
+
+
+	private:
+	enum class EChangeType // ESelectedType
+	{
+		None,
+		SpinX,
+		SpinY,
+		SpinZ,
+	};
+	EChangeType		SelectedType = EChangeType::None;
+	::EulerAngle3D	SelectedOffset;
 
 	public:
 	bool	SelectedIsNone() const  override;
@@ -89,23 +95,11 @@ struct EulerAngle3D : public Base
 
 
 	private:
-	::EulerAngle3D	Value;
-
-	public:
-	const ::EulerAngle3D &	Get() const;
-	void					Set(const ::EulerAngle3D & val);
-
-	private:
 	::EulerAngle3D	CalculatePlaneX(const RayF3 & ray) const;
 	::EulerAngle3D	CalculatePlaneY(const RayF3 & ray) const;
 	::EulerAngle3D	CalculatePlaneZ(const RayF3 & ray) const;
 	private:
 	::EulerAngle3D	Calculate(const RayF3 & ray) const;
-
-	private:
-	void	RoundValue();
-	public:
-	void	ChangeValue(const RayF3 & ray);
 };
 };
 

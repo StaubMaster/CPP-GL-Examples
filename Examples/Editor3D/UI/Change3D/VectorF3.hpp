@@ -5,15 +5,7 @@
 
 # include "ValueType/Vector/F3.hpp"
 
-# include "ValueType/Ray/F3.hpp"
-# include "ValueType/Ray/Hit/F3.hpp"
-
-# include "ValueType/View/3D.hpp"
-# include "Display/DisplaySize.hpp"
-
 # include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
-
-class DirectoryInfo;
 
 namespace Change3D
 {

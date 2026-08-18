@@ -32,6 +32,7 @@ FILES := \
 	UI/Change3D/Base.cpp \
 	UI/Change3D/VectorF3.cpp \
 	UI/Change3D/EulerAngle3D.cpp \
+	UI/Change3D/Trans3D.cpp \
 \
 	Context.cpp \
 	new.cpp \
