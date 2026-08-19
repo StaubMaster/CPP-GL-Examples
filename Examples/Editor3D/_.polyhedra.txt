@@ -1,28 +1,9 @@
-.polyhedra Type
-
-TextCommand: "Type":
-	should be the first things in a .polyhedra File
-	Argument[0]
-		if not "PolyHedra", throw a fatal Parsing error
-	(optional) Argument[1]
-		"Manual" or "Automatic"
-		default, if not given, is "Manual"
-		should be stored in PolyHedra ?
-		make a faster way of getting this ?
-		dont override "Manual" File
-
-
 
 .polyhedra should be able to use other .polyhedra
 
 
 
 ways to include another PolyHedra
-
-static:
-	put the data from the other PolyHedra into the data of this PolyHedra
-	+ only one Buffer
-	- more difficult to seperate
 
 dynamic:
 	store a List of other PolyHedra
@@ -36,57 +17,13 @@ specifying File every time seems annoying
 parse .polyhedra and give it a name
 then use that name to place
 
-maybe check Parent PolyHedra to see if file has already been loaded
-to avoid loading same PolyHedra multiple times
 
 
+File Organizer:
+list of all PolyHedra files that have been loaded
+when requesting File, check if it has already been loaded
 
-TextCommand: "TransDefault"
-TextCommand: "TransChangePos" {X} {Y} {Z}
-TextCommand: "TransChangeRot" {X} {Y} {Z}
-	forward/reverse ?
-these change a hidden Trans3D
-
-TextCommand: "PlaceStatic" "Name"
-TextCommand: "PlaceDynamic" "Name"
-these use the hidden Trans3D
-
-
-
-
-
-ways to use another .polyhedra File
-
-normal:
-	the other just has normal Data
-
-parameter:
-	the other uses Variables to change itself
-	needs default Values/throw error if no Values
-
-	store Parameters for Automatic Files ?
-	PolyHedra should store a list of Variables that were relevent to its making
-	when an Automatic File is made, put those Variables
-
-TextCommand: "varFloat" "name" {value}
-TextCommand: "varFloat" "name"
-	remove Variable ?
-
-TextCommand: "varFloat_parameter" "name" {value}
-	if not exists, put value
-TextCommand: "varFloat_parameter" "name"
-	if not exists, throw fatal error
-
-how to give Variables to Children ?
-giving them access to all Variables would be bad
-	they should not be allowed to change so should be fine
-
-
-
-"local" Variables
-	only the current File / PolyHedra can access / assign
-Variables shared with Parent
-Variables shared with Children
+how to check for Parameters ?
 
 
 
@@ -96,7 +33,7 @@ other Ideas
 
 info:
 	arbitrary text
-	each PolyHedra should store a list of string
+	list of strings in PolyHedra
 
 
 

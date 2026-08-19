@@ -256,6 +256,18 @@ void Light3DContext::SceneInitCubes()
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
 	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));*/
 }
+
+static NewPolyHedra::PalletObjectManager * Cube_UI_manager = nullptr;
+static NewPolyHedra::PalletObjectManager * stage_light_manager = nullptr;
+static NewPolyHedra::PalletObjectManager * light_bulb_manager = nullptr;
+void Light3DContext::InitLights()
+{
+	DirectoryInfo dir(MediaDirectory.Child("YMT/Light"));
+	if (Cube_UI_manager == nullptr) { Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(Cube); }
+	if (stage_light_manager == nullptr) { stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt"))); }
+	if (light_bulb_manager == nullptr) { light_bulb_manager = ObjectManagerTSC.FindMakePalletObjectManager(PolyHedra::Load(dir.File("LightBulb.polyhedra"))); }
+}
+
 void Light3DContext::SceneInitLights()
 {
 	/*Light_Spot_Array[0] = LightSpot(
@@ -271,12 +283,6 @@ void Light3DContext::SceneInitLights()
 		//RangeF(0.95f, 0.95f)
 	);
 	Light_Spot_Count = 1;*/
-
-	// Assign Object PolyHedras
-	DirectoryInfo dir = MediaDirectory.Child("YMT/Light");
-	NewPolyHedra::PalletObjectManager * Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(Cube);
-	NewPolyHedra::PalletObjectManager * stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt")));
-	NewPolyHedra::PalletObjectManager * light_bulb_manager = ObjectManagerTSC.FindMakePalletObjectManager(PolyHedra::Load(dir.File("LightBulb.polyhedra")));
 
 	/* Light Meta Indicators
 		LightBuld: LightPoint
@@ -572,7 +578,12 @@ void Light3DContext::Make()
 //	View.Trans = Trans3D(VectorF3(0, 64, -2), EulerAngle3D());
 	View.Trans = Trans3D(VectorF3(0, 430, -24), EulerAngle3D());
 
+	UserChange.IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
+	UserChange.IndicatorsHide();
+
 	TestPolyHedraSphere = PolyHedraGenerate::SphereY(2, 5, 12.0f);
+
+	InitLights();
 
 	SceneReMake();
 
@@ -584,9 +595,6 @@ void Light3DContext::Make()
 	UIPolyHedraPalletList.Hide();
 
 	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
-
-	UserChange.IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
-	UserChange.IndicatorsHide();
 
 	Shader::Base::BindNone();
 	LightBuffer.BindBase(BindingLight);

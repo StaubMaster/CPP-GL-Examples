@@ -103,6 +103,8 @@ static GL::BlockBinding		BindingLight;
 ::LightManager		LightManager;
 Buffer::Uniform		LightBuffer;
 
+void InitLights();
+
 
 
 // User Change

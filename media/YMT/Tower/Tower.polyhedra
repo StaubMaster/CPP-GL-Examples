@@ -1,0 +1,21 @@
+Type PolyHedra
+Format Normal
+
+OtherFile PipeY/100cm_to_80cm_len_6m.polyhedra
+OtherStatic
+
+OtherFile PipeY/80cm_to_60cm_len_10m.polyhedra
+TransPos   0 060 0
+OtherStatic
+
+OtherFile PipeY/60cm_to_60cm_len_18m.polyhedra
+TransPos   0 160 0
+OtherStatic
+TransPos   0 340 0
+OtherStatic
+TransPos   0 520 0
+OtherStatic
+
+OtherFile PipeY/60cm_Cap_len_50cm.polyhedra
+TransPos   0 700 0
+OtherStatic

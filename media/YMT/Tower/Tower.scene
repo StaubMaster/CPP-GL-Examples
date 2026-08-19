@@ -9,19 +9,22 @@ LightDirectionD   1.0   1.0 1.0 1.0    +1.0 -3.0  +2.0   0.0 45.0 0.0
 
 
 
-pallet PipeY/100cm_to_80cm_len_6m.polyhedra pipe0
-place pipe0   0 0 0   0 0 0
+#pallet PipeY/100cm_to_80cm_len_6m.polyhedra pipe0
+#place pipe0   0 0 0   0 0 0
+#
+#pallet PipeY/80cm_to_60cm_len_10m.polyhedra pipe1
+#place pipe1   0 60 0   0 0 0
+#
+#pallet PipeY/60cm_to_60cm_len_18m.polyhedra pipe2
+#place pipe2   0 160 0   0 0 0
+#place pipe2   0 340 0   0 0 0
+#place pipe2   0 520 0   0 0 0
+#
+#pallet PipeY/60cm_Cap_len_50cm.polyhedra pipe3
+#place pipe3   0 700 0   0 0 0
 
-pallet PipeY/80cm_to_60cm_len_10m.polyhedra pipe1
-place pipe1   0 60 0   0 0 0
-
-pallet PipeY/60cm_to_60cm_len_18m.polyhedra pipe2
-place pipe2   0 160 0   0 0 0
-place pipe2   0 340 0   0 0 0
-place pipe2   0 520 0   0 0 0
-
-pallet PipeY/60cm_Cap_len_50cm.polyhedra pipe3
-place pipe3   0 700 0   0 0 0
+pallet Tower.polyhedra tower
+place tower   0 0 0   0 0 0
 
 
 
@@ -52,14 +55,18 @@ pallet Antenna/Circle_96cm.polyhedra antenna_2
 
 
 
-place antenna_connector   -07.5 432 -18.5   0 0 90
-place antenna_0           -05.0 432 -18.5   0 0 180
+#place antenna_connector   -07.5 432 -18.5   0 0 90
+#place antenna_0           -05.0 432 -18.5   0 0 180
+#
+#place antenna_connector   +07.5 432 -18.5   0 0 90
+#place antenna_1           +10.0 432 -18.5   0 0 180
+#
+#place antenna_connector   -07.5 424 -18.5   0 0 270
+#place antenna_2           -10.0 424 -18.5   0 0 180
 
-place antenna_connector   +07.5 432 -18.5   0 0 90
-place antenna_1           +10.0 432 -18.5   0 0 180
-
-place antenna_connector   -07.5 424 -18.5   0 0 270
-place antenna_2           -10.0 424 -18.5   0 0 180
+place antenna_0   -07.5 432 -18.5   0 0 180
+place antenna_1   +07.5 432 -18.5   0 0 180
+place antenna_2   -07.5 424 -18.5   0 0 180
 
 
 

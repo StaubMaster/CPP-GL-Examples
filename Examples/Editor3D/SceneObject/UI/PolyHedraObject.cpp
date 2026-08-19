@@ -59,7 +59,8 @@ void UI::Control::PolyHedraObject::Syncronize()
 	{
 		const PolyHedra & polyhedra = *(Object -> Manager -> Pallet -> Object);
 		std::stringstream ss;
-		ss.str(std::string()); ss << "Name:" << (polyhedra.Name); PalletName.SetText(ss.str());
+		//ss.str(std::string()); ss << "Name:" << (polyhedra.Name); PalletName.SetText(ss.str());
+		ss.str(std::string()); ss << "Name:" << (polyhedra.File.Name()); PalletName.SetText(ss.str());
 		ss.str(std::string()); ss << "File:" << (polyhedra.File.Path); PalletFile.SetText(ss.str());
 		ss.str(std::string()); ss << "Skin:" << (polyhedra.Skin); PalletSkinsCount.SetText(ss.str());
 	}
