@@ -264,8 +264,8 @@ void Light3DContext::InitLights()
 {
 	DirectoryInfo dir(MediaDirectory.Child("YMT/Light"));
 	if (Cube_UI_manager == nullptr) { Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(Cube); }
-	if (stage_light_manager == nullptr) { stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt"))); }
-	if (light_bulb_manager == nullptr) { light_bulb_manager = ObjectManagerTSC.FindMakePalletObjectManager(PolyHedra::Load(dir.File("LightBulb.polyhedra"))); }
+	if (stage_light_manager == nullptr) { stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt"), PolyHedraFileCollection)); }
+	if (light_bulb_manager == nullptr) { light_bulb_manager = ObjectManagerTSC.FindMakePalletObjectManager(PolyHedra::Load(dir.File("LightBulb.polyhedra"), PolyHedraFileCollection)); }
 }
 
 void Light3DContext::SceneInitLights()
@@ -586,6 +586,16 @@ void Light3DContext::Make()
 	InitLights();
 
 	SceneReMake();
+
+	{
+		std::cout << "PolyHedraFileCollection[" << PolyHedraFileCollection.FileObjects.Count() << "]\n";
+		std::cout << "[\n";
+		for (unsigned int i = 0; i < PolyHedraFileCollection.FileObjects.Count(); i++)
+		{
+			std::cout << "  " << PolyHedraFileCollection.FileObjects[i].File << '\n';
+		}
+		std::cout << "]\n";
+	}
 
 	UIManager.WindowControl.ChildInsert(UISceneObject);
 	UIManager.WindowControl.ChildInsert(UIPolyHedraPalletList);

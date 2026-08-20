@@ -38,6 +38,9 @@
 # include "UI/Change3D/EulerAngle3D.hpp"
 # include "UI/Change3D/Trans3D.hpp"
 
+// PolyHedra
+# include "PolyHedra/FileCollection.hpp"
+
 // NewPolyHedra
 # include "NewPolyHedra/Manager.hpp"
 # include "NewPolyHedra/ObjectManager.hpp"
@@ -64,6 +67,8 @@ RayF3		ViewRay;
 Matrix4x4	ViewMatrix;
 
 
+
+::PolyHedraFileCollection	PolyHedraFileCollection;
 
 NewPolyHedra::Manager		NewPolyHedra_Manager;
 
