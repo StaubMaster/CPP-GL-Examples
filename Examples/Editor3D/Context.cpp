@@ -263,9 +263,28 @@ static NewPolyHedra::PalletObjectManager * light_bulb_manager = nullptr;
 void Light3DContext::InitLights()
 {
 	DirectoryInfo dir(MediaDirectory.Child("YMT/Light"));
-	if (Cube_UI_manager == nullptr) { Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(Cube); }
-	if (stage_light_manager == nullptr) { stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(PolyHedra::Load(dir.File("Stage_Light.polyhedra.ymt"), PolyHedraFileCollection)); }
-	if (light_bulb_manager == nullptr) { light_bulb_manager = ObjectManagerTSC.FindMakePalletObjectManager(PolyHedra::Load(dir.File("LightBulb.polyhedra"), PolyHedraFileCollection)); }
+	if (Cube_UI_manager == nullptr)
+	{
+		Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(
+			Cube
+		);
+	}
+	if (stage_light_manager == nullptr)
+	{
+		stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(
+			PolyHedraFileCollection.FindMake(
+				dir.File("Stage_Light.polyhedra.ymt")
+			)
+		);
+	}
+	if (light_bulb_manager == nullptr)
+	{
+		light_bulb_manager = ObjectManagerTSC.FindMakePalletObjectManager(
+			PolyHedraFileCollection.FindMake(
+				dir.File("LightBulb.polyhedra")
+			)
+		);
+	}
 }
 
 void Light3DContext::SceneInitLights()
@@ -343,12 +362,12 @@ void Light3DContext::SceneInitLights()
 }
 
 #include "SceneParsingData.hpp"
-#include "FileParsing/Text/TextCommandStream.hpp"
+#include "FileParsing/TextCommand/ArgsStream.hpp"
 void Light3DContext::SceneLoad(FileInfo file)
 {
-	SceneParsingData data(file, *this);
-	TextCommandStream stream(file.LoadText());
-	TextCommandArgs cmd_args;
+	SceneParsingData data(file, *this, PolyHedraFileCollection);
+	TextCommand::ArgsStream stream(file.LoadText());
+	TextCommand::Args cmd_args;
 	while (stream.Continue(cmd_args))
 	{
 		data.Parse(cmd_args);
@@ -592,7 +611,7 @@ void Light3DContext::Make()
 		std::cout << "[\n";
 		for (unsigned int i = 0; i < PolyHedraFileCollection.FileObjects.Count(); i++)
 		{
-			std::cout << "  " << PolyHedraFileCollection.FileObjects[i].File << '\n';
+			std::cout << "  " << PolyHedraFileCollection.FileObjects[i].File.Path << '\n';
 		}
 		std::cout << "]\n";
 	}

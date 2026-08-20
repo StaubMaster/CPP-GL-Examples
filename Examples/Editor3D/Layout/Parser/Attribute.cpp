@@ -3,15 +3,15 @@
 #include "Graphics/Attribute/General/Layout.hpp"
 #include "Graphics/Attribute/_Include.hpp"
 
-#include "FileParsing/Text/TextCommandArgs.hpp"
-#include "FileParsing/Text/TextCommandStream.hpp"
-#include "FileParsing/Text/Exceptions.hpp"
+#include "FileParsing/TextCommand/Args.hpp"
+#include "FileParsing/TextCommand/ArgsStream.hpp"
+#include "FileParsing/TextCommand/Exceptions.hpp"
 
 #include <iostream>
 
 
 
-void AttributeLayoutParser::Parse(const TextCommandArgs & cmd_args)
+void AttributeLayoutParser::Parse(const TextCommand::Args & cmd_args)
 {
 	try
 	{
@@ -29,22 +29,22 @@ void AttributeLayoutParser::Parse(const TextCommandArgs & cmd_args)
 
 
 
-void AttributeLayoutParser::PutDivisor(const TextCommandArgs & cmd_args)
+void AttributeLayoutParser::PutDivisor(const TextCommand::Args & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 1"); }
 
-	if (Layout != nullptr) { throw TextCommand::InvalidState(cmd_args, "Layout already"); }
+	if (Layout != nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "Layout already"); }
 
 	Layout = new Attribute::Layout(cmd_args.ToUInt32(0));
 }
 
 
 
-void AttributeLayoutParser::PutMatrix4x4(const TextCommandArgs & cmd_args)
+void AttributeLayoutParser::PutMatrix4x4(const TextCommand::Args & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 1"); }
 
-	if (Layout == nullptr) { throw TextCommand::InvalidState(cmd_args, "Layout missing"); }
+	if (Layout == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "Layout missing"); }
 
 	Attribute::Matrix4x4 * attribute = new Attribute::Matrix4x4(*Layout);
 	attribute -> Change(cmd_args.ToInt32(0));
@@ -52,14 +52,14 @@ void AttributeLayoutParser::PutMatrix4x4(const TextCommandArgs & cmd_args)
 
 
 
-#include "FileParsing/Text/TextCommandStream.hpp"
+#include "FileParsing/TextCommand/ArgsStream.hpp"
 
 Attribute::Layout * AttributeLayoutParser::Parse(const FileInfo & file)
 {
 	AttributeLayoutParser data;
 
-	TextCommandStream stream(file.LoadText());
-	TextCommandArgs cmd_args;
+	TextCommand::ArgsStream stream(file.LoadText());
+	TextCommand::Args cmd_args;
 	while (stream.Continue(cmd_args))
 	{
 		data.Parse(cmd_args);

@@ -3,7 +3,7 @@
 
 # include "FileInfo.hpp"
 
-class TextCommandArgs;
+namespace TextCommand { class Args; };
 
 namespace Uniform
 {
@@ -14,16 +14,16 @@ struct UniformLayoutParser
 {
 	Uniform::Layout *		Layout = nullptr;
 
-	void	Parse(const TextCommandArgs & cmd_args);
+	void	Parse(const TextCommand::Args & cmd_args);
 
-//	void	File(const TextCommandArgs & cmd_args);
-//	void	FilesDone(const TextCommandArgs & cmd_args);
+//	void	File(const TextCommand::Args & cmd_args);
+//	void	FilesDone(const TextCommand::Args & cmd_args);
 
-	void	Matrix4x4(const TextCommandArgs & cmd_args);
-	void	Angle(const TextCommandArgs & cmd_args);
+	void	Matrix4x4(const TextCommand::Args & cmd_args);
+	void	Angle(const TextCommand::Args & cmd_args);
 
-	void	DisplaySize(const TextCommandArgs & cmd_args);
-	void	Depth(const TextCommandArgs & cmd_args);
+	void	DisplaySize(const TextCommand::Args & cmd_args);
+	void	Depth(const TextCommand::Args & cmd_args);
 
 	static Uniform::Layout *	Parse(const FileInfo & file);
 };

@@ -3,7 +3,7 @@
 
 # include "FileInfo.hpp"
 
-class TextCommandArgs;
+namespace TextCommand { class Args; };
 
 namespace Attribute
 {
@@ -14,11 +14,11 @@ struct AttributeLayoutParser
 {
 	Attribute::Layout *		Layout = nullptr;
 
-	void	Parse(const TextCommandArgs & cmd_args);
+	void	Parse(const TextCommand::Args & cmd_args);
 
-	void	PutDivisor(const TextCommandArgs & cmd_args);
+	void	PutDivisor(const TextCommand::Args & cmd_args);
 
-	void	PutMatrix4x4(const TextCommandArgs & cmd_args);
+	void	PutMatrix4x4(const TextCommand::Args & cmd_args);
 
 	static Attribute::Layout *	Parse(const FileInfo & file);
 };
