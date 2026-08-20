@@ -9,7 +9,7 @@
 # include <string>
 # include <exception>
 
-class TextCommandArgs;
+namespace TextCommand { class Args; };
 
 namespace UI
 {
@@ -27,15 +27,15 @@ struct Font::ParsingData
 	ParsingData(const FileInfo & file);
 	~ParsingData();
 
-	void	Parse(const TextCommandArgs & cmd_args);
+	void	Parse(const TextCommand::Args & cmd_args);
 
-	void	Parse_Type(const TextCommandArgs & cmd_args);
+	void	Parse_Type(const TextCommand::Args & cmd_args);
 
-	void	Parse_Image(const TextCommandArgs & cmd_args);
-	void	Parse_Scale(const TextCommandArgs & cmd_args);
-	void	Parse_Character(const TextCommandArgs & cmd_args);
+	void	Parse_Image(const TextCommand::Args & cmd_args);
+	void	Parse_Scale(const TextCommand::Args & cmd_args);
+	void	Parse_Character(const TextCommand::Args & cmd_args);
 
-	void	Parse_Range(const TextCommandArgs & cmd_args);
+	void	Parse_Range(const TextCommand::Args & cmd_args);
 };
 
 };

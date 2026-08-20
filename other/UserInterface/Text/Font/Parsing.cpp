@@ -1,8 +1,8 @@
 #include "Text/Font/Parsing.hpp"
 
-#include "FileParsing/Text/TextCommandArgs.hpp"
-#include "FileParsing/Text/TextCommandStream.hpp"
-#include "FileParsing/Text/Exceptions.hpp"
+#include "FileParsing/TextCommand/Args.hpp"
+#include "FileParsing/TextCommand/ArgsStream.hpp"
+#include "FileParsing/TextCommand/Exceptions.hpp"
 
 #include "FileInfo.hpp"
 #include "DirectoryInfo.hpp"
@@ -22,7 +22,7 @@ UI::Text::Font::ParsingData::~ParsingData()
 
 
 
-void UI::Text::Font::ParsingData::Parse(const TextCommandArgs & cmd_args)
+void UI::Text::Font::ParsingData::Parse(const TextCommand::Args & cmd_args)
 {
 	std::string name = cmd_args.Name();
 
@@ -34,17 +34,17 @@ void UI::Text::Font::ParsingData::Parse(const TextCommandArgs & cmd_args)
 	else if (name == "Character")	{ Parse_Character(cmd_args); }
 	else if (name == "Range")		{ Parse_Range(cmd_args); }
 
-	else							{ throw TextCommand::Unknown(cmd_args); }
+	else							{ throw TextCommand::Exception::Unknown(cmd_args); }
 }
 
-void UI::Text::Font::ParsingData::Parse_Type(const TextCommandArgs & cmd_args)
+void UI::Text::Font::ParsingData::Parse_Type(const TextCommand::Args & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 1"); }
 }
 
-void UI::Text::Font::ParsingData::Parse_Image(const TextCommandArgs & cmd_args)
+void UI::Text::Font::ParsingData::Parse_Image(const TextCommand::Args & cmd_args)
 {
-	if (!(cmd_args.Count() == 1)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 1"); }
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 1"); }
 
 	DirectoryInfo dir(File.Directory());
 	FileInfo imgFile(dir.File(cmd_args.ToString(0).c_str()));
@@ -57,15 +57,15 @@ void UI::Text::Font::ParsingData::Parse_Image(const TextCommandArgs & cmd_args)
 		}
 	}
 }
-void UI::Text::Font::ParsingData::Parse_Scale(const TextCommandArgs & cmd_args)
+void UI::Text::Font::ParsingData::Parse_Scale(const TextCommand::Args & cmd_args)
 {
-	if (!(cmd_args.Count() == 2)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 2"); }
+	if (!(cmd_args.Count() == 2)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 2"); }
 
 	Scale = VectorF2(cmd_args.ToFloat(0), cmd_args.ToFloat(1));
 }
-void UI::Text::Font::ParsingData::Parse_Character(const TextCommandArgs & cmd_args)
+void UI::Text::Font::ParsingData::Parse_Character(const TextCommand::Args & cmd_args)
 {
-	if (!(cmd_args.Count() == 5)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 5"); }
+	if (!(cmd_args.Count() == 5)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 5"); }
 
 	VectorF2 pos(cmd_args.ToFloat(1), cmd_args.ToFloat(2));
 	VectorF2 size(cmd_args.ToFloat(3), cmd_args.ToFloat(4));
@@ -92,9 +92,9 @@ void UI::Text::Font::ParsingData::Parse_Character(const TextCommandArgs & cmd_ar
 	}
 }
 
-void UI::Text::Font::ParsingData::Parse_Range(const TextCommandArgs & cmd_args)
+void UI::Text::Font::ParsingData::Parse_Range(const TextCommand::Args & cmd_args)
 {
-	if (!(cmd_args.Count() == 0 || cmd_args.Count() == 2)) { throw TextCommand::InvalidArgumentCount(cmd_args, "n == 0 || n == 2"); }
+	if (!(cmd_args.Count() == 0 || cmd_args.Count() == 2)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 0 || n == 2"); }
 
 	if (cmd_args.Count() == 0)
 	{
@@ -124,8 +124,8 @@ UI::Text::Font * UI::Text::Font::Parse(const FileInfo & file)
 	ParsingData data(file);
 	data.Data = new UI::Text::Font();
 
-	TextCommandStream stream(file.LoadText());
-	TextCommandArgs cmd_args;
+	TextCommand::ArgsStream stream(file.LoadText());
+	TextCommand::Args cmd_args;
 	while (stream.Continue(cmd_args))
 	{
 		data.Parse(cmd_args);
