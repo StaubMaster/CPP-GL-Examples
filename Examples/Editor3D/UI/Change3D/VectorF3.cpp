@@ -6,15 +6,16 @@
 #include "ValueType/NormalPlaneF3.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
+#include "PolyHedra/Parser.hpp"
 #include "DirectoryInfo.hpp"
 
 
 
 void Change3D::VectorF3::IndicatorsInit(const DirectoryInfo & dir)
 {
-	MoveAxisX.Create(PolyHedra::Load(dir.File("MoveAxis/AxisX.polyhedra")));
-	MoveAxisY.Create(PolyHedra::Load(dir.File("MoveAxis/AxisY.polyhedra")));
-	MoveAxisZ.Create(PolyHedra::Load(dir.File("MoveAxis/AxisZ.polyhedra")));
+	MoveAxisX.Create(PolyHedraParser::Load(dir.File("MoveAxis/AxisX.polyhedra"), nullptr, nullptr));
+	MoveAxisY.Create(PolyHedraParser::Load(dir.File("MoveAxis/AxisY.polyhedra"), nullptr, nullptr));
+	MoveAxisZ.Create(PolyHedraParser::Load(dir.File("MoveAxis/AxisZ.polyhedra"), nullptr, nullptr));
 }
 
 void Change3D::VectorF3::IndicatorsShow()

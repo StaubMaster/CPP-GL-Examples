@@ -19,29 +19,3 @@ info:
 organize
 
 nested class stuff sucks
-
-
-
-Normals:
-Normals are eighter
-	per Face
-	per Vertex
-
-belt
-	should average Normals between Belt-Faces
-	not to other Neighbouring Faces
-not allways the case ?
-
-fan
-	should average Normal of Middle
-	and between Blades
-
-sometimes, fan and belt touch and should average between eachother. not allways
-sometimes, belts touch and should average between eachother. not allways
-
-how to specify ?
-
-Normal Groups ?
-each face has a Normal Group Index
-or -1 for none
-average Vertex Normals within a Group

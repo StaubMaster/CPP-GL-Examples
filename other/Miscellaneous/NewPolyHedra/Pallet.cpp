@@ -49,7 +49,6 @@ void NewPolyHedra::Pallet::GraphicsPut()
 	VertexArray::Base::BindNone();
 	if (Object != nullptr)
 	{
-		Object -> CalcNormals();
 		GraphicsPutFull();
 		GraphicsPutWire();
 		if (Object -> Skin != nullptr)
@@ -81,7 +80,7 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 			vert1.Position = corner1.Position;
 			vert2.Position = corner2.Position;
 
-			if (!Object -> UseCornerNormals)
+			if (face.NormalGroup == 0xFFFFFFFF)
 			{
 				vert0.Normal = face.Normal;
 				vert1.Normal = face.Normal;
@@ -89,9 +88,65 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 			}
 			else
 			{
-				vert0.Normal = corner0.Normal;
-				vert1.Normal = corner1.Normal;
-				vert2.Normal = corner2.Normal;
+				vert0.Normal = VectorF3();
+				vert1.Normal = VectorF3();
+				vert2.Normal = VectorF3();
+			}
+		}
+	}
+
+	// Normals (unoptimized)
+	unsigned int normal_group_limit = 0xFFFFFFFF;
+	for (unsigned int i = 0; i < Object -> Faces.Count(); i++)
+	{
+		const PolyHedra::Face & face = Object -> Faces[i];
+		if (face.NormalGroup != 0xFFFFFFFF)
+		{
+			if (normal_group_limit == 0xFFFFFFFF || face.NormalGroup > normal_group_limit)
+			{
+				normal_group_limit = face.NormalGroup;
+			}
+		}
+	}
+	if (normal_group_limit != 0xFFFFFFFF)
+	{
+		Container::Array<VectorF3> normals(Object -> Corners.Count());
+		for (unsigned int normal_group = 0; normal_group <= normal_group_limit; normal_group++)
+		{
+			for (unsigned int i = 0; i < normals.Length(); i++)
+			{
+				normals[i] = VectorF3();
+			}
+			for (unsigned int i = 0; i < Object -> Faces.Count(); i++)
+			{
+				const PolyHedra::Face & face = Object -> Faces[i];
+				if (face.NormalGroup == normal_group)
+				{
+					if (face.Check(normals.Length()))
+					{
+						normals[face.idx[0]] += face.Normal;
+						normals[face.idx[1]] += face.Normal;
+						normals[face.idx[2]] += face.Normal;
+					}
+				}
+			}
+			for (unsigned int i = 0; i < normals.Length(); i++)
+			{
+				normals[i] = normals[i].normalize();
+			}
+			for (unsigned int i = 0; i < Object -> Faces.Count(); i++)
+			{
+				const PolyHedra::Face & face = Object -> Faces[i];
+				if (face.NormalGroup == normal_group)
+				{
+					PalletFull::Triangle & tri = data[i];
+					PalletFull::Vertex & vert0 = tri.Data[0];
+					PalletFull::Vertex & vert1 = tri.Data[1];
+					PalletFull::Vertex & vert2 = tri.Data[2];
+					vert0.Normal = normals[face.idx[0]];
+					vert1.Normal = normals[face.idx[1]];
+					vert2.Normal = normals[face.idx[2]];
+				}
 			}
 		}
 	}
