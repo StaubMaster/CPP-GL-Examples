@@ -1,35 +1,12 @@
 
-.polyhedra should be able to use other .polyhedra
-
-
-
-ways to include another PolyHedra
-
-dynamic:
-	store a List of other PolyHedra
-	+ they remain seperate
-	+ can be optimized if included multiple times
-	- needs extra Buffer for each one
-
-should be able to include another PolyHedra multiple times
-specifying File every time seems annoying
-
-parse .polyhedra and give it a name
-then use that name to place
-
-
-
-File Organizer:
-list of all PolyHedra files that have been loaded
-when requesting File, check if it has already been loaded
-
-how to check for Parameters ?
+the original idea of calling these PolyHedra
+was that they are just raw geometry with nothing extra
+this is a lot of extra stuff
+cant really think of a better name though
 
 
 
 
-
-other Ideas
 
 info:
 	arbitrary text
@@ -39,7 +16,32 @@ info:
 
 
 
-the original idea of calling these PolyHedra
-was that they are just raw geometry with nothing extra
-this is a lot of extra stuff
-cant really think of a better name though
+organize
+
+nested class stuff sucks
+
+
+
+Normals:
+Normals are eighter
+	per Face
+	per Vertex
+
+belt
+	should average Normals between Belt-Faces
+	not to other Neighbouring Faces
+not allways the case ?
+
+fan
+	should average Normal of Middle
+	and between Blades
+
+sometimes, fan and belt touch and should average between eachother. not allways
+sometimes, belts touch and should average between eachother. not allways
+
+how to specify ?
+
+Normal Groups ?
+each face has a Normal Group Index
+or -1 for none
+average Vertex Normals within a Group
