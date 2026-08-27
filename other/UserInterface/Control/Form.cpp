@@ -33,10 +33,10 @@ UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 m
 	BoxF2 MinY_Box(VectorF2(BoxDisplay.Min.X, BoxDisplay.Min.Y), VectorF2(BoxDisplay.Max.X, BoxBoarder.Min.Y));
 	BoxF2 MaxY_Box(VectorF2(BoxDisplay.Min.X, BoxBoarder.Max.Y), VectorF2(BoxDisplay.Max.X, BoxDisplay.Max.Y));
 
-	bool MinX_Hovering = MinX_Box.IntersectInclusive(mouse).All(true);
-	bool MinY_Hovering = MinY_Box.IntersectInclusive(mouse).All(true);
-	bool MaxX_Hovering = MaxX_Box.IntersectInclusive(mouse).All(true);
-	bool MaxY_Hovering = MaxY_Box.IntersectInclusive(mouse).All(true);
+	bool MinX_Hovering = MinX_Box.ContainsExclusive(mouse).All(true);
+	bool MinY_Hovering = MinY_Box.ContainsExclusive(mouse).All(true);
+	bool MaxX_Hovering = MaxX_Box.ContainsExclusive(mouse).All(true);
+	bool MaxY_Hovering = MaxY_Box.ContainsExclusive(mouse).All(true);
 
 	if (MinX_Hovering || MaxX_Hovering || MinY_Hovering || MaxY_Hovering)
 	{

@@ -488,7 +488,7 @@ UI::Control::Base * UI::Control::Base::FindHover(const VectorF2 & mouse)
 {
 	if (!_Visible) { return nullptr; }
 	if (!_Enabled) { return nullptr; }
-	if (!BoxDisplay.Intersekt(mouse)) { return nullptr; }
+	if (!BoxDisplay.ContainsExclusive(mouse).All(true)) { return nullptr; }
 
 	// check BoxContent before checking children ?
 	Base * control = nullptr;
