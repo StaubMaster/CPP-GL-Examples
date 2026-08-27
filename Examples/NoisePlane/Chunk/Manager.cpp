@@ -167,8 +167,8 @@ void ChunkManager::ChangeCenter(VectorI3 center)
 	InsertAround();
 }
 
-VectorI3 ChunkManager::absolute(VectorU3 u) const { return u + KnowBox.Min; }
-VectorU3 ChunkManager::relative(VectorI3 i) const { return i - KnowBox.Min; }
+VectorI3 ChunkManager::absolute(VectorU3 u) const { return (u.ToI() + KnowBox.Min); }
+VectorU3 ChunkManager::relative(VectorI3 i) const { return (i - KnowBox.Min).ToU(); }
 
 Chunk * ChunkManager::FindAbsOrNull(VectorI3 idx)
 {
@@ -503,25 +503,23 @@ void ChunkManager::ChangeMedia(const DirectoryInfo & dir)
 		dir.File("Shaders/Voxel/VoxelU.vert"),
 		dir.File("Shaders/Voxel/Voxel.frag"),
 	});
-	ShaderU.UniformLayout = &ShaderLayoutU;
-	ShaderLayoutU.Shader = &ShaderU;
+	ShaderU.AssignLayout(ShaderLayoutU);
 
 	ShaderF.Change({
 		dir.File("Shaders/Voxel/VoxelF.vert"),
 		dir.File("Shaders/Voxel/Voxel.frag"),
 	});
-	ShaderF.UniformLayout = &ShaderLayoutF;
-	ShaderLayoutF.Shader = &ShaderF;
+	ShaderF.AssignLayout(ShaderLayoutF);
 
 	BufferLayoutU.Voxel.Change(0);
 	BufferLayoutU.Texture.Change(1);
 	BufferLayoutU.Chunk.Change(2);
-	BufferU.Buffer.Layout = &BufferLayoutU;
+	BufferU.Buffer.AssignLayout(BufferLayoutU);
 
 	BufferLayoutF.Pos.Change(0);
 	BufferLayoutF.Tex.Change(1);
 	BufferLayoutF.Normal.Change(2);
-	BufferF.Buffer.Layout = &BufferLayoutF;
+	BufferF.Buffer.AssignLayout(BufferLayoutF);
 }
 
 void ChunkManager::GraphicsCreate()

@@ -303,7 +303,7 @@ void ChunkGraphicsData::Make(const Chunk & chunk, const Array3D<bool> & voxel_is
 		#endif
 
 		VectorU3 udx = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
-		VectorF3 offset = VectorI3(udx) + (chunk.Index * 32);
+		VectorF3 offset = (udx.ToI() + (chunk.Index * 32)).ToF();
 
 		#ifdef MEASURE_TIME
 		TimeVoxelRetrieveData.TakeOver(TimeVisibleTotal);

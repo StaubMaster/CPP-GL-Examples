@@ -28,19 +28,21 @@ ItemSlotUI::ItemSlotUI()
 
 
 
-void ItemSlotUI::RelayUpdateBox()
+void ItemSlotUI::BoxUpdate()
 {
+	Base::BoxUpdate();
 	if (ItemObject.Is())
 	{
-		ItemObject.Data().Pos = DisplayBox.Center();
+		ItemObject.Data().Pos = BoxDisplay.Center();
 	}
 	if (TextObject.Is())
 	{
-		TextObject.TextPosition() = DisplayBox.Center();
+		TextObject.TextPosition() = BoxDisplay.Center();
 	}
 }
-void ItemSlotUI::RelayInsertObject()
+void ItemSlotUI::ObjectInsert()
 {
+	Base::ObjectInsert();
 	if (Item != nullptr)
 	{
 		{
@@ -51,14 +53,14 @@ void ItemSlotUI::RelayInsertObject()
 				if (ItemObject.Is())
 				{
 					ItemObject.Data().Size = VectorF2(32, 32);
-					ItemObject.Data().Pos = DisplayBox.Center();
+					ItemObject.Data().Pos = BoxDisplay.Center();
 					ItemObject.Data().Rot = EulerAngle3D::Degrees(0, 30, 45).reverse();
 				}
 				TextObject.Create();
 				if (TextObject.Is())
 				{
 					TextObject.Text() = "";
-					TextObject.TextPosition() = DisplayBox.Center();
+					TextObject.TextPosition() = BoxDisplay.Center();
 				}
 			}
 		}
@@ -74,7 +76,7 @@ void ItemSlotUI::RelayInsertObject()
 					// but anything outside of the box is still culled
 					// just give everything a seperate scale factor ?
 					// also depth in general is wrong
-					ItemObject.Data().Pos = DisplayBox.Center();
+					ItemObject.Data().Pos = BoxDisplay.Center();
 					ItemObject.Data().Rot = EulerAngle3D::Degrees(0, 30, 45).reverse();
 					ItemObject.Data().Scale = 0.25f;
 				}
@@ -82,14 +84,15 @@ void ItemSlotUI::RelayInsertObject()
 				if (TextObject.Is())
 				{
 					TextObject.Text() = "";
-					TextObject.TextPosition() = DisplayBox.Center();
+					TextObject.TextPosition() = BoxDisplay.Center();
 				}
 			}
 		}
 	}
 }
-void ItemSlotUI::RelayRemoveObject()
+void ItemSlotUI::ObjectRemove()
 {
+	Base::ObjectRemove();
 	ItemObject.Delete();
 	TextObject.Delete();
 }
@@ -102,11 +105,11 @@ void ItemSlotUI::RelayClick(ClickArgs args)
 	{
 		if (Item != nullptr)
 		{
-			RelayRemoveObject();
+			ObjectRemove();
 			ItemBase * temp = *Item;
 			*Item = StaticItem;
 			StaticItem = temp;
-			RelayInsertObject();
+			ObjectInsert();
 		}
 	}
 }

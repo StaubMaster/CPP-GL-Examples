@@ -338,8 +338,8 @@ void AuxThread2::TerrainGrid(ChunkData & data)
 {
 	for (VectorU3 u = Loop3.Min(); Loop3.Check(u).All(true); Loop3.Next(u))
 	{
-		VectorI3 voxel_idx = data.Offset + u;
-		VectorF3 voxel_pos = voxel_idx;
+		VectorI3 voxel_idx = data.Offset + u.ToI();
+		VectorF3 voxel_pos = voxel_idx.ToF();
 
 		VectorF3 grid_pos = voxel_pos.round(256);
 		VectorF3 grid_rel = voxel_pos - grid_pos + VectorF3(0.5f);

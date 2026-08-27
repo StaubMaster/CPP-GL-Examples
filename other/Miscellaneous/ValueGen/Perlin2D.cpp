@@ -57,14 +57,14 @@ static float interpolate(float val0, float val1, float t)
 float Perlin2D::Calculate(VectorF2 pos) const
 {
 	VectorF2 posF = pos.roundF();
-	VectorI2 posI = posF;
+	VectorI2 posI = posF.ToI();
 
-	VectorF2 rel = pos - posI;
+	VectorF2 rel = pos - posI.ToF();
 	VectorF2 rel0 = rel;
 	VectorF2 rel1 = rel - VectorF2(1.0f);
 
 	VectorU2 count = Nodes.Size();
-	VectorU2 i0 = ((posI % count) + count) % count;
+	VectorU2 i0 = (((posI % count.ToI()) + count.ToI()) % count.ToI()).ToU();
 	VectorU2 i1 = (i0 + 1u) % count;
 
 	i0.Y = i0.Y * count.X;

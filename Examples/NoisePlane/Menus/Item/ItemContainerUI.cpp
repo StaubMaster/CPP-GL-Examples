@@ -53,11 +53,13 @@ void ItemContainerUI::HideItems()
 	}
 }
 
-void ItemContainerUI::RelayInsertObject()
+void ItemContainerUI::ObjectInsert()
 {
+	Base::ObjectInsert();
 	ShowItems();
 }
-void ItemContainerUI::RelayRemoveObject()
+void ItemContainerUI::ObjectRemove()
 {
+	Base::ObjectRemove();
 	HideItems();
 }

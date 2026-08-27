@@ -67,14 +67,14 @@ static float interpolate(float val0, float val1, float t)
 float Perlin3D::Calculate(VectorF3 pos) const
 {
 	VectorF3 posF = pos.roundF();
-	VectorI3 posI = posF;
+	VectorI3 posI = posF.ToI();
 
-	VectorF3 rel = pos - posI;
+	VectorF3 rel = pos - posI.ToF();
 	VectorF3 rel0 = rel;
 	VectorF3 rel1 = rel - VectorF3(1.0f);
 
 	VectorU3 count = Nodes.Size();
-	VectorU3 i0 = ((posI % count) + count) % count;
+	VectorU3 i0 = (((posI % count.ToI()) + count.ToI()) % count.ToI()).ToU();
 	VectorU3 i1 = (i0 + VectorU3(1)) % count; // do this with if checks ?
 
 	i0.Y = i0.Y * count.X; i0.Z = i0.Z * count.X * count.Y;
