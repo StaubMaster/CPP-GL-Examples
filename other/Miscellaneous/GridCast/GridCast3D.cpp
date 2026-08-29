@@ -18,11 +18,11 @@ GridCast3D::Data::Data(RayF3 ray3D, float limit, float scale)
 	, dir(ray3D.Dir / scale)
 	, sum(0.0f)
 {
-	grid_idx = pos.roundF();
+	grid_idx = pos.roundF().ToI();
 
 	side_len = (dir.length() / dir).abs();
 
-	side_sum = ((VectorF3)grid_idx) - pos;
+	side_sum = grid_idx.ToF() - pos;
 
 	if (dir.X > 0)	{ grid_dir.X = +1; side_sum.X = 1 + side_sum.X; cardinal_side_X = AxisRel::PrevX; }
 	else			{ grid_dir.X = -1; side_sum.X = 0 - side_sum.X; cardinal_side_X = AxisRel::NextX; }
@@ -76,6 +76,6 @@ GridCast3D::Hit::Hit(Data data)
 	dist = data.sum;
 	idx = data.grid_idx;
 	pos = data.pos + (data.dir * dist);
-	rel = pos - idx;
+	rel = pos - idx.ToF();
 	cardinal = data.cardinal_dir;
 }

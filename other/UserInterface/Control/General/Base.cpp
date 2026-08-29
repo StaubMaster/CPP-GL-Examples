@@ -33,7 +33,7 @@ void UI::Control::Base::ChildInsert(Base & control)
 	Children.Insert(&control);
 	control.Parent = this;
 	control.ChangeManagerRecursive(Manager);
-	control.ObjectChangeRequest();
+	control.DisplayChangeRequest();
 	control.BoxUpdateRequest();
 	control.ColorUpdateRequest();
 }
@@ -102,9 +102,14 @@ unsigned int UI::Control::Base::LayerLimit() const
 	return 0;
 }
 
+// store (Layer) in (Base)
+// store (LayerLimit) in (Form)
+// store (*Form) in (Base)
+// store (DepthOffset) in (Form)
+// store (DepthSize) in (Manager)
 void UI::Control::Base::AssignDepth(float offset, float size, unsigned int layer)
 {
-	Depth = 1.0f - ((layer * size) + offset);
+	Depth = -((layer * size) + offset);
 	RelayAssignDepth();
 
 	layer++;
@@ -126,12 +131,12 @@ bool UI::Control::Base::IsEnabled() const
 void UI::Control::Base::MakeEnabled()
 {
 	_Enabled = true;
-	ColorUpdateRequest();
+	ColorUpdateRequestRecursive();
 }
 void UI::Control::Base::MakeDisabled()
 {
 	_Enabled = false;
-	ColorUpdateRequest();
+	ColorUpdateRequestRecursive();
 }
 
 bool UI::Control::Base::IsThisVisible() const
@@ -141,12 +146,12 @@ bool UI::Control::Base::IsThisVisible() const
 void UI::Control::Base::Show()
 {
 	_Visible = true;
-	ObjectChangeRequest();
+	DisplayChangeRequest();
 }
 void UI::Control::Base::Hide()
 {
 	_Visible = false;
-	ObjectChangeRequest();
+	DisplayChangeRequest();
 }
 
 bool UI::Control::Base::IsTransparent() const
@@ -160,12 +165,12 @@ bool UI::Control::Base::IsOpaque() const
 void UI::Control::Base::MakeTransparent()
 {
 	_Opaque = false;
-	ObjectChangeRequest();
+	DisplayChangeRequest();
 }
 void UI::Control::Base::MakeOpaque()
 {
 	_Opaque = true;
-	ObjectChangeRequest();
+	DisplayChangeRequest();
 }
 
 bool UI::Control::Base::IsVisible() const
@@ -206,19 +211,12 @@ void UI::Control::Base::BoxUpdate()
 	BoxContent.Min = BoxBoarder.Min + AnchorPadding.Min;
 	BoxContent.Max = BoxBoarder.Max - AnchorPadding.Max;
 
-	ObjectAssignBoxRequest();
-}
-
-void UI::Control::Base::BoxUpdateRequest()
-{
-	BoxUpdateIsRequested = true;
-
-	// do this in BoxUpdate ?
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> BoxUpdateRequest();
 	}
 }
+
 void UI::Control::Base::BoxUpdateResolve()
 {
 	if (BoxUpdateIsRequested)
@@ -227,7 +225,11 @@ void UI::Control::Base::BoxUpdateResolve()
 		BoxUpdateIsRequested = false;
 	}
 }
-//void UI::Control::Base::BoxUpdateRequestRecursive()
+
+void UI::Control::Base::BoxUpdateRequest()
+{
+	BoxUpdateIsRequested = true;
+}
 
 
 
@@ -299,13 +301,8 @@ void UI::Control::Base::ColorUpdate()
 			Color = ColorHover;
 		}
 	}
-	ObjectAssignColorRequest();
 }
 
-void UI::Control::Base::ColorUpdateRequest()
-{
-	ColorUpdateIsRequested = true;
-}
 void UI::Control::Base::ColorUpdateResolve()
 {
 	if (ColorUpdateIsRequested)
@@ -315,138 +312,110 @@ void UI::Control::Base::ColorUpdateResolve()
 	}
 }
 
+void UI::Control::Base::ColorUpdateRequest()
+{
+	ColorUpdateIsRequested = true;
+}
+void UI::Control::Base::ColorUpdateRequestRecursive()
+{
+	ColorUpdateRequest();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> ColorUpdateRequestRecursive();
+	}
+}
+
+
+
+void UI::Control::Base::DisplayPut() const
+{
+	if (Manager != nullptr)
+	{
+		//Manager -> ControlManager.InstancePut(ObjectData);
+		if (Display)
+		{
+			Inst::BufferData data;
+			data.Layer = Depth;
+			data.Box = BoxDisplay;
+			data.Color = Color;
+			if (Parent != nullptr)
+			{
+				data.Bound = Parent -> BoxBoarder;
+			}
+			else
+			{
+				data.Bound = BoxF2();
+			}
+			Manager -> ControlManager.InstancePut(data);
+		}
+	}
+}
+
+void UI::Control::Base::DisplayPutRecursive() const
+{
+	DisplayPut();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> DisplayPutRecursive();
+	}
+}
+
+void UI::Control::Base::DisplayShow()
+{
+	Display = true;
+
+	BoxUpdateIsRequested = true;
+	ColorUpdateRequest();
+}
+void UI::Control::Base::DisplayHide()
+{
+	Display = false;
+}
+
+void UI::Control::Base::DisplayChangeRequest()
+{
+	DisplayChangeIsRequested = true;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> DisplayChangeRequest();
+	}
+}
+void UI::Control::Base::DisplayChangeResolve()
+{
+	if (DisplayChangeIsRequested)
+	{
+		if (IsDrawable())
+		{
+			DisplayShow();
+		}
+		else
+		{
+			DisplayHide();
+		}
+		DisplayChangeIsRequested = false;
+	}
+}
+
+void UI::Control::Base::DisplayChange()
+{
+	DisplayChangeResolve();
+}
+
 
 
 void UI::Control::Base::Update()
 {
-	if (IsVisible())
-	{
-		BoxUpdateResolve();
-	}
+	BoxUpdateResolve();
 	ColorUpdateResolve();
+	DisplayChange();
 }
 
-void UI::Control::Base::RecursiveUpdate()
+void UI::Control::Base::UpdateRecursive()
 {
 	Update();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> RecursiveUpdate();
-	}
-}
-
-
-
-void UI::Control::Base::ObjectInsert()
-{
-	if (!Object.Is() && Manager != nullptr)
-	{
-		Object.Create();
-		Object.Depth() = Depth;
-
-		BoxUpdateIsRequested = true;
-		ColorUpdateRequest();
-	}
-}
-void UI::Control::Base::ObjectRemove()
-{
-	if (Object.Is() || Manager == nullptr)
-	{
-		if (Object.Is())
-		{
-			Object.Hide();
-		}
-		Object.Delete();
-	}
-}
-
-void UI::Control::Base::ObjectChangeRequest()
-{
-	ObjectChangeIsRequested = true;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> ObjectChangeRequest();
-	}
-}
-void UI::Control::Base::ObjectChangeResolve()
-{
-	if (ObjectChangeIsRequested)
-	{
-		if (IsDrawable())
-		{
-			ObjectInsert();
-		}
-		else
-		{
-			ObjectRemove();
-		}
-		ObjectChangeIsRequested = false;
-	}
-}
-//void UI::Control::Base::ObjectChangeRequestRecursive()
-
-
-
-void UI::Control::Base::ObjectAssignBox()
-{
-	Object.Box() = BoxDisplay;
-	if (Parent != nullptr)
-	{
-		Object.Bound() = Parent -> BoxBoarder;
-	}
-	else
-	{
-		Object.Bound() = BoxF2();
-	}
-}
-void UI::Control::Base::ObjectAssignBoxRequest()
-{
-	ObjectAssignBoxIsRequested = true;
-}
-void UI::Control::Base::ObjectAssignBoxResolve()
-{
-	if (ObjectAssignBoxIsRequested)
-	{
-		ObjectAssignBox();
-		ObjectAssignBoxIsRequested = false;
-	}
-}
-
-void UI::Control::Base::ObjectAssignColor()
-{
-	Object.Color() = Color;
-}
-void UI::Control::Base::ObjectAssignColorRequest()
-{
-	ObjectAssignColorIsRequested = true;
-}
-void UI::Control::Base::ObjectAssignColorResolve()
-{
-	if (ObjectAssignColorIsRequested)
-	{
-		ObjectAssignColor();
-		ObjectAssignColorIsRequested = false;
-	}
-}
-
-
-
-void UI::Control::Base::ObjectAssign()
-{
-	ObjectChangeResolve();
-	if (Object.Is())
-	{
-		ObjectAssignBoxResolve();
-		ObjectAssignColorResolve();
-	}
-}
-
-void UI::Control::Base::RecursiveObjectAssign()
-{
-	ObjectAssign();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> RecursiveObjectAssign();
+		Children[i] -> UpdateRecursive();
 	}
 }
 

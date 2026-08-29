@@ -123,25 +123,25 @@ void UI::Control::Form::RelayHover(HoverArgs args)
 {
 	/*if (args == HoverArgs::Enter)
 	{
-		Manager -> CursorsUseResizeH();
+		Manager -> Cursor.UseResizeH();
 	}*/
 	if (args.Type == HoverType::Leave)
 	{
-		Manager -> CursorsUseDefault();
+		Manager -> Cursor.UseDefault();
 	}
 	if (args.Type == HoverType::Move)
 	{
-		EBoxChangeType type = FindChangingArea(Manager -> CursorPosition);
-		if (type == EBoxChangeType::Move) { Manager -> CursorsUseDefault(); }
-		else if (type == EBoxChangeType::ResizeMinX) { Manager -> CursorsUseBoxEdge(0); }
-		else if (type == EBoxChangeType::ResizeMinY) { Manager -> CursorsUseBoxEdge(1); }
-		else if (type == EBoxChangeType::ResizeMaxX) { Manager -> CursorsUseBoxEdge(2); }
-		else if (type == EBoxChangeType::ResizeMaxY) { Manager -> CursorsUseBoxEdge(3); }
-		else if (type == EBoxChangeType::ResizeMinMin) { Manager -> CursorsUseBoxCorn(0); }
-		else if (type == EBoxChangeType::ResizeMaxMin) { Manager -> CursorsUseBoxCorn(1); }
-		else if (type == EBoxChangeType::ResizeMinMax) { Manager -> CursorsUseBoxCorn(2); }
-		else if (type == EBoxChangeType::ResizeMaxMax) { Manager -> CursorsUseBoxCorn(3); }
-		else { Manager -> CursorsUseDefault(); }
+		EBoxChangeType type = FindChangingArea(Manager -> Cursor.Position);
+		if (type == EBoxChangeType::Move) { Manager -> Cursor.UseDefault(); }
+		else if (type == EBoxChangeType::ResizeMinX) { Manager -> Cursor.UseBoxEdge(0); }
+		else if (type == EBoxChangeType::ResizeMinY) { Manager -> Cursor.UseBoxEdge(1); }
+		else if (type == EBoxChangeType::ResizeMaxX) { Manager -> Cursor.UseBoxEdge(2); }
+		else if (type == EBoxChangeType::ResizeMaxY) { Manager -> Cursor.UseBoxEdge(3); }
+		else if (type == EBoxChangeType::ResizeMinMin) { Manager -> Cursor.UseBoxCorn(0); }
+		else if (type == EBoxChangeType::ResizeMaxMin) { Manager -> Cursor.UseBoxCorn(1); }
+		else if (type == EBoxChangeType::ResizeMinMax) { Manager -> Cursor.UseBoxCorn(2); }
+		else if (type == EBoxChangeType::ResizeMaxMax) { Manager -> Cursor.UseBoxCorn(3); }
+		else { Manager -> Cursor.UseDefault(); }
 	}
 }
 void UI::Control::Form::RelayDrag(DragArgs args)
