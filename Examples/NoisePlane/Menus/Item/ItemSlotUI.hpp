@@ -28,9 +28,9 @@ struct ItemSlotUI : public UI::Control::Base
 	// so it is seperate
 
 	protected:
-	void	RelayUpdateBox() override;
-	void	RelayInsertObject() override;
-	void	RelayRemoveObject() override;
+	void	BoxUpdate() override;
+	void	ObjectInsert() override;
+	void	ObjectRemove() override;
 
 	void	RelayClick(ClickArgs args) override;
 };

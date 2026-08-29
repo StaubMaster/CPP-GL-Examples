@@ -83,9 +83,9 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataF::
 		const VoxelGraphicsDataF::Face & face = data.Data[i];
 
 		unsigned int ph_i = polyhedra.Corners.Count();
-		polyhedra.Insert_Corn(PolyHedra::Corner(face.Vertexes[0].Pos - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(face.Vertexes[1].Pos - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(face.Vertexes[2].Pos - off));
+		polyhedra.Insert_Corn(face.Vertexes[0].Pos - off);
+		polyhedra.Insert_Corn(face.Vertexes[1].Pos - off);
+		polyhedra.Insert_Corn(face.Vertexes[2].Pos - off);
 		polyhedra.Insert_Face3(ph_i + 0, ph_i + 1, ph_i + 2);
 
 		unsigned int sk_i = skin.Corners.Count();
@@ -111,10 +111,10 @@ static void PolyHedraVoxelData(PolyHedra & polyhedra, const VoxelGeometryDataU::
 	VectorF3 off(0.5f);
 	{
 		unsigned int ph_i = polyhedra.Corners.Count();
-		polyhedra.Insert_Corn(PolyHedra::Corner(VectorF3(data.Vertexes[0].Pos) - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(VectorF3(data.Vertexes[1].Pos) - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(VectorF3(data.Vertexes[2].Pos) - off));
-		polyhedra.Insert_Corn(PolyHedra::Corner(VectorF3(data.Vertexes[3].Pos) - off));
+		polyhedra.Insert_Corn(data.Vertexes[0].Pos.ToF() - off);
+		polyhedra.Insert_Corn(data.Vertexes[1].Pos.ToF() - off);
+		polyhedra.Insert_Corn(data.Vertexes[2].Pos.ToF() - off);
+		polyhedra.Insert_Corn(data.Vertexes[3].Pos.ToF() - off);
 		polyhedra.Insert_Face3(ph_i + 0, ph_i + 1, ph_i + 2);
 		polyhedra.Insert_Face3(ph_i + 2, ph_i + 1, ph_i + 3);
 

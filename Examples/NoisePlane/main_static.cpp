@@ -68,7 +68,7 @@ static void DisplayBoxEntityVoxels(NewPolyHedra::Pallet * pallet, ::ChunkManager
 	box.Consider(box_entity.Box.Max + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
 	box = box - VectorF3(0.5f);
 
-	LoopI3 loop(box.Min.round(), Bool3(false), box.Max.round(), Bool3(false));
+	LoopI3 loop(box.Min.round().ToI(), Bool3(false), box.Max.round().ToI(), Bool3(false));
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		ChunkVoxelIndex idx(i);
@@ -80,7 +80,7 @@ static void DisplayBoxEntityVoxels(NewPolyHedra::Pallet * pallet, ::ChunkManager
 			//PolyHedraObject voxel_obj(pallet);
 			NewPolyHedra::Basic3D::Object voxel_obj(pallet);
 			//voxel_obj.Trans().Position = i;
-			voxel_obj.Data().Trans.Position = i;
+			voxel_obj.Data().Trans.Position = i.ToF();
 			voxel_obj.ShowWire();
 		}
 	}

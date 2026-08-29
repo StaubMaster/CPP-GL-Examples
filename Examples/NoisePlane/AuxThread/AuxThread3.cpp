@@ -109,7 +109,7 @@ AccessLockedChunk AuxThread3::Find()
 		if (!ref.Neighbours.CanAssamble()) { ptr -> AccessU(); continue; }
 
 		candidate_count++;
-		VectorF3 rel = ref.Index - Manager.Center;
+		VectorF3 rel = (ref.Index - Manager.Center).ToF();
 		float d = rel.length2();
 		//if (!found.Is() || d < dist)
 		if (found == nullptr || d < dist)
@@ -169,7 +169,7 @@ void AuxThread3::AssambleDecoration(Chunk & chunk, const StructureObject & obj, 
 	LoopU3 loop(VectorU3(), structure.Voxels.Size());
 	for (VectorU3 u = loop.Min(); loop.Check(u).All(true); loop.Next(u))
 	{
-		VectorU3 p = obj.Origin - structure.Center + u + offset;
+		VectorU3 p = ((obj.Origin - structure.Center + u).ToI() + offset).ToU();
 		if ((p < chunk.Voxels.Size()).All(true))
 		{
 			if (!structure.Voxels[u].IsEmpty())

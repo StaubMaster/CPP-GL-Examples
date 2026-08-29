@@ -19,10 +19,10 @@ ChunkVoxelIndex & ChunkVoxelIndex::operator=(const VectorI3 & position)
 void ChunkVoxelIndex::FromPosition(VectorI3 position)
 {
 //	ChunkPointer = nullptr;
-	Chunk = (VectorF3(position) / (float)CHUNK_VALUES_PER_SIDE).roundF(); // make intager division round down;
-	Voxel = position - (Chunk * CHUNK_VALUES_PER_SIDE);
+	Chunk = ((position.ToF() / (float)CHUNK_VALUES_PER_SIDE).roundF()).ToI(); // make intager division round down;
+	Voxel = (position - (Chunk * CHUNK_VALUES_PER_SIDE)).ToU();
 }
 VectorI3 ChunkVoxelIndex::ToPosition() const
 {
-	return Voxel + (Chunk * CHUNK_VALUES_PER_SIDE);
+	return Voxel.ToI() + (Chunk * CHUNK_VALUES_PER_SIDE);
 }

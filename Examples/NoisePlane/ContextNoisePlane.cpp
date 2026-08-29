@@ -1,6 +1,9 @@
 #include "ContextNoisePlane.hpp"
 #include "new.hpp"
 
+// PolyHedra
+#include "PolyHedra/Parser.hpp"
+
 // Graphics
 #include "Graphics/Shader/Code.hpp"
 #include "Generics/Container/Array.hpp"
@@ -115,8 +118,7 @@ ContextNoisePlane::ContextNoisePlane()
 					MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
 				});
 				ShaderLayoutView3D * layout = new ShaderLayoutView3D();
-				ObjectManagerBasic.ShaderFull.UniformLayout = layout;
-				layout -> Shader = &ObjectManagerBasic.ShaderFull;
+				ObjectManagerBasic.ShaderFull.AssignLayout(layout);
 			}
 			{
 				ObjectManagerBasic.ShaderWire.Change({
@@ -124,8 +126,7 @@ ContextNoisePlane::ContextNoisePlane()
 					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
 				});
 				ShaderLayoutView3D * layout = new ShaderLayoutView3D();
-				ObjectManagerBasic.ShaderWire.UniformLayout = layout;
-				layout -> Shader = &ObjectManagerBasic.ShaderWire;
+				ObjectManagerBasic.ShaderWire.AssignLayout(layout);
 			}
 			{
 				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
@@ -149,13 +150,11 @@ ContextNoisePlane::ContextNoisePlane()
 					MediaDirectory.File("Shaders/UI/PHFull.frag"),
 				});
 				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
-				ObjectManagerUI.ShaderFull.UniformLayout = layout;
-				layout -> Shader = &ObjectManagerUI.ShaderFull;
+				ObjectManagerUI.ShaderFull.AssignLayout(layout);
 			}
 			{
 				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
-				ObjectManagerUI.ShaderWire.UniformLayout = layout;
-				layout -> Shader = &ObjectManagerUI.ShaderWire;
+				ObjectManagerUI.ShaderWire.AssignLayout(layout);
 			}
 			{
 				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
@@ -175,10 +174,10 @@ ContextNoisePlane::ContextNoisePlane()
 
 	AuxThreadBase::ThreadName = "DrawThread";
 	Container::Array<Uniform::Layout *> layouts({
-		ObjectManagerBasic.ShaderFull.UniformLayout,
-		ObjectManagerBasic.ShaderWire.UniformLayout,
-		ObjectManagerUI.ShaderFull.UniformLayout,
-		ObjectManagerUI.ShaderWire.UniformLayout,
+		ObjectManagerBasic.ShaderFull.Layout,
+		ObjectManagerBasic.ShaderWire.Layout,
+		ObjectManagerUI.ShaderFull.Layout,
+		ObjectManagerUI.ShaderWire.Layout,
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 //		&PlaneManager.Shader,
@@ -459,7 +458,7 @@ void ContextNoisePlane::ViewUpdate_Colliding(FrameTime frame_time)
 		collision_range.Consider(ViewEntity.Box.Max + ViewEntity.Pos + (ViewEntity.Vel * frame_time.Delta));
 		collision_range = collision_range - VectorF3(0.5f);
 
-		LoopI3 loop(collision_range.Min.round(), Bool3(false), collision_range.Max.round(), Bool3(false));
+		LoopI3 loop(collision_range.Min.round().ToI(), Bool3(false), collision_range.Max.round().ToI(), Bool3(false));
 		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 		{
 			ChunkVoxelIndex idx(i);
@@ -470,8 +469,8 @@ void ContextNoisePlane::ViewUpdate_Colliding(FrameTime frame_time)
 			{
 				boxes.Insert(
 					BoxF3(
-						i + VectorI3(0, 0, 0),
-						i + VectorI3(1, 1, 1)
+						(i + VectorI3(0, 0, 0)).ToF(),
+						(i + VectorI3(1, 1, 1)).ToF()
 					)
 				);
 			}
@@ -510,7 +509,7 @@ void ContextNoisePlane::ViewRay_Hit()
 			NewPolyHedra::Basic3D::Object voxel_box_obj(VoxelCube);
 			//voxel_box_obj.Trans().Position = idx;
 			//voxel_box_obj.Trans().Position = ViewHit.Index;
-			voxel_box_obj.Data().Trans.Position = ViewHit.Index;
+			voxel_box_obj.Data().Trans.Position = ViewHit.Index.ToF();
 			voxel_box_obj.ShowWire();
 		}
 		{
@@ -681,7 +680,7 @@ void ContextNoisePlane::AuxThread0Func()
 		if (!AuxThread0Idle)
 		{
 			sw.Clear(); sw.Start();
-			ChunkManager.ChangeCenter((View.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF());
+			ChunkManager.ChangeCenter((View.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF().ToI());
 			//ChunkManager.RemoveAround();
 			//ChunkManager.InsertAround();
 			ChunkManager.UpdateChunksContainer();
@@ -803,10 +802,10 @@ void ContextNoisePlane::MakeControls()
 		{
 			Inventory.Items[idx] = new ItemVoxel(VoxelPalletMap::StaticMap.Data[i]); idx++;
 		}
-		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Stick.polyhedra")),  VoxelMaterialType::None,  1.0f); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Spade.polyhedra")),  VoxelMaterialType::Dirt,  4.0f); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Pick.polyhedra")),   VoxelMaterialType::Stone, 4.0f); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedra::Load(MediaDirectory.File("YMT/Tools/Hammer.polyhedra")), VoxelMaterialType::None,  4.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Stick.polyhedra") , nullptr, nullptr),  VoxelMaterialType::None,  1.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Spade.polyhedra") , nullptr, nullptr),  VoxelMaterialType::Dirt,  4.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Pick.polyhedra")  , nullptr, nullptr),   VoxelMaterialType::Stone, 4.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Hammer.polyhedra"), nullptr, nullptr), VoxelMaterialType::None,  4.0f); idx++;
 		Inventory.Items[idx] = new ItemTool(PolyHedraGenerate::SphereY(6, 12, 4.0f), VoxelMaterialType::None, 1.0f); idx++;
 		InventoryUI.IsResizable = false;
 		InventoryUI.IsMovable = false;
@@ -974,7 +973,7 @@ void ContextNoisePlane::Draw()
 	PolyHedraManager.InstancesClear();
 	PolyHedraManager.InstancesMake();
 
-	UIManager.WindowControl.Update();
+	UIManager.WindowControl.RecursiveUpdate();
 	UIManager.Resize(window.Size);
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 	UIManager.ControlManager.MakeInstances();
@@ -1414,7 +1413,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	if (MenuDebug.ChunkHere.Check.IsChecked())
 	{
 		//VoxelIndex idx = ChunkManager.FindVoxelIndex(View.Trans.Position);
-		ChunkVoxelIndex idx(View.Trans.Position.roundF());
+		ChunkVoxelIndex idx(View.Trans.Position.roundF().ToI());
 		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
 		//ChunkManager.ChunksInUse.lock();
 		AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
@@ -1813,7 +1812,7 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 			Chunk * chunk = ChunkManager.Chunks[i];
 			if (chunk == nullptr) { continue; }
 			NewPolyHedra::Basic3D::Object chunk_box(pallet);
-			chunk_box.Data().Trans.Position = chunk -> Index * CHUNK_VALUES_PER_SIDE;
+			chunk_box.Data().Trans.Position = (chunk -> Index * CHUNK_VALUES_PER_SIDE).ToF();
 			chunk_box.ShowWire();
 		}
 	}
@@ -1823,9 +1822,9 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (MenuDebug.ChunkHere.Check.IsChecked())
 	{
-		ChunkVoxelIndex idx(View.Trans.Position.roundF());
+		ChunkVoxelIndex idx(View.Trans.Position.roundF().ToI());
 		NewPolyHedra::Basic3D::Object chunk_box(VoxelChunkCube);
-		chunk_box.Data().Trans.Position = idx.Chunk * CHUNK_VALUES_PER_SIDE;
+		chunk_box.Data().Trans.Position = (idx.Chunk * CHUNK_VALUES_PER_SIDE).ToF();
 		chunk_box.ShowWire();
 	}
 	sw.Stop(); FrameTime_ChunkHereBox.NewValue(sw.ElapsedTime());

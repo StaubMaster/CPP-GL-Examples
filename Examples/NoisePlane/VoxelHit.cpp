@@ -45,7 +45,7 @@ GridCast3D::Hit VoxelHit::Hit(const Chunk & chunk, RayF3 ray3D, float limit)
 		if (box.IntersectVecInclusive(idx).All(false)) { return GridCast3D::Hit(); }
 		if (box.IntersectVecExclusive(idx).All(true))
 		{
-			if (!chunk.Voxels[idx].IsEmpty())
+			if (!chunk.Voxels[idx.ToU()].IsEmpty())
 			{
 				return GridCast3D::Hit(data);
 			}
