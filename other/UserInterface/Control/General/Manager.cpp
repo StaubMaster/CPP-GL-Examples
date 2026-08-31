@@ -128,32 +128,22 @@ void UI::Control::Manager::GraphicsMain()
 }
 void UI::Control::Manager::GraphicsInst()
 {
-	MakeInstances();
 	Buffer.InstBuffer.DataFull(Instances.ToVoid());
 	Buffer.InstBuffer.Count = Instances.Count();
 }
 
-void UI::Control::Manager::PlaceInstance(const ObjectData & obj)
-{
-	Inst::BufferData data;
-	data.Layer = obj.Depth;
-	data.Box = obj.Box;
-	data.Color = obj.Color;
-	data.Bound = obj.Bound;
-	Instances.Insert(data);
-}
-void UI::Control::Manager::MakeInstances()
+void UI::Control::Manager::InstancesClear()
 {
 	Instances.Clear();
+}
+void UI::Control::Manager::InstancesMake()
+{
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
 		if (ObjectDatas[i] != nullptr)
 		{
 			ObjectData & obj = *ObjectDatas[i];
-			if (obj.Display)
-			{
-				PlaceInstance(obj);
-			}
+			InstancePut(obj);
 			if (obj.Remove)
 			{
 				ObjectDatas.RemoveAt(i);
@@ -162,6 +152,21 @@ void UI::Control::Manager::MakeInstances()
 			}
 		}
 	}
+}
+void UI::Control::Manager::InstancePut(const ObjectData & obj)
+{
+	if (!obj.Display) { return; }
+
+	Inst::BufferData data;
+	data.Layer = obj.Depth;
+	data.Box = obj.Box;
+	data.Color = obj.Color;
+	data.Bound = obj.Bound;
+	InstancePut(data);
+}
+void UI::Control::Manager::InstancePut(const Control::Inst::BufferData & data)
+{
+	Instances.Insert(data);
 }
 
 

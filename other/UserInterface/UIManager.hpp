@@ -8,6 +8,8 @@
 # include "Display/DisplaySize.hpp"
 # include "Control/Window.hpp"
 
+# include "CursorManager.hpp"
+
 namespace UI
 {
 
@@ -38,41 +40,13 @@ class Manager
 
 
 	public:
-	VectorF2		CursorPosition;
-
-	GLFWwindow *	glfw_window;
-
-	// make CursorManager ?
-	// put these in MouseManager ?
-	GLFWcursor *	glfw_cursorArrowC;
-	GLFWcursor *	glfw_cursorArrowH;
-	GLFWcursor *	glfw_cursorArrowV;
-	GLFWcursor *	glfw_cursorArrowD0;
-	GLFWcursor *	glfw_cursorArrowD1;
-	GLFWcursor *	glfw_cursorBoxEdge[4];
-	GLFWcursor *	glfw_cursorBoxCorn[4];
-
-	void	CursorsCreate(const DirectoryInfo & dir, GLFWwindow * glfw_window);
-	void	CursorsDelete();
-
-	void	CursorsUseDefault();
-	void	CursorsUseArrowC();
-	void	CursorsUseArrowH();
-	void	CursorsUseArrowV();
-	void	CursorsUseArrowD0();
-	void	CursorsUseArrowD1();
-	void	CursorsUseBoxEdge(unsigned char i);
-	void	CursorsUseBoxCorn(unsigned char i);
-
-
-
-	public:
 	~Manager();
 	Manager();
 	Manager(const Manager & other) = delete;
 	Manager & operator=(const Manager & other) = delete;
 
-
+	public:
+	CursorManager	Cursor;
 
 	public:
 	void	MouseMove(MoveArgs args);
@@ -85,19 +59,22 @@ class Manager
 	public:
 	void	UpdateMouse(DisplayPosition mouse_pos);
 	void	Resize(DisplaySize display_size);
+	void	Update();
 
 	public:
 	void	ChangeMedia(const DirectoryInfo & dir, GLFWwindow * glfw_window);
 
 	//private:
 	//bool	GraphicsExist;
+
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 	void	GraphicsInit();
 
 	public:
-	void	Draw();
+	void	GraphicsMake();
+	void	GraphicsDraw();
 };
 
 };

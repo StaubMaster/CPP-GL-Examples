@@ -33,7 +33,7 @@ uniform sDisplaySize DisplaySize;
 
 
 const float BoarderFactor = 0.05;
-const float BoarderSize = 10;
+const float BoarderSize = 2;
 
 
 

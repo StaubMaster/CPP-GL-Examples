@@ -15,6 +15,7 @@ UserInterfaceMenu0::UserInterfaceMenu0()
 	, Menu3Button()
 	, TestScrollButton()
 	, TestListButton()
+	, DirectoryNavigatorButton()
 {
 	//float x = 0.0f;
 	float y = 0.0f;
@@ -74,11 +75,17 @@ UserInterfaceMenu0::UserInterfaceMenu0()
 	TestListButton.SetText("TestList");
 	y = TestListButton.Anchor.Y.GetMinSize();
 
+	DirectoryNavigatorButton.Anchor.X.AnchorBoth(0, 0);
+	DirectoryNavigatorButton.Anchor.Y.AnchorMin(y);
+	DirectoryNavigatorButton.SetText("DirectoryNavigator");
+	y = DirectoryNavigatorButton.Anchor.Y.GetMinSize();
+
 	ChildInsert(Menu1Button);
 	ChildInsert(Menu2Button);
 	ChildInsert(Menu3Button);
 	ChildInsert(TestScrollButton);
 	ChildInsert(TestListButton);
+	ChildInsert(DirectoryNavigatorButton);
 }
 
 //#include "Selector/new.hpp"

@@ -50,3 +50,8 @@ void UI::Control::Window::UpdateDepth()
 	}
 	std::cout << '\n';
 }
+
+void UI::Control::Window::PutDisplay()
+{
+	DisplayPutRecursive();
+}

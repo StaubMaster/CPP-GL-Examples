@@ -9,6 +9,7 @@
 #include "User/KeyBoardArgs.hpp"
 
 #include "ValueType/_Include.hpp"
+// include individual
 
 #include "Generics/Container/Binary.hpp"
 
@@ -144,6 +145,9 @@ class Base
 	bool	IsEnabled() const;
 	void	MakeEnabled();
 	void	MakeDisabled();
+	/*
+		recursive change Color
+	*/
 
 	protected:
 	bool	_Visible = true;
@@ -151,6 +155,9 @@ class Base
 	bool	IsThisVisible() const;
 	void	Show();
 	void	Hide();
+	/*
+		recursive change Display
+	*/
 
 	protected:
 	bool	_Opaque = true;
@@ -159,6 +166,9 @@ class Base
 	bool	IsOpaque() const;
 	void	MakeTransparent();
 	void	MakeOpaque();
+	/*
+		change Display
+	*/
 
 	public:
 	bool	IsVisible() const;
@@ -187,15 +197,15 @@ class Base
 	BoxF2	BoxBoarder; // used for culling Children
 	BoxF2	BoxContent; // used for anchoring Children
 
-	public: //protected:
-	virtual void	BoxUpdate();
-
 	protected:
+	virtual void	BoxUpdate();
+	private:
+
 	bool	BoxUpdateIsRequested = false;
+	void	BoxUpdateResolve();
+
 	public:
 	void	BoxUpdateRequest();
-	private:
-	void	BoxUpdateResolve();
 
 
 
@@ -231,13 +241,34 @@ class Base
 
 	private:
 	bool	ColorUpdateIsRequested = false;
-	public:
-	void	ColorUpdateRequest();
-	private:
 	void	ColorUpdateResolve();
 
-//	protected:
-//	virtual ColorF4		ColorMake() const;
+	public:
+	void	ColorUpdateRequest();
+	void	ColorUpdateRequestRecursive();
+
+
+
+	protected:
+	bool	Display;
+
+	protected:
+	virtual void	DisplayPut() const;
+
+	protected:
+	void	DisplayPutRecursive() const;
+
+	protected:
+	virtual void	DisplayShow();
+	virtual void	DisplayHide();
+
+	private:
+	bool	DisplayChangeIsRequested = false;
+	void	DisplayChangeRequest();
+	void	DisplayChangeResolve();
+
+	protected:
+	virtual void	DisplayChange();
 
 
 
@@ -245,58 +276,7 @@ class Base
 	virtual void	Update();
 
 	public:
-	void	RecursiveUpdate();
-
-
-
-//	protected: public:
-//	Control::ObjectData		Data;
-//	protected: public:
-//	void	PlaceInstance() const;
-
-	protected:
-	Control::Object		Object;
-
-	protected:
-	virtual void	ObjectInsert();
-	virtual void	ObjectRemove();
-
-	private:
-	bool	ObjectChangeIsRequested = false;
-	void	ObjectChangeRequest();
-	void	ObjectChangeResolve();
-
-
-
-	private:
-	void	ObjectAssignBox();
-
-	private:
-	bool	ObjectAssignBoxIsRequested = false;
-	protected:
-	void	ObjectAssignBoxRequest();
-	private:
-	void	ObjectAssignBoxResolve();
-
-
-
-	private:
-	void	ObjectAssignColor();
-
-	private:
-	bool	ObjectAssignColorIsRequested = false;
-	public:
-	void	ObjectAssignColorRequest();
-	private:
-	void	ObjectAssignColorResolve();
-
-
-
-	protected:
-	virtual void	ObjectAssign();
-
-	public:
-	void	RecursiveObjectAssign();
+	void	UpdateRecursive();
 
 
 

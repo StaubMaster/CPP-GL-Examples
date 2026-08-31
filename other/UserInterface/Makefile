@@ -45,6 +45,7 @@ FILES := \
 	Graph/ObjectData.cpp \
 	Graph/Object.cpp \
 \
+	CursorManager.cpp \
 	UIManager.cpp
 
 DIR_SRC := .

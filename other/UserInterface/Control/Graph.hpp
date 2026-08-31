@@ -33,8 +33,8 @@ class Graph : public Base
 
 	public:
 	void	BoxUpdate() override;
-	void	ObjectInsert() override;
-	void	ObjectRemove() override;
+	void	DisplayShow() override;
+	void	DisplayHide() override;
 
 };
 

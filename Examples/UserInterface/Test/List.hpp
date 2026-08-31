@@ -1,10 +1,10 @@
 #ifndef  USER_INTERFACE_TEST_LIST_HPP
 # define USER_INTERFACE_TEST_LIST_HPP
 
-# include "ControlsInclude.hpp"
-# include "Control/List.hpp"
+# include "Control/_Include.hpp"
+# include "Control/ListBox.hpp"
 
-struct TestList : public UI::Control::Form
+/*struct TestList : public UI::Control::Form
 {
 	UI::Control::List	List;
 
@@ -12,6 +12,6 @@ struct TestList : public UI::Control::Form
 	TestList();
 
 	void	ItemFunc(void * obj);
-};
+};*/
 
 #endif

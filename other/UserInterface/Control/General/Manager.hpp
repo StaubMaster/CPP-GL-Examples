@@ -81,10 +81,12 @@ class Manager
 	void	GraphicsMain();
 	void	GraphicsInst();
 
-	private:
-	void	PlaceInstance(const ObjectData & obj);
 	public:
-	void	MakeInstances();
+	void	InstancesClear();
+	void	InstancesMake();
+	public:
+	void	InstancePut(const ObjectData & data);
+	void	InstancePut(const Control::Inst::BufferData & data);
 
 	public:
 	void	Draw();

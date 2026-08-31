@@ -80,7 +80,16 @@ void UI::Control::Slider::PutSliderNub()
 		SliderObject.Box().Min = slider_value - slider_size_half;
 		SliderObject.Box().Max = slider_value + slider_size_half;
 
-		SliderObject.Bound() = Object.Bound();
+		//SliderObject.Bound() = Object.Bound();
+		//SliderObject.Bound() = ObjectData.Bound;
+		if (Parent != nullptr)
+		{
+			SliderObject.Bound() = Parent -> BoxBoarder;
+		}
+		else
+		{
+			SliderObject.Bound() = BoxF2();
+		}
 	}
 }
 void UI::Control::Slider::ClampValue()
@@ -140,9 +149,9 @@ void UI::Control::Slider::BoxUpdate()
 	BaseText::BoxUpdate();
 	PutSliderNub();
 }
-void UI::Control::Slider::ObjectInsert()
+void UI::Control::Slider::DisplayShow()
 {
-	BaseText::ObjectInsert();
+	BaseText::DisplayShow();
 	if (!SliderObject.Is() && Manager != NULL)
 	{
 		SliderObject.Create();
@@ -151,9 +160,9 @@ void UI::Control::Slider::ObjectInsert()
 		PutSliderNub();
 	}
 }
-void UI::Control::Slider::ObjectRemove()
+void UI::Control::Slider::DisplayHide()
 {
-	BaseText::ObjectRemove();
+	BaseText::DisplayHide();
 	if (SliderObject.Is() || Manager == NULL)
 	{
 		SliderObject.Delete();

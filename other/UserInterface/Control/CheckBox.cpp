@@ -72,7 +72,6 @@ void UI::Control::CheckBox::ColorUpdate()
 			}
 		}
 	}
-	ObjectAssignColorRequest();
 }
 
 

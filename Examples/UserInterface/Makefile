@@ -15,6 +15,8 @@ FILES := \
 	Test/Scroll.cpp \
 	Test/List.cpp \
 \
+	Form/DirectoryNavigator.cpp \
+\
 	new.cpp \
 	main.cpp \
 

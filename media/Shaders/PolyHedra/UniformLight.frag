@@ -106,6 +106,10 @@ vec4 CalcLightFactor(LightDirection light)
 	vec3 L = -normalize(light.Direction);
 	vec3 V = -normalize(fs_inn.Relative);
 	vec3 R = +normalize(reflect(light.Direction, N));
+	if (dot(light.Direction, N) > 0.0)
+	{
+		R = vec3(0, 0, 0);
+	}
 
 	float factor_diffuse;
 	factor_diffuse = dot(L, N);
@@ -150,6 +154,10 @@ vec4 CalcLightFactor(LightSpot light)
 	vec3 L = +normalize(light.Position - fs_inn.Absolute);
 	vec3 V = -normalize(fs_inn.Relative);
 	vec3 R = +normalize(reflect(light.Direction, N));
+	if (dot(light.Direction, N) > 0.0)
+	{
+		R = vec3(0, 0, 0);
+	}
 
 	float factor_intensity;
 	factor_intensity = dot(L, -normalize(light.Direction));

@@ -79,7 +79,7 @@ NewPolyHedra::PalletManager		PalletManager;
 //NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
 //NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
 
-Uniform::Buffer *						ObjectManagerBasic_ShaderFull_Lights;
+//Uniform::Buffer *						ObjectManagerBasic_ShaderFull_Lights;
 NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
 
 ShaderLayoutView3D						ObjectManagerTSC_ShaderFullLayout;

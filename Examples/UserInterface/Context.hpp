@@ -11,6 +11,8 @@
 # include "Test/Scroll.hpp"
 # include "Test/List.hpp"
 
+# include "Form/DirectoryNavigator.hpp"
+
 # include "UIManager.hpp"
 
 struct UserInterfaceContext : public ContextBase
@@ -21,8 +23,9 @@ struct UserInterfaceContext : public ContextBase
 	UserInterfaceMenu1		Menu1;
 	UserInterfaceMenu2		Menu2;
 	UserInterfaceMenu3		Menu3;
-	::TestScroll	TestScroll;
-	::TestList		TestList;
+	::TestScroll			TestScroll;
+	//::TestList				TestList;
+	::DirectoryNavigator	DirectoryNavigator;
 
 	~UserInterfaceContext();
 	UserInterfaceContext();
@@ -33,6 +36,7 @@ struct UserInterfaceContext : public ContextBase
 	void	ToggleMenu3(ClickArgs args);
 	void	ToggleTestScroll(ClickArgs args);
 	void	ToggleTestList(ClickArgs args);
+	void	ToggleDirectoryNavigator(ClickArgs args);
 	
 	void	Init() override;
 	void	Free() override;

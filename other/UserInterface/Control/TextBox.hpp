@@ -27,8 +27,8 @@ class TextBox : public Base
 	void	RelayAssignDepth() override;
 	public:
 	void	BoxUpdate() override;
-	void	ObjectInsert() override;
-	void	ObjectRemove() override;
+	void	DisplayShow() override;
+	void	DisplayHide() override;
 
 	public:
 	void	RelayKey(KeyArgs args) override;

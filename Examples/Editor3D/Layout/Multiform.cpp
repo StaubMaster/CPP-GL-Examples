@@ -10,9 +10,11 @@ MultiformLayout::MultiformLayout()
 	, View("View")
 	, Depth("Depth")
 	, FOV("FOV")
+	, Lights("ILights")
 {
 	Multiforms.Insert(&DisplaySize);
 	Multiforms.Insert(&View);
 	Multiforms.Insert(&Depth);
 	Multiforms.Insert(&FOV);
+	Multiforms.Insert(&Lights);
 }

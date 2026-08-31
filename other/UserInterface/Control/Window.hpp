@@ -20,6 +20,7 @@ class Window : public Base
 	public:
 	void	UpdateWindowSize(VectorF2 size);
 	void	UpdateDepth();
+	void	PutDisplay();
 };
 
 };

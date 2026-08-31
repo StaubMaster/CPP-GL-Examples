@@ -54,9 +54,18 @@ void UI::Control::BaseText::TextObjectAssignText()
 void UI::Control::BaseText::TextObjectAssignBound()
 {
 	TextObjectAssignPosition();
-	if (Object.Is())
+	/*if (Object.Is())
 	{
 		TextObject.Bound() = Object.Bound().InnerBox(BoxContent);
+	}
+	else
+	{
+		TextObject.Bound() = BoxContent;
+	}*/
+	//TextObject.Bound() = ObjectData.Bound.InnerBox(BoxContent);
+	if (Parent != nullptr)
+	{
+		TextObject.Bound() = Parent -> BoxBoarder.InnerBox(BoxContent);
 	}
 	else
 	{
@@ -67,9 +76,18 @@ void UI::Control::BaseText::TextObjectAssignPosition()
 {
 	// Middle
 	TextObject.TextPosition() = BoxContent.Center();
-	if (Object.Is())
+	/*if (Object.Is())
 	{
 		TextObject.Bound() = Object.Bound().InnerBox(BoxContent);
+	}
+	else
+	{
+		TextObject.Bound() = BoxContent;
+	}*/
+	//TextObject.Bound() = ObjectData.Bound.InnerBox(BoxContent);
+	if (Parent != nullptr)
+	{
+		TextObject.Bound() = Parent -> BoxBoarder.InnerBox(BoxContent);
 	}
 	else
 	{
@@ -97,9 +115,9 @@ void UI::Control::BaseText::BoxUpdate()
 }
 
 // is Checking Manager needed ?
-void UI::Control::BaseText::ObjectInsert()
+void UI::Control::BaseText::DisplayShow()
 {
-	Base::ObjectInsert();
+	Base::DisplayShow();
 	if (!TextObject.Is() && Manager != nullptr)
 	{
 		TextObject.Create();
@@ -116,9 +134,9 @@ void UI::Control::BaseText::ObjectInsert()
 		TextObjectNewBound = true;
 	}
 }
-void UI::Control::BaseText::ObjectRemove()
+void UI::Control::BaseText::DisplayHide()
 {
-	Base::ObjectRemove();
+	Base::DisplayHide();
 	if (TextObject.Is() || Manager == nullptr)
 	{
 		TextObject.Delete();

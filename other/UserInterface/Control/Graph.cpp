@@ -31,17 +31,17 @@ void UI::Control::Graph::BoxUpdate()
 		GraphObject.Data -> Values = &Values;
 	}
 }
-void UI::Control::Graph::ObjectInsert()
+void UI::Control::Graph::DisplayShow()
 {
-	Base::ObjectInsert();
+	Base::DisplayShow();
 	if (!GraphObject.Is() && Manager != nullptr)
 	{
 		GraphObject.Create();
 	}
 }
-void UI::Control::Graph::ObjectRemove()
+void UI::Control::Graph::DisplayHide()
 {
-	Base::ObjectRemove();
+	Base::DisplayHide();
 	if (GraphObject.Is() || Manager == nullptr)
 	{
 		GraphObject.Delete();

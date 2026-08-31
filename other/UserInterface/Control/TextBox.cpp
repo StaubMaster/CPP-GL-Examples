@@ -98,9 +98,9 @@ void UI::Control::TextBox::BoxUpdate()
 	}
 }
 
-void UI::Control::TextBox::ObjectInsert()
+void UI::Control::TextBox::DisplayShow()
 {
-	Base::ObjectInsert();
+	Base::DisplayShow();
 	if (Manager != nullptr)
 	{
 		if (!TextObject.Is())
@@ -110,9 +110,9 @@ void UI::Control::TextBox::ObjectInsert()
 		}
 	}
 }
-void UI::Control::TextBox::ObjectRemove()
+void UI::Control::TextBox::DisplayHide()
 {
-	Base::ObjectRemove();
+	Base::DisplayHide();
 	if (Manager == nullptr)
 	{
 		if (TextObject.Is())

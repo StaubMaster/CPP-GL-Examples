@@ -64,8 +64,8 @@ class Slider : public BaseText
 	void	RelayAssignDepth() override;
 	public:
 	void	BoxUpdate() override;
-	void	ObjectInsert() override;
-	void	ObjectRemove() override;
+	void	DisplayShow() override;
+	void	DisplayHide() override;
 	
 	public:
 	void	RelayClick(ClickArgs args) override;

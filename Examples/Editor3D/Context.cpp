@@ -64,8 +64,10 @@ void Light3DContext::PolyHedra_ChangeMedia()
 				new Uniform::Matrix4x4		(*layout, "View");
 				new Uniform::Depth			(*layout, "Depth");
 				new Uniform::Angle			(*layout, "FOV");
-				ObjectManagerBasic_ShaderFull_Lights = new Uniform::Buffer(*layout, "ILights");
+				//ObjectManagerBasic_ShaderFull_Lights = new Uniform::Buffer(*layout, "ILights");
+				new Uniform::Buffer			(*layout, "ILights");
 				ObjectManagerBasic.ShaderFull.AssignLayout(layout);
+				MultiformLayout.Find(layout);
 			}
 			{
 				Attribute::Layout * layout = new Attribute::Layout(1, sizeof(NewPolyHedra::Basic3D::InstanceData));
@@ -85,6 +87,7 @@ void Light3DContext::PolyHedra_ChangeMedia()
 				new Uniform::Depth			(*layout, "Depth");
 				new Uniform::Angle			(*layout, "FOV");
 				ObjectManagerBasic.ShaderWire.AssignLayout(layout);
+				MultiformLayout.Find(layout);
 			}
 			{
 				Attribute::Layout * layout = new Attribute::Layout(1, sizeof(NewPolyHedra::Basic3D::InstanceData));
@@ -545,6 +548,8 @@ void Light3DContext::ChangeMedia()
 {
 	std::cout << "ChangeMedia 0\n";
 
+	// MultiformLayout.Clear()
+
 	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 
 	PolyHedra_ChangeMedia();
@@ -553,10 +558,6 @@ void Light3DContext::ChangeMedia()
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 		&UIManager.GraphManager.ShaderLayout,
-		//&ObjectManagerBasic_ShaderFullLayout,
-		//&ObjectManagerBasic_ShaderWireLayout,
-		ObjectManagerBasic.ShaderFull.Layout,
-		ObjectManagerBasic.ShaderWire.Layout,
 		&ObjectManagerTSC_ShaderFullLayout,
 		&ObjectManagerTSC_ShaderWireLayout,
 	});
@@ -628,8 +629,9 @@ void Light3DContext::Make()
 	Shader::Base::BindNone();
 	LightBuffer.BindBase(BindingLight);
 
-	ObjectManagerBasic.ShaderFull.Bind();
-	ObjectManagerBasic.ShaderFull.BindUniformBlockIndex(ObjectManagerBasic_ShaderFull_Lights -> Index, BindingLight);
+	//ObjectManagerBasic.ShaderFull.Bind();
+	//ObjectManagerBasic.ShaderFull.BindUniformBlockIndex(ObjectManagerBasic_ShaderFull_Lights -> Index, BindingLight);
+	MultiformLayout.Lights.ChangeData(BindingLight);
 
 	std::cout << "Light3DContext::Make() done\n";
 }
@@ -787,7 +789,8 @@ void Light3DContext::Draw()
 	GL::Disable(GL::Capability::DepthTest);
 	GL::Disable(GL::Capability::CullFace);
 
-	UIManager.Draw();
+	UIManager.GraphicsMake();
+	UIManager.GraphicsDraw();
 
 
 

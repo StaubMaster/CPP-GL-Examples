@@ -1,0 +1,30 @@
+#ifndef  DIRECTORY_NAVIGATOR_HPP
+# define DIRECTORY_NAVIGATOR_HPP
+
+# include "DirectoryInfo.hpp"
+# include "FileInfo.hpp"
+
+# include "Generics/Container/Array.hpp"
+
+# include "Control/_Include.hpp"
+
+class DirectoryNavigator : public UI::Control::Form
+{
+	DirectoryInfo						Directory;
+	Container::Array<DirectoryInfo>		Directorys;
+	Container::Array<FileInfo>			Files;
+
+	UI::Control::TextBox	DirectoryText;
+	UI::Control::ListBox	FileList;
+	UI::Control::Button		GoParent;
+	UI::Control::Button		GoChild;
+
+	public:
+	~DirectoryNavigator();
+	DirectoryNavigator();
+
+	public:
+	void	Change(const DirectoryInfo & dir);
+};
+
+#endif
