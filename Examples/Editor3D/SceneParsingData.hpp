@@ -16,10 +16,7 @@ class PolyHedraFileCollection;
 
 namespace TextCommand { class Args; };
 
-namespace NewPolyHedra
-{
-struct PalletObjectManager;
-};
+namespace NewPolyHedra { struct PalletObjectManager; };
 
 struct SceneParsingData
 {

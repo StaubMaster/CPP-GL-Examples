@@ -1,5 +1,5 @@
-#ifndef  MANAGER_HPP
-# define MANAGER_HPP
+#ifndef  LIGHT_MANAGER_HPP
+# define LIGHT_MANAGER_HPP
 
 # include "ValueType/Light/Base.hpp"
 # include "ValueType/Light/Direction.hpp"
@@ -29,7 +29,6 @@ struct LightManager
 	LightDirection *	TakeDirection();
 	LightPoint *		TakePoint();
 	LightSpot *			TakeSpot();
-
 };
 
 #endif

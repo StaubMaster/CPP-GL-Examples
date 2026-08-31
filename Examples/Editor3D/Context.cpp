@@ -64,7 +64,6 @@ void Light3DContext::PolyHedra_ChangeMedia()
 				new Uniform::Matrix4x4		(*layout, "View");
 				new Uniform::Depth			(*layout, "Depth");
 				new Uniform::Angle			(*layout, "FOV");
-				//ObjectManagerBasic_ShaderFull_Lights = new Uniform::Buffer(*layout, "ILights");
 				new Uniform::Buffer			(*layout, "ILights");
 				ObjectManagerBasic.ShaderFull.AssignLayout(layout);
 				MultiformLayout.Find(layout);
@@ -629,8 +628,6 @@ void Light3DContext::Make()
 	Shader::Base::BindNone();
 	LightBuffer.BindBase(BindingLight);
 
-	//ObjectManagerBasic.ShaderFull.Bind();
-	//ObjectManagerBasic.ShaderFull.BindUniformBlockIndex(ObjectManagerBasic_ShaderFull_Lights -> Index, BindingLight);
 	MultiformLayout.Lights.ChangeData(BindingLight);
 
 	std::cout << "Light3DContext::Make() done\n";

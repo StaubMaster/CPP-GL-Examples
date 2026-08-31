@@ -7,12 +7,8 @@ ENGINE_DIR := $(REPOS_DIR)/Engine
 
 REPOS_LIST += $(ENGINE_DIR)
 
-#ENGINE_LIBRARYS = $(call repoLibrarys,$(ENGINE_DIR))
-#ENGINE_INCLUDES = $(call repoIncludes,$(ENGINE_DIR))
-#ENGINE_ARGUMENTS = $(call repoArguments,$(ENGINE_DIR))
-
-ENGINE_LIBRARYS = $(ENGINE_DIR)/Engine.a
-ENGINE_INCLUDES = $(ENGINE_DIR)/include
+ENGINE_LIBRARYS = $(ENGINE_DIR)/Engine.a $(ENGINE_DIR)/ValueType/ValueType.a $(ENGINE_DIR)/Generics/Generics.a $(ENGINE_DIR)/Graphics/Graphics.a
+ENGINE_INCLUDES = $(ENGINE_DIR)/include  $(ENGINE_DIR)/ValueType/include     $(ENGINE_DIR)/Generics/include    $(ENGINE_DIR)/Graphics/include
 
 LIBRARYS += $(ENGINE_LIBRARYS)
 INCLUDES += $(ENGINE_INCLUDES)
