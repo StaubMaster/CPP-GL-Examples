@@ -26,8 +26,8 @@ struct ItemContainerUI : public UI::Control::Form
 	void	ShowItems();
 	void	HideItems();
 
-	void	ObjectInsert() override;
-	void	ObjectRemove() override;
+	void	DisplayShow() override;
+	void	DisplayHide() override;
 };
 
 #endif

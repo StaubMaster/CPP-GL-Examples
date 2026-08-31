@@ -119,6 +119,7 @@ ContextNoisePlane::ContextNoisePlane()
 				});
 				ShaderLayoutView3D * layout = new ShaderLayoutView3D();
 				ObjectManagerBasic.ShaderFull.AssignLayout(layout);
+				MultiformLayout.Find(layout);
 			}
 			{
 				ObjectManagerBasic.ShaderWire.Change({
@@ -127,6 +128,7 @@ ContextNoisePlane::ContextNoisePlane()
 				});
 				ShaderLayoutView3D * layout = new ShaderLayoutView3D();
 				ObjectManagerBasic.ShaderWire.AssignLayout(layout);
+				MultiformLayout.Find(layout);
 			}
 			{
 				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
@@ -151,10 +153,12 @@ ContextNoisePlane::ContextNoisePlane()
 				});
 				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
 				ObjectManagerUI.ShaderFull.AssignLayout(layout);
+				MultiformLayout.Find(layout);
 			}
 			{
 				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
 				ObjectManagerUI.ShaderWire.AssignLayout(layout);
+				MultiformLayout.Find(layout);
 			}
 			{
 				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
@@ -173,21 +177,14 @@ ContextNoisePlane::ContextNoisePlane()
 	}
 
 	AuxThreadBase::ThreadName = "DrawThread";
-	Container::Array<Uniform::Layout *> layouts({
-		ObjectManagerBasic.ShaderFull.Layout,
-		ObjectManagerBasic.ShaderWire.Layout,
-		ObjectManagerUI.ShaderFull.Layout,
-		ObjectManagerUI.ShaderWire.Layout,
+	Container::Array<Uniform::Layout*> layouts({
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 //		&PlaneManager.Shader,
 		&ChunkManager.ShaderLayoutU,
 		&ChunkManager.ShaderLayoutF,
 	});
-	MultiformLayout.DisplaySize.FindUniforms(layouts);
-	MultiformLayout.View.FindUniforms(layouts);
-	MultiformLayout.Depth.FindUniforms(layouts);
-	MultiformLayout.FOV.FindUniforms(layouts);
+	MultiformLayout.Find(layouts);
 }
 
 
@@ -973,10 +970,11 @@ void ContextNoisePlane::Draw()
 	PolyHedraManager.InstancesClear();
 	PolyHedraManager.InstancesMake();
 
-	UIManager.WindowControl.RecursiveUpdate();
+	UIManager.WindowControl.UpdateRecursive();
 	UIManager.Resize(window.Size);
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
-	UIManager.ControlManager.MakeInstances();
+	UIManager.ControlManager.InstancesClear();
+	UIManager.ControlManager.InstancesMake();
 
 	UIManager.GraphManager.MakeInstances();
 

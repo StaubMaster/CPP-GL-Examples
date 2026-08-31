@@ -1,5 +1,6 @@
 #include "BoxEntity3D.hpp"
 #include "ValueType/Vector/I3.hpp"
+#include "ValueType/Bool/3.hpp"
 
 
 
@@ -58,7 +59,7 @@ void BoxEntity3D_CollisionSide::Consider(const BoxEntity3D_CollisionSide & other
 
 BoxEntity3D_CollisionTime BoxEntity3D::FindCollisionTime(const BoxF3 & other) const
 {
-	if ((Box + Pos).IntersectBoxInclusive(other).All(true))
+	if ((Box + Pos).IntersectsInclusive(other).All(true))
 	{
 		BoxEntity3D_CollisionTime();
 	}

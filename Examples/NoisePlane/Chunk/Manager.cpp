@@ -333,7 +333,7 @@ void ChunkManager::RemoveAround()
 	{
 		Chunk * chunk = Chunks[i];
 		if (chunk == nullptr) { continue; }
-		if (KnowBox.IntersectVecInclusive(chunk -> Index).All(true)) { continue; }
+		if (KnowBox.ContainsInclusive(chunk -> Index).All(true)) { continue; }
 
 		Chunks[i] = nullptr;
 

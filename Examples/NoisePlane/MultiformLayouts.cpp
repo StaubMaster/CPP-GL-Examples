@@ -5,9 +5,11 @@
 MultiformLayoutDisplay::~MultiformLayoutDisplay()
 { }
 MultiformLayoutDisplay::MultiformLayoutDisplay()
-	: ::MultiformLayout()
+	: ::Multiform::Layout()
 	, DisplaySize("DisplaySize")
-{ }
+{
+	Multiforms.Insert(&DisplaySize);
+}
 
 
 
@@ -18,4 +20,8 @@ MultiformLayoutView3D::MultiformLayoutView3D()
 	, View("View")
 	, Depth("Depth")
 	, FOV("FOV")
-{ }
+{
+	Multiforms.Insert(&View);
+	Multiforms.Insert(&Depth);
+	Multiforms.Insert(&FOV);
+}

@@ -2,12 +2,9 @@
 # define MULTIFORM_LAYOUTS_HPP
 
 # include "Graphics/Multiform/_Include.hpp"
+# include "Graphics/Multiform/General/Layout.hpp"
 
-class MultiformLayout
-{
-};
-
-class MultiformLayoutDisplay : public MultiformLayout
+class MultiformLayoutDisplay : public Multiform::Layout
 {
 	public:
 	Multiform::DisplaySize		DisplaySize;

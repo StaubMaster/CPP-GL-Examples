@@ -105,7 +105,7 @@ AccessLockedChunk AuxThread3::Find()
 		ptr -> AccessL();
 
 		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { ptr -> AccessU(); continue; }
-		if (!Manager.CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
+		if (!Manager.CareBox.ContainsInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
 		if (!ref.Neighbours.CanAssamble()) { ptr -> AccessU(); continue; }
 
 		candidate_count++;

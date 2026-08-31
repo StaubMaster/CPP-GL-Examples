@@ -158,6 +158,8 @@ void VoxelPallet::MakePolyHedra()
 	if (geometry.UseF_NextY) { PolyHedraVoxelData(*PolyHedra, dataF.NextY); } else { PolyHedraVoxelData(*PolyHedra, dataU.NextY); }
 	if (geometry.UseF_NextZ) { PolyHedraVoxelData(*PolyHedra, dataF.NextZ); } else { PolyHedraVoxelData(*PolyHedra, dataU.NextZ); }
 	PolyHedraVoxelData(*PolyHedra, dataF.Here);
+
+	PolyHedra -> Done();
 }
 
 Voxel VoxelPallet::ToVoxel() const

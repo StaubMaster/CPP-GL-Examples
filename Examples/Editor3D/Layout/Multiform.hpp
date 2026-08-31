@@ -1,9 +1,9 @@
 #ifndef  LAYOUT_MULTIFORM_HPP
 # define LAYOUT_MULTIFORM_HPP
 
-# include "Graphics/Multiform/Layout.hpp"
-# include "Graphics/Multiform/_Include.hpp"
+# include "Graphics/Multiform/General/Layout.hpp"
 # include "Graphics/Multiform/General/Buffer.hpp"
+# include "Graphics/Multiform/_Include.hpp"
 
 class MultiformLayout : public Multiform::Layout
 {

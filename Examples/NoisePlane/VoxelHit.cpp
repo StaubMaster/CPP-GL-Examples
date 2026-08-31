@@ -42,8 +42,8 @@ GridCast3D::Hit VoxelHit::Hit(const Chunk & chunk, RayF3 ray3D, float limit)
 		//ShowRay(data.Ray());
 		//ShowVoxel(data.Index());
 		VectorI3 idx = data.Index() - (chunk.Index * CHUNK_VALUES_PER_SIDE);
-		if (box.IntersectVecInclusive(idx).All(false)) { return GridCast3D::Hit(); }
-		if (box.IntersectVecExclusive(idx).All(true))
+		if (box.ContainsInclusive(idx).All(false)) { return GridCast3D::Hit(); }
+		if (box.ContainsExclusive(idx).All(true))
 		{
 			if (!chunk.Voxels[idx.ToU()].IsEmpty())
 			{

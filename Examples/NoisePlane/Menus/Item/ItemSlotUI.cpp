@@ -40,9 +40,9 @@ void ItemSlotUI::BoxUpdate()
 		TextObject.TextPosition() = BoxDisplay.Center();
 	}
 }
-void ItemSlotUI::ObjectInsert()
+void ItemSlotUI::DisplayShow()
 {
-	Base::ObjectInsert();
+	Base::DisplayShow();
 	if (Item != nullptr)
 	{
 		{
@@ -90,9 +90,9 @@ void ItemSlotUI::ObjectInsert()
 		}
 	}
 }
-void ItemSlotUI::ObjectRemove()
+void ItemSlotUI::DisplayHide()
 {
-	Base::ObjectRemove();
+	Base::DisplayHide();
 	ItemObject.Delete();
 	TextObject.Delete();
 }
@@ -105,11 +105,11 @@ void ItemSlotUI::RelayClick(ClickArgs args)
 	{
 		if (Item != nullptr)
 		{
-			ObjectRemove();
+			DisplayHide();
 			ItemBase * temp = *Item;
 			*Item = StaticItem;
 			StaticItem = temp;
-			ObjectInsert();
+			DisplayShow();
 		}
 	}
 }

@@ -53,13 +53,13 @@ void ItemContainerUI::HideItems()
 	}
 }
 
-void ItemContainerUI::ObjectInsert()
+void ItemContainerUI::DisplayShow()
 {
-	Base::ObjectInsert();
+	Base::DisplayShow();
 	ShowItems();
 }
-void ItemContainerUI::ObjectRemove()
+void ItemContainerUI::DisplayHide()
 {
-	Base::ObjectRemove();
+	Base::DisplayHide();
 	HideItems();
 }
