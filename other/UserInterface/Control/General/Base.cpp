@@ -36,6 +36,7 @@ void UI::Control::Base::ChildInsert(Base & control)
 	control.DisplayChangeRequest();
 	control.BoxUpdateRequest();
 	control.ColorUpdateRequest();
+	AutoAnchorUpdateRequest();
 }
 void UI::Control::Base::ChildRemove(Base & control)
 {
@@ -47,10 +48,12 @@ void UI::Control::Base::ChildRemove(Base & control)
 			i--;
 		}
 	}
+	AutoAnchorUpdateRequest();
 }
 void UI::Control::Base::ChildClear()
 {
 	Children.Clear();
+	AutoAnchorUpdateRequest();
 }
 
 void UI::Control::Base::ChildInsert(Base * control)
@@ -233,7 +236,20 @@ void UI::Control::Base::BoxUpdateRequest()
 
 
 
-void UI::Control::Base::UpdateAutoAnchor()
+void UI::Control::Base::AutoAnchorUpdateResolve()
+{
+	if (AutoAnchorUpdateIsRequested)
+	{
+		AutoAnchorUpdate();
+		AutoAnchorUpdateIsRequested = false;
+	}
+}
+void UI::Control::Base::AutoAnchorUpdateRequest()
+{
+	AutoAnchorUpdateIsRequested = true;
+}
+
+void UI::Control::Base::AutoAnchorUpdate()
 {
 	switch (AutoAnchorXType)
 	{
@@ -244,17 +260,20 @@ void UI::Control::Base::UpdateAutoAnchor()
 	switch (AutoAnchorYType)
 	{
 		case EAutoAnchorType::None: break;
-		case EAutoAnchorType::StackMin:		UpdateAutoAnchor_Y_StackMin(); break;
-		case EAutoAnchorType::StackMinFit:	UpdateAutoAnchor_Y_StackMinFit(); break;
+		case EAutoAnchorType::StackMin:		AutoAnchorUpdate_Y_StackMin(); break;
+		case EAutoAnchorType::StackMinFit:	AutoAnchorUpdate_Y_StackMinFit(); break;
 		default: break;
 	}
 
-	if (Parent != nullptr)
+	if (AutoAnchorYType != EAutoAnchorType::None || AutoAnchorXType != EAutoAnchorType::None)
 	{
-		Parent -> UpdateAutoAnchor();
+		if (Parent != nullptr)
+		{
+			Parent -> AutoAnchorUpdateRequest();
+		}
 	}
 }
-void UI::Control::Base::UpdateAutoAnchor_Y_StackMin()
+void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 {
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -267,7 +286,7 @@ void UI::Control::Base::UpdateAutoAnchor_Y_StackMin()
 		control.BoxUpdateRequest();
 	}
 }
-void UI::Control::Base::UpdateAutoAnchor_Y_StackMinFit()
+void UI::Control::Base::AutoAnchorUpdate_Y_StackMinFit()
 {
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -417,6 +436,7 @@ void UI::Control::Base::UpdateRecursive()
 	{
 		Children[i] -> UpdateRecursive();
 	}
+	AutoAnchorUpdate();
 }
 
 

@@ -29,7 +29,8 @@ void UI::Control::PropertyControl::ShowProperty()
 		}
 	}
 	Visible = true;
-	UpdateAutoAnchor();
+	//AutoAnchorUpdateRequest();
+	AutoAnchorUpdate();
 }
 void UI::Control::PropertyControl::HideProperty()
 {
@@ -41,7 +42,8 @@ void UI::Control::PropertyControl::HideProperty()
 		}
 	}
 	Visible = false;
-	UpdateAutoAnchor();
+	//AutoAnchorUpdateRequest();
+	AutoAnchorUpdate();
 }
 
 void UI::Control::PropertyControl::ToggleFunc(ClickArgs args)

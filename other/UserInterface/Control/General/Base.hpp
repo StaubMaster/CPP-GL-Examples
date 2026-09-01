@@ -219,8 +219,15 @@ class Base
 	EAutoAnchorType		AutoAnchorXType = EAutoAnchorType::None;
 	EAutoAnchorType		AutoAnchorYType = EAutoAnchorType::None;
 
+	private:
+	bool	AutoAnchorUpdateIsRequested = false;
+	void	AutoAnchorUpdateResolve();
+
 	public:
-	void	UpdateAutoAnchor(); // call this in Update ?
+	void	AutoAnchorUpdateRequest();
+
+	public:
+	void	AutoAnchorUpdate();
 	/* AutoAnchor should be done automatically
 		when ?
 			when ChildInsert()
@@ -237,8 +244,8 @@ class Base
 	*/
 
 	private:
-	void	UpdateAutoAnchor_Y_StackMin();
-	void	UpdateAutoAnchor_Y_StackMinFit();
+	void	AutoAnchorUpdate_Y_StackMin();
+	void	AutoAnchorUpdate_Y_StackMinFit();
 
 
 

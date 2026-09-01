@@ -38,7 +38,8 @@ UI::Control::ScrollBox::ScrollBox()
 void UI::Control::ScrollBox::ChildInsert(Base & control)
 {
 	Content.ChildInsert(control);
-	Content.UpdateAutoAnchor();
+	//Content.AutoAnchorUpdateRequest();
+	Content.AutoAnchorUpdate();
 	if (Manager != nullptr)
 	{
 		Manager -> WindowControl.DepthUpdateRequest();
@@ -47,7 +48,8 @@ void UI::Control::ScrollBox::ChildInsert(Base & control)
 void UI::Control::ScrollBox::ChildRemove(Base & control)
 {
 	Content.ChildRemove(control);
-	Content.UpdateAutoAnchor();
+	//Content.AutoAnchorUpdateRequest();
+	Content.AutoAnchorUpdate();
 	if (Manager != nullptr)
 	{
 		Manager -> WindowControl.DepthUpdateRequest();
@@ -56,7 +58,8 @@ void UI::Control::ScrollBox::ChildRemove(Base & control)
 void UI::Control::ScrollBox::ChildClear()
 {
 	Content.ChildClear();
-	Content.UpdateAutoAnchor();
+	//Content.AutoAnchorUpdateRequest();
+	Content.AutoAnchorUpdate();
 }
 
 

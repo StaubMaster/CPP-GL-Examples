@@ -70,8 +70,10 @@ void DirectoryNavigator::Change(const DirectoryInfo & dir)
 void DirectoryNavigator::BoxUpdate()
 {
 	Base::BoxUpdate();
-	UpdateAutoAnchor();
-	FileList.Content.UpdateAutoAnchor();
+	//AutoAnchorUpdateRequest();
+	//FileList.Content.AutoAnchorUpdateRequest();
+	AutoAnchorUpdate();
+	FileList.Content.AutoAnchorUpdate();
 }
 
 
