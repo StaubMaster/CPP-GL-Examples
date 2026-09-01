@@ -15,9 +15,10 @@
 # include "Voxel/GeometryDataF.hpp"
 # include "Chunk/GraphicsData.hpp"
 
-# include "Graphics/Buffer.hpp"
-# include "Graphics/DataU.hpp"
-# include "Graphics/DataF.hpp"
+# include "Graphics/U/Data.hpp"
+# include "Graphics/F/Data.hpp"
+
+# include "Graphics/VertexArray/Multi.hpp"
 
 # include "ValueType/Vector/I3.hpp"
 # include "ValueType/Vector/U3.hpp"
@@ -37,8 +38,6 @@
 
 struct ChunkManager;
 struct Structure;
-
-# include "Graphics/Buffer.hpp"
 
 /* Do I need Assign Lock ?
 
@@ -192,8 +191,8 @@ struct Chunk
 	bool	BufferData_Have;
 	void	BufferData_Update();
 
-	VoxelGraphics::BufferEntryU		BufferUData_Entry;
-	VoxelGraphics::BufferEntryF		BufferFData_Entry;
+	VertexArray::Multi::Entry		BufferUData_Entry;
+	VertexArray::Multi::Entry		BufferFData_Entry;
 };
 
 #endif

@@ -3,6 +3,9 @@
 
 # include "ValueType/Vector/F3.hpp"
 
+struct VectorF2;
+struct BoxF2;
+
 namespace VoxelGraphicsDataF
 {
 	struct Vertex

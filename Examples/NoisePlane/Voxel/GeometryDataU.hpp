@@ -4,6 +4,8 @@
 # include "ValueType/Vector/U3.hpp"
 # include "ValueType/Vector/U2.hpp"
 
+struct BoxU2;
+
 namespace VoxelGeometryDataU
 {
 struct Vertex
@@ -15,6 +17,9 @@ struct Vertex
 struct Face
 {
 	Vertex	Vertexes[4];
+
+	void	Quad0(VectorU3 p00, VectorU3 p01, VectorU3 p10, VectorU3 p11, BoxU2 box, unsigned int tex);
+	void	Quad1(VectorU3 p00, VectorU3 p01, VectorU3 p10, VectorU3 p11, BoxU2 box, unsigned int tex);
 };
 struct Cube
 {

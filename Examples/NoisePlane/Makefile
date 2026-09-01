@@ -5,11 +5,10 @@ FANCY_NAME := NoisePlane
 ################################################################
 
 FILES := \
-	Graphics/DataU.cpp \
-	Graphics/DataF.cpp \
-	Graphics/LayoutU.cpp \
-	Graphics/LayoutF.cpp \
-	Graphics/Buffer.cpp \
+	Graphics/U/Data.cpp \
+	Graphics/U/Layout.cpp \
+	Graphics/F/Data.cpp \
+	Graphics/F/Layout.cpp \
 	Graphics/ShaderLayout.cpp \
 \
 	Voxel/TextureFileMap.cpp \

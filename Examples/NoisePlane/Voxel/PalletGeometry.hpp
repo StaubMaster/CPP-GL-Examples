@@ -7,14 +7,11 @@
 
 struct VoxelPalletGeometry
 {
-	static VoxelPalletGeometry	Cube;
+	static VoxelPalletGeometry	CubeDiag;
+	static VoxelPalletGeometry	CubeAxisY;
 	static VoxelPalletGeometry	AxisStar;
 	static VoxelPalletGeometry	PrismY8;
 	static VoxelPalletGeometry	Slope;
-
-	// Textures are aligned to the Diagonal
-	// should make another for "Prism" Cube
-	// there the Belt Textures are aligned to the Bases
 
 	VoxelGeometryDataU::Cube	DataU;
 	VoxelGeometryDataF::Full	DataF;
@@ -37,9 +34,6 @@ struct VoxelPalletGeometry
 
 
 
-	void	InitU();
-
-	void	InitF_Cube();
 	/*DefaultCube()
 		Textures are oriented around the Diagonal
 	*/
@@ -49,9 +43,18 @@ struct VoxelPalletGeometry
 		should all Y face the same way, or should every other be spun 180 degrees ?
 	*/
 
+	void	InitU_CubeDiag();
+	void	InitF_CubeDiag();
+
+	void	InitU_CubeAxisY();
+	void	InitF_CubeAxisY();
+
 	void	InitF_AxisStar();
 	void	InitF_PrismY8();
+
 	void	InitF_Slope();
+
+	// do all these with Files ?
 };
 
 #endif

@@ -1,8 +1,8 @@
 #ifndef  CHUNK_GRAPHICS_DATA_HPP
 # define CHUNK_GRAPHICS_DATA_HPP
 
-# include "Graphics/DataU.hpp"
-# include "Graphics/DataF.hpp"
+# include "Graphics/U/Data.hpp"
+# include "Graphics/F/Data.hpp"
 # include "Axis/Enums.hpp"
 
 # include "Generics/Container/Array.hpp"

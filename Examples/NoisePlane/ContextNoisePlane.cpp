@@ -604,10 +604,17 @@ void ContextNoisePlane::ViewRay_Show()
 			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
 			if (voxel != nullptr)
 			{
-				const VoxelPallet & pallet = voxel -> ToPallet();
-				ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
-				ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
-				ss << (pallet.Name) << " :Pallet\n";
+				if (!(voxel -> IsEmpty()))
+				{
+					const VoxelPallet & pallet = voxel -> ToPallet();
+					ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
+					ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
+					ss << (pallet.Name) << " :Pallet\n";
+				}
+				else
+				{
+					ss << "empty";
+				}
 			}
 			else
 			{
@@ -736,13 +743,15 @@ void ContextNoisePlane::Make()
 
 	// Voxels
 	{
-		VoxelPalletGeometry::Cube.InitU();
-		VoxelPalletGeometry::Cube.InitF_Cube();
-		VoxelPalletGeometry::AxisStar.InitU();
+		VoxelPalletGeometry::CubeDiag.InitU_CubeDiag();
+		VoxelPalletGeometry::CubeDiag.InitF_CubeDiag();
+		VoxelPalletGeometry::CubeAxisY.InitU_CubeAxisY();
+		VoxelPalletGeometry::CubeAxisY.InitF_CubeAxisY();
+		VoxelPalletGeometry::AxisStar.InitU_CubeDiag();
 		VoxelPalletGeometry::AxisStar.InitF_AxisStar();
-		VoxelPalletGeometry::PrismY8.InitU();
+		VoxelPalletGeometry::PrismY8.InitU_CubeAxisY();
 		VoxelPalletGeometry::PrismY8.InitF_PrismY8();
-		VoxelPalletGeometry::Slope.InitU();
+		VoxelPalletGeometry::Slope.InitU_CubeDiag();
 		VoxelPalletGeometry::Slope.InitF_Slope();
 
 		VoxelPalletMap::StaticMap.Default(MediaDirectory);
@@ -819,6 +828,8 @@ void ContextNoisePlane::MakeControls()
 		//HotBarUI.Hide();
 		UIManager.WindowControl.ChildInsert(HotBarUI);
 	}
+
+	UIManager.WindowControl.UpdateDepth();
 }
 
 
@@ -975,6 +986,7 @@ void ContextNoisePlane::Draw()
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
 	UIManager.ControlManager.InstancesClear();
 	UIManager.ControlManager.InstancesMake();
+	UIManager.WindowControl.PutDisplay();
 
 	UIManager.GraphManager.MakeInstances();
 
@@ -1851,10 +1863,7 @@ void ContextNoisePlane::Resize(DisplaySize display_size)
 
 // make these virtual and put them in Base
 void ContextNoisePlane::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
-void ContextNoisePlane::MouseClick(ClickArgs args)
-{
-	UIManager.MouseClick(args);
-}
+void ContextNoisePlane::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
 void ContextNoisePlane::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
 void ContextNoisePlane::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
 void ContextNoisePlane::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }

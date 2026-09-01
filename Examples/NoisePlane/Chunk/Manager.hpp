@@ -6,9 +6,10 @@
 
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/ShaderLayout.hpp"
-# include "Graphics/Buffer.hpp"
-# include "Graphics/LayoutU.hpp"
-# include "Graphics/LayoutF.hpp"
+# include "Graphics/U/Layout.hpp"
+# include "Graphics/F/Layout.hpp"
+
+# include "Graphics/VertexArray/Multi.hpp"
 
 //# include "Graphics/Data.hpp"
 
@@ -52,8 +53,6 @@ struct VoxelHit;
 # include "ContainerLock/Lock.hpp"
 
 # include "Generics/Container/Array3D.hpp"
-
-# include "Graphics/Buffer.hpp"
 
 
 
@@ -163,8 +162,8 @@ struct ChunkManager
 	VoxelGraphics::ShaderLayout		ShaderLayoutU;
 	VoxelGraphics::ShaderLayout		ShaderLayoutF;
 
-	VoxelGraphics::BufferU			BufferU;
-	VoxelGraphics::BufferF			BufferF;
+	VertexArray::Multi				BufferU;
+	VertexArray::Multi				BufferF;
 	VoxelGraphics::LayoutU			BufferLayoutU;
 	VoxelGraphics::LayoutF			BufferLayoutF;
 

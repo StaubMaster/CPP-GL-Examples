@@ -92,12 +92,13 @@ VoxelPallet & VoxelPalletMap::NewPallet(const char * name, const VoxelPalletGeom
 #include "DirectoryInfo.hpp"
 void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 {
-	const VoxelPalletGeometry & cube = VoxelPalletGeometry::Cube;
+	const VoxelPalletGeometry & cube_diag = VoxelPalletGeometry::CubeDiag;
+	const VoxelPalletGeometry & cube_axis_Y = VoxelPalletGeometry::CubeAxisY;
 	const VoxelPalletGeometry & axis_star = VoxelPalletGeometry::AxisStar;
 	const VoxelPalletGeometry & cylinder = VoxelPalletGeometry::PrismY8;
 	const VoxelPalletGeometry & slope = VoxelPalletGeometry::Slope;
 
-	NewPallet("OrientationCube", cube, VoxelMaterialType::None).TextureAxis(
+	NewPallet("OrientationCube", cube_diag, VoxelMaterialType::None).TextureAxis(
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
 		MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
@@ -130,24 +131,24 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 		MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
 	);
 
-	NewPallet("DebugR", cube, VoxelMaterialType::None).TextureAll(
+	NewPallet("DebugR", cube_diag, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Debug/R.png")
 	);
-	NewPallet("DebugG", cube, VoxelMaterialType::None).TextureAll(
+	NewPallet("DebugG", cube_diag, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Debug/G.png")
 	);
-	NewPallet("DebugB", cube, VoxelMaterialType::None).TextureAll(
+	NewPallet("DebugB", cube_diag, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Debug/B.png")
 	);
 
-	NewPallet("Gray", cube, VoxelMaterialType::Stone).TextureAll(
+	NewPallet("Gray", cube_diag, VoxelMaterialType::Stone).TextureAll(
 		MediaDirectory.File("Images/Voxel/Gray.png")
 	);
 
-	NewPallet("Grass", cube, VoxelMaterialType::Dirt).TextureAll(
+	NewPallet("Grass", cube_diag, VoxelMaterialType::Dirt).TextureAll(
 		MediaDirectory.File("Images/Voxel/Grass.png")
 	);
-	NewPallet("Dirt", cube, VoxelMaterialType::Dirt).TextureAll(
+	NewPallet("Dirt", cube_diag, VoxelMaterialType::Dirt).TextureAll(
 		MediaDirectory.File("Images/Voxel/Dirt.png")
 	);
 
@@ -155,25 +156,25 @@ void VoxelPalletMap::Default(const DirectoryInfo & MediaDirectory)
 		MediaDirectory.File("Images/Voxel/fancy_RedWood_Base.png"),
 		MediaDirectory.File("Images/Voxel/fancy_RedWood_Belt.png")
 	);
-	NewPallet("Log", cube, VoxelMaterialType::Wood).TexturePrismY(
+	NewPallet("Log", cube_axis_Y, VoxelMaterialType::Wood).TexturePrismY(
 		MediaDirectory.File("Images/Voxel/Log_Base.png"),
 		MediaDirectory.File("Images/Voxel/Log_Belt.png")
 	);
-	NewPallet("Leaves", cube, VoxelMaterialType::None).TextureAll(
+	NewPallet("Leaves", cube_diag, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Leave1.png")
 	);
 
-	NewPallet("Sand", cube, VoxelMaterialType::Powder).TextureAll(
+	NewPallet("Sand", cube_diag, VoxelMaterialType::Powder).TextureAll(
 		MediaDirectory.File("Images/Voxel/Sand.png")
 	);
-	NewPallet("Snow", cube, VoxelMaterialType::Powder).TextureAll(
+	NewPallet("Snow", cube_diag, VoxelMaterialType::Powder).TextureAll(
 		MediaDirectory.File("Images/Voxel/Snow.png")
 	);
-	NewPallet("Water", cube, VoxelMaterialType::None).TextureAll(
+	NewPallet("Water", cube_diag, VoxelMaterialType::None).TextureAll(
 		MediaDirectory.File("Images/Voxel/Water.png")
 	);
 
-	NewPallet("ConcreteCube", cube, VoxelMaterialType::Stone).TextureAll(
+	NewPallet("ConcreteCube", cube_diag, VoxelMaterialType::Stone).TextureAll(
 		MediaDirectory.File("Images/Voxel/Concrete_0.png")
 	);
 	NewPallet("ConcreteCylinder", cylinder, VoxelMaterialType::Stone).TextureAll(
