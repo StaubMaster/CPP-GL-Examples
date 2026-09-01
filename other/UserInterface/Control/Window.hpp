@@ -19,8 +19,16 @@ class Window : public Base
 
 	public:
 	void	UpdateWindowSize(VectorF2 size);
-	void	UpdateDepth(); // do this in general Update
 	void	PutDisplay();
+
+	private:
+	bool	DepthUpdateIsRequested = false;
+	public:
+	void	DepthUpdateResolve();
+	public:
+	void	DepthUpdateRequest();
+	private:
+	void	DepthUpdate();
 };
 
 };

@@ -264,7 +264,7 @@ static NewPolyHedra::PalletObjectManager * stage_light_manager = nullptr;
 static NewPolyHedra::PalletObjectManager * light_bulb_manager = nullptr;
 void Light3DContext::InitLights()
 {
-	DirectoryInfo dir(MediaDirectory.Child("YMT/Light"));
+	DirectoryInfo dir(MediaDirectory.Directory("YMT/Light"));
 	if (Cube_UI_manager == nullptr)
 	{
 		Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(
@@ -597,7 +597,7 @@ void Light3DContext::Make()
 //	View.Trans = Trans3D(VectorF3(0, 64, -2), EulerAngle3D());
 	View.Trans = Trans3D(VectorF3(0, 430, -24), EulerAngle3D());
 
-	UserChange.IndicatorsInit(MediaDirectory.Child("YMT/Meta/"));
+	UserChange.IndicatorsInit(MediaDirectory.Directory("YMT/Meta/"));
 	UserChange.IndicatorsHide();
 
 	TestPolyHedraSphere = PolyHedraGenerate::SphereY(2, 5, 12.0f);

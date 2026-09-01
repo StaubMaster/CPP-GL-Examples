@@ -25,8 +25,28 @@ void UI::Control::Window::UpdateWindowSize(VectorF2 size)
 	BoxUpdateRequest();
 }
 
+void UI::Control::Window::PutDisplay()
+{
+	DisplayPutRecursive();
+}
+
+
+
+void UI::Control::Window::DepthUpdateResolve()
+{
+	if (DepthUpdateIsRequested)
+	{
+		DepthUpdate();
+		DepthUpdateIsRequested = false;
+	}
+}
+void UI::Control::Window::DepthUpdateRequest()
+{
+	DepthUpdateIsRequested = true;
+}
+
 #include <iostream>
-void UI::Control::Window::UpdateDepth()
+void UI::Control::Window::DepthUpdate()
 {
 	unsigned int layer_sum = 0;
 	for (unsigned int i = 0; i < Children.Count(); i++) // Assumes Window only holds Forms
@@ -49,9 +69,4 @@ void UI::Control::Window::UpdateDepth()
 		depth_offset += control -> LayerLimit() * depth_size;
 	}
 	std::cout << '\n';
-}
-
-void UI::Control::Window::PutDisplay()
-{
-	DisplayPutRecursive();
 }

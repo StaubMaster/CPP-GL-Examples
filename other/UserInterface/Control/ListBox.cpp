@@ -39,6 +39,8 @@ void UI::Control::ListBox::Item::RelayClick(ClickArgs args)
 
 
 
+
+
 UI::Control::ListBox::~ListBox()
 {
 	for (unsigned int i = 0; i < Items.Count(); i++)
@@ -70,7 +72,6 @@ void UI::Control::ListBox::ItemNew(const char * name, void * obj)
 	Items.Insert(item);
 	ChildInsert(*item);
 
-	item -> BoxUpdate();
 	CalcScroll();
 }
 

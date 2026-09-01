@@ -24,7 +24,7 @@ struct UserInterfaceContext : public ContextBase
 	UserInterfaceMenu2		Menu2;
 	UserInterfaceMenu3		Menu3;
 	::TestScroll			TestScroll;
-	//::TestList				TestList;
+	::TestList				TestList;
 	::DirectoryNavigator	DirectoryNavigator;
 
 	~UserInterfaceContext();

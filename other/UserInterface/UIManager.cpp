@@ -143,6 +143,7 @@ void UI::Manager::Resize(DisplaySize display_size)
 void UI::Manager::Update()
 {
 	WindowControl.UpdateRecursive();
+	WindowControl.DepthUpdateResolve();
 }
 
 

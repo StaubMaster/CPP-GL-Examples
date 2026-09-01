@@ -117,7 +117,7 @@ void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 2)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 2"); }
 
-	FileInfo file((File.DirectoryString() + "/" + cmd_args.ToString(0)).c_str());
+	FileInfo file(File.Directory().File(cmd_args.ToString(0)));
 
 //	PolyHedra * polyhedra = PolyHedra::Load(file);
 	PolyHedra * polyhedra = PolyHedraFileCollection.FindMake(file);

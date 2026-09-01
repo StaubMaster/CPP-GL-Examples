@@ -34,15 +34,24 @@ UI::Control::ScrollBox::ScrollBox()
 
 
 
+#include "UIManager.hpp"
 void UI::Control::ScrollBox::ChildInsert(Base & control)
 {
 	Content.ChildInsert(control);
 	Content.UpdateAutoAnchor();
+	if (Manager != nullptr)
+	{
+		Manager -> WindowControl.DepthUpdateRequest();
+	}
 }
 void UI::Control::ScrollBox::ChildRemove(Base & control)
 {
 	Content.ChildRemove(control);
 	Content.UpdateAutoAnchor();
+	if (Manager != nullptr)
+	{
+		Manager -> WindowControl.DepthUpdateRequest();
+	}
 }
 void UI::Control::ScrollBox::ChildClear()
 {

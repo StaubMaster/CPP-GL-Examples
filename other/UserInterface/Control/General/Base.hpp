@@ -199,8 +199,8 @@ class Base
 
 	protected:
 	virtual void	BoxUpdate();
-	private:
 
+	private:
 	bool	BoxUpdateIsRequested = false;
 	void	BoxUpdateResolve();
 
@@ -221,6 +221,20 @@ class Base
 
 	public:
 	void	UpdateAutoAnchor(); // call this in Update ?
+	/* AutoAnchor should be done automatically
+		when ?
+			when ChildInsert()
+			when ChildRemove()
+			when Child Visibility changes
+			when Child Box Changes ?
+			DisplayShow() ?
+				should be requested
+				should not be done when not Visible
+		how ?
+			need to update Child Boxes first
+			so call BoxUpdate again (if needed)
+		also X and Y are independant
+	*/
 
 	private:
 	void	UpdateAutoAnchor_Y_StackMin();

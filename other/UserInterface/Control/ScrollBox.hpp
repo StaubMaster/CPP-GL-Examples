@@ -10,7 +10,7 @@ namespace Control
 {
 class ScrollBox : public Base
 {
-	private:
+	private: public:
 	Base		Content;
 	float		ContentSize;
 	Slider		ScrollBar;

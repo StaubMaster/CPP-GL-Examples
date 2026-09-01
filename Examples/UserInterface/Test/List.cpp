@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-/*
+
 TestList::~TestList()
 { }
 TestList::TestList()
@@ -69,4 +69,3 @@ void TestList::ItemClear(ClickArgs args)
 		List.ItemsClear();
 	}
 }
-*/

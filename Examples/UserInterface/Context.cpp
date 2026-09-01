@@ -14,7 +14,7 @@ UserInterfaceContext::UserInterfaceContext()
 	, Menu2()
 	, Menu3()
 	, TestScroll()
-	//, TestList()
+	, TestList()
 	, DirectoryNavigator()
 {
 	MediaDirectory = DirectoryInfo("../../media/");
@@ -29,28 +29,29 @@ void UserInterfaceContext::Make()
 	UIManager.WindowControl.ChildInsert(Menu2);
 	UIManager.WindowControl.ChildInsert(Menu3);
 	UIManager.WindowControl.ChildInsert(TestScroll);
-	//UIManager.WindowControl.ChildInsert(TestList);
+	UIManager.WindowControl.ChildInsert(TestList);
 	UIManager.WindowControl.ChildInsert(DirectoryNavigator);
-	UIManager.WindowControl.UpdateDepth();
+	UIManager.WindowControl.DepthUpdateRequest();
 
 	Menu1.Hide();
 	Menu2.Hide();
 	Menu3.Hide();
 	Menu3.Hide();
 	TestScroll.Hide();
-	//TestList.Hide();
+	TestList.Hide();
 	DirectoryNavigator.Hide();
 
 	Menu0.Menu1Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu1);
 	Menu0.Menu2Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu2);
 	Menu0.Menu3Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu3);
 	Menu0.TestScrollButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestScroll);
-	//Menu0.TestListButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestList);
+	Menu0.TestListButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestList);
 	Menu0.DirectoryNavigatorButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleDirectoryNavigator);
 
 	DirectoryNavigator.Change(MediaDirectory);
+	//DirectoryNavigator.Change(DirectoryInfo(MediaDirectory.Path.ToAbsolute()));
 
-	UIManager.WindowControl.UpdateDepth();
+	UIManager.WindowControl.DepthUpdateRequest();
 }
 
 static void MenuToggleVisible(UI::Control::Form & form)
@@ -97,7 +98,7 @@ void UserInterfaceContext::ToggleTestList(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		//MenuToggleVisible(TestList);
+		MenuToggleVisible(TestList);
 	}
 }
 void UserInterfaceContext::ToggleDirectoryNavigator(ClickArgs args)
@@ -105,6 +106,7 @@ void UserInterfaceContext::ToggleDirectoryNavigator(ClickArgs args)
 	if (args.Action == Action::Press)
 	{
 		MenuToggleVisible(DirectoryNavigator);
+		//DirectoryNavigator.FileList.CalcScroll();
 	}
 }
 
@@ -163,7 +165,7 @@ void UserInterfaceContext::KeyBoardKey(KeyArgs args)
 			Menu2.Hide();
 			Menu3.Hide();
 			TestScroll.Hide();
-			//TestList.Hide();
+			TestList.Hide();
 			DirectoryNavigator.Hide();
 		}
 	}
