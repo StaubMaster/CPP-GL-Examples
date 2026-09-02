@@ -3,17 +3,18 @@
 
 # include "Control/Window.hpp"
 # include "Control/Form.hpp"
-# include "Control/GroupBox.hpp"
 
-# include "Control/Button.hpp"
-# include "Control/TextBox.hpp"
-# include "Control/Slider.hpp"
-# include "Control/Label.hpp"
-# include "Control/CheckBox.hpp"
+# include "Control/Controls/GroupBox.hpp"
 
-# include "Control/Graph.hpp"
+# include "Control/Controls/Button.hpp"
+# include "Control/Controls/TextBox.hpp"
+# include "Control/Controls/Slider.hpp"
+# include "Control/Controls/Label.hpp"
+# include "Control/Controls/CheckBox.hpp"
 
-# include "Control/ScrollBox.hpp"
-# include "Control/ListBox.hpp"
+# include "Control/Controls/Graph.hpp"
+
+# include "Control/Controls/ScrollBox.hpp"
+# include "Control/Controls/ListBox.hpp"
 
 #endif

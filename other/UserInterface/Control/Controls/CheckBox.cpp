@@ -1,4 +1,4 @@
-#include "Control/CheckBox.hpp"
+#include "Control/Controls/CheckBox.hpp"
 #include "UIManager.hpp"
 
 #include "User/MouseArgs.hpp"

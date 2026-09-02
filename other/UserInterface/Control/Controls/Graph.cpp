@@ -1,4 +1,4 @@
-#include "Control/Graph.hpp"
+#include "Control/Controls/Graph.hpp"
 
 
 
@@ -17,7 +17,7 @@ UI::Control::Graph::Graph()
 
 
 
-#include "../Graph/ObjectData.hpp"
+#include "Graph/ObjectData.hpp"
 
 void UI::Control::Graph::BoxUpdate()
 {

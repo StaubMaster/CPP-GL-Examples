@@ -1,4 +1,4 @@
-#include "Control/Label.hpp"
+#include "Control/Controls/Label.hpp"
 #include "Control/General/Manager.hpp"
 
 #include "Text/Manager.hpp"

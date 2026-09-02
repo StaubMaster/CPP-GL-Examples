@@ -19,15 +19,15 @@ FILES := \
 \
 	Control/Window.cpp \
 	Control/Form.cpp \
-	Control/GroupBox.cpp \
-	Control/Button.cpp \
-	Control/TextBox.cpp \
-	Control/Slider.cpp \
-	Control/CheckBox.cpp \
-	Control/Label.cpp \
-	Control/Graph.cpp \
-	Control/ScrollBox.cpp \
-	Control/ListBox.cpp \
+	Control/Controls/GroupBox.cpp \
+	Control/Controls/Button.cpp \
+	Control/Controls/TextBox.cpp \
+	Control/Controls/Slider.cpp \
+	Control/Controls/CheckBox.cpp \
+	Control/Controls/Label.cpp \
+	Control/Controls/Graph.cpp \
+	Control/Controls/ScrollBox.cpp \
+	Control/Controls/ListBox.cpp \
 \
 	Text/Data.cpp \
 	Text/Buffer.cpp \

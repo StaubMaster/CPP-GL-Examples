@@ -1,4 +1,4 @@
-#include "Control/Slider.hpp"
+#include "Control/Controls/Slider.hpp"
 #include "Control/General/Manager.hpp"
 
 #include "User/MouseArgs.hpp"

@@ -1,4 +1,4 @@
-#include "Control/TextBox.hpp"
+#include "Control/Controls/TextBox.hpp"
 #include "Control/General/Manager.hpp"
 
 #include "Text/Manager.hpp"

@@ -3,7 +3,7 @@
 
 # include "Control/General/Base.hpp"
 # include "Control/General/BaseText.hpp"
-# include "Control/ScrollBox.hpp"
+# include "Control/Controls/ScrollBox.hpp"
 
 # include "Generics/Function/Pointer.hpp"
 # include "Generics/Container/Binary.hpp"

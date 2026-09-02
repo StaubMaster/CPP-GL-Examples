@@ -2,7 +2,7 @@
 # define USER_INTERFACE_TEST_LIST_HPP
 
 # include "Control/_Include.hpp"
-# include "Control/ListBox.hpp"
+# include "Control/Controls/ListBox.hpp"
 
 struct TestList : public UI::Control::Form
 {

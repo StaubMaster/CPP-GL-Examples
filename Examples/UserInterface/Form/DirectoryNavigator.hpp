@@ -33,9 +33,6 @@ class DirectoryNavigator : public UI::Control::Form
 	void	Change(const DirectoryInfo & dir);
 
 	public:
-	void	BoxUpdate() override;
-
-	public:
 	void	ClickGoParent(ClickArgs args);
 };
 

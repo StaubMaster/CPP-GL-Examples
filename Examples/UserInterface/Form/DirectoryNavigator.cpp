@@ -67,15 +67,6 @@ void DirectoryNavigator::Change(const DirectoryInfo & dir)
 	}
 }
 
-void DirectoryNavigator::BoxUpdate()
-{
-	Base::BoxUpdate();
-	//AutoAnchorUpdateRequest();
-	//FileList.Content.AutoAnchorUpdateRequest();
-	//AutoAnchorUpdate();
-	//FileList.Content.AutoAnchorUpdate();
-}
-
 
 
 void DirectoryNavigator::ClickGoParent(ClickArgs args)

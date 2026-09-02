@@ -2,7 +2,7 @@
 # define USER_INTERFACE_TEST_SCROLL_HPP
 
 # include "Control/_Include.hpp"
-# include "Control/ScrollBox.hpp"
+# include "Control/Controls/ScrollBox.hpp"
 
 struct TestScroll : public UI::Control::Form
 {

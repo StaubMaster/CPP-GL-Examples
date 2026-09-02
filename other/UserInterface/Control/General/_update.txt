@@ -1,0 +1,26 @@
+
+some Updates need to be done in different orders depeding on what happens
+
+control.BoxUpdate
+control.child[i].BoxUpdate
+control.child[i].child[i].BoxUpdate
+
+control.BoxUpdate
+control.child[i].BoxUpdate
+control.child[i].child[i].BoxUpdate
+control.child[i].AutoAnchorUpdate
+control.child[i].child[i].BoxUpdate
+
+have a function to check if any Control needs any Update
+as long as that is true, keep running Update Funciton (with Limit)
+
+how to prevent infinite loop ?
+control.child[i].child[i].BoxUpdate // if this is changed by AutoAnchor, then it should not change its Position, only Size maybe
+control.child[i].AutoAnchorUpdate   // this changes child[i] Position based on Size of it and others
+control.child[i].child[i].BoxUpdate // after AutoAnchor, child[i] needs to Update its Box Position
+
+
+
+
+
+just look at how normal UIs to this and copy that ?

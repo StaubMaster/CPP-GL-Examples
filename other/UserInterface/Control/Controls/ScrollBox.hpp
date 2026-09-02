@@ -2,7 +2,7 @@
 # define UI_CONTROL_SCROLL_BOX_HPP
 
 # include "Control/General/Base.hpp"
-# include "Control/Slider.hpp"
+# include "Control/Controls/Slider.hpp"
 
 namespace UI
 {
