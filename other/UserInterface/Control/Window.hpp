@@ -3,14 +3,10 @@
 
 # include "Control/General/Base.hpp"
 
-
-
 namespace UI
 {
-
 namespace Control
 {
-
 class Window : public Base
 {
 	public:
@@ -30,9 +26,7 @@ class Window : public Base
 	private:
 	void	DepthUpdate();
 };
-
 };
-
 };
 
 #endif

@@ -16,6 +16,14 @@ void UI::Control::Base::ChangeManager(UI::Manager * manager)
 {
 	Manager = manager;
 }
+void UI::Control::Base::ChangeManager(UI::Control::Window * window)
+{
+	Window = window;
+}
+void UI::Control::Base::ChangeManager(UI::Control::Form * form)
+{
+	Form = form;
+}
 
 void UI::Control::Base::ChangeManagerRecursive(UI::Manager * manager)
 {
@@ -25,6 +33,22 @@ void UI::Control::Base::ChangeManagerRecursive(UI::Manager * manager)
 		Children[i] -> ChangeManagerRecursive(manager);
 	}
 }
+void UI::Control::Base::ChangeManagerRecursive(UI::Control::Window * window)
+{
+	ChangeManager(window);
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> ChangeManagerRecursive(window);
+	}
+}
+void UI::Control::Base::ChangeManagerRecursive(UI::Control::Form * form)
+{
+	ChangeManager(form);
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> ChangeManagerRecursive(form);
+	}
+}
 
 
 
@@ -32,11 +56,13 @@ void UI::Control::Base::ChildInsert(Base & control)
 {
 	Children.Insert(&control);
 	control.Parent = this;
-	control.ChangeManagerRecursive(Manager);
 	control.DisplayChangeRequest();
 	control.BoxUpdateRequest();
 	control.ColorUpdateRequest();
 	AutoAnchorUpdateRequest();
+	control.ChangeManagerRecursive(Manager);
+	control.ChangeManagerRecursive(Window);
+	control.ChangeManagerRecursive(Form);
 }
 void UI::Control::Base::ChildRemove(Base & control)
 {
@@ -350,7 +376,6 @@ void UI::Control::Base::DisplayPut() const
 {
 	if (Manager != nullptr)
 	{
-		//Manager -> ControlManager.InstancePut(ObjectData);
 		if (Display)
 		{
 			Inst::BufferData data;

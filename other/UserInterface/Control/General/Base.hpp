@@ -90,16 +90,24 @@ namespace UI
 class Manager;
 namespace Control
 {
+class Window;
+class Form;
 class Base
 {
 	protected:
-	UI::Manager *	Manager = nullptr;
+	UI::Manager *			Manager = nullptr;
+	UI::Control::Window *	Window = nullptr;
+	UI::Control::Form *		Form = nullptr;
 
 	public:
 	virtual void	ChangeManager(UI::Manager * manager);
+	virtual void	ChangeManager(UI::Control::Window * window);
+	virtual void	ChangeManager(UI::Control::Form * form);
 
 	public:
 	void	ChangeManagerRecursive(UI::Manager * manager);
+	void	ChangeManagerRecursive(UI::Control::Window * window);
+	void	ChangeManagerRecursive(UI::Control::Form * form);
 
 	protected: public:
 	Base *	Parent = nullptr;

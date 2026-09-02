@@ -34,6 +34,11 @@ namespace Control
 class Form : public Base
 {
 	public:
+	void	ChildInsert(Base & control) override;
+	void	ChildRemove(Base & control) override;
+	void	ChildClear() override;
+
+	public:
 	virtual ~Form();
 	Form();
 

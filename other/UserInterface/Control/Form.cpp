@@ -3,6 +3,22 @@
 
 
 
+void UI::Control::Form::ChildInsert(Base & control)
+{
+	Base::ChildInsert(control);
+	control.ChangeManagerRecursive(this);
+}
+void UI::Control::Form::ChildRemove(Base & control)
+{
+	Base::ChildRemove(control);
+}
+void UI::Control::Form::ChildClear()
+{
+	Base::ChildClear();
+}
+
+
+
 UI::Control::Form::~Form()
 { }
 UI::Control::Form::Form()
