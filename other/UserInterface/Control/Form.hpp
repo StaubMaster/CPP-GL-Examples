@@ -34,9 +34,13 @@ namespace Control
 class Form : public Base
 {
 	public:
-	void	ChildInsert(Base & control) override;
-	void	ChildRemove(Base & control) override;
-	void	ChildClear() override;
+	void	ChangePointers(Base & control) override;
+
+	public:
+	float	DepthOffset = 0.0f;
+
+	public:
+	void	AssignDepth() override;
 
 	public:
 	virtual ~Form();

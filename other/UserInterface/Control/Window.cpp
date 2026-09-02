@@ -2,6 +2,50 @@
 
 
 
+void UI::Control::Window::ChangePointers(Base & control)
+{
+	control.Parent = this;
+	control.ChangeManagerRecursive(Manager);
+	control.ChangeManagerRecursive(this);
+}
+
+
+
+//#include <iostream>
+#include "Control/Form.hpp"
+void UI::Control::Window::AssignDepth()
+{
+	unsigned int layer_sum = 0;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		const UI::Control::Form * form = dynamic_cast<const UI::Control::Form*>(Children[i]);
+		if (form == nullptr) { continue; }
+
+		layer_sum += form -> LayerLimit();
+	}
+//	std::cout << "LayerSum: " << layer_sum << '\n';
+
+	float depth_size = 1.0f / (layer_sum + 2);
+	DepthSize = depth_size;
+//	std::cout << "DepthSize: " << depth_size << '\n';
+
+	float depth_offset = depth_size;
+//	std::cout << "DepthOffset: " << depth_offset << '\n';
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		UI::Control::Form * form = dynamic_cast<UI::Control::Form*>(Children[i]);
+		if (form == nullptr) { continue; }
+
+		form -> DepthOffset = depth_offset;
+
+		depth_offset += form -> LayerLimit() * depth_size;
+//		std::cout << "DepthOffset: " << depth_offset << '\n';
+	}
+//	std::cout << '\n';
+}
+
+
+
 UI::Control::Window::Window()
 {
 	Anchor.X.Anchor = AnchorType::Both;
@@ -44,29 +88,8 @@ void UI::Control::Window::DepthUpdateRequest()
 {
 	DepthUpdateIsRequested = true;
 }
-
-#include <iostream>
 void UI::Control::Window::DepthUpdate()
 {
-	unsigned int layer_sum = 0;
-	for (unsigned int i = 0; i < Children.Count(); i++) // Assumes Window only holds Forms
-	{
-		const Base * control = Children[i];
-		if (control == nullptr) { continue; }
-		layer_sum += control -> LayerLimit();
-	}
-	std::cout << "LayerSum: " << layer_sum << '\n';
-
-	float depth_size = 1.0f / (layer_sum + 2);
-	float depth_offset = depth_size;
-
-	std::cout << "DepthSize: " << depth_size << '\n';
-	for (unsigned int i = 0; i < Children.Count(); i++) // Assumes Window only holds Forms
-	{
-		Base * control = Children[i];
-		if (control == nullptr) { continue; }
-		control -> AssignDepth(depth_offset, depth_size, 0);
-		depth_offset += control -> LayerLimit() * depth_size;
-	}
-	std::cout << '\n';
+	CalcLayerRecursive();
+	AssignDepthRecursive();
 }

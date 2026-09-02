@@ -45,6 +45,7 @@ FILES := \
 	Graph/ObjectData.cpp \
 	Graph/Object.cpp \
 \
+	HoverArgs.cpp \
 	CursorManager.cpp \
 	UIManager.cpp
 

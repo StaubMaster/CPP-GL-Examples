@@ -7,6 +7,7 @@
 
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
+#include "HoverArgs.hpp"
 
 #include "ValueType/_Include.hpp"
 // include individual
@@ -18,72 +19,6 @@
 
 
 #include "AnchorEnum.hpp"
-
-/* what do Controls do ?
-
-handle Events and/or Relay to children
-change Size relative to Parent
-change Visibility
-change Layer (Depth)
-change Color
-
-*/
-
-/* UpdateSize
-Window Size changes
-ControlManager is told that Size changed
-Control::Window is told that Size changed
-Control tells children that Size changed
-
-should this be done immedeatly or be delayed ?
-doing it immedeatly seems fine
-
-it also sets a Flag that Anchor Size changed
-*/
-
-/* UpdateEntrys
-is done every frame, before Draw
-changes GraphicalBox, does not calculate
-changes Color
-
-why is this delayed ?
-something else might also change it ?
-the delayed stuff is assigning, which is the fastest part
-if anything, delay the calculating ?
-*/
-
-/*
-change in Enabled
-	changes this
-
-change in Visibility
-	changes this
-	changes Children
-
-change in Transparency
-	change this
-
-change in Color
-	changes this
-
-change in Box
-	changes this
-	changes children
-*/
-
-enum class HoverType
-{
-	Enter,
-	Move,
-	Leave,
-};
-struct HoverArgs
-{
-	HoverType			Type;
-	DisplayPosition		Position;
-
-	HoverArgs(HoverType type, DisplayPosition position);
-};
 
 namespace UI
 {
@@ -99,10 +34,13 @@ class Base
 	UI::Control::Window *	Window = nullptr;
 	UI::Control::Form *		Form = nullptr;
 
+	protected:
+	virtual void	ChangePointers(Base & control);
+
 	public:
-	virtual void	ChangeManager(UI::Manager * manager);
-	virtual void	ChangeManager(UI::Control::Window * window);
-	virtual void	ChangeManager(UI::Control::Form * form);
+	void	ChangeManager(UI::Manager * manager);
+	void	ChangeManager(UI::Control::Window * window);
+	void	ChangeManager(UI::Control::Form * form);
 
 	public:
 	void	ChangeManagerRecursive(UI::Manager * manager);
@@ -112,10 +50,8 @@ class Base
 	protected: public:
 	Base *	Parent = nullptr;
 
-	public: // temp
+	protected: public:
 	Container::Binary<Base *>	Children;
-	// dynamic Children
-	// builtin Children
 
 	public:
 	virtual void	ChildInsert(Base & control);
@@ -127,7 +63,14 @@ class Base
 	void	ChildRemove(Base * control);
 
 	public:
-	unsigned int	Layer() const;
+	unsigned int	Layer = 0;
+
+	public:
+	void	CalcLayer();
+	void	CalcLayerRecursive();
+
+	public:
+//	unsigned int	Layer() const;
 	unsigned int	LayerLimit() const;
 
 	public:
@@ -135,10 +78,10 @@ class Base
 	// why so greedy ? just make this a uint32
 
 	public:
-	void	AssignDepth(float offset, float size, unsigned int layer);
-
+	virtual void	AssignDepth();
+	
 	protected:
-	virtual void	RelayAssignDepth();
+	void	AssignDepthRecursive();
 
 
 

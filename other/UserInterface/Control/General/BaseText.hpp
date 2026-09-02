@@ -40,7 +40,7 @@ class BaseText : public Base
 	virtual void	TextObjectAssignPosition();
 
 	protected:
-	void	RelayAssignDepth() override;
+	void	AssignDepth() override;
 
 	public:
 	void	BoxUpdate() override;

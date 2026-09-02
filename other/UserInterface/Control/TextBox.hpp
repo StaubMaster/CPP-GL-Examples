@@ -24,7 +24,7 @@ class TextBox : public Base
 	TextBox();
 
 	protected:
-	void	RelayAssignDepth() override;
+	void	AssignDepth() override;
 	public:
 	void	BoxUpdate() override;
 	void	DisplayShow() override;

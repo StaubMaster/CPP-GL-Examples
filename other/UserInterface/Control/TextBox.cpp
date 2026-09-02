@@ -78,8 +78,9 @@ void UI::Control::TextBox::SetText(std::string text)
 
 
 
-void UI::Control::TextBox::RelayAssignDepth()
+void UI::Control::TextBox::AssignDepth()
 {
+	Base::AssignDepth();
 	if (TextObject.Is())
 	{
 		TextObject.Depth() = Depth - 0.001f;

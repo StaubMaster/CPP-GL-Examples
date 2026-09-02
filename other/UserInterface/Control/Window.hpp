@@ -10,8 +10,17 @@ namespace Control
 class Window : public Base
 {
 	public:
-	Window();
+	void	ChangePointers(Base & control) override;
+
+	public:
+	float	DepthSize = 0.0f;
+
+	public:
+	void	AssignDepth() override;
+
+	public:
 	~Window();
+	Window();
 
 	public:
 	void	UpdateWindowSize(VectorF2 size);

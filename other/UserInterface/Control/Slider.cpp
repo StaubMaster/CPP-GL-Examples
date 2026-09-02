@@ -129,16 +129,26 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 
 
-void UI::Control::Slider::RelayAssignDepth()
+#include "Control/Window.hpp"
+#include "Control/Form.hpp"
+void UI::Control::Slider::AssignDepth()
 {
-	BaseText::RelayAssignDepth();
-	if (TextObject.Is())
-	{
-		TextObject.Depth() = Depth - 0.001f;
-	}
+	BaseText::AssignDepth();
+
+	if (Window == nullptr) { return; }
+	if (Form == nullptr) { return; }
+
+	float size = Window -> DepthSize;
+	float offset = Form -> DepthOffset;
+	float layer = Layer;
+
 	if (SliderObject.Is())
 	{
-		SliderObject.Depth() = Depth - 0.0005f;
+		SliderObject.Depth() = -(((layer + (1.0f / 3.0f)) * size) + offset);
+	}
+	if (TextObject.Is())
+	{
+		TextObject.Depth() = -(((layer + (2.0f / 3.0f)) * size) + offset);
 	}
 }
 

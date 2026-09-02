@@ -1,16 +1,15 @@
 #include "Base.hpp"
 #include "UIManager.hpp"
 
-#include "User/MouseArgs.hpp"
 
 
-
-HoverArgs::HoverArgs(HoverType type, DisplayPosition position)
-	: Type(type)
-	, Position(position)
-{ }
-
-
+void UI::Control::Base::ChangePointers(Base & control)
+{
+	control.Parent = this;
+	control.ChangeManagerRecursive(Manager);
+	control.ChangeManagerRecursive(Window);
+	control.ChangeManagerRecursive(Form);
+}
 
 void UI::Control::Base::ChangeManager(UI::Manager * manager)
 {
@@ -54,15 +53,12 @@ void UI::Control::Base::ChangeManagerRecursive(UI::Control::Form * form)
 
 void UI::Control::Base::ChildInsert(Base & control)
 {
+	ChangePointers(control);
 	Children.Insert(&control);
-	control.Parent = this;
 	control.DisplayChangeRequest();
 	control.BoxUpdateRequest();
 	control.ColorUpdateRequest();
 	AutoAnchorUpdateRequest();
-	control.ChangeManagerRecursive(Manager);
-	control.ChangeManagerRecursive(Window);
-	control.ChangeManagerRecursive(Form);
 }
 void UI::Control::Base::ChildRemove(Base & control)
 {
@@ -97,23 +93,32 @@ void UI::Control::Base::ChildRemove(Base * control)
 	}
 }
 
-unsigned int UI::Control::Base::Layer() const
+
+
+void UI::Control::Base::CalcLayer()
 {
 	if (Parent != nullptr)
 	{
-		return 1 + Parent -> Layer();
+		Layer = (Parent -> Layer) + 1;
 	}
-	return 0;
-
-	unsigned int layer = 0;
-	const Base * control = this;
-	while (control -> Parent != nullptr)
+	else
 	{
-		layer++;
-		control = control -> Parent;
+		Layer = 0;
 	}
-	return layer;
 }
+void UI::Control::Base::CalcLayerRecursive()
+{
+	CalcLayer();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Base * control = Children[i];
+		if (control == nullptr) { continue; }
+		control -> CalcLayerRecursive();
+	}
+}
+
+// CalcLayerLimit() then store
+// store in Form ?
 unsigned int UI::Control::Base::LayerLimit() const
 {
 	if (Children.Count() != 0)
@@ -131,25 +136,29 @@ unsigned int UI::Control::Base::LayerLimit() const
 	return 0;
 }
 
-// store (Layer) in (Base)
-// store (LayerLimit) in (Form)
-// store (*Form) in (Base)
-// store (DepthOffset) in (Form)
-// store (DepthSize) in (Manager)
-void UI::Control::Base::AssignDepth(float offset, float size, unsigned int layer)
+#include "Control/Form.hpp" // this is only included for Depth
+// put Depth stuff in seperate file ?
+void UI::Control::Base::AssignDepth()
 {
-	Depth = -((layer * size) + offset);
-	RelayAssignDepth();
+	if (Window == nullptr) { return; }
+	if (Form == nullptr) { return; }
 
-	layer++;
+	float size = Window -> DepthSize;
+	float offset = Form -> DepthOffset;
+	float layer = Layer;
+
+	Depth = -((layer * size) + offset);
+}
+void UI::Control::Base::AssignDepthRecursive()
+{
+	AssignDepth();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Base * control = Children[i];
 		if (control == nullptr) { continue; }
-		control -> AssignDepth(offset, size, layer);
+		control -> AssignDepthRecursive();
 	}
 }
-void UI::Control::Base::RelayAssignDepth() { }
 
 
 
@@ -245,7 +254,6 @@ void UI::Control::Base::BoxUpdate()
 		Children[i] -> BoxUpdateRequest();
 	}
 }
-
 void UI::Control::Base::BoxUpdateResolve()
 {
 	if (BoxUpdateIsRequested)
@@ -254,7 +262,6 @@ void UI::Control::Base::BoxUpdateResolve()
 		BoxUpdateIsRequested = false;
 	}
 }
-
 void UI::Control::Base::BoxUpdateRequest()
 {
 	BoxUpdateIsRequested = true;
@@ -347,7 +354,6 @@ void UI::Control::Base::ColorUpdate()
 		}
 	}
 }
-
 void UI::Control::Base::ColorUpdateResolve()
 {
 	if (ColorUpdateIsRequested)
@@ -356,7 +362,6 @@ void UI::Control::Base::ColorUpdateResolve()
 		ColorUpdateIsRequested = false;
 	}
 }
-
 void UI::Control::Base::ColorUpdateRequest()
 {
 	ColorUpdateIsRequested = true;
@@ -521,24 +526,6 @@ UI::Control::Base * UI::Control::Base::FindHover(const VectorF2 & mouse)
 	}
 	return this;
 }
-
-/*void UI::Control::Base::ChangeHover(HoverArgs args)
-{
-	if (args == HoverArgs::Enter)
-	{
-		if (IsEnabled() && Object.Is())
-		{
-			Object.Color() = ColorHover;
-		}
-	}
-	if (args == HoverArgs::Leave)
-	{
-		if (IsEnabled() && Object.Is())
-		{
-			Object.Color() = ColorDefault;
-		}
-	}
-}*/
 
 
 

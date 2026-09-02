@@ -97,11 +97,22 @@ void UI::Control::BaseText::TextObjectAssignPosition()
 
 
 
-void UI::Control::BaseText::RelayAssignDepth()
+#include "Control/Window.hpp"
+#include "Control/Form.hpp"
+void UI::Control::BaseText::AssignDepth()
 {
+	Base::AssignDepth();
+
+	if (Window == nullptr) { return; }
+	if (Form == nullptr) { return; }
+
+	float size = Window -> DepthSize;
+	float offset = Form -> DepthOffset;
+	float layer = Layer;
+
 	if (TextObject.Is())
 	{
-		TextObject.Depth() = Depth - 0.001f;
+		TextObject.Depth() = -(((layer + (1.0f / 2.0f)) * size) + offset);
 	}
 }
 

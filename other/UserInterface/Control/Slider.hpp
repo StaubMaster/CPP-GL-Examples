@@ -61,7 +61,7 @@ class Slider : public BaseText
 	~Slider();
 
 	protected:
-	void	RelayAssignDepth() override;
+	void	AssignDepth() override;
 	public:
 	void	BoxUpdate() override;
 	void	DisplayShow() override;

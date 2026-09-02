@@ -3,18 +3,25 @@
 
 
 
-void UI::Control::Form::ChildInsert(Base & control)
+void UI::Control::Form::ChangePointers(Base & control)
 {
-	Base::ChildInsert(control);
+	control.Parent = this;
+	control.ChangeManagerRecursive(Manager);
+	control.ChangeManagerRecursive(Window);
 	control.ChangeManagerRecursive(this);
 }
-void UI::Control::Form::ChildRemove(Base & control)
+
+
+
+void UI::Control::Form::AssignDepth()
 {
-	Base::ChildRemove(control);
-}
-void UI::Control::Form::ChildClear()
-{
-	Base::ChildClear();
+	if (Window == nullptr) { return; }
+
+	float size = Window -> DepthSize;
+	float offset = DepthOffset;
+	float layer = Layer;
+
+	Depth = -((layer * size) + offset);
 }
 
 
