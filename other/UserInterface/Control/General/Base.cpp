@@ -185,11 +185,19 @@ void UI::Control::Base::Show()
 {
 	_Visible = true;
 	DisplayChangeRequest();
+	if (Parent != nullptr)
+	{
+		Parent -> AutoAnchorUpdateRequest();
+	}
 }
 void UI::Control::Base::Hide()
 {
 	_Visible = false;
 	DisplayChangeRequest();
+	if (Parent != nullptr)
+	{
+		Parent -> AutoAnchorUpdateRequest();
+	}
 }
 
 bool UI::Control::Base::IsTransparent() const
@@ -271,9 +279,17 @@ void UI::Control::Base::BoxUpdateRequest()
 
 void UI::Control::Base::AutoAnchorUpdateResolve()
 {
+	if (!IsVisible()) { return; }
 	if (AutoAnchorUpdateIsRequested)
 	{
-		AutoAnchorUpdate();
+		if (AutoAnchorYType != EAutoAnchorType::None || AutoAnchorXType != EAutoAnchorType::None)
+		{
+			AutoAnchorUpdate();
+			if (Parent != nullptr)
+			{
+				Parent -> AutoAnchorUpdateRequest();
+			}
+		}
 		AutoAnchorUpdateIsRequested = false;
 	}
 }
@@ -282,8 +298,15 @@ void UI::Control::Base::AutoAnchorUpdateRequest()
 	AutoAnchorUpdateIsRequested = true;
 }
 
+#include <iostream>
+// this is called a lot every frame
+// why ?
 void UI::Control::Base::AutoAnchorUpdate()
 {
+	static unsigned int num = 0;
+	std::cout << "UI::Control::Base::AutoAnchorUpdate() " << num << '\n';
+	num++;
+
 	switch (AutoAnchorXType)
 	{
 		case EAutoAnchorType::None: break;
@@ -297,26 +320,25 @@ void UI::Control::Base::AutoAnchorUpdate()
 		case EAutoAnchorType::StackMinFit:	AutoAnchorUpdate_Y_StackMinFit(); break;
 		default: break;
 	}
-
-	if (AutoAnchorYType != EAutoAnchorType::None || AutoAnchorXType != EAutoAnchorType::None)
-	{
-		if (Parent != nullptr)
-		{
-			Parent -> AutoAnchorUpdateRequest();
-		}
-	}
 }
 void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 {
+	std::cout << "UI::Control::Base::AutoAnchorUpdate_Y_StackMin()\n";
+	std::cout << "Children: " << Children.Count() << "\n";
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
+		std::cout << "y: " << y << '\n';
 		if (Children[i] == nullptr) { continue; }
 		Base & control = *Children[i];
 		if (!control.IsVisible()) { continue; }
 		control.Anchor.Y.AnchorMin(y);
 		y = control.Anchor.Y.GetMinSize();
-		control.BoxUpdateRequest();
+		//control.BoxUpdateRequest();
+		control.BoxUpdate();
+		// AutoAnchor Children might need to update their Box again ?
+		// their Sizes stay the same, only their Y Offset changes
+		// Child BoxUpdate Anchor is bascially ignored / overridden
 	}
 }
 void UI::Control::Base::AutoAnchorUpdate_Y_StackMinFit()
@@ -466,7 +488,7 @@ void UI::Control::Base::UpdateRecursive()
 	{
 		Children[i] -> UpdateRecursive();
 	}
-	AutoAnchorUpdate();
+	AutoAnchorUpdateResolve();
 }
 
 

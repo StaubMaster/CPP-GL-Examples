@@ -8,12 +8,30 @@ namespace UI
 {
 namespace Control
 {
+class ScrollBox;
+class ScrollContent : public Base
+{
+	public:
+	ScrollBox &		Box;
+
+	public:
+	float	CalcRatio(float & control_range_size, float & content_size);
+
+	public:
+	~ScrollContent();
+	ScrollContent(ScrollBox & box);
+
+	public:
+	void	BoxUpdate() override;
+
+	public:
+	void	AutoAnchorUpdate() override;
+};
 class ScrollBox : public Base
 {
 	private: public:
-	Base		Content;
-	float		ContentSize;
-	Slider		ScrollBar;
+	ScrollContent	Content;
+	Slider			ScrollBar;
 
 	public:
 	~ScrollBox();
@@ -27,15 +45,24 @@ class ScrollBox : public Base
 	public:
 	void	BoxUpdate() override;
 
-//	protected:
-//	void	Update() override;
-
 	public:
 	/* CalcScroll
-		this should be automatically called
-		when Box changes. after Children have been updated
+		this should be automatically called when ...
+			Box changes
+			Child Box changes
+			Child Visibility changes
+		Content uses AutoAnchor
+		so it automatically changes Box when...
+			Child Box changes
+			Child Visibility changes
+		so this only has to catch when ...
+			Box changes
+
+		Box change should automatically request AutoAnchor change from Parent
+		so this should be able to override AutoAnchorUpdate
 	*/
-	void	CalcScroll();
+	void	ScrollNone();
+	void	ScrollCalc();
 	void	ScrollFunc(float val);
 
 	public:

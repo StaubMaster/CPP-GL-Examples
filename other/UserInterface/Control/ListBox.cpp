@@ -63,16 +63,12 @@ void UI::Control::ListBox::ItemsClear()
 	}
 	Items.Clear();
 	ClickedObject = nullptr;
-
-	CalcScroll();
 }
 void UI::Control::ListBox::ItemNew(const char * name, void * obj)
 {
 	Item * item = new Item(*this, Items.Count(), name, obj);
 	Items.Insert(item);
 	ChildInsert(*item);
-
-	CalcScroll();
 }
 
 

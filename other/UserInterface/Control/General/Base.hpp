@@ -140,6 +140,8 @@ class Base
 	// ContentOffset ?
 	public:
 	Anchor2D	Anchor;
+	// make Anchor for X and Y seperate
+	// do BoxUpdate seperately ?
 
 
 
@@ -178,7 +180,7 @@ class Base
 	void	AutoAnchorUpdateRequest();
 
 	public:
-	void	AutoAnchorUpdate();
+	virtual void	AutoAnchorUpdate();
 	/* AutoAnchor should be done automatically
 		when ?
 			when ChildInsert()
@@ -197,6 +199,24 @@ class Base
 	private:
 	void	AutoAnchorUpdate_Y_StackMin();
 	void	AutoAnchorUpdate_Y_StackMinFit();
+
+	/* combine AutoAnchor and BoxUpdate ?
+		BoxUpdate changes Box based on Parent
+		AutoAnchorUpdate changes Box based on Children
+
+		UpdateRecursive
+		BoxUpdate is done before Updatie()ing Children
+		AutoAnchorUpdate is done after Updatie()ing Children
+
+		minimize work
+		if AutoAnchorUpdate does something
+			tell Parent to also AutoAnchorUpdate
+		else
+			dont tell Parent to AutoAnchorUpdate
+
+		if AutoAnchorUpdate is supposed to do something
+			dont do normal BoxUpdate ?
+	*/
 
 
 

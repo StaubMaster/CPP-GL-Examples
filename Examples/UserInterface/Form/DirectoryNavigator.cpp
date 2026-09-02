@@ -72,8 +72,8 @@ void DirectoryNavigator::BoxUpdate()
 	Base::BoxUpdate();
 	//AutoAnchorUpdateRequest();
 	//FileList.Content.AutoAnchorUpdateRequest();
-	AutoAnchorUpdate();
-	FileList.Content.AutoAnchorUpdate();
+	//AutoAnchorUpdate();
+	//FileList.Content.AutoAnchorUpdate();
 }
 
 
