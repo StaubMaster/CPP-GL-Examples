@@ -12,6 +12,7 @@ FILES := \
 	3D/Voxel/Pallet/Map.cpp \
 	3D/Voxel/Pallet/Geometry.cpp \
 	3D/Voxel/Pallet/Geometry/Map.cpp \
+	3D/Voxel/Pallet/Geometry/Parser.cpp \
 	3D/Voxel/Pallet/Geometry/U.cpp \
 	3D/Voxel/Pallet/Geometry/F.cpp \
 \

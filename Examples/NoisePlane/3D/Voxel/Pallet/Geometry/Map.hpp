@@ -6,6 +6,8 @@
 struct VoxelPalletGeometry;
 typedef unsigned short VoxelPalletGeometryIndex;
 
+# include <string>
+
 struct VoxelPalletGeometryMap
 {
 	static VoxelPalletGeometryMap	StaticMap;
@@ -23,6 +25,7 @@ struct VoxelPalletGeometryMap
 	VoxelPalletGeometryIndex		FindIndex(const VoxelPalletGeometry & pallet) const;
 
 	VoxelPalletGeometry &	New(const char * name);
+	VoxelPalletGeometry &	New(std::string name);
 };
 
 #endif

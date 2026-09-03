@@ -88,3 +88,11 @@ VoxelPalletGeometry & VoxelPalletGeometryMap::New(const char * name)
 	Data.Insert(item);
 	return Data[idx];
 }
+VoxelPalletGeometry & VoxelPalletGeometryMap::New(std::string name)
+{
+	VoxelPalletGeometryIndex idx = Data.Count();
+	VoxelPalletGeometry item;
+	item.Name = name;
+	Data.Insert(item);
+	return Data[idx];
+}

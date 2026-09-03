@@ -11,7 +11,7 @@ Map can be made from multiple Files
 give Map to Parser
 
 
-Name "name"		# starts a new Geometry
+new "name"		# starts a new Geometry
 done			# ends a Geometry
 				# end automatically at end of File or if next begins
 
@@ -22,5 +22,51 @@ done			# ends a Geometry
 quad0   prevX   000 010 100 110   0.0 0.0 1.0 1.0   0
 
 */
+
+//# include "3D/Voxel/Pallet/Geometry/Map.hpp"
+struct VoxelPalletGeometryMap;
+struct VoxelPalletGeometry;
+
+# include "FileParsing/TextCommand/Loop.hpp"
+# include "FileParsing/TextCommand/Func.hpp"
+
+# include "FileInfo.hpp"
+
+namespace VoxelGeometryDataU { struct Face; };
+namespace VoxelGeometryDataF { struct Axis; };
+
+# include "Generics/Container/Binary.hpp"
+
+# include "ValueType/Vector/F3.hpp"
+
+struct VoxelPalletGeometryMapParser : public TextCommand::Loop
+{
+	VoxelPalletGeometryMap &	Map;
+	VoxelPalletGeometry *		Entry = nullptr;
+
+	Container::Binary<VectorF3>		Corners;
+	void		NewCorner(const TextCommand::Args & cmd_args);
+
+	VoxelPalletGeometryMapParser() = delete;
+	VoxelPalletGeometryMapParser(VoxelPalletGeometryMap & map);
+
+	void	New(const TextCommand::Args & cmd_args);
+	void	Done(const TextCommand::Args & cmd_args);
+
+	void	ShowAxis(const TextCommand::Args & cmd_args);
+	void	HideAxis(const TextCommand::Args & cmd_args);
+
+	VoxelGeometryDataU::Face &	ToFaceU(std::string str);
+	void	UQuad0(const TextCommand::Args & cmd_args);
+	void	UQuad1(const TextCommand::Args & cmd_args);
+
+	VoxelGeometryDataF::Axis &	ToFaceF(std::string str);
+	void	FTri0(const TextCommand::Args & cmd_args);
+	void	FTri1(const TextCommand::Args & cmd_args);
+	void	FQuad0(const TextCommand::Args & cmd_args);
+	void	FQuad1(const TextCommand::Args & cmd_args);
+
+	static void		Parse(VoxelPalletGeometryMap & map, const FileInfo & file);
+};
 
 #endif

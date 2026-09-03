@@ -5,6 +5,8 @@
 # include "3D/Voxel/Pallet/Geometry/U.hpp"
 # include "3D/Voxel/Pallet/Geometry/F.hpp"
 
+# include <string>
+
 struct VoxelPalletGeometry
 {
 //	static VoxelPalletGeometry	CubeDiag;
@@ -13,17 +15,17 @@ struct VoxelPalletGeometry
 //	static VoxelPalletGeometry	PrismY8;
 //	static VoxelPalletGeometry	Slope;
 
-	const char *	Name = nullptr;
+	std::string		Name;
 
 	VoxelGeometryDataU::Cube	DataU;
 	VoxelGeometryDataF::Full	DataF;
 
-	bool	UseF_PrevX;
-	bool	UseF_PrevY;
-	bool	UseF_PrevZ;
-	bool	UseF_NextX;
-	bool	UseF_NextY;
-	bool	UseF_NextZ;
+	bool	UseF_PrevX = true;
+	bool	UseF_PrevY = true;
+	bool	UseF_PrevZ = true;
+	bool	UseF_NextX = true;
+	bool	UseF_NextY = true;
+	bool	UseF_NextZ = true;
 	bool	IsAxisVisible(AxisRel axis) const;
 
 	const VoxelGeometryDataU::Face &	AxisDataU(AxisRel axis) const;

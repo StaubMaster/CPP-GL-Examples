@@ -25,6 +25,7 @@
 #include "3D/Voxel/Pallet/Map.hpp"
 #include "3D/Voxel/Pallet/Geometry.hpp"
 #include "3D/Voxel/Pallet/Geometry/Map.hpp"
+#include "3D/Voxel/Pallet/Geometry/Parser.hpp"
 
 // Math
 #include <math.h>
@@ -713,21 +714,25 @@ void ContextNoisePlane::Init_Maps()
 	{
 		VoxelPalletGeometryMap & map = VoxelPalletGeometryMap::StaticMap;
 
-		VoxelPalletGeometry & CubeDiag = map.New("CubeDiag");
-		CubeDiag.InitU_CubeDiag();
-		CubeDiag.InitF_CubeDiag();
+		//VoxelPalletGeometry & CubeDiag = map.New("CubeDiag");
+		//CubeDiag.InitU_CubeDiag();
+		//CubeDiag.InitF_CubeDiag();
+		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/CubeDiag.file"));
 
-		VoxelPalletGeometry & CubeAxisY = map.New("CubeAxisY");
-		CubeAxisY.InitU_CubeAxisY();
-		CubeAxisY.InitF_CubeAxisY();
+		//VoxelPalletGeometry & CubeAxisY = map.New("CubeAxisY");
+		//CubeAxisY.InitU_CubeAxisY();
+		//CubeAxisY.InitF_CubeAxisY();
+		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/CubeAxisY.file"));
 
-		VoxelPalletGeometry & AxisStar = map.New("AxisStar");
-		AxisStar.InitU_CubeDiag();
-		AxisStar.InitF_AxisStar();
+		//VoxelPalletGeometry & AxisStar = map.New("AxisStar");
+		//AxisStar.InitU_CubeDiag();
+		//AxisStar.InitF_AxisStar();
+		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/AxisStar.file"));
 
 		VoxelPalletGeometry & PrismY8 = map.New("PrismY8");
 		PrismY8.InitU_CubeAxisY();
 		PrismY8.InitF_PrismY8();
+		//VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/PrismY8.file"));
 
 		VoxelPalletGeometry & Slope = map.New("Slope");
 		Slope.InitU_CubeDiag();
