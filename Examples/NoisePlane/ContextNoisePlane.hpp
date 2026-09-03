@@ -34,18 +34,14 @@
 // Voxel
 #include "Axis/Orientation.hpp"
 
-#include "Chunk.hpp"
-#include "Chunk/Manager.hpp"
-#include "Chunk/Neighbours.hpp"
+#include "3D/Chunk.hpp"
+#include "3D/Chunk/Manager.hpp"
+#include "3D/Chunk/Neighbours.hpp"
 
-#include "Voxel/Pallet.hpp"
-#include "Voxel/PalletMap.hpp"
-#include "Voxel/PalletGeometry.hpp"
+#include "3D/ChunkVoxelIndex.hpp"
+#include "3D/VoxelHit.hpp"
 
-#include "ChunkVoxelIndex.hpp"
-#include "VoxelHit.hpp"
-
-#include "Structure.hpp"
+#include "3D/Structure.hpp"
 
 #include "BoxEntity3D.hpp"
 
@@ -81,9 +77,9 @@
 
 # include "NewPolyHedraUI.hpp"
 
-// Graphics
-# include "ShaderLayouts.hpp"
-# include "MultiformLayouts.hpp"
+// Layout
+# include "Layout/Shader.hpp"
+# include "Layout/Multiform.hpp"
 
 
 
@@ -91,10 +87,16 @@ struct ContextNoisePlane : public ContextBase
 {
 MultiformLayoutView3D	MultiformLayout;
 
+
+
 NewPolyHedra::Manager	PolyHedraManager;
 NewPolyHedra::PalletManager		PalletManager;
 NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
 NewPolyHedra::UserInterface::ObjectManager		ObjectManagerUI;
+
+void	NewPolyHedra_ChangeMedia();
+
+
 
 UI::Manager			UIManager;
 //::PlaneManager	PlaneManager;
@@ -188,7 +190,7 @@ void	ViewUpdate(Trans3D change, FrameTime frame_time);
 
 
 /* Draw Thread should focus on Drawing
-	avoid locking
+	avoid	locking
 	move View stuff to another Thread ?
 	Draw Thread needs to Create/Delete Graphics
 	Input from different Thread ?
@@ -205,7 +207,9 @@ void						AuxThread0Func();
 PolyHedra *		VoxelCube; // put this in PolyHedra Geometry Pallet
 PolyHedra *		VoxelChunkCube;
 
-void Make();
+void	Init_Maps();
+
+void	Make();
 
 
 
@@ -216,7 +220,7 @@ void Make();
 	split main_.cpp into ContextNoisePlane.hpp and ContextNoisePlane.cpp
 */
 
-void MakeControls();
+void	MakeControls();
 
 
 
@@ -227,28 +231,28 @@ void MakeControls();
 //
 // a lot of the managers are siminal with the bool flags and function names
 // make a Base ? to organize
-void ChangeMedia();
+void	ChangeMedia();
 
 // Valgrind is very slow here ?
-void GraphicsCreate();
-void GraphicsDelete();
+void	GraphicsCreate();
+void	GraphicsDelete();
 
-void Init() override;
-void Free() override;
-
-
-
-void Draw();
+void	Init() override;
+void	Free() override;
 
 
 
-void FrameText(FrameTime frame_time);
-void InventoryCursor(FrameTime frame_time);
+void	Draw();
+
+
+
+void	FrameText(FrameTime frame_time);
+void	InventoryCursor(FrameTime frame_time);
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
-void FrameInput();;
+void	FrameInput();;
 
-void Frame(FrameTime frame_time) override;
-void Resize(DisplaySize display_size) override;
+void	Frame(FrameTime frame_time) override;
+void	Resize(DisplaySize display_size) override;
 
 
 

@@ -4,10 +4,10 @@
 #include "PolyHedra/Data.hpp"
 #include "PolyHedra/Skin/Skin.hpp"
 
-#include "Voxel/GeometryDataU.hpp"
-#include "Voxel/GeometryDataF.hpp"
-#include "Voxel/PalletGeometry.hpp"
-#include "Voxel/Pallet.hpp"
+#include "3D/Voxel/Pallet.hpp"
+#include "3D/Voxel/Pallet/Geometry.hpp"
+#include "3D/Voxel/Pallet/Geometry/U.hpp"
+#include "3D/Voxel/Pallet/Geometry/F.hpp"
 
 
 

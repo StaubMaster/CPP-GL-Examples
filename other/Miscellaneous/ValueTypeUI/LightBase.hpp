@@ -3,7 +3,7 @@
 
 # include "PropertyControl.hpp"
 # include "ValueTypeUI/ColorF4.hpp"
-# include "Control/Slider.hpp"
+# include "Control/Controls/Slider.hpp"
 
 struct LightBase;
 

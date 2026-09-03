@@ -1,8 +1,8 @@
 #ifndef  PROPERTY_CONTROL_HPP
 # define PROPERTY_CONTROL_HPP
 
-# include "Control/GroupBox.hpp"
-# include "Control/Button.hpp"
+# include "Control/Controls/GroupBox.hpp"
+# include "Control/Controls/Button.hpp"
 
 namespace UI
 {

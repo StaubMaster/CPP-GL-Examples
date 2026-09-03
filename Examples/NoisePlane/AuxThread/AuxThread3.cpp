@@ -1,9 +1,9 @@
 #include "AuxThread3.hpp"
 
-#include "Chunk.hpp"
-#include "Chunk/Manager.hpp"
+#include "3D/Chunk.hpp"
+#include "3D/Chunk/Manager.hpp"
 
-#include "Structure.hpp"
+#include "3D/Structure.hpp"
 
 #include "ValueType/Loop/U3.hpp"
 

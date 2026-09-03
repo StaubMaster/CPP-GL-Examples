@@ -1,0 +1,14 @@
+
+make a general FileMap ?
+already have something similar for PolyHedra
+but that one stores Pointers to that Data as well
+this one just stored Files
+
+store both (optionally)
+
+PolyHedra, when looking for a File, loads it and returns the Object
+
+this just looks for the File, remembers it and returns am Index
+
+it dosnt return a Pointer immedeatly
+it first accumulates, then returns indexes

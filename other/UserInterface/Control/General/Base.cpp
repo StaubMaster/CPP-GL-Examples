@@ -514,9 +514,9 @@ UI::Control::Base::Base()
 	AnchorNormal = VectorF2(0, 0);
 	AnchorDist = BoxF2(VectorF2(0, 0), VectorF2(0, 0));
 
-	float margin = 5;
-	float boarder = 2;
-	float padding = 5;
+	float margin = 2.5f;
+	float boarder = 2.0f;
+	float padding = 2.5f;
 
 	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
 	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));

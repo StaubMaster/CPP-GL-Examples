@@ -37,7 +37,8 @@ UI::Control::Form::Form()
 	// give this stuff to Base ?
 	Anchor.X.Anchor = AnchorType::None;
 	Anchor.Y.Anchor = AnchorType::None;
-	AnchorSize = VectorF2(480, 360);
+//	AnchorSize = VectorF2(480, 360);
+	AnchorSize = VectorF2(360, 240);
 	AnchorNormal = VectorF2(0.5, 0.5);
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);

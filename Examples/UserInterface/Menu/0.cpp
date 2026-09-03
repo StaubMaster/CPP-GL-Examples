@@ -86,6 +86,8 @@ UserInterfaceMenu0::UserInterfaceMenu0()
 	ChildInsert(TestScrollButton);
 	ChildInsert(TestListButton);
 	ChildInsert(DirectoryNavigatorButton);
+
+	AutoAnchorYType = EAutoAnchorType::StackMinFit;
 }
 
 //#include "Selector/new.hpp"

@@ -1,11 +1,11 @@
 #include "AuxThread2.hpp"
 
-#include "Chunk.hpp"
-#include "Chunk/Manager.hpp"
-#include "Voxel/Pallet.hpp"
-#include "Voxel/PalletMap.hpp"
+#include "3D/Chunk.hpp"
+#include "3D/Chunk/Manager.hpp"
+#include "3D/Voxel/Pallet.hpp"
+#include "3D/Voxel/Pallet/Map.hpp"
 
-#include "Structure.hpp"
+#include "3D/Structure.hpp"
 
 #include "ContainerLock/AccessTypeGuard.hpp"
 #include "ContainerLock/AssignTypeGuard.hpp"

@@ -10,7 +10,7 @@ UI::Control::Button::Button()
 {
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = VectorF2(75, 25);
+	AnchorSize = VectorF2(75, 16);
 
 	float padding = 0;
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));

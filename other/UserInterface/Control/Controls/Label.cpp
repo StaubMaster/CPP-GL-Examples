@@ -11,7 +11,7 @@ UI::Control::Label::Label()
 {
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = VectorF2(50, 25);
+	AnchorSize = VectorF2(50, 20);
 
 	float padding = 0;
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));

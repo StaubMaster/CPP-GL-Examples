@@ -2,7 +2,7 @@
 # define PROPERTY_CONTROL_VECTOR_F_3_HPP
 
 # include "ValueTypeUI/PropertyControl.hpp"
-# include "Control/Label.hpp"
+# include "Control/Controls/Label.hpp"
 
 struct VectorF3;
 

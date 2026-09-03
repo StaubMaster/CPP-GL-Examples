@@ -2,7 +2,7 @@
 # define PROPERTY_CONTROL_EULER_ANGLE_3D_HPP
 
 # include "PropertyControl.hpp"
-# include "Control/Label.hpp"
+# include "Control/Controls/Label.hpp"
 
 struct EulerAngle3D;
 

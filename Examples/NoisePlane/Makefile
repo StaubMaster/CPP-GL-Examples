@@ -5,29 +5,30 @@ FANCY_NAME := NoisePlane
 ################################################################
 
 FILES := \
-	Graphics/U/Data.cpp \
-	Graphics/U/Layout.cpp \
-	Graphics/F/Data.cpp \
-	Graphics/F/Layout.cpp \
-	Graphics/ShaderLayout.cpp \
+	Texture/FileMap.cpp \
 \
-	Voxel/TextureFileMap.cpp \
+	3D/Voxel.cpp \
+	3D/Voxel/Pallet.cpp \
+	3D/Voxel/Pallet/Map.cpp \
+	3D/Voxel/Pallet/Geometry.cpp \
+	3D/Voxel/Pallet/Geometry/Map.cpp \
+	3D/Voxel/Pallet/Geometry/U.cpp \
+	3D/Voxel/Pallet/Geometry/F.cpp \
 \
-	Voxel.cpp \
-	Voxel/GeometryDataU.cpp \
-	Voxel/GeometryDataF.cpp \
-	Voxel/PalletGeometry.cpp \
-	Voxel/Pallet.cpp \
-	Voxel/PalletMap.cpp \
+	3D/Voxel/Pallet/Geometry/Graphics/ShaderLayout.cpp \
+	3D/Voxel/Pallet/Geometry/Graphics/U/Data.cpp \
+	3D/Voxel/Pallet/Geometry/Graphics/U/Layout.cpp \
+	3D/Voxel/Pallet/Geometry/Graphics/F/Data.cpp \
+	3D/Voxel/Pallet/Geometry/Graphics/F/Layout.cpp \
 \
-	Chunk.cpp \
-	Chunk/GraphicsData.cpp \
-	Chunk/Neighbours.cpp \
-	Chunk/Manager.cpp \
+	3D/Chunk.cpp \
+	3D/Chunk/GraphicsData.cpp \
+	3D/Chunk/Neighbours.cpp \
+	3D/Chunk/Manager.cpp \
 \
-	VoxelHit.cpp \
-	ChunkVoxelIndex.cpp \
-	Structure.cpp \
+	3D/VoxelHit.cpp \
+	3D/ChunkVoxelIndex.cpp \
+	3D/Structure.cpp \
 \
 	AuxThread/AuxThread1.cpp \
 	AuxThread/AuxThread2.cpp \
@@ -49,8 +50,8 @@ FILES := \
 	Menus/Item/ItemContainerUI.cpp \
 \
 	ContextNoisePlane.cpp \
-	ShaderLayouts.cpp \
-	MultiformLayouts.cpp \
+	Layout/Shader.cpp \
+	Layout/Multiform.cpp \
 	NewPolyHedraUI.cpp \
 	new.cpp \
 	main.cpp \

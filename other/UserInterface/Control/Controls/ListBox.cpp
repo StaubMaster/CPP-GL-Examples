@@ -13,7 +13,7 @@ UI::Control::ListBox::Item::Item(UI::Control::ListBox & listBox, unsigned int id
 {
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = VectorF2(75, 25);
+	AnchorSize = VectorF2(75, 16);
 
 
 

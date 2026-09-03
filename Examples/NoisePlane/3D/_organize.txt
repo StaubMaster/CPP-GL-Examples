@@ -1,0 +1,16 @@
+
+Voxel/ should contain all this stuff
+
+rename Voxel. to VoxelUnit. ?
+maybe Voxel/Unit.
+
+
+
+seperate Chunk/Manager.
+	Chunk management
+	Graphics
+
+seperate Chunk.
+	Voxel stuff
+	Generation Data
+	Graphics

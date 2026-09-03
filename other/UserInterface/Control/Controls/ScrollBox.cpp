@@ -72,11 +72,11 @@ UI::Control::ScrollBox::ScrollBox()
 	Content.ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	Content.ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 
-	ScrollBar.Anchor.X.AnchorMax(0, 25);
+	ScrollBar.Anchor.X.AnchorMax(0, 10);
 	ScrollBar.Anchor.Y.AnchorBoth(0, 0);
 	ScrollBar.ValueMin.Y = 0.0f;
 	ScrollBar.ValueMax.Y = 1.0f;
-	ScrollBar.NubSize.X = 25.0f;
+	ScrollBar.NubSize.X = 10.0f;
 	ScrollBar.NubSize.Y = 100.0f;
 	ScrollBar.ValueYChangedFunc.Assign(this, &ScrollBox::ScrollFunc);
 

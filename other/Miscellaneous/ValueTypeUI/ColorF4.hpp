@@ -2,7 +2,7 @@
 # define PROPERTY_CONTROL_COLOR_F_4_HPP
 
 # include "PropertyControl.hpp"
-# include "Control/Slider.hpp"
+# include "Control/Controls/Slider.hpp"
 
 struct ColorF4;
 

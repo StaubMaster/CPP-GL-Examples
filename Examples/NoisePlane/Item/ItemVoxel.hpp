@@ -3,7 +3,7 @@
 
 # include "ItemBase.hpp"
 
-# include "Voxel/Pallet.hpp"
+# include "3D/Voxel/Pallet.hpp"
 
 struct ItemVoxel : public ItemBase
 {

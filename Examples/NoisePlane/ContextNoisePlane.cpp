@@ -20,6 +20,12 @@
 #include "ContainerLock/AccessTypeGuard.hpp"
 #include "ContainerLock/AssignTypeGuard.hpp"
 
+// Voxel
+#include "3D/Voxel/Pallet.hpp"
+#include "3D/Voxel/Pallet/Map.hpp"
+#include "3D/Voxel/Pallet/Geometry.hpp"
+#include "3D/Voxel/Pallet/Geometry/Map.hpp"
+
 // Math
 #include <math.h>
 
@@ -67,33 +73,8 @@ static ValueAccumulator<float>		FrameTime_Draw_DrawText(64);
 
 
 
-
-
-ContextNoisePlane::~ContextNoisePlane()
-{ }
-ContextNoisePlane::ContextNoisePlane()
-	: ContextBase()
-	, MultiformLayout()
-	, PolyHedraManager()
-	, PalletManager()
-	, ObjectManagerBasic()
-	, ObjectManagerUI()
-	, UIManager()
-//	, PlaneManager()
-	, ChunkManager()
-	, MenuMain()
-	, MenuPause(*this)
-	, MenuOptions(*this)
-	, MenuDebug(*this)
-	, Inventory(VectorU2(10, 5))
-	, InventoryUI()
-	, HotBar(VectorU2(10, 1))
-	, HotBarUI()
-	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
-	, AuxThread0Time(64)
+void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 {
-	MediaDirectory = DirectoryInfo("../../media/");
-
 	// NewPolyHedra
 	{
 		// PolyHedraManager
@@ -175,6 +156,36 @@ ContextNoisePlane::ContextNoisePlane()
 			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerUI);
 		}
 	}
+}
+
+
+
+ContextNoisePlane::~ContextNoisePlane()
+{ }
+ContextNoisePlane::ContextNoisePlane()
+	: ContextBase()
+	, MultiformLayout()
+	, PolyHedraManager()
+	, PalletManager()
+	, ObjectManagerBasic()
+	, ObjectManagerUI()
+	, UIManager()
+//	, PlaneManager()
+	, ChunkManager()
+	, MenuMain()
+	, MenuPause(*this)
+	, MenuOptions(*this)
+	, MenuDebug(*this)
+	, Inventory(VectorU2(10, 5))
+	, InventoryUI()
+	, HotBar(VectorU2(10, 1))
+	, HotBarUI()
+	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
+	, AuxThread0Time(64)
+{
+	MediaDirectory = DirectoryInfo("../../media/");
+
+	NewPolyHedra_ChangeMedia();
 
 	AuxThreadBase::ThreadName = "DrawThread";
 	Container::Array<Uniform::Layout*> layouts({
@@ -696,6 +707,132 @@ void ContextNoisePlane::AuxThread0Func()
 
 
 
+void ContextNoisePlane::Init_Maps()
+{
+	// VoxelPalletGeometryMap
+	{
+		VoxelPalletGeometryMap & map = VoxelPalletGeometryMap::StaticMap;
+
+		VoxelPalletGeometry & CubeDiag = map.New("CubeDiag");
+		CubeDiag.InitU_CubeDiag();
+		CubeDiag.InitF_CubeDiag();
+
+		VoxelPalletGeometry & CubeAxisY = map.New("CubeAxisY");
+		CubeAxisY.InitU_CubeAxisY();
+		CubeAxisY.InitF_CubeAxisY();
+
+		VoxelPalletGeometry & AxisStar = map.New("AxisStar");
+		AxisStar.InitU_CubeDiag();
+		AxisStar.InitF_AxisStar();
+
+		VoxelPalletGeometry & PrismY8 = map.New("PrismY8");
+		PrismY8.InitU_CubeAxisY();
+		PrismY8.InitF_PrismY8();
+
+		VoxelPalletGeometry & Slope = map.New("Slope");
+		Slope.InitU_CubeDiag();
+		Slope.InitF_Slope();
+	}
+
+	// VoxelPalletMap
+	{
+		VoxelPalletMap & map = VoxelPalletMap::StaticMap;
+
+		const VoxelPalletGeometry & cube_diag   = VoxelPalletGeometryMap::StaticMap["CubeDiag"];
+		const VoxelPalletGeometry & cube_axis_Y = VoxelPalletGeometryMap::StaticMap["CubeAxisY"];
+		const VoxelPalletGeometry & axis_star   = VoxelPalletGeometryMap::StaticMap["AxisStar"];
+		const VoxelPalletGeometry & cylinder    = VoxelPalletGeometryMap::StaticMap["PrismY8"];
+		const VoxelPalletGeometry & slope       = VoxelPalletGeometryMap::StaticMap["Slope"];
+
+		map.New("OrientationCube", cube_diag, VoxelMaterialType::None).TextureAxis(
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
+		);
+		map.New("OrientationAxisStar", axis_star, VoxelMaterialType::None).TextureAxis(
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
+		);
+		map.New("OrientationCylinder", cylinder, VoxelMaterialType::None).TextureAxis(
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
+		);
+		map.New("OrientationSlope", slope, VoxelMaterialType::None).TextureAxis(
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
+		);
+
+		map.New("DebugR", cube_diag, VoxelMaterialType::None).TextureAll(
+			MediaDirectory.File("Images/Voxel/Debug/R.png")
+		);
+		map.New("DebugG", cube_diag, VoxelMaterialType::None).TextureAll(
+			MediaDirectory.File("Images/Voxel/Debug/G.png")
+		);
+		map.New("DebugB", cube_diag, VoxelMaterialType::None).TextureAll(
+			MediaDirectory.File("Images/Voxel/Debug/B.png")
+		);
+
+		map.New("Gray", cube_diag, VoxelMaterialType::Stone).TextureAll(
+			MediaDirectory.File("Images/Voxel/Gray.png")
+		);
+
+		map.New("Grass", cube_diag, VoxelMaterialType::Dirt).TextureAll(
+			MediaDirectory.File("Images/Voxel/Grass.png")
+		);
+		map.New("Dirt", cube_diag, VoxelMaterialType::Dirt).TextureAll(
+			MediaDirectory.File("Images/Voxel/Dirt.png")
+		);
+
+		map.New("RedLog", cylinder, VoxelMaterialType::Wood).TexturePrismY(
+			MediaDirectory.File("Images/Voxel/fancy_RedWood_Base.png"),
+			MediaDirectory.File("Images/Voxel/fancy_RedWood_Belt.png")
+		);
+		map.New("Log", cube_axis_Y, VoxelMaterialType::Wood).TexturePrismY(
+			MediaDirectory.File("Images/Voxel/Log_Base.png"),
+			MediaDirectory.File("Images/Voxel/Log_Belt.png")
+		);
+		map.New("Leaves", cube_diag, VoxelMaterialType::None).TextureAll(
+			MediaDirectory.File("Images/Voxel/Leave1.png")
+		);
+
+		map.New("Sand", cube_diag, VoxelMaterialType::Powder).TextureAll(
+			MediaDirectory.File("Images/Voxel/Sand.png")
+		);
+		map.New("Snow", cube_diag, VoxelMaterialType::Powder).TextureAll(
+			MediaDirectory.File("Images/Voxel/Snow.png")
+		);
+		map.New("Water", cube_diag, VoxelMaterialType::None).TextureAll(
+			MediaDirectory.File("Images/Voxel/Water.png")
+		);
+
+		map.New("ConcreteCube", cube_diag, VoxelMaterialType::Stone).TextureAll(
+			MediaDirectory.File("Images/Voxel/Concrete_0.png")
+		);
+		map.New("ConcreteCylinder", cylinder, VoxelMaterialType::Stone).TextureAll(
+			MediaDirectory.File("Images/Voxel/Concrete_0.png")
+		);
+	}
+
+	{
+		Structure::Default();
+	}
+}
+
 void ContextNoisePlane::Make()
 {
 	{
@@ -741,24 +878,7 @@ void ContextNoisePlane::Make()
 		PalletManager.FindMakePallet(ViewEntity_PolyHedra);
 	}
 
-	// Voxels
-	{
-		VoxelPalletGeometry::CubeDiag.InitU_CubeDiag();
-		VoxelPalletGeometry::CubeDiag.InitF_CubeDiag();
-		VoxelPalletGeometry::CubeAxisY.InitU_CubeAxisY();
-		VoxelPalletGeometry::CubeAxisY.InitF_CubeAxisY();
-		VoxelPalletGeometry::AxisStar.InitU_CubeDiag();
-		VoxelPalletGeometry::AxisStar.InitF_AxisStar();
-		VoxelPalletGeometry::PrismY8.InitU_CubeAxisY();
-		VoxelPalletGeometry::PrismY8.InitF_PrismY8();
-		VoxelPalletGeometry::Slope.InitU_CubeDiag();
-		VoxelPalletGeometry::Slope.InitF_Slope();
-
-		VoxelPalletMap::StaticMap.Default(MediaDirectory);
-		//VoxelPalletMap::All.MakePolyHedra();
-
-		Structure::Default();
-	}
+	Init_Maps();
 
 	/*{
 		ViewRayPolyHedra = PolyHedra::Generate::ConeC(8, 0.01f, 0.1f);
@@ -829,7 +949,7 @@ void ContextNoisePlane::MakeControls()
 		UIManager.WindowControl.ChildInsert(HotBarUI);
 	}
 
-	UIManager.WindowControl.UpdateDepth();
+//	UIManager.WindowControl.UpdateDepth();
 }
 
 
@@ -875,7 +995,7 @@ void ContextNoisePlane::GraphicsDelete()
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 }
 
-#include "Voxel/TextureFileMap.hpp"
+#include "Texture/FileMap.hpp"
 void ContextNoisePlane::Init()
 {
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';

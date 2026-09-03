@@ -5,7 +5,7 @@
 
 # include "PolyHedra/PolyHedra.hpp"
 
-# include "Voxel/Pallet.hpp"
+# include "3D/Voxel/Pallet.hpp"
 
 struct ItemTool : public ItemBase
 {

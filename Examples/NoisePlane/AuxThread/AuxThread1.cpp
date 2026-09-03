@@ -1,7 +1,7 @@
 #include "AuxThread1.hpp"
 
-#include "Chunk.hpp"
-#include "Chunk/Manager.hpp"
+#include "3D/Chunk.hpp"
+#include "3D/Chunk/Manager.hpp"
 
 #include "ContainerLock/AccessTypeGuard.hpp"
 
