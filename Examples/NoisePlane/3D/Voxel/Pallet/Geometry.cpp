@@ -241,8 +241,6 @@ void VoxelPalletGeometry::InitF_AxisStar()
 	DataF.Here.Tri0(nextZ, pos[0b100], pos[0b101], VectorF2(0.5f, 0.5f), VectorF2(0, 0), VectorF2(1, 0), 5);
 	DataF.Here.Tri0(nextZ, pos[0b101], pos[0b111], VectorF2(0.5f, 0.5f), VectorF2(1, 0), VectorF2(1, 1), 5);
 }
-
-// Prims12 would have better Texture alignment
 void VoxelPalletGeometry::InitF_PrismY8()
 {
 	UseF_PrevX = true;
@@ -255,57 +253,6 @@ void VoxelPalletGeometry::InitF_PrismY8()
 	OrientationAxis0 = AxisRel::PrevY;
 	OrientationAxis1 = AxisRel::None;
 
-	float val0 = 0.00f;
-	float val1 = 0.10f;
-	float val2 = 0.35f;
-	float val3 = 0.65f;
-	float val4 = 0.90f;
-	float val5 = 1.00f;
-
-	VectorF3 pos_prev_y[12] = {
-		VectorF3(val1, 0.0f, val1), // 0x0 00
-		VectorF3(val2, 0.0f, val0), // 0x1 01
-		VectorF3(val3, 0.0f, val0), // 0x2 02
-		VectorF3(val4, 0.0f, val1), // 0x3 03
-		VectorF3(val5, 0.0f, val2), // 0x4 04
-		VectorF3(val5, 0.0f, val3), // 0x5 05
-		VectorF3(val4, 0.0f, val4), // 0x6 06
-		VectorF3(val3, 0.0f, val5), // 0x7 07
-		VectorF3(val2, 0.0f, val5), // 0x8 08
-		VectorF3(val1, 0.0f, val4), // 0x9 09
-		VectorF3(val0, 0.0f, val3), // 0xA 10
-		VectorF3(val0, 0.0f, val2), // 0xB 11
-	};
-
-	VectorF3 pos_next_y[12] = {
-		VectorF3(val1, 1.0f, val1), // 0x0 00
-		VectorF3(val2, 1.0f, val0), // 0x1 01
-		VectorF3(val3, 1.0f, val0), // 0x2 02
-		VectorF3(val4, 1.0f, val1), // 0x3 03
-		VectorF3(val5, 1.0f, val2), // 0x4 04
-		VectorF3(val5, 1.0f, val3), // 0x5 05
-		VectorF3(val4, 1.0f, val4), // 0x6 06
-		VectorF3(val3, 1.0f, val5), // 0x7 07
-		VectorF3(val2, 1.0f, val5), // 0x8 08
-		VectorF3(val1, 1.0f, val4), // 0x9 09
-		VectorF3(val0, 1.0f, val3), // 0xA 10
-		VectorF3(val0, 1.0f, val2), // 0xB 11
-	};
-
-	DataF.Here .Quad1(pos_prev_y[0x0], pos_prev_y[0x1], pos_next_y[0x0], pos_next_y[0x1], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.4f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0x1], pos_prev_y[0x2], pos_next_y[0x1], pos_next_y[0x2], BoxF2(VectorF2(0.4f, 0.0f), VectorF2(0.6f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0x2], pos_prev_y[0x3], pos_next_y[0x2], pos_next_y[0x3], BoxF2(VectorF2(0.6f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0x3], pos_prev_y[0x4], pos_next_y[0x3], pos_next_y[0x4], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0x4], pos_prev_y[0x5], pos_next_y[0x4], pos_next_y[0x5], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0x5], pos_prev_y[0x6], pos_next_y[0x5], pos_next_y[0x6], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0x6], pos_prev_y[0x7], pos_next_y[0x6], pos_next_y[0x7], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0x7], pos_prev_y[0x8], pos_next_y[0x7], pos_next_y[0x8], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0x8], pos_prev_y[0x9], pos_next_y[0x8], pos_next_y[0x9], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0x9], pos_prev_y[0xA], pos_next_y[0x9], pos_next_y[0xA], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0xA], pos_prev_y[0xB], pos_next_y[0xA], pos_next_y[0xB], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-	DataF.Here .Quad1(pos_prev_y[0xB], pos_prev_y[0x0], pos_next_y[0xB], pos_next_y[0x0], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.0f, 1.0f)), 2);
-
-/*
 	float f___ = 0.3f;
 
 	VectorF3 pos[16] = {
@@ -413,11 +360,9 @@ void VoxelPalletGeometry::InitF_PrismY8()
 	tri.Vertexes[1] = nY[0xB];
 	tri.Vertexes[2] = nY[0xA];
 	DataF.NextY.Data.Insert(tri);
-*/
 
 	DataF.Done();
 }
-
 void VoxelPalletGeometry::InitF_Slope()
 {
 	UseF_PrevX = true;
@@ -476,6 +421,112 @@ void VoxelPalletGeometry::InitF_Slope()
 		),
 		0
 	);
+
+	DataF.Done();
+}
+
+void VoxelPalletGeometry::InitF_PrismY12()
+{
+	UseF_PrevX = true;
+	UseF_PrevY = true;
+	UseF_PrevZ = true;
+	UseF_NextX = true;
+	UseF_NextY = true;
+	UseF_NextZ = true;
+
+	OrientationAxis0 = AxisRel::PrevY;
+	OrientationAxis1 = AxisRel::None;
+
+	float val0 = 0.00f;
+	float val1 = 0.10f;
+	float val2 = 0.35f;
+	float val3 = 0.65f;
+	float val4 = 0.90f;
+	float val5 = 1.00f;
+
+	VectorF3 pos_prev_y_blades[12] = {
+		VectorF3(val1, 0.0f, val1), // 0x0 00
+		VectorF3(val2, 0.0f, val0), // 0x1 01
+		VectorF3(val3, 0.0f, val0), // 0x2 02
+		VectorF3(val4, 0.0f, val1), // 0x3 03
+		VectorF3(val5, 0.0f, val2), // 0x4 04
+		VectorF3(val5, 0.0f, val3), // 0x5 05
+		VectorF3(val4, 0.0f, val4), // 0x6 06
+		VectorF3(val3, 0.0f, val5), // 0x7 07
+		VectorF3(val2, 0.0f, val5), // 0x8 08
+		VectorF3(val1, 0.0f, val4), // 0x9 09
+		VectorF3(val0, 0.0f, val3), // 0xA 10
+		VectorF3(val0, 0.0f, val2), // 0xB 11
+	};
+	VectorF3 pos_prev_y_middle(0.5f, 0.0f, 0.5f);
+
+	VectorF3 pos_next_y_blades[12] = {
+		VectorF3(val1, 1.0f, val1), // 0x0 00
+		VectorF3(val2, 1.0f, val0), // 0x1 01
+		VectorF3(val3, 1.0f, val0), // 0x2 02
+		VectorF3(val4, 1.0f, val1), // 0x3 03
+		VectorF3(val5, 1.0f, val2), // 0x4 04
+		VectorF3(val5, 1.0f, val3), // 0x5 05
+		VectorF3(val4, 1.0f, val4), // 0x6 06
+		VectorF3(val3, 1.0f, val5), // 0x7 07
+		VectorF3(val2, 1.0f, val5), // 0x8 08
+		VectorF3(val1, 1.0f, val4), // 0x9 09
+		VectorF3(val0, 1.0f, val3), // 0xA 10
+		VectorF3(val0, 1.0f, val2), // 0xB 11
+	};
+	VectorF3 pos_next_y_middle(0.5f, 1.0f, 0.5f);
+
+	DataF.Here .Quad1(pos_prev_y_blades[0x0], pos_prev_y_blades[0x1], pos_next_y_blades[0x0], pos_next_y_blades[0x1], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(0.4f, 1.0f)), 2);
+	DataF.PrevZ.Quad1(pos_prev_y_blades[0x1], pos_prev_y_blades[0x2], pos_next_y_blades[0x1], pos_next_y_blades[0x2], BoxF2(VectorF2(0.4f, 0.0f), VectorF2(0.6f, 1.0f)), 2);
+	DataF.Here .Quad1(pos_prev_y_blades[0x2], pos_prev_y_blades[0x3], pos_next_y_blades[0x2], pos_next_y_blades[0x3], BoxF2(VectorF2(0.6f, 0.0f), VectorF2(1.0f, 1.0f)), 2);
+
+	DataF.Here .Quad0(pos_prev_y_blades[0x3], pos_prev_y_blades[0x4], pos_next_y_blades[0x3], pos_next_y_blades[0x4], BoxF2(VectorF2(0.0f, 0.0f), VectorF2(1.0f, 0.4f)), 3);
+	DataF.NextX.Quad0(pos_prev_y_blades[0x4], pos_prev_y_blades[0x5], pos_next_y_blades[0x4], pos_next_y_blades[0x5], BoxF2(VectorF2(0.0f, 0.4f), VectorF2(1.0f, 0.6f)), 3);
+	DataF.Here .Quad0(pos_prev_y_blades[0x5], pos_prev_y_blades[0x6], pos_next_y_blades[0x5], pos_next_y_blades[0x6], BoxF2(VectorF2(0.0f, 0.6f), VectorF2(1.0f, 1.0f)), 3);
+
+	DataF.Here .Quad1(pos_prev_y_blades[0x6], pos_prev_y_blades[0x7], pos_next_y_blades[0x6], pos_next_y_blades[0x7], BoxF2(VectorF2(1.0f, 0.0f), VectorF2(0.6f, 1.0f)), 5);
+	DataF.NextZ.Quad1(pos_prev_y_blades[0x7], pos_prev_y_blades[0x8], pos_next_y_blades[0x7], pos_next_y_blades[0x8], BoxF2(VectorF2(0.6f, 0.0f), VectorF2(0.4f, 1.0f)), 5);
+	DataF.Here .Quad1(pos_prev_y_blades[0x8], pos_prev_y_blades[0x9], pos_next_y_blades[0x8], pos_next_y_blades[0x9], BoxF2(VectorF2(0.4f, 0.0f), VectorF2(0.0f, 1.0f)), 5);
+
+	DataF.Here .Quad0(pos_prev_y_blades[0x9], pos_prev_y_blades[0xA], pos_next_y_blades[0x9], pos_next_y_blades[0xA], BoxF2(VectorF2(0.0f, 1.0f), VectorF2(1.0f, 0.6f)), 0);
+	DataF.PrevX.Quad0(pos_prev_y_blades[0xA], pos_prev_y_blades[0xB], pos_next_y_blades[0xA], pos_next_y_blades[0xB], BoxF2(VectorF2(0.0f, 0.6f), VectorF2(1.0f, 0.4f)), 0);
+	DataF.Here .Quad0(pos_prev_y_blades[0xB], pos_prev_y_blades[0x0], pos_next_y_blades[0xB], pos_next_y_blades[0x0], BoxF2(VectorF2(0.0f, 0.4f), VectorF2(1.0f, 0.0f)), 0);
+
+
+
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x0], pos_prev_y_blades[0x1], pos_prev_y_middle, VectorF2(0.0f, 0.0f), VectorF2(0.0f, 0.4f), VectorF2(0.5f, 0.5f), 1);
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x1], pos_prev_y_blades[0x2], pos_prev_y_middle, VectorF2(0.0f, 0.4f), VectorF2(0.0f, 0.6f), VectorF2(0.5f, 0.5f), 1);
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x2], pos_prev_y_blades[0x3], pos_prev_y_middle, VectorF2(0.0f, 0.6f), VectorF2(0.0f, 1.0f), VectorF2(0.5f, 0.5f), 1);
+
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x3], pos_prev_y_blades[0x4], pos_prev_y_middle, VectorF2(0.0f, 1.0f), VectorF2(0.4f, 1.0f), VectorF2(0.5f, 0.5f), 1);
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x4], pos_prev_y_blades[0x5], pos_prev_y_middle, VectorF2(0.4f, 1.0f), VectorF2(0.6f, 1.0f), VectorF2(0.5f, 0.5f), 1);
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x5], pos_prev_y_blades[0x6], pos_prev_y_middle, VectorF2(0.6f, 1.0f), VectorF2(1.0f, 1.0f), VectorF2(0.5f, 0.5f), 1);
+
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x6], pos_prev_y_blades[0x7], pos_prev_y_middle, VectorF2(1.0f, 1.0f), VectorF2(1.0f, 0.6f), VectorF2(0.5f, 0.5f), 1);
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x7], pos_prev_y_blades[0x8], pos_prev_y_middle, VectorF2(1.0f, 0.6f), VectorF2(1.0f, 0.4f), VectorF2(0.5f, 0.5f), 1);
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x8], pos_prev_y_blades[0x9], pos_prev_y_middle, VectorF2(1.0f, 0.4f), VectorF2(1.0f, 0.0f), VectorF2(0.5f, 0.5f), 1);
+
+	DataF.PrevY.Tri0(pos_prev_y_blades[0x9], pos_prev_y_blades[0xA], pos_prev_y_middle, VectorF2(1.0f, 0.0f), VectorF2(0.6f, 0.0f), VectorF2(0.5f, 0.5f), 1);
+	DataF.PrevY.Tri0(pos_prev_y_blades[0xA], pos_prev_y_blades[0xB], pos_prev_y_middle, VectorF2(0.6f, 0.0f), VectorF2(0.4f, 0.0f), VectorF2(0.5f, 0.5f), 1);
+	DataF.PrevY.Tri0(pos_prev_y_blades[0xB], pos_prev_y_blades[0x0], pos_prev_y_middle, VectorF2(0.4f, 0.0f), VectorF2(0.0f, 0.0f), VectorF2(0.5f, 0.5f), 1);
+
+
+
+	DataF.NextY.Tri1(pos_next_y_blades[0x0], pos_next_y_blades[0x1], pos_next_y_middle, VectorF2(0.0f, 0.0f), VectorF2(0.0f, 0.4f), VectorF2(0.5f, 0.5f), 4);
+	DataF.NextY.Tri1(pos_next_y_blades[0x1], pos_next_y_blades[0x2], pos_next_y_middle, VectorF2(0.0f, 0.4f), VectorF2(0.0f, 0.6f), VectorF2(0.5f, 0.5f), 4);
+	DataF.NextY.Tri1(pos_next_y_blades[0x2], pos_next_y_blades[0x3], pos_next_y_middle, VectorF2(0.0f, 0.6f), VectorF2(0.0f, 1.0f), VectorF2(0.5f, 0.5f), 4);
+
+	DataF.NextY.Tri1(pos_next_y_blades[0x3], pos_next_y_blades[0x4], pos_next_y_middle, VectorF2(0.0f, 1.0f), VectorF2(0.4f, 1.0f), VectorF2(0.5f, 0.5f), 4);
+	DataF.NextY.Tri1(pos_next_y_blades[0x4], pos_next_y_blades[0x5], pos_next_y_middle, VectorF2(0.4f, 1.0f), VectorF2(0.6f, 1.0f), VectorF2(0.5f, 0.5f), 4);
+	DataF.NextY.Tri1(pos_next_y_blades[0x5], pos_next_y_blades[0x6], pos_next_y_middle, VectorF2(0.6f, 1.0f), VectorF2(1.0f, 1.0f), VectorF2(0.5f, 0.5f), 4);
+
+	DataF.NextY.Tri1(pos_next_y_blades[0x6], pos_next_y_blades[0x7], pos_next_y_middle, VectorF2(1.0f, 1.0f), VectorF2(1.0f, 0.6f), VectorF2(0.5f, 0.5f), 4);
+	DataF.NextY.Tri1(pos_next_y_blades[0x7], pos_next_y_blades[0x8], pos_next_y_middle, VectorF2(1.0f, 0.6f), VectorF2(1.0f, 0.4f), VectorF2(0.5f, 0.5f), 4);
+	DataF.NextY.Tri1(pos_next_y_blades[0x8], pos_next_y_blades[0x9], pos_next_y_middle, VectorF2(1.0f, 0.4f), VectorF2(1.0f, 0.0f), VectorF2(0.5f, 0.5f), 4);
+
+	DataF.NextY.Tri1(pos_next_y_blades[0x9], pos_next_y_blades[0xA], pos_next_y_middle, VectorF2(1.0f, 0.0f), VectorF2(0.6f, 0.0f), VectorF2(0.5f, 0.5f), 4);
+	DataF.NextY.Tri1(pos_next_y_blades[0xA], pos_next_y_blades[0xB], pos_next_y_middle, VectorF2(0.6f, 0.0f), VectorF2(0.4f, 0.0f), VectorF2(0.5f, 0.5f), 4);
+	DataF.NextY.Tri1(pos_next_y_blades[0xB], pos_next_y_blades[0x0], pos_next_y_middle, VectorF2(0.4f, 0.0f), VectorF2(0.0f, 0.0f), VectorF2(0.5f, 0.5f), 4);
 
 	DataF.Done();
 }

@@ -62,7 +62,7 @@ struct VoxelPallet
 	const VoxelPalletGeometry *		Geometry = nullptr;
 	VoxelMaterialType				Material = VoxelMaterialType::None;
 
-	TextureFileIndex	Textures[6];
+	TextureFileIndex	Textures[6]; // make this a Container::Binary<>
 	::PolyHedra *		PolyHedra = nullptr;
 
 

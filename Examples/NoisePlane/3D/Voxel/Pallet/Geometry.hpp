@@ -16,25 +16,28 @@ struct VoxelPalletGeometry
 //	static VoxelPalletGeometry	Slope;
 
 	std::string		Name;
+	// instead of allways 6 Textures, use a Variable number of Textures
+	// store how many this Geometry needs
 
-	VoxelGeometryDataU::Cube	DataU;
-	VoxelGeometryDataF::Full	DataF;
-
+	// rename UseF_ to DisplayNeighbour_
 	bool	UseF_PrevX = true;
 	bool	UseF_PrevY = true;
 	bool	UseF_PrevZ = true;
 	bool	UseF_NextX = true;
 	bool	UseF_NextY = true;
 	bool	UseF_NextZ = true;
-	bool	IsAxisVisible(AxisRel axis) const;
 
+	VoxelGeometryDataU::Cube	DataU;
+	VoxelGeometryDataF::Full	DataF;
+
+	bool								IsAxisVisible(AxisRel axis) const;
 	const VoxelGeometryDataU::Face &	AxisDataU(AxisRel axis) const;
 	const VoxelGeometryDataF::Axis &	AxisDataF(AxisRel axis) const;
 
 	AxisRel		OrientationAxis0;
 	AxisRel		OrientationAxis1;
 
-	AxisOrientation	Orient(AxisRel placeAxis0, AxisRel placeAxis1) const;
+	AxisOrientation		Orient(AxisRel placeAxis0, AxisRel placeAxis1) const;
 
 
 
@@ -55,10 +58,17 @@ struct VoxelPalletGeometry
 
 	void	InitF_AxisStar();
 	void	InitF_PrismY8();
-
 	void	InitF_Slope();
 
-	// do all these with Files ?
+
+
+	// these are all the same Geometry
+	// but with different Texture Orientation
+	// rename AxisOrientation to Axis3DOrientation
+	// make Axis2DOrientation
+	// give each Texture an Orientation member ?
+	// make Texture Orientation part of Pallet, not PalletGeometry
+	void	InitF_PrismY12();
 };
 
 #endif

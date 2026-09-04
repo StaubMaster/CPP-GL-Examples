@@ -28,47 +28,51 @@ TextureFileIndex VoxelPallet::FindTextureFileIndex(int idx) const
 	return tex;
 }
 
+
+
 void VoxelPallet::TextureAxis(
 	FileInfo prevX, FileInfo prevY, FileInfo prevZ,
 	FileInfo nextX, FileInfo nextY, FileInfo nextZ
 )
 {
-	Textures[0].File = prevX; Textures[0].Index = 0xFFFF;
-	Textures[1].File = prevY; Textures[1].Index = 0xFFFF;
-	Textures[2].File = prevZ; Textures[2].Index = 0xFFFF;
-	Textures[3].File = nextX; Textures[3].Index = 0xFFFF;
-	Textures[4].File = nextY; Textures[4].Index = 0xFFFF;
-	Textures[5].File = nextZ; Textures[5].Index = 0xFFFF;
+	Textures[0].Change(prevX);
+	Textures[1].Change(prevY);
+	Textures[2].Change(prevZ);
+	Textures[3].Change(nextX);
+	Textures[4].Change(nextY);
+	Textures[5].Change(nextZ);
 }
 void VoxelPallet::TextureAxis(
 	FileInfo axisX, FileInfo axisY, FileInfo axisZ
 )
 {
-	Textures[0].File = axisX; Textures[0].Index = 0xFFFF;
-	Textures[1].File = axisY; Textures[1].Index = 0xFFFF;
-	Textures[2].File = axisZ; Textures[2].Index = 0xFFFF;
-	Textures[3].File = axisX; Textures[3].Index = 0xFFFF;
-	Textures[4].File = axisY; Textures[4].Index = 0xFFFF;
-	Textures[5].File = axisZ; Textures[5].Index = 0xFFFF;
+	Textures[0].Change(axisX);
+	Textures[1].Change(axisY);
+	Textures[2].Change(axisZ);
+	Textures[3].Change(axisX);
+	Textures[4].Change(axisY);
+	Textures[5].Change(axisZ);
 }
 void VoxelPallet::TexturePrismY(FileInfo base, FileInfo belt)
 {
-	Textures[0].File = belt; Textures[0].Index = 0xFFFF;
-	Textures[1].File = base; Textures[1].Index = 0xFFFF;
-	Textures[2].File = belt; Textures[2].Index = 0xFFFF;
-	Textures[3].File = belt; Textures[3].Index = 0xFFFF;
-	Textures[4].File = base; Textures[4].Index = 0xFFFF;
-	Textures[5].File = belt; Textures[5].Index = 0xFFFF;
+	Textures[0].Change(belt);
+	Textures[1].Change(base);
+	Textures[2].Change(belt);
+	Textures[3].Change(belt);
+	Textures[4].Change(base);
+	Textures[5].Change(belt);
 }
 void VoxelPallet::TextureAll(FileInfo tex)
 {
-	Textures[0].File = tex; Textures[0].Index = 0xFFFF;
-	Textures[1].File = tex; Textures[1].Index = 0xFFFF;
-	Textures[2].File = tex; Textures[2].Index = 0xFFFF;
-	Textures[3].File = tex; Textures[3].Index = 0xFFFF;
-	Textures[4].File = tex; Textures[4].Index = 0xFFFF;
-	Textures[5].File = tex; Textures[5].Index = 0xFFFF;
+	Textures[0].Change(tex);
+	Textures[1].Change(tex);
+	Textures[2].Change(tex);
+	Textures[3].Change(tex);
+	Textures[4].Change(tex);
+	Textures[5].Change(tex);
 }
+
+
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Data.hpp"

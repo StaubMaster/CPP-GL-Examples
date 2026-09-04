@@ -6,6 +6,7 @@ FANCY_NAME := NoisePlane
 
 FILES := \
 	Texture/FileMap.cpp \
+	Texture/FileIndex.cpp \
 \
 	3D/Voxel.cpp \
 	3D/Voxel/Pallet.cpp \

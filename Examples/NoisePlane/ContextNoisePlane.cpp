@@ -734,6 +734,10 @@ void ContextNoisePlane::Init_Maps()
 		PrismY8.InitF_PrismY8();
 		//VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/PrismY8.file"));
 
+		VoxelPalletGeometry & PrismY12 = map.New("PrismY12");
+		PrismY12.InitU_CubeDiag();
+		PrismY12.InitF_PrismY12();
+
 		VoxelPalletGeometry & Slope = map.New("Slope");
 		Slope.InitU_CubeDiag();
 		Slope.InitF_Slope();
@@ -830,6 +834,15 @@ void ContextNoisePlane::Init_Maps()
 		);
 		map.New("ConcreteCylinder", cylinder, VoxelMaterialType::Stone).TextureAll(
 			MediaDirectory.File("Images/Voxel/Concrete_0.png")
+		);
+
+		map.New("PrismY12", VoxelPalletGeometryMap::StaticMap["PrismY12"], VoxelMaterialType::None).TextureAxis(
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
+			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
 		);
 	}
 

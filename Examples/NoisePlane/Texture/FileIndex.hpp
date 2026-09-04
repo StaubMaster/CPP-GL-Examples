@@ -6,7 +6,9 @@
 struct TextureFileIndex
 {
 	FileInfo		File;
-	unsigned int	Index = 0xFFFF;
+	unsigned short	Index = 0xFFFF;
+
+	void	Change(const FileInfo & file);
 };
 
 #endif
