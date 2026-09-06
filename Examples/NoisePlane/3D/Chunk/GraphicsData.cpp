@@ -142,14 +142,14 @@ void ChunkGraphicsData::ClearU()
 {
 	ArrayU.Clear();
 }
-const Container::Array<VoxelGraphicsDataU::Face> & ChunkGraphicsData::DataU() const
-{
-	return ArrayU;
-}
-
 void ChunkGraphicsData::ClearF()
 {
 	ArrayF.Clear();
+}
+
+const Container::Array<VoxelGraphicsDataU::Face> & ChunkGraphicsData::DataU() const
+{
+	return ArrayU;
 }
 const Container::Array<VoxelGraphicsDataF::Face> & ChunkGraphicsData::DataF() const
 {
@@ -214,10 +214,26 @@ void ChunkGraphicsData::CatF(const VoxelData & voxel_data, Axis3D::Rel axis)
 		graph_face.Vertexes[1].Pos = pos_func(geom_face.Vertexes[1].Pos) + voxel_data.Offset;
 		graph_face.Vertexes[2].Pos = pos_func(geom_face.Vertexes[2].Pos) + voxel_data.Offset;
 
-		// Normal also needs to be Oriented
-		graph_face.Vertexes[0].Normal = geom_face.Normal;
-		graph_face.Vertexes[1].Normal = geom_face.Normal;
-		graph_face.Vertexes[2].Normal = geom_face.Normal;
+		VectorF3 normal = geom_face.Normal;
+		switch (voxel_data.Orientation.GetDiag())
+		{
+			case Axis3D::Diag::Here : normal = VectorF3(+normal.X, +normal.Y, +normal.Z); break;
+			case Axis3D::Diag::Prev : normal = VectorF3(+normal.Z, +normal.X, +normal.Y); break;
+			case Axis3D::Diag::Next : normal = VectorF3(+normal.Y, +normal.Z, +normal.X); break;
+			case Axis3D::Diag::DiagX: normal = VectorF3(-normal.X, -normal.Z, -normal.Y); break;
+			case Axis3D::Diag::DiagY: normal = VectorF3(-normal.Z, -normal.Y, -normal.X); break;
+			case Axis3D::Diag::DiagZ: normal = VectorF3(-normal.Y, -normal.X, -normal.Z); break;
+		}
+		switch (voxel_data.Orientation.GetFlip())
+		{
+			case Axis3D::Flip::None : normal = VectorF3(+normal.X, +normal.Y, +normal.Z); break;
+			case Axis3D::Flip::FlipX: normal = VectorF3(+normal.X, -normal.Y, -normal.Z); break;
+			case Axis3D::Flip::FlipY: normal = VectorF3(-normal.X, +normal.Y, -normal.Z); break;
+			case Axis3D::Flip::FlipZ: normal = VectorF3(-normal.X, -normal.Y, +normal.Z); break;
+		}
+		graph_face.Vertexes[0].Normal = normal;
+		graph_face.Vertexes[1].Normal = normal;
+		graph_face.Vertexes[2].Normal = normal;
 
 		unsigned int tex_idx;
 		tex_idx = voxel_data.Pallet.Textures[geom_face.Tex].Index;
@@ -226,7 +242,6 @@ void ChunkGraphicsData::CatF(const VoxelData & voxel_data, Axis3D::Rel axis)
 		Axis2D::Orientation::SwizzlerF_Ref tex_func = tex_orientation.absolute_F_Func();
 
 		VectorF2 tex;
-		// use Texture Orientation
 
 		tex = tex_func(geom_face.Vertexes[0].Tex);
 		graph_face.Vertexes[0].Tex.X = tex.X;
@@ -259,6 +274,8 @@ void ChunkGraphicsData::Cat(const VoxelData & voxel_data, Axis3D::Rel axis)
 		default: break;
 	}
 }
+
+
 
 void ChunkGraphicsData::Done()
 {

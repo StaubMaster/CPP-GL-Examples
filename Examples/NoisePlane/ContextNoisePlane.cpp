@@ -340,6 +340,18 @@ void ContextNoisePlane::ViewUpdate_Intangible(Trans3D change, FrameTime frame_ti
 }
 void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 {
+	float limit = 0.0f;
+	if (window[Keys::LeftControl] == State::Down)
+	{
+		limit = ViewEntity_MoveLimitFast;
+	}
+	else
+	{
+		limit = ViewEntity_MoveLimitSlow;
+	}
+	ViewEntity.Vel = change * limit;
+	return;
+
 	if (ViewEntity_CollisionSide.PrevY)
 	{
 		if (change.Y > 0.0f)
@@ -362,7 +374,6 @@ void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 				limit = ViewEntity_MoveLimitSlow;
 			}
 		}
-		(void)limit;
 
 		/* accel and decel
 			accel:
@@ -770,18 +781,17 @@ void ContextNoisePlane::Init_Maps()
 
 void ContextNoisePlane::Make()
 {
-	{
-		//window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
-		//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
-		window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
-		//window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
-		View.Depth.Color = window.DefaultColor;
-		View.Depth.Range.SetMin(0.5f);
+	//window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
+	//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
+	window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
+	//window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
 
-		LightAmbient = LightBase(0.2f, ColorF4(1.0f, 1.0f, 1.0f));
-		LightSolar = LightDirection(1.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(1.0f, -1.0f, 0.0f));
-		LightSpot = ::LightSpot(0.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
-	}
+	View.Depth.Color = window.DefaultColor;
+	View.Depth.Range.SetMin(0.5f);
+
+	LightAmbient = LightBase(0.5f, ColorF4(1.0f, 1.0f, 1.0f));
+	LightSolar = LightDirection(1.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(+2.0f, -3.0f, +1.0f));
+	LightSpot = ::LightSpot(0.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
 
 	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
 	ViewEntity.Box = BoxF3(
@@ -819,6 +829,15 @@ void ContextNoisePlane::Make()
 		ViewRayPolyHedra = PolyHedra::Generate::ConeC(8, 0.01f, 0.1f);
 		PolyHedraManager.PlacePolyHedra(ViewRayPolyHedra);
 	}*/
+
+	//ChunkManager.ChangeSize(0, 0);
+	//ChunkManager.ChangeSize(2, 1);
+	//ChunkManager.ChangeSize(4, 3);
+	ChunkManager.ChangeSize(8, 3);
+	//ChunkManager.ChangeSize(8, 6);
+	//ChunkManager.ChangeSize(16, 8);
+	//ChunkManager.ChangeSize(16, 12);
+	//ChunkManager.ChangeSize(32, 16);
 }
 
 
@@ -958,14 +977,6 @@ void ContextNoisePlane::Init()
 	VoxelPalletMap::StaticMap.MakePolyHedras();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	MakeControls();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	//ChunkManager.ChangeSize(0, 0);
-	//ChunkManager.ChangeSize(2, 1);
-	ChunkManager.ChangeSize(4, 3);
-//	ChunkManager.ChangeSize(8, 6);
-	//ChunkManager.ChangeSize(16, 8);
-	//ChunkManager.ChangeSize(16, 12);
-	//ChunkManager.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	MultiformLayout.Depth.ChangeData(View.Depth);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';

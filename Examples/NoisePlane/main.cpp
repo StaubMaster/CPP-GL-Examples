@@ -20,7 +20,14 @@ int main(int argc, char * argv[])
 {
 	std::cout << "int main() ...\n";
 	int ret = -1;
-	Debug::NewFileInDir(DirectoryInfo("./logs/"));
+	{
+		DirectoryInfo log_dir("./logs/");
+		if (!log_dir.Exists())
+		{
+			log_dir.Create();
+		}
+		Debug::NewFileInDir(log_dir);
+	}
 	if (argc > 0)	{ Debug::Log << argv[0] << Debug::Done; }
 	else			{ Debug::Log << "NoName" << Debug::Done; }
 	if (glfwInit() == 0) { std::cout << "GLFW Init Failed\n"; return -1; }

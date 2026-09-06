@@ -54,19 +54,17 @@ struct ChunkGraphicsData
 
 	private:
 	Container::BlockLinkedList<1024, VoxelGraphicsDataU::Face>	BlockU;
+	Container::BlockLinkedList<1024, VoxelGraphicsDataF::Face>	BlockF;
+
 	Container::Array<VoxelGraphicsDataU::Face>	ArrayU;
+	Container::Array<VoxelGraphicsDataF::Face>	ArrayF;
+
 	public:
 	void	ClearU();
-	const Container::Array<VoxelGraphicsDataF::Face> &	DataF() const;
-
-
-
-	private:
-	Container::BlockLinkedList<1024, VoxelGraphicsDataF::Face>	BlockF;
-	Container::Array<VoxelGraphicsDataF::Face>	ArrayF;
-	public:
 	void	ClearF();
+
 	const Container::Array<VoxelGraphicsDataU::Face> &	DataU() const;
+	const Container::Array<VoxelGraphicsDataF::Face> &	DataF() const;
 
 
 

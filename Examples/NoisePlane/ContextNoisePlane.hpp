@@ -158,7 +158,7 @@ Axis3D::Rel		ViewHit_Axis1;
 
 // VoxelClear
 unsigned int			VoxelClear_Progress = 0xFFFFFFFF;
-unsigned int			VoxelClear_Required = 64;
+unsigned int			VoxelClear_Required = 1;
 ChunkVoxelIndex			VoxelClear_Index;
 const VoxelPallet *		VoxelClear_Pallet = nullptr;
 const ItemTool *		VoxelClear_Tool = nullptr;

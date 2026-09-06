@@ -21,7 +21,7 @@ struct StructureMapParser : public TextCommand::Loop
 	struct PalletChar
 	{
 		const VoxelPallet *		Pallet = nullptr;
-		char					Character = ' ';
+		char					Character = '\0';
 	};
 	Container::Binary<PalletChar>	PalletChars;
 
