@@ -50,17 +50,18 @@ struct VoxelPalletGeometryMapParser : public TextCommand::Loop
 	VoxelPalletGeometryMapParser() = delete;
 	VoxelPalletGeometryMapParser(VoxelPalletGeometryMap & map);
 
+	VoxelGeometryDataU::Face &	ToFaceU(std::string str);
+	VoxelGeometryDataF::Axis &	ToFaceF(std::string str);
+
 	void	New(const TextCommand::Args & cmd_args);
 	void	Done(const TextCommand::Args & cmd_args);
 
 	void	ShowAxis(const TextCommand::Args & cmd_args);
 	void	HideAxis(const TextCommand::Args & cmd_args);
 
-	VoxelGeometryDataU::Face &	ToFaceU(std::string str);
 	void	UQuad0(const TextCommand::Args & cmd_args);
 	void	UQuad1(const TextCommand::Args & cmd_args);
 
-	VoxelGeometryDataF::Axis &	ToFaceF(std::string str);
 	void	FTri0(const TextCommand::Args & cmd_args);
 	void	FTri1(const TextCommand::Args & cmd_args);
 	void	FQuad0(const TextCommand::Args & cmd_args);

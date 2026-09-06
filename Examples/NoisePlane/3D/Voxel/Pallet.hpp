@@ -3,7 +3,8 @@
 
 # include "FileInfo.hpp"
 
-# include "Axis/Orientation.hpp"
+# include "Axis/3D/Orientation.hpp"
+# include "Axis/2D/Orientation.hpp"
 
 struct Voxel;
 struct VoxelPalletGeometry;
@@ -54,15 +55,19 @@ enum class VoxelMaterialType
 		Dirt
 */
 
+# include <string>
+
 struct VoxelPallet
 {
 	VoxelPalletIndex				Index = 0xFFFF;
 
-	const char *					Name = nullptr;
+	std::string						Name;
 	const VoxelPalletGeometry *		Geometry = nullptr;
 	VoxelMaterialType				Material = VoxelMaterialType::None;
 
-	TextureFileIndex	Textures[6]; // make this a Container::Binary<>
+	TextureFileIndex		Textures[6]; // make this a Container::Binary<> ?
+	Axis2D::Orientation		TextureOrientations[6];
+
 	::PolyHedra *		PolyHedra = nullptr;
 
 
@@ -72,14 +77,18 @@ struct VoxelPallet
 	VoxelPallet(const VoxelPallet & other) = default;
 	VoxelPallet & operator=(const VoxelPallet & other) = default;
 
-	VoxelPallet(VoxelPalletIndex idx, const char * name, const VoxelPalletGeometry & geometry, VoxelMaterialType material);
+	VoxelPallet(VoxelPalletIndex idx, std::string name, const VoxelPalletGeometry & geometry, VoxelMaterialType material);
 
 
 
-	TextureFileIndex	FindTextureFileIndex(int idx) const;
-
-
-
+	void	TextureAxis(
+		FileInfo prevX, Axis2D::Orientation prevX_orientation,
+		FileInfo prevY, Axis2D::Orientation prevY_orientation,
+		FileInfo prevZ, Axis2D::Orientation prevZ_orientation,
+		FileInfo nextX, Axis2D::Orientation nextX_orientation,
+		FileInfo nextY, Axis2D::Orientation nextY_orientation,
+		FileInfo nextZ, Axis2D::Orientation nextZ_orientation
+	);
 	void	TextureAxis(
 		FileInfo prevX, FileInfo prevY, FileInfo prevZ,
 		FileInfo nextX, FileInfo nextY, FileInfo nextZ
@@ -95,7 +104,7 @@ struct VoxelPallet
 	void	MakePolyHedra();
 
 	Voxel	ToVoxel() const;
-	Voxel	ToVoxel(AxisRel placeAxis0, AxisRel placeAxis1) const;
+	Voxel	ToVoxel(Axis3D::Rel placeAxis0, Axis3D::Rel placeAxis1) const;
 };
 
 #endif

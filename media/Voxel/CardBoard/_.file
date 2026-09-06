@@ -1,0 +1,9 @@
+
+new CardBoard   CubeDiag   None
+tex Belt0.png   Invert1 None
+tex Base0.png   Invert0 None
+tex Belt1.png   Normal1 FlipY
+tex Belt0.png   Invert1 FlipY
+tex Base1.png   Invert0 None
+tex Belt1.png   Normal1 None
+done

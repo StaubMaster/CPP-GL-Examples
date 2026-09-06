@@ -3,9 +3,9 @@
 
 # include "3D/Voxel/Pallet/Geometry/U.hpp"
 # include "ValueType/Vector/I3.hpp"
+# include "Axis/3D/Types.hpp"
 
 struct VectorU3;
-enum class AxisRel : unsigned char;
 
 /* Vertex
 	|------||------||------||------| 32 Bits in 4 Bytes
@@ -39,7 +39,7 @@ struct Vertex
 	Vertex(const Vertex & other) = default;
 	Vertex & operator=(const Vertex & other) = default;
 
-	Vertex(const VectorU3 & udx, const VoxelGeometryDataU::Vertex & vert, const AxisRel & axis, const VectorI3 & chunk);
+	Vertex(const VectorU3 & udx, const VoxelGeometryDataU::Vertex & vert, const Axis3D::Rel & axis, unsigned int tex, const VectorI3 & chunk);
 };
 struct Face
 {

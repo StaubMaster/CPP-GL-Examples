@@ -1,0 +1,27 @@
+
+new Orientation_Cube_All0   CubeDiag   None
+tex PrevX.png   Normal0 None
+tex PrevY.png   Normal0 None
+tex PrevZ.png   Normal0 None
+tex NextX.png   Normal0 None
+tex NextY.png   Normal0 None
+tex NextZ.png   Normal0 None
+done
+
+new Orientation_Cube_All1   CubeDiag   None
+tex X.png   Normal0 None
+tex Y.png   Normal0 None
+tex Z.png   Normal0 None
+tex X.png   Normal1 None
+tex Y.png   Normal1 None
+tex Z.png   Normal1 None
+done
+
+new Orientation_Cube_Axis0   CubeDiag   None
+tex Belt.png   Invert0 None
+tex Base.png   Normal0 None
+tex Belt.png   Normal0 None
+tex Belt.png   Invert0 None
+tex Base.png   Normal0 None
+tex Belt.png   Normal0 None
+done

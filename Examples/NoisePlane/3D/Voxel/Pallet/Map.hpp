@@ -12,6 +12,8 @@ struct TextureFileMap;
 typedef unsigned short VoxelPalletIndex;
 enum class VoxelMaterialType;
 
+# include <string>
+
 struct VoxelPalletMap
 {
 	static VoxelPalletMap	StaticMap;
@@ -28,7 +30,7 @@ struct VoxelPalletMap
 	VoxelPalletIndex		FindIndex(const VoxelPallet * pallet) const;
 	VoxelPalletIndex		FindIndex(const VoxelPallet & pallet) const;
 
-	VoxelPallet &	New(const char * name, const VoxelPalletGeometry & geometry, VoxelMaterialType material);
+	VoxelPallet &	New(std::string name, const VoxelPalletGeometry & geometry, VoxelMaterialType material);
 
 	void	TexturesAssign(TextureFileMap & tex_map);
 

@@ -6,6 +6,7 @@
 #include "3D/Voxel/Pallet/Map.hpp"
 
 #include "3D/Structure.hpp"
+#include "3D/StructureMap.hpp"
 
 #include "ContainerLock/AccessTypeGuard.hpp"
 #include "ContainerLock/AssignTypeGuard.hpp"
@@ -412,7 +413,7 @@ void AuxThread2::DecorateTreesCenter(Chunk & chunk)
 	if ((chunk.Index.X % 2 == 0) && (chunk.Index.Z % 2 == 0))
 	{
 		StructureObject obj;
-		obj.Structure = &Structure::Tree1;
+		obj.Structure = &StructureMap::StaticMap["Tree1"];
 		obj.Origin = VectorU3(15, 0, 15);
 		if (FindMinYNull(chunk, obj.Origin))
 		{ chunk.Decorations.Insert(obj); }
@@ -425,7 +426,7 @@ void AuxThread2::DecorateTreesLines(Chunk & chunk)
 		for (unsigned int x = 1; x < CHUNK_VALUES_PER_SIDE; x += 4)
 		{
 			StructureObject obj;
-			obj.Structure = &Structure::Tree0;
+			obj.Structure = &StructureMap::StaticMap["Tree9"];
 			obj.Origin = VectorU3(x, 0, z);
 			if (FindMinYNull(chunk, obj.Origin))
 			{ chunk.Decorations.Insert(obj); }
@@ -434,7 +435,7 @@ void AuxThread2::DecorateTreesLines(Chunk & chunk)
 		for (unsigned int x = 3; x < CHUNK_VALUES_PER_SIDE; x += 4)
 		{
 			StructureObject obj;
-			obj.Structure = &Structure::Tree0;
+			obj.Structure = &StructureMap::StaticMap["Tree0"];
 			obj.Origin = VectorU3(x, 0, z);
 			if (FindMinYNull(chunk, obj.Origin))
 			{ chunk.Decorations.Insert(obj); }

@@ -6,13 +6,13 @@
 
 # include "Generics/Container/Array.hpp"
 
-# include "Axis/Enums.hpp"
+# include "Axis/3D/Types.hpp"
 
 struct BoxEntity3D_CollisionTime
 {
 	float		Time = 0.0f / 0.0f;
 	VectorF3	Normal;
-	//AxisRel		Axis; // instread of Normal ?
+	//Axis3D::Rel		Axis; // instread of Normal ?
 
 	~BoxEntity3D_CollisionTime() = default;
 	BoxEntity3D_CollisionTime() = default;
@@ -39,7 +39,7 @@ struct BoxEntity3D_CollisionSide // could be compressed into a Byte
 	BoxEntity3D_CollisionSide(const BoxEntity3D_CollisionSide & other) = default;
 	BoxEntity3D_CollisionSide & operator=(const BoxEntity3D_CollisionSide & other) = default;
 
-	void	Consider(const AxisRel & axis);
+	void	Consider(const Axis3D::Rel & axis);
 	void	Consider(const VectorF3 & vec);
 	void	Consider(const BoxEntity3D_CollisionSide & other);
 };

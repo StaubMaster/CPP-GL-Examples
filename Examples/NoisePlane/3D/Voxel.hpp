@@ -1,14 +1,14 @@
 #ifndef  VOXEL_HPP
 # define VOXEL_HPP
 
-# include "Axis/Orientation.hpp"
+# include "Axis/3D/Orientation.hpp"
 
 struct VoxelPallet;
 
 struct Voxel
 {
 	public:
-	AxisOrientation		Orientation;
+	Axis3D::Orientation		Orientation;
 
 	private:
 	unsigned short	Pallet = 0xFFFF;
@@ -18,7 +18,7 @@ struct Voxel
 	const VoxelPallet &		ToPallet() const;
 	void					MakePallet(const VoxelPallet & pallet);
 
-	bool	IsAxisVisible(AxisRel axis) const;
+	bool	IsAxisVisible(Axis3D::Rel axis) const;
 
 
 

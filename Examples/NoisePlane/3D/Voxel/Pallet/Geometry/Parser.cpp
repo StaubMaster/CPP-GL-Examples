@@ -12,6 +12,23 @@
 #include "ValueType/Box/U2.hpp"
 #include "ValueType/Box/F2.hpp"
 
+// Axis
+#include "Axis/3D/Enums.hpp"
+
+
+
+static Axis3D::Rel StringToAxis3DRel(const std::string & str)
+{
+	if (str == "Here")			{ return Axis3D::Rel::Here; }
+	else if (str == "PrevX")	{ return Axis3D::Rel::PrevX; }
+	else if (str == "PrevY")	{ return Axis3D::Rel::PrevY; }
+	else if (str == "PrevZ")	{ return Axis3D::Rel::PrevZ; }
+	else if (str == "NextX")	{ return Axis3D::Rel::NextX; }
+	else if (str == "NextY")	{ return Axis3D::Rel::NextY; }
+	else if (str == "NextZ")	{ return Axis3D::Rel::NextZ; }
+	else						{ return Axis3D::Rel::None; }
+}
+
 
 
 void VoxelPalletGeometryMapParser::NewCorner(const TextCommand::Args & cmd_args)
@@ -44,8 +61,6 @@ VoxelPalletGeometryMapParser::VoxelPalletGeometryMapParser(VoxelPalletGeometryMa
 	Commands.Insert(new TextCommand::FuncNormal("fQuad1",		this, &VoxelPalletGeometryMapParser::FQuad1));
 }
 
-
-
 void VoxelPalletGeometryMapParser::New(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 1)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 1"); }
@@ -63,49 +78,37 @@ void VoxelPalletGeometryMapParser::Done(const TextCommand::Args & cmd_args)
 	Corners.Clear();
 }
 
-/*static AxisRel	StringToAxisRel(const std::string & str)
-{
-	if (str == "Here") { return AxisRel::Here; }
-	else if (str == "PrevX") { return AxisRel::PrevX; }
-	else if (str == "PrevY") { return AxisRel::PrevY; }
-	else if (str == "PrevZ") { return AxisRel::PrevZ; }
-	else if (str == "NextX") { return AxisRel::NextX; }
-	else if (str == "NextY") { return AxisRel::NextY; }
-	else if (str == "NextZ") { return AxisRel::NextZ; }
-	else { return AxisRel::None; }
-}*/
-
 void VoxelPalletGeometryMapParser::ShowAxis(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 1)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 1"); }
 	if (Entry == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "no Entry"); }
 
-	std::string str = cmd_args.ToString(0);
-
-	if (str == "Here") { return; }
-	else if (str == "PrevX") { Entry -> UseF_PrevX = true; }
-	else if (str == "PrevY") { Entry -> UseF_PrevY = true; }
-	else if (str == "PrevZ") { Entry -> UseF_PrevZ = true; }
-	else if (str == "NextX") { Entry -> UseF_NextX = true; }
-	else if (str == "NextY") { Entry -> UseF_NextY = true; }
-	else if (str == "NextZ") { Entry -> UseF_NextZ = true; }
-	else { throw "Invalid Axis Name"; }
+	switch (StringToAxis3DRel(cmd_args.ToString(0)))
+	{
+		case Axis3D::Rel::PrevX: Entry -> UseF_PrevX = true; break;
+		case Axis3D::Rel::PrevY: Entry -> UseF_PrevY = true; break;
+		case Axis3D::Rel::PrevZ: Entry -> UseF_PrevZ = true; break;
+		case Axis3D::Rel::NextX: Entry -> UseF_NextX = true; break;
+		case Axis3D::Rel::NextY: Entry -> UseF_NextY = true; break;
+		case Axis3D::Rel::NextZ: Entry -> UseF_NextZ = true; break;
+		default: return;
+	}
 }
 void VoxelPalletGeometryMapParser::HideAxis(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 1)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 1"); }
 	if (Entry == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "no Entry"); }
 
-	std::string str = cmd_args.ToString(0);
-
-	if (str == "Here") { return; }
-	else if (str == "PrevX") { Entry -> UseF_PrevX = false; }
-	else if (str == "PrevY") { Entry -> UseF_PrevY = false; }
-	else if (str == "PrevZ") { Entry -> UseF_PrevZ = false; }
-	else if (str == "NextX") { Entry -> UseF_NextX = false; }
-	else if (str == "NextY") { Entry -> UseF_NextY = false; }
-	else if (str == "NextZ") { Entry -> UseF_NextZ = false; }
-	else { throw "Invalid Axis Name"; }
+	switch (StringToAxis3DRel(cmd_args.ToString(0)))
+	{
+		case Axis3D::Rel::PrevX: Entry -> UseF_PrevX = false; break;
+		case Axis3D::Rel::PrevY: Entry -> UseF_PrevY = false; break;
+		case Axis3D::Rel::PrevZ: Entry -> UseF_PrevZ = false; break;
+		case Axis3D::Rel::NextX: Entry -> UseF_NextX = false; break;
+		case Axis3D::Rel::NextY: Entry -> UseF_NextY = false; break;
+		case Axis3D::Rel::NextZ: Entry -> UseF_NextZ = false; break;
+		default: return;
+	}
 }
 
 
@@ -139,25 +142,13 @@ static VectorU3 BinaryStringToVecU3(std::string str)
 	return VectorU3(v[2], v[1], v[0]);
 }
 
-VoxelGeometryDataU::Face & VoxelPalletGeometryMapParser::ToFaceU(std::string str)
-{
-	if (str == "Here") { throw "Invalid FaceU Axis"; }
-	else if (str == "PrevX") { return Entry -> DataU.PrevX; }
-	else if (str == "PrevY") { return Entry -> DataU.PrevY; }
-	else if (str == "PrevZ") { return Entry -> DataU.PrevZ; }
-	else if (str == "NextX") { return Entry -> DataU.NextX; }
-	else if (str == "NextY") { return Entry -> DataU.NextY; }
-	else if (str == "NextZ") { return Entry -> DataU.NextZ; }
-	else { throw "Invalid FaceU Name"; }
-}
-
 // uQuad0   prevX   000 010 100 110   0 0 1 1   0
 void VoxelPalletGeometryMapParser::UQuad0(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 10)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 10"); }
 	if (Entry == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "no Entry"); }
 
-	VoxelGeometryDataU::Face & face = ToFaceU(cmd_args.ToString(0));
+	VoxelGeometryDataU::Face & face = Entry -> AxisDataU(StringToAxis3DRel(cmd_args.ToString(0)));
 
 	VectorU3 p00 = BinaryStringToVecU3(cmd_args.ToString(1));
 	VectorU3 p01 = BinaryStringToVecU3(cmd_args.ToString(2));
@@ -184,7 +175,7 @@ void VoxelPalletGeometryMapParser::UQuad1(const TextCommand::Args & cmd_args)
 	if (!(cmd_args.Count() == 10)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 10"); }
 	if (Entry == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "no Entry"); }
 
-	VoxelGeometryDataU::Face & face = ToFaceU(cmd_args.ToString(0));
+	VoxelGeometryDataU::Face & face = Entry -> AxisDataU(StringToAxis3DRel(cmd_args.ToString(0)));
 
 	VectorU3 p00 = BinaryStringToVecU3(cmd_args.ToString(1));
 	VectorU3 p01 = BinaryStringToVecU3(cmd_args.ToString(2));
@@ -209,19 +200,6 @@ void VoxelPalletGeometryMapParser::UQuad1(const TextCommand::Args & cmd_args)
 
 
 
-
-VoxelGeometryDataF::Axis & VoxelPalletGeometryMapParser::ToFaceF(std::string str)
-{
-	if (str == "Here") { return Entry -> DataF.Here; }
-	else if (str == "PrevX") { return Entry -> DataF.PrevX; }
-	else if (str == "PrevY") { return Entry -> DataF.PrevY; }
-	else if (str == "PrevZ") { return Entry -> DataF.PrevZ; }
-	else if (str == "NextX") { return Entry -> DataF.NextX; }
-	else if (str == "NextY") { return Entry -> DataF.NextY; }
-	else if (str == "NextZ") { return Entry -> DataF.NextZ; }
-	else { throw "Invalid FaceF Name"; }
-}
-
 // void	Tri0(VectorF3 p0, VectorF3 p1, VectorF3 p2, VectorF2 t0, VectorF2 t1, VectorF2 t2, unsigned int tex);
 // fTri0   prevX   idx0 idx1 idx2   0.0 0.0  0.0 0.0  0.0 0.0   0
 void VoxelPalletGeometryMapParser::FTri0(const TextCommand::Args & cmd_args)
@@ -229,7 +207,7 @@ void VoxelPalletGeometryMapParser::FTri0(const TextCommand::Args & cmd_args)
 	if (!(cmd_args.Count() == 11)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 11"); }
 	if (Entry == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "no Entry"); }
 
-	VoxelGeometryDataF::Axis & face = ToFaceF(cmd_args.ToString(0));
+	VoxelGeometryDataF::Axis & face = Entry -> AxisDataF(StringToAxis3DRel(cmd_args.ToString(0)));
 
 	VectorF3 p0 = Corners[cmd_args.ToUInt32(1)];
 	VectorF3 p1 = Corners[cmd_args.ToUInt32(2)];
@@ -257,7 +235,7 @@ void VoxelPalletGeometryMapParser::FTri1(const TextCommand::Args & cmd_args)
 	if (!(cmd_args.Count() == 11)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 11"); }
 	if (Entry == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "no Entry"); }
 
-	VoxelGeometryDataF::Axis & face = ToFaceF(cmd_args.ToString(0));
+	VoxelGeometryDataF::Axis & face = Entry -> AxisDataF(StringToAxis3DRel(cmd_args.ToString(0)));
 
 	VectorF3 p0 = Corners[cmd_args.ToUInt32(1)];
 	VectorF3 p1 = Corners[cmd_args.ToUInt32(2)];
@@ -288,7 +266,7 @@ void VoxelPalletGeometryMapParser::FQuad0(const TextCommand::Args & cmd_args)
 	if (!(cmd_args.Count() == 10)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 10"); }
 	if (Entry == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "no Entry"); }
 
-	VoxelGeometryDataF::Axis & face = ToFaceF(cmd_args.ToString(0));
+	VoxelGeometryDataF::Axis & face = Entry -> AxisDataF(StringToAxis3DRel(cmd_args.ToString(0)));
 
 	VectorF3 p00 = Corners[cmd_args.ToUInt32(1)];
 	VectorF3 p01 = Corners[cmd_args.ToUInt32(2)];
@@ -315,7 +293,7 @@ void VoxelPalletGeometryMapParser::FQuad1(const TextCommand::Args & cmd_args)
 	if (!(cmd_args.Count() == 10)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 10"); }
 	if (Entry == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "no Entry"); }
 
-	VoxelGeometryDataF::Axis & face = ToFaceF(cmd_args.ToString(0));
+	VoxelGeometryDataF::Axis & face = Entry -> AxisDataF(StringToAxis3DRel(cmd_args.ToString(0)));
 
 	VectorF3 p00 = Corners[cmd_args.ToUInt32(1)];
 	VectorF3 p01 = Corners[cmd_args.ToUInt32(2)];

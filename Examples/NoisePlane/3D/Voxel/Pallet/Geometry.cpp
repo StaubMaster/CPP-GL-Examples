@@ -1,4 +1,5 @@
 #include "3D/Voxel/Pallet/Geometry.hpp"
+#include "Axis/3D/Enums.hpp"
 
 #include "ValueType/Box/F2.hpp"
 #include "ValueType/Box/U2.hpp"
@@ -13,30 +14,75 @@
 
 
 
-const VoxelGeometryDataU::Face & VoxelPalletGeometry::AxisDataU(AxisRel axis) const
+bool VoxelPalletGeometry::IsAxisVisible(Axis3D::Rel axis) const
 {
 	switch (axis)
 	{
-		case AxisRel::PrevX: return DataU.PrevX;
-		case AxisRel::PrevY: return DataU.PrevY;
-		case AxisRel::PrevZ: return DataU.PrevZ;
-		case AxisRel::NextX: return DataU.NextX;
-		case AxisRel::NextY: return DataU.NextY;
-		case AxisRel::NextZ: return DataU.NextZ;
+		case Axis3D::Rel::None:  return false;
+		case Axis3D::Rel::PrevX: return UseF_PrevX;
+		case Axis3D::Rel::PrevY: return UseF_PrevY;
+		case Axis3D::Rel::PrevZ: return UseF_PrevZ;
+		case Axis3D::Rel::NextX: return UseF_NextX;
+		case Axis3D::Rel::NextY: return UseF_NextY;
+		case Axis3D::Rel::NextZ: return UseF_NextZ;
+		case Axis3D::Rel::Here:  return true;
+		default: return false;
+	}
+}
+
+const VoxelGeometryDataU::Face & VoxelPalletGeometry::AxisDataU(Axis3D::Rel axis) const
+{
+	switch (axis)
+	{
+		case Axis3D::Rel::PrevX: return DataU.PrevX;
+		case Axis3D::Rel::PrevY: return DataU.PrevY;
+		case Axis3D::Rel::PrevZ: return DataU.PrevZ;
+		case Axis3D::Rel::NextX: return DataU.NextX;
+		case Axis3D::Rel::NextY: return DataU.NextY;
+		case Axis3D::Rel::NextZ: return DataU.NextZ;
 		default: break;
 	}
 	throw "VoxelPalletGeometry::AxisDataU: Invalid axis\n";
 }
-const VoxelGeometryDataF::Axis & VoxelPalletGeometry::AxisDataF(AxisRel axis) const
+const VoxelGeometryDataF::Axis & VoxelPalletGeometry::AxisDataF(Axis3D::Rel axis) const
 {
 	switch (axis)
 	{
-		case AxisRel::PrevX: return DataF.PrevX;
-		case AxisRel::PrevY: return DataF.PrevY;
-		case AxisRel::PrevZ: return DataF.PrevZ;
-		case AxisRel::NextX: return DataF.NextX;
-		case AxisRel::NextY: return DataF.NextY;
-		case AxisRel::NextZ: return DataF.NextZ;
+		case Axis3D::Rel::PrevX: return DataF.PrevX;
+		case Axis3D::Rel::PrevY: return DataF.PrevY;
+		case Axis3D::Rel::PrevZ: return DataF.PrevZ;
+		case Axis3D::Rel::NextX: return DataF.NextX;
+		case Axis3D::Rel::NextY: return DataF.NextY;
+		case Axis3D::Rel::NextZ: return DataF.NextZ;
+		default: return DataF.Here;
+	}
+	throw "VoxelPalletGeometry::AxisDataF: Invalid axis\n";
+}
+
+VoxelGeometryDataU::Face & VoxelPalletGeometry::AxisDataU(Axis3D::Rel axis)
+{
+	switch (axis)
+	{
+		case Axis3D::Rel::PrevX: return DataU.PrevX;
+		case Axis3D::Rel::PrevY: return DataU.PrevY;
+		case Axis3D::Rel::PrevZ: return DataU.PrevZ;
+		case Axis3D::Rel::NextX: return DataU.NextX;
+		case Axis3D::Rel::NextY: return DataU.NextY;
+		case Axis3D::Rel::NextZ: return DataU.NextZ;
+		default: break;
+	}
+	throw "VoxelPalletGeometry::AxisDataU: Invalid axis\n";
+}
+VoxelGeometryDataF::Axis & VoxelPalletGeometry::AxisDataF(Axis3D::Rel axis)
+{
+	switch (axis)
+	{
+		case Axis3D::Rel::PrevX: return DataF.PrevX;
+		case Axis3D::Rel::PrevY: return DataF.PrevY;
+		case Axis3D::Rel::PrevZ: return DataF.PrevZ;
+		case Axis3D::Rel::NextX: return DataF.NextX;
+		case Axis3D::Rel::NextY: return DataF.NextY;
+		case Axis3D::Rel::NextZ: return DataF.NextZ;
 		default: return DataF.Here;
 	}
 	throw "VoxelPalletGeometry::AxisDataF: Invalid axis\n";
@@ -44,25 +90,9 @@ const VoxelGeometryDataF::Axis & VoxelPalletGeometry::AxisDataF(AxisRel axis) co
 
 
 
-bool VoxelPalletGeometry::IsAxisVisible(AxisRel axis) const
+Axis3D::Orientation VoxelPalletGeometry::Orient(Axis3D::Rel placeAxis0, Axis3D::Rel placeAxis1) const
 {
-	switch (axis)
-	{
-		case AxisRel::None:  return false;
-		case AxisRel::PrevX: return UseF_PrevX;
-		case AxisRel::PrevY: return UseF_PrevY;
-		case AxisRel::PrevZ: return UseF_PrevZ;
-		case AxisRel::NextX: return UseF_NextX;
-		case AxisRel::NextY: return UseF_NextY;
-		case AxisRel::NextZ: return UseF_NextZ;
-		case AxisRel::Here:  return true;
-		default: return false;
-	}
-}
-
-AxisOrientation VoxelPalletGeometry::Orient(AxisRel placeAxis0, AxisRel placeAxis1) const
-{
-	AxisOrientation orient;
+	Axis3D::Orientation orient;
 	orient.make(OrientationAxis0, placeAxis0, OrientationAxis1, placeAxis1);
 	return orient;
 }
@@ -100,8 +130,8 @@ void VoxelPalletGeometry::InitF_CubeDiag()
 	UseF_NextY = false;
 	UseF_NextZ = false;
 
-	OrientationAxis0 = AxisRel::None;
-	OrientationAxis1 = AxisRel::None;
+	OrientationAxis0 = Axis3D::Rel::None;
+	OrientationAxis1 = Axis3D::Rel::None;
 
 	VectorF3 pos[8] = {
 		VectorF3(0.0f, 0.0f, 0.0f), // 0b000
@@ -156,8 +186,8 @@ void VoxelPalletGeometry::InitF_CubeAxisY()
 	UseF_NextY = false;
 	UseF_NextZ = false;
 
-	OrientationAxis0 = AxisRel::PrevY;
-	OrientationAxis1 = AxisRel::None;
+	OrientationAxis0 = Axis3D::Rel::PrevY;
+	OrientationAxis1 = Axis3D::Rel::None;
 
 	VectorF3 pos[8] = {
 		VectorF3(0.0f, 0.0f, 0.0f), // 0b000
@@ -250,8 +280,8 @@ void VoxelPalletGeometry::InitF_PrismY8()
 	UseF_NextY = true;
 	UseF_NextZ = true;
 
-	OrientationAxis0 = AxisRel::PrevY;
-	OrientationAxis1 = AxisRel::None;
+	OrientationAxis0 = Axis3D::Rel::PrevY;
+	OrientationAxis1 = Axis3D::Rel::None;
 
 	float f___ = 0.3f;
 
@@ -286,16 +316,18 @@ void VoxelPalletGeometry::InitF_PrismY8()
 	DataF.PrevX.Quad1(pos[0x6], pos[0x7], pos[0xE], pos[0xF], BoxF2(VectorF2(0.0f, 1.0f), VectorF2(1.0f, 0.0f)), 0);
 	DataF.Here .Quad1(pos[0x7], pos[0x0], pos[0xF], pos[0x8], BoxF2(VectorF2(0.0f, 1.0f), VectorF2(1.0f, 0.0f)), 0);
 
-	VoxelGraphicsDataF::Face	tri;
-	VoxelGraphicsDataF::Vertex	pY[8];
-	pY[0x0] = VoxelGraphicsDataF::Vertex(pos[0x0], VectorF3(0.0f, 0.0f + f___, 1));
-	pY[0x1] = VoxelGraphicsDataF::Vertex(pos[0x1], VectorF3(0.0f, 1.0f - f___, 1));
-	pY[0x2] = VoxelGraphicsDataF::Vertex(pos[0x2], VectorF3(0.0f + f___, 1.0f, 1));
-	pY[0x3] = VoxelGraphicsDataF::Vertex(pos[0x3], VectorF3(1.0f - f___, 1.0f, 1));
-	pY[0x4] = VoxelGraphicsDataF::Vertex(pos[0x4], VectorF3(1.0f, 1.0f - f___, 1));
-	pY[0x5] = VoxelGraphicsDataF::Vertex(pos[0x5], VectorF3(1.0f, 0.0f + f___, 1));
-	pY[0x6] = VoxelGraphicsDataF::Vertex(pos[0x6], VectorF3(1.0f - f___, 0.0f, 1));
-	pY[0x7] = VoxelGraphicsDataF::Vertex(pos[0x7], VectorF3(0.0f + f___, 0.0f, 1));
+	VoxelGeometryDataF::Face	tri;
+
+	tri.Tex = 1;
+	VoxelGeometryDataF::Vertex	pY[8];
+	pY[0x0] = VoxelGeometryDataF::Vertex(pos[0x0], VectorF2(0.0f, 0.0f + f___));
+	pY[0x1] = VoxelGeometryDataF::Vertex(pos[0x1], VectorF2(0.0f, 1.0f - f___));
+	pY[0x2] = VoxelGeometryDataF::Vertex(pos[0x2], VectorF2(0.0f + f___, 1.0f));
+	pY[0x3] = VoxelGeometryDataF::Vertex(pos[0x3], VectorF2(1.0f - f___, 1.0f));
+	pY[0x4] = VoxelGeometryDataF::Vertex(pos[0x4], VectorF2(1.0f, 1.0f - f___));
+	pY[0x5] = VoxelGeometryDataF::Vertex(pos[0x5], VectorF2(1.0f, 0.0f + f___));
+	pY[0x6] = VoxelGeometryDataF::Vertex(pos[0x6], VectorF2(1.0f - f___, 0.0f));
+	pY[0x7] = VoxelGeometryDataF::Vertex(pos[0x7], VectorF2(0.0f + f___, 0.0f));
 
 	tri.Vertexes[0] = pY[0x0];
 	tri.Vertexes[1] = pY[0x1];
@@ -324,15 +356,16 @@ void VoxelPalletGeometry::InitF_PrismY8()
 	tri.Vertexes[2] = pY[0x7];
 	DataF.PrevY.Data.Insert(tri);
 
-	VoxelGraphicsDataF::Vertex	nY[16];
-	nY[0x8] = VoxelGraphicsDataF::Vertex(pos[0x8], VectorF3(0.0f, 0.0f + f___, 4));
-	nY[0x9] = VoxelGraphicsDataF::Vertex(pos[0x9], VectorF3(0.0f, 1.0f - f___, 4));
-	nY[0xA] = VoxelGraphicsDataF::Vertex(pos[0xA], VectorF3(0.0f + f___, 1.0f, 4));
-	nY[0xB] = VoxelGraphicsDataF::Vertex(pos[0xB], VectorF3(1.0f - f___, 1.0f, 4));
-	nY[0xC] = VoxelGraphicsDataF::Vertex(pos[0xC], VectorF3(1.0f, 1.0f - f___, 4));
-	nY[0xD] = VoxelGraphicsDataF::Vertex(pos[0xD], VectorF3(1.0f, 0.0f + f___, 4));
-	nY[0xE] = VoxelGraphicsDataF::Vertex(pos[0xE], VectorF3(1.0f - f___, 0.0f, 4));
-	nY[0xF] = VoxelGraphicsDataF::Vertex(pos[0xF], VectorF3(0.0f + f___, 0.0f, 4));
+	tri.Tex = 4;
+	VoxelGeometryDataF::Vertex	nY[16];
+	nY[0x8] = VoxelGeometryDataF::Vertex(pos[0x8], VectorF2(0.0f, 0.0f + f___));
+	nY[0x9] = VoxelGeometryDataF::Vertex(pos[0x9], VectorF2(0.0f, 1.0f - f___));
+	nY[0xA] = VoxelGeometryDataF::Vertex(pos[0xA], VectorF2(0.0f + f___, 1.0f));
+	nY[0xB] = VoxelGeometryDataF::Vertex(pos[0xB], VectorF2(1.0f - f___, 1.0f));
+	nY[0xC] = VoxelGeometryDataF::Vertex(pos[0xC], VectorF2(1.0f, 1.0f - f___));
+	nY[0xD] = VoxelGeometryDataF::Vertex(pos[0xD], VectorF2(1.0f, 0.0f + f___));
+	nY[0xE] = VoxelGeometryDataF::Vertex(pos[0xE], VectorF2(1.0f - f___, 0.0f));
+	nY[0xF] = VoxelGeometryDataF::Vertex(pos[0xF], VectorF2(0.0f + f___, 0.0f));
 
 	tri.Vertexes[0] = nY[0xE];
 	tri.Vertexes[1] = nY[0xD];
@@ -373,8 +406,8 @@ void VoxelPalletGeometry::InitF_Slope()
 	UseF_NextY = true;
 	UseF_NextZ = false;
 
-	OrientationAxis0 = AxisRel::NextY;
-	OrientationAxis1 = AxisRel::NextZ;
+	OrientationAxis0 = Axis3D::Rel::NextY;
+	OrientationAxis1 = Axis3D::Rel::NextZ;
 
 	VectorF3 pos[8] = {
 		VectorF3(0.0f, 0.0f, 0.0f), // 0b000
@@ -434,8 +467,8 @@ void VoxelPalletGeometry::InitF_PrismY12()
 	UseF_NextY = true;
 	UseF_NextZ = true;
 
-	OrientationAxis0 = AxisRel::PrevY;
-	OrientationAxis1 = AxisRel::None;
+	OrientationAxis0 = Axis3D::Rel::PrevY;
+	OrientationAxis1 = Axis3D::Rel::None;
 
 	float val0 = 0.00f;
 	float val1 = 0.10f;

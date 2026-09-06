@@ -4,7 +4,7 @@
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/Vector/I3.hpp"
 
-# include "Axis/Enums.hpp"
+# include "Axis/3D/Types.hpp"
 
 # include "ValueType/Ray/F3.hpp"
 
@@ -26,10 +26,10 @@ struct Data
 	VectorI3	grid_dir;
 	VectorI3	grid_idx;
 
-	AxisRel		cardinal_side_X;
-	AxisRel		cardinal_side_Y;
-	AxisRel		cardinal_side_Z;
-	AxisRel		cardinal_dir;
+	Axis3D::Rel		cardinal_side_X;
+	Axis3D::Rel		cardinal_side_Y;
+	Axis3D::Rel		cardinal_side_Z;
+	Axis3D::Rel		cardinal_dir;
 
 	VectorI3	Index() const;
 	float		Distance() const;
@@ -46,7 +46,7 @@ struct Hit
 	VectorF3	rel;
 	VectorI3	idx;
 	float		dist;
-	AxisRel		cardinal;
+	Axis3D::Rel		cardinal;
 
 	Hit();
 	Hit(Data data);

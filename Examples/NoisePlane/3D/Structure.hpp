@@ -6,12 +6,11 @@
 
 # include "Voxel.hpp"
 
+# include <string>
+
 struct Structure
 {
-	static Structure	Tree0;
-	static Structure	Tree1;
-	static void			Default();
-
+	std::string		Name;
 	VectorU3		Center;
 	Array3D<Voxel>	Voxels;
 };

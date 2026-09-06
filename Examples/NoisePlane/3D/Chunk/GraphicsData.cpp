@@ -14,6 +14,8 @@
 #include "Telemetry/StopWatch.hpp"
 #include "Telemetry/ValueAccumulator.hpp"
 
+# include "Axis/3D/Enums.hpp"
+
 #include <iostream>
 #include <iomanip>
 
@@ -156,108 +158,104 @@ const Container::Array<VoxelGraphicsDataF::Face> & ChunkGraphicsData::DataF() co
 
 
 
-void ChunkGraphicsData::CatU(const VoxelData & voxel_data, AxisRel axis)
+void ChunkGraphicsData::CatU(const VoxelData & voxel_data, Axis3D::Rel axis)
 {
-	if (axis == AxisRel::Here || axis == AxisRel::None) { return; }
+	if (axis == Axis3D::Rel::Here || axis == Axis3D::Rel::None) { return; }
 	CountData++;
 
-	#ifdef MEASURE_TIME
-	TimeDataRetrieveData.Start();
-	#endif
+	const VoxelGeometryDataU::Face & geom_face = voxel_data.Geometry.AxisDataU(voxel_data.Orientation.relative(axis));
 
-	VoxelGeometryDataU::Face geom_face = voxel_data.Geometry.AxisDataU(voxel_data.Orientation.relative(axis));
+	if (geom_face.Tex >= 6) { return; }
 
-	AxisOrientation::SwizzlerU_Ref func = voxel_data.Orientation.absoluteU_Func();
+	VoxelGeometryDataU::Vertex vertexes[4];
+
 	// this function stays the same per Voxel
 	// get before CatU ?
-	geom_face.Vertexes[0].Pos = func(geom_face.Vertexes[0].Pos);
-	geom_face.Vertexes[1].Pos = func(geom_face.Vertexes[1].Pos);
-	geom_face.Vertexes[2].Pos = func(geom_face.Vertexes[2].Pos);
-	geom_face.Vertexes[3].Pos = func(geom_face.Vertexes[3].Pos);
+	Axis3D::Orientation::SwizzlerU_Ref pos_func = voxel_data.Orientation.absolute_U_Func();
+	vertexes[0].Pos = pos_func(geom_face.Vertexes[0].Pos);
+	vertexes[1].Pos = pos_func(geom_face.Vertexes[1].Pos);
+	vertexes[2].Pos = pos_func(geom_face.Vertexes[2].Pos);
+	vertexes[3].Pos = pos_func(geom_face.Vertexes[3].Pos);
 
-	#ifdef MEASURE_TIME
-	TimeDataRetrieveData.Stop();
-	TimeDataAbsoluteVertex.Start();
-	#endif
+	unsigned int tex_idx;
+	tex_idx = voxel_data.Pallet.Textures[geom_face.Tex].Index;
 
-	#ifdef MEASURE_TIME
-	TimeDataAbsoluteVertex.Stop();
-	TimeDataAbsoluteAxis.Start();
-	#endif
-
-	#ifdef MEASURE_TIME
-	TimeDataAbsoluteAxis.Stop();
-	TimeDataTexture.Start();
-	#endif
-
-	geom_face.Vertexes[0].Idx = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[0].Idx).Index;
-	geom_face.Vertexes[1].Idx = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[1].Idx).Index;
-	geom_face.Vertexes[2].Idx = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[2].Idx).Index;
-	geom_face.Vertexes[3].Idx = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[3].Idx).Index;
-
-	#ifdef MEASURE_TIME
-	TimeDataTexture.Stop();
-	TimeDataCompress.Start();
-	#endif
+	const Axis2D::Orientation & tex_orientation = voxel_data.Pallet.TextureOrientations[geom_face.Tex];
+	Axis2D::Orientation::SwizzlerU_Ref tex_func = tex_orientation.absolute_U_Func();
+	vertexes[0].Tex = tex_func(geom_face.Vertexes[0].Tex);
+	vertexes[1].Tex = tex_func(geom_face.Vertexes[1].Tex);
+	vertexes[2].Tex = tex_func(geom_face.Vertexes[2].Tex);
+	vertexes[3].Tex = tex_func(geom_face.Vertexes[3].Tex);
 
 	VoxelGraphicsDataU::Vertex data[4];
-	data[0] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[0], axis, voxel_data.Chunk);
-	data[1] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[1], axis, voxel_data.Chunk);
-	data[2] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[2], axis, voxel_data.Chunk);
-	data[3] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, geom_face.Vertexes[3], axis, voxel_data.Chunk);
-
-	#ifdef MEASURE_TIME
-	TimeDataCompress.Stop();
-	TimeInsert.Start();
-	#endif
+	data[0] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, vertexes[0], axis, tex_idx, voxel_data.Chunk);
+	data[1] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, vertexes[1], axis, tex_idx, voxel_data.Chunk);
+	data[2] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, vertexes[2], axis, tex_idx, voxel_data.Chunk);
+	data[3] = VoxelGraphicsDataU::Vertex(voxel_data.Undex, vertexes[3], axis, tex_idx, voxel_data.Chunk);
 
 	BlockU.Insert(VoxelGraphicsDataU::Face(data));
-
-	#ifdef MEASURE_TIME
-	TimeInsert.Stop();
-	#endif
 }
-void ChunkGraphicsData::CatF(const VoxelData & voxel_data, AxisRel axis)
+void ChunkGraphicsData::CatF(const VoxelData & voxel_data, Axis3D::Rel axis)
 {
-	if (axis == AxisRel::None) { return; }
+	if (axis == Axis3D::Rel::None) { return; }
 
 	const VoxelGeometryDataF::Axis geom_axis = voxel_data.Geometry.AxisDataF(voxel_data.Orientation.relative(axis));
 
 	for (unsigned int i = 0; i < geom_axis.Data.Count(); i++)
 	{
-		const VoxelGraphicsDataF::Face & geom_face = geom_axis.Data[i];
+		const VoxelGeometryDataF::Face & geom_face = geom_axis.Data[i];
+
+		if (geom_face.Tex >= 6) { continue; }
 
 		VoxelGraphicsDataF::Face & graph_face = BlockF.MakeNext();
 
-		graph_face.Vertexes[0].Pos = voxel_data.Orientation.absolute(geom_face.Vertexes[0].Pos) + voxel_data.Offset;
-		graph_face.Vertexes[1].Pos = voxel_data.Orientation.absolute(geom_face.Vertexes[1].Pos) + voxel_data.Offset;
-		graph_face.Vertexes[2].Pos = voxel_data.Orientation.absolute(geom_face.Vertexes[2].Pos) + voxel_data.Offset;
+		Axis3D::Orientation::SwizzlerF_Ref pos_func = voxel_data.Orientation.absolute_F_Func();
+		graph_face.Vertexes[0].Pos = pos_func(geom_face.Vertexes[0].Pos) + voxel_data.Offset;
+		graph_face.Vertexes[1].Pos = pos_func(geom_face.Vertexes[1].Pos) + voxel_data.Offset;
+		graph_face.Vertexes[2].Pos = pos_func(geom_face.Vertexes[2].Pos) + voxel_data.Offset;
 
-		graph_face.Vertexes[0].Normal = geom_face.Vertexes[0].Normal;
-		graph_face.Vertexes[1].Normal = geom_face.Vertexes[1].Normal;
-		graph_face.Vertexes[2].Normal = geom_face.Vertexes[2].Normal;
+		// Normal also needs to be Oriented
+		graph_face.Vertexes[0].Normal = geom_face.Normal;
+		graph_face.Vertexes[1].Normal = geom_face.Normal;
+		graph_face.Vertexes[2].Normal = geom_face.Normal;
 
-		graph_face.Vertexes[0].Tex = geom_face.Vertexes[0].Tex;
-		graph_face.Vertexes[1].Tex = geom_face.Vertexes[1].Tex;
-		graph_face.Vertexes[2].Tex = geom_face.Vertexes[2].Tex;
+		unsigned int tex_idx;
+		tex_idx = voxel_data.Pallet.Textures[geom_face.Tex].Index;
 
-		graph_face.Vertexes[0].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[0].Tex.Z).Index;
-		graph_face.Vertexes[1].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[1].Tex.Z).Index;
-		graph_face.Vertexes[2].Tex.Z = voxel_data.Pallet.FindTextureFileIndex(geom_face.Vertexes[2].Tex.Z).Index;
+		const Axis2D::Orientation & tex_orientation = voxel_data.Pallet.TextureOrientations[geom_face.Tex];
+		Axis2D::Orientation::SwizzlerF_Ref tex_func = tex_orientation.absolute_F_Func();
+
+		VectorF2 tex;
+		// use Texture Orientation
+
+		tex = tex_func(geom_face.Vertexes[0].Tex);
+		graph_face.Vertexes[0].Tex.X = tex.X;
+		graph_face.Vertexes[0].Tex.Y = tex.Y;
+		graph_face.Vertexes[0].Tex.Z = tex_idx;
+
+		tex = tex_func(geom_face.Vertexes[1].Tex);
+		graph_face.Vertexes[1].Tex.X = tex.X;
+		graph_face.Vertexes[1].Tex.Y = tex.Y;
+		graph_face.Vertexes[1].Tex.Z = tex_idx;
+
+		tex = tex_func(geom_face.Vertexes[2].Tex);
+		graph_face.Vertexes[2].Tex.X = tex.X;
+		graph_face.Vertexes[2].Tex.Y = tex.Y;
+		graph_face.Vertexes[2].Tex.Z = tex_idx;
 
 		BlockF.Next();
 	}
 }
-void ChunkGraphicsData::Cat(const VoxelData & voxel_data, AxisRel axis)
+void ChunkGraphicsData::Cat(const VoxelData & voxel_data, Axis3D::Rel axis)
 {
 	switch (voxel_data.Orientation.relative(axis))
 	{
-		case AxisRel::PrevX: if (voxel_data.Geometry.UseF_PrevX) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
-		case AxisRel::PrevY: if (voxel_data.Geometry.UseF_PrevY) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
-		case AxisRel::PrevZ: if (voxel_data.Geometry.UseF_PrevZ) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
-		case AxisRel::NextX: if (voxel_data.Geometry.UseF_NextX) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
-		case AxisRel::NextY: if (voxel_data.Geometry.UseF_NextY) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
-		case AxisRel::NextZ: if (voxel_data.Geometry.UseF_NextZ) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case Axis3D::Rel::PrevX: if (voxel_data.Geometry.UseF_PrevX) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case Axis3D::Rel::PrevY: if (voxel_data.Geometry.UseF_PrevY) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case Axis3D::Rel::PrevZ: if (voxel_data.Geometry.UseF_PrevZ) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case Axis3D::Rel::NextX: if (voxel_data.Geometry.UseF_NextX) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case Axis3D::Rel::NextY: if (voxel_data.Geometry.UseF_NextY) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
+		case Axis3D::Rel::NextZ: if (voxel_data.Geometry.UseF_NextZ) { CatF(voxel_data, axis); } else { CatU(voxel_data, axis); } break;
 		default: break;
 	}
 }
@@ -325,13 +323,13 @@ void ChunkGraphicsData::Make(const Chunk & chunk, const Array3D<bool> & voxel_is
 			is_visible_next_x || is_visible_next_y || is_visible_next_z)*/
 		{
 			VoxelData voxel_data(chunk.Voxels.At(u), chunk.Index, udx, offset);
-			if (is_visible_prev_x) { Cat(voxel_data, AxisRel::PrevX); }
-			if (is_visible_prev_y) { Cat(voxel_data, AxisRel::PrevY); }
-			if (is_visible_prev_z) { Cat(voxel_data, AxisRel::PrevZ); }
-			if (is_visible_next_x) { Cat(voxel_data, AxisRel::NextX); }
-			if (is_visible_next_y) { Cat(voxel_data, AxisRel::NextY); }
-			if (is_visible_next_z) { Cat(voxel_data, AxisRel::NextZ); }
-			CatF(voxel_data, AxisRel::Here);
+			if (is_visible_prev_x) { Cat(voxel_data, Axis3D::Rel::PrevX); }
+			if (is_visible_prev_y) { Cat(voxel_data, Axis3D::Rel::PrevY); }
+			if (is_visible_prev_z) { Cat(voxel_data, Axis3D::Rel::PrevZ); }
+			if (is_visible_next_x) { Cat(voxel_data, Axis3D::Rel::NextX); }
+			if (is_visible_next_y) { Cat(voxel_data, Axis3D::Rel::NextY); }
+			if (is_visible_next_z) { Cat(voxel_data, Axis3D::Rel::NextZ); }
+			CatF(voxel_data, Axis3D::Rel::Here);
 		}
 
 		#ifdef MEASURE_TIME

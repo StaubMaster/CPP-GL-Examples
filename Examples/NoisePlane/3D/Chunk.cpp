@@ -4,7 +4,7 @@
 
 #include "Voxel/Pallet.hpp"
 
-#include "Axis/Orientation.hpp"
+#include "Axis/3D/Orientation.hpp"
 
 #include "Structure.hpp"
 
@@ -247,10 +247,10 @@ bool Chunk::PlaceVoxel(VectorU3 udx, Voxel & vox)
 		{
 			i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0x5, y, z));
 			Data[i].Pallet = &VoxelPallet::RedLog;
-			Data[i].Orientation.make(AxisRel::NextY, AxisRel::NextZ, AxisRel::None, AxisRel::None);
+			Data[i].Orientation.make(Axis3D::Rel::NextY, Axis3D::Rel::NextZ, Axis3D::Rel::None, Axis3D::Rel::None);
 			i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0xA, y, z));
 			Data[i].Pallet = &VoxelPallet::RedLog;
-			Data[i].Orientation.make(AxisRel::NextY, AxisRel::NextZ, AxisRel::None, AxisRel::None);
+			Data[i].Orientation.make(Axis3D::Rel::NextY, Axis3D::Rel::NextZ, Axis3D::Rel::None, Axis3D::Rel::None);
 		}
 	}
 }*/

@@ -1,0 +1,36 @@
+
+new Leaves   CubeDiag   Wood
+tex Leave1.png   Normal0 None
+tex Leave1.png   Normal0 None
+tex Leave1.png   Normal0 None
+tex Leave1.png   Normal0 None
+tex Leave1.png   Normal0 None
+tex Leave1.png   Normal0 None
+done
+
+new Log   CubeDiag   Wood
+tex Log_Belt.png   Invert0 None
+tex Log_Base.png   Normal0 None
+tex Log_Belt.png   Normal0 None
+tex Log_Belt.png   Invert0 None
+tex Log_Base.png   Normal0 None
+tex Log_Belt.png   Normal0 None
+done
+
+#new Log_PrismY8   PrismY8   Wood
+#tex Log_Belt.png   Invert0 None
+#tex Log_Base.png   Normal0 None
+#tex Log_Belt.png   Normal0 None
+#tex Log_Belt.png   Invert0 None
+#tex Log_Base.png   Normal0 None
+#tex Log_Belt.png   Normal0 None
+#done
+
+#new Log_PrismY12   PrismY12   Wood
+#tex Log_Belt.png   Invert0 None
+#tex Log_Base.png   Normal0 None
+#tex Log_Belt.png   Normal0 None
+#tex Log_Belt.png   Invert0 None
+#tex Log_Base.png   Normal0 None
+#tex Log_Belt.png   Normal0 None
+#done

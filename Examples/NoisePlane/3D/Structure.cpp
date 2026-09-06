@@ -6,10 +6,7 @@
 
 
 
-Structure Structure::Tree0;
-Structure Structure::Tree1;
-
-void Structure::Default()
+/*void Structure::Default()
 {
 	{
 		Structure & structure = Tree0;
@@ -84,4 +81,4 @@ void Structure::Default()
 			structure.Voxels[VectorU3(2, i, 2)] = pallet1.ToVoxel();
 		}
 	}
-}
+}*/

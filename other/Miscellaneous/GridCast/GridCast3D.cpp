@@ -1,4 +1,5 @@
 #include "GridCast3D.hpp"
+#include "Axis/3D/Enums.hpp"
 
 #include <math.h>
 
@@ -24,18 +25,18 @@ GridCast3D::Data::Data(RayF3 ray3D, float limit, float scale)
 
 	side_sum = grid_idx.ToF() - pos;
 
-	if (dir.X > 0)	{ grid_dir.X = +1; side_sum.X = 1 + side_sum.X; cardinal_side_X = AxisRel::PrevX; }
-	else			{ grid_dir.X = -1; side_sum.X = 0 - side_sum.X; cardinal_side_X = AxisRel::NextX; }
+	if (dir.X > 0)	{ grid_dir.X = +1; side_sum.X = 1 + side_sum.X; cardinal_side_X = Axis3D::Rel::PrevX; }
+	else			{ grid_dir.X = -1; side_sum.X = 0 - side_sum.X; cardinal_side_X = Axis3D::Rel::NextX; }
 
-	if (dir.Y > 0)	{ grid_dir.Y = +1; side_sum.Y = 1 + side_sum.Y; cardinal_side_Y = AxisRel::PrevY; }
-	else			{ grid_dir.Y = -1; side_sum.Y = 0 - side_sum.Y; cardinal_side_Y = AxisRel::NextY; }
+	if (dir.Y > 0)	{ grid_dir.Y = +1; side_sum.Y = 1 + side_sum.Y; cardinal_side_Y = Axis3D::Rel::PrevY; }
+	else			{ grid_dir.Y = -1; side_sum.Y = 0 - side_sum.Y; cardinal_side_Y = Axis3D::Rel::NextY; }
 
-	if (dir.Z > 0)	{ grid_dir.Z = +1; side_sum.Z = 1 + side_sum.Z; cardinal_side_Z = AxisRel::PrevZ; }
-	else			{ grid_dir.Z = -1; side_sum.Z = 0 - side_sum.Z; cardinal_side_Z = AxisRel::NextZ; }
+	if (dir.Z > 0)	{ grid_dir.Z = +1; side_sum.Z = 1 + side_sum.Z; cardinal_side_Z = Axis3D::Rel::PrevZ; }
+	else			{ grid_dir.Z = -1; side_sum.Z = 0 - side_sum.Z; cardinal_side_Z = Axis3D::Rel::NextZ; }
 
 	side_sum *= side_len;
 
-	cardinal_dir = AxisRel::Here;
+	cardinal_dir = Axis3D::Rel::Here;
 }
 bool GridCast3D::Data::Iterate()
 {
@@ -69,7 +70,7 @@ bool GridCast3D::Data::Iterate()
 
 GridCast3D::Hit::Hit()
 {
-	cardinal = AxisRel::None;
+	cardinal = Axis3D::Rel::None;
 }
 GridCast3D::Hit::Hit(Data data)
 {

@@ -12,11 +12,11 @@ struct Vertex
 {
 	VectorU3		Pos;
 	VectorU2		Tex;
-	unsigned int	Idx; // Texture Index
 };
 struct Face
 {
-	Vertex	Vertexes[4];
+	Vertex			Vertexes[4];
+	unsigned int	Tex;
 
 	void	Quad0(VectorU3 p00, VectorU3 p01, VectorU3 p10, VectorU3 p11, BoxU2 box, unsigned int tex);
 	void	Quad1(VectorU3 p00, VectorU3 p01, VectorU3 p10, VectorU3 p11, BoxU2 box, unsigned int tex);

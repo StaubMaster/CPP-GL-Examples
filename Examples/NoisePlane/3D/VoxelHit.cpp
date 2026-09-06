@@ -5,6 +5,8 @@
 
 #include "ContainerLock/AccessTypeGuard.hpp"
 
+#include "Axis/3D/Enums.hpp"
+
 
 
 #include <math.h>
@@ -64,7 +66,7 @@ GridCast3D::Hit VoxelHit::Hit(ChunkManager & manager, RayF3 ray3D, float limit)
 		if (!((*chunk).GenerationDone())) { return GridCast3D::Hit(); }
 		if (((*chunk).IsEmpty())) { continue; }
 		GridCast3D::Hit hit = VoxelHit::Hit(*chunk, data.Ray(), data.Limit());
-		if (hit.cardinal != AxisRel::None) { return hit; }
+		if (hit.cardinal != Axis3D::Rel::None) { return hit; }
 	}
 	while (data.Iterate());
 	return GridCast3D::Hit();
@@ -72,8 +74,8 @@ GridCast3D::Hit VoxelHit::Hit(ChunkManager & manager, RayF3 ray3D, float limit)
 
 
 
-bool VoxelHit::Valid() const { return Side != AxisRel::None; }
+bool VoxelHit::Valid() const { return Side != Axis3D::Rel::None; }
 
 VoxelHit::VoxelHit()
-	: Side(AxisRel::None)
+	: Side(Axis3D::Rel::None)
 { }

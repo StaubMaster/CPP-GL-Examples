@@ -11,6 +11,7 @@ FILES := \
 	3D/Voxel.cpp \
 	3D/Voxel/Pallet.cpp \
 	3D/Voxel/Pallet/Map.cpp \
+	3D/Voxel/Pallet/Parser.cpp \
 	3D/Voxel/Pallet/Geometry.cpp \
 	3D/Voxel/Pallet/Geometry/Map.cpp \
 	3D/Voxel/Pallet/Geometry/Parser.cpp \
@@ -31,6 +32,8 @@ FILES := \
 	3D/VoxelHit.cpp \
 	3D/ChunkVoxelIndex.cpp \
 	3D/Structure.cpp \
+	3D/StructureMap.cpp \
+	3D/StructureParser.cpp \
 \
 	AuxThread/AuxThread1.cpp \
 	AuxThread/AuxThread2.cpp \

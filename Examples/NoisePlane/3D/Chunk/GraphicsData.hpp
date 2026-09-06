@@ -3,7 +3,9 @@
 
 # include "3D/Voxel/Pallet/Geometry/Graphics/U/Data.hpp"
 # include "3D/Voxel/Pallet/Geometry/Graphics/F/Data.hpp"
-# include "Axis/Enums.hpp"
+
+# include "Axis/3D/Types.hpp"
+namespace Axis3D { struct Orientation; };
 
 # include "Generics/Container/Array.hpp"
 # include "Generics/Container/Array3D.hpp"
@@ -12,7 +14,6 @@
 struct VectorU3;
 struct VectorI3;
 struct VectorF3;
-struct AxisOrientation;
 struct VoxelPallet;
 struct VoxelPalletGeometry;
 struct ChunkNeighbour;
@@ -40,7 +41,7 @@ struct ChunkGraphicsData
 	struct VoxelData
 	{
 		const ::Voxel & Voxel;
-		const ::AxisOrientation & Orientation;
+		const ::Axis3D::Orientation & Orientation;
 		const ::VoxelPallet & Pallet;
 		const ::VoxelPalletGeometry & Geometry;
 		const ::VectorI3 & Chunk;
@@ -70,9 +71,9 @@ struct ChunkGraphicsData
 
 
 	private:
-	void	CatU(const VoxelData & voxel_data, AxisRel axis);
-	void	CatF(const VoxelData & voxel_data, AxisRel axis);
-	void	Cat(const VoxelData & voxel_data, AxisRel axis);
+	void	CatU(const VoxelData & voxel_data, Axis3D::Rel axis);
+	void	CatF(const VoxelData & voxel_data, Axis3D::Rel axis);
+	void	Cat(const VoxelData & voxel_data, Axis3D::Rel axis);
 
 
 

@@ -4,7 +4,7 @@
 
 #include "3D/Voxel.hpp"
 
-#include "Axis/Enums.hpp"
+#include "Axis/3D/Enums.hpp"
 
 #include "ValueType/Vector/U3.hpp"
 
@@ -12,6 +12,7 @@
 
 
 
+// do these constructors with = default
 ChunkNeighbour::~ChunkNeighbour()
 { }
 ChunkNeighbour::ChunkNeighbour()
@@ -102,7 +103,7 @@ bool ChunkNeighbour::IsVisiblePrevX(const Array3D<bool> & voxel_is_empty, Vector
 		if (chunk -> IsEmpty()) { return true; }
 		u = n;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::PrevX));
+	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::PrevX));
 }
 bool ChunkNeighbour::IsVisiblePrevY(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -121,7 +122,7 @@ bool ChunkNeighbour::IsVisiblePrevY(const Array3D<bool> & voxel_is_empty, Vector
 		if (chunk -> IsEmpty()) { return true; }
 		u = n;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::PrevY));
+	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::PrevY));
 }
 bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -140,7 +141,7 @@ bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<bool> & voxel_is_empty, Vector
 		if (chunk -> IsEmpty()) { return true; }
 		u = n;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::PrevZ));
+	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::PrevZ));
 }
 bool ChunkNeighbour::IsVisibleNextX(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -159,7 +160,7 @@ bool ChunkNeighbour::IsVisibleNextX(const Array3D<bool> & voxel_is_empty, Vector
 		if (chunk -> IsEmpty()) { return true; }
 		u = 0;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::NextX));
+	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::NextX));
 }
 bool ChunkNeighbour::IsVisibleNextY(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -178,7 +179,7 @@ bool ChunkNeighbour::IsVisibleNextY(const Array3D<bool> & voxel_is_empty, Vector
 		if (chunk -> IsEmpty()) { return true; }
 		u = 0;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::NextY));
+	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::NextY));
 }
 bool ChunkNeighbour::IsVisibleNextZ(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -197,7 +198,7 @@ bool ChunkNeighbour::IsVisibleNextZ(const Array3D<bool> & voxel_is_empty, Vector
 		if (chunk -> IsEmpty()) { return true; }
 		u = 0;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(AxisRel::NextZ));
+	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::NextZ));
 }
 
 void ChunkNeighbour::BufferDataWant()

@@ -82,7 +82,7 @@ VoxelPalletIndex VoxelPalletMap::FindIndex(const VoxelPallet & pallet) const
 	return FindIndex(&pallet);
 }
 
-VoxelPallet & VoxelPalletMap::New(const char * name, const VoxelPalletGeometry & geometry, VoxelMaterialType material)
+VoxelPallet & VoxelPalletMap::New(std::string name, const VoxelPalletGeometry & geometry, VoxelMaterialType material)
 {
 	VoxelPalletIndex idx = Data.Count();
 	Data.Insert(VoxelPallet(idx, name, geometry, material));

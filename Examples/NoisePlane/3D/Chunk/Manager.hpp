@@ -38,7 +38,7 @@ struct ChunkGenerationNoise;
 template<typename TypeObject> struct ContainerAccessTypeGuard;
 typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
 
-enum class AxisRel : unsigned char;
+# include "Axis/3D/Types.hpp"
 
 struct ChunkNeighbour;
 

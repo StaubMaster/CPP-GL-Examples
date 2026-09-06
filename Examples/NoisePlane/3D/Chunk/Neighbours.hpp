@@ -5,8 +5,9 @@ struct Chunk;
 struct ChunkManager;
 struct VectorU3;
 struct VectorI3;
-enum class AxisRel : unsigned char;
 struct Voxel;
+
+# include "Axis/3D/Types.hpp"
 
 # include "Generics/Container/Array3D.hpp"
 

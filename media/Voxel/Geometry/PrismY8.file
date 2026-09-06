@@ -16,8 +16,8 @@ showAxis NextX
 showAxis NextY
 showAxis NextZ
 
-# OrientationAxis0 = AxisRel::None;
-# OrientationAxis1 = AxisRel::None;
+# OrientationAxis0 = Axis3D::Rel::None;
+# OrientationAxis1 = Axis3D::Rel::None;
 
 newCorner 0.3 0.0 0.0 # 0x0
 newCorner 0.7 0.0 0.0 # 0x1

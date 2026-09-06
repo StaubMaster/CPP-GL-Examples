@@ -2,6 +2,8 @@
 #include "ValueType/Vector/I3.hpp"
 #include "ValueType/Bool/3.hpp"
 
+#include "Axis/3D/Enums.hpp"
+
 
 
 BoxEntity3D_CollisionTime::BoxEntity3D_CollisionTime(VectorF3 t, VectorF3 dir)
@@ -22,27 +24,27 @@ void BoxEntity3D_CollisionTime::Consider(const BoxEntity3D_CollisionTime & other
 
 
 
-void BoxEntity3D_CollisionSide::Consider(const AxisRel & axis)
+void BoxEntity3D_CollisionSide::Consider(const Axis3D::Rel & axis)
 {
 	switch (axis)
 	{
-		case AxisRel::PrevX: PrevX = true; None = false; break;
-		case AxisRel::PrevY: PrevY = true; None = false; break;
-		case AxisRel::PrevZ: PrevZ = true; None = false; break;
-		case AxisRel::NextX: NextX = true; None = false; break;
-		case AxisRel::NextY: NextY = true; None = false; break;
-		case AxisRel::NextZ: NextZ = true; None = false; break;
+		case Axis3D::Rel::PrevX: PrevX = true; None = false; break;
+		case Axis3D::Rel::PrevY: PrevY = true; None = false; break;
+		case Axis3D::Rel::PrevZ: PrevZ = true; None = false; break;
+		case Axis3D::Rel::NextX: NextX = true; None = false; break;
+		case Axis3D::Rel::NextY: NextY = true; None = false; break;
+		case Axis3D::Rel::NextZ: NextZ = true; None = false; break;
 		default: break;
 	}
 }
 void BoxEntity3D_CollisionSide::Consider(const VectorF3 & vec)
 {
-	if (vec.X > 0.0f) { Consider(AxisRel::PrevX); }
-	if (vec.Y > 0.0f) { Consider(AxisRel::PrevY); }
-	if (vec.Z > 0.0f) { Consider(AxisRel::PrevZ); }
-	if (vec.X < 0.0f) { Consider(AxisRel::NextX); }
-	if (vec.Y < 0.0f) { Consider(AxisRel::NextY); }
-	if (vec.Z < 0.0f) { Consider(AxisRel::NextZ); }
+	if (vec.X > 0.0f) { Consider(Axis3D::Rel::PrevX); }
+	if (vec.Y > 0.0f) { Consider(Axis3D::Rel::PrevY); }
+	if (vec.Z > 0.0f) { Consider(Axis3D::Rel::PrevZ); }
+	if (vec.X < 0.0f) { Consider(Axis3D::Rel::NextX); }
+	if (vec.Y < 0.0f) { Consider(Axis3D::Rel::NextY); }
+	if (vec.Z < 0.0f) { Consider(Axis3D::Rel::NextZ); }
 }
 void BoxEntity3D_CollisionSide::Consider(const BoxEntity3D_CollisionSide & other)
 {

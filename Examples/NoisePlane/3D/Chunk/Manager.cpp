@@ -4,7 +4,9 @@
 
 #include "3D/Voxel.hpp"
 
-#include "Axis/Orientation.hpp"
+#include "Axis/3D/Orientation.hpp"
+#include "Axis/3D/Enums.hpp"
+#include "Axis/3D/Funcs.hpp"
 
 #include "3D/ChunkVoxelIndex.hpp"
 
@@ -482,12 +484,12 @@ VoxelHit ChunkManager::HitVoxel(RayF3 ray)
 
 	VoxelHit hit;
 	//std::cout << "HitVoxel:" << __LINE__ << '\n';
-	if (_hit.cardinal == AxisRel::None) { return hit; }
+	if (_hit.cardinal == Axis3D::Rel::None) { return hit; }
 	//std::cout << "HitVoxel:" << __LINE__ << '\n';
 	hit.Side = _hit.cardinal;
 	hit.Index = _hit.idx;
 	hit.Position = _hit.pos;
-	hit.Normal = AxisToVector(_hit.cardinal);
+	hit.Normal = Axis3D::ToVector(_hit.cardinal);
 	//std::cout << "HitVoxel:" << __LINE__ << '\n';
 
 	return hit;

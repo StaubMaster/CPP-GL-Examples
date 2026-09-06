@@ -26,7 +26,7 @@ void Voxel::MakePallet(const VoxelPallet & pallet)
 
 
 
-bool Voxel::IsAxisVisible(AxisRel axis) const
+bool Voxel::IsAxisVisible(Axis3D::Rel axis) const
 {
 	if (IsEmpty()) { return true; }
 	const VoxelPallet & pallet = ToPallet();

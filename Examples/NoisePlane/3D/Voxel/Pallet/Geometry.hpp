@@ -1,7 +1,7 @@
 #ifndef  VOXEL_PALLET_GEOMETRY_HPP
 # define VOXEL_PALLET_GEOMETRY_HPP
 
-# include "Axis/Orientation.hpp"
+# include "Axis/3D/Orientation.hpp"
 # include "3D/Voxel/Pallet/Geometry/U.hpp"
 # include "3D/Voxel/Pallet/Geometry/F.hpp"
 
@@ -30,14 +30,23 @@ struct VoxelPalletGeometry
 	VoxelGeometryDataU::Cube	DataU;
 	VoxelGeometryDataF::Full	DataF;
 
-	bool								IsAxisVisible(AxisRel axis) const;
-	const VoxelGeometryDataU::Face &	AxisDataU(AxisRel axis) const;
-	const VoxelGeometryDataF::Axis &	AxisDataF(AxisRel axis) const;
+	bool									IsAxisVisible(Axis3D::Rel axis) const;
+	const	VoxelGeometryDataU::Face &		AxisDataU(Axis3D::Rel axis) const;
+	const	VoxelGeometryDataF::Axis &		AxisDataF(Axis3D::Rel axis) const;
+			VoxelGeometryDataU::Face &		AxisDataU(Axis3D::Rel axis);
+			VoxelGeometryDataF::Axis &		AxisDataF(Axis3D::Rel axis);
 
-	AxisRel		OrientationAxis0;
-	AxisRel		OrientationAxis1;
+	/* in Geometry of Pallet ?
+		Cube
+			could have: no Orientation
+			could be Prism: Orientation
+		Cylinder
+			allways Orientation ?
+	*/
+	Axis3D::Rel		OrientationAxis0;
+	Axis3D::Rel		OrientationAxis1;
 
-	AxisOrientation		Orient(AxisRel placeAxis0, AxisRel placeAxis1) const;
+	Axis3D::Orientation		Orient(Axis3D::Rel placeAxis0, Axis3D::Rel placeAxis1) const;
 
 
 
@@ -64,7 +73,7 @@ struct VoxelPalletGeometry
 
 	// these are all the same Geometry
 	// but with different Texture Orientation
-	// rename AxisOrientation to Axis3DOrientation
+	// rename Axis3D::Orientation to Axis3DOrientation
 	// make Axis2DOrientation
 	// give each Texture an Orientation member ?
 	// make Texture Orientation part of Pallet, not PalletGeometry

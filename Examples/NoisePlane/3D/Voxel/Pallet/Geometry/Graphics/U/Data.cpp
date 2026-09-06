@@ -1,12 +1,12 @@
 #include "3D/Voxel/Pallet/Geometry/Graphics/U/Data.hpp"
 #include "ValueType/Vector/U3.hpp"
-#include "Axis/Enums.hpp"
+#include "Axis/3D/Enums.hpp"
 
 
 
-VoxelGraphicsDataU::Vertex::Vertex(const VectorU3 & udx, const VoxelGeometryDataU::Vertex & vert, const AxisRel & axis, const VectorI3 & chunk)
+VoxelGraphicsDataU::Vertex::Vertex(const VectorU3 & udx, const VoxelGeometryDataU::Vertex & vert, const Axis3D::Rel & axis, unsigned int tex, const VectorI3 & chunk)
 	: Voxel(0)
-	, Texture(vert.Idx)
+	, Texture(tex)
 	, Chunk(chunk)
 {
 	Voxel |= (((udx.X) & 0xFF) << 0);

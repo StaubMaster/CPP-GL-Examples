@@ -16,6 +16,12 @@
 #include "ValueType/_Show.hpp"
 #include "ValueType/_Include.hpp"
 
+// Axis
+#include "Axis/3D/Enums.hpp"
+#include "Axis/3D/Show.hpp"
+#include "Axis/3D/Funcs.hpp"
+#include "Axis/2D/Enums.hpp"
+
 // Voxel
 #include "ContainerLock/AccessTypeGuard.hpp"
 #include "ContainerLock/AssignTypeGuard.hpp"
@@ -23,9 +29,13 @@
 // Voxel
 #include "3D/Voxel/Pallet.hpp"
 #include "3D/Voxel/Pallet/Map.hpp"
+#include "3D/Voxel/Pallet/Parser.hpp"
 #include "3D/Voxel/Pallet/Geometry.hpp"
 #include "3D/Voxel/Pallet/Geometry/Map.hpp"
 #include "3D/Voxel/Pallet/Geometry/Parser.hpp"
+#include "3D/Structure.hpp"
+#include "3D/StructureMap.hpp"
+#include "3D/StructureParser.hpp"
 
 // Math
 #include <math.h>
@@ -496,15 +506,15 @@ void ContextNoisePlane::ViewRay_Update()
 	ViewRay.Dir = View.Trans.Rotation.forward(VectorF3(0, 0, 1));
 	{
 		VectorI3 ranks = ViewRay.Dir.abs().RankDimensions();
-		     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { ViewRay_Axis0 = AxisRel::NextX; } else { ViewRay_Axis0 = AxisRel::PrevX; } }
-		else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis0 = AxisRel::NextY; } else { ViewRay_Axis0 = AxisRel::PrevY; } }
-		else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis0 = AxisRel::NextZ; } else { ViewRay_Axis0 = AxisRel::PrevZ; } }
-		if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { ViewRay_Axis1 = AxisRel::NextX; } else { ViewRay_Axis1 = AxisRel::PrevX; } }
-		else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis1 = AxisRel::NextY; } else { ViewRay_Axis1 = AxisRel::PrevY; } }
-		else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis1 = AxisRel::NextZ; } else { ViewRay_Axis1 = AxisRel::PrevZ; } }
-		if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { ViewRay_Axis2 = AxisRel::NextX; } else { ViewRay_Axis2 = AxisRel::PrevX; } }
-		else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis2 = AxisRel::NextY; } else { ViewRay_Axis2 = AxisRel::PrevY; } }
-		else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis2 = AxisRel::NextZ; } else { ViewRay_Axis2 = AxisRel::PrevZ; } }
+		     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { ViewRay_Axis0 = Axis3D::Rel::NextX; } else { ViewRay_Axis0 = Axis3D::Rel::PrevX; } }
+		else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis0 = Axis3D::Rel::NextY; } else { ViewRay_Axis0 = Axis3D::Rel::PrevY; } }
+		else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis0 = Axis3D::Rel::NextZ; } else { ViewRay_Axis0 = Axis3D::Rel::PrevZ; } }
+		if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { ViewRay_Axis1 = Axis3D::Rel::NextX; } else { ViewRay_Axis1 = Axis3D::Rel::PrevX; } }
+		else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis1 = Axis3D::Rel::NextY; } else { ViewRay_Axis1 = Axis3D::Rel::PrevY; } }
+		else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis1 = Axis3D::Rel::NextZ; } else { ViewRay_Axis1 = Axis3D::Rel::PrevZ; } }
+		if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { ViewRay_Axis2 = Axis3D::Rel::NextX; } else { ViewRay_Axis2 = Axis3D::Rel::PrevX; } }
+		else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis2 = Axis3D::Rel::NextY; } else { ViewRay_Axis2 = Axis3D::Rel::PrevY; } }
+		else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis2 = Axis3D::Rel::NextZ; } else { ViewRay_Axis2 = Axis3D::Rel::PrevZ; } }
 		// what if same ranks ?
 	}
 }
@@ -523,12 +533,12 @@ void ContextNoisePlane::ViewRay_Hit()
 		}
 		{
 			ViewHit_Axis0 = ViewHit.Side;
-			AxisAbs axis = AxisRelToAxisAbs(ViewHit_Axis0);
-			if (axis == AxisAbs::None) { ViewHit_Axis1 = AxisRel::None; }
-			else if (axis != AxisRelToAxisAbs(ViewRay_Axis2)) { ViewHit_Axis1 = ViewRay_Axis2; }
-			else if (axis != AxisRelToAxisAbs(ViewRay_Axis1)) { ViewHit_Axis1 = ViewRay_Axis1; }
-			else if (axis != AxisRelToAxisAbs(ViewRay_Axis0)) { ViewHit_Axis1 = ViewRay_Axis0; }
-			else { ViewHit_Axis1 = AxisRel::None; }
+			Axis3D::Abs axis = Axis3D::RelToAbs(ViewHit_Axis0);
+			if (axis == Axis3D::Abs::None) { ViewHit_Axis1 = Axis3D::Rel::None; }
+			else if (axis != Axis3D::RelToAbs(ViewRay_Axis2)) { ViewHit_Axis1 = ViewRay_Axis2; }
+			else if (axis != Axis3D::RelToAbs(ViewRay_Axis1)) { ViewHit_Axis1 = ViewRay_Axis1; }
+			else if (axis != Axis3D::RelToAbs(ViewRay_Axis0)) { ViewHit_Axis1 = ViewRay_Axis0; }
+			else { ViewHit_Axis1 = Axis3D::Rel::None; }
 		}
 	}
 }
@@ -567,12 +577,12 @@ void ContextNoisePlane::ViewRay_HitDo()
 		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
 		{
 			VectorI3 hit_idx = ViewHit.Index;
-			if (ViewHit_Axis0 == AxisRel::NextX) { hit_idx.X += 1; }
-			if (ViewHit_Axis0 == AxisRel::NextY) { hit_idx.Y += 1; }
-			if (ViewHit_Axis0 == AxisRel::NextZ) { hit_idx.Z += 1; }
-			if (ViewHit_Axis0 == AxisRel::PrevX) { hit_idx.X -= 1; }
-			if (ViewHit_Axis0 == AxisRel::PrevY) { hit_idx.Y -= 1; }
-			if (ViewHit_Axis0 == AxisRel::PrevZ) { hit_idx.Z -= 1; }
+			if (ViewHit_Axis0 == Axis3D::Rel::NextX) { hit_idx.X += 1; }
+			if (ViewHit_Axis0 == Axis3D::Rel::NextY) { hit_idx.Y += 1; }
+			if (ViewHit_Axis0 == Axis3D::Rel::NextZ) { hit_idx.Z += 1; }
+			if (ViewHit_Axis0 == Axis3D::Rel::PrevX) { hit_idx.X -= 1; }
+			if (ViewHit_Axis0 == Axis3D::Rel::PrevY) { hit_idx.Y -= 1; }
+			if (ViewHit_Axis0 == Axis3D::Rel::PrevZ) { hit_idx.Z -= 1; }
 
 			if (HotBar.Items[VectorU2(0, 0)] != nullptr)
 			{
@@ -708,31 +718,20 @@ void ContextNoisePlane::AuxThread0Func()
 
 
 
+#include "Axis/2D/Show.hpp"
 void ContextNoisePlane::Init_Maps()
 {
 	// VoxelPalletGeometryMap
 	{
 		VoxelPalletGeometryMap & map = VoxelPalletGeometryMap::StaticMap;
 
-		//VoxelPalletGeometry & CubeDiag = map.New("CubeDiag");
-		//CubeDiag.InitU_CubeDiag();
-		//CubeDiag.InitF_CubeDiag();
-		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/CubeDiag.file"));
-
-		//VoxelPalletGeometry & CubeAxisY = map.New("CubeAxisY");
-		//CubeAxisY.InitU_CubeAxisY();
-		//CubeAxisY.InitF_CubeAxisY();
-		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/CubeAxisY.file"));
-
-		//VoxelPalletGeometry & AxisStar = map.New("AxisStar");
-		//AxisStar.InitU_CubeDiag();
-		//AxisStar.InitF_AxisStar();
-		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/AxisStar.file"));
+		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/Geometry/Cube.file"));
+		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/Geometry/Star.file"));
 
 		VoxelPalletGeometry & PrismY8 = map.New("PrismY8");
 		PrismY8.InitU_CubeAxisY();
 		PrismY8.InitF_PrismY8();
-		//VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/PrismY8.file"));
+		//VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/Geometry/PrismY8.file"));
 
 		VoxelPalletGeometry & PrismY12 = map.New("PrismY12");
 		PrismY12.InitU_CubeDiag();
@@ -747,107 +746,25 @@ void ContextNoisePlane::Init_Maps()
 	{
 		VoxelPalletMap & map = VoxelPalletMap::StaticMap;
 
-		const VoxelPalletGeometry & cube_diag   = VoxelPalletGeometryMap::StaticMap["CubeDiag"];
-		const VoxelPalletGeometry & cube_axis_Y = VoxelPalletGeometryMap::StaticMap["CubeAxisY"];
-		const VoxelPalletGeometry & axis_star   = VoxelPalletGeometryMap::StaticMap["AxisStar"];
-		const VoxelPalletGeometry & cylinder    = VoxelPalletGeometryMap::StaticMap["PrismY8"];
-		const VoxelPalletGeometry & slope       = VoxelPalletGeometryMap::StaticMap["Slope"];
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/Cube.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/Star.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/PrismY8.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/PrismY12.file"));
 
-		map.New("OrientationCube", cube_diag, VoxelMaterialType::None).TextureAxis(
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
-		);
-		map.New("OrientationAxisStar", axis_star, VoxelMaterialType::None).TextureAxis(
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
-		);
-		map.New("OrientationCylinder", cylinder, VoxelMaterialType::None).TextureAxis(
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
-		);
-		map.New("OrientationSlope", slope, VoxelMaterialType::None).TextureAxis(
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
-		);
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/CardBoard/_.file"));
 
-		map.New("DebugR", cube_diag, VoxelMaterialType::None).TextureAll(
-			MediaDirectory.File("Images/Voxel/Debug/R.png")
-		);
-		map.New("DebugG", cube_diag, VoxelMaterialType::None).TextureAll(
-			MediaDirectory.File("Images/Voxel/Debug/G.png")
-		);
-		map.New("DebugB", cube_diag, VoxelMaterialType::None).TextureAll(
-			MediaDirectory.File("Images/Voxel/Debug/B.png")
-		);
-
-		map.New("Gray", cube_diag, VoxelMaterialType::Stone).TextureAll(
-			MediaDirectory.File("Images/Voxel/Gray.png")
-		);
-
-		map.New("Grass", cube_diag, VoxelMaterialType::Dirt).TextureAll(
-			MediaDirectory.File("Images/Voxel/Grass.png")
-		);
-		map.New("Dirt", cube_diag, VoxelMaterialType::Dirt).TextureAll(
-			MediaDirectory.File("Images/Voxel/Dirt.png")
-		);
-
-		map.New("RedLog", cylinder, VoxelMaterialType::Wood).TexturePrismY(
-			MediaDirectory.File("Images/Voxel/fancy_RedWood_Base.png"),
-			MediaDirectory.File("Images/Voxel/fancy_RedWood_Belt.png")
-		);
-		map.New("Log", cube_axis_Y, VoxelMaterialType::Wood).TexturePrismY(
-			MediaDirectory.File("Images/Voxel/Log_Base.png"),
-			MediaDirectory.File("Images/Voxel/Log_Belt.png")
-		);
-		map.New("Leaves", cube_diag, VoxelMaterialType::None).TextureAll(
-			MediaDirectory.File("Images/Voxel/Leave1.png")
-		);
-
-		map.New("Sand", cube_diag, VoxelMaterialType::Powder).TextureAll(
-			MediaDirectory.File("Images/Voxel/Sand.png")
-		);
-		map.New("Snow", cube_diag, VoxelMaterialType::Powder).TextureAll(
-			MediaDirectory.File("Images/Voxel/Snow.png")
-		);
-		map.New("Water", cube_diag, VoxelMaterialType::None).TextureAll(
-			MediaDirectory.File("Images/Voxel/Water.png")
-		);
-
-		map.New("ConcreteCube", cube_diag, VoxelMaterialType::Stone).TextureAll(
-			MediaDirectory.File("Images/Voxel/Concrete_0.png")
-		);
-		map.New("ConcreteCylinder", cylinder, VoxelMaterialType::Stone).TextureAll(
-			MediaDirectory.File("Images/Voxel/Concrete_0.png")
-		);
-
-		map.New("PrismY12", VoxelPalletGeometryMap::StaticMap["PrismY12"], VoxelMaterialType::None).TextureAxis(
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/PrevZ.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextX.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextY.png"),
-			MediaDirectory.File("Images/Voxel/Orientation0/NextZ.png")
-		);
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Debug/_.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Tree/_.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Terrain/_.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Concrete/_.file"));
 	}
 
+	// Structure
 	{
-		Structure::Default();
+		StructureMap & map = StructureMap::StaticMap;
+
+		StructureMapParser::Parse(map, MediaDirectory.File("Voxel/Structure/Tree0"));
+		StructureMapParser::Parse(map, MediaDirectory.File("Voxel/Structure/Tree1"));
 	}
 }
 

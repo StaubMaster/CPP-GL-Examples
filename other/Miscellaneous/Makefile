@@ -42,8 +42,12 @@ FILES := \
 	Telemetry/StopWatch.cpp \
 	Telemetry/WaitDoTime.cpp \
 \
-	Axis/Enums.cpp \
-	Axis/Orientation.cpp \
+	Axis/3D/Orientation.cpp \
+	Axis/3D/Funcs.cpp \
+	Axis/3D/Show.cpp \
+	\
+	Axis/2D/Orientation.cpp \
+	Axis/2D/Show.cpp \
 \
 	CenterIndexLoop/2D.cpp \
 	CenterIndexLoop/3D.cpp \

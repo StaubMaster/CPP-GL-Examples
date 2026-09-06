@@ -4,45 +4,63 @@
 
 
 
+VoxelGeometryDataF::Vertex::Vertex(VectorF3 pos, VectorF2 tex)
+	: Pos(pos)
+	, Tex(tex)
+{ }
+
+
+
+void VoxelGeometryDataF::Face::CalcNormal()
+{
+	Normal = VectorF3::cross(Vertexes[1].Pos - Vertexes[0].Pos, Vertexes[2].Pos - Vertexes[0].Pos);
+}
+
+
+
 void VoxelGeometryDataF::Axis::Tri0(VectorF3 p0, VectorF3 p1, VectorF3 p2, VectorF2 t0, VectorF2 t1, VectorF2 t2, unsigned int tex)
 {
-	VoxelGraphicsDataF::Face face;
-	face.Vertexes[0] = VoxelGraphicsDataF::Vertex(p0, VectorF3(t0.X, t0.Y, tex));
-	face.Vertexes[1] = VoxelGraphicsDataF::Vertex(p1, VectorF3(t1.X, t1.Y, tex));
-	face.Vertexes[2] = VoxelGraphicsDataF::Vertex(p2, VectorF3(t2.X, t2.Y, tex));
+	Face face;
+	face.Tex = tex;
+	face.Vertexes[0] = Vertex(p0, t0);
+	face.Vertexes[1] = Vertex(p1, t1);
+	face.Vertexes[2] = Vertex(p2, t2);
 	Data.Insert(face);
 }
 void VoxelGeometryDataF::Axis::Tri1(VectorF3 p0, VectorF3 p1, VectorF3 p2, VectorF2 t0, VectorF2 t1, VectorF2 t2, unsigned int tex)
 {
-	VoxelGraphicsDataF::Face face;
-	face.Vertexes[0] = VoxelGraphicsDataF::Vertex(p0, VectorF3(t0.X, t0.Y, tex));
-	face.Vertexes[1] = VoxelGraphicsDataF::Vertex(p2, VectorF3(t2.X, t2.Y, tex));
-	face.Vertexes[2] = VoxelGraphicsDataF::Vertex(p1, VectorF3(t1.X, t1.Y, tex));
+	Face face;
+	face.Tex = tex;
+	face.Vertexes[0] = Vertex(p0, t0);
+	face.Vertexes[1] = Vertex(p2, t2);
+	face.Vertexes[2] = Vertex(p1, t1);
 	Data.Insert(face);
 }
 
 void VoxelGeometryDataF::Axis::Quad1(VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, unsigned int tex)
 {
-	VoxelGraphicsDataF::Face face;
-	face.Vertexes[0] = VoxelGraphicsDataF::Vertex(p00, VectorF3(box.Min.X, box.Min.Y, tex));
-	face.Vertexes[1] = VoxelGraphicsDataF::Vertex(p10, VectorF3(box.Min.X, box.Max.Y, tex));
-	face.Vertexes[2] = VoxelGraphicsDataF::Vertex(p01, VectorF3(box.Max.X, box.Min.Y, tex));
+	Face face;
+	face.Tex = tex;
+	face.Vertexes[0] = Vertex(p00, VectorF2(box.Min.X, box.Min.Y));
+	face.Vertexes[1] = Vertex(p10, VectorF2(box.Min.X, box.Max.Y));
+	face.Vertexes[2] = Vertex(p01, VectorF2(box.Max.X, box.Min.Y));
 	Data.Insert(face);
-	face.Vertexes[0] = VoxelGraphicsDataF::Vertex(p01, VectorF3(box.Max.X, box.Min.Y, tex));
-	face.Vertexes[1] = VoxelGraphicsDataF::Vertex(p10, VectorF3(box.Min.X, box.Max.Y, tex));
-	face.Vertexes[2] = VoxelGraphicsDataF::Vertex(p11, VectorF3(box.Max.X, box.Max.Y, tex));
+	face.Vertexes[0] = Vertex(p01, VectorF2(box.Max.X, box.Min.Y));
+	face.Vertexes[1] = Vertex(p10, VectorF2(box.Min.X, box.Max.Y));
+	face.Vertexes[2] = Vertex(p11, VectorF2(box.Max.X, box.Max.Y));
 	Data.Insert(face);
 }
 void VoxelGeometryDataF::Axis::Quad0(VectorF3 p00, VectorF3 p01, VectorF3 p10, VectorF3 p11, BoxF2 box, unsigned int tex)
 {
-	VoxelGraphicsDataF::Face face;
-	face.Vertexes[0] = VoxelGraphicsDataF::Vertex(p00, VectorF3(box.Min.X, box.Min.Y, tex));
-	face.Vertexes[1] = VoxelGraphicsDataF::Vertex(p10, VectorF3(box.Max.X, box.Min.Y, tex));
-	face.Vertexes[2] = VoxelGraphicsDataF::Vertex(p01, VectorF3(box.Min.X, box.Max.Y, tex));
+	Face face;
+	face.Tex = tex;
+	face.Vertexes[0] = Vertex(p00, VectorF2(box.Min.X, box.Min.Y));
+	face.Vertexes[1] = Vertex(p10, VectorF2(box.Max.X, box.Min.Y));
+	face.Vertexes[2] = Vertex(p01, VectorF2(box.Min.X, box.Max.Y));
 	Data.Insert(face);
-	face.Vertexes[0] = VoxelGraphicsDataF::Vertex(p01, VectorF3(box.Min.X, box.Max.Y, tex));
-	face.Vertexes[1] = VoxelGraphicsDataF::Vertex(p10, VectorF3(box.Max.X, box.Min.Y, tex));
-	face.Vertexes[2] = VoxelGraphicsDataF::Vertex(p11, VectorF3(box.Max.X, box.Max.Y, tex));
+	face.Vertexes[0] = Vertex(p01, VectorF2(box.Min.X, box.Max.Y));
+	face.Vertexes[1] = Vertex(p10, VectorF2(box.Max.X, box.Min.Y));
+	face.Vertexes[2] = Vertex(p11, VectorF2(box.Max.X, box.Max.Y));
 	Data.Insert(face);
 }
 

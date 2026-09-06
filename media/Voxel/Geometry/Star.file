@@ -1,5 +1,5 @@
 
-new AxisStar
+new Star
 
 uQuad0 PrevX   000 010 100 110   0 0 1 1   0
 uQuad0 PrevY   000 100 001 101   0 0 1 1   1
@@ -15,8 +15,8 @@ showAxis NextX
 showAxis NextY
 showAxis NextZ
 
-# OrientationAxis0 = AxisRel::None;
-# OrientationAxis1 = AxisRel::None;
+# OrientationAxis0 = Axis3D::Rel::None;
+# OrientationAxis1 = Axis3D::Rel::None;
 
 newCorner 0.0 0.5 0.5 #00000
 newCorner 0.5 0.0 0.5 #00001

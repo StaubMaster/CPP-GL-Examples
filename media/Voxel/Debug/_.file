@@ -1,0 +1,27 @@
+
+new Debug_R   CubeDiag   None
+tex R.png   Normal0 None
+tex R.png   Normal0 None
+tex R.png   Normal0 None
+tex R.png   Normal0 None
+tex R.png   Normal0 None
+tex R.png   Normal0 None
+done
+
+new Debug_G   CubeDiag   None
+tex G.png   Normal0 None
+tex G.png   Normal0 None
+tex G.png   Normal0 None
+tex G.png   Normal0 None
+tex G.png   Normal0 None
+tex G.png   Normal0 None
+done
+
+new Debug_B   CubeDiag   None
+tex B.png   Normal0 None
+tex B.png   Normal0 None
+tex B.png   Normal0 None
+tex B.png   Normal0 None
+tex B.png   Normal0 None
+tex B.png   Normal0 None
+done

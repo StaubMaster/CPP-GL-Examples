@@ -7,7 +7,7 @@ struct Chunk;
 struct ChunkManager;
 struct VoxelHit
 {
-	AxisRel		Side;
+	Axis3D::Rel		Side;
 	VectorI3	Index;
 	//VoxelIndex	Index;
 	VectorF3	Position;

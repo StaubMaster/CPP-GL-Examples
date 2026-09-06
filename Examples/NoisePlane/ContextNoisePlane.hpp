@@ -32,7 +32,7 @@
 //#include "Plane/PlaneManager.hpp"
 
 // Voxel
-#include "Axis/Orientation.hpp"
+#include "Axis/3D/Orientation.hpp"
 
 #include "3D/Chunk.hpp"
 #include "3D/Chunk/Manager.hpp"
@@ -148,13 +148,13 @@ float						ViewEntity_MoveLimitSlow = 5.0f;
 float						ViewEntity_MoveLimitFast = 10.0f;
 
 RayF3		ViewRay;
-AxisRel		ViewRay_Axis0;
-AxisRel		ViewRay_Axis1;
-AxisRel		ViewRay_Axis2;
+Axis3D::Rel		ViewRay_Axis0;
+Axis3D::Rel		ViewRay_Axis1;
+Axis3D::Rel		ViewRay_Axis2;
 
 VoxelHit	ViewHit;
-AxisRel		ViewHit_Axis0;
-AxisRel		ViewHit_Axis1;
+Axis3D::Rel		ViewHit_Axis0;
+Axis3D::Rel		ViewHit_Axis1;
 
 // VoxelClear
 unsigned int			VoxelClear_Progress = 0xFFFFFFFF;

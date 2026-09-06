@@ -1,0 +1,9 @@
+
+new Orientation_Slope   Slope   None
+tex PrevX.png   Normal0 None
+tex PrevY.png   Normal0 None
+tex PrevZ.png   Normal0 None
+tex NextX.png   Normal0 None
+tex NextY.png   Normal0 None
+tex NextZ.png   Normal0 None
+done

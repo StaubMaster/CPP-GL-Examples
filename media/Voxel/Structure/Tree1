@@ -1,0 +1,119 @@
+
+new Tree1   2 0 2   5 12 5
+
+pallet 0 Leaves
+pallet 1 Log
+
+lineX_YZ 11 0   ~000~
+lineX_YZ 10 0   00000
+lineX_YZ 09 0   00000
+lineX_YZ 08 0   00000
+lineX_YZ 07 0   ~000~
+lineX_YZ 06 0   ~~~~~
+lineX_YZ 05 0   ~~~~~
+lineX_YZ 04 0   ~~~~~
+lineX_YZ 03 0   ~~~~~
+lineX_YZ 02 0   ~~~~~
+lineX_YZ 01 0   ~~~~~
+lineX_YZ 00 0   ~~~~~
+
+lineX_YZ 11 1   00000
+lineX_YZ 10 1   00000
+lineX_YZ 09 1   00000
+lineX_YZ 08 1   00000
+lineX_YZ 07 1   00000
+lineX_YZ 06 1   ~~~~~
+lineX_YZ 05 1   ~~~~~
+lineX_YZ 04 1   ~~~~~
+lineX_YZ 03 1   ~~~~~
+lineX_YZ 02 1   ~~~~~
+lineX_YZ 01 1   ~~~~~
+lineX_YZ 00 1   ~~~~~
+
+lineX_YZ 11 2   00000
+lineX_YZ 10 2   00000
+lineX_YZ 09 2   00100
+lineX_YZ 08 2   00100
+lineX_YZ 07 2   00100
+lineX_YZ 06 2   ~~1~~
+lineX_YZ 05 2   ~~1~~
+lineX_YZ 04 2   ~~1~~
+lineX_YZ 03 2   ~~1~~
+lineX_YZ 02 2   ~~1~~
+lineX_YZ 01 2   ~~1~~
+lineX_YZ 00 2   ~~1~~
+
+lineX_YZ 11 3   00000
+lineX_YZ 10 3   00000
+lineX_YZ 09 3   00000
+lineX_YZ 08 3   00000
+lineX_YZ 07 3   00000
+lineX_YZ 06 3   ~~~~~
+lineX_YZ 05 3   ~~~~~
+lineX_YZ 04 3   ~~~~~
+lineX_YZ 03 3   ~~~~~
+lineX_YZ 02 3   ~~~~~
+lineX_YZ 01 3   ~~~~~
+lineX_YZ 00 3   ~~~~~
+
+lineX_YZ 11 4   ~000~
+lineX_YZ 10 4   00000
+lineX_YZ 09 4   00000
+lineX_YZ 08 4   00000
+lineX_YZ 07 4   ~000~
+lineX_YZ 06 4   ~~~~~
+lineX_YZ 05 4   ~~~~~
+lineX_YZ 04 4   ~~~~~
+lineX_YZ 03 4   ~~~~~
+lineX_YZ 02 4   ~~~~~
+lineX_YZ 01 4   ~~~~~
+lineX_YZ 00 4   ~~~~~
+
+
+
+#lineY_XZ 0 0   ~~~~~~~~000~
+#lineY_XZ 1 0   ~~~~~~~00000
+#lineY_XZ 2 0   ~~~~~~~00000
+#lineY_XZ 3 0   ~~~~~~~00000
+#lineY_XZ 4 0   ~~~~~~~~000~
+#
+#lineY_XZ 0 1   ~~~~~~~00000
+#lineY_XZ 1 1   ~~~~~~~00000
+#lineY_XZ 2 1   ~~~~~~~00000
+#lineY_XZ 3 1   ~~~~~~~00000
+#lineY_XZ 4 1   ~~~~~~~00000
+#
+#lineY_XZ 0 2   ~~~~~~~00000
+#lineY_XZ 1 2   ~~~~~~~00000
+#lineY_XZ 2 2   111111111100
+#lineY_XZ 3 2   ~~~~~~~00000
+#lineY_XZ 4 2   ~~~~~~~00000
+#
+#lineY_XZ 0 3   ~~~~~~~00000
+#lineY_XZ 1 3   ~~~~~~~00000
+#lineY_XZ 2 3   ~~~~~~~00000
+#lineY_XZ 3 3   ~~~~~~~00000
+#lineY_XZ 4 3   ~~~~~~~00000
+#
+#lineY_XZ 0 4   ~~~~~~~~000~
+#lineY_XZ 1 4   ~~~~~~~00000
+#lineY_XZ 2 4   ~~~~~~~00000
+#lineY_XZ 3 4   ~~~~~~~00000
+#lineY_XZ 4 4   ~~~~~~~~000~
+
+
+
+#areaXZ_Y 00     ~ 0 0 0 ~     0 0 0 0 0     ~ 0 0 0 ~     0 0 0 0 0     ~ 0 0 0 ~
+#areaXZ_Y 01     0 0 0 0 0     0 0 0 0 0     0 0 0 0 0     0 0 0 0 0     0 0 0 0 0
+#areaXZ_Y 02     0 0 0 0 0     0 0 0 0 0     0 0 1 0 0     0 0 0 0 0     0 0 0 0 0
+#areaXZ_Y 03     0 0 0 0 0     0 0 0 0 0     0 0 1 0 0     0 0 0 0 0     0 0 0 0 0
+#areaXZ_Y 04     ~ 0 0 0 ~     0 0 0 0 0     ~ 0 1 0 ~     0 0 0 0 0     ~ 0 0 0 ~
+#areaXZ_Y 05     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~     ~ ~ 1 ~ ~     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~
+#areaXZ_Y 06     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~     ~ ~ 1 ~ ~     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~
+#areaXZ_Y 07     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~     ~ ~ 1 ~ ~     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~
+#areaXZ_Y 08     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~     ~ ~ 1 ~ ~     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~
+#areaXZ_Y 09     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~     ~ ~ 1 ~ ~     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~
+#areaXZ_Y 10     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~     ~ ~ 1 ~ ~     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~
+#areaXZ_Y 11     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~     ~ ~ 1 ~ ~     ~ ~ ~ ~ ~     ~ ~ ~ ~ ~
+
+done

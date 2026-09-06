@@ -1,0 +1,54 @@
+
+new Gray   CubeDiag   Stone
+tex Gray.png   Normal0 None
+tex Gray.png   Normal0 None
+tex Gray.png   Normal0 None
+tex Gray.png   Normal0 None
+tex Gray.png   Normal0 None
+tex Gray.png   Normal0 None
+done
+
+new Dirt   CubeDiag   Dirt
+tex Dirt.png   Normal0 None
+tex Dirt.png   Normal0 None
+tex Dirt.png   Normal0 None
+tex Dirt.png   Normal0 None
+tex Dirt.png   Normal0 None
+tex Dirt.png   Normal0 None
+done
+
+new Grass   CubeDiag   Dirt
+tex Grass.png   Normal0 None
+tex Grass.png   Normal0 None
+tex Grass.png   Normal0 None
+tex Grass.png   Normal0 None
+tex Grass.png   Normal0 None
+tex Grass.png   Normal0 None
+done
+
+new Sand   CubeDiag   Powder
+tex Sand.png   Normal0 None
+tex Sand.png   Normal0 None
+tex Sand.png   Normal0 None
+tex Sand.png   Normal0 None
+tex Sand.png   Normal0 None
+tex Sand.png   Normal0 None
+done
+
+new Snow   CubeDiag   Powder
+tex Snow.png   Normal0 None
+tex Snow.png   Normal0 None
+tex Snow.png   Normal0 None
+tex Snow.png   Normal0 None
+tex Snow.png   Normal0 None
+tex Snow.png   Normal0 None
+done
+
+new Water   CubeDiag   None
+tex Water.png   Normal0 None
+tex Water.png   Normal0 None
+tex Water.png   Normal0 None
+tex Water.png   Normal0 None
+tex Water.png   Normal0 None
+tex Water.png   Normal0 None
+done
