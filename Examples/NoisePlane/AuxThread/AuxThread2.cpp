@@ -189,8 +189,8 @@ void AuxThread2::TerrainPillars(ChunkData & data)
 	//0123456789ABCDEF0123456789ABCDEF
 	//       #                #       
 
-	const VoxelPallet & pallet0 = VoxelPalletMap::StaticMap["ConcreteCube"];
-	const VoxelPallet & pallet1 = VoxelPalletMap::StaticMap["ConcreteCylinder"];
+	const VoxelPallet & pallet0 = VoxelPalletMap::StaticMap["Concrete_Cube"];
+	const VoxelPallet & pallet1 = VoxelPalletMap::StaticMap["Concrete_PrismY8"];
 
 	for (VectorU3 u = Loop3.Min(); Loop3.Check(u).All(true); Loop3.Next(u))
 	{
@@ -269,6 +269,11 @@ void AuxThread2::TerrainPlane(ChunkData & data, const Perlin2D & noise)
 	}
 }
 
+// this is slow
+/*
+Simplex Noise is better then Perlin Noise ?
+Cache Noise Data ?
+*/
 void AuxThread2::TerrainCaveNoodle(ChunkData & data, const Perlin3D & noise0, const Perlin3D & noise1)
 {
 	//if (Index.Y >= 0) { return; }
@@ -278,9 +283,9 @@ void AuxThread2::TerrainCaveNoodle(ChunkData & data, const Perlin3D & noise0, co
 	(void)noise0;
 	(void)noise1;
 
-	const VoxelPallet & pallet_r = VoxelPalletMap::StaticMap["DebugR"];
-	const VoxelPallet & pallet_g = VoxelPalletMap::StaticMap["DebugG"];
-	const VoxelPallet & pallet_b = VoxelPalletMap::StaticMap["DebugB"];
+	const VoxelPallet & pallet_r = VoxelPalletMap::StaticMap["Debug_R"];
+	const VoxelPallet & pallet_g = VoxelPalletMap::StaticMap["Debug_G"];
+	const VoxelPallet & pallet_b = VoxelPalletMap::StaticMap["Debug_B"];
 
 	(void)pallet_r;
 	(void)pallet_g;
@@ -295,19 +300,32 @@ void AuxThread2::TerrainCaveNoodle(ChunkData & data, const Perlin3D & noise0, co
 	{
 		//if (u.Y != 31) { continue; }
 		VectorF3 p(
-			data.Offset.X + u.X,
-			data.Offset.Y + u.Y,
-			data.Offset.Z + u.Z
+			data.Offset.X + (int)u.X,
+			data.Offset.Y + (int)u.Y,
+			data.Offset.Z + (int)u.Z
 		);
 
-		const float factor = 128.0f;
-		float val0 = noise0.Calculate(p / factor) * factor;
-		float val1 = noise1.Calculate(p / factor) * factor;
+		float val0 = 0.0f;
+		float val1 = 0.0f;
 
-		//if (!(val0 > min && val0 < max)) { chunk.Voxels[u] = pallet_r.ToVoxel(); }
-		//if (!(val1 > min && val1 < max)) { chunk.Voxels[u] = pallet_b.ToVoxel(); }
-		if ((val0 > min && val0 < max) && (val1 > min && val1 < max)) { data.Voxels[u] = pallet_g.ToVoxel(); }
-		//if ((val0 > min && val0 < max) && (val1 > min && val1 < max)) { chunk.Voxels[u] = Voxel(); }
+		const unsigned int n = 1;
+		const float factors[n] = {
+			//128.0f,
+			64.0f,
+		};
+		for (unsigned int i = 0; i < n; i++)
+		{
+			val0 += noise0.Calculate(p / factors[i]) * factors[i];
+			val1 += noise1.Calculate(p / factors[i]) * factors[i];
+		}
+
+		bool is_0 = (val0 > min) && (val0 < max);
+		bool is_1 = (val1 > min) && (val1 < max);
+		if (!is_0) { data.Voxels[u] = pallet_r.ToVoxel(); }
+		if (!is_1) { data.Voxels[u] = pallet_b.ToVoxel(); }
+		//if (is_0 && is_1) { data.Voxels[u] = pallet_g.ToVoxel(); }
+
+		//if (is_0 && is_1) { data.Voxels[u] = Voxel(); }
 
 		/*float val0 = 0.0f;
 		//val += noise.Calculate(p / 32.0f) * 32.0f;

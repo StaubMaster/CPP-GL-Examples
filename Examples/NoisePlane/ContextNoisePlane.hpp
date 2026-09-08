@@ -147,12 +147,12 @@ float						ViewEntity_MoveChange = 0.1f;
 float						ViewEntity_MoveLimitSlow = 5.0f;
 float						ViewEntity_MoveLimitFast = 10.0f;
 
-RayF3		ViewRay;
+RayF3			ViewRay;
 Axis3D::Rel		ViewRay_Axis0;
 Axis3D::Rel		ViewRay_Axis1;
 Axis3D::Rel		ViewRay_Axis2;
 
-VoxelHit	ViewHit;
+VoxelHit		ViewHit;
 Axis3D::Rel		ViewHit_Axis0;
 Axis3D::Rel		ViewHit_Axis1;
 

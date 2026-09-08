@@ -25,13 +25,15 @@ clean:
 
 fclean:
 	@$(call fancyNameTargetEcho,$@)
-	@$(MAKE) -s clean
-	@$(MAKE) -s clean-final
+	@$(REMOVER) $(FILES_OBJ)
+	@$(REMOVER) $(NAME)
 
 re:
 	@$(call fancyNameTargetEcho,$@)
-	@$(MAKE) -s fclean
-	@$(MAKE) -s all
+	@$(REMOVER) $(FILES_OBJ)
+	@$(REMOVER) $(NAME)
+	@$(MAKE) -s $(FILES_OBJ)
+	@$(MAKE) -s $(NAME)
 
 .PHONY: all clean fclean re final
 
@@ -39,9 +41,7 @@ re:
 
 final:
 	@$(call fancyNameTargetEcho,$@)
-	@$(MAKE) -s $(FILES_OBJ)
-	@$(call fancyNameCompilingEcho,$(NAME))
-	@$(ARCHIVER) $(NAME) $(FILES_OBJ)
+	@$(MAKE) -s $(NAME)
 
 clean-final:
 	@$(call fancyNameTargetEcho,$@)
@@ -49,8 +49,8 @@ clean-final:
 
 re-final:
 	@$(call fancyNameTargetEcho,$@)
-	@$(MAKE) -s clean-final
-	@$(MAKE) -s final
+	@$(REMOVER) $(NAME)
+	@$(MAKE) -s $(NAME)
 
 ################################################################
 

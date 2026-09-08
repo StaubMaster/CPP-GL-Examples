@@ -789,8 +789,8 @@ void ContextNoisePlane::Make()
 	View.Depth.Color = window.DefaultColor;
 	View.Depth.Range.SetMin(0.5f);
 
-	LightAmbient = LightBase(0.5f, ColorF4(1.0f, 1.0f, 1.0f));
-	LightSolar = LightDirection(1.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(+2.0f, -3.0f, +1.0f));
+	LightAmbient = LightBase(1.0f, ColorF4(1.0f, 1.0f, 1.0f));
+	LightSolar = LightDirection(0.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(+2.0f, -3.0f, +1.0f));
 	LightSpot = ::LightSpot(0.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
 
 	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
