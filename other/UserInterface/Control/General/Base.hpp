@@ -181,42 +181,52 @@ class Base
 
 	public:
 	virtual void	AutoAnchorUpdate();
-	/* AutoAnchor should be done automatically
-		when ?
-			when ChildInsert()
-			when ChildRemove()
-			when Child Visibility changes
-			when Child Box Changes ?
-			DisplayShow() ?
-				should be requested
-				should not be done when not Visible
-		how ?
-			need to update Child Boxes first
-			so call BoxUpdate again (if needed)
-		also X and Y are independant
-	*/
 
 	private:
 	void	AutoAnchorUpdate_Y_StackMin();
 	void	AutoAnchorUpdate_Y_StackMinFit();
 
-	/* combine AutoAnchor and BoxUpdate ?
-		BoxUpdate changes Box based on Parent
-		AutoAnchorUpdate changes Box based on Children
+	/* Update Box
+		currently jitters because some things are updated on different frames
 
-		UpdateRecursive
-		BoxUpdate is done before Updatie()ing Children
-		AutoAnchorUpdate is done after Updatie()ing Children
+currently
+{
+	BoxUpdate()
+	...
+	Children.BoxUpdate()
+	...
+	AutoAnchorUpdate()
+}
 
-		minimize work
-		if AutoAnchorUpdate does something
-			tell Parent to also AutoAnchorUpdate
-		else
-			dont tell Parent to AutoAnchorUpdate
+idea
+{
+	BoxUpdate()
+	if (AutoAnchor)
+	{
+		Children.BoxUpdate()
+		AutoAnchorUpdate()
+		Children.BoxUpdate()
+	}
+}
+the first time, Children dont need to do full BoxUpdate
+what do Children do the first time ?
+Update Size maybe
+define themselves maybe
 
-		if AutoAnchorUpdate is supposed to do something
-			dont do normal BoxUpdate ?
-	*/
+what does AutoAnchor do ?
+	tell Children how to Anchor themselves
+	maybe change Size of this
+	so Children need to BoxUpdate after anyway
+	Sizes are gotten with Anchors, they are defined when Child is constructed
+
+idea
+{
+	AutoAnchorUpdate()
+	BoxUpdate()
+	...
+	Children.BoxUpdate()
+}
+*/
 
 
 

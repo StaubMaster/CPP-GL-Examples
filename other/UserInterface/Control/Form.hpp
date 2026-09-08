@@ -46,6 +46,9 @@ class Form : public Base
 	virtual ~Form();
 	Form();
 
+	protected:
+	void	BoxUpdate() override;
+
 	public:
 	bool	IsMovable;
 	bool	IsResizable;

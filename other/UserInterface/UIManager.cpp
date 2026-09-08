@@ -14,15 +14,14 @@
 UI::Manager::~Manager()
 { }
 UI::Manager::Manager()
-	: WindowSize()
-	, WindowControl()
+	: Window()
 	, Hovering(nullptr)
 	, Selected(nullptr)
 {
 	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
 	GraphManager.MakeCurrent();
-	WindowControl.Show();
+	Window.Show();
 }
 
 
@@ -102,8 +101,9 @@ void UI::Manager::KeyBoardText(TextArgs args)
 void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 {
 	Cursor.Position = mouse_pos.Buffer.Corner;
-	UI::Control::Base * control = WindowControl.FindHover(mouse_pos.Buffer.Corner);
+	UI::Control::Base * control = Window.FindHover(mouse_pos.Buffer.Corner);
 
+	// change Hovering to null when removing Control
 	if (control != Hovering)
 	{
 		if (Hovering != nullptr)
@@ -137,13 +137,13 @@ void UI::Manager::Resize(DisplaySize display_size)
 	GraphManager.Shader.Bind();
 	GraphManager.ShaderLayout.DisplaySize.Put(display_size);
 
-	WindowSize = display_size;
-	WindowControl.UpdateWindowSize(WindowSize.Buffer.Full);
+	Window.WindowSize = display_size.Buffer.Full;
+	Window.BoxUpdateRequest();
 }
 void UI::Manager::Update()
 {
-	WindowControl.UpdateRecursive();
-	WindowControl.DepthUpdateResolve();
+	Window.UpdateRecursive();
+	Window.DepthUpdateResolve();
 }
 
 
@@ -161,7 +161,7 @@ void UI::Manager::ChangeMedia(const DirectoryInfo & dir, GLFWwindow * glfw_windo
 
 	Cursor.Create(dir, glfw_window);
 
-	WindowControl.ChangeManagerRecursive(this);
+	Window.ChangeManagerRecursive(this);
 }
 
 
@@ -190,7 +190,7 @@ void UI::Manager::GraphicsMake()
 {
 	ControlManager.InstancesClear();
 	ControlManager.InstancesMake();
-	WindowControl.PutDisplay();
+	Window.WindowPutDisplay();
 
 	TextManager.MakeInstances();
 

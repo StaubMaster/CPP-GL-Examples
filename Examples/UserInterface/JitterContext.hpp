@@ -3,15 +3,9 @@
 
 # include "ContextBase.hpp"
 
-# include "Menu/0.hpp"
-# include "Menu/1.hpp"
-# include "Menu/2.hpp"
-# include "Menu/3.hpp"
+# include "FrameTime.hpp"
 
-# include "Test/Scroll.hpp"
-# include "Test/List.hpp"
-
-# include "Form/DirectoryNavigator.hpp"
+# include "Control/Form.hpp"
 
 # include "UIManager.hpp"
 
@@ -19,24 +13,12 @@ struct UserInterfaceContext : public ContextBase
 {
 	UI::Manager				UIManager;
 
-	UserInterfaceMenu0		Menu0;
-	UserInterfaceMenu1		Menu1;
-	UserInterfaceMenu2		Menu2;
-	UserInterfaceMenu3		Menu3;
-	::TestScroll			TestScroll;
-	::TestList				TestList;
-	::DirectoryNavigator	DirectoryNavigator;
+	UI::Control::Form		JitterTest;
 
 	~UserInterfaceContext();
 	UserInterfaceContext();
 	
 	void	Make();
-	void	ToggleMenu1(ClickArgs args);
-	void	ToggleMenu2(ClickArgs args);
-	void	ToggleMenu3(ClickArgs args);
-	void	ToggleTestScroll(ClickArgs args);
-	void	ToggleTestList(ClickArgs args);
-	void	ToggleDirectoryNavigator(ClickArgs args);
 	
 	void	Init() override;
 	void	Free() override;

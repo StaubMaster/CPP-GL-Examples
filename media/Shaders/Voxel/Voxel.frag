@@ -129,7 +129,8 @@ vec4 CalcLightFactor(LightPoint light)
 	factor_specular = pow(factor_specular, 8);
 
 	float factor = factor_dist * (factor_diffuse + factor_specular);
-	return light.Base.Intensity * light.Base.Color * factor;}
+	return light.Base.Intensity * light.Base.Color * factor;
+}
 vec4 CalcLightFactor(LightSpot light)
 {
 	vec3 N = +normalize(fs_inn.Normal);

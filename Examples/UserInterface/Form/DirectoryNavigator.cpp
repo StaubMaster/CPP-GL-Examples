@@ -21,6 +21,7 @@ DirectoryNavigator::DirectoryNavigator()
 
 	FileList.Anchor.X.AnchorBoth(0, 0);
 	FileList.Anchor.Y.AnchorBoth(DirectoryText.Anchor.Y.GetMinSize(), GoChild.Anchor.Y.GetMaxSize());
+	FileList.ItemFunc.Assign(this, &DirectoryNavigator::ClickItem);
 
 	ChildInsert(DirectoryText);
 	ChildInsert(FileList);
@@ -39,7 +40,7 @@ void DirectoryNavigator::Change(const DirectoryInfo & dir)
 
 	FileList.ItemsClear();
 
-	Directorys = Directory.Directorys();
+	//Directorys = Directory.Directorys();
 	/*for (unsigned int i = 0; i < Directorys.Length(); i++)
 	{
 		std::stringstream ss;
@@ -47,7 +48,7 @@ void DirectoryNavigator::Change(const DirectoryInfo & dir)
 		FileList.ItemNew(ss.str().c_str(), &Directorys[i]);
 	}*/
 
-	Files = Directory.Files();
+	//Files = Directory.Files();
 	/*for (unsigned int i = 0; i < Files.Length(); i++)
 	{
 		std::stringstream ss;
@@ -55,19 +56,55 @@ void DirectoryNavigator::Change(const DirectoryInfo & dir)
 		FileList.ItemNew(ss.str().c_str(), &Files[i]);
 	}*/
 
-	Container::Array<FileSystemInfo> infos = Directory.Children();
-	for (unsigned int i = 0; i < infos.Length(); i++)
+	Infos = Directory.Children();
+	for (unsigned int i = 0; i < Infos.Length(); i++)
 	{
 		std::stringstream ss;
-		if (infos[i].IsFile()) { ss << "F: "; }
-		else if (infos[i].IsDirectory()) { ss << "D: "; }
+		if (Infos[i].IsFile()) { ss << "F: "; }
+		else if (Infos[i].IsDirectory()) { ss << "D: "; }
 		else { ss << "N: "; }
-		ss << infos[i].Name();
-		FileList.ItemNew(ss.str().c_str(), &infos[i]);
+		ss << Infos[i].Name();
+		FileList.ItemNew(ss.str().c_str(), &Infos[i]);
 	}
 }
 
+#include <iostream>
+#include <string.h>
+void DirectoryNavigator::ClickItem(const UI::Control::ListBox::Item & item)
+{
+	FileSystemInfo & info = *((FileSystemInfo*)item.Object);
 
+	if (info.IsDirectory())
+	{
+		std::cout << "Directory: " << info << '\n';
+		Change(info.ToDirectory());
+	}
+	else if (info.IsFile())
+	{
+		std::cout << "File: " << info << '\n';
+	}
+	else
+	{
+		std::cout << "Unknown: " << info << '\n';
+	}
+
+	/*if (i < Directorys.Length())
+	{
+		std::cout << "Dir: " << Directorys[i] << '\n';
+	}
+	else
+	{
+		i -= Directorys.Length();
+		if (i < Files.Length())
+		{
+			std::cout << "File: " << Files[i] << '\n';
+		}
+		else
+		{
+			std::cout << "Unknown:\n";
+		}
+	}*/
+}
 
 void DirectoryNavigator::ClickGoParent(ClickArgs args)
 {

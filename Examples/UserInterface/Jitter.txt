@@ -1,0 +1,18 @@
+
+the jitter comes form the Window (glfw / Linux)
+
+there is nothing I can do about it ?
+
+maybe draw in Resize
+but that dosnt work on Windows
+
+also everything get stuck on Windows
+yes you can
+
+requires call to swapBuffer, which is normally done in Window
+call Frame in Window.Resize ?
+
+glfw Refresh Callback
+
+on Windows this only gets called when moving Mouse
+not when holding still

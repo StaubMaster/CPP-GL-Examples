@@ -13,7 +13,8 @@ class Window : public Base
 	void	ChangePointers(Base & control) override;
 
 	public:
-	float	DepthSize = 0.0f;
+	float		DepthSize = 0.0f;
+	VectorF2	WindowSize;
 
 	public:
 	void	AssignDepth() override;
@@ -22,9 +23,11 @@ class Window : public Base
 	~Window();
 	Window();
 
+	protected:
+	void	BoxUpdate() override;
+
 	public:
-	void	UpdateWindowSize(VectorF2 size);
-	void	PutDisplay();
+	void	WindowPutDisplay();
 
 	private:
 	bool	DepthUpdateIsRequested = false;

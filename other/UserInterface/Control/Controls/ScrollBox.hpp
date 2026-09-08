@@ -43,24 +43,6 @@ class ScrollBox : public Base
 	void	ChildClear() override;
 
 	public:
-	void	BoxUpdate() override;
-
-	public:
-	/* CalcScroll
-		this should be automatically called when ...
-			Box changes
-			Child Box changes
-			Child Visibility changes
-		Content uses AutoAnchor
-		so it automatically changes Box when...
-			Child Box changes
-			Child Visibility changes
-		so this only has to catch when ...
-			Box changes
-
-		Box change should automatically request AutoAnchor change from Parent
-		so this should be able to override AutoAnchorUpdate
-	*/
 	void	ScrollNone();
 	void	ScrollCalc();
 	void	ScrollFunc(float val);

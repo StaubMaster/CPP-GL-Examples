@@ -3,6 +3,7 @@
 
 # include "DirectoryInfo.hpp"
 # include "FileInfo.hpp"
+# include "FileSystemInfo.hpp"
 
 # include "Generics/Container/Array.hpp"
 
@@ -16,8 +17,9 @@ class DirectoryNavigator : public UI::Control::Form
 {
 	public:
 	DirectoryInfo						Directory;
-	Container::Array<DirectoryInfo>		Directorys;
-	Container::Array<FileInfo>			Files;
+	//Container::Array<DirectoryInfo>		Directorys;
+	//Container::Array<FileInfo>			Files;
+	Container::Array<FileSystemInfo>	Infos;
 
 	public:
 	UI::Control::TextBox	DirectoryText;
@@ -31,6 +33,9 @@ class DirectoryNavigator : public UI::Control::Form
 
 	public:
 	void	Change(const DirectoryInfo & dir);
+
+	private:
+	void	ClickItem(const UI::Control::ListBox::Item & item);
 
 	public:
 	void	ClickGoParent(ClickArgs args);

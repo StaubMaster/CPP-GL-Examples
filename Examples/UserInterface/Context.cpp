@@ -24,14 +24,14 @@ UserInterfaceContext::UserInterfaceContext()
 
 void UserInterfaceContext::Make()
 {
-	UIManager.WindowControl.ChildInsert(Menu0);
-	UIManager.WindowControl.ChildInsert(Menu1);
-	UIManager.WindowControl.ChildInsert(Menu2);
-	UIManager.WindowControl.ChildInsert(Menu3);
-	UIManager.WindowControl.ChildInsert(TestScroll);
-	UIManager.WindowControl.ChildInsert(TestList);
-	UIManager.WindowControl.ChildInsert(DirectoryNavigator);
-	UIManager.WindowControl.DepthUpdateRequest();
+	UIManager.Window.ChildInsert(Menu0);
+	UIManager.Window.ChildInsert(Menu1);
+	UIManager.Window.ChildInsert(Menu2);
+	UIManager.Window.ChildInsert(Menu3);
+	UIManager.Window.ChildInsert(TestScroll);
+	UIManager.Window.ChildInsert(TestList);
+	UIManager.Window.ChildInsert(DirectoryNavigator);
+	UIManager.Window.DepthUpdateRequest();
 
 	Menu1.Hide();
 	Menu2.Hide();
@@ -51,7 +51,7 @@ void UserInterfaceContext::Make()
 	DirectoryNavigator.Change(MediaDirectory);
 	//DirectoryNavigator.Change(DirectoryInfo(MediaDirectory.Path.ToAbsolute()));
 
-	UIManager.WindowControl.DepthUpdateRequest();
+	UIManager.Window.DepthUpdateRequest();
 }
 
 static void MenuToggleVisible(UI::Control::Form & form)

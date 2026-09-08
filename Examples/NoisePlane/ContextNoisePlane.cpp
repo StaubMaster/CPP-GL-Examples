@@ -1047,9 +1047,9 @@ void ContextNoisePlane::Draw()
 	PolyHedraManager.InstancesClear();
 	PolyHedraManager.InstancesMake();
 
-	UIManager.WindowControl.UpdateRecursive();
 	UIManager.Resize(window.Size);
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+	UIManager.WindowControl.UpdateRecursive();
 	UIManager.ControlManager.InstancesClear();
 	UIManager.ControlManager.InstancesMake();
 	UIManager.WindowControl.PutDisplay();
@@ -1075,6 +1075,11 @@ void ContextNoisePlane::Draw()
 	ChunkManager.ShaderLayoutU.LightSolar.Put(LightSolar);
 	ChunkManager.ShaderLayoutU.LightSpot.Put(LightSpot);
 	ChunkManager.ShaderLayoutU.LightSpotCount.Put(1);
+	ChunkManager.ShaderF.Bind();
+	ChunkManager.ShaderLayoutF.LightAmbient.Put(LightAmbient);
+	ChunkManager.ShaderLayoutF.LightSolar.Put(LightSolar);
+	ChunkManager.ShaderLayoutF.LightSpot.Put(LightSpot);
+	ChunkManager.ShaderLayoutF.LightSpotCount.Put(1);
 	FrameTime_Draw_UniformChunk.NewValue(sw.ElapsedTime());
 
 	sw.Clear();

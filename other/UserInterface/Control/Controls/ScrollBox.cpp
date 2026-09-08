@@ -10,7 +10,7 @@
 float UI::Control::ScrollContent::CalcRatio(float & control_range_size, float & content_size)
 {
 	// calculating ContentSize and Ratio should be done in Content
-	std::cout << "ContentChildren: " << Children.Count() << '\n';
+	//std::cout << "ContentChildren: " << Children.Count() << '\n';
 
 	BoxF1 control_range;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -18,15 +18,15 @@ float UI::Control::ScrollContent::CalcRatio(float & control_range_size, float & 
 		UI::Control::Base & control = *Children[i];
 
 		BoxF1 control_box(control.BoxDisplay.Min.Y, control.BoxDisplay.Max.Y);
-		std::cout << "control_box: " << control_box << '\n';
+		//std::cout << "control_box: " << control_box << '\n';
 
 		control_range.Consider(control_box.Min);
 		control_range.Consider(control_box.Max);
 		//control_range.Consider(control_box); // make this
 	}
 	control_range_size = control_range.Size();
-	std::cout << "ContentControlRange: " << control_range << '\n';
-	std::cout << "ContentControlSize:  " << control_range_size << '\n';
+	//std::cout << "ContentControlRange: " << control_range << '\n';
+	//std::cout << "ContentControlSize:  " << control_range_size << '\n';
 
 	BoxF1 content_range(BoxContent.Min.Y, BoxContent.Max.Y);
 	content_size = content_range.Size();
@@ -45,16 +45,20 @@ UI::Control::ScrollContent::ScrollContent(ScrollBox & box)
 
 void UI::Control::ScrollContent::BoxUpdate()
 {
+//	std::cout << "==== BoxUpdate base\n";
 	Base::BoxUpdate();
+//	std::cout << "==== BoxUpdate ....\n";
+	Box.ScrollCalc();
+//	std::cout << "==== BoxUpdate done\n";
 }
 
 void UI::Control::ScrollContent::AutoAnchorUpdate()
 {
-	std::cout << "==== AutoAnchorUpdate base\n";
+//	std::cout << "==== AutoAnchorUpdate base\n";
 	Base::AutoAnchorUpdate();
-	std::cout << "==== AutoAnchorUpdate ....\n";
+//	std::cout << "==== AutoAnchorUpdate ....\n";
 	Box.ScrollCalc();
-	std::cout << "==== AutoAnchorUpdate done\n";
+//	std::cout << "==== AutoAnchorUpdate done\n";
 }
 
 
@@ -90,12 +94,11 @@ UI::Control::ScrollBox::ScrollBox()
 
 
 
-#include "UIManager.hpp"
+#include "Control/Window.hpp"
 void UI::Control::ScrollBox::ChildInsert(Base & control)
 {
 	Content.ChildInsert(control);
 	Content.AutoAnchorUpdateRequest();
-	//Content.AutoAnchorUpdate();
 	if (Window != nullptr)
 	{
 		Window -> DepthUpdateRequest();
@@ -105,7 +108,6 @@ void UI::Control::ScrollBox::ChildRemove(Base & control)
 {
 	Content.ChildRemove(control);
 	Content.AutoAnchorUpdateRequest();
-	//Content.AutoAnchorUpdate();
 	if (Window != nullptr)
 	{
 		Window -> DepthUpdateRequest();
@@ -114,33 +116,8 @@ void UI::Control::ScrollBox::ChildRemove(Base & control)
 void UI::Control::ScrollBox::ChildClear()
 {
 	Content.ChildClear();
-	//Content.AutoAnchorUpdateRequest();
 	Content.AutoAnchorUpdate();
 }
-
-
-
-void UI::Control::ScrollBox::BoxUpdate()
-{
-	Base::BoxUpdate();
-	//std::cout << "BoxUpdate ....\n";
-	//ScrollCalc();
-	//std::cout << "BoxUpdate done\n";
-}
-
-/*void UI::Control::ScrollBox::AutoAnchorUpdate()
-{
-	Base::AutoAnchorUpdate();
-	std::cout << "AutoAnchorUpdate ....\n";
-	ScrollCalc();
-	std::cout << "AutoAnchorUpdate done\n";
-}*/
-
-/*void UI::Control::ScrollBox::Update()
-{
-	Base::Update();
-	//ScrollBar.Update();
-}*/
 
 
 

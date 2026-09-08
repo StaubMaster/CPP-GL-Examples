@@ -46,6 +46,26 @@ UI::Control::Form::Form()
 
 
 
+void UI::Control::Form::BoxUpdate()
+{
+	if (Window == nullptr) { return; }
+
+	BoxDisplay = Anchor.Calculate(Window -> BoxContent);
+
+	BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
+	BoxBoarder.Max = BoxDisplay.Max - AnchorBoarder.Max;
+
+	BoxContent.Min = BoxBoarder.Min + AnchorPadding.Min;
+	BoxContent.Max = BoxBoarder.Max - AnchorPadding.Max;
+
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> BoxUpdateRequest();
+	}
+}
+
+
+
 UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 mouse) const
 {
 	BoxF2 BoxBoarder;

@@ -131,13 +131,14 @@ unsigned int UI::Control::Base::LayerLimit() const
 			unsigned int l = control -> LayerLimit();
 			if (l > limit) { limit = l; }
 		}
-		return 1 + limit;
+		return limit + 1;
 	}
 	return 0;
 }
 
 #include "Control/Form.hpp" // this is only included for Depth
 // put Depth stuff in seperate file ?
+#include <iostream>
 void UI::Control::Base::AssignDepth()
 {
 	if (Window == nullptr) { return; }
@@ -146,8 +147,10 @@ void UI::Control::Base::AssignDepth()
 	float size = Window -> DepthSize;
 	float offset = Form -> DepthOffset;
 	float layer = Layer;
-
+	
 	Depth = -((layer * size) + offset);
+
+	std::cout << "Base::AssignDepth()" << " {" << size << ' ' << offset << ' ' << layer << "} " << Depth << '\n';
 }
 void UI::Control::Base::AssignDepthRecursive()
 {
@@ -249,6 +252,8 @@ void UI::Control::Base::BoxUpdate()
 {
 	if (Parent == nullptr) { return; }
 
+	std::cout << "BoxUpdate\n";
+
 	BoxDisplay = Anchor.Calculate(Parent -> BoxContent);
 
 	BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
@@ -282,13 +287,13 @@ void UI::Control::Base::AutoAnchorUpdateResolve()
 	if (!IsVisible()) { return; }
 	if (AutoAnchorUpdateIsRequested)
 	{
-		if (AutoAnchorYType != EAutoAnchorType::None || AutoAnchorXType != EAutoAnchorType::None)
+		//if (AutoAnchorYType != EAutoAnchorType::None || AutoAnchorXType != EAutoAnchorType::None)
 		{
 			AutoAnchorUpdate();
-			if (Parent != nullptr)
+			/*if (Parent != nullptr)
 			{
 				Parent -> AutoAnchorUpdateRequest();
-			}
+			}*/
 		}
 		AutoAnchorUpdateIsRequested = false;
 	}
@@ -299,8 +304,6 @@ void UI::Control::Base::AutoAnchorUpdateRequest()
 }
 
 #include <iostream>
-// this is called a lot every frame
-// why ?
 void UI::Control::Base::AutoAnchorUpdate()
 {
 	static unsigned int num = 0;
@@ -476,6 +479,7 @@ void UI::Control::Base::DisplayChange()
 
 void UI::Control::Base::Update()
 {
+	AutoAnchorUpdateResolve();
 	BoxUpdateResolve();
 	ColorUpdateResolve();
 	DisplayChange();
@@ -488,7 +492,7 @@ void UI::Control::Base::UpdateRecursive()
 	{
 		Children[i] -> UpdateRecursive();
 	}
-	AutoAnchorUpdateResolve();
+	//AutoAnchorUpdateResolve();
 }
 
 

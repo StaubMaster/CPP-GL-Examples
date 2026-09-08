@@ -26,9 +26,8 @@ class Manager
 	Graph::Manager		GraphManager;
 
 
-
-	DisplaySize				WindowSize;
-	UI::Control::Window		WindowControl;
+	
+	UI::Control::Window		Window;
 
 
 

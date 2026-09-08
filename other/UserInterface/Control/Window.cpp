@@ -11,7 +11,7 @@ void UI::Control::Window::ChangePointers(Base & control)
 
 
 
-//#include <iostream>
+#include <iostream>
 #include "Control/Form.hpp"
 void UI::Control::Window::AssignDepth()
 {
@@ -21,31 +21,35 @@ void UI::Control::Window::AssignDepth()
 		const UI::Control::Form * form = dynamic_cast<const UI::Control::Form*>(Children[i]);
 		if (form == nullptr) { continue; }
 
-		layer_sum += form -> LayerLimit();
+		unsigned int limit = form -> LayerLimit();
+		limit = limit + 1;
+		std::cout << "limit: " << limit << '\n';
+		layer_sum += limit;
 	}
-//	std::cout << "LayerSum: " << layer_sum << '\n';
+	std::cout << "LayerSum: " << layer_sum << '\n';
 
 	float depth_size = 1.0f / (layer_sum + 2);
 	DepthSize = depth_size;
-//	std::cout << "DepthSize: " << depth_size << '\n';
+	std::cout << "DepthSize: " << depth_size << '\n';
 
 	float depth_offset = depth_size;
-//	std::cout << "DepthOffset: " << depth_offset << '\n';
+	std::cout << "DepthOffset: " << depth_offset << '\n';
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		UI::Control::Form * form = dynamic_cast<UI::Control::Form*>(Children[i]);
 		if (form == nullptr) { continue; }
-
+		unsigned int limit = form -> LayerLimit();
 		form -> DepthOffset = depth_offset;
-
-		depth_offset += form -> LayerLimit() * depth_size;
-//		std::cout << "DepthOffset: " << depth_offset << '\n';
+		depth_offset += limit * depth_size;
+		std::cout << "DepthOffset: " << (form -> DepthOffset) << " to " << (depth_offset) << ' ' << limit << '\n';
 	}
-//	std::cout << '\n';
+	std::cout << '\n';
 }
 
 
 
+UI::Control::Window::~Window()
+{ }
 UI::Control::Window::Window()
 {
 	Anchor.X.Anchor = AnchorType::Both;
@@ -56,20 +60,24 @@ UI::Control::Window::Window()
 	ColorHover = ColorF4(0, 0, 0);
 	_Opaque = false;
 }
-UI::Control::Window::~Window()
-{ }
 
 
 
-void UI::Control::Window::UpdateWindowSize(VectorF2 size)
+void UI::Control::Window::BoxUpdate()
 {
-	BoxDisplay = BoxF2(VectorF2(), size);
+	BoxDisplay = BoxF2(VectorF2(), WindowSize);
 	BoxBoarder = BoxDisplay;
 	BoxContent = BoxDisplay;
-	BoxUpdateRequest();
+
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> BoxUpdateRequest();
+	}
 }
 
-void UI::Control::Window::PutDisplay()
+
+
+void UI::Control::Window::WindowPutDisplay()
 {
 	DisplayPutRecursive();
 }
