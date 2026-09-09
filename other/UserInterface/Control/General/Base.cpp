@@ -1,6 +1,8 @@
 #include "Base.hpp"
 #include "UIManager.hpp"
 
+//#include <iostream>
+
 
 
 void UI::Control::Base::ChangePointers(Base & control)
@@ -138,7 +140,6 @@ unsigned int UI::Control::Base::LayerLimit() const
 
 #include "Control/Form.hpp" // this is only included for Depth
 // put Depth stuff in seperate file ?
-#include <iostream>
 void UI::Control::Base::AssignDepth()
 {
 	if (Window == nullptr) { return; }
@@ -150,7 +151,7 @@ void UI::Control::Base::AssignDepth()
 	
 	Depth = -((layer * size) + offset);
 
-	std::cout << "Base::AssignDepth()" << " {" << size << ' ' << offset << ' ' << layer << "} " << Depth << '\n';
+	//std::cout << "Base::AssignDepth()" << " {" << size << ' ' << offset << ' ' << layer << "} " << Depth << '\n';
 }
 void UI::Control::Base::AssignDepthRecursive()
 {
@@ -252,7 +253,7 @@ void UI::Control::Base::BoxUpdate()
 {
 	if (Parent == nullptr) { return; }
 
-	std::cout << "BoxUpdate\n";
+	//std::cout << "BoxUpdate\n";
 
 	BoxDisplay = Anchor.Calculate(Parent -> BoxContent);
 
@@ -303,11 +304,10 @@ void UI::Control::Base::AutoAnchorUpdateRequest()
 	AutoAnchorUpdateIsRequested = true;
 }
 
-#include <iostream>
 void UI::Control::Base::AutoAnchorUpdate()
 {
 	static unsigned int num = 0;
-	std::cout << "UI::Control::Base::AutoAnchorUpdate() " << num << '\n';
+	//std::cout << "UI::Control::Base::AutoAnchorUpdate() " << num << '\n';
 	num++;
 
 	switch (AutoAnchorXType)
@@ -326,12 +326,12 @@ void UI::Control::Base::AutoAnchorUpdate()
 }
 void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 {
-	std::cout << "UI::Control::Base::AutoAnchorUpdate_Y_StackMin()\n";
-	std::cout << "Children: " << Children.Count() << "\n";
+	//std::cout << "UI::Control::Base::AutoAnchorUpdate_Y_StackMin()\n";
+	//std::cout << "Children: " << Children.Count() << "\n";
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		std::cout << "y: " << y << '\n';
+		//std::cout << "y: " << y << '\n';
 		if (Children[i] == nullptr) { continue; }
 		Base & control = *Children[i];
 		if (!control.IsVisible()) { continue; }

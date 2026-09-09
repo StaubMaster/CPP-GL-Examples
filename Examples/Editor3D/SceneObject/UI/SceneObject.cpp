@@ -31,8 +31,6 @@ SceneObjectUI::SceneObjectUI()
 	ChildInsert(LightAmbient);
 	ChildInsert(LightSolar);
 	ChildInsert(LightSpot);
-
-	UpdateAutoAnchor();
 }
 
 
@@ -89,8 +87,6 @@ void SceneObjectUI::Change(::SceneObject * obj)
 			LightSpot.Change(nullptr);
 		}
 	}
-
-	UpdateAutoAnchor();
 }
 void SceneObjectUI::Syncronize()
 {

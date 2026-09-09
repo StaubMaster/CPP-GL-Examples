@@ -1,0 +1,11 @@
+Type PolyHedra
+Format Normal
+
+
+
+vertex -25 0 -100
+vertex -25 0 +100
+vertex +25 0 -100
+vertex +25 0 +100
+face{ +0 +1 +2 +3
+offset +4

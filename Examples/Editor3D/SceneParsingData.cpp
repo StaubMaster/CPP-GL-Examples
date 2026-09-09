@@ -121,6 +121,11 @@ void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
 
 //	PolyHedra * polyhedra = PolyHedra::Load(file);
 	PolyHedra * polyhedra = PolyHedraFileCollection.FindMake(file);
+	if (polyhedra == nullptr)
+	{
+		std::cout << "PolyHedra " << file << " null\n";
+		return;
+	}
 
 	NewPolyHedra::Pallet * pallet = Context.PalletManager.FindMakePallet(polyhedra);
 	pallet -> Name = cmd_args.ToString(1);
@@ -140,6 +145,11 @@ void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 		{
 			polyhedra = PolyHedras[i];
 		}
+	}
+	if (polyhedra == nullptr)
+	{
+		std::cout << "Pallet " << name << " not found\n";
+		return;
 	}
 
 	Trans3D trans(

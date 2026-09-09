@@ -62,6 +62,8 @@
 
 struct Light3DContext : public ContextBase
 {
+Container::Array<FileInfo>	ArgumentFiles;
+
 View3D		View;
 RayF3		ViewRay;
 Matrix4x4	ViewMatrix;
@@ -151,8 +153,7 @@ void	SceneReMake();
 
 
 
-~Light3DContext();
-Light3DContext();
+Light3DContext(const Container::Array<FileInfo> & files);
 
 
 

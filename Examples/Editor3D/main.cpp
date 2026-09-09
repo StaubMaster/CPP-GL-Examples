@@ -52,6 +52,9 @@ static void init_DebugFile(const char * name)
 	}
 }
 
+/*
+isolate Files that actually Exist ?
+*/
 static Container::Array<FileInfo> main_args_to_FileInfo(int argc, char * argv[])
 {
 	argc--;
@@ -62,7 +65,7 @@ static Container::Array<FileInfo> main_args_to_FileInfo(int argc, char * argv[])
 	Container::Array<FileInfo> files(argc);
 	for (int i = 0; i < argc; i++)
 	{
-		files[i] = FileInfo(argv[i]);
+		files[i] = FileInfo(argv[i + 1]);
 	}
 	return files;
 }
@@ -70,7 +73,8 @@ static Container::Array<FileInfo> main_args_to_FileInfo(int argc, char * argv[])
 int main(int argc, char * argv[])
 {
 #ifdef SHOW_MAIN_INFO
-	std::cout << "int main(\n";
+	std::cout << "int main\n";
+	std::cout << "(\n";
 	for (int i = 0; i < argc; i++)
 	{
 		std::cout << "  " << '"' << argv[i] << '"' << '\n';
@@ -96,7 +100,7 @@ int main(int argc, char * argv[])
 			window.Create();
 			ContextBase::WindowPointer = &window;
 			{
-				Light3DContext context;
+				Light3DContext context(files);
 				context.Run();
 			}
 			window.Delete();

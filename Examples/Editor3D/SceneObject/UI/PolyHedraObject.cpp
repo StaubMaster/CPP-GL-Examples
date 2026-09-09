@@ -35,9 +35,9 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 	Pallet.ChildInsert(PalletChange);
 	ChildInsert(Trans);
 
-	Pallet.UpdateAutoAnchor();
-	Trans.UpdateAutoAnchor();
-	UpdateAutoAnchor();
+	//Pallet.UpdateAutoAnchor();
+	//Trans.UpdateAutoAnchor();
+	//UpdateAutoAnchor();
 
 	Change(nullptr);
 }

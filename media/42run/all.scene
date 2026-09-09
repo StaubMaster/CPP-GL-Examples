@@ -1,0 +1,25 @@
+
+LightAmbient      0.4   1.0 1.0 1.0     0.0 40.0   0.0   0.0 0.0 0.0
+LightDirectionD   1.0   1.0 1.0 1.0    +1.0 -3.0  +2.0   0.0 45.0 0.0
+
+
+
+pallet Player.polyhedra player
+place player   0 16 0   0 0 0
+
+pallet I.polyhedra segment_I
+pallet I_Gap.polyhedra segment_I_Gap
+
+pallet L_R.polyhedra segment_L_R
+pallet L_L.polyhedra segment_L_L
+
+pallet T.polyhedra segment_T
+pallet X.polyhedra segment_X
+
+place segment_I     0000 0 0000   0 0 0
+place segment_I_Gap 0250 0 0000   0 0 0
+
+place segment_L_R   0000 0 0250   0 0 0
+place segment_L_L   0250 0 0250   0 0 0
+place segment_T     0500 0 0250   0 0 0
+place segment_X     0750 0 0250   0 0 0

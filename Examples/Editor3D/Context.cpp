@@ -152,7 +152,7 @@ void Light3DContext::PolyHedra_ChangeMedia()
 
 bool Light3DContext::IsHoveringControl() const
 {
-	return (UIManager.Hovering != nullptr && UIManager.Hovering != &UIManager.WindowControl);
+	return (UIManager.Hovering != nullptr && UIManager.Hovering != &UIManager.Window);
 }
 
 void Light3DContext::Objects_Change()
@@ -388,8 +388,20 @@ void Light3DContext::SceneReMake()
 	std::cout << "Scene ReMake ....\n";
 	SceneClear();
 	SceneInitCubes();
+	std::cout << "ArgumentFiles\n";
+	std::cout << "[\n";
+	for (unsigned int i = 0; i < ArgumentFiles.Length(); i++)
+	{
+		std::cout << "  " << ArgumentFiles[i] << '\n';
+	}
+	std::cout << "]\n";
+	for (unsigned int i = 0; i < ArgumentFiles.Length(); i++)
+	{
+		SceneLoad(ArgumentFiles[i]);
+	}
 	//SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
-	SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
+	//SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
+	//SceneLoad(MediaDirectory.File("42run/all.scene"));
 	SceneInitLights();
 	std::cout << "Scene ReMake done\n";
 }
@@ -400,7 +412,7 @@ void Light3DContext::UserChange_ChangeObject(SceneObject * obj)
 {
 	if (obj != nullptr)
 	{
-		UserChange.IndicatorsShow();
+		//UserChange.IndicatorsShow();
 
 		Trans3D trans = obj -> GetTrans();
 
@@ -500,7 +512,7 @@ void Light3DContext::PolyHedraPalletChangeFunc(ClickArgs args)
 				//UIPolyHedraPalletList.List.ItemNew(pallet -> Object -> File.Path.ToString(), pallet);
 				UIPolyHedraPalletList.List.ItemNew(pallet -> Object -> File.Path.Name(), pallet);
 			}
-			UIPolyHedraPalletList.UpdateAutoAnchor();
+			//UIPolyHedraPalletList.UpdateAutoAnchor();
 		}
 		//UIPolyHedraPalletList.Change(PolyHedraManager);
 	}
@@ -523,10 +535,9 @@ void Light3DContext::PolyHedraPalletUpdate()
 
 
 
-Light3DContext::~Light3DContext()
-{ }
-Light3DContext::Light3DContext()
+Light3DContext::Light3DContext(const Container::Array<FileInfo> & files)
 	: ContextBase()
+	, ArgumentFiles(files)
 	, LightBuffer(GL::BufferDataUsage::StreamDraw)
 {
 	MediaDirectory = DirectoryInfo("../../media/"); // Set Media Directory with MakeFile Macro ?
@@ -545,7 +556,7 @@ Light3DContext::Light3DContext()
 #include "Layout/Parser/Uniform.hpp"
 void Light3DContext::ChangeMedia()
 {
-	std::cout << "ChangeMedia 0\n";
+	std::cout << "Light3DContext::ChangeMedia ....\n";
 
 	// MultiformLayout.Clear()
 
@@ -562,10 +573,12 @@ void Light3DContext::ChangeMedia()
 	});
 	MultiformLayout.Find(layouts);
 
-	std::cout << "ChangeMedia 1\n";
+	std::cout << "Light3DContext::ChangeMedia done\n";
 }
 void Light3DContext::GraphicsCreate()
 {
+	std::cout << "Light3DContext::GraphicsCreate ....\n";
+
 	UIManager.GraphicsCreate();
 
 	MultiformLayout.Depth.ChangeData(View.Depth);
@@ -574,14 +587,20 @@ void Light3DContext::GraphicsCreate()
 	LightBuffer.Create();
 
 	NewPolyHedra_Manager.GraphicsCreate();
+
+	std::cout << "Light3DContext::GraphicsCreate done\n";
 }
 void Light3DContext::GraphicsDelete()
 {
+	std::cout << "Light3DContext::GraphicsDelete ....\n";
+
 	UIManager.GraphicsDelete();
 
 	LightBuffer.Delete();
 
 	NewPolyHedra_Manager.GraphicsDelete();
+
+	std::cout << "Light3DContext::GraphicsDelete done\n";
 }
 
 
@@ -595,7 +614,8 @@ void Light3DContext::Make()
 	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
 	View.Depth.Color = window.DefaultColor;
 //	View.Trans = Trans3D(VectorF3(0, 64, -2), EulerAngle3D());
-	View.Trans = Trans3D(VectorF3(0, 430, -24), EulerAngle3D());
+//	View.Trans = Trans3D(VectorF3(0, 430, -24), EulerAngle3D());
+	View.Trans = Trans3D(VectorF3(0, 0, -24), EulerAngle3D());
 
 	UserChange.IndicatorsInit(MediaDirectory.Directory("YMT/Meta/"));
 	UserChange.IndicatorsHide();
@@ -616,9 +636,9 @@ void Light3DContext::Make()
 		std::cout << "]\n";
 	}
 
-	UIManager.WindowControl.ChildInsert(UISceneObject);
-	UIManager.WindowControl.ChildInsert(UIPolyHedraPalletList);
-	UIManager.WindowControl.UpdateDepth();
+	UIManager.Window.ChildInsert(UISceneObject);
+	UIManager.Window.ChildInsert(UIPolyHedraPalletList);
+	//UIManager.Window.UpdateDepth();
 
 	UISceneObject.Hide();
 	UIPolyHedraPalletList.Hide();

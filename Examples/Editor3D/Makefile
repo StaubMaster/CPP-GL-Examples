@@ -35,7 +35,6 @@ FILES := \
 	UI/Change3D/Trans3D.cpp \
 \
 	Context.cpp \
-	new.cpp \
 	main.cpp \
 
 DIR_SRC := .
@@ -60,8 +59,6 @@ include $(OTHER_DIR)/Miscellaneous.mk
 include $(OTHER_DIR)/UserInterface.mk
 
 include $(REPOS_DIR)/Engine.mk
-include $(REPOS_DIR)/FileManager.mk
-include $(REPOS_DIR)/OpenGL.mk
 
 ################################################################
 

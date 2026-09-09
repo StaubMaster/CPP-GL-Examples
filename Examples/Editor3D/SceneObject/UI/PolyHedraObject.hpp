@@ -1,8 +1,8 @@
 #ifndef  SCENE_OBJECT_CONTROL_POLYHEDRA_OBJECT_HPP
 # define SCENE_OBJECT_CONTROL_POLYHEDRA_OBJECT_HPP
 
-# include "Control/GroupBox.hpp"
-# include "Control/Label.hpp"
+# include "Control/Controls/GroupBox.hpp"
+# include "Control/Controls/Label.hpp"
 # include "ValueTypeUI/Trans3D.hpp"
 
 namespace NewPolyHedra
