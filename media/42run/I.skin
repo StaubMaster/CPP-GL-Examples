@@ -1,0 +1,19 @@
+Type Skin
+Format S_2025_10_27
+
+Size 32 32
+
+#Img Wood.png
+Img Orientation.png
+
+TexI 0
+
+
+
+vIndex here
+vertex -2.5 -10.0
+vertex -2.5 +10.0
+vertex +2.5 -10.0
+vertex +2.5 +10.0
+vFace< +0 +1 +2
+vFace< +2 +1 +3

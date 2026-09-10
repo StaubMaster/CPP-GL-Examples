@@ -44,22 +44,23 @@ void UI::CursorManager::Create(const DirectoryInfo & dir, GLFWwindow * glfw_wind
 {
 	this -> glfw_window = glfw_window;
 
-	glfw_cursorArrowC = ImageToCursor(dir.File("Images/Cursors/ArrowCross.png").LoadImage());
+	DirectoryInfo cursor_dir = dir.Directory("Images/Cursors/");
 
-	glfw_cursorArrowH = ImageToCursor(dir.File("Images/Cursors/ArrowHori.png").LoadImage());
-	glfw_cursorArrowV = ImageToCursor(dir.File("Images/Cursors/ArrowVert.png").LoadImage());
-	glfw_cursorArrowD0 = ImageToCursor(dir.File("Images/Cursors/ArrowDiag0.png").LoadImage());
-	glfw_cursorArrowD1 = ImageToCursor(dir.File("Images/Cursors/ArrowDiag1.png").LoadImage());
+	glfw_cursorArrowC  = ImageToCursor(cursor_dir.File("ArrowCross.png").LoadImage());
+	glfw_cursorArrowH  = ImageToCursor(cursor_dir.File("ArrowHori.png").LoadImage());
+	glfw_cursorArrowV  = ImageToCursor(cursor_dir.File("ArrowVert.png").LoadImage());
+	glfw_cursorArrowD0 = ImageToCursor(cursor_dir.File("ArrowDiag0.png").LoadImage());
+	glfw_cursorArrowD1 = ImageToCursor(cursor_dir.File("ArrowDiag1.png").LoadImage());
 
-	glfw_cursorBoxEdge[0] = ImageToCursor(dir.File("Images/Cursors/BoxEdge0.png").LoadImage());
-	glfw_cursorBoxEdge[1] = ImageToCursor(dir.File("Images/Cursors/BoxEdge1.png").LoadImage());
-	glfw_cursorBoxEdge[2] = ImageToCursor(dir.File("Images/Cursors/BoxEdge2.png").LoadImage());
-	glfw_cursorBoxEdge[3] = ImageToCursor(dir.File("Images/Cursors/BoxEdge3.png").LoadImage());
+	glfw_cursorBoxEdge[0] = ImageToCursor(cursor_dir.File("BoxHoriMin.png").LoadImage());
+	glfw_cursorBoxEdge[1] = ImageToCursor(cursor_dir.File("BoxVertMin.png").LoadImage());
+	glfw_cursorBoxEdge[2] = ImageToCursor(cursor_dir.File("BoxHoriMax.png").LoadImage());
+	glfw_cursorBoxEdge[3] = ImageToCursor(cursor_dir.File("BoxVertMax.png").LoadImage());
 
-	glfw_cursorBoxCorn[0] = ImageToCursor(dir.File("Images/Cursors/BoxCorn0.png").LoadImage());
-	glfw_cursorBoxCorn[1] = ImageToCursor(dir.File("Images/Cursors/BoxCorn1.png").LoadImage());
-	glfw_cursorBoxCorn[2] = ImageToCursor(dir.File("Images/Cursors/BoxCorn2.png").LoadImage());
-	glfw_cursorBoxCorn[3] = ImageToCursor(dir.File("Images/Cursors/BoxCorn3.png").LoadImage());
+	glfw_cursorBoxCorn[0] = ImageToCursor(cursor_dir.File("BoxMinMin.png").LoadImage());
+	glfw_cursorBoxCorn[1] = ImageToCursor(cursor_dir.File("BoxMaxMin.png").LoadImage());
+	glfw_cursorBoxCorn[2] = ImageToCursor(cursor_dir.File("BoxMinMax.png").LoadImage());
+	glfw_cursorBoxCorn[3] = ImageToCursor(cursor_dir.File("BoxMaxMax.png").LoadImage());
 }
 void UI::CursorManager::Delete()
 {

@@ -16,3 +16,7 @@ vertex +100 0 -025
 vertex +100 0 +025
 face{ +0 +1 +2 +3
 offset +4
+
+
+
+Skin T.skin
