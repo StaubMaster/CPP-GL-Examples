@@ -227,7 +227,7 @@ void ContextNoisePlane::VoxelClear_Clear(ChunkVoxelIndex idx)
 	VoxelClear_Index = idx;
 	VoxelClear_Tool = dynamic_cast<ItemTool*>(HotBar.Items[0]);
 
-	AccessLockedChunk chunk = ChunkManager.FindAccess(VoxelClear_Index.Chunk);
+	AccessLockedChunk chunk = ChunkManager.FindAbsoluteAccess(VoxelClear_Index.Chunk);
 	const Voxel & voxel = (*chunk).Voxels[VoxelClear_Index.Voxel];
 	if (!voxel.IsEmpty())
 	{
@@ -251,7 +251,7 @@ void ContextNoisePlane::VoxelClear_Continue(const ChunkVoxelIndex & other)
 			{
 				Voxel voxel;
 				// why not .FindAssign() ?
-				AccessLockedChunk chunk_access = ChunkManager.FindAccess(VoxelClear_Index.Chunk);
+				AccessLockedChunk chunk_access = ChunkManager.FindAbsoluteAccess(VoxelClear_Index.Chunk);
 				if (chunk_access.Is())
 				{
 					AssignLockedChunk chunk_assign = chunk_access.ToAssign();
@@ -492,7 +492,7 @@ void ContextNoisePlane::ViewUpdate_Colliding(FrameTime frame_time)
 		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 		{
 			ChunkVoxelIndex idx(i);
-			AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
+			AccessLockedChunk chunk = ChunkManager.FindAbsoluteAccess(idx.Chunk);
 			if (!chunk.Is()) { continue; }
 			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
 			if (voxel != nullptr && !(voxel -> IsEmpty()))
@@ -603,7 +603,7 @@ void ContextNoisePlane::ViewRay_HitDo()
 					{
 						Voxel voxel = item -> VoxelPallet -> ToVoxel(ViewHit_Axis0, ViewHit_Axis1);
 						ChunkVoxelIndex idx(hit_idx);
-						AssignLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk).ToAssign();
+						AssignLockedChunk chunk = ChunkManager.FindAbsoluteAccess(idx.Chunk).ToAssign();
 						if (chunk.Is())
 						{
 							(*chunk).PlaceVoxel(idx.Voxel, voxel);
@@ -633,7 +633,7 @@ void ContextNoisePlane::ViewRay_Show()
 
 		// Voxel Info
 		{
-			AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
+			AccessLockedChunk chunk = ChunkManager.FindAbsoluteAccess(idx.Chunk);
 			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
 			if (voxel != nullptr)
 			{
@@ -848,7 +848,7 @@ void ContextNoisePlane::MakeControls()
 	// Pause
 	{
 		MenuPause.Show();
-		UIManager.WindowControl.ChildInsert(MenuPause);
+		UIManager.Window.ChildInsert(MenuPause);
 	}
 	// Options
 	{
@@ -865,7 +865,7 @@ void ContextNoisePlane::MakeControls()
 		// make RemoveRange = InsertRange + n ?
 
 		MenuOptions.Hide();
-		UIManager.WindowControl.ChildInsert(MenuOptions);
+		UIManager.Window.ChildInsert(MenuOptions);
 	}
 	// Debug
 	{
@@ -873,7 +873,7 @@ void ContextNoisePlane::MakeControls()
 		//MenuDebug.VoxelChunkMemory.Check.Check(true);
 
 		MenuDebug.Hide();
-		UIManager.WindowControl.ChildInsert(MenuDebug);
+		UIManager.Window.ChildInsert(MenuDebug);
 	}
 	// Inventory
 	{
@@ -891,7 +891,7 @@ void ContextNoisePlane::MakeControls()
 		InventoryUI.IsMovable = false;
 		InventoryUI.Change(&Inventory);
 		InventoryUI.Hide();
-		UIManager.WindowControl.ChildInsert(InventoryUI);
+		UIManager.Window.ChildInsert(InventoryUI);
 	}
 	// HotBar
 	{
@@ -900,10 +900,10 @@ void ContextNoisePlane::MakeControls()
 		HotBarUI.Anchor.Y.AnchorMax(0);
 		HotBarUI.Change(&HotBar);
 		//HotBarUI.Hide();
-		UIManager.WindowControl.ChildInsert(HotBarUI);
+		UIManager.Window.ChildInsert(HotBarUI);
 	}
 
-//	UIManager.WindowControl.UpdateDepth();
+//	UIManager.Window.UpdateDepth();
 }
 
 
@@ -1049,10 +1049,10 @@ void ContextNoisePlane::Draw()
 
 	UIManager.Resize(window.Size);
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
-	UIManager.WindowControl.UpdateRecursive();
+	UIManager.Window.UpdateRecursive();
 	UIManager.ControlManager.InstancesClear();
 	UIManager.ControlManager.InstancesMake();
-	UIManager.WindowControl.PutDisplay();
+	UIManager.Window.WindowPutDisplay();
 
 	UIManager.GraphManager.MakeInstances();
 
@@ -1497,7 +1497,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ChunkVoxelIndex idx(View.Trans.Position.roundF().ToI());
 		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
 		//ChunkManager.ChunksInUse.lock();
-		AccessLockedChunk chunk = ChunkManager.FindAccess(idx.Chunk);
+		AccessLockedChunk chunk = ChunkManager.FindAbsoluteAccess(idx.Chunk);
 		//if (idx.ChunkMan != 0xFFFFFFFF)
 		if (chunk.Is())
 		{

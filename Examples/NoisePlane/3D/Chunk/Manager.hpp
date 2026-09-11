@@ -84,44 +84,65 @@ struct ChunkManager
 
 	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
 
-	public:
-	Array3D<Chunk*>	Chunks;
-	ContainerLock	ChunksLock;
+	//struct Container
+	//{
+		private:
+		public:
+		Array3D<Chunk*>		Chunks;
+		ContainerLock		ChunksLock;
 
-	public:
-	unsigned int	KnowSize;
-	unsigned int	CareSize;
+		private: public:
+		unsigned int	KnowSize;
+		unsigned int	CareSize;
 
-	public:
-	VectorI3	Center;
-	BoxI3		KnowBox;
-	BoxI3		CareBox;
+		private:
+		VectorI3	Center;
+		BoxI3		KnowBox;
+		BoxI3		CareBox;
 
-	public:
-	void	Clear();
-	void	ChangeSize(unsigned int know_size, unsigned int care_size);
-	void	ChangeCenter(VectorI3 center);
+		public:
+		bool	AbsoluteCheckCareBox(const VectorI3 & idx) const;
+		bool	AbsoluteCheckKnowBox(const VectorI3 & idx) const;
 
-	VectorI3	absolute(VectorU3 u) const;
-	VectorU3	relative(VectorI3 i) const;
+		public:
+		VectorI3	RelativeToAbsolute(VectorU3 u) const;
+		VectorU3	AbsoluteToRelative(VectorI3 i) const;
+		VectorI3	CenteredToAbsolute(VectorI3 i) const;
+		VectorI3	AbsoluteToCentered(VectorI3 i) const;
 
-	public:
-	Chunk *					FindAbsOrNull(VectorI3 idx);
-	AccessLockedChunk		FindAccess(VectorI3 idx);
+		public:
+		Chunk *		FindAbsolutePointer(VectorI3 idx);
+		Chunk *		FindCenteredPointer(VectorI3 idx);
 
-	private:
-	public:
-	Container::Binary<Chunk*>	ChunksToInsert; // do this in Chunks
-	Container::Binary<Chunk*>	ChunksToRemove; // ChunkDisposal
-	ContainerLock				ChunksToInsertLock;
-	ContainerLock				ChunksToRemoveLock;
+		public:
+		AccessLockedChunk		FindAbsoluteAccess(VectorI3 idx);
 
-	public:
-	void	InsertAround();
-	void	RemoveAround(); // returns immedeatly
+		public:
+		void	Clear();
+		void	ChangeSize(unsigned int know_size, unsigned int care_size);
+		void	ChangeCenter(VectorI3 center);
 
-	void	UpdateChunksContainer();
+		private:
+		public:
+		Container::Binary<Chunk*>	ChunksToInsert; // do this in Chunks
+		Container::Binary<Chunk*>	ChunksToRemove; // ChunkDisposal
+		ContainerLock				ChunksToInsertLock;
+		ContainerLock				ChunksToRemoveLock;
 
+		private:
+		void	ChunkNeighboutsFind(Chunk & chunk);
+		//void	ChunkNeighboutsNull(Chunk & chunk);
+
+		private:
+		Container::Binary<VectorI3>		MissingCareChunks();
+
+		public:
+		void	InsertAround();
+		//void	RemoveAround(); // returns immedeatly
+
+		void	UpdateChunksContainer();
+	//};
+	//ChunkManager::Container		Container;
 
 
 	public:

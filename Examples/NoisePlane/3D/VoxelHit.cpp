@@ -61,7 +61,7 @@ GridCast3D::Hit VoxelHit::Hit(ChunkManager & manager, RayF3 ray3D, float limit)
 	GridCast3D::Data data(ray3D, limit, CHUNK_VALUES_PER_SIDE);
 	do
 	{
-		ContainerAccessTypeGuard<Chunk> chunk = manager.FindAccess(data.Index());
+		ContainerAccessTypeGuard<Chunk> chunk = manager.FindAbsoluteAccess(data.Index());
 		if (!chunk.Is()) { return GridCast3D::Hit(); }
 		if (!((*chunk).GenerationDone())) { return GridCast3D::Hit(); }
 		if (((*chunk).IsEmpty())) { continue; }

@@ -105,11 +105,12 @@ AccessLockedChunk AuxThread3::Find()
 		ptr -> AccessL();
 
 		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { ptr -> AccessU(); continue; }
-		if (!Manager.CareBox.ContainsInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
+		//if (!Manager.CareBox.ContainsInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
+		if (!Manager.AbsoluteCheckCareBox(ref.Index)) { ptr -> AccessU(); continue; }
 		if (!ref.Neighbours.CanAssamble()) { ptr -> AccessU(); continue; }
 
 		candidate_count++;
-		VectorF3 rel = (ref.Index - Manager.Center).ToF();
+		VectorF3 rel = Manager.AbsoluteToCentered(ref.Index).ToF();
 		float d = rel.length2();
 		//if (!found.Is() || d < dist)
 		if (found == nullptr || d < dist)
