@@ -52,9 +52,11 @@ FILES := \
 	CenterIndexLoop/2D.cpp \
 	CenterIndexLoop/3D.cpp \
 \
-	ContainerLock/Lock.cpp \
-	ContainerLock/AccessGuard.cpp \
-	ContainerLock/AssignGuard.cpp \
+	Threading/ObjectLock.cpp \
+	Threading/ObjectAccessUniqueGuard.cpp \
+	Threading/ObjectAccessSharedGuard.cpp \
+	Threading/ObjectAssignUniqueGuard.cpp \
+	Threading/ObjectAssignSharedGuard.cpp \
 \
 	GridCast/GridCast3D.cpp \
 \

@@ -1,13 +1,13 @@
-#ifndef  CONTAINER_LOCK_HPP
-# define CONTAINER_LOCK_HPP
+#ifndef  OBJECT_LOCK_HPP
+# define OBJECT_LOCK_HPP
 
 # include <mutex>
 # include <atomic>
 
-# include "Telemetry/WaitDoTime.hpp"
-# include "Telemetry/StopWatch.hpp"
+class StopWatch;
+struct WaitDoTime;
 
-struct ContainerLock
+struct ObjectLock
 {
 	private:
 	std::atomic<unsigned int>	UseCount;
@@ -19,21 +19,21 @@ struct ContainerLock
 	bool	InUse() const;
 
 	public:
-	~ContainerLock();
-	ContainerLock();
-
-	ContainerLock(const ContainerLock & other) = delete;
-	ContainerLock & operator=(const ContainerLock & other) = delete;
+	~ObjectLock();
+	ObjectLock();
+	ObjectLock(const ObjectLock & other) = delete;
+	ObjectLock & operator=(const ObjectLock & other) = delete;
 
 	public:
-	void	AccessL();
-	void	AccessU();
+	void	AccessL(); // Take (lock)
+	void	AccessU(); // Give (unlock)
+	bool	AccessT(); // Try
 
-	bool	AccessT();
+	void	AssignL(); // Take (lock)
+	void	AssignU(); // Give (unlock)
+	bool	AssignT(); // Try
+
 	void	AccessToAssign();
-
-	void	AssignL();
-	void	AssignU();
 
 	public:
 	void	AccessL(StopWatch & watch, WaitDoTime & time);

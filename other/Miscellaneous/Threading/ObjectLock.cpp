@@ -1,18 +1,23 @@
-#include "ContainerLock/Lock.hpp"
+#include "Threading/ObjectLock.hpp"
 #include "AuxThreadBase.hpp"
-//#include <iostream>
+
+#include "Telemetry/WaitDoTime.hpp"
+#include "Telemetry/StopWatch.hpp"
 
 //#define LOG_THREAD_INFO
 
+#ifdef LOG_THREAD_INFO
+# include <iostream>
+#endif
 
 
-bool ContainerLock::InUse() const { return (UseCount.load() != 0); }
+bool ObjectLock::InUse() const { return (UseCount.load() != 0); }
 
 
 
-ContainerLock::~ContainerLock()
+ObjectLock::~ObjectLock()
 { }
-ContainerLock::ContainerLock()
+ObjectLock::ObjectLock()
 	: UseCount(0)
 	, AssignMutex()
 	, AccessMutex()
@@ -21,7 +26,7 @@ ContainerLock::ContainerLock()
 
 
 
-void ContainerLock::AccessL()
+void ObjectLock::AccessL()
 {
 	UseCount++;
 #ifdef LOG_THREAD_INFO
@@ -34,7 +39,7 @@ void ContainerLock::AccessL()
 	std::cerr << AuxThreadBase::ThreadName << " have AccessL" << '\n';
 #endif
 }
-void ContainerLock::AccessU()
+void ObjectLock::AccessU()
 {
 #ifdef LOG_THREAD_INFO
 	std::cerr << AuxThreadBase::ThreadName << " have AccessU" << '\n';
@@ -46,7 +51,7 @@ void ContainerLock::AccessU()
 	UseCount--;
 }
 
-bool ContainerLock::AccessT()
+bool ObjectLock::AccessT()
 {
 	UseCount++;
 	if (AccessMutex.try_lock())
@@ -58,7 +63,7 @@ bool ContainerLock::AccessT()
 	UseCount--;
 	return false;
 }
-void ContainerLock::AccessToAssign()
+void ObjectLock::AccessToAssign()
 {
 	AccessCount--;
 	AssignMutex.lock();
@@ -66,7 +71,7 @@ void ContainerLock::AccessToAssign()
 	while (AccessCount.load() != 0) { }
 }
 
-void ContainerLock::AssignL()
+void ObjectLock::AssignL()
 {
 	UseCount++;
 #ifdef LOG_THREAD_INFO
@@ -79,7 +84,7 @@ void ContainerLock::AssignL()
 	std::cerr << AuxThreadBase::ThreadName << " have AssignL" << '\n';
 #endif
 }
-void ContainerLock::AssignU()
+void ObjectLock::AssignU()
 {
 #ifdef LOG_THREAD_INFO
 	std::cerr << AuxThreadBase::ThreadName << " have AssignU" << '\n';
@@ -94,7 +99,7 @@ void ContainerLock::AssignU()
 
 
 
-void ContainerLock::AccessL(StopWatch & watch, WaitDoTime & time)
+void ObjectLock::AccessL(StopWatch & watch, WaitDoTime & time)
 {
 	UseCount++;
 #ifdef LOG_THREAD_INFO
@@ -114,7 +119,7 @@ void ContainerLock::AccessL(StopWatch & watch, WaitDoTime & time)
 	std::cerr << AuxThreadBase::ThreadName << " have AccessL" << '\n' << std::flush;
 #endif
 }
-void ContainerLock::AccessU(StopWatch & watch, WaitDoTime & time)
+void ObjectLock::AccessU(StopWatch & watch, WaitDoTime & time)
 {
 	time.ThreadName = AuxThreadBase::ThreadName;
 #ifdef LOG_THREAD_INFO
@@ -130,7 +135,7 @@ void ContainerLock::AccessU(StopWatch & watch, WaitDoTime & time)
 	UseCount--;
 }
 
-void ContainerLock::AssignL(StopWatch & watch, WaitDoTime & time)
+void ObjectLock::AssignL(StopWatch & watch, WaitDoTime & time)
 {
 	UseCount++;
 	time.ThreadName = AuxThreadBase::ThreadName;
@@ -150,7 +155,7 @@ void ContainerLock::AssignL(StopWatch & watch, WaitDoTime & time)
 	std::cerr << AuxThreadBase::ThreadName << " have AssignL" << '\n';
 #endif
 }
-void ContainerLock::AssignU(StopWatch & watch, WaitDoTime & time)
+void ObjectLock::AssignU(StopWatch & watch, WaitDoTime & time)
 {
 	time.ThreadName = AuxThreadBase::ThreadName;
 #ifdef LOG_THREAD_INFO

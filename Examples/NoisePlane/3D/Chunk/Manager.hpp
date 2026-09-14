@@ -35,8 +35,7 @@ struct Chunk;
 struct Chunk;
 struct ChunkGenerationNoise;
 
-template<typename TypeObject> struct ContainerAccessTypeGuard;
-typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
+# include "3D/ChunkGuards.hpp"
 
 # include "Axis/3D/Types.hpp"
 
@@ -51,7 +50,7 @@ struct VoxelHit;
 # include "ValueType/_Show.hpp"
 
 # include "Telemetry/WaitDoTime.hpp"
-# include "ContainerLock/Lock.hpp"
+# include "Threading/ObjectLock.hpp"
 
 # include "Generics/Container/Array3D.hpp"
 
@@ -89,7 +88,7 @@ struct ChunkManager
 		private:
 		public:
 		Array3D<Chunk*>		Chunks;
-		ContainerLock		ChunksLock;
+		ObjectLock			ChunksLock;
 
 		private: public:
 		unsigned int	KnowSize;
@@ -115,7 +114,7 @@ struct ChunkManager
 		Chunk *		FindCenteredPointer(VectorI3 idx);
 
 		public:
-		AccessLockedChunk		FindAbsoluteAccess(VectorI3 idx);
+		AccessLockedChunk	FindAbsoluteAccess(VectorI3 idx);
 
 		public:
 		void	Clear();
@@ -126,20 +125,19 @@ struct ChunkManager
 		public:
 		Container::Binary<Chunk*>	ChunksToInsert; // do this in Chunks
 		Container::Binary<Chunk*>	ChunksToRemove; // ChunkDisposal
-		ContainerLock				ChunksToInsertLock;
-		ContainerLock				ChunksToRemoveLock;
+		ObjectLock					ChunksToInsertLock;
+		ObjectLock					ChunksToRemoveLock;
 
 		private:
 		void	ChunkNeighboutsFind(Chunk & chunk);
-		//void	ChunkNeighboutsNull(Chunk & chunk);
 
-		private:
+		void	PutChunks(Container::Binary<VectorI3> & chunks);
+
 		Container::Binary<VectorI3>		MissingCareChunks();
 
-		public:
-		void	InsertAround();
-		//void	RemoveAround(); // returns immedeatly
+		void	PutMissingCareChunks();
 
+		public:
 		void	UpdateChunksContainer();
 	//};
 	//ChunkManager::Container		Container;

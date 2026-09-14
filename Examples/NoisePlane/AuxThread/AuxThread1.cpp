@@ -3,7 +3,8 @@
 #include "3D/Chunk.hpp"
 #include "3D/Chunk/Manager.hpp"
 
-#include "ContainerLock/AccessTypeGuard.hpp"
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAccessSharedGuard.hpp"
 
 
 
@@ -106,7 +107,7 @@ AccessLockedChunk AuxThread1::Find()
 		const Chunk & ref = *ptr;
 		QueueMutex.unlock();
 
-		AccessLockedChunk chunk = ptr -> ToAccess();
+		AccessLockedChunk chunk = ptr -> ToAccessMake();
 		//AccessLockedChunk chunk = ptr -> ToAccessTry();
 		//if (!chunk.Is()) { continue; }
 

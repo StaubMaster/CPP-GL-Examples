@@ -22,9 +22,11 @@
 #include "Axis/3D/Funcs.hpp"
 #include "Axis/2D/Enums.hpp"
 
-// Voxel
-#include "ContainerLock/AccessTypeGuard.hpp"
-#include "ContainerLock/AssignTypeGuard.hpp"
+// Threading
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+#include "Threading/ObjectTypeAssignUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAccessSharedGuard.hpp"
+//#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
 // Voxel
 #include "3D/Voxel/Pallet.hpp"

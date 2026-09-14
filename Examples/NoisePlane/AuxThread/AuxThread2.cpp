@@ -8,8 +8,10 @@
 #include "3D/Structure.hpp"
 #include "3D/StructureMap.hpp"
 
-#include "ContainerLock/AccessTypeGuard.hpp"
-#include "ContainerLock/AssignTypeGuard.hpp"
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAccessSharedGuard.hpp"
+#include "Threading/ObjectTypeAssignUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
 
 
@@ -82,6 +84,8 @@ void AuxThread2::Func()
 
 
 
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+
 AccessLockedChunk AuxThread2::Find()
 {
 	/* loop takes longer the longer it goes on
@@ -95,6 +99,7 @@ AccessLockedChunk AuxThread2::Find()
 
 	CenterIndexLoop3D	loop = FindLoop;
 	FindCandidateCount = 0;
+	//std::cout << "AuxThread2.Find() loop\n";
 	for (loop.New(Manager.CareSize); !loop.Done(); loop.Continue())
 	{
 		//Chunk * ptr = Manager.Chunks[Manager.ToRelative(loop.Index() + Manager.Center)];
@@ -102,11 +107,37 @@ AccessLockedChunk AuxThread2::Find()
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 
-		ptr -> AccessL();
-		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); FindLoop = loop; continue; }
+		//std::cout << "AuxThread2.Find() lock\n";
+		//ptr -> AccessL();
+		//ptr -> Lock.AccessL();
+		//ObjectTypeAccessUniqueGuard<Chunk> guard;
+		//guard.Lock = &(ptr -> Lock);
+		//guard.Lock -> AccessL();
+		//ObjectTypeAccessUniqueGuard<Chunk> guard = ObjectTypeAccessUniqueGuard<Chunk>::Make(ptr -> Lock, *ptr);
+		//ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessUniqueMake();
+		ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessMake();
+
+		//std::cout << "AuxThread2.Find() check\n";
+		if (ref.TerrainDone && ref.DecorationsGenerated)
+		{
+			//std::cout << "AuxThread2.Find() continue\n";
+			//ptr -> AccessU();
+			//ptr -> Lock.AccessU();
+			//guard.Lock -> AccessU();
+			//guard.Lock = nullptr;
+			// ~guard
+			FindLoop = loop;
+			continue;
+		}
+
 		//if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
 
-		return Chunk::ToAccess(ptr);
+		//std::cout << "AuxThread2.Find() done\n";
+		//return ptr -> ToAccessTake();
+		//guard.Lock = nullptr;
+		//return AccessLockedChunk::Take(ptr -> Lock, *ptr);
+		//return guard.ToShared();
+		return guard;
 	}
 	return AccessLockedChunk();
 }
