@@ -23,7 +23,7 @@ struct ObjectData;
 struct ObjectManager
 {
 	public:
-	virtual ~ObjectManager();
+	~ObjectManager() = default;
 	ObjectManager() = default;
 	ObjectManager(const ObjectManager & other) = delete;
 	ObjectManager & operator=(const ObjectManager & other) = delete;

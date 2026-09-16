@@ -25,12 +25,14 @@ struct Type_PalletObjectManager : public PalletObjectManager
 		InstanceDataFull.Clear();
 		InstanceDataWire.Clear();
 	}
-	void	InstancePutFull(const void * data) override { InstancePutFull(*((const TypeData *)data)); }
-	void	InstancePutWire(const void * data) override { InstancePutFull(*((const TypeData *)data)); }
-	void	InstancePutFull(const TypeData & data) { InstancePutFull(TypeInstanceData(data)); }
-	void	InstancePutWire(const TypeData & data) { InstancePutWire(TypeInstanceData(data)); }
-	void	InstancePutFull(const TypeInstanceData & data) { InstanceDataFull.Insert(data); }
-	void	InstancePutWire(const TypeInstanceData & data) { InstanceDataWire.Insert(data); }
+	void	InstancePutFull(const void * data) override
+	{
+		InstanceDataFull.Insert(TypeInstanceData(*((const TypeData *)data)));
+	}
+	void	InstancePutWire(const void * data) override
+	{
+		InstanceDataWire.Insert(TypeInstanceData(*((const TypeData *)data)));
+	}
 	void	InstancesToBufferFull() override
 	{
 		BufferFullInstance.DataFull(InstanceDataFull.ToVoid());

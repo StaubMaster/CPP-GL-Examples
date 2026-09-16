@@ -12,10 +12,6 @@ NewPolyHedra::PalletManager * NewPolyHedra::PalletManager::Current = nullptr;
 NewPolyHedra::PalletManager::~PalletManager()
 {
 	Current = nullptr;
-	for (unsigned int i = 0; i < Pallets.Count(); i++)
-	{
-		delete Pallets[i];
-	}
 }
 NewPolyHedra::PalletManager::PalletManager()
 	: Pallets()

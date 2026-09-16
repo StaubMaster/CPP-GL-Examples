@@ -17,7 +17,7 @@ struct PalletObjectManager
 	NewPolyHedra::Pallet *	Pallet;
 
 	public:
-	virtual ~PalletObjectManager();
+	~PalletObjectManager();
 	PalletObjectManager();
 	PalletObjectManager(const PalletObjectManager & other) = delete;
 	PalletObjectManager & operator=(const PalletObjectManager & other) = delete;

@@ -6,16 +6,6 @@
 
 
 
-NewPolyHedra::ObjectManager::~ObjectManager()
-{
-	for (unsigned int i = 0; i < Managers.Count(); i++)
-	{
-		delete Managers[i];
-	}
-}
-
-
-
 NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::FindPalletObjectManager(NewPolyHedra::Pallet * pallet) const
 {
 	if (pallet == nullptr) { return nullptr; }
