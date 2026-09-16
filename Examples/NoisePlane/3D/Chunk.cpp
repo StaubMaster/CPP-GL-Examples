@@ -25,8 +25,10 @@
 #include "Telemetry/StopWatch.hpp"
 #include "AuxThreadBase.hpp"
 
-#include "ContainerLock/AccessTypeGuard.hpp"
-#include "ContainerLock/AssignTypeGuard.hpp"
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAccessSharedGuard.hpp"
+#include "Threading/ObjectTypeAssignUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
 
 
@@ -68,30 +70,36 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 
 
 
-bool Chunk::InUse() const { return Lock.InUse(); }
-void Chunk::AccessL() { Lock.AccessL(); }
-void Chunk::AccessU() { Lock.AccessU(); }
-bool Chunk::AccessT() { return Lock.AccessT(); }
-void Chunk::AccessToAssign() { Lock.AccessToAssign(); }
-void Chunk::AssignL() { Lock.AssignL(); }
-void Chunk::AssignU() { Lock.AssignU(); }
 
-AccessLockedChunk Chunk::ToAccess() { return AccessLockedChunk::MakeLock(Lock, *this); }
-AccessLockedChunk Chunk::ToAccessTry() { return AccessLockedChunk::TryLock(Lock, *this); }
-AssignLockedChunk Chunk::ToAssign()
-{
-	AssignL();
-	return AssignLockedChunk::TakeLock(Lock, *this);
-}
 
-AccessLockedChunk Chunk::ToAccess(Chunk * chunk)
+bool Chunk::InUse() const		{ return Lock.InUse(); }
+
+//void Chunk::AccessL()			{ Lock.AccessL(); }
+//void Chunk::AccessU()			{ Lock.AccessU(); }
+//bool Chunk::AccessT()			{ return Lock.AccessT(); }
+
+//void Chunk::AssignL()			{ Lock.AssignL(); }
+//void Chunk::AssignU()			{ Lock.AssignU(); }
+
+//void Chunk::AccessToAssign()	{ Lock.AccessToAssign(); }
+
+//ObjectTypeAccessUniqueGuard<Chunk>	Chunk::ToAccessUniqueMake()		{ return ObjectTypeAccessUniqueGuard<Chunk>::Make(Lock, *this); }
+
+AccessLockedChunk	Chunk::ToAccessMake()		{ return AccessLockedChunk::Make(Lock, *this); }
+AccessLockedChunk	Chunk::ToAccessTake()		{ return AccessLockedChunk::Take(Lock, *this); }
+//AccessLockedChunk	Chunk::ToAccessTry()		{ return AccessLockedChunk::Try(Lock, *this); }
+
+AccessLockedChunk	Chunk::ToAccessTake(Chunk * chunk)
 {
 	if (chunk != nullptr)
 	{
-		return AccessLockedChunk::TakeLock(chunk -> Lock, *chunk);
+		return chunk -> ToAccessTake();
 	}
 	return AccessLockedChunk();
 }
+
+AssignLockedChunk	Chunk::ToAssign()	{ return AssignLockedChunk::Make(Lock, *this); }
+
 
 
 

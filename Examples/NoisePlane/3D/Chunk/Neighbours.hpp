@@ -2,12 +2,7 @@
 # define CHUNK_NEIGHBOURS_HPP
 
 struct Chunk;
-struct ChunkManager;
 struct VectorU3;
-struct VectorI3;
-struct Voxel;
-
-# include "Axis/3D/Types.hpp"
 
 # include "Generics/Container/Array3D.hpp"
 
@@ -20,14 +15,31 @@ struct ChunkNeighbour
 
 	private:
 	public:
-	Chunk * Cube[3][3][3];
+	Chunk * Cube[3][3][3] = {
+		{
+			{ nullptr, nullptr, nullptr },
+			{ nullptr, nullptr, nullptr },
+			{ nullptr, nullptr, nullptr },
+		},
+		{
+			{ nullptr, nullptr, nullptr },
+			{ nullptr, nullptr, nullptr },
+			{ nullptr, nullptr, nullptr },
+		},
+		{
+			{ nullptr, nullptr, nullptr },
+			{ nullptr, nullptr, nullptr },
+			{ nullptr, nullptr, nullptr },
+		},
+	};
 
 	public:
-	~ChunkNeighbour();
-	ChunkNeighbour();
-	ChunkNeighbour(const ChunkNeighbour & other);
-	ChunkNeighbour & operator=(const ChunkNeighbour & other);
-	ChunkNeighbour(Chunk & chunk);
+	~ChunkNeighbour() = default;
+	ChunkNeighbour() = default;
+	ChunkNeighbour(const ChunkNeighbour & other) = default;
+	ChunkNeighbour & operator=(const ChunkNeighbour & other) = default;
+
+	ChunkNeighbour(Chunk * chunk);
 
 	public:
 	bool	IsVisiblePrevX(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const;

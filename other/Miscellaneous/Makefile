@@ -9,8 +9,10 @@ FILES := \
 	AuxThreadBase.cpp \
 \
 	ValueGen/Random.cpp \
+	ValueGen/Lerp.cpp \
 	ValueGen/Perlin2D.cpp \
 	ValueGen/Perlin3D.cpp \
+	ValueGen/Simplex2D.cpp \
 \
 	ValueTypeUI/PropertyControl.cpp \
 	ValueTypeUI/VectorF3.cpp \
@@ -52,9 +54,11 @@ FILES := \
 	CenterIndexLoop/2D.cpp \
 	CenterIndexLoop/3D.cpp \
 \
-	ContainerLock/Lock.cpp \
-	ContainerLock/AccessGuard.cpp \
-	ContainerLock/AssignGuard.cpp \
+	Threading/ObjectLock.cpp \
+	Threading/ObjectAccessUniqueGuard.cpp \
+	Threading/ObjectAccessSharedGuard.cpp \
+	Threading/ObjectAssignUniqueGuard.cpp \
+	Threading/ObjectAssignSharedGuard.cpp \
 \
 	GridCast/GridCast3D.cpp \
 \

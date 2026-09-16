@@ -3,7 +3,8 @@
 #include "Chunk.hpp"
 #include "Chunk/Manager.hpp"
 
-#include "ContainerLock/AccessTypeGuard.hpp"
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAccessSharedGuard.hpp"
 
 #include "Axis/3D/Enums.hpp"
 
@@ -61,7 +62,7 @@ GridCast3D::Hit VoxelHit::Hit(ChunkManager & manager, RayF3 ray3D, float limit)
 	GridCast3D::Data data(ray3D, limit, CHUNK_VALUES_PER_SIDE);
 	do
 	{
-		ContainerAccessTypeGuard<Chunk> chunk = manager.FindAccess(data.Index());
+		AccessLockedChunk chunk = manager.FindAbsoluteAccess(data.Index());
 		if (!chunk.Is()) { return GridCast3D::Hit(); }
 		if (!((*chunk).GenerationDone())) { return GridCast3D::Hit(); }
 		if (((*chunk).IsEmpty())) { continue; }

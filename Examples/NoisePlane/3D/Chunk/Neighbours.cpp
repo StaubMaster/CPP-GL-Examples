@@ -12,10 +12,7 @@
 
 
 
-// do these constructors with = default
-ChunkNeighbour::~ChunkNeighbour()
-{ }
-ChunkNeighbour::ChunkNeighbour()
+ChunkNeighbour::ChunkNeighbour(Chunk * chunk)
 	: Cube{
 		{
 			{ nullptr, nullptr, nullptr },
@@ -24,7 +21,7 @@ ChunkNeighbour::ChunkNeighbour()
 		},
 		{
 			{ nullptr, nullptr, nullptr },
-			{ nullptr, nullptr, nullptr },
+			{ nullptr,  chunk , nullptr },
 			{ nullptr, nullptr, nullptr },
 		},
 		{
@@ -34,57 +31,8 @@ ChunkNeighbour::ChunkNeighbour()
 		},
 	}
 { }
-ChunkNeighbour::ChunkNeighbour(const ChunkNeighbour & other)
-	: Cube{
-		{
-			{ other.Cube[0][0][0], other.Cube[0][0][1], other.Cube[0][0][2] },
-			{ other.Cube[0][1][0], other.Cube[0][1][1], other.Cube[0][1][2] },
-			{ other.Cube[0][2][0], other.Cube[0][2][1], other.Cube[0][2][2] },
-		},
-		{
-			{ other.Cube[1][0][0], other.Cube[1][0][1], other.Cube[1][0][2] },
-			{ other.Cube[1][1][0], other.Cube[1][1][1], other.Cube[1][1][2] },
-			{ other.Cube[1][2][0], other.Cube[1][2][1], other.Cube[1][2][2] },
-		},
-		{
-			{ other.Cube[2][0][0], other.Cube[2][0][1], other.Cube[2][0][2] },
-			{ other.Cube[2][1][0], other.Cube[2][1][1], other.Cube[2][1][2] },
-			{ other.Cube[2][2][0], other.Cube[2][2][1], other.Cube[2][2][2] },
-		},
-	}
-{ }
-ChunkNeighbour & ChunkNeighbour::operator=(const ChunkNeighbour & other)
-{
-	Cube[0][0][0] = other.Cube[0][0][0]; Cube[0][0][1] = other.Cube[0][0][1]; Cube[0][0][2] = other.Cube[0][0][2];
-	Cube[0][1][0] = other.Cube[0][1][0]; Cube[0][1][1] = other.Cube[0][1][1]; Cube[0][1][2] = other.Cube[0][1][2];
-	Cube[0][2][0] = other.Cube[0][2][0]; Cube[0][2][1] = other.Cube[0][2][1]; Cube[0][2][2] = other.Cube[0][2][2];
-	Cube[1][0][0] = other.Cube[1][0][0]; Cube[1][0][1] = other.Cube[1][0][1]; Cube[1][0][2] = other.Cube[1][0][2];
-	Cube[1][1][0] = other.Cube[1][1][0]; Cube[1][1][1] = other.Cube[1][1][1]; Cube[1][1][2] = other.Cube[1][1][2];
-	Cube[1][2][0] = other.Cube[1][2][0]; Cube[1][2][1] = other.Cube[1][2][1]; Cube[1][2][2] = other.Cube[1][2][2];
-	Cube[2][0][0] = other.Cube[2][0][0]; Cube[2][0][1] = other.Cube[2][0][1]; Cube[2][0][2] = other.Cube[2][0][2];
-	Cube[2][1][0] = other.Cube[2][1][0]; Cube[2][1][1] = other.Cube[2][1][1]; Cube[2][1][2] = other.Cube[2][1][2];
-	Cube[2][2][0] = other.Cube[2][2][0]; Cube[2][2][1] = other.Cube[2][2][1]; Cube[2][2][2] = other.Cube[2][2][2];
-	return *this;
-}
-ChunkNeighbour::ChunkNeighbour(Chunk & chunk)
-	: Cube{
-		{
-			{ nullptr, nullptr, nullptr },
-			{ nullptr, nullptr, nullptr },
-			{ nullptr, nullptr, nullptr },
-		},
-		{
-			{ nullptr, nullptr, nullptr },
-			{ nullptr, &chunk , nullptr },
-			{ nullptr, nullptr, nullptr },
-		},
-		{
-			{ nullptr, nullptr, nullptr },
-			{ nullptr, nullptr, nullptr },
-			{ nullptr, nullptr, nullptr },
-		},
-	}
-{ }
+
+
 
 bool ChunkNeighbour::IsVisiblePrevX(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {

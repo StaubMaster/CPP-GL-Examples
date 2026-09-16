@@ -1,0 +1,21 @@
+
+the Object... structs dont holy an Object
+they are Bases ?
+
+the ObjectTypes actually have Objects
+
+rename Object... to just ...
+rename ObjectType... to Object...
+
+make ObjectLock that is Lock with an Object
+Object Pointer or just the Object itself ?
+
+
+
+
+
+
+SharedGuard
+UniqueGuard
+
+

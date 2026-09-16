@@ -7,8 +7,10 @@
 
 #include "ValueType/Loop/U3.hpp"
 
-#include "ContainerLock/AssignTypeGuard.hpp"
-#include "ContainerLock/AccessTypeGuard.hpp"
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAccessSharedGuard.hpp"
+#include "Threading/ObjectTypeAssignUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
 
 
@@ -74,6 +76,8 @@ void AuxThread3::Func()
 
 
 
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+
 AccessLockedChunk AuxThread3::Find()
 {
 	/*CenterIndexLoop3D	loop;
@@ -91,8 +95,8 @@ AccessLockedChunk AuxThread3::Find()
 	}
 	return AccessLockedChunk();*/
 
-//	AccessLockedChunk found;
-	Chunk * found = nullptr;
+	//Chunk * found = nullptr;
+	ObjectTypeAccessUniqueGuard<Chunk> found;
 	float dist;
 	unsigned int candidate_count = 0;
 	for (unsigned int i = 0; i < Manager.Chunks.Length(); i++)
@@ -101,31 +105,36 @@ AccessLockedChunk AuxThread3::Find()
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 
-		//AccessLockedChunk chunk = ptr -> ToAccess();
-		ptr -> AccessL();
+		//ptr -> AccessL();
+		//ObjectTypeAccessUniqueGuard<Chunk> guard = ObjectTypeAccessUniqueGuard<Chunk>::Make(ptr -> Lock, *ptr);
+		//ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessUniqueMake();
+		ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessMake();
 
-		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { ptr -> AccessU(); continue; }
-		if (!Manager.CareBox.ContainsInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
-		if (!ref.Neighbours.CanAssamble()) { ptr -> AccessU(); continue; }
+		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { /*ptr -> AccessU();*/ continue; }
+		//if (!Manager.CareBox.ContainsInclusive(ref.Index).All(true)) { /*ptr -> AccessU();*/ continue; }
+		if (!Manager.AbsoluteCheckCareBox(ref.Index)) { /*ptr -> AccessU();*/ continue; }
+		if (!ref.Neighbours.CanAssamble()) { /*ptr -> AccessU();*/ continue; }
 
 		candidate_count++;
-		VectorF3 rel = (ref.Index - Manager.Center).ToF();
+		VectorF3 rel = Manager.AbsoluteToCentered(ref.Index).ToF();
 		float d = rel.length2();
-		//if (!found.Is() || d < dist)
-		if (found == nullptr || d < dist)
+		//if (found == nullptr || d < dist)
+		if (found.Object == nullptr || d < dist)
 		{
-			if (found != nullptr) { found -> AccessU(); }
-			//found = chunk;
-			//std::cout << "Aux3 Find Can " << &(found -> Lock) << '\n' << std::flush;
-			found = ptr;
+			//found = guard;
+			found.Transfer(guard);
+			//if (found != nullptr) { found -> AccessU(); }
+			//found = ptr;
+			//guard.Lock = nullptr;
 			dist = d;
 		}
-		else { ptr -> AccessU(); }
+		else { /*ptr -> AccessU();*/ }
 	}
 	FindCandidateCount = candidate_count;
 
-	//return found;
-	return Chunk::ToAccess(found);
+	//return Chunk::ToAccessTake(found);
+	//return found.ToShared();
+	return found;
 }
 
 

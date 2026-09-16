@@ -72,7 +72,7 @@ static void DisplayBoxEntityVoxels(NewPolyHedra::Pallet * pallet, ::ChunkManager
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		ChunkVoxelIndex idx(i);
-		AccessLockedChunk chunk = manager.FindAccess(idx.Chunk);
+		AccessLockedChunk chunk = manager.FindAbsoluteAccess(idx.Chunk);
 		if (!chunk.Is()) { continue; }
 		const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
 		if (voxel != nullptr && !(voxel -> IsEmpty()))

@@ -28,11 +28,10 @@
 
 # include "Telemetry/ValueAccumulator.hpp"
 
-# include "ContainerLock/Lock.hpp"
+# include "Threading/ObjectLock.hpp"
 
 # include <mutex>
 
-# include "Chunk/GenerationNoise.hpp"
 # include "Chunk/Neighbours.hpp"
 
 struct ChunkManager;
@@ -61,11 +60,7 @@ how to make sure Chunk is not referanced anywhere else
 
 struct Chunk;
 
-template<typename TypeObject> struct ContainerAccessTypeGuard;
-template<typename TypeObject> struct ContainerAssignTypeGuard;
-
-typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
-typedef ContainerAssignTypeGuard<Chunk> AssignLockedChunk;
+# include "3D/ChunkGuards.hpp"
 
 // StructurePlacement ?
 // StructureOrientation ?
@@ -100,22 +95,31 @@ struct Chunk
 
 
 	private:
-	ContainerLock	Lock;
+	ObjectLock	Lock;
+
 	public:
 	bool	InUse() const;
-	void	AccessL();
-	void	AccessU();
-	bool	AccessT();
-	void	AccessToAssign();
-	void	AssignL();
-	void	AssignU();
 
-	AccessLockedChunk	ToAccess();
+//	void	AccessL();
+//	void	AccessU();
+//	bool	AccessT();
+
+//	void	AssignL();
+//	void	AssignU();
+
+//	void	AccessToAssign();
+
+//	ObjectTypeAccessUniqueGuard<Chunk>	ToAccessUniqueMake();
+
+	AccessLockedChunk	ToAccessMake();
+	AccessLockedChunk	ToAccessTake();
 	AccessLockedChunk	ToAccessTry();
+
+	static AccessLockedChunk	ToAccessTake(Chunk * chunk);
+
 	AssignLockedChunk	ToAssign();
 	//AssignLockedChunk	ToAssignTry();
 
-	static AccessLockedChunk	ToAccess(Chunk * chunk);
 
 
 

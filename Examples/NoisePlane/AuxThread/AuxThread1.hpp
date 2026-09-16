@@ -12,8 +12,7 @@
 struct ChunkManager;
 struct Chunk;
 
-template<typename TypeObject> struct ContainerAccessTypeGuard;
-typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
+# include "3D/ChunkGuards.hpp"
 
 // BufferDataMakeThread
 struct AuxThread1 : public AuxThreadBase

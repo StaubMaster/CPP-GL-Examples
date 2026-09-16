@@ -12,8 +12,7 @@
 struct ChunkManager;
 struct Chunk;
 
-template<typename TypeObject> struct ContainerAccessTypeGuard;
-typedef ContainerAccessTypeGuard<Chunk> AccessLockedChunk;
+# include "3D/ChunkGuards.hpp"
 
 struct Voxel;
 
@@ -21,7 +20,6 @@ struct Voxel;
 # include "ValueType/Loop/U3.hpp"
 
 # include "CenterIndexLoop/3D.hpp"
-# include "3D/Chunk/GenerationNoise.hpp"
 
 /* make a Queue for Generating/Assambling ?
 	Problem:
@@ -51,10 +49,19 @@ struct Voxel;
 
 // seperate generating Terrain and generating Decorations
 
+# include "ValueGen/Perlin2D.hpp"
+# include "ValueGen/Perlin3D.hpp"
+# include "ValueGen/Simplex2D.hpp"
+
 struct AuxThread2 : public AuxThreadBase
 {
 	ChunkManager &			Manager;
-	ChunkGenerationNoise	GenerationNoise;
+
+	Perlin2D	Plane;
+	Perlin3D	Cave0;
+	Perlin3D	Cave1;
+	Perlin3D	Cave2;
+	Simplex2D	Simplex2DTest;
 
 	WaitDoTime		TimeGenerateFind;
 	WaitDoTime		TimeGenerate;
@@ -78,7 +85,7 @@ struct AuxThread2 : public AuxThreadBase
 
 
 	private:
-	void	GenerateTerrain(Chunk & chunk, const ChunkGenerationNoise & noise);
+	void	GenerateTerrain(Chunk & chunk);
 	LoopU2	Loop2;
 	LoopU3	Loop3;
 	struct ChunkData

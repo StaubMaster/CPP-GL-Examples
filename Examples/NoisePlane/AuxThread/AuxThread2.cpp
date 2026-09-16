@@ -8,8 +8,10 @@
 #include "3D/Structure.hpp"
 #include "3D/StructureMap.hpp"
 
-#include "ContainerLock/AccessTypeGuard.hpp"
-#include "ContainerLock/AssignTypeGuard.hpp"
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAccessSharedGuard.hpp"
+#include "Threading/ObjectTypeAssignUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
 
 
@@ -18,16 +20,15 @@ AuxThread2::~AuxThread2()
 AuxThread2::AuxThread2(ChunkManager & manager)
 	: AuxThreadBase()
 	, Manager(manager)
-	, GenerationNoise()
 	, TimeGenerateFind("TimeGenerateFind")
 	, TimeGenerate("TimeGenerate")
 	, Loop2(VectorU2(), VectorU2(CHUNK_VALUES_PER_SIDE))
 	, Loop3(VectorU3(), VectorU3(CHUNK_VALUES_PER_SIDE))
 {
-	GenerationNoise.Plane = Perlin2D::Random(VectorU2(8, 8));
-	GenerationNoise.Cave0 = Perlin3D::Random(VectorU3(8, 8, 8));
-	GenerationNoise.Cave1 = Perlin3D::Random(VectorU3(8, 8, 8));
-	GenerationNoise.Cave2 = Perlin3D::Random(VectorU3(8, 8, 8));
+	Plane = Perlin2D::Random(VectorU2(8, 8));
+	Cave0 = Perlin3D::Random(VectorU3(8, 8, 8));
+	Cave1 = Perlin3D::Random(VectorU3(8, 8, 8));
+	Cave2 = Perlin3D::Random(VectorU3(8, 8, 8));
 }
 
 
@@ -69,8 +70,8 @@ void AuxThread2::Func()
 
 		sw.Clear();
 		sw.Start();
-		GenerateTerrain(*chunk2, GenerationNoise);
-		GenerateDecoration(*chunk2, GenerationNoise.Plane, GenerationNoise.Cave0);
+		GenerateTerrain(*chunk2);
+		GenerateDecoration(*chunk2, Plane, Cave0);
 		sw.Stop();
 		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
 		TimeGenerate.ThreadName = AuxThreadBase::ThreadName;
@@ -81,6 +82,8 @@ void AuxThread2::Func()
 
 
 
+
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
 
 AccessLockedChunk AuxThread2::Find()
 {
@@ -95,17 +98,45 @@ AccessLockedChunk AuxThread2::Find()
 
 	CenterIndexLoop3D	loop = FindLoop;
 	FindCandidateCount = 0;
+	//std::cout << "AuxThread2.Find() loop\n";
 	for (loop.New(Manager.CareSize); !loop.Done(); loop.Continue())
 	{
-		Chunk * ptr = Manager.Chunks[Manager.relative(loop.Index() + Manager.Center)];
+		//Chunk * ptr = Manager.Chunks[Manager.ToRelative(loop.Index() + Manager.Center)];
+		Chunk * ptr = Manager.FindCenteredPointer(loop.Index());
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 
-		ptr -> AccessL();
-		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); FindLoop = loop; continue; }
+		//std::cout << "AuxThread2.Find() lock\n";
+		//ptr -> AccessL();
+		//ptr -> Lock.AccessL();
+		//ObjectTypeAccessUniqueGuard<Chunk> guard;
+		//guard.Lock = &(ptr -> Lock);
+		//guard.Lock -> AccessL();
+		//ObjectTypeAccessUniqueGuard<Chunk> guard = ObjectTypeAccessUniqueGuard<Chunk>::Make(ptr -> Lock, *ptr);
+		//ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessUniqueMake();
+		ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessMake();
+
+		//std::cout << "AuxThread2.Find() check\n";
+		if (ref.TerrainDone && ref.DecorationsGenerated)
+		{
+			//std::cout << "AuxThread2.Find() continue\n";
+			//ptr -> AccessU();
+			//ptr -> Lock.AccessU();
+			//guard.Lock -> AccessU();
+			//guard.Lock = nullptr;
+			// ~guard
+			FindLoop = loop;
+			continue;
+		}
+
 		//if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
 
-		return Chunk::ToAccess(ptr);
+		//std::cout << "AuxThread2.Find() done\n";
+		//return ptr -> ToAccessTake();
+		//guard.Lock = nullptr;
+		//return AccessLockedChunk::Take(ptr -> Lock, *ptr);
+		//return guard.ToShared();
+		return guard;
 	}
 	return AccessLockedChunk();
 }
@@ -114,10 +145,8 @@ AccessLockedChunk AuxThread2::Find()
 
 
 
-void AuxThread2::GenerateTerrain(Chunk & chunk, const ChunkGenerationNoise & noise)
+void AuxThread2::GenerateTerrain(Chunk & chunk)
 {
-	(void)noise;
-
 	if (chunk.TerrainDone) { return; }
 
 	chunk.MakeNull();
@@ -125,7 +154,7 @@ void AuxThread2::GenerateTerrain(Chunk & chunk, const ChunkGenerationNoise & noi
 	ChunkData data(chunk);
 //	TerrainFlat(data, 0, 0);
 //	TerrainPillars(data);
-	TerrainPlane(data, noise.Plane);
+	TerrainPlane(data, Plane);
 //	TerrainCaveNoodle(data, noise.Cave0, noise.Cave1);
 //	TerrainCaveBlob(data, noise.Cave2);
 
@@ -214,6 +243,14 @@ void AuxThread2::TerrainPlane(ChunkData & data, const Perlin2D & noise)
 	(void)pallet_grass;
 	(void)pallet_water;
 
+	const VoxelPallet & pallet_debug_r = VoxelPalletMap::StaticMap["Debug_R"];
+	const VoxelPallet & pallet_debug_g = VoxelPalletMap::StaticMap["Debug_G"];
+	const VoxelPallet & pallet_debug_b = VoxelPalletMap::StaticMap["Debug_B"];
+
+	(void)pallet_debug_r;
+	(void)pallet_debug_g;
+	(void)pallet_debug_b;
+
 	for (VectorU2 u = Loop2.Min(); Loop2.Check(u).All(true); Loop2.Next(u))
 	{
 		VectorF2 abs_2(
@@ -223,49 +260,73 @@ void AuxThread2::TerrainPlane(ChunkData & data, const Perlin2D & noise)
 
 		float val = 0.0f;
 
-		//val += noise.Calculate(abs_2 / 128.0f) * 128;
-		//val += noise.Calculate(abs_2 / 64.0f) * 64;
-		//val += noise.Calculate(abs_2 / 32.0f) * 32;
-		//val += noise.Calculate(abs_2 / 16.0f) * 16;
-		//val += noise.Calculate(abs_2 / 8.0f) * 8;
-		//val += noise.Calculate(abs_2 / 4.0f) * 4;
-		//val += noise.Calculate(abs_2 / 2.0f) * 2;
-		//val += noise.Calculate(abs_2 / 1.0f) * 1;
+		//val += noise.Generate(abs_2 / 128.0f) * 128;
+		//val += noise.Generate(abs_2 / 64.0f) * 64;
+		//val += noise.Generate(abs_2 / 32.0f) * 32;
+		//val += noise.Generate(abs_2 / 16.0f) * 16;
+		//val += noise.Generate(abs_2 / 8.0f) * 8;
+		//val += noise.Generate(abs_2 / 4.0f) * 4;
+		//val += noise.Generate(abs_2 / 2.0f) * 2;
+		//val += noise.Generate(abs_2 / 1.0f) * 1;
 
-		//val += noise.Calculate(abs_2 / 1.0f) * 1.0f;
-		//val += noise.Calculate(abs_2 / 2.0f) * 2.0f;
-		//val += noise.Calculate(abs_2 / 4.0f) * 4.0f;
-		//val += noise.Calculate(abs_2 / 8.0f) * 8.0f;
-		//val += noise.Calculate(abs_2 / 16.0f) * 16.0f;
-		//val += noise.Calculate(abs_2 / 32.0f) * 32.0f;
-		//val += noise.Calculate(abs_2 / 64.0f) * 64.0f;
-		//val += noise.Calculate(abs_2 / 128.0f) * 128.0f;
-		//val += noise.Calculate(abs_2 / 256.0f) * 256.0f;
+		//val += noise.Generate(abs_2 / 1.0f) * 1.0f;
+		//val += noise.Generate(abs_2 / 2.0f) * 2.0f;
+		//val += noise.Generate(abs_2 / 4.0f) * 4.0f;
+		//val += noise.Generate(abs_2 / 8.0f) * 8.0f;
+		//val += noise.Generate(abs_2 / 16.0f) * 16.0f;
+		//val += noise.Generate(abs_2 / 32.0f) * 32.0f;
+		//val += noise.Generate(abs_2 / 64.0f) * 64.0f;
+		//val += noise.Generate(abs_2 / 128.0f) * 128.0f;
+		//val += noise.Generate(abs_2 / 256.0f) * 256.0f;
 
-		val += noise.Calculate(abs_2 / 256.0f) * 64;
+		(void)noise;
+		//val += noise.Generate(abs_2 / 256.0f) * 64.0f;
+		val += Simplex2DTest.Generate(abs_2 / 64.0f) * 4.0f;
 
 		for (unsigned int y = 0; y < CHUNK_VALUES_PER_SIDE; y++)
 		{
+			unsigned int udx = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(u.X, y, u.Y));
 			int abs_y = y + data.Offset.Y;
-			unsigned int voxel_u = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(u.X, y, u.Y));
+			float diff = val - abs_y;
+			if (diff > 0.0f)
+			{
+				if (val > +1.0f)
+				{
+					data.Voxels[udx] = pallet_debug_r.ToVoxel();
+				}
+				else if (val < -1.0f)
+				{
+					data.Voxels[udx] = pallet_debug_b.ToVoxel();
+				}
+				else
+				{
+					data.Voxels[udx] = pallet_debug_g.ToVoxel();
+				}
+			}
+		}
+
+		/*for (unsigned int y = 0; y < CHUNK_VALUES_PER_SIDE; y++)
+		{
+			unsigned int udx = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(u.X, y, u.Y));
+			int abs_y = y + data.Offset.Y;
 			float diff = val - abs_y;
 			if (diff < 0.0f)
 			{
-				data.Voxels[voxel_u] = Voxel();
+				data.Voxels[udx] = Voxel();
 				//if (abs_y < 0)
-				//{ chunk.Voxels[voxel_u] = pallet_water.ToVoxel(); }
+				//{ chunk.Voxels[udx] = pallet_water.ToVoxel(); }
 			}
 			else if (diff < 1.0f)
 			{
-				{ data.Voxels[voxel_u] = pallet_grass.ToVoxel(); }
+				{ data.Voxels[udx] = pallet_grass.ToVoxel(); }
 				//if (abs_y >= 0)
-				//{ chunk.Voxels[voxel_u] = pallet_grass.ToVoxel(); }
+				//{ chunk.Voxels[udx] = pallet_grass.ToVoxel(); }
 				//else
-				//{ chunk.Voxels[voxel_u] = pallet_dirt.ToVoxel(); }
+				//{ chunk.Voxels[udx] = pallet_dirt.ToVoxel(); }
 			}
-			else if (diff < 4.0f) { data.Voxels[voxel_u] = pallet_dirt.ToVoxel(); }
-			else                  { data.Voxels[voxel_u] = pallet_gray.ToVoxel(); }
-		}
+			else if (diff < 4.0f) { data.Voxels[udx] = pallet_dirt.ToVoxel(); }
+			else                  { data.Voxels[udx] = pallet_gray.ToVoxel(); }
+		}*/
 	}
 }
 
@@ -315,8 +376,8 @@ void AuxThread2::TerrainCaveNoodle(ChunkData & data, const Perlin3D & noise0, co
 		};
 		for (unsigned int i = 0; i < n; i++)
 		{
-			val0 += noise0.Calculate(p / factors[i]) * factors[i];
-			val1 += noise1.Calculate(p / factors[i]) * factors[i];
+			val0 += noise0.Generate(p / factors[i]) * factors[i];
+			val1 += noise1.Generate(p / factors[i]) * factors[i];
 		}
 
 		bool is_0 = (val0 > min) && (val0 < max);

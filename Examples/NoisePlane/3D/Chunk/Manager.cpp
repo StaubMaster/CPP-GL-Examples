@@ -22,9 +22,11 @@
 #include "AuxThreadBase.hpp"
 #include "Telemetry/WaitDoTime.hpp"
 
-#include "ContainerLock/Lock.hpp"
-#include "ContainerLock/AccessTypeGuard.hpp"
-#include "ContainerLock/AssignTypeGuard.hpp"
+#include "Threading/ObjectLock.hpp"
+#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAccessSharedGuard.hpp"
+#include "Threading/ObjectTypeAssignUniqueGuard.hpp"
+//#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
 #include "ValueType/Loop/U3.hpp"
 
@@ -42,6 +44,63 @@ WaitDoTime ChunkManager::TimeGraphicsDelete("TimeGraphicsDelete");
 WaitDoTime ChunkManager::TimeDraw("TimeDraw");
 
 
+
+bool ChunkManager::AbsoluteCheckCareBox(const VectorI3 & idx) const
+{
+	return CareBox.ContainsInclusive(idx).All(true);
+}
+bool ChunkManager::AbsoluteCheckKnowBox(const VectorI3 & idx) const
+{
+	return KnowBox.ContainsInclusive(idx).All(true);
+}
+
+VectorI3 ChunkManager::RelativeToAbsolute(VectorU3 u) const
+{
+	return (u.ToI() + KnowBox.Min);
+}
+VectorU3 ChunkManager::AbsoluteToRelative(VectorI3 i) const
+{
+	return (i - KnowBox.Min).ToU();
+}
+VectorI3 ChunkManager::CenteredToAbsolute(VectorI3 i) const
+{
+	return (i + Center);
+}
+VectorI3 ChunkManager::AbsoluteToCentered(VectorI3 i) const
+{
+	return (i - Center);
+}
+
+
+
+Chunk * ChunkManager::FindAbsolutePointer(VectorI3 idx)
+{
+	VectorU3 udx = AbsoluteToRelative(idx);
+	if (Chunks.Check(udx))
+	{
+		return Chunks[udx];
+	}
+	return nullptr;
+}
+Chunk * ChunkManager::FindCenteredPointer(VectorI3 idx)
+{
+	VectorU3 udx = AbsoluteToRelative(CenteredToAbsolute(idx));
+	if (Chunks.Check(udx))
+	{
+		return Chunks[udx];
+	}
+	return nullptr;
+}
+
+AccessLockedChunk ChunkManager::FindAbsoluteAccess(VectorI3 idx)
+{
+	Chunk * chunk = FindAbsolutePointer(idx);
+	if (chunk != nullptr)
+	{
+		return chunk -> ToAccessMake();
+	}
+	return AccessLockedChunk();
+}
 
 
 
@@ -75,11 +134,17 @@ void ChunkManager::ChangeSize(unsigned int know_size, unsigned int care_size)
 //	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
 	ChunksLock.AssignU();
 //	std::cout << "ChangeChunksArraySize:" << __LINE__ << '\n';
-	InsertAround();
+	PutMissingCareChunks();
 }
 
 static VectorU3 ChunkSkipped;
 static VectorU3 ChunkMoved;
+/* dont have ChunkToRemove here ?
+put moved in NewChunks
+leave old chunks in Chunks
+set moved chunks in Chunks to null
+after, collect from Chunks into ChunksToRemove
+*/
 static void ChangeCenterMoveX(const Array3D<Chunk*> & Chunks, Array3D<Chunk*> & NewChunks, Container::Binary<Chunk*> & ChunksToRemove, VectorU3 u, VectorI3 diff)
 {
 	unsigned int udx0 = Chunks.Size().Convert(u);
@@ -136,6 +201,8 @@ void ChunkManager::ChangeCenter(VectorI3 center)
 	// dont put into ToRemove until done
 	// make a temp Binary Array for that as well
 	// give Binary a Insert(Array)
+	//   this would allocate every tine Center changes
+	//   the current version dosent do that
 
 	VectorI3 diff = center - Center;
 
@@ -156,8 +223,8 @@ void ChunkManager::ChangeCenter(VectorI3 center)
 	//Chunks = new_chunks;
 	//new_chunks.Clear();
 
-//	std::cout << "Skip: " << ChunkSkipped << '\n';
-//	std::cout << "Move: " << ChunkMoved << '\n';
+	std::cout << "Moveed: " << ChunkMoved << '\n';
+	std::cout << "Skipped: " << ChunkSkipped << '\n';
 
 	Center = center;
 	KnowBox = BoxI3(Center - (int)KnowSize, Center + (int)KnowSize);
@@ -166,33 +233,128 @@ void ChunkManager::ChangeCenter(VectorI3 center)
 	ChunksToRemoveLock.AssignU();
 	ChunksLock.AssignU();
 
-	InsertAround();
+	PutMissingCareChunks();
 }
 
-VectorI3 ChunkManager::absolute(VectorU3 u) const { return (u.ToI() + KnowBox.Min); }
-VectorU3 ChunkManager::relative(VectorI3 i) const { return (i - KnowBox.Min).ToU(); }
 
-Chunk * ChunkManager::FindAbsOrNull(VectorI3 idx)
+
+void ChunkManager::ChunkNeighboutsFind(Chunk & chunk)
 {
-	VectorU3 udx = relative(idx);
-	if (Chunks.Check(udx))
+	for (int z = 0; z < 3; z++)
 	{
-		return Chunks[udx];
-	}
-	return nullptr;
-}
-AccessLockedChunk ChunkManager::FindAccess(VectorI3 idx)
-{
-	VectorU3 udx = relative(idx);
-	if (Chunks.Check(udx))
-	{
-		Chunk * chunk = Chunks[udx];
-		if (chunk != nullptr)
+		for (int y = 0; y < 3; y++)
 		{
-			return chunk -> ToAccess();
+			for (int x = 0; x < 3; x++)
+			{
+				if (x != 1 || y != 1 || z != 1)
+				{
+					// use Referance to Pointer
+						chunk.Neighbours.Cube[z][y][x] = FindAbsolutePointer(chunk.Index + VectorI3(x - 1, y - 1, z - 1));
+					if (chunk.Neighbours.Cube[z][y][x] != nullptr)
+					{
+						chunk.Neighbours.Cube[z][y][x] -> Neighbours.Cube[2 - z][2 - y][2 - x] = &chunk;
+					}
+				}
+			}
 		}
 	}
-	return AccessLockedChunk();
+}
+/*void ChunkManager::ChunkNeighboutsNull(Chunk & chunk)
+{
+	for (int z = 0; z < 3; z++)
+	{
+		for (int y = 0; y < 3; y++)
+		{
+			for (int x = 0; x < 3; x++)
+			{
+				if (x != 1 || y != 1 || z != 1)
+				{
+					// use Referance to Pointer
+					if (chunk.Neighbours.Cube[z][y][x] != nullptr)
+					{
+						chunk.Neighbours.Cube[z][y][x] -> Neighbours.Cube[2 - z][2 - y][2 - x] = nullptr;
+					}
+						chunk.Neighbours.Cube[z][y][x] = nullptr;
+				}
+			}
+		}
+	}
+}*/
+
+void ChunkManager::PutChunks(Container::Binary<VectorI3> & chunks)
+{
+	StopWatch sw;
+
+	sw.Start();
+	ChunksLock.AccessL();
+	ChunksToInsertLock.AssignL();
+	TimeInsertPut.WaitTime.NewValue(sw.ElapsedTime());
+
+	sw.Clear();
+	for (unsigned int i = 0; i < chunks.Count(); i++)
+	{
+		VectorU3 u = AbsoluteToRelative(chunks[i]);
+		Chunk * chunk = new Chunk(chunks[i], *this);
+		Chunks[u] = chunk;
+		ChunksToInsert.Insert(chunk);
+
+		chunk -> Neighbours = ChunkNeighbour(chunk);
+		ChunkNeighboutsFind(*chunk);
+	}
+
+	ChunksToInsertLock.AssignU();
+	ChunksLock.AccessU();
+	TimeInsertPut.DoTime.NewValue(sw.ElapsedTime());
+}
+
+/* const Lock
+cannot be const because locking is not const
+const means that Members of this Object arent changed
+if the Member is a Pointer, then the Pointer cannot be changed
+the Object tha the Pointer points to can be changed
+so make the ChunkLock a Pointer ?
+*/
+Container::Binary<VectorI3> ChunkManager::MissingCareChunks()
+{
+	StopWatch sw;
+	Container::Binary<VectorI3> chunks;
+
+	sw.Start();
+	ChunksLock.AccessL();
+	TimeInsertNew.WaitTime.NewValue(sw.ElapsedTime());
+
+	sw.Clear();
+	LoopI3 loop(CareBox.Min, Bool3(false), CareBox.Max, Bool3(false));
+	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+	{
+		VectorU3 u = AbsoluteToRelative(i);
+		if (Chunks[u] != nullptr) { continue; }
+		chunks.Insert(i);
+	}
+
+	ChunksLock.AccessU();
+	TimeInsertNew.DoTime.NewValue(sw.ElapsedTime());
+
+	return chunks;
+}
+
+void ChunkManager::PutMissingCareChunks()
+{
+	StopWatch sw_total;
+	sw_total.Start();
+
+	Container::Binary<VectorI3> chunks = MissingCareChunks();
+	PutChunks(chunks);
+
+	std::cout << "Put " << chunks.Count() << " Missing Chunks\n";
+	if (chunks.Count() != 0)
+	{
+		AuxThread2.FindLoop = CenterIndexLoop3D();
+		AuxThread2.Poke();
+	}
+
+	TimeInsert.DoTime.NewValue(sw_total.ElapsedTime());
+	TimeInsert.ThreadName = AuxThreadBase::ThreadName;
 }
 
 /* change Insert/Remove
@@ -215,164 +377,7 @@ AccessLockedChunk ChunkManager::FindAccess(VectorI3 idx)
 
 */
 
-/* insert new directly into Chunks
-	Gathering0 and New are slow because they iterate over all chunks
-	just loop over it once, insert any gaps
-	then dont loop again until Center changes or something else
-
-	Insert new directly into Chunks
-	use ChunksToInsert as a list of Chunks that need Graphics/Neighbours Created
-*/
-// just do this once when Center changes
-// doing all this whenever Center changes might be slow
-// only need to do it once, whenever Center changes
-// use CenterIndexLoop ? then inster Chunks over time
-/* Thread
-	find chunk that needs to be inserted
-	insert that one
-	repert
-
-	maybe remember where last chunk was to waste less time
-*/
-void ChunkManager::InsertAround()
-{
-	StopWatch sw_total;
-	sw_total.Start();
-
-	StopWatch sw;
-	Container::Binary<VectorI3> new_chunks;
-
-
-
-	sw.Clear(); sw.Start();
-	ChunksLock.AccessL();
-	sw.Stop(); TimeInsertNew.WaitTime.NewValue(sw.ElapsedTime());
-
-	sw.Clear(); sw.Start();
-	LoopI3 loop(CareBox.Min, Bool3(false), CareBox.Max, Bool3(false));
-	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-	{
-		VectorU3 u = relative(i);
-		if (Chunks[u] != nullptr) { continue; }
-		new_chunks.Insert(i);
-	}
-
-	ChunksLock.AccessU();
-	sw.Stop(); TimeInsertNew.DoTime.NewValue(sw.ElapsedTime());
-
-
-
-	sw.Clear(); sw.Start();
-	ChunksLock.AccessL();
-	ChunksToInsertLock.AssignL();
-	sw.Stop(); TimeInsertPut.WaitTime.NewValue(sw.ElapsedTime());
-	
-	sw.Clear(); sw.Start();
-	for (unsigned int i = 0; i < new_chunks.Count(); i++)
-	{
-		VectorU3 u = relative(new_chunks[i]);
-		Chunk * chunk = new Chunk(new_chunks[i], *this);
-		Chunks[u] = chunk;
-		ChunksToInsert.Insert(chunk);
-
-		chunk -> Neighbours = ChunkNeighbour(*chunk);
-		for (int z = 0; z < 3; z++)
-		{
-			for (int y = 0; y < 3; y++)
-			{
-				for (int x = 0; x < 3; x++)
-				{
-					if (x != 1 || y != 1 || z != 1)
-					{
-							chunk -> Neighbours.Cube[z][y][x] = FindAbsOrNull(chunk -> Index + VectorI3(x - 1, y - 1, z - 1));
-						if (chunk -> Neighbours.Cube[z][y][x] != nullptr)
-						{
-							chunk -> Neighbours.Cube[z][y][x] -> Neighbours.Cube[2 - z][2 - y][2 - x] = chunk;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	ChunksToInsertLock.AssignU();
-	ChunksLock.AccessU();
-	sw.Stop(); TimeInsertPut.DoTime.NewValue(sw.ElapsedTime());
-
-	std::cout << "newChunk: " << new_chunks.Count() << '\n';
-	if (new_chunks.Count() != 0)
-	{
-		AuxThread2.FindLoop = CenterIndexLoop3D();
-		AuxThread2.Poke();
-	}
-
-	sw_total.Stop(); TimeInsert.DoTime.NewValue(sw_total.ElapsedTime());
-	TimeInsert.ThreadName = AuxThreadBase::ThreadName;
-}
-void ChunkManager::RemoveAround()
-{
-	// this is done in ChangeCenter
-	// make a function for removing Chunks
-	// make that function ClearNeighbours of that Chunk
-
-	StopWatch sw;
-	sw.Start();
-//	std::cout << "RemoveAround:" << __LINE__ << '\n';
-//	ChunksLock.AssignL();
-	ChunksLock.AccessL();
-//	std::cout << "RemoveAround:" << __LINE__ << '\n';
-	ChunksToRemoveLock.AssignL();
-//	std::cout << "RemoveAround:" << __LINE__ << '\n';
-	sw.Stop();
-	TimeRemove.WaitTime.NewValue(sw.ElapsedTime());
-	TimeRemove.ThreadName = AuxThreadBase::ThreadName;
-
-	sw.Clear();
-	sw.Start();
-
-//	std::cout << "RemoveAround:" << __LINE__ << '\n';
-	for (unsigned int i = 0; i < Chunks.Length(); i++)
-	{
-		Chunk * chunk = Chunks[i];
-		if (chunk == nullptr) { continue; }
-		if (KnowBox.ContainsInclusive(chunk -> Index).All(true)) { continue; }
-
-		Chunks[i] = nullptr;
-
-		// Clear Neighbours
-		for (int z = 0; z < 3; z++)
-		{
-			for (int y = 0; y < 3; y++)
-			{
-				for (int x = 0; x < 3; x++)
-				{
-					if (x != 1 || y != 1 || z != 1)
-					{
-						if (chunk -> Neighbours.Cube[z][y][x] != nullptr)
-						{
-							chunk -> Neighbours.Cube[z][y][x] -> Neighbours.Cube[2 - z][2 - y][2 - x] = nullptr;
-						}
-							chunk -> Neighbours.Cube[z][y][x] = nullptr;
-					}
-				}
-			}
-		}
-
-		ChunksToRemove.Insert(chunk);
-	}
-//	std::cout << "RemoveAround:" << __LINE__ << '\n';
-	ChunksToRemoveLock.AssignU();
-//	std::cout << "RemoveAround:" << __LINE__ << '\n';
-	ChunksLock.AccessU();
-//	ChunksLock.AssignU();
-//	std::cout << "RemoveAround:" << __LINE__ << '\n';
-	sw.Stop();
-	TimeRemove.DoTime.NewValue(sw.ElapsedTime());
-}
-
-/* how to safely delete
-
-*/
+// how to safely delete ?
 void ChunkManager::UpdateChunksContainer()
 {
 	StopWatch sw;
@@ -412,7 +417,7 @@ void ChunkManager::UpdateChunksContainer()
 		{
 			Chunk * chunk = ChunksToInsert[i];
 			if (chunk == nullptr) { continue; }
-			VectorU3 u = relative(chunk -> Index);
+			VectorU3 u = AbsoluteToRelative(chunk -> Index);
 			if ((u < Chunks.Size()).Any(false)) { continue; }
 			//if (Chunks[u] != nullptr) { continue; }
 			//Chunks[u] = chunk;

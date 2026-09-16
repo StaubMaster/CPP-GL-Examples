@@ -1,5 +1,6 @@
-#include "Perlin3D.hpp"
-#include "Random.hpp"
+#include "ValueGen/Perlin3D.hpp"
+#include "ValueGen/Random.hpp"
+#include "ValueGen/Lerp.hpp"
 
 #include "ValueType/Vector/I3.hpp"
 #include "ValueType/Loop/U3.hpp"
@@ -7,27 +8,31 @@
 
 
 
-Perlin3D::~Perlin3D()
-{ }
-Perlin3D::Perlin3D()
-	: Nodes()
-{ }
-Perlin3D::Perlin3D(const Perlin3D & other)
-	: Nodes(other.Nodes)
-{ }
-Perlin3D & Perlin3D::operator=(const Perlin3D & other)
+VectorU3 Perlin3D::Clamp(const VectorF3 & pos) const
 {
-	Nodes = other.Nodes;
-	return *this;
+	VectorI3 count = Nodes.Size().ToI();
+	VectorI3 idx = pos.ToI();
+	while (idx.X < 0) { idx.X += count.X; }
+	while (idx.Y < 0) { idx.Y += count.Y; }
+	while (idx.Z < 0) { idx.Z += count.Z; }
+	while (idx.X >= count.X) { idx.X -= count.X; }
+	while (idx.Y >= count.Y) { idx.Y -= count.Y; }
+	while (idx.Z >= count.Z) { idx.Z -= count.Z; }
+	return idx.ToU();
 }
 
-Perlin3D::Perlin3D(VectorU3 count)
-	: Nodes(count)
+
+
+Perlin3D::Perlin3D(const VectorU3 & size)
+	: Nodes(size)
 { }
 
-Perlin3D Perlin3D::Random(VectorU3 count)
+
+
+
+Perlin3D Perlin3D::Random(const VectorU3 & size)
 {
-	Perlin3D perlin(count);
+	Perlin3D perlin(size);
 	unsigned int c = perlin.Nodes.Length();
 	for (unsigned int i = 0; i < c; i++)
 	{
@@ -41,30 +46,9 @@ Perlin3D Perlin3D::Random(VectorU3 count)
 	return perlin;
 }
 
-VectorU3 Perlin3D::Normalize(VectorF3 node) const
-{
-	VectorU3 count = Nodes.Size();
-	int x = node.X;
-	int y = node.Y;
-	int z = node.Z;
-	while (x < 0) { x += count.X; }
-	while (y < 0) { y += count.Y; }
-	while (z < 0) { z += count.Z; }
-	while (x >= (int)count.X) { x -= count.X; }
-	while (y >= (int)count.Y) { y -= count.Y; }
-	while (z >= (int)count.Z) { z -= count.Z; }
-	return VectorU3(x, y, z);
-}
-
-static float interpolate(float val0, float val1, float t)
-{
-	//t = (3.0f - t * 2.0f) * t * t;
-	return (val0 * (1.0f - t)) + (val1 * (t - 0.0f));
-}
 
 
-
-float Perlin3D::Calculate(VectorF3 pos) const
+float Perlin3D::Generate(const VectorF3 & pos) const
 {
 	VectorF3 posF = pos.roundF();
 	VectorI3 posI = posF.ToI();
@@ -73,37 +57,95 @@ float Perlin3D::Calculate(VectorF3 pos) const
 	VectorF3 rel0 = rel;
 	VectorF3 rel1 = rel - VectorF3(1.0f);
 
-	VectorU3 count = Nodes.Size();
-	VectorU3 i0 = (((posI % count.ToI()) + count.ToI()) % count.ToI()).ToU();
-	VectorU3 i1 = (i0 + VectorU3(1)) % count; // do this with if checks ?
+	VectorU3 countU = Nodes.Size();
+	VectorI3 countI = countU.ToI();
 
-	i0.Y = i0.Y * count.X; i0.Z = i0.Z * count.X * count.Y;
-	i1.Y = i1.Y * count.X; i1.Z = i1.Z * count.X * count.Y;
+	VectorU3 idx0 = (((posI % countI) + countI) % countI).ToU();
+	VectorU3 idx1 = ((idx0.ToI() + VectorI3(1)) % countI).ToU(); // do this with if checks ?
 
-	float dotZ[8] ={
-		VectorF3::dot(Nodes[i0.X + i0.Y + i0.Z], VectorF3(rel0.X, rel0.Y, rel0.Z)),
-		VectorF3::dot(Nodes[i1.X + i0.Y + i0.Z], VectorF3(rel1.X, rel0.Y, rel0.Z)),
-		VectorF3::dot(Nodes[i0.X + i1.Y + i0.Z], VectorF3(rel0.X, rel1.Y, rel0.Z)),
-		VectorF3::dot(Nodes[i1.X + i1.Y + i0.Z], VectorF3(rel1.X, rel1.Y, rel0.Z)),
-		VectorF3::dot(Nodes[i0.X + i0.Y + i1.Z], VectorF3(rel0.X, rel0.Y, rel1.Z)),
-		VectorF3::dot(Nodes[i1.X + i0.Y + i1.Z], VectorF3(rel1.X, rel0.Y, rel1.Z)),
-		VectorF3::dot(Nodes[i0.X + i1.Y + i1.Z], VectorF3(rel0.X, rel1.Y, rel1.Z)),
-		VectorF3::dot(Nodes[i1.X + i1.Y + i1.Z], VectorF3(rel1.X, rel1.Y, rel1.Z)),
+	idx0.X = idx0.X;
+	idx0.Y = idx0.Y * countU.X;
+	idx0.Z = idx0.Z * countU.X * countU.Y;
+
+	idx1.X = idx1.X;
+	idx1.Y = idx1.Y * countU.X;
+	idx1.Z = idx1.Z * countU.X * countU.Y;
+
+	VectorF3 nodes_cube[8] = {
+		Nodes[idx0.X + idx0.Y + idx0.Z],
+		Nodes[idx1.X + idx0.Y + idx0.Z],
+		Nodes[idx0.X + idx1.Y + idx0.Z],
+		Nodes[idx1.X + idx1.Y + idx0.Z],
+		Nodes[idx0.X + idx0.Y + idx1.Z],
+		Nodes[idx1.X + idx0.Y + idx1.Z],
+		Nodes[idx0.X + idx1.Y + idx1.Z],
+		Nodes[idx1.X + idx1.Y + idx1.Z],
 	};
 
-	float dotY[4] = {
-		interpolate(dotZ[0b000], dotZ[0b100], rel.Z),
-		interpolate(dotZ[0b001], dotZ[0b101], rel.Z),
-		interpolate(dotZ[0b010], dotZ[0b110], rel.Z),
-		interpolate(dotZ[0b011], dotZ[0b111], rel.Z),
+	VectorF3 rel_cube[8] = {
+		VectorF3(rel0.X, rel0.Y, rel0.Z),
+		VectorF3(rel1.X, rel0.Y, rel0.Z),
+		VectorF3(rel0.X, rel1.Y, rel0.Z),
+		VectorF3(rel1.X, rel1.Y, rel0.Z),
+		VectorF3(rel0.X, rel0.Y, rel1.Z),
+		VectorF3(rel1.X, rel0.Y, rel1.Z),
+		VectorF3(rel0.X, rel1.Y, rel1.Z),
+		VectorF3(rel1.X, rel1.Y, rel1.Z),
 	};
 
-	float dotX[2] = {
-		interpolate(dotY[0b00], dotY[0b10], rel.Y),
-		interpolate(dotY[0b01], dotY[0b11], rel.Y),
+	VectorF3 val_[8] = {
+		nodes_cube[0b000] * rel_cube[0b000],
+		nodes_cube[0b001] * rel_cube[0b001],
+		nodes_cube[0b010] * rel_cube[0b010],
+		nodes_cube[0b011] * rel_cube[0b011],
+		nodes_cube[0b100] * rel_cube[0b100],
+		nodes_cube[0b101] * rel_cube[0b101],
+		nodes_cube[0b110] * rel_cube[0b110],
+		nodes_cube[0b111] * rel_cube[0b111],
 	};
 
-	return interpolate(dotX[0b0], dotX[0b1], rel.X);
+	VectorF3 valZ[4] = {
+		Lerp::interpolate(val_[0b000], val_[0b100], rel.Z),
+		Lerp::interpolate(val_[0b001], val_[0b101], rel.Z),
+		Lerp::interpolate(val_[0b010], val_[0b110], rel.Z),
+		Lerp::interpolate(val_[0b011], val_[0b111], rel.Z),
+	};
+
+	VectorF3 valY[2] = {
+		Lerp::interpolate(valZ[0b00], valZ[0b10], rel.Y),
+		Lerp::interpolate(valZ[0b01], valZ[0b11], rel.Y),
+	};
+
+	VectorF3 valX = Lerp::interpolate(valY[0b0], valY[0b1], rel.X);
+
+	return valX.X + valX.Y + valX.Z;
+
+	/*float val_[8] = {
+		VectorF3::dot(nodes_cube[0b000], rel_cube[0b000]),
+		VectorF3::dot(nodes_cube[0b001], rel_cube[0b001]),
+		VectorF3::dot(nodes_cube[0b010], rel_cube[0b010]),
+		VectorF3::dot(nodes_cube[0b011], rel_cube[0b011]),
+		VectorF3::dot(nodes_cube[0b100], rel_cube[0b100]),
+		VectorF3::dot(nodes_cube[0b101], rel_cube[0b101]),
+		VectorF3::dot(nodes_cube[0b110], rel_cube[0b110]),
+		VectorF3::dot(nodes_cube[0b111], rel_cube[0b111]),
+	};*/
+
+	/*float valZ[4] = {
+		interpolate(val_[0b000], val_[0b100], rel.Z),
+		interpolate(val_[0b001], val_[0b101], rel.Z),
+		interpolate(val_[0b010], val_[0b110], rel.Z),
+		interpolate(val_[0b011], val_[0b111], rel.Z),
+	};*/
+
+	/*float valY[2] = {
+		interpolate(valZ[0b00], valZ[0b10], rel.Y),
+		interpolate(valZ[0b01], valZ[0b11], rel.Y),
+	};*/
+
+	//float valX = interpolate(valY[0b0], valY[0b1], rel.X);
+
+	//return valX;
 
 	/*return interpolate(
 		interpolate(
