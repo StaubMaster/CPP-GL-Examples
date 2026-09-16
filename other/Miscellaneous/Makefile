@@ -9,8 +9,10 @@ FILES := \
 	AuxThreadBase.cpp \
 \
 	ValueGen/Random.cpp \
+	ValueGen/Lerp.cpp \
 	ValueGen/Perlin2D.cpp \
 	ValueGen/Perlin3D.cpp \
+	ValueGen/Simplex2D.cpp \
 \
 	ValueTypeUI/PropertyControl.cpp \
 	ValueTypeUI/VectorF3.cpp \

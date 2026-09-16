@@ -832,12 +832,9 @@ void ContextNoisePlane::Make()
 		PolyHedraManager.PlacePolyHedra(ViewRayPolyHedra);
 	}*/
 
-	//ChunkManager.ChangeSize(0, 0);
-	//ChunkManager.ChangeSize(2, 1);
-	//ChunkManager.ChangeSize(4, 3);
-	ChunkManager.ChangeSize(8, 3);
-	//ChunkManager.ChangeSize(8, 6);
-	//ChunkManager.ChangeSize(16, 8);
+	//ChunkManager.ChangeSize(4, 2);
+	ChunkManager.ChangeSize(8, 4);
+	//ChunkManager.ChangeSize(16, 4);
 	//ChunkManager.ChangeSize(16, 12);
 	//ChunkManager.ChangeSize(32, 16);
 }

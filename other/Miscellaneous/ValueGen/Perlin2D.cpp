@@ -1,5 +1,6 @@
-#include "Perlin2D.hpp"
-#include "Random.hpp"
+#include "ValueGen/Perlin2D.hpp"
+#include "ValueGen/Random.hpp"
+#include "ValueGen/Lerp.hpp"
 
 #include "ValueType/Vector/I2.hpp"
 #include "ValueType/Loop/U2.hpp"
@@ -7,27 +8,26 @@
 
 
 
-Perlin2D::~Perlin2D()
-{ }
-Perlin2D::Perlin2D()
-	: Nodes()
-{ }
-Perlin2D::Perlin2D(const Perlin2D & other)
-	: Nodes(other.Nodes)
-{ }
-Perlin2D & Perlin2D::operator=(const Perlin2D & other)
+VectorU2 Perlin2D::Clamp(const VectorF2 & pos) const
 {
-	Nodes = other.Nodes;
-	return *this;
+	VectorI2 size = Nodes.Size().ToI();
+	VectorI2 idx = pos.ToI();
+	while (idx.X < 0) { idx.X += size.X; }
+	while (idx.Y < 0) { idx.Y += size.Y; }
+	while (idx.X >= size.X) { idx.X -= size.X; }
+	while (idx.Y >= size.Y) { idx.Y -= size.Y; }
+	return idx.ToU();
 }
 
-Perlin2D::Perlin2D(VectorU2 count)
-	: Nodes(count)
+
+
+Perlin2D::Perlin2D(const VectorU2 & size)
+	: Nodes(size)
 { }
 
-Perlin2D Perlin2D::Random(VectorU2 count)
+Perlin2D Perlin2D::Random(const VectorU2 & size)
 {
-	Perlin2D perlin(count);
+	Perlin2D perlin(size);
 	unsigned int c = perlin.Nodes.Length();
 	for (unsigned int i = 0; i < c; i++)
 	{
@@ -37,24 +37,9 @@ Perlin2D Perlin2D::Random(VectorU2 count)
 	return perlin;
 }
 
-VectorU2 Perlin2D::Normalize(VectorF2 node) const
-{
-	VectorU2 count = Nodes.Size();
-	int x = node.X;
-	int y = node.Y;
-	while (x < 0) { x += count.X; }
-	while (y < 0) { y += count.Y; }
-	while (x >= (int)count.X) { x -= count.X; }
-	while (y >= (int)count.Y) { y -= count.Y; }
-	return VectorU2(x, y);
-}
 
-static float interpolate(float val0, float val1, float t)
-{
-	return (val0 * (1.0f - t)) + (val1 * (t - 0.0f));
-}
 
-float Perlin2D::Calculate(VectorF2 pos) const
+float Perlin2D::Generate(const VectorF2 & pos) const
 {
 	VectorF2 posF = pos.roundF();
 	VectorI2 posI = posF.ToI();
@@ -78,11 +63,11 @@ float Perlin2D::Calculate(VectorF2 pos) const
 	};
 
 	float dotX[2] = {
-		interpolate(dotY[0b00], dotY[0b10], rel.Y),
-		interpolate(dotY[0b01], dotY[0b11], rel.Y),
+		Lerp::interpolate(dotY[0b00], dotY[0b10], rel.Y),
+		Lerp::interpolate(dotY[0b01], dotY[0b11], rel.Y),
 	};
 
-	return interpolate(dotX[0b0], dotX[0b1], rel.X);
+	return Lerp::interpolate(dotX[0b0], dotX[0b1], rel.X);
 
 	/*return interpolate(
 		interpolate(

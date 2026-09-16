@@ -32,7 +32,6 @@
 
 # include <mutex>
 
-# include "Chunk/GenerationNoise.hpp"
 # include "Chunk/Neighbours.hpp"
 
 struct ChunkManager;

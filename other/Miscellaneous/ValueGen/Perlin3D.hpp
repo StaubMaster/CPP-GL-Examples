@@ -9,18 +9,18 @@ struct Perlin3D
 {
 	Array3D<VectorF3>	Nodes;
 
-	~Perlin3D();
-	Perlin3D();
-	Perlin3D(const Perlin3D & other);
-	Perlin3D & operator=(const Perlin3D & other);
-	
-	Perlin3D(VectorU3 count);
+	VectorU3	Clamp(const VectorF3 & pos) const;
 
-	static Perlin3D		Random(VectorU3 count);
+	~Perlin3D() = default;
+	Perlin3D() = default;
+	Perlin3D(const Perlin3D & other) = default;
+	Perlin3D & operator=(const Perlin3D & other) = default;
 
-	VectorU3		Normalize(VectorF3 node) const;
+	Perlin3D(const VectorU3 & size);
 
-	float	Calculate(VectorF3 pos) const;
+	static Perlin3D		Random(const VectorU3 & size);
+
+	float	Generate(const VectorF3 & pos) const;
 };
 
 #endif
