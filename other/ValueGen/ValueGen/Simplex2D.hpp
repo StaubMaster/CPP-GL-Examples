@@ -10,6 +10,7 @@ struct Simplex2D
 	static void init();
 
 	float	Generate(const VectorF2 & pos) const;
+	float	GenerateMy(const VectorF2 & pos) const;
 };
 
 #endif

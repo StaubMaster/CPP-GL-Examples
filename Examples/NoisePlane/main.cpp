@@ -16,8 +16,22 @@
 
 
 
+#include "ValueGen/Simplex2D.hpp"
+__attribute__((unused))
+static void SimplexTest()
+{
+	Simplex2D simplex;
+	VectorF2 test(12.3f, 3.33f);
+	std::cout << "simplex  : " << simplex.Generate(test) << '\n' << '\n';
+	std::cout << "simplexMy: " << simplex.GenerateMy(test) << '\n' << '\n';
+}
+
+
+
 int main(int argc, char * argv[])
 {
+	SimplexTest(); return 0;
+
 	std::cout << "int main() ...\n";
 	int ret = -1;
 	{

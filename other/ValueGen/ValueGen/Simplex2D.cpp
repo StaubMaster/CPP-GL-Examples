@@ -36,6 +36,7 @@ static int p[256] = {
 	222,114, 67, 29, 24, 72,243,141,128,195, 78, 66,215, 61,156,180,
 };
 
+// just & 255 when indexing into p ???
 static int perm[512];
 
 void Simplex2D::init()
@@ -81,71 +82,21 @@ const float G2 = (1.0f - 1.0f / sqrt(2.0f + 1.0f)) / 2.0f;
 
 float Simplex2D::Generate(const VectorF2 & pos) const
 {
-	std::cout << "pos: " << pos << '\n';
-	
-	float F_sum_ = (pos.X + pos.Y) * F2;
-	std::cout << "F_sum_: " << F_sum_ << '\n';
-
-	VectorF2 skew;
-	skew.X = pos.X + F_sum_;
-	skew.Y = pos.Y + F_sum_;
-	std::cout << "skew: " << skew << '\n';
-
-	float G_sum_ = (skew.X + skew.Y) * G2;
-	std::cout << "skew_sum: " << (skew.X + skew.Y) << '\n';
-	std::cout << "G_sum_: " << G_sum_ << '\n';
-
-	VectorI2 cube_idx;
-	cube_idx.X = fastfloor(skew.X);
-	cube_idx.Y = fastfloor(skew.Y);
-	std::cout << "cube_idx: " << cube_idx << '\n';
-
-	VectorF2 cube_rel;
-	cube_rel.X = skew.X - cube_idx.X;
-	cube_rel.Y = skew.Y - cube_idx.Y;
-	std::cout << "cube_rel: " << cube_rel << '\n';
-
-	VectorI2 indexes[3];
-	indexes[0] = VectorI2(0, 0);
-	if (cube_rel.X > cube_rel.Y)
-	{
-		indexes[1] = VectorI2(1, 0);
-	}
-	else
-	{
-		indexes[1] = VectorI2(0, 1);
-	}
-	indexes[2] = VectorI2(1, 1);
-	std::cout << "indexes[0]: " << indexes[0] << '\n';
-	std::cout << "indexes[1]: " << indexes[1] << '\n';
-	std::cout << "indexes[2]: " << indexes[2] << '\n';
-
-	float index1_G = (indexes[1].X + indexes[1].Y) * G2; // sum is 1
-	float index2_G = (indexes[2].X + indexes[2].Y) * G2; // sum is 2
-
-	VectorF2 corners[3];
-	corners[0].X = skew.X - indexes[0].X - G_sum_;
-	corners[0].Y = skew.Y - indexes[0].Y - G_sum_;
-	corners[1].X = corners[0].X - indexes[1].X + index1_G;
-	corners[1].Y = corners[0].Y - indexes[1].Y + index1_G;
-	corners[2].X = corners[0].X - indexes[2].X + index2_G;
-	corners[2].Y = corners[0].Y - indexes[2].Y + index2_G;
-	std::cout << "corners[0]: " << corners[0] << '\n';
-	std::cout << "corners[1]: " << corners[1] << '\n';
-	std::cout << "corners[2]: " << corners[2] << '\n';
-
-
-
 	float F_sum = (pos.X + pos.Y) * F2;
-	std::cout << "F_sum: " << F_sum << '\n';
+	std::cout << "F_sum: " << (pos.X + pos.Y) << ' ' << F_sum << '\n';
+
+	VectorF2 posF;
+	posF.X = pos.X + F_sum;
+	posF.Y = pos.Y + F_sum;
+	std::cout << "posF: " << posF << '\n';
 
 	VectorI2 ij0;
-	ij0.X = fastfloor(pos.X + F_sum);
-	ij0.Y = fastfloor(pos.Y + F_sum);
+	ij0.X = fastfloor(posF.X);
+	ij0.Y = fastfloor(posF.Y);
 	std::cout << "ij0: " << ij0 << '\n';
 
 	float G_sum = (ij0.X + ij0.Y) * G2;
-	std::cout << "G_sum: " << G_sum << '\n';
+	std::cout << "G_sum: " << (ij0.X + ij0.Y) << ' ' << G_sum << '\n';
 
 	VectorF2 P0;
 	P0.X = ij0.X - G_sum;
@@ -203,7 +154,115 @@ float Simplex2D::Generate(const VectorF2 & pos) const
 	if (!(t[1] < 0.0f)) { n[1] = t[1] * t[1] * t[1] * t[1] * grad3_vec2[grad_idx[1]].dot(p1); }
 	if (!(t[2] < 0.0f)) { n[2] = t[2] * t[2] * t[2] * t[2] * grad3_vec2[grad_idx[2]].dot(p2); }
 
-	std::cout << '\n';
+	return 70.0f * (n[0] + n[1] + n[2]);
+}
+
+#define DEBUG
+
+float Simplex2D::GenerateMy(const VectorF2 & pos) const
+{
+#ifdef DEBUG
+	std::cout << "pos: " << pos << '\n';
+#endif
+
+	float F_sum = (pos.X + pos.Y) * F2;
+#ifdef DEBUG
+	std::cout << "F_sum: " << (pos.X + pos.Y) << ' ' << F_sum << '\n';
+#endif
+
+	VectorF2 skew;
+	skew.X = pos.X + F_sum;
+	skew.Y = pos.Y + F_sum;
+#ifdef DEBUG
+	std::cout << "skew: " << skew << '\n';
+#endif
+
+	float G_sum = (skew.X + skew.Y) * G2;
+#ifdef DEBUG
+	std::cout << "G_sum: " << (skew.X + skew.Y) << ' ' << G_sum << '\n';
+#endif
+
+	VectorF2 unskew;
+	unskew.X = skew.X - G_sum;
+	unskew.Y = skew.Y - G_sum;
+#ifdef DEBUG
+	std::cout << "unskew: " << unskew << '\n';
+#endif
+
+	VectorI2 cube_idx;
+	cube_idx.X = fastfloor(skew.X);
+	cube_idx.Y = fastfloor(skew.Y);
+#ifdef DEBUG
+	std::cout << "cube_idx: " << cube_idx << '\n';
+#endif
+
+	VectorF2 cube_rel;
+	cube_rel.X = skew.X - cube_idx.X;
+	cube_rel.Y = skew.Y - cube_idx.Y;
+#ifdef DEBUG
+	std::cout << "cube_rel: " << cube_rel << '\n';
+#endif
+
+	VectorI2 indexes[3];
+	indexes[0] = VectorI2(0, 0);
+	if (cube_rel.X > cube_rel.Y)
+	{
+		indexes[1] = VectorI2(1, 0);
+	}
+	else
+	{
+		indexes[1] = VectorI2(0, 1);
+	}
+	indexes[2] = VectorI2(1, 1);
+#ifdef DEBUG
+	std::cout << "indexes[0]: " << indexes[0] << '\n';
+	std::cout << "indexes[1]: " << indexes[1] << '\n';
+	std::cout << "indexes[2]: " << indexes[2] << '\n';
+#endif
+
+	float index0_G = (indexes[0].X + indexes[0].Y) * G2; // sum is 0
+	float index1_G = (indexes[1].X + indexes[1].Y) * G2; // sum is 1
+	float index2_G = (indexes[2].X + indexes[2].Y) * G2; // sum is 2
+
+	VectorF2 corners_default;
+	corners_default = cube_rel;
+
+	VectorF2 corners[3];
+	corners[0].X = corners_default.X - indexes[0].X + index0_G; // should be p0
+	corners[0].Y = corners_default.Y - indexes[0].Y + index0_G; // should be p0
+	corners[1].X = corners_default.X - indexes[1].X + index1_G; // should be p1
+	corners[1].Y = corners_default.Y - indexes[1].Y + index1_G; // should be p1
+	corners[2].X = corners_default.X - indexes[2].X + index2_G; // should be p2
+	corners[2].Y = corners_default.Y - indexes[2].Y + index2_G; // should be p2
+#ifdef DEBUG
+	std::cout << "corners[0]: " << corners[0] << '\n';
+	std::cout << "corners[1]: " << corners[1] << '\n';
+	std::cout << "corners[2]: " << corners[2] << '\n';
+#endif
+	// these are close, but the other one uses floored values at some point, while i use floating values
+
+	VectorI2 cube_idx_mod;
+	cube_idx_mod.X = cube_idx.X & 255;
+	cube_idx_mod.Y = cube_idx.Y & 255;
+
+	int grad_idx[3];
+	grad_idx[0] = perm[cube_idx_mod.X + indexes[0].X + perm[cube_idx_mod.Y + indexes[0].Y]] % 12;
+	grad_idx[1] = perm[cube_idx_mod.X + indexes[1].X + perm[cube_idx_mod.Y + indexes[1].Y]] % 12;
+	grad_idx[2] = perm[cube_idx_mod.X + indexes[2].X + perm[cube_idx_mod.Y + indexes[2].Y]] % 12;
+
+	float dist[3];
+	dist[0] = 0.5f - corners[0].length2();
+	dist[1] = 0.5f - corners[1].length2();
+	dist[2] = 0.5f - corners[2].length2();
+
+	float n[3];
+	n[0] = 0.0f;
+	n[1] = 0.0f;
+	n[2] = 0.0f;
+
+	if (!(dist[0] < 0.0f)) { n[0] = dist[0] * dist[0] * dist[0] * dist[0] * grad3_vec2[grad_idx[0]].dot(corners[0]); }
+	if (!(dist[1] < 0.0f)) { n[1] = dist[1] * dist[1] * dist[1] * dist[1] * grad3_vec2[grad_idx[1]].dot(corners[1]); }
+	if (!(dist[2] < 0.0f)) { n[2] = dist[2] * dist[2] * dist[2] * dist[2] * grad3_vec2[grad_idx[2]].dot(corners[2]); }
 
 	return 70.0f * (n[0] + n[1] + n[2]);
 }

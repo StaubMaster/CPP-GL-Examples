@@ -281,7 +281,8 @@ void AuxThread2::TerrainPlane(ChunkData & data, const Perlin2D & noise)
 
 		(void)noise;
 		//val += noise.Generate(abs_2 / 256.0f) * 64.0f;
-		val += Simplex2DTest.Generate(abs_2 / 64.0f) * 4.0f;
+		//val += Simplex2DTest.Generate(abs_2 / 64.0f) * 4.0f;
+		val += Simplex2DTest.GenerateMy(abs_2 / 64.0f) * 4.0f;
 
 		for (unsigned int y = 0; y < CHUNK_VALUES_PER_SIDE; y++)
 		{
