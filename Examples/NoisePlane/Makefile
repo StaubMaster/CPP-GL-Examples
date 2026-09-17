@@ -79,6 +79,8 @@ include $(BASE_DIR)fancy.mk
 
 ################################################################
 
+include $(OTHER_DIR)/ValueGen.mk
+include $(OTHER_DIR)/NewPolyHedra.mk
 include $(OTHER_DIR)/Miscellaneous.mk
 include $(OTHER_DIR)/UserInterface.mk
 

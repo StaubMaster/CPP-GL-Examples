@@ -6,28 +6,28 @@ FANCY_NAME := NewPolyHedra
 
 FILES := \
 \
-	Manager.cpp \
-	ObjectManager.cpp \
-	Pallet.cpp \
-	Pallet/Full/Layout.cpp \
-	Pallet/Wire/Layout.cpp \
-	PalletManager.cpp \
-	PalletObjectData.cpp \
-	PalletObjectManager.cpp \
+	NewPolyHedra/Manager.cpp \
+	NewPolyHedra/ObjectManager.cpp \
+	NewPolyHedra/Pallet.cpp \
+	NewPolyHedra/Pallet/Full/Layout.cpp \
+	NewPolyHedra/Pallet/Wire/Layout.cpp \
+	NewPolyHedra/PalletManager.cpp \
+	NewPolyHedra/PalletObjectData.cpp \
+	NewPolyHedra/PalletObjectManager.cpp \
 \
-	DataType/Basic3D/Layout.cpp \
-	DataType/Basic3D/InstanceData.cpp \
-	DataType/Basic3D/Special.cpp \
+	NewPolyHedra/DataType/Basic3D/Layout.cpp \
+	NewPolyHedra/DataType/Basic3D/InstanceData.cpp \
+	NewPolyHedra/DataType/Basic3D/Special.cpp \
 	\
-	DataType/TransScaleColor3D/Layout.cpp \
-	DataType/TransScaleColor3D/InstanceData.cpp \
-	DataType/TransScaleColor3D/Special.cpp \
+	NewPolyHedra/DataType/TransScaleColor3D/Layout.cpp \
+	NewPolyHedra/DataType/TransScaleColor3D/InstanceData.cpp \
+	NewPolyHedra/DataType/TransScaleColor3D/Special.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .
 
 LIBRARYS :=
-INCLUDES := ../
+INCLUDES := .
 ARGUMENTS :=
 
 ################################################################

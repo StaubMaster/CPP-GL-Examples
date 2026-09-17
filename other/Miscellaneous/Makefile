@@ -8,12 +8,6 @@ FILES := \
 	ContextBase.cpp \
 	AuxThreadBase.cpp \
 \
-	ValueGen/Random.cpp \
-	ValueGen/Lerp.cpp \
-	ValueGen/Perlin2D.cpp \
-	ValueGen/Perlin3D.cpp \
-	ValueGen/Simplex2D.cpp \
-\
 	ValueTypeUI/PropertyControl.cpp \
 	ValueTypeUI/VectorF3.cpp \
 	ValueTypeUI/EulerAngle3D.cpp \
@@ -22,23 +16,6 @@ FILES := \
 	ValueTypeUI/LightBase.cpp \
 	ValueTypeUI/LightDirection.cpp \
 	ValueTypeUI/LightSpot.cpp \
-\
-	NewPolyHedra/Manager.cpp \
-	NewPolyHedra/ObjectManager.cpp \
-	NewPolyHedra/Pallet.cpp \
-	NewPolyHedra/Pallet/Full/Layout.cpp \
-	NewPolyHedra/Pallet/Wire/Layout.cpp \
-	NewPolyHedra/PalletManager.cpp \
-	NewPolyHedra/PalletObjectData.cpp \
-	NewPolyHedra/PalletObjectManager.cpp \
-\
-	NewPolyHedra/DataType/Basic3D/Layout.cpp \
-	NewPolyHedra/DataType/Basic3D/InstanceData.cpp \
-	NewPolyHedra/DataType/Basic3D/Special.cpp \
-	\
-	NewPolyHedra/DataType/TransScaleColor3D/Layout.cpp \
-	NewPolyHedra/DataType/TransScaleColor3D/InstanceData.cpp \
-	NewPolyHedra/DataType/TransScaleColor3D/Special.cpp \
 \
 	Telemetry/Time.cpp \
 	Telemetry/StopWatch.cpp \
