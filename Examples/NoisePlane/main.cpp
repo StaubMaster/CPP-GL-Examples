@@ -30,7 +30,7 @@ static void SimplexTest()
 
 int main(int argc, char * argv[])
 {
-	SimplexTest(); return 0;
+	//SimplexTest(); return 0;
 
 	std::cout << "int main() ...\n";
 	int ret = -1;
