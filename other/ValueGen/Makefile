@@ -10,6 +10,7 @@ FILES := \
 	ValueGen/Perlin2D.cpp \
 	ValueGen/Perlin3D.cpp \
 	ValueGen/Simplex2D.cpp \
+	ValueGen/Simplex3D.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .

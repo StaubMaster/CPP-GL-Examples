@@ -8,6 +8,8 @@ tex Leave1.png   Normal0 None
 tex Leave1.png   Normal0 None
 done
 
+
+
 new Log   CubeDiag   Wood
 tex Log_Belt.png   Invert0 None
 tex Log_Base.png   Normal0 None
@@ -16,6 +18,37 @@ tex Log_Belt.png   Invert0 None
 tex Log_Base.png   Normal0 None
 tex Log_Belt.png   Normal0 None
 done
+
+
+
+new Log_Corn   CubeDiag   Wood
+tex Log/Side0.png   Invert0 None
+tex Log/Corn.png    Normal0 None
+tex Log/Side0.png   Normal0 None
+tex Log/Side1.png   Invert0 None
+tex Log/Corn.png    Normal0 None
+tex Log/Side1.png   Normal0 None
+done
+
+new Log_Edge   CubeDiag   Wood
+tex Log/Side0.png   Invert0 None
+tex Log/Edge.png    Normal0 None
+tex Log/Side1.png   Normal0 None
+tex Log/Side2.png   Normal0 None
+tex Log/Edge.png    Normal0 None
+tex Log/Side1.png   Normal0 None
+done
+
+new Log_Core   CubeDiag   Wood
+tex Log/Side3.png   Invert0 None
+tex Log/Core.png    Normal0 None
+tex Log/Side3.png   Normal0 None
+tex Log/Side3.png   Invert0 None
+tex Log/Core.png    Normal0 None
+tex Log/Side3.png   Normal0 None
+done
+
+
 
 #new Log_PrismY8   PrismY8   Wood
 #tex Log_Belt.png   Invert0 None

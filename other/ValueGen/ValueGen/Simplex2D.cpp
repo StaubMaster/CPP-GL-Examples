@@ -32,10 +32,10 @@ void Simplex2D::init()
 	}
 }
 
-static int fastfloor(float val)
+/*static int fastfloor(float val)
 {
 	return (val > 0) ? ((int)val - 0) : ((int)val - 1);
-}
+}*/
 
 static VectorF2 grad2[12] = {
 	VectorF2(+1,+1), VectorF2(-1,+1), VectorF2(+1,-1), VectorF2(-1,-1),
@@ -56,109 +56,7 @@ static VectorF2 grad2[12] = {
 const float F2 = (sqrt(2.0f + 1.0f) - 1.0f) / 2.0f;
 const float G2 = (1.0f - 1.0f / sqrt(2.0f + 1.0f)) / 2.0f;
 
-//#define DEBUG
-
-#ifdef DEBUG
-# include <iostream>
-# include "ValueType/_Show.hpp"
-#endif
-
 float Simplex2D::Generate(const VectorF2 & pos) const
-{
-	float F_sum = (pos.X + pos.Y) * F2;
-#ifdef DEBUG
-	std::cout << "F_sum: " << (pos.X + pos.Y) << ' ' << F_sum << '\n';
-#endif
-
-	VectorF2 posF;
-	posF.X = pos.X + F_sum;
-	posF.Y = pos.Y + F_sum;
-#ifdef DEBUG
-	std::cout << "posF: " << posF << '\n';
-#endif
-
-	VectorI2 ij0;
-	ij0.X = fastfloor(posF.X);
-	ij0.Y = fastfloor(posF.Y);
-#ifdef DEBUG
-	std::cout << "ij0: " << ij0 << '\n';
-#endif
-
-	float G_sum = (ij0.X + ij0.Y) * G2;
-#ifdef DEBUG
-	std::cout << "G_sum: " << (ij0.X + ij0.Y) << ' ' << G_sum << '\n';
-#endif
-
-	VectorF2 P0;
-	P0.X = ij0.X - G_sum;
-	P0.Y = ij0.Y - G_sum;
-#ifdef DEBUG
-	std::cout << "P0: " << P0 << '\n';
-#endif
-
-	VectorF2 p0;
-	p0.X = pos.X - P0.X;
-	p0.Y = pos.Y - P0.Y;
-#ifdef DEBUG
-	std::cout << "p0" << p0 << '\n';
-#endif
-
-	VectorI2 ij1;
-	if (p0.X > p0.Y)
-	{
-		ij1.X = 1;
-		ij1.Y = 0;
-	}
-	else
-	{
-		ij1.X = 0;
-		ij1.Y = 1;
-	}
-#ifdef DEBUG
-	std::cout << "ij1" << ij1 << '\n';
-#endif
-
-	VectorF2 p1;
-	p1.X = p0.X - ij1.X + G2;
-	p1.Y = p0.Y - ij1.Y + G2;
-#ifdef DEBUG
-	std::cout << "p1" << p1 << '\n';
-#endif
-
-	VectorF2 p2;
-	p2.X = p0.X - 1.0f + 2.0f * G2;
-	p2.Y = p0.Y - 1.0f + 2.0f * G2;
-#ifdef DEBUG
-	std::cout << "p2" << p2 << '\n';
-#endif
-
-	VectorI2 ij2;
-	ij2.X = ij0.X & 255;
-	ij2.Y = ij0.Y & 255;
-
-	int grad_idx[3];
-	grad_idx[0] = perm_512[ij2.X + 0 +     perm_512[ij2.Y + 0    ]] % 12; // (0 0)
-	grad_idx[1] = perm_512[ij2.X + ij1.X + perm_512[ij2.Y + ij1.Y]] % 12; // (1 0) or (0 1)
-	grad_idx[2] = perm_512[ij2.X + 1 +     perm_512[ij2.Y + 1    ]] % 12; // (1 1)
-
-	float t[3];
-	t[0] = 0.5f - p0.length2();
-	t[1] = 0.5f - p1.length2();
-	t[2] = 0.5f - p2.length2();
-
-	float n[3];
-	n[0] = 0.0f;
-	n[1] = 0.0f;
-	n[2] = 0.0f;
-
-	if (!(t[0] < 0.0f)) { n[0] = t[0] * t[0] * t[0] * t[0] * grad2[grad_idx[0]].dot(p0); }
-	if (!(t[1] < 0.0f)) { n[1] = t[1] * t[1] * t[1] * t[1] * grad2[grad_idx[1]].dot(p1); }
-	if (!(t[2] < 0.0f)) { n[2] = t[2] * t[2] * t[2] * t[2] * grad2[grad_idx[2]].dot(p2); }
-
-	return 70.0f * (n[0] + n[1] + n[2]);
-}
-
-float Simplex2D::GenerateMy(const VectorF2 & pos) const
 {
 	float F_sum = (pos.X + pos.Y) * F2;
 
@@ -201,9 +99,18 @@ float Simplex2D::GenerateMy(const VectorF2 & pos) const
 	idx_mod.Y = skew_idx.Y & 255;
 
 	int grad_idx[3];
-	grad_idx[0] = perm_512[idx_mod.X + indexes[0].X + perm_512[idx_mod.Y + indexes[0].Y]] % 12;
-	grad_idx[1] = perm_512[idx_mod.X + indexes[1].X + perm_512[idx_mod.Y + indexes[1].Y]] % 12;
-	grad_idx[2] = perm_512[idx_mod.X + indexes[2].X + perm_512[idx_mod.Y + indexes[2].Y]] % 12;
+	grad_idx[0] = 0;
+	grad_idx[1] = 0;
+	grad_idx[2] = 0;
+	grad_idx[0] = perm_512[idx_mod.Y + indexes[0].Y + grad_idx[0]];
+	grad_idx[1] = perm_512[idx_mod.Y + indexes[1].Y + grad_idx[1]];
+	grad_idx[2] = perm_512[idx_mod.Y + indexes[2].Y + grad_idx[2]];
+	grad_idx[0] = perm_512[idx_mod.X + indexes[0].X + grad_idx[0]];
+	grad_idx[1] = perm_512[idx_mod.X + indexes[1].X + grad_idx[1]];
+	grad_idx[2] = perm_512[idx_mod.X + indexes[2].X + grad_idx[2]];
+	grad_idx[0] = grad_idx[0] % 12;
+	grad_idx[1] = grad_idx[1] % 12;
+	grad_idx[2] = grad_idx[2] % 12;
 
 
 

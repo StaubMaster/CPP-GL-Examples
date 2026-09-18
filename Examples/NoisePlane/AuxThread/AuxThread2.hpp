@@ -52,6 +52,7 @@ struct Voxel;
 # include "ValueGen/Perlin2D.hpp"
 # include "ValueGen/Perlin3D.hpp"
 # include "ValueGen/Simplex2D.hpp"
+# include "ValueGen/Simplex3D.hpp"
 
 struct AuxThread2 : public AuxThreadBase
 {
@@ -62,6 +63,7 @@ struct AuxThread2 : public AuxThreadBase
 	Perlin3D	Cave1;
 	Perlin3D	Cave2;
 	Simplex2D	Simplex2DTest;
+	Simplex3D	Simplex3DTest;
 
 	WaitDoTime		TimeGenerateFind;
 	WaitDoTime		TimeGenerate;
@@ -102,6 +104,8 @@ struct AuxThread2 : public AuxThreadBase
 		use Y Perlin2D result
 		use Perlin3D result
 	*/
+	private:
+	void	TerrainTest3D(ChunkData & data);
 	private:
 	void	TerrainFlat(ChunkData & data, int y_chunk, unsigned int y_voxel);
 	void	TerrainPillars(ChunkData & data);

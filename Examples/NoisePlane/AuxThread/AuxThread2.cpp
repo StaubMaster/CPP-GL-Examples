@@ -152,9 +152,10 @@ void AuxThread2::GenerateTerrain(Chunk & chunk)
 	chunk.MakeNull();
 
 	ChunkData data(chunk);
+	TerrainTest3D(data);
 //	TerrainFlat(data, 0, 0);
 //	TerrainPillars(data);
-	TerrainPlane(data, Plane);
+	//TerrainPlane(data, Plane);
 //	TerrainCaveNoodle(data, noise.Cave0, noise.Cave1);
 //	TerrainCaveBlob(data, noise.Cave2);
 
@@ -167,6 +168,30 @@ AuxThread2::ChunkData::ChunkData(Chunk & chunk)
 	, Offset(chunk.Index * CHUNK_VALUES_PER_SIDE)
 	, Voxels(chunk.Voxels)
 { }
+
+
+
+void AuxThread2::TerrainTest3D(ChunkData & data)
+{
+	const VoxelPallet & pallet_debug_r = VoxelPalletMap::StaticMap["Debug_R"];
+	const VoxelPallet & pallet_debug_g = VoxelPalletMap::StaticMap["Debug_G"];
+	const VoxelPallet & pallet_debug_b = VoxelPalletMap::StaticMap["Debug_B"];
+
+	(void)pallet_debug_r;
+	(void)pallet_debug_g;
+	(void)pallet_debug_b;
+
+	for (VectorU3 udx = Loop3.Min(); Loop3.Check(udx).All(true); Loop3.Next(udx))
+	{
+		VectorF3 vec = (data.Offset + udx.ToI()).ToF();
+
+		float val = 0.0f;
+		val += Simplex3DTest.Generate(vec / 64.0f) * 1.0f;
+
+		if (val > +0.5f) { data.Voxels[udx] = pallet_debug_r.ToVoxel(); }
+		if (val < -0.5f) { data.Voxels[udx] = pallet_debug_b.ToVoxel(); }
+	}
+}
 
 
 
@@ -281,8 +306,7 @@ void AuxThread2::TerrainPlane(ChunkData & data, const Perlin2D & noise)
 
 		(void)noise;
 		//val += noise.Generate(abs_2 / 256.0f) * 64.0f;
-		//val += Simplex2DTest.Generate(abs_2 / 64.0f) * 4.0f;
-		val += Simplex2DTest.GenerateMy(abs_2 / 64.0f) * 4.0f;
+		val += Simplex2DTest.Generate(abs_2 / 64.0f) * 4.0f;
 
 		for (unsigned int y = 0; y < CHUNK_VALUES_PER_SIDE; y++)
 		{
