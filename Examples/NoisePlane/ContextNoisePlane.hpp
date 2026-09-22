@@ -81,7 +81,8 @@
 # include "Layout/Shader.hpp"
 # include "Layout/Multiform.hpp"
 
-
+// AuxThread0
+# include "AuxThread/AuxThread0.hpp"
 
 struct ContextNoisePlane : public ContextBase
 {
@@ -196,6 +197,7 @@ void	ViewUpdate(Trans3D change, FrameTime frame_time);
 	Input from different Thread ?
 */
 
+//::AuxThread0	AuxThread0;
 ValueAccumulator<float>		AuxThread0Time;
 bool						AuxThread0Term = false;
 bool						AuxThread0Idle = true;

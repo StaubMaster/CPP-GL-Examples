@@ -17,10 +17,8 @@
 
 
 
-AuxThread2::~AuxThread2()
-{ }
 AuxThread2::AuxThread2(ChunkManager & manager)
-	: AuxThreadBase()
+	: AuxThreadBase("AuxThread2")
 	, Manager(manager)
 	, TimeGenerateFind("TimeGenerateFind")
 	, TimeGenerate("TimeGenerate")
@@ -35,8 +33,32 @@ AuxThread2::AuxThread2(ChunkManager & manager)
 
 
 
+bool AuxThread2::CheckFunc()
+{
+			Manager.Container.ChunksLock.AccessL(sw, TimeGenerateFind);
+			chunk = Find();
+			Manager.Container.ChunksLock.AccessU(sw, TimeGenerateFind);
 
-void AuxThread2::Func()
+			return (chunk.Is());
+}
+void AuxThread2::DoFunc()
+{
+		if (!chunk.Is()) { return; }
+
+		// Generate Voxels into seperate Voxel Array. then assign new Array into chunk
+		AssignLockedChunk chunk2 = chunk.ToAssign();
+
+		sw.Clear();
+		sw.Start();
+		GenerateTerrain(*chunk2);
+		GenerateDecoration(*chunk2, Plane, Cave0);
+		sw.Stop();
+		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
+		TimeGenerate.ThreadName = AuxThreadBase::ThreadName;
+
+		chunk = AccessLockedChunk();
+}
+/*void AuxThread2::Func()
 {
 	AuxThreadBase::ThreadName = "AuxThread2";
 	while (!Term)
@@ -50,9 +72,9 @@ void AuxThread2::Func()
 			if (Term) { return true; }
 			if (DoIdle) { return false; }
 
-			Manager.ChunkContainer.ChunksLock.AccessL(sw, TimeGenerateFind);
+			Manager.Container.ChunksLock.AccessL(sw, TimeGenerateFind);
 			chunk = Find();
-			Manager.ChunkContainer.ChunksLock.AccessU(sw, TimeGenerateFind);
+			Manager.Container.ChunksLock.AccessU(sw, TimeGenerateFind);
 
 			if (chunk.Is())
 			{
@@ -79,7 +101,7 @@ void AuxThread2::Func()
 		TimeGenerate.ThreadName = AuxThreadBase::ThreadName;
 	}
 	Done = true;
-}
+}*/
 
 
 
@@ -101,10 +123,10 @@ AccessLockedChunk AuxThread2::Find()
 	CenterIndexLoop3D	loop = FindLoop;
 	FindCandidateCount = 0;
 	//std::cout << "AuxThread2.Find() loop\n";
-	for (loop.New(Manager.ChunkContainer.CareSize); !loop.Done(); loop.Continue())
+	for (loop.New(Manager.Container.CareSize); !loop.Done(); loop.Continue())
 	{
 		//Chunk * ptr = Manager.Chunks[Manager.ToRelative(loop.Index() + Manager.Center)];
-		Chunk * ptr = Manager.ChunkContainer.FindCenteredPointer(loop.Index());
+		Chunk * ptr = Manager.Container.FindCenteredPointer(loop.Index());
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 

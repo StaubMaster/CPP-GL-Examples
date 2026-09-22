@@ -14,6 +14,10 @@ struct Chunk;
 struct StructureObject;
 struct VectorI3;
 
+# include "Telemetry/StopWatch.hpp"
+# include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+# include "Threading/ObjectTypeAssignUniqueGuard.hpp"
+
 struct AuxThread3 : public AuxThreadBase
 {
 	ChunkManager &	Manager;
@@ -21,13 +25,17 @@ struct AuxThread3 : public AuxThreadBase
 	WaitDoTime		TimeAssambleFind;
 	WaitDoTime		TimeAssamble;
 
-	~AuxThread3();
+	~AuxThread3() = default;
 	AuxThread3() = delete;
-	AuxThread3(ChunkManager & manager);
 	AuxThread3(const AuxThread3 & other) = delete;
 	AuxThread3 & operator=(const AuxThread3 & other) = delete;
+	AuxThread3(ChunkManager & manager);
 
-	void	Func() override;
+		StopWatch sw;
+		AccessLockedChunk chunk;
+
+	bool	CheckFunc() override;
+	void	DoFunc() override;
 
 
 

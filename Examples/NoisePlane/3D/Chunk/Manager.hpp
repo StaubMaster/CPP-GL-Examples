@@ -39,7 +39,7 @@ struct ChunkManager
 
 	public:
 	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
-	::ChunkContainer	ChunkContainer;
+	ChunkContainer	Container;
 
 	public:
 	//							// DrawBufferThread

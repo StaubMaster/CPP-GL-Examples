@@ -5,39 +5,47 @@
 # include <mutex>
 # include <condition_variable>
 
-/* Condition Var ?
-*/
-
-struct AuxThreadBase
+struct AuxThreadBase // IdleThread
 {
 	public:
 	static thread_local const char *	ThreadName;
-	
+
 	private:
 	std::thread		Thread;
+	const char *	Name;
 
-	protected:
+	private:
 	std::condition_variable		ConditionVar;
 	std::mutex					ConditionVarMutex;
 
 	public:
-	bool	Term;
-	bool	DoIdle;
-	bool	IsIdle;
-	bool	Done;
+	bool	DoTerminate = false;
+	bool	DoIdle = true;
+	bool	IsWaiting = false;
+	bool	IsDone = false;
 
 	public:
-	~AuxThreadBase();
-	AuxThreadBase() ;
+	//void	Term();
+
+	public:
+	~AuxThreadBase() = default;
+	AuxThreadBase() = delete;
 	AuxThreadBase(const AuxThreadBase & other) = delete;
 	AuxThreadBase & operator=(const AuxThreadBase & other) = delete;
+	AuxThreadBase(const char * name);
 
 	public:
 	void	Poke();
 	void	Join();
 
-	public:
-	virtual void	Func() = 0;
+	private:
+	void	ThreadFunc();
+
+	protected:
+	// true  : condition met, do
+	// false : condition not met, keep waiting
+	virtual bool	CheckFunc() = 0;
+	virtual void	DoFunc() = 0;
 };
 
 #endif

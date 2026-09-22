@@ -16,10 +16,8 @@
 
 
 
-AuxThread3::~AuxThread3()
-{ }
 AuxThread3::AuxThread3(ChunkManager & manager)
-	: AuxThreadBase()
+	: AuxThreadBase("AuxThread3")
 	, Manager(manager)
 	, TimeAssambleFind("TimeAssambleFind")
 	, TimeAssamble("TimeAssamble")
@@ -27,9 +25,32 @@ AuxThread3::AuxThread3(ChunkManager & manager)
 
 
 
+bool AuxThread3::CheckFunc()
+{
+			Manager.Container.ChunksLock.AccessL(sw, TimeAssambleFind);
+			//chunk = Manager.AssambleChunkFind();
+			chunk = Find();
+			Manager.Container.ChunksLock.AccessU(sw, TimeAssambleFind);
 
+			return (chunk.Is());
+}
+void AuxThread3::DoFunc()
+{
+		if (!chunk.Is()) { return; }
 
-void AuxThread3::Func()
+		AssignLockedChunk chunk2 = chunk.ToAssign();
+
+		sw.Clear();
+		sw.Start();
+		//(*chunk2).AssambleDecoration();
+		AssambleDecoration(*chunk2);
+		sw.Stop();
+		TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
+		TimeAssamble.ThreadName = AuxThreadBase::ThreadName;
+
+		chunk = AccessLockedChunk();
+}
+/*void AuxThread3::Func()
 {
 	AuxThreadBase::ThreadName = "AuxThread3";
 	while (!Term)
@@ -43,10 +64,10 @@ void AuxThread3::Func()
 			if (Term) { return true; }
 			if (DoIdle) { return false; }
 
-			Manager.ChunkContainer.ChunksLock.AccessL(sw, TimeAssambleFind);
+			Manager.Container.ChunksLock.AccessL(sw, TimeAssambleFind);
 			//chunk = Manager.AssambleChunkFind();
 			chunk = Find();
-			Manager.ChunkContainer.ChunksLock.AccessU(sw, TimeAssambleFind);
+			Manager.Container.ChunksLock.AccessU(sw, TimeAssambleFind);
 
 			if (chunk.Is())
 			{
@@ -72,7 +93,7 @@ void AuxThread3::Func()
 		TimeAssamble.ThreadName = AuxThreadBase::ThreadName;
 	}
 	Done = true;
-}
+}*/
 
 
 
@@ -101,9 +122,9 @@ AccessLockedChunk AuxThread3::Find()
 	ObjectTypeAccessUniqueGuard<Chunk> found;
 	float dist;
 	unsigned int candidate_count = 0;
-	for (unsigned int i = 0; i < Manager.ChunkContainer.Chunks.Length(); i++)
+	for (unsigned int i = 0; i < Manager.Container.Chunks.Length(); i++)
 	{
-		Chunk * ptr = Manager.ChunkContainer.Chunks[i];
+		Chunk * ptr = Manager.Container.Chunks[i];
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 
@@ -114,11 +135,11 @@ AccessLockedChunk AuxThread3::Find()
 
 		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { /*ptr -> AccessU();*/ continue; }
 		//if (!Manager.CareBox.ContainsInclusive(ref.Index).All(true)) { /*ptr -> AccessU();*/ continue; }
-		if (!Manager.ChunkContainer.AbsoluteCheckCareBox(ref.Index)) { /*ptr -> AccessU();*/ continue; }
+		if (!Manager.Container.AbsoluteCheckCareBox(ref.Index)) { /*ptr -> AccessU();*/ continue; }
 		if (!ref.Neighbours.CanAssamble()) { /*ptr -> AccessU();*/ continue; }
 
 		candidate_count++;
-		VectorF3 rel = Manager.ChunkContainer.AbsoluteToCentered(ref.Index).ToF();
+		VectorF3 rel = Manager.Container.AbsoluteToCentered(ref.Index).ToF();
 		float d = rel.length2();
 		//if (found == nullptr || d < dist)
 		if (found.Object == nullptr || d < dist)

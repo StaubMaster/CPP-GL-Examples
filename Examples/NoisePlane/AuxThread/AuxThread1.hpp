@@ -14,6 +14,10 @@ struct Chunk;
 
 # include "3D/ChunkGuards.hpp"
 
+# include "Telemetry/StopWatch.hpp"
+# include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+# include "Threading/ObjectTypeAssignUniqueGuard.hpp"
+
 // BufferDataMakeThread
 struct AuxThread1 : public AuxThreadBase
 {
@@ -22,13 +26,17 @@ struct AuxThread1 : public AuxThreadBase
 	WaitDoTime		TimeMakeBufferFind;
 	WaitDoTime		TimeMakeBuffer;
 
-	~AuxThread1();
+	~AuxThread1() = default;
 	AuxThread1() = delete;
-	AuxThread1(ChunkManager & manager);
 	AuxThread1(const AuxThread1 & other) = delete;
 	AuxThread1 & operator=(const AuxThread1 & other) = delete;
+	AuxThread1(ChunkManager & manager);
 
-	void	Func() override;
+		StopWatch sw;
+		AccessLockedChunk chunk;
+
+	bool	CheckFunc() override;
+	void	DoFunc() override;
 
 
 

@@ -37,6 +37,7 @@ FILES := \
 	3D/StructureMap.cpp \
 	3D/StructureParser.cpp \
 \
+	AuxThread/AuxThread0.cpp \
 	AuxThread/AuxThread1.cpp \
 	AuxThread/AuxThread2.cpp \
 	AuxThread/AuxThread3.cpp \

@@ -18,7 +18,7 @@ WaitDoTime ChunkManager::TimeDraw("TimeDraw");
 
 
 ChunkManager::ChunkManager()
-	: ChunkContainer(*this)
+	: Container(*this)
 	, AuxThread1(*this)
 	, AuxThread2(*this)
 	, AuxThread3(*this)
@@ -35,14 +35,14 @@ void ChunkManager::Draw()
 	StopWatch sw_lock;
 	sw_total.Start();
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
-	ChunkContainer.ChunksLock.AccessL(sw_lock, TimeDraw);
+	Container.ChunksLock.AccessL(sw_lock, TimeDraw);
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
 	Graphics.DrawWait.NewValue(sw_lock.ElapsedTime());
 
 	Graphics.Draw();
 
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
-	ChunkContainer.ChunksLock.AccessU(sw_lock, TimeDraw);
+	Container.ChunksLock.AccessU(sw_lock, TimeDraw);
 	//std::cout << ThreadInfo::ThreadName << " Draw " << __LINE__ << '\n';
 	Graphics.DrawTotal.NewValue(sw_total.ElapsedTime());
 }

@@ -10,10 +10,8 @@
 
 
 
-AuxThread1::~AuxThread1()
-{ }
 AuxThread1::AuxThread1(ChunkManager & manager)
-	: AuxThreadBase()
+	: AuxThreadBase("AuxThread1")
 	, Manager(manager)
 	, TimeMakeBufferFind("TimeMakeBufferFind")
 	, TimeMakeBuffer("TimeMakeBuffer")
@@ -21,9 +19,28 @@ AuxThread1::AuxThread1(ChunkManager & manager)
 
 
 
+bool AuxThread1::CheckFunc()
+{
+	Manager.Container.ChunksLock.AccessL(sw, TimeMakeBufferFind);
+	chunk = Find();
+	Manager.Container.ChunksLock.AccessU(sw, TimeMakeBufferFind);
 
+	return (chunk.Is());
+}
+void AuxThread1::DoFunc()
+{
+	if (!chunk.Is()) { return; }
 
-void AuxThread1::Func()
+	sw.Clear();
+	sw.Start();
+	((Chunk*)&(*chunk)) -> BufferData_Make();
+	sw.Stop();
+	TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
+	TimeMakeBuffer.ThreadName = AuxThreadBase::ThreadName;
+
+	chunk = AccessLockedChunk();
+}
+/*void AuxThread1::Func()
 {
 	AuxThreadBase::ThreadName = "AuxThread1";
 	while (!Term)
@@ -37,9 +54,9 @@ void AuxThread1::Func()
 			if (Term) { return true; }
 			if (DoIdle) { return false; }
 
-			Manager.ChunkContainer.ChunksLock.AccessL(sw, TimeMakeBufferFind);
+			Manager.Container.ChunksLock.AccessL(sw, TimeMakeBufferFind);
 			chunk = Find();
-			Manager.ChunkContainer.ChunksLock.AccessU(sw, TimeMakeBufferFind);
+			Manager.Container.ChunksLock.AccessU(sw, TimeMakeBufferFind);
 
 			if (chunk.Is())
 			{
@@ -67,7 +84,7 @@ void AuxThread1::Func()
 		TimeMakeBuffer.ThreadName = AuxThreadBase::ThreadName;
 	}
 	Done = true;
-}
+}*/
 
 
 

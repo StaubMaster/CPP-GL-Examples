@@ -54,6 +54,10 @@ struct Voxel;
 # include "ValueGen/Simplex2D.hpp"
 # include "ValueGen/Simplex3D.hpp"
 
+# include "Telemetry/StopWatch.hpp"
+# include "Threading/ObjectTypeAccessUniqueGuard.hpp"
+# include "Threading/ObjectTypeAssignUniqueGuard.hpp"
+
 struct AuxThread2 : public AuxThreadBase
 {
 	ChunkManager &			Manager;
@@ -68,13 +72,17 @@ struct AuxThread2 : public AuxThreadBase
 	WaitDoTime		TimeGenerateFind;
 	WaitDoTime		TimeGenerate;
 
-	~AuxThread2();
+	~AuxThread2() = default;
 	AuxThread2() = delete;
-	AuxThread2(ChunkManager & manager);
 	AuxThread2(const AuxThread2 & other) = delete;
 	AuxThread2 & operator=(const AuxThread2 & other) = delete;
+	AuxThread2(ChunkManager & manager);
 
-	void	Func() override;
+		StopWatch sw;
+		AccessLockedChunk chunk;
+
+	bool	CheckFunc() override;
+	void	DoFunc() override;
 
 
 
