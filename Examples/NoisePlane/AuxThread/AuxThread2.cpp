@@ -13,6 +13,8 @@
 #include "Threading/ObjectTypeAssignUniqueGuard.hpp"
 //#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
+#include "Telemetry/StopWatch.hpp"
+
 
 
 AuxThread2::~AuxThread2()
@@ -48,9 +50,9 @@ void AuxThread2::Func()
 			if (Term) { return true; }
 			if (DoIdle) { return false; }
 
-			Manager.ChunksLock.AccessL(sw, TimeGenerateFind);
+			Manager.ChunkContainer.ChunksLock.AccessL(sw, TimeGenerateFind);
 			chunk = Find();
-			Manager.ChunksLock.AccessU(sw, TimeGenerateFind);
+			Manager.ChunkContainer.ChunksLock.AccessU(sw, TimeGenerateFind);
 
 			if (chunk.Is())
 			{
@@ -99,10 +101,10 @@ AccessLockedChunk AuxThread2::Find()
 	CenterIndexLoop3D	loop = FindLoop;
 	FindCandidateCount = 0;
 	//std::cout << "AuxThread2.Find() loop\n";
-	for (loop.New(Manager.CareSize); !loop.Done(); loop.Continue())
+	for (loop.New(Manager.ChunkContainer.CareSize); !loop.Done(); loop.Continue())
 	{
 		//Chunk * ptr = Manager.Chunks[Manager.ToRelative(loop.Index() + Manager.Center)];
-		Chunk * ptr = Manager.FindCenteredPointer(loop.Index());
+		Chunk * ptr = Manager.ChunkContainer.FindCenteredPointer(loop.Index());
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 
@@ -152,8 +154,8 @@ void AuxThread2::GenerateTerrain(Chunk & chunk)
 	chunk.MakeNull();
 
 	ChunkData data(chunk);
-	TerrainTest3D(data);
-//	TerrainFlat(data, 0, 0);
+	//TerrainTest3D(data);
+	TerrainFlat(data, -1, 7);
 //	TerrainPillars(data);
 	//TerrainPlane(data, Plane);
 //	TerrainCaveNoodle(data, noise.Cave0, noise.Cave1);
@@ -186,6 +188,7 @@ void AuxThread2::TerrainTest3D(ChunkData & data)
 		VectorF3 vec = (data.Offset + udx.ToI()).ToF();
 
 		float val = 0.0f;
+
 		val += Simplex3DTest.Generate(vec / 64.0f) * 1.0f;
 
 		if (val > +0.5f) { data.Voxels[udx] = pallet_debug_r.ToVoxel(); }
@@ -497,13 +500,13 @@ void AuxThread2::GenerateDecoration(Chunk & chunk, const Perlin2D & noise2, cons
 bool AuxThread2::FindMinYNull(Chunk & chunk, VectorU3 & udx) const
 {
 	udx.Y = CHUNK_VALUES_PER_SIDE - 1;
-	if (!chunk.Voxels[udx].IsEmpty())
+	if (!chunk[udx].IsEmpty())
 	{
 		return false;
 	}
 	for (; udx.Y < CHUNK_VALUES_PER_SIDE; udx.Y--)
 	{
-		if (!chunk.Voxels[udx].IsEmpty())
+		if (!chunk[udx].IsEmpty())
 		{
 			udx.Y++;
 			return true;

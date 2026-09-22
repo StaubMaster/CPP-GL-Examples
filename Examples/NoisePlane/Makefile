@@ -27,6 +27,8 @@ FILES := \
 	3D/Chunk.cpp \
 	3D/Chunk/GraphicsData.cpp \
 	3D/Chunk/Neighbours.cpp \
+	3D/Chunk/Container.cpp \
+	3D/Chunk/Graphics.cpp \
 	3D/Chunk/Manager.cpp \
 \
 	3D/VoxelHit.cpp \

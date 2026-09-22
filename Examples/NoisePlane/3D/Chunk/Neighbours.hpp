@@ -50,7 +50,8 @@ struct ChunkNeighbour
 	bool	IsVisibleNextZ(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const;
 
 	public:
-	void	BufferDataWant();
+	void	BufferDataWantAll();
+	void	BufferDataWant(const VectorU3 & udx);
 
 	public:
 	bool	CanMakeBuffer() const;

@@ -10,33 +10,6 @@
 
 
 
-# include "3D/Voxel.hpp"
-# include "3D/Voxel/Pallet/Geometry/U.hpp"
-# include "3D/Voxel/Pallet/Geometry/F.hpp"
-# include "3D/Voxel/Pallet/Geometry/Graphics/U/Data.hpp"
-# include "3D/Voxel/Pallet/Geometry/Graphics/F/Data.hpp"
-# include "3D/Chunk/GraphicsData.hpp"
-
-# include "Graphics/VertexArray/Multi.hpp"
-
-# include "ValueType/Vector/I3.hpp"
-# include "ValueType/Vector/U3.hpp"
-
-# include "Generics/Container/Array3D.hpp"
-# include "Generics/Container/Binary.hpp"
-# include "Generics/Container/Array.hpp"
-
-# include "Telemetry/ValueAccumulator.hpp"
-
-# include "Threading/ObjectLock.hpp"
-
-# include <mutex>
-
-# include "Chunk/Neighbours.hpp"
-
-struct ChunkManager;
-struct Structure;
-
 /* Do I need Assign Lock ?
 
 when changing
@@ -58,6 +31,35 @@ do the same with Chunks in ChunkManager
 how to make sure Chunk is not referanced anywhere else
 */
 
+
+
+# include "3D/Voxel.hpp"
+//# include "3D/Voxel/Pallet/Geometry/U.hpp"
+//# include "3D/Voxel/Pallet/Geometry/F.hpp"
+//# include "3D/Voxel/Pallet/Geometry/Graphics/U/Data.hpp"
+//# include "3D/Voxel/Pallet/Geometry/Graphics/F/Data.hpp"
+# include "3D/Chunk/GraphicsData.hpp"
+
+# include "ValueType/Vector/I3.hpp"
+# include "ValueType/Vector/U3.hpp"
+
+# include "Generics/Container/Array3D.hpp"
+# include "Generics/Container/Binary.hpp"
+//# include "Generics/Container/Array.hpp"
+
+//# include "Telemetry/ValueAccumulator.hpp"
+
+# include "Threading/ObjectLock.hpp"
+
+# include "Chunk/Neighbours.hpp"
+
+//# include <mutex>
+
+# include "Graphics/VertexArray/Multi.hpp"
+
+struct ChunkManager;
+struct Structure;
+
 struct Chunk;
 
 # include "3D/ChunkGuards.hpp"
@@ -75,22 +77,42 @@ struct Chunk
 	public:
 	const VectorI3		Index;
 	ChunkManager &		Manager;
-	Array3D<Voxel>		Voxels;
-	ChunkNeighbour		Neighbours;
-
-	public:
-	const Voxel &	operator[](VectorU3 udx) const;
-	const Voxel *	FindVoxelOrNull(VectorU3 udx) const;
 
 
 
 	public:
 	~Chunk();
-	Chunk(VectorI3 idx, ChunkManager & manager);
-
 	Chunk() = delete;
 	Chunk(const Chunk & other) = delete;
 	Chunk & operator=(const Chunk & other) = delete;
+
+	Chunk(VectorI3 idx, ChunkManager & manager);
+
+
+
+	public:
+	ChunkNeighbour		Neighbours;
+
+
+
+	private: public:
+	Array3D<Voxel>		Voxels;
+
+	public:
+	const Voxel &	operator[](unsigned int udx) const;
+	const Voxel &	operator[](const VectorU3 & udx) const;
+
+	public:
+	bool	IsEmpty() const;
+	bool	IsNullOrEmpty() const;
+
+	private: public:
+	void	MakeEmpty();
+	void	MakeNull();
+
+	public:
+	bool	ClearVoxel(const VectorU3 & udx, Voxel & vox);
+	bool	PlaceVoxel(const VectorU3 & udx, Voxel & vox);
 
 
 
@@ -122,30 +144,26 @@ struct Chunk
 
 
 
-
-
-
-	public:
-	bool	IsEmpty() const;
-	bool	IsNullOrEmpty() const;
-
-	//private:
-	public:
-	void	MakeEmpty();
-	void	MakeNull();
-
-
+	/*
+		the chunk is already done after Placing Voxels
+		Clear Decorations is related to different Chunks
+		maybe just delete as needed
+	*/
 
 	public:
-	bool	ClearVoxel(VectorU3 udx, Voxel & vox);
-	bool	PlaceVoxel(VectorU3 udx, Voxel & vox);
-
-
-
-
+	bool	TerrainDone;
 
 	public:
-	bool	GenerationDone() const;
+	Container::Binary<StructureObject>	Decorations;
+
+	public:
+	bool	DecorationsGenerated;
+
+	public:
+	bool	DecorationsAssambled;
+
+	public:
+	bool	IsDone() const;
 	/* Generation
 		Terrain:
 			different Layers ?
@@ -162,28 +180,6 @@ struct Chunk
 		Done:
 	*/
 
-	/*
-		the chunk is already done after Placing Voxels
-		Clear Decorations is related to different Chunks
-		maybe just delete as needed
-	*/
-
-
-
-	public:
-	bool	TerrainDone;
-
-	public:
-	Container::Binary<StructureObject>	Decorations;
-
-	public:
-	bool	DecorationsGenerated;
-
-	public:
-	bool	DecorationsAssambled;
-
-
-
 
 
 	public:
@@ -193,6 +189,8 @@ struct Chunk
 	void	BufferData_Make();
 	bool	BufferData_Have;
 	void	BufferData_Update();
+
+	void	BufferData_Queue();
 
 	VertexArray::Multi::Entry		BufferUData_Entry;
 	VertexArray::Multi::Entry		BufferFData_Entry;

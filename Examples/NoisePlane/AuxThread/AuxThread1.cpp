@@ -6,6 +6,8 @@
 #include "Threading/ObjectTypeAccessUniqueGuard.hpp"
 //#include "Threading/ObjectTypeAccessSharedGuard.hpp"
 
+#include "Telemetry/StopWatch.hpp"
+
 
 
 AuxThread1::~AuxThread1()
@@ -35,9 +37,9 @@ void AuxThread1::Func()
 			if (Term) { return true; }
 			if (DoIdle) { return false; }
 
-			Manager.ChunksLock.AccessL(sw, TimeMakeBufferFind);
+			Manager.ChunkContainer.ChunksLock.AccessL(sw, TimeMakeBufferFind);
 			chunk = Find();
-			Manager.ChunksLock.AccessU(sw, TimeMakeBufferFind);
+			Manager.ChunkContainer.ChunksLock.AccessU(sw, TimeMakeBufferFind);
 
 			if (chunk.Is())
 			{
@@ -53,7 +55,7 @@ void AuxThread1::Func()
 			return false;
 		});
 
-		if (Term) { break;; }
+		if (Term) { break; }
 
 		if (!chunk.Is()) { continue; }
 
@@ -112,7 +114,7 @@ AccessLockedChunk AuxThread1::Find()
 		//if (!chunk.Is()) { continue; }
 
 		if (!ref.BufferData_Want) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
-		if (!ref.GenerationDone()) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
+		if (!ref.IsDone()) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
 		if (!ref.Neighbours.CanMakeBuffer()) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
 
 		return chunk;

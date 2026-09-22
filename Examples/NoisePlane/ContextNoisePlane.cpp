@@ -8,14 +8,6 @@
 #include "Graphics/Shader/Code.hpp"
 #include "Generics/Container/Array.hpp"
 
-// Debug
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-#include "Debug.hpp"
-#include "ValueType/_Show.hpp"
-#include "ValueType/_Include.hpp"
-
 // Axis
 #include "Axis/3D/Enums.hpp"
 #include "Axis/3D/Show.hpp"
@@ -24,8 +16,8 @@
 
 // Threading
 #include "Threading/ObjectTypeAccessUniqueGuard.hpp"
-#include "Threading/ObjectTypeAssignUniqueGuard.hpp"
 //#include "Threading/ObjectTypeAccessSharedGuard.hpp"
+#include "Threading/ObjectTypeAssignUniqueGuard.hpp"
 //#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
 // Voxel
@@ -42,8 +34,18 @@
 // Math
 #include <math.h>
 
+// Debug
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include "Debug.hpp"
+#include "ValueType/_Show.hpp"
+#include "ValueType/_Include.hpp"
 
+// Telemetry
+#include "Telemetry/StopWatch.hpp"
 
+//
 #include "main_static.cpp"
 
 
@@ -193,8 +195,8 @@ ContextNoisePlane::ContextNoisePlane()
 	, InventoryUI()
 	, HotBar(VectorU2(10, 1))
 	, HotBarUI()
-	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 	, AuxThread0Time(64)
+	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 {
 	MediaDirectory = DirectoryInfo("../../media/");
 
@@ -205,8 +207,8 @@ ContextNoisePlane::ContextNoisePlane()
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 //		&PlaneManager.Shader,
-		&ChunkManager.ShaderLayoutU,
-		&ChunkManager.ShaderLayoutF,
+		&ChunkManager.Graphics.ShaderLayoutU,
+		&ChunkManager.Graphics.ShaderLayoutF,
 	});
 	MultiformLayout.Find(layouts);
 }
@@ -229,7 +231,7 @@ void ContextNoisePlane::VoxelClear_Clear(ChunkVoxelIndex idx)
 	VoxelClear_Index = idx;
 	VoxelClear_Tool = dynamic_cast<ItemTool*>(HotBar.Items[0]);
 
-	AccessLockedChunk chunk = ChunkManager.FindAbsoluteAccess(VoxelClear_Index.Chunk);
+	AccessLockedChunk chunk = ChunkManager.ChunkContainer.FindAbsoluteAccess(VoxelClear_Index.Chunk);
 	const Voxel & voxel = (*chunk).Voxels[VoxelClear_Index.Voxel];
 	if (!voxel.IsEmpty())
 	{
@@ -253,7 +255,7 @@ void ContextNoisePlane::VoxelClear_Continue(const ChunkVoxelIndex & other)
 			{
 				Voxel voxel;
 				// why not .FindAssign() ?
-				AccessLockedChunk chunk_access = ChunkManager.FindAbsoluteAccess(VoxelClear_Index.Chunk);
+				AccessLockedChunk chunk_access = ChunkManager.ChunkContainer.FindAbsoluteAccess(VoxelClear_Index.Chunk);
 				if (chunk_access.Is())
 				{
 					AssignLockedChunk chunk_assign = chunk_access.ToAssign();
@@ -494,18 +496,18 @@ void ContextNoisePlane::ViewUpdate_Colliding(FrameTime frame_time)
 		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 		{
 			ChunkVoxelIndex idx(i);
-			AccessLockedChunk chunk = ChunkManager.FindAbsoluteAccess(idx.Chunk);
+			AccessLockedChunk chunk = ChunkManager.ChunkContainer.FindAbsoluteAccess(idx.Chunk);
 			if (!chunk.Is()) { continue; }
-			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
-			if (voxel != nullptr && !(voxel -> IsEmpty()))
-			{
-				boxes.Insert(
-					BoxF3(
-						(i + VectorI3(0, 0, 0)).ToF(),
-						(i + VectorI3(1, 1, 1)).ToF()
-					)
-				);
-			}
+			if (!(*chunk).IsDone()) { continue; }
+			if ((*chunk).IsEmpty()) { continue; }
+			const Voxel & voxel = (*chunk)[idx.Voxel];
+			if (voxel.IsEmpty()) { continue; }
+			boxes.Insert(
+				BoxF3(
+					(i + VectorI3(0, 0, 0)).ToF(),
+					(i + VectorI3(1, 1, 1)).ToF()
+				)
+			);
 		}
 
 		ViewEntity_CollisionSide = ViewEntity.Collide(boxes.ToArray(), frame_time.Delta);
@@ -533,7 +535,7 @@ void ContextNoisePlane::ViewRay_Update()
 }
 void ContextNoisePlane::ViewRay_Hit()
 {
-	ViewHit = ChunkManager.HitVoxel(ViewRay);
+	ViewHit = ChunkManager.ChunkContainer.HitVoxel(ViewRay);
 	if (ViewHit.Valid())
 	{
 		{
@@ -605,7 +607,7 @@ void ContextNoisePlane::ViewRay_HitDo()
 					{
 						Voxel voxel = item -> VoxelPallet -> ToVoxel(ViewHit_Axis0, ViewHit_Axis1);
 						ChunkVoxelIndex idx(hit_idx);
-						AssignLockedChunk chunk = ChunkManager.FindAbsoluteAccess(idx.Chunk).ToAssign();
+						AssignLockedChunk chunk = ChunkManager.ChunkContainer.FindAbsoluteAccess(idx.Chunk).ToAssign();
 						if (chunk.Is())
 						{
 							(*chunk).PlaceVoxel(idx.Voxel, voxel);
@@ -635,15 +637,15 @@ void ContextNoisePlane::ViewRay_Show()
 
 		// Voxel Info
 		{
-			AccessLockedChunk chunk = ChunkManager.FindAbsoluteAccess(idx.Chunk);
-			const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
-			if (voxel != nullptr)
+			AccessLockedChunk chunk = ChunkManager.ChunkContainer.FindAbsoluteAccess(idx.Chunk);
+			if (chunk.Is() && (*chunk).IsDone() && (*chunk).IsEmpty())
 			{
-				if (!(voxel -> IsEmpty()))
+				const Voxel & voxel = (*chunk)[idx.Voxel];
+				if (!voxel.IsEmpty())
 				{
-					const VoxelPallet & pallet = voxel -> ToPallet();
-					ss << (voxel -> Orientation.GetDiag()) << " :Diag\n";
-					ss << (voxel -> Orientation.GetFlip()) << " :Flip\n";
+					const VoxelPallet & pallet = voxel.ToPallet();
+					ss << (voxel.Orientation.GetDiag()) << " :Diag\n";
+					ss << (voxel.Orientation.GetFlip()) << " :Flip\n";
 					ss << (pallet.Name) << " :Pallet\n";
 				}
 				else
@@ -719,10 +721,10 @@ void ContextNoisePlane::AuxThread0Func()
 		if (!AuxThread0Idle)
 		{
 			sw.Clear(); sw.Start();
-			ChunkManager.ChangeCenter((View.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF().ToI());
-			//ChunkManager.RemoveAround();
-			//ChunkManager.InsertAround();
-			ChunkManager.UpdateChunksContainer();
+			//ChunkManager.ChunkContainer.ChangeCenter((View.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF().ToI());
+			//ChunkManager.ChunkContainer.RemoveAround();
+			//ChunkManager.ChunkContainer.InsertAround();
+			ChunkManager.ChunkContainer.UpdateChunksContainer();
 			sw.Stop();
 			AuxThread0Time.NewValue(sw.ElapsedTime());
 		}
@@ -832,11 +834,11 @@ void ContextNoisePlane::Make()
 		PolyHedraManager.PlacePolyHedra(ViewRayPolyHedra);
 	}*/
 
-	//ChunkManager.ChangeSize(4, 2);
-	ChunkManager.ChangeSize(8, 4);
-	//ChunkManager.ChangeSize(16, 4);
-	//ChunkManager.ChangeSize(16, 12);
-	//ChunkManager.ChangeSize(32, 16);
+	//ChunkManager.ChunkContainer.ChangeSize(4, 2);
+	ChunkManager.ChunkContainer.ChangeSize(8, 4);
+	//ChunkManager.ChunkContainer.ChangeSize(16, 4);
+	//ChunkManager.ChunkContainer.ChangeSize(16, 12);
+	//ChunkManager.ChunkContainer.ChangeSize(32, 16);
 }
 
 
@@ -922,7 +924,7 @@ void ContextNoisePlane::ChangeMedia()
 		PlaneManager.Shader.Change(code);
 	}*/
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
-	ChunkManager.ChangeMedia(MediaDirectory);
+	ChunkManager.Graphics.ChangeMedia(MediaDirectory);
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 }
 
@@ -934,7 +936,7 @@ void ContextNoisePlane::GraphicsCreate()
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	//PlaneManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
-	ChunkManager.GraphicsCreate();
+	ChunkManager.Graphics.GraphicsCreate();
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 }
 void ContextNoisePlane::GraphicsDelete()
@@ -944,7 +946,7 @@ void ContextNoisePlane::GraphicsDelete()
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	//PlaneManager.GraphicsDelete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
-	ChunkManager.GraphicsDelete();
+	ChunkManager.Graphics.GraphicsDelete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 }
 
@@ -969,8 +971,8 @@ void ContextNoisePlane::Init()
 		std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 		VoxelPalletMap::StaticMap.TexturesAssign(tex_map);
 		std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-		ChunkManager.Texture.Bind();
-		ChunkManager.Texture.Assign(VectorU2(32, 32), tex_map.Files.ToArray());
+		ChunkManager.Graphics.Texture.Bind();
+		ChunkManager.Graphics.Texture.Assign(VectorU2(32, 32), tex_map.Files.ToArray());
 	}
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	VoxelPalletMap::StaticMap.MakePolyHedras();
@@ -1069,16 +1071,16 @@ void ContextNoisePlane::Draw()
 	//PlaneManager.Draw();
 
 	sw.Clear();
-	ChunkManager.ShaderU.Bind();
-	ChunkManager.ShaderLayoutU.LightAmbient.Put(LightAmbient);
-	ChunkManager.ShaderLayoutU.LightSolar.Put(LightSolar);
-	ChunkManager.ShaderLayoutU.LightSpot.Put(LightSpot);
-	ChunkManager.ShaderLayoutU.LightSpotCount.Put(1);
-	ChunkManager.ShaderF.Bind();
-	ChunkManager.ShaderLayoutF.LightAmbient.Put(LightAmbient);
-	ChunkManager.ShaderLayoutF.LightSolar.Put(LightSolar);
-	ChunkManager.ShaderLayoutF.LightSpot.Put(LightSpot);
-	ChunkManager.ShaderLayoutF.LightSpotCount.Put(1);
+	ChunkManager.Graphics.ShaderU.Bind();
+	ChunkManager.Graphics.ShaderLayoutU.LightAmbient.Put(LightAmbient);
+	ChunkManager.Graphics.ShaderLayoutU.LightSolar.Put(LightSolar);
+	ChunkManager.Graphics.ShaderLayoutU.LightSpot.Put(LightSpot);
+	ChunkManager.Graphics.ShaderLayoutU.LightSpotCount.Put(1);
+	ChunkManager.Graphics.ShaderF.Bind();
+	ChunkManager.Graphics.ShaderLayoutF.LightAmbient.Put(LightAmbient);
+	ChunkManager.Graphics.ShaderLayoutF.LightSolar.Put(LightSolar);
+	ChunkManager.Graphics.ShaderLayoutF.LightSpot.Put(LightSpot);
+	ChunkManager.Graphics.ShaderLayoutF.LightSpotCount.Put(1);
 	FrameTime_Draw_UniformChunk.NewValue(sw.ElapsedTime());
 
 	sw.Clear();
@@ -1180,10 +1182,10 @@ struct VoxelChunkMemoryInfo
 	unsigned int buffer_data_have[2];
 	unsigned int buffer_data_want[2];
 	unsigned long long buffer_data_u_entrys;
-	unsigned long long buffer_data_u_memory;
+	unsigned long long buffer_data_u_total;
 	unsigned long long buffer_data_u_limit;
 	unsigned long long buffer_data_f_entrys;
-	unsigned long long buffer_data_f_memory;
+	unsigned long long buffer_data_f_total;
 	unsigned long long buffer_data_f_limit;
 
 	void	Clear()
@@ -1202,25 +1204,25 @@ struct VoxelChunkMemoryInfo
 		buffer_data_want[0] = 0;
 		buffer_data_want[1] = 0;
 		buffer_data_u_entrys = 0;
-		buffer_data_u_memory = 0;
+		buffer_data_u_total = 0;
 		buffer_data_u_limit = 0;
 		buffer_data_f_entrys = 0;
-		buffer_data_f_memory = 0;
+		buffer_data_f_total = 0;
 		buffer_data_f_limit = 0;
 	}
 	void	Gather(ChunkManager & manager)
 	{
-		chunks_limit = manager.Chunks.Length();
+		chunks_limit = manager.ChunkContainer.Chunks.Length();
 		for (unsigned int i = 0; i < chunks_limit; i++)
 		{
-			if (manager.Chunks[i] == nullptr) { continue; }
-			Chunk & chunk = *manager.Chunks[i];
+			if (manager.ChunkContainer.Chunks[i] == nullptr) { continue; }
+			Chunk & chunk = *manager.ChunkContainer.Chunks[i];
 			chunks_total++;
 
 			if (chunk.TerrainDone) { chunks_gen_TD++; }
 			if (chunk.DecorationsGenerated) { chunks_gen_DG++; }
 			if (chunk.DecorationsAssambled) { chunks_gen_DA++; }
-			if (chunk.GenerationDone())
+			if (chunk.IsDone())
 			{
 				chunks_gen_done++;
 				if (chunk.IsEmpty())
@@ -1233,7 +1235,7 @@ struct VoxelChunkMemoryInfo
 
 			// Edge Chunks dont get BufferData because the outside Chunks are not done Decorating
 			// Edge Chunks dont Decorate because the outside Chunks are out of Bounds and assumed null
-			if (chunk.GenerationDone())
+			if (chunk.IsDone())
 			{
 				if (chunk.BufferData_Want)		{ buffer_data_want[0]++; }
 				else							{ buffer_data_want[1]++; }
@@ -1247,21 +1249,13 @@ struct VoxelChunkMemoryInfo
 			}
 		}
 
-		buffer_data_u_entrys = manager.BufferU.Entrys.Count();
-		buffer_data_u_memory = 0;
-		for (unsigned int i = 0; i < buffer_data_u_entrys; i++)
-		{
-			buffer_data_u_memory += manager.BufferU.Entrys[i] -> Length;
-		}
-		buffer_data_u_limit = manager.BufferU.Buffer.Count;
+		buffer_data_u_entrys = manager.Graphics.BufferU.Count();
+		buffer_data_u_total = manager.Graphics.BufferU.LengthSum();
+		buffer_data_u_limit = manager.Graphics.BufferU.Buffer.Count;
 
-		buffer_data_f_entrys = manager.BufferF.Entrys.Count();
-		buffer_data_f_memory = 0;
-		for (unsigned int i = 0; i < buffer_data_f_entrys; i++)
-		{
-			buffer_data_f_memory += manager.BufferF.Entrys[i] -> Length;
-		}
-		buffer_data_f_limit = manager.BufferF.Buffer.Count;
+		buffer_data_f_entrys = manager.Graphics.BufferF.Count();
+		buffer_data_f_total = manager.Graphics.BufferF.LengthSum();
+		buffer_data_f_limit = manager.Graphics.BufferF.Buffer.Count;
 	}
 	void	Show(std::stringstream & ss)
 	{
@@ -1295,19 +1289,32 @@ struct VoxelChunkMemoryInfo
 		ss << " Have[" << buffer_data_have[0] << ':' << buffer_data_have[1] << ']';
 		ss << '\n';
 
-		ss << "DataU Entrys:" << buffer_data_u_entrys << '\n';
-		ss << "DataU Memory: ";
-		ss << Memory1000ToString(buffer_data_u_memory * sizeof(VoxelGeometryDataU::Face));
-		ss << " / ";
-		ss << Memory1000ToString(buffer_data_u_limit * sizeof(VoxelGeometryDataU::Face));
+		ss << "DataU Entrys: " << buffer_data_u_entrys << ' ';
+		ss << "( " << buffer_data_u_total << " / " << buffer_data_u_limit << " )";
+		ss << '\n';
+		ss << "DataF Entrys: " << buffer_data_f_entrys << ' ';
+		ss << "( " << buffer_data_f_total << " / " << buffer_data_f_limit << " )";
 		ss << '\n';
 
-		ss << "DataF Entrys:" << buffer_data_f_entrys << '\n';
-		ss << "DataF Memory: ";
-		ss << Memory1000ToString(buffer_data_f_memory * sizeof(VoxelGeometryDataF::Axis));
+		ss << "DataU Memory: ";
+		ss << Memory1000ToString(buffer_data_u_total * sizeof(VoxelGraphicsDataU::Vertex));
 		ss << " / ";
-		ss << Memory1000ToString(buffer_data_f_limit * sizeof(VoxelGeometryDataF::Axis));
+		ss << Memory1000ToString(buffer_data_u_limit * sizeof(VoxelGraphicsDataU::Vertex));
 		ss << '\n';
+		ss << "Memory: DataF: ";
+		ss << Memory1000ToString(buffer_data_f_total * sizeof(VoxelGraphicsDataF::Vertex));
+		ss << "/";
+		ss << Memory1000ToString(buffer_data_f_limit * sizeof(VoxelGraphicsDataF::Vertex));
+		ss << '\n';
+
+		/* Memory
+			Item Memory		Item Count		Memory Total	Memory Limit
+		*/
+
+		/* Chunks
+			Know Used of Limit
+			Care Used of Limit
+		*/
 
 		/*ss << "DataU Memory:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));
 		ss << " * " << Seperated1000(data_u_memory);
@@ -1401,12 +1408,12 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "}\n";*/
 		ShowNameTimeLine(ss, "Draw            ", FrameTime_Draw);
 		ss << "{\n";
-		ss << "Total       " << ToString(::ChunkManager::DrawTotal.Average(), 6) << '\n';
-		ss << "Wait        " << ToString(::ChunkManager::DrawWait.Average(), 6) << '\n';
-		ss << "TextureBind " << ToString(::ChunkManager::DrawTextureBind.Average(), 6) << '\n';
-		ss << "ShaderBind  " << ToString(::ChunkManager::DrawShaderBind.Average(), 6) << '\n';
-		ss << "UpdateBind  " << ToString(::ChunkManager::DrawUpdateBind.Average(), 6) << '\n';
-		ss << "BufferDraw  " << ToString(::ChunkManager::DrawBufferDraw.Average(), 6) << '\n';
+		ss << "Total       " << ToString(::ChunkGraphics::DrawTotal.Average(), 6) << '\n';
+		ss << "Wait        " << ToString(::ChunkGraphics::DrawWait.Average(), 6) << '\n';
+		ss << "TextureBind " << ToString(::ChunkGraphics::DrawTextureBind.Average(), 6) << '\n';
+		ss << "ShaderBind  " << ToString(::ChunkGraphics::DrawShaderBind.Average(), 6) << '\n';
+		ss << "UpdateBind  " << ToString(::ChunkGraphics::DrawUpdateBind.Average(), 6) << '\n';
+		ss << "BufferDraw  " << ToString(::ChunkGraphics::DrawBufferDraw.Average(), 6) << '\n';
 		ss << "}\n";
 		ShowNameTimeLine(ss, "DrawThread      ", FrameTime_DrawThread);
 		ss << "}\n";
@@ -1496,7 +1503,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ChunkVoxelIndex idx(View.Trans.Position.roundF().ToI());
 		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
 		//ChunkManager.ChunksInUse.lock();
-		AccessLockedChunk chunk = ChunkManager.FindAbsoluteAccess(idx.Chunk);
+		AccessLockedChunk chunk = ChunkManager.ChunkContainer.FindAbsoluteAccess(idx.Chunk);
 		//if (idx.ChunkMan != 0xFFFFFFFF)
 		if (chunk.Is())
 		{
@@ -1512,7 +1519,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			ss << "TerrainDone: " << (*chunk).TerrainDone << '\n';
 			ss << "DecorationsGenerated: " << (*chunk).DecorationsGenerated << '\n';
 			ss << "DecorationsAssambled: " << (*chunk).DecorationsAssambled << '\n';
-			if ((*chunk).GenerationDone()) { ss << "Done"; }
+			if ((*chunk).IsDone()) { ss << "Done"; }
 			ss << '\n';
 
 			ss << "BufferData_Want: " << (*chunk).BufferData_Want << '\n';
@@ -1565,17 +1572,17 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	if (MenuDebug.ChunkRange.Check.IsChecked())
 	{
 		ss << "Chunk Ranges:" << '\n';
-		ss << "Chunk Know: " << ChunkManager.KnowSize << '\n';
-		ss << "Chunk Care: " << ChunkManager.CareSize << '\n';
+		ss << "Chunk Know: " << ChunkManager.ChunkContainer.KnowSize << '\n';
+		ss << "Chunk Care: " << ChunkManager.ChunkContainer.CareSize << '\n';
 
-		VectorU3 know = ChunkManager.Chunks.Size();
-		VectorU3 care((ChunkManager.CareSize * 2) + 1);
+		VectorU3 know = ChunkManager.ChunkContainer.Chunks.Size();
+		VectorU3 care((ChunkManager.ChunkContainer.CareSize * 2) + 1);
 
 		ss << "Know: " << know << ' ' << know.Product() << '\n';
 		ss << "Care: " << care << ' ' << care.Product() << '\n';
 
-		ss << "ToInsert: " << ChunkManager.ChunksToInsert.Count() << '\n';
-		ss << "ToRemove: " << ChunkManager.ChunksToRemove.Count() << '\n';
+		ss << "ToInsert: " << ChunkManager.ChunkContainer.ChunksToInsert.Count() << '\n';
+		ss << "ToRemove: " << ChunkManager.ChunkContainer.ChunksToRemove.Count() << '\n';
 
 		ss << '\n';
 	}
@@ -1586,7 +1593,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << "Queues:\n";
 
 		ss << "BufferData Want " << ChunkManager.AuxThread1.QueueCount() << '\n';
-		ss << "BufferData Have " << ChunkManager.BufferDataHave.QueueCount() << '\n';
+		ss << "BufferData Have " << ChunkManager.Graphics.BufferDataHave.QueueCount() << '\n';
 
 		ss << "Generate Candidates " << ChunkManager.AuxThread2.FindCandidateCount << '\n';
 		ss << "Assamble Candidates " << ChunkManager.AuxThread3.FindCandidateCount << '\n';
@@ -1599,7 +1606,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	if (MenuDebug.VoxelChunkMemory.Check.IsChecked())
 	{
 		sw_part.Clear(); sw_part.Start();
-		ChunkManager.ChunksLock.AccessL();
+		ChunkManager.ChunkContainer.ChunksLock.AccessL();
 		sw_part.Stop(); TextTime_VoxelChunkMemory_Wait.NewValue(sw_part.ElapsedTime());
 
 		/* Info refresh rate
@@ -1621,7 +1628,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		}
 		sw_part.Stop(); TextTime_VoxelChunkMemory_Loop.NewValue(sw_part.ElapsedTime());
 
-		ChunkManager.ChunksLock.AccessU();
+		ChunkManager.ChunkContainer.ChunksLock.AccessU();
 
 		sw_part.Clear(); sw_part.Start();
 		info.Show(ss);
@@ -1806,7 +1813,7 @@ void ContextNoisePlane::FrameInput()
 	if (window[Keys::F5] == State::Press)
 	{
 		//PlaneManager.Clear();
-		ChunkManager.Clear();
+		ChunkManager.ChunkContainer.Clear();
 	}
 
 	if (MenuPause.IsVisible() || MenuOptions.IsVisible() || InventoryUI.IsVisible())
@@ -1887,9 +1894,9 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	if (MenuDebug.VoxelChunkBoxes.Check.IsChecked())
 	{
 		NewPolyHedra::Pallet * pallet = PalletManager.FindMakePallet(VoxelChunkCube);
-		for (unsigned int i = 0; i < ChunkManager.Chunks.Length(); i++)
+		for (unsigned int i = 0; i < ChunkManager.ChunkContainer.Chunks.Length(); i++)
 		{
-			Chunk * chunk = ChunkManager.Chunks[i];
+			Chunk * chunk = ChunkManager.ChunkContainer.Chunks[i];
 			if (chunk == nullptr) { continue; }
 			NewPolyHedra::Basic3D::Object chunk_box(pallet);
 			chunk_box.Data().Trans.Position = (chunk -> Index * CHUNK_VALUES_PER_SIDE).ToF();

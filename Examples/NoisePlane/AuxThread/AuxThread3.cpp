@@ -12,6 +12,8 @@
 #include "Threading/ObjectTypeAssignUniqueGuard.hpp"
 //#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
+#include "Telemetry/StopWatch.hpp"
+
 
 
 AuxThread3::~AuxThread3()
@@ -41,10 +43,10 @@ void AuxThread3::Func()
 			if (Term) { return true; }
 			if (DoIdle) { return false; }
 
-			Manager.ChunksLock.AccessL(sw, TimeAssambleFind);
+			Manager.ChunkContainer.ChunksLock.AccessL(sw, TimeAssambleFind);
 			//chunk = Manager.AssambleChunkFind();
 			chunk = Find();
-			Manager.ChunksLock.AccessU(sw, TimeAssambleFind);
+			Manager.ChunkContainer.ChunksLock.AccessU(sw, TimeAssambleFind);
 
 			if (chunk.Is())
 			{
@@ -99,9 +101,9 @@ AccessLockedChunk AuxThread3::Find()
 	ObjectTypeAccessUniqueGuard<Chunk> found;
 	float dist;
 	unsigned int candidate_count = 0;
-	for (unsigned int i = 0; i < Manager.Chunks.Length(); i++)
+	for (unsigned int i = 0; i < Manager.ChunkContainer.Chunks.Length(); i++)
 	{
-		Chunk * ptr = Manager.Chunks[i];
+		Chunk * ptr = Manager.ChunkContainer.Chunks[i];
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 
@@ -112,11 +114,11 @@ AccessLockedChunk AuxThread3::Find()
 
 		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { /*ptr -> AccessU();*/ continue; }
 		//if (!Manager.CareBox.ContainsInclusive(ref.Index).All(true)) { /*ptr -> AccessU();*/ continue; }
-		if (!Manager.AbsoluteCheckCareBox(ref.Index)) { /*ptr -> AccessU();*/ continue; }
+		if (!Manager.ChunkContainer.AbsoluteCheckCareBox(ref.Index)) { /*ptr -> AccessU();*/ continue; }
 		if (!ref.Neighbours.CanAssamble()) { /*ptr -> AccessU();*/ continue; }
 
 		candidate_count++;
-		VectorF3 rel = Manager.AbsoluteToCentered(ref.Index).ToF();
+		VectorF3 rel = Manager.ChunkContainer.AbsoluteToCentered(ref.Index).ToF();
 		float d = rel.length2();
 		//if (found == nullptr || d < dist)
 		if (found.Object == nullptr || d < dist)
@@ -167,7 +169,7 @@ void AuxThread3::AssambleDecoration(Chunk & chunk)
 
 	chunk.DecorationsAssambled = true;
 
-	chunk.Neighbours.BufferDataWant();
+	chunk.Neighbours.BufferDataWantAll();
 	Manager.AuxThread1.QueuePut(&chunk);
 }
 void AuxThread3::AssambleDecoration(Chunk & chunk, const StructureObject & obj, const VectorI3 & offset)

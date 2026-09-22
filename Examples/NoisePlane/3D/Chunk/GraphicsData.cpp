@@ -339,7 +339,9 @@ void ChunkGraphicsData::Make(const Chunk & chunk, const Array3D<bool> & voxel_is
 		/*if (is_visible_prev_x || is_visible_prev_y || is_visible_prev_z ||
 			is_visible_next_x || is_visible_next_y || is_visible_next_z)*/
 		{
-			VoxelData voxel_data(chunk.Voxels.At(u), chunk.Index, udx, offset);
+			// .At is more optimized then []
+			//VoxelData voxel_data(chunk.Voxels.At(u), chunk.Index, udx, offset);
+			VoxelData voxel_data(chunk[u], chunk.Index, udx, offset);
 			if (is_visible_prev_x) { Cat(voxel_data, Axis3D::Rel::PrevX); }
 			if (is_visible_prev_y) { Cat(voxel_data, Axis3D::Rel::PrevY); }
 			if (is_visible_prev_z) { Cat(voxel_data, Axis3D::Rel::PrevZ); }
@@ -370,7 +372,10 @@ void ChunkGraphicsData::Make(const Chunk & chunk, const ChunkNeighbour & neighbo
 		Array3D<bool> voxel_is_empty (VectorU3(CHUNK_VALUES_PER_SIDE));
 		for (unsigned int u = 0; u < CHUNK_VALUES_PER_VOLM; u++)
 		{
-			voxel_is_empty.At(u) = chunk.Voxels.At(u).IsEmpty();
+			// At is more optimized, no check every time
+			// maybe just get this bool Array in Chunk
+			//voxel_is_empty.At(u) = chunk.Voxels.At(u).IsEmpty();
+			voxel_is_empty.At(u) = chunk[u].IsEmpty();
 		}
 		Make(chunk, voxel_is_empty, neighbours);
 	}

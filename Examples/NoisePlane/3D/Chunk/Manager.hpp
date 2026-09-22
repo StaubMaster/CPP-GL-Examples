@@ -1,60 +1,10 @@
 #ifndef  CHUNK_MANAGER_HPP
 # define CHUNK_MANAGER_HPP
 
-# include "ValueGen/Perlin2D.hpp"
-# include "ValueGen/Perlin3D.hpp"
-
-# include "Graphics/Shader/Base.hpp"
-
-# include "3D/Voxel/Pallet/Geometry/Graphics/ShaderLayout.hpp"
-# include "3D/Voxel/Pallet/Geometry/Graphics/U/Layout.hpp"
-# include "3D/Voxel/Pallet/Geometry/Graphics/F/Layout.hpp"
-
-# include "Graphics/VertexArray/Multi.hpp"
-
-//# include "Graphics/Data.hpp"
-
-# include "ValueType/Vector/I3.hpp"
-# include "ValueType/Box/I3.hpp"
-
-# include "Generics/Container/Binary.hpp"
-
-# include "Graphics/Texture/Array2D.hpp"
-
-//# include "GridCast/GridCast3D.hpp"
-
-# include "Telemetry/ValueAccumulator.hpp"
-# include "Telemetry/StopWatch.hpp"
-
-# include <mutex>
-# include <atomic>
-# include <condition_variable>
-
-struct Voxel;
-struct Chunk;
-struct Chunk;
-struct ChunkGenerationNoise;
-
-# include "3D/ChunkGuards.hpp"
-
-# include "Axis/3D/Types.hpp"
-
-struct ChunkNeighbour;
-
-struct RayF3;
-class PolyHedra;
-
-struct VoxelHit;
-
-# include <iostream>
-# include "ValueType/_Show.hpp"
-
 # include "Telemetry/WaitDoTime.hpp"
-# include "Threading/ObjectLock.hpp"
 
-# include "Generics/Container/Array3D.hpp"
-
-
+# include "3D/Chunk/Container.hpp"
+# include "3D/Chunk/Graphics.hpp"
 
 # include "AuxThread/AuxThread1.hpp"
 # include "AuxThread/AuxThread2.hpp"
@@ -81,82 +31,15 @@ struct ChunkManager
 
 
 
-	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
-
-	//struct Container
-	//{
-		private:
-		public:
-		Array3D<Chunk*>		Chunks;
-		ObjectLock			ChunksLock;
-
-		private: public:
-		unsigned int	KnowSize;
-		unsigned int	CareSize;
-
-		private:
-		VectorI3	Center;
-		BoxI3		KnowBox;
-		BoxI3		CareBox;
-
-		public:
-		bool	AbsoluteCheckCareBox(const VectorI3 & idx) const;
-		bool	AbsoluteCheckKnowBox(const VectorI3 & idx) const;
-
-		public:
-		VectorI3	RelativeToAbsolute(VectorU3 u) const;
-		VectorU3	AbsoluteToRelative(VectorI3 i) const;
-		VectorI3	CenteredToAbsolute(VectorI3 i) const;
-		VectorI3	AbsoluteToCentered(VectorI3 i) const;
-
-		public:
-		Chunk *		FindAbsolutePointer(VectorI3 idx);
-		Chunk *		FindCenteredPointer(VectorI3 idx);
-
-		public:
-		AccessLockedChunk	FindAbsoluteAccess(VectorI3 idx);
-
-		public:
-		void	Clear();
-		void	ChangeSize(unsigned int know_size, unsigned int care_size);
-		void	ChangeCenter(VectorI3 center);
-
-		private:
-		public:
-		Container::Binary<Chunk*>	ChunksToInsert; // do this in Chunks
-		Container::Binary<Chunk*>	ChunksToRemove; // ChunkDisposal
-		ObjectLock					ChunksToInsertLock;
-		ObjectLock					ChunksToRemoveLock;
-
-		private:
-		void	ChunkNeighboutsFind(Chunk & chunk);
-
-		void	PutChunks(Container::Binary<VectorI3> & chunks);
-
-		Container::Binary<VectorI3>		MissingCareChunks();
-
-		void	PutMissingCareChunks();
-
-		public:
-		void	UpdateChunksContainer();
-	//};
-	//ChunkManager::Container		Container;
-
-
 	public:
-	~ChunkManager();
+	~ChunkManager() = default;
 	ChunkManager();
-
 	ChunkManager(const ChunkManager & other) = delete;
 	ChunkManager & operator=(const ChunkManager & other) = delete;
 
-
-
-	private:
 	public:
-	VoxelHit		HitVoxel(RayF3 ray);
-
-
+	// store 2D Noise Plane. so that height values only get calculated once per XZ Coordinate
+	::ChunkContainer	ChunkContainer;
 
 	public:
 	//							// DrawBufferThread
@@ -164,58 +47,8 @@ struct ChunkManager
 	::AuxThread2	AuxThread2;
 	::AuxThread3	AuxThread3;
 
-
-
 	public:
-	void	ChangeMedia(const DirectoryInfo & dir);
-
-	public:
-	bool	GraphicsExist;
-	void	GraphicsCreate();
-	void	GraphicsDelete();
-
-	public:
-	Texture::Array2D				Texture;
-
-	::Shader::Base					ShaderU;
-	::Shader::Base					ShaderF;
-	VoxelGraphics::ShaderLayout		ShaderLayoutU;
-	VoxelGraphics::ShaderLayout		ShaderLayoutF;
-
-	VertexArray::Multi				BufferU;
-	VertexArray::Multi				BufferF;
-	VoxelGraphics::LayoutU			BufferLayoutU;
-	VoxelGraphics::LayoutF			BufferLayoutF;
-
-
-
-	/* BufferUpdate
-		None: no Vertex Data
-		Want: requrest to make Vertex Data
-		Make: make Vertex Data
-		Have: requrest to put Vertex Data into Buffer
-		Bind: put Vertex Data into Buffer
-		Done: Vertex Data is freed
-	*/
-
-	struct BufferHave
-	{
-		public:
-		Container::Binary<Chunk *>	Queue;
-		std::mutex					QueueMutex;
-		public:
-		unsigned int				QueueCount();
-		void						QueuePut(Chunk * chunk);
-	};
-	ChunkManager::BufferHave	BufferDataHave;
-
-	public:
-	static ValueAccumulator<float>		DrawTotal;
-	static ValueAccumulator<float>		DrawWait;
-	static ValueAccumulator<float>		DrawTextureBind;
-	static ValueAccumulator<float>		DrawShaderBind;
-	static ValueAccumulator<float>		DrawUpdateBind;
-	static ValueAccumulator<float>		DrawBufferDraw;
+	ChunkGraphics	Graphics;
 
 	public:
 	void	Draw();

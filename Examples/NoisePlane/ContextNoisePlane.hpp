@@ -196,10 +196,10 @@ void	ViewUpdate(Trans3D change, FrameTime frame_time);
 	Input from different Thread ?
 */
 
-std::thread					AuxThread0;
+ValueAccumulator<float>		AuxThread0Time;
 bool						AuxThread0Term = false;
 bool						AuxThread0Idle = true;
-ValueAccumulator<float>		AuxThread0Time;
+std::thread					AuxThread0;
 void						AuxThread0Func();
 
 

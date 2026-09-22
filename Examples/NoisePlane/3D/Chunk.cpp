@@ -1,49 +1,93 @@
-#include "Chunk.hpp"
-#include "Chunk/Manager.hpp"
-#include "Chunk/Neighbours.hpp"
-
-#include "Voxel/Pallet.hpp"
-
-#include "Axis/3D/Orientation.hpp"
-
-#include "Structure.hpp"
-
-#include "ValueGen/Perlin2D.hpp"
-#include "ValueGen/Perlin3D.hpp"
-
-#include "ValueType/Box/I3.hpp"
-
-#include "ValueType/Bool/3.hpp"
-#include "ValueType/Vector/U3.hpp"
-
-#include "ValueType/Vector/U2.hpp"
-#include "ValueType/Loop/U2.hpp"
-
-#include "ValueType/Vector/U3.hpp"
-#include "ValueType/Loop/U3.hpp"
-
-#include "Telemetry/StopWatch.hpp"
-#include "AuxThreadBase.hpp"
+#include "3D/Chunk.hpp"
+#include "3D/Chunk/Manager.hpp"
 
 #include "Threading/ObjectTypeAccessUniqueGuard.hpp"
 //#include "Threading/ObjectTypeAccessSharedGuard.hpp"
 #include "Threading/ObjectTypeAssignUniqueGuard.hpp"
 //#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
-
-
-#include <iostream>
-
+//#include <iostream>
 
 
 
-
-const Voxel &	Chunk::operator[](VectorU3 udx) const { return Voxels[udx]; }
-const Voxel *	Chunk::FindVoxelOrNull(VectorU3 udx) const
+const Voxel & Chunk::operator[](unsigned int udx) const
 {
-	if (!(GenerationDone())) { return nullptr; }
-	if (IsEmpty()) { return nullptr; }
-	return &Voxels[udx];
+	return Voxels[udx];
+}
+const Voxel & Chunk::operator[](const VectorU3 & udx) const
+{
+	return Voxels[udx];
+}
+
+bool Chunk::IsEmpty() const
+{
+	return Voxels.IsNull();
+}
+bool Chunk::IsNullOrEmpty() const
+{
+	if (IsEmpty()) { return true; }
+	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
+	{
+		if (!Voxels[i].IsEmpty())
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+void Chunk::MakeEmpty()
+{
+	if (!IsEmpty())
+	{
+		Voxels.Clear();
+		Neighbours.BufferDataWantAll(); // this should be done outside
+	}
+}
+void Chunk::MakeNull()
+{
+	if (IsEmpty())
+	{
+		Voxels.Size(VectorU3(CHUNK_VALUES_PER_SIDE));
+	}
+	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
+	{
+		Voxels[i] = Voxel();
+	}
+	Neighbours.BufferDataWantAll(); // this should be done outside
+}
+
+bool Chunk::ClearVoxel(const VectorU3 & udx, Voxel & vox)
+{
+	if (!IsDone()) { return false; }
+
+	if (IsEmpty()) { return false; }
+
+	Voxel & voxel = Voxels[udx];
+	if (voxel.IsEmpty()) { return false; }
+
+	vox = voxel;
+	voxel = Voxel();
+
+	if (IsNullOrEmpty()) { MakeEmpty(); }
+
+	Neighbours.BufferDataWant(udx);
+	return true;
+}
+bool Chunk::PlaceVoxel(const VectorU3 & udx, Voxel & vox)
+{
+	if (!IsDone()) { return false; }
+
+	if (IsEmpty()) { MakeNull(); }
+
+	Voxel & voxel = Voxels[udx];
+	if (!voxel.IsEmpty()) {return false; }
+
+	voxel = vox;
+	vox = Voxel();
+
+	Neighbours.BufferDataWant(udx);
+	return true;
 }
 
 
@@ -55,6 +99,7 @@ Chunk::~Chunk()
 Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	: Index(idx)
 	, Manager(manager)
+	, Neighbours()
 	, Voxels()
 	, Lock()
 	, TerrainDone(false)
@@ -64,11 +109,9 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, BufferData()
 	, BufferData_Want(false)
 	, BufferData_Have(false)
-	, BufferUData_Entry(manager.BufferU)
-	, BufferFData_Entry(manager.BufferF)
+	, BufferUData_Entry(Manager.Graphics.BufferU)
+	, BufferFData_Entry(Manager.Graphics.BufferF)
 { }
-
-
 
 
 
@@ -102,216 +145,43 @@ AssignLockedChunk	Chunk::ToAssign()	{ return AssignLockedChunk::Make(Lock, *this
 
 
 
-
-
-bool Chunk::IsEmpty() const
-{
-	return Voxels.IsNull();
-}
-bool Chunk::IsNullOrEmpty() const
-{
-	if (IsEmpty()) { return true; }
-	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
-	{
-		if (!Voxels[i].IsEmpty())
-		{
-			return false;
-		}
-	}
-	return true;
-}
-void Chunk::MakeEmpty()
-{
-	if (!IsEmpty())
-	{
-		Voxels.Clear();
-		Neighbours.BufferDataWant();
-	}
-}
-void Chunk::MakeNull()
-{
-	if (IsEmpty())
-	{
-		Voxels.Size(VectorU3(CHUNK_VALUES_PER_SIDE));
-	}
-	for (unsigned int i = 0; i < CHUNK_VALUES_PER_VOLM; i++)
-	{
-		Voxels[i] = Voxel();
-	}
-	Neighbours.BufferDataWant();
-}
-
-
-
-bool Chunk::ClearVoxel(VectorU3 udx, Voxel & vox)
-{
-	if (!GenerationDone()) { return false; }
-
-	if (IsEmpty()) { return false; }
-
-	Voxel & voxel = Voxels[udx];
-	if (voxel.IsEmpty()) { return false; }
-
-	vox = voxel;
-	voxel = Voxel();
-
-	if (IsNullOrEmpty()) { MakeEmpty(); }
-
-	Neighbours.BufferDataWant();
-	return true;
-}
-bool Chunk::PlaceVoxel(VectorU3 udx, Voxel & vox)
-{
-	if (!GenerationDone()) { return false; }
-
-	if (IsEmpty()) { MakeNull(); }
-
-	Voxel & voxel = Voxels[udx];
-	if (!voxel.IsEmpty()) {return false; }
-
-	voxel = vox;
-	vox = Voxel();
-
-	Neighbours.BufferDataWant();
-	return true;
-}
-
-
-
-/*static void TestOrientation(Chunk & chunk, const VoxelPallet & voxel_template, Diag diag, Flip flip, VectorU3 u)
-{
-	//unsigned int i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, u);
-	chunk[u].Pallet = &voxel_template;
-	chunk[u].Orientation.make(diag, flip);
-}*/
-/*static void TestOrientation(Chunk & chunk, const VoxelPallet & voxel_template, unsigned int y)
-{
-	Diag diags[6] =
-	{
-		Diag::Here,
-		Diag::Prev,
-		Diag::Next,
-		Diag::DiagX,
-		Diag::DiagY,
-		Diag::DiagZ,
-	};
-	Flip flips[4] = 
-	{
-		Flip::None,
-		Flip::FlipX,
-		Flip::FlipY,
-		Flip::FlipZ,
-	};
-
-	unsigned int uX[6] { 0x0, 0x3, 0x6, 0x9, 0xC, 0xF };
-	unsigned int uZ[4] { 0x0, 0x2, 0x4, 0x6 };
-
-	for (unsigned int f = 0; f < 4; f++)
-	{
-		for (unsigned int d = 0; d < 6; d++)
-		{
-			TestOrientation(chunk, voxel_template, diags[d], flips[f], VectorU3(uX[d], y, uZ[f]));
-		}
-	}
-}*/
-
-/*void Chunk::TestOrientation()
-{
-	MakeNull();
-	::TestOrientation(*this, VoxelPallet::OrientationCube, 0x0);
-	::TestOrientation(*this, VoxelPallet::OrientationCylinder, 0x2);
-	::TestOrientation(*this, VoxelPallet::OrientationSlope, 0x4);
-}*/
-/*void Chunk::TestHouse()
-{
-	MakeNull();
-	unsigned int i;
-
-	for (unsigned int x = 0x5; x <= 0xA; x++)
-	{
-		for (unsigned int z = 0x3; z <= 0xC; z++)
-		{
-			i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(x, 0, z));
-			Data[i].Pallet = &VoxelPallet::Grass;
-			Data[i].Orientation.make(Diag::Here, Flip::None);
-		}
-	}
-
-	for (unsigned int y = 0x1; y <= 0x4; y++)
-	{
-		i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0x5, y, 0x3));
-		Data[i].Pallet = &VoxelPallet::RedLog;
-		Data[i].Orientation.make(Diag::Here, Flip::None);
-		i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0xA, y, 0x3));
-		Data[i].Pallet = &VoxelPallet::RedLog;
-		Data[i].Orientation.make(Diag::Here, Flip::None);
-		i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0x5, y, 0xC));
-		Data[i].Pallet = &VoxelPallet::RedLog;
-		Data[i].Orientation.make(Diag::Here, Flip::None);
-		i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0xA, y, 0xC));
-		Data[i].Pallet = &VoxelPallet::RedLog;
-		Data[i].Orientation.make(Diag::Here, Flip::None);
-		for (unsigned int z = 0x4; z <= 0xB; z++)
-		{
-			i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0x5, y, z));
-			Data[i].Pallet = &VoxelPallet::RedLog;
-			Data[i].Orientation.make(Axis3D::Rel::NextY, Axis3D::Rel::NextZ, Axis3D::Rel::None, Axis3D::Rel::None);
-			i = VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(0xA, y, z));
-			Data[i].Pallet = &VoxelPallet::RedLog;
-			Data[i].Orientation.make(Axis3D::Rel::NextY, Axis3D::Rel::NextZ, Axis3D::Rel::None, Axis3D::Rel::None);
-		}
-	}
-}*/
-
-
-
-
-
-bool Chunk::GenerationDone() const
+bool Chunk::IsDone() const
 {
 	return TerrainDone && DecorationsGenerated && DecorationsAssambled;
 }
 
 
 
-
+void Chunk::BufferData_Queue()
+{
+	Manager.AuxThread1.QueuePut(this);
+}
 
 void Chunk::BufferData_Make()
 {
 	if (!BufferData_Want) { return; }
-	if (!GenerationDone()) { return; }
+	if (!IsDone()) { return; }
 
 	BufferData.Make(*this, Neighbours);
 
 	BufferData_Want = false;
 
-	Manager.BufferDataHave.QueuePut(this);
+	Manager.Graphics.BufferDataHave.QueuePut(this);
 }
 
-#include <iostream>
 void Chunk::BufferData_Update()
 {
 	if (!BufferData_Have) { return; }
 
 	BufferData.ArrayLock.lock();
 	{
-		{
-			const Container::Array<VoxelGraphicsDataU::Face> & data = BufferData.DataU();
-			Manager.BufferU.Put(BufferUData_Entry, sizeof(VoxelGraphicsDataU::Vertex), data.ToVoid(), data.Length() * 6);
-		}
+		const Container::Array<VoxelGraphicsDataU::Face> & data = BufferData.DataU();
+		BufferUData_Entry.Put(data.ToVoid());
 		BufferData.ClearU();
-		{
-			const Container::Array<VoxelGraphicsDataF::Face> & data = BufferData.DataF();
-			/*std::cout << "DataF: " << data.Length() << '\n';
-			for (unsigned int i = 0; i < data.Length(); i++)
-			{
-				std::cout << data[i].Vertexes[0].Pos << '\n';
-				std::cout << data[i].Vertexes[1].Pos << '\n';
-				std::cout << data[i].Vertexes[2].Pos << '\n';
-			}
-			std::cout << '\n';*/
-			Manager.BufferF.Put(BufferFData_Entry, sizeof(VoxelGraphicsDataF::Vertex), data.ToVoid(), data.Length() * 3);
-		}
+	}
+	{
+		const Container::Array<VoxelGraphicsDataF::Face> & data = BufferData.DataF();
+		BufferFData_Entry.Put(data.ToVoid());
 		BufferData.ClearF();
 	}
 	BufferData.ArrayLock.unlock();

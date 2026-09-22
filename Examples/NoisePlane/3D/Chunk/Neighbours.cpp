@@ -47,11 +47,12 @@ bool ChunkNeighbour::IsVisiblePrevX(const Array3D<bool> & voxel_is_empty, Vector
 	else
 	{
 		chunk = Cube[1][1][0];
-		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
+		if (chunk == nullptr) { return false; }
+		if (!chunk -> IsDone()) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
 		u = n;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::PrevX));
+	return ((*chunk)[udx].IsAxisVisible(Axis3D::Rel::PrevX));
 }
 bool ChunkNeighbour::IsVisiblePrevY(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -66,11 +67,12 @@ bool ChunkNeighbour::IsVisiblePrevY(const Array3D<bool> & voxel_is_empty, Vector
 	else
 	{
 		chunk = Cube[1][0][1];
-		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
+		if (chunk == nullptr) { return false; }
+		if (!chunk -> IsDone()) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
 		u = n;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::PrevY));
+	return ((*chunk)[udx].IsAxisVisible(Axis3D::Rel::PrevY));
 }
 bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -85,11 +87,12 @@ bool ChunkNeighbour::IsVisiblePrevZ(const Array3D<bool> & voxel_is_empty, Vector
 	else
 	{
 		chunk = Cube[0][1][1];
-		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
+		if (chunk == nullptr) { return false; }
+		if (!chunk -> IsDone()) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
 		u = n;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::PrevZ));
+	return ((*chunk)[udx].IsAxisVisible(Axis3D::Rel::PrevZ));
 }
 bool ChunkNeighbour::IsVisibleNextX(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -104,11 +107,12 @@ bool ChunkNeighbour::IsVisibleNextX(const Array3D<bool> & voxel_is_empty, Vector
 	else
 	{
 		chunk = Cube[1][1][2];
-		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
+		if (chunk == nullptr) { return false; }
+		if (!chunk -> IsDone()) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
 		u = 0;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::NextX));
+	return ((*chunk)[udx].IsAxisVisible(Axis3D::Rel::NextX));
 }
 bool ChunkNeighbour::IsVisibleNextY(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -123,11 +127,12 @@ bool ChunkNeighbour::IsVisibleNextY(const Array3D<bool> & voxel_is_empty, Vector
 	else
 	{
 		chunk = Cube[1][2][1];
-		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
+		if (chunk == nullptr) { return false; }
+		if (!chunk -> IsDone()) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
 		u = 0;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::NextY));
+	return ((*chunk)[udx].IsAxisVisible(Axis3D::Rel::NextY));
 }
 bool ChunkNeighbour::IsVisibleNextZ(const Array3D<bool> & voxel_is_empty, VectorU3 udx) const
 {
@@ -142,36 +147,45 @@ bool ChunkNeighbour::IsVisibleNextZ(const Array3D<bool> & voxel_is_empty, Vector
 	else
 	{
 		chunk = Cube[2][1][1];
-		if (chunk == nullptr || !(chunk -> GenerationDone())) { return false; }
+		if (chunk == nullptr) { return false; }
+		if (!chunk -> IsDone()) { return false; }
 		if (chunk -> IsEmpty()) { return true; }
 		u = 0;
 	}
-	return (chunk -> Voxels[udx].IsAxisVisible(Axis3D::Rel::NextZ));
+	return ((*chunk)[udx].IsAxisVisible(Axis3D::Rel::NextZ));
 }
 
-void ChunkNeighbour::BufferDataWant()
+void ChunkNeighbour::BufferDataWantAll()
 {
-	if (Cube[1][1][1] == nullptr) { return; }
-	Chunk & chunk = *Cube[1][1][1];
-
-	if (Cube[1][1][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][1][1]); }
-	if (Cube[1][1][0] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][1][0]); }
-	if (Cube[1][0][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][0][1]); }
-	if (Cube[0][1][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[0][1][1]); }
-	if (Cube[1][1][2] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][1][2]); }
-	if (Cube[1][2][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[1][2][1]); }
-	if (Cube[2][1][1] != nullptr) { chunk.Manager.AuxThread1.QueuePut(Cube[2][1][1]); }
+	if (Cube[1][1][1] != nullptr) { Cube[1][1][1] -> BufferData_Queue(); }
+	if (Cube[1][1][0] != nullptr) { Cube[1][1][0] -> BufferData_Queue(); }
+	if (Cube[1][0][1] != nullptr) { Cube[1][0][1] -> BufferData_Queue(); }
+	if (Cube[0][1][1] != nullptr) { Cube[0][1][1] -> BufferData_Queue(); }
+	if (Cube[1][1][2] != nullptr) { Cube[1][1][2] -> BufferData_Queue(); }
+	if (Cube[1][2][1] != nullptr) { Cube[1][2][1] -> BufferData_Queue(); }
+	if (Cube[2][1][1] != nullptr) { Cube[2][1][1] -> BufferData_Queue(); }
+}
+void ChunkNeighbour::BufferDataWant(const VectorU3 & udx)
+{
+	(void)udx;
+	if (Cube[1][1][1] != nullptr) { Cube[1][1][1] -> BufferData_Queue(); }
+	if (Cube[1][1][0] != nullptr) { Cube[1][1][0] -> BufferData_Queue(); }
+	if (Cube[1][0][1] != nullptr) { Cube[1][0][1] -> BufferData_Queue(); }
+	if (Cube[0][1][1] != nullptr) { Cube[0][1][1] -> BufferData_Queue(); }
+	if (Cube[1][1][2] != nullptr) { Cube[1][1][2] -> BufferData_Queue(); }
+	if (Cube[1][2][1] != nullptr) { Cube[1][2][1] -> BufferData_Queue(); }
+	if (Cube[2][1][1] != nullptr) { Cube[2][1][1] -> BufferData_Queue(); }
 }
 
 bool ChunkNeighbour::CanMakeBuffer() const
 {
-	if (Cube[1][1][1] != nullptr) { if (!Cube[1][1][1] -> GenerationDone()) { return false; } }
-	if (Cube[1][1][0] != nullptr) { if (!Cube[1][1][0] -> GenerationDone()) { return false; } }
-	if (Cube[1][0][1] != nullptr) { if (!Cube[1][0][1] -> GenerationDone()) { return false; } }
-	if (Cube[0][1][1] != nullptr) { if (!Cube[0][1][1] -> GenerationDone()) { return false; } }
-	if (Cube[1][1][2] != nullptr) { if (!Cube[1][1][2] -> GenerationDone()) { return false; } }
-	if (Cube[1][2][1] != nullptr) { if (!Cube[1][2][1] -> GenerationDone()) { return false; } }
-	if (Cube[2][1][1] != nullptr) { if (!Cube[2][1][1] -> GenerationDone()) { return false; } }
+	if (Cube[1][1][1] != nullptr) { if (!Cube[1][1][1] -> IsDone()) { return false; } }
+	if (Cube[1][1][0] != nullptr) { if (!Cube[1][1][0] -> IsDone()) { return false; } }
+	if (Cube[1][0][1] != nullptr) { if (!Cube[1][0][1] -> IsDone()) { return false; } }
+	if (Cube[0][1][1] != nullptr) { if (!Cube[0][1][1] -> IsDone()) { return false; } }
+	if (Cube[1][1][2] != nullptr) { if (!Cube[1][1][2] -> IsDone()) { return false; } }
+	if (Cube[1][2][1] != nullptr) { if (!Cube[1][2][1] -> IsDone()) { return false; } }
+	if (Cube[2][1][1] != nullptr) { if (!Cube[2][1][1] -> IsDone()) { return false; } }
 	return true;
 }
 

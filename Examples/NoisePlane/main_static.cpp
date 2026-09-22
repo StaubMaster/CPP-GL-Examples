@@ -72,16 +72,16 @@ static void DisplayBoxEntityVoxels(NewPolyHedra::Pallet * pallet, ::ChunkManager
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		ChunkVoxelIndex idx(i);
-		AccessLockedChunk chunk = manager.FindAbsoluteAccess(idx.Chunk);
+		AccessLockedChunk chunk = manager.ChunkContainer.FindAbsoluteAccess(idx.Chunk);
 		if (!chunk.Is()) { continue; }
-		const Voxel * voxel = (*chunk).FindVoxelOrNull(idx.Voxel);
-		if (voxel != nullptr && !(voxel -> IsEmpty()))
-		{
-			//PolyHedraObject voxel_obj(pallet);
-			NewPolyHedra::Basic3D::Object voxel_obj(pallet);
-			//voxel_obj.Trans().Position = i;
-			voxel_obj.Data().Trans.Position = i.ToF();
-			voxel_obj.ShowWire();
-		}
+		if (!(*chunk).IsDone()) { continue; }
+		if ((*chunk).IsEmpty()) { continue; }
+		const Voxel & voxel = (*chunk)[idx.Voxel];
+		if (voxel.IsEmpty()) { continue; }
+		//PolyHedraObject voxel_obj(pallet);
+		NewPolyHedra::Basic3D::Object voxel_obj(pallet);
+		//voxel_obj.Trans().Position = i;
+		voxel_obj.Data().Trans.Position = i.ToF();
+		voxel_obj.ShowWire();
 	}
 }
