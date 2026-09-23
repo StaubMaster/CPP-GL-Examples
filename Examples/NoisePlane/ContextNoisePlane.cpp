@@ -45,10 +45,154 @@
 // Telemetry
 #include "Telemetry/StopWatch.hpp"
 
-//
-#include "main_static.cpp"
 
 
+#include "ValueType/_Include.hpp"
+
+#include "PolyHedra/PolyHedra.hpp"
+#include "PolyHedra/Data.hpp"
+#include "PolyHedra/Skin/Skin.hpp"
+
+#include "3D/Voxel/Pallet.hpp"
+#include "3D/Voxel/Pallet/Geometry.hpp"
+#include "3D/Voxel/Pallet/Geometry/U.hpp"
+#include "3D/Voxel/Pallet/Geometry/F.hpp"
+
+
+
+static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
+{
+	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Min.Y, box.Min.Z))); // 000
+	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Min.Y, box.Min.Z))); // 001
+	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Max.Y, box.Min.Z))); // 010
+	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Max.Y, box.Min.Z))); // 011
+	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Min.Y, box.Max.Z))); // 100
+	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Min.Y, box.Max.Z))); // 101
+	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Max.Y, box.Max.Z))); // 110
+	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Max.Y, box.Max.Z))); // 111
+
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b001));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b011));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b100, 0b101));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b110, 0b111));
+
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b010));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b001, 0b011));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b100, 0b110));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b101, 0b111));
+
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b100));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b001, 0b101));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b110));
+	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
+}
+
+__attribute__((unused))
+static void Toggle(bool & value) { value = !value; }
+
+__attribute__((unused))
+static void Toggle(::PolyHedra * & polyhedra, ::PolyHedra * other)
+{
+	if (polyhedra == nullptr)
+	{
+		polyhedra = other;
+	}
+	else
+	{
+		polyhedra = nullptr;
+	}
+}
+
+static void RankAxis(const VectorF3 & vec, Axis3D::Rel & axis0, Axis3D::Rel & axis1, Axis3D::Rel & axis2)
+{
+	VectorI3 ranks = vec.abs().RankDimensions();
+
+	if      (ranks.X == 0) { if (vec.X > 0) { axis0 = Axis3D::Rel::NextX; } else { axis0 = Axis3D::Rel::PrevX; } }
+	else if (ranks.Y == 0) { if (vec.Y > 0) { axis0 = Axis3D::Rel::NextY; } else { axis0 = Axis3D::Rel::PrevY; } }
+	else if (ranks.Z == 0) { if (vec.Z > 0) { axis0 = Axis3D::Rel::NextZ; } else { axis0 = Axis3D::Rel::PrevZ; } }
+
+	if      (ranks.X == 1) { if (vec.X > 0) { axis1 = Axis3D::Rel::NextX; } else { axis1 = Axis3D::Rel::PrevX; } }
+	else if (ranks.Y == 1) { if (vec.Y > 0) { axis1 = Axis3D::Rel::NextY; } else { axis1 = Axis3D::Rel::PrevY; } }
+	else if (ranks.Z == 1) { if (vec.Z > 0) { axis1 = Axis3D::Rel::NextZ; } else { axis1 = Axis3D::Rel::PrevZ; } }
+
+	if      (ranks.X == 2) { if (vec.X > 0) { axis2 = Axis3D::Rel::NextX; } else { axis2 = Axis3D::Rel::PrevX; } }
+	else if (ranks.Y == 2) { if (vec.Y > 0) { axis2 = Axis3D::Rel::NextY; } else { axis2 = Axis3D::Rel::PrevY; } }
+	else if (ranks.Z == 2) { if (vec.Z > 0) { axis2 = Axis3D::Rel::NextZ; } else { axis2 = Axis3D::Rel::PrevZ; } }
+
+	// what if same ranks ?
+}
+
+
+
+static BoxF3 BoxEntity_RangeF(const BoxEntity3D & box_entity, const FrameTime & frame_time)
+{
+	BoxF3 range = box_entity.Box + box_entity.Pos;
+	range.Consider(box_entity.Box.Min + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
+	range.Consider(box_entity.Box.Max + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
+	return range;
+}
+static BoxI3 BoxEntity_RangeI(const BoxEntity3D & box_entity, const FrameTime & frame_time)
+{
+	BoxF3 range = BoxEntity_RangeF(box_entity, frame_time);
+	range = range - VectorF3(0.5f);
+	return BoxI3(range.Min.round().ToI(), range.Max.round().ToI());
+}
+static void BoxEntity_Display(BoxEntity3D & box_entity, PolyHedra & polyhedra)
+{
+	NewPolyHedra::Basic3D::Object view_box_obj(&polyhedra);
+	view_box_obj.Data().Trans.Position = box_entity.Pos;
+	view_box_obj.ShowWire();
+}
+
+static Container::Array<BoxF3> Voxels_Boxes_Collect(ChunkContainer & container, const BoxI3 & range)
+{
+	Container::Binary<BoxF3> boxes;
+
+	//LoopI3 loop(range, Bool3(false), Bool3(false));
+	LoopI3 loop(range.Min, Bool3(false), range.Max, Bool3(false));
+	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+	{
+		ChunkVoxelIndex idx(i);
+		AccessLockedChunk chunk = container.FindAbsoluteAccess(idx.Chunk);
+		if (!chunk.Is()) { continue; }
+		if (!(*chunk).IsDone()) { continue; }
+		if ((*chunk).IsEmpty()) { continue; }
+		const Voxel & voxel = (*chunk)[idx.Voxel];
+		if (voxel.IsEmpty()) { continue; }
+		boxes.Insert(
+			BoxF3(
+				(i + VectorI3(0, 0, 0)).ToF(),
+				(i + VectorI3(1, 1, 1)).ToF()
+			)
+		);
+	}
+
+	return boxes.ToArray();
+}
+static void Voxels_Boxes_Display(const Container::Array<BoxF3> & boxes, NewPolyHedra::Pallet * pallet)
+{
+	for (unsigned int i = 0; i < boxes.Length(); i++)
+	{
+		NewPolyHedra::Basic3D::Object voxel_obj(pallet);
+		voxel_obj.Data().Trans.Position = boxes[i].Min;
+		voxel_obj.ShowWire();
+	}
+
+	/*LoopI3 loop(range.Min, Bool3(false), range.Max, Bool3(false));
+	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+	{
+		ChunkVoxelIndex idx(i);
+		AccessLockedChunk chunk = container.FindAbsoluteAccess(idx.Chunk);
+		if (!chunk.Is()) { continue; }
+		if (!(*chunk).IsDone()) { continue; }
+		if ((*chunk).IsEmpty()) { continue; }
+		const Voxel & voxel = (*chunk)[idx.Voxel];
+		if (voxel.IsEmpty()) { continue; }
+		NewPolyHedra::Basic3D::Object voxel_obj(pallet);
+		voxel_obj.Data().Trans.Position = i.ToF();
+		voxel_obj.ShowWire();
+	}*/
+}
 
 
 
@@ -184,9 +328,10 @@ ContextNoisePlane::ContextNoisePlane()
 	, PalletManager()
 	, ObjectManagerBasic()
 	, ObjectManagerUI()
+	, AuxThreadCollection(*this)
 	, UIManager()
 //	, PlaneManager()
-	, ChunkManager()
+	, ChunkManager(AuxThreadCollection)
 	, MenuMain()
 	, MenuPause(*this)
 	, MenuOptions(*this)
@@ -195,15 +340,15 @@ ContextNoisePlane::ContextNoisePlane()
 	, InventoryUI()
 	, HotBar(VectorU2(10, 1))
 	, HotBarUI()
-	, AuxThread0Time(64)
-	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
+//	, AuxThread0Time(64)
+//	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
 //	, AuxThread0(*this)
 {
 	MediaDirectory = DirectoryInfo("../../media/");
 
 	NewPolyHedra_ChangeMedia();
 
-	AuxThreadBase::ThreadName = "DrawThread";
+	IdleLoopThread::ThreadName = "DrawThread";
 	Container::Array<Uniform::Layout*> layouts({
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
@@ -212,96 +357,6 @@ ContextNoisePlane::ContextNoisePlane()
 		&ChunkManager.Graphics.ShaderLayoutF,
 	});
 	MultiformLayout.Find(layouts);
-}
-
-
-
-bool ContextNoisePlane::VoxelClear_Is() const
-{
-	return (VoxelClear_Progress != 0xFFFFFFFF);
-}
-void ContextNoisePlane::VoxelClear_None()
-{
-	VoxelClear_Progress = 0xFFFFFFFF;
-	VoxelClear_Pallet = nullptr;
-	VoxelClear_Tool = nullptr;
-}
-void ContextNoisePlane::VoxelClear_Clear(ChunkVoxelIndex idx)
-{
-	VoxelClear_Progress = 0;
-	VoxelClear_Index = idx;
-	VoxelClear_Tool = dynamic_cast<ItemTool*>(HotBar.Items[0]);
-
-	AccessLockedChunk chunk = ChunkManager.Container.FindAbsoluteAccess(VoxelClear_Index.Chunk);
-	const Voxel & voxel = (*chunk).Voxels[VoxelClear_Index.Voxel];
-	if (!voxel.IsEmpty())
-	{
-		VoxelClear_Pallet = &voxel.ToPallet();
-	}
-	else
-	{
-		VoxelClear_Pallet = nullptr;
-	}
-}
-void ContextNoisePlane::VoxelClear_Continue(const ChunkVoxelIndex & other)
-{
-	if (VoxelClear_Is())
-	{
-		if (
-			(other.Chunk == VoxelClear_Index.Chunk).All(true) &&
-			(other.Voxel == VoxelClear_Index.Voxel).All(true)
-		)
-		{
-			if (VoxelClear_Progress >= VoxelClear_Required)
-			{
-				Voxel voxel;
-				// why not .FindAssign() ?
-				AccessLockedChunk chunk_access = ChunkManager.Container.FindAbsoluteAccess(VoxelClear_Index.Chunk);
-				if (chunk_access.Is())
-				{
-					AssignLockedChunk chunk_assign = chunk_access.ToAssign();
-					(*chunk_assign).ClearVoxel(VoxelClear_Index.Voxel, voxel);
-				}
-				VoxelClear_None();
-			}
-			else
-			{
-				if (VoxelClear_Tool != nullptr && VoxelClear_Pallet != nullptr)
-				{
-					if (VoxelClear_Tool -> Material == VoxelClear_Pallet -> Material)
-					{
-						VoxelClear_Progress += VoxelClear_Tool -> Multiplier;
-					}
-					else
-					{
-						VoxelClear_Progress++;
-					}
-				}
-				else
-				{
-					VoxelClear_Progress++;
-				}
-			}
-		}
-		else
-		{
-			VoxelClear_Clear(other);
-		}
-	}
-	else
-	{
-		VoxelClear_Clear(other);
-	}
-}
-void ContextNoisePlane::VoxelClear_Show(std::stringstream & ss) const
-{
-	if (VoxelClear_Is())
-	{
-		ss << "VoxelClear:\n";
-		ss << VoxelClear_Index.Chunk << " :Chunk\n";
-		ss << VoxelClear_Index.Voxel << " :Voxel\n";
-		ss << VoxelClear_Progress << " :Progress\n";
-	}
 }
 
 
@@ -315,20 +370,7 @@ void ContextNoisePlane::VoxelClear_Show(std::stringstream & ss) const
 
 
 
-void ContextNoisePlane::ViewUpdate_Done()
-{
-	if (View_Distance == 0.0f)
-	{
-		MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
-	}
-	else
-	{
-		MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(
-			Trans3D(View.Trans.Position - View.Trans.Rotation.forward(VectorF3(0, 0, View_Distance)), View.Trans.Rotation)
-		));
-	}
-}
-void ContextNoisePlane::ViewUpdate_Intangible(Trans3D change, FrameTime frame_time)
+void ContextNoisePlane::ViewEntityUpdate_Intangible(Trans3D change, FrameTime frame_time)
 {
 	change.Position *= View_MoveSpeed;
 	if (window[Keys::LeftControl] == State::Down)
@@ -343,7 +385,7 @@ void ContextNoisePlane::ViewUpdate_Intangible(Trans3D change, FrameTime frame_ti
 	ViewEntity.Pos = View.Trans.Position;
 	ViewEntity.Vel = change.Position;
 }
-void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
+void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change)
 {
 	float limit = 0.0f;
 	if (window[Keys::LeftControl] == State::Down)
@@ -355,8 +397,9 @@ void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 		limit = ViewEntity_MoveLimitSlow;
 	}
 	ViewEntity.Vel = change * limit;
-	return;
-
+}
+/*void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change)
+{
 	if (ViewEntity_CollisionSide.PrevY)
 	{
 		if (change.Y > 0.0f)
@@ -380,77 +423,76 @@ void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 			}
 		}
 
-		/* accel and decel
-			accel:
-				should be change
-				so it moves in the direction that is wanted
-			decel:
-				should slow you down
-				when turing
-				it currently slows you down based on how fast you turn
-				so if you turn 90 degreees, your speed goes to 0
-				this feels terrible
-			the current speed should be redirected towards change
-
-			just add change to speed and limit ?
-			this feels floaty
-		*/
+		// accel and decel
+		//	accel:
+		//		should be change
+		//		so it moves in the direction that is wanted
+		//	decel:
+		//		should slow you down
+		//		when turing
+		//		it currently slows you down based on how fast you turn
+		//		so if you turn 90 degreees, your speed goes to 0
+		//		this feels terrible
+		//	the current speed should be redirected towards change
+		//	just add change to speed and limit ?
+		//	this feels floaty
+		//
 
 		//VectorF3 accel;
 		//VectorF3 decel;
 
-		/*{
-			float flat_len2 = flat.length2();
-			if (flat_len2 != 0.0f)
-			{
-				float len2 = change.length2();
-				if (len2 != 0.0f)
-				{
-					float dot = flat.dot(change);
-					accel = change;
-					decel = flat - (change / len2) * dot;
-				}
-				else
-				{
-					decel = flat;
-				}
-			}
-			else
-			{
-				accel = change;
-			}
-		}*/
+		//{
+		//	float flat_len2 = flat.length2();
+		//	if (flat_len2 != 0.0f)
+		//	{
+		//		float len2 = change.length2();
+		//		if (len2 != 0.0f)
+		//		{
+		//			float dot = flat.dot(change);
+		//			accel = change;
+		//			decel = flat - (change / len2) * dot;
+		//		}
+		//		else
+		//		{
+		//			decel = flat;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		accel = change;
+		//	}
+		//}
 
-		/*{
-			float accel_speed = ViewEntity_MoveChange;
-			float decel_speed = ViewEntity_MoveChange * 8.0f;
-			float flat_speed = flat.length();
-			{
-				float diff = limit - flat_speed;
-				if (diff < 0.0f)
-				{
-					diff = 0.0f;
-				}
-				if (diff > accel_speed)
-				{
-					diff = accel_speed;
-				}
-				accel = accel.normalize() * diff;
-			}
-			{
-				float diff = flat_speed;
-				if (diff < 0.0f)
-				{
-					diff = 0.0f;
-				}
-				if (diff > decel_speed)
-				{
-					diff = decel_speed;
-				}
-				decel = decel.normalize() * diff;
-			}
-			// this feels terrible
-		}*/
+		//{
+		//	float accel_speed = ViewEntity_MoveChange;
+		//	float decel_speed = ViewEntity_MoveChange * 8.0f;
+		//	float flat_speed = flat.length();
+		//	{
+		//		float diff = limit - flat_speed;
+		//		if (diff < 0.0f)
+		//		{
+		//			diff = 0.0f;
+		//		}
+		//		if (diff > accel_speed)
+		//		{
+		//			diff = accel_speed;
+		//		}
+		//		accel = accel.normalize() * diff;
+		//	}
+		//	{
+		//		float diff = flat_speed;
+		//		if (diff < 0.0f)
+		//		{
+		//			diff = 0.0f;
+		//		}
+		//		if (diff > decel_speed)
+		//		{
+		//			diff = decel_speed;
+		//		}
+		//		decel = decel.normalize() * diff;
+		//	}
+		//	// this feels terrible
+		//}
 
 		//ViewEntity.Vel = ViewEntity.Vel + accel - decel;
 
@@ -480,118 +522,89 @@ void ContextNoisePlane::ViewUpdate_Physics(VectorF3 change)
 		- PhysicsContext_Fluid.Drag(ViewEntity.Vel, 1.0f, 1.0f)
 		+ PhysicsContext_Gravity.Vector()
 	;
-}
-void ContextNoisePlane::ViewUpdate_Colliding(FrameTime frame_time)
+}*/
+void ContextNoisePlane::ViewEntityUpdate_Colliding(FrameTime frame_time)
 {
-	DisplayBoxEntityVoxels(PalletManager.FindMakePallet(VoxelCube), ChunkManager, ViewEntity, frame_time);
-	DisplayBoxEntity(ViewEntity, *ViewEntity_PolyHedra);
+	BoxI3 range = BoxEntity_RangeI(ViewEntity, frame_time);
+	Container::Array<BoxF3> boxes = Voxels_Boxes_Collect(ChunkManager.Container, range);
+	Voxels_Boxes_Display(boxes, PalletManager.FindMakePallet(VoxelCube));
+	BoxEntity_Display(ViewEntity, *ViewEntity_PolyHedra);
+	ViewEntity_CollisionSide = ViewEntity.Collide(boxes, frame_time.Delta);
+	BoxEntity_Display(ViewEntity, *ViewEntity_PolyHedra);
+}
+void ContextNoisePlane::ViewEntityUpdate_Done()
+{
+	if (View_Distance == 0.0f)
 	{
-		Container::Binary<BoxF3> boxes;
-
-		BoxF3 collision_range = ViewEntity.Box + ViewEntity.Pos;
-		collision_range.Consider(ViewEntity.Box.Min + ViewEntity.Pos + (ViewEntity.Vel * frame_time.Delta));
-		collision_range.Consider(ViewEntity.Box.Max + ViewEntity.Pos + (ViewEntity.Vel * frame_time.Delta));
-		collision_range = collision_range - VectorF3(0.5f);
-
-		LoopI3 loop(collision_range.Min.round().ToI(), Bool3(false), collision_range.Max.round().ToI(), Bool3(false));
-		for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-		{
-			ChunkVoxelIndex idx(i);
-			AccessLockedChunk chunk = ChunkManager.Container.FindAbsoluteAccess(idx.Chunk);
-			if (!chunk.Is()) { continue; }
-			if (!(*chunk).IsDone()) { continue; }
-			if ((*chunk).IsEmpty()) { continue; }
-			const Voxel & voxel = (*chunk)[idx.Voxel];
-			if (voxel.IsEmpty()) { continue; }
-			boxes.Insert(
-				BoxF3(
-					(i + VectorI3(0, 0, 0)).ToF(),
-					(i + VectorI3(1, 1, 1)).ToF()
-				)
-			);
-		}
-
-		ViewEntity_CollisionSide = ViewEntity.Collide(boxes.ToArray(), frame_time.Delta);
+		MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
 	}
-	DisplayBoxEntity(ViewEntity, *ViewEntity_PolyHedra);
+	else
+	{
+		MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(
+			Trans3D(View.Trans.Position - View.Trans.Rotation.forward(VectorF3(0, 0, View_Distance)), View.Trans.Rotation)
+		));
+	}
+}
+void ContextNoisePlane::ViewEntityUpdate(Trans3D change, FrameTime frame_time)
+{
+	if (View_IsTangible)
+	{
+		ViewEntityUpdate_Physics(change.Position);
+		View.Trans.Rotation += change.Rotation * frame_time.Delta;
+		View.Trans.Rotation.X1.clampPI();
+		ViewEntityUpdate_Colliding(frame_time);
+		View.Trans.Position = ViewEntity.Pos;
+	}
+	else
+	{
+		ViewEntityUpdate_Intangible(change, frame_time);
+	}
+	ViewEntityUpdate_Done();
 }
 
-void ContextNoisePlane::ViewRay_Update()
+void ContextNoisePlane::ViewRayUpdate_Sync()
 {
 	ViewRay.Pos = View.Trans.Position;
 	ViewRay.Dir = View.Trans.Rotation.forward(VectorF3(0, 0, 1));
-	{
-		VectorI3 ranks = ViewRay.Dir.abs().RankDimensions();
-		     if (ranks.X == 0) { if (ViewRay.Dir.X > 0) { ViewRay_Axis0 = Axis3D::Rel::NextX; } else { ViewRay_Axis0 = Axis3D::Rel::PrevX; } }
-		else if (ranks.Y == 0) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis0 = Axis3D::Rel::NextY; } else { ViewRay_Axis0 = Axis3D::Rel::PrevY; } }
-		else if (ranks.Z == 0) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis0 = Axis3D::Rel::NextZ; } else { ViewRay_Axis0 = Axis3D::Rel::PrevZ; } }
-		if      (ranks.X == 1) { if (ViewRay.Dir.X > 0) { ViewRay_Axis1 = Axis3D::Rel::NextX; } else { ViewRay_Axis1 = Axis3D::Rel::PrevX; } }
-		else if (ranks.Y == 1) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis1 = Axis3D::Rel::NextY; } else { ViewRay_Axis1 = Axis3D::Rel::PrevY; } }
-		else if (ranks.Z == 1) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis1 = Axis3D::Rel::NextZ; } else { ViewRay_Axis1 = Axis3D::Rel::PrevZ; } }
-		if      (ranks.X == 2) { if (ViewRay.Dir.X > 0) { ViewRay_Axis2 = Axis3D::Rel::NextX; } else { ViewRay_Axis2 = Axis3D::Rel::PrevX; } }
-		else if (ranks.Y == 2) { if (ViewRay.Dir.Y > 0) { ViewRay_Axis2 = Axis3D::Rel::NextY; } else { ViewRay_Axis2 = Axis3D::Rel::PrevY; } }
-		else if (ranks.Z == 2) { if (ViewRay.Dir.Z > 0) { ViewRay_Axis2 = Axis3D::Rel::NextZ; } else { ViewRay_Axis2 = Axis3D::Rel::PrevZ; } }
-		// what if same ranks ?
-	}
+	RankAxis(ViewRay.Dir, ViewRay_Axis0, ViewRay_Axis1, ViewRay_Axis2);
 }
-void ContextNoisePlane::ViewRay_Hit()
+void ContextNoisePlane::ViewRayUpdate_Hit()
 {
 	ViewHit = ChunkManager.Container.HitVoxel(ViewRay);
 	if (ViewHit.Valid())
 	{
-		{
-			//PolyHedraObject voxel_box_obj(VoxelCube);
-			NewPolyHedra::Basic3D::Object voxel_box_obj(VoxelCube);
-			//voxel_box_obj.Trans().Position = idx;
-			//voxel_box_obj.Trans().Position = ViewHit.Index;
-			voxel_box_obj.Data().Trans.Position = ViewHit.Index.ToF();
-			voxel_box_obj.ShowWire();
-		}
-		{
-			ViewHit_Axis0 = ViewHit.Side;
-			Axis3D::Abs axis = Axis3D::RelToAbs(ViewHit_Axis0);
-			if (axis == Axis3D::Abs::None) { ViewHit_Axis1 = Axis3D::Rel::None; }
-			else if (axis != Axis3D::RelToAbs(ViewRay_Axis2)) { ViewHit_Axis1 = ViewRay_Axis2; }
-			else if (axis != Axis3D::RelToAbs(ViewRay_Axis1)) { ViewHit_Axis1 = ViewRay_Axis1; }
-			else if (axis != Axis3D::RelToAbs(ViewRay_Axis0)) { ViewHit_Axis1 = ViewRay_Axis0; }
-			else { ViewHit_Axis1 = Axis3D::Rel::None; }
-		}
+		ViewHit_Axis0 = ViewHit.Side;
+		Axis3D::Abs axis = Axis3D::RelToAbs(ViewHit_Axis0);
+		if      (axis == Axis3D::Abs::None) { ViewHit_Axis1 = Axis3D::Rel::None; }
+		else if (axis != Axis3D::RelToAbs(ViewRay_Axis2)) { ViewHit_Axis1 = ViewRay_Axis2; }
+		else if (axis != Axis3D::RelToAbs(ViewRay_Axis1)) { ViewHit_Axis1 = ViewRay_Axis1; }
+		else if (axis != Axis3D::RelToAbs(ViewRay_Axis0)) { ViewHit_Axis1 = ViewRay_Axis0; }
+		else { ViewHit_Axis1 = Axis3D::Rel::None; }
 	}
 }
-void ContextNoisePlane::ViewRay_HitDo()
+void ContextNoisePlane::ViewRayUpdate_HitDo()
 {
 	if (MenuPause.IsInteractible() || MenuOptions.IsInteractible() || InventoryUI.IsInteractible()) { return; }
 
+	const ItemBase * item = HotBar.Items[VectorU2(0, 0)];
+
 	if (ViewHit.Valid())
 	{
-		// Side: make part of VoxelHit ?
-		// determine place_axis_1 based on where on the face was clicked ?
-		// top of face orients to point to top and so on
-
-		/*if (window.MouseManager[MouseButtons::MouseL] == State::Press)
-		{
-			ChunkVoxelIndex idx = ViewHit.Index;
-			Voxel voxel;
-			// why not .FindAssign() ?
-			AccessLockedChunk chunk0 = ChunkManager.FindAccess(idx.Chunk);
-			if (chunk0.Is())
-			{
-				AssignLockedChunk chunk1 = chunk0.ToAssign();
-				(*chunk1).ClearVoxel(idx.Voxel, voxel);
-			}
-			Voxel_Clear_Progress = 0;
-		}*/
 		if (window.MouseManager[MouseButtons::MouseL] == State::Down)
 		{
-			VoxelClear_Continue(ViewHit.Index);
+			VoxelClear.Continue(ViewHit.Index, ChunkManager.Container);
 		}
 		else
 		{
-			VoxelClear_Clear(ViewHit.Index);
+			VoxelClear.Change(ViewHit.Index, ChunkManager.Container, dynamic_cast<const ItemTool *>(item));
 		}
 
 		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
 		{
+			// Side: make part of VoxelHit ?
+			// determine place_axis_1 based on where on the face was clicked ?
+			// top of face orients to point to top and so on
+
 			VectorI3 hit_idx = ViewHit.Index;
 			if (ViewHit_Axis0 == Axis3D::Rel::NextX) { hit_idx.X += 1; }
 			if (ViewHit_Axis0 == Axis3D::Rel::NextY) { hit_idx.Y += 1; }
@@ -600,26 +613,21 @@ void ContextNoisePlane::ViewRay_HitDo()
 			if (ViewHit_Axis0 == Axis3D::Rel::PrevY) { hit_idx.Y -= 1; }
 			if (ViewHit_Axis0 == Axis3D::Rel::PrevZ) { hit_idx.Z -= 1; }
 
-			if (HotBar.Items[VectorU2(0, 0)] != nullptr)
+			const ItemVoxel * item_voxel = dynamic_cast<const ItemVoxel *>(item);
+			if (item_voxel != nullptr && item_voxel -> VoxelPallet != nullptr)
 			{
+				ChunkVoxelIndex idx(hit_idx);
+				AssignLockedChunk chunk = ChunkManager.Container.FindAbsoluteAccess(idx.Chunk).ToAssign();
+				if (chunk.Is())
 				{
-					ItemVoxel * item = dynamic_cast<ItemVoxel*>(HotBar.Items[VectorU2(0, 0)]);
-					if (item != nullptr && item -> VoxelPallet != nullptr)
-					{
-						Voxel voxel = item -> VoxelPallet -> ToVoxel(ViewHit_Axis0, ViewHit_Axis1);
-						ChunkVoxelIndex idx(hit_idx);
-						AssignLockedChunk chunk = ChunkManager.Container.FindAbsoluteAccess(idx.Chunk).ToAssign();
-						if (chunk.Is())
-						{
-							(*chunk).PlaceVoxel(idx.Voxel, voxel);
-						}
-					}
+					Voxel voxel = item_voxel -> VoxelPallet -> ToVoxel(ViewHit_Axis0, ViewHit_Axis1);
+					(*chunk).PlaceVoxel(idx.Voxel, voxel);
 				}
 			}
 		}
 	}
 }
-void ContextNoisePlane::ViewRay_Show()
+void ContextNoisePlane::ViewRayUpdate_Show()
 {
 	std::stringstream ss;
 	ss << "ViewRay\n";
@@ -658,11 +666,17 @@ void ContextNoisePlane::ViewRay_Show()
 			{
 				ss << "null";
 			}
-			ss << '\n';
+		}
+		ss << '\n';
+
+		{
+			NewPolyHedra::Basic3D::Object voxel_box_obj(VoxelCube);
+			voxel_box_obj.Data().Trans.Position = ViewHit.Index.ToF();
+			voxel_box_obj.ShowWire();
 		}
 	}
 
-	VoxelClear_Show(ss);
+	VoxelClear.Show(ss);
 
 	UI::Text::Object text; text.Create();
 	text.Text() = ss.str();
@@ -672,35 +686,25 @@ void ContextNoisePlane::ViewRay_Show()
 	text.Bound().Max = window.Size.Buffer.Full;
 	text.Color() = ColorF4(1, 1, 1);
 }
+void ContextNoisePlane::ViewRayUpdate()
+{
+	ViewRayUpdate_Sync();
+	ViewRayUpdate_Hit();
+	ViewRayUpdate_HitDo();
+	ViewRayUpdate_Show();
+}
 
 void ContextNoisePlane::ViewUpdate(Trans3D change, FrameTime frame_time)
 {
-	// sperate applying change and moving
-	// when intangible, change view directly
-
 	StopWatch sw;
+
 	sw.Start();
-	if (View_IsTangible)
-	{
-		ViewUpdate_Physics(change.Position);
-		View.Trans.Rotation += change.Rotation * frame_time.Delta;
-		View.Trans.Rotation.X1.clampPI();
-		ViewUpdate_Colliding(frame_time);
-		View.Trans.Position = ViewEntity.Pos;
-	}
-	else
-	{
-		ViewUpdate_Intangible(change, frame_time);
-	}
-	ViewUpdate_Done();
+	ViewEntityUpdate(change, frame_time);
 	sw.Stop();
 	FrameTime_ViewUpdate_CollisionTime.NewValue(sw.ElapsedTime());
 
 	sw.Clear(); sw.Start();
-	ViewRay_Update();
-	ViewRay_Hit();
-	ViewRay_HitDo();
-	ViewRay_Show();
+	ViewRayUpdate();
 	sw.Stop();
 	FrameTime_ViewUpdate_RayTime.NewValue(sw.ElapsedTime());
 }
@@ -709,7 +713,106 @@ void ContextNoisePlane::ViewUpdate(Trans3D change, FrameTime frame_time)
 
 
 
-void ContextNoisePlane::AuxThread0Func()
+ContextNoisePlane::VoxelClear::~VoxelClear()
+{ }
+ContextNoisePlane::VoxelClear::VoxelClear()
+	: Required(64)
+{ }
+bool ContextNoisePlane::VoxelClear::Is() const
+{
+	return (Progress != 0xFFFFFFFF);
+}
+void ContextNoisePlane::VoxelClear::None()
+{
+	Progress = 0xFFFFFFFF;
+	Index = ChunkVoxelIndex();
+	Pallet = nullptr;
+	Tool = nullptr;
+}
+void ContextNoisePlane::VoxelClear::Change(const ChunkVoxelIndex & idx, ChunkContainer & container, const ItemTool * tool)
+{
+	Progress = 0;
+	Index = idx;
+//	Tool = dynamic_cast<ItemTool*>(HotBar.Items[0]);
+	Tool = tool;
+
+	AccessLockedChunk chunk = container.FindAbsoluteAccess(Index.Chunk);
+	const Voxel & voxel = (*chunk).Voxels[Index.Voxel];
+	if (!voxel.IsEmpty())
+	{
+		Pallet = &voxel.ToPallet();
+	}
+	else
+	{
+		Pallet = nullptr;
+	}
+}
+void ContextNoisePlane::VoxelClear::Continue(const ChunkVoxelIndex & idx, ChunkContainer & container)
+{
+	if (Is())
+	{
+		if (
+			(idx.Chunk == Index.Chunk).All(true) &&
+			(idx.Voxel == Index.Voxel).All(true)
+		)
+		{
+			if (Progress >= Required)
+			{
+				// why not .FindAssign() ?
+				AccessLockedChunk chunk_access = container.FindAbsoluteAccess(Index.Chunk);
+				if (chunk_access.Is())
+				{
+					Voxel voxel;
+					AssignLockedChunk chunk_assign = chunk_access.ToAssign();
+					(*chunk_assign).ClearVoxel(Index.Voxel, voxel);
+				}
+				None();
+			}
+			else
+			{
+				if (Tool != nullptr && Pallet != nullptr)
+				{
+					if (Tool -> Material == Pallet -> Material)
+					{
+						Progress += Tool -> Multiplier;
+					}
+					else
+					{
+						Progress++;
+					}
+				}
+				else
+				{
+					Progress++;
+				}
+			}
+		}
+		else
+		{
+			Change(idx, container, Tool);
+		}
+	}
+	else
+	{
+		Change(idx, container, Tool);
+	}
+}
+void ContextNoisePlane::VoxelClear::Show(std::stringstream & ss) const
+{
+	if (Is())
+	{
+		ss << "VoxelClear:\n";
+		ss << Index.Chunk << " :Chunk\n";
+		ss << Index.Voxel << " :Voxel\n";
+		ss << Progress << " :Progress\n";
+	}
+}
+
+
+
+
+
+/*void ContextNoisePlane::AuxThread0Func()
 {
 	// do CenterChange here
 
@@ -728,7 +831,7 @@ void ContextNoisePlane::AuxThread0Func()
 			AuxThread0Time.NewValue(sw.ElapsedTime());
 		}
 	}
-}
+}*/
 
 
 
@@ -992,18 +1095,7 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	MultiformLayout.FOV.ChangeData(View.FOV);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	AuxThread0Idle = false;
-	//AuxThread0.DoIdle = false;
-	ChunkManager.AuxThread1.DoIdle = false;
-	ChunkManager.AuxThread2.DoIdle = false;
-	ChunkManager.AuxThread3.DoIdle = false;
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	//AuxThread0.Poke();
-	ChunkManager.AuxThread1.Poke();
-	ChunkManager.AuxThread2.Poke();
-	ChunkManager.AuxThread3.Poke();
+	AuxThreadCollection.Run();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 }
 void ContextNoisePlane::Free()
@@ -1013,32 +1105,7 @@ void ContextNoisePlane::Free()
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	GraphicsDelete();
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	AuxThread0Term = true;
-	//AuxThread0.DoTerminate = true;
-	ChunkManager.AuxThread1.DoTerminate = true;
-	ChunkManager.AuxThread2.DoTerminate = true;
-	ChunkManager.AuxThread3.DoTerminate = true;
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	while (
-		//!AuxThread0.IsDone ||
-		!ChunkManager.AuxThread1.IsDone ||
-		!ChunkManager.AuxThread2.IsDone ||
-		!ChunkManager.AuxThread3.IsDone)
-	{
-		//if (!AuxThread0.IsDone) { AuxThread0.Poke(); }
-		if (!ChunkManager.AuxThread1.IsDone) { ChunkManager.AuxThread1.Poke(); }
-		if (!ChunkManager.AuxThread2.IsDone) { ChunkManager.AuxThread2.Poke(); }
-		if (!ChunkManager.AuxThread3.IsDone) { ChunkManager.AuxThread3.Poke(); }
-	}
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	AuxThread0.join();
-	//AuxThread0.Join();
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	ChunkManager.AuxThread1.Join();
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	ChunkManager.AuxThread2.Join();
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	ChunkManager.AuxThread3.Join();
+	AuxThreadCollection.Terminate();
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 }
 
@@ -1085,6 +1152,8 @@ void ContextNoisePlane::Draw()
 
 	//PlaneManager.Draw();
 
+	// make Light with Multiform or Buffer
+	// probably Buffer
 	sw.Clear();
 	ChunkManager.Graphics.ShaderU.Bind();
 	ChunkManager.Graphics.ShaderLayoutU.LightAmbient.Put(LightAmbient);
@@ -1451,17 +1520,17 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << ChunkManager::TimeUpdateInsert << '\n';
 		ss << ChunkManager::TimeUpdateRemove << '\n';
 		ss << '\n';
-		ss << "AuxThread1 DoIdle: " << ChunkManager.AuxThread1.DoIdle << '\n';
-		ss << ChunkManager.AuxThread1.TimeMakeBufferFind << '\n';
-		ss << ChunkManager.AuxThread1.TimeMakeBuffer << '\n';
+		ss << "AuxThread1 DoIdle: " << AuxThreadCollection.AuxThread1.DoIdle << '\n';
+		ss << AuxThreadCollection.AuxThread1.TimeMakeBufferFind << '\n';
+		ss << AuxThreadCollection.AuxThread1.TimeMakeBuffer << '\n';
 		ss << '\n';
-		ss << "AuxThread2 DoIdle: " << ChunkManager.AuxThread2.DoIdle << '\n';
-		ss << ChunkManager.AuxThread2.TimeGenerateFind << '\n';
-		ss << ChunkManager.AuxThread2.TimeGenerate << '\n';
+		ss << "AuxThread2 DoIdle: " << AuxThreadCollection.AuxThread2.DoIdle << '\n';
+		ss << AuxThreadCollection.AuxThread2.TimeGenerateFind << '\n';
+		ss << AuxThreadCollection.AuxThread2.TimeGenerate << '\n';
 		ss << '\n';
-		ss << "AuxThread3 DoIdle: " << ChunkManager.AuxThread3.DoIdle << '\n';
-		ss << ChunkManager.AuxThread3.TimeAssambleFind << '\n';
-		ss << ChunkManager.AuxThread3.TimeAssamble << '\n';
+		ss << "AuxThread3 DoIdle: " << AuxThreadCollection.AuxThread3.DoIdle << '\n';
+		ss << AuxThreadCollection.AuxThread3.TimeAssambleFind << '\n';
+		ss << AuxThreadCollection.AuxThread3.TimeAssamble << '\n';
 		ss << '\n';
 		ss << ChunkManager::TimeGraphicsCreate << '\n';
 		ss << ChunkManager::TimeGraphicsDelete << '\n';
@@ -1607,11 +1676,11 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	{
 		ss << "Queues:\n";
 
-		ss << "BufferData Want " << ChunkManager.AuxThread1.QueueCount() << '\n';
+		ss << "BufferData Want " << AuxThreadCollection.AuxThread1.QueueCount() << '\n';
 		ss << "BufferData Have " << ChunkManager.Graphics.BufferDataHave.QueueCount() << '\n';
 
-		ss << "Generate Candidates " << ChunkManager.AuxThread2.FindCandidateCount << '\n';
-		ss << "Assamble Candidates " << ChunkManager.AuxThread3.FindCandidateCount << '\n';
+		ss << "Generate Candidates " << AuxThreadCollection.AuxThread2.FindCandidateCount << '\n';
+		ss << "Assamble Candidates " << AuxThreadCollection.AuxThread3.FindCandidateCount << '\n';
 
 		ss << '\n';
 	}
@@ -1678,11 +1747,11 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		text.Bound().Min = VectorF2();
 		text.Bound().Max = window.Size.Buffer.Full;
 	}
-	if (VoxelClear_Is())
+	if (VoxelClear.Is())
 	{
 		std::stringstream ss;
 		ss << "\n\n";
-		ss << VoxelClear_Progress << '/' << VoxelClear_Required;
+		ss << VoxelClear.Progress << '/' << VoxelClear.Required;
 		UI::Text::Object text; text.Create();
 		text.Text() = ss.str();
 		text.AlignMiddleMiddle();

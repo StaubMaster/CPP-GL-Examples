@@ -17,11 +17,12 @@ WaitDoTime ChunkManager::TimeDraw("TimeDraw");
 
 
 
-ChunkManager::ChunkManager()
-	: Container(*this)
-	, AuxThread1(*this)
-	, AuxThread2(*this)
-	, AuxThread3(*this)
+ChunkManager::ChunkManager(::AuxThreadCollection & aux_thread_collection)
+	: AuxThreadCollection(aux_thread_collection)
+	, Container(*this)
+//	, AuxThread1(*this)
+//	, AuxThread2(*this)
+//	, AuxThread3(*this)
 	, Graphics()
 { }
 

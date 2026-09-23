@@ -59,8 +59,8 @@
 #include "Menus/Item/ItemContainerUI.hpp"
 
 // Threads
-#include "AuxThreadBase.hpp"
-#include <thread>
+//#include "IdleLoopThread.hpp"
+//#include <thread>
 
 // 
 #include "PhysicsContext.hpp"
@@ -82,7 +82,8 @@
 # include "Layout/Multiform.hpp"
 
 // AuxThread0
-# include "AuxThread/AuxThread0.hpp"
+//# include "AuxThread/AuxThread0.hpp"
+# include "AuxThread/Collection.hpp"
 
 struct ContextNoisePlane : public ContextBase
 {
@@ -96,6 +97,10 @@ NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
 NewPolyHedra::UserInterface::ObjectManager		ObjectManagerUI;
 
 void	NewPolyHedra_ChangeMedia();
+
+
+
+::AuxThreadCollection	AuxThreadCollection;
 
 
 
@@ -157,52 +162,48 @@ VoxelHit		ViewHit;
 Axis3D::Rel		ViewHit_Axis0;
 Axis3D::Rel		ViewHit_Axis1;
 
-// VoxelClear
-unsigned int			VoxelClear_Progress = 0xFFFFFFFF;
-unsigned int			VoxelClear_Required = 1;
-ChunkVoxelIndex			VoxelClear_Index;
-const VoxelPallet *		VoxelClear_Pallet = nullptr;
-const ItemTool *		VoxelClear_Tool = nullptr;
+void	ViewEntityUpdate_Intangible(Trans3D change, FrameTime frame_time);
+void	ViewEntityUpdate_Physics(VectorF3 change);
+void	ViewEntityUpdate_Colliding(FrameTime frame_time);
+void	ViewEntityUpdate_Done();
+void	ViewEntityUpdate(Trans3D change, FrameTime frame_time);
 
-bool	VoxelClear_Is() const;
-void	VoxelClear_None();
-void	VoxelClear_Clear(ChunkVoxelIndex idx);
-void	VoxelClear_Continue(const ChunkVoxelIndex & other);
-void	VoxelClear_Show(std::stringstream & ss) const;
-
-void	ViewUpdate_Done();
-void	ViewUpdate_Intangible(Trans3D change, FrameTime frame_time);
-void	ViewUpdate_Physics(VectorF3 change);
-void	ViewUpdate_Colliding(FrameTime frame_time);
-
-void	ViewRay_Update();
-void	ViewRay_Hit();
-void	ViewRay_HitDo();
-void	ViewRay_Show();
+void	ViewRayUpdate_Sync();
+void	ViewRayUpdate_Hit();
+void	ViewRayUpdate_HitDo();
+void	ViewRayUpdate_Show();
+void	ViewRayUpdate();
 
 void	ViewUpdate(Trans3D change, FrameTime frame_time);
+
+
+
+struct VoxelClear
+{
+	unsigned int			Progress = 0xFFFFFFFF;
+	unsigned int			Required;
+	ChunkVoxelIndex			Index;
+	const VoxelPallet *		Pallet = nullptr;
+	const ItemTool *		Tool = nullptr;
+
+	~VoxelClear();
+	VoxelClear();
+	VoxelClear(const VoxelClear & other) = delete;
+	VoxelClear & operator=(const VoxelClear & other) = delete;
+
+	bool	Is() const;
+	void	None();
+	void	Change(const ChunkVoxelIndex & idx, ChunkContainer & container, const ItemTool * tool);
+	void	Continue(const ChunkVoxelIndex & idx, ChunkContainer & container);
+	void	Show(std::stringstream & ss) const;
+};
+ContextNoisePlane::VoxelClear	VoxelClear;
 
 
 
 ::LightBase			LightAmbient;
 ::LightDirection	LightSolar;
 ::LightSpot			LightSpot;
-
-
-
-/* Draw Thread should focus on Drawing
-	avoid	locking
-	move View stuff to another Thread ?
-	Draw Thread needs to Create/Delete Graphics
-	Input from different Thread ?
-*/
-
-//::AuxThread0	AuxThread0;
-ValueAccumulator<float>		AuxThread0Time;
-bool						AuxThread0Term = false;
-bool						AuxThread0Idle = true;
-std::thread					AuxThread0;
-void						AuxThread0Func();
 
 
 
@@ -214,13 +215,6 @@ void	Init_Maps();
 void	Make();
 
 
-
-/* why are these here ?
-	to access ContextNoisePlane
-	just have a Referance/Pointer to ContextNoisePlane ?
-	all the Code is in the Header
-	split main_.cpp into ContextNoisePlane.hpp and ContextNoisePlane.cpp
-*/
 
 void	MakeControls();
 

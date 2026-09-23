@@ -8,6 +8,8 @@
 
 //#include <iostream>
 
+#include "AuxThread/Collection.hpp"
+
 
 
 const Voxel & Chunk::operator[](unsigned int udx) const
@@ -154,7 +156,7 @@ bool Chunk::IsDone() const
 
 void Chunk::BufferData_Queue()
 {
-	Manager.AuxThread1.QueuePut(this);
+	Manager.AuxThreadCollection.AuxThread1.QueuePut(this);
 }
 
 void Chunk::BufferData_Make()

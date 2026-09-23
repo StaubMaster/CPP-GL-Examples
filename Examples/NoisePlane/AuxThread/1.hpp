@@ -1,7 +1,7 @@
 #ifndef  AUX_THREAD_1_HPP
 # define AUX_THREAD_1_HPP
 
-# include "AuxThreadBase.hpp"
+# include "IdleLoopThread.hpp"
 # include "Telemetry/WaitDoTime.hpp"
 
 # include <mutex>
@@ -19,7 +19,7 @@ struct Chunk;
 # include "Threading/ObjectTypeAssignUniqueGuard.hpp"
 
 // BufferDataMakeThread
-struct AuxThread1 : public AuxThreadBase
+struct AuxThread1 : public IdleLoopThread
 {
 	ChunkManager &	Manager;
 

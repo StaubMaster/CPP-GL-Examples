@@ -1,4 +1,4 @@
-#include "AuxThread1.hpp"
+#include "AuxThread/1.hpp"
 
 #include "3D/Chunk.hpp"
 #include "3D/Chunk/Manager.hpp"
@@ -11,7 +11,7 @@
 
 
 AuxThread1::AuxThread1(ChunkManager & manager)
-	: AuxThreadBase("AuxThread1")
+	: IdleLoopThread("AuxThread1")
 	, Manager(manager)
 	, TimeMakeBufferFind("TimeMakeBufferFind")
 	, TimeMakeBuffer("TimeMakeBuffer")
@@ -36,13 +36,13 @@ void AuxThread1::DoFunc()
 	((Chunk*)&(*chunk)) -> BufferData_Make();
 	sw.Stop();
 	TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
-	TimeMakeBuffer.ThreadName = AuxThreadBase::ThreadName;
+	TimeMakeBuffer.ThreadName = IdleLoopThread::ThreadName;
 
 	chunk = AccessLockedChunk();
 }
 /*void AuxThread1::Func()
 {
-	AuxThreadBase::ThreadName = "AuxThread1";
+	IdleLoopThread::ThreadName = "AuxThread1";
 	while (!Term)
 	{
 		StopWatch sw;
@@ -81,7 +81,7 @@ void AuxThread1::DoFunc()
 		((Chunk*)&(*chunk)) -> BufferData_Make();
 		sw.Stop();
 		TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
-		TimeMakeBuffer.ThreadName = AuxThreadBase::ThreadName;
+		TimeMakeBuffer.ThreadName = IdleLoopThread::ThreadName;
 	}
 	Done = true;
 }*/

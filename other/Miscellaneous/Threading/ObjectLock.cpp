@@ -1,5 +1,5 @@
 #include "Threading/ObjectLock.hpp"
-#include "AuxThreadBase.hpp"
+#include "IdleLoopThread.hpp"
 
 #include "Telemetry/WaitDoTime.hpp"
 #include "Telemetry/StopWatch.hpp"
@@ -30,23 +30,23 @@ void ObjectLock::AccessL()
 {
 	UseCount++;
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " wait AccessL" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " wait AccessL" << '\n';
 #endif
 	AccessMutex.lock();
 	AccessCount++;
 	AccessMutex.unlock();
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " have AccessL" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " have AccessL" << '\n';
 #endif
 }
 void ObjectLock::AccessU()
 {
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " have AccessU" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " have AccessU" << '\n';
 #endif
 	AccessCount--;
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " done AccessU" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " done AccessU" << '\n';
 #endif
 	UseCount--;
 }
@@ -75,24 +75,24 @@ void ObjectLock::AssignL()
 {
 	UseCount++;
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " wait AssignL" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " wait AssignL" << '\n';
 #endif
 	AssignMutex.lock();
 	AccessMutex.lock();
 	while (AccessCount.load() != 0) { }
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " have AssignL" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " have AssignL" << '\n';
 #endif
 }
 void ObjectLock::AssignU()
 {
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " have AssignU" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " have AssignU" << '\n';
 #endif
 	AccessMutex.unlock();
 	AssignMutex.unlock();
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " done AssignU" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " done AssignU" << '\n';
 #endif
 	UseCount--;
 }
@@ -103,9 +103,9 @@ void ObjectLock::AccessL(StopWatch & watch, WaitDoTime & time)
 {
 	UseCount++;
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " wait AccessL" << '\n' << std::flush;
+	std::cerr << IdleLoopThread::ThreadName << " wait AccessL" << '\n' << std::flush;
 #endif
-	time.ThreadName = AuxThreadBase::ThreadName;
+	time.ThreadName = IdleLoopThread::ThreadName;
 	watch.Clear(); watch.Start();
 
 	AccessMutex.lock();
@@ -116,21 +116,21 @@ void ObjectLock::AccessL(StopWatch & watch, WaitDoTime & time)
 	time.WaitTime.NewValue(watch.ElapsedTime());
 	watch.Clear(); watch.Start();
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " have AccessL" << '\n' << std::flush;
+	std::cerr << IdleLoopThread::ThreadName << " have AccessL" << '\n' << std::flush;
 #endif
 }
 void ObjectLock::AccessU(StopWatch & watch, WaitDoTime & time)
 {
-	time.ThreadName = AuxThreadBase::ThreadName;
+	time.ThreadName = IdleLoopThread::ThreadName;
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " have AccessU" << '\n' << std::flush;
+	std::cerr << IdleLoopThread::ThreadName << " have AccessU" << '\n' << std::flush;
 #endif
 	AccessCount--;
 
 	watch.Stop();
 	time.DoTime.NewValue(watch.ElapsedTime());
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " done AccessU" << '\n' << std::flush;
+	std::cerr << IdleLoopThread::ThreadName << " done AccessU" << '\n' << std::flush;
 #endif
 	UseCount--;
 }
@@ -138,9 +138,9 @@ void ObjectLock::AccessU(StopWatch & watch, WaitDoTime & time)
 void ObjectLock::AssignL(StopWatch & watch, WaitDoTime & time)
 {
 	UseCount++;
-	time.ThreadName = AuxThreadBase::ThreadName;
+	time.ThreadName = IdleLoopThread::ThreadName;
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " wait AssignL" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " wait AssignL" << '\n';
 #endif
 	watch.Clear(); watch.Start();
 
@@ -152,14 +152,14 @@ void ObjectLock::AssignL(StopWatch & watch, WaitDoTime & time)
 	time.WaitTime.NewValue(watch.ElapsedTime());
 	watch.Clear(); watch.Start();
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " have AssignL" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " have AssignL" << '\n';
 #endif
 }
 void ObjectLock::AssignU(StopWatch & watch, WaitDoTime & time)
 {
-	time.ThreadName = AuxThreadBase::ThreadName;
+	time.ThreadName = IdleLoopThread::ThreadName;
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " have AssignU" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " have AssignU" << '\n';
 #endif
 	AccessMutex.unlock();
 	AssignMutex.unlock();
@@ -167,7 +167,7 @@ void ObjectLock::AssignU(StopWatch & watch, WaitDoTime & time)
 	watch.Stop();
 	time.DoTime.NewValue(watch.ElapsedTime());
 #ifdef LOG_THREAD_INFO
-	std::cerr << AuxThreadBase::ThreadName << " done AssignU" << '\n';
+	std::cerr << IdleLoopThread::ThreadName << " done AssignU" << '\n';
 #endif
 	UseCount--;
 }

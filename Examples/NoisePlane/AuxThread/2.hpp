@@ -1,7 +1,7 @@
 #ifndef  AUX_THREAD_2_HPP
 # define AUX_THREAD_2_HPP
 
-# include "AuxThreadBase.hpp"
+# include "IdleLoopThread.hpp"
 # include "Telemetry/WaitDoTime.hpp"
 
 # include <mutex>
@@ -58,7 +58,7 @@ struct Voxel;
 # include "Threading/ObjectTypeAccessUniqueGuard.hpp"
 # include "Threading/ObjectTypeAssignUniqueGuard.hpp"
 
-struct AuxThread2 : public AuxThreadBase
+struct AuxThread2 : public IdleLoopThread
 {
 	ChunkManager &			Manager;
 

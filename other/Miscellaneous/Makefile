@@ -6,7 +6,6 @@ FANCY_NAME := Miscellaneous
 
 FILES := \
 	ContextBase.cpp \
-	AuxThreadBase.cpp \
 \
 	ValueTypeUI/PropertyControl.cpp \
 	ValueTypeUI/VectorF3.cpp \
@@ -36,6 +35,8 @@ FILES := \
 	Threading/ObjectAccessSharedGuard.cpp \
 	Threading/ObjectAssignUniqueGuard.cpp \
 	Threading/ObjectAssignSharedGuard.cpp \
+	\
+	IdleLoopThread.cpp \
 \
 	GridCast/GridCast3D.cpp \
 \

@@ -15,6 +15,8 @@
 
 #include "Telemetry/StopWatch.hpp"
 
+#include "AuxThread/Collection.hpp"
+
 
 
 ChunkContainer::~ChunkContainer()
@@ -334,12 +336,12 @@ void ChunkContainer::PutMissingCareChunks()
 	std::cout << "Put " << chunks.Count() << " Missing Chunks\n";
 	if (chunks.Count() != 0)
 	{
-		Manager.AuxThread2.FindLoop = CenterIndexLoop3D();
-		Manager.AuxThread2.Poke();
+		Manager.AuxThreadCollection.AuxThread2.FindLoop = CenterIndexLoop3D();
+		Manager.AuxThreadCollection.AuxThread2.Poke();
 	}
 
 	Manager.TimeInsert.DoTime.NewValue(sw_total.ElapsedTime());
-	Manager.TimeInsert.ThreadName = AuxThreadBase::ThreadName;
+	Manager.TimeInsert.ThreadName = IdleLoopThread::ThreadName;
 }
 
 /* change Insert/Remove
@@ -415,8 +417,8 @@ void ChunkContainer::UpdateChunksContainer()
 
 		if (inserted)
 		{
-			Manager.AuxThread2.Poke();
-			Manager.AuxThread3.Poke();
+			Manager.AuxThreadCollection.AuxThread2.Poke();
+			Manager.AuxThreadCollection.AuxThread3.Poke();
 		}
 	}
 

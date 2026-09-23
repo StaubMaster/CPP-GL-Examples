@@ -1,7 +1,7 @@
 #ifndef  AUX_THREAD_3_HPP
 # define AUX_THREAD_3_HPP
 
-# include "AuxThreadBase.hpp"
+# include "IdleLoopThread.hpp"
 # include "Telemetry/WaitDoTime.hpp"
 
 # include "Generics/Container/Binary.hpp"
@@ -18,7 +18,7 @@ struct VectorI3;
 # include "Threading/ObjectTypeAccessUniqueGuard.hpp"
 # include "Threading/ObjectTypeAssignUniqueGuard.hpp"
 
-struct AuxThread3 : public AuxThreadBase
+struct AuxThread3 : public IdleLoopThread
 {
 	ChunkManager &	Manager;
 

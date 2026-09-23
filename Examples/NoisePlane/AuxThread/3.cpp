@@ -1,4 +1,5 @@
-#include "AuxThread3.hpp"
+#include "AuxThread/3.hpp"
+#include "AuxThread/Collection.hpp"
 
 #include "3D/Chunk.hpp"
 #include "3D/Chunk/Manager.hpp"
@@ -17,7 +18,7 @@
 
 
 AuxThread3::AuxThread3(ChunkManager & manager)
-	: AuxThreadBase("AuxThread3")
+	: IdleLoopThread("AuxThread3")
 	, Manager(manager)
 	, TimeAssambleFind("TimeAssambleFind")
 	, TimeAssamble("TimeAssamble")
@@ -27,32 +28,32 @@ AuxThread3::AuxThread3(ChunkManager & manager)
 
 bool AuxThread3::CheckFunc()
 {
-			Manager.Container.ChunksLock.AccessL(sw, TimeAssambleFind);
-			//chunk = Manager.AssambleChunkFind();
-			chunk = Find();
-			Manager.Container.ChunksLock.AccessU(sw, TimeAssambleFind);
+	Manager.Container.ChunksLock.AccessL(sw, TimeAssambleFind);
+	//chunk = Manager.AssambleChunkFind();
+	chunk = Find();
+	Manager.Container.ChunksLock.AccessU(sw, TimeAssambleFind);
 
-			return (chunk.Is());
+	return (chunk.Is());
 }
 void AuxThread3::DoFunc()
 {
-		if (!chunk.Is()) { return; }
+	if (!chunk.Is()) { return; }
 
-		AssignLockedChunk chunk2 = chunk.ToAssign();
+	AssignLockedChunk chunk2 = chunk.ToAssign();
 
-		sw.Clear();
-		sw.Start();
-		//(*chunk2).AssambleDecoration();
-		AssambleDecoration(*chunk2);
-		sw.Stop();
-		TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
-		TimeAssamble.ThreadName = AuxThreadBase::ThreadName;
+	sw.Clear();
+	sw.Start();
+	//(*chunk2).AssambleDecoration();
+	AssambleDecoration(*chunk2);
+	sw.Stop();
+	TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
+	TimeAssamble.ThreadName = IdleLoopThread::ThreadName;
 
-		chunk = AccessLockedChunk();
+	chunk = AccessLockedChunk();
 }
 /*void AuxThread3::Func()
 {
-	AuxThreadBase::ThreadName = "AuxThread3";
+	IdleLoopThread::ThreadName = "AuxThread3";
 	while (!Term)
 	{
 		StopWatch sw;
@@ -90,7 +91,7 @@ void AuxThread3::DoFunc()
 		AssambleDecoration(*chunk2);
 		sw.Stop();
 		TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
-		TimeAssamble.ThreadName = AuxThreadBase::ThreadName;
+		TimeAssamble.ThreadName = IdleLoopThread::ThreadName;
 	}
 	Done = true;
 }*/
@@ -191,7 +192,7 @@ void AuxThread3::AssambleDecoration(Chunk & chunk)
 	chunk.DecorationsAssambled = true;
 
 	chunk.Neighbours.BufferDataWantAll();
-	Manager.AuxThread1.QueuePut(&chunk);
+	Manager.AuxThreadCollection.AuxThread1.QueuePut(&chunk);
 }
 void AuxThread3::AssambleDecoration(Chunk & chunk, const StructureObject & obj, const VectorI3 & offset)
 {

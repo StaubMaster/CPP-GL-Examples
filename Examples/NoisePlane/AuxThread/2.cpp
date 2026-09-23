@@ -1,4 +1,5 @@
-#include "AuxThread2.hpp"
+#include "AuxThread/2.hpp"
+#include "AuxThread/Collection.hpp"
 
 #include "3D/Chunk.hpp"
 #include "3D/Chunk/Manager.hpp"
@@ -18,7 +19,7 @@
 
 
 AuxThread2::AuxThread2(ChunkManager & manager)
-	: AuxThreadBase("AuxThread2")
+	: IdleLoopThread("AuxThread2")
 	, Manager(manager)
 	, TimeGenerateFind("TimeGenerateFind")
 	, TimeGenerate("TimeGenerate")
@@ -35,32 +36,32 @@ AuxThread2::AuxThread2(ChunkManager & manager)
 
 bool AuxThread2::CheckFunc()
 {
-			Manager.Container.ChunksLock.AccessL(sw, TimeGenerateFind);
-			chunk = Find();
-			Manager.Container.ChunksLock.AccessU(sw, TimeGenerateFind);
+	Manager.Container.ChunksLock.AccessL(sw, TimeGenerateFind);
+	chunk = Find();
+	Manager.Container.ChunksLock.AccessU(sw, TimeGenerateFind);
 
-			return (chunk.Is());
+	return (chunk.Is());
 }
 void AuxThread2::DoFunc()
 {
-		if (!chunk.Is()) { return; }
+	if (!chunk.Is()) { return; }
 
-		// Generate Voxels into seperate Voxel Array. then assign new Array into chunk
-		AssignLockedChunk chunk2 = chunk.ToAssign();
+	// Generate Voxels into seperate Voxel Array. then assign new Array into chunk
+	AssignLockedChunk chunk2 = chunk.ToAssign();
 
-		sw.Clear();
-		sw.Start();
-		GenerateTerrain(*chunk2);
-		GenerateDecoration(*chunk2, Plane, Cave0);
-		sw.Stop();
-		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
-		TimeGenerate.ThreadName = AuxThreadBase::ThreadName;
+	sw.Clear();
+	sw.Start();
+	GenerateTerrain(*chunk2);
+	GenerateDecoration(*chunk2, Plane, Cave0);
+	sw.Stop();
+	TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
+	TimeGenerate.ThreadName = IdleLoopThread::ThreadName;
 
-		chunk = AccessLockedChunk();
+	chunk = AccessLockedChunk();
 }
 /*void AuxThread2::Func()
 {
-	AuxThreadBase::ThreadName = "AuxThread2";
+	IdleLoopThread::ThreadName = "AuxThread2";
 	while (!Term)
 	{
 		StopWatch sw;
@@ -98,7 +99,7 @@ void AuxThread2::DoFunc()
 		GenerateDecoration(*chunk2, Plane, Cave0);
 		sw.Stop();
 		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
-		TimeGenerate.ThreadName = AuxThreadBase::ThreadName;
+		TimeGenerate.ThreadName = IdleLoopThread::ThreadName;
 	}
 	Done = true;
 }*/
@@ -184,7 +185,7 @@ void AuxThread2::GenerateTerrain(Chunk & chunk)
 //	TerrainCaveBlob(data, noise.Cave2);
 
 	chunk.TerrainDone = true;
-	Manager.AuxThread3.Poke();
+	Manager.AuxThreadCollection.AuxThread3.Poke();
 }
 
 AuxThread2::ChunkData::ChunkData(Chunk & chunk)
@@ -516,7 +517,7 @@ void AuxThread2::GenerateDecoration(Chunk & chunk, const Perlin2D & noise2, cons
 	//DecorateTrees(chunk, noise2);
 
 	chunk.DecorationsGenerated = true;
-	Manager.AuxThread3.Poke();
+	Manager.AuxThreadCollection.AuxThread3.Poke();
 }
 
 bool AuxThread2::FindMinYNull(Chunk & chunk, VectorU3 & udx) const

@@ -1,11 +1,13 @@
 #ifndef  AUX_THREAD_0_HPP
 # define AUX_THREAD_0_HPP
 
-# include "AuxThreadBase.hpp"
+# include "IdleLoopThread.hpp"
 
 struct ContextNoisePlane;
 
-struct AuxThread0 : public AuxThreadBase
+# include "Telemetry/StopWatch.hpp"
+
+struct AuxThread0 : public IdleLoopThread
 {
 	ContextNoisePlane &		Context;
 
@@ -14,6 +16,8 @@ struct AuxThread0 : public AuxThreadBase
 	AuxThread0(const AuxThread0 & other) = delete;
 	AuxThread0 & operator=(const AuxThread0 & other) = delete;
 	AuxThread0(ContextNoisePlane & context);
+
+		StopWatch sw;
 
 	bool	CheckFunc() override;
 	void	DoFunc() override;
