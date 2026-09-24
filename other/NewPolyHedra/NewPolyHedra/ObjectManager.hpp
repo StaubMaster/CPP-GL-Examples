@@ -31,7 +31,9 @@ struct ObjectManager
 
 
 	private:
-	Container::Binary<PalletObjectManager*>	Managers;
+	Container::Binary<PalletObjectManager*>		Managers;
+	public:
+	unsigned int	ManagersCount() const;
 
 	private:
 	virtual PalletObjectManager *	NewPalletObjectManager() = 0;
@@ -56,6 +58,8 @@ struct ObjectManager
 
 	private:
 	Container::Binary<PalletObjectData*>	PalletObjectDatas;
+	public:
+	unsigned int	PalletObjectDatasCount() const;
 
 	public:
 	virtual PalletObjectData *		NewPalletObjectData() = 0;
@@ -72,6 +76,9 @@ struct ObjectManager
 
 	::Attribute::Layout *	BufferFullLayout = nullptr;
 	::Attribute::Layout *	BufferWireLayout = nullptr;
+
+	unsigned int	InstanceFullCount() const;
+	unsigned int	InstanceWireCount() const;
 
 	void	InstancesClear();
 	void	InstancesMake();

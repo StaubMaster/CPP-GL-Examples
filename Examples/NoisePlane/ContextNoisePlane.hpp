@@ -59,8 +59,7 @@
 #include "Menus/Item/ItemContainerUI.hpp"
 
 // Threads
-//#include "IdleLoopThread.hpp"
-//#include <thread>
+# include "AuxThread/Collection.hpp"
 
 // 
 #include "PhysicsContext.hpp"
@@ -81,19 +80,15 @@
 # include "Layout/Shader.hpp"
 # include "Layout/Multiform.hpp"
 
-// AuxThread0
-//# include "AuxThread/AuxThread0.hpp"
-# include "AuxThread/Collection.hpp"
-
 struct ContextNoisePlane : public ContextBase
 {
 MultiformLayoutView3D	MultiformLayout;
 
 
 
-NewPolyHedra::Manager	PolyHedraManager;
-NewPolyHedra::PalletManager		PalletManager;
-NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
+NewPolyHedra::Manager							PolyHedraManager;
+NewPolyHedra::PalletManager						PalletManager;
+NewPolyHedra::Basic3D::ObjectManager			ObjectManagerBasic;
 NewPolyHedra::UserInterface::ObjectManager		ObjectManagerUI;
 
 void	NewPolyHedra_ChangeMedia();

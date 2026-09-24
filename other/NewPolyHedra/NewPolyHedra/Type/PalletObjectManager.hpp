@@ -18,6 +18,15 @@ struct Type_PalletObjectManager : public PalletObjectManager
 	private:
 	Container::Binary<TypeInstanceData>		InstanceDataFull;
 	Container::Binary<TypeInstanceData>		InstanceDataWire;
+	public:
+	unsigned int	InstanceFullCount() const override
+	{
+		return InstanceDataFull.Count();
+	}
+	unsigned int	InstanceWireCount() const override
+	{
+		return InstanceDataWire.Count();
+	}
 
 	public:
 	void	InstancesClear() override
@@ -26,7 +35,7 @@ struct Type_PalletObjectManager : public PalletObjectManager
 		InstanceDataWire.Clear();
 	}
 	void	InstancePutFull(const void * data) override { InstancePutFull(*((const TypeData *)data)); }
-	void	InstancePutWire(const void * data) override { InstancePutFull(*((const TypeData *)data)); }
+	void	InstancePutWire(const void * data) override { InstancePutWire(*((const TypeData *)data)); }
 	void	InstancePutFull(const TypeData & data) { InstancePutFull(TypeInstanceData(data)); }
 	void	InstancePutWire(const TypeData & data) { InstancePutWire(TypeInstanceData(data)); }
 	void	InstancePutFull(const TypeInstanceData & data) { InstanceDataFull.Insert(data); }

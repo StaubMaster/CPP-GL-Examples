@@ -16,6 +16,13 @@ NewPolyHedra::ObjectManager::~ObjectManager()
 
 
 
+unsigned int NewPolyHedra::ObjectManager::ManagersCount() const
+{
+	return Managers.Count();
+}
+
+
+
 NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::FindPalletObjectManager(NewPolyHedra::Pallet * pallet) const
 {
 	if (pallet == nullptr) { return nullptr; }
@@ -111,6 +118,11 @@ NewPolyHedra::PalletObjectManager * NewPolyHedra::ObjectManager::FindMakePalletO
 
 
 
+unsigned int NewPolyHedra::ObjectManager::PalletObjectDatasCount() const
+{
+	return PalletObjectDatas.Count();
+}
+
 NewPolyHedra::PalletObjectData * NewPolyHedra::ObjectManager::NewPalletObjectData(NewPolyHedra::Pallet * pallet)
 {
 	if (pallet == nullptr) { return nullptr; }
@@ -141,6 +153,25 @@ void NewPolyHedra::ObjectManager::UpdatePalletObjectDatas()
 
 
 
+unsigned int NewPolyHedra::ObjectManager::InstanceFullCount() const
+{
+	unsigned int sum = 0;
+	for (unsigned int i = 0; i < Managers.Count(); i++)
+	{
+		sum += Managers[i] -> InstanceFullCount();
+	}
+	return sum;
+}
+unsigned int NewPolyHedra::ObjectManager::InstanceWireCount() const
+{
+	unsigned int sum = 0;
+	for (unsigned int i = 0; i < Managers.Count(); i++)
+	{
+		sum += Managers[i] -> InstanceWireCount();
+	}
+	return sum;
+}
+
 void NewPolyHedra::ObjectManager::InstancesClear()
 {
 	for (unsigned int i = 0; i < Managers.Count(); i++)
@@ -159,8 +190,6 @@ void NewPolyHedra::ObjectManager::InstancesMake()
 		object -> InstancePut();
 	}
 }
-
-
 
 void NewPolyHedra::ObjectManager::GraphicsCreate()
 {

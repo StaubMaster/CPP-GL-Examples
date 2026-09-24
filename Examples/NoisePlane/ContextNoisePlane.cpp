@@ -60,7 +60,7 @@
 
 
 
-static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
+static void MakePolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 {
 	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Min.Y, box.Min.Z))); // 000
 	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Min.Y, box.Min.Z))); // 001
@@ -87,11 +87,11 @@ static void PolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
 }
 
-__attribute__((unused))
-static void Toggle(bool & value) { value = !value; }
-
-__attribute__((unused))
-static void Toggle(::PolyHedra * & polyhedra, ::PolyHedra * other)
+__attribute__((unused)) static void Toggle(bool & value)
+{
+	value = !value;
+}
+__attribute__((unused)) static void Toggle(::PolyHedra * & polyhedra, ::PolyHedra * other)
 {
 	if (polyhedra == nullptr)
 	{
@@ -122,8 +122,6 @@ static void RankAxis(const VectorF3 & vec, Axis3D::Rel & axis0, Axis3D::Rel & ax
 	// what if same ranks ?
 }
 
-
-
 static BoxF3 BoxEntity_RangeF(const BoxEntity3D & box_entity, const FrameTime & frame_time)
 {
 	BoxF3 range = box_entity.Box + box_entity.Pos;
@@ -141,6 +139,7 @@ static void BoxEntity_Display(BoxEntity3D & box_entity, PolyHedra & polyhedra)
 {
 	NewPolyHedra::Basic3D::Object view_box_obj(&polyhedra);
 	view_box_obj.Data().Trans.Position = box_entity.Pos;
+	view_box_obj.HideFull();
 	view_box_obj.ShowWire();
 }
 
@@ -175,23 +174,9 @@ static void Voxels_Boxes_Display(const Container::Array<BoxF3> & boxes, NewPolyH
 	{
 		NewPolyHedra::Basic3D::Object voxel_obj(pallet);
 		voxel_obj.Data().Trans.Position = boxes[i].Min;
+		voxel_obj.HideFull();
 		voxel_obj.ShowWire();
 	}
-
-	/*LoopI3 loop(range.Min, Bool3(false), range.Max, Bool3(false));
-	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-	{
-		ChunkVoxelIndex idx(i);
-		AccessLockedChunk chunk = container.FindAbsoluteAccess(idx.Chunk);
-		if (!chunk.Is()) { continue; }
-		if (!(*chunk).IsDone()) { continue; }
-		if ((*chunk).IsEmpty()) { continue; }
-		const Voxel & voxel = (*chunk)[idx.Voxel];
-		if (voxel.IsEmpty()) { continue; }
-		NewPolyHedra::Basic3D::Object voxel_obj(pallet);
-		voxel_obj.Data().Trans.Position = i.ToF();
-		voxel_obj.ShowWire();
-	}*/
 }
 
 
@@ -262,6 +247,12 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 				MultiformLayout.Find(layout);
 			}
 			{
+				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
+				layout -> Trans.Change(3);
+				layout -> Normal.Change(7);
+				ObjectManagerBasic.BufferFullLayout = layout;
+			}
+			{
 				ObjectManagerBasic.ShaderWire.Change({
 					MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
 					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
@@ -269,12 +260,6 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 				ShaderLayoutView3D * layout = new ShaderLayoutView3D();
 				ObjectManagerBasic.ShaderWire.AssignLayout(layout);
 				MultiformLayout.Find(layout);
-			}
-			{
-				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
-				layout -> Trans.Change(3);
-				layout -> Normal.Change(7);
-				ObjectManagerBasic.BufferFullLayout = layout;
 			}
 			{
 				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
@@ -296,17 +281,17 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 				MultiformLayout.Find(layout);
 			}
 			{
-				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
-				ObjectManagerUI.ShaderWire.AssignLayout(layout);
-				MultiformLayout.Find(layout);
-			}
-			{
 				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
 				layout -> Size.Change(3);
 				layout -> Pos.Change(4);
 				layout -> Rot.Change(5);
 				layout -> Scale.Change(8);
 				ObjectManagerUI.BufferFullLayout = layout;
+			}
+			{
+				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
+				ObjectManagerUI.ShaderWire.AssignLayout(layout);
+				MultiformLayout.Find(layout);
 			}
 			{
 				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
@@ -340,9 +325,6 @@ ContextNoisePlane::ContextNoisePlane()
 	, InventoryUI()
 	, HotBar(VectorU2(10, 1))
 	, HotBarUI()
-//	, AuxThread0Time(64)
-//	, AuxThread0(&ContextNoisePlane::AuxThread0Func, this)
-//	, AuxThread0(*this)
 {
 	MediaDirectory = DirectoryInfo("../../media/");
 
@@ -672,6 +654,7 @@ void ContextNoisePlane::ViewRayUpdate_Show()
 		{
 			NewPolyHedra::Basic3D::Object voxel_box_obj(VoxelCube);
 			voxel_box_obj.Data().Trans.Position = ViewHit.Index.ToF();
+			voxel_box_obj.HideFull();
 			voxel_box_obj.ShowWire();
 		}
 	}
@@ -812,29 +795,6 @@ void ContextNoisePlane::VoxelClear::Show(std::stringstream & ss) const
 
 
 
-/*void ContextNoisePlane::AuxThread0Func()
-{
-	// do CenterChange here
-
-	AuxThreadBase::ThreadName = "AuxThread0";
-	StopWatch sw;
-	while (!AuxThread0Term)
-	{
-		if (!AuxThread0Idle)
-		{
-			sw.Clear(); sw.Start();
-			//ChunkManager.Container.ChangeCenter((View.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF().ToI());
-			//ChunkManager.Container.RemoveAround();
-			//ChunkManager.Container.InsertAround();
-			ChunkManager.Container.UpdateChunksContainer();
-			sw.Stop();
-			AuxThread0Time.NewValue(sw.ElapsedTime());
-		}
-	}
-}*/
-
-
-
 #include "Axis/2D/Show.hpp"
 void ContextNoisePlane::Init_Maps()
 {
@@ -888,62 +848,31 @@ void ContextNoisePlane::Init_Maps()
 void ContextNoisePlane::Make()
 {
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-
-	//window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
-	//window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
-	window.DefaultColor = ColorF4(0.25f, 0.25f, 0.25f);
-	//window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
-
-	View.Depth.Color = window.DefaultColor;
-	View.Depth.Range.SetMin(0.5f);
-
+	window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
 	LightAmbient = LightBase(1.0f, ColorF4(1.0f, 1.0f, 1.0f));
 	LightSolar = LightDirection(0.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(+2.0f, -3.0f, +1.0f));
 	LightSpot = ::LightSpot(0.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
-
+	View.Depth.Color = window.DefaultColor;
+	View.Depth.Range.SetMin(0.5f);
 	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
 	ViewEntity.Box = BoxF3(
 		VectorF3(-0.4f, -1.7f, -0.4f),
 		VectorF3(+0.4f, +0.1f, +0.4f)
 	);
-
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-
-	{
-		// this is needed to prevent compiler from complaining about multiple definitions of Bool2D
-		Image img(VectorU2(1, 1));
-		PolyHedra * picture = PolyHedraGenerate::ImageQuad(img);
-		delete picture;
-	}
-
-	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-
-	// 3 Cuboids. implement Scaling for Transformations
-	{
-		VoxelCube = new PolyHedra();
-		PolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
-		PalletManager.FindMakePallet(VoxelCube);
-	}
-	{
-		VoxelChunkCube = new PolyHedra();
-		PolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
-		PalletManager.FindMakePallet(VoxelChunkCube);
-	}
-	{
-		ViewEntity_PolyHedra = new PolyHedra();
-		PolyHedraBoxEdges(*ViewEntity_PolyHedra, ViewEntity.Box);
-		PalletManager.FindMakePallet(ViewEntity_PolyHedra);
-	}
-
+	// these are all Cuboids.
+	// make 1 Cube PolyHedra then scale that
+	VoxelCube = new PolyHedra();
+	VoxelChunkCube = new PolyHedra();
+	ViewEntity_PolyHedra = new PolyHedra();
+	MakePolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
+	MakePolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
+	MakePolyHedraBoxEdges(*ViewEntity_PolyHedra, ViewEntity.Box);
+	PalletManager.FindMakePallet(VoxelCube);
+	PalletManager.FindMakePallet(VoxelChunkCube);
+	PalletManager.FindMakePallet(ViewEntity_PolyHedra);
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
 	Init_Maps();
-	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-
-	/*{
-		ViewRayPolyHedra = PolyHedra::Generate::ConeC(8, 0.01f, 0.1f);
-		PolyHedraManager.PlacePolyHedra(ViewRayPolyHedra);
-	}*/
-
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
 	//ChunkManager.Container.ChangeSize(4, 2);
 	ChunkManager.Container.ChangeSize(8, 4);

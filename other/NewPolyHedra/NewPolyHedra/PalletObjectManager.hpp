@@ -14,7 +14,7 @@ struct ObjectData;
 struct PalletObjectManager
 {
 	public:
-	NewPolyHedra::Pallet *	Pallet;
+	NewPolyHedra::Pallet *	Pallet = nullptr;
 
 	public:
 	virtual ~PalletObjectManager();
@@ -25,7 +25,9 @@ struct PalletObjectManager
 	public:
 	PalletObjectManager(NewPolyHedra::Pallet * pallet);
 
-
+	public:
+	virtual unsigned int	InstanceFullCount() const = 0;
+	virtual unsigned int	InstanceWireCount() const = 0;
 
 	public:
 	virtual void	InstancesClear() = 0;
@@ -43,8 +45,8 @@ struct PalletObjectManager
 	::Buffer::Array		BufferFullInstance;
 	::Buffer::Array		BufferWireInstance;
 
-	unsigned int	CountFull;
-	unsigned int	CountWire;
+	unsigned int	CountFull = 0;
+	unsigned int	CountWire = 0;
 
 	void	GraphicsCreate();
 	void	GraphicsDelete();
