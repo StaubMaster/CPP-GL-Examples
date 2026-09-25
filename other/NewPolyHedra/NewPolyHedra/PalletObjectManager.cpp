@@ -43,7 +43,7 @@ void NewPolyHedra::PalletObjectManager::GraphicsDelete()
 
 void NewPolyHedra::PalletObjectManager::GraphicsDrawFull()
 {
-	InstancesToBufferFull();
+	InstancesFullToBuffer();
 	if (Pallet != nullptr)
 	{
 		BufferFull.Bind();
@@ -53,7 +53,7 @@ void NewPolyHedra::PalletObjectManager::GraphicsDrawFull()
 }
 void NewPolyHedra::PalletObjectManager::GraphicsDrawWire()
 {
-	InstancesToBufferWire();
+	InstancesWireToBuffer();
 	if (Pallet != nullptr)
 	{
 		BufferWire.Bind();

@@ -24,8 +24,8 @@ template<typename TypeData> struct Type_PalletObjectData : public PalletObjectDa
 	const void *	DataVoid() const;
 
 	public:
-	static Type_PalletObjectData<TypeData> * Make(Pallet * pallet);
-	static Type_PalletObjectData<TypeData> * Make(PolyHedra * polyhedra);
+	static Type_PalletObjectData<TypeData> *	New(Pallet * pallet);
+	static Type_PalletObjectData<TypeData> *	New(PolyHedra * polyhedra);
 };
 };
 

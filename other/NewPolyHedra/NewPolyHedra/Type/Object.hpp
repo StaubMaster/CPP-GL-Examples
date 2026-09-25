@@ -14,7 +14,7 @@ template<typename TypeData> struct Type_PalletObjectData;
 template<typename TypeData> struct Type_Object
 {
 	private:
-	Type_PalletObjectData<TypeData> *		PalletObjectData;
+	Type_PalletObjectData<TypeData> *	PalletObjectData = nullptr;
 
 	public:
 	bool	Is() const;
@@ -39,13 +39,13 @@ template<typename TypeData> struct Type_Object
 
 	public:
 	~Type_Object();
-	Type_Object();
-	Type_Object(Pallet * pallet);
-	Type_Object(PolyHedra * polyhedra);
-
-	public:
+	Type_Object() = default;
 	Type_Object(const Type_Object & other) = delete;
 	Type_Object & operator=(const Type_Object & other) = delete;
+
+	public:
+	Type_Object(Pallet * pallet);
+	Type_Object(PolyHedra * polyhedra);
 
 	public:
 	void	Delete();

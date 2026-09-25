@@ -21,6 +21,10 @@ template<typename TypeData> const TypeData & NewPolyHedra::Type_Object<TypeData>
 
 
 
+template<typename TypeData> bool NewPolyHedra::Type_Object<TypeData>::VisibleFull() const
+{
+	return PalletObjectData -> VisibleFull();
+}
 template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::ShowFull()
 {
 	PalletObjectData -> ShowFull();
@@ -29,11 +33,11 @@ template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::HideFull()
 {
 	PalletObjectData -> HideFull();
 }
-template<typename TypeData> bool NewPolyHedra::Type_Object<TypeData>::VisibleFull() const
-{
-	return PalletObjectData -> VisibleFull();
-}
 
+template<typename TypeData> bool NewPolyHedra::Type_Object<TypeData>::VisibleWire() const
+{
+	return PalletObjectData -> VisibleWire();
+}
 template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::ShowWire()
 {
 	PalletObjectData -> ShowWire();
@@ -41,10 +45,6 @@ template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::ShowWire()
 template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::HideWire()
 {
 	PalletObjectData -> HideWire();
-}
-template<typename TypeData> bool NewPolyHedra::Type_Object<TypeData>::VisibleWire() const
-{
-	return PalletObjectData -> VisibleWire();
 }
 
 
@@ -75,14 +75,12 @@ template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::~Type_Object()
 		}*/
 	}
 }
-template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::Type_Object()
-	: PalletObjectData(nullptr)
-{ }
+
 template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::Type_Object(Pallet * pallet)
-	: PalletObjectData(Type_PalletObjectData<TypeData>::Make(pallet))
+	: PalletObjectData(Type_PalletObjectData<TypeData>::New(pallet))
 { }
 template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::Type_Object(PolyHedra * polyhedra)
-	: PalletObjectData(Type_PalletObjectData<TypeData>::Make(polyhedra))
+	: PalletObjectData(Type_PalletObjectData<TypeData>::New(polyhedra))
 { }
 
 
@@ -96,10 +94,10 @@ template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::Delete()
 template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::Create(Pallet * pallet)
 {
 	if (PalletObjectData != nullptr) { return; }
-	PalletObjectData = Type_PalletObjectData<TypeData>::Make(pallet);
+	PalletObjectData = Type_PalletObjectData<TypeData>::New(pallet);
 }
 template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::Create(PolyHedra * polyhedra)
 {
 	if (PalletObjectData != nullptr) { return; }
-	PalletObjectData = Type_PalletObjectData<TypeData>::Make(polyhedra);
+	PalletObjectData = Type_PalletObjectData<TypeData>::New(polyhedra);
 }

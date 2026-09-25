@@ -25,16 +25,20 @@ struct PalletObjectManager
 	public:
 	PalletObjectManager(NewPolyHedra::Pallet * pallet);
 
-	public:
-	virtual unsigned int	InstanceFullCount() const = 0;
-	virtual unsigned int	InstanceWireCount() const = 0;
+
 
 	public:
-	virtual void	InstancesClear() = 0;
-	virtual void	InstancePutFull(const void * data) = 0;
-	virtual void	InstancePutWire(const void * data) = 0;
-	virtual void	InstancesToBufferFull() = 0;
-	virtual void	InstancesToBufferWire() = 0;
+	virtual unsigned int	InstancesFullCount() const = 0;
+	virtual unsigned int	InstancesWireCount() const = 0;
+	public:
+	virtual void	InstancesFullClear() = 0;
+	virtual void	InstancesWireClear() = 0;
+	public:
+	virtual void	InstancesFullPut(const void * data) = 0;
+	virtual void	InstancesWirePut(const void * data) = 0;
+	public:
+	virtual void	InstancesFullToBuffer() = 0;
+	virtual void	InstancesWireToBuffer() = 0;
 
 
 

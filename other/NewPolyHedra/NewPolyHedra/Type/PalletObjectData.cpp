@@ -11,15 +11,14 @@ template<typename TypeData> const void * NewPolyHedra::Type_PalletObjectData<Typ
 
 
 
-template<typename TypeData> NewPolyHedra::Type_PalletObjectData<TypeData> * NewPolyHedra::Type_PalletObjectData<TypeData>::Make(Pallet * pallet)
+template<typename TypeData> NewPolyHedra::Type_PalletObjectData<TypeData> * NewPolyHedra::Type_PalletObjectData<TypeData>::New(Pallet * pallet)
 {
 	if (Type_Data_ObjectManager<TypeData>::Current == nullptr) { return nullptr; }
-	return (Type_PalletObjectData<TypeData> *)Type_Data_ObjectManager<TypeData>::Current -> NewPalletObjectData(pallet);
+	return (Type_PalletObjectData<TypeData> *)Type_Data_ObjectManager<TypeData>::Current -> PalletObjectDatasNew(pallet);
 }
 
-template<typename TypeData> NewPolyHedra::Type_PalletObjectData<TypeData> * NewPolyHedra::Type_PalletObjectData<TypeData>::Make(PolyHedra * polyhedra)
+template<typename TypeData> NewPolyHedra::Type_PalletObjectData<TypeData> * NewPolyHedra::Type_PalletObjectData<TypeData>::New(PolyHedra * polyhedra)
 {
-	if (PalletManager::Current == nullptr) { return nullptr; }
-	Pallet * pallet = PalletManager::Current -> FindMakePallet(polyhedra);
-	return Type_PalletObjectData<TypeData>::Make(pallet);
+	if (Type_Data_ObjectManager<TypeData>::Current == nullptr) { return nullptr; }
+	return (Type_PalletObjectData<TypeData> *)Type_Data_ObjectManager<TypeData>::Current -> PalletObjectDatasNew(polyhedra);
 }

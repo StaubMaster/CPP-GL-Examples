@@ -14,19 +14,11 @@ struct Type_Data_ObjectManager : public ObjectManager
 	static Type_Data_ObjectManager *	Current;
 
 	public:
-	~Type_Data_ObjectManager()
-	{
-		Current = nullptr;
-	}
-	Type_Data_ObjectManager()
-	{
-		Current = this;
-	}
+	~Type_Data_ObjectManager();
+	Type_Data_ObjectManager();
 	Type_Data_ObjectManager(const Type_Data_ObjectManager & other) = delete;
 	Type_Data_ObjectManager & operator=(const Type_Data_ObjectManager & other) = delete;
 };
-
-template<typename TypeData> Type_Data_ObjectManager<TypeData> * Type_Data_ObjectManager<TypeData>::Current = nullptr;
 
 
 
@@ -40,17 +32,8 @@ struct Type_ObjectManager : public Type_Data_ObjectManager<TypeData>
 	Type_ObjectManager & operator=(const Type_ObjectManager & other) = delete;
 
 	public:
-	PalletObjectManager *	NewPalletObjectManager() override
-	{
-		PalletObjectManager * manager = new Type_PalletObjectManager<TypeData, TypeInstanceData>();
-		//manager -> BufferFullInstance.SizeOf = sizeof(TypeInstanceData);
-		//manager -> BufferWireInstance.SizeOf = sizeof(TypeInstanceData);
-		return manager;
-	}
-	PalletObjectData *	NewPalletObjectData() override
-	{
-		return new Type_PalletObjectData<TypeData>();
-	}
+	PalletObjectManager *	PalletObjectManagersNew() override;
+	PalletObjectData *		PalletObjectDatasNew() override;
 };
 };
 

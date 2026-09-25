@@ -10,7 +10,7 @@ void NewPolyHedra::Manager::UpdatePalletObjectDatas()
 	{
 		NewPolyHedra::ObjectManager * manager = ObjectManagers[i];
 		if (manager == nullptr) { continue; }
-		manager -> UpdatePalletObjectDatas();
+		manager -> PalletObjectDatasRemove();
 	}
 }
 

@@ -25,11 +25,11 @@ void NewPolyHedra::PalletObjectData::InstancePut() const
 	{
 		if (DisplayFull)
 		{
-			Manager -> InstancePutFull(DataVoid());
+			Manager -> InstancesFullPut(DataVoid());
 		}
 		if (DisplayWire)
 		{
-			Manager -> InstancePutWire(DataVoid());
+			Manager -> InstancesWirePut(DataVoid());
 		}
 	}
 }
