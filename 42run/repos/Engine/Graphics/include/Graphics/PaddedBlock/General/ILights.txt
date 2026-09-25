@@ -1,0 +1,83 @@
+
+LightBase
+{
+	Float		Intensity
+	ColorF4		Color
+}
+
+LightDirection
+{
+	LightBase	Base
+	VectorF3	Dir
+}
+
+LightPoint
+{
+	LightBase	Base
+	VectorF3	Pos
+}
+
+LightSpot
+{
+	LightBase	Base
+	VectorF3	Pos
+	VectorF3	Dir
+	RangeF		Range
+}
+
+Lights
+{
+	LightBase			Ambient
+	LightDirection		Solar
+	UInt				PointCount
+	LightPoint			Point[point_limit]
+	UInt				SpotCount
+	LightSpot			Spot[spot_limit]
+}
+
+
+
+[0]	[1]	[2]	[3]	|ILights
+				|{
+				|	LightBase						Ambient
+				|	{
+#	_	_	_	|		Float		Intensity
+#	#	#	#	|		ColorF4		Color
+				|	}
+				|	LightDirection					Solar
+				|	{
+				|		LightBase						Base
+				|		{
+#	_	_	_	|			Float				Intensity
+#	#	#	#	|			ColorF4				Color
+				|		}
+#	#	#	#	|		VectorF3			Dir
+				|	}
+#	_	_	_	|	UInt				PointCount
+				|	LightPoint						Point
+				|	[
+				|		LightBase						Base
+				|		{
+#	_	_	_	|			Float				Intensity
+#	#	#	#	|			ColorF4				Color
+				|		}
+#	#	#	#	|		VectorF3			Pos
+				|	]
+#	_	_	_	|	UInt				SpotCount
+				|	LightSpot						Spot
+				|	[
+				|		LightBase						Base
+				|		{
+#	_	_	_	|			Float				Intensity
+#	#	#	#	|			ColorF4				Color
+				|		}
+#	#	#	_	|		VectorF3			Pos
+#	#	#	_	|		VectorF3			Dir
+				|		RangeF							Range
+				|		{
+#	_	_	_	|			float			Min
+_	#	_	_	|			float			Len
+_	_	#	_	|			float			Max
+				|		}
+				|	]
+				|}

@@ -1,0 +1,64 @@
+
+
+
+
+
+LineCommand Parser
+"inside"	LineCommand functions
+"outside"	where the LineCommand stuff is used
+
+currently the names need to be checked "outside"
+and then the count needs to be checked "outside"
+set that stuff in the beginning and then check "inside"
+
+
+
+Problem:
+some funcitons might "turn on" other functions
+so Skin can only be probably parsed once "Skin" is known
+
+make it so "Type" and "FileFormat" are hardcoded inside the Parser
+
+how to other Parsers work
+most are just hardcoded
+and dont change
+
+maybe Parse "Type" and "FileFormat"
+then give that to a "ParserInitFunc"
+that then sets all the Functions to use ?
+
+
+
+Type and FileFormat are expected to be at the beginning
+and can both only have 1 Value
+
+put them together
+so the beginning of the File needs to be:
+"Type"'\n'"FileFormat"'\n'
+
+for Skin
+make Type the Type of Skin
+that what it dose already :|
+
+dont have this stuff be hardcoded
+isntead have a function called "ParseTypeFileFormat()"
+that returns Type and Foramt
+
+
+
+DirectoryInfo Collection
+	have a collection of Directorys
+	then getting a File, look through all the Directorys
+	usually User specified stuff should be checked first
+	have 2 Lists, User and Auto
+	have a way to specify Priority ?
+
+
+
+NEW:
+the old version ran the loop internally
+and needed a referance an object
+
+the new version only loops when requested
+so just run the loop until you have what you want
+and then keep calling

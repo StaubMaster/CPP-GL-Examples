@@ -1,0 +1,21 @@
+
+debug:
+info:
+warning:
+error:
+
+categorys for messages
+different log files for different types ?
+that might be a lot of files
+
+make log file only store certain stuff
+
+
+
+so creating shaders and Buffers only logs when an error occurs
+
+
+
+
+
+Error handling could maybe improved in general ?

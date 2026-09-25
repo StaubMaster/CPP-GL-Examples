@@ -1,0 +1,17 @@
+the double Constructor for Layouts is kind of annoying
+
+give Uniform a function for putting it into a Layout ?
+
+call in Layout
+this would need to be called for every Uniform
+so every Uniform would need 2 Lines
+1 for construcing with name
+1 for putting in Layout
+
+this is basically no work.
+but forgetting to do that would be bad
+passsing Layout could also be forgotten ?
+every Uniform in a Layout takes this, hard to forget
+forgetting to Put would be the same
+
+what am I arguing about ?

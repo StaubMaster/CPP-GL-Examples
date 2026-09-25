@@ -1,0 +1,10 @@
+
+maybe make them a Linked List ?
+
+the reason why there are EntryContainer::Entry and EntryContainer::EntryData
+is becaus one needs to be an allocated pointer
+so that both sides can point to the same thing
+
+the reason I dont just use a regular Container::Binary is because reallocating would change the address
+
+but a linked list would also use pointers so it would only change how the pointers are stored

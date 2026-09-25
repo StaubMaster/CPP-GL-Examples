@@ -1,0 +1,9 @@
+
+#	Objects
+*.o
+
+#	Archchives
+*.a
+
+#	Excutables
+*.exe

@@ -1,0 +1,9 @@
+
+[0]	[1]	[2]	[3]	|IPallets
+				|{
+				|	BoxF2	Array
+				|	[
+#	#	_	_	|		vec2	Min
+_	_	#	#	|		vec2	Max
+				|	]
+				|}

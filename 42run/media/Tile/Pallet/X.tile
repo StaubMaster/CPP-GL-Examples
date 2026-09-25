@@ -1,0 +1,13 @@
+
+polyhedra PolyHedra/Tile/X.polyhedra
+
+nodeTrans C    000 0 -150     00  00  00
+nodeTrans C    000 0 -025     00  00  00
+
+nodeTrans M    000 0 +150     00  00  00
+
+nodeTrans L   -025 0  000     00  00 -90
+nodeTrans L   -150 0  000     00  00 -90
+
+nodeTrans R   +025 0  000     00  00 +90
+nodeTrans R   +150 0  000     00  00 +90

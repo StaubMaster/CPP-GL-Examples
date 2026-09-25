@@ -1,0 +1,36 @@
+Type PolyHedra
+Format Normal
+
+
+
+vertex -25 0 -150
+vertex -25 0 -025
+vertex +25 0 -150
+vertex +25 0 -025
+face{ +0 +1 +2 +3
+offset +4
+
+vertex -150 0 -025
+vertex -150 0 +025
+vertex +025 0 -025
+vertex +025 0 +025
+face{ +0 +1 +2 +3
+offset +4
+
+vertex -25 0 +025
+vertex -25 0 +050
+vertex +25 0 +025
+vertex +25 0 +050
+face{ +0 +1 +2 +3
+offset +4
+
+vertex -25 0 +150
+vertex -25 0 +200
+vertex +25 0 +150
+vertex +25 0 +200
+face{ +0 +1 +2 +3
+offset +4
+
+
+
+Skin T_Gap_L.skin

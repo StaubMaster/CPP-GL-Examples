@@ -1,0 +1,3 @@
+[submodule "repos/Engine"]
+	path = repos/Engine
+	url = https://github.com/StaubMaster/CPP-GL-Engine.git

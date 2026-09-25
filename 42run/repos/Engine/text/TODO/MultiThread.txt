@@ -1,0 +1,29 @@
+
+probebly very complicated
+drawing in openGL can only be done on one Thread anyway
+
+
+
+make Windows have 2 Threads
+1 that calls FrameFunc
+1 that calls UpdateFunc
+
+KeyStatus are stored and can be accesed outside of the Drawing Thread
+
+Cursor Position could probably also be stored so it can be accessed from anythwre
+
+
+
+
+
+the Drawing Thread stores things like KeyStates and other Input stuff
+other only need to access a constant version of it
+
+the Update Thread stores things like Instance Data
+the Drawing Thread only needs to access a const version to copy into buffers
+
+
+right now I dont think there is anything that is changed by multiple Threads
+although later on there might be something
+
+

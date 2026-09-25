@@ -1,0 +1,15 @@
+
+starting to not like the Templates for Vector and Box
+
+causes weird errors when compiling
+then giving bad values to the Compiler
+
+
+
+keep templates for operators ?
+like when multiplying a int vector with 0.5f ?
+normally, it converts both to the higher type, float
+then does the operation, then converts to the desired type
+
+how often doese this happen ?
+just convert to Float Vector

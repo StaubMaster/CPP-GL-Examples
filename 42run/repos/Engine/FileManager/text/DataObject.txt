@@ -1,0 +1,19 @@
+
+lost of Object store Data
+to allocates a Pointer of stuff
+but how should there Pointers be handled between Objects
+
+
+
+Bind
+	just copy the Pointers
+	Destructor does nothing
+	Dispose() needs to be called to delete[]
+
+Copy
+	allocate a new[] Pointer
+	copy data at the Pointer
+	Destructor delete[]s
+	Dispose() does nothing ?
+
+

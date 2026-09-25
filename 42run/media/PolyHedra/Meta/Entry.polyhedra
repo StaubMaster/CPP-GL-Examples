@@ -1,0 +1,61 @@
+Type PolyHedra
+Format Normal
+
+Skin Entry.skin
+
+
+
+# W 25.0
+varFloat W_Inn 24.0
+varFloat W_Out 26.0
+
+# H 25.0
+varFloat H_Inn 24.0
+varFloat H_Out 26.0
+
+
+
+vertex -W_Inn -H_Inn +0
+vertex +W_Inn -H_Inn +0
+vertex +W_Inn +H_Inn +0
+vertex -W_Inn +H_Inn +0
+
+vertex -W_Inn -H_Inn +2
+vertex +W_Inn -H_Inn +2
+vertex +W_Inn +H_Inn +2
+vertex -W_Inn +H_Inn +2
+
+vertex -W_Out -H_Out +2
+vertex +W_Out -H_Out +2
+vertex +W_Out +H_Out +2
+vertex -W_Out +H_Out +2
+
+vertex -W_Out -H_Out +0
+vertex +W_Out -H_Out +0
+vertex +W_Out +H_Out +0
+vertex -W_Out +H_Out +0
+
+belt{1   +00 +01 +02 +03   +04 +05 +06 +07
+belt{1   +04 +05 +06 +07   +08 +09 +10 +11
+belt{1   +08 +09 +10 +11   +12 +13 +14 +15
+belt{1   +12 +13 +14 +15   +00 +01 +02 +03
+
+offset +16
+
+
+
+vertex             0,0 25,0 +08,0
+circle>   8 8 01   0,0 25,0 +08,0   2   0,0 0,0 -1,0   0,0
+circle>   8 8 01   0,0 25,0 +16,0   2   0,0 0,0 -1,0   0,0
+circle>   8 8 01   0,0 25,0 +16,0   4   0,0 0,0 -1,0   0,0
+vertex             0,0 25,0 +24,0
+
+fan<{1   +00   +01 +02 +03 +04 +05 +06 +07 +08
+offset +01
+belt{1   +00 +01 +02 +03 +04 +05 +06 +07   +08 +09 +10 +11 +12 +13 +14 +15
+offset +08
+belt{1   +00 +01 +02 +03 +04 +05 +06 +07   +08 +09 +10 +11 +12 +13 +14 +15
+offset +08
+fan>{1   +00 +01 +02 +03 +04 +05 +06 +07   +08
+offset +08
+offset +01

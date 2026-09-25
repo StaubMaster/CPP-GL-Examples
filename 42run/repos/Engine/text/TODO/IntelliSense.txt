@@ -1,0 +1,18 @@
+
+
+IntelliSense Comments
+	add comments to functions to explain what they do
+	at least for the functions used in the Mains
+
+
+
+IntelliSense includes
+	are kind of wacky at the moment
+	probably because the includes are done with Makefile Commands
+	which IntelliSense dosent understand / store ?
+	it should probalby do that
+	I think I can tell it somewhere but I'm not sure where
+	I tried putting it in .vscode/c_cpp_properties.json
+	but that didnt work
+
+

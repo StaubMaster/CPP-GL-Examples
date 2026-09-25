@@ -1,0 +1,14 @@
+
+Plane can be done with a Normal or with 2 Direcitons
+  Plane3D
+    3D plane can only be done with Normal
+  PlaneF3
+    like Ray but with 2 Dir instread of 1
+
+
+
+SpaceF3
+  Origin with 3 Axis
+  like Ray and Plane but with 3 Dir instead of 1 or 2
+  transform Axis Factors from one Space to another
+  this could probably be done with a Matrix

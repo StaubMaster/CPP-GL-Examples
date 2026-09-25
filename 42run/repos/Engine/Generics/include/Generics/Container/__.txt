@@ -1,0 +1,65 @@
+
+delete all
+delete[] all
+
+
+
+
+
+Array Containers
+	fixed data
+	filly accessible
+	multiple Dimensions
+
+Dynamic Containers
+	can reallocate
+	Items accessible up to Count
+	inserting/removing changes Count
+
+
+
+add a _Known like in ByteBlock
+bascially keep count of how many know _Data, and only delete when it reaches 0
+this is basically just smart Pointer ?
+
+Void
+{
+	VoidData()
+	VoidSize()
+	everything else isnt needed
+}
+Data<> : Void
+{
+	_Data
+	_Know
+
+	mForget()		reset Members
+	mRemember()		external Data
+	mNew()			new Data
+	mDelete()		delete Data
+	mBind()			same Data
+
+	these should also change Size/Count
+}
+ArrayMember : Void
+{
+	_Data
+	_Know
+	_Size (differnet Types)
+
+	Size()
+	Length()
+
+	operator[]
+	At()
+
+	Clear()
+	ChangeSize() take default value ?
+}
+DynamicMember : Void
+{
+	_Data
+	_Know
+	_Limit
+	_Count
+}

@@ -1,0 +1,10 @@
+
+polyhedra PolyHedra/Tile/I_Obs.polyhedra
+
+nodePos C 0 0 -100
+
+nodePos M 0 0 +100
+
+feature DeathWall M M 95.0 105.0 0.0 20.0
+feature DeathWall M L 95.0 105.0 0.0 20.0
+feature DeathWall M R 95.0 105.0 0.0 20.0

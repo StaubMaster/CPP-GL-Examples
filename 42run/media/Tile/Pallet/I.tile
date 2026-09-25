@@ -1,0 +1,6 @@
+
+polyhedra PolyHedra/Tile/I.polyhedra
+
+nodePos C 0 0 -100
+
+nodePos M 0 0 +100

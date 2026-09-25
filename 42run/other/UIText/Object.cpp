@@ -1,0 +1,142 @@
+#include "Object.hpp"
+#include "ObjectData.hpp"
+#include "Manager.hpp"
+
+
+
+bool UI::Text::Object::Is() const { return (Data != nullptr); }
+
+bool UI::Text::Object::Visibility() const { return (Data -> Display); }
+void UI::Text::Object::Hide() { (Data -> Display) = false; }
+void UI::Text::Object::Show() { (Data -> Display) = true; }
+
+
+
+std::string &			UI::Text::Object::Text() { return (Data -> Text); }
+VectorF2 &				UI::Text::Object::TextPosition() { return (Data -> TextPosition); }
+UI::Text::Alignment &	UI::Text::Object::TextAlignmentX() { return (Data -> TextAlignmentX); }
+UI::Text::Alignment &	UI::Text::Object::TextAlignmentY() { return (Data -> TextAlignmentY); }
+
+VectorF2 &				UI::Text::Object::CharacterSize() { return (Data -> CharacterSize); }
+UI::Text::Alignment &	UI::Text::Object::CharacterAlignmentX() { return (Data -> CharacterAlignmentX); }
+UI::Text::Alignment &	UI::Text::Object::CharacterAlignmentY() { return (Data -> CharacterAlignmentY); }
+
+BoxF2 &					UI::Text::Object::Bound() { return (Data -> Bound); }
+ColorF4 &				UI::Text::Object::Color() { return (Data -> Color); }
+float &					UI::Text::Object::Depth() { return (Data -> Depth); }
+
+
+
+void UI::Text::Object::AlignTopLeft()
+{
+	Data -> TextAlignmentX = UI::Text::Alignment::Min;
+	Data -> TextAlignmentY = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Min;
+}
+void UI::Text::Object::AlignTopMiddle()
+{
+	Data -> TextAlignmentX = UI::Text::Alignment::Mid;
+	Data -> TextAlignmentY = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Mid;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Min;
+}
+void UI::Text::Object::AlignTopRight()
+{
+	Data -> TextAlignmentX = UI::Text::Alignment::Max;
+	Data -> TextAlignmentY = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Min;
+}
+void UI::Text::Object::AlignMiddleLeft()
+{
+	Data -> TextAlignmentX = UI::Text::Alignment::Min;
+	Data -> TextAlignmentY = UI::Text::Alignment::Mid;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Mid;
+}
+void UI::Text::Object::AlignMiddleMiddle()
+{
+	Data -> TextAlignmentX = UI::Text::Alignment::Mid;
+	Data -> TextAlignmentY = UI::Text::Alignment::Mid;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Mid;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Mid;
+}
+void UI::Text::Object::AlignMiddleRight()
+{
+	Data -> TextAlignmentX = UI::Text::Alignment::Max;
+	Data -> TextAlignmentY = UI::Text::Alignment::Mid;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Mid;
+}
+void UI::Text::Object::AlignBottomLeft()
+{
+	Data -> TextAlignmentX = UI::Text::Alignment::Min;
+	Data -> TextAlignmentY = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Min;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
+}
+void UI::Text::Object::AlignBottomMiddle()
+{
+	Data -> TextAlignmentX = UI::Text::Alignment::Mid;
+	Data -> TextAlignmentY = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Mid;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
+}
+void UI::Text::Object::AlignBottomRight()
+{
+	Data -> TextAlignmentX = UI::Text::Alignment::Max;
+	Data -> TextAlignmentY = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentX = UI::Text::Alignment::Max;
+	Data -> CharacterAlignmentY = UI::Text::Alignment::Max;
+}
+
+
+
+bool			UI::Text::Object::TextCursorVisibility() const { return (Data -> DisplayTextCursor); }
+void			UI::Text::Object::HideTextCursor() { (Data -> DisplayTextCursor) = false; }
+void			UI::Text::Object::ShowTextCursor() { (Data -> DisplayTextCursor) = true; }
+unsigned int &	UI::Text::Object::TextCursorIndex() { return (Data -> TextCursorIndex); }
+
+
+
+UI::Text::Object::~Object()
+{
+	if (Data != nullptr)
+	{
+		Data -> Remove = true;
+	}
+}
+UI::Text::Object::Object()
+	: Data(nullptr)
+{ }
+UI::Text::Object::Object(const Object & other)
+	: Data(Manager::Current().CopyObject(other.Data))
+{ }
+UI::Text::Object & UI::Text::Object::operator=(const Object & other)
+{
+	if (Data != nullptr)
+	{
+		Data -> Remove = true;
+	}
+	Data = Manager::Current().CopyObject(other.Data);
+	return *this;
+}
+
+
+
+void UI::Text::Object::Delete()
+{
+	if (Data != nullptr)
+	{
+		Data -> Remove = true;
+		Data = nullptr;
+	}
+}
+void UI::Text::Object::Create()
+{
+	if (Data == nullptr)
+	{
+		Data = Manager::Current().MakeObject();
+	}
+}

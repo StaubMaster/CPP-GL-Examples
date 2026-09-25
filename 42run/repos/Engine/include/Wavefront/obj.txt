@@ -1,0 +1,37 @@
+
+not sure if material is even required
+
+how to texture ?
+if i dont get texture coords I need to generate them
+it says the texture should not be stretched on any of the sides
+but it shows an image where the texture is on one side but is stretched on the perpendicular side
+although its not really a "stretch" and instead just the same ?
+also for something like the teapot, how do I make it now stretched ?
+
+
+
+how to color ?
+can I just have an order, that colors the Faces as:
+[(i % 4) + 0] = color[0]
+[(i % 4) + 1] = color[1]
+[(i % 4) + 2] = color[2]
+[(i % 4) + 3] = color[3]
+but this might cause 2 faces that are next to each other to have the same color
+but again, the picture seemd to use the simple version ?
+
+a "real" version would:
+give the first face the first color
+then go to the next face, check what colors the neightbours have
+and then pick the lowest unused color
+can this result in a case where there is no free color ?
+no (if there are only triangles)
+	if I have 4 colors
+	the 3 neightbours all have different colors
+	and the current gets the last color
+should a quad have one color ?
+in the pictures it seem so
+of I need the highest order Polygon + 1 Colors
+
+
+
+

@@ -1,0 +1,29 @@
+Type PolyHedra
+Format Normal
+
+
+
+vertex -25 0 -200
+vertex -25 0 -125
+vertex +25 0 -200
+vertex +25 0 -125
+face{ +0 +1 +2 +3
+offset +4
+
+vertex -25 0 -125
+vertex -25 0 +125
+vertex -10 0 -125
+vertex -10 0 +125
+face{ +0 +1 +2 +3
+offset +4
+
+vertex -25 0 +125
+vertex -25 0 +200
+vertex +25 0 +125
+vertex +25 0 +200
+face{ +0 +1 +2 +3
+offset +4
+
+
+
+Skin I_Gap_R.skin

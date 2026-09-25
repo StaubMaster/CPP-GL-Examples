@@ -1,0 +1,179 @@
+
+perhaps rework a bit how Attributes and Uniforms interact with Buffers and Shaders ?
+
+right now the system is a bit weird
+
+
+
+Shaders: Base and Code
+
+the Parameters of the Shader are terrible
+it would be nice to just give it a list of ShaderCode
+
+how should Shaders work ?
+
+Shader::Base (ShaderProgram)
+{
+	Codes		(source files)
+	ID			(from OpenGL)
+	Uniforms	(Uniforms that are part of this Program)
+
+	Valid() { is this a validly Compiled Program }
+	Compile()
+	{
+		Compiles all Codes
+		Compiles Program
+		Find Locations for all Uniforms ?
+	}
+
+	Is() { is this the bound Program }
+	Use() { bind this Program }
+}
+
+
+
+Multiforms
+{
+	right now to use a Multiform you first need to look up the Uniform in the Shader
+	when looking for a Uniform in a Shader, look if that Uniform already exists in the Shader
+	if yes { use that }
+	if not { add it }
+}
+
+
+
+Currently
+	Base
+	{
+		Name;
+		Shader;
+		Multiform;
+		Base() { Shader.Uniforms.Insert(this); }
+	}
+	GBase : Base<Type>
+	{
+		void PutData(Type val) = 0;
+	}
+	FloatN : GBase<const float *>
+	{
+		void PutData(const float * val) = 0;
+		void PutVoid(const void * val) { PutData(val); }
+	}
+	Float3 : FloatN
+	{
+		void PutData(const float * val) { glUniform(val); }
+	}
+	VectorF3 : GBase<VectorF3>
+	{
+		Float3 Location;
+		void PutData(Point val) { Location.PutVoid(&val); }
+	}
+...
+every Base gets stored in Shader
+dont need that
+only the top most needs to be stored ?
+or only the actual Data storages ?
+so FloatN
+
+why are Uniforms stored in the Shaders
+if the Uniform is part of a Multiform
+then when the Shader is Used again, it will automatically set the data of those Multiforms
+just store the Multiforms ?
+
+
+
+
+
+Idea:
+Uniform dont know about Multiforms
+Shader stores Multiforms
+when a Shader gets Bound
+go over Multiforms and set Data
+the Multiform would have to go over all its Uniforms
+and check which one has a Shader that is currently in Use
+Bad Idea
+
+
+
+
+currently:
+all Uniform::Base are stored in the Shader
+VectorF3 is GBase<>, which gets put in the Shader
+bul also stores Float3, which gets put in the Shader
+
+I need GBase for the generic PutData() Function
+I need Float3 for the glUniform() Function
+
+double inheritance would also cause this
+
+have a seperate generic Float3
+which also requires a PutData()
+
+that would be a lot of garbadge
+
+
+
+
+
+Float3		this gets directly put in the Shaders
+VectorF3		this is basically a Wrapper for Float3
+Trans3D		this contains simpler Uniforms, like VectorF3
+
+FloatN		has the Uniform Location
+Float3		is a Wrapper for FloatN
+VectorF3		can be used by itself so it needs all the stuff that a Uniform needs
+Trans3D		gets used by itself so it dosent need VectorF3 to be a full Uniform
+
+
+
+where do Names and Shaders need to be stored
+Multiforms need the Shader to theck if it is Bound or not
+Uniforms only need Shaders in constructor, where it is already passed
+so I dont really need to store it there
+
+have 2 constructors for Uniforms
+one just takes Name and Shader
+the other takes NameShader
+
+the one with NameShader is for passing down
+those dont get Stored in Shader
+
+the other dose
+could be problimatic in the Base
+put a "Store in Shader" into NameShader
+maybe rename to "Uniform::InitData"
+
+stuff like VectorF3 needs to remember Name
+since it might be used by itself
+and I dont feel like making 2.
+	one is used a complete Uniform
+	one is used a Member of another Uniform
+
+
+
+
+
+Multiforms
+Base
+{
+	Name;
+}
+GBase : Base
+{
+	Uniforms;	put in Base
+	Data;		actual Data
+					Data might be big
+					would redundand to store it outside and here
+					currently it is not big, so it dosent matter ?
+}
+
+Uniforms is currently just a pointer to the direct Uniforms
+maybe instead have a struct
+{
+	Pointer;	the Uniform
+	Shader;		the Shader that the Uniform is a part of
+	Update;		is the Multiform ahead of the Uniform
+	Multiform;	a Pointer to the Multiform
+}
+
+

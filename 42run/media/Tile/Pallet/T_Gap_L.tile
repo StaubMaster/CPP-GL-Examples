@@ -1,0 +1,14 @@
+
+polyhedra PolyHedra/Tile/T_Gap_L.polyhedra
+
+nodeTrans C    000 0 -150     00  00  00
+nodeTrans C    000 0 -025     00  00  00
+
+nodeTrans M    000 0 +200     00  00  00
+
+nodeTrans L   -025 0  000     00  00 -90
+nodeTrans L   -150 0  000     00  00 -90
+
+feature DeathFall M M 200.0 300.0
+feature DeathFall M L 200.0 300.0
+feature DeathFall M R 200.0 300.0

@@ -1,0 +1,57 @@
+
+currently OpenGL 3.3 is used. Subject demands 4.something
+
+
+
+better Meshes
+	the current ones are simple and ugly
+	maybe make different Characters ?
+
+
+
+DistanceMeter
+	mandatory
+	just copy the UserInterface/Text stuff here
+	maybe use a better Font
+
+
+Game starts paused
+need to press F1 to start
+F1 is Pausing for debugging
+should press Space to start
+
+
+
+more Tiles
+	Bar
+		have a Roll Variable like with Jumping
+		Jumping should cancel Roll
+		Roll should increase Gravity
+	Info
+		the Start tile should be a special Tile
+		no Entry, 0 pervent chance of being randomly chosen
+		has a Info Texture thing to the side
+		what shows controls
+	Goal ?
+		no Exit
+		when this is reached, the "Level" is "Complete"
+		not sure that the point of this would be
+
+
+
+Tile Chooser
+	currently, every Tile has the same chance of being picked
+	which results in mostly curves
+
+
+
+Speed
+	make faster over time
+
+
+
+spinning Coins
+Lighting
+Depth Fog
+
+

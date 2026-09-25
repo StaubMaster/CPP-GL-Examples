@@ -1,0 +1,15 @@
+
+#comment
+# comment
+#	comment
+
+cmd0
+cmd1 1
+cmd2 1 22
+cmd3 1 22 333
+cmd4 1 22 333 4444
+   
+			
+cmd           1                      22										333		         				      		    						     			4444
+
+cmd 1 2 3 4 #5

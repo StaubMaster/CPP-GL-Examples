@@ -1,0 +1,9 @@
+
+polyhedra PolyHedra/Tile/I_Gap_L.polyhedra
+
+nodePos C 0 0 -200
+
+nodePos M 0 0 +200
+
+feature DeathFall M M 75.0 325.0
+feature DeathFall M L 75.0 325.0

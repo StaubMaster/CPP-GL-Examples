@@ -1,0 +1,13 @@
+
+implement new Containers better
+
+
+handle Copying better
+of the EntryContainer
+and of the Entrys ?
+
+
+
+make it so internal Data is just copied
+and is only really deleted when .Dispose is called
+but this makes its use equivelant to Pointers

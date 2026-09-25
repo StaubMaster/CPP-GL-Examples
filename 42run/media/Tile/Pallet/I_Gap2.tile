@@ -1,0 +1,17 @@
+
+polyhedra PolyHedra/Tile/I_Gap2.polyhedra
+
+nodePos C 0 0 -100
+
+nodePos M 0 0 +100
+
+feature DeathFall M M 025.0 075.0
+feature DeathFall M L 025.0 075.0
+feature DeathFall M R 025.0 075.0
+
+feature DeathFall M M 125.0 175.0
+feature DeathFall M L 125.0 175.0
+feature DeathFall M R 125.0 175.0
+
+feature CoinParabola M M 050.0
+feature CoinParabola M M 150.0

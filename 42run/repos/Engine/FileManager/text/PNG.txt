@@ -1,0 +1,14 @@
+
+MSPaint:
+	png files directly made with MSPaint arent Parsed properly
+	no problem with the Huffman Tree but the Image is wrong
+	might be some of those unused Blocks
+
+Workaround:
+	if wanted Image is in non-working File
+	open a working File (like Test.png) with MSPaint
+	resize to wanted Size
+	"select all" on wanted in MSPaint
+	paste in working MSPaint Image
+this seems to increase the of the File
+not fully sure what's going on

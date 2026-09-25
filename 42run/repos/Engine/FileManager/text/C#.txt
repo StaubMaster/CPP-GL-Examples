@@ -1,0 +1,4 @@
+
+FileInfo is called FileInfo in C#.
+It inherits from FileSystemInfo which is what I call FileInfo.
+should probably rename since those names make a lot more sence

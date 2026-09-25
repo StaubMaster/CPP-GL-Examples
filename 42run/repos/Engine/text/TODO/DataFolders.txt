@@ -1,0 +1,29 @@
+
+
+
+not sure how difficult
+
+not needed but changing would require updating everything that uses these
+which I already did once
+it wasnt that hard
+
+
+
+basically the Names still suck
+ValueType/Main
+ValueType/Inst
+ValueType/Full
+
+I dont really like them being in DataStruct
+but I also dont want them directly in the Base Folder
+basically replace DataStruct with a different Folder
+but I'm not sure what to call this group
+
+Display ?
+so Graphics is the more basic stuff
+while Dispaly is more complex ?
+put Window and Texture in there as well
+
+but the Instance stuff is not only Display but also just Data
+
+

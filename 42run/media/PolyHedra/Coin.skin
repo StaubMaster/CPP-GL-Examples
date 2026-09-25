@@ -1,0 +1,17 @@
+Type Skin
+Format S_2025_10_27
+
+
+
+vIndex here
+
+colD 255 255 000 255
+colD 127 127 000 255
+
+multi +0 12
+multi +1 24
+multi +0 24
+multi +1 24
+multi +0 24
+multi +1 24
+multi +0 12

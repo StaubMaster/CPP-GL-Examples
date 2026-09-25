@@ -1,0 +1,9 @@
+
+currenly this is fixes as using Basic3D
+
+make a Tempalte that can take different InstData / InstBuffer
+Tempalte might suck if I have to include everything in one
+
+forward define Tempaltes ?
+
+

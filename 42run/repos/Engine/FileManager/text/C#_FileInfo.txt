@@ -1,0 +1,33 @@
+Properties
+Name				Description
+Attributes			Gets or sets the attributes for the current file or directory.
+CreationTime		Gets or sets the creation time of the current file or directory.
+CreationTimeUtc		Gets or sets the creation time, in coordinated universal time (UTC), of the current file or directory.
+Exists				Gets a value indicating whether the file or directory exists.
+Extension			Gets the extension part of the file name, including the leading dot . even if it is the entire file name, or an empty string if no extension is present.
+FullName			Gets the full path of the directory or file.
+LastAccessTime		Gets or sets the time the current file or directory was last accessed.
+LastAccessTimeUtc	Gets or sets the time, in coordinated universal time (UTC), that the current file or directory was last accessed.
+LastWriteTime		Gets or sets the time when the current file or directory was last written to.
+LastWriteTimeUtc	Gets or sets the time, in coordinated universal time (UTC), when the current file or directory was last written to.
+LinkTarget			Gets the target path of the link located in FullName, or null if this FileSystemInfo instance doesn't represent a link.
+Name				For files, gets the name of the file. For directories, gets the name of the last directory in the hierarchy if a hierarchy exists. Otherwise, the Name property gets the name of the directory.
+UnixFileMode		Gets or sets the Unix file mode for the current file or directory.
+
+
+
+Methods
+Name												Description
+CreateAsSymbolicLink(String)						Creates a symbolic link located in FullName that points to the specified pathToTarget.
+Delete()											Deletes a file or directory.
+Equals(Object)										Determines whether the specified object is equal to the current object. (Inherited from Object)
+GetHashCode()										Serves as the default hash function. (Inherited from Object)
+GetLifetimeService()								Retrieves the current lifetime service object that controls the lifetime policy for this instance. Obsolete.
+GetObjectData(SerializationInfo, StreamingContext)	Sets the SerializationInfo object with the file name and additional exception inFileFormation. Obsolete.
+GetType()											Gets the Type of the current instance. (Inherited from Object)
+InitializeLifetimeService()							Obtains a lifetime service object to control the lifetime policy for this instance. Obsolete. (Inherited from MarshalByRefObject)
+MemberwiseClone()									Creates a shallow copy of the current Object. (Inherited from Object)
+MemberwiseClone(Boolean)							Creates a shallow copy of the current MarshalByRefObject object. (Inherited from MarshalByRefObject)
+Refresh()											Refreshes the state of the object.
+ResolveLinkTarget(Boolean)							Gets the target of the specified link.
+ToString()											Returns the original path. Use the FullName or Name properties for the full path or file/directory name.

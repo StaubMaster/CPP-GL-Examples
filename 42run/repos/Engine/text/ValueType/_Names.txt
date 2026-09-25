@@ -1,0 +1,48 @@
+
+typedef to test ?
+what about headers ?
+have the old headers contain just the typedef
+
+
+
+F_  or  _F
+U_  or  _U
+I_  or  _I
+
+F3  or  3F
+U3  or  3U
+I3  or  3I
+
+
+
+Point_D		VectorF_
+Undex_D		VectorU_
+Index_D		VectorI_
+
+VectorF3		VectorF3
+VectorU3		VectorU3
+Index3D		VectorI3
+
+
+
+AxisBox_D	BoxF_
+UndexBox_D	BoxU_
+
+BoxF3	BoxF3
+UndexBox3D	BoxU3
+
+
+
+Line_D		LineF_
+Ray_D		RayF_
+
+LineF3		LineF3
+RayF3		RayF3
+
+
+
+
+
+with Undex and Index, the different "Dimensions" have nothing to do with eachother ?
+sometimes ? they would be pseudoVectors. but thats still a type of Vector
+symantics really

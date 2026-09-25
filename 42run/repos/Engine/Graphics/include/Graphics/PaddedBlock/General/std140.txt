@@ -1,0 +1,41 @@
+https://registry.khronos.org/OpenGL/specs/gl/glspec45.core.pdf#page=159
+
+
+
+(1) (2) (3) Basics
+
+float	vec2	vec3	vec4
+0123	0123	0123	0123
+#___	##__	###_	####
+_#__	__##
+__#_
+___#
+
+this is based on "basic machine unit" (BMU) consumed by the type
+there are floats, which take 4 BMU
+
+what about a type that takes a differnt number of BMU ?
+glsl basically only allows float, int and uint. all of which are 4 BMU
+so dont worry about that
+
+
+
+(4) Arrays
+
+use (1) (2) (3) to make 1 Element
+then pad to vec4
+
+
+
+(5) (6) (7) (8) Matrix stuff
+
+
+
+(9) Structs
+
+base alignment is alignment of largest member
+rounded up to vec4
+
+
+
+(10) Array of Structs

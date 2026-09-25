@@ -1,0 +1,28 @@
+
+
+
+
+add more stuff to Debug
+Debug could be its own thing ?
+so another Repository ?
+
+but it includes FileInfo ?
+remove that
+
+check for FILE_CONTEXT_HPP to check if FileInfo is known
+then depending on that, declare all the functions that use that
+
+how do I handle the -I Includes ?
+
+have the repos next to eachother
+in the same folder
+so	./FileManager
+and	./DebugLogger
+
+that way they can all include eachother with no problem
+but having a repo change things outside of itself would probably be bad
+and they cant delete eachother since there should be one that remains
+
+so use the Engien as a Center, that clones and removes the others as needed
+
+

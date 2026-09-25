@@ -1,0 +1,17 @@
+
+Shader::Base()
+	sets to 0
+
+Shader::Base(code)
+	automatically compiled and finds Uniforms
+
+
+
+Uniforms.
+at the beginning they should referance the Shader and insert themselves into Shader.Uniforms
+
+only look for Locations then Find is called
+at the beginning. if Shader already exists. look for Locations then
+
+
+

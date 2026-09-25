@@ -1,0 +1,43 @@
+
+
+
+Voxel stuff
+but maybe start off with some easy 2D-Height map stuff
+	Perlin Noise
+	maybe mix to have Biomes
+	maybe place stuff like Trees
+
+can use that to also figure out
+	Level of Detail ?
+		higher Quality up close, lower when farther
+	Save/Load / Generate Chunk Data
+
+
+
+
+
+Generation:
+	Diffiusion something
+		cant remember the name
+		where you have a grid where every tile could be everything
+		but then you set one to be something
+		and then the surrounding tiles have a limited selection
+	Other name
+		Place an Element
+		the Element has connection Points
+		then check what fits
+		and place another Element connected to that
+		and keep going like that
+
+
+
+
+
+Spline Curves:
+	I already did those
+	shouldnt be too hard to implement
+	I used the old version for Rails
+	maybe do that again
+	I think Tessalation can be used to connect things
+
+

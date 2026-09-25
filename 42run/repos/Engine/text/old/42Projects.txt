@@ -1,0 +1,16 @@
+
+at least:
+	scop
+		the one with .obj
+	Particles
+
+maybe:
+	Bones
+		seems easy enough
+
+want to:
+	voxel
+		but that needs a partner
+		I kinda already have stuff.
+		I dont want to take work away
+		also I dont know anyone

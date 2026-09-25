@@ -1,0 +1,29 @@
+
+change a Bit how it works
+
+FallDeath
+
+for jumping, check Flag (OnGround or InAir)
+the Gap Tile should return false if you are in the Gap, so falling happend normally
+
+when Y is <= -16, then just set IsDead to true
+no extra condition stuff for DeathFall
+
+
+make PlayerChange return there Ground is ?
+defaults to 0
+Gaps set it to -16
+
+maybe Walls should set it to on top of the Wall ?
+
+
+make Ground a Feature ?
+normal Tiles just say that the Floor is everywhere
+with Height 0 ?
+
+these then Check for if you can Jump
+
+
+
+hitting Wall while Falling should also kill ?
+
