@@ -311,7 +311,7 @@ Container::Binary<VectorI3> ChunkContainer::MissingCareChunks()
 	Manager.TimeInsertNew.WaitTime.NewValue(sw.ElapsedTime());
 
 	sw.Clear();
-	LoopI3 loop(CareBox.Min, Bool3(false), CareBox.Max, Bool3(false));
+	LoopI3 loop(CareBox, Bool3(false), Bool3(false));
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		VectorU3 u = AbsoluteToRelative(i);

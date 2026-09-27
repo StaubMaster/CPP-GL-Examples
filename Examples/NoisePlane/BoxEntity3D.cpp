@@ -6,10 +6,42 @@
 
 
 
+static VectorI3 Axis_Ranks(const VectorF3 & vec)
+{
+	VectorI3 ranks;
+
+	const float *	value_ptr = (const float*)&vec;
+	int *			ranks_ptr = (int*)&ranks;
+
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		if (value_ptr[i] != value_ptr[i])
+		{
+			ranks_ptr[i] = -1;
+		}
+		else
+		{
+			for (unsigned int j = 0; j < 3; j++)
+			{
+				if (i != j)
+				{
+					if (value_ptr[i] > value_ptr[j])
+					{
+						ranks_ptr[i]++;
+					}
+				}
+			}
+		}
+	}
+
+	return ranks;
+}
+
 BoxEntity3D_CollisionTime::BoxEntity3D_CollisionTime(VectorF3 t, VectorF3 dir)
 {
-	VectorI3 ranks = t.abs().RankDimensions();
-	     if (ranks.X == 0) { Time = t.X; Normal = VectorF3(dir.X, 0, 0); }
+	//VectorI3 ranks = t.abs().RankDimensions();
+	VectorI3 ranks = Axis_Ranks(t.abs());
+	if      (ranks.X == 0) { Time = t.X; Normal = VectorF3(dir.X, 0, 0); }
 	else if (ranks.Y == 0) { Time = t.Y; Normal = VectorF3(0, dir.Y, 0); }
 	else if (ranks.Z == 0) { Time = t.Z; Normal = VectorF3(0, 0, dir.Z); }
 	else { Time = 0.0f / 0.0f; }
@@ -59,13 +91,80 @@ void BoxEntity3D_CollisionSide::Consider(const BoxEntity3D_CollisionSide & other
 
 
 
+static VectorF3 CollisionTimePerAxis(
+	const BoxF3 & box0, const VectorF3 & vel0,
+	const BoxF3 & box1
+)
+{
+	Bool3	comp = (vel0 > 0.0f);
+
+	//VectorF3 pos0;
+	//if (vel0.X > 0.0f) { pos0.X = box0.Max.X; } else { pos0.X = box0.Min.X; }
+	//if (vel0.Y > 0.0f) { pos0.Y = box0.Max.Y; } else { pos0.Y = box0.Min.Y; }
+	//if (vel0.Z > 0.0f) { pos0.Z = box0.Max.Z; } else { pos0.Z = box0.Min.Z; }
+	VectorF3 pos0 = VectorF3::Mix(box0.Min, box0.Max, comp);
+
+	//VectorF3 pos1;
+	//if (vel0.X > 0.0f) { pos1.X = box1.Min.X; } else { pos1.X = box1.Max.X; }
+	//if (vel0.Y > 0.0f) { pos1.Y = box1.Min.Y; } else { pos1.Y = box1.Max.Y; }
+	//if (vel0.Z > 0.0f) { pos1.Z = box1.Min.Z; } else { pos1.Z = box1.Max.Z; }
+	VectorF3 pos1 = VectorF3::Mix(box1.Max, box1.Min, comp);
+
+	return (pos1 - pos0) / vel0;
+}
+static VectorF3 CollisionTimePerAxisNaN(
+	const BoxF3 & box0, const VectorF3 & vel0,
+	const BoxF3 & box1
+)
+{
+	VectorF3 t = CollisionTimePerAxis(box0, vel0, box1);
+
+	if (t.X >= 0.0f)
+	{
+		BoxF3 box = box0 + (vel0 * t.X);
+		box.Min.X = -1.0f/0.0f; // -Infinity
+		box.Max.X = +1.0f/0.0f; // +Infinity
+		if (!box.IntersectsInclusive(box1).All(true))
+		{
+			t.X = 0.0f / 0.0f; // no Collision
+		}
+	}
+	else { t.X = 0.0f / 0.0f; }
+
+	if (t.Y >= 0.0f)
+	{
+		BoxF3 box = box0 + (vel0 * t.Y);
+		box.Min.Y = -1.0f/0.0f; // -Infinity
+		box.Max.Y = +1.0f/0.0f; // +Infinity
+		if (!box.IntersectsInclusive(box1).All(true))
+		{
+			t.Y = 0.0f / 0.0f; // no Collision
+		}
+	}
+	else { t.Y = 0.0f / 0.0f; }
+
+	if (t.Z >= 0.0f)
+	{
+		BoxF3 box = box0 + (vel0 * t.Z);
+		box.Min.Z = -1.0f/0.0f; // -Infinity
+		box.Max.Z = +1.0f/0.0f; // +Infinity
+		if (!box.IntersectsInclusive(box1).All(true))
+		{
+			t.Z = 0.0f / 0.0f; // no Collision
+		}
+	}
+	else { t.Z = 0.0f / 0.0f; }
+
+	return t;
+}
+
 BoxEntity3D_CollisionTime BoxEntity3D::FindCollisionTime(const BoxF3 & other) const
 {
 	if ((Box + Pos).IntersectsInclusive(other).All(true))
 	{
 		BoxEntity3D_CollisionTime();
 	}
-	VectorF3 t = BoxF3::CollisionTimePerAxisNaN((Box + Pos), Vel, other);
+	VectorF3 t = CollisionTimePerAxisNaN((Box + Pos), Vel, other);
 
 	VectorF3 dir; // normalize Axis
 	if (Vel.X > 0.0f) { dir.X = +1.0f; } else { dir.X = -1.0f; }

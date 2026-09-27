@@ -60,31 +60,35 @@
 
 
 
-static void MakePolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
+__attribute__((unused)) static PolyHedra * MakePolyHedraBoxEdges(BoxF3 box)
 {
-	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Min.Y, box.Min.Z))); // 000
-	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Min.Y, box.Min.Z))); // 001
-	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Max.Y, box.Min.Z))); // 010
-	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Max.Y, box.Min.Z))); // 011
-	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Min.Y, box.Max.Z))); // 100
-	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Min.Y, box.Max.Z))); // 101
-	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Max.Y, box.Max.Z))); // 110
-	polyhedra.Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Max.Y, box.Max.Z))); // 111
+	PolyHedra * polyhedra = new PolyHedra();
 
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b001));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b011));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b100, 0b101));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b110, 0b111));
+	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Min.Y, box.Min.Z))); // 000
+	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Min.Y, box.Min.Z))); // 001
+	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Max.Y, box.Min.Z))); // 010
+	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Max.Y, box.Min.Z))); // 011
+	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Min.Y, box.Max.Z))); // 100
+	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Min.Y, box.Max.Z))); // 101
+	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Max.Y, box.Max.Z))); // 110
+	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Max.Y, box.Max.Z))); // 111
 
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b010));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b001, 0b011));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b100, 0b110));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b101, 0b111));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b000, 0b001));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b010, 0b011));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b100, 0b101));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b110, 0b111));
 
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b000, 0b100));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b001, 0b101));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b010, 0b110));
-	polyhedra.Edges.Insert(PolyHedra::Edge(0b011, 0b111));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b000, 0b010));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b001, 0b011));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b100, 0b110));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b101, 0b111));
+
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b000, 0b100));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b001, 0b101));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b010, 0b110));
+	polyhedra -> Edges.Insert(PolyHedra::Edge(0b011, 0b111));
+
+	return polyhedra;
 }
 
 __attribute__((unused)) static void Toggle(bool & value)
@@ -103,39 +107,153 @@ __attribute__((unused)) static void Toggle(::PolyHedra * & polyhedra, ::PolyHedr
 	}
 }
 
-static void RankAxis(const VectorF3 & vec, Axis3D::Rel & axis0, Axis3D::Rel & axis1, Axis3D::Rel & axis2)
+/*__attribute__((unused)) static VectorI3 Axis_Ranks(const VectorF3 & vec)
 {
-	VectorI3 ranks = vec.abs().RankDimensions();
+	VectorI3 ranks;
+
+	const float *	value_ptr = (const float*)&vec;
+	int *			ranks_ptr = (int*)&ranks;
+
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		if (value_ptr[i] != value_ptr[i])
+		{
+			ranks_ptr[i] = -1;
+		}
+		else
+		{
+			for (unsigned int j = 0; j < 3; j++)
+			{
+				if (i != j)
+				{
+					if (value_ptr[i] > value_ptr[j])
+					{
+						ranks_ptr[i]++;
+					}
+				}
+			}
+		}
+	}
+
+	return ranks;
+}*/
+/*__attribute__((unused)) static void RankAxis(const VectorF3 & vec, Axis3D::Abs & axis0, Axis3D::Abs & axis1, Axis3D::Abs & axis2)
+{
+	axis0 = Axis3D::Abs::None;
+	if ((vec.X < vec.Y) && (vec.X < vec.Z)) { axis0 = Axis3D::Abs::X; }
+	if ((vec.Y < vec.Z) && (vec.Y < vec.X)) { axis0 = Axis3D::Abs::Y; }
+	if ((vec.Z < vec.X) && (vec.Z < vec.Y)) { axis0 = Axis3D::Abs::Z; }
+
+	axis1 = Axis3D::Abs::None;
+	if (((vec.X > vec.Y) && (vec.X < vec.Z)) || ((vec.X < vec.Y) && (vec.X > vec.Z))) { axis1 = Axis3D::Abs::X; }
+	if (((vec.Y > vec.Z) && (vec.Y < vec.X)) || ((vec.Y < vec.Z) && (vec.Y > vec.X))) { axis1 = Axis3D::Abs::Y; }
+	if (((vec.Z > vec.X) && (vec.Z < vec.Y)) || ((vec.Z < vec.X) && (vec.Z > vec.Y))) { axis1 = Axis3D::Abs::Z; }
+
+	axis2 = Axis3D::Abs::None;
+	if ((vec.X > vec.Y) && (vec.X > vec.Z)) { axis0 = Axis3D::Abs::X; }
+	if ((vec.Y > vec.Z) && (vec.Y > vec.X)) { axis0 = Axis3D::Abs::Y; }
+	if ((vec.Z > vec.X) && (vec.Z > vec.Y)) { axis0 = Axis3D::Abs::Z; }
+
+	//axis0 = Axis3D::Abs::None;
+	//axis1 = Axis3D::Abs::None;
+	//axis2 = Axis3D::Abs::None;
+	//if ((vec.X < vec.Y) && (vec.X < vec.Z) && (vec.Y < vec.Z)) { axis0 = Axis3D::Abs::X; axis1 = Axis3D::Abs::Y; axis2 = Axis3D::Abs::Z; } // X Y Z
+	//if ((vec.X < vec.Y) && (vec.X < vec.Z) && (vec.Y < vec.Z)) { axis0 = Axis3D::Abs::X; axis1 = Axis3D::Abs::Y; axis2 = Axis3D::Abs::Z; } // X Z Y
+	//if ((vec.X < vec.Y) && (vec.X < vec.Z) && (vec.Y < vec.Z)) { axis0 = Axis3D::Abs::X; axis1 = Axis3D::Abs::Y; axis2 = Axis3D::Abs::Z; } // Y Z X
+	//if ((vec.X < vec.Y) && (vec.X < vec.Z) && (vec.Y < vec.Z)) { axis0 = Axis3D::Abs::X; axis1 = Axis3D::Abs::Y; axis2 = Axis3D::Abs::Z; } // Y X Z
+	//if ((vec.X < vec.Y) && (vec.X < vec.Z) && (vec.Y < vec.Z)) { axis0 = Axis3D::Abs::X; axis1 = Axis3D::Abs::Y; axis2 = Axis3D::Abs::Z; } // Z X Y
+	//if ((vec.X < vec.Y) && (vec.X < vec.Z) && (vec.Y < vec.Z)) { axis0 = Axis3D::Abs::X; axis1 = Axis3D::Abs::Y; axis2 = Axis3D::Abs::Z; } // Z Y X
+}*/
+/*__attribute__((unused)) static void RankAxis(const VectorF3 & vec, Axis3D::Rel & axis0, Axis3D::Rel & axis1, Axis3D::Rel & axis2)
+{
+	Axis3D::Abs axis0_abs;
+	Axis3D::Abs axis1_abs;
+	Axis3D::Abs axis2_abs;
+
+	RankAxis(vec, axis0_abs, axis1_abs, axis2_abs);
+
+	axis0 = Axis3D::Rel::None;
+	if (axis0_abs == Axis3D::Abs::X) { if (vec.X > 0) { axis0 = Axis3D::Rel::NextX; } else { axis0 = Axis3D::Rel::PrevX; } }
+	if (axis0_abs == Axis3D::Abs::Y) { if (vec.Y > 0) { axis0 = Axis3D::Rel::NextY; } else { axis0 = Axis3D::Rel::PrevY; } }
+	if (axis0_abs == Axis3D::Abs::Z) { if (vec.Z > 0) { axis0 = Axis3D::Rel::NextZ; } else { axis0 = Axis3D::Rel::PrevZ; } }
+
+	axis1 = Axis3D::Rel::None;
+	if (axis1_abs == Axis3D::Abs::X) { if (vec.X > 0) { axis1 = Axis3D::Rel::NextX; } else { axis1 = Axis3D::Rel::PrevX; } }
+	if (axis1_abs == Axis3D::Abs::Y) { if (vec.Y > 0) { axis1 = Axis3D::Rel::NextY; } else { axis1 = Axis3D::Rel::PrevY; } }
+	if (axis1_abs == Axis3D::Abs::Z) { if (vec.Z > 0) { axis1 = Axis3D::Rel::NextZ; } else { axis1 = Axis3D::Rel::PrevZ; } }
+
+	axis2 = Axis3D::Rel::None;
+	if (axis2_abs == Axis3D::Abs::X) { if (vec.X > 0) { axis2 = Axis3D::Rel::NextX; } else { axis2 = Axis3D::Rel::PrevX; } }
+	if (axis2_abs == Axis3D::Abs::Y) { if (vec.Y > 0) { axis2 = Axis3D::Rel::NextY; } else { axis2 = Axis3D::Rel::PrevY; } }
+	if (axis2_abs == Axis3D::Abs::Z) { if (vec.Z > 0) { axis2 = Axis3D::Rel::NextZ; } else { axis2 = Axis3D::Rel::PrevZ; } }
+}*/
+/*__attribute__((unused)) static void RankAxis(const VectorF3 & vec, Axis3D::Rel & axis0, Axis3D::Rel & axis1, Axis3D::Rel & axis2)
+{
+	VectorI3 ranks = Axis_Ranks(vec.abs());
 
 	if      (ranks.X == 0) { if (vec.X > 0) { axis0 = Axis3D::Rel::NextX; } else { axis0 = Axis3D::Rel::PrevX; } }
 	else if (ranks.Y == 0) { if (vec.Y > 0) { axis0 = Axis3D::Rel::NextY; } else { axis0 = Axis3D::Rel::PrevY; } }
 	else if (ranks.Z == 0) { if (vec.Z > 0) { axis0 = Axis3D::Rel::NextZ; } else { axis0 = Axis3D::Rel::PrevZ; } }
+	else { axis0 = Axis3D::Rel::None; }
 
 	if      (ranks.X == 1) { if (vec.X > 0) { axis1 = Axis3D::Rel::NextX; } else { axis1 = Axis3D::Rel::PrevX; } }
 	else if (ranks.Y == 1) { if (vec.Y > 0) { axis1 = Axis3D::Rel::NextY; } else { axis1 = Axis3D::Rel::PrevY; } }
 	else if (ranks.Z == 1) { if (vec.Z > 0) { axis1 = Axis3D::Rel::NextZ; } else { axis1 = Axis3D::Rel::PrevZ; } }
+	else { axis1 = Axis3D::Rel::None; }
 
 	if      (ranks.X == 2) { if (vec.X > 0) { axis2 = Axis3D::Rel::NextX; } else { axis2 = Axis3D::Rel::PrevX; } }
 	else if (ranks.Y == 2) { if (vec.Y > 0) { axis2 = Axis3D::Rel::NextY; } else { axis2 = Axis3D::Rel::PrevY; } }
 	else if (ranks.Z == 2) { if (vec.Z > 0) { axis2 = Axis3D::Rel::NextZ; } else { axis2 = Axis3D::Rel::PrevZ; } }
+	else { axis2 = Axis3D::Rel::None; }
 
 	// what if same ranks ?
+}*/
+__attribute__((unused)) static void RankAxis(const VectorF3 & vec, Axis3D::Rel & axis0, Axis3D::Rel & axis1, Axis3D::Rel & axis2)
+{
+	axis0 = Axis3D::Rel::None;
+	axis1 = Axis3D::Rel::None;
+	axis2 = Axis3D::Rel::None;
+
+	Axis3D::Rel axisX = (vec.X > 0) ? Axis3D::Rel::NextX : Axis3D::Rel::PrevX;
+	Axis3D::Rel axisY = (vec.Y > 0) ? Axis3D::Rel::NextY : Axis3D::Rel::PrevY;
+	Axis3D::Rel axisZ = (vec.Z > 0) ? Axis3D::Rel::NextZ : Axis3D::Rel::PrevZ;
+
+	bool XvsY = (vec.X < vec.Y);
+	bool YvsX = (vec.X > vec.Y);
+
+	bool YvsZ = (vec.Y < vec.Z);
+	bool ZvsY = (vec.Y > vec.Z);
+
+	bool ZvsX = (vec.Z < vec.X);
+	bool XvsZ = (vec.Z > vec.X);
+
+	if (XvsY && XvsZ) { axis0 = axisX; }
+	if (YvsZ && YvsX) { axis0 = axisY; }
+	if (ZvsX && ZvsY) { axis0 = axisZ; }
+
+	if ((YvsX && XvsZ) || (XvsY && ZvsX)) { axis1 = axisX; }
+	if ((ZvsY && YvsX) || (YvsZ && XvsY)) { axis1 = axisY; }
+	if ((XvsZ && ZvsY) || (ZvsX && YvsZ)) { axis1 = axisZ; }
+
+	if (YvsX && ZvsX) { axis2 = axisX; }
+	if (ZvsY && XvsY) { axis2 = axisY; }
+	if (XvsZ && YvsZ) { axis2 = axisZ; }
 }
 
-static BoxF3 BoxEntity_RangeF(const BoxEntity3D & box_entity, const FrameTime & frame_time)
+__attribute__((unused)) static BoxF3 BoxEntity_RangeF(const BoxEntity3D & box_entity, const FrameTime & frame_time)
 {
 	BoxF3 range = box_entity.Box + box_entity.Pos;
 	range.Consider(box_entity.Box.Min + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
 	range.Consider(box_entity.Box.Max + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
 	return range;
 }
-static BoxI3 BoxEntity_RangeI(const BoxEntity3D & box_entity, const FrameTime & frame_time)
+__attribute__((unused)) static BoxI3 BoxEntity_RangeI(const BoxEntity3D & box_entity, const FrameTime & frame_time)
 {
 	BoxF3 range = BoxEntity_RangeF(box_entity, frame_time);
 	range = range - VectorF3(0.5f);
 	return BoxI3(range.Min.round().ToI(), range.Max.round().ToI());
 }
-static void BoxEntity_Display(BoxEntity3D & box_entity, PolyHedra & polyhedra)
+__attribute__((unused)) static void BoxEntity_Display(BoxEntity3D & box_entity, PolyHedra & polyhedra)
 {
 	NewPolyHedra::Basic3D::Object view_box_obj(&polyhedra);
 	view_box_obj.Data().Trans.Position = box_entity.Pos;
@@ -143,12 +261,11 @@ static void BoxEntity_Display(BoxEntity3D & box_entity, PolyHedra & polyhedra)
 	view_box_obj.ShowWire();
 }
 
-static Container::Array<BoxF3> Voxels_Boxes_Collect(ChunkContainer & container, const BoxI3 & range)
+__attribute__((unused)) static Container::Array<BoxF3> Voxels_Boxes_Collect(ChunkContainer & container, const BoxI3 & range)
 {
 	Container::Binary<BoxF3> boxes;
 
-	//LoopI3 loop(range, Bool3(false), Bool3(false));
-	LoopI3 loop(range.Min, Bool3(false), range.Max, Bool3(false));
+	LoopI3 loop(range, Bool3(false), Bool3(false));
 	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
 	{
 		ChunkVoxelIndex idx(i);
@@ -168,7 +285,7 @@ static Container::Array<BoxF3> Voxels_Boxes_Collect(ChunkContainer & container, 
 
 	return boxes.ToArray();
 }
-static void Voxels_Boxes_Display(const Container::Array<BoxF3> & boxes, NewPolyHedra::Pallet * pallet)
+__attribute__((unused)) static void Voxels_Boxes_Display(const Container::Array<BoxF3> & boxes, NewPolyHedra::Pallet * pallet)
 {
 	for (unsigned int i = 0; i < boxes.Length(); i++)
 	{
@@ -177,6 +294,13 @@ static void Voxels_Boxes_Display(const Container::Array<BoxF3> & boxes, NewPolyH
 		voxel_obj.HideFull();
 		voxel_obj.ShowWire();
 	}
+}
+
+__attribute__((unused)) static void VectorComponents(const VectorF3 & vec, const VectorF3 & other, VectorF3 & parallel, VectorF3 & perpendicular)
+{
+	float dot = vec.dot(other);
+	parallel = (vec / vec.length2()) * dot;
+	perpendicular = other - parallel;
 }
 
 
@@ -325,6 +449,7 @@ ContextNoisePlane::ContextNoisePlane()
 	, InventoryUI()
 	, HotBar(VectorU2(10, 1))
 	, HotBarUI()
+	, VoxelClear(ChunkManager.Container)
 {
 	MediaDirectory = DirectoryInfo("../../media/");
 
@@ -343,22 +468,18 @@ ContextNoisePlane::ContextNoisePlane()
 
 
 
-/*static void VectorComponents(const VectorF3 & vec, const VectorF3 & other, VectorF3 & parallel, VectorF3 & perpendicular)
-{
-	float dot = vec.dot(other);
-	parallel = (vec / vec.length2()) * dot;
-	perpendicular = other - parallel;
-}*/
-
-
-
 void ContextNoisePlane::ViewEntityUpdate_Intangible(Trans3D change, FrameTime frame_time)
 {
-	change.Position *= View_MoveSpeed;
+	float speed = 0.0f;
 	if (window[Keys::LeftControl] == State::Down)
 	{
-		change.Position *= View_MoveSpeedMultiplier;
+		speed = ViewMove_SpeedFast;
 	}
+	else
+	{
+		speed = ViewMove_SpeedSlow;
+	}
+	change.Position *= speed;
 
 	View.Trans.Position += change.Position * frame_time.Delta;
 	View.Trans.Rotation += change.Rotation * frame_time.Delta;
@@ -367,7 +488,42 @@ void ContextNoisePlane::ViewEntityUpdate_Intangible(Trans3D change, FrameTime fr
 	ViewEntity.Pos = View.Trans.Position;
 	ViewEntity.Vel = change.Position;
 }
-void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change)
+void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change, FrameTime frame_time)
+{
+	(void)frame_time;
+
+	float accel_factor = 0.0f;
+	if (window[Keys::LeftControl] == State::Down)
+	{
+		accel_factor = ViewMove_AccelFast;
+	}
+	else
+	{
+		accel_factor = ViewMove_AccelSlow;
+	}
+	float decel_factor = ViewMove_Decel;
+
+	VectorF2 change_hori(change.X, change.Z);
+	float change_vert = change.Y;
+
+	VectorF3 jump;
+	if (ViewEntity_CollisionSide.PrevY)
+	{
+		if (change_vert > 0.0f)
+		{
+			jump.Y = 16.0f;
+		}
+	}
+
+	VectorF3 accel = VectorF3(change_hori.X, 0.0f, change_hori.Y);
+	VectorF3 decel = VectorF3(ViewEntity.Vel.X, 0.0f, ViewEntity.Vel.Z);
+
+	accel *= accel_factor;
+	decel *= decel_factor;
+
+	ViewEntity.Vel = ViewEntity.Vel + accel - decel + jump + PhysicsContext_Gravity.Vector();
+}
+/*void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change)
 {
 	float limit = 0.0f;
 	if (window[Keys::LeftControl] == State::Down)
@@ -379,7 +535,7 @@ void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change)
 		limit = ViewEntity_MoveLimitSlow;
 	}
 	ViewEntity.Vel = change * limit;
-}
+}*/
 /*void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change)
 {
 	if (ViewEntity_CollisionSide.PrevY)
@@ -531,7 +687,7 @@ void ContextNoisePlane::ViewEntityUpdate(Trans3D change, FrameTime frame_time)
 {
 	if (View_IsTangible)
 	{
-		ViewEntityUpdate_Physics(change.Position);
+		ViewEntityUpdate_Physics(change.Position, frame_time);
 		View.Trans.Rotation += change.Rotation * frame_time.Delta;
 		View.Trans.Rotation.X1.clampPI();
 		ViewEntityUpdate_Colliding(frame_time);
@@ -569,16 +725,20 @@ void ContextNoisePlane::ViewRayUpdate_HitDo()
 	if (MenuPause.IsInteractible() || MenuOptions.IsInteractible() || InventoryUI.IsInteractible()) { return; }
 
 	const ItemBase * item = HotBar.Items[VectorU2(0, 0)];
+	const ItemTool * item_tool = dynamic_cast<const ItemTool *>(item);
+	const ItemVoxel * item_voxel = dynamic_cast<const ItemVoxel *>(item);
+
+	VoxelClear.ChangeTool(item_tool);
 
 	if (ViewHit.Valid())
 	{
 		if (window.MouseManager[MouseButtons::MouseL] == State::Down)
 		{
-			VoxelClear.Continue(ViewHit.Index, ChunkManager.Container);
+			VoxelClear.Continue(ViewHit.Index);
 		}
 		else
 		{
-			VoxelClear.Change(ViewHit.Index, ChunkManager.Container, dynamic_cast<const ItemTool *>(item));
+			VoxelClear.Change(ViewHit.Index);
 		}
 
 		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
@@ -595,7 +755,6 @@ void ContextNoisePlane::ViewRayUpdate_HitDo()
 			if (ViewHit_Axis0 == Axis3D::Rel::PrevY) { hit_idx.Y -= 1; }
 			if (ViewHit_Axis0 == Axis3D::Rel::PrevZ) { hit_idx.Z -= 1; }
 
-			const ItemVoxel * item_voxel = dynamic_cast<const ItemVoxel *>(item);
 			if (item_voxel != nullptr && item_voxel -> VoxelPallet != nullptr)
 			{
 				ChunkVoxelIndex idx(hit_idx);
@@ -694,107 +853,6 @@ void ContextNoisePlane::ViewUpdate(Trans3D change, FrameTime frame_time)
 
 
 
-
-
-ContextNoisePlane::VoxelClear::~VoxelClear()
-{ }
-ContextNoisePlane::VoxelClear::VoxelClear()
-	: Required(64)
-{ }
-bool ContextNoisePlane::VoxelClear::Is() const
-{
-	return (Progress != 0xFFFFFFFF);
-}
-void ContextNoisePlane::VoxelClear::None()
-{
-	Progress = 0xFFFFFFFF;
-	Index = ChunkVoxelIndex();
-	Pallet = nullptr;
-	Tool = nullptr;
-}
-void ContextNoisePlane::VoxelClear::Change(const ChunkVoxelIndex & idx, ChunkContainer & container, const ItemTool * tool)
-{
-	Progress = 0;
-	Index = idx;
-//	Tool = dynamic_cast<ItemTool*>(HotBar.Items[0]);
-	Tool = tool;
-
-	AccessLockedChunk chunk = container.FindAbsoluteAccess(Index.Chunk);
-	const Voxel & voxel = (*chunk).Voxels[Index.Voxel];
-	if (!voxel.IsEmpty())
-	{
-		Pallet = &voxel.ToPallet();
-	}
-	else
-	{
-		Pallet = nullptr;
-	}
-}
-void ContextNoisePlane::VoxelClear::Continue(const ChunkVoxelIndex & idx, ChunkContainer & container)
-{
-	if (Is())
-	{
-		if (
-			(idx.Chunk == Index.Chunk).All(true) &&
-			(idx.Voxel == Index.Voxel).All(true)
-		)
-		{
-			if (Progress >= Required)
-			{
-				// why not .FindAssign() ?
-				AccessLockedChunk chunk_access = container.FindAbsoluteAccess(Index.Chunk);
-				if (chunk_access.Is())
-				{
-					Voxel voxel;
-					AssignLockedChunk chunk_assign = chunk_access.ToAssign();
-					(*chunk_assign).ClearVoxel(Index.Voxel, voxel);
-				}
-				None();
-			}
-			else
-			{
-				if (Tool != nullptr && Pallet != nullptr)
-				{
-					if (Tool -> Material == Pallet -> Material)
-					{
-						Progress += Tool -> Multiplier;
-					}
-					else
-					{
-						Progress++;
-					}
-				}
-				else
-				{
-					Progress++;
-				}
-			}
-		}
-		else
-		{
-			Change(idx, container, Tool);
-		}
-	}
-	else
-	{
-		Change(idx, container, Tool);
-	}
-}
-void ContextNoisePlane::VoxelClear::Show(std::stringstream & ss) const
-{
-	if (Is())
-	{
-		ss << "VoxelClear:\n";
-		ss << Index.Chunk << " :Chunk\n";
-		ss << Index.Voxel << " :Voxel\n";
-		ss << Progress << " :Progress\n";
-	}
-}
-
-
-
-
-
 #include "Axis/2D/Show.hpp"
 void ContextNoisePlane::Init_Maps()
 {
@@ -856,18 +914,27 @@ void ContextNoisePlane::Make()
 	View.Depth.Range.SetMin(0.5f);
 	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
 	ViewEntity.Box = BoxF3(
-		VectorF3(-0.4f, -1.7f, -0.4f),
-		VectorF3(+0.4f, +0.1f, +0.4f)
+		VectorF3(-0.4f, -1.6f, -0.4f),
+		VectorF3(+0.4f, +0.2f, +0.4f)
 	);
+	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+	View_Distance = 0.0f;
+	View_IsTangible = false;
+	ViewMove_SpeedSlow = 10.0f;
+	ViewMove_SpeedFast = 100.0f;
+	// Target = Accel / Decel
+	// Target * Decel = Accel
+	// Slow: Target = 5.0; Accel = 5.0 * 0.2 = 1.0
+	// Slow: Target = 10.0; Accel = 10.0 * 0.2 = 2.0
+	ViewMove_AccelSlow = 1.0f;
+	ViewMove_AccelFast = 2.0f;
+	ViewMove_Decel = 0.2f;
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
 	// these are all Cuboids.
 	// make 1 Cube PolyHedra then scale that
-	VoxelCube = new PolyHedra();
-	VoxelChunkCube = new PolyHedra();
-	ViewEntity_PolyHedra = new PolyHedra();
-	MakePolyHedraBoxEdges(*VoxelCube, BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
-	MakePolyHedraBoxEdges(*VoxelChunkCube, BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
-	MakePolyHedraBoxEdges(*ViewEntity_PolyHedra, ViewEntity.Box);
+	VoxelCube = MakePolyHedraBoxEdges(BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
+	VoxelChunkCube = MakePolyHedraBoxEdges(BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
+	ViewEntity_PolyHedra = MakePolyHedraBoxEdges(ViewEntity.Box);
 	PalletManager.FindMakePallet(VoxelCube);
 	PalletManager.FindMakePallet(VoxelChunkCube);
 	PalletManager.FindMakePallet(ViewEntity_PolyHedra);
@@ -913,6 +980,8 @@ void ContextNoisePlane::MakeControls()
 	{
 		MenuDebug.FPS.Check.Check(true);
 		//MenuDebug.VoxelChunkMemory.Check.Check(true);
+
+		MenuDebug.View.Check.Check(true);
 
 		MenuDebug.Hide();
 		UIManager.Window.ChildInsert(MenuDebug);

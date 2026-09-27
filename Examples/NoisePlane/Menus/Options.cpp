@@ -98,7 +98,7 @@ void OptionsMenu::FOVFunc(float val)
 }
 void OptionsMenu::DepthFunc(float val)
 {
-	Context.View.Depth.Factors.ChangeFar(val);
+	Context.View.Depth.Factors.SetFar(val);
 	Context.MultiformLayout.Depth.ChangeData(Context.View.Depth);
 
 	unsigned int v = val;

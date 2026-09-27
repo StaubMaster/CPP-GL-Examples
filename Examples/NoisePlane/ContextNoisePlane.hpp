@@ -80,6 +80,9 @@
 # include "Layout/Shader.hpp"
 # include "Layout/Multiform.hpp"
 
+// other
+# include "VoxelClear.hpp"
+
 struct ContextNoisePlane : public ContextBase
 {
 MultiformLayoutView3D	MultiformLayout;
@@ -130,23 +133,30 @@ Physics::SurfaceContext		PhysicsContext_Surface;
 
 
 
+::VoxelClear	VoxelClear;
+
+
+
 ~ContextNoisePlane();
 ContextNoisePlane();
 
 
 
 View3D	View;
-float	View_Distance = 0.0f;
-float	View_MoveSpeed = 10.0f;
-float	View_MoveSpeedMultiplier = 10.0f;
-bool	View_IsTangible = false;
+
+float	View_Distance;
+bool	View_IsTangible;
+
+float	ViewMove_SpeedSlow;
+float	ViewMove_SpeedFast;
+
+float	ViewMove_AccelSlow;
+float	ViewMove_AccelFast;
+float	ViewMove_Decel;
 
 BoxEntity3D					ViewEntity;
 BoxEntity3D_CollisionSide	ViewEntity_CollisionSide;
 PolyHedra *					ViewEntity_PolyHedra = nullptr;
-float						ViewEntity_MoveChange = 0.1f;
-float						ViewEntity_MoveLimitSlow = 5.0f;
-float						ViewEntity_MoveLimitFast = 10.0f;
 
 RayF3			ViewRay;
 Axis3D::Rel		ViewRay_Axis0;
@@ -158,7 +168,7 @@ Axis3D::Rel		ViewHit_Axis0;
 Axis3D::Rel		ViewHit_Axis1;
 
 void	ViewEntityUpdate_Intangible(Trans3D change, FrameTime frame_time);
-void	ViewEntityUpdate_Physics(VectorF3 change);
+void	ViewEntityUpdate_Physics(VectorF3 change, FrameTime frame_time);
 void	ViewEntityUpdate_Colliding(FrameTime frame_time);
 void	ViewEntityUpdate_Done();
 void	ViewEntityUpdate(Trans3D change, FrameTime frame_time);
@@ -170,29 +180,6 @@ void	ViewRayUpdate_Show();
 void	ViewRayUpdate();
 
 void	ViewUpdate(Trans3D change, FrameTime frame_time);
-
-
-
-struct VoxelClear
-{
-	unsigned int			Progress = 0xFFFFFFFF;
-	unsigned int			Required;
-	ChunkVoxelIndex			Index;
-	const VoxelPallet *		Pallet = nullptr;
-	const ItemTool *		Tool = nullptr;
-
-	~VoxelClear();
-	VoxelClear();
-	VoxelClear(const VoxelClear & other) = delete;
-	VoxelClear & operator=(const VoxelClear & other) = delete;
-
-	bool	Is() const;
-	void	None();
-	void	Change(const ChunkVoxelIndex & idx, ChunkContainer & container, const ItemTool * tool);
-	void	Continue(const ChunkVoxelIndex & idx, ChunkContainer & container);
-	void	Show(std::stringstream & ss) const;
-};
-ContextNoisePlane::VoxelClear	VoxelClear;
 
 
 

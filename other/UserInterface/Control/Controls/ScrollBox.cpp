@@ -12,7 +12,7 @@ float UI::Control::ScrollContent::CalcRatio(float & control_range_size, float & 
 	// calculating ContentSize and Ratio should be done in Content
 	//std::cout << "ContentChildren: " << Children.Count() << '\n';
 
-	BoxF1 control_range;
+	BoxF1 control_range = BoxF1::InverseLimit();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		UI::Control::Base & control = *Children[i];

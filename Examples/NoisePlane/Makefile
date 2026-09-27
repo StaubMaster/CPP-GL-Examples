@@ -62,6 +62,7 @@ FILES := \
 	Layout/Shader.cpp \
 	Layout/Multiform.cpp \
 	NewPolyHedraUI.cpp \
+	VoxelClear.cpp \
 	new.cpp \
 	main.cpp \
 
