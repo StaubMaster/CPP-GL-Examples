@@ -3,7 +3,7 @@
 
 struct PlayerChange
 {
-	bool			DeathWall = false;
+	bool			IsDead = false;
 	bool			NotAboveGround = false;
 	unsigned int	Coins = 0;
 

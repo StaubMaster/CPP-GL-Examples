@@ -17,6 +17,9 @@
 // NewPolyHedra
 #include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
 
+// Debug
+#include <iostream>
+
 
 
 TileParser::~TileParser()
@@ -37,6 +40,7 @@ TileParser::TileParser(TilePallet & pallet, const DirectoryInfo & media_dir, con
 	Commands.Insert(new TextCommand::FuncNormal("feature",		this, &TileParser::PutFeature));
 }
 
+
 void TileParser::PutPolyHedra(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 1)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 1"); }
@@ -49,6 +53,7 @@ void TileParser::PutPolyHedra(const TextCommand::Args & cmd_args)
 	FileInfo file = MediaDirectory.File(cmd_args.ToString(0));
 	if (!file.Exists()) { throw TextCommand::Exception::InvalidArgument(cmd_args, 0, "Invalid File"); }
 	PolyHedra * polyhedra = PolyHedraParser::Load(file, nullptr, nullptr);
+	if (polyhedra == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "Missing PolyHedra"); }
 
 	// compact this whole thing ?
 	// NewPolyHedra::Basic3D::PalletObjectManager::FindMake(PolyHedra*)
@@ -98,7 +103,6 @@ void TileParser::PutNodeTrans(const TextCommand::Args & cmd_args)
 #include "Tile/Feature/Pallet/DeathFall.hpp"
 #include "Tile/Feature/Pallet/DeathWall.hpp"
 #include "Tile/Feature/Pallet/CoinParabola.hpp"
-#include <iostream>
 
 void TileParser::PutFeature(const TextCommand::Args & cmd_args)
 {
@@ -205,7 +209,29 @@ TilePallet * TileParser::Parse(const FileInfo & file, const DirectoryInfo & medi
 	TilePallet * pallet = new TilePallet();
 	TileParser data(*pallet, media_dir, player);
 	data.File = file;
-	data.ParseFile();
+	try
+	{
+		data.ParseFile();
+	}
+	catch (std::exception & ex)
+	{
+		std::cerr << "Exception while parsing Tile File " << file << '\n';
+		std::cerr << ex.what() << '\n';
+		delete pallet;
+		return nullptr;
+	}
+
+	bool invalid_pallet = false;
+	invalid_pallet |= (data.ExceptionCount != 0);
+	invalid_pallet |= (pallet -> PathTo.Nodes.Count() == 0);
+	invalid_pallet |= !(pallet -> HasPath(EPath::Middle));
+	if (invalid_pallet)
+	{
+		std::cerr << "Invalid Pallet\n";
+		delete pallet;
+		return nullptr;
+	}
+
 	pallet -> Init();
 	return pallet;
 }

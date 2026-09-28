@@ -49,7 +49,7 @@ static void MakePolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 
 void Context::ViewDefault()
 {
-	View.Trans = Trans3D(VectorF3(0, 48, -48), EulerAngle3D::Degrees(0, 5, 0));
+	View.Trans = Trans3D(VectorF3(0, +48, -48), EulerAngle3D::Degrees(0, 5, 0));
 }
 void Context::ViewChange(FrameTime frame_time)
 {
@@ -197,24 +197,34 @@ void Context::TilePalletsInit()
 		dir.File("L_L.tile"),
 		dir.File("L_R.tile"),
 
-		//dir.File("T.tile"), // needs new Mesh
-		//dir.File("T_L.tile"), // needs new Mesh
-		//dir.File("T_R.tile"), // needs new Mesh
-		//dir.File("X.tile"), // needs new Mesh
+		dir.File("T.tile"),
+		dir.File("T_L.tile"),
+		dir.File("T_R.tile"),
+		dir.File("X.tile"),
 
-		//dir.File("I_Gap.tile"), // needs new Mesh
-		//dir.File("I_Gap2.tile"), // needs new Mesh
+		//dir.File("I_Gap.tile"), // debug Mesh
+		//dir.File("I_Gap2.tile"), // bad Spacing for Jumps // debug Mesh
 		dir.File("I_Gap_L.tile"),
 		dir.File("I_Gap_R.tile"),
-		//dir.File("T_Gap_L.tile"), // needs new Mesh
-		//dir.File("T_Gap_R.tile"), // needs new Mesh
+		//dir.File("T_Gap_L.tile"), // debug Mesh
+		//dir.File("T_Gap_R.tile"), // debug Mesh
 
 		dir.File("I_Obs.tile"),
+		dir.File("T_Obs_L.tile"),
+		dir.File("T_Obs_R.tile"),
 	});
+	std::cout << "Loading Tile Files ....\n";
 	for (unsigned int i = 0; i < files.Length(); i++)
 	{
-		pallets.Insert(TileParser::Parse(files[i], MediaDirectory, Player));
+		std::cout << files[i] << " ....\n";
+		TilePallet * pallet = TileParser::Parse(files[i], MediaDirectory, Player);
+		std::cout << files[i] << " done\n";
+		if (pallet != nullptr)
+		{
+			pallets.Insert(pallet);
+		}
 	}
+	std::cout << "Loading Tile Files done\n";
 
 	TileStart = TileParser::Parse(dir.File("Info.tile"), MediaDirectory, Player);
 	TilePallets = pallets.ToArray();
@@ -236,8 +246,12 @@ void Context::TilePalletsFree()
 #include "ValueGen/Random.hpp"
 TileObject * Context::TileNewRandom()
 {
+	if (TilePallets.Length() == 0)
+	{
+		return nullptr;
+	}
 	unsigned int val = Random::UInt32();
-	TilePallet * pallet = TilePallets[val % TilePallets.Length()];
+	const TilePallet * pallet = TilePallets[val % TilePallets.Length()];
 	return pallet -> ToObject();
 }
 void Context::TileNewRandomExit(TileObject * tile, unsigned int layers)
@@ -260,28 +274,6 @@ void Context::TileNewRandomExit(TileObject * tile, unsigned int layers)
 			}
 		}
 	}
-	/*if (tile -> Pallet.HasExit(0))
-	{
-		if (tile -> Exit[0] == nullptr)
-		{
-			tile -> ConnectExit(TileNewRandom(), 0);
-		}
-		if (layers != 0)
-		{
-			TileNewRandomExit(tile -> Exit[0], layers);
-		}
-	}*/
-	/*if (tile -> Pallet.HasExit(1))
-	{
-		if (tile -> Exit[1] == nullptr)
-		{
-			tile -> ConnectExit(TileNewRandom(), 1);
-		}
-		if (layers != 0)
-		{
-			TileNewRandomExit(tile -> Exit[1], layers);
-		}
-	}*/
 }
 
 
@@ -289,10 +281,17 @@ void Context::TileNewRandomExit(TileObject * tile, unsigned int layers)
 void Context::TileInit()
 {
 	delete CurrentTile;
-	CurrentTile = new TileObject(*TileStart);
+	if (TileStart != nullptr)
+	{
+		CurrentTile = TileStart -> ToObject();
+		TileNewRandomExit(CurrentTile, 2);
+	}
+	else
+	{
+		CurrentTile = nullptr;
+	}
 
-	TileNewRandomExit(CurrentTile, 2);
-
+	IsInfoWait = true;
 	Player.MakeDefault();
 }
 void Context::TileFree()
@@ -303,6 +302,14 @@ void Context::TileFree()
 
 void Context::TileIterate()
 {
+	if (IsInfoWait)
+	{
+		if (Window[Keys::Left]  == State::Down) { IsInfoWait = false; }
+		if (Window[Keys::Right] == State::Down) { IsInfoWait = false; }
+		if (Window[Keys::Up]    == State::Down) { IsInfoWait = false; }
+		return;
+	}
+
 	Player.Height += Player.JumpSpeed;
 
 	Player.Side = EPath::Middle;
@@ -331,35 +338,33 @@ void Context::TileIterate()
 			{
 				CurrentTile -> TrimEntry();
 
-				TileObject * exit = nullptr;
+				TileObject * tile = nullptr;
 				if (Player.Path == EPath::Middle)
 				{
-					exit = CurrentTile -> Exit[0];
+					tile = CurrentTile -> Exit[0];
 				}
 				if (Player.Path == EPath::Left)
 				{
-					exit = CurrentTile -> Exit[1];
+					tile = CurrentTile -> Exit[1];
 				}
 				if (Player.Path == EPath::Right)
 				{
-					exit = CurrentTile -> Exit[2];
+					tile = CurrentTile -> Exit[2];
 				}
-				if (exit == nullptr)
+
+				if (tile == nullptr)
 				{
-					exit = CurrentTile -> Exit[0];
+					delete CurrentTile;
 				}
-				CurrentTile = exit;
+				CurrentTile = tile;
 			}
 
-			if (CurrentTile == nullptr)
+			if (CurrentTile != nullptr)
 			{
-				std::cerr << "Missing Current Tile\n";
-				CurrentTile = new TileObject(*TileStart);
+				TileNewRandomExit(CurrentTile, 2);
+				Player.Path = EPath::Middle;
+				Player.PathLocked = false;
 			}
-
-			TileNewRandomExit(CurrentTile, 2);
-			Player.Path = EPath::Middle;
-			Player.PathLocked = false;
 		}
 	}
 
@@ -385,16 +390,15 @@ void Context::TileIterate()
 }
 void Context::TileDisplay()
 {
-	if (CurrentTile != nullptr)
-	{
-		Trans3D trans = CurrentTile -> Pallet.Target(Player.Path, Player.TileDistance);
-		trans.Position = trans.Rotation.reverse(trans.Position);
-		trans = Trans3D(
-			-trans.Position,
-			-trans.Rotation
-		);
-		CurrentTile -> Display(trans, TilePalletDisplayOptions);
-	}
+	if (CurrentTile == nullptr) { return; }
+
+	Trans3D trans = CurrentTile -> Pallet.Target(Player.Path, Player.TileDistance);
+	trans.Position = trans.Rotation.reverse(trans.Position);
+	trans = Trans3D(
+		-trans.Position,
+		-trans.Rotation
+	);
+	CurrentTile -> Display(trans, TilePalletDisplayOptions);
 }
 
 
@@ -428,6 +432,7 @@ Context::Context(::Window & window)
 
 	window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
 	View.Depth.Color = window.DefaultColor;
+	View.Depth.Range.SetMin(0.5f);
 	View.Depth.Factors.SetFar(500.0f);
 	ViewDefault();
 
@@ -465,6 +470,7 @@ static void Toggle(bool & value)
 	value = !value;
 }
 
+#include "ValueType/_Show.hpp"
 void Context::Draw()
 {
 	NewPolyHedra_Manager.InstancesClear();
@@ -481,7 +487,7 @@ void Context::Draw()
 	GL::Enable(GL::Capability::CullFace);
 
 	ObjectManagerBasic.GraphicsDrawFull();
-	ObjectManagerBasic.GraphicsDrawWire();
+	//ObjectManagerBasic.GraphicsDrawWire();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
@@ -509,10 +515,20 @@ void Context::Frame(FrameTime frame_time)
 		std::stringstream ss;
 		ss << (int)(Player.TotalDistance / 10) << "m\n";
 		ss << Player.Change.Coins << "Coins\n";
-		ss << Player.Change.NotAboveGround << " NotAboveGround\n";
-		ss << Player.Change.DeathWall << " DeathWall\n";
-		ss << Window.MouseManager.CursorModeIsLocked() << " CursorLocked\n";
-		ss << IsPaused << " Paused\n";
+		if (Player.Change.IsDead) { ss << "Dead\n"; }
+
+		if (IsDebugging)
+		{
+			ss << "Debug Stuff [F12]\n";
+			ss << IsPaused << " Paused [F1]\n";
+			ss << "Step [F2]\n";
+			ss << Window.MouseManager.CursorModeIsLocked() << " View [F3]\n";
+			ss << "ReLoad [F5]\n";
+			ss << "DisplayOptions\n";
+			ss << TilePalletDisplayOptions.Connections << " Connections [F6]\n";
+			ss << TilePalletDisplayOptions.Paths << " Paths [F7]\n";
+			ss << TilePalletDisplayOptions.Features << " Features [F8]\n";
+		}
 
 		UI::Text::Object text;
 		text.Create();
@@ -524,64 +540,61 @@ void Context::Frame(FrameTime frame_time)
 		text.Text() = ss.str();
 	}
 
+	if (CurrentTile == nullptr)
+	{
+		UI::Text::Object text;
+		text.Create();
+		text.Color() = ColorF4(1, 0, 0);
+		text.AlignMiddleMiddle();
+		text.TextPosition().X = Window.Size.Buffer.Half.X;
+		text.TextPosition().Y = Window.Size.Buffer.Half.Y;
+		text.CharacterSize() = VectorF2(20, 20);
+		text.Text() = "Missing CurrentTile";
+	}
+
 	// Update
 
 	ViewChange(frame_time);
 
 	bool do_step = !IsPaused;
-	if (Window[Keys::F1] == State::Press) { Toggle(IsPaused); }
-	if (Window[Keys::F2] == State::Press) { do_step = true; }
-	if (Window[Keys::F3] == State::Press) { ViewDefault(); }
-	if (Window[Keys::F5] == State::Press)
+	if (Window[Keys::F12] == State::Press) { Toggle(IsDebugging); }
+	if (IsDebugging)
 	{
-		TileFree();
-		TilePalletsFree();
-		TilePalletsInit();
-		TileInit();
-	}
-	if (Window[Keys::F6] == State::Press) { Toggle(TilePalletDisplayOptions.Connections); }
-	if (Window[Keys::F7] == State::Press) { Toggle(TilePalletDisplayOptions.Paths); }
-	if (Window[Keys::F8] == State::Press) { Toggle(TilePalletDisplayOptions.Features); }
-
-	if (IsDead && Window[Keys::Space] == State::Press)
-	{
-		IsDead = false;
-		TileInit();
+		if (Window[Keys::F1] == State::Press) { Toggle(IsPaused); }
+		if (Window[Keys::F2] == State::Press) { do_step = true; }
+		if (Window[Keys::F3] == State::Press) { ViewDefault(); }
+		if (Window[Keys::F5] == State::Press)
+		{
+			TileFree();
+			TilePalletsFree();
+			TilePalletsInit();
+			TileInit();
+		}
+		if (Window[Keys::F6] == State::Press) { Toggle(TilePalletDisplayOptions.Connections); }
+		if (Window[Keys::F7] == State::Press) { Toggle(TilePalletDisplayOptions.Paths); }
+		if (Window[Keys::F8] == State::Press) { Toggle(TilePalletDisplayOptions.Features); }
 	}
 
-	if (do_step)
+	if (!Player.Change.IsDead)
 	{
-		if (Player.Height <= -32.0f || Player.Change.DeathWall)
-		{
-			IsDead = true;
-		}
-		else
-		{
-			TileIterate();
-		}
-
-		/*if (!Player.Change.DeathFall && !Player.Change.DeathWall)
-		{
-			TileIterate();
-		}
-		else if (Player.Change.DeathWall)
-		{
-			IsDead = true;
-		}
-		else if (Player.Change.DeathFall)
+		if (do_step)
 		{
 			if (Player.Height > -32.0f)
 			{
-				Player.TotalDistance += Player.Speed;
-				Player.TileDistance += Player.Speed;
-				Player.Height += Player.JumpSpeed;
-				Player.JumpSpeed -= Player.Gravity;
+				TileIterate();
 			}
 			else
 			{
-				IsDead = true;
+				Player.Change.IsDead = true;
 			}
-		}*/
+		}
+	}
+	else
+	{
+		if (Window[Keys::Enter] == State::Press)
+		{
+			TileInit();
+		}
 	}
 
 	// Update Player Display

@@ -40,15 +40,18 @@ offset +24
 
 
 
-vertex -25 +00 -5
-vertex +25 +00 -5
-vertex +25 +00 +5
-vertex -25 +00 +5
-vertex -25 +20 -5
-vertex +25 +20 -5
-vertex +25 +20 +5
-vertex -25 +20 +5
-belt +0 +1 +2 +3 +4 +5 +6 +7
-face{ +5 +4 +6 +7
+vertex -75 +00 -5
+vertex -75 +20 -5
+vertex -75 +20 +5
+vertex -75 +00 +5
+
+vertex +75 +00 -5
+vertex +75 +20 -5
+vertex +75 +20 +5
+vertex +75 +00 +5
+
+belt}0 +00 +01 +02 +03 +04 +05 +06 +07
+
+
 
 Skin I_Obs.skin

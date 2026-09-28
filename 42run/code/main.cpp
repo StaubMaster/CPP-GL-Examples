@@ -44,6 +44,16 @@ int main()
 			std::cerr << "Error: " << ex.what() << '\n';
 			ret = -1;
 		}
+		catch (std::string & str)
+		{
+			std::cerr << "String Error: " << '"' << str << '"' << '\n';
+			ret = -1;
+		}
+		catch (const char * str)
+		{
+			std::cerr << "String Error: " << '"' << str << '"' << '\n';
+			ret = -1;
+		}
 		catch (...)
 		{
 			std::cerr << "Error: " << "Unknown" << '\n';

@@ -27,7 +27,7 @@ PlayerChange TileFeaturePalletDeathWall::CheckPlayer(const Player & player) cons
 		(box.Max.Y > Height.Min && box.Min.Y < Height.Max)
 	)
 	{
-		h.DeathWall = true;
+		h.IsDead = true;
 	}
 	return h;
 }

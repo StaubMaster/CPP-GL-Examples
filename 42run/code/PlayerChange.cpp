@@ -4,13 +4,13 @@
 
 void PlayerChange::MakeDefault()
 {
-	DeathWall = false;
+	IsDead = false;
 	NotAboveGround = false;
 	Coins = 0;
 }
 void PlayerChange::Consider(const PlayerChange & other)
 {
-	DeathWall |= other.DeathWall;
+	IsDead |= other.IsDead;
 	NotAboveGround |= other.NotAboveGround;
 	Coins += other.Coins;
 }

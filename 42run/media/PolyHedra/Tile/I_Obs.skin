@@ -4,7 +4,7 @@ Format S_2025_10_27
 Size 256 256
 Img Tex/Floor_256x256.png
 Img Tex/Wall_256x256.png
-Img Tex/Orientation.png
+Img Tex/Metal_256x256.png
 
 
 
@@ -27,15 +27,8 @@ TexI 1
 axisAlign   0 0 0   +1 0 0   16.0   0 0 +1   16.0   10
 
 
+
 TexI 2
-vIndex here
-vertex -2.5 -0.5
-vertex +2.5 -0.5
-vertex +2.5 +0.5
-vertex -2.5 +0.5
-vertex -2.5 -0.5
-vertex +2.5 -0.5
-vertex +2.5 +0.5
-vertex -2.5 +0.5
-belt{1 +0 +1 +2 +3 +4 +5 +6 +7
-#face{ +5 +4 +6 +7
+axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2
+axisAlign   0 0 0   +1 0 0   16.0   0 0 +1   16.0   2
+axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2

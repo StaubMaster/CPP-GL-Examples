@@ -87,21 +87,6 @@ void TileObject::ConnectExit(TileObject * tile, EPath path)
 
 
 
-static Trans3D TransForwardPls(const Trans3D & trans, const Trans3D & other)
-{
-	return Trans3D(
-		trans.forward(         +other.Position),
-		trans.Rotation.forward(+other.Rotation)
-	);
-}
-static Trans3D TransForwardMns(const Trans3D & trans, const Trans3D & other)
-{
-	return Trans3D(
-		trans.forward(         -other.Position),
-		trans.Rotation.forward(-other.Rotation)
-	);
-}
-
 void TileObject::DisplayThis(Trans3D trans, const TilePalletDisplayOptions & display_options) const
 {
 	Pallet.Display(trans, display_options);
@@ -115,13 +100,13 @@ void TileObject::Display(Trans3D trans, const TilePalletDisplayOptions & display
 	DisplayThis(trans, display_options);
 	if (Entry != nullptr)
 	{
-		Entry -> DisplayEntry(TransForwardPls(trans, Pallet.TransEntry), EntryExit, display_options);
+		Entry -> DisplayEntry(trans.forward(+Pallet.TransEntry), EntryExit, display_options);
 	}
 	for (unsigned int i = 0; i < 3; i++)
 	{
 		if (Exit[i] != nullptr)
 		{
-			Exit[i] -> DisplayExit(TransForwardPls(trans, Pallet.TransExit[i]), display_options);
+			Exit[i] -> DisplayExit(trans.forward(+Pallet.TransExit[i]), display_options);
 		}
 	}
 }
@@ -130,25 +115,25 @@ void TileObject::DisplayEntry(Trans3D trans, EPath path, const TilePalletDisplay
 	unsigned int idx = (unsigned int)path;
 	trans = Trans3D(
 		trans.Position -      (-Pallet.TransExit[idx].Rotation).forward(trans.Rotation.forward((Pallet.TransExit[idx].Position))),
-		trans.Rotation.forward(-Pallet.TransExit[idx].Rotation)
+		trans.Rotation.forward(trans.Rotation.forward(-Pallet.TransExit[idx].Rotation))
 	);
 
 	DisplayThis(trans, display_options);
 	if (Entry != nullptr)
 	{
-		Entry -> DisplayEntry(TransForwardPls(trans, Pallet.TransEntry), EntryExit, display_options);
+		Entry -> DisplayEntry(trans.forward(+Pallet.TransEntry), EntryExit, display_options);
 	}
 }
 void TileObject::DisplayExit(Trans3D trans, const TilePalletDisplayOptions & display_options) const
 {
-	trans = TransForwardMns(trans, Pallet.TransEntry);
+	trans = trans.forward(-Pallet.TransEntry);
 
 	DisplayThis(trans, display_options);
 	for (unsigned int i = 0; i < 3; i++)
 	{
 		if (Exit[i] != nullptr)
 		{
-			Exit[i] -> DisplayExit(TransForwardPls(trans, Pallet.TransExit[i]), display_options);
+			Exit[i] -> DisplayExit(trans.forward(+Pallet.TransExit[i]), display_options);
 		}
 	}
 }

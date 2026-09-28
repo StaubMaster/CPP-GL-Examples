@@ -12,6 +12,14 @@ NewPolyHedra::ObjectManager::~ObjectManager()
 	{
 		delete PalletObjectManagers[i];
 	}
+	if (BufferFullLayout != nullptr && BufferFullLayout -> IsDynamic)
+	{
+		delete BufferFullLayout;
+	}
+	if (BufferWireLayout != nullptr && BufferWireLayout -> IsDynamic)
+	{
+		delete BufferWireLayout;
+	}
 }
 
 

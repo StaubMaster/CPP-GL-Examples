@@ -16,13 +16,13 @@ TileFeaturePalletCoinParabola::TileFeaturePalletCoinParabola(const Player & play
 
 	Coins.NewLength(9);
 	Coins[0] = VectorF2(center - 80,  0.0f + 8.0f);
-	Coins[1] = VectorF2(center - 60,  0.0f + 8.0f);
-	Coins[2] = VectorF2(center - 40,  0.0f + 8.0f);
-	Coins[3] = VectorF2(center - 20,  0.5f + 8.0f);
+	Coins[1] = VectorF2(center - 60, 10.0f + 8.0f);
+	Coins[2] = VectorF2(center - 40, 30.0f + 8.0f);
+	Coins[3] = VectorF2(center - 20, 40.0f + 8.0f);
 	Coins[4] = VectorF2(center     , 52.5f + 8.0f);
-	Coins[5] = VectorF2(center + 20,  0.0f + 8.0f);
-	Coins[6] = VectorF2(center + 40,  0.0f + 8.0f);
-	Coins[7] = VectorF2(center + 60,  0.0f + 8.0f);
+	Coins[5] = VectorF2(center + 20, 40.0f + 8.0f);
+	Coins[6] = VectorF2(center + 40, 30.0f + 8.0f);
+	Coins[7] = VectorF2(center + 60, 10.0f + 8.0f);
 	Coins[8] = VectorF2(center + 80,  0.0f + 8.0f);
 }
 

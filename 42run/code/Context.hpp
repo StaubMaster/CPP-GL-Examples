@@ -48,8 +48,9 @@ struct Context
 
 	::MultiformLayout	MultiformLayout;
 
-	bool	IsPaused = true;
-	bool	IsDead = false;
+	bool	IsDebugging = false;
+	bool	IsPaused = false;
+	bool	IsInfoWait = true;
 
 	::Player		Player;
 
