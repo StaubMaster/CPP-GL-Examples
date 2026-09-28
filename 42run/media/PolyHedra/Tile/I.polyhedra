@@ -3,12 +3,18 @@ Format Normal
 
 
 
-vertex -25 0 -100
-vertex -25 0 +100
-vertex +25 0 -100
-vertex +25 0 +100
-face{ +0 +1 +2 +3
-offset +4
+vertex -25 +000 -100
+vertex +25 +000 -100
+vertex +25 +100 -100
+vertex -25 +100 -100
+
+vertex -25 +000 +100
+vertex +25 +000 +100
+vertex +25 +100 +100
+vertex -25 +100 +100
+
+belt1 +00 +01 +02 +03 +04 +05 +06 +07
+offset +8
 
 
 

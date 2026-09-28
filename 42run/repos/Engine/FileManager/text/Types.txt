@@ -1,3 +1,0 @@
-
-ValueType:	Fixed Size
-DataType:	Variable Size

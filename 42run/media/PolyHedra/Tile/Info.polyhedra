@@ -1,0 +1,46 @@
+Type PolyHedra
+Format Normal
+
+
+
+vertex -100 +000 -100
+vertex +100 +000 -100
+vertex +100 +100 -100
+vertex -100 +100 -100
+
+vertex -100 +000 +075
+vertex +100 +000 +075
+vertex +100 +100 +075
+vertex -100 +100 +075
+
+vertex -25 +000 +075
+vertex +25 +000 +075
+vertex +25 +100 +075
+vertex -25 +100 +075
+
+vertex -25 +000 +100
+vertex +25 +000 +100
+vertex +25 +100 +100
+vertex -25 +100 +100
+
+belt1 +00 +01 +02 +03 +04 +05 +06 +07
+offset +4
+belt1 +00 +01 +02 +03 +04 +05 +06 +07
+offset +4
+belt1 +00 +01 +02 +03 +04 +05 +06 +07
+offset +4
+offset +4
+
+
+
+vertex -60 +25 -40
+vertex -20 +25 -25
+vertex -60 +75 -40
+vertex -20 +75 -25
+
+belt0 +00 +01 +02 +03
+offset +4
+
+
+
+Skin Info.skin

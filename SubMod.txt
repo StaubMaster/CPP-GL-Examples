@@ -10,3 +10,9 @@ git checkout main
 git merge <sha>
 
 git push
+
+
+
+
+
+

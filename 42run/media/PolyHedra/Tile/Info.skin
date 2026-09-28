@@ -1,0 +1,45 @@
+Type Skin
+Format S_2025_10_27
+
+Size 256 256
+Img Tex/Floor_256x256.png
+Img Tex/Wall_256x256.png
+
+Img Tex/Instructions.png
+
+
+
+TexI 0
+axisAlign   0 0 0   +1 0 0   16.0   0 0 +1   16.0   2
+TexI 1
+axisAlign   0 0 0   0 +1 0   16.0   0 0 +1   16.0   2
+axisAlign   0 0 0   -1 0 0   16.0   0 0 +1   16.0   2
+axisAlign   0 0 0   0 -1 0   16.0   0 0 +1   16.0   2
+
+
+
+TexI 0
+axisAlign   0 0 0   +1 0 0   16.0   0 0 +1   16.0   2
+TexI 1
+axisAlign   0 0 0   0 +1 0   16.0   +1 0 0   16.0   2
+axisAlign   0 0 0   -1 0 0   16.0   0 0 +1   16.0   2
+axisAlign   0 0 0   0 -1 0   16.0   +1 0 0   16.0   2
+
+
+
+TexI 0
+axisAlign   0 0 0   +1 0 0   16.0   0 0 +1   16.0   2
+TexI 1
+axisAlign   0 0 0   0 +1 0   16.0   0 0 +1   16.0   2
+axisAlign   0 0 0   -1 0 0   16.0   0 0 +1   16.0   2
+axisAlign   0 0 0   0 -1 0   16.0   0 0 +1   16.0   2
+
+
+
+TexI 2
+vIndex here
+vertex 0.0 1.0
+vertex 1.0 1.0
+vertex 0.0 0.0
+vertex 1.0 0.0
+belt{0 +0 +1 +2 +3

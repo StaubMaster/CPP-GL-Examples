@@ -49,7 +49,7 @@ static void MakePolyHedraBoxEdges(PolyHedra & polyhedra, BoxF3 box)
 
 void Context::ViewDefault()
 {
-	View.Trans = Trans3D(VectorF3(0, 75, -75), EulerAngle3D::Degrees(0, 5, 0));
+	View.Trans = Trans3D(VectorF3(0, 48, -48), EulerAngle3D::Degrees(0, 5, 0));
 }
 void Context::ViewChange(FrameTime frame_time)
 {
@@ -193,23 +193,23 @@ void Context::TilePalletsInit()
 	DirectoryInfo dir = MediaDirectory.Directory("Tile/Pallet/");
 	Container::Array<FileInfo> files(
 	{
-		//dir.File("I.tile"),
-		//dir.File("L_L.tile"),
-		//dir.File("L_R.tile"),
+		dir.File("I.tile"),
+		dir.File("L_L.tile"),
+		dir.File("L_R.tile"),
 
-		//dir.File("T.tile"),
-		//dir.File("T_L.tile"),
-		//dir.File("T_R.tile"),
-		//dir.File("X.tile"),
+		//dir.File("T.tile"), // needs new Mesh
+		//dir.File("T_L.tile"), // needs new Mesh
+		//dir.File("T_R.tile"), // needs new Mesh
+		//dir.File("X.tile"), // needs new Mesh
 
-		dir.File("I_Gap.tile"),
-		//dir.File("I_Gap2.tile"),
-		//dir.File("I_Gap_L.tile"),
-		//dir.File("I_Gap_R.tile"),
-		//dir.File("T_Gap_L.tile"),
-		//dir.File("T_Gap_R.tile"),
+		//dir.File("I_Gap.tile"), // needs new Mesh
+		//dir.File("I_Gap2.tile"), // needs new Mesh
+		dir.File("I_Gap_L.tile"),
+		dir.File("I_Gap_R.tile"),
+		//dir.File("T_Gap_L.tile"), // needs new Mesh
+		//dir.File("T_Gap_R.tile"), // needs new Mesh
 
-		//dir.File("I_Obs.tile"),
+		dir.File("I_Obs.tile"),
 	});
 	for (unsigned int i = 0; i < files.Length(); i++)
 	{
@@ -428,7 +428,7 @@ Context::Context(::Window & window)
 
 	window.DefaultColor = ColorF4(0.5f, 0.5f, 0.5f);
 	View.Depth.Color = window.DefaultColor;
-	View.Depth.Factors.ChangeFar(500.0f);
+	View.Depth.Factors.SetFar(500.0f);
 	ViewDefault();
 
 	Player.MakeDefault();
