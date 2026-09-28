@@ -4,6 +4,7 @@
 # include "FileInfo.hpp"
 
 # include "Axis/3D/Orientation.hpp"
+# include "Axis/3D/Enums.hpp"
 # include "Axis/2D/Orientation.hpp"
 
 struct Voxel;
@@ -70,7 +71,8 @@ struct VoxelPallet
 
 	::PolyHedra *		PolyHedra = nullptr;
 
-
+	Axis3D::Rel		OrientationAxis0 = Axis3D::Rel::None;
+	Axis3D::Rel		OrientationAxis1 = Axis3D::Rel::None;
 
 	~VoxelPallet() = default;
 	VoxelPallet() = default;

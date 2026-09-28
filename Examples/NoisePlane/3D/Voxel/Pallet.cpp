@@ -13,6 +13,8 @@ VoxelPallet::VoxelPallet(VoxelPalletIndex idx, std::string name, const VoxelPall
 	, Material(material)
 	, Textures()
 	, PolyHedra(nullptr)
+	, OrientationAxis0(geometry.OrientationAxis0)
+	, OrientationAxis1(geometry.OrientationAxis1)
 { }
 
 
@@ -184,6 +186,7 @@ Voxel VoxelPallet::ToVoxel(Axis3D::Rel placeAxis0, Axis3D::Rel placeAxis1) const
 {
 	Voxel voxel;
 	voxel.MakePallet(*this);
-	voxel.Orientation = Geometry -> Orient(placeAxis0, placeAxis1);
+	//voxel.Orientation = Geometry -> Orient(placeAxis0, placeAxis1);
+	voxel.Orientation.make(OrientationAxis0, placeAxis0, OrientationAxis1, placeAxis1);
 	return voxel;
 }

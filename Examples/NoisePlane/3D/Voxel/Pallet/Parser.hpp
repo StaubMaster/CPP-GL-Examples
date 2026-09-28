@@ -24,6 +24,7 @@ struct VoxelPalletMapParser : public TextCommand::Loop
 	void	Done(const TextCommand::Args & cmd_args);
 
 	void	Texture(const TextCommand::Args & cmd_args);
+	void	Orientation(const TextCommand::Args & cmd_args);
 
 	static void		Parse(VoxelPalletMap & map, const FileInfo & file);
 };

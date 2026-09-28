@@ -51,6 +51,7 @@ VoxelPalletMapParser::VoxelPalletMapParser(VoxelPalletMap & map)
 	Commands.Insert(new TextCommand::FuncNormal("new",			this, &VoxelPalletMapParser::New));
 	Commands.Insert(new TextCommand::FuncNormal("done",			this, &VoxelPalletMapParser::Done));
 	Commands.Insert(new TextCommand::FuncNormal("tex",			this, &VoxelPalletMapParser::Texture));
+	Commands.Insert(new TextCommand::FuncNormal("orient",		this, &VoxelPalletMapParser::Orientation));
 }
 
 
@@ -101,6 +102,36 @@ void VoxelPalletMapParser::Texture(const TextCommand::Args & cmd_args)
 	Entry -> Textures[TextureIndex].Change(file);
 	Entry -> TextureOrientations[TextureIndex] = Axis2D::Orientation(diag, flip);
 	TextureIndex++;
+}
+void VoxelPalletMapParser::Orientation(const TextCommand::Args & cmd_args)
+{
+	if (!(cmd_args.Count() == 2)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 2"); }
+	if (Entry == nullptr) { throw TextCommand::Exception::InvalidState(cmd_args, "no Entry"); }
+
+	Axis3D::Rel axis0;
+	std::string axis0_str = cmd_args.ToString(0);
+	if (axis0_str == "Here")       { axis0 = Axis3D::Rel::Here; }
+	else if (axis0_str == "PrevX") { axis0 = Axis3D::Rel::PrevX; }
+	else if (axis0_str == "PrevY") { axis0 = Axis3D::Rel::PrevY; }
+	else if (axis0_str == "PrevZ") { axis0 = Axis3D::Rel::PrevZ; }
+	else if (axis0_str == "NextX") { axis0 = Axis3D::Rel::NextX; }
+	else if (axis0_str == "NextY") { axis0 = Axis3D::Rel::NextY; }
+	else if (axis0_str == "NextZ") { axis0 = Axis3D::Rel::NextZ; }
+	else                           { axis0 = Axis3D::Rel::None; }
+
+	Axis3D::Rel axis1;
+	std::string axis1_str = cmd_args.ToString(1);
+	if (axis1_str == "Here")       { axis1 = Axis3D::Rel::Here; }
+	else if (axis1_str == "PrevX") { axis1 = Axis3D::Rel::PrevX; }
+	else if (axis1_str == "PrevY") { axis1 = Axis3D::Rel::PrevY; }
+	else if (axis1_str == "PrevZ") { axis1 = Axis3D::Rel::PrevZ; }
+	else if (axis1_str == "NextX") { axis1 = Axis3D::Rel::NextX; }
+	else if (axis1_str == "NextY") { axis1 = Axis3D::Rel::NextY; }
+	else if (axis1_str == "NextZ") { axis1 = Axis3D::Rel::NextZ; }
+	else                           { axis1 = Axis3D::Rel::None; }
+
+	Entry -> OrientationAxis0 = axis0;
+	Entry -> OrientationAxis1 = axis1;
 }
 
 

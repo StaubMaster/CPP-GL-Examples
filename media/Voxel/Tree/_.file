@@ -17,6 +17,7 @@ tex Log_Belt.png   Normal0 None
 tex Log_Belt.png   Invert0 None
 tex Log_Base.png   Normal0 None
 tex Log_Belt.png   Normal0 None
+orient PrevY None
 done
 
 
@@ -28,6 +29,7 @@ tex Log/Side0.png   Normal0 None
 tex Log/Side1.png   Invert0 None
 tex Log/Corn.png    Normal0 None
 tex Log/Side1.png   Normal0 None
+#orient PrevY PrevZ
 done
 
 new Log_Edge   CubeDiag   Wood
@@ -37,6 +39,7 @@ tex Log/Side1.png   Normal0 None
 tex Log/Side2.png   Normal0 None
 tex Log/Edge.png    Normal0 None
 tex Log/Side1.png   Normal0 None
+#orient PrevY PrevZ
 done
 
 new Log_Core   CubeDiag   Wood
