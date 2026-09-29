@@ -1,26 +1,37 @@
 Type PolyHedra
 Format Normal
 
+
+
+#vertex -025 +00 +45
+#vertex -025 +20 +45
+#vertex -025 +20 +55
+#vertex -025 +00 +55
+#
+#vertex +125 +00 +45
+#vertex +125 +20 +45
+#vertex +125 +20 +55
+#vertex +125 +00 +55
+#
+#belt}0 +00 +01 +02 +03 +04 +05 +06 +07
+#
+#Skin T_Obs_R.skin
+
+
+
 OtherFile T.polyhedra
 TransRot   0 0 -90
 OtherStatic
 
-offset +24
 
 
+OtherFile ../TablePC.polyhedra
 
-vertex -025 +00 +45
-vertex -025 +20 +45
-vertex -025 +20 +55
-vertex -025 +00 +55
+TransRot   0 0 180
 
-vertex +125 +00 +45
-vertex +125 +20 +45
-vertex +125 +20 +55
-vertex +125 +00 +55
-
-belt}0 +00 +01 +02 +03 +04 +05 +06 +07
-
-
-
-Skin T_Obs_R.skin
+TransPos     000 0 +040
+OtherStatic
+TransPos     000 0 +070
+OtherStatic
+TransPos     000 0 +100
+OtherStatic

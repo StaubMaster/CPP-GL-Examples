@@ -63,15 +63,15 @@ vertex -025 +000 +150
 vertex -025 +100 +150
 vertex -025 +100 -150
 
-vertex -025 +020 -140
-vertex -025 +020 +140
-vertex -025 +080 +140
-vertex -025 +080 -140
+vertex -025 +012 -140
+vertex -025 +012 +140
+vertex -025 +088 +140
+vertex -025 +088 -140
 
-vertex -030 +020 -140
-vertex -030 +020 +140
-vertex -030 +080 +140
-vertex -030 +080 -140
+vertex -030 +012 -140
+vertex -030 +012 +140
+vertex -030 +088 +140
+vertex -030 +088 -140
 
 vertex -030 +000 -150
 vertex -030 +000 +150
@@ -80,6 +80,7 @@ vertex -030 +100 -150
 
 belt{1 +00 +01 +02 +03 +04 +05 +06 +07
 belt{1 +04 +05 +06 +07 +08 +09 +10 +11
+belt{1 +08 +09 +10 +11 +12 +13 +14 +15
 belt{0 +00 +03 +12 +15
 belt{0 +02 +01 +14 +13
 offset +16
@@ -92,15 +93,15 @@ vertex +025 +000 +150
 vertex +025 +100 +150
 vertex +025 +100 -150
 
-vertex +025 +020 -140
-vertex +025 +020 +140
-vertex +025 +080 +140
-vertex +025 +080 -140
+vertex +025 +012 -140
+vertex +025 +012 +140
+vertex +025 +088 +140
+vertex +025 +088 -140
 
-vertex +030 +020 -140
-vertex +030 +020 +140
-vertex +030 +080 +140
-vertex +030 +080 -140
+vertex +030 +012 -140
+vertex +030 +012 +140
+vertex +030 +088 +140
+vertex +030 +088 -140
 
 vertex +030 +000 -150
 vertex +030 +000 +150
@@ -109,6 +110,7 @@ vertex +030 +100 -150
 
 belt}1 +00 +01 +02 +03 +04 +05 +06 +07
 belt}1 +04 +05 +06 +07 +08 +09 +10 +11
+belt}1 +08 +09 +10 +11 +12 +13 +14 +15
 belt}0 +00 +03 +12 +15
 belt}0 +02 +01 +14 +13
 offset +16
@@ -116,3 +118,46 @@ offset +16
 
 
 Skin I_Gaaap.skin
+
+
+
+OtherFile ../TablePC.polyhedra
+TransRot   0 0 0
+
+TransPos   -50 0 -120
+OtherStatic
+TransPos   -50 0 -90
+OtherStatic
+TransPos   -50 0 -60
+OtherStatic
+TransPos   -50 0 -30
+OtherStatic
+TransPos   -50 0  0
+OtherStatic
+TransPos   -50 0 +30
+OtherStatic
+TransPos   -50 0 +60
+OtherStatic
+TransPos   -50 0 +90
+OtherStatic
+TransPos   -50 0 +120
+OtherStatic
+
+TransPos   +50 0 -120
+OtherStatic
+TransPos   +50 0 -90
+OtherStatic
+TransPos   +50 0 -60
+OtherStatic
+TransPos   +50 0 -30
+OtherStatic
+TransPos   +50 0  0
+OtherStatic
+TransPos   +50 0 +30
+OtherStatic
+TransPos   +50 0 +60
+OtherStatic
+TransPos   +50 0 +90
+OtherStatic
+TransPos   +50 0 +120
+OtherStatic

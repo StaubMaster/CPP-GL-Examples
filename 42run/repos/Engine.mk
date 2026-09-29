@@ -3,7 +3,7 @@
 #                            Engine                            #
 ################################################################
 
-ENGINE_DIR := $(REPOS_DIR)/Engine
+ENGINE_DIR := $(REPOS_DIR)../../repos/Engine
 
 REPOS_LIST += $(ENGINE_DIR)
 

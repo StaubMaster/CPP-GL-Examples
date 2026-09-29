@@ -198,13 +198,13 @@ void Context::TilePalletsInit()
 		//dir.File("L_R.tile"),
 
 		//dir.File("T.tile"),
-		//dir.File("T_L.tile"), // Bad Skin ?
-		//dir.File("T_R.tile"), // Bad Skin ?
+		//dir.File("T_L.tile"),
+		//dir.File("T_R.tile"),
 		//dir.File("X.tile"),
 
 		//dir.File("I_Gap.tile"), // debug Mesh
 		//dir.File("I_Gap2.tile"), // bad Spacing for Jumps // debug Mesh
-		dir.File("I_Gap_L.tile"),
+		//dir.File("I_Gap_L.tile"),
 		//dir.File("I_Gap_R.tile"),
 		//dir.File("T_Gap_L.tile"), // debug Mesh
 		//dir.File("T_Gap_R.tile"), // debug Mesh
@@ -212,6 +212,8 @@ void Context::TilePalletsInit()
 		//dir.File("I_Obs.tile"),
 		//dir.File("T_Obs_L.tile"),
 		//dir.File("T_Obs_R.tile"),
+
+		dir.File("I_Sup.tile"),
 	});
 	std::cout << "Loading Tile Files ....\n";
 	for (unsigned int i = 0; i < files.Length(); i++)
@@ -515,7 +517,6 @@ void Context::Frame(FrameTime frame_time)
 		std::stringstream ss;
 		ss << (int)(Player.TotalDistance / 10) << "m\n";
 		ss << Player.Change.Coins << "Coins\n";
-		if (Player.Change.IsDead) { ss << "Dead\n"; }
 
 		if (IsDebugging)
 		{
@@ -548,8 +549,30 @@ void Context::Frame(FrameTime frame_time)
 		text.AlignMiddleMiddle();
 		text.TextPosition().X = Window.Size.Buffer.Half.X;
 		text.TextPosition().Y = Window.Size.Buffer.Half.Y;
-		text.CharacterSize() = VectorF2(20, 20);
+		text.CharacterSize() = VectorF2(36);
 		text.Text() = "Missing CurrentTile";
+	}
+	else if (Player.Change.IsDead)
+	{
+		UI::Text::Object text;
+		text.Create();
+		text.Color() = ColorF4(1, 0, 0);
+		text.AlignMiddleMiddle();
+		text.TextPosition().X = Window.Size.Buffer.Half.X;
+		text.TextPosition().Y = Window.Size.Buffer.Half.Y;
+		text.CharacterSize() = VectorF2(36);
+		text.Text() = "You are Dead\npress [Enter]";
+	}
+	else if (IsInfoWait)
+	{
+		UI::Text::Object text;
+		text.Create();
+		text.Color() = ColorF4(0, 0.5f, 0);
+		text.AlignTopMiddle();
+		text.TextPosition().X = Window.Size.Buffer.Half.X;
+		text.TextPosition().Y = 50.0f;
+		text.CharacterSize() = VectorF2(36);
+		text.Text() = "Instructions:\nuse Arrow Keys";
 	}
 
 	// Update

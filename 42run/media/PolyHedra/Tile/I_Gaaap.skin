@@ -47,6 +47,8 @@ axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2
 axisAlign   0 0 0   +1 0 0   16.0   0 0 +1   16.0   2
 axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2
 
+axisAlign   0 0 0   0 -1 0   16.0   0 0 +1   16.0   8
+
 axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2
 axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2
 
@@ -55,10 +57,13 @@ axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2
 # Wall Window R
 TexI 2
 axisAlign   0 0 0   0 -1 0   16.0   0 0 +1   16.0   8
+
 axisAlign   0 0 0   +1 0 0   16.0   0 0 +1   16.0   2
 axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2
 axisAlign   0 0 0   +1 0 0   16.0   0 0 +1   16.0   2
 axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2
+
+axisAlign   0 0 0   0 -1 0   16.0   0 0 +1   16.0   8
 
 axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2
 axisAlign   0 0 0   +1 0 0   16.0   0 +1 0   16.0   2

@@ -1,0 +1,12 @@
+
+polyhedra PolyHedra/Tile/I_Sup.polyhedra
+
+nodePos C 0 0 -300
+
+nodePos M 0 0 +300
+
+feature DeathWall M M 145.0 155.0 0.0 100.0
+feature DeathWall M L 145.0 155.0 0.0 100.0
+
+feature DeathWall M M 445.0 455.0 0.0 100.0
+feature DeathWall M R 445.0 455.0 0.0 100.0

@@ -45,32 +45,37 @@ Skin T.skin
 
 
 OtherFile ../TablePC.polyhedra
-TransRot   0 0 00
 
-TransPos    -100 0 -030
-OtherStatic
-TransPos    -100 0 -060
-OtherStatic
-TransPos    -100 0 -090
-OtherStatic
+TransRot   0 0 +90
 
-TransPos    -050 0 -030
+TransPos    -040 0 -100
 OtherStatic
-TransPos    -050 0 -060
+TransPos    -070 0 -100
 OtherStatic
-TransPos    -050 0 -090
+TransPos    -100 0 -100
 OtherStatic
 
-TransPos    +050 0 -030
+TransPos    -040 0 -050
 OtherStatic
-TransPos    +050 0 -060
+TransPos    -070 0 -050
 OtherStatic
-TransPos    +050 0 -090
+TransPos    -100 0 -050
 OtherStatic
 
-TransPos    +100 0 -030
+
+
+TransRot   0 0 -90
+
+TransPos    +040 0 -100
 OtherStatic
-TransPos    +100 0 -060
+TransPos    +070 0 -100
 OtherStatic
-TransPos    +100 0 -090
+TransPos    +100 0 -100
+OtherStatic
+
+TransPos    +040 0 -050
+OtherStatic
+TransPos    +070 0 -050
+OtherStatic
+TransPos    +100 0 -050
 OtherStatic
