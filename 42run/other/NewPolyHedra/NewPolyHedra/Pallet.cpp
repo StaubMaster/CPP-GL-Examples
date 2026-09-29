@@ -172,12 +172,15 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 				PalletFull::Triangle & tri = data[i];
 				for (unsigned int j = 0; j < 3; j++)
 				{
-					const Skin::Corner & corner = skin.Corners[face.idx[j]];
-					PalletFull::Vertex & vert = tri.Data[j];
-					vert.Texture.X = corner.Coord.X;
-					vert.Texture.Y = corner.Coord.Y;
-					vert.Texture.Z = corner.Index;
-					vert.Color = corner.Color;
+					if (face.idx[j] < skin.Corners.Count())
+					{
+						const Skin::Corner & corner = skin.Corners[face.idx[j]];
+						PalletFull::Vertex & vert = tri.Data[j];
+						vert.Texture.X = corner.Coord.X;
+						vert.Texture.Y = corner.Coord.Y;
+						vert.Texture.Z = corner.Index;
+						vert.Color = corner.Color;
+					}
 				}
 			}
 		}

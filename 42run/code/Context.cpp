@@ -193,25 +193,25 @@ void Context::TilePalletsInit()
 	DirectoryInfo dir = MediaDirectory.Directory("Tile/Pallet/");
 	Container::Array<FileInfo> files(
 	{
-		dir.File("I.tile"),
-		dir.File("L_L.tile"),
-		dir.File("L_R.tile"),
+		//dir.File("I.tile"),
+		//dir.File("L_L.tile"),
+		//dir.File("L_R.tile"),
 
-		dir.File("T.tile"),
-		dir.File("T_L.tile"),
-		dir.File("T_R.tile"),
-		dir.File("X.tile"),
+		//dir.File("T.tile"),
+		//dir.File("T_L.tile"), // Bad Skin ?
+		//dir.File("T_R.tile"), // Bad Skin ?
+		//dir.File("X.tile"),
 
 		//dir.File("I_Gap.tile"), // debug Mesh
 		//dir.File("I_Gap2.tile"), // bad Spacing for Jumps // debug Mesh
 		dir.File("I_Gap_L.tile"),
-		dir.File("I_Gap_R.tile"),
+		//dir.File("I_Gap_R.tile"),
 		//dir.File("T_Gap_L.tile"), // debug Mesh
 		//dir.File("T_Gap_R.tile"), // debug Mesh
 
-		dir.File("I_Obs.tile"),
-		dir.File("T_Obs_L.tile"),
-		dir.File("T_Obs_R.tile"),
+		//dir.File("I_Obs.tile"),
+		//dir.File("T_Obs_L.tile"),
+		//dir.File("T_Obs_R.tile"),
 	});
 	std::cout << "Loading Tile Files ....\n";
 	for (unsigned int i = 0; i < files.Length(); i++)

@@ -36,3 +36,23 @@ belt{0 +10 +11 +12 +13 +14 +19 +18 +17 +16 +15
 
 
 Skin L_R.skin
+
+
+
+OtherFile ../TablePC.polyhedra
+TransRot   0 0 -90
+
+TransPos   +030 0 -100
+OtherStatic
+TransPos   +030 0 -050
+OtherStatic
+
+TransPos   +060 0 -100
+OtherStatic
+TransPos   +060 0 -050
+OtherStatic
+
+TransPos   +090 0 -100
+OtherStatic
+TransPos   +090 0 -050
+OtherStatic
