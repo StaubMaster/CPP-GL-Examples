@@ -454,9 +454,8 @@ void ContextNoisePlane::MakeControls()
 	// Debug
 	{
 		MenuDebug.FPS.Check.Check(true);
-		//MenuDebug.VoxelChunkMemory.Check.Check(true);
-
 		MenuDebug.View.Check.Check(true);
+		MenuDebug.VoxelChunkMemory.Check.Check(true);
 
 		MenuDebug.Hide();
 		UIManager.Window.ChildInsert(MenuDebug);
@@ -1008,15 +1007,16 @@ void ContextNoisePlane::MakeVoxels()
 void ContextNoisePlane::Make()
 {
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-	MakeControls();
-	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
 	MakeVoxels();
+	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+	MakeControls();
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
 	//ChunkManager.Container.ChangeSize(4, 2);
 	//ChunkManager.Container.ChangeSize(8, 4);
 	//ChunkManager.Container.ChangeSize(16, 4);
-	//ChunkManager.Container.ChangeSize(16, 8);
-	ChunkManager.Container.ChangeSize(16, 12);
+	//ChunkManager.Container.ChangeSize(16, 6);
+	ChunkManager.Container.ChangeSize(16, 8);
+	//ChunkManager.Container.ChangeSize(16, 12);
 	//ChunkManager.Container.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
 }
@@ -1278,6 +1278,134 @@ static ValueAccumulator<float>		DLTAverageTime(1024);
 static ValueAccumulator<float>		FPSAverageTime(1024);
 static ValueAccumulator<float>		InventoryCursorTime(64);
 
+// seperate ChunkContainer and ChunkGraphics
+struct ChunkContainerInfo
+{
+	VectorI3		Center;
+
+	unsigned int	Know_Want = 0;
+	unsigned int	Know_Have = 0;
+	unsigned int	Know_Done = 0;
+
+	unsigned int	Care_Want = 0;
+	unsigned int	Care_Have = 0;
+	unsigned int	Care_Done = 0;
+
+	unsigned int	Limit = 0;
+	unsigned int	Total = 0;
+
+	unsigned int	Generation_None = 0;
+	unsigned int	Generation_TerrainDone = 0;
+	unsigned int	Generation_Decoration_Generated = 0;
+	unsigned int	Generation_Decoration_Assambled = 0;
+	unsigned int	Generation_Done = 0;
+
+	unsigned int	Done_Empty = 0;
+	unsigned int	Done_Filled = 0;
+
+	unsigned int	Memory_Chunks = 0;
+	unsigned int	Memory_Voxels = 0;
+
+	void	Gather(ChunkContainer & container)
+	{
+		Center = container.Center;
+
+		Know_Want = (container.KnowBox.Size() + 1).Product();
+		Know_Have = 0;
+		Know_Done = 0;
+
+		Care_Want = (container.CareBox.Size() + 1).Product();
+		Care_Have = 0;
+		Care_Done = 0;
+
+		Limit = container.Chunks.Length();
+		Total = 0;
+
+		Generation_None = 0;
+		Generation_TerrainDone = 0;
+		Generation_Decoration_Generated = 0;
+		Generation_Decoration_Assambled = 0;
+		Generation_Done = 0;
+
+		Done_Empty = 0;
+		Done_Filled = 0;
+
+		Memory_Chunks = 0;
+		Memory_Voxels = 0;
+
+		for (unsigned int i = 0; i < Limit; i++)
+		{
+			if (container.Chunks[i] == nullptr) { continue; }
+			Chunk & chunk = *container.Chunks[i];
+			Total++;
+			Memory_Chunks++;
+
+			bool is_care = container.AbsoluteCheckCareBox(chunk.Index);
+
+			Know_Have++;
+			Care_Have += is_care;
+
+			if (chunk.IsDone())
+			{
+				Generation_Done++;
+
+				Know_Done++;
+				Care_Done += is_care;
+
+				if (chunk.IsEmpty())	{ Done_Empty++; }
+				else					{ Done_Filled++; }
+			}
+			else if (chunk.DecorationsAssambled)	{ Generation_Decoration_Assambled++; }
+			else if (chunk.DecorationsGenerated)	{ Generation_Decoration_Generated++; }
+			else if (chunk.TerrainDone)				{ Generation_TerrainDone++; }
+			else									{ Generation_None++; }
+
+			if (!chunk.IsEmpty())
+			{
+				Memory_Voxels++;
+			}
+		}
+	}
+	void	Show(std::stringstream & ss)
+	{
+		ss << "ChunkContainer:\n";
+
+		ss << "Center: " << Center << '\n';
+
+		ss << "Know: " << Know_Want << ' ' << Know_Have << ' ' << Know_Done << '\n';
+		ss << "Care: " << Care_Want << ' ' << Care_Have << ' ' << Care_Done << '\n';
+
+		ss << "Limit: " << Limit << '\n';
+		ss << "Total: " << Total << '\n';
+
+		ss << "None   : " << Generation_None << '\n';
+		ss << "Terrain: " << Generation_TerrainDone << '\n';
+		ss << "DecGen : " << Generation_Decoration_Generated << '\n';
+		ss << "DecAss : " << Generation_Decoration_Assambled << '\n';
+		ss << "Done   : " << Generation_Done;
+		ss << " ( ";
+		ss << Done_Empty;
+		ss << " | ";
+		ss << Done_Filled;
+		ss << " )\n";
+
+		ss << "Memory: Chunks: ";
+		//ss << Memory1000ToString(sizeof(Chunk));
+		//ss << " * ";
+		//ss << Seperated1000(Memory_Chunks);
+		//ss << " = ";
+		ss << Memory1000ToString(Memory_Chunks * sizeof(Chunk));
+		ss << '\n';
+
+		ss << "Memory: Voxels: ";
+		//ss << Memory1000ToString(CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
+		//ss << " * ";
+		//ss << Seperated1000(Memory_Voxels);
+		//ss << " = ";
+		ss << Memory1000ToString(Memory_Voxels * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
+		ss << '\n';
+	}
+};
 struct VoxelChunkMemoryInfo
 {
 	unsigned int chunks_limit;
@@ -1300,6 +1428,10 @@ struct VoxelChunkMemoryInfo
 	unsigned long long buffer_data_f_entrys;
 	unsigned long long buffer_data_f_total;
 	unsigned long long buffer_data_f_limit;
+
+	VectorI3	ContainerCenter;
+	BoxI3		ContainerKnowBox;
+	BoxI3		ContainerCareBox;
 
 	void	Clear()
 	{
@@ -1369,6 +1501,10 @@ struct VoxelChunkMemoryInfo
 		buffer_data_f_entrys = manager.Graphics.BufferF.Count();
 		buffer_data_f_total = manager.Graphics.BufferF.LengthSum();
 		buffer_data_f_limit = manager.Graphics.BufferF.Buffer.Count;
+
+		ContainerCenter = manager.Container.Center;
+		ContainerKnowBox = manager.Container.KnowBox;
+		ContainerCareBox = manager.Container.CareBox;
 	}
 	void	Show(std::stringstream & ss)
 	{
@@ -1386,48 +1522,61 @@ struct VoxelChunkMemoryInfo
 		ss << 'F' << chunks_done_filled << '\n';
 		ss << '\n';
 
-		ss << "Chunks: " << Memory1000ToString(sizeof(Chunk));
-		ss << " * " << Seperated1000(chunks_total);
-		ss << " = " << Memory1000ToString(chunks_total * sizeof(Chunk));
-		ss << '\n';
-
-		ss << "Voxels: " << Memory1000ToString(sizeof(Voxel));
-		ss << " * " << Seperated1000(chunks_done_filled * CHUNK_VALUES_PER_VOLM);
-		ss << " = " << Memory1000ToString(chunks_done_filled * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
-		ss << '\n';
-
 		ss << "BufferState";
 		ss << " None[" << buffer_data_none << ']';
 		ss << " Want[" << buffer_data_want[0] << ':' << buffer_data_want[1] << ']';
 		ss << " Have[" << buffer_data_have[0] << ':' << buffer_data_have[1] << ']';
 		ss << '\n';
 
-		ss << "DataU Entrys: " << buffer_data_u_entrys << ' ';
-		ss << "( " << buffer_data_u_total << " / " << buffer_data_u_limit << " )";
-		ss << '\n';
-		ss << "DataF Entrys: " << buffer_data_f_entrys << ' ';
-		ss << "( " << buffer_data_f_total << " / " << buffer_data_f_limit << " )";
+		ss << "Memory: Chunks: ";
+		//ss << Memory1000ToString(sizeof(Chunk));
+		//ss << " * ";
+		//ss << Seperated1000(chunks_total);
+		//ss << " = ";
+		ss << Memory1000ToString(chunks_total * sizeof(Chunk));
 		ss << '\n';
 
-		ss << "DataU Memory: ";
+		ss << "Memory: Voxels: ";
+		//ss << Memory1000ToString(sizeof(Voxel));
+		//ss << " * ";
+		//ss << Seperated1000(chunks_done_filled * CHUNK_VALUES_PER_VOLM);
+		//ss << " = ";
+		ss << Memory1000ToString(chunks_done_filled * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
+		ss << '\n';
+
+		ss << "Container: Center: " << ContainerCenter << '\n';
+		ss << "Know: Box: " << ContainerKnowBox << ' ' << (ContainerKnowBox.Size() + 1) << ' ' << (ContainerKnowBox.Size() + 1).Product() << '\n';
+		ss << "Care: Box: " << ContainerCareBox << ' ' << (ContainerCareBox.Size() + 1) << ' ' << (ContainerCareBox.Size() + 1).Product() << '\n';
+		// Know: Total / Limit
+		// Care: Total / Limit
+
+		ss << "Entrys: DataU: ";
+		ss << buffer_data_u_entrys;
+		ss << " ( ";
+		ss << buffer_data_u_total;
+		ss << " / ";
+		ss << buffer_data_u_limit;
+		ss << " )\n";
+
+		ss << "Entrys: DataF: ",
+		ss << buffer_data_f_entrys;
+		ss << " ( ";
+		ss << buffer_data_f_total;
+		ss << " / ";
+		ss << buffer_data_f_limit;
+		ss << " )\n";
+
+		ss << "Memory: DataU: ";
 		ss << Memory1000ToString(buffer_data_u_total * sizeof(VoxelGraphicsDataU::Vertex));
 		ss << " / ";
 		ss << Memory1000ToString(buffer_data_u_limit * sizeof(VoxelGraphicsDataU::Vertex));
 		ss << '\n';
+
 		ss << "Memory: DataF: ";
 		ss << Memory1000ToString(buffer_data_f_total * sizeof(VoxelGraphicsDataF::Vertex));
 		ss << "/";
 		ss << Memory1000ToString(buffer_data_f_limit * sizeof(VoxelGraphicsDataF::Vertex));
 		ss << '\n';
-
-		/* Memory
-			Item Memory		Item Count		Memory Total	Memory Limit
-		*/
-
-		/* Chunks
-			Know Used of Limit
-			Care Used of Limit
-		*/
 
 		/*ss << "DataU Memory:" << Memory1000ToString(sizeof(VoxelGraphics::MainFaceU));
 		ss << " * " << Seperated1000(data_u_memory);
@@ -1550,8 +1699,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << ChunkManager::TimeUpdateRemove << '\n';
 		ss << '\n';
 		ss << "AuxThread1 DoIdle: " << AuxThreadCollection.AuxThread1.DoIdle << '\n';
-		ss << AuxThreadCollection.AuxThread1.TimeMakeBufferFind << '\n';
-		ss << AuxThreadCollection.AuxThread1.TimeMakeBuffer << '\n';
+		ss << AuxThreadCollection.AuxThread1.TimeFind << '\n';
+		ss << AuxThreadCollection.AuxThread1.TimeDo << '\n';
 		ss << '\n';
 		ss << "AuxThread2 DoIdle: " << AuxThreadCollection.AuxThread2.DoIdle << '\n';
 		ss << AuxThreadCollection.AuxThread2.TimeGenerateFind << '\n';
@@ -1705,8 +1854,11 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	{
 		ss << "Queues:\n";
 
+		ss << "BufferData Have " << ChunkManager.Graphics.Queue.Count() << '\n';
 		ss << "BufferData Want " << AuxThreadCollection.AuxThread1.QueueCount() << '\n';
-		ss << "BufferData Have " << ChunkManager.Graphics.BufferDataHave.QueueCount() << '\n';
+		ss << "Completed    : " << AuxThreadCollection.AuxThread1.Completed << '\n';
+		ss << "Removed Null : " << AuxThreadCollection.AuxThread1.RemovedNull << '\n';
+		ss << "Removed Check: " << AuxThreadCollection.AuxThread1.RemovedCheck << '\n';
 
 		ss << "Generate Candidates " << AuxThreadCollection.AuxThread2.FindCandidateCount << '\n';
 		ss << "Assamble Candidates " << AuxThreadCollection.AuxThread3.FindCandidateCount << '\n';
@@ -1727,15 +1879,16 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			the Threads run independently anyway
 			so 10Hz or so should be fine
 		*/
-		static VoxelChunkMemoryInfo info;
+		//static VoxelChunkMemoryInfo info;
+		static ChunkContainerInfo info;
 		static StopWatch info_sw;
 		info_sw.Start();
 
 		sw_part.Clear(); sw_part.Start();
 		if (info_sw.ElapsedTime() > 1.0f)
 		{
-			info.Clear();
-			info.Gather(ChunkManager);
+			//info.Gather(ChunkManager);
+			info.Gather(ChunkManager.Container);
 			info_sw.Clear();
 			info_sw.Start();
 		}

@@ -6,7 +6,7 @@
 
 # include "Generics/Container/Binary.hpp"
 
-struct ChunkManager;
+struct ChunkContainer;
 struct Chunk;
 
 # include "3D/ChunkGuards.hpp"
@@ -20,7 +20,7 @@ struct VectorI3;
 
 struct AuxThread3 : public IdleLoopThread
 {
-	ChunkManager &	Manager;
+	ChunkContainer &	Container;
 
 	WaitDoTime		TimeAssambleFind;
 	WaitDoTime		TimeAssamble;
@@ -29,7 +29,7 @@ struct AuxThread3 : public IdleLoopThread
 	AuxThread3() = delete;
 	AuxThread3(const AuxThread3 & other) = delete;
 	AuxThread3 & operator=(const AuxThread3 & other) = delete;
-	AuxThread3(ChunkManager & manager);
+	AuxThread3(ChunkContainer & container);
 
 		StopWatch sw;
 		AccessLockedChunk chunk;

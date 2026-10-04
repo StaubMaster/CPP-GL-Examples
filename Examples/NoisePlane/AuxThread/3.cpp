@@ -9,17 +9,15 @@
 #include "ValueType/Loop/U3.hpp"
 
 #include "Threading/ObjectTypeAccessUniqueGuard.hpp"
-//#include "Threading/ObjectTypeAccessSharedGuard.hpp"
 #include "Threading/ObjectTypeAssignUniqueGuard.hpp"
-//#include "Threading/ObjectTypeAssignSharedGuard.hpp"
 
 #include "Telemetry/StopWatch.hpp"
 
 
 
-AuxThread3::AuxThread3(ChunkManager & manager)
+AuxThread3::AuxThread3(ChunkContainer & container)
 	: IdleLoopThread("AuxThread3")
-	, Manager(manager)
+	, Container(container)
 	, TimeAssambleFind("TimeAssambleFind")
 	, TimeAssamble("TimeAssamble")
 { }
@@ -28,10 +26,9 @@ AuxThread3::AuxThread3(ChunkManager & manager)
 
 bool AuxThread3::CheckFunc()
 {
-	Manager.Container.ChunksLock.AccessL(sw, TimeAssambleFind);
-	//chunk = Manager.AssambleChunkFind();
+	Container.ChunksLock.AccessL(sw, TimeAssambleFind);
 	chunk = Find();
-	Manager.Container.ChunksLock.AccessU(sw, TimeAssambleFind);
+	Container.ChunksLock.AccessU(sw, TimeAssambleFind);
 
 	return (chunk.Is());
 }
@@ -43,7 +40,6 @@ void AuxThread3::DoFunc()
 
 	sw.Clear();
 	sw.Start();
-	//(*chunk2).AssambleDecoration();
 	AssambleDecoration(*chunk2);
 	sw.Stop();
 	TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
@@ -51,113 +47,38 @@ void AuxThread3::DoFunc()
 
 	chunk = AccessLockedChunk();
 }
-/*void AuxThread3::Func()
-{
-	IdleLoopThread::ThreadName = "AuxThread3";
-	while (!Term)
-	{
-		StopWatch sw;
-		AccessLockedChunk chunk;
-
-		std::unique_lock<std::mutex> lk(ConditionVarMutex);
-		ConditionVar.wait(lk, [&]
-		{
-			if (Term) { return true; }
-			if (DoIdle) { return false; }
-
-			Manager.Container.ChunksLock.AccessL(sw, TimeAssambleFind);
-			//chunk = Manager.AssambleChunkFind();
-			chunk = Find();
-			Manager.Container.ChunksLock.AccessU(sw, TimeAssambleFind);
-
-			if (chunk.Is())
-			{
-				IsIdle = false;
-				return true;
-			}
-			IsIdle = true;
-			return false;
-		});
-
-		if (Term) { break; }
-
-		if (!chunk.Is()) { continue; }
-
-		AssignLockedChunk chunk2 = chunk.ToAssign();
-
-		sw.Clear();
-		sw.Start();
-		//(*chunk2).AssambleDecoration();
-		AssambleDecoration(*chunk2);
-		sw.Stop();
-		TimeAssamble.DoTime.NewValue(sw.ElapsedTime());
-		TimeAssamble.ThreadName = IdleLoopThread::ThreadName;
-	}
-	Done = true;
-}*/
 
 
 
 
-
-#include "Threading/ObjectTypeAccessUniqueGuard.hpp"
 
 AccessLockedChunk AuxThread3::Find()
 {
-	/*CenterIndexLoop3D	loop;
-	for (loop.New(CareSize); !loop.Done(); loop.Continue())
-	{
-		Chunk * ptr = Chunks[relative(loop.Index())];
-		if (ptr == nullptr) { continue; }
-		const Chunk & ref = *ptr;
-
-		ptr -> AccessL();
-		if (ref.TerrainDone && ref.DecorationsGenerated) { ptr -> AccessU(); continue; }
-		if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
-
-		return AccessLockedChunk(ptr);
-	}
-	return AccessLockedChunk();*/
-
-	//Chunk * found = nullptr;
-	ObjectTypeAccessUniqueGuard<Chunk> found;
+	AccessLockedChunk found;
 	float dist;
-	unsigned int candidate_count = 0;
-	for (unsigned int i = 0; i < Manager.Container.Chunks.Length(); i++)
+	FindCandidateCount = 0;
+	for (unsigned int i = 0; i < Container.Chunks.Length(); i++)
 	{
-		Chunk * ptr = Manager.Container.Chunks[i];
+		Chunk * ptr = Container.Chunks[i];
 		if (ptr == nullptr) { continue; }
 		const Chunk & ref = *ptr;
 
-		//ptr -> AccessL();
-		//ObjectTypeAccessUniqueGuard<Chunk> guard = ObjectTypeAccessUniqueGuard<Chunk>::Make(ptr -> Lock, *ptr);
-		//ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessUniqueMake();
-		ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessMake();
+		AccessLockedChunk guard = ptr -> ToAccessMake();
 
-		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { /*ptr -> AccessU();*/ continue; }
-		//if (!Manager.CareBox.ContainsInclusive(ref.Index).All(true)) { /*ptr -> AccessU();*/ continue; }
-		if (!Manager.Container.AbsoluteCheckCareBox(ref.Index)) { /*ptr -> AccessU();*/ continue; }
-		if (!ref.Neighbours.CanAssamble()) { /*ptr -> AccessU();*/ continue; }
+		if (!ref.TerrainDone || !ref.DecorationsGenerated || ref.DecorationsAssambled) { continue; }
+		if (!Container.AbsoluteCheckCareBox(ref.Index)) { continue; }
+		if (!ref.Neighbours.CanAssamble()) { continue; }
 
-		candidate_count++;
-		VectorF3 rel = Manager.Container.AbsoluteToCentered(ref.Index).ToF();
+		FindCandidateCount++;
+		VectorF3 rel = Container.AbsoluteToCentered(ref.Index).ToF();
 		float d = rel.length2();
-		//if (found == nullptr || d < dist)
 		if (found.Object == nullptr || d < dist)
 		{
-			//found = guard;
 			found.Transfer(guard);
-			//if (found != nullptr) { found -> AccessU(); }
-			//found = ptr;
-			//guard.Lock = nullptr;
 			dist = d;
 		}
-		else { /*ptr -> AccessU();*/ }
 	}
-	FindCandidateCount = candidate_count;
 
-	//return Chunk::ToAccessTake(found);
-	//return found.ToShared();
 	return found;
 }
 
@@ -192,7 +113,6 @@ void AuxThread3::AssambleDecoration(Chunk & chunk)
 	chunk.DecorationsAssambled = true;
 
 	chunk.Neighbours.BufferDataWantAll();
-	Manager.AuxThreadCollection.AuxThread1.QueuePut(&chunk);
 }
 void AuxThread3::AssambleDecoration(Chunk & chunk, const StructureObject & obj, const VectorI3 & offset)
 {

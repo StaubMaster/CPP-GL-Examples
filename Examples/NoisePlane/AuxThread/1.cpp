@@ -1,7 +1,7 @@
 #include "AuxThread/1.hpp"
 
 #include "3D/Chunk.hpp"
-#include "3D/Chunk/Manager.hpp"
+#include "3D/Chunk/Container.hpp"
 
 #include "Threading/ObjectTypeAccessUniqueGuard.hpp"
 //#include "Threading/ObjectTypeAccessSharedGuard.hpp"
@@ -10,81 +10,62 @@
 
 
 
-AuxThread1::AuxThread1(ChunkManager & manager)
+AuxThread1::AuxThread1(ChunkContainer & container)
 	: IdleLoopThread("AuxThread1")
-	, Manager(manager)
-	, TimeMakeBufferFind("TimeMakeBufferFind")
-	, TimeMakeBuffer("TimeMakeBuffer")
+	, Container(container)
+	, TimeFind("TimeMakeBufferFind")
+	, TimeDo("TimeMakeBuffer")
 { }
 
 
 
 bool AuxThread1::CheckFunc()
 {
-	Manager.Container.ChunksLock.AccessL(sw, TimeMakeBufferFind);
-	chunk = Find();
-	Manager.Container.ChunksLock.AccessU(sw, TimeMakeBufferFind);
+	StopWatch sw;
 
-	return (chunk.Is());
+	Container.ChunksLock.AccessL(sw, TimeFind);
+	ChunkFind = Find();
+	Container.ChunksLock.AccessU(sw, TimeFind);
+
+	return (ChunkFind.Is());
 }
 void AuxThread1::DoFunc()
 {
-	if (!chunk.Is()) { return; }
+	if (!ChunkFind.Is()) { return; }
+
+	TimeDo.ThreadName = IdleLoopThread::ThreadName;
+
+	StopWatch sw;
+
+	sw.Start();
+	AssignLockedChunk assign_chunk = ChunkFind.ToAssign();
+	TimeDo.WaitTime.NewValue(sw.ElapsedTime());
 
 	sw.Clear();
-	sw.Start();
-	((Chunk*)&(*chunk)) -> BufferData_Make();
-	sw.Stop();
-	TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
-	TimeMakeBuffer.ThreadName = IdleLoopThread::ThreadName;
+	(*assign_chunk).GraphicsData_Make();
+	TimeDo.DoTime.NewValue(sw.ElapsedTime());
 
-	chunk = AccessLockedChunk();
+	Completed++;
+
+	ChunkFind = AccessLockedChunk();
+	QueueClean();
 }
-/*void AuxThread1::Func()
+
+
+
+// uint Binary::FindCount(item)
+// bool Binary::FindZero(item)
+template <typename TypeItem> static bool FindZero(const Container::Binary<TypeItem> & container, const TypeItem & item)
 {
-	IdleLoopThread::ThreadName = "AuxThread1";
-	while (!Term)
+	for (unsigned int i = 0; i < container.Count(); i++)
 	{
-		StopWatch sw;
-		AccessLockedChunk chunk;
-
-		std::unique_lock<std::mutex> lk(ConditionVarMutex);
-		ConditionVar.wait(lk, [&]
+		if (container[i] == item)
 		{
-			if (Term) { return true; }
-			if (DoIdle) { return false; }
-
-			Manager.Container.ChunksLock.AccessL(sw, TimeMakeBufferFind);
-			chunk = Find();
-			Manager.Container.ChunksLock.AccessU(sw, TimeMakeBufferFind);
-
-			if (chunk.Is())
-			{
-				IsIdle = false;
-				return true;
-			}
-			//if (Manager.MakeBufferQueue.Count() != 0)
-			//{
-			//	IsIdle = false;
-			//	return true;
-			//}
-			IsIdle = true;
 			return false;
-		});
-
-		if (Term) { break; }
-
-		if (!chunk.Is()) { continue; }
-
-		sw.Clear();
-		sw.Start();
-		((Chunk*)&(*chunk)) -> BufferData_Make();
-		sw.Stop();
-		TimeMakeBuffer.DoTime.NewValue(sw.ElapsedTime());
-		TimeMakeBuffer.ThreadName = IdleLoopThread::ThreadName;
+		}
 	}
-	Done = true;
-}*/
+	return true;
+}
 
 
 
@@ -95,44 +76,57 @@ unsigned int AuxThread1::QueueCount()
 	QueueMutex.unlock();
 	return c;
 }
-void AuxThread1::QueuePut(Chunk * chunk)
+void AuxThread1::QueuePut(Chunk & chunk)
 {
-	if (chunk == nullptr) { return; }
+	if (!chunk.GraphicsData_Make_Can()) { return; }
 
 	QueueMutex.lock();
 
-	for (unsigned int i = 0; i < Queue.Count(); i++)
+	if (!FindZero(Queue, &chunk))
 	{
-		if (Queue[i] == chunk)
-		{
-			QueueMutex.unlock();
-			return;
-		}
+		QueueMutex.unlock();
+		return;
 	}
-	chunk -> BufferData_Want = true;
-	Queue.Insert(chunk);
+	Queue.Insert(&chunk);
 
 	QueueMutex.unlock();
 
 	Poke();
 }
+/*void AuxThread1::QueuePut(Chunk * chunk)
+{
+	if (chunk != nullptr)
+	{
+		QueuePut(*chunk);
+	}
+}*/
+void AuxThread1::QueueClean()
+{
+	QueueMutex.lock();
+	for (unsigned int i = 0; i < Queue.Count(); i++)
+	{
+		Chunk * ptr = Queue[i];
+		if (ptr == nullptr) { RemovedNull++; Queue.RemoveAt(i); i--; continue; }
+		QueueMutex.unlock();
+
+		const Chunk & ref = *ptr;
+		if (!ref.GraphicsData_Make_Can()) { RemovedCheck++; QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
+	}
+	QueueMutex.unlock();
+}
+
 AccessLockedChunk AuxThread1::Find()
 {
 	QueueMutex.lock();
 	for (unsigned int i = 0; i < Queue.Count(); i++)
 	{
 		Chunk * ptr = Queue[i];
-		if (ptr == nullptr) { Queue.RemoveAt(i); i--; continue; }
-		const Chunk & ref = *ptr;
+		if (ptr == nullptr) { continue; }
 		QueueMutex.unlock();
 
 		AccessLockedChunk chunk = ptr -> ToAccessMake();
-		//AccessLockedChunk chunk = ptr -> ToAccessTry();
-		//if (!chunk.Is()) { continue; }
-
-		if (!ref.BufferData_Want) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
-		if (!ref.IsDone()) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
-		if (!ref.Neighbours.CanMakeBuffer()) { QueueMutex.lock(); Queue.RemoveAt(i); i--; continue; }
+		const Chunk & ref = *ptr;
+		if (!ref.GraphicsData_Make_Can()) { continue; }
 
 		return chunk;
 	}

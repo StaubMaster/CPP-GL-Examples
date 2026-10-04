@@ -98,6 +98,7 @@ void ChunkContainer::Clear()
 	{
 		//Chunks[i] -> GraphicsDelete();
 		delete Chunks[i];
+		Chunks[i] = nullptr;
 	}
 //	std::cout << "Clear:" << __LINE__ << '\n';
 }

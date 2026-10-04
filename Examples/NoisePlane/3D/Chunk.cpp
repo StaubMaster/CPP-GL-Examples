@@ -108,11 +108,11 @@ Chunk::Chunk(VectorI3 idx, ChunkManager & manager)
 	, Decorations()
 	, DecorationsGenerated(false)
 	, DecorationsAssambled(false)
-	, BufferData()
+	, GraphicsData()
 	, BufferData_Want(false)
 	, BufferData_Have(false)
-	, BufferUData_Entry(Manager.Graphics.BufferU)
-	, BufferFData_Entry(Manager.Graphics.BufferF)
+	, GraphicsDataU_Entry(Manager.Graphics.BufferU)
+	, GraphicsDataF_Entry(Manager.Graphics.BufferF)
 { }
 
 
@@ -154,39 +154,51 @@ bool Chunk::IsDone() const
 
 
 
-void Chunk::BufferData_Queue()
+void Chunk::GraphicsData_Make_Queue()
 {
-	Manager.AuxThreadCollection.AuxThread1.QueuePut(this);
+	BufferData_Want = true;
+	Manager.AuxThreadCollection.AuxThread1.QueuePut(*this);
 }
-
-void Chunk::BufferData_Make()
+bool Chunk::GraphicsData_Make_Can() const
 {
-	if (!BufferData_Want) { return; }
-	if (!IsDone()) { return; }
+	return BufferData_Want && IsDone() && Neighbours.CanMakeBuffer();
+}
+void Chunk::GraphicsData_Make()
+{
+	if (!GraphicsData_Make_Can()) { return; }
 
-	BufferData.Make(*this, Neighbours);
+	GraphicsData.Make(*this, Neighbours);
 
 	BufferData_Want = false;
 
-	Manager.Graphics.BufferDataHave.QueuePut(this);
+	GraphicsData_Put_Queue();
 }
 
-void Chunk::BufferData_Update()
+void Chunk::GraphicsData_Put_Queue()
 {
-	if (!BufferData_Have) { return; }
+	BufferData_Have = true;
+	Manager.Graphics.Queue.Put(*this);
+}
+bool Chunk::GraphicsData_Put_Can() const
+{
+	return BufferData_Have;
+}
+void Chunk::GraphicsData_Put()
+{
+	if (!GraphicsData_Put_Can()) { return; }
 
-	BufferData.ArrayLock.lock();
+	GraphicsData.ArrayLock.lock();
 	{
-		const Container::Array<VoxelGraphicsDataU::Face> & data = BufferData.DataU();
-		BufferUData_Entry.Put(data.ToVoid());
-		BufferData.ClearU();
+		const Container::Array<VoxelGraphicsDataU::Face> & data = GraphicsData.DataU();
+		GraphicsDataU_Entry.Put(data.ToVoid());
+		GraphicsData.ClearU();
 	}
 	{
-		const Container::Array<VoxelGraphicsDataF::Face> & data = BufferData.DataF();
-		BufferFData_Entry.Put(data.ToVoid());
-		BufferData.ClearF();
+		const Container::Array<VoxelGraphicsDataF::Face> & data = GraphicsData.DataF();
+		GraphicsDataF_Entry.Put(data.ToVoid());
+		GraphicsData.ClearF();
 	}
-	BufferData.ArrayLock.unlock();
+	GraphicsData.ArrayLock.unlock();
 
 	BufferData_Have = false;
 }

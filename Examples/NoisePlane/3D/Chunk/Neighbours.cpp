@@ -157,35 +157,35 @@ bool ChunkNeighbour::IsVisibleNextZ(const Array3D<bool> & voxel_is_empty, Vector
 
 void ChunkNeighbour::BufferDataWantAll()
 {
-	if (Cube[1][1][1] != nullptr) { Cube[1][1][1] -> BufferData_Queue(); }
-	if (Cube[1][1][0] != nullptr) { Cube[1][1][0] -> BufferData_Queue(); }
-	if (Cube[1][0][1] != nullptr) { Cube[1][0][1] -> BufferData_Queue(); }
-	if (Cube[0][1][1] != nullptr) { Cube[0][1][1] -> BufferData_Queue(); }
-	if (Cube[1][1][2] != nullptr) { Cube[1][1][2] -> BufferData_Queue(); }
-	if (Cube[1][2][1] != nullptr) { Cube[1][2][1] -> BufferData_Queue(); }
-	if (Cube[2][1][1] != nullptr) { Cube[2][1][1] -> BufferData_Queue(); }
+	if (Cube[1][1][1] != nullptr) { Cube[1][1][1] -> GraphicsData_Make_Queue(); }
+	if (Cube[1][1][0] != nullptr) { Cube[1][1][0] -> GraphicsData_Make_Queue(); }
+	if (Cube[1][0][1] != nullptr) { Cube[1][0][1] -> GraphicsData_Make_Queue(); }
+	if (Cube[0][1][1] != nullptr) { Cube[0][1][1] -> GraphicsData_Make_Queue(); }
+	if (Cube[1][1][2] != nullptr) { Cube[1][1][2] -> GraphicsData_Make_Queue(); }
+	if (Cube[1][2][1] != nullptr) { Cube[1][2][1] -> GraphicsData_Make_Queue(); }
+	if (Cube[2][1][1] != nullptr) { Cube[2][1][1] -> GraphicsData_Make_Queue(); }
 }
 void ChunkNeighbour::BufferDataWant(const VectorU3 & udx)
 {
 	(void)udx;
-	if (Cube[1][1][1] != nullptr) { Cube[1][1][1] -> BufferData_Queue(); }
-	if (Cube[1][1][0] != nullptr) { Cube[1][1][0] -> BufferData_Queue(); }
-	if (Cube[1][0][1] != nullptr) { Cube[1][0][1] -> BufferData_Queue(); }
-	if (Cube[0][1][1] != nullptr) { Cube[0][1][1] -> BufferData_Queue(); }
-	if (Cube[1][1][2] != nullptr) { Cube[1][1][2] -> BufferData_Queue(); }
-	if (Cube[1][2][1] != nullptr) { Cube[1][2][1] -> BufferData_Queue(); }
-	if (Cube[2][1][1] != nullptr) { Cube[2][1][1] -> BufferData_Queue(); }
+	if (Cube[1][1][1] != nullptr) { Cube[1][1][1] -> GraphicsData_Make_Queue(); }
+	if (Cube[1][1][0] != nullptr) { Cube[1][1][0] -> GraphicsData_Make_Queue(); }
+	if (Cube[1][0][1] != nullptr) { Cube[1][0][1] -> GraphicsData_Make_Queue(); }
+	if (Cube[0][1][1] != nullptr) { Cube[0][1][1] -> GraphicsData_Make_Queue(); }
+	if (Cube[1][1][2] != nullptr) { Cube[1][1][2] -> GraphicsData_Make_Queue(); }
+	if (Cube[1][2][1] != nullptr) { Cube[1][2][1] -> GraphicsData_Make_Queue(); }
+	if (Cube[2][1][1] != nullptr) { Cube[2][1][1] -> GraphicsData_Make_Queue(); }
 }
 
 bool ChunkNeighbour::CanMakeBuffer() const
 {
-	if (Cube[1][1][1] != nullptr) { if (!Cube[1][1][1] -> IsDone()) { return false; } }
-	if (Cube[1][1][0] != nullptr) { if (!Cube[1][1][0] -> IsDone()) { return false; } }
-	if (Cube[1][0][1] != nullptr) { if (!Cube[1][0][1] -> IsDone()) { return false; } }
-	if (Cube[0][1][1] != nullptr) { if (!Cube[0][1][1] -> IsDone()) { return false; } }
-	if (Cube[1][1][2] != nullptr) { if (!Cube[1][1][2] -> IsDone()) { return false; } }
-	if (Cube[1][2][1] != nullptr) { if (!Cube[1][2][1] -> IsDone()) { return false; } }
-	if (Cube[2][1][1] != nullptr) { if (!Cube[2][1][1] -> IsDone()) { return false; } }
+	if (Cube[1][1][1] == nullptr || !Cube[1][1][1] -> IsDone()) { return false; }
+	if (Cube[1][1][0] == nullptr || !Cube[1][1][0] -> IsDone()) { return false; }
+	if (Cube[1][0][1] == nullptr || !Cube[1][0][1] -> IsDone()) { return false; }
+	if (Cube[0][1][1] == nullptr || !Cube[0][1][1] -> IsDone()) { return false; }
+	if (Cube[1][1][2] == nullptr || !Cube[1][1][2] -> IsDone()) { return false; }
+	if (Cube[1][2][1] == nullptr || !Cube[1][2][1] -> IsDone()) { return false; }
+	if (Cube[2][1][1] == nullptr || !Cube[2][1][1] -> IsDone()) { return false; }
 	return true;
 }
 

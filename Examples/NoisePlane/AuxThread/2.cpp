@@ -59,50 +59,6 @@ void AuxThread2::DoFunc()
 
 	chunk = AccessLockedChunk();
 }
-/*void AuxThread2::Func()
-{
-	IdleLoopThread::ThreadName = "AuxThread2";
-	while (!Term)
-	{
-		StopWatch sw;
-		AccessLockedChunk chunk;
-
-		std::unique_lock<std::mutex> lk(ConditionVarMutex);
-		ConditionVar.wait(lk, [&]
-		{
-			if (Term) { return true; }
-			if (DoIdle) { return false; }
-
-			Manager.Container.ChunksLock.AccessL(sw, TimeGenerateFind);
-			chunk = Find();
-			Manager.Container.ChunksLock.AccessU(sw, TimeGenerateFind);
-
-			if (chunk.Is())
-			{
-				IsIdle = false;
-				return true;
-			}
-			IsIdle = true;
-			return false;
-		});
-
-		if (Term) { break; }
-
-		if (!chunk.Is()) { continue; }
-
-		// Generate Voxels into seperate Voxel Array. then assign new Array into chunk
-		AssignLockedChunk chunk2 = chunk.ToAssign();
-
-		sw.Clear();
-		sw.Start();
-		GenerateTerrain(*chunk2);
-		GenerateDecoration(*chunk2, Plane, Cave0);
-		sw.Stop();
-		TimeGenerate.DoTime.NewValue(sw.ElapsedTime());
-		TimeGenerate.ThreadName = IdleLoopThread::ThreadName;
-	}
-	Done = true;
-}*/
 
 
 
@@ -121,46 +77,21 @@ AccessLockedChunk AuxThread2::Find()
 		it would only need to loop once, which should be fine
 	*/
 
-	CenterIndexLoop3D	loop = FindLoop;
+	CenterIndexLoop3D loop = FindLoop;
 	FindCandidateCount = 0;
-	//std::cout << "AuxThread2.Find() loop\n";
 	for (loop.New(Manager.Container.CareSize); !loop.Done(); loop.Continue())
 	{
-		//Chunk * ptr = Manager.Chunks[Manager.ToRelative(loop.Index() + Manager.Center)];
 		Chunk * ptr = Manager.Container.FindCenteredPointer(loop.Index());
 		if (ptr == nullptr) { continue; }
+
+		AccessLockedChunk guard = ptr -> ToAccessMake();
 		const Chunk & ref = *ptr;
-
-		//std::cout << "AuxThread2.Find() lock\n";
-		//ptr -> AccessL();
-		//ptr -> Lock.AccessL();
-		//ObjectTypeAccessUniqueGuard<Chunk> guard;
-		//guard.Lock = &(ptr -> Lock);
-		//guard.Lock -> AccessL();
-		//ObjectTypeAccessUniqueGuard<Chunk> guard = ObjectTypeAccessUniqueGuard<Chunk>::Make(ptr -> Lock, *ptr);
-		//ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessUniqueMake();
-		ObjectTypeAccessUniqueGuard<Chunk> guard = ptr -> ToAccessMake();
-
-		//std::cout << "AuxThread2.Find() check\n";
 		if (ref.TerrainDone && ref.DecorationsGenerated)
 		{
-			//std::cout << "AuxThread2.Find() continue\n";
-			//ptr -> AccessU();
-			//ptr -> Lock.AccessU();
-			//guard.Lock -> AccessU();
-			//guard.Lock = nullptr;
-			// ~guard
 			FindLoop = loop;
 			continue;
 		}
 
-		//if (!CareBox.IntersectVecInclusive(ref.Index).All(true)) { ptr -> AccessU(); continue; }
-
-		//std::cout << "AuxThread2.Find() done\n";
-		//return ptr -> ToAccessTake();
-		//guard.Lock = nullptr;
-		//return AccessLockedChunk::Take(ptr -> Lock, *ptr);
-		//return guard.ToShared();
 		return guard;
 	}
 	return AccessLockedChunk();

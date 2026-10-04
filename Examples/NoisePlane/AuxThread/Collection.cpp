@@ -21,9 +21,9 @@ bool AuxThreadCollection::AllDone() const
 AuxThreadCollection::AuxThreadCollection(ContextNoisePlane & context)
 	: Threads(4)
 	, AuxThread0(context)
-	, AuxThread1(context.ChunkManager)
+	, AuxThread1(context.ChunkManager.Container)
 	, AuxThread2(context.ChunkManager)
-	, AuxThread3(context.ChunkManager)
+	, AuxThread3(context.ChunkManager.Container)
 {
 	Threads[0] = &AuxThread0;
 	Threads[1] = &AuxThread1;

@@ -9,7 +9,7 @@
 
 # include "Generics/Container/Binary.hpp"
 
-struct ChunkManager;
+struct ChunkContainer;
 struct Chunk;
 
 # include "3D/ChunkGuards.hpp"
@@ -21,19 +21,18 @@ struct Chunk;
 // BufferDataMakeThread
 struct AuxThread1 : public IdleLoopThread
 {
-	ChunkManager &	Manager;
+	ChunkContainer &	Container;
 
-	WaitDoTime		TimeMakeBufferFind;
-	WaitDoTime		TimeMakeBuffer;
+	WaitDoTime		TimeFind;
+	WaitDoTime		TimeDo;
 
 	~AuxThread1() = default;
 	AuxThread1() = delete;
 	AuxThread1(const AuxThread1 & other) = delete;
 	AuxThread1 & operator=(const AuxThread1 & other) = delete;
-	AuxThread1(ChunkManager & manager);
+	AuxThread1(ChunkContainer & container);
 
-		StopWatch sw;
-		AccessLockedChunk chunk;
+	AccessLockedChunk	ChunkFind;
 
 	bool	CheckFunc() override;
 	void	DoFunc() override;
@@ -42,14 +41,21 @@ struct AuxThread1 : public IdleLoopThread
 
 	private:
 	Container::Binary<Chunk *>	Queue;
-	std::mutex					QueueMutex;
+	std::mutex		QueueMutex;
+	public:
+	unsigned int	QueueCount();
+	public:
+	void	QueuePut(Chunk & chunk);
+	void	QueueClean();
+
+
 
 	public:
-	unsigned int				QueueCount();
-	void						QueuePut(Chunk * chunk);
-
-
-
+	unsigned int	Completed = 0;
+	unsigned int	RemovedNull = 0;
+	unsigned int	RemovedCheck = 0;
+	public:
+	//void	
 	private:
 	AccessLockedChunk			Find();
 };

@@ -75,31 +75,41 @@ void ChunkGraphics::GraphicsDelete()
 
 
 
-unsigned int ChunkGraphics::BufferHave::QueueCount()
+// uint Binary::FindCount(item)
+// bool Binary::FindZero(item)
+template <typename TypeItem> static bool FindZero(const Container::Binary<TypeItem> & container, const TypeItem & item)
 {
-	QueueMutex.lock();
+	for (unsigned int i = 0; i < container.Count(); i++)
+	{
+		if (container[i] == item)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+
+unsigned int ChunkGraphics::ChunkThreadQueue::Count()
+{
+	Mutex.lock();
 	unsigned int c = Queue.Count();
-	QueueMutex.unlock();
+	Mutex.unlock();
 	return c;
 }
-void ChunkGraphics::BufferHave::QueuePut(Chunk * chunk)
+void ChunkGraphics::ChunkThreadQueue::Put(Chunk & chunk)
 {
-	if (chunk == nullptr) { return; }
+	Mutex.lock();
 
-	QueueMutex.lock();
-
-	/*for (unsigned int i = 0; i < Queue.Count(); i++)
+	if (!FindZero(Queue, &chunk))
 	{
-		if (Queue[i] == chunk)
-		{
-			QueueMutex.unlock();
-			return;
-		}
-	}*/
-	chunk -> BufferData_Have = true;
-	Queue.Insert(chunk);
+		Mutex.unlock();
+		return;
+	}
+	Queue.Insert(&chunk);
 
-	QueueMutex.unlock();
+	Mutex.unlock();
 }
 
 
@@ -127,17 +137,15 @@ void ChunkGraphics::Draw()
 
 
 	sw.Clear();
-	BufferDataHave.QueueMutex.lock();
-	for (unsigned int i = 0; i < BufferDataHave.Queue.Count(); i++)
+	Queue.Mutex.lock();
+	for (unsigned int i = 0; i < Queue.Queue.Count(); i++)
 	{
-		Chunk * ptr = BufferDataHave.Queue[i];
+		Chunk * ptr = Queue.Queue[i];
 		if (ptr == nullptr) { continue; }
-		const Chunk & ref = *ptr;
-		if (!ref.BufferData_Have) { continue; }
-		ptr -> BufferData_Update();
+		ptr -> GraphicsData_Put();
 	}
-	BufferDataHave.Queue.Clear();
-	BufferDataHave.QueueMutex.unlock();
+	Queue.Queue.Clear();
+	Queue.Mutex.unlock();
 	DrawUpdateBind.NewValue(sw.ElapsedTime());
 
 
@@ -157,15 +165,6 @@ void ChunkGraphics::Draw()
 	ShaderF.Bind();
 	DrawShaderBind.NewValue(sw.ElapsedTime());
 
-	/*{
-		std::cout << "Entrys: " << BufferF.Entrys.Count() << '\n';
-		for (unsigned int i = 0; i < BufferF.Entrys.Count(); i++)
-		{
-			std::cout << BufferF.Entrys[i] -> Offset << ' ';
-			std::cout << BufferF.Entrys[i] -> Length << '\n';
-		}
-		std::cout << '\n';
-	}*/
 	sw.Clear();
 	BufferF.Bind();
 	BufferF.Draw();

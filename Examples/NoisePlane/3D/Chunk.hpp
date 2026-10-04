@@ -183,17 +183,35 @@ struct Chunk
 
 
 	public:
-	ChunkGraphicsData	BufferData;
+	/*enum class GraphicsState
+	{
+		None, // do nothing
+		Want, // want Vertex Data, generate
+		Have, // hant Vertex Data, put in Buffer
+		Done, // do nothing
+	};*/
+	//Chunk::GraphicsState	GraphicsState; // put this in GraphicsData ?
 
+	private:
+	ChunkGraphicsData	GraphicsData;
+
+	private: public:
 	bool	BufferData_Want;
-	void	BufferData_Make();
 	bool	BufferData_Have;
-	void	BufferData_Update();
 
-	void	BufferData_Queue();
+	public:
+	void	GraphicsData_Make_Queue();
+	bool	GraphicsData_Make_Can() const;
+	void	GraphicsData_Make();
 
-	VertexArray::Multi::Entry		BufferUData_Entry;
-	VertexArray::Multi::Entry		BufferFData_Entry;
+	public:
+	void	GraphicsData_Put_Queue();
+	bool	GraphicsData_Put_Can() const;
+	void	GraphicsData_Put();
+
+	private:
+	VertexArray::Multi::Entry		GraphicsDataU_Entry;
+	VertexArray::Multi::Entry		GraphicsDataF_Entry;
 };
 
 #endif

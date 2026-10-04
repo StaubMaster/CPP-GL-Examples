@@ -42,7 +42,7 @@ struct ChunkContainer
 	unsigned int	KnowSize;
 	unsigned int	CareSize;
 
-	private:
+	private: public:
 	VectorI3	Center;
 	BoxI3		KnowBox;
 	BoxI3		CareBox;

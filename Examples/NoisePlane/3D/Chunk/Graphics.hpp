@@ -53,16 +53,25 @@ struct ChunkGraphics
 		Done: Vertex Data is freed
 	*/
 
-	struct BufferHave
+	/*enum class BufferState
+	{
+		None, // do nothing
+		Want, // want Vertex Data, generate
+		Have, // hant Vertex Data, put in Buffer
+		Done, // do nothing
+	};*/
+
+	struct ChunkThreadQueue
 	{
 		public:
 		Container::Binary<Chunk *>	Queue;
-		std::mutex					QueueMutex;
+		std::mutex		Mutex;
 		public:
-		unsigned int				QueueCount();
-		void						QueuePut(Chunk * chunk);
+		unsigned int	Count();
+		public:
+		void	Put(Chunk & chunk);
 	};
-	ChunkGraphics::BufferHave	BufferDataHave;
+	ChunkThreadQueue		Queue;
 
 	public:
 	static ValueAccumulator<float>		DrawTotal;

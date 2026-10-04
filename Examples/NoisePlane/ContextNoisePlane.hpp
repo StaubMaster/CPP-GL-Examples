@@ -191,9 +191,6 @@ void	ViewUpdate(Trans3D change, FrameTime frame_time);
 static GL::BlockBinding		LightBufferBinding;
 ::LightManager				LightManager;
 Buffer::Uniform				LightBuffer;
-//::LightBase			LightAmbient;
-//::LightDirection		LightSolar;
-//::LightSpot			LightSpot;
 
 
 
@@ -230,8 +227,7 @@ void	Draw();
 
 void	FrameText(FrameTime frame_time);
 void	InventoryCursor(FrameTime frame_time);
-// !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
-void	FrameInput();;
+void	FrameInput();
 
 void	Frame(FrameTime frame_time) override;
 void	Resize(DisplaySize display_size) override;
