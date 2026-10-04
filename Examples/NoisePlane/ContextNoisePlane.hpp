@@ -77,15 +77,18 @@
 # include "NewPolyHedraUI.hpp"
 
 // Layout
-# include "Layout/Shader.hpp"
-# include "Layout/Multiform.hpp"
+# include "Layout/Uniform/Light3D.hpp"
+# include "Layout/Multiform/Light3D.hpp"
 
 // other
 # include "VoxelClear.hpp"
 
+// Light
+# include "Light/Manager.hpp"
+
 struct ContextNoisePlane : public ContextBase
 {
-MultiformLayoutView3D	MultiformLayout;
+LayoutMultiformLight3D	LayoutMultiform;
 
 
 
@@ -124,6 +127,8 @@ Item Indicator
 */
 ::ItemContainer		HotBar;
 ::ItemContainerUI	HotBarUI;
+
+void	MakeControls();
 
 
 
@@ -183,22 +188,21 @@ void	ViewUpdate(Trans3D change, FrameTime frame_time);
 
 
 
-::LightBase			LightAmbient;
-::LightDirection	LightSolar;
-::LightSpot			LightSpot;
+static GL::BlockBinding		LightBufferBinding;
+::LightManager				LightManager;
+Buffer::Uniform				LightBuffer;
+//::LightBase			LightAmbient;
+//::LightDirection		LightSolar;
+//::LightSpot			LightSpot;
 
 
 
 PolyHedra *		VoxelCube; // put this in PolyHedra Geometry Pallet
 PolyHedra *		VoxelChunkCube;
 
-void	Init_Maps();
+void	MakeVoxels();
 
 void	Make();
-
-
-
-void	MakeControls();
 
 
 

@@ -1,4 +1,4 @@
-#include "LightManager.hpp"
+#include "Light/Manager.hpp"
 
 
 
@@ -49,4 +49,30 @@ LightSpot * LightManager::TakeSpot()
 		return light;
 	}
 	return nullptr;
+}
+
+
+
+
+
+#include "Light/BufferData.hpp"
+LightBufferData LightManager::ToBufferData() const
+{
+	LightBufferData data;
+	data.Ambient = Ambient;
+	data.Solar = Solar;
+
+	for (unsigned int i = 0; i < Point_Count; i++)
+	{
+		data.Point[i] = Point_Array[i];
+	}
+	data.PointCount = Point_Count;
+
+	for (unsigned int i = 0; i < Spot_Count; i++)
+	{
+		data.Spot[i] = Spot_Array[i];
+	}
+	data.SpotCount = Spot_Count;
+
+	return data;
 }

@@ -91,7 +91,7 @@ void OptionsMenu::FPSFunc(float val)
 void OptionsMenu::FOVFunc(float val)
 {
 	Context.View.FOV = Angle::Degrees(val);
-	Context.MultiformLayout.FOV.ChangeData(Context.View.FOV);
+	Context.LayoutMultiform.FOV.ChangeData(Context.View.FOV);
 
 	unsigned int v = val;
 	Context.MenuOptions.FOV.SetText("FOV:" + std::to_string(v));
@@ -99,7 +99,7 @@ void OptionsMenu::FOVFunc(float val)
 void OptionsMenu::DepthFunc(float val)
 {
 	Context.View.Depth.Factors.SetFar(val);
-	Context.MultiformLayout.Depth.ChangeData(Context.View.Depth);
+	Context.LayoutMultiform.Depth.ChangeData(Context.View.Depth);
 
 	unsigned int v = val;
 	Context.MenuOptions.Depth.SetText("Depth:" + std::to_string(v));
@@ -107,7 +107,7 @@ void OptionsMenu::DepthFunc(float val)
 void OptionsMenu::DepthRangeFunc(float val)
 {
 	Context.View.Depth.Range.SetMin(val);
-	Context.MultiformLayout.Depth.ChangeData(Context.View.Depth);
+	Context.LayoutMultiform.Depth.ChangeData(Context.View.Depth);
 	Context.MenuOptions.DepthRange.SetText("DepthRange:" + std::to_string(val));
 }
 void OptionsMenu::Chunk_InsertFunc(float val)

@@ -6,6 +6,8 @@
 # include "ValueType/Light/Point.hpp"
 # include "ValueType/Light/Spot.hpp"
 
+struct LightBufferData;
+
 struct LightManager
 {
 	static const unsigned int	Ambient_Limit = 1;
@@ -13,10 +15,10 @@ struct LightManager
 	static const unsigned int	Point_Limit = 1;
 	static const unsigned int	Spot_Limit = 4;
 
-	unsigned int	Ambient_Count;
-	unsigned int	Solar_Count;
-	unsigned int	Point_Count;
-	unsigned int	Spot_Count;
+	unsigned int	Ambient_Count = 0;
+	unsigned int	Solar_Count = 0;
+	unsigned int	Point_Count = 0;
+	unsigned int	Spot_Count = 0;
 
 	LightBase		Ambient;
 	LightDirection	Solar;
@@ -29,6 +31,8 @@ struct LightManager
 	LightDirection *	TakeDirection();
 	LightPoint *		TakePoint();
 	LightSpot *			TakeSpot();
+
+	LightBufferData		ToBufferData() const;
 };
 
 #endif

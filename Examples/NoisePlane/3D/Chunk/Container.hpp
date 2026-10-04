@@ -27,6 +27,7 @@ struct ChunkContainer
 	ChunkContainer() = delete;
 	ChunkContainer(const ChunkContainer & other) = delete;
 	ChunkContainer & operator=(const ChunkContainer & other) = delete;
+
 	ChunkContainer(ChunkManager & manager);
 
 	private:

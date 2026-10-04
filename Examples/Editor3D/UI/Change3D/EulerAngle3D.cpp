@@ -2,7 +2,7 @@
 
 #include "Ray3D_Hit.hpp"
 #include "ValueType/Ray/Hit/F3Type.hpp"
-#include "ValueType/InteractF3.hpp"
+#include "ValueType/Interact/3D.hpp"
 #include "ValueType/NormalPlaneF3.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
@@ -203,7 +203,7 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 	::EulerAngle3D euler(Angle(), Angle(), Value.Y2);
 	VectorF3 axis0 = euler.forward(VectorF3(1, 0, 0));
 	VectorF3 axis1 = euler.forward(VectorF3(0, 1, 0));
-	RayHitF3 hit = InteractF3::Plane(ray, NormalPlaneF3(Center, axis0));
+	RayHitF3 hit = Interact3D::Plane(ray, NormalPlaneF3(Center, axis0));
 	if (!hit.Is()) { return Value; }
 	VectorF3 rel = !(hit.Pos() - Center);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
@@ -222,7 +222,7 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 	::EulerAngle3D euler;
 	VectorF3 axis0 = euler.forward(VectorF3(0, 1, 0));
 	VectorF3 axis1 = euler.forward(VectorF3(0, 0, 1));
-	RayHitF3 hit = InteractF3::Plane(ray, NormalPlaneF3(Center, axis0));
+	RayHitF3 hit = Interact3D::Plane(ray, NormalPlaneF3(Center, axis0));
 	if (!hit.Is()) { return Value; }
 	VectorF3 rel = !(hit.Pos() - Center);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
@@ -233,7 +233,7 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 	::EulerAngle3D euler(Angle(), Value.X1, Value.Y2);
 	VectorF3 axis0 = euler.forward(VectorF3(0, 0, 1));
 	VectorF3 axis1 = euler.forward(VectorF3(1, 0, 0));
-	RayHitF3 hit = InteractF3::Plane(ray, NormalPlaneF3(Center, axis0));
+	RayHitF3 hit = Interact3D::Plane(ray, NormalPlaneF3(Center, axis0));
 	if (!hit.Is()) { return Value; }
 	VectorF3 rel = !(hit.Pos() - Center);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));

@@ -16,7 +16,7 @@
 #include "NewPolyHedra/Pallet.hpp"
 
 #include "ValueType/TriangleF3.hpp"
-#include "ValueType/InteractF3.hpp"
+#include "ValueType/Interact/3D.hpp"
 
 
 
@@ -38,7 +38,7 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 		triangle.B = trans.forward(triangle.B);
 		triangle.C = trans.forward(triangle.C);
 
-		hit_return.Consider(InteractF3::Triangle(ray, triangle), i);
+		hit_return.Consider(Interact3D::Triangle(ray, triangle), i);
 	}
 	return hit_return;
 }
@@ -60,7 +60,7 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 		triangle.B = trans.forward(triangle.B * scale);
 		triangle.C = trans.forward(triangle.C * scale);
 
-		hit_return.Consider(InteractF3::Triangle(ray, triangle), i);
+		hit_return.Consider(Interact3D::Triangle(ray, triangle), i);
 	}
 	return hit_return;
 }

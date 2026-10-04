@@ -4,9 +4,9 @@
 
 struct RangeData
 {
-	float	Min;
-	float	Len;
-	float	Max;
+	float Min;
+	float Len;
+	float Max;
 };
 
 struct DepthData
@@ -48,27 +48,18 @@ struct LightSpot
 
 uniform DepthData Depth;
 
-// more Textures
-//   Light
-//     Diffuse
-//     Specular
-//   BumpMap
+
+
 uniform sampler2DArray TextureImage;
 
 
 
-const uint SpotLimit = 4u;
-const uint PointLimit = 1u;
+uniform LightBase Light_Ambient;
+uniform LightDirection Light_Solar;
 
-layout(std140) uniform ILights
-{
-	LightBase				Ambient;
-	LightDirection			Solar;
-	uint					PointCount;
-	LightPoint[PointLimit]	Point;
-	uint					SpotCount;
-	LightSpot[SpotLimit]	Spot;
-} Lights;
+//const uint Light_Spot_Limit = 4u;
+//uniform uint Light_Spot_Count = 0u;
+//uniform LightSpot[Light_Spot_Limit] Light_Spot;
 
 
 
@@ -79,20 +70,11 @@ in Vert {
 
 	vec3	Normal;
 	vec3	Tex;
-	vec4	Color;
 } fs_inn;
 
 
 
 out vec4 Color;
-
-
-
-// rotating View changes Specular
-// I dont think it should do that
-// fs_inn.Relative includes roation
-// light.Position - fs_inn.Absolute is different
-// so it changing with rotation might be correct ?
 
 
 
@@ -119,6 +101,7 @@ vec4 CalcLightFactor(LightDirection light)
 	factor_specular = dot(R, V);
 	factor_specular = clamp(factor_specular, 0.0, 1.0);
 	factor_specular = pow(factor_specular, 8);
+	factor_specular = 0.0;
 
 	float factor = (factor_diffuse + factor_specular);
 	return light.Base.Intensity * light.Base.Color * factor;
@@ -179,19 +162,47 @@ vec4 CalcLightFactor(LightSpot light)
 vec4 CalcLightFactor()
 {
 	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
-	light_factor += CalcLightFactor(Lights.Ambient);
-	light_factor += CalcLightFactor(Lights.Solar);
-	for (uint i = 0u; i < min(PointLimit, Lights.PointCount); i++)
+	light_factor += CalcLightFactor(Light_Ambient);
+	light_factor += CalcLightFactor(Light_Solar);
+	/*for (uint i = 0u; i < min(PointLimit, Lights.PointCount); i++)
 	{
 		light_factor += CalcLightFactor(Lights.Point[i]);
-	}
-	for (uint i = 0u; i < min(SpotLimit, Lights.SpotCount); i++)
+	}*/
+	/*for (uint i = 0u; i < min(Light_Spot_Limit, Light_Spot_Count); i++)
 	{
-		light_factor += CalcLightFactor(Lights.Spot[i]);
-	}
+		light_factor += CalcLightFactor(Light_Spot[i]);
+	}*/
 	//light_factor = vec4(1.0);
 	return light_factor;
 }
+
+/*vec4 CalcLightFactor()
+{
+	vec4 ambient_factor = Ambient.Intensity * Ambient.Color;
+	vec4 solar_factor = Solar.Base.Intensity * Solar.Base.Color * dot(Solar.Direction, normalize(-fs_inn.Normal));
+
+	vec4 spot_factor[SpotLimit];
+	for (uint i = 0u; i < SpotCount; i++)
+	{
+		vec3 spot_rel = normalize(fs_inn.Absolute - SpotArr[i].Position);
+		float spot_dot;
+		spot_dot = dot(spot_rel, SpotArr[i].Direction);
+		spot_dot = (spot_dot - SpotArr[i].Range.Min) / SpotArr[i].Range.Len;
+		spot_dot = min(1.0, max(0.0, spot_dot));
+		spot_dot = spot_dot * dot(spot_rel, normalize(-fs_inn.Normal));
+		spot_dot = min(1.0, max(0.0, spot_dot));
+		spot_factor[i] = SpotArr[i].Base.Intensity * SpotArr[i].Base.Color * spot_dot;
+	}
+
+	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
+	light_factor = max(light_factor, ambient_factor);
+	light_factor = max(light_factor, solar_factor);
+	for (uint i = 0u; i < SpotCount; i++)
+	{
+		light_factor = max(light_factor, spot_factor[i]);
+	}
+	return light_factor;
+}*/
 
 
 
@@ -220,12 +231,14 @@ void main()
 	float	depth_factor = CalcDepthFactor();
 	vec4	light_factor = CalcLightFactor();
 
-	vec4 col = texture(TextureImage, fs_inn.Tex);
-	col = (col * (1.0 - fs_inn.Color.a)) + (fs_inn.Color.a * fs_inn.Color);
+	vec4 col;
+	col = texture(TextureImage, fs_inn.Tex);
+//	col = vec4(1.0, 1.0, 1.0, 1.0);
 
 	col = col * light_factor;
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
-//	col = vec4(abs(normalize(fs_inn.Normal)), 1.0);
-	Color = vec4(col.rgb, 1.0);
+//	col = vec4(abs(normalize(fs_inn.Normal)), 1);
+
+	Color = col;
 }

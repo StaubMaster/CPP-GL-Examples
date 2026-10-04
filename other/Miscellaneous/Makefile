@@ -7,6 +7,16 @@ FANCY_NAME := Miscellaneous
 FILES := \
 	ContextBase.cpp \
 \
+	Light/Manager.cpp \
+\
+	Layout/Uniform/Display.cpp \
+	Layout/Uniform/View3D.cpp \
+	Layout/Uniform/Light3D.cpp \
+	\
+	Layout/Multiform/Display.cpp \
+	Layout/Multiform/View3D.cpp \
+	Layout/Multiform/Light3D.cpp \
+\
 	ValueTypeUI/PropertyControl.cpp \
 	ValueTypeUI/VectorF3.cpp \
 	ValueTypeUI/EulerAngle3D.cpp \

@@ -2,51 +2,51 @@
 
 
 
-struct RangeData
+struct SRange
 {
-	float Min;
-	float Len;
-	float Max;
+	float	Min;
+	float	Len;
+	float	Max;
 };
 
-struct DepthData
+struct SDepth
 {
 	float[7]	Factors;
-	RangeData	Range;
+	SRange		Range;
 	vec4		Color;
 };
 
 
 
-struct LightBase
+struct SLightBase
 {
 	float	Intensity;
 	vec4	Color;
 };
 
-struct LightDirection
+struct SLightDirection
 {
-	LightBase	Base;
+	SLightBase	Base;
 	vec3		Direction;
 };
 
-struct LightPoint
+struct SLightPoint
 {
-	LightBase	Base;
+	SLightBase	Base;
 	vec3		Position;
 };
 
-struct LightSpot
+struct SLightSpot
 {
-	LightBase	Base;
+	SLightBase	Base;
 	vec3		Position;
 	vec3		Direction;
-	RangeData	Range;
+	SRange		Range;
 };
 
 
 
-uniform DepthData Depth;
+uniform SDepth Depth;
 
 
 
@@ -54,12 +54,18 @@ uniform sampler2DArray TextureImage;
 
 
 
-uniform LightBase Light_Ambient;
-uniform LightDirection Light_Solar;
+const uint SpotLimit = 4u;
+const uint PointLimit = 1u;
 
-//const uint Light_Spot_Limit = 4u;
-//uniform uint Light_Spot_Count = 0u;
-//uniform LightSpot[Light_Spot_Limit] Light_Spot;
+layout(std140) uniform ILights
+{
+	SLightBase					Ambient;
+	SLightDirection				Solar;
+	uint						PointCount;
+	SLightPoint[PointLimit]		Point;
+	uint						SpotCount;
+	SLightSpot[SpotLimit]		Spot;
+} Lights;
 
 
 
@@ -78,11 +84,11 @@ out vec4 Color;
 
 
 
-vec4 CalcLightFactor(LightBase light)
+vec4 CalcLightFactor(SLightBase light)
 {
 	return light.Intensity * light.Color;
 }
-vec4 CalcLightFactor(LightDirection light)
+vec4 CalcLightFactor(SLightDirection light)
 {
 	vec3 N = +normalize(fs_inn.Normal);
 	vec3 L = -normalize(light.Direction);
@@ -106,7 +112,7 @@ vec4 CalcLightFactor(LightDirection light)
 	float factor = (factor_diffuse + factor_specular);
 	return light.Base.Intensity * light.Base.Color * factor;
 }
-vec4 CalcLightFactor(LightPoint light)
+vec4 CalcLightFactor(SLightPoint light)
 {
 	float strength = 128.0f;
 	vec3 rel = light.Position - fs_inn.Absolute;
@@ -131,7 +137,7 @@ vec4 CalcLightFactor(LightPoint light)
 	float factor = factor_dist * (factor_diffuse + factor_specular);
 	return light.Base.Intensity * light.Base.Color * factor;
 }
-vec4 CalcLightFactor(LightSpot light)
+vec4 CalcLightFactor(SLightSpot light)
 {
 	vec3 N = +normalize(fs_inn.Normal);
 	vec3 L = +normalize(light.Position - fs_inn.Absolute);
@@ -162,47 +168,19 @@ vec4 CalcLightFactor(LightSpot light)
 vec4 CalcLightFactor()
 {
 	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
-	light_factor += CalcLightFactor(Light_Ambient);
-	light_factor += CalcLightFactor(Light_Solar);
-	/*for (uint i = 0u; i < min(PointLimit, Lights.PointCount); i++)
+	light_factor += CalcLightFactor(Lights.Ambient);
+	light_factor += CalcLightFactor(Lights.Solar);
+	for (uint i = 0u; i < min(PointLimit, Lights.PointCount); i++)
 	{
 		light_factor += CalcLightFactor(Lights.Point[i]);
-	}*/
-	/*for (uint i = 0u; i < min(Light_Spot_Limit, Light_Spot_Count); i++)
+	}
+	for (uint i = 0u; i < min(SpotLimit, Lights.SpotCount); i++)
 	{
-		light_factor += CalcLightFactor(Light_Spot[i]);
-	}*/
+		light_factor += CalcLightFactor(Lights.Spot[i]);
+	}
 	//light_factor = vec4(1.0);
 	return light_factor;
 }
-
-/*vec4 CalcLightFactor()
-{
-	vec4 ambient_factor = Ambient.Intensity * Ambient.Color;
-	vec4 solar_factor = Solar.Base.Intensity * Solar.Base.Color * dot(Solar.Direction, normalize(-fs_inn.Normal));
-
-	vec4 spot_factor[SpotLimit];
-	for (uint i = 0u; i < SpotCount; i++)
-	{
-		vec3 spot_rel = normalize(fs_inn.Absolute - SpotArr[i].Position);
-		float spot_dot;
-		spot_dot = dot(spot_rel, SpotArr[i].Direction);
-		spot_dot = (spot_dot - SpotArr[i].Range.Min) / SpotArr[i].Range.Len;
-		spot_dot = min(1.0, max(0.0, spot_dot));
-		spot_dot = spot_dot * dot(spot_rel, normalize(-fs_inn.Normal));
-		spot_dot = min(1.0, max(0.0, spot_dot));
-		spot_factor[i] = SpotArr[i].Base.Intensity * SpotArr[i].Base.Color * spot_dot;
-	}
-
-	vec4 light_factor = vec4(0.0, 0.0, 0.0, 0.0);
-	light_factor = max(light_factor, ambient_factor);
-	light_factor = max(light_factor, solar_factor);
-	for (uint i = 0u; i < SpotCount; i++)
-	{
-		light_factor = max(light_factor, spot_factor[i]);
-	}
-	return light_factor;
-}*/
 
 
 
@@ -239,6 +217,5 @@ void main()
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
 //	col = vec4(abs(normalize(fs_inn.Normal)), 1);
-
 	Color = col;
 }

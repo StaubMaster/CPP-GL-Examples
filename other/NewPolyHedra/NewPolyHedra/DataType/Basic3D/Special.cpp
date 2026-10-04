@@ -6,8 +6,6 @@
 #include "NewPolyHedra/Type/PalletObjectData.cpp"
 #include "NewPolyHedra/Type/Object.cpp"
 
-
-
 namespace NewPolyHedra
 {
 typedef Basic3D::ObjectData TypeData;

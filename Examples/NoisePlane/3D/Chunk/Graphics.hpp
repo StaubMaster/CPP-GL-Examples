@@ -3,7 +3,10 @@
 
 # include "Telemetry/ValueAccumulator.hpp"
 
-# include "3D/Voxel/Pallet/Geometry/Graphics/ShaderLayout.hpp"
+//# include "3D/Voxel/Pallet/Geometry/Graphics/ShaderLayout.hpp"
+# include "Graphics/Shader/Base.hpp"
+# include "Layout/Uniform/Light3D.hpp"
+
 # include "3D/Voxel/Pallet/Geometry/Graphics/U/Layout.hpp"
 # include "3D/Voxel/Pallet/Geometry/Graphics/F/Layout.hpp"
 
@@ -33,8 +36,8 @@ struct ChunkGraphics
 
 	::Shader::Base					ShaderU;
 	::Shader::Base					ShaderF;
-	VoxelGraphics::ShaderLayout		ShaderLayoutU;
-	VoxelGraphics::ShaderLayout		ShaderLayoutF;
+	LayoutUniformLight3D			ShaderLayoutU;
+	LayoutUniformLight3D			ShaderLayoutF;
 
 	VertexArray::Multi				BufferU;
 	VertexArray::Multi				BufferF;

@@ -1,11 +1,18 @@
 #include "ObjectData.hpp"
+#include "InstanceData.hpp"
+
+#include "NewPolyHedra/Type/ObjectManager.cpp"
+#include "NewPolyHedra/Type/PalletObjectManager.cpp"
 #include "NewPolyHedra/Type/PalletObjectData.cpp"
 #include "NewPolyHedra/Type/Object.cpp"
 
-
-
 namespace NewPolyHedra
 {
-template struct Type_PalletObjectData<TransScaleColor3D::ObjectData>;
-template struct Type_Object<TransScaleColor3D::ObjectData>;
+typedef TransScaleColor3D::ObjectData TypeData;
+typedef TransScaleColor3D::InstanceData TypeInstanceData;
+template struct Type_Data_ObjectManager<TypeData>;
+template struct Type_ObjectManager<TypeData, TypeInstanceData>;
+template struct Type_PalletObjectManager<TypeData, TypeInstanceData>;
+template struct Type_PalletObjectData<TypeData>;
+template struct Type_Object<TypeData>;
 };

@@ -4,11 +4,11 @@
 # include "ContextBase.hpp"
 
 // Layout
-# include "Layout/Shader.hpp"
-# include "Layout/Multiform.hpp"
+# include "Layout/Uniform/Light3D.hpp"
+# include "Layout/Multiform/Light3D.hpp"
 
 //
-# include "LightManager.hpp"
+# include "Light/Manager.hpp"
 
 // PolyHedra
 # include "PolyHedra/PolyHedra.hpp"
@@ -83,8 +83,8 @@ NewPolyHedra::PalletManager		PalletManager;
 
 NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
 
-ShaderLayoutView3D						ObjectManagerTSC_ShaderFullLayout;
-ShaderLayoutView3D						ObjectManagerTSC_ShaderWireLayout;
+LayoutUniformView3D						ObjectManagerTSC_ShaderFullLayout;
+LayoutUniformView3D						ObjectManagerTSC_ShaderWireLayout;
 TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferFullLayout;
 TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferWireLayout;
 TransScaleColor3D::ObjectManager		ObjectManagerTSC;
@@ -93,7 +93,7 @@ void	PolyHedra_ChangeMedia();
 
 
 
-::MultiformLayout	MultiformLayout;
+LayoutMultiformLight3D	LayoutMultiform;
 
 
 

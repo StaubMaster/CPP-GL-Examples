@@ -24,4 +24,15 @@ class MultiformLayoutView3D : public MultiformLayoutDisplay
 	MultiformLayoutView3D();
 };
 
+# include "Graphics/Multiform/General/Buffer.hpp"
+
+class MultiformLayoutLight3D : public MultiformLayoutDisplay
+{
+	public:
+	Multiform::Buffer		Lights;
+	public:
+	~MultiformLayoutLight3D();
+	MultiformLayoutLight3D();
+};
+
 #endif

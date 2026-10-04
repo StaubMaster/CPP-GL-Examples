@@ -18,7 +18,6 @@ FILES := \
 	3D/Voxel/Pallet/Geometry/U.cpp \
 	3D/Voxel/Pallet/Geometry/F.cpp \
 \
-	3D/Voxel/Pallet/Geometry/Graphics/ShaderLayout.cpp \
 	3D/Voxel/Pallet/Geometry/Graphics/U/Data.cpp \
 	3D/Voxel/Pallet/Geometry/Graphics/U/Layout.cpp \
 	3D/Voxel/Pallet/Geometry/Graphics/F/Data.cpp \
@@ -59,8 +58,6 @@ FILES := \
 	Menus/Item/ItemContainerUI.cpp \
 \
 	ContextNoisePlane.cpp \
-	Layout/Shader.cpp \
-	Layout/Multiform.cpp \
 	NewPolyHedraUI.cpp \
 	VoxelClear.cpp \
 	new.cpp \

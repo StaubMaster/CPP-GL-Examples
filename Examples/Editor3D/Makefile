@@ -5,13 +5,6 @@ FANCY_NAME := Editor3D
 ################################################################
 
 FILES := \
-	LightManager.cpp \
-\
-	Layout/Shader.cpp \
-	Layout/Multiform.cpp \
-	Layout/Parser/Uniform.cpp \
-	Layout/Parser/Attribute.cpp \
-\
 	SceneObject/SceneObject.cpp \
 	SceneObject/DisplayMode.cpp \
 	SceneObject/Collection.cpp \
@@ -55,6 +48,7 @@ include $(BASE_DIR)fancy.mk
 
 ################################################################
 
+include $(OTHER_DIR)/NewPolyHedra.mk
 include $(OTHER_DIR)/Miscellaneous.mk
 include $(OTHER_DIR)/UserInterface.mk
 

@@ -361,14 +361,14 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 		}
 		// ObjectManagerBasic
 		{
+			ObjectManagerBasic.ShaderFull.Change({
+				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
+				MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
+			});
 			{
-				ObjectManagerBasic.ShaderFull.Change({
-					MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
-					MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
-				});
-				ShaderLayoutView3D * layout = new ShaderLayoutView3D();
+				Uniform::Layout * layout = new LayoutUniformLight3D();
 				ObjectManagerBasic.ShaderFull.AssignLayout(layout);
-				MultiformLayout.Find(layout);
+				LayoutMultiform.Find(layout);
 			}
 			{
 				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
@@ -376,14 +376,14 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 				layout -> Normal.Change(7);
 				ObjectManagerBasic.BufferFullLayout = layout;
 			}
+			ObjectManagerBasic.ShaderWire.Change({
+				MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
+				MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
+			});
 			{
-				ObjectManagerBasic.ShaderWire.Change({
-					MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
-					MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
-				});
-				ShaderLayoutView3D * layout = new ShaderLayoutView3D();
+				Uniform::Layout * layout = new LayoutUniformView3D();
 				ObjectManagerBasic.ShaderWire.AssignLayout(layout);
-				MultiformLayout.Find(layout);
+				LayoutMultiform.Find(layout);
 			}
 			{
 				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
@@ -395,14 +395,14 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 		}
 		// ObjectManagerUI
 		{
+			ObjectManagerUI.ShaderFull.Change({
+				MediaDirectory.File("Shaders/UI/PHFull.vert"),
+				MediaDirectory.File("Shaders/UI/PHFull.frag"),
+			});
 			{
-				ObjectManagerUI.ShaderFull.Change({
-					MediaDirectory.File("Shaders/UI/PHFull.vert"),
-					MediaDirectory.File("Shaders/UI/PHFull.frag"),
-				});
-				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
+				Uniform::Layout * layout = new LayoutUniformDisplay();
 				ObjectManagerUI.ShaderFull.AssignLayout(layout);
-				MultiformLayout.Find(layout);
+				LayoutMultiform.Find(layout);
 			}
 			{
 				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
@@ -413,9 +413,9 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 				ObjectManagerUI.BufferFullLayout = layout;
 			}
 			{
-				ShaderLayoutDisplay * layout = new ShaderLayoutDisplay();
+				Uniform::Layout * layout = new LayoutUniformDisplay();
 				ObjectManagerUI.ShaderWire.AssignLayout(layout);
-				MultiformLayout.Find(layout);
+				LayoutMultiform.Find(layout);
 			}
 			{
 				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
@@ -426,13 +426,79 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 	}
 }
 
+void ContextNoisePlane::MakeControls()
+{
+	std::cerr << "MakeControls()\n";
+	// Pause
+	{
+		MenuPause.Show();
+		UIManager.Window.ChildInsert(MenuPause);
+	}
+	// Options
+	{
+		//MenuOptions.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
+		MenuOptions.FPS.SetValueX(64);
+		MenuOptions.FOV.SetValueX(View.FOV.ToDegrees());
+
+		//MenuOptions.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
+		MenuOptions.Depth.SetValueX(1000.0f); // get Depth. also depth works weirdly ?
+		MenuOptions.DepthRange.SetValueX(View.Depth.Range.GetMin());
+
+		// Remove range should never be less then Insert
+		// make RemoveRange = InsertRange * 2 ?
+		// make RemoveRange = InsertRange + n ?
+
+		MenuOptions.Hide();
+		UIManager.Window.ChildInsert(MenuOptions);
+	}
+	// Debug
+	{
+		MenuDebug.FPS.Check.Check(true);
+		//MenuDebug.VoxelChunkMemory.Check.Check(true);
+
+		MenuDebug.View.Check.Check(true);
+
+		MenuDebug.Hide();
+		UIManager.Window.ChildInsert(MenuDebug);
+	}
+	// Inventory
+	{
+		unsigned int idx = 0;
+		for (unsigned int i = 0; i < VoxelPalletMap::StaticMap.Data.Count(); i++)
+		{
+			Inventory.Items[idx] = new ItemVoxel(VoxelPalletMap::StaticMap.Data[i]); idx++;
+		}
+		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Stick.polyhedra") , nullptr, nullptr),  VoxelMaterialType::None,  1.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Spade.polyhedra") , nullptr, nullptr),  VoxelMaterialType::Dirt,  4.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Pick.polyhedra")  , nullptr, nullptr),   VoxelMaterialType::Stone, 4.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Hammer.polyhedra"), nullptr, nullptr), VoxelMaterialType::None,  4.0f); idx++;
+		Inventory.Items[idx] = new ItemTool(PolyHedraGenerate::SphereY(6, 12, 4.0f), VoxelMaterialType::None, 1.0f); idx++;
+		InventoryUI.IsResizable = false;
+		InventoryUI.IsMovable = false;
+		InventoryUI.Change(&Inventory);
+		InventoryUI.Hide();
+		UIManager.Window.ChildInsert(InventoryUI);
+	}
+	// HotBar
+	{
+		HotBarUI.IsResizable = false;
+		HotBarUI.IsMovable = false;
+		HotBarUI.Anchor.Y.AnchorMax(0);
+		HotBarUI.Change(&HotBar);
+		//HotBarUI.Hide();
+		UIManager.Window.ChildInsert(HotBarUI);
+	}
+
+//	UIManager.Window.UpdateDepth();
+}
+
 
 
 ContextNoisePlane::~ContextNoisePlane()
 { }
 ContextNoisePlane::ContextNoisePlane()
 	: ContextBase()
-	, MultiformLayout()
+	, LayoutMultiform()
 	, PolyHedraManager()
 	, PalletManager()
 	, ObjectManagerBasic()
@@ -450,12 +516,13 @@ ContextNoisePlane::ContextNoisePlane()
 	, HotBar(VectorU2(10, 1))
 	, HotBarUI()
 	, VoxelClear(ChunkManager.Container)
+	, LightBuffer(GL::BufferDataUsage::StreamDraw)
 {
 	MediaDirectory = DirectoryInfo("../../media/");
-
-	NewPolyHedra_ChangeMedia();
-
 	IdleLoopThread::ThreadName = "DrawThread";
+
+	PhysicsContext_Gravity.Acceleration = 0.5f;
+
 	Container::Array<Uniform::Layout*> layouts({
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
@@ -463,7 +530,7 @@ ContextNoisePlane::ContextNoisePlane()
 		&ChunkManager.Graphics.ShaderLayoutU,
 		&ChunkManager.Graphics.ShaderLayoutF,
 	});
-	MultiformLayout.Find(layouts);
+	LayoutMultiform.Find(layouts);
 }
 
 
@@ -511,7 +578,8 @@ void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change, FrameTime fram
 	{
 		if (change_vert > 0.0f)
 		{
-			jump.Y = 16.0f;
+			//jump.Y = 16.0f;
+			jump.Y = 10.0f;
 		}
 	}
 
@@ -674,11 +742,11 @@ void ContextNoisePlane::ViewEntityUpdate_Done()
 {
 	if (View_Distance == 0.0f)
 	{
-		MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
+		LayoutMultiform.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
 	}
 	else
 	{
-		MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(
+		LayoutMultiform.View.ChangeData(Matrix4x4::TransformReverse(
 			Trans3D(View.Trans.Position - View.Trans.Rotation.forward(VectorF3(0, 0, View_Distance)), View.Trans.Rotation)
 		));
 	}
@@ -830,10 +898,17 @@ void ContextNoisePlane::ViewRayUpdate_Show()
 }
 void ContextNoisePlane::ViewRayUpdate()
 {
-	ViewRayUpdate_Sync();
-	ViewRayUpdate_Hit();
-	ViewRayUpdate_HitDo();
-	ViewRayUpdate_Show();
+	if (View_IsTangible)
+	{
+		ViewRayUpdate_Sync();
+		ViewRayUpdate_Hit();
+		ViewRayUpdate_HitDo();
+		ViewRayUpdate_Show();
+	}
+	else
+	{
+		ViewHit = VoxelHit();
+	}
 }
 
 void ContextNoisePlane::ViewUpdate(Trans3D change, FrameTime frame_time)
@@ -853,8 +928,11 @@ void ContextNoisePlane::ViewUpdate(Trans3D change, FrameTime frame_time)
 
 
 
-#include "Axis/2D/Show.hpp"
-void ContextNoisePlane::Init_Maps()
+GL::BlockBinding ContextNoisePlane::LightBufferBinding = 3;
+
+#include "Texture/FileMap.hpp"
+
+void ContextNoisePlane::MakeVoxels()
 {
 	// VoxelPalletGeometryMap
 	{
@@ -894,127 +972,53 @@ void ContextNoisePlane::Init_Maps()
 		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Concrete/_.file"));
 	}
 
-	// Structure
+	// StructureMap
 	{
 		StructureMap & map = StructureMap::StaticMap;
 
 		StructureMapParser::Parse(map, MediaDirectory.File("Voxel/Structure/Tree0"));
 		StructureMapParser::Parse(map, MediaDirectory.File("Voxel/Structure/Tree1"));
 	}
+
+	// Texture
+	{
+		TextureFileMap tex_map;
+		std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+		VoxelPalletMap::StaticMap.TexturesAssign(tex_map);
+		std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+		ChunkManager.Graphics.Texture.Bind();
+		ChunkManager.Graphics.Texture.Assign(VectorU2(32, 32), tex_map.Files.ToArray());
+	}
+
+	// PolyHedras
+	{
+		VoxelPalletMap::StaticMap.MakePolyHedras();
+
+		// these are all Cuboids.
+		// make 1 Cube PolyHedra then scale that
+		VoxelCube = MakePolyHedraBoxEdges(BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
+		VoxelChunkCube = MakePolyHedraBoxEdges(BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
+		ViewEntity_PolyHedra = MakePolyHedraBoxEdges(ViewEntity.Box);
+		PalletManager.FindMakePallet(VoxelCube);
+		PalletManager.FindMakePallet(VoxelChunkCube);
+		PalletManager.FindMakePallet(ViewEntity_PolyHedra);
+	}
 }
 
 void ContextNoisePlane::Make()
 {
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-	window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
-	LightAmbient = LightBase(1.0f, ColorF4(1.0f, 1.0f, 1.0f));
-	LightSolar = LightDirection(0.0f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(+2.0f, -3.0f, +1.0f));
-	LightSpot = ::LightSpot(0.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
-	View.Depth.Color = window.DefaultColor;
-	View.Depth.Range.SetMin(0.5f);
-	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
-	ViewEntity.Box = BoxF3(
-		VectorF3(-0.4f, -1.6f, -0.4f),
-		VectorF3(+0.4f, +0.2f, +0.4f)
-	);
+	MakeControls();
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-	View_Distance = 0.0f;
-	View_IsTangible = false;
-	ViewMove_SpeedSlow = 10.0f;
-	ViewMove_SpeedFast = 100.0f;
-	// Target = Accel / Decel
-	// Target * Decel = Accel
-	// Slow: Target = 5.0; Accel = 5.0 * 0.2 = 1.0
-	// Slow: Target = 10.0; Accel = 10.0 * 0.2 = 2.0
-	ViewMove_AccelSlow = 1.0f;
-	ViewMove_AccelFast = 2.0f;
-	ViewMove_Decel = 0.2f;
-	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-	// these are all Cuboids.
-	// make 1 Cube PolyHedra then scale that
-	VoxelCube = MakePolyHedraBoxEdges(BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
-	VoxelChunkCube = MakePolyHedraBoxEdges(BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
-	ViewEntity_PolyHedra = MakePolyHedraBoxEdges(ViewEntity.Box);
-	PalletManager.FindMakePallet(VoxelCube);
-	PalletManager.FindMakePallet(VoxelChunkCube);
-	PalletManager.FindMakePallet(ViewEntity_PolyHedra);
-	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-	Init_Maps();
+	MakeVoxels();
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
 	//ChunkManager.Container.ChangeSize(4, 2);
-	ChunkManager.Container.ChangeSize(8, 4);
+	//ChunkManager.Container.ChangeSize(8, 4);
 	//ChunkManager.Container.ChangeSize(16, 4);
-	//ChunkManager.Container.ChangeSize(16, 12);
+	//ChunkManager.Container.ChangeSize(16, 8);
+	ChunkManager.Container.ChangeSize(16, 12);
 	//ChunkManager.Container.ChangeSize(32, 16);
 	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-}
-
-
-
-void ContextNoisePlane::MakeControls()
-{
-	std::cerr << "MakeControls()\n";
-	// Pause
-	{
-		MenuPause.Show();
-		UIManager.Window.ChildInsert(MenuPause);
-	}
-	// Options
-	{
-		//MenuOptions.FPS.SetValueX(window.FrameTime.WantedFramesPerSecond);
-		MenuOptions.FPS.SetValueX(64);
-		MenuOptions.FOV.SetValueX(View.FOV.ToDegrees());
-
-		//MenuOptions.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
-		MenuOptions.Depth.SetValueX(1000.0f); // get Depth. also depth works weirdly ?
-		MenuOptions.DepthRange.SetValueX(View.Depth.Range.GetMin());
-
-		// Remove range should never be less then Insert
-		// make RemoveRange = InsertRange * 2 ?
-		// make RemoveRange = InsertRange + n ?
-
-		MenuOptions.Hide();
-		UIManager.Window.ChildInsert(MenuOptions);
-	}
-	// Debug
-	{
-		MenuDebug.FPS.Check.Check(true);
-		//MenuDebug.VoxelChunkMemory.Check.Check(true);
-
-		MenuDebug.View.Check.Check(true);
-
-		MenuDebug.Hide();
-		UIManager.Window.ChildInsert(MenuDebug);
-	}
-	// Inventory
-	{
-		unsigned int idx = 0;
-		for (unsigned int i = 0; i < VoxelPalletMap::StaticMap.Data.Count(); i++)
-		{
-			Inventory.Items[idx] = new ItemVoxel(VoxelPalletMap::StaticMap.Data[i]); idx++;
-		}
-		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Stick.polyhedra") , nullptr, nullptr),  VoxelMaterialType::None,  1.0f); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Spade.polyhedra") , nullptr, nullptr),  VoxelMaterialType::Dirt,  4.0f); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Pick.polyhedra")  , nullptr, nullptr),   VoxelMaterialType::Stone, 4.0f); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedraParser::Load(MediaDirectory.File("YMT/Tools/Hammer.polyhedra"), nullptr, nullptr), VoxelMaterialType::None,  4.0f); idx++;
-		Inventory.Items[idx] = new ItemTool(PolyHedraGenerate::SphereY(6, 12, 4.0f), VoxelMaterialType::None, 1.0f); idx++;
-		InventoryUI.IsResizable = false;
-		InventoryUI.IsMovable = false;
-		InventoryUI.Change(&Inventory);
-		InventoryUI.Hide();
-		UIManager.Window.ChildInsert(InventoryUI);
-	}
-	// HotBar
-	{
-		HotBarUI.IsResizable = false;
-		HotBarUI.IsMovable = false;
-		HotBarUI.Anchor.Y.AnchorMax(0);
-		HotBarUI.Change(&HotBar);
-		//HotBarUI.Hide();
-		UIManager.Window.ChildInsert(HotBarUI);
-	}
-
-//	UIManager.Window.UpdateDepth();
 }
 
 
@@ -1023,6 +1027,8 @@ void ContextNoisePlane::MakeControls()
 // make a Base ? to organize
 void ContextNoisePlane::ChangeMedia()
 {
+	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
+	NewPolyHedra_ChangeMedia();
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
@@ -1048,6 +1054,8 @@ void ContextNoisePlane::GraphicsCreate()
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	ChunkManager.Graphics.GraphicsCreate();
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
+	LightBuffer.Create();
+	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 }
 void ContextNoisePlane::GraphicsDelete()
 {
@@ -1058,17 +1066,56 @@ void ContextNoisePlane::GraphicsDelete()
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	ChunkManager.Graphics.GraphicsDelete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
+	LightBuffer.Delete();
+	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 }
 
-#include "Texture/FileMap.hpp"
 void ContextNoisePlane::Init()
 {
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	PolyHedraManager.GraphicsCreate();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	Make();
+	{
+	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
+	window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
+
+	LightManager.Clear();
+
+	LightManager.Ambient = LightBase(0.8f, ColorF4(1.0f, 1.0f, 1.0f));
+	LightManager.Solar = LightDirection(0.8f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(+2.0f, -3.0f, +1.0f));
+	LightManager.Spot_Array[0] = LightSpot(1.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
+
+	LightManager.Ambient_Count = 1;
+	LightManager.Solar_Count = 1;
+	LightManager.Spot_Count = 0;
+
+	View.Depth.Color = window.DefaultColor;
+	View.Depth.Range.SetMin(0.5f);
+	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
+	ViewEntity.Box = BoxF3(
+		VectorF3(-0.4f, -1.6f, -0.4f),
+		VectorF3(+0.4f, +0.2f, +0.4f)
+	);
+	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
+	View_Distance = 0.0f;
+	View_IsTangible = false;
+	ViewMove_SpeedSlow = 10.0f;
+	ViewMove_SpeedFast = 100.0f;
+	// Target = Accel / Decel
+	// Target * Decel = Accel
+	// Slow: Target = 5.0; Accel = 5.0 * 0.2 = 1.0
+	// Slow: Target = 10.0; Accel = 10.0 * 0.2 = 2.0
+	ViewMove_AccelSlow = 1.0f;
+	ViewMove_AccelFast = 2.0f;
+	ViewMove_Decel = 0.2f;
+	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
+	LayoutMultiform.Depth.ChangeData(View.Depth);
+	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
+	LayoutMultiform.FOV.ChangeData(View.FOV);
+	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
+	}
+
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	ChangeMedia();
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	PolyHedraManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	GraphicsCreate();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
@@ -1076,22 +1123,12 @@ void ContextNoisePlane::Init()
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	UIManager.GraphicsInit();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	{
-		TextureFileMap tex_map;
-		std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-		VoxelPalletMap::StaticMap.TexturesAssign(tex_map);
-		std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-		ChunkManager.Graphics.Texture.Bind();
-		ChunkManager.Graphics.Texture.Assign(VectorU2(32, 32), tex_map.Files.ToArray());
-	}
+	Shader::Base::BindNone();
+	LightBuffer.BindBase(LightBufferBinding);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	VoxelPalletMap::StaticMap.MakePolyHedras();
+	LayoutMultiform.Lights.ChangeData(LightBufferBinding);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	MakeControls();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	MultiformLayout.Depth.ChangeData(View.Depth);
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	MultiformLayout.FOV.ChangeData(View.FOV);
+	Make();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	AuxThreadCollection.Run();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
@@ -1099,11 +1136,11 @@ void ContextNoisePlane::Init()
 void ContextNoisePlane::Free()
 {
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
+	AuxThreadCollection.Terminate();
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	PolyHedraManager.GraphicsDelete();
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	GraphicsDelete();
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	AuxThreadCollection.Terminate();
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 }
 
@@ -1111,6 +1148,7 @@ void ContextNoisePlane::Free()
 
 static unsigned int		TextCharCount = 0;
 
+#include "Light/BufferData.hpp"
 void ContextNoisePlane::Draw()
 {
 	// should GraphicsManagers just know that they want Enabled/Disabled ?
@@ -1122,6 +1160,11 @@ void ContextNoisePlane::Draw()
 	sw_total.Start();
 
 	StopWatch sw;
+
+
+
+	VertexArray::Base::BindNone();
+	LightBuffer.DataFull(Container::Void(LightManager.ToBufferData()));
 
 
 
@@ -1150,19 +1193,7 @@ void ContextNoisePlane::Draw()
 
 	//PlaneManager.Draw();
 
-	// make Light with Multiform or Buffer
-	// probably Buffer
 	sw.Clear();
-	ChunkManager.Graphics.ShaderU.Bind();
-	ChunkManager.Graphics.ShaderLayoutU.LightAmbient.Put(LightAmbient);
-	ChunkManager.Graphics.ShaderLayoutU.LightSolar.Put(LightSolar);
-	ChunkManager.Graphics.ShaderLayoutU.LightSpot.Put(LightSpot);
-	ChunkManager.Graphics.ShaderLayoutU.LightSpotCount.Put(1);
-	ChunkManager.Graphics.ShaderF.Bind();
-	ChunkManager.Graphics.ShaderLayoutF.LightAmbient.Put(LightAmbient);
-	ChunkManager.Graphics.ShaderLayoutF.LightSolar.Put(LightSolar);
-	ChunkManager.Graphics.ShaderLayoutF.LightSpot.Put(LightSpot);
-	ChunkManager.Graphics.ShaderLayoutF.LightSpotCount.Put(1);
 	FrameTime_Draw_UniformChunk.NewValue(sw.ElapsedTime());
 
 	sw.Clear();
@@ -1931,8 +1962,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 	// this is general Update, not Draw specific
 	//LightSolar.Dir = EulerAngle3D::Degrees(0, 0, 90 * frame_time.Delta).forward(LightSolar.Dir);
-	LightSpot.Pos = View.Trans.Position;
-	LightSpot.Dir = View.Trans.Rotation.forward(VectorF3(0, 0, 1));
+	//LightSpot.Pos = View.Trans.Position;
+	//LightSpot.Dir = View.Trans.Rotation.forward(VectorF3(0, 0, 1));
 
 	StopWatch sw_total;
 	sw_total.Start();
@@ -1959,6 +1990,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 			}
 		}
 		ViewUpdate(change, frame_time);
+		//LightManager.Spot_Array[0].Pos = ViewRay.Pos;
+		//LightManager.Spot_Array[0].Dir = ViewRay.Dir;
 	}
 	sw.Stop(); FrameTime_ViewUpdate.NewValue(sw.ElapsedTime());
 
@@ -2015,7 +2048,7 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 void ContextNoisePlane::Resize(DisplaySize display_size)
 {
 	::ItemSlotUI::WindowSize = display_size;
-	MultiformLayout.DisplaySize.ChangeData(display_size);
+	LayoutMultiform.DisplaySize.ChangeData(display_size);
 }
 
 

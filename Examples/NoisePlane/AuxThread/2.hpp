@@ -113,6 +113,7 @@ struct AuxThread2 : public IdleLoopThread
 		use Perlin3D result
 	*/
 	private:
+	void	TerrainTest2D(ChunkData & data);
 	void	TerrainTest3D(ChunkData & data);
 	private:
 	void	TerrainFlat(ChunkData & data, int y_chunk, unsigned int y_voxel);

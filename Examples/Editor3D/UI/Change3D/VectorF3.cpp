@@ -2,7 +2,7 @@
 
 #include "Ray3D_Hit.hpp"
 #include "ValueType/Ray/Hit/F3Type.hpp"
-#include "ValueType/InteractF3.hpp"
+#include "ValueType/Interact/3D.hpp"
 #include "ValueType/NormalPlaneF3.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
@@ -231,13 +231,13 @@ void Change3D::VectorF3::SelectedMakeR()
 	RayF3 axis_ray(Value - SelectedOffset, axis);
 	RayHitF3 axis_hit;
 	RayHitF3 hit;
-	InteractF3::Skew(ray, hit, axis_ray, axis_hit);
+	Interact3D::Skew(ray, hit, axis_ray, axis_hit);
 	if (hit.Interval < 0.0f) { return Value; }
 	return (axis_hit.Pos() + SelectedOffset);
 }
 ::VectorF3 Change3D::VectorF3::CalculatePlane(const RayF3 & ray, const ::VectorF3 & axis) const
 {
-	RayHitF3 hit = InteractF3::Plane(ray, NormalPlaneF3(Value - SelectedOffset, axis));
+	RayHitF3 hit = Interact3D::Plane(ray, NormalPlaneF3(Value - SelectedOffset, axis));
 	if (!hit.Is()) { return Value; }
 	return (hit.Pos() + SelectedOffset);
 }

@@ -10,7 +10,7 @@
 
 // ValueType
 #include "ValueType/_Include.hpp"
-#include "ValueType/Intersect.hpp"
+//#include "ValueType/Interact/2D.hpp"
 #include "ValueType/_Show.hpp"
 #include "ValueType/Ray/Hit/F3Type.hpp"
 
@@ -55,18 +55,10 @@ void Light3DContext::PolyHedra_ChangeMedia()
 				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
 				MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
 			});
-			/*{
-				ObjectManagerBasic.ShaderFull.AssignLayout(ObjectManagerBasic_ShaderFullLayout);
-			}*/
 			{
-				Uniform::Layout * layout = new Uniform::Layout(ObjectManagerBasic.ShaderFull);
-				new Uniform::DisplaySize	(*layout, "DisplaySize");
-				new Uniform::Matrix4x4		(*layout, "View");
-				new Uniform::Depth			(*layout, "Depth");
-				new Uniform::Angle			(*layout, "FOV");
-				new Uniform::Buffer			(*layout, "ILights");
+				Uniform::Layout * layout = new LayoutUniformLight3D();
 				ObjectManagerBasic.ShaderFull.AssignLayout(layout);
-				MultiformLayout.Find(layout);
+				LayoutMultiform.Find(layout);
 			}
 			{
 				Attribute::Layout * layout = new Attribute::Layout(1, sizeof(NewPolyHedra::Basic3D::InstanceData));
@@ -80,13 +72,9 @@ void Light3DContext::PolyHedra_ChangeMedia()
 				MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
 			});
 			{
-				Uniform::Layout * layout = new Uniform::Layout(ObjectManagerBasic.ShaderWire);
-				new Uniform::DisplaySize	(*layout, "DisplaySize");
-				new Uniform::Matrix4x4		(*layout, "View");
-				new Uniform::Depth			(*layout, "Depth");
-				new Uniform::Angle			(*layout, "FOV");
+				Uniform::Layout * layout = new LayoutUniformView3D();
 				ObjectManagerBasic.ShaderWire.AssignLayout(layout);
-				MultiformLayout.Find(layout);
+				LayoutMultiform.Find(layout);
 			}
 			{
 				Attribute::Layout * layout = new Attribute::Layout(1, sizeof(NewPolyHedra::Basic3D::InstanceData));
@@ -203,7 +191,7 @@ void Light3DContext::SceneInitCubes()
 {
 	Cube = PolyHedraGenerate::RegularHexaHedron();
 	CenterCube = new SceneObject_PolyHedraObject();
-	CenterCube -> Data.Manager = ObjectManagerBasic.FindMakePalletObjectManager(Cube);
+	CenterCube -> Data.Manager = ObjectManagerBasic.PalletObjectManagersFindMake(Cube);
 	Collection.Objects.Insert(CenterCube);
 
 	/* Random
@@ -267,13 +255,13 @@ void Light3DContext::InitLights()
 	DirectoryInfo dir(MediaDirectory.Directory("YMT/Light"));
 	if (Cube_UI_manager == nullptr)
 	{
-		Cube_UI_manager = ObjectManagerTSC.FindMakePalletObjectManager(
+		Cube_UI_manager = ObjectManagerTSC.PalletObjectManagersFindMake(
 			Cube
 		);
 	}
 	if (stage_light_manager == nullptr)
 	{
-		stage_light_manager = ObjectManagerBasic.FindMakePalletObjectManager(
+		stage_light_manager = ObjectManagerBasic.PalletObjectManagersFindMake(
 			PolyHedraFileCollection.FindMake(
 				dir.File("Stage_Light.polyhedra.ymt")
 			)
@@ -281,7 +269,7 @@ void Light3DContext::InitLights()
 	}
 	if (light_bulb_manager == nullptr)
 	{
-		light_bulb_manager = ObjectManagerTSC.FindMakePalletObjectManager(
+		light_bulb_manager = ObjectManagerTSC.PalletObjectManagersFindMake(
 			PolyHedraFileCollection.FindMake(
 				dir.File("LightBulb.polyhedra")
 			)
@@ -526,7 +514,7 @@ void Light3DContext::PolyHedraPalletUpdate()
 			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(Object_Selected);
 			if (UIPolyHedraPalletList.Object != nullptr && obj != nullptr)
 			{
-				obj -> Data.Manager = ObjectManagerBasic.FindMakePalletObjectManager((NewPolyHedra::Pallet *)UIPolyHedraPalletList.Object);
+				obj -> Data.Manager = ObjectManagerBasic.PalletObjectManagersFindMake((NewPolyHedra::Pallet *)UIPolyHedraPalletList.Object);
 			}
 			DoPolyHedraPalletChange = false;
 		}
@@ -571,7 +559,7 @@ void Light3DContext::ChangeMedia()
 		&ObjectManagerTSC_ShaderFullLayout,
 		&ObjectManagerTSC_ShaderWireLayout,
 	});
-	MultiformLayout.Find(layouts);
+	LayoutMultiform.Find(layouts);
 
 	std::cout << "Light3DContext::ChangeMedia done\n";
 }
@@ -581,8 +569,8 @@ void Light3DContext::GraphicsCreate()
 
 	UIManager.GraphicsCreate();
 
-	MultiformLayout.Depth.ChangeData(View.Depth);
-	MultiformLayout.FOV.ChangeData(View.FOV);
+	LayoutMultiform.Depth.ChangeData(View.Depth);
+	LayoutMultiform.FOV.ChangeData(View.FOV);
 
 	LightBuffer.Create();
 
@@ -648,7 +636,7 @@ void Light3DContext::Make()
 	Shader::Base::BindNone();
 	LightBuffer.BindBase(BindingLight);
 
-	MultiformLayout.Lights.ChangeData(BindingLight);
+	LayoutMultiform.Lights.ChangeData(BindingLight);
 
 	std::cout << "Light3DContext::Make() done\n";
 }
@@ -730,7 +718,7 @@ void Light3DContext::User(FrameTime frame_time)
 
 	if (window[Keys::Insert] == State::Press)
 	{
-		NewPolyHedra::PalletObjectManager * manager = ObjectManagerBasic.FindMakePalletObjectManager(Cube);
+		NewPolyHedra::PalletObjectManager * manager = ObjectManagerBasic.PalletObjectManagersFindMake(Cube);
 		Collection.Objects.Insert(new SceneObject_PolyHedraObject(manager, Trans3D()));
 	}
 
@@ -757,28 +745,15 @@ void Light3DContext::User(FrameTime frame_time)
 		SceneReMake();
 	}
 }
+#include "Light/BufferData.hpp"
 void Light3DContext::Draw()
 {
 	// Uniforms
 
-	MultiformLayout.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
-
-	LightBufferData data;
-	data.Ambient = LightManager.Ambient;
-	data.Solar = LightManager.Solar;
-	for (unsigned int i = 0; i < LightManager.Point_Count; i++)
-	{
-		data.Point[i] = LightManager.Point_Array[i];
-	}
-	data.PointCount = LightManager.Point_Count;
-	for (unsigned int i = 0; i < LightManager.Spot_Count; i++)
-	{
-		data.Spot[i] = LightManager.Spot_Array[i];
-	}
-	data.SpotCount = LightManager.Spot_Count;
+	LayoutMultiform.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
 
 	VertexArray::Base::BindNone();
-	LightBuffer.DataFull(Container::Void(data));
+	LightBuffer.DataFull(Container::Void(LightManager.ToBufferData()));
 
 	// Instances
 
@@ -878,7 +853,7 @@ void Light3DContext::Frame(FrameTime frame_time)
 
 void Light3DContext::Resize(DisplaySize display_size)
 {
-	MultiformLayout.DisplaySize.ChangeData(display_size);
+	LayoutMultiform.DisplaySize.ChangeData(display_size);
 	UIManager.Resize(display_size);
 }
 

@@ -2,47 +2,33 @@
 
 
 
-struct Trans3D
+struct SPixelSize
 {
-	vec3 Pos;
-	mat3 Rot;
+	vec2	Full;
+	vec2	Half;
+};
+struct SDisplaySize
+{
+	vec2		Ratio;
+	SPixelSize	Window;
+	SPixelSize	Buffer;
 };
 
-struct PixelSize
+struct SRange
 {
-	vec2 Full;
-	vec2 Half;
-};
-struct sDisplaySize
-{
-	vec2 Ratio;
-	PixelSize Window;
-	PixelSize Buffer;
+	float	Min;
+	float	Len;
+	float	Max;
 };
 
-struct RangeData
-{
-	float Min;
-	float Len;
-	float Max;
-};
-
-struct DepthData
+struct SDepth
 {
 	float[7]	Factors;
-	RangeData	Range;
+	SRange		Range;
 	vec4		Color;
 };
 
 
-//	None  = 0b000,
-//	PrevX = 0b001,
-//	PrevY = 0b010,
-//	PrevZ = 0b100,
-//	NextX = 0b110,
-//	NextY = 0b101,
-//	NextZ = 0b011,
-//	Here  = 0b111,
 
 const vec3 axis[8] = vec3[8](
 	vec3( 0,  0,  0), // None  = 0b000
@@ -57,12 +43,10 @@ const vec3 axis[8] = vec3[8](
 
 
 
-uniform sDisplaySize DisplaySize;
+uniform SDisplaySize DisplaySize;
 
 uniform mat4 View;
-
-uniform DepthData Depth;
-
+uniform SDepth Depth;
 uniform float FOV;
 
 
