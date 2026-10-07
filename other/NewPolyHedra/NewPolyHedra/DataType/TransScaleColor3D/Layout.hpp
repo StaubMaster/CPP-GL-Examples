@@ -11,7 +11,7 @@ struct BufferLayout : public ::Attribute::Layout
 	public:
 	::Attribute::Matrix4x4	Trans;
 	::Attribute::Matrix4x4	Normal;
-	::Attribute::Float		Scale;
+	::Attribute::VectorF3	Scale;
 	::Attribute::ColorF4	Color;
 	public:
 	~BufferLayout();

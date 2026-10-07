@@ -4,9 +4,9 @@
 
 struct RangeData
 {
-	float Min;
-	float Len;
-	float Max;
+	float	Min;
+	float	Len;
+	float	Max;
 };
 
 struct DepthData
@@ -20,14 +20,18 @@ struct DepthData
 
 uniform DepthData Depth;
 
+//uniform sampler2DArray texture0;
+
 
 
 in Vert {
-	vec3 Original;
-	vec3 Absolute;
-	vec3 Relative;
+	vec3	Original;
+	vec3	Absolute;
+	vec3	Relative;
 
-	vec4 Color;
+	vec3	Normal;
+	vec3	Tex;
+	vec4	Color;
 } fs_inn;
 
 
@@ -54,13 +58,16 @@ float CalcDepthFactor()
 	return depth_factor;
 }
 
+
+
 void main()
 {
 	float	depth_factor = CalcDepthFactor();
 
-	vec4	col = fs_inn.Color;
-	//col = vec4(1, 1, 1, 1);
-	col = vec4(0, 0, 0, 1);
+	vec4 col;
+	//col = texture(texture0, fs_inn.Tex);
+	//col = (col * (1.0 - fs_inn.Color.a)) + (fs_inn.Color.a * fs_inn.Color);
+	col = vec4(1, 0, 1, 1);
 
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 

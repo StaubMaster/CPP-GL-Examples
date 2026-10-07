@@ -88,7 +88,6 @@ vec4 proj(in vec3 p_inn)
 void main()
 {
 	vs_out.Original = VPos;
-
 	vs_out.Absolute = (vec4(vs_out.Original, 1) * ITrans).xyz;
 	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
 	gl_Position = proj(vs_out.Relative);

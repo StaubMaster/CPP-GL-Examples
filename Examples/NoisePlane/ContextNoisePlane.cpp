@@ -2,7 +2,17 @@
 #include "new.hpp"
 
 // PolyHedra
+#include "PolyHedra/PolyHedra.hpp"
+#include "PolyHedra/Data.hpp"
+#include "PolyHedra/Skin/Skin.hpp"
 #include "PolyHedra/Parser.hpp"
+
+// New PolyHedra
+#include "NewPolyHedra/DataType/Basic3D/Layout.hpp"
+#include "NewPolyHedra/DataType/Basic3D/Object.hpp"
+
+#include "NewPolyHedra/DataType/TransScaleColor3D/Layout.hpp"
+#include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
 
 // Graphics
 #include "Graphics/Shader/Code.hpp"
@@ -25,6 +35,8 @@
 #include "3D/Voxel/Pallet/Map.hpp"
 #include "3D/Voxel/Pallet/Parser.hpp"
 #include "3D/Voxel/Pallet/Geometry.hpp"
+//#include "3D/Voxel/Pallet/Geometry/U.hpp"
+//#include "3D/Voxel/Pallet/Geometry/F.hpp"
 #include "3D/Voxel/Pallet/Geometry/Map.hpp"
 #include "3D/Voxel/Pallet/Geometry/Parser.hpp"
 #include "3D/Structure.hpp"
@@ -45,18 +57,8 @@
 // Telemetry
 #include "Telemetry/StopWatch.hpp"
 
-
-
+// ValueType
 #include "ValueType/_Include.hpp"
-
-#include "PolyHedra/PolyHedra.hpp"
-#include "PolyHedra/Data.hpp"
-#include "PolyHedra/Skin/Skin.hpp"
-
-#include "3D/Voxel/Pallet.hpp"
-#include "3D/Voxel/Pallet/Geometry.hpp"
-#include "3D/Voxel/Pallet/Geometry/U.hpp"
-#include "3D/Voxel/Pallet/Geometry/F.hpp"
 
 
 
@@ -89,6 +91,30 @@ __attribute__((unused)) static PolyHedra * MakePolyHedraBoxEdges(BoxF3 box)
 	polyhedra -> Edges.Insert(PolyHedra::Edge(0b011, 0b111));
 
 	return polyhedra;
+}
+
+__attribute__((unused)) static void PolyHedra_Display_Normalized(NewPolyHedra::Pallet & pallet, const BoxF3 & box)
+{
+	TransScaleColor3D::Object obj(&pallet);
+	obj.Data().Trans.Position = box.Center();
+	obj.Data().Scale = box.Size() * 0.5f;
+	obj.HideFull();
+	obj.ShowWire();
+}
+__attribute__((unused)) static void PolyHedra_Display_Normalized(NewPolyHedra::Pallet & pallet, const BoxEntity3D & box_entity)
+{
+	PolyHedra_Display_Normalized(pallet, box_entity.Box + box_entity.Pos);
+}
+__attribute__((unused)) static void PolyHedra_Display_Normalized(NewPolyHedra::Pallet & pallet, const Container::Array<BoxF3> & boxes)
+{
+	for (unsigned int i = 0; i < boxes.Length(); i++)
+	{
+		PolyHedra_Display_Normalized(pallet, boxes[i]);
+		/*NewPolyHedra::Basic3D::Object voxel_obj(pallet);
+		voxel_obj.Data().Trans.Position = boxes[i].Min;
+		voxel_obj.HideFull();
+		voxel_obj.ShowWire();*/
+	}
 }
 
 __attribute__((unused)) static void Toggle(bool & value)
@@ -253,13 +279,6 @@ __attribute__((unused)) static BoxI3 BoxEntity_RangeI(const BoxEntity3D & box_en
 	range = range - VectorF3(0.5f);
 	return BoxI3(range.Min.round().ToI(), range.Max.round().ToI());
 }
-__attribute__((unused)) static void BoxEntity_Display(BoxEntity3D & box_entity, PolyHedra & polyhedra)
-{
-	NewPolyHedra::Basic3D::Object view_box_obj(&polyhedra);
-	view_box_obj.Data().Trans.Position = box_entity.Pos;
-	view_box_obj.HideFull();
-	view_box_obj.ShowWire();
-}
 
 __attribute__((unused)) static Container::Array<BoxF3> Voxels_Boxes_Collect(ChunkContainer & container, const BoxI3 & range)
 {
@@ -284,16 +303,6 @@ __attribute__((unused)) static Container::Array<BoxF3> Voxels_Boxes_Collect(Chun
 	}
 
 	return boxes.ToArray();
-}
-__attribute__((unused)) static void Voxels_Boxes_Display(const Container::Array<BoxF3> & boxes, NewPolyHedra::Pallet * pallet)
-{
-	for (unsigned int i = 0; i < boxes.Length(); i++)
-	{
-		NewPolyHedra::Basic3D::Object voxel_obj(pallet);
-		voxel_obj.Data().Trans.Position = boxes[i].Min;
-		voxel_obj.HideFull();
-		voxel_obj.ShowWire();
-	}
 }
 
 __attribute__((unused)) static void VectorComponents(const VectorF3 & vec, const VectorF3 & other, VectorF3 & parallel, VectorF3 & perpendicular)
@@ -359,7 +368,7 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 			}
 			PolyHedraManager.PalletManager = &PalletManager;
 		}
-		// ObjectManagerBasic
+		// Basic3D
 		{
 			ObjectManagerBasic.ShaderFull.Change({
 				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
@@ -393,7 +402,45 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 			}
 			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerBasic);
 		}
-		// ObjectManagerUI
+		// TransScaleColor3D
+		{
+			ObjectManagerTSC.ShaderFull.Change({
+				MediaDirectory.File("Shaders/PolyHedra/UserInterface.vert"),
+				MediaDirectory.File("Shaders/PolyHedra/TexturedNoLight.frag"),
+			});
+			{
+				Uniform::Layout * layout = new LayoutUniformView3D();
+				ObjectManagerTSC.ShaderFull.AssignLayout(layout);
+				LayoutMultiform.Find(layout);
+			}
+			{
+				TransScaleColor3D::BufferLayout * layout = new TransScaleColor3D::BufferLayout();
+				layout -> Trans.Change(3);
+				layout -> Normal.Change(7);
+				layout -> Scale.Change(11);
+				layout -> Color.Change(12);
+				ObjectManagerTSC.BufferFullLayout = layout;
+			}
+			ObjectManagerTSC.ShaderWire.Change({
+				MediaDirectory.File("Shaders/PolyHedra/TSC/Wire.vert"),
+				MediaDirectory.File("Shaders/PolyHedra/Fixed.frag"),
+			});
+			{
+				Uniform::Layout * layout = new LayoutUniformView3D();
+				ObjectManagerTSC.ShaderWire.AssignLayout(layout);
+				LayoutMultiform.Find(layout);
+			}
+			{
+				TransScaleColor3D::BufferLayout * layout = new TransScaleColor3D::BufferLayout();
+				layout -> Trans.Change(3);
+				layout -> Normal.Change(-1);
+				layout -> Scale.Change(11);
+				layout -> Color.Change(-1);
+				ObjectManagerTSC.BufferWireLayout = layout;
+			}
+			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerTSC);
+		}
+		// UI
 		{
 			ObjectManagerUI.ShaderFull.Change({
 				MediaDirectory.File("Shaders/UI/PHFull.vert"),
@@ -440,8 +487,7 @@ void ContextNoisePlane::MakeControls()
 		MenuOptions.FPS.SetValueX(64);
 		MenuOptions.FOV.SetValueX(View.FOV.ToDegrees());
 
-		//MenuOptions.Depth.SetValueX(100.0f); // get Depth. also depth works weirdly ?
-		MenuOptions.Depth.SetValueX(1000.0f); // get Depth. also depth works weirdly ?
+		MenuOptions.Depth.SetValueX(View.Depth.Factors.GetFar());
 		MenuOptions.DepthRange.SetValueX(View.Depth.Range.GetMin());
 
 		// Remove range should never be less then Insert
@@ -501,6 +547,7 @@ ContextNoisePlane::ContextNoisePlane()
 	, PolyHedraManager()
 	, PalletManager()
 	, ObjectManagerBasic()
+	, ObjectManagerTSC()
 	, ObjectManagerUI()
 	, AuxThreadCollection(*this)
 	, UIManager()
@@ -519,6 +566,9 @@ ContextNoisePlane::ContextNoisePlane()
 {
 	MediaDirectory = DirectoryInfo("../../media/");
 	IdleLoopThread::ThreadName = "DrawThread";
+
+	Box_PolyHedra = PolyHedraGenerate::RegularHexaHedron();
+	Box_Pallet = PalletManager.FindMakePallet(Box_PolyHedra);
 
 	PhysicsContext_Gravity.Acceleration = 0.5f;
 
@@ -732,10 +782,10 @@ void ContextNoisePlane::ViewEntityUpdate_Colliding(FrameTime frame_time)
 {
 	BoxI3 range = BoxEntity_RangeI(ViewEntity, frame_time);
 	Container::Array<BoxF3> boxes = Voxels_Boxes_Collect(ChunkManager.Container, range);
-	Voxels_Boxes_Display(boxes, PalletManager.FindMakePallet(VoxelCube));
-	BoxEntity_Display(ViewEntity, *ViewEntity_PolyHedra);
+	PolyHedra_Display_Normalized(*Box_Pallet, boxes);
+	PolyHedra_Display_Normalized(*Box_Pallet, ViewEntity);
 	ViewEntity_CollisionSide = ViewEntity.Collide(boxes, frame_time.Delta);
-	BoxEntity_Display(ViewEntity, *ViewEntity_PolyHedra);
+	PolyHedra_Display_Normalized(*Box_Pallet, ViewEntity);
 }
 void ContextNoisePlane::ViewEntityUpdate_Done()
 {
@@ -1048,6 +1098,8 @@ void ContextNoisePlane::ChangeMedia()
 void ContextNoisePlane::GraphicsCreate()
 {
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
+	PolyHedraManager.GraphicsCreate();
+	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	UIManager.GraphicsCreate();
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
 	//PlaneManager.GraphicsCreate();
@@ -1059,6 +1111,8 @@ void ContextNoisePlane::GraphicsCreate()
 }
 void ContextNoisePlane::GraphicsDelete()
 {
+	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
+	PolyHedraManager.GraphicsDelete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 	UIManager.GraphicsDelete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
@@ -1106,27 +1160,21 @@ void ContextNoisePlane::Init()
 	ViewMove_AccelFast = 2.0f;
 	ViewMove_Decel = 0.2f;
 	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
-	LayoutMultiform.Depth.ChangeData(View.Depth);
-	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
-	LayoutMultiform.FOV.ChangeData(View.FOV);
-	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
 	}
 
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	ChangeMedia();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	PolyHedraManager.GraphicsCreate();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	GraphicsCreate();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	UIManager.TextManager.InitFont();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	UIManager.GraphicsInit();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	Shader::Base::BindNone();
 	LightBuffer.BindBase(LightBufferBinding);
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	LayoutMultiform.Lights.ChangeData(LightBufferBinding);
+	LayoutMultiform.Depth.ChangeData(View.Depth);
+	LayoutMultiform.FOV.ChangeData(View.FOV);
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
 	Make();
 	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
@@ -1137,8 +1185,6 @@ void ContextNoisePlane::Free()
 {
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	AuxThreadCollection.Terminate();
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	PolyHedraManager.GraphicsDelete();
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
 	GraphicsDelete();
 	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
@@ -1151,10 +1197,7 @@ static unsigned int		TextCharCount = 0;
 #include "Light/BufferData.hpp"
 void ContextNoisePlane::Draw()
 {
-	// should GraphicsManagers just know that they want Enabled/Disabled ?
-	// GraphicsManagerBase so I dont need to call the Create/Delete individually
-	// instead just put them in a Container
-	// also Update/Draw all automatically
+//	LayoutMultiform.Depth.ChangeData(View.Depth);
 
 	StopWatch sw_total;
 	sw_total.Start();
@@ -1190,6 +1233,9 @@ void ContextNoisePlane::Draw()
 	ObjectManagerBasic.GraphicsDrawFull();
 	ObjectManagerBasic.GraphicsDrawWire();
 	FrameTime_Draw_DrawPolyHedra.NewValue(sw.ElapsedTime());
+
+	ObjectManagerTSC.GraphicsDrawFull();
+	ObjectManagerTSC.GraphicsDrawWire();
 
 	//PlaneManager.Draw();
 

@@ -110,7 +110,7 @@ void AuxThread2::GenerateTerrain(Chunk & chunk)
 	ChunkData data(chunk);
 	TerrainTest2D(data);
 //	TerrainTest3D(data);
-//	TerrainFlat(data, -1, 7);
+//	TerrainFlat(data, -1, 15);
 //	TerrainPillars(data);
 	//TerrainPlane(data, Plane);
 //	TerrainCaveNoodle(data, noise.Cave0, noise.Cave1);
@@ -157,10 +157,12 @@ void AuxThread2::TerrainTest2D(ChunkData & data)
 
 		float val = 0.0f;
 
-		val += Simplex2DTest.Generate(pos_hori /   64.0f) *  4.0f;
-		val += Simplex2DTest.Generate(pos_hori /  128.0f) *  8.0f;
-		val += Simplex2DTest.Generate(pos_hori /  256.0f) * 16.0f;
-		val += Simplex2DTest.Generate(pos_hori / 1024.0f) * 64.0f;
+		//val += Simplex2DTest.Generate(pos_hori /   64.0f) *  4.0f;
+		//val += Simplex2DTest.Generate(pos_hori /  128.0f) *  8.0f;
+		//val += Simplex2DTest.Generate(pos_hori /  256.0f) * 16.0f;
+		//val += Simplex2DTest.Generate(pos_hori / 1024.0f) * 64.0f;
+
+		val += Simplex2DTest.Generate(pos_hori / 512.0f) * 64.0f;
 
 		for (unsigned int udx_vert = 0; udx_vert < CHUNK_VALUES_PER_SIDE; udx_vert++)
 		{

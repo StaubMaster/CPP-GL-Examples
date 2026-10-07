@@ -64,15 +64,12 @@
 // 
 #include "PhysicsContext.hpp"
 
-
-
 // New PolyHedra
 # include "NewPolyHedra/Manager.hpp"
 # include "NewPolyHedra/PalletManager.hpp"
 
-# include "NewPolyHedra/DataType/Basic3D/Layout.hpp"
-# include "NewPolyHedra/DataType/Basic3D/Object.hpp"
 # include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/ObjectManager.hpp"
 
 # include "NewPolyHedraUI.hpp"
 
@@ -95,6 +92,7 @@ LayoutMultiformLight3D	LayoutMultiform;
 NewPolyHedra::Manager							PolyHedraManager;
 NewPolyHedra::PalletManager						PalletManager;
 NewPolyHedra::Basic3D::ObjectManager			ObjectManagerBasic;
+TransScaleColor3D::ObjectManager				ObjectManagerTSC;
 NewPolyHedra::UserInterface::ObjectManager		ObjectManagerUI;
 
 void	NewPolyHedra_ChangeMedia();
@@ -139,6 +137,11 @@ Physics::SurfaceContext		PhysicsContext_Surface;
 
 
 ::VoxelClear	VoxelClear;
+
+
+
+PolyHedra *				Box_PolyHedra = nullptr;
+NewPolyHedra::Pallet *	Box_Pallet = nullptr;
 
 
 

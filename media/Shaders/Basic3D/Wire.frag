@@ -56,12 +56,12 @@ float CalcDepthFactor()
 
 void main()
 {
-	float	depth_factor = CalcDepthFactor();
+	float depth_factor = CalcDepthFactor();
 
-	vec4	col = fs_inn.Color;
+	vec4 col = fs_inn.Color;
 	col = vec4(1, 1, 1, 1);
 
-	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
+	//col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
 	Color = col;
 }
