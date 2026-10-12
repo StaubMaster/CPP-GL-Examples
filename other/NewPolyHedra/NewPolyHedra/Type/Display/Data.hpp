@@ -1,19 +1,23 @@
-#ifndef  NEW_POLYHEDRA_TYPE_PALLET_OBJECT_MANAGER_HPP
-# define NEW_POLYHEDRA_TYPE_PALLET_OBJECT_MANAGER_HPP
+#ifndef  NEW_POLYHEDRA_TYPE_DISPLAY_DATA_HPP
+# define NEW_POLYHEDRA_TYPE_DISPLAY_DATA_HPP
 
-# include "../PalletObjectManager.hpp"
+# include "NewPolyHedra/Base/Display/Data.hpp"
+
 # include "Generics/Container/Binary.hpp"
 
 namespace NewPolyHedra
 {
 template<typename TypeData, typename TypeInstanceData>
-struct Type_PalletObjectManager : public PalletObjectManager
+struct TypeDisplayData : public BaseDisplayData
 {
 	public:
-	~Type_PalletObjectManager() = default;
-	Type_PalletObjectManager() = default;
-	Type_PalletObjectManager(const Type_PalletObjectManager & other) = delete;
-	Type_PalletObjectManager & operator=(const Type_PalletObjectManager & other) = delete;
+	~TypeDisplayData() = default;
+	TypeDisplayData() = delete;
+	TypeDisplayData(const TypeDisplayData & other) = delete;
+	TypeDisplayData & operator=(const TypeDisplayData & other) = delete;
+
+	public:
+	TypeDisplayData(Pallet & pallet);
 
 	private:
 	Container::Binary<TypeInstanceData>		InstancesFullData;

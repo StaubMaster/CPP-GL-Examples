@@ -1,10 +1,3 @@
-DisplayPolyHedra ?
-PolyHedra/Display
-
-these dont just draw
-they also store stuff ?
-
-
 
 "Temporary" Objects vs "Permanent" Objects
 
@@ -17,3 +10,14 @@ dynamically allocated and deleted
 Type_PalletObjectData use directly
 managed by user
 
+
+
+
+
+rename
+
+DisplayPolyHedra ?
+PolyHedra/Display
+
+these dont just draw
+they also store stuff ?

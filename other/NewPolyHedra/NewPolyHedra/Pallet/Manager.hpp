@@ -4,19 +4,21 @@
 # include "Generics/Container/Binary.hpp"
 # include "Graphics/Attribute/General/Layout.hpp"
 
-#include "Pallet/Full/Layout.hpp"
-#include "Pallet/Wire/Layout.hpp"
+#include "NewPolyHedra/Pallet/Full/Layout.hpp"
+#include "NewPolyHedra/Pallet/Wire/Layout.hpp"
 
 class PolyHedra;
 
 namespace NewPolyHedra
 {
 struct Pallet;
-
 struct PalletManager
 {
-	public:
+	private:
 	static PalletManager *		Current;
+	public:
+	static Pallet *		sFind(PolyHedra * polyhedra);
+	static Pallet *		sTake(PolyHedra * polyhedra);
 
 	public:
 	~PalletManager();
@@ -27,25 +29,21 @@ struct PalletManager
 
 
 	private:
-	public:
 	Container::Binary<Pallet*>		Pallets;
 
-	public:
-	Pallet *	FindPallet(PolyHedra * polyhedra) const;
-	private:
-	Pallet *	MakePallet(PolyHedra * polyhedra);
-	public:
-	Pallet *	FindMakePallet(PolyHedra * polyhedra);
+	public:		Pallet *	Find(PolyHedra * polyhedra) const;
+	private:	Pallet *	Make(PolyHedra * polyhedra);
+	public:		Pallet *	Take(PolyHedra * polyhedra);
 
 	// Find Name
 
 
 
+	// seperate into PalletGraphics / GraphicsMain
+
 	public:
 	PalletFull::Layout		BufferFullLayout;
 	PalletWire::Layout		BufferWireLayout;
-	//::Attribute::Layout *	BufferFullLayout;
-	//::Attribute::Layout *	BufferWireLayout;
 
 	public:
 	void	GraphicsCreate();

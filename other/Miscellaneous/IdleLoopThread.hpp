@@ -18,7 +18,7 @@ struct IdleLoopThread
 	IdleLoopThread(const char * name);
 
 	private:
-	std::thread		Thread;
+	std::thread		Thread; // Thread should be after Flags. to guarantee that Flags are set when thread starts
 	const char *	Name;
 
 	private:

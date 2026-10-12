@@ -6,8 +6,7 @@
 namespace NewPolyHedra
 {
 struct PalletManager;
-struct ObjectManager;
-
+struct BaseManager;
 struct Manager
 {
 	~Manager() = default;
@@ -15,11 +14,11 @@ struct Manager
 	Manager(const Manager & other) = delete;
 	Manager & operator=(const Manager & other) = delete;
 
-	NewPolyHedra::PalletManager *	PalletManager = nullptr;
+	NewPolyHedra::PalletManager *		PalletManager = nullptr;
 
-	Container::Binary<ObjectManager*>	ObjectManagers;
+	Container::Binary<BaseManager*>		BaseManagers;
 
-	void	UpdatePalletObjectDatas();
+	void	CleanObjects();
 
 	void	InstancesClear();
 	void	InstancesMake();

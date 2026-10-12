@@ -1,4 +1,4 @@
-#include "Pallet.hpp"
+#include "NewPolyHedra/Pallet/.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Data.hpp"
@@ -10,6 +10,14 @@
 
 #include "Graphics/VertexArray/Base.hpp"
 #include "Graphics/Attribute/General/Layout.hpp"
+
+
+
+bool NewPolyHedra::Pallet::Equals(const PolyHedra * polyhedra) const	{ return Object == polyhedra; }
+bool NewPolyHedra::Pallet::Equals(const PolyHedra & polyhedra) const	{ return Object == &polyhedra; }
+
+bool NewPolyHedra::Pallet::Equals(const std::string & name) const		{ return Name == name; }
+bool NewPolyHedra::Pallet::Equals(const char * name) const				{ return Name == name; }
 
 
 

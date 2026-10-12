@@ -52,9 +52,9 @@ class Slider : public BaseText
 	void	ChangeValue(DisplayPosition mouse_pos);
 
 	public:
-	FunctionPointer<float>		ValueXChangedFunc;
-	FunctionPointer<float>		ValueYChangedFunc;
-	FunctionPointer<VectorF2>	ValueChangedFunc;
+	Function::Pointer<float>		ValueXChangedFunc;
+	Function::Pointer<float>		ValueYChangedFunc;
+	Function::Pointer<VectorF2>		ValueChangedFunc;
 
 	public:
 	Slider();

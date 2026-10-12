@@ -12,7 +12,7 @@ namespace Control
 class Button : public BaseText
 {
 	public:
-	FunctionPointer<ClickArgs>	ClickFunc; // FuncClick
+	Function::Pointer<ClickArgs>	ClickFunc; // FuncClick
 
 	public:
 	~Button();

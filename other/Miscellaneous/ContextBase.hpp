@@ -11,10 +11,10 @@
 struct ContextBase
 {
 	static ::Window *							WindowPointer;
-	static ::StaticFunction<::ContextBase*>		NewContext;
+	static ::Function::Static<ContextBase*>		NewContext;
 
 	static void		Quit();
-	static void		Change(StaticFunction<ContextBase*>::FunctionType new_context);
+	static void		Change(Function::Static<ContextBase*>::FunctionType new_context);
 
 
 

@@ -7,7 +7,7 @@
 
 
 ::Window *						ContextBase::WindowPointer = nullptr;
-::StaticFunction<ContextBase*>	ContextBase::NewContext;
+::Function::Static<ContextBase*>	ContextBase::NewContext;
 
 void ContextBase::Quit()
 {
@@ -17,7 +17,7 @@ void ContextBase::Quit()
 		WindowPointer -> ExitLoop();
 	}
 }
-void ContextBase::Change(StaticFunction<ContextBase*>::FunctionType new_context)
+void ContextBase::Change(Function::Static<ContextBase*>::FunctionType new_context)
 {
 	NewContext.Assign(new_context);
 	if (WindowPointer != nullptr)

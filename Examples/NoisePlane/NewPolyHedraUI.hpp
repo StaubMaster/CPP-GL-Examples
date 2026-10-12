@@ -10,9 +10,9 @@
 # include "Graphics/Attribute/TypeDefs/Matrix3x3.hpp"
 # include "Graphics/Attribute/TypeDefs/Float.hpp"
 
+# include "NewPolyHedra/Type/Manager.hpp"
+# include "NewPolyHedra/Type/Logical/Data.hpp"
 # include "NewPolyHedra/Type/Object.hpp"
-# include "NewPolyHedra/Type/PalletObjectData.hpp"
-# include "NewPolyHedra/Type/ObjectManager.hpp"
 
 namespace NewPolyHedra
 {
@@ -46,9 +46,11 @@ class BufferLayout : public ::Attribute::Layout
 	~BufferLayout();
 	BufferLayout();
 };
-typedef Type_PalletObjectData<ObjectData> PalletObjectData;
-typedef Type_Object<ObjectData> Object;
-typedef Type_ObjectManager<ObjectData, InstanceData> ObjectManager;
+typedef ObjectData TypeData;
+typedef InstanceData TypeInstanceData;
+typedef TypeLogicalData	<TypeData> TypeObjectData;
+typedef TypeManager		<TypeData, TypeInstanceData> TypeManager;
+typedef Type_Object		<TypeData> Object;
 };
 };
 

@@ -7,14 +7,14 @@ namespace NewPolyHedra
 {
 struct Pallet;
 
-struct PalletObjectManager;
+struct BaseGraphicsInst;
 
-template<typename TypeData> struct Type_PalletObjectData;
+template<typename TypeData> struct TypeLogicalData;
 
 template<typename TypeData> struct Type_Object
 {
 	private:
-	Type_PalletObjectData<TypeData> *	PalletObjectData = nullptr;
+	TypeLogicalData<TypeData> *	ObjectData = nullptr;
 
 	public:
 	bool	Is() const;
@@ -34,8 +34,8 @@ template<typename TypeData> struct Type_Object
 	void	HideWire();
 
 	public:
-	const	PalletObjectManager *	Manager() const;
-			PalletObjectManager *	Manager();
+	const	BaseDisplayData *	Manager() const;
+			BaseDisplayData *	Manager();
 
 	public:
 	~Type_Object();

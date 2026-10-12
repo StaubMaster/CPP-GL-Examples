@@ -14,6 +14,8 @@
 #include "NewPolyHedra/DataType/TransScaleColor3D/Layout.hpp"
 #include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
 
+#include "NewPolyHedra/Type/Display/DataManager.hpp"
+
 // Graphics
 #include "Graphics/Shader/Code.hpp"
 #include "Generics/Container/Array.hpp"
@@ -98,11 +100,63 @@ __attribute__((unused)) static void PolyHedra_Display_Normalized(NewPolyHedra::P
 	TransScaleColor3D::Object obj(&pallet);
 	obj.Data().Trans.Position = box.Center();
 	obj.Data().Scale = box.Size() * 0.5f;
-	obj.HideFull();
-	obj.ShowWire();
+	obj.Data().Color = ColorF4(1, 1, 1);
+	obj.HideFull(); obj.ShowWire();
 }
 __attribute__((unused)) static void PolyHedra_Display_Normalized(NewPolyHedra::Pallet & pallet, const BoxEntity3D & box_entity)
 {
+	VectorF3 pos = box_entity.Pos;
+	VectorF3 size = box_entity.Box.Size() * 0.5f;
+	VectorF3 center = box_entity.Box.Center();
+
+	/*{
+		{
+			TransScaleColor3D::Object obj(&pallet);
+			obj.Data().Trans.Position = pos + VectorF3(0, center.Y, center.Z);
+			obj.Data().Scale = VectorF3(0, size.Y, size.Z);
+			obj.Data().Color = ColorF4(1, 0, 0);
+			obj.HideFull(); obj.ShowWire();
+		}
+		{
+			TransScaleColor3D::Object obj(&pallet);
+			obj.Data().Trans.Position = pos + VectorF3(center.X, 0, center.Z);
+			obj.Data().Scale = VectorF3(size.X, 0, size.Z);
+			obj.Data().Color = ColorF4(0, 1, 0);
+			obj.HideFull(); obj.ShowWire();
+		}
+		{
+			TransScaleColor3D::Object obj(&pallet);
+			obj.Data().Trans.Position = pos + VectorF3(center.X, center.Y, 0);
+			obj.Data().Scale = VectorF3(size.X, size.Y, 0);
+			obj.Data().Color = ColorF4(0, 0, 1);
+			obj.HideFull(); obj.ShowWire();
+		}
+	}*/
+
+	{
+		{
+			TransScaleColor3D::Object obj(&pallet);
+			obj.Data().Trans.Position = pos + VectorF3(center.X, 0, 0);
+			obj.Data().Scale = VectorF3(size.X, 0, 0);
+			obj.Data().Color = ColorF4(1, 0, 0);
+			obj.HideFull(); obj.ShowWire();
+		}
+		{
+			TransScaleColor3D::Object obj(&pallet);
+			obj.Data().Trans.Position = pos + VectorF3(0, center.Y, 0);
+			obj.Data().Scale = VectorF3(0, size.Y, 0);
+			obj.Data().Color = ColorF4(0, 1, 0);
+			obj.HideFull(); obj.ShowWire();
+		}
+		{
+			TransScaleColor3D::Object obj(&pallet);
+			obj.Data().Trans.Position = pos + VectorF3(0, 0, center.Z);
+			obj.Data().Scale = VectorF3(0, 0, size.Z);
+			obj.Data().Color = ColorF4(0, 0, 1);
+			obj.HideFull(); obj.ShowWire();
+		}
+	}
+
 	PolyHedra_Display_Normalized(pallet, box_entity.Box + box_entity.Pos);
 }
 __attribute__((unused)) static void PolyHedra_Display_Normalized(NewPolyHedra::Pallet & pallet, const Container::Array<BoxF3> & boxes)
@@ -370,47 +424,49 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 		}
 		// Basic3D
 		{
-			ObjectManagerBasic.ShaderFull.Change({
+			NewPolyHedra::BaseDisplayDataManager & graphics = ObjectManagerBasic.DisplayType;
+			graphics.ShaderFull.Change({
 				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
 				MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
 			});
 			{
 				Uniform::Layout * layout = new LayoutUniformLight3D();
-				ObjectManagerBasic.ShaderFull.AssignLayout(layout);
+				graphics.ShaderFull.AssignLayout(layout);
 				LayoutMultiform.Find(layout);
 			}
 			{
 				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
 				layout -> Trans.Change(3);
 				layout -> Normal.Change(7);
-				ObjectManagerBasic.BufferFullLayout = layout;
+				graphics.BufferFullLayout = layout;
 			}
-			ObjectManagerBasic.ShaderWire.Change({
+			graphics.ShaderWire.Change({
 				MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
 				MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
 			});
 			{
 				Uniform::Layout * layout = new LayoutUniformView3D();
-				ObjectManagerBasic.ShaderWire.AssignLayout(layout);
+				graphics.ShaderWire.AssignLayout(layout);
 				LayoutMultiform.Find(layout);
 			}
 			{
 				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
 				layout -> Trans.Change(3);
 				layout -> Normal.Change(-1);
-				ObjectManagerBasic.BufferWireLayout = layout;
+				graphics.BufferWireLayout = layout;
 			}
-			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerBasic);
+			PolyHedraManager.BaseManagers.Insert(&ObjectManagerBasic);
 		}
 		// TransScaleColor3D
 		{
-			ObjectManagerTSC.ShaderFull.Change({
+			NewPolyHedra::BaseDisplayDataManager & graphics = ObjectManagerTSC.DisplayType;
+			graphics.ShaderFull.Change({
 				MediaDirectory.File("Shaders/PolyHedra/UserInterface.vert"),
 				MediaDirectory.File("Shaders/PolyHedra/TexturedNoLight.frag"),
 			});
 			{
 				Uniform::Layout * layout = new LayoutUniformView3D();
-				ObjectManagerTSC.ShaderFull.AssignLayout(layout);
+				graphics.ShaderFull.AssignLayout(layout);
 				LayoutMultiform.Find(layout);
 			}
 			{
@@ -419,15 +475,15 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 				layout -> Normal.Change(7);
 				layout -> Scale.Change(11);
 				layout -> Color.Change(12);
-				ObjectManagerTSC.BufferFullLayout = layout;
+				graphics.BufferFullLayout = layout;
 			}
-			ObjectManagerTSC.ShaderWire.Change({
+			graphics.ShaderWire.Change({
 				MediaDirectory.File("Shaders/PolyHedra/TSC/Wire.vert"),
-				MediaDirectory.File("Shaders/PolyHedra/Fixed.frag"),
+				MediaDirectory.File("Shaders/PolyHedra/Color.frag"),
 			});
 			{
 				Uniform::Layout * layout = new LayoutUniformView3D();
-				ObjectManagerTSC.ShaderWire.AssignLayout(layout);
+				graphics.ShaderWire.AssignLayout(layout);
 				LayoutMultiform.Find(layout);
 			}
 			{
@@ -435,20 +491,21 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 				layout -> Trans.Change(3);
 				layout -> Normal.Change(-1);
 				layout -> Scale.Change(11);
-				layout -> Color.Change(-1);
-				ObjectManagerTSC.BufferWireLayout = layout;
+				layout -> Color.Change(12);
+				graphics.BufferWireLayout = layout;
 			}
-			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerTSC);
+			PolyHedraManager.BaseManagers.Insert(&ObjectManagerTSC);
 		}
 		// UI
 		{
-			ObjectManagerUI.ShaderFull.Change({
+			NewPolyHedra::BaseDisplayDataManager & graphics = ObjectManagerUI.DisplayType;
+			graphics.ShaderFull.Change({
 				MediaDirectory.File("Shaders/UI/PHFull.vert"),
 				MediaDirectory.File("Shaders/UI/PHFull.frag"),
 			});
 			{
 				Uniform::Layout * layout = new LayoutUniformDisplay();
-				ObjectManagerUI.ShaderFull.AssignLayout(layout);
+				graphics.ShaderFull.AssignLayout(layout);
 				LayoutMultiform.Find(layout);
 			}
 			{
@@ -457,18 +514,18 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 				layout -> Pos.Change(4);
 				layout -> Rot.Change(5);
 				layout -> Scale.Change(8);
-				ObjectManagerUI.BufferFullLayout = layout;
+				graphics.BufferFullLayout = layout;
 			}
 			{
 				Uniform::Layout * layout = new LayoutUniformDisplay();
-				ObjectManagerUI.ShaderWire.AssignLayout(layout);
+				graphics.ShaderWire.AssignLayout(layout);
 				LayoutMultiform.Find(layout);
 			}
 			{
 				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
-				ObjectManagerUI.BufferWireLayout = layout;
+				graphics.BufferWireLayout = layout;
 			}
-			PolyHedraManager.ObjectManagers.Insert(&ObjectManagerUI);
+			PolyHedraManager.BaseManagers.Insert(&ObjectManagerUI);
 		}
 	}
 }
@@ -568,7 +625,7 @@ ContextNoisePlane::ContextNoisePlane()
 	IdleLoopThread::ThreadName = "DrawThread";
 
 	Box_PolyHedra = PolyHedraGenerate::RegularHexaHedron();
-	Box_Pallet = PalletManager.FindMakePallet(Box_PolyHedra);
+	Box_Pallet = PalletManager.Take(Box_PolyHedra);
 
 	PhysicsContext_Gravity.Acceleration = 0.5f;
 
@@ -782,10 +839,16 @@ void ContextNoisePlane::ViewEntityUpdate_Colliding(FrameTime frame_time)
 {
 	BoxI3 range = BoxEntity_RangeI(ViewEntity, frame_time);
 	Container::Array<BoxF3> boxes = Voxels_Boxes_Collect(ChunkManager.Container, range);
-	PolyHedra_Display_Normalized(*Box_Pallet, boxes);
-	PolyHedra_Display_Normalized(*Box_Pallet, ViewEntity);
+	if (View_Distance != 0.0f)
+	{
+		PolyHedra_Display_Normalized(*Box_Pallet, boxes);
+		PolyHedra_Display_Normalized(*Box_Pallet, ViewEntity);
+	}
 	ViewEntity_CollisionSide = ViewEntity.Collide(boxes, frame_time.Delta);
-	PolyHedra_Display_Normalized(*Box_Pallet, ViewEntity);
+	if (View_Distance != 0.0f)
+	{
+		PolyHedra_Display_Normalized(*Box_Pallet, ViewEntity);
+	}
 }
 void ContextNoisePlane::ViewEntityUpdate_Done()
 {
@@ -928,10 +991,14 @@ void ContextNoisePlane::ViewRayUpdate_Show()
 		ss << '\n';
 
 		{
-			NewPolyHedra::Basic3D::Object voxel_box_obj(VoxelCube);
-			voxel_box_obj.Data().Trans.Position = ViewHit.Index.ToF();
-			voxel_box_obj.HideFull();
-			voxel_box_obj.ShowWire();
+			BoxF3 box;
+			box.Min = ViewHit.Index.ToF();
+			box.Max = box.Min + VectorF3(1.0f);
+			PolyHedra_Display_Normalized(*Box_Pallet, box);
+			//NewPolyHedra::Basic3D::Object voxel_box_obj(VoxelCube);
+			//voxel_box_obj.Data().Trans.Position = ViewHit.Index.ToF();
+			//voxel_box_obj.HideFull();
+			//voxel_box_obj.ShowWire();
 		}
 	}
 
@@ -1045,12 +1112,8 @@ void ContextNoisePlane::MakeVoxels()
 
 		// these are all Cuboids.
 		// make 1 Cube PolyHedra then scale that
-		VoxelCube = MakePolyHedraBoxEdges(BoxF3(VectorF3(0.0f), VectorF3(1.0f)));
-		VoxelChunkCube = MakePolyHedraBoxEdges(BoxF3(VectorF3(0.1f), VectorF3(CHUNK_VALUES_PER_SIDE - 0.1f)));
 		ViewEntity_PolyHedra = MakePolyHedraBoxEdges(ViewEntity.Box);
-		PalletManager.FindMakePallet(VoxelCube);
-		PalletManager.FindMakePallet(VoxelChunkCube);
-		PalletManager.FindMakePallet(ViewEntity_PolyHedra);
+		PalletManager.Take(ViewEntity_PolyHedra);
 	}
 }
 
@@ -1140,7 +1203,9 @@ void ContextNoisePlane::Init()
 	LightManager.Solar_Count = 1;
 	LightManager.Spot_Count = 0;
 
+	View.Trans = Trans3D();
 	View.Depth.Color = window.DefaultColor;
+	View.Depth.Factors.SetFar(256.0f);
 	View.Depth.Range.SetMin(0.5f);
 	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
 	ViewEntity.Box = BoxF3(
@@ -1281,7 +1346,7 @@ void ContextNoisePlane::Draw()
 
 
 
-	PolyHedraManager.UpdatePalletObjectDatas();
+	PolyHedraManager.CleanObjects();
 }
 
 
@@ -2207,14 +2272,20 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (MenuDebug.VoxelChunkBoxes.Check.IsChecked())
 	{
-		NewPolyHedra::Pallet * pallet = PalletManager.FindMakePallet(VoxelChunkCube);
+		//NewPolyHedra::Pallet * pallet = PalletManager.Take(VoxelChunkCube);
 		for (unsigned int i = 0; i < ChunkManager.Container.Chunks.Length(); i++)
 		{
 			Chunk * chunk = ChunkManager.Container.Chunks[i];
 			if (chunk == nullptr) { continue; }
-			NewPolyHedra::Basic3D::Object chunk_box(pallet);
-			chunk_box.Data().Trans.Position = (chunk -> Index * CHUNK_VALUES_PER_SIDE).ToF();
-			chunk_box.ShowWire();
+			BoxF3 box;
+			box.Min = (chunk -> Index).ToF();
+			box.Max = box.Min + VectorF3(1.0f);
+			box.Min = box.Min * CHUNK_VALUES_PER_SIDE;
+			box.Max = box.Max * CHUNK_VALUES_PER_SIDE;
+			PolyHedra_Display_Normalized(*Box_Pallet, box);
+			//NewPolyHedra::Basic3D::Object chunk_box(pallet);
+			//chunk_box.Data().Trans.Position = (chunk -> Index * CHUNK_VALUES_PER_SIDE).ToF();
+			//chunk_box.ShowWire();
 		}
 	}
 	sw.Stop(); FrameTime_ChunkBoxes.NewValue(sw.ElapsedTime());
@@ -2224,9 +2295,15 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	if (MenuDebug.ChunkHere.Check.IsChecked())
 	{
 		ChunkVoxelIndex idx(View.Trans.Position.roundF().ToI());
-		NewPolyHedra::Basic3D::Object chunk_box(VoxelChunkCube);
-		chunk_box.Data().Trans.Position = (idx.Chunk * CHUNK_VALUES_PER_SIDE).ToF();
-		chunk_box.ShowWire();
+		BoxF3 box;
+		box.Min = idx.Chunk.ToF();
+		box.Max = box.Min + VectorF3(1.0f);
+		box.Min = box.Min * CHUNK_VALUES_PER_SIDE;
+		box.Max = box.Max * CHUNK_VALUES_PER_SIDE;
+		PolyHedra_Display_Normalized(*Box_Pallet, box);
+		//NewPolyHedra::Basic3D::Object chunk_box(VoxelChunkCube);
+		//chunk_box.Data().Trans.Position = (idx.Chunk * CHUNK_VALUES_PER_SIDE).ToF();
+		//chunk_box.ShowWire();
 	}
 	sw.Stop(); FrameTime_ChunkHereBox.NewValue(sw.ElapsedTime());
 

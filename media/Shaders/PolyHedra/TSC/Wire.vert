@@ -48,7 +48,7 @@ layout(location = 1) in vec4 VColor;
 layout(location =  3) in mat4 InstTrans;  // 3 4 5 6
 //layout(location =  7) in mat4 InstNormal; // 7 8 9 10
 layout(location = 11) in vec3 InstScale;
-//layout(location = 12) in vec4 InstColor;
+layout(location = 12) in vec4 InstColor;
 
 
 
@@ -91,5 +91,5 @@ void main()
 	//vs_out.Normal = (vec4(MainNormal, 1.0) * InstNormal).xyz;
 	////vs_out.Normal = (vec4(VPos + VNormal, 1) * ITrans).xyz - vs_out.Absolute;
 	//vs_out.Tex = MainTex;
-	//vs_out.Color = InstColor;
+	vs_out.Color = InstColor;
 }

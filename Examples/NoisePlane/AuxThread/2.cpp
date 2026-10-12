@@ -16,6 +16,8 @@
 
 #include "Telemetry/StopWatch.hpp"
 
+#include <math.h>
+
 
 
 AuxThread2::AuxThread2(ChunkManager & manager)
@@ -130,23 +132,15 @@ AuxThread2::ChunkData::ChunkData(Chunk & chunk)
 
 void AuxThread2::TerrainTest2D(ChunkData & data)
 {
-	const VoxelPallet & pallet_gray = VoxelPalletMap::StaticMap["Gray"];
-	const VoxelPallet & pallet_dirt = VoxelPalletMap::StaticMap["Dirt"];
-	const VoxelPallet & pallet_grass = VoxelPalletMap::StaticMap["Grass"];
-	const VoxelPallet & pallet_water = VoxelPalletMap::StaticMap["Water"];
 
-	(void)pallet_gray;
-	(void)pallet_dirt;
-	(void)pallet_grass;
-	(void)pallet_water;
+	const VoxelPallet & pallet_debug_r = VoxelPalletMap::StaticMap["Debug_R"];	(void)pallet_debug_r;
+	const VoxelPallet & pallet_debug_g = VoxelPalletMap::StaticMap["Debug_G"];	(void)pallet_debug_g;
+	const VoxelPallet & pallet_debug_b = VoxelPalletMap::StaticMap["Debug_B"];	(void)pallet_debug_b;
 
-	const VoxelPallet & pallet_debug_r = VoxelPalletMap::StaticMap["Debug_R"];
-	const VoxelPallet & pallet_debug_g = VoxelPalletMap::StaticMap["Debug_G"];
-	const VoxelPallet & pallet_debug_b = VoxelPalletMap::StaticMap["Debug_B"];
-
-	(void)pallet_debug_r;
-	(void)pallet_debug_g;
-	(void)pallet_debug_b;
+	const VoxelPallet & pallet_gray = VoxelPalletMap::StaticMap["Gray"];	(void)pallet_gray;
+	const VoxelPallet & pallet_dirt = VoxelPalletMap::StaticMap["Dirt"];	(void)pallet_dirt;
+	const VoxelPallet & pallet_grass = VoxelPalletMap::StaticMap["Grass"];	(void)pallet_grass;
+	const VoxelPallet & pallet_water = VoxelPalletMap::StaticMap["Water"];	(void)pallet_water;
 
 	for (VectorU2 udx_hori = Loop2.Min(); Loop2.Check(udx_hori).All(true); Loop2.Next(udx_hori))
 	{
@@ -162,7 +156,11 @@ void AuxThread2::TerrainTest2D(ChunkData & data)
 		//val += Simplex2DTest.Generate(pos_hori /  256.0f) * 16.0f;
 		//val += Simplex2DTest.Generate(pos_hori / 1024.0f) * 64.0f;
 
-		val += Simplex2DTest.Generate(pos_hori / 512.0f) * 64.0f;
+		//val += Simplex2DTest.Generate(pos_hori / 512.0f) * 64.0f;
+		val += Simplex2DTest.Generate(pos_hori / 512.0f) * 16.0f;
+
+		//val += Simplex2DTest.Generate(pos_hori /   64.0f) *  4.0f;
+		//val += roundf(Simplex2DTest.Generate((pos_hori / 16.0f).round() / 32.0f) * 4.0f) * 16.0f;
 
 		for (unsigned int udx_vert = 0; udx_vert < CHUNK_VALUES_PER_SIDE; udx_vert++)
 		{
@@ -171,12 +169,12 @@ void AuxThread2::TerrainTest2D(ChunkData & data)
 			Voxel & voxel = data.Voxels[VectorU3::Convert(CHUNK_VALUES_PER_SIDE, VectorU3(udx_hori.X, udx_vert, udx_hori.Y))];
 
 			float diff = val - pos_vert;
-			/*if (diff > 0.0f)
-			{
-				if      (val > +1.0f) { voxel = pallet_debug_r.ToVoxel(); }
-				else if (val < -1.0f) { voxel = pallet_debug_b.ToVoxel(); }
-				else                  { voxel = pallet_debug_g.ToVoxel(); }
-			}*/
+			//if (diff > 0.0f)
+			//{
+			//	if      (val > +1.0f) { voxel = pallet_debug_r.ToVoxel(); }
+			//	else if (val < -1.0f) { voxel = pallet_debug_b.ToVoxel(); }
+			//	else                  { voxel = pallet_debug_g.ToVoxel(); }
+			//}
 			if      (diff < 0.0f) { voxel = Voxel(); }
 			else if (diff < 1.0f) { voxel = pallet_grass.ToVoxel(); }
 			else if (diff < 4.0f) { voxel = pallet_dirt.ToVoxel(); }

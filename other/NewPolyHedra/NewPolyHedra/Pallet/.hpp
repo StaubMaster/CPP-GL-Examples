@@ -15,9 +15,17 @@ namespace NewPolyHedra
 {
 struct Pallet
 {
-	public:
+	private:
 	PolyHedra *		Object = nullptr;
 	std::string		Name;
+
+	public:
+	bool	Equals(const PolyHedra * polyhedra) const;
+	bool	Equals(const PolyHedra & polyhedra) const;
+
+	public:
+	bool	Equals(const std::string & name) const;
+	bool	Equals(const char * name) const;
 
 	public:
 	~Pallet();

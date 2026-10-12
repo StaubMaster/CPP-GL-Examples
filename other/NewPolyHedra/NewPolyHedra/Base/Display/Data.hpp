@@ -1,29 +1,33 @@
-#ifndef  NEW_POLYHEDRA_PALLET_OBJECT_MANAGER_HPP
-# define NEW_POLYHEDRA_PALLET_OBJECT_MANAGER_HPP
+#ifndef  NEW_POLYHEDRA_BASE_DISPLAY_DATA_HPP
+# define NEW_POLYHEDRA_BASE_DISPLAY_DATA_HPP
 
 # include "Generics/Container/Binary.hpp"
+
 # include "Graphics/VertexArray/Base.hpp"
 # include "Graphics/Buffer/Array.hpp"
-# include "Graphics/Buffer/Uniform.hpp"
 
 namespace NewPolyHedra
 {
 struct Pallet;
 struct ObjectData;
 
-struct PalletObjectManager
+struct BaseDisplayData
 {
-	public:
-	NewPolyHedra::Pallet *	Pallet = nullptr;
+	private:
+	Pallet &	PalletObject;
 
 	public:
-	virtual ~PalletObjectManager();
-	PalletObjectManager();
-	PalletObjectManager(const PalletObjectManager & other) = delete;
-	PalletObjectManager & operator=(const PalletObjectManager & other) = delete;
+	bool	Equals(const Pallet & pallet) const;
+	bool	Equals(const Pallet * pallet) const;
 
 	public:
-	PalletObjectManager(NewPolyHedra::Pallet * pallet);
+	virtual ~BaseDisplayData() = default;
+	BaseDisplayData() = delete;
+	BaseDisplayData(const BaseDisplayData & other) = delete;
+	BaseDisplayData & operator=(const BaseDisplayData & other) = delete;
+
+	public:
+	BaseDisplayData(Pallet & pallet);
 
 
 
@@ -54,6 +58,9 @@ struct PalletObjectManager
 
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+
+	void	GraphicsInitFull(::Attribute::Layout * layout);
+	void	GraphicsInitWire(::Attribute::Layout * layout);
 
 	void	GraphicsDrawFull();
 	void	GraphicsDrawWire();

@@ -216,6 +216,6 @@ void main()
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 
 //	col = vec4(abs(normalize(fs_inn.Normal)), 1);
-	col = vec4(vec3(1.0 - gl_FragDepth), 1);
+//	col = vec4(vec3(1.0 - gl_FragDepth), 1);
 	Color = col;
 }

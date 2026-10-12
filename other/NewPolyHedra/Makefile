@@ -7,13 +7,17 @@ FANCY_NAME := NewPolyHedra
 FILES := \
 \
 	NewPolyHedra/Manager.cpp \
-	NewPolyHedra/ObjectManager.cpp \
-	NewPolyHedra/Pallet.cpp \
+	\
+	NewPolyHedra/Pallet/.cpp \
 	NewPolyHedra/Pallet/Full/Layout.cpp \
 	NewPolyHedra/Pallet/Wire/Layout.cpp \
-	NewPolyHedra/PalletManager.cpp \
-	NewPolyHedra/PalletObjectData.cpp \
-	NewPolyHedra/PalletObjectManager.cpp \
+	NewPolyHedra/Pallet/Manager.cpp \
+	\
+	NewPolyHedra/Base/Manager.cpp \
+	NewPolyHedra/Base/Logical/Data.cpp \
+	NewPolyHedra/Base/Logical/DataManager.cpp \
+	NewPolyHedra/Base/Display/Data.cpp \
+	NewPolyHedra/Base/Display/DataManager.cpp \
 \
 	NewPolyHedra/DataType/Basic3D/Layout.cpp \
 	NewPolyHedra/DataType/Basic3D/InstanceData.cpp \

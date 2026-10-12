@@ -34,7 +34,7 @@ struct ListBox : public UI::Control::ScrollBox
 
 	void *		ClickedObject = nullptr;
 
-	FunctionPointer<const Item &>	ItemFunc;
+	Function::Pointer<const Item &>		ItemFunc;
 
 	~ListBox();
 	ListBox();

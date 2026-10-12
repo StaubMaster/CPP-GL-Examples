@@ -12,7 +12,7 @@ namespace Control
 class CheckBox : public Base
 {
 	public:
-	FunctionPointer<ClickArgs>	ClickFunc;
+	Function::Pointer<ClickArgs>	ClickFunc;
 
 	private:
 	bool	Checked;

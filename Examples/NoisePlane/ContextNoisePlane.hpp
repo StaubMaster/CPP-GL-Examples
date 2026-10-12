@@ -66,10 +66,10 @@
 
 // New PolyHedra
 # include "NewPolyHedra/Manager.hpp"
-# include "NewPolyHedra/PalletManager.hpp"
+# include "NewPolyHedra/Pallet/Manager.hpp"
 
-# include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
-# include "NewPolyHedra/DataType/TransScaleColor3D/ObjectManager.hpp"
+# include "NewPolyHedra/DataType/Basic3D/Manager.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/TypeManager.hpp"
 
 # include "NewPolyHedraUI.hpp"
 
@@ -91,9 +91,9 @@ LayoutMultiformLight3D	LayoutMultiform;
 
 NewPolyHedra::Manager							PolyHedraManager;
 NewPolyHedra::PalletManager						PalletManager;
-NewPolyHedra::Basic3D::ObjectManager			ObjectManagerBasic;
-TransScaleColor3D::ObjectManager				ObjectManagerTSC;
-NewPolyHedra::UserInterface::ObjectManager		ObjectManagerUI;
+NewPolyHedra::Basic3D::Manager					ObjectManagerBasic;
+TransScaleColor3D::TypeManager					ObjectManagerTSC;
+NewPolyHedra::UserInterface::TypeManager		ObjectManagerUI;
 
 void	NewPolyHedra_ChangeMedia();
 
@@ -196,9 +196,6 @@ static GL::BlockBinding		LightBufferBinding;
 Buffer::Uniform				LightBuffer;
 
 
-
-PolyHedra *		VoxelCube; // put this in PolyHedra Geometry Pallet
-PolyHedra *		VoxelChunkCube;
 
 void	MakeVoxels();
 

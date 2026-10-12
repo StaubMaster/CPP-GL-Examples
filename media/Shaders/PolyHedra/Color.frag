@@ -66,8 +66,7 @@ void main()
 
 	vec4 col;
 	//col = texture(texture0, fs_inn.Tex);
-	//col = (col * (1.0 - fs_inn.Color.a)) + (fs_inn.Color.a * fs_inn.Color);
-	col = vec4(1, 0, 1, 1);
+	col = (col * (1.0 - fs_inn.Color.a)) + (fs_inn.Color.a * fs_inn.Color);
 
 	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
 

@@ -1,38 +1,25 @@
 #include "Manager.hpp"
-#include "PalletManager.hpp"
-#include "ObjectManager.hpp"
+#include "Pallet/Manager.hpp"
+#include "Base/Manager.hpp"
+
+#include "Generics/Loop.hpp"
 
 
 
-void NewPolyHedra::Manager::UpdatePalletObjectDatas()
+void NewPolyHedra::Manager::CleanObjects()
 {
-	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
-	{
-		NewPolyHedra::ObjectManager * manager = ObjectManagers[i];
-		if (manager == nullptr) { continue; }
-		manager -> PalletObjectDatasRemove();
-	}
+	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::CleanObjects);
 }
 
 
 
 void NewPolyHedra::Manager::InstancesClear()
 {
-	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
-	{
-		NewPolyHedra::ObjectManager * manager = ObjectManagers[i];
-		if (manager == nullptr) { continue; }
-		manager -> InstancesClear();
-	}
+	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::InstancesClear);
 }
 void NewPolyHedra::Manager::InstancesMake()
 {
-	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
-	{
-		NewPolyHedra::ObjectManager * manager = ObjectManagers[i];
-		if (manager == nullptr) { continue; }
-		manager -> InstancesMake();
-	}
+	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::InstancesMake);
 }
 
 
@@ -43,12 +30,7 @@ void NewPolyHedra::Manager::GraphicsCreate()
 	{
 		PalletManager -> GraphicsCreate();
 	}
-	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
-	{
-		NewPolyHedra::ObjectManager * manager = ObjectManagers[i];
-		if (manager == nullptr) { continue; }
-		manager -> GraphicsCreate();
-	}
+	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::GraphicsCreate);
 }
 void NewPolyHedra::Manager::GraphicsDelete()
 {
@@ -56,28 +38,13 @@ void NewPolyHedra::Manager::GraphicsDelete()
 	{
 		PalletManager -> GraphicsDelete();
 	}
-	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
-	{
-		NewPolyHedra::ObjectManager * manager = ObjectManagers[i];
-		if (manager == nullptr) { continue; }
-		manager -> GraphicsDelete();
-	}
+	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::GraphicsDelete);
 }
 void NewPolyHedra::Manager::GraphicsDrawFull()
 {
-	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
-	{
-		NewPolyHedra::ObjectManager * manager = ObjectManagers[i];
-		if (manager == nullptr) { continue; }
-		manager -> GraphicsDrawFull();
-	}
+	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::GraphicsDrawFull);
 }
 void NewPolyHedra::Manager::GraphicsDrawWire()
 {
-	for (unsigned int i = 0; i < ObjectManagers.Count(); i++)
-	{
-		NewPolyHedra::ObjectManager * manager = ObjectManagers[i];
-		if (manager == nullptr) { continue; }
-		manager -> GraphicsDrawWire();
-	}
+	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::GraphicsDrawWire);
 }

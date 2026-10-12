@@ -13,6 +13,9 @@ AuxThread0::AuxThread0(ContextNoisePlane & context)
 
 
 
+// this dosent Check
+// make TickLoopThread
+// and BaseLoopThread
 bool AuxThread0::CheckFunc()
 {
 	return true;

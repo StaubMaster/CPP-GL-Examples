@@ -3,18 +3,16 @@
 
 namespace NewPolyHedra
 {
-template<typename TypeData, typename TypeInstanceData>
-struct Type_ObjectManager;
+template<typename TypeData, typename TypeInstanceData> struct TypeManager;
 
 namespace Basic3D
 {
+typedef ObjectData TypeData;
+typedef InstanceData TypeInstanceData;
+typedef NewPolyHedra::TypeManager		<TypeData, TypeInstanceData> TypeManager;
 
-struct ObjectData;
-struct InstanceData;
-typedef Type_ObjectManager<ObjectData, InstanceData> ObjectManager;
-
-void	Create(ObjectManager & manager);
-void	Delete(ObjectManager & manager);
+void	Create(TypeManager & manager);
+void	Delete(TypeManager & manager);
 };
 };
 
