@@ -17,5 +17,3 @@ Object Pointer or just the Object itself ?
 
 SharedGuard
 UniqueGuard
-
-

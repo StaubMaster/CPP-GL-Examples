@@ -63,11 +63,11 @@ FILES := \
 	new.cpp \
 	main.cpp \
 
-DIR_SRC := .
-DIR_OBJ := .
+DIR_SRC := ./code/
+DIR_OBJ := ./code/
 
 LIBRARYS :=
-INCLUDES := .
+INCLUDES := ./code
 ARGUMENTS :=
 
 ################################################################

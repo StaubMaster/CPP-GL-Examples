@@ -40,13 +40,16 @@ FILES := \
 	CenterIndexLoop/2D.cpp \
 	CenterIndexLoop/3D.cpp \
 \
-	Threading/ObjectLock.cpp \
-	Threading/ObjectAccessUniqueGuard.cpp \
-	Threading/ObjectAccessSharedGuard.cpp \
-	Threading/ObjectAssignUniqueGuard.cpp \
-	Threading/ObjectAssignSharedGuard.cpp \
+	Threading/Lock.cpp \
+	Threading/Guard/Access/Unique.cpp \
+	Threading/Guard/Access/Shared.cpp \
+	Threading/Guard/Assign/Unique.cpp \
+	Threading/Guard/Assign/Shared.cpp \
 	\
-	IdleLoopThread.cpp \
+	Threading/Thread/Loop/Base.cpp \
+	Threading/Thread/Loop/Idle.cpp \
+	Threading/Thread/Loop/Tick.cpp \
+	Threading/Thread/Loop/Collection.cpp \
 \
 	GridCast/GridCast3D.cpp \
 \

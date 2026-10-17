@@ -1,0 +1,25 @@
+#include "AuxThread/0.hpp"
+
+#include "Telemetry/StopWatch.hpp"
+
+#include "ContextNoisePlane.hpp"
+
+
+
+AuxThread0::AuxThread0(ContextNoisePlane & context)
+	: TickLoopThread("AuxThread0", std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::seconds(1)) / 1)
+	, Context(context)
+{ }
+
+
+
+void AuxThread0::DoFunc()
+{
+	sw.Clear(); sw.Start();
+	//Context.ChunkManager.Container.ChangeCenter((Context.View.Trans.Position / (float)CHUNK_VALUES_PER_SIDE).roundF().ToI());
+	//Context.ChunkManager.Container.RemoveAround();
+	//Context.ChunkManager.Container.InsertAround();
+	Context.ChunkManager.Container.UpdateChunksContainer();
+	sw.Stop();
+	//AuxThread0Time.NewValue(sw.ElapsedTime());
+}

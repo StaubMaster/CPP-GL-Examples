@@ -1,0 +1,217 @@
+#ifndef  CHUNK_HPP
+# define CHUNK_HPP
+
+# define CHUNK_VALUES_PER_SIDE 32
+# define CHUNK_VALUES_PER_VOLM CHUNK_VALUES_PER_SIDE * CHUNK_VALUES_PER_SIDE * CHUNK_VALUES_PER_SIDE
+
+// 16 * 16 * 16 = 4096
+// 16 * 16 * 256 = 65536
+// 32 * 32 * 32 = 32768
+
+
+
+/* Do I need Assign Lock ?
+
+when changing
+just createa a New Voxel Array and fill that with the new data
+then just replace the old Voxel Array with the new one
+just lock, replace, unlock
+that should be done internally
+
+Generation is currently the only one that changes
+
+changing should not happen at the same time
+so lock it for others that want to change
+but also changing should not lock checking until Voxels are changed
+
+do the same with Chunks in ChunkManager
+*/
+
+/* deleting Chunk
+how to make sure Chunk is not referanced anywhere else
+*/
+
+
+
+# include "3D/Voxel.hpp"
+//# include "3D/Voxel/Pallet/Geometry/U.hpp"
+//# include "3D/Voxel/Pallet/Geometry/F.hpp"
+//# include "3D/Voxel/Pallet/Geometry/Graphics/U/Data.hpp"
+//# include "3D/Voxel/Pallet/Geometry/Graphics/F/Data.hpp"
+# include "3D/Chunk/GraphicsData.hpp"
+
+# include "ValueType/Vector/I3.hpp"
+# include "ValueType/Vector/U3.hpp"
+
+# include "Generics/Container/Array3D.hpp"
+# include "Generics/Container/Binary.hpp"
+//# include "Generics/Container/Array.hpp"
+
+//# include "Telemetry/ValueAccumulator.hpp"
+
+# include "Threading/Lock.hpp"
+
+# include "Chunk/Neighbours.hpp"
+
+//# include <mutex>
+
+# include "Graphics/VertexArray/Multi.hpp"
+
+struct ChunkManager;
+struct Structure;
+
+struct Chunk;
+
+# include "3D/ChunkGuards.hpp"
+
+// StructurePlacement ?
+// StructureOrientation ?
+struct StructureObject
+{
+	::Structure *	Structure = nullptr;
+	::VectorU3		Origin;
+};
+
+struct Chunk
+{
+	public:
+	const VectorI3		Index;
+	ChunkManager &		Manager;
+
+
+
+	public:
+	~Chunk();
+	Chunk() = delete;
+	Chunk(const Chunk & other) = delete;
+	Chunk & operator=(const Chunk & other) = delete;
+
+	Chunk(VectorI3 idx, ChunkManager & manager);
+
+
+
+	public:
+	ChunkNeighbour		Neighbours;
+
+
+
+	private: public:
+	Array3D<Voxel>		Voxels;
+
+	public:
+	const Voxel &	operator[](unsigned int udx) const;
+	const Voxel &	operator[](const VectorU3 & udx) const;
+
+	public:
+	bool	IsEmpty() const;
+	bool	IsNullOrEmpty() const;
+
+	private: public:
+	void	MakeEmpty();
+	void	MakeNull();
+
+	public:
+	bool	ClearVoxel(const VectorU3 & udx, Voxel & vox);
+	bool	PlaceVoxel(const VectorU3 & udx, Voxel & vox);
+
+
+
+	private:
+	ObjectLock	Lock;
+
+	public:
+	bool	InUse() const;
+
+//	void	AccessL();
+//	void	AccessU();
+//	bool	AccessT();
+
+//	void	AssignL();
+//	void	AssignU();
+
+//	void	AccessToAssign();
+
+//	ObjectTypeAccessUniqueGuard<Chunk>	ToAccessUniqueMake();
+
+	AccessLockedChunk	ToAccessMake();
+	AccessLockedChunk	ToAccessTake();
+	AccessLockedChunk	ToAccessTry();
+
+	static AccessLockedChunk	ToAccessTake(Chunk * chunk);
+
+	AssignLockedChunk	ToAssign();
+	//AssignLockedChunk	ToAssignTry();
+
+
+
+	/*
+		the chunk is already done after Placing Voxels
+		Clear Decorations is related to different Chunks
+		maybe just delete as needed
+	*/
+
+	public:
+	bool	TerrainDone;
+
+	public:
+	Container::Binary<StructureObject>	Decorations;
+
+	public:
+	bool	DecorationsGenerated;
+
+	public:
+	bool	DecorationsAssambled;
+
+	public:
+	bool	IsDone() const;
+	/* Generation
+		Terrain:
+			different Layers ?
+			just Height Map
+		Note Decorations:
+			put Decorations in Container
+			resolve Overlaps
+		Place Decorations:
+			resolve Overlaps
+			put Voxels
+			clear Decorations that arent needed for other Chunks
+		Clear Decorations:
+			clear Decorations Container
+		Done:
+	*/
+
+
+
+	public:
+	/*enum class GraphicsState
+	{
+		None, // do nothing
+		Want, // want Vertex Data, generate
+		Have, // hant Vertex Data, put in Buffer
+		Done, // do nothing
+	};*/
+	//Chunk::GraphicsState	GraphicsState; // put this in GraphicsData ?
+
+	private:
+	ChunkGraphicsData	GraphicsData;
+
+	private: public:
+	bool	BufferData_Want;
+	bool	BufferData_Have;
+
+	public:
+	void	GraphicsData_Make_Queue();
+	bool	GraphicsData_Make_Can() const;
+	void	GraphicsData_Make();
+
+	public:
+	void	GraphicsData_Put_Queue();
+	bool	GraphicsData_Put_Can() const;
+	void	GraphicsData_Put();
+
+	private:
+	VertexArray::Multi::Entry		GraphicsDataU_Entry;
+	VertexArray::Multi::Entry		GraphicsDataF_Entry;
+};
+
+#endif

@@ -1,0 +1,151 @@
+
+reduce Lag
+culling. check if chunkBox is visible. if not, dont Draw
+
+Generation and MainBufferData takes the most time
+I think the only way of fixing this multiThreading
+only one of the "writes" and the other "reads"
+so it should be easy enough
+
+MultiThreading
+{
+Drawing (OpenGL)
+	Data to Buffers
+	Draw Buffers
+User Interface (updating)
+	input relys on GLFW
+	store input and only update in UI Thread
+general Updating
+}
+
+
+
+VoxelTemplate
+{
+
+better face Hiding
+{
+  right now only Full faces Hide
+  Cylinder and Slop sides can also hide eachother
+  depending on Orientation
+}
+
+Transparancy
+{
+  full Transparancy is easy. just discard alpha 0
+  color Transparancy depends on distance
+}
+
+Connections
+{
+  Voxels that Connect to eachother
+  need different Models for each Connection ?
+  probably easier to have a different model for the Connecting part
+  so a Connection and a dead end
+  and it changes depending on if it connectes
+
+  Orientation is 5 Bits
+  make Connected Voxels not Orient ?
+  6 Bits needed of all Connections
+  first 2 Bits to indicate "Type"
+  0b00 Orientation
+  0b01 Connections
+
+what if I want a Fence to point to another Axis ?
+just dont do that ?
+
+have a seperate array for extra Data ?
+array of itmes of arbitrary size ? (why not store Voxels with arbitrary size ?)
+
+do other stuff first ?
+like reducing lag
+and UI
+}
+
+}
+
+
+
+
+
+Save/Load Chunk
+{
+how to Store Chunk ?
+just store Raw Data for Testing ?
+for Empty just store that it is Empty
+how to optimize ?
+{
+divide Chunk into 8 Sections
+if a Section is all the same, store that once ?
+what about Orientation ?
+mark unknown Orientation ?
+then Generate it ? it would have to be Generated
+if Section is not all the same
+divide into 8 smaller Sections
+repeat until done
+
+if a Section is not all the same
+try check for a common type (1/2 is the same)
+then store that as a "base"
+only do if this "base" is different from parent "base"
+
+how to store a Voxel
+{
+1 Byte for Orientation
+how many for Tempalte ?
+make Data a ByteStream
+store up to 127 Tempalte at beginning
+then use first bit 0 as Index into that
+if first bit 1, then interpred the next as Template Index ?
+
+if every Voxel is different, then all Tempaltes would need to be stored
+if only 2 are the same, then that is worth optimizing
+allways store all Template at the beginning
+
+ 8^3 =  512 =  9 Bits per Index
+16^3 = 4096 = 12 Bits per Index
+
+Orientation is 5 Bits
+ 8^3 = 14 Bits per Orientation + Index (2 Bytes. 2 Bits left)
+16^3 = 19 Bits per Orientation + Index (3 Bytes. 5 Bits left)
+
+
+
+
+}
+}
+}
+
+
+
+Inventory/UI
+{
+recreate from old VoxelEngine
+
+main Menu ?
+make a Save/Load/Generate/Test selection
+
+options ?
+change FOV
+GenerationDisntance
+
+make Debug Text better
+
+MAKE A CROSSHAIR
+}
+
+
+
+
+
+make Planes line up with Voxels more
+use Planes to "predict" far away Chunks
+
+
+
+clean up main
+
+make smaller text
+make better font
+
+organize Shaders

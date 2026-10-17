@@ -1,0 +1,56 @@
+#ifndef  AUX_THREAD_3_HPP
+# define AUX_THREAD_3_HPP
+
+# include "Threading/Thread/Loop/Idle.hpp"
+
+# include "Telemetry/WaitDoTime.hpp"
+
+# include "Generics/Container/Binary.hpp"
+
+struct ChunkContainer;
+struct Chunk;
+
+# include "3D/ChunkGuards.hpp"
+
+struct StructureObject;
+struct VectorI3;
+
+# include "Telemetry/StopWatch.hpp"
+# include "Threading/Guard/Type/Access/Unique.hpp"
+# include "Threading/Guard/Type/Assign/Unique.hpp"
+
+struct AuxThread3 : public IdleLoopThread
+{
+	ChunkContainer &	Container;
+
+	WaitDoTime		TimeAssambleFind;
+	WaitDoTime		TimeAssamble;
+
+	~AuxThread3() = default;
+	AuxThread3() = delete;
+	AuxThread3(const AuxThread3 & other) = delete;
+	AuxThread3 & operator=(const AuxThread3 & other) = delete;
+	AuxThread3(ChunkContainer & container);
+
+		StopWatch sw;
+		AccessLockedChunk chunk;
+
+	bool	CheckFunc() override;
+	void	DoFunc() override;
+
+
+
+	public:	
+	unsigned int				FindCandidateCount;
+	private:
+	AccessLockedChunk			Find();
+
+
+
+	private:
+	void	AssambleDecoration(Chunk & chunk);
+	void	AssambleDecoration(Chunk & chunk, const StructureObject & obj, const VectorI3 & offset);
+
+};
+
+#endif

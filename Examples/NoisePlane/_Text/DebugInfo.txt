@@ -1,0 +1,44 @@
+
+make Graph Form Control
+	Text for Name
+	dragging anywhere should move
+		Dragging should be relayed to Parent
+
+make per Second Graphs for Aux Threads
+
+
+
+
+
+currenty this is categorized by where the info comes from
+also a bunch of stuff is missing
+categorize by what the info is
+
+Memory
+{
+	Chunks		Used
+	Voxels		Used
+	Graphics
+	{
+		DataU		Used	Limit
+		DataF		Used	Limit
+	}
+}
+
+Chunk Status
+{
+	Generation
+	{
+		None
+		Terrain
+		DecoGen
+		DecoAss
+		Done
+	}
+	Graphics
+	{
+		Done
+		Want
+		Have
+	}
+}
