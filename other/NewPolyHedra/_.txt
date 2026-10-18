@@ -21,3 +21,9 @@ PolyHedra/Display
 
 these dont just draw
 they also store stuff ?
+
+
+
+
+Make() and Take() should return referanced, since they should never return null
+only Find() should be able to return null

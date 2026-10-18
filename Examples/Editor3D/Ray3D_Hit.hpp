@@ -14,10 +14,9 @@ class PolyHedra;
 namespace NewPolyHedra
 {
 struct Pallet;
-struct PalletObjectManager;
-
-template<typename TypeData> struct Type_Object;
-template<typename TypeData> struct Type_PalletObjectData;
+struct BaseDisplayObject;
+template<typename TypeLogicalData> struct TypeLogicalObject;
+template<typename TypeLogicalData> struct Type_Object;
 };
 
 // these use Trans.forward()
@@ -27,10 +26,10 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 // check Bounding Box
 // should that be stored in PolyHedra of Pallet
 
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const TypeData & data);
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Pallet & pallet, const TypeData & data);
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::PalletObjectManager & manager, const TypeData & data);
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_Object<TypeData> & object);
-template<typename TypeData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_PalletObjectData<TypeData> & object);
+template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const TypeLogicalData & data);
+template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Pallet & pallet, const TypeLogicalData & data);
+template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::BaseDisplayObject & manager, const TypeLogicalData & data);
+template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_Object<TypeLogicalData> & object);
+template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::TypeLogicalObject<TypeLogicalData> & object);
 
 #endif

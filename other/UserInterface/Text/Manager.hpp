@@ -87,11 +87,13 @@ class Manager
 
 
 	public:
-	void	ShowInstancesTime();
-	private:
-	void	MakeObjectInstances(const ObjectData & obj);
+	void	InstancesShowTime();
+
 	public:
-	void	MakeInstances();
+	void	InstancesClear();
+	void	InstancesMake();
+	void	InstancesDone();
+	void	InstancesPut(const ObjectData & obj);
 
 
 

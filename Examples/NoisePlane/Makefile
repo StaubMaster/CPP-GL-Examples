@@ -57,8 +57,16 @@ FILES := \
 	Menus/Item/ItemSlotUI.cpp \
 	Menus/Item/ItemContainerUI.cpp \
 \
+	NewPolyHedra/UserInterface/DisplayData.cpp \
+	NewPolyHedra/UserInterface/Layout.cpp \
+	NewPolyHedra/UserInterface/Special.cpp \
+	NewPolyHedra/UserInterface/Init.cpp \
+	\
+	NewPolyHedra/Init/Pallet.cpp \
+	NewPolyHedra/Init/Basic3D.cpp \
+	NewPolyHedra/Init/TransScaleColor3D.cpp \
+\
 	ContextNoisePlane.cpp \
-	NewPolyHedraUI.cpp \
 	VoxelClear.cpp \
 	new.cpp \
 	main.cpp \

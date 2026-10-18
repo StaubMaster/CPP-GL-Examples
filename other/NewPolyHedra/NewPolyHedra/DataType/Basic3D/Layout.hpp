@@ -14,7 +14,6 @@ class BufferLayout : public ::Attribute::Layout
 	::Attribute::Matrix4x4	Trans;
 	::Attribute::Matrix4x4	Normal;
 	public:
-	~BufferLayout();
 	BufferLayout();
 };
 };

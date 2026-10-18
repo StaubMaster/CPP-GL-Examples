@@ -72,6 +72,7 @@ class Manager
 	void	GraphicsInit();
 
 	public:
+	void	GraphicsClear();
 	void	GraphicsMake();
 	void	GraphicsDraw();
 };

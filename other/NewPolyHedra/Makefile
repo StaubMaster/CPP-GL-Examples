@@ -13,18 +13,18 @@ FILES := \
 	NewPolyHedra/Pallet/Wire/Layout.cpp \
 	NewPolyHedra/Pallet/Manager.cpp \
 	\
+	NewPolyHedra/Base/Logical/Object.cpp \
+	NewPolyHedra/Base/Logical/ObjectManager.cpp \
+	NewPolyHedra/Base/Display/Object.cpp \
+	NewPolyHedra/Base/Display/ObjectManager.cpp \
 	NewPolyHedra/Base/Manager.cpp \
-	NewPolyHedra/Base/Logical/Data.cpp \
-	NewPolyHedra/Base/Logical/DataManager.cpp \
-	NewPolyHedra/Base/Display/Data.cpp \
-	NewPolyHedra/Base/Display/DataManager.cpp \
 \
+	NewPolyHedra/DataType/Basic3D/Display/Data.cpp \
 	NewPolyHedra/DataType/Basic3D/Layout.cpp \
-	NewPolyHedra/DataType/Basic3D/InstanceData.cpp \
 	NewPolyHedra/DataType/Basic3D/Special.cpp \
 	\
+	NewPolyHedra/DataType/TransScaleColor3D/Display/Data.cpp \
 	NewPolyHedra/DataType/TransScaleColor3D/Layout.cpp \
-	NewPolyHedra/DataType/TransScaleColor3D/InstanceData.cpp \
 	NewPolyHedra/DataType/TransScaleColor3D/Special.cpp \
 
 DIR_SRC := .

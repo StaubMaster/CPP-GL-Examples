@@ -1,25 +1,25 @@
 #include "NewPolyHedra/Type/Manager.hpp"
-#include "NewPolyHedra/Type/Logical/DataManager.hpp"
-#include "NewPolyHedra/Type/Display/DataManager.hpp"
+#include "NewPolyHedra/Type/Logical/ObjectManager.hpp"
+#include "NewPolyHedra/Type/Display/ObjectManager.hpp"
 
 
 
-template<typename TypeData> NewPolyHedra::DataManager<TypeData> * NewPolyHedra::DataManager<TypeData>::Current = nullptr;
+template<typename LogicalData> NewPolyHedra::DataManager<LogicalData> * NewPolyHedra::DataManager<LogicalData>::Current = nullptr;
 
-template<typename TypeData> NewPolyHedra::DataManager<TypeData>::~DataManager()
+template<typename LogicalData> NewPolyHedra::DataManager<LogicalData>::~DataManager()
 {
 	Current = nullptr;
 }
-template<typename TypeData> NewPolyHedra::DataManager<TypeData>::DataManager()
+template<typename LogicalData> NewPolyHedra::DataManager<LogicalData>::DataManager()
 {
 	Current = this;
 }
 
-template<typename TypeData> NewPolyHedra::BaseLogicalDataManager & NewPolyHedra::DataManager<TypeData>::LogicalBase()
+template<typename LogicalData> NewPolyHedra::BaseLogicalObjectManager & NewPolyHedra::DataManager<LogicalData>::LogicalBase()
 {
 	return LogicalType;
 }
-template<typename TypeData> const NewPolyHedra::BaseLogicalDataManager & NewPolyHedra::DataManager<TypeData>::LogicalBase() const
+template<typename LogicalData> const NewPolyHedra::BaseLogicalObjectManager & NewPolyHedra::DataManager<LogicalData>::LogicalBase() const
 {
 	return LogicalType;
 }
@@ -28,11 +28,11 @@ template<typename TypeData> const NewPolyHedra::BaseLogicalDataManager & NewPoly
 
 
 
-template<typename TypeData, typename TypeInstanceData> NewPolyHedra::BaseDisplayDataManager & NewPolyHedra::TypeManager<TypeData, TypeInstanceData>::DisplayBase()
+template<typename LogicalData, typename TypeInstanceData> NewPolyHedra::BaseDisplayObjectManager & NewPolyHedra::TypeManager<LogicalData, TypeInstanceData>::DisplayBase()
 {
 	return DisplayType;
 }
-template<typename TypeData, typename TypeInstanceData> const NewPolyHedra::BaseDisplayDataManager & NewPolyHedra::TypeManager<TypeData, TypeInstanceData>::DisplayBase() const
+template<typename LogicalData, typename TypeInstanceData> const NewPolyHedra::BaseDisplayObjectManager & NewPolyHedra::TypeManager<LogicalData, TypeInstanceData>::DisplayBase() const
 {
 	return DisplayType;
 }

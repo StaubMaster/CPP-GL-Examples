@@ -9,9 +9,9 @@ SceneObject_PolyHedraObject::~SceneObject_PolyHedraObject()
 { }
 SceneObject_PolyHedraObject::SceneObject_PolyHedraObject()
 { }
-SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(::NewPolyHedra::PalletObjectManager * manager, Trans3D trans)
+SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(NewPolyHedra::BaseDisplayObject * manager, Trans3D trans)
 {
-	Data.Manager = manager;
+	Data.Graphics = manager;
 	Data.Data.Trans = trans;
 }
 

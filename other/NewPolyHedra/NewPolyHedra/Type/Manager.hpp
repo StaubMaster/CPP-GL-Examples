@@ -3,22 +3,21 @@
 
 # include "NewPolyHedra/Base/Manager.hpp"
 
-# include "NewPolyHedra/Type/Logical/DataManager.hpp"
-# include "NewPolyHedra/Type/Display/DataManager.hpp"
+# include "NewPolyHedra/Type/Logical/ObjectManager.hpp"
+# include "NewPolyHedra/Type/Display/ObjectManager.hpp"
 
 namespace NewPolyHedra
 {
-template<typename TypeData>
-struct DataManager : public BaseManager
+template<typename LogicalData> struct DataManager : public BaseManager
 {
 	public:
 	static DataManager *	Current;
 
 	public:
-	TypeLogicalDataManager<TypeData>	LogicalType;
+	TypeLogicalObjectManager<LogicalData>		LogicalType;
 	public:
-			BaseLogicalDataManager &	LogicalBase()		override;
-	const	BaseLogicalDataManager &	LogicalBase() const	override;
+			BaseLogicalObjectManager &		LogicalBase()		override;
+	const	BaseLogicalObjectManager &		LogicalBase() const	override;
 
 	public:
 	virtual ~DataManager();
@@ -29,14 +28,13 @@ struct DataManager : public BaseManager
 
 
 
-template<typename TypeData, typename TypeInstanceData>
-struct TypeManager : public DataManager<TypeData>
+template<typename LogicalData, typename DisplayData> struct TypeManager : public DataManager<LogicalData>
 {
 	public:
-	TypeDisplayDataManager<TypeData, TypeInstanceData>		DisplayType;
+	TypeDisplayObjectManager<LogicalData, DisplayData>	DisplayType;
 	public:
-			BaseDisplayDataManager &	DisplayBase()		override;
-	const	BaseDisplayDataManager &	DisplayBase() const	override;
+			BaseDisplayObjectManager &		DisplayBase()		override;
+	const	BaseDisplayObjectManager &		DisplayBase() const	override;
 
 	public:
 	~TypeManager() = default;

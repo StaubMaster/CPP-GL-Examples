@@ -44,8 +44,9 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 
 
 
-#include "NewPolyHedra/PalletObjectManager.hpp"
-#include "NewPolyHedra/Pallet.hpp"
+//#include "NewPolyHedra/PalletObjectManager.hpp"
+#include "NewPolyHedra/Base/Display/Object.hpp"
+#include "NewPolyHedra/Pallet/.hpp"
 
 #include "PolyHedra/PolyHedra.hpp"
 
@@ -57,7 +58,7 @@ void UI::Control::PolyHedraObject::Syncronize()
 {
 	if (Object != nullptr)
 	{
-		const PolyHedra & polyhedra = *(Object -> Manager -> Pallet -> Object);
+		const PolyHedra & polyhedra = *(Object -> Graphics -> PalletObject.Object);
 		std::stringstream ss;
 		//ss.str(std::string()); ss << "Name:" << (polyhedra.Name); PalletName.SetText(ss.str());
 		ss.str(std::string()); ss << "Name:" << (polyhedra.File.Name()); PalletName.SetText(ss.str());

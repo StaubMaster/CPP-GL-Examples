@@ -5,6 +5,8 @@
 
 #include "Display/DisplaySize.hpp"
 
+#include "NewPolyHedra/UserInterface/LogicalData.hpp"
+
 
 
 ItemBase *		ItemSlotUI::StaticItem = nullptr;

@@ -95,7 +95,31 @@ void UI::Graph::Manager::GraphicsDelete()
 
 #include "ValueType/_Show.hpp"
 #include <iostream>
-void UI::Graph::Manager::PlaceInstance(const ObjectData & obj)
+void UI::Graph::Manager::InstancesClear()
+{
+	Instances.Clear();
+}
+void UI::Graph::Manager::InstancesMake()
+{
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		if (ObjectDatas[i] != nullptr)
+		{
+			ObjectData & obj = *ObjectDatas[i];
+			if (obj.Display)
+			{
+				InstancesPut(obj);
+			}
+			if (obj.Remove)
+			{
+				ObjectDatas.RemoveAt(i);
+				delete &obj;
+				i--;
+			}
+		}
+	}
+}
+void UI::Graph::Manager::InstancesPut(const ObjectData & obj)
 {
 	BufferData data;
 	data.Box = obj.Box;
@@ -154,27 +178,6 @@ void UI::Graph::Manager::PlaceInstance(const ObjectData & obj)
 			data.Pos = VectorF2(-1, val); Instances.Insert(data);
 			data.Pos = VectorF2(+1, val); Instances.Insert(data);
 		}*/
-	}
-}
-void UI::Graph::Manager::MakeInstances()
-{
-	Instances.Clear();
-	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
-	{
-		if (ObjectDatas[i] != nullptr)
-		{
-			ObjectData & obj = *ObjectDatas[i];
-			if (obj.Display)
-			{
-				PlaceInstance(obj);
-			}
-			if (obj.Remove)
-			{
-				ObjectDatas.RemoveAt(i);
-				delete &obj;
-				i--;
-			}
-		}
 	}
 }
 

@@ -67,10 +67,10 @@ class Manager
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 
-	private:
-	void	PlaceInstance(const ObjectData & obj);
 	public:
-	void	MakeInstances();
+	void	InstancesClear();
+	void	InstancesMake();
+	void	InstancesPut(const ObjectData & obj);
 
 	public:
 	void	Draw();

@@ -27,39 +27,52 @@ NewPolyHedra::PalletManager::~PalletManager()
 }
 NewPolyHedra::PalletManager::PalletManager()
 	: Pallets()
-	, BufferFullLayout()
-	, BufferWireLayout()
+//	, BufferFullLayout()
+//	, BufferWireLayout()
 {
 	Current = this;
 }
 
 
 
-NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Find(PolyHedra * polyhedra) const
+NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Find(const PolyHedra & polyhedra) const
+{
+	return Container::Loop::Find(Pallets, NewPolyHedra::Pallet::Equals, &polyhedra);
+}
+NewPolyHedra::Pallet & NewPolyHedra::PalletManager::Make(PolyHedra & polyhedra)
+{
+	NewPolyHedra::Pallet * pallet = new NewPolyHedra::Pallet(&polyhedra);
+//	pallet -> BufferFull.AssignLayout(BufferFullLayout);
+//	pallet -> BufferWire.AssignLayout(BufferWireLayout);
+	pallet -> GraphicsCreate();
+	pallet -> GraphicsPut();
+	Pallets.Insert(pallet);
+	return *pallet;
+}
+NewPolyHedra::Pallet & NewPolyHedra::PalletManager::Take(PolyHedra & polyhedra)
+{
+	NewPolyHedra::Pallet * pallet = Find(polyhedra);
+	if (pallet != nullptr)
+	{
+		return *pallet;
+	}
+	return Make(polyhedra);
+}
+
+NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Find(const PolyHedra * polyhedra) const
 {
 	if (polyhedra == nullptr) { return nullptr; }
-	return Container::Loop::Find(Pallets, NewPolyHedra::Pallet::Equals, (const PolyHedra *)polyhedra);
+	return Find(*polyhedra);
 }
 NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Make(PolyHedra * polyhedra)
 {
 	if (polyhedra == nullptr) { return nullptr; }
-	NewPolyHedra::Pallet * pallet = new NewPolyHedra::Pallet(polyhedra);
-	pallet -> BufferFull.AssignLayout(BufferFullLayout);
-	pallet -> BufferWire.AssignLayout(BufferWireLayout);
-	pallet -> GraphicsCreate();
-	pallet -> GraphicsPut();
-	Pallets.Insert(pallet);
-	return pallet;
+	return &Make(*polyhedra);
 }
 NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Take(PolyHedra * polyhedra)
 {
 	if (polyhedra == nullptr) { return nullptr; }
-	NewPolyHedra::Pallet * pallet = Find(polyhedra);
-	if (pallet == nullptr)
-	{
-		pallet = Make(polyhedra);
-	}
-	return pallet;
+	return &Take(*polyhedra);
 }
 
 

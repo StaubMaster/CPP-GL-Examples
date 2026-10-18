@@ -43,22 +43,31 @@
 
 // NewPolyHedra
 # include "NewPolyHedra/Manager.hpp"
-# include "NewPolyHedra/ObjectManager.hpp"
-# include "NewPolyHedra/Pallet.hpp"
-# include "NewPolyHedra/PalletManager.hpp"
-# include "NewPolyHedra/PalletObjectData.hpp"
-# include "NewPolyHedra/PalletObjectManager.hpp"
-# include "NewPolyHedra/Type/ObjectManager.hpp"
-# include "NewPolyHedra/Type/PalletObjectManager.hpp"
+
+# include "NewPolyHedra/Pallet/.hpp"
+# include "NewPolyHedra/Pallet/Manager.hpp"
+
+# include "NewPolyHedra/Base/Manager.hpp"
+# include "NewPolyHedra/Base/Logical/Object.hpp"
+# include "NewPolyHedra/Base/Logical/ObjectManager.hpp"
+# include "NewPolyHedra/Base/Display/Object.hpp"
+# include "NewPolyHedra/Base/Display/ObjectManager.hpp"
+
+# include "NewPolyHedra/Type/Manager.hpp"
+# include "NewPolyHedra/Type/Logical/Object.hpp"
+# include "NewPolyHedra/Type/Logical/ObjectManager.hpp"
+# include "NewPolyHedra/Type/Display/Object.hpp"
+# include "NewPolyHedra/Type/Display/ObjectManager.hpp"
+
 # include "NewPolyHedra/Type/Object.hpp"
 
 # include "NewPolyHedra/DataType/Basic3D/Layout.hpp"
 # include "NewPolyHedra/DataType/Basic3D/Object.hpp"
-# include "NewPolyHedra/DataType/Basic3D/ObjectManager.hpp"
+# include "NewPolyHedra/DataType/Basic3D/Manager.hpp"
 
 # include "NewPolyHedra/DataType/TransScaleColor3D/Layout.hpp"
 # include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
-# include "NewPolyHedra/DataType/TransScaleColor3D/ObjectManager.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/Manager.hpp"
 
 struct Light3DContext : public ContextBase
 {
@@ -80,14 +89,13 @@ NewPolyHedra::PalletManager		PalletManager;
 //ShaderLayoutView3D						ObjectManagerBasic_ShaderWireLayout;
 //NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferFullLayout;
 //NewPolyHedra::Basic3D::BufferLayout		ObjectManagerBasic_BufferWireLayout;
-
-NewPolyHedra::Basic3D::ObjectManager	ObjectManagerBasic;
+NewPolyHedra::Basic3D::Manager				ObjectManagerBasic;
 
 LayoutUniformView3D						ObjectManagerTSC_ShaderFullLayout;
 LayoutUniformView3D						ObjectManagerTSC_ShaderWireLayout;
 TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferFullLayout;
 TransScaleColor3D::BufferLayout			ObjectManagerTSC_BufferWireLayout;
-TransScaleColor3D::ObjectManager		ObjectManagerTSC;
+TransScaleColor3D::Manager				ObjectManagerTSC;
 
 void	PolyHedra_ChangeMedia();
 

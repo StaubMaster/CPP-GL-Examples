@@ -69,9 +69,8 @@
 # include "NewPolyHedra/Pallet/Manager.hpp"
 
 # include "NewPolyHedra/DataType/Basic3D/Manager.hpp"
-# include "NewPolyHedra/DataType/TransScaleColor3D/TypeManager.hpp"
-
-# include "NewPolyHedraUI.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/Manager.hpp"
+# include "NewPolyHedra/UserInterface/Manager.hpp"
 
 // Layout
 # include "Layout/Uniform/Light3D.hpp"
@@ -89,11 +88,11 @@ LayoutMultiformLight3D	LayoutMultiform;
 
 
 
-NewPolyHedra::Manager							PolyHedraManager;
-NewPolyHedra::PalletManager						PalletManager;
-NewPolyHedra::Basic3D::Manager					ObjectManagerBasic;
-TransScaleColor3D::TypeManager					ObjectManagerTSC;
-NewPolyHedra::UserInterface::TypeManager		ObjectManagerUI;
+NewPolyHedra::Manager						PolyHedraManager;
+NewPolyHedra::PalletManager					PalletManager;
+NewPolyHedra::Basic3D::Manager				ObjectManagerBasic;
+TransScaleColor3D::Manager					ObjectManagerTSC;
+NewPolyHedra::UserInterface::Manager		ObjectManagerUI;
 
 void	NewPolyHedra_ChangeMedia();
 
@@ -221,7 +220,9 @@ void	Free() override;
 
 
 
-void	Draw();
+void	GraphicsClear();
+void	GraphicsMake();
+void	GraphicsDraw();
 
 
 

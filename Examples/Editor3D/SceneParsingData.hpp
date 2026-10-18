@@ -16,14 +16,14 @@ class PolyHedraFileCollection;
 
 namespace TextCommand { class Args; };
 
-namespace NewPolyHedra { struct PalletObjectManager; };
+namespace NewPolyHedra { struct BaseDisplayObject; };
 
 struct SceneParsingData
 {
 	struct ParsingCommand // TextCommandFunc ?
 	{
 		std::string		Name;
-		FunctionPointer<const TextCommand::Args &>	Func;
+		Function::Pointer<const TextCommand::Args &>	Func;
 		ParsingCommand(std::string name);
 	};
 
@@ -39,8 +39,8 @@ struct SceneParsingData
 	//Container::Binary<PolyHedraPalletManager*>	PolyHedras;
 
 	// these should be Pallets ?
-	NewPolyHedra::PalletObjectManager *						MissingPolyHedra;
-	Container::Binary<NewPolyHedra::PalletObjectManager*>	PolyHedras;
+	NewPolyHedra::BaseDisplayObject *						MissingPolyHedra;
+	Container::Binary<NewPolyHedra::BaseDisplayObject*>		PolyHedras;
 
 	ParsingVariable::FloatMemory	VariableFloats;
 	void	PutFloat(const TextCommand::Args & cmd_args);

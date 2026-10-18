@@ -13,9 +13,9 @@ namespace Attribute { class Layout; };
 
 namespace NewPolyHedra
 {
-struct Pallet
+struct Pallet // PalletObject
 {
-	private:
+	private: public: // get PolyHedra
 	PolyHedra *		Object = nullptr;
 	std::string		Name;
 

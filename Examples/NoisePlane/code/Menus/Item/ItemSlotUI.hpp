@@ -4,7 +4,7 @@
 # include "Control/Form.hpp"
 # include "Text/Object.hpp"
 
-# include "NewPolyHedraUI.hpp"
+# include "NewPolyHedra/UserInterface/Object.hpp"
 
 struct ItemBase;
 

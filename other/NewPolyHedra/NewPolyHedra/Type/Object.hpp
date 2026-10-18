@@ -7,21 +7,25 @@ namespace NewPolyHedra
 {
 struct Pallet;
 
-struct BaseGraphicsInst;
+struct BaseDisplayObject;
 
-template<typename TypeData> struct TypeLogicalData;
+template<typename LogicalData> struct TypeLogicalObject;
 
-template<typename TypeData> struct Type_Object
+template<typename LogicalData> struct Type_Object
 {
 	private:
-	TypeLogicalData<TypeData> *	ObjectData = nullptr;
+	TypeLogicalObject<LogicalData> *	ObjectData = nullptr;
 
 	public:
 	bool	Is() const;
 
 	public:
-	const	TypeData &	Data() const;
-			TypeData &	Data();
+	const	LogicalData &	Data() const;
+			LogicalData &	Data();
+
+	public:
+	const	BaseDisplayObject *		Manager() const;
+			BaseDisplayObject *		Manager();
 
 	public:
 	bool	VisibleFull() const;
@@ -32,10 +36,6 @@ template<typename TypeData> struct Type_Object
 	bool	VisibleWire() const;
 	void	ShowWire();
 	void	HideWire();
-
-	public:
-	const	BaseDisplayData *	Manager() const;
-			BaseDisplayData *	Manager();
 
 	public:
 	~Type_Object();

@@ -3,8 +3,8 @@
 
 namespace NewPolyHedra
 {
-struct BaseLogicalDataManager;
-struct BaseDisplayDataManager;
+struct BaseLogicalObjectManager;
+struct BaseDisplayObjectManager;
 struct BaseManager
 {
 	public:
@@ -14,10 +14,10 @@ struct BaseManager
 	BaseManager & operator=(const BaseManager & other) = delete;
 
 	public:
-	virtual			BaseLogicalDataManager &	LogicalBase()			= 0;
-	virtual const	BaseLogicalDataManager &	LogicalBase() const		= 0;
-	virtual			BaseDisplayDataManager &	DisplayBase()			= 0;
-	virtual const	BaseDisplayDataManager &	DisplayBase() const		= 0;
+	virtual			BaseLogicalObjectManager &		LogicalBase()			= 0;
+	virtual const	BaseLogicalObjectManager &		LogicalBase() const		= 0;
+	virtual			BaseDisplayObjectManager &		DisplayBase()			= 0;
+	virtual const	BaseDisplayObjectManager &		DisplayBase() const		= 0;
 
 	public:
 	void	CleanObjects();

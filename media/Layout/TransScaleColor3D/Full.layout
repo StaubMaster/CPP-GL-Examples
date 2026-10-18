@@ -1,0 +1,8 @@
+
+Shader	Shaders/PolyHedra/UserInterface.vert
+Shader	Shaders/PolyHedra/TexturedNoLight.frag
+
+Uniform		Light3D.uniform.layout
+
+Attribute	Pallet.attribute.layout
+Attribute	Full.attribute.layout

@@ -1,67 +1,68 @@
 #include "NewPolyHedra/Type/Object.hpp"
 
-#include "NewPolyHedra/Type/Logical/Data.hpp"
+#include "NewPolyHedra/Type/Logical/Object.hpp"
+#include "NewPolyHedra/Type/Logical/ObjectManager.hpp"
 
 
 
-template<typename TypeData> bool NewPolyHedra::Type_Object<TypeData>::Is() const
+template<typename LogicalData> bool NewPolyHedra::Type_Object<LogicalData>::Is() const
 {
 	return (ObjectData != nullptr);
 }
 
 
 
-template<typename TypeData> TypeData & NewPolyHedra::Type_Object<TypeData>::Data()
+template<typename LogicalData> LogicalData & NewPolyHedra::Type_Object<LogicalData>::Data()
 {
 	return (ObjectData -> Data);
 }
-template<typename TypeData> const TypeData & NewPolyHedra::Type_Object<TypeData>::Data() const
+template<typename LogicalData> const LogicalData & NewPolyHedra::Type_Object<LogicalData>::Data() const
 {
 	return (ObjectData -> Data);
 }
 
 
 
-template<typename TypeData> bool NewPolyHedra::Type_Object<TypeData>::VisibleFull() const
+template<typename LogicalData> NewPolyHedra::BaseDisplayObject * NewPolyHedra::Type_Object<LogicalData>::Manager()
+{
+	return (ObjectData -> Graphics);
+}
+template<typename LogicalData> const NewPolyHedra::BaseDisplayObject * NewPolyHedra::Type_Object<LogicalData>::Manager() const
+{
+	return (ObjectData -> Graphics);
+}
+
+
+
+template<typename LogicalData> bool NewPolyHedra::Type_Object<LogicalData>::VisibleFull() const
 {
 	return ObjectData -> VisibleFull();
 }
-template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::ShowFull()
+template<typename LogicalData> void NewPolyHedra::Type_Object<LogicalData>::ShowFull()
 {
 	ObjectData -> ShowFull();
 }
-template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::HideFull()
+template<typename LogicalData> void NewPolyHedra::Type_Object<LogicalData>::HideFull()
 {
 	ObjectData -> HideFull();
 }
 
-template<typename TypeData> bool NewPolyHedra::Type_Object<TypeData>::VisibleWire() const
+template<typename LogicalData> bool NewPolyHedra::Type_Object<LogicalData>::VisibleWire() const
 {
 	return ObjectData -> VisibleWire();
 }
-template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::ShowWire()
+template<typename LogicalData> void NewPolyHedra::Type_Object<LogicalData>::ShowWire()
 {
 	ObjectData -> ShowWire();
 }
-template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::HideWire()
+template<typename LogicalData> void NewPolyHedra::Type_Object<LogicalData>::HideWire()
 {
 	ObjectData -> HideWire();
 }
 
 
 
-template<typename TypeData> NewPolyHedra::BaseDisplayData * NewPolyHedra::Type_Object<TypeData>::Manager()
-{
-	return (ObjectData -> Graphics);
-}
-template<typename TypeData> const NewPolyHedra::BaseDisplayData * NewPolyHedra::Type_Object<TypeData>::Manager() const
-{
-	return (ObjectData -> Graphics);
-}
-
-
-
-template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::~Type_Object()
+template<typename LogicalData> NewPolyHedra::Type_Object<LogicalData>::~Type_Object()
 {
 	if (ObjectData != nullptr)
 	{
@@ -69,28 +70,28 @@ template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::~Type_Object()
 	}
 }
 
-template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::Type_Object(Pallet * pallet)
-	: ObjectData(TypeLogicalData<TypeData>::New(pallet))
+template<typename LogicalData> NewPolyHedra::Type_Object<LogicalData>::Type_Object(Pallet * pallet)
+	: ObjectData(TypeLogicalObjectManager<LogicalData>::sNewType(pallet))
 { }
-template<typename TypeData> NewPolyHedra::Type_Object<TypeData>::Type_Object(PolyHedra * polyhedra)
-	: ObjectData(TypeLogicalData<TypeData>::New(PalletManager::sTake(polyhedra)))
+template<typename LogicalData> NewPolyHedra::Type_Object<LogicalData>::Type_Object(PolyHedra * polyhedra)
+	: ObjectData(TypeLogicalObjectManager<LogicalData>::sNewType(PalletManager::sTake(polyhedra)))
 { }
 
 
 
-template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::Delete()
+template<typename LogicalData> void NewPolyHedra::Type_Object<LogicalData>::Delete()
 {
 	if (ObjectData == nullptr) { return; }
 	ObjectData -> Remove = true;
 	ObjectData = nullptr;
 }
-template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::Create(Pallet * pallet)
+template<typename LogicalData> void NewPolyHedra::Type_Object<LogicalData>::Create(Pallet * pallet)
 {
 	if (ObjectData != nullptr) { return; }
-	ObjectData = TypeLogicalData<TypeData>::New(pallet);
+	ObjectData = TypeLogicalObjectManager<LogicalData>::sNewType(pallet);
 }
-template<typename TypeData> void NewPolyHedra::Type_Object<TypeData>::Create(PolyHedra * polyhedra)
+template<typename LogicalData> void NewPolyHedra::Type_Object<LogicalData>::Create(PolyHedra * polyhedra)
 {
 	if (ObjectData != nullptr) { return; }
-	ObjectData = TypeLogicalData<TypeData>::New(PalletManager::sTake(polyhedra));
+	ObjectData = TypeLogicalObjectManager<LogicalData>::sNewType(PalletManager::sTake(polyhedra));
 }

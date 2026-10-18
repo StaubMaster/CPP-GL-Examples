@@ -68,7 +68,7 @@ SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & conte
 	, PolyHedraFileCollection(file_collection)
 	, PolyHedras()
 {
-	MissingPolyHedra = Context.ObjectManagerBasic.PalletObjectManagersFindMake(PolyHedraGenerate::RegularHexaHedron(1.0f));
+	MissingPolyHedra = Context.ObjectManagerBasic.DisplayType.NewBase(*NewPolyHedra::PalletManager::sTake(PolyHedraGenerate::RegularHexaHedron(1.0f)));
 
 	/* Problem
 		some commands like belt have variants
@@ -127,10 +127,10 @@ void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
 		return;
 	}
 
-	NewPolyHedra::Pallet * pallet = Context.PalletManager.FindMakePallet(polyhedra);
+	NewPolyHedra::Pallet * pallet = Context.PalletManager.Take(polyhedra);
 	pallet -> Name = cmd_args.ToString(1);
 
-	NewPolyHedra::PalletObjectManager * manager = Context.ObjectManagerBasic.PalletObjectManagersFindMake(pallet);
+	NewPolyHedra::BaseDisplayObject * manager = Context.ObjectManagerBasic.DisplayType.NewBase(*pallet);
 	PolyHedras.Insert(manager);
 }
 void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
@@ -138,15 +138,15 @@ void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 	if (!(cmd_args.Count() == 7)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 7"); }
 
 	std::string name = cmd_args.ToString(0);
-	NewPolyHedra::PalletObjectManager * polyhedra = MissingPolyHedra;
+	NewPolyHedra::BaseDisplayObject * object = MissingPolyHedra;
 	for (unsigned int i = 0; i < PolyHedras.Count(); i++)
 	{
-		if (PolyHedras[i] -> Pallet -> Name == name)
+		if (PolyHedras[i] -> PalletObject.Name == name)
 		{
-			polyhedra = PolyHedras[i];
+			object = PolyHedras[i];
 		}
 	}
-	if (polyhedra == nullptr)
+	if (object == nullptr)
 	{
 		std::cout << "Pallet " << name << " not found\n";
 		return;
@@ -165,11 +165,11 @@ void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 		)
 	);
 
-	Context.Collection.Objects.Insert(new SceneObject_PolyHedraObject(polyhedra, trans));
+	Context.Collection.Objects.Insert(new SceneObject_PolyHedraObject(object, trans));
 }
 
-#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
-#include "NewPolyHedra/PalletObjectData.hpp"
+#include "NewPolyHedra/DataType/TransScaleColor3D/Logical/Object.hpp"
+//#include "NewPolyHedra/PalletObjectData.hpp"
 
 void SceneParsingData::Parse_LightAmbient(const TextCommand::Args & cmd_args)
 {

@@ -14,7 +14,11 @@
 #include "NewPolyHedra/DataType/TransScaleColor3D/Layout.hpp"
 #include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
 
-#include "NewPolyHedra/Type/Display/DataManager.hpp"
+#include "NewPolyHedra/UserInterface/Layout.hpp"
+#include "NewPolyHedra/UserInterface/Object.hpp"
+#include "NewPolyHedra/UserInterface/LogicalData.hpp"
+
+#include "NewPolyHedra/Type/Display/ObjectManager.hpp"
 
 // Graphics
 #include "Graphics/Shader/Code.hpp"
@@ -403,6 +407,22 @@ static ValueAccumulator<float>		FrameTime_Draw_MakeText(64);
 static ValueAccumulator<float>		FrameTime_Draw_DrawText(64);
 
 
+#include "NewPolyHedra/Init/Pallet.hpp"
+#include "NewPolyHedra/Init/Basic3D.hpp"
+#include "NewPolyHedra/Init/TransScaleColor3D.hpp"
+#include "NewPolyHedra/UserInterface/Init.hpp"
+
+/*
+Layouts depend on Shader
+
+make file Parser
+{
+	ShaderFiles
+	UniformLayout
+	BufferMainLayoutFile
+	BufferInstLayoutFile
+}
+*/
 
 void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 {
@@ -410,121 +430,22 @@ void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 	{
 		// PolyHedraManager
 		{
-			{
-				PalletManager.BufferFullLayout.Position.Change(0);
-				PalletManager.BufferFullLayout.Normal.Change(1);
-				PalletManager.BufferFullLayout.Texture.Change(2);
-				PalletManager.BufferFullLayout.Color.Change(15);
-			}
-			{
-				PalletManager.BufferWireLayout.Pos.Change(0);
-				PalletManager.BufferWireLayout.Col.Change(1);
-			}
+			NewPolyHedra::Pallet_ChangeMedia(PalletManager);
 			PolyHedraManager.PalletManager = &PalletManager;
 		}
 		// Basic3D
 		{
-			NewPolyHedra::BaseDisplayDataManager & graphics = ObjectManagerBasic.DisplayType;
-			graphics.ShaderFull.Change({
-				MediaDirectory.File("Shaders/PolyHedra/Default.vert"),
-				MediaDirectory.File("Shaders/PolyHedra/UniformLight.frag"),
-			});
-			{
-				Uniform::Layout * layout = new LayoutUniformLight3D();
-				graphics.ShaderFull.AssignLayout(layout);
-				LayoutMultiform.Find(layout);
-			}
-			{
-				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
-				layout -> Trans.Change(3);
-				layout -> Normal.Change(7);
-				graphics.BufferFullLayout = layout;
-			}
-			graphics.ShaderWire.Change({
-				MediaDirectory.File("Shaders/Basic3D/Wire.vert"),
-				MediaDirectory.File("Shaders/Basic3D/Wire.frag"),
-			});
-			{
-				Uniform::Layout * layout = new LayoutUniformView3D();
-				graphics.ShaderWire.AssignLayout(layout);
-				LayoutMultiform.Find(layout);
-			}
-			{
-				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
-				layout -> Trans.Change(3);
-				layout -> Normal.Change(-1);
-				graphics.BufferWireLayout = layout;
-			}
+			NewPolyHedra::Basic3D::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerBasic.DisplayType);
 			PolyHedraManager.BaseManagers.Insert(&ObjectManagerBasic);
 		}
 		// TransScaleColor3D
 		{
-			NewPolyHedra::BaseDisplayDataManager & graphics = ObjectManagerTSC.DisplayType;
-			graphics.ShaderFull.Change({
-				MediaDirectory.File("Shaders/PolyHedra/UserInterface.vert"),
-				MediaDirectory.File("Shaders/PolyHedra/TexturedNoLight.frag"),
-			});
-			{
-				Uniform::Layout * layout = new LayoutUniformView3D();
-				graphics.ShaderFull.AssignLayout(layout);
-				LayoutMultiform.Find(layout);
-			}
-			{
-				TransScaleColor3D::BufferLayout * layout = new TransScaleColor3D::BufferLayout();
-				layout -> Trans.Change(3);
-				layout -> Normal.Change(7);
-				layout -> Scale.Change(11);
-				layout -> Color.Change(12);
-				graphics.BufferFullLayout = layout;
-			}
-			graphics.ShaderWire.Change({
-				MediaDirectory.File("Shaders/PolyHedra/TSC/Wire.vert"),
-				MediaDirectory.File("Shaders/PolyHedra/Color.frag"),
-			});
-			{
-				Uniform::Layout * layout = new LayoutUniformView3D();
-				graphics.ShaderWire.AssignLayout(layout);
-				LayoutMultiform.Find(layout);
-			}
-			{
-				TransScaleColor3D::BufferLayout * layout = new TransScaleColor3D::BufferLayout();
-				layout -> Trans.Change(3);
-				layout -> Normal.Change(-1);
-				layout -> Scale.Change(11);
-				layout -> Color.Change(12);
-				graphics.BufferWireLayout = layout;
-			}
+			TransScaleColor3D::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerTSC.DisplayType);
 			PolyHedraManager.BaseManagers.Insert(&ObjectManagerTSC);
 		}
 		// UI
 		{
-			NewPolyHedra::BaseDisplayDataManager & graphics = ObjectManagerUI.DisplayType;
-			graphics.ShaderFull.Change({
-				MediaDirectory.File("Shaders/UI/PHFull.vert"),
-				MediaDirectory.File("Shaders/UI/PHFull.frag"),
-			});
-			{
-				Uniform::Layout * layout = new LayoutUniformDisplay();
-				graphics.ShaderFull.AssignLayout(layout);
-				LayoutMultiform.Find(layout);
-			}
-			{
-				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
-				layout -> Size.Change(3);
-				layout -> Pos.Change(4);
-				layout -> Rot.Change(5);
-				layout -> Scale.Change(8);
-				graphics.BufferFullLayout = layout;
-			}
-			{
-				Uniform::Layout * layout = new LayoutUniformDisplay();
-				graphics.ShaderWire.AssignLayout(layout);
-				LayoutMultiform.Find(layout);
-			}
-			{
-				NewPolyHedra::UserInterface::BufferLayout * layout = new NewPolyHedra::UserInterface::BufferLayout();
-				graphics.BufferWireLayout = layout;
-			}
+			NewPolyHedra::UserInterface::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerUI.DisplayType);
 			PolyHedraManager.BaseManagers.Insert(&ObjectManagerUI);
 		}
 	}
@@ -1258,9 +1179,45 @@ void ContextNoisePlane::Free()
 
 
 static unsigned int		TextCharCount = 0;
+void ContextNoisePlane::GraphicsClear()
+{
+	StopWatch sw_total;
+	sw_total.Start();
+
+	PolyHedraManager.InstancesClear();
+
+	UIManager.ControlManager.InstancesClear();
+	UIManager.TextManager.InstancesClear();
+	UIManager.GraphManager.InstancesClear();
+
+	sw_total.Stop();
+}
+void ContextNoisePlane::GraphicsMake()
+{
+	StopWatch sw_total;
+	sw_total.Start();
+
+	StopWatch sw;
+
+	PolyHedraManager.InstancesMake();
+
+	UIManager.Resize(window.Size);
+	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+	UIManager.Window.UpdateRecursive();
+	UIManager.ControlManager.InstancesMake();
+	UIManager.Window.WindowPutDisplay();
+
+	sw.Clear();
+	UIManager.TextManager.InstancesMake();
+	FrameTime_Draw_MakeText.NewValue(sw.ElapsedTime());
+
+	UIManager.GraphManager.InstancesMake();
+
+	sw_total.Stop();
+}
 
 #include "Light/BufferData.hpp"
-void ContextNoisePlane::Draw()
+void ContextNoisePlane::GraphicsDraw()
 {
 //	LayoutMultiform.Depth.ChangeData(View.Depth);
 
@@ -1273,20 +1230,6 @@ void ContextNoisePlane::Draw()
 
 	VertexArray::Base::BindNone();
 	LightBuffer.DataFull(Container::Void(LightManager.ToBufferData()));
-
-
-
-	PolyHedraManager.InstancesClear();
-	PolyHedraManager.InstancesMake();
-
-	UIManager.Resize(window.Size);
-	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
-	UIManager.Window.UpdateRecursive();
-	UIManager.ControlManager.InstancesClear();
-	UIManager.ControlManager.InstancesMake();
-	UIManager.Window.WindowPutDisplay();
-
-	UIManager.GraphManager.MakeInstances();
 
 
 
@@ -1305,9 +1248,6 @@ void ContextNoisePlane::Draw()
 	//PlaneManager.Draw();
 
 	sw.Clear();
-	FrameTime_Draw_UniformChunk.NewValue(sw.ElapsedTime());
-
-	sw.Clear();
 	ChunkManager.Draw();
 	FrameTime_Draw_DrawChunk.NewValue(sw.ElapsedTime());
 
@@ -1318,12 +1258,6 @@ void ContextNoisePlane::Draw()
 	sw.Clear();
 	UIManager.ControlManager.Draw();
 	FrameTime_Draw_DrawControl.NewValue(sw.ElapsedTime());
-
-	sw.Clear();
-	UIManager.TextManager.MakeInstances();
-	FrameTime_Draw_MakeText.NewValue(sw.ElapsedTime());
-
-	UIManager.TextManager.ShowInstancesTime();
 
 	sw.Clear();
 	UIManager.TextManager.Draw();
@@ -1489,18 +1423,22 @@ struct ChunkContainerInfo
 		ss << "Limit: " << Limit << '\n';
 		ss << "Total: " << Total << '\n';
 
-		ss << "None   : " << Generation_None << '\n';
-		ss << "Terrain: " << Generation_TerrainDone << '\n';
-		ss << "DecGen : " << Generation_Decoration_Generated << '\n';
-		ss << "DecAss : " << Generation_Decoration_Assambled << '\n';
-		ss << "Done   : " << Generation_Done;
+		//ss << "None   : " << Generation_None << '\n';
+		//ss << "Terrain: " << Generation_TerrainDone << '\n';
+		//ss << "DecoGen: " << Generation_Decoration_Generated << '\n';
+		//ss << "DecoAss: " << Generation_Decoration_Assambled << '\n';
+		//ss << "Done   : " << Generation_Done;
+		ss << "Done: " << Generation_Done;
 		ss << " ( ";
 		ss << Done_Empty;
 		ss << " | ";
 		ss << Done_Filled;
 		ss << " )\n";
+		ss << '\n';
 
-		ss << "Memory: Chunks: ";
+		ss << "Memory:\n";
+
+		ss << "Chunks: ";
 		//ss << Memory1000ToString(sizeof(Chunk));
 		//ss << " * ";
 		//ss << Seperated1000(Memory_Chunks);
@@ -1508,12 +1446,73 @@ struct ChunkContainerInfo
 		ss << Memory1000ToString(Memory_Chunks * sizeof(Chunk));
 		ss << '\n';
 
-		ss << "Memory: Voxels: ";
+		ss << "Voxels: ";
 		//ss << Memory1000ToString(CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
 		//ss << " * ";
 		//ss << Seperated1000(Memory_Voxels);
 		//ss << " = ";
 		ss << Memory1000ToString(Memory_Voxels * CHUNK_VALUES_PER_VOLM * sizeof(Voxel));
+		ss << '\n';
+
+		ss << '\n';
+	}
+};
+struct ChunkGraphicsInfo
+{
+	unsigned long long buffer_data_u_entrys;
+	unsigned long long buffer_data_u_total;
+	unsigned long long buffer_data_u_limit;
+
+	unsigned long long buffer_data_f_entrys;
+	unsigned long long buffer_data_f_total;
+	unsigned long long buffer_data_f_limit;
+
+	void	Gather(ChunkGraphics & graphics)
+	{
+		buffer_data_u_entrys = graphics.BufferU.Count();
+		buffer_data_u_total = graphics.BufferU.LengthSum();
+		buffer_data_u_limit = graphics.BufferU.Buffer.Count;
+
+		buffer_data_f_entrys = graphics.BufferF.Count();
+		buffer_data_f_total = graphics.BufferF.LengthSum();
+		buffer_data_f_limit = graphics.BufferF.Buffer.Count;
+	}
+	void	Show(std::stringstream & ss)
+	{
+		ss << "ChunkGraphics:\n";
+
+		ss << "Entrys:\n";
+
+		ss << "DataU: ";
+		ss << buffer_data_u_entrys;
+		ss << " ( ";
+		ss << buffer_data_u_total;
+		ss << " / ";
+		ss << buffer_data_u_limit;
+		ss << " )\n";
+
+		ss << "DataF: ",
+		ss << buffer_data_f_entrys;
+		ss << " ( ";
+		ss << buffer_data_f_total;
+		ss << " / ";
+		ss << buffer_data_f_limit;
+		ss << " )\n";
+
+		ss << "Memory:\n";
+
+		ss << "DataU: ";
+		ss << Memory1000ToString(buffer_data_u_total * sizeof(VoxelGraphicsDataU::Vertex));
+		ss << " / ";
+		ss << Memory1000ToString(buffer_data_u_limit * sizeof(VoxelGraphicsDataU::Vertex));
+		ss << '\n';
+
+		ss << "DataF: ";
+		ss << Memory1000ToString(buffer_data_f_total * sizeof(VoxelGraphicsDataF::Vertex));
+		ss << "/";
+		ss << Memory1000ToString(buffer_data_f_limit * sizeof(VoxelGraphicsDataF::Vertex));
+		ss << '\n';
+
 		ss << '\n';
 	}
 };
@@ -1847,23 +1846,13 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (MenuDebug.View.Check.IsChecked())
 	{
-		ss << "View.Pos.X: " << View.Trans.Position.X << '\n';
-		ss << "View.Pos.Y: " << View.Trans.Position.Y << '\n';
-		ss << "View.Pos.Z: " << View.Trans.Position.Z << '\n';
-		ss << "ViewEntity.Pos.X: " << ViewEntity.Pos.X << '\n';
-		ss << "ViewEntity.Pos.Y: " << ViewEntity.Pos.Y << '\n';
-		ss << "ViewEntity.Pos.Z: " << ViewEntity.Pos.Z << '\n';
-		ss << "ViewEntity.Vel.X: " << ViewEntity.Vel.X << '\n';
-		ss << "ViewEntity.Vel.Y: " << ViewEntity.Vel.Y << '\n';
-		ss << "ViewEntity.Vel.Z: " << ViewEntity.Vel.Z << '\n';
-		ss << "ViewEntity.|Vel|: " << ViewEntity.Vel.length() << '\n';
-		ss << "None : " << (ViewEntity_CollisionSide.None) << '\n';
-		ss << "PrevX: " << (ViewEntity_CollisionSide.PrevX) << '\n';
-		ss << "PrevY: " << (ViewEntity_CollisionSide.PrevY) << '\n';
-		ss << "PrevZ: " << (ViewEntity_CollisionSide.PrevZ) << '\n';
-		ss << "NextX: " << (ViewEntity_CollisionSide.NextX) << '\n';
-		ss << "NextY: " << (ViewEntity_CollisionSide.NextY) << '\n';
-		ss << "NextZ: " << (ViewEntity_CollisionSide.NextZ) << '\n';
+		VectorF3 posF = View.Trans.Position;
+		VectorI3 posI = posF.roundF().ToI();
+		ChunkVoxelIndex idx(posI);
+		ss << "Float: " << posF << '\n';
+		ss << "Index: " << posI << '\n';
+		ss << "Voxel: " << idx.Voxel << '\n';
+		ss << "Chunk: " << idx.Chunk << '\n';
 		ss << '\n';
 	}
 	sw.Stop(); TextTime_View.NewValue(sw.ElapsedTime());
@@ -1872,16 +1861,10 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (MenuDebug.ChunkHere.Check.IsChecked())
 	{
-		//VoxelIndex idx = ChunkManager.FindVoxelIndex(View.Trans.Position);
 		ChunkVoxelIndex idx(View.Trans.Position.roundF().ToI());
-		ss << "Here: " << idx.Chunk << ' ' << idx.Voxel << '\n';
-		//ChunkManager.ChunksInUse.lock();
 		AccessLockedChunk chunk = ChunkManager.Container.FindAbsoluteAccess(idx.Chunk);
-		//if (idx.ChunkMan != 0xFFFFFFFF)
 		if (chunk.Is())
 		{
-			//ss << "Chunk: " << idx.ChunkMan << '\n';
-
 			ss << "Data: ";
 			if ((*chunk).IsEmpty()) { ss << "Empty"; } else
 			{
@@ -1902,9 +1885,9 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			//ss << Memory1000ToString(chunk.Buffer.Main.Count * sizeof(VoxelGraphics::MainDataU));
 			//ss << '\n';
 
-			/*ss << "BufferF: ";
-			ss << Memory1000ToString((*chunk).BufferF.Main.Count * sizeof(VoxelGraphics::MainDataF));
-			ss << '\n';*/
+			//ss << "BufferF: ";
+			//ss << Memory1000ToString((*chunk).BufferF.Main.Count * sizeof(VoxelGraphics::MainDataF));
+			//ss << '\n';
 
 			ss << '\n';
 		}
@@ -1991,15 +1974,16 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			so 10Hz or so should be fine
 		*/
 		//static VoxelChunkMemoryInfo info;
-		static ChunkContainerInfo info;
 		static StopWatch info_sw;
+		static ChunkContainerInfo container_info;
+		static ChunkGraphicsInfo graphics_info;
 		info_sw.Start();
 
 		sw_part.Clear(); sw_part.Start();
 		if (info_sw.ElapsedTime() > 1.0f)
 		{
-			//info.Gather(ChunkManager);
-			info.Gather(ChunkManager.Container);
+			container_info.Gather(ChunkManager.Container);
+			graphics_info.Gather(ChunkManager.Graphics);
 			info_sw.Clear();
 			info_sw.Start();
 		}
@@ -2008,7 +1992,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ChunkManager.Container.ChunksLock.AccessU();
 
 		sw_part.Clear(); sw_part.Start();
-		info.Show(ss);
+		container_info.Show(ss);
+		graphics_info.Show(ss);
 		sw_part.Stop(); TextTime_VoxelChunkMemory_Show.NewValue(sw_part.ElapsedTime());
 	}
 	sw.Stop(); TextTime_VoxelChunkMemory.NewValue(sw.ElapsedTime());
@@ -2219,6 +2204,7 @@ void ContextNoisePlane::FrameInput()
 	//FrameInputTime.NewValue(sw.ElapsedTime());
 }
 
+#include "NewPolyHedra/DataType/TransScaleColor3D/Display/Object.hpp"
 void ContextNoisePlane::Frame(FrameTime frame_time)
 {
 	DLTAverageTime.NewValue(frame_time.ActualFrameTime);
@@ -2234,12 +2220,10 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 
 	StopWatch sw;
 
-	// this is general Update, not Draw specific
 	sw.Clear(); sw.Start();
 	FrameInput();
 	sw.Stop(); FrameTime_Input.NewValue(sw.ElapsedTime());
 
-	// this is general Update, not Draw specific, except View Matrix Uniform
 	sw.Clear(); sw.Start();
 	if (!MenuOptions.IsVisible())
 	{
@@ -2268,54 +2252,90 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 		obj.Color() = ColorF4(1, 0, 1);
 	}*/
 
-	// rechnically not Draw related, but PolyHedraManager is currently not intended for different Threads
-	sw.Clear(); sw.Start();
-	if (MenuDebug.VoxelChunkBoxes.Check.IsChecked())
-	{
-		//NewPolyHedra::Pallet * pallet = PalletManager.Take(VoxelChunkCube);
-		for (unsigned int i = 0; i < ChunkManager.Container.Chunks.Length(); i++)
-		{
-			Chunk * chunk = ChunkManager.Container.Chunks[i];
-			if (chunk == nullptr) { continue; }
-			BoxF3 box;
-			box.Min = (chunk -> Index).ToF();
-			box.Max = box.Min + VectorF3(1.0f);
-			box.Min = box.Min * CHUNK_VALUES_PER_SIDE;
-			box.Max = box.Max * CHUNK_VALUES_PER_SIDE;
-			PolyHedra_Display_Normalized(*Box_Pallet, box);
-			//NewPolyHedra::Basic3D::Object chunk_box(pallet);
-			//chunk_box.Data().Trans.Position = (chunk -> Index * CHUNK_VALUES_PER_SIDE).ToF();
-			//chunk_box.ShowWire();
-		}
-	}
-	sw.Stop(); FrameTime_ChunkBoxes.NewValue(sw.ElapsedTime());
-	
-	// rechnically not Draw related, but PolyHedraManager is currently not intended for different Threads
-	sw.Clear(); sw.Start();
-	if (MenuDebug.ChunkHere.Check.IsChecked())
-	{
-		ChunkVoxelIndex idx(View.Trans.Position.roundF().ToI());
-		BoxF3 box;
-		box.Min = idx.Chunk.ToF();
-		box.Max = box.Min + VectorF3(1.0f);
-		box.Min = box.Min * CHUNK_VALUES_PER_SIDE;
-		box.Max = box.Max * CHUNK_VALUES_PER_SIDE;
-		PolyHedra_Display_Normalized(*Box_Pallet, box);
-		//NewPolyHedra::Basic3D::Object chunk_box(VoxelChunkCube);
-		//chunk_box.Data().Trans.Position = (idx.Chunk * CHUNK_VALUES_PER_SIDE).ToF();
-		//chunk_box.ShowWire();
-	}
-	sw.Stop(); FrameTime_ChunkHereBox.NewValue(sw.ElapsedTime());
-
-	// rechnically not Draw related, but TextManager is currently not intended for different Threads
 	sw.Clear(); sw.Start();
 	FrameText(frame_time);
 	sw.Stop(); FrameTime_Text.NewValue(sw.ElapsedTime());
 
 	InventoryCursor(frame_time);
 
+
+
+	GraphicsClear();
+	GraphicsMake();
+
 	sw.Clear(); sw.Start();
-	Draw();
+	if (MenuDebug.ChunkHere.Check.IsChecked())
+	{
+		TransScaleColor3D::DisplayObject & graphics = (TransScaleColor3D::DisplayObject&)ObjectManagerTSC.DisplayType.Take(*Box_Pallet);
+
+		ChunkVoxelIndex idx(View.Trans.Position.roundF().ToI());
+
+		BoxF3 box;
+		box.Min = idx.Chunk.ToF();
+		box.Max = box.Min + VectorF3(1.0f);
+		box.Min = box.Min * CHUNK_VALUES_PER_SIDE;
+		box.Max = box.Max * CHUNK_VALUES_PER_SIDE;
+
+		TransScaleColor3D::LogicalData data;
+		data.Trans.Position = box.Center();
+		data.Scale = box.Size() * 0.5f;
+		data.Color = ColorF4(1, 1, 1);
+		graphics.InstancesWirePut(data);
+		
+		VectorF3 size = box.Size() * 0.5f;
+		VectorF3 center = box.Center();
+
+		for (int i = -14.0f; i <= 14.0f; i += 2)
+		{
+			data.Trans.Position = VectorF3(center.X + i, center.Y, center.Z);
+			data.Scale = VectorF3(0, size.Y, size.Z);
+			data.Color = ColorF4(1, 0, 0);
+			graphics.InstancesWirePut(data);
+
+			data.Trans.Position = VectorF3(center.X, center.Y + i, center.Z);
+			data.Scale = VectorF3(size.X, 0, size.Z);
+			data.Color = ColorF4(0, 1, 0);
+			graphics.InstancesWirePut(data);
+
+			data.Trans.Position = VectorF3(center.X, center.Y, center.Z + i);
+			data.Scale = VectorF3(size.X, size.Y, 0);
+			data.Color = ColorF4(0, 0, 1);
+			graphics.InstancesWirePut(data);
+		}
+	}
+	sw.Stop(); FrameTime_ChunkHereBox.NewValue(sw.ElapsedTime());
+
+	sw.Clear(); sw.Start();
+	if (MenuDebug.VoxelChunkBoxes.Check.IsChecked())
+	{
+		TransScaleColor3D::DisplayObject & graphics = (TransScaleColor3D::DisplayObject&)ObjectManagerTSC.DisplayType.Take(*Box_Pallet);
+
+		for (unsigned int i = 0; i < ChunkManager.Container.Chunks.Length(); i++)
+		{
+			const Chunk * chunk = ChunkManager.Container.Chunks[i];
+			if (chunk == nullptr) { continue; }
+
+			BoxF3 box;
+			box.Min = (chunk -> Index).ToF();
+			box.Max = box.Min + VectorF3(1.0f);
+			box.Min = box.Min * CHUNK_VALUES_PER_SIDE;
+			box.Max = box.Max * CHUNK_VALUES_PER_SIDE;
+			//PolyHedra_Display_Normalized(*Box_Pallet, box);
+
+			TransScaleColor3D::LogicalData data;
+			data.Trans.Position = box.Center();
+			data.Scale = box.Size() * 0.5f;
+			data.Color = ColorF4(1, 1, 1);
+			graphics.InstancesWirePut(data);
+		}
+	}
+	sw.Stop(); FrameTime_ChunkBoxes.NewValue(sw.ElapsedTime());
+
+	UIManager.TextManager.InstancesShowTime();
+	UIManager.TextManager.InstancesDone();
+
+	sw.Clear(); sw.Start();
+	GraphicsDraw();
 	sw.Stop(); FrameTime_Draw.NewValue(sw.ElapsedTime());
 
 	sw_total.Stop(); FrameTime_.NewValue(sw_total.ElapsedTime());

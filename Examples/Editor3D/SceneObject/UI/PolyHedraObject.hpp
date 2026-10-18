@@ -5,7 +5,9 @@
 # include "Control/Controls/Label.hpp"
 # include "ValueTypeUI/Trans3D.hpp"
 
-namespace NewPolyHedra
+# include "NewPolyHedra/DataType/Basic3D/Logical/Object.hpp"
+
+/*namespace NewPolyHedra
 {
 template<typename TypeData>struct Type_PalletObjectData;
 
@@ -14,7 +16,7 @@ namespace Basic3D
 struct ObjectData;
 typedef Type_PalletObjectData<Basic3D::ObjectData> PalletObjectData;
 };
-};
+};*/
 
 struct SceneObject_PolyHedraObject;
 
@@ -35,7 +37,8 @@ struct PolyHedraObject : public GroupBox
 	~PolyHedraObject();
 	PolyHedraObject();
 
-	NewPolyHedra::Basic3D::PalletObjectData * Object;
+	//NewPolyHedra::Basic3D::PalletObjectData * Object;
+	NewPolyHedra::Basic3D::LogicalObject * Object;
 	void	Change(::SceneObject_PolyHedraObject * obj);
 	void	Syncronize();
 };

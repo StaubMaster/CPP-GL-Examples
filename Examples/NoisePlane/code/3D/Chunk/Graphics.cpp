@@ -117,8 +117,8 @@ void ChunkGraphics::ChunkThreadQueue::Put(Chunk & chunk)
 ValueAccumulator<float> ChunkGraphics::DrawTotal(64);
 ValueAccumulator<float> ChunkGraphics::DrawWait(64);
 ValueAccumulator<float> ChunkGraphics::DrawTextureBind(64);
-ValueAccumulator<float> ChunkGraphics::DrawShaderBind(64);
 ValueAccumulator<float> ChunkGraphics::DrawUpdateBind(64);
+ValueAccumulator<float> ChunkGraphics::DrawShaderBind(64);
 ValueAccumulator<float> ChunkGraphics::DrawBufferDraw(64);
 
 //#include <iostream>
@@ -138,6 +138,8 @@ void ChunkGraphics::Draw()
 
 	sw.Clear();
 	Queue.Mutex.lock();
+	// split Remove and Insert
+	// Remove to free as much space as possible
 	for (unsigned int i = 0; i < Queue.Queue.Count(); i++)
 	{
 		Chunk * ptr = Queue.Queue[i];

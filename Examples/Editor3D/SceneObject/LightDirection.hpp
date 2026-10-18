@@ -4,14 +4,14 @@
 # include "SceneObject.hpp"
 # include "ValueType/Light/Direction.hpp"
 
-# include "NewPolyHedra/DataType/TransScaleColor3D/PalletObjectData.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/Logical/Object.hpp"
 
 struct SceneObjectDisplayMode;
 struct SceneObject_LightDirection : public SceneObject
 {
 	LightDirection *	Light;
 
-	TransScaleColor3D::PalletObjectData		Data;
+	TransScaleColor3D::LogicalObject	Data;
 
 	~SceneObject_LightDirection();
 	SceneObject_LightDirection();

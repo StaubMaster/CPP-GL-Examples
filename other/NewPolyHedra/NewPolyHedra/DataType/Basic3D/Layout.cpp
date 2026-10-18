@@ -1,12 +1,10 @@
 #include "Layout.hpp"
-#include "InstanceData.hpp"
+#include "Display/Data.hpp"
 
 
 
-NewPolyHedra::Basic3D::BufferLayout::~BufferLayout()
-{ }
 NewPolyHedra::Basic3D::BufferLayout::BufferLayout()
-	: ::Attribute::Layout(1, sizeof(NewPolyHedra::Basic3D::InstanceData))
+	: ::Attribute::Layout(1, sizeof(DisplayData))
 	, Trans(*this)
 	, Normal(*this)
 { }

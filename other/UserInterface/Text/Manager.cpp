@@ -216,7 +216,7 @@ static void TimeValueFunc()
 }
 #endif
 
-void UI::Text::Manager::ShowInstancesTime()
+void UI::Text::Manager::InstancesShowTime()
 {
 #ifdef TELEMETRY_TIME
 	std::cout << "Total   " << ToString(TimeTotal.Average()) << '\n';
@@ -236,7 +236,79 @@ void UI::Text::Manager::ShowInstancesTime()
 #endif
 }
 
-void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
+void UI::Text::Manager::InstancesClear()
+{
+#ifdef TELEMETRY_TIME
+	TimeClearFunc();
+#endif
+
+#ifdef TELEMETRY_TIME
+	WatchClear.Start();
+#endif
+	TextsList.Clear();
+	InstancesBlock.Clear();
+	InstancesArray.Clear();
+#ifdef TELEMETRY_TIME
+	WatchClear.Stop();
+#endif
+}
+void UI::Text::Manager::InstancesMake()
+{
+#ifdef TELEMETRY_TIME
+	WatchTotal.Start();
+#endif
+
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		if (ObjectDatas[i] != nullptr)
+		{
+			ObjectData & obj = *ObjectDatas[i];
+			if (obj.Display)
+			{
+#ifdef TELEMETRY_TIME
+				WatchDisplay.Start();
+#endif
+				InstancesPut(obj);
+#ifdef TELEMETRY_TIME
+				WatchDisplay.Stop();
+#endif
+			}
+			if (obj.Remove)
+			{
+#ifdef TELEMETRY_TIME
+				WatchRemove.Start();
+#endif
+				ObjectDatas.RemoveAt(i);
+				delete &obj;
+				i--;
+#ifdef TELEMETRY_TIME
+				WatchRemove.Stop();
+#endif
+			}
+		}
+	}
+
+#ifdef TELEMETRY_TIME
+	WatchTotal.Stop();
+#endif
+}
+void UI::Text::Manager::InstancesDone()
+{
+	Buffer.InstBuffer.DataHave = true;
+
+#ifdef TELEMETRY_TIME
+	WatchArray.Start();
+#endif
+	InstancesArray = InstancesBlock.ToArray();
+#ifdef TELEMETRY_TIME
+	WatchArray.Stop();
+#endif
+
+#ifdef TELEMETRY_TIME
+	TimeValueFunc();
+#endif
+}
+void UI::Text::Manager::InstancesPut(const ObjectData & obj)
 {
 #ifdef TELEMETRY_TIME
 	WatchAlign.Start();
@@ -403,69 +475,6 @@ void UI::Text::Manager::MakeObjectInstances(const ObjectData & obj)
 	WatchLoop.Stop();
 #endif
 }
-void UI::Text::Manager::MakeInstances()
-{
-#ifdef TELEMETRY_TIME
-	TimeClearFunc();
-	WatchTotal.Start();
-#endif
-
-#ifdef TELEMETRY_TIME
-	WatchClear.Start();
-#endif
-	TextsList.Clear();
-	InstancesBlock.Clear();
-	InstancesArray.Clear();
-#ifdef TELEMETRY_TIME
-	WatchClear.Stop();
-#endif
-
-	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
-	{
-		if (ObjectDatas[i] != nullptr)
-		{
-			ObjectData & obj = *ObjectDatas[i];
-			if (obj.Display)
-			{
-#ifdef TELEMETRY_TIME
-				WatchDisplay.Start();
-#endif
-				MakeObjectInstances(obj);
-#ifdef TELEMETRY_TIME
-				WatchDisplay.Stop();
-#endif
-			}
-			if (obj.Remove)
-			{
-#ifdef TELEMETRY_TIME
-				WatchRemove.Start();
-#endif
-				ObjectDatas.RemoveAt(i);
-				delete &obj;
-				i--;
-#ifdef TELEMETRY_TIME
-				WatchRemove.Stop();
-#endif
-			}
-		}
-	}
-	Buffer.InstBuffer.DataHave = true;
-
-#ifdef TELEMETRY_TIME
-	WatchArray.Start();
-#endif
-	InstancesArray = InstancesBlock.ToArray();
-#ifdef TELEMETRY_TIME
-	WatchArray.Stop();
-#endif
-
-#ifdef TELEMETRY_TIME
-	WatchTotal.Stop();
-	TimeValueFunc();
-#endif
-}
-
-
 
 
 

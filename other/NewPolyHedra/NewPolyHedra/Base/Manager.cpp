@@ -1,10 +1,10 @@
 #include "NewPolyHedra/Base/Manager.hpp"
 
-#include "NewPolyHedra/Base/Logical/Data.hpp"
-#include "NewPolyHedra/Base/Logical/DataManager.hpp"
+#include "NewPolyHedra/Base/Logical/Object.hpp"
+#include "NewPolyHedra/Base/Logical/ObjectManager.hpp"
 
-#include "NewPolyHedra/Base/Display/Data.hpp"
-#include "NewPolyHedra/Base/Display/DataManager.hpp"
+#include "NewPolyHedra/Base/Display/Object.hpp"
+#include "NewPolyHedra/Base/Display/ObjectManager.hpp"
 
 #include "NewPolyHedra/Pallet/.hpp"
 #include "NewPolyHedra/Pallet/Manager.hpp"

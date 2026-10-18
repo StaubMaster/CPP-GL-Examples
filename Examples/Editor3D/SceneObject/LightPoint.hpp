@@ -4,14 +4,14 @@
 # include "SceneObject.hpp"
 # include "ValueType/Light/Point.hpp"
 
-# include "NewPolyHedra/DataType/TransScaleColor3D/PalletObjectData.hpp"
+# include "NewPolyHedra/DataType/TransScaleColor3D/Logical/Object.hpp"
 
 struct SceneObjectDisplayMode;
 struct SceneObject_LightPoint : public SceneObject
 {
 	LightPoint *	Light;
 
-	TransScaleColor3D::PalletObjectData		Data;
+	TransScaleColor3D::LogicalObject	Data;
 
 	~SceneObject_LightPoint();
 	SceneObject_LightPoint();

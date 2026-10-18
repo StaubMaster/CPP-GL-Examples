@@ -3,9 +3,9 @@
 
 #include "Ray3D_Hit.hpp"
 
-#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
-#include "NewPolyHedra/PalletObjectData.hpp"
-#include "NewPolyHedra/PalletObjectManager.hpp"
+//#include "NewPolyHedra/DataType/TransScaleColor3D/ObjectData.hpp"
+//#include "NewPolyHedra/PalletObjectData.hpp"
+//#include "NewPolyHedra/PalletObjectManager.hpp"
 
 
 

@@ -2,10 +2,9 @@
 # define NEW_POLYHEDRA_PALLET_MANAGER_HPP
 
 # include "Generics/Container/Binary.hpp"
-# include "Graphics/Attribute/General/Layout.hpp"
 
-#include "NewPolyHedra/Pallet/Full/Layout.hpp"
-#include "NewPolyHedra/Pallet/Wire/Layout.hpp"
+//#include "NewPolyHedra/Pallet/Full/Layout.hpp"
+//#include "NewPolyHedra/Pallet/Wire/Layout.hpp"
 
 class PolyHedra;
 
@@ -28,22 +27,27 @@ struct PalletManager
 
 
 
-	private:
+	private: public:
 	Container::Binary<Pallet*>		Pallets;
 
-	public:		Pallet *	Find(PolyHedra * polyhedra) const;
-	private:	Pallet *	Make(PolyHedra * polyhedra);
-	public:		Pallet *	Take(PolyHedra * polyhedra);
+	// Count()
+	// operator[]
 
-	// Find Name
+	public:		Pallet *	Find(const PolyHedra & polyhedra) const;
+	private:	Pallet &	Make(      PolyHedra & polyhedra);
+	public:		Pallet &	Take(      PolyHedra & polyhedra);
+
+	public:		Pallet *	Find(const PolyHedra * polyhedra) const;
+	private:	Pallet *	Make(      PolyHedra * polyhedra);
+	public:		Pallet *	Take(      PolyHedra * polyhedra);
 
 
 
 	// seperate into PalletGraphics / GraphicsMain
 
 	public:
-	PalletFull::Layout		BufferFullLayout;
-	PalletWire::Layout		BufferWireLayout;
+	//PalletFull::Layout		BufferFullLayout;
+	//PalletWire::Layout		BufferWireLayout;
 
 	public:
 	void	GraphicsCreate();
