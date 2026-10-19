@@ -39,7 +39,8 @@ struct Object
 	Alignment &		CharacterAlignmentY();
 
 	BoxF2 &			Bound();
-	ColorF4 &		Color();
+	ColorF4 &		Color0();
+	ColorF4 &		Color1();
 	float &			Depth();
 
 	void	AlignTopLeft();

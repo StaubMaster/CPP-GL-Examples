@@ -1,9 +1,16 @@
 #ifndef  UI_TEXT_MANAGER_HPP
 # define UI_TEXT_MANAGER_HPP
 
-# include "Data.hpp"
-# include "Buffer.hpp"
-# include "ShaderLayout.hpp"
+# include "DataMain.hpp"
+# include "DataInst.hpp"
+
+# include "TextData.hpp"
+# include "FontData.hpp"
+
+# include "Layout/Uniform.hpp"
+# include "Layout/AttributeMain.hpp"
+# include "Layout/AttributeInst.hpp"
+
 # include "Graphics/Shader/Base.hpp"
 
 # include "Graphics/VertexArray/MainInst.hpp"
@@ -46,19 +53,18 @@ class Manager
 
 
 	public:
-	::Shader::Base			Shader;
-	UI::Text::ShaderLayout	ShaderLayout;
+	::Shader::Base				Shader;
+	UI::Text::LayoutUniform		ShaderLayout;
 
-	//UI::Text::Buffer		Buffer;
-	VertexArray::MainInst		Buffer;
-	UI::Text::Main_Layout		LayoutMain;
-	UI::Text::Inst_Layout		LayoutInst;
+	VertexArray::MainInst				Buffer;
+	UI::Text::LayoutAttributeMain		BufferLayoutMain;
+	UI::Text::LayoutAttributeInst		BufferLayoutInst;
 
 	Container::Binary<UI::Text::ObjectData*>				ObjectDatas;
-	Container::BlockLinkedList<1024, UI::Text::Inst_Data>	InstancesBlock;
-	Container::Array<UI::Text::Inst_Data>					InstancesArray;
+	Container::BlockLinkedList<1024, UI::Text::DataInst>	InstancesBlock;
+	Container::Array<UI::Text::DataInst>					InstancesArray;
 
-	UI::Text::Font *			Font;
+	UI::Text::Font *			Font = nullptr;
 	Texture::Array2D			FontTexture;
 	Container::Binary<BoxF2>	FontPalletsList;
 	::Buffer::Uniform			FontBuffer;
@@ -98,14 +104,14 @@ class Manager
 
 
 	private:
-	bool	GraphicsExist;
+	bool	GraphicsExist = false;
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 	void	GraphicsInit();
 
 	private:
-	bool	TextureAssigned;
+	bool	TextureAssigned = false;
 	void	TextureAssign();
 
 	private:

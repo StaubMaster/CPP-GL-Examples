@@ -38,7 +38,8 @@ const uint TextLimit = 64u;
 struct TextData
 {
 	BoxF2	Bound;
-	vec4	Color;
+	vec4	Color0;
+	vec4	Color1;
 	vec2	CharSize;
 	float	Depth;
 };
@@ -61,7 +62,8 @@ out UI_Text
 {
 	vec2	PalletPos;
 	BoxF2	Bound;
-	vec4	Color;
+	vec4	Color0;
+	vec4	Color1;
 } vs_out;
 
 
@@ -104,5 +106,6 @@ void main()
 	vs_out.Bound.Max.x = bound.Max.x;
 	vs_out.Bound.Max.y = DisplaySize.Buffer.Full.y - bound.Min.y;
 
-	vs_out.Color = text_data.Color;
+	vs_out.Color0 = text_data.Color0;
+	vs_out.Color1 = text_data.Color1;
 }

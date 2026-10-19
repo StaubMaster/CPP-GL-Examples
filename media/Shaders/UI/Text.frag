@@ -18,7 +18,8 @@ in UI_Text
 {
 	vec2	PalletPos; // Font Pos
 	BoxF2	Bound;
-	vec4	Color;
+	vec4	Color0;
+	vec4	Color1;
 } fs_inn;
 
 
@@ -29,10 +30,6 @@ out vec4 Color;
 
 void main()
 {
-	// if statement in Fragment Shader is bad ?
-	// figure out a better way of doing this ?
-	// maybe make it so outside values result in alpha <= 0
-
 	if (gl_FragCoord.x < fs_inn.Bound.Min.x ||
 		gl_FragCoord.x > fs_inn.Bound.Max.x ||
 		gl_FragCoord.y < fs_inn.Bound.Min.y ||
@@ -40,16 +37,9 @@ void main()
 	{ discard; }
 
 	vec4 col = texture(texture0, vec3(fs_inn.PalletPos, 0));
-
-	// when loading Font Texture
-	// add Transparency to Pixels
-	// so only alpha gets filtered here
-
 	if (col.a == 0) { discard; }
-	if (col.r >= 0.25) { discard; }
-	if (col.g >= 0.25) { discard; }
-	if (col.b >= 0.25) { discard; }
 
-	Color = fs_inn.Color;
-//	Color = col;
+	vec4 col0 = vec4(0 + col.r, 0 + col.g, 0 + col.b, col.a);
+	vec4 col1 = vec4(1 - col.r, 1 - col.g, 1 - col.b, col.a);
+	Color = (col0 * fs_inn.Color0) + (col1 * fs_inn.Color1);
 }

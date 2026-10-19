@@ -37,27 +37,12 @@ UI::Text::Manager::~Manager()
 	delete Font;
 }
 UI::Text::Manager::Manager()
-	: Shader()
-	, ShaderLayout()
-	, Buffer()
-	, LayoutMain()
-	, LayoutInst()
-	, ObjectDatas()
-	, InstancesBlock()
-	, InstancesArray()
-	, Font(nullptr)
-	, FontTexture()
-	, FontPalletsList()
-	, FontBuffer(GL::BufferDataUsage::StreamDraw)
-	, TextsList()
+	: FontBuffer(GL::BufferDataUsage::StreamDraw)
 	, TextsBuffer(GL::BufferDataUsage::StreamDraw)
-	, GraphicsExist(false)
-	, TextureAssigned(false)
 {
 	Shader.AssignLayout(ShaderLayout);
-
-	Buffer.MainBuffer.AssignLayout(LayoutMain);
-	Buffer.InstBuffer.AssignLayout(LayoutInst);
+	Buffer.MainBuffer.AssignLayout(BufferLayoutMain);
+	Buffer.InstBuffer.AssignLayout(BufferLayoutInst);
 }
 
 void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
@@ -69,10 +54,10 @@ void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
 		});
 	}
 	{
-		LayoutMain.Pos.Change(0);
-		LayoutInst.TextPos.Change(1);
-		LayoutInst.CharIdx.Change(2);
-		LayoutInst.TextIdx.Change(3);
+		BufferLayoutMain.Pos.Change(0);
+		BufferLayoutInst.TextPos.Change(1);
+		BufferLayoutInst.CharIdx.Change(2);
+		BufferLayoutInst.TextIdx.Change(3);
 	}
 }
 #include "Font/Font.hpp"
@@ -391,7 +376,7 @@ void UI::Text::Manager::InstancesPut(const ObjectData & obj)
 #ifdef TELEMETRY_TIME
 		WatchNext0.Start();
 #endif
-		UI::Text::Inst_Data & data = InstancesBlock.MakeNext();
+		UI::Text::DataInst & data = InstancesBlock.MakeNext();
 #ifdef TELEMETRY_TIME
 		WatchNext0.Stop();
 #endif
@@ -457,7 +442,7 @@ void UI::Text::Manager::InstancesPut(const ObjectData & obj)
 			cursor = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
 		}
 
-		UI::Text::Inst_Data & data = InstancesBlock.MakeNext();
+		UI::Text::DataInst & data = InstancesBlock.MakeNext();
 		data.TextPos = cursor;
 		data.CharIdx = Font -> FindCodeIndex('^');
 		data.TextIdx = TextsList.Count();
@@ -466,7 +451,8 @@ void UI::Text::Manager::InstancesPut(const ObjectData & obj)
 
 	TextData data;
 	data.Bound = obj.Bound;
-	data.Color = obj.Color;
+	data.Color0 = obj.Color0;
+	data.Color1 = obj.Color1;
 	data.CharSize = obj.CharacterSize;
 	data.Depth = obj.Depth;
 	TextsList.Insert(data);
@@ -530,14 +516,14 @@ void UI::Text::Manager::BufferMainUpdateData()
 {
 	if (!GraphicsExist || !Buffer.MainBuffer.DataWant) { return; }
 
-	Container::Binary<UI::Text::Main_Data> data;
+	Container::Binary<UI::Text::DataMain> data;
 
-	data.Insert(UI::Text::Main_Data(VectorF2(-1, -1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(+1, -1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(+1, -1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(-1, +1)));
-	data.Insert(UI::Text::Main_Data(VectorF2(+1, +1)));
+	data.Insert(UI::Text::DataMain(VectorF2(-1, -1)));
+	data.Insert(UI::Text::DataMain(VectorF2(-1, +1)));
+	data.Insert(UI::Text::DataMain(VectorF2(+1, -1)));
+	data.Insert(UI::Text::DataMain(VectorF2(+1, -1)));
+	data.Insert(UI::Text::DataMain(VectorF2(-1, +1)));
+	data.Insert(UI::Text::DataMain(VectorF2(+1, +1)));
 
 	Buffer.MainBuffer.DataWant = false;
 	Buffer.MainBuffer.DataHave = true;

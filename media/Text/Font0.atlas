@@ -21,11 +21,11 @@
 #    Scale Size.X Size.Y
 #      what scale to use for Positions
 #      default is Size of Texture Size
-#      
 
 #Image 16x16_0.png
 #Image 32x32_1.png
-Image 32x32_2.png
+#Image 32x32_2.png
+Image 32x32_3.png
 
 Scale 16 8
 

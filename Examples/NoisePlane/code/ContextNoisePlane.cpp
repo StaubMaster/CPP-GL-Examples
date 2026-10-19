@@ -931,7 +931,7 @@ void ContextNoisePlane::ViewRayUpdate_Show()
 	text.AlignTopRight(); // take DisplaySize
 	text.Bound().Min = VectorF2();
 	text.Bound().Max = window.Size.Buffer.Full;
-	text.Color() = ColorF4(1, 1, 1);
+	text.Color0() = ColorF4(1, 1, 1);
 }
 void ContextNoisePlane::ViewRayUpdate()
 {
@@ -1846,13 +1846,13 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (MenuDebug.View.Check.IsChecked())
 	{
-		VectorF3 posF = View.Trans.Position;
+		VectorF3 & posF = View.Trans.Position;
 		VectorI3 posI = posF.roundF().ToI();
 		ChunkVoxelIndex idx(posI);
-		ss << "Float: " << posF << '\n';
-		ss << "Index: " << posI << '\n';
-		ss << "Voxel: " << idx.Voxel << '\n';
-		ss << "Chunk: " << idx.Chunk << '\n';
+		ss << "Float" << '(' << posF.X << '|' << posF.Y << '|' << posF.Z << ')' << '\n';
+		ss << "Index" << '(' << posI.X << '|' << posI.Y << '|' << posI.Z << ')' << '\n';
+		ss << "Voxel" << '[' << idx.Voxel.X << '|' << idx.Voxel.Y << '|' << idx.Voxel.Z << ']' << '\n';
+		ss << "Chunk" << '[' << idx.Chunk.X << '|' << idx.Chunk.Y << '|' << idx.Chunk.Z << ']' << '\n';
 		ss << '\n';
 	}
 	sw.Stop(); TextTime_View.NewValue(sw.ElapsedTime());
@@ -2009,7 +2009,8 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 			text.TextPosition().X = MenuDebug.Anchor.X.GetMinSize();
 		}
 		text.AlignTopLeft();
-		text.Color() = ColorF4(1, 1, 1);
+		text.CharacterSize() = VectorF2(20);
+		text.Color0() = ColorF4(1, 1, 1);
 		text.Bound().Min = VectorF2();
 		text.Bound().Max = window.Size.Buffer.Full;
 	}
@@ -2020,21 +2021,22 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		UI::Text::Object text; text.Create();
 		text.Text() = "[+]";
 		text.AlignMiddleMiddle();
+		text.CharacterSize() = VectorF2(64);
 		text.TextPosition() = window.Size.Buffer.Half;
-		text.Color() = ColorF4(1, 1, 1);
+		text.Color0() = ColorF4(1, 1, 1);
 		text.Bound().Min = VectorF2();
 		text.Bound().Max = window.Size.Buffer.Full;
 	}
 	if (VoxelClear.Is())
 	{
 		std::stringstream ss;
-		ss << "\n\n";
 		ss << VoxelClear.Progress << '/' << VoxelClear.Required;
 		UI::Text::Object text; text.Create();
 		text.Text() = ss.str();
 		text.AlignMiddleMiddle();
-		text.TextPosition() = window.Size.Buffer.Half;
-		text.Color() = ColorF4(1, 1, 1);
+		text.TextPosition().X = window.Size.Buffer.Half.X;
+		text.TextPosition().Y = window.Size.Buffer.Half.Y + 64.0f;
+		text.Color0() = ColorF4(1, 1, 1);
 		text.Bound().Min = VectorF2();
 		text.Bound().Max = window.Size.Buffer.Full;
 	}

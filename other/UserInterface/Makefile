@@ -29,9 +29,11 @@ FILES := \
 	Control/Controls/ScrollBox.cpp \
 	Control/Controls/ListBox.cpp \
 \
-	Text/Data.cpp \
-	Text/Buffer.cpp \
-	Text/ShaderLayout.cpp \
+	Text/DataMain.cpp \
+	Text/DataInst.cpp \
+	Text/Layout/Uniform.cpp \
+	Text/Layout/AttributeMain.cpp \
+	Text/Layout/AttributeInst.cpp \
 	Text/Manager.cpp \
 	Text/ObjectData.cpp \
 	Text/Object.cpp \

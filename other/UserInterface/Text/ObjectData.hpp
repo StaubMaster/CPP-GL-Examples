@@ -15,8 +15,8 @@ namespace Text
 {
 struct ObjectData
 {
-	bool	Remove;
-	bool	Display;
+	bool	Remove = false;
+	bool	Display = true;
 	// Object. to set Data to null when this gets deleted
 
 	std::string		Text;
@@ -29,16 +29,19 @@ struct ObjectData
 	Alignment		CharacterAlignmentY;
 
 	BoxF2			Bound;
-	ColorF4			Color;
-	float			Depth;
+	ColorF4			Color0;
+	ColorF4			Color1;
+	float			Depth = 1.0f;
 
-	bool			DisplayTextCursor;
-	unsigned int	TextCursorIndex;
+	bool			DisplayTextCursor = false;
+	unsigned int	TextCursorIndex = 0;
 
-	~ObjectData();
-	ObjectData(); // make htis default as well
+	~ObjectData() = default;
+	ObjectData(); // basically only for CharacterSize
 	ObjectData(const ObjectData & other) = default;
 	ObjectData & operator=(const ObjectData & other) = default;
+
+	// put default CharacterSize in TextManager
 };
 };
 };

@@ -1,10 +1,8 @@
-#include "ShaderLayout.hpp"
+#include "Text/Layout/Uniform.hpp"
 
 
 
-UI::Text::ShaderLayout::~ShaderLayout()
-{ }
-UI::Text::ShaderLayout::ShaderLayout()
+UI::Text::LayoutUniform::LayoutUniform()
 	: Uniform::Layout()
 	, DisplaySize(*this, "DisplaySize")
 	, Pallets(*this, "IPallets")

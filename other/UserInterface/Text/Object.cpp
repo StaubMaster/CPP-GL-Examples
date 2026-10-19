@@ -21,9 +21,10 @@ VectorF2 &				UI::Text::Object::CharacterSize() { return (Data -> CharacterSize)
 UI::Text::Alignment &	UI::Text::Object::CharacterAlignmentX() { return (Data -> CharacterAlignmentX); }
 UI::Text::Alignment &	UI::Text::Object::CharacterAlignmentY() { return (Data -> CharacterAlignmentY); }
 
-BoxF2 &					UI::Text::Object::Bound() { return (Data -> Bound); }
-ColorF4 &				UI::Text::Object::Color() { return (Data -> Color); }
-float &					UI::Text::Object::Depth() { return (Data -> Depth); }
+BoxF2 &		UI::Text::Object::Bound() { return (Data -> Bound); }
+ColorF4 &	UI::Text::Object::Color0() { return (Data -> Color0); }
+ColorF4 &	UI::Text::Object::Color1() { return (Data -> Color1); }
+float &		UI::Text::Object::Depth() { return (Data -> Depth); }
 
 
 
