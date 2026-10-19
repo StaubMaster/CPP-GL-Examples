@@ -20,7 +20,7 @@ unsigned int NewPolyHedra::BaseDisplayObjectManager::Count() const
 
 NewPolyHedra::BaseDisplayObject * NewPolyHedra::BaseDisplayObjectManager::Find(const NewPolyHedra::Pallet & pallet) const
 {
-	return Container::Loop::Find(Objects, NewPolyHedra::BaseDisplayObject::Equals, &pallet);
+	return Container::Loop::Find(Objects, &NewPolyHedra::BaseDisplayObject::Equals, &pallet);
 }
 NewPolyHedra::BaseDisplayObject & NewPolyHedra::BaseDisplayObjectManager::Make(NewPolyHedra::Pallet & pallet)
 {
@@ -62,17 +62,17 @@ NewPolyHedra::BaseDisplayObject * NewPolyHedra::BaseDisplayObjectManager::Take(P
 
 unsigned int NewPolyHedra::BaseDisplayObjectManager::InstancesFullCount() const
 {
-	return Container::Loop::SumUInt32(Objects, NewPolyHedra::BaseDisplayObject::InstancesFullCount);
+	return Container::Loop::SumUInt32(Objects, &NewPolyHedra::BaseDisplayObject::InstancesFullCount);
 }
 unsigned int NewPolyHedra::BaseDisplayObjectManager::InstancesWireCount() const
 {
-	return Container::Loop::SumUInt32(Objects, NewPolyHedra::BaseDisplayObject::InstancesWireCount);
+	return Container::Loop::SumUInt32(Objects, &NewPolyHedra::BaseDisplayObject::InstancesWireCount);
 }
 
 void NewPolyHedra::BaseDisplayObjectManager::InstancesClear()
 {
-	Container::Loop::Invoke(Objects, NewPolyHedra::BaseDisplayObject::InstancesFullClear);
-	Container::Loop::Invoke(Objects, NewPolyHedra::BaseDisplayObject::InstancesWireClear);
+	Container::Loop::Invoke(Objects, &NewPolyHedra::BaseDisplayObject::InstancesFullClear);
+	Container::Loop::Invoke(Objects, &NewPolyHedra::BaseDisplayObject::InstancesWireClear);
 }
 /*void NewPolyHedra::BaseDisplayObjectManager::InstancesMake() { }*/
 
@@ -80,23 +80,23 @@ void NewPolyHedra::BaseDisplayObjectManager::GraphicsCreate()
 {
 	ShaderFull.Create();
 	ShaderWire.Create();
-	Container::Loop::Invoke(Objects, NewPolyHedra::BaseDisplayObject::GraphicsCreate);
+	Container::Loop::Invoke(Objects, &NewPolyHedra::BaseDisplayObject::GraphicsCreate);
 }
 void NewPolyHedra::BaseDisplayObjectManager::GraphicsDelete()
 {
 	ShaderFull.Delete();
 	ShaderWire.Delete();
-	Container::Loop::Invoke(Objects, NewPolyHedra::BaseDisplayObject::GraphicsDelete);
+	Container::Loop::Invoke(Objects, &NewPolyHedra::BaseDisplayObject::GraphicsDelete);
 }
 void NewPolyHedra::BaseDisplayObjectManager::GraphicsDrawFull()
 {
 	ShaderFull.Bind();
-	Container::Loop::Invoke(Objects, NewPolyHedra::BaseDisplayObject::GraphicsDrawFull);
+	Container::Loop::Invoke(Objects, &NewPolyHedra::BaseDisplayObject::GraphicsDrawFull);
 	VertexArray::Base::BindNone();
 }
 void NewPolyHedra::BaseDisplayObjectManager::GraphicsDrawWire()
 {
 	ShaderWire.Bind();
-	Container::Loop::Invoke(Objects, NewPolyHedra::BaseDisplayObject::GraphicsDrawWire);
+	Container::Loop::Invoke(Objects, &NewPolyHedra::BaseDisplayObject::GraphicsDrawWire);
 	VertexArray::Base::BindNone();
 }

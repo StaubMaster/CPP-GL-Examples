@@ -37,7 +37,7 @@ NewPolyHedra::PalletManager::PalletManager()
 
 NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Find(const PolyHedra & polyhedra) const
 {
-	return Container::Loop::Find(Pallets, NewPolyHedra::Pallet::Equals, &polyhedra);
+	return Container::Loop::Find(Pallets, &NewPolyHedra::Pallet::Equals, &polyhedra);
 }
 NewPolyHedra::Pallet & NewPolyHedra::PalletManager::Make(PolyHedra & polyhedra)
 {
@@ -79,9 +79,9 @@ NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Take(PolyHedra * polyhedra)
 
 void NewPolyHedra::PalletManager::GraphicsCreate()
 {
-	Container::Loop::Invoke(Pallets, NewPolyHedra::Pallet::GraphicsCreate);
+	Container::Loop::Invoke(Pallets, &NewPolyHedra::Pallet::GraphicsCreate);
 }
 void NewPolyHedra::PalletManager::GraphicsDelete()
 {
-	Container::Loop::Invoke(Pallets, NewPolyHedra::Pallet::GraphicsDelete);
+	Container::Loop::Invoke(Pallets, &NewPolyHedra::Pallet::GraphicsDelete);
 }

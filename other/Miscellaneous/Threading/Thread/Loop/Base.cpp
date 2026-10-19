@@ -6,35 +6,61 @@ thread_local const char * BaseLoopThread::ThreadName = "ThreadName";
 
 
 
-void BaseLoopThread::DoTerminate()
+void BaseLoopThread::Run()
 {
-	_Terminate = true;
+	if (State == EState::None)
+	{
+		Thread = std::thread(&BaseLoopThread::ThreadFunc, this);
+		State = EState::Running;
+	}
 }
-bool BaseLoopThread::IsDone() const
+void BaseLoopThread::JoinRequest()
 {
-	return _Done;
+	if (State == EState::Running)
+	{
+		State = EState::Joining;
+	}
+}
+bool BaseLoopThread::JoinCan() const
+{
+	return State == EState::Done;
+}
+void BaseLoopThread::Join()
+{
+	if (State == EState::None)
+	{
+		return;
+	}
+	if (State == EState::Running)
+	{
+		JoinRequest();
+	}
+	if (State == EState::Joining)
+	{
+		while (!JoinCan())
+		{
+			//DoIdle = false;
+			Poke();
+		}
+	}
+	if (State == EState::Done)
+	{
+		Thread.join();
+	}
 }
 
 
 
 BaseLoopThread::BaseLoopThread(const char * name)
 	: Name(name)
-	, Thread(&BaseLoopThread::ThreadFunc, this)
 { }
-
-void BaseLoopThread::Join()
-{
-	Thread.join();
-}
-
-
 
 void BaseLoopThread::ThreadFunc()
 {
 	BaseLoopThread::ThreadName = Name;
-	while (!_Terminate)
+	while (State != EState::Joining)
 	{
 		LoopFunc();
 	}
-	_Done = true;
+	State = EState::Done;
 }

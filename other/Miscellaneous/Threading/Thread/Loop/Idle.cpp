@@ -14,8 +14,7 @@ void IdleLoopThread::LoopFunc()
 	std::unique_lock<std::mutex> lk(ConditionVarMutex);
 	ConditionVar.wait(lk, [&]
 	{
-		if (_Terminate) { return true; }
-		if (DoIdle) { return false; }
+		if (State == EState::Joining) { return true; }
 
 		if (CheckFunc())
 		{
@@ -29,7 +28,7 @@ void IdleLoopThread::LoopFunc()
 		}
 	});
 
-	if (_Terminate) { return; }
+	if (State == EState::Joining) { return; }
 
 	DoFunc();
 }

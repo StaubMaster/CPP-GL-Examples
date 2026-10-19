@@ -8,18 +8,18 @@
 
 void NewPolyHedra::Manager::CleanObjects()
 {
-	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::CleanObjects);
+	Container::Loop::Invoke(BaseManagers, &NewPolyHedra::BaseManager::CleanObjects);
 }
 
 
 
 void NewPolyHedra::Manager::InstancesClear()
 {
-	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::InstancesClear);
+	Container::Loop::Invoke(BaseManagers, &NewPolyHedra::BaseManager::InstancesClear);
 }
 void NewPolyHedra::Manager::InstancesMake()
 {
-	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::InstancesMake);
+	Container::Loop::Invoke(BaseManagers, &NewPolyHedra::BaseManager::InstancesMake);
 }
 
 
@@ -30,7 +30,7 @@ void NewPolyHedra::Manager::GraphicsCreate()
 	{
 		PalletManager -> GraphicsCreate();
 	}
-	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::GraphicsCreate);
+	Container::Loop::Invoke(BaseManagers, &NewPolyHedra::BaseManager::GraphicsCreate);
 }
 void NewPolyHedra::Manager::GraphicsDelete()
 {
@@ -38,13 +38,13 @@ void NewPolyHedra::Manager::GraphicsDelete()
 	{
 		PalletManager -> GraphicsDelete();
 	}
-	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::GraphicsDelete);
+	Container::Loop::Invoke(BaseManagers, &NewPolyHedra::BaseManager::GraphicsDelete);
 }
 void NewPolyHedra::Manager::GraphicsDrawFull()
 {
-	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::GraphicsDrawFull);
+	Container::Loop::Invoke(BaseManagers, &NewPolyHedra::BaseManager::GraphicsDrawFull);
 }
 void NewPolyHedra::Manager::GraphicsDrawWire()
 {
-	Container::Loop::Invoke(BaseManagers, NewPolyHedra::BaseManager::GraphicsDrawWire);
+	Container::Loop::Invoke(BaseManagers, &NewPolyHedra::BaseManager::GraphicsDrawWire);
 }

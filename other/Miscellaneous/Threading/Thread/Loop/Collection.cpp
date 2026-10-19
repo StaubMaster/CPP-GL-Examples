@@ -7,7 +7,7 @@ bool ThreadLoopCollection::IsDone() const
 {
 	for (unsigned int i = 0; i < Threads.Count(); i++)
 	{
-		if (!Threads[i] -> IsDone())
+		if (!Threads[i] -> JoinCan())
 		{
 			return false;
 		}
@@ -18,7 +18,7 @@ void ThreadLoopCollection::DoTerminate()
 {
 	for (unsigned int i = 0; i < Threads.Count(); i++)
 	{
-		Threads[i] -> DoTerminate();
+		Threads[i] -> JoinRequest();
 	}
 }
 void ThreadLoopCollection::Join()
@@ -35,8 +35,7 @@ void ThreadLoopCollection::Run()
 {
 	for (unsigned int i = 0; i < Threads.Count(); i++)
 	{
-		Threads[i] -> DoIdle = false;
-		Threads[i] -> Poke();
+		Threads[i] -> Run();
 	}
 }
 void ThreadLoopCollection::Terminate()
@@ -47,7 +46,7 @@ void ThreadLoopCollection::Terminate()
 	{
 		for (unsigned int i = 0; i < Threads.Count(); i++)
 		{
-			if (!Threads[i] -> IsDone())
+			if (!Threads[i] -> JoinCan())
 			{
 				Threads[i] -> Poke();
 			}

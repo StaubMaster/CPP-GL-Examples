@@ -39,5 +39,5 @@ void NewPolyHedra::BaseLogicalObjectManager::Clean()
 
 void NewPolyHedra::BaseLogicalObjectManager::InstancesMake()
 {
-	Container::Loop::Invoke(Datas, NewPolyHedra::BaseLogicalObject::InstancePut);
+	Container::Loop::Invoke(Datas, &NewPolyHedra::BaseLogicalObject::InstancePut);
 }

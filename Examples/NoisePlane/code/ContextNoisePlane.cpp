@@ -1808,15 +1808,15 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ss << ChunkManager::TimeUpdateInsert << '\n';
 		ss << ChunkManager::TimeUpdateRemove << '\n';
 		ss << '\n';
-		ss << "AuxThread1 DoIdle: " << AuxThreadCollection.AuxThread1.DoIdle << '\n';
+		ss << "AuxThread1n";
 		ss << AuxThreadCollection.AuxThread1.TimeFind << '\n';
 		ss << AuxThreadCollection.AuxThread1.TimeDo << '\n';
 		ss << '\n';
-		ss << "AuxThread2 DoIdle: " << AuxThreadCollection.AuxThread2.DoIdle << '\n';
+		ss << "AuxThread2\n";
 		ss << AuxThreadCollection.AuxThread2.TimeGenerateFind << '\n';
 		ss << AuxThreadCollection.AuxThread2.TimeGenerate << '\n';
 		ss << '\n';
-		ss << "AuxThread3 DoIdle: " << AuxThreadCollection.AuxThread3.DoIdle << '\n';
+		ss << "AuxThread3\n";
 		ss << AuxThreadCollection.AuxThread3.TimeAssambleFind << '\n';
 		ss << AuxThreadCollection.AuxThread3.TimeAssamble << '\n';
 		ss << '\n';

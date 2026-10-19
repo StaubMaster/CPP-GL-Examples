@@ -9,15 +9,23 @@ struct BaseLoopThread
 	static thread_local const char *	ThreadName;
 
 	protected:
-	bool	_Terminate = false;
-	bool	_Done = false;
+	enum class EState
+	{
+		None,
+		Running,
+		Joining,
+		Done,
+	};
+	EState	State = EState::None;
 	public:
-	void	DoTerminate();
-	bool	IsDone() const;
+	void	Run();
+	void	JoinRequest();
+	bool	JoinCan() const;
+	void	Join();
 
-	public:
-	bool	DoIdle = true;
-	public:
+	//public:
+	//bool	DoIdle = false;
+	//public:
 	//bool	IsIdle();
 	//void	MakeIdle();
 	//void	DontIdle();
@@ -34,8 +42,6 @@ struct BaseLoopThread
 
 	public:
 	BaseLoopThread(const char * name);
-	public:
-	void	Join();
 
 	private:
 	void	ThreadFunc();
