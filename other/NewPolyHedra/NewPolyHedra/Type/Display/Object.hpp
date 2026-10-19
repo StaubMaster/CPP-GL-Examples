@@ -7,7 +7,22 @@
 
 namespace NewPolyHedra
 {
-template<typename LogicalData, typename DisplayData> struct TypeDisplayObject : public BaseDisplayObject
+template<typename LogicalData> struct DataDisplayObject : public BaseDisplayObject
+{
+	public:
+	~DataDisplayObject() = default;
+	DataDisplayObject() = delete;
+	DataDisplayObject(const DataDisplayObject & other) = delete;
+	DataDisplayObject & operator=(const DataDisplayObject & other) = delete;
+
+	public:
+	DataDisplayObject(Pallet & pallet);
+
+	public:
+	virtual void	InstancesFullPut(const LogicalData & data) = 0;
+	virtual void	InstancesWirePut(const LogicalData & data) = 0;
+};
+template<typename LogicalData, typename DisplayData> struct TypeDisplayObject : public DataDisplayObject<LogicalData>
 {
 	public:
 	~TypeDisplayObject() = default;
@@ -28,11 +43,8 @@ template<typename LogicalData, typename DisplayData> struct TypeDisplayObject : 
 	void	InstancesFullClear() override;
 	void	InstancesWireClear() override;
 	public:
-	void	InstancesFullPut(const void * data) override;
-	void	InstancesWirePut(const void * data) override;
-	public:
-	void	InstancesFullPut(const LogicalData & data);
-	void	InstancesWirePut(const LogicalData & data);
+	void	InstancesFullPut(const LogicalData & data) override;
+	void	InstancesWirePut(const LogicalData & data) override;
 	public:
 	void	InstancesFullPut(const DisplayData & data);
 	void	InstancesWirePut(const DisplayData & data);

@@ -34,7 +34,7 @@ template<typename LogicalData> NewPolyHedra::TypeLogicalObject<LogicalData> * Ne
 {
 	if (pallet == nullptr) { return nullptr; }
 	TypeLogicalObject<LogicalData> * object = new TypeLogicalObject<LogicalData>();
-	object -> Graphics = DataDisplayObjectManager<LogicalData>::sTake(pallet);
+	object -> DisplayObject = (DataDisplayObject<LogicalData>*)DataDisplayObjectManager<LogicalData>::sTake(pallet); // sTakeType
 	this -> Datas.Insert(object);
 	return object;
 }

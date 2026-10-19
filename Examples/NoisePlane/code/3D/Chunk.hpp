@@ -209,7 +209,7 @@ struct Chunk
 	bool	GraphicsData_Put_Can() const;
 	void	GraphicsData_Put();
 
-	private:
+	private: public: // Info
 	VertexArray::Multi::Entry		GraphicsDataU_Entry;
 	VertexArray::Multi::Entry		GraphicsDataF_Entry;
 };

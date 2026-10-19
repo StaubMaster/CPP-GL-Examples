@@ -2,9 +2,14 @@
 
 
 
+template<typename LogicalData> NewPolyHedra::DataDisplayObject<LogicalData>::DataDisplayObject(Pallet & pallet)
+	: BaseDisplayObject(pallet)
+{ }
+
+
 
 template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData>::TypeDisplayObject(Pallet & pallet)
-	: BaseDisplayObject(pallet)
+	: DataDisplayObject<LogicalData>(pallet)
 { }
 
 
@@ -27,15 +32,6 @@ template<typename LogicalData, typename DisplayData> void NewPolyHedra::TypeDisp
 	InstancesWireData.Clear();
 }
 
-template<typename LogicalData, typename DisplayData> void NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData>::InstancesFullPut(const void * data)
-{
-	InstancesFullPut(*((const LogicalData *)data));
-}
-template<typename LogicalData, typename DisplayData> void NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData>::InstancesWirePut(const void * data)
-{
-	InstancesWirePut(*((const LogicalData *)data));
-}
-
 template<typename LogicalData, typename DisplayData> void NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData>::InstancesFullPut(const LogicalData & data)
 {
 	InstancesFullPut(DisplayData(data));
@@ -56,11 +52,13 @@ template<typename LogicalData, typename DisplayData> void NewPolyHedra::TypeDisp
 
 template<typename LogicalData, typename DisplayData> void NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData>::InstancesFullToBuffer()
 {
-	BufferFullInstance.DataFull(InstancesFullData.ToVoid());
-	CountFull = InstancesFullData.Count();
+	// why does this require "this"
+	this -> BufferFullInstance.DataFull(InstancesFullData.ToVoid());
+	this -> CountFull = InstancesFullData.Count();
 }
 template<typename LogicalData, typename DisplayData> void NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData>::InstancesWireToBuffer()
 {
-	BufferWireInstance.DataFull(InstancesWireData.ToVoid());
-	CountWire = InstancesWireData.Count();
+	// why does this require "this"
+	this -> BufferWireInstance.DataFull(InstancesWireData.ToVoid());
+	this -> CountWire = InstancesWireData.Count();
 }

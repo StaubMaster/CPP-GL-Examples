@@ -23,13 +23,13 @@ template<typename LogicalData> const LogicalData & NewPolyHedra::Type_Object<Log
 
 
 
-template<typename LogicalData> NewPolyHedra::BaseDisplayObject * NewPolyHedra::Type_Object<LogicalData>::Manager()
+template<typename LogicalData> NewPolyHedra::DataDisplayObject<LogicalData> * NewPolyHedra::Type_Object<LogicalData>::Graphics()
 {
-	return (ObjectData -> Graphics);
+	return (ObjectData -> DisplayObject);
 }
-template<typename LogicalData> const NewPolyHedra::BaseDisplayObject * NewPolyHedra::Type_Object<LogicalData>::Manager() const
+template<typename LogicalData> const NewPolyHedra::DataDisplayObject<LogicalData> * NewPolyHedra::Type_Object<LogicalData>::Graphics() const
 {
-	return (ObjectData -> Graphics);
+	return (ObjectData -> DisplayObject);
 }
 
 

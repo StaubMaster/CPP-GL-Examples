@@ -3,14 +3,17 @@
 
 
 
-template<typename LogicalData> const void * NewPolyHedra::TypeLogicalObject<LogicalData>::DataVoid() const
+template<typename LogicalData> void NewPolyHedra::TypeLogicalObject<LogicalData>::InstancePut() const
 {
-	return &Data;
+	if (DisplayObject != nullptr)
+	{
+		if (VisibleFull())
+		{
+			DisplayObject -> InstancesFullPut(Data);
+		}
+		if (VisibleWire())
+		{
+			DisplayObject -> InstancesWirePut(Data);
+		}
+	}
 }
-
-
-
-/*template<typename LogicalData> NewPolyHedra::TypeLogicalObject<LogicalData> * NewPolyHedra::TypeLogicalObject<LogicalData>::New(Pallet * pallet)
-{
-	return TypeLogicalObjectManager<LogicalData>::sNewType(pallet);
-}*/

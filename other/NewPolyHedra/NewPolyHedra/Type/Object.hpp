@@ -7,9 +7,8 @@ namespace NewPolyHedra
 {
 struct Pallet;
 
-struct BaseDisplayObject;
-
 template<typename LogicalData> struct TypeLogicalObject;
+template<typename LogicalData> struct DataDisplayObject;
 
 template<typename LogicalData> struct Type_Object
 {
@@ -24,8 +23,8 @@ template<typename LogicalData> struct Type_Object
 			LogicalData &	Data();
 
 	public:
-	const	BaseDisplayObject *		Manager() const;
-			BaseDisplayObject *		Manager();
+	const	DataDisplayObject<LogicalData> *	Graphics() const;
+			DataDisplayObject<LogicalData> *	Graphics();
 
 	public:
 	bool	VisibleFull() const;

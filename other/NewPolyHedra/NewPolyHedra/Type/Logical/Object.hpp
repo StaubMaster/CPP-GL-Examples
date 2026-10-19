@@ -2,6 +2,7 @@
 # define NEW_POLYHEDRA_TYPE_LOGICAL_OBJECT_HPP
 
 # include "NewPolyHedra/Base/Logical/Object.hpp"
+# include "NewPolyHedra/Type/Display/Object.hpp"
 
 class PolyHedra;
 
@@ -12,6 +13,9 @@ struct Pallet;
 template<typename LogicalData> struct TypeLogicalObject : public BaseLogicalObject
 {
 	public:
+	DataDisplayObject<LogicalData> *	DisplayObject = nullptr;
+
+	public:
 	~TypeLogicalObject() = default;
 	TypeLogicalObject() = default;
 	TypeLogicalObject(const TypeLogicalObject & other) = delete;
@@ -20,11 +24,8 @@ template<typename LogicalData> struct TypeLogicalObject : public BaseLogicalObje
 	public:
 	LogicalData		Data;
 
-	protected:
-	const void *	DataVoid() const;
-
 	public:
-	//static TypeLogicalObject<LogicalData> *		New(Pallet * pallet);
+	void	InstancePut() const override;
 };
 };
 

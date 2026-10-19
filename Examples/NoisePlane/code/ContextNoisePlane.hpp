@@ -183,10 +183,14 @@ void	ViewEntityUpdate(Trans3D change, FrameTime frame_time);
 void	ViewRayUpdate_Sync();
 void	ViewRayUpdate_Hit();
 void	ViewRayUpdate_HitDo();
-void	ViewRayUpdate_Show();
 void	ViewRayUpdate();
 
 void	ViewUpdate(Trans3D change, FrameTime frame_time);
+
+void	ViewPosText(std::stringstream & ss);
+void	ViewPosShow();
+void	ViewRayText(std::stringstream & ss);
+void	ViewRayShow();
 
 
 

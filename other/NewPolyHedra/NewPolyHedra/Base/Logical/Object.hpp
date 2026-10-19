@@ -26,13 +26,6 @@ struct BaseLogicalObject
 	bool	VisibleWire() const;
 
 	public:
-	BaseDisplayObject *		Graphics = nullptr;
-	// make function that returns Base referance
-	// put DisplayData directly in LogicalObject ?
-	// LogicalObject should not need DisplayData
-	// make ObjectData that holds both LogicalObject and DisplayObject stuff
-
-	public:
 	virtual ~BaseLogicalObject() = default;
 	BaseLogicalObject() = default;
 	BaseLogicalObject(const BaseLogicalObject & other) = default;
@@ -41,11 +34,8 @@ struct BaseLogicalObject
 	public:
 	BaseLogicalObject(BaseDisplayObject * graphics);
 
-	protected:
-	virtual const void *	DataVoid() const = 0;
-
 	public:
-	void	InstancePut() const;
+	virtual void	InstancePut() const = 0;
 };
 };
 

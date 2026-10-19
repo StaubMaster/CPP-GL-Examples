@@ -14,22 +14,5 @@ bool NewPolyHedra::BaseLogicalObject::VisibleWire() const { return DisplayWire; 
 
 
 NewPolyHedra::BaseLogicalObject::BaseLogicalObject(BaseDisplayObject * graphics)
-	: Graphics(graphics)
-{ }
-
-
-
-void NewPolyHedra::BaseLogicalObject::InstancePut() const
-{
-	if (Graphics != nullptr)
-	{
-		if (DisplayFull)
-		{
-			Graphics -> InstancesFullPut(DataVoid());
-		}
-		if (DisplayWire)
-		{
-			Graphics -> InstancesWirePut(DataVoid());
-		}
-	}
-}
+//	: Graphics(graphics)
+{ (void)graphics; }

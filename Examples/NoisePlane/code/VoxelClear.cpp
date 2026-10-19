@@ -101,16 +101,16 @@ void VoxelClear::Continue(const ChunkVoxelIndex & idx)
 
 
 
-#include <iostream>
 #include <sstream>
 #include "ValueType/_Show.hpp"
 void VoxelClear::Show(std::stringstream & ss) const
 {
+	ss << "VoxelClear:\n";
 	if (Is())
 	{
-		ss << "VoxelClear:\n";
 		ss << Index.Chunk << " :Chunk\n";
 		ss << Index.Voxel << " :Voxel\n";
 		ss << Progress << " :Progress\n";
+		ss << Required << " :Required\n";
 	}
 }
