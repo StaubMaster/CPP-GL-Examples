@@ -29,7 +29,7 @@ tex Log/Side0.png   Normal0 None
 tex Log/Side1.png   Invert0 None
 tex Log/Corn.png    Normal0 None
 tex Log/Side1.png   Normal0 None
-#orient PrevY PrevZ
+orient PrevY NextX
 done
 
 new Log_Edge   CubeDiag   Wood
@@ -39,9 +39,12 @@ tex Log/Side1.png   Normal0 None
 tex Log/Side2.png   Normal0 None
 tex Log/Edge.png    Normal0 None
 tex Log/Side1.png   Normal0 None
-#orient PrevY PrevZ
+orient PrevY NextX
 done
 
+# Corner should have 3 Orientatoin axis
+# technically a Diagonal Orientatoin Axis
+# so the Corner allways faces towards View
 new Log_Core   CubeDiag   Wood
 tex Log/Side3.png   Invert0 None
 tex Log/Core.png    Normal0 None
@@ -49,6 +52,7 @@ tex Log/Side3.png   Normal0 None
 tex Log/Side3.png   Invert0 None
 tex Log/Core.png    Normal0 None
 tex Log/Side3.png   Normal0 None
+orient PrevY None
 done
 
 

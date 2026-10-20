@@ -58,7 +58,8 @@ struct BoxEntity3D
 	BoxEntity3D_CollisionTime	FindCollisionTime(const BoxF3 & other) const;
 	BoxEntity3D_CollisionTime	FindCollisionTime(const Container::Array<BoxF3> & boxes) const;
 
-	BoxEntity3D_CollisionSide	Collide(const Container::Array<BoxF3> & boxes, float time_limit);
+	BoxEntity3D_CollisionSide	CollisionSide;
+	void	Collide(const Container::Array<BoxF3> & boxes, float time_limit);
 };
 
 #endif

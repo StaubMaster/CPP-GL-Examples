@@ -183,9 +183,10 @@ BoxEntity3D_CollisionTime BoxEntity3D::FindCollisionTime(const Container::Array<
 	return collision;
 }
 
-BoxEntity3D_CollisionSide BoxEntity3D::Collide(const Container::Array<BoxF3> & boxes, float time_limit)
+void BoxEntity3D::Collide(const Container::Array<BoxF3> & boxes, float time_limit)
 {
-	BoxEntity3D_CollisionSide side;
+	BoxEntity3D_CollisionSide & side = CollisionSide;
+	side = BoxEntity3D_CollisionSide();
 
 	for (unsigned int i = 0; i < 4; i++)
 	{
@@ -212,6 +213,4 @@ BoxEntity3D_CollisionSide BoxEntity3D::Collide(const Container::Array<BoxF3> & b
 	{
 		Pos += Vel * time_limit;
 	}
-
-	return side;
 }

@@ -305,14 +305,16 @@ __attribute__((unused)) static void RankAxis(const VectorF3 & vec, Axis3D::Rel &
 	Axis3D::Rel axisY = (vec.Y > 0) ? Axis3D::Rel::NextY : Axis3D::Rel::PrevY;
 	Axis3D::Rel axisZ = (vec.Z > 0) ? Axis3D::Rel::NextZ : Axis3D::Rel::PrevZ;
 
-	bool XvsY = (vec.X < vec.Y);
-	bool YvsX = (vec.X > vec.Y);
+	VectorF3 abs = vec.abs();
 
-	bool YvsZ = (vec.Y < vec.Z);
-	bool ZvsY = (vec.Y > vec.Z);
+	bool XvsY = (abs.X < abs.Y);
+	bool YvsX = (abs.X > abs.Y);
 
-	bool ZvsX = (vec.Z < vec.X);
-	bool XvsZ = (vec.Z > vec.X);
+	bool YvsZ = (abs.Y < abs.Z);
+	bool ZvsY = (abs.Y > abs.Z);
+
+	bool ZvsX = (abs.Z < abs.X);
+	bool XvsZ = (abs.Z > abs.X);
 
 	if (XvsY && XvsZ) { axis0 = axisX; }
 	if (YvsZ && YvsX) { axis0 = axisY; }
@@ -565,7 +567,47 @@ ContextNoisePlane::ContextNoisePlane()
 
 
 
-void ContextNoisePlane::ViewEntityUpdate_Intangible(Trans3D change, FrameTime frame_time)
+void ContextNoisePlane::BoxEntity_Collide(BoxEntity3D & box_entity, const FrameTime & frame_time)
+{
+	BoxI3 range = BoxEntity_RangeI(box_entity, frame_time);
+	Container::Array<BoxF3> boxes = Voxels_Boxes_Collect(ChunkManager.Container, range);
+	if (BoxEntitys_Display_CollisionBoxes)
+	{
+		PolyHedra_Display_Normalized(*Box_Pallet, boxes);
+	}
+	box_entity.Collide(boxes, frame_time.Delta);
+}
+void ContextNoisePlane::BoxEntity_Physics(BoxEntity3D & box_entity)
+{
+	box_entity.Vel += PhysicsContext_Gravity.Vector();
+}
+void ContextNoisePlane::BoxEntitys_Update(const FrameTime & frame_time)
+{
+	for (unsigned int i = 0; i < BoxEntitys.Count(); i++)
+	{
+		BoxEntity3D * obj = BoxEntitys[i];
+		if (obj != nullptr)
+		{
+			BoxEntity_Physics(*obj);
+			BoxEntity_Collide(*obj, frame_time);
+		}
+	}
+}
+void ContextNoisePlane::BoxEntitys_Display()
+{
+	for (unsigned int i = 0; i < BoxEntitys.Count(); i++)
+	{
+		BoxEntity3D * obj = BoxEntitys[i];
+		if (obj != nullptr)
+		{
+			PolyHedra_Display_Normalized(*Box_Pallet, *obj);
+		}
+	}
+}
+
+
+
+void ContextNoisePlane::ViewEntityUpdate_Intangible(Trans3D change, const FrameTime & frame_time)
 {
 	float speed = 0.0f;
 	if (window[Keys::LeftControl] == State::Down)
@@ -581,13 +623,11 @@ void ContextNoisePlane::ViewEntityUpdate_Intangible(Trans3D change, FrameTime fr
 	View.Trans.Position += change.Position * frame_time.Delta;
 	View.Trans.Rotation += change.Rotation * frame_time.Delta;
 	View.Trans.Rotation.X1.clampPI();
-
-	ViewEntity.Pos = View.Trans.Position;
-	ViewEntity.Vel = change.Position;
 }
-void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change, FrameTime frame_time)
+void ContextNoisePlane::ViewEntityUpdate_Change(VectorF3 change)
 {
-	(void)frame_time;
+	if (ViewEntity == nullptr) { return; }
+	BoxEntity3D & box_entity = *ViewEntity;
 
 	float accel_factor = 0.0f;
 	if (window[Keys::LeftControl] == State::Down)
@@ -604,7 +644,7 @@ void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change, FrameTime fram
 	float change_vert = change.Y;
 
 	VectorF3 jump;
-	if (ViewEntity_CollisionSide.PrevY)
+	if (ViewEntity -> CollisionSide.PrevY)
 	{
 		if (change_vert > 0.0f)
 		{
@@ -614,12 +654,12 @@ void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change, FrameTime fram
 	}
 
 	VectorF3 accel = VectorF3(change_hori.X, 0.0f, change_hori.Y);
-	VectorF3 decel = VectorF3(ViewEntity.Vel.X, 0.0f, ViewEntity.Vel.Z);
+	VectorF3 decel = VectorF3(box_entity.Vel.X, 0.0f, box_entity.Vel.Z);
 
 	accel *= accel_factor;
 	decel *= decel_factor;
 
-	ViewEntity.Vel = ViewEntity.Vel + accel - decel + jump + PhysicsContext_Gravity.Vector();
+	box_entity.Vel = box_entity.Vel + accel - decel + jump;
 }
 /*void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change)
 {
@@ -759,21 +799,6 @@ void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change, FrameTime fram
 		+ PhysicsContext_Gravity.Vector()
 	;
 }*/
-void ContextNoisePlane::ViewEntityUpdate_Colliding(FrameTime frame_time)
-{
-	BoxI3 range = BoxEntity_RangeI(ViewEntity, frame_time);
-	Container::Array<BoxF3> boxes = Voxels_Boxes_Collect(ChunkManager.Container, range);
-	if (View_Distance != 0.0f)
-	{
-		PolyHedra_Display_Normalized(*Box_Pallet, boxes);
-		//PolyHedra_Display_Normalized(*Box_Pallet, ViewEntity);
-	}
-	ViewEntity_CollisionSide = ViewEntity.Collide(boxes, frame_time.Delta);
-	if (View_Distance != 0.0f)
-	{
-		PolyHedra_Display_Normalized(*Box_Pallet, ViewEntity);
-	}
-}
 void ContextNoisePlane::ViewEntityUpdate_Done()
 {
 	if (View_Distance == 0.0f)
@@ -787,20 +812,30 @@ void ContextNoisePlane::ViewEntityUpdate_Done()
 		));
 	}
 }
-void ContextNoisePlane::ViewEntityUpdate(Trans3D change, FrameTime frame_time)
+void ContextNoisePlane::ViewEntityUpdate(Trans3D change, const FrameTime & frame_time)
 {
-	if (View_IsTangible)
+	if (ViewEntity != nullptr)
 	{
-		ViewEntityUpdate_Physics(change.Position, frame_time);
+		ViewEntityUpdate_Change(change.Position);
 		View.Trans.Rotation += change.Rotation * frame_time.Delta;
 		View.Trans.Rotation.X1.clampPI();
-		ViewEntityUpdate_Colliding(frame_time);
-		View.Trans.Position = ViewEntity.Pos;
 	}
 	else
 	{
 		ViewEntityUpdate_Intangible(change, frame_time);
 	}
+
+	// View Change should happen before BoxEntitys_Update
+	// but syncronizing View with ViewEntity needs to happen after
+	BoxEntitys_Display_CollisionBoxes = true;
+	BoxEntitys_Update(frame_time);
+	BoxEntitys_Display();
+
+	if (ViewEntity != nullptr)
+	{
+		View.Trans.Position = ViewEntity -> Pos;
+	}
+
 	ViewEntityUpdate_Done();
 }
 
@@ -876,7 +911,7 @@ void ContextNoisePlane::ViewRayUpdate_HitDo()
 
 void ContextNoisePlane::ViewRayUpdate()
 {
-	if (View_IsTangible)
+	if (ViewEntity != nullptr)
 	{
 		ViewRayUpdate_Sync();
 		ViewRayUpdate_Hit();
@@ -888,7 +923,7 @@ void ContextNoisePlane::ViewRayUpdate()
 	}
 }
 
-void ContextNoisePlane::ViewUpdate(Trans3D change, FrameTime frame_time)
+void ContextNoisePlane::ViewUpdate(Trans3D change, const FrameTime & frame_time)
 {
 	StopWatch sw;
 
@@ -908,11 +943,13 @@ void ContextNoisePlane::ViewPosText(std::stringstream & ss)
 	VectorF3 & posF = View.Trans.Position;
 	VectorI3 posI = posF.roundF().ToI();
 	ChunkVoxelIndex idx(posI);
+	VectorU3 & idxV = idx.Voxel;
+	VectorI3 & idxC = idx.Chunk;
 	ss << "View\n";
 	ss << "Float" << '(' << posF.X << '|' << posF.Y << '|' << posF.Z << ')' << '\n';
 	ss << "Index" << '(' << posI.X << '|' << posI.Y << '|' << posI.Z << ')' << '\n';
-	ss << "Voxel" << '[' << idx.Voxel.X << '|' << idx.Voxel.Y << '|' << idx.Voxel.Z << ']' << '\n';
-	ss << "Chunk" << '[' << idx.Chunk.X << '|' << idx.Chunk.Y << '|' << idx.Chunk.Z << ']' << '\n';
+	ss << "Voxel" << '[' << idxV.X << '|' << idxV.Y << '|' << idxV.Z << ']' << '\n';
+	ss << "Chunk" << '[' << idxC.X << '|' << idxC.Y << '|' << idxC.Z << ']' << '\n';
 	ss << '\n';
 }
 void ContextNoisePlane::ViewPosShow()
@@ -922,18 +959,28 @@ void ContextNoisePlane::ViewPosShow()
 void ContextNoisePlane::ViewRayText(std::stringstream & ss)
 {
 	ss << "ViewRay\n";
-	ss << ViewRay_Axis0 << " :RayAxis0\n";
-	ss << ViewRay_Axis1 << " :RayAxis1\n";
-	ss << ViewRay_Axis2 << " :RayAxis2\n";
+
+	ss << ViewRay.Dir.X << ":X\n";
+	ss << ViewRay.Dir.Y << ":Y\n";
+	ss << ViewRay.Dir.Z << ":Z\n";
+
+	ss << ViewRay_Axis0 << ":RayAxis0\n";
+	ss << ViewRay_Axis1 << ":RayAxis1\n";
+	ss << ViewRay_Axis2 << ":RayAxis2\n";
 
 	if (ViewHit.Valid())
 	{
-		ChunkVoxelIndex idx(ViewHit.Index);
-		ss << ViewHit.Index << '\n';
-		ss << idx.Chunk << '\n';
-		ss << idx.Voxel << '\n';
-		ss << ViewHit_Axis0 << " :HitAxis0\n";
-		ss << ViewHit_Axis1 << " :HitAxis1\n";
+		VectorF3 & posF = ViewHit.Position;
+		VectorI3 & posI = ViewHit.Index;
+		ChunkVoxelIndex idx(posI);
+		VectorU3 & idxV = idx.Voxel;
+		VectorI3 & idxC = idx.Chunk;
+		ss << '(' << posF.X << '|' << posF.Y << '|' << posF.Z << ')' << "Float" << '\n';
+		ss << '(' << posI.X << '|' << posI.Y << '|' << posI.Z << ')' << "Index" << '\n';
+		ss << '[' << idxV.X << '|' << idxV.Y << '|' << idxV.Z << ']' << "Voxel" << '\n';
+		ss << '[' << idxC.X << '|' << idxC.Y << '|' << idxC.Z << ']' << "Chunk" << '\n';
+		ss << ViewHit_Axis0 << ":HitAxis0\n";
+		ss << ViewHit_Axis1 << ":HitAxis1\n";
 
 		// Voxel Info
 		{
@@ -1041,11 +1088,6 @@ void ContextNoisePlane::MakeVoxels()
 	// PolyHedras
 	{
 		VoxelPalletMap::StaticMap.MakePolyHedras();
-
-		// these are all Cuboids.
-		// make 1 Cube PolyHedra then scale that
-		ViewEntity_PolyHedra = MakePolyHedraBoxEdges(ViewEntity.Box);
-		PalletManager.Take(ViewEntity_PolyHedra);
 	}
 }
 
@@ -1139,14 +1181,9 @@ void ContextNoisePlane::Init()
 	View.Depth.Color = window.DefaultColor;
 	View.Depth.Factors.SetFar(256.0f);
 	View.Depth.Range.SetMin(0.5f);
-	ViewEntity.Pos = VectorF3(0.5f, 0.5f, 0.5f);
-	ViewEntity.Box = BoxF3(
-		VectorF3(-0.4f, -1.6f, -0.4f),
-		VectorF3(+0.4f, +0.2f, +0.4f)
-	);
+	ViewEntity = nullptr;
 	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
 	View_Distance = 0.0f;
-	View_IsTangible = false;
 	ViewMove_SpeedSlow = 10.0f;
 	ViewMove_SpeedFast = 100.0f;
 	// Target = Accel / Decel
@@ -1327,8 +1364,6 @@ __attribute__((unused)) static void ShowNameTimeLine(std::stringstream & ss, con
 	ShowTime(ss, time.Average()); ss << ' ';
 	ShowTime(ss, time.Max()); ss << '\n';
 }
-
-
 
 static ValueAccumulator<float>		DLTAverageTime(1024);
 static ValueAccumulator<float>		FPSAverageTime(1024);
@@ -1984,6 +2019,18 @@ void ContextNoisePlane::FrameInput()
 		}
 	}
 
+	if (window[Keys::R] == State::Press)
+	{
+		BoxEntity3D * box_entity = new BoxEntity3D();
+		box_entity -> Pos = View.Trans.Position;
+		box_entity -> Box = BoxF3(
+			VectorF3(-0.2f, -0.2f, -0.2f),
+			VectorF3(+0.2f, +0.2f, +0.2f)
+		);
+		box_entity -> Vel = View.Trans.Rotation.forward(VectorF3(0, 0, 1)) * 8.0f;
+		BoxEntitys.Insert(box_entity);
+	}
+
 	//if (window[Keys::D1] == State::Press) { Toggle(ViewRaySync); }
 	//if (window[Keys::D2] == State::Press) { Toggle(ChunkManager.ViewRayPolyHedra, ViewRayPolyHedra); }
 	//if (window[Keys::D3] == State::Press) { Toggle(ChunkManager.VoxelBoxPolyHedra, VoxelCube); }
@@ -2000,7 +2047,33 @@ void ContextNoisePlane::FrameInput()
 		}
 	}
 
-	if (window[Keys::F2] == State::Press) { Toggle(View_IsTangible); }
+	if (window[Keys::F2] == State::Press)
+	{
+		if (ViewEntity != nullptr)
+		{
+			for (unsigned int i = 0; i < BoxEntitys.Count(); i++)
+			{
+				if (BoxEntitys[i] == ViewEntity)
+				{
+					BoxEntitys.RemoveAt(i);
+					break;
+				}
+			}
+			delete ViewEntity;
+			ViewEntity = nullptr;
+		}
+		else
+		{
+			ViewEntity = new BoxEntity3D();
+			ViewEntity -> Pos = View.Trans.Position;
+			ViewEntity -> Box = BoxF3(
+				VectorF3(-0.4f, -1.6f, -0.4f),
+				VectorF3(+0.4f, +0.2f, +0.4f)
+			);
+			ViewEntity -> Vel = VectorF3();
+			BoxEntitys.Insert(ViewEntity);
+		}
+	}
 	if (window[Keys::F3] == State::Press)
 	{
 		if (View_Distance == 0.0f)
@@ -2193,9 +2266,9 @@ void ContextNoisePlane::Resize(DisplaySize display_size)
 
 
 // make these virtual and put them in Base
-void ContextNoisePlane::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
-void ContextNoisePlane::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
-void ContextNoisePlane::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
-void ContextNoisePlane::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
-void ContextNoisePlane::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
-void ContextNoisePlane::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
+void ContextNoisePlane::MouseMove(MoveArgs args)		{ UIManager.MouseMove(args); }
+void ContextNoisePlane::MouseClick(ClickArgs args)		{ UIManager.MouseClick(args); }
+void ContextNoisePlane::MouseScroll(ScrollArgs args)	{ UIManager.MouseScroll(args); }
+void ContextNoisePlane::MouseDrag(DragArgs args)		{ UIManager.MouseDrag(args); }
+void ContextNoisePlane::KeyBoardKey(KeyArgs args)		{ UIManager.KeyBoardKey(args); }
+void ContextNoisePlane::KeyBoardText(TextArgs args)		{ UIManager.KeyBoardText(args); }

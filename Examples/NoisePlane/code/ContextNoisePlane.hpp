@@ -149,10 +149,18 @@ ContextNoisePlane();
 
 
 
+bool	BoxEntitys_Display_CollisionBoxes = false;
+Container::Binary<BoxEntity3D*>		BoxEntitys;
+void	BoxEntity_Collide(BoxEntity3D & box_entity, const FrameTime & frame_time);
+void	BoxEntity_Physics(BoxEntity3D & box_entity);
+void	BoxEntitys_Update(const FrameTime & frame_time);
+void	BoxEntitys_Display();
+
+
+
 View3D	View;
 
 float	View_Distance;
-bool	View_IsTangible;
 
 float	ViewMove_SpeedSlow;
 float	ViewMove_SpeedFast;
@@ -161,9 +169,7 @@ float	ViewMove_AccelSlow;
 float	ViewMove_AccelFast;
 float	ViewMove_Decel;
 
-BoxEntity3D					ViewEntity;
-BoxEntity3D_CollisionSide	ViewEntity_CollisionSide;
-PolyHedra *					ViewEntity_PolyHedra = nullptr;
+BoxEntity3D *	ViewEntity = nullptr;
 
 RayF3			ViewRay;
 Axis3D::Rel		ViewRay_Axis0;
@@ -174,18 +180,17 @@ VoxelHit		ViewHit;
 Axis3D::Rel		ViewHit_Axis0;
 Axis3D::Rel		ViewHit_Axis1;
 
-void	ViewEntityUpdate_Intangible(Trans3D change, FrameTime frame_time);
-void	ViewEntityUpdate_Physics(VectorF3 change, FrameTime frame_time);
-void	ViewEntityUpdate_Colliding(FrameTime frame_time);
+void	ViewEntityUpdate_Intangible(Trans3D change, const FrameTime & frame_time);
+void	ViewEntityUpdate_Change(VectorF3 change);
 void	ViewEntityUpdate_Done();
-void	ViewEntityUpdate(Trans3D change, FrameTime frame_time);
+void	ViewEntityUpdate(Trans3D change, const FrameTime & frame_time);
 
 void	ViewRayUpdate_Sync();
 void	ViewRayUpdate_Hit();
 void	ViewRayUpdate_HitDo();
 void	ViewRayUpdate();
 
-void	ViewUpdate(Trans3D change, FrameTime frame_time);
+void	ViewUpdate(Trans3D change, const FrameTime & frame_time);
 
 void	ViewPosText(std::stringstream & ss);
 void	ViewPosShow();
