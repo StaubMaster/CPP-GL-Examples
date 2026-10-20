@@ -843,3 +843,71 @@ Axis3D::Orientation::SwizzlerF_Ref Axis3D::Orientation::absolute_F_Func() const
 {
 	return *(absolute_F3_SwizzleFunc_Array[Value]);
 }
+
+
+/*
+00 Here  None  : (  0,  0,  0)
+01 Next  None  : (-90,-90,  0)
+02 Prev  None  : (+90,  0,+90)
+03 DiagX None  : (  0,+90,180)
+04 DiagY None  : (180   0 -90)
+05 DiagZ None  : (+90,180,  0)
+08 Here  FlipX : (  0,180,  0)
+09 Next  FlipX : (-90,+90,  0)
+10 Prev  FlipX : (-90,  0,+90)
+11 DiagX FlipX : (180,-90,  0)
+12 DiagY FlipX : (  0,  0,-90)
+13 DiagZ FlipX : (+90,  0,  0)
+16 Here  FlipY : (  0,  0,180)
+17 Next  FlipY : (+90,-90,  0)
+18 Prev  FlipY : (+90,  0,-90)
+19 DiagX FlipY : (  0,+90,  0)
+20 DiagY FlipY : (  0,180,-90)
+21 DiagZ FlipY : (-90,  0,  0)
+24 Here  FlipZ : (180,  0,  0)
+25 Next  FlipZ : (  0,+90,-90)
+26 Prev  FlipZ : (-90,  0,-90)
+27 DiagX FlipZ : (  0,-90,  0)
+28 DiagY FlipZ : (  0,  0,+90)
+29 DiagZ FlipZ : (+90,  0,180)
+*/
+// there might be other angles that result in the same outcome
+#include "ValueType/EulerAngle3D.hpp"
+EulerAngle3D ToAngle_Array[32] = {
+	EulerAngle3D::Degrees(  0,  0,  0),
+	EulerAngle3D::Degrees(-90,-90,  0),
+	EulerAngle3D::Degrees(+90,  0,+90),
+	EulerAngle3D::Degrees(  0,+90,180),
+	EulerAngle3D::Degrees(180,  0,-90),
+	EulerAngle3D::Degrees(+90,180,  0),
+	EulerAngle3D(),
+	EulerAngle3D(),
+	EulerAngle3D::Degrees(  0,180,  0),
+	EulerAngle3D::Degrees(-90,+90,  0),
+	EulerAngle3D::Degrees(-90,  0,+90),
+	EulerAngle3D::Degrees(180,-90,  0),
+	EulerAngle3D::Degrees(  0,  0,-90),
+	EulerAngle3D::Degrees(+90,  0,  0),
+	EulerAngle3D(),
+	EulerAngle3D(),
+	EulerAngle3D::Degrees(  0,  0,180),
+	EulerAngle3D::Degrees(+90,-90,  0),
+	EulerAngle3D::Degrees(+90,  0,-90),
+	EulerAngle3D::Degrees(  0,+90,  0),
+	EulerAngle3D::Degrees(  0,180,-90),
+	EulerAngle3D::Degrees(-90,  0,  0),
+	EulerAngle3D(),
+	EulerAngle3D(),
+	EulerAngle3D::Degrees(180,  0,  0),
+	EulerAngle3D::Degrees(  0,+90,-90),
+	EulerAngle3D::Degrees(-90,  0,-90),
+	EulerAngle3D::Degrees(  0,-90,  0),
+	EulerAngle3D::Degrees(  0,  0,+90),
+	EulerAngle3D::Degrees(+90,  0,180),
+	EulerAngle3D(),
+	EulerAngle3D(),
+};
+EulerAngle3D Axis3D::Orientation::ToAngle() const
+{
+	return ToAngle_Array[Value];
+}

@@ -230,8 +230,38 @@ void	GraphicsDraw();
 
 
 
+/*
+	there is the Item in the Hotbar
+	there is the Item in the Cursor
+	make only one (like in factorio)
+
+	if you take an item in the inventory
+	the slot where that item comes from stays reserved
+	for that item in the cursor
+	if cursor is removed from the item is returned to that slot
+
+	if no item is in the cursor
+	use selected item from the hotbar
+
+	hotbar item should also be able to be unselected
+	so you hold nothing
+
+	ItemToUse
+	if (CursorItem != null)
+		ItemToUse = CursorItem
+	else if (HotBarItem != null)
+		ItemToUse = HotBarItem
+	eles
+		ItemToUse = null
+
+	how to show which item is being used in inventory ?
+
+*/
+void	DisplayItemToUse(ItemBase * item_base);
+void	DisplayCursorItem();
+void	DisplayItems(FrameTime frame_time);
+
 void	FrameText(FrameTime frame_time);
-void	InventoryCursor(FrameTime frame_time);
 void	FrameInput();
 
 void	Frame(FrameTime frame_time) override;

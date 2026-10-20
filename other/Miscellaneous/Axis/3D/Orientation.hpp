@@ -5,6 +5,7 @@
 
 struct VectorF3;
 struct VectorU3;
+struct EulerAngle3D;
 
 namespace Axis3D
 {
@@ -55,6 +56,8 @@ struct Orientation
 	typedef VectorF3 (*SwizzlerF_Ptr)(const VectorF3 &);
 	typedef VectorF3 (&SwizzlerF_Ref)(const VectorF3 &);
 	SwizzlerF_Ref	absolute_F_Func() const;
+
+	EulerAngle3D	ToAngle() const;
 };
 };
 

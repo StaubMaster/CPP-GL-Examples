@@ -1527,6 +1527,87 @@ struct ChunkGraphicsInfo
 	}
 };
 
+void ContextNoisePlane::DisplayItemToUse(ItemBase * item_base)
+{
+	if (item_base != nullptr)
+	{
+		NewPolyHedra::UserInterface::Object obj;
+		{
+			ItemVoxel * item_voxel = dynamic_cast<ItemVoxel*>(item_base);
+			if (item_voxel != nullptr)
+			{
+				obj.Create(item_voxel -> VoxelPallet -> PolyHedra);
+				Voxel voxel = item_voxel -> VoxelPallet -> ToVoxel(ViewHit_Axis0, ViewHit_Axis1);
+				EulerAngle3D rot = voxel.Orientation.ToAngle();
+				obj.Data().Rot = rot.forward(View.Trans.Rotation.reverse());
+				if (ViewHit.Valid())
+				{
+					VectorF3 pos = ViewHit.Index.ToF() + 0.5f + ViewHit.Normal;
+					NewPolyHedra::Basic3D::Object obj(item_voxel -> VoxelPallet -> PolyHedra);
+					obj.Data().Trans.Position = pos;
+					obj.Data().Trans.Rotation = rot;
+				}
+			}
+		}
+		{
+			ItemTool * item_tool = dynamic_cast<ItemTool*>(item_base);
+			if (item_tool != nullptr)
+			{
+				obj.Create(item_tool -> Pallet);
+				obj.Data().Scale = 0.25f;
+			}
+		}
+		if (obj.Is())
+		{
+			obj.Data().Size = VectorF2(240, 240);
+			obj.Data().Pos = VectorF2(window.Size.Buffer.Full.X - 120, window.Size.Buffer.Full.Y - 120);
+		}
+	}
+}
+void ContextNoisePlane::DisplayCursorItem()
+{
+	ItemBase * item_base = ItemSlotUI::StaticItem;
+	if (item_base != nullptr)
+	{
+		NewPolyHedra::UserInterface::Object obj;
+		{
+			ItemVoxel * item_voxel = dynamic_cast<ItemVoxel*>(item_base);
+			if (item_voxel != nullptr)
+			{
+				obj.Create(item_voxel -> VoxelPallet -> PolyHedra);
+			}
+		}
+		{
+			ItemTool * item_tool = dynamic_cast<ItemTool*>(item_base);
+			if (item_tool != nullptr)
+			{
+				obj.Create(item_tool -> Pallet);
+				obj.Data().Scale = 0.25f;
+			}
+		}
+		if (obj.Is())
+		{
+			obj.Data().Size = VectorF2(40, 40);
+			obj.Data().Pos = window.MouseManager.CursorPosition().Buffer.Corner;
+			//obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
+			obj.Data().Rot = EulerAngle3D::Degrees(0, 30, 45).reverse();
+		}
+	}
+}
+void ContextNoisePlane::DisplayItems(FrameTime frame_time)
+{
+	StopWatch sw;
+	sw.Start();
+
+	DisplayItemToUse(HotBar.Items[VectorU2(0, 0)]);
+	DisplayCursorItem();
+
+	sw.Stop();
+	InventoryCursorTime.NewValue(sw.ElapsedTime());
+
+	(void)frame_time;
+}
+
 #include "Graph/ObjectData.hpp"
 void ContextNoisePlane::FrameText(FrameTime frame_time)
 {
@@ -1765,7 +1846,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 	sw.Stop(); TextTime_ChunkRange.NewValue(sw.ElapsedTime());
 
 	// Queues
-	{
+	/*{
 		ssL << "Queues:\n";
 
 		ssL << "BufferData Have " << ChunkManager.Graphics.Queue.Count() << '\n';
@@ -1778,7 +1859,7 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		ssL << "Assamble Candidates " << AuxThreadCollection.AuxThread3.FindCandidateCount << '\n';
 
 		ssL << '\n';
-	}
+	}*/
 
 	// VoxelChunkMemory
 	sw.Clear(); sw.Start();
@@ -1863,92 +1944,6 @@ void ContextNoisePlane::FrameText(FrameTime frame_time)
 		text.Bound().Min = VectorF2();
 		text.Bound().Max = window.Size.Buffer.Full;
 	}
-}
-void ContextNoisePlane::InventoryCursor(FrameTime frame_time)
-{
-	StopWatch sw;
-	sw.Start();
-
-	static float time_sum = 0.0f;
-
-	ItemBase * item_base = HotBar.Items[VectorU2(0, 0)];
-	if (item_base != nullptr)
-	{
-		NewPolyHedra::UserInterface::Object obj;
-		{
-			ItemVoxel * item = dynamic_cast<ItemVoxel*>(item_base);
-			if (item != nullptr)
-			{
-				obj.Create(item -> VoxelPallet -> PolyHedra);
-				Voxel voxel = item_voxel -> VoxelPallet -> ToVoxel(ViewHit_Axis0, ViewHit_Axis1);
-				//voxel.Orientation
-				EulerAngle3D rot;
-				// Find Voxel Orientation this would cause
-				// Convert Orientation to EulerAngle3D
-				/* how to figure these out ?
-					dont what to recompile everytime i want to try something out
-					make an array like swizzles
-					index Orientation into that array
-					load array from a file
-					so 32 lines of 3 ints each
-					parse lines to EulerAngles
-				*/
-				obj.Data().Rot = rot.forward(View.Trans.Rotation.reverse());
-
-				if (ViewHit.Valid())
-				{
-					VectorF3 pos = ViewHit.Index.ToF() + 0.5f + ViewHit.Normal;
-					NewPolyHedra::Basic3D::Object obj(item -> VoxelPallet -> PolyHedra);
-					obj.Data().Trans.Position = pos;
-				}
-			}
-		}
-		{
-			ItemTool * item = dynamic_cast<ItemTool*>(item_base);
-			if (item != nullptr)
-			{
-				obj.Create(item -> Pallet);
-				obj.Data().Scale = 0.25f;
-			}
-		}
-		if (obj.Is())
-		{
-			obj.Data().Size = VectorF2(240, 240);
-			obj.Data().Pos = VectorF2(window.Size.Buffer.Full.X - 120, window.Size.Buffer.Full.Y - 120);
-			//obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
-		}
-	}
-
-	if (ItemSlotUI::StaticItem != nullptr)
-	{
-		NewPolyHedra::UserInterface::Object obj;
-		{
-			ItemVoxel * item = dynamic_cast<ItemVoxel*>(ItemSlotUI::StaticItem);
-			if (item != nullptr)
-			{
-				obj.Create(item -> VoxelPallet -> PolyHedra);
-			}
-		}
-		{
-			ItemTool * item = dynamic_cast<ItemTool*>(ItemSlotUI::StaticItem);
-			if (item != nullptr)
-			{
-				obj.Create(item -> Pallet);
-				obj.Data().Scale = 0.25f;
-			}
-		}
-		if (obj.Is())
-		{
-			obj.Data().Size = VectorF2(40, 40);
-			obj.Data().Pos = window.MouseManager.CursorPosition().Buffer.Corner;
-			obj.Data().Rot = EulerAngle3D::Degrees(0, 30, time_sum * 45).reverse();
-		}
-	}
-
-	time_sum += frame_time.Delta;
-
-	sw.Stop();
-	InventoryCursorTime.NewValue(sw.ElapsedTime());
 }
 // !!!! F12 is used by gdb to cause a BreakPoint. dont use it as input
 void ContextNoisePlane::FrameInput()
@@ -2101,7 +2096,7 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	FrameText(frame_time);
 	sw.Stop(); FrameTime_Text.NewValue(sw.ElapsedTime());
 
-	InventoryCursor(frame_time);
+	DisplayItems(frame_time);
 
 	ViewPosShow();
 	ViewRayShow();
