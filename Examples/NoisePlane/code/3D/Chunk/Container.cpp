@@ -460,3 +460,32 @@ VoxelHit ChunkContainer::HitVoxel(RayF3 ray)
 
 	return hit;
 }
+
+
+
+#include "3D/ChunkVoxelIndex.hpp"
+#include "ValueType/Box/F3.hpp"
+Container::Array<BoxF3> ChunkContainer::CollisionBoxes(const BoxI3 & range)
+{
+	Container::Binary<BoxF3> boxes;
+
+	LoopI3 loop(range, Bool3(false), Bool3(false));
+	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
+	{
+		ChunkVoxelIndex idx(i);
+		AccessLockedChunk chunk = FindAbsoluteAccess(idx.Chunk);
+		if (!chunk.Is()) { continue; }
+		if (!(*chunk).IsDone()) { continue; }
+		if ((*chunk).IsEmpty()) { continue; }
+		const Voxel & voxel = (*chunk)[idx.Voxel];
+		if (voxel.IsEmpty()) { continue; }
+		boxes.Insert(
+			BoxF3(
+				(i + VectorI3(0, 0, 0)).ToF(),
+				(i + VectorI3(1, 1, 1)).ToF()
+			)
+		);
+	}
+
+	return boxes.ToArray();
+}

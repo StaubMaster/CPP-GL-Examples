@@ -43,7 +43,9 @@
 
 #include "3D/Structure.hpp"
 
+// BoxEntity
 #include "BoxEntity3D.hpp"
+#include "BoxEntityManager.hpp"
 
 // Menus
 #include "Menus/Main.hpp"
@@ -125,6 +127,8 @@ Item Indicator
 ::ItemContainer		HotBar;
 ::ItemContainerUI	HotBarUI;
 
+VectorU2	HotBarIndex;
+
 void	MakeControls();
 
 
@@ -139,22 +143,18 @@ Physics::SurfaceContext		PhysicsContext_Surface;
 
 
 
-PolyHedra *				Box_PolyHedra = nullptr;
-NewPolyHedra::Pallet *	Box_Pallet = nullptr;
-
-
-
 ~ContextNoisePlane();
 ContextNoisePlane();
 
 
 
-bool	BoxEntitys_Display_CollisionBoxes = false;
-Container::Binary<BoxEntity3D*>		BoxEntitys;
-void	BoxEntity_Collide(BoxEntity3D & box_entity, const FrameTime & frame_time);
-void	BoxEntity_Physics(BoxEntity3D & box_entity);
-void	BoxEntitys_Update(const FrameTime & frame_time);
-void	BoxEntitys_Display();
+BoxEntityManager	BoxEntitys;
+//bool	BoxEntitys_Display_CollisionBoxes = false;
+//Container::Binary<BoxEntity3D*>		BoxEntitys;
+//void	BoxEntity_Collide(BoxEntity3D & box_entity, const FrameTime & frame_time);
+//void	BoxEntity_Physics(BoxEntity3D & box_entity);
+//void	BoxEntitys_Update(const FrameTime & frame_time);
+//void	BoxEntitys_Display();
 
 
 
@@ -180,8 +180,7 @@ VoxelHit		ViewHit;
 Axis3D::Rel		ViewHit_Axis0;
 Axis3D::Rel		ViewHit_Axis1;
 
-void	ViewEntityUpdate_Intangible(Trans3D change, const FrameTime & frame_time);
-void	ViewEntityUpdate_Change(VectorF3 change);
+void	ViewEntityUpdate_Change(Trans3D change, const FrameTime & frame_time);
 void	ViewEntityUpdate_Done();
 void	ViewEntityUpdate(Trans3D change, const FrameTime & frame_time);
 
@@ -262,7 +261,7 @@ void	GraphicsDraw();
 	how to show which item is being used in inventory ?
 
 */
-void	DisplayItemToUse(ItemBase * item_base);
+void	DisplayItemToUse(const ItemBase * item_base);
 void	DisplayCursorItem();
 void	DisplayItems(FrameTime frame_time);
 

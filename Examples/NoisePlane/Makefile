@@ -43,6 +43,7 @@ FILES := \
 	AuxThread/Collection.cpp \
 \
 	BoxEntity3D.cpp \
+	BoxEntityManager.cpp \
 \
 	Menus/Main.cpp \
 	Menus/Pause.cpp \
@@ -65,6 +66,10 @@ FILES := \
 	NewPolyHedra/Init/Pallet.cpp \
 	NewPolyHedra/Init/Basic3D.cpp \
 	NewPolyHedra/Init/TransScaleColor3D.cpp \
+\
+	DisplayHelp/Normalized.cpp \
+\
+	VoxelCollision.cpp \
 \
 	ContextNoisePlane.cpp \
 	VoxelClear.cpp \

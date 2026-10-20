@@ -69,114 +69,11 @@
 // ValueType
 #include "ValueType/_Include.hpp"
 
+// DisplayHelp
+#include "DisplayHelp/Normalized.hpp"
 
-
-__attribute__((unused)) static PolyHedra * MakePolyHedraBoxEdges(BoxF3 box)
-{
-	PolyHedra * polyhedra = new PolyHedra();
-
-	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Min.Y, box.Min.Z))); // 000
-	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Min.Y, box.Min.Z))); // 001
-	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Max.Y, box.Min.Z))); // 010
-	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Max.Y, box.Min.Z))); // 011
-	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Min.Y, box.Max.Z))); // 100
-	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Min.Y, box.Max.Z))); // 101
-	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Min.X, box.Max.Y, box.Max.Z))); // 110
-	polyhedra -> Corners.Insert(PolyHedra::Corner(VectorF3(box.Max.X, box.Max.Y, box.Max.Z))); // 111
-
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b000, 0b001));
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b010, 0b011));
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b100, 0b101));
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b110, 0b111));
-
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b000, 0b010));
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b001, 0b011));
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b100, 0b110));
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b101, 0b111));
-
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b000, 0b100));
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b001, 0b101));
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b010, 0b110));
-	polyhedra -> Edges.Insert(PolyHedra::Edge(0b011, 0b111));
-
-	return polyhedra;
-}
-
-__attribute__((unused)) static void PolyHedra_Display_Normalized(NewPolyHedra::Pallet & pallet, const BoxF3 & box)
-{
-	TransScaleColor3D::Object obj(&pallet);
-	obj.Data().Trans.Position = box.Center();
-	obj.Data().Scale = box.Size() * 0.5f;
-	obj.Data().Color = ColorF4(1, 1, 1);
-	obj.HideFull(); obj.ShowWire();
-}
-__attribute__((unused)) static void PolyHedra_Display_Normalized(NewPolyHedra::Pallet & pallet, const BoxEntity3D & box_entity)
-{
-	VectorF3 pos = box_entity.Pos;
-	VectorF3 size = box_entity.Box.Size() * 0.5f;
-	VectorF3 center = box_entity.Box.Center();
-
-	/*{
-		{
-			TransScaleColor3D::Object obj(&pallet);
-			obj.Data().Trans.Position = pos + VectorF3(0, center.Y, center.Z);
-			obj.Data().Scale = VectorF3(0, size.Y, size.Z);
-			obj.Data().Color = ColorF4(1, 0, 0);
-			obj.HideFull(); obj.ShowWire();
-		}
-		{
-			TransScaleColor3D::Object obj(&pallet);
-			obj.Data().Trans.Position = pos + VectorF3(center.X, 0, center.Z);
-			obj.Data().Scale = VectorF3(size.X, 0, size.Z);
-			obj.Data().Color = ColorF4(0, 1, 0);
-			obj.HideFull(); obj.ShowWire();
-		}
-		{
-			TransScaleColor3D::Object obj(&pallet);
-			obj.Data().Trans.Position = pos + VectorF3(center.X, center.Y, 0);
-			obj.Data().Scale = VectorF3(size.X, size.Y, 0);
-			obj.Data().Color = ColorF4(0, 0, 1);
-			obj.HideFull(); obj.ShowWire();
-		}
-	}*/
-
-	{
-		{
-			TransScaleColor3D::Object obj(&pallet);
-			obj.Data().Trans.Position = pos + VectorF3(center.X, 0, 0);
-			obj.Data().Scale = VectorF3(size.X, 0, 0);
-			obj.Data().Color = ColorF4(1, 0, 0);
-			obj.HideFull(); obj.ShowWire();
-		}
-		{
-			TransScaleColor3D::Object obj(&pallet);
-			obj.Data().Trans.Position = pos + VectorF3(0, center.Y, 0);
-			obj.Data().Scale = VectorF3(0, size.Y, 0);
-			obj.Data().Color = ColorF4(0, 1, 0);
-			obj.HideFull(); obj.ShowWire();
-		}
-		{
-			TransScaleColor3D::Object obj(&pallet);
-			obj.Data().Trans.Position = pos + VectorF3(0, 0, center.Z);
-			obj.Data().Scale = VectorF3(0, 0, size.Z);
-			obj.Data().Color = ColorF4(0, 0, 1);
-			obj.HideFull(); obj.ShowWire();
-		}
-	}
-
-	PolyHedra_Display_Normalized(pallet, box_entity.Box + box_entity.Pos);
-}
-__attribute__((unused)) static void PolyHedra_Display_Normalized(NewPolyHedra::Pallet & pallet, const Container::Array<BoxF3> & boxes)
-{
-	for (unsigned int i = 0; i < boxes.Length(); i++)
-	{
-		PolyHedra_Display_Normalized(pallet, boxes[i]);
-		/*NewPolyHedra::Basic3D::Object voxel_obj(pallet);
-		voxel_obj.Data().Trans.Position = boxes[i].Min;
-		voxel_obj.HideFull();
-		voxel_obj.ShowWire();*/
-	}
-}
+// other
+#include "VoxelCollision.hpp"
 
 __attribute__((unused)) static void Toggle(bool & value)
 {
@@ -327,45 +224,6 @@ __attribute__((unused)) static void RankAxis(const VectorF3 & vec, Axis3D::Rel &
 	if (YvsX && ZvsX) { axis2 = axisX; }
 	if (ZvsY && XvsY) { axis2 = axisY; }
 	if (XvsZ && YvsZ) { axis2 = axisZ; }
-}
-
-__attribute__((unused)) static BoxF3 BoxEntity_RangeF(const BoxEntity3D & box_entity, const FrameTime & frame_time)
-{
-	BoxF3 range = box_entity.Box + box_entity.Pos;
-	range.Consider(box_entity.Box.Min + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
-	range.Consider(box_entity.Box.Max + box_entity.Pos + (box_entity.Vel * frame_time.Delta));
-	return range;
-}
-__attribute__((unused)) static BoxI3 BoxEntity_RangeI(const BoxEntity3D & box_entity, const FrameTime & frame_time)
-{
-	BoxF3 range = BoxEntity_RangeF(box_entity, frame_time);
-	range = range - VectorF3(0.5f);
-	return BoxI3(range.Min.round().ToI(), range.Max.round().ToI());
-}
-
-__attribute__((unused)) static Container::Array<BoxF3> Voxels_Boxes_Collect(ChunkContainer & container, const BoxI3 & range)
-{
-	Container::Binary<BoxF3> boxes;
-
-	LoopI3 loop(range, Bool3(false), Bool3(false));
-	for (VectorI3 i = loop.Min(); loop.Check(i).All(true); loop.Next(i))
-	{
-		ChunkVoxelIndex idx(i);
-		AccessLockedChunk chunk = container.FindAbsoluteAccess(idx.Chunk);
-		if (!chunk.Is()) { continue; }
-		if (!(*chunk).IsDone()) { continue; }
-		if ((*chunk).IsEmpty()) { continue; }
-		const Voxel & voxel = (*chunk)[idx.Voxel];
-		if (voxel.IsEmpty()) { continue; }
-		boxes.Insert(
-			BoxF3(
-				(i + VectorI3(0, 0, 0)).ToF(),
-				(i + VectorI3(1, 1, 1)).ToF()
-			)
-		);
-	}
-
-	return boxes.ToArray();
 }
 
 __attribute__((unused)) static void VectorComponents(const VectorF3 & vec, const VectorF3 & other, VectorF3 & parallel, VectorF3 & perpendicular)
@@ -550,8 +408,8 @@ ContextNoisePlane::ContextNoisePlane()
 	MediaDirectory = DirectoryInfo("../../media/");
 	IdleLoopThread::ThreadName = "DrawThread";
 
-	Box_PolyHedra = PolyHedraGenerate::RegularHexaHedron();
-	Box_Pallet = PalletManager.Take(Box_PolyHedra);
+	DisplayHelp::Box_PolyHedra = PolyHedraGenerate::RegularHexaHedron();
+	DisplayHelp::Box_Pallet = PalletManager.Take(DisplayHelp::Box_PolyHedra);
 
 	PhysicsContext_Gravity.Acceleration = 0.5f;
 
@@ -567,99 +425,61 @@ ContextNoisePlane::ContextNoisePlane()
 
 
 
-void ContextNoisePlane::BoxEntity_Collide(BoxEntity3D & box_entity, const FrameTime & frame_time)
+void ContextNoisePlane::ViewEntityUpdate_Change(Trans3D change, const FrameTime & frame_time)
 {
-	BoxI3 range = BoxEntity_RangeI(box_entity, frame_time);
-	Container::Array<BoxF3> boxes = Voxels_Boxes_Collect(ChunkManager.Container, range);
-	if (BoxEntitys_Display_CollisionBoxes)
+	if (ViewEntity != nullptr)
 	{
-		PolyHedra_Display_Normalized(*Box_Pallet, boxes);
-	}
-	box_entity.Collide(boxes, frame_time.Delta);
-}
-void ContextNoisePlane::BoxEntity_Physics(BoxEntity3D & box_entity)
-{
-	box_entity.Vel += PhysicsContext_Gravity.Vector();
-}
-void ContextNoisePlane::BoxEntitys_Update(const FrameTime & frame_time)
-{
-	for (unsigned int i = 0; i < BoxEntitys.Count(); i++)
-	{
-		BoxEntity3D * obj = BoxEntitys[i];
-		if (obj != nullptr)
+		BoxEntity3D & box_entity = *ViewEntity;
+
+		float accel_factor = 0.0f;
+		if (window[Keys::LeftControl] == State::Down)
 		{
-			BoxEntity_Physics(*obj);
-			BoxEntity_Collide(*obj, frame_time);
+			accel_factor = ViewMove_AccelFast;
 		}
-	}
-}
-void ContextNoisePlane::BoxEntitys_Display()
-{
-	for (unsigned int i = 0; i < BoxEntitys.Count(); i++)
-	{
-		BoxEntity3D * obj = BoxEntitys[i];
-		if (obj != nullptr)
+		else
 		{
-			PolyHedra_Display_Normalized(*Box_Pallet, *obj);
+			accel_factor = ViewMove_AccelSlow;
 		}
-	}
-}
+		float decel_factor = ViewMove_Decel;
 
+		VectorF2 change_hori(change.Position.X, change.Position.Z);
+		float change_vert = change.Position.Y;
 
+		VectorF3 jump;
+		if (ViewEntity -> CollisionSide.PrevY)
+		{
+			if (change_vert > 0.0f)
+			{
+				//jump.Y = 16.0f;
+				jump.Y = 10.0f;
+			}
+		}
 
-void ContextNoisePlane::ViewEntityUpdate_Intangible(Trans3D change, const FrameTime & frame_time)
-{
-	float speed = 0.0f;
-	if (window[Keys::LeftControl] == State::Down)
-	{
-		speed = ViewMove_SpeedFast;
+		VectorF3 accel = VectorF3(change_hori.X, 0.0f, change_hori.Y);
+		VectorF3 decel = VectorF3(box_entity.Vel.X, 0.0f, box_entity.Vel.Z);
+
+		accel *= accel_factor;
+		decel *= decel_factor;
+
+		box_entity.Vel = box_entity.Vel + accel - decel + jump;
 	}
 	else
 	{
-		speed = ViewMove_SpeedSlow;
-	}
-	change.Position *= speed;
+		float speed = 0.0f;
+		if (window[Keys::LeftControl] == State::Down)
+		{
+			speed = ViewMove_SpeedFast;
+		}
+		else
+		{
+			speed = ViewMove_SpeedSlow;
+		}
+		change.Position *= speed;
 
-	View.Trans.Position += change.Position * frame_time.Delta;
+		View.Trans.Position += change.Position * frame_time.Delta;
+	}
 	View.Trans.Rotation += change.Rotation * frame_time.Delta;
 	View.Trans.Rotation.X1.clampPI();
-}
-void ContextNoisePlane::ViewEntityUpdate_Change(VectorF3 change)
-{
-	if (ViewEntity == nullptr) { return; }
-	BoxEntity3D & box_entity = *ViewEntity;
-
-	float accel_factor = 0.0f;
-	if (window[Keys::LeftControl] == State::Down)
-	{
-		accel_factor = ViewMove_AccelFast;
-	}
-	else
-	{
-		accel_factor = ViewMove_AccelSlow;
-	}
-	float decel_factor = ViewMove_Decel;
-
-	VectorF2 change_hori(change.X, change.Z);
-	float change_vert = change.Y;
-
-	VectorF3 jump;
-	if (ViewEntity -> CollisionSide.PrevY)
-	{
-		if (change_vert > 0.0f)
-		{
-			//jump.Y = 16.0f;
-			jump.Y = 10.0f;
-		}
-	}
-
-	VectorF3 accel = VectorF3(change_hori.X, 0.0f, change_hori.Y);
-	VectorF3 decel = VectorF3(box_entity.Vel.X, 0.0f, box_entity.Vel.Z);
-
-	accel *= accel_factor;
-	decel *= decel_factor;
-
-	box_entity.Vel = box_entity.Vel + accel - decel + jump;
 }
 /*void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change)
 {
@@ -814,22 +634,12 @@ void ContextNoisePlane::ViewEntityUpdate_Done()
 }
 void ContextNoisePlane::ViewEntityUpdate(Trans3D change, const FrameTime & frame_time)
 {
-	if (ViewEntity != nullptr)
-	{
-		ViewEntityUpdate_Change(change.Position);
-		View.Trans.Rotation += change.Rotation * frame_time.Delta;
-		View.Trans.Rotation.X1.clampPI();
-	}
-	else
-	{
-		ViewEntityUpdate_Intangible(change, frame_time);
-	}
+	ViewEntityUpdate_Change(change, frame_time);
 
-	// View Change should happen before BoxEntitys_Update
-	// but syncronizing View with ViewEntity needs to happen after
-	BoxEntitys_Display_CollisionBoxes = true;
-	BoxEntitys_Update(frame_time);
-	BoxEntitys_Display();
+	BoxEntitys.Physics(PhysicsContext_Gravity);
+	VoxelCollision_DisplayBoxes = true;
+	VoxelCollision(frame_time, ChunkManager.Container, BoxEntitys);
+	BoxEntitys.Display();
 
 	if (ViewEntity != nullptr)
 	{
@@ -863,7 +673,7 @@ void ContextNoisePlane::ViewRayUpdate_HitDo()
 {
 	if (MenuPause.IsInteractible() || MenuOptions.IsInteractible() || InventoryUI.IsInteractible()) { return; }
 
-	const ItemBase * item = HotBar.Items[VectorU2(0, 0)];
+	const ItemBase * item = HotBar.Items[HotBarIndex];
 	const ItemTool * item_tool = dynamic_cast<const ItemTool *>(item);
 	const ItemVoxel * item_voxel = dynamic_cast<const ItemVoxel *>(item);
 
@@ -1017,7 +827,7 @@ void ContextNoisePlane::ViewRayShow()
 		BoxF3 box;
 		box.Min = ViewHit.Index.ToF();
 		box.Max = box.Min + VectorF3(1.0f);
-		PolyHedra_Display_Normalized(*Box_Pallet, box);
+		DisplayHelp::Normalized(box);
 	}
 }
 
@@ -1562,13 +1372,13 @@ struct ChunkGraphicsInfo
 	}
 };
 
-void ContextNoisePlane::DisplayItemToUse(ItemBase * item_base)
+void ContextNoisePlane::DisplayItemToUse(const ItemBase * item_base)
 {
 	if (item_base != nullptr)
 	{
 		NewPolyHedra::UserInterface::Object obj;
 		{
-			ItemVoxel * item_voxel = dynamic_cast<ItemVoxel*>(item_base);
+			const ItemVoxel * item_voxel = dynamic_cast<const ItemVoxel *>(item_base);
 			if (item_voxel != nullptr)
 			{
 				obj.Create(item_voxel -> VoxelPallet -> PolyHedra);
@@ -1585,7 +1395,7 @@ void ContextNoisePlane::DisplayItemToUse(ItemBase * item_base)
 			}
 		}
 		{
-			ItemTool * item_tool = dynamic_cast<ItemTool*>(item_base);
+			const ItemTool * item_tool = dynamic_cast<const ItemTool *>(item_base);
 			if (item_tool != nullptr)
 			{
 				obj.Create(item_tool -> Pallet);
@@ -1634,7 +1444,7 @@ void ContextNoisePlane::DisplayItems(FrameTime frame_time)
 	StopWatch sw;
 	sw.Start();
 
-	DisplayItemToUse(HotBar.Items[VectorU2(0, 0)]);
+	DisplayItemToUse(HotBar.Items[HotBarIndex]);
 	DisplayCursorItem();
 
 	sw.Stop();
@@ -2028,7 +1838,7 @@ void ContextNoisePlane::FrameInput()
 			VectorF3(+0.2f, +0.2f, +0.2f)
 		);
 		box_entity -> Vel = View.Trans.Rotation.forward(VectorF3(0, 0, 1)) * 8.0f;
-		BoxEntitys.Insert(box_entity);
+		BoxEntitys.BoxEntitys.Insert(box_entity);
 	}
 
 	//if (window[Keys::D1] == State::Press) { Toggle(ViewRaySync); }
@@ -2051,11 +1861,11 @@ void ContextNoisePlane::FrameInput()
 	{
 		if (ViewEntity != nullptr)
 		{
-			for (unsigned int i = 0; i < BoxEntitys.Count(); i++)
+			for (unsigned int i = 0; i < BoxEntitys.BoxEntitys.Count(); i++)
 			{
-				if (BoxEntitys[i] == ViewEntity)
+				if (BoxEntitys.BoxEntitys[i] == ViewEntity)
 				{
-					BoxEntitys.RemoveAt(i);
+					BoxEntitys.BoxEntitys.RemoveAt(i);
 					break;
 				}
 			}
@@ -2071,7 +1881,7 @@ void ContextNoisePlane::FrameInput()
 				VectorF3(+0.4f, +0.2f, +0.4f)
 			);
 			ViewEntity -> Vel = VectorF3();
-			BoxEntitys.Insert(ViewEntity);
+			BoxEntitys.BoxEntitys.Insert(ViewEntity);
 		}
 	}
 	if (window[Keys::F3] == State::Press)
@@ -2182,7 +1992,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (MenuDebug.ChunkHere.Check.IsChecked())
 	{
-		TransScaleColor3D::DisplayObject & graphics = (TransScaleColor3D::DisplayObject&)ObjectManagerTSC.DisplayType.Take(*Box_Pallet);
+		// put in DisplayHelp
+		TransScaleColor3D::DisplayObject & graphics = (TransScaleColor3D::DisplayObject&)ObjectManagerTSC.DisplayType.Take(*DisplayHelp::Box_Pallet);
 
 		ChunkVoxelIndex idx(View.Trans.Position.roundF().ToI());
 
@@ -2224,7 +2035,8 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 	sw.Clear(); sw.Start();
 	if (MenuDebug.VoxelChunkBoxes.Check.IsChecked())
 	{
-		TransScaleColor3D::DisplayObject & graphics = (TransScaleColor3D::DisplayObject&)ObjectManagerTSC.DisplayType.Take(*Box_Pallet);
+		// put in DisplayHelp
+		TransScaleColor3D::DisplayObject & graphics = (TransScaleColor3D::DisplayObject&)ObjectManagerTSC.DisplayType.Take(*DisplayHelp::Box_Pallet);
 
 		for (unsigned int i = 0; i < ChunkManager.Container.Chunks.Length(); i++)
 		{

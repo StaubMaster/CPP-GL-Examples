@@ -44,6 +44,7 @@ struct BoxEntity3D_CollisionSide // could be compressed into a Byte
 	void	Consider(const BoxEntity3D_CollisionSide & other);
 };
 
+struct FrameTime;
 struct BoxEntity3D
 {
 	BoxF3			Box;
@@ -60,6 +61,9 @@ struct BoxEntity3D
 
 	BoxEntity3D_CollisionSide	CollisionSide;
 	void	Collide(const Container::Array<BoxF3> & boxes, float time_limit);
+
+	BoxF3	RangeF(const FrameTime & frame_time) const;
+	BoxI3	RangeI(const FrameTime & frame_time) const;
 };
 
 #endif

@@ -214,3 +214,21 @@ void BoxEntity3D::Collide(const Container::Array<BoxF3> & boxes, float time_limi
 		Pos += Vel * time_limit;
 	}
 }
+
+
+
+#include "FrameTime.hpp"
+#include "ValueType/Box/I3.hpp"
+BoxF3 BoxEntity3D::RangeF(const FrameTime & frame_time) const
+{
+	BoxF3 range = Box + Pos;
+	range.Consider(Box.Min + Pos + (Vel * frame_time.Delta));
+	range.Consider(Box.Max + Pos + (Vel * frame_time.Delta));
+	return range;
+}
+BoxI3 BoxEntity3D::RangeI(const FrameTime & frame_time) const
+{
+	BoxF3 range = RangeF(frame_time);
+	range = range - VectorF3(0.5f);
+	return BoxI3(range.Min.round().ToI(), range.Max.round().ToI());
+}
