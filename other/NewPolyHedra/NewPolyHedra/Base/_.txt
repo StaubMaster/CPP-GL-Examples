@@ -1,0 +1,13 @@
+
+
+
+Base...Manager is empty because all the functions need the Objects
+which are in Type...Manager
+
+cannot downCast Binary Container to Base...Manager
+because Binary has Insert() function, which cannot be downCast
+because it needs the upperCast
+
+could a Template be downCast if it has no functinos that need upCast ?
+
+

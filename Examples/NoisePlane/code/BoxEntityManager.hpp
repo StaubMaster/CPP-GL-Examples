@@ -15,6 +15,11 @@ struct BoxEntityManager
 {
 	Container::Binary<BoxEntity3D*>		BoxEntitys;
 
+	void	Delete(BoxEntity3D * box_entity);
+	void	Remove(BoxEntity3D & box_entity);
+	void	Insert(BoxEntity3D * box_entity);
+	void	Create(BoxEntity3D & box_entity);
+
 	void	Physics(const Physics::GravityContext & context, BoxEntity3D & box_entity);
 	void	Physics(const Physics::GravityContext & context);
 

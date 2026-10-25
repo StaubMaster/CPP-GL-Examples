@@ -3,21 +3,29 @@
 
 namespace NewPolyHedra
 {
+struct Pallet;
+
+struct BaseLogicalObject;
 struct BaseLogicalObjectManager;
+struct BaseDisplayObject;
 struct BaseDisplayObjectManager;
 struct BaseManager
 {
+	public:
+	virtual			BaseLogicalObjectManager &	LogicalManager()					= 0;
+	virtual const	BaseLogicalObjectManager &	LogicalManager() const				= 0;
+
+	public:
+	virtual			BaseDisplayObjectManager &	DisplayManager()							= 0;
+	virtual const	BaseDisplayObjectManager &	DisplayManager() const						= 0;
+	virtual			BaseDisplayObject *			FindDisplayObject(const Pallet & pallet)	= 0;
+	virtual			BaseDisplayObject &			TakeDisplayObject(      Pallet & pallet)	= 0;
+
 	public:
 	virtual ~BaseManager() = default;
 	BaseManager() = default;
 	BaseManager(const BaseManager & other) = delete;
 	BaseManager & operator=(const BaseManager & other) = delete;
-
-	public:
-	virtual			BaseLogicalObjectManager &		LogicalBase()			= 0;
-	virtual const	BaseLogicalObjectManager &		LogicalBase() const		= 0;
-	virtual			BaseDisplayObjectManager &		DisplayBase()			= 0;
-	virtual const	BaseDisplayObjectManager &		DisplayBase() const		= 0;
 
 	public:
 	void	CleanObjects();

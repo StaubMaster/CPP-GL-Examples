@@ -9,14 +9,14 @@
 
 
 
-unsigned int NewPolyHedra::BaseLogicalObjectManager::Count() const
+/*unsigned int NewPolyHedra::BaseLogicalObjectManager::Count() const
 {
 	return Datas.Count();
-}
+}*/
 
 
 
-void NewPolyHedra::BaseLogicalObjectManager::Clean()
+/*void NewPolyHedra::BaseLogicalObjectManager::Clean()
 {
 	for (unsigned int i = 0; i < Datas.Count(); i++)
 	{
@@ -33,11 +33,11 @@ void NewPolyHedra::BaseLogicalObjectManager::Clean()
 			i--;
 		}
 	}
-}
+}*/
 
 
 
-void NewPolyHedra::BaseLogicalObjectManager::InstancesMake()
+/*void NewPolyHedra::BaseLogicalObjectManager::InstancesMake()
 {
 	Container::Loop::Invoke(Datas, &NewPolyHedra::BaseLogicalObject::InstancePut);
-}
+}*/

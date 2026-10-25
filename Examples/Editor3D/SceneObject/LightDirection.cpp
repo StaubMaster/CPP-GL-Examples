@@ -12,7 +12,10 @@
 SceneObject_LightDirection::~SceneObject_LightDirection()
 { }
 SceneObject_LightDirection::SceneObject_LightDirection()
-{ }
+{
+	Data.Data.Scale = VectorF3(1.0f);
+	Data.Data.Color = ColorF4();
+}
 
 
 

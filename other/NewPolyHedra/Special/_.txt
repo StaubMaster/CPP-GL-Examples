@@ -1,0 +1,32 @@
+
+Basic3D
+{
+	Matrix4x4	Trans;
+	Matrix4x4	Normal;
+}
+
+TransScaleColor3D
+{
+	Matrix4x4	Trans;
+	Matrix4x4	Normal;
+	VectorF3	Scale;
+	ColorF4		Color;
+}
+
+Normal is not needed, can be calculated in Shader
+Scale can be made part of Trans
+
+Shader already has per Vertex Color overriding
+make Instance Color overriding part of Basic3D
+
+that way TransScaleColor3D can be made part of Basic3D and removed
+
+
+
+Problem:
+in Editor3D, TransScaleColor3D uses a Shader that uses no Light
+
+they are the same but use a different Shader ?
+or they use the same Shader, but one ignores Light ?
+
+

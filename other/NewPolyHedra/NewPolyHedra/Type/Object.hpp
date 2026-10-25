@@ -10,7 +10,7 @@ struct Pallet;
 template<typename LogicalData> struct TypeLogicalObject;
 template<typename LogicalData> struct DataDisplayObject;
 
-template<typename LogicalData> struct Type_Object
+template<typename LogicalData> struct TypeObject
 {
 	private:
 	TypeLogicalObject<LogicalData> *	ObjectData = nullptr;
@@ -37,19 +37,19 @@ template<typename LogicalData> struct Type_Object
 	void	HideWire();
 
 	public:
-	~Type_Object();
-	Type_Object() = default;
-	Type_Object(const Type_Object & other) = delete;
-	Type_Object & operator=(const Type_Object & other) = delete;
+	~TypeObject();
+	TypeObject() = default;
+	TypeObject(const TypeObject & other) = delete;
+	TypeObject & operator=(const TypeObject & other) = delete;
 
 	public:
-	Type_Object(Pallet * pallet);
-	Type_Object(PolyHedra * polyhedra);
+	TypeObject(Pallet & pallet);
+	TypeObject(PolyHedra & polyhedra);
 
 	public:
 	void	Delete();
-	void	Create(Pallet * pallet);
-	void	Create(PolyHedra * polyhedra);
+	void	Create(Pallet & pallet);
+	void	Create(PolyHedra & polyhedra);
 };
 };
 

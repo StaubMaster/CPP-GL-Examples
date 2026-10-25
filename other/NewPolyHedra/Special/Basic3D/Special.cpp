@@ -1,5 +1,5 @@
-#include "Logical/Data.hpp"
-#include "Display/Data.hpp"
+#include "Special/Basic3D/Logical/Data.hpp"
+#include "Special/Basic3D/Display/Data.hpp"
 
 #include "NewPolyHedra/Type/Logical/Object.cpp"
 #include "NewPolyHedra/Type/Logical/ObjectManager.cpp"
@@ -19,5 +19,12 @@ template struct DataDisplayObjectManager	<LogicalData>;
 template struct TypeDisplayObjectManager	<LogicalData, DisplayData>;
 template struct DataManager					<LogicalData>;
 template struct TypeManager					<LogicalData, DisplayData>;
-template struct Type_Object					<LogicalData>;
+template struct TypeObject					<LogicalData>;
 };
+
+#include "Special/Basic3D/Logical/Object.hpp"
+#include "Special/Basic3D/Logical/ObjectManager.hpp"
+#include "Special/Basic3D/Display/Object.hpp"
+#include "Special/Basic3D/Display/ObjectManager.hpp"
+#include "Special/Basic3D/Manager.hpp"
+#include "Special/Basic3D/Object.hpp"

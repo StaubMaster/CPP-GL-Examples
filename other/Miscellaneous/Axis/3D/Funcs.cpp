@@ -2,6 +2,7 @@
 #include "Enums.hpp"
 
 #include "ValueType/Vector/F3.hpp"
+#include "ValueType/Vector/I3.hpp"
 
 
 
@@ -19,7 +20,20 @@ Axis3D::Abs Axis3D::RelToAbs(const Axis3D::Rel & axis)
 	}
 }
 
-VectorF3 Axis3D::ToVector(const Axis3D::Rel & axis)
+VectorI3 Axis3D::ToVectorI(const Axis3D::Rel & axis)
+{
+	switch (axis)
+	{
+		case Rel::PrevX: return VectorI3(-1, 0, 0);
+		case Rel::PrevY: return VectorI3(0, -1, 0);
+		case Rel::PrevZ: return VectorI3(0, 0, -1);
+		case Rel::NextX: return VectorI3(+1, 0, 0);
+		case Rel::NextY: return VectorI3(0, +1, 0);
+		case Rel::NextZ: return VectorI3(0, 0, +1);
+		default: return VectorI3(0, 0, 0);
+	}
+}
+VectorF3 Axis3D::ToVectorF(const Axis3D::Rel & axis)
 {
 	switch (axis)
 	{

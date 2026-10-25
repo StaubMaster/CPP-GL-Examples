@@ -12,7 +12,10 @@
 SceneObject_LightAmbient::~SceneObject_LightAmbient()
 { }
 SceneObject_LightAmbient::SceneObject_LightAmbient()
-{ }
+{
+	Data.Data.Scale = VectorF3(1.0f);
+	Data.Data.Color = ColorF4();
+}
 
 
 

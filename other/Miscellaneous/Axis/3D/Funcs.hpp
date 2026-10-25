@@ -3,13 +3,15 @@
 
 # include "Types.hpp"
 
+struct VectorI3;
 struct VectorF3;
 
 namespace Axis3D
 {
 	Abs		RelToAbs(const Rel & axis);
 
-	VectorF3	ToVector(const Rel & axis);
+	VectorI3	ToVectorI(const Rel & axis);
+	VectorF3	ToVectorF(const Rel & axis);
 };
 
 #endif

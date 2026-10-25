@@ -289,29 +289,21 @@ make file Parser
 
 void ContextNoisePlane::NewPolyHedra_ChangeMedia()
 {
-	// NewPolyHedra
-	{
-		// PolyHedraManager
-		{
-			NewPolyHedra::Pallet_ChangeMedia(PalletManager);
-			PolyHedraManager.PalletManager = &PalletManager;
-		}
-		// Basic3D
-		{
-			NewPolyHedra::Basic3D::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerBasic.DisplayType);
-			PolyHedraManager.BaseManagers.Insert(&ObjectManagerBasic);
-		}
-		// TransScaleColor3D
-		{
-			TransScaleColor3D::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerTSC.DisplayType);
-			PolyHedraManager.BaseManagers.Insert(&ObjectManagerTSC);
-		}
-		// UI
-		{
-			NewPolyHedra::UserInterface::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerUI.DisplayType);
-			PolyHedraManager.BaseManagers.Insert(&ObjectManagerUI);
-		}
-	}
+	// PolyHedraManager
+	NewPolyHedra::Pallet_ChangeMedia(PalletManager);
+	PolyHedraManager.PalletManager = &PalletManager;
+
+	// Basic3D
+	NewPolyHedra::Basic3D::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerBasic.DisplayType);
+	PolyHedraManager.BaseManagers.Insert(&ObjectManagerBasic);
+
+	// TransScaleColor3D
+	TransScaleColor3D::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerTSC.DisplayType);
+	PolyHedraManager.BaseManagers.Insert(&ObjectManagerTSC);
+
+	// UserInterface
+	NewPolyHedra::UserInterface::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerUI.DisplayType);
+	PolyHedraManager.BaseManagers.Insert(&ObjectManagerUI);
 }
 
 void ContextNoisePlane::MakeControls()
@@ -425,62 +417,6 @@ ContextNoisePlane::ContextNoisePlane()
 
 
 
-void ContextNoisePlane::ViewEntityUpdate_Change(Trans3D change, const FrameTime & frame_time)
-{
-	if (ViewEntity != nullptr)
-	{
-		BoxEntity3D & box_entity = *ViewEntity;
-
-		float accel_factor = 0.0f;
-		if (window[Keys::LeftControl] == State::Down)
-		{
-			accel_factor = ViewMove_AccelFast;
-		}
-		else
-		{
-			accel_factor = ViewMove_AccelSlow;
-		}
-		float decel_factor = ViewMove_Decel;
-
-		VectorF2 change_hori(change.Position.X, change.Position.Z);
-		float change_vert = change.Position.Y;
-
-		VectorF3 jump;
-		if (ViewEntity -> CollisionSide.PrevY)
-		{
-			if (change_vert > 0.0f)
-			{
-				//jump.Y = 16.0f;
-				jump.Y = 10.0f;
-			}
-		}
-
-		VectorF3 accel = VectorF3(change_hori.X, 0.0f, change_hori.Y);
-		VectorF3 decel = VectorF3(box_entity.Vel.X, 0.0f, box_entity.Vel.Z);
-
-		accel *= accel_factor;
-		decel *= decel_factor;
-
-		box_entity.Vel = box_entity.Vel + accel - decel + jump;
-	}
-	else
-	{
-		float speed = 0.0f;
-		if (window[Keys::LeftControl] == State::Down)
-		{
-			speed = ViewMove_SpeedFast;
-		}
-		else
-		{
-			speed = ViewMove_SpeedSlow;
-		}
-		change.Position *= speed;
-
-		View.Trans.Position += change.Position * frame_time.Delta;
-	}
-	View.Trans.Rotation += change.Rotation * frame_time.Delta;
-	View.Trans.Rotation.X1.clampPI();
-}
 /*void ContextNoisePlane::ViewEntityUpdate_Physics(VectorF3 change)
 {
 	float limit = 0.0f;
@@ -619,22 +555,74 @@ void ContextNoisePlane::ViewEntityUpdate_Change(Trans3D change, const FrameTime 
 		+ PhysicsContext_Gravity.Vector()
 	;
 }*/
-void ContextNoisePlane::ViewEntityUpdate_Done()
+
+/*
+Input to change ViewEntity should happen in the frame before BoxEntitys are updated
+
+View Ray stuff needs to be syncronized with ViewEntity, so should be done after BoxEntity Update
+*/
+
+void ContextNoisePlane::ViewUpdate(Trans3D change, const FrameTime & frame_time)
 {
-	if (View_Distance == 0.0f)
+	if (ViewEntity != nullptr)
 	{
-		LayoutMultiform.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
+		float accel_factor = 0.0f;
+		if (window[Keys::LeftControl] == State::Down)
+		{
+			accel_factor = ViewMove_AccelFast;
+		}
+		else
+		{
+			accel_factor = ViewMove_AccelSlow;
+		}
+		float decel_factor = ViewMove_Decel;
+
+		VectorF2 change_hori(change.Position.X, change.Position.Z);
+		float change_vert = change.Position.Y;
+
+		BoxEntity3D & box_entity = *ViewEntity;
+
+		if (box_entity.CollisionSide.PrevY)
+		{
+			if (change_vert > 0.0f)
+			{
+				change_vert = 10.0f;
+			}
+			else
+			{
+				change_vert = 0.0f;
+			}
+		}
+		else
+		{
+			change_vert = 0.0f;
+		}
+
+		VectorF3 accel = VectorF3(change_hori.X, change_vert, change_hori.Y);
+		VectorF3 decel = VectorF3(box_entity.Vel.X, 0.0f, box_entity.Vel.Z);
+		accel *= accel_factor;
+		decel *= decel_factor;
+
+		VectorF3 change_vel = accel - decel;
+		box_entity.Vel += change_vel;
 	}
 	else
 	{
-		LayoutMultiform.View.ChangeData(Matrix4x4::TransformReverse(
-			Trans3D(View.Trans.Position - View.Trans.Rotation.forward(VectorF3(0, 0, View_Distance)), View.Trans.Rotation)
-		));
+		float speed = 0.0f;
+		if (window[Keys::LeftControl] == State::Down)
+		{
+			speed = ViewMove_SpeedFast;
+		}
+		else
+		{
+			speed = ViewMove_SpeedSlow;
+		}
+		change.Position *= speed;
+
+		View.Trans.Position += change.Position * frame_time.Delta;
 	}
-}
-void ContextNoisePlane::ViewEntityUpdate(Trans3D change, const FrameTime & frame_time)
-{
-	ViewEntityUpdate_Change(change, frame_time);
+	View.Trans.Rotation += change.Rotation * frame_time.Delta;
+	View.Trans.Rotation.X1.clampPI();
 
 	BoxEntitys.Physics(PhysicsContext_Gravity);
 	VoxelCollision_DisplayBoxes = true;
@@ -646,106 +634,74 @@ void ContextNoisePlane::ViewEntityUpdate(Trans3D change, const FrameTime & frame
 		View.Trans.Position = ViewEntity -> Pos;
 	}
 
-	ViewEntityUpdate_Done();
-}
+	if (View_Distance == 0.0f)
+	{
+		LayoutMultiform.View.ChangeData(Matrix4x4::TransformReverse(View.Trans));
+	}
+	else
+	{
+		LayoutMultiform.View.ChangeData(Matrix4x4::TransformReverse(
+			Trans3D(View.Trans.Position - View.Trans.Rotation.forward(VectorF3(0, 0, View_Distance)), View.Trans.Rotation)
+		));
+	}
 
-void ContextNoisePlane::ViewRayUpdate_Sync()
-{
 	ViewRay.Pos = View.Trans.Position;
 	ViewRay.Dir = View.Trans.Rotation.forward(VectorF3(0, 0, 1));
 	RankAxis(ViewRay.Dir, ViewRay_Axis0, ViewRay_Axis1, ViewRay_Axis2);
-}
-void ContextNoisePlane::ViewRayUpdate_Hit()
-{
-	ViewHit = ChunkManager.Container.HitVoxel(ViewRay);
-	if (ViewHit.Valid())
-	{
-		ViewHit_Axis0 = ViewHit.Side;
-		Axis3D::Abs axis = Axis3D::RelToAbs(ViewHit_Axis0);
-		if      (axis == Axis3D::Abs::None) { ViewHit_Axis1 = Axis3D::Rel::None; }
-		else if (axis != Axis3D::RelToAbs(ViewRay_Axis2)) { ViewHit_Axis1 = ViewRay_Axis2; }
-		else if (axis != Axis3D::RelToAbs(ViewRay_Axis1)) { ViewHit_Axis1 = ViewRay_Axis1; }
-		else if (axis != Axis3D::RelToAbs(ViewRay_Axis0)) { ViewHit_Axis1 = ViewRay_Axis0; }
-		else { ViewHit_Axis1 = Axis3D::Rel::None; }
-	}
-}
-void ContextNoisePlane::ViewRayUpdate_HitDo()
-{
-	if (MenuPause.IsInteractible() || MenuOptions.IsInteractible() || InventoryUI.IsInteractible()) { return; }
 
-	const ItemBase * item = HotBar.Items[HotBarIndex];
-	const ItemTool * item_tool = dynamic_cast<const ItemTool *>(item);
-	const ItemVoxel * item_voxel = dynamic_cast<const ItemVoxel *>(item);
-
-	VoxelClear.ChangeTool(item_tool);
-
-	if (ViewHit.Valid())
-	{
-		if (window.MouseManager[MouseButtons::MouseL] == State::Down)
-		{
-			VoxelClear.Continue(ViewHit.Index);
-		}
-		else
-		{
-			VoxelClear.Change(ViewHit.Index);
-		}
-
-		if (window.MouseManager[MouseButtons::MouseR] == State::Press)
-		{
-			// Side: make part of VoxelHit ?
-			// determine place_axis_1 based on where on the face was clicked ?
-			// top of face orients to point to top and so on
-
-			VectorI3 hit_idx = ViewHit.Index;
-			if (ViewHit_Axis0 == Axis3D::Rel::NextX) { hit_idx.X += 1; }
-			if (ViewHit_Axis0 == Axis3D::Rel::NextY) { hit_idx.Y += 1; }
-			if (ViewHit_Axis0 == Axis3D::Rel::NextZ) { hit_idx.Z += 1; }
-			if (ViewHit_Axis0 == Axis3D::Rel::PrevX) { hit_idx.X -= 1; }
-			if (ViewHit_Axis0 == Axis3D::Rel::PrevY) { hit_idx.Y -= 1; }
-			if (ViewHit_Axis0 == Axis3D::Rel::PrevZ) { hit_idx.Z -= 1; }
-			// ViewHit.Index + ViewHit.Normal
-
-			if (item_voxel != nullptr && item_voxel -> VoxelPallet != nullptr)
-			{
-				ChunkVoxelIndex idx(hit_idx);
-				AssignLockedChunk chunk = ChunkManager.Container.FindAbsoluteAccess(idx.Chunk).ToAssign();
-				if (chunk.Is())
-				{
-					Voxel voxel = item_voxel -> VoxelPallet -> ToVoxel(ViewHit_Axis0, ViewHit_Axis1);
-					(*chunk).PlaceVoxel(idx.Voxel, voxel);
-				}
-			}
-		}
-	}
-}
-
-void ContextNoisePlane::ViewRayUpdate()
-{
 	if (ViewEntity != nullptr)
 	{
-		ViewRayUpdate_Sync();
-		ViewRayUpdate_Hit();
-		ViewRayUpdate_HitDo();
+		ViewHit = VoxelHit::Hit(ViewRay, 10.0f, ChunkManager.Container);
+		if (ViewHit.Valid())
+		{
+			ViewHit_Axis0 = ViewHit.Side;
+			Axis3D::Abs axis = Axis3D::RelToAbs(ViewHit_Axis0);
+			if      (axis == Axis3D::Abs::None) { ViewHit_Axis1 = Axis3D::Rel::None; }
+			else if (axis != Axis3D::RelToAbs(ViewRay_Axis2)) { ViewHit_Axis1 = ViewRay_Axis2; }
+			else if (axis != Axis3D::RelToAbs(ViewRay_Axis1)) { ViewHit_Axis1 = ViewRay_Axis1; }
+			else if (axis != Axis3D::RelToAbs(ViewRay_Axis0)) { ViewHit_Axis1 = ViewRay_Axis0; }
+			else { ViewHit_Axis1 = Axis3D::Rel::None; }
+		}
 	}
 	else
 	{
 		ViewHit = VoxelHit();
 	}
-}
 
-void ContextNoisePlane::ViewUpdate(Trans3D change, const FrameTime & frame_time)
-{
-	StopWatch sw;
+	const ItemBase * item = HotBar.Items[HotBarIndex];
+	const ItemTool * item_tool = dynamic_cast<const ItemTool *>(item);
+	const ItemVoxel * item_voxel = dynamic_cast<const ItemVoxel *>(item);
 
-	sw.Start();
-	ViewEntityUpdate(change, frame_time);
-	sw.Stop();
-	FrameTime_ViewUpdate_CollisionTime.NewValue(sw.ElapsedTime());
+	if (!MenuPause.IsInteractible() && !MenuOptions.IsInteractible() && !InventoryUI.IsInteractible())
+	{
+		VoxelClear.ChangeTool(item_tool);
 
-	sw.Clear(); sw.Start();
-	ViewRayUpdate();
-	sw.Stop();
-	FrameTime_ViewUpdate_RayTime.NewValue(sw.ElapsedTime());
+		if (ViewHit.Valid())
+		{
+			if (window.MouseManager[MouseButtons::MouseL] == State::Down)
+			{
+				VoxelClear.Continue(ViewHit.Index);
+			}
+			else
+			{
+				VoxelClear.Change(ViewHit.Index);
+			}
+
+			if (window.MouseManager[MouseButtons::MouseR] == State::Press)
+			{
+				if (item_voxel != nullptr && item_voxel -> VoxelPallet != nullptr)
+				{
+					ChunkVoxelIndex idx(ViewHit.Index + Axis3D::ToVectorI(ViewHit.Side));
+					AssignLockedChunk chunk = ChunkManager.Container.FindAbsoluteAccess(idx.Chunk).ToAssign();
+					if (chunk.Is())
+					{
+						Voxel voxel = item_voxel -> VoxelPallet -> ToVoxel(ViewHit_Axis0, ViewHit_Axis1);
+						(*chunk).PlaceVoxel(idx.Voxel, voxel);
+					}
+				}
+			}
+		}
+	}
 }
 
 void ContextNoisePlane::ViewPosText(std::stringstream & ss)
@@ -778,8 +734,14 @@ void ContextNoisePlane::ViewRayText(std::stringstream & ss)
 	ss << ViewRay_Axis1 << ":RayAxis1\n";
 	ss << ViewRay_Axis2 << ":RayAxis2\n";
 
+	ss << '\n';
+
+	VoxelClear.Show(ss);
+	ss << '\n';
+
 	if (ViewHit.Valid())
 	{
+		ss << "ViewHit\n";
 		VectorF3 & posF = ViewHit.Position;
 		VectorI3 & posI = ViewHit.Index;
 		ChunkVoxelIndex idx(posI);
@@ -791,34 +753,42 @@ void ContextNoisePlane::ViewRayText(std::stringstream & ss)
 		ss << '[' << idxC.X << '|' << idxC.Y << '|' << idxC.Z << ']' << "Chunk" << '\n';
 		ss << ViewHit_Axis0 << ":HitAxis0\n";
 		ss << ViewHit_Axis1 << ":HitAxis1\n";
+		ss << '\n';
+	}
 
-		// Voxel Info
+	if (ViewHit.Valid())
+	{
+		ss << "Voxel\n";
+		ChunkVoxelIndex idx(ViewHit.Index);
+		AccessLockedChunk chunk = ChunkManager.Container.FindAbsoluteAccess(idx.Chunk);
+		if (chunk.Is() && (*chunk).IsDone())
 		{
-			AccessLockedChunk chunk = ChunkManager.Container.FindAbsoluteAccess(idx.Chunk);
-			if (chunk.Is() && (*chunk).IsDone() && (*chunk).IsEmpty())
+			if (!(*chunk).IsEmpty())
 			{
 				const Voxel & voxel = (*chunk)[idx.Voxel];
 				if (!voxel.IsEmpty())
 				{
 					const VoxelPallet & pallet = voxel.ToPallet();
-					ss << (voxel.Orientation.GetDiag()) << " :Diag\n";
-					ss << (voxel.Orientation.GetFlip()) << " :Flip\n";
-					ss << (pallet.Name) << " :Pallet\n";
+					ss << (voxel.Orientation.GetDiag()) << ":Diag\n";
+					ss << (voxel.Orientation.GetFlip()) << ":Flip\n";
+					ss << (pallet.Name) << ":Pallet\n";
 				}
 				else
 				{
-					ss << "empty";
+					ss << "empty\n";
 				}
 			}
 			else
 			{
-				ss << "null";
+				ss << "empty\n";
 			}
+		}
+		else
+		{
+			ss << "null\n";
 		}
 		ss << '\n';
 	}
-
-	VoxelClear.Show(ss);
 }
 void ContextNoisePlane::ViewRayShow()
 {
@@ -834,94 +804,10 @@ void ContextNoisePlane::ViewRayShow()
 
 
 GL::BlockBinding ContextNoisePlane::LightBufferBinding = 3;
+#include "Light/BufferData.hpp"
 
-#include "Texture/FileMap.hpp"
+static unsigned int TextCharCount = 0;
 
-void ContextNoisePlane::MakeVoxels()
-{
-	// VoxelPalletGeometryMap
-	{
-		VoxelPalletGeometryMap & map = VoxelPalletGeometryMap::StaticMap;
-
-		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/Geometry/Cube.file"));
-		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/Geometry/Star.file"));
-
-		VoxelPalletGeometry & PrismY8 = map.New("PrismY8");
-		PrismY8.InitU_CubeAxisY();
-		PrismY8.InitF_PrismY8();
-		//VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/Geometry/PrismY8.file"));
-
-		VoxelPalletGeometry & PrismY12 = map.New("PrismY12");
-		PrismY12.InitU_CubeDiag();
-		PrismY12.InitF_PrismY12();
-
-		VoxelPalletGeometry & Slope = map.New("Slope");
-		Slope.InitU_CubeDiag();
-		Slope.InitF_Slope();
-	}
-
-	// VoxelPalletMap
-	{
-		VoxelPalletMap & map = VoxelPalletMap::StaticMap;
-
-		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/Cube.file"));
-		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/Star.file"));
-		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/PrismY8.file"));
-		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/PrismY12.file"));
-
-		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/CardBoard/_.file"));
-
-		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Debug/_.file"));
-		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Tree/_.file"));
-		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Terrain/_.file"));
-		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Concrete/_.file"));
-	}
-
-	// StructureMap
-	{
-		StructureMap & map = StructureMap::StaticMap;
-
-		StructureMapParser::Parse(map, MediaDirectory.File("Voxel/Structure/Tree0"));
-		StructureMapParser::Parse(map, MediaDirectory.File("Voxel/Structure/Tree1"));
-	}
-
-	// Texture
-	{
-		TextureFileMap tex_map;
-		std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-		VoxelPalletMap::StaticMap.TexturesAssign(tex_map);
-		std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-		ChunkManager.Graphics.Texture.Bind();
-		ChunkManager.Graphics.Texture.Assign(VectorU2(32, 32), tex_map.Files.ToArray());
-	}
-
-	// PolyHedras
-	{
-		VoxelPalletMap::StaticMap.MakePolyHedras();
-	}
-}
-
-void ContextNoisePlane::Make()
-{
-	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-	MakeVoxels();
-	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-	MakeControls();
-	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-	//ChunkManager.Container.ChangeSize(4, 2);
-	ChunkManager.Container.ChangeSize(8, 4);
-	//ChunkManager.Container.ChangeSize(16, 4);
-	//ChunkManager.Container.ChangeSize(16, 6);
-	//ChunkManager.Container.ChangeSize(16, 8);
-	//ChunkManager.Container.ChangeSize(16, 12);
-	//ChunkManager.Container.ChangeSize(32, 16);
-	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
-}
-
-
-
-// a lot of the managers are siminal with the bool flags and function names
-// make a Base ? to organize
 void ContextNoisePlane::ChangeMedia()
 {
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
@@ -941,7 +827,6 @@ void ContextNoisePlane::ChangeMedia()
 	std::cout << "ContextNoisePlane::ChangeMedia() " << __LINE__ << '\n' << std::flush;
 }
 
-// Valgrind is very slow here ?
 void ContextNoisePlane::GraphicsCreate()
 {
 	std::cout << "ContextNoisePlane::GraphicsCreate() " << __LINE__ << '\n' << std::flush;
@@ -970,74 +855,6 @@ void ContextNoisePlane::GraphicsDelete()
 	LightBuffer.Delete();
 	std::cout << "ContextNoisePlane::GraphicsDelete() " << __LINE__ << '\n' << std::flush;
 }
-
-void ContextNoisePlane::Init()
-{
-	{
-	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
-	window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
-
-	LightManager.Clear();
-
-	LightManager.Ambient = LightBase(0.8f, ColorF4(1.0f, 1.0f, 1.0f));
-	LightManager.Solar = LightDirection(0.8f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(+2.0f, -3.0f, +1.0f));
-	LightManager.Spot_Array[0] = LightSpot(1.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
-
-	LightManager.Ambient_Count = 1;
-	LightManager.Solar_Count = 1;
-	LightManager.Spot_Count = 0;
-
-	View.Trans = Trans3D();
-	View.Depth.Color = window.DefaultColor;
-	View.Depth.Factors.SetFar(256.0f);
-	View.Depth.Range.SetMin(0.5f);
-	ViewEntity = nullptr;
-	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
-	View_Distance = 0.0f;
-	ViewMove_SpeedSlow = 10.0f;
-	ViewMove_SpeedFast = 100.0f;
-	// Target = Accel / Decel
-	// Target * Decel = Accel
-	// Slow: Target = 5.0; Accel = 5.0 * 0.2 = 1.0
-	// Slow: Target = 10.0; Accel = 10.0 * 0.2 = 2.0
-	ViewMove_AccelSlow = 1.0f;
-	ViewMove_AccelFast = 2.0f;
-	ViewMove_Decel = 0.2f;
-	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
-	}
-
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	ChangeMedia();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	GraphicsCreate();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	UIManager.TextManager.InitFont();
-	UIManager.GraphicsInit();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	Shader::Base::BindNone();
-	LightBuffer.BindBase(LightBufferBinding);
-	LayoutMultiform.Lights.ChangeData(LightBufferBinding);
-	LayoutMultiform.Depth.ChangeData(View.Depth);
-	LayoutMultiform.FOV.ChangeData(View.FOV);
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	Make();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-	AuxThreadCollection.Run();
-	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
-}
-void ContextNoisePlane::Free()
-{
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	AuxThreadCollection.Terminate();
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-	GraphicsDelete();
-	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
-}
-
-
-
-static unsigned int		TextCharCount = 0;
-#include "Light/BufferData.hpp"
 
 void ContextNoisePlane::GraphicsClear()
 {
@@ -1139,6 +956,152 @@ void ContextNoisePlane::GraphicsDraw()
 
 
 	PolyHedraManager.CleanObjects();
+}
+
+void ContextNoisePlane::Init()
+{
+	{
+	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
+	window.DefaultColor = ColorF4(0.6f, 0.85f, 0.9f);
+
+	LightManager.Clear();
+
+	LightManager.Ambient = LightBase(0.8f, ColorF4(1.0f, 1.0f, 1.0f));
+	LightManager.Solar = LightDirection(0.8f, ColorF4(1.0f, 1.0f, 1.0f), !VectorF3(+2.0f, -3.0f, +1.0f));
+	LightManager.Spot_Array[0] = LightSpot(1.0f, ColorF4(1.0f, 1.0f, 1.0f), VectorF3(), VectorF3(), RangeF(0.1f, 1.0f));
+
+	LightManager.Ambient_Count = 1;
+	LightManager.Solar_Count = 1;
+	LightManager.Spot_Count = 0;
+
+	View.Trans = Trans3D();
+	View.Depth.Color = window.DefaultColor;
+	View.Depth.Factors.SetFar(256.0f);
+	View.Depth.Range.SetMin(0.5f);
+	ViewEntity = nullptr;
+	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
+	View_Distance = 0.0f;
+	ViewMove_SpeedSlow = 10.0f;
+	ViewMove_SpeedFast = 100.0f;
+	// Target = Accel / Decel
+	// Target * Decel = Accel
+	// Slow: Target = 5.0; Accel = 5.0 * 0.2 = 1.0
+	// Slow: Target = 10.0; Accel = 10.0 * 0.2 = 2.0
+	ViewMove_AccelSlow = 1.0f;
+	ViewMove_AccelFast = 2.0f;
+	ViewMove_Decel = 0.2f;
+	std::cout << "ContextNoisePlane::Default:" << __LINE__ << '\n';
+	}
+
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	ChangeMedia();
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	GraphicsCreate();
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	UIManager.TextManager.InitFont();
+	UIManager.GraphicsInit();
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	Shader::Base::BindNone();
+	LightBuffer.BindBase(LightBufferBinding);
+	LayoutMultiform.Lights.ChangeData(LightBufferBinding);
+	LayoutMultiform.Depth.ChangeData(View.Depth);
+	LayoutMultiform.FOV.ChangeData(View.FOV);
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	Make();
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+	AuxThreadCollection.Run();
+	std::cout << "ContextNoisePlane::Init:" << __LINE__ << '\n';
+}
+void ContextNoisePlane::Free()
+{
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
+	AuxThreadCollection.Terminate();
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
+	GraphicsDelete();
+	std::cout << "ContextNoisePlane::Free:" << __LINE__ << '\n';
+}
+
+void ContextNoisePlane::Make()
+{
+	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+	MakeVoxels();
+	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+	MakeControls();
+	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+	//ChunkManager.Container.ChangeSize(4, 2);
+	ChunkManager.Container.ChangeSize(8, 4);
+	//ChunkManager.Container.ChangeSize(16, 4);
+	//ChunkManager.Container.ChangeSize(16, 6);
+	//ChunkManager.Container.ChangeSize(16, 8);
+	//ChunkManager.Container.ChangeSize(16, 12);
+	//ChunkManager.Container.ChangeSize(32, 16);
+	std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+}
+
+#include "Texture/FileMap.hpp"
+
+void ContextNoisePlane::MakeVoxels()
+{
+	// VoxelPalletGeometryMap
+	{
+		VoxelPalletGeometryMap & map = VoxelPalletGeometryMap::StaticMap;
+
+		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/Geometry/Cube.file"));
+		VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/Geometry/Star.file"));
+
+		VoxelPalletGeometry & PrismY8 = map.New("PrismY8");
+		PrismY8.InitU_CubeAxisY();
+		PrismY8.InitF_PrismY8();
+		//VoxelPalletGeometryMapParser::Parse(map, MediaDirectory.File("Voxel/Geometry/PrismY8.file"));
+
+		VoxelPalletGeometry & PrismY12 = map.New("PrismY12");
+		PrismY12.InitU_CubeDiag();
+		PrismY12.InitF_PrismY12();
+
+		VoxelPalletGeometry & Slope = map.New("Slope");
+		Slope.InitU_CubeDiag();
+		Slope.InitF_Slope();
+	}
+
+	// VoxelPalletMap
+	{
+		VoxelPalletMap & map = VoxelPalletMap::StaticMap;
+
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/Cube.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/Star.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/PrismY8.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Orientation/PrismY12.file"));
+
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/CardBoard/_.file"));
+
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Debug/_.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Tree/_.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Terrain/_.file"));
+		VoxelPalletMapParser::Parse(map, MediaDirectory.File("Voxel/Concrete/_.file"));
+	}
+
+	// StructureMap
+	{
+		StructureMap & map = StructureMap::StaticMap;
+
+		StructureMapParser::Parse(map, MediaDirectory.File("Voxel/Structure/Tree0"));
+		StructureMapParser::Parse(map, MediaDirectory.File("Voxel/Structure/Tree1"));
+	}
+
+	// Texture
+	{
+		TextureFileMap tex_map;
+		std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+		VoxelPalletMap::StaticMap.TexturesAssign(tex_map);
+		std::cout << "ContextNoisePlane::Make:" << __LINE__ << '\n';
+		ChunkManager.Graphics.Texture.Bind();
+		ChunkManager.Graphics.Texture.Assign(VectorU2(32, 32), tex_map.Files.ToArray());
+	}
+
+	// PolyHedras
+	{
+		VoxelPalletMap::StaticMap.MakePolyHedras();
+	}
 }
 
 
@@ -1387,7 +1350,7 @@ void ContextNoisePlane::DisplayItemToUse(const ItemBase * item_base)
 				obj.Data().Rot = rot.forward(View.Trans.Rotation.reverse());
 				if (ViewHit.Valid())
 				{
-					VectorF3 pos = ViewHit.Index.ToF() + 0.5f + ViewHit.Normal;
+					VectorF3 pos = ViewHit.Index.ToF() + 0.5f + Axis3D::ToVectorF(ViewHit.Side);
 					NewPolyHedra::Basic3D::Object obj(item_voxel -> VoxelPallet -> PolyHedra);
 					obj.Data().Trans.Position = pos;
 					obj.Data().Trans.Rotation = rot;
@@ -1861,15 +1824,7 @@ void ContextNoisePlane::FrameInput()
 	{
 		if (ViewEntity != nullptr)
 		{
-			for (unsigned int i = 0; i < BoxEntitys.BoxEntitys.Count(); i++)
-			{
-				if (BoxEntitys.BoxEntitys[i] == ViewEntity)
-				{
-					BoxEntitys.BoxEntitys.RemoveAt(i);
-					break;
-				}
-			}
-			delete ViewEntity;
+			BoxEntitys.Delete(ViewEntity);
 			ViewEntity = nullptr;
 		}
 		else
@@ -1955,10 +1910,7 @@ void ContextNoisePlane::Frame(FrameTime frame_time)
 		{
 			change = window.MoveSpinFromKeysCursor();
 			change.Rotation *= View.FOV.ToRadians() * 0.05f;
-			{
-				EulerAngle3D e(Angle(), Angle(), View.Trans.Rotation.Y2);
-				change.Position = e.forward(change.Position);
-			}
+			change.Position = EulerAngle3D(Angle(), Angle(), View.Trans.Rotation.Y2).forward(change.Position);
 		}
 		ViewUpdate(change, frame_time);
 		//LightManager.Spot_Array[0].Pos = ViewRay.Pos;

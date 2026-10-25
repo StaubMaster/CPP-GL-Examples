@@ -16,8 +16,8 @@ struct PalletManager
 	private:
 	static PalletManager *		Current;
 	public:
-	static Pallet *		sFind(PolyHedra * polyhedra);
-	static Pallet *		sTake(PolyHedra * polyhedra);
+	static Pallet *		sFind(PolyHedra & polyhedra);
+	static Pallet *		sTake(PolyHedra & polyhedra);
 
 	public:
 	~PalletManager();
@@ -37,9 +37,9 @@ struct PalletManager
 	private:	Pallet &	Make(      PolyHedra & polyhedra);
 	public:		Pallet &	Take(      PolyHedra & polyhedra);
 
-	public:		Pallet *	Find(const PolyHedra * polyhedra) const;
-	private:	Pallet *	Make(      PolyHedra * polyhedra);
-	public:		Pallet *	Take(      PolyHedra * polyhedra);
+//	public:		Pallet *	Find(const PolyHedra * polyhedra) const;
+//	private:	Pallet *	Make(      PolyHedra * polyhedra);
+//	public:		Pallet *	Take(      PolyHedra * polyhedra);
 
 
 

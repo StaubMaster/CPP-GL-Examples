@@ -19,5 +19,5 @@ template struct DataDisplayObjectManager	<LogicalData>;
 template struct TypeDisplayObjectManager	<LogicalData, DisplayData>;
 template struct DataManager					<LogicalData>;
 template struct TypeManager					<LogicalData, DisplayData>;
-template struct Type_Object					<LogicalData>;
+template struct TypeObject					<LogicalData>;
 };

@@ -6,7 +6,7 @@
 namespace TransScaleColor3D
 {
 struct LogicalData;
-typedef NewPolyHedra::Type_Object<LogicalData> Object;
+typedef NewPolyHedra::TypeObject<LogicalData> Object;
 };
 
 #endif

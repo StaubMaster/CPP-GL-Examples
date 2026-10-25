@@ -10,16 +10,15 @@ struct ChunkContainer;
 struct VoxelHit
 {
 	Axis3D::Rel		Side = Axis3D::Rel::None;
-	VectorI3		Index;
-	//VoxelIndex	Index;
 	VectorF3		Position;
-	VectorF3		Normal;
+	VectorI3		Index;
 
 	bool	Valid() const;
-
 	public:
-	static GridCast3D::Hit	Hit(const Chunk & chunk, RayF3 ray3D, float limit);
-	static GridCast3D::Hit	Hit(ChunkContainer & container, RayF3 ray3D, float limit);
+	static VoxelHit		Hit(RayF3 ray, float limit, ChunkContainer & container);
+	private:
+	static GridCast3D::Hit	HitGridCast(RayF3 ray, float limit, ChunkContainer & container);
+	static GridCast3D::Hit	HitGridCast(RayF3 ray, float limit, const Chunk & chunk);
 };
 
 #endif

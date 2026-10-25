@@ -1,9 +1,6 @@
 #ifndef  NEW_POLYHEDRA_DATA_TYPE_BASIC_3D_MANAGER_HPP
 # define NEW_POLYHEDRA_DATA_TYPE_BASIC_3D_MANAGER_HPP
 
-//# include "Logical/Data.hpp"
-//# include "Display/Data.hpp"
-
 # include "NewPolyHedra/Type/Manager.hpp"
 
 namespace NewPolyHedra

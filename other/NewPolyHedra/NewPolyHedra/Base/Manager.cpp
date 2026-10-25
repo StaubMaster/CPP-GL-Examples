@@ -15,40 +15,40 @@
 
 void NewPolyHedra::BaseManager::CleanObjects()
 {
-	LogicalBase().Clean();
+	LogicalManager().Clean();
 }
 
 unsigned int NewPolyHedra::BaseManager::InstancesFullCount() const
 {
-	return DisplayBase().InstancesFullCount();
+	return DisplayManager().InstancesFullCount();
 }
 unsigned int NewPolyHedra::BaseManager::InstancesWireCount() const
 {
-	return DisplayBase().InstancesWireCount();
+	return DisplayManager().InstancesWireCount();
 }
 
 void NewPolyHedra::BaseManager::InstancesClear()
 {
-	DisplayBase().InstancesClear();
+	DisplayManager().InstancesClear();
 }
 void NewPolyHedra::BaseManager::InstancesMake()
 {
-	LogicalBase().InstancesMake();
+	LogicalManager().InstancesMake();
 }
 
 void NewPolyHedra::BaseManager::GraphicsCreate()
 {
-	DisplayBase().GraphicsCreate();
+	DisplayManager().GraphicsCreate();
 }
 void NewPolyHedra::BaseManager::GraphicsDelete()
 {
-	DisplayBase().GraphicsDelete();
+	DisplayManager().GraphicsDelete();
 }
 void NewPolyHedra::BaseManager::GraphicsDrawFull()
 {
-	DisplayBase().GraphicsDrawFull();
+	DisplayManager().GraphicsDrawFull();
 }
 void NewPolyHedra::BaseManager::GraphicsDrawWire()
 {
-	DisplayBase().GraphicsDrawWire();
+	DisplayManager().GraphicsDrawWire();
 }

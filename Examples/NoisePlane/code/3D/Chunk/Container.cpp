@@ -430,39 +430,6 @@ void ChunkContainer::UpdateChunksContainer()
 
 
 
-#include "3D/VoxelHit.hpp"
-#include "Axis/3D/Enums.hpp"
-#include "Axis/3D/Funcs.hpp"
-VoxelHit ChunkContainer::HitVoxel(RayF3 ray)
-{
-	//::ViewRayPolyHedra = ViewRayPolyHedra;
-	//::VoxelBoxPolyHedra = VoxelBoxPolyHedra;
-	//::ChunkBoxPolyHedra = ChunkBoxPolyHedra;
-	//ShowRay(ray);
-
-	//std::cout << "HitVoxel:" << __LINE__ << '\n';
-	ChunksLock.AccessL();
-	//std::cout << "HitVoxel:" << __LINE__ << '\n';
-	GridCast3D::Hit _hit = VoxelHit::Hit(*this, ray, 10.0f);
-	//std::cout << "HitVoxel:" << __LINE__ << '\n';
-	ChunksLock.AccessU();
-	//std::cout << "HitVoxel:" << __LINE__ << '\n';
-
-	VoxelHit hit;
-	//std::cout << "HitVoxel:" << __LINE__ << '\n';
-	if (_hit.cardinal == Axis3D::Rel::None) { return hit; }
-	//std::cout << "HitVoxel:" << __LINE__ << '\n';
-	hit.Side = _hit.cardinal;
-	hit.Index = _hit.idx;
-	hit.Position = _hit.pos;
-	hit.Normal = Axis3D::ToVector(_hit.cardinal);
-	//std::cout << "HitVoxel:" << __LINE__ << '\n';
-
-	return hit;
-}
-
-
-
 #include "3D/ChunkVoxelIndex.hpp"
 #include "ValueType/Box/F3.hpp"
 Container::Array<BoxF3> ChunkContainer::CollisionBoxes(const BoxI3 & range)

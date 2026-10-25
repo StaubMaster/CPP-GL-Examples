@@ -46,13 +46,13 @@ uniform float FOV;
 
 
 
-layout(location =  0) in vec3 VPos;
-layout(location =  1) in vec3 VNormal;
-layout(location =  2) in vec3 VTex;
-layout(location = 15) in vec4 VColor;
+layout(location =  0) in vec3 MainPos;
+layout(location =  1) in vec3 MainNormal;
+layout(location =  2) in vec3 MainTex;
+layout(location =  3) in vec4 MainColor;
 
-layout(location =  3) in mat4 ITrans; // 3 4 5 6
-layout(location =  7) in mat4 INormal; // 7 8 9 10
+layout(location =  4) in mat4 InstTrans; // 4 5 6 7
+layout(location =  8) in vec4 InstColor;
 
 
 
@@ -87,13 +87,12 @@ vec4 proj(in vec3 p_inn)
 
 void main()
 {
-	vs_out.Original = VPos;
-	vs_out.Absolute = (vec4(vs_out.Original, 1) * ITrans).xyz;
+	vs_out.Original = MainPos;
+	vs_out.Absolute = (vec4(vs_out.Original, 1) * InstTrans).xyz;
 	vs_out.Relative = (vec4(vs_out.Absolute, 1) * View).xyz;
 	gl_Position = proj(vs_out.Relative);
 
-	vs_out.Normal = (vec4(VNormal, 1) * INormal).xyz;
-	//vs_out.Normal = (vec4(VPos + VNormal, 1) * ITrans).xyz - vs_out.Absolute;
-	vs_out.Tex = VTex;
-	vs_out.Color = VColor;
+	vs_out.Normal = (vec4(MainPos + MainNormal, 1) * InstTrans).xyz - vs_out.Absolute;
+	vs_out.Tex = MainTex;
+	vs_out.Color = MainColor;
 }

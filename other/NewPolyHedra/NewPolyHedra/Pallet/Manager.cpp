@@ -9,15 +9,15 @@
 
 NewPolyHedra::PalletManager * NewPolyHedra::PalletManager::Current = nullptr;
 
-NewPolyHedra::Pallet * NewPolyHedra::PalletManager::sFind(PolyHedra * polyhedra)
+NewPolyHedra::Pallet * NewPolyHedra::PalletManager::sFind(PolyHedra & polyhedra)
 {
 	if (Current == nullptr) { return nullptr; }
-	return Current -> Find(polyhedra);
+	return (Current -> Find(polyhedra));
 }
-NewPolyHedra::Pallet * NewPolyHedra::PalletManager::sTake(PolyHedra * polyhedra)
+NewPolyHedra::Pallet * NewPolyHedra::PalletManager::sTake(PolyHedra & polyhedra)
 {
 	if (Current == nullptr) { return nullptr; }
-	return Current -> Take(polyhedra);
+	return &(Current -> Take(polyhedra));
 }
 
 NewPolyHedra::PalletManager::~PalletManager()
@@ -59,21 +59,21 @@ NewPolyHedra::Pallet & NewPolyHedra::PalletManager::Take(PolyHedra & polyhedra)
 	return Make(polyhedra);
 }
 
-NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Find(const PolyHedra * polyhedra) const
+/*NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Find(const PolyHedra * polyhedra) const
 {
 	if (polyhedra == nullptr) { return nullptr; }
 	return Find(*polyhedra);
-}
-NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Make(PolyHedra * polyhedra)
+}*/
+/*NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Make(PolyHedra * polyhedra)
 {
 	if (polyhedra == nullptr) { return nullptr; }
 	return &Make(*polyhedra);
-}
-NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Take(PolyHedra * polyhedra)
+}*/
+/*NewPolyHedra::Pallet * NewPolyHedra::PalletManager::Take(PolyHedra * polyhedra)
 {
 	if (polyhedra == nullptr) { return nullptr; }
 	return &Take(*polyhedra);
-}
+}*/
 
 
 

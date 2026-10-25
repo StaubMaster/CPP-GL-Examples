@@ -208,7 +208,7 @@ float CalcDepthFactor()
 	gl_FragDepth = depth_factor;
 
 	depth_factor = (depth_factor - Depth.Range.Min) / Depth.Range.Len;
-	depth_factor = min(max(depth_factor, 0), 1);
+	depth_factor = clamp(depth_factor, 0, 1);
 
 	return depth_factor;
 }
@@ -221,11 +221,8 @@ void main()
 	vec4	light_factor = CalcLightFactor();
 
 	vec4 col = texture(TextureImage, fs_inn.Tex);
-	col = (col * (1.0 - fs_inn.Color.a)) + (fs_inn.Color.a * fs_inn.Color);
-
+	col = mix(col, fs_inn.Color, fs_inn.Color.a);
 	col = col * light_factor;
-	col = (col * (1.0 - depth_factor)) + (depth_factor * Depth.Color);
-
-//	col = vec4(abs(normalize(fs_inn.Normal)), 1.0);
-	Color = vec4(col.rgb, 1.0);
+	col = mix(col, Depth.Color, depth_factor);
+	Color = col;
 }

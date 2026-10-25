@@ -16,6 +16,9 @@
 #include "SceneObject/LightPoint.hpp"
 #include "SceneObject/LightSpot.hpp"
 
+#include "Special/Basic3D/Logical/Data.hpp"
+#include "Special/Basic3D/Logical/ObjectManager.hpp"
+
 #include <iostream>
 
 
@@ -68,7 +71,7 @@ SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & conte
 	, PolyHedraFileCollection(file_collection)
 	, PolyHedras()
 {
-	MissingPolyHedra = Context.ObjectManagerBasic.DisplayType.NewBase(*NewPolyHedra::PalletManager::sTake(PolyHedraGenerate::RegularHexaHedron(1.0f)));
+	MissingPolyHedra = &Context.ObjectManagerBasic.TakeDisplayObject(*NewPolyHedra::PalletManager::sTake(*PolyHedraGenerate::RegularHexaHedron(1.0f)));
 
 	/* Problem
 		some commands like belt have variants
@@ -127,18 +130,18 @@ void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
 		return;
 	}
 
-	NewPolyHedra::Pallet * pallet = Context.PalletManager.Take(polyhedra);
-	pallet -> Name = cmd_args.ToString(1);
+	NewPolyHedra::Pallet & pallet = Context.PalletManager.Take(*polyhedra);
+	pallet.Name = cmd_args.ToString(1);
 
-	NewPolyHedra::BaseDisplayObject * manager = Context.ObjectManagerBasic.DisplayType.NewBase(*pallet);
-	PolyHedras.Insert(manager);
+	NewPolyHedra::Basic3D::DisplayObject & manager = Context.ObjectManagerBasic.TakeDisplayObject(pallet);
+	PolyHedras.Insert(&manager);
 }
 void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 7)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 7"); }
 
 	std::string name = cmd_args.ToString(0);
-	NewPolyHedra::BaseDisplayObject * object = MissingPolyHedra;
+	NewPolyHedra::Basic3D::DisplayObject * object = MissingPolyHedra;
 	for (unsigned int i = 0; i < PolyHedras.Count(); i++)
 	{
 		if (PolyHedras[i] -> PalletObject.Name == name)
@@ -168,7 +171,7 @@ void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 	Context.Collection.Objects.Insert(new SceneObject_PolyHedraObject(object, trans));
 }
 
-#include "NewPolyHedra/DataType/TransScaleColor3D/Logical/Object.hpp"
+#include "Special/TransScaleColor3D/Logical/Object.hpp"
 //#include "NewPolyHedra/PalletObjectData.hpp"
 
 void SceneParsingData::Parse_LightAmbient(const TextCommand::Args & cmd_args)

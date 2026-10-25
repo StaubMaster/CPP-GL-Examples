@@ -6,7 +6,7 @@
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/EulerAngle3D.hpp"
 
-# include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
+# include "Special/TransScaleColor3D/Object.hpp"
 
 namespace Change3D
 {

@@ -15,24 +15,36 @@ template<typename LogicalData> NewPolyHedra::DataManager<LogicalData>::DataManag
 	Current = this;
 }
 
-template<typename LogicalData> NewPolyHedra::BaseLogicalObjectManager & NewPolyHedra::DataManager<LogicalData>::LogicalBase()
+template<typename LogicalData> NewPolyHedra::TypeLogicalObjectManager<LogicalData> & NewPolyHedra::DataManager<LogicalData>::LogicalManager()
 {
-	return LogicalType;
+	return _LogicalManager;
 }
-template<typename LogicalData> const NewPolyHedra::BaseLogicalObjectManager & NewPolyHedra::DataManager<LogicalData>::LogicalBase() const
+template<typename LogicalData> const NewPolyHedra::TypeLogicalObjectManager<LogicalData> & NewPolyHedra::DataManager<LogicalData>::LogicalManager() const
 {
-	return LogicalType;
+	return _LogicalManager;
 }
-
-
-
-
-
-template<typename LogicalData, typename TypeInstanceData> NewPolyHedra::BaseDisplayObjectManager & NewPolyHedra::TypeManager<LogicalData, TypeInstanceData>::DisplayBase()
+/*template<typename LogicalData> NewPolyHedra::TypeLogicalObject<LogicalData> * NewPolyHedra::DataManager<LogicalData>::NewLogicalObject(Pallet & pallet)
 {
-	return DisplayType;
+	return _LogicalManager.New(pallet);
+}*/
+
+
+
+
+
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayObjectManager<LogicalData, DisplayData> & NewPolyHedra::TypeManager<LogicalData, DisplayData>::DisplayManager()
+{
+	return _DisplayManager;
 }
-template<typename LogicalData, typename TypeInstanceData> const NewPolyHedra::BaseDisplayObjectManager & NewPolyHedra::TypeManager<LogicalData, TypeInstanceData>::DisplayBase() const
+template<typename LogicalData, typename DisplayData> const NewPolyHedra::TypeDisplayObjectManager<LogicalData, DisplayData> & NewPolyHedra::TypeManager<LogicalData, DisplayData>::DisplayManager() const
 {
-	return DisplayType;
+	return _DisplayManager;
+}
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData> * NewPolyHedra::TypeManager<LogicalData, DisplayData>::FindDisplayObject(const Pallet & pallet)
+{
+	return _DisplayManager.Find(pallet);
+}
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData> & NewPolyHedra::TypeManager<LogicalData, DisplayData>::TakeDisplayObject(Pallet & pallet)
+{
+	return _DisplayManager.Take(pallet);
 }

@@ -11,7 +11,8 @@ template<typename LogicalData> struct TypeLogicalObjectManager : public BaseLogi
 	private:
 	static TypeLogicalObjectManager *	Current;
 	public:
-	static TypeLogicalObject<LogicalData> *		sNewType(Pallet * pallet);
+	static TypeLogicalObject<LogicalData> *		sNew(Pallet & pallet);
+	static TypeLogicalObject<LogicalData> *		sNew(Pallet * pallet);
 
 	public:
 	virtual ~TypeLogicalObjectManager();
@@ -19,9 +20,20 @@ template<typename LogicalData> struct TypeLogicalObjectManager : public BaseLogi
 	TypeLogicalObjectManager(const TypeLogicalObjectManager & other) = delete;
 	TypeLogicalObjectManager & operator=(const TypeLogicalObjectManager & other) = delete;
 
+	private:
+	Container::Binary<TypeLogicalObject<LogicalData> *>		Objects;
+
 	public:
-	BaseLogicalObject *					NewBase(Pallet * pallet) override;
-	TypeLogicalObject<LogicalData> *	NewType(Pallet * pallet);
+	unsigned int	Count() const override;
+
+	public:
+	TypeLogicalObject<LogicalData> &	New(Pallet & pallet) override;
+
+	public:
+	void	Clean() override;
+
+	public:
+	void	InstancesMake() override;
 };
 };
 

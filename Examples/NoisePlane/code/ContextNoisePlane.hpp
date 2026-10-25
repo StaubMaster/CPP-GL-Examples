@@ -180,15 +180,6 @@ VoxelHit		ViewHit;
 Axis3D::Rel		ViewHit_Axis0;
 Axis3D::Rel		ViewHit_Axis1;
 
-void	ViewEntityUpdate_Change(Trans3D change, const FrameTime & frame_time);
-void	ViewEntityUpdate_Done();
-void	ViewEntityUpdate(Trans3D change, const FrameTime & frame_time);
-
-void	ViewRayUpdate_Sync();
-void	ViewRayUpdate_Hit();
-void	ViewRayUpdate_HitDo();
-void	ViewRayUpdate();
-
 void	ViewUpdate(Trans3D change, const FrameTime & frame_time);
 
 void	ViewPosText(std::stringstream & ss);
@@ -204,33 +195,21 @@ Buffer::Uniform				LightBuffer;
 
 
 
-void	MakeVoxels();
-
-void	Make();
-
-
-
-// hardcode Shaders into Managers
-// hardcode Attributes into Managers
-// "Template" for Attributes in Managers with InstanceManagers
-// also organize Shader Files
-//
-// a lot of the managers are siminal with the bool flags and function names
-// make a Base ? to organize
 void	ChangeMedia();
 
-// Valgrind is very slow here ?
 void	GraphicsCreate();
 void	GraphicsDelete();
-
-void	Init() override;
-void	Free() override;
-
-
 
 void	GraphicsClear();
 void	GraphicsMake();
 void	GraphicsDraw();
+
+void	Init() override;
+void	Free() override;
+
+void	Make();
+
+void	MakeVoxels();
 
 
 

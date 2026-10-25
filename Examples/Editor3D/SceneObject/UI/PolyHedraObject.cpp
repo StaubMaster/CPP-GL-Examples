@@ -58,7 +58,7 @@ void UI::Control::PolyHedraObject::Syncronize()
 {
 	if (Object != nullptr)
 	{
-		const PolyHedra & polyhedra = *(Object -> Graphics -> PalletObject.Object);
+		const PolyHedra & polyhedra = *(Object -> DisplayObject -> PalletObject.Object);
 		std::stringstream ss;
 		//ss.str(std::string()); ss << "Name:" << (polyhedra.Name); PalletName.SetText(ss.str());
 		ss.str(std::string()); ss << "Name:" << (polyhedra.File.Name()); PalletName.SetText(ss.str());

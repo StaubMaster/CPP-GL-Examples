@@ -93,9 +93,6 @@ struct ChunkContainer
 	void	UpdateChunksContainer();
 
 	public:
-	VoxelHit	HitVoxel(RayF3 ray);
-
-	public:
 	Container::Array<BoxF3>		CollisionBoxes(const BoxI3 & range);
 };
 

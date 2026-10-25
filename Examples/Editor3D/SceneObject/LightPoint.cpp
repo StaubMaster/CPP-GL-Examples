@@ -12,7 +12,10 @@
 SceneObject_LightPoint::~SceneObject_LightPoint()
 { }
 SceneObject_LightPoint::SceneObject_LightPoint()
-{ }
+{
+	Data.Data.Scale = VectorF3(1.0f);
+	Data.Data.Color = ColorF4();
+}
 
 
 

@@ -61,13 +61,16 @@
 
 # include "NewPolyHedra/Type/Object.hpp"
 
-# include "NewPolyHedra/DataType/Basic3D/Layout.hpp"
-# include "NewPolyHedra/DataType/Basic3D/Object.hpp"
-# include "NewPolyHedra/DataType/Basic3D/Manager.hpp"
+# include "Special/Basic3D/Logical/Data.hpp" // not including this here caues a problem somewhere else
+# include "Special/Basic3D/Logical/ObjectManager.hpp"
+# include "Special/Basic3D/Object.hpp"
+# include "Special/Basic3D/Manager.hpp"
+# include "Special/Basic3D/Layout.hpp"
 
-# include "NewPolyHedra/DataType/TransScaleColor3D/Layout.hpp"
-# include "NewPolyHedra/DataType/TransScaleColor3D/Object.hpp"
-# include "NewPolyHedra/DataType/TransScaleColor3D/Manager.hpp"
+# include "Special/TransScaleColor3D/Logical/Data.hpp"
+# include "Special/TransScaleColor3D/Object.hpp"
+# include "Special/TransScaleColor3D/Manager.hpp"
+# include "Special/TransScaleColor3D/Layout.hpp"
 
 struct Light3DContext : public ContextBase
 {

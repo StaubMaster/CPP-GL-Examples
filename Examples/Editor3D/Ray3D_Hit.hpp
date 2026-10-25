@@ -16,7 +16,7 @@ namespace NewPolyHedra
 struct Pallet;
 struct BaseDisplayObject;
 template<typename TypeLogicalData> struct TypeLogicalObject;
-template<typename TypeLogicalData> struct Type_Object;
+template<typename TypeLogicalData> struct TypeObject;
 };
 
 // these use Trans.forward()
@@ -29,7 +29,7 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const TypeLogicalData & data);
 template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Pallet & pallet, const TypeLogicalData & data);
 template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::BaseDisplayObject & manager, const TypeLogicalData & data);
-template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::Type_Object<TypeLogicalData> & object);
+template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::TypeObject<TypeLogicalData> & object);
 template<typename TypeLogicalData> RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const NewPolyHedra::TypeLogicalObject<TypeLogicalData> & object);
 
 #endif

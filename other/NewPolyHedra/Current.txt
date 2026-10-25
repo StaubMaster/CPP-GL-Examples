@@ -1,0 +1,15 @@
+
+a lot of the Managers use a static Current Pointer
+
+the point is so that you dont need to know the actual Manager to make an Object
+
+but all the static function need to be able to return null in case the Manager does not exist
+
+
+
+the Manager should allways exist when that Type is being used
+
+so just throw an error if the Manager does not exist
+
+also throw an error if you try to make the same Manager more then once
+

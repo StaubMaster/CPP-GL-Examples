@@ -8,16 +8,26 @@
 
 namespace NewPolyHedra
 {
+//template<typename LogicalData> struct TypeLogicalObject;
+//template<typename LogicalData> struct TypeLogicalObjectManager;
+//template<typename LogicalData> struct DataDisplayObject;
+//template<typename LogicalData> struct DataDisplayObjectManager;
 template<typename LogicalData> struct DataManager : public BaseManager
 {
 	public:
 	static DataManager *	Current;
 
+	private:
+	TypeLogicalObjectManager<LogicalData>		_LogicalManager;
 	public:
-	TypeLogicalObjectManager<LogicalData>		LogicalType;
+			TypeLogicalObjectManager<LogicalData> &		LogicalManager()					override;
+	const	TypeLogicalObjectManager<LogicalData> &		LogicalManager() const				override;
+
 	public:
-			BaseLogicalObjectManager &		LogicalBase()		override;
-	const	BaseLogicalObjectManager &		LogicalBase() const	override;
+	virtual			DataDisplayObjectManager<LogicalData> &		DisplayManager()							= 0;
+	virtual const	DataDisplayObjectManager<LogicalData> &		DisplayManager() const						= 0;
+	virtual			DataDisplayObject<LogicalData> *			FindDisplayObject(const Pallet & pallet)	= 0;
+	virtual			DataDisplayObject<LogicalData> &			TakeDisplayObject(      Pallet & pallet)	= 0;
 
 	public:
 	virtual ~DataManager();
@@ -28,13 +38,17 @@ template<typename LogicalData> struct DataManager : public BaseManager
 
 
 
+//template<typename LogicalData, typename DisplayData> struct TypeDisplayObject;
+//template<typename LogicalData, typename DisplayData> struct TypeDisplayObjectManager;
 template<typename LogicalData, typename DisplayData> struct TypeManager : public DataManager<LogicalData>
 {
+	private:
+	TypeDisplayObjectManager<LogicalData, DisplayData>		_DisplayManager;
 	public:
-	TypeDisplayObjectManager<LogicalData, DisplayData>	DisplayType;
-	public:
-			BaseDisplayObjectManager &		DisplayBase()		override;
-	const	BaseDisplayObjectManager &		DisplayBase() const	override;
+			TypeDisplayObjectManager<LogicalData, DisplayData> &	DisplayManager()							override;
+	const	TypeDisplayObjectManager<LogicalData, DisplayData> &	DisplayManager() const						override;
+			TypeDisplayObject<LogicalData, DisplayData> *			FindDisplayObject(const Pallet & pallet)	override;
+			TypeDisplayObject<LogicalData, DisplayData> &			TakeDisplayObject(      Pallet & pallet)	override;
 
 	public:
 	~TypeManager() = default;

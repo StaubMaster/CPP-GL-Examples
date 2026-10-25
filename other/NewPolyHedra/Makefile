@@ -6,8 +6,6 @@ FANCY_NAME := NewPolyHedra
 
 FILES := \
 \
-	NewPolyHedra/Manager.cpp \
-	\
 	NewPolyHedra/Pallet/.cpp \
 	NewPolyHedra/Pallet/Full/Layout.cpp \
 	NewPolyHedra/Pallet/Wire/Layout.cpp \
@@ -18,14 +16,16 @@ FILES := \
 	NewPolyHedra/Base/Display/Object.cpp \
 	NewPolyHedra/Base/Display/ObjectManager.cpp \
 	NewPolyHedra/Base/Manager.cpp \
-\
-	NewPolyHedra/DataType/Basic3D/Display/Data.cpp \
-	NewPolyHedra/DataType/Basic3D/Layout.cpp \
-	NewPolyHedra/DataType/Basic3D/Special.cpp \
 	\
-	NewPolyHedra/DataType/TransScaleColor3D/Display/Data.cpp \
-	NewPolyHedra/DataType/TransScaleColor3D/Layout.cpp \
-	NewPolyHedra/DataType/TransScaleColor3D/Special.cpp \
+	NewPolyHedra/Manager.cpp \
+\
+	Special/Basic3D/Display/Data.cpp \
+	Special/Basic3D/Special.cpp \
+	Special/Basic3D/Layout.cpp \
+	\
+	Special/TransScaleColor3D/Display/Data.cpp \
+	Special/TransScaleColor3D/Special.cpp \
+	Special/TransScaleColor3D/Layout.cpp \
 
 DIR_SRC := .
 DIR_OBJ := .

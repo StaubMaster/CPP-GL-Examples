@@ -10,13 +10,14 @@
 # include "Generics/Function/Pointer.hpp"
 # include "SceneObject/SceneObject.hpp"
 
+# include "Special/Basic3D/Display/Object.hpp"
+# include "Special/Basic3D/Display/Data.hpp"
+
 struct Light3DContext;
 
 class PolyHedraFileCollection;
 
 namespace TextCommand { class Args; };
-
-namespace NewPolyHedra { struct BaseDisplayObject; };
 
 struct SceneParsingData
 {
@@ -35,12 +36,9 @@ struct SceneParsingData
 
 	Container::Binary<ParsingCommand*>	Commands;
 
-	//PolyHedraPalletManager *						MissingPolyHedra;
-	//Container::Binary<PolyHedraPalletManager*>	PolyHedras;
-
 	// these should be Pallets ?
-	NewPolyHedra::BaseDisplayObject *						MissingPolyHedra;
-	Container::Binary<NewPolyHedra::BaseDisplayObject*>		PolyHedras;
+	NewPolyHedra::Basic3D::DisplayObject *							MissingPolyHedra;
+	Container::Binary<NewPolyHedra::Basic3D::DisplayObject *>		PolyHedras;
 
 	ParsingVariable::FloatMemory	VariableFloats;
 	void	PutFloat(const TextCommand::Args & cmd_args);

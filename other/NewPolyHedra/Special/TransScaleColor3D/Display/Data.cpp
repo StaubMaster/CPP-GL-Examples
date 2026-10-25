@@ -1,5 +1,5 @@
-#include "NewPolyHedra/DataType/TransScaleColor3D/Display/Data.hpp"
-#include "NewPolyHedra/DataType/TransScaleColor3D/Logical/Data.hpp"
+#include "Special/TransScaleColor3D/Display/Data.hpp"
+#include "Special/TransScaleColor3D/Logical/Data.hpp"
 
 
 

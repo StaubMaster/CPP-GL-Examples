@@ -167,7 +167,7 @@ void UI::Control::ScrollBox::RelayScroll(ScrollArgs args)
 	if (ScrollBar.IsEnabled())
 	{
 		float val = ScrollBar.GetValueY();
-		val -= args.Y * 5;
+		val -= args.Value.Y * 5;
 		ScrollBar.SetValueY(val);
 	}
 }

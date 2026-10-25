@@ -5,13 +5,9 @@
 
 
 
-SceneObject_PolyHedraObject::~SceneObject_PolyHedraObject()
-{ }
-SceneObject_PolyHedraObject::SceneObject_PolyHedraObject()
-{ }
-SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(NewPolyHedra::BaseDisplayObject * manager, Trans3D trans)
+SceneObject_PolyHedraObject::SceneObject_PolyHedraObject(NewPolyHedra::Basic3D::DisplayObject * display, Trans3D trans)
 {
-	Data.Graphics = manager;
+	Data.DisplayObject = display;
 	Data.Data.Trans = trans;
 }
 

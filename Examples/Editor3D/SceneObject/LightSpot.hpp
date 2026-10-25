@@ -4,7 +4,8 @@
 # include "SceneObject.hpp"
 # include "ValueType/Light/Spot.hpp"
 
-# include "NewPolyHedra/DataType/Basic3D/Logical/Object.hpp"
+# include "Special/Basic3D/Logical/Object.hpp"
+# include "Special/Basic3D/Logical/Data.hpp"
 
 struct SceneObjectDisplayMode;
 struct SceneObject_LightSpot : public SceneObject

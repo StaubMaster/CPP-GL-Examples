@@ -1,5 +1,7 @@
 #include "UI/Change3D/VectorF3.hpp"
 
+#include "Special/TransScaleColor3D/Logical/Data.hpp"
+
 #include "Ray3D_Hit.hpp"
 #include "ValueType/Ray/Hit/F3Type.hpp"
 #include "ValueType/Interact/3D.hpp"
@@ -13,9 +15,9 @@
 
 void Change3D::VectorF3::IndicatorsInit(const DirectoryInfo & dir)
 {
-	MoveAxisX.Create(PolyHedraParser::Load(dir.File("MoveAxis/AxisX.polyhedra"), nullptr, nullptr));
-	MoveAxisY.Create(PolyHedraParser::Load(dir.File("MoveAxis/AxisY.polyhedra"), nullptr, nullptr));
-	MoveAxisZ.Create(PolyHedraParser::Load(dir.File("MoveAxis/AxisZ.polyhedra"), nullptr, nullptr));
+	MoveAxisX.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisX.polyhedra"), nullptr, nullptr));
+	MoveAxisY.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisY.polyhedra"), nullptr, nullptr));
+	MoveAxisZ.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisZ.polyhedra"), nullptr, nullptr));
 }
 
 void Change3D::VectorF3::IndicatorsShow()

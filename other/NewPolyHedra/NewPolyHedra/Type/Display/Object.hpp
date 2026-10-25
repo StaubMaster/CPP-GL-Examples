@@ -33,7 +33,7 @@ template<typename LogicalData, typename DisplayData> struct TypeDisplayObject : 
 	public:
 	TypeDisplayObject(Pallet & pallet);
 
-	private:
+	private: public:
 	Container::Binary<DisplayData>		InstancesFullData;
 	Container::Binary<DisplayData>		InstancesWireData;
 	public:

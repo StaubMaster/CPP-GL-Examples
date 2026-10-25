@@ -10,19 +10,19 @@ struct Pallet;
 struct BaseLogicalObject;
 struct BaseLogicalObjectManager
 {
-	protected:
-	Container::Binary<BaseLogicalObject*>		Datas;
+//	protected:
+//	Container::Binary<BaseLogicalObject*>		Datas;
 	public:
-	unsigned int	Count() const;
+	virtual unsigned int	Count() const = 0;
 
 	public:
-	virtual BaseLogicalObject *		NewBase(Pallet * pallet) = 0;
+	virtual BaseLogicalObject &		New(Pallet & pallet) = 0;
 
 	public:
-	void	Clean();
+	virtual void	Clean() = 0;
 
 	public:
-	void	InstancesMake();
+	virtual void	InstancesMake() = 0;
 };
 };
 

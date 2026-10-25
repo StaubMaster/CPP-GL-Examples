@@ -1,5 +1,7 @@
 #include "UI/Change3D/EulerAngle3D.hpp"
 
+#include "Special/TransScaleColor3D/Logical/Data.hpp"
+
 #include "Ray3D_Hit.hpp"
 #include "ValueType/Ray/Hit/F3Type.hpp"
 #include "ValueType/Interact/3D.hpp"
@@ -13,9 +15,9 @@
 
 void Change3D::EulerAngle3D::IndicatorsInit(const DirectoryInfo & dir)
 {
-	SpinRingX.Create(PolyHedraParser::Load(dir.File("SpinRing/RingX.polyhedra"), nullptr, nullptr));
-	SpinRingY.Create(PolyHedraParser::Load(dir.File("SpinRing/RingY.polyhedra"), nullptr, nullptr));
-	SpinRingZ.Create(PolyHedraParser::Load(dir.File("SpinRing/RingZ.polyhedra"), nullptr, nullptr));
+	SpinRingX.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingX.polyhedra"), nullptr, nullptr));
+	SpinRingY.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingY.polyhedra"), nullptr, nullptr));
+	SpinRingZ.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingZ.polyhedra"), nullptr, nullptr));
 }
 
 void Change3D::EulerAngle3D::IndicatorsShow()

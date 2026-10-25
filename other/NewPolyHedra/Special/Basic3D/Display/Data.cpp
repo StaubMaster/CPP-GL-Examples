@@ -1,5 +1,5 @@
-#include "NewPolyHedra/DataType/Basic3D/Display/Data.hpp"
-#include "NewPolyHedra/DataType/Basic3D/Logical/Data.hpp"
+#include "Special/Basic3D/Display/Data.hpp"
+#include "Special/Basic3D/Logical/Data.hpp"
 
 
 

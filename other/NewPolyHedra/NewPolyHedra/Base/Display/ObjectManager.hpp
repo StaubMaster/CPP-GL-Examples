@@ -1,13 +1,11 @@
 #ifndef  NEW_POLYHEDRA_BASE_DISPLAY_OBJECT_MANAGER_HPP
 # define NEW_POLYHEDRA_BASE_DISPLAY_OBJECT_MANAGER_HPP
 
-# include "Generics/Container/Binary.hpp"
-
-#include "NewPolyHedra/Pallet/Full/Layout.hpp"
-#include "NewPolyHedra/Pallet/Wire/Layout.hpp"
-
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/Attribute/General/Layout.hpp"
+
+# include "NewPolyHedra/Pallet/Full/Layout.hpp"
+# include "NewPolyHedra/Pallet/Wire/Layout.hpp"
 
 namespace NewPolyHedra
 {
@@ -17,26 +15,20 @@ struct BaseDisplayObject;
 struct BaseDisplayObjectManager
 {
 	public:
-	virtual ~BaseDisplayObjectManager();
+	virtual ~BaseDisplayObjectManager() = default;
 	BaseDisplayObjectManager() = default;
 	BaseDisplayObjectManager(const BaseDisplayObjectManager & other) = delete;
 	BaseDisplayObjectManager & operator=(const BaseDisplayObjectManager & other) = delete;
 
-	protected:
-	Container::Binary<BaseDisplayObject*>	Objects;
-	public:
-	unsigned int	Count() const;
+	public:		virtual unsigned int	Count() const = 0;
 
-	private:
-	virtual	BaseDisplayObject *		NewBase(Pallet & pallet) = 0;
+	public:		virtual BaseDisplayObject *		Find(const Pallet & pallet) const = 0;
+	private:	virtual BaseDisplayObject &		Make(      Pallet & pallet) = 0;
+	public:		virtual BaseDisplayObject &		Take(      Pallet & pallet) = 0;
 
-	public:		BaseDisplayObject *		Find(const Pallet & pallet) const;
-	private:	BaseDisplayObject &		Make(      Pallet & pallet);
-	public:		BaseDisplayObject &		Take(      Pallet & pallet);
-
-	public:		BaseDisplayObject *		Find(const Pallet * pallet) const;
-	private:	BaseDisplayObject *		Make(      Pallet * pallet);
-	public:		BaseDisplayObject *		Take(      Pallet * pallet);
+//	public:		virtual BaseDisplayObject *		Find(const Pallet * pallet) const = 0;
+//	private:	virtual BaseDisplayObject *		Make(      Pallet * pallet) = 0;
+//	public:		virtual BaseDisplayObject *		Take(      Pallet * pallet) = 0;
 
 	public:
 	::Shader::Base	ShaderFull;
@@ -49,16 +41,15 @@ struct BaseDisplayObjectManager
 	::Attribute::Layout *	BufferWireInstLayout = nullptr;
 
 	public:
-	unsigned int	InstancesFullCount() const;
-	unsigned int	InstancesWireCount() const;
+	virtual unsigned int	InstancesFullCount() const = 0;
+	virtual unsigned int	InstancesWireCount() const = 0;
+	virtual void			InstancesClear() = 0;
 
-	void	InstancesClear();
-	//void	InstancesMake();
-
-	void	GraphicsCreate();
-	void	GraphicsDelete();
-	void	GraphicsDrawFull();
-	void	GraphicsDrawWire();
+	public:
+	virtual void	GraphicsCreate() = 0;
+	virtual void	GraphicsDelete() = 0;
+	virtual void	GraphicsDrawFull() = 0;
+	virtual void	GraphicsDrawWire() = 0;
 };
 };
 
