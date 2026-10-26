@@ -5,7 +5,16 @@
 # include "Control/Controls/Label.hpp"
 # include "ValueTypeUI/Trans3D.hpp"
 
-# include "Special/Basic3D/Logical/Object.hpp"
+//# include "Special/Basic3D/Logical/Object.hpp"
+namespace NewPolyHedra
+{
+template<typename LogicalData> struct TypeLogicalObject;
+namespace Basic3D
+{
+struct LogicalData;
+typedef NewPolyHedra::TypeLogicalObject<LogicalData> LogicalObject;
+};
+};
 
 struct SceneObject_PolyHedraObject;
 

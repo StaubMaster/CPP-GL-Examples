@@ -3,9 +3,10 @@
 
 # include "NewPolyHedra/Type/Object.hpp"
 
+# include "Special/TransScaleColor3D/Logical/Data.hpp"
+
 namespace TransScaleColor3D
 {
-struct LogicalData;
 typedef NewPolyHedra::TypeObject<LogicalData> Object;
 };
 

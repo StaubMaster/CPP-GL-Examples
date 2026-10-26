@@ -69,13 +69,10 @@ vec4 proj(in vec3 p_inn)
 
 	float s = 1.0 / tan(FOV / 2.0);
 
-	p_out.x = p_inn.x * s;
-	p_out.y = p_inn.y * s;
+	p_out.x = p_inn.x * s * DisplaySize.Ratio.x;
+	p_out.y = p_inn.y * s * DisplaySize.Ratio.y;
 	p_out.z = p_inn.z * Depth.Factors[5] - Depth.Factors[6];
 	p_out.w = p_inn.z;
-
-	p_out.x = p_out.x * DisplaySize.Ratio.x;
-	p_out.y = p_out.y * DisplaySize.Ratio.y;
 
 	return p_out;
 }

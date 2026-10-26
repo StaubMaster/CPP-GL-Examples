@@ -3,6 +3,8 @@
 
 # include "NewPolyHedra/Type/Object.hpp"
 
+# include "Special/Basic3D/Logical/Data.hpp"
+
 namespace NewPolyHedra
 {
 namespace Basic3D

@@ -2,6 +2,7 @@
 # define NEW_POLYHEDRA_TYPE_DISPLAY_OBJECT_MANAGER_HPP
 
 # include "NewPolyHedra/Base/Display/ObjectManager.hpp"
+# include "NewPolyHedra/Type/Display/Object.hpp"
 
 namespace NewPolyHedra
 {

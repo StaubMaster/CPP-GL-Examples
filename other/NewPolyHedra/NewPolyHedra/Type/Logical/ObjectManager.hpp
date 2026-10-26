@@ -2,10 +2,10 @@
 # define NEW_POLYHEDRA_TYPE_LOGICAL_OBJECT_MANAGER_HPP
 
 # include "NewPolyHedra/Base/Logical/ObjectManager.hpp"
+# include "NewPolyHedra/Type/Logical/Object.hpp"
 
 namespace NewPolyHedra
 {
-template<typename LogicalData> struct TypeLogicalObject;
 template<typename LogicalData> struct TypeLogicalObjectManager : public BaseLogicalObjectManager
 {
 	private:

@@ -3,11 +3,12 @@
 
 # include "NewPolyHedra/Type/Logical/Object.hpp"
 
+# include "Special/Basic3D/Logical/Data.hpp"
+
 namespace NewPolyHedra
 {
 namespace Basic3D
 {
-struct LogicalData;
 typedef NewPolyHedra::TypeLogicalObject<LogicalData> LogicalObject;
 };
 };

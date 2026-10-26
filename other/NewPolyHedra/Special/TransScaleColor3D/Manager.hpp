@@ -3,10 +3,11 @@
 
 # include "NewPolyHedra/Type/Manager.hpp"
 
+# include "Special/TransScaleColor3D/Logical/Data.hpp"
+# include "Special/TransScaleColor3D/Display/Data.hpp"
+
 namespace TransScaleColor3D
 {
-struct LogicalData;
-struct DisplayData;
 typedef NewPolyHedra::TypeManager <LogicalData, DisplayData> Manager;
 };
 

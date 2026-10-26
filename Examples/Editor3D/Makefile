@@ -30,6 +30,11 @@ FILES := \
 	NewPolyHedra/Init/Pallet.cpp \
 	NewPolyHedra/Init/Basic3D.cpp \
 	NewPolyHedra/Init/TransScaleColor3D.cpp \
+	\
+	NewPolyHedra/UserInterface/Display/Data.cpp \
+	NewPolyHedra/UserInterface/Layout.cpp \
+	NewPolyHedra/UserInterface/Special.cpp \
+	NewPolyHedra/UserInterface/Init.cpp \
 \
 	Context.cpp \
 	main.cpp \

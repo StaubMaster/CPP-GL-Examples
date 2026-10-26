@@ -8,10 +8,6 @@
 
 namespace NewPolyHedra
 {
-//template<typename LogicalData> struct TypeLogicalObject;
-//template<typename LogicalData> struct TypeLogicalObjectManager;
-//template<typename LogicalData> struct DataDisplayObject;
-//template<typename LogicalData> struct DataDisplayObjectManager;
 template<typename LogicalData> struct DataManager : public BaseManager
 {
 	public:
@@ -38,8 +34,6 @@ template<typename LogicalData> struct DataManager : public BaseManager
 
 
 
-//template<typename LogicalData, typename DisplayData> struct TypeDisplayObject;
-//template<typename LogicalData, typename DisplayData> struct TypeDisplayObjectManager;
 template<typename LogicalData, typename DisplayData> struct TypeManager : public DataManager<LogicalData>
 {
 	private:

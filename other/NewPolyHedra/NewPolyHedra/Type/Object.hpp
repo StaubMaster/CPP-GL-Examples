@@ -47,9 +47,14 @@ template<typename LogicalData> struct TypeObject
 	TypeObject(PolyHedra & polyhedra);
 
 	public:
+	//bool	Exists(); // same as Is(), but more in line with Delete() and Create()
 	void	Delete();
+	// Create()
+	// Creates a new Object with the same Pallet
 	void	Create(Pallet & pallet);
 	void	Create(PolyHedra & polyhedra);
+	// these 2 should Delete, then Create
+	// right now if they already exist, they just dont do anything
 };
 };
 

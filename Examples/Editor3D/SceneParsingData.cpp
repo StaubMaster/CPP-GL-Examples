@@ -71,7 +71,7 @@ SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & conte
 	, PolyHedraFileCollection(file_collection)
 	, PolyHedras()
 {
-	MissingPolyHedra = &Context.ObjectManagerBasic.TakeDisplayObject(*NewPolyHedra::PalletManager::sTake(*PolyHedraGenerate::RegularHexaHedron(1.0f)));
+	MissingPolyHedra = &Context.NewPolyHedraManagerBasic.TakeDisplayObject(*NewPolyHedra::PalletManager::sTake(*PolyHedraGenerate::RegularHexaHedron(1.0f)));
 
 	/* Problem
 		some commands like belt have variants
@@ -130,10 +130,10 @@ void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
 		return;
 	}
 
-	NewPolyHedra::Pallet & pallet = Context.PalletManager.Take(*polyhedra);
+	NewPolyHedra::Pallet & pallet = Context.NewPolyHedraPalletManager.Take(*polyhedra);
 	pallet.Name = cmd_args.ToString(1);
 
-	NewPolyHedra::Basic3D::DisplayObject & manager = Context.ObjectManagerBasic.TakeDisplayObject(pallet);
+	NewPolyHedra::Basic3D::DisplayObject & manager = Context.NewPolyHedraManagerBasic.TakeDisplayObject(pallet);
 	PolyHedras.Insert(&manager);
 }
 void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)

@@ -28,17 +28,20 @@
 
 
 // NewPolyHedra
-#include "Special/TransScaleColor3D/Display/Object.hpp"
-
 #include "NewPolyHedra/Init/Pallet.hpp"
 #include "NewPolyHedra/Init/Basic3D.hpp"
 #include "NewPolyHedra/Init/TransScaleColor3D.hpp"
+#include "NewPolyHedra/UserInterface/Init.hpp"
+
+#include "Special/TransScaleColor3D/Display/Object.hpp"
+#include "NewPolyHedra/UserInterface/Object.hpp"
 
 void Light3DContext::PolyHedra_ChangeMedia()
 {
-	NewPolyHedra::Pallet_ChangeMedia(PalletManager);
-	NewPolyHedra::Basic3D::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerBasic.DisplayManager());
-	TransScaleColor3D::ChangeMedia(MediaDirectory, LayoutMultiform, ObjectManagerTSC.DisplayManager());
+	NewPolyHedra::Pallet_ChangeMedia(NewPolyHedraPalletManager);
+	NewPolyHedra::Basic3D::ChangeMedia(MediaDirectory, LayoutMultiform, NewPolyHedraManagerBasic.DisplayManager());
+	TransScaleColor3D::ChangeMedia(MediaDirectory, LayoutMultiform, NewPolyHedraManagerTSC.DisplayManager());
+	NewPolyHedra::UserInterface::ChangeMedia(MediaDirectory, LayoutMultiform, NewPolyHedraManagerUI.DisplayManager());
 }
 
 
@@ -100,7 +103,7 @@ void Light3DContext::SceneInitCubes()
 {
 	Cube = PolyHedraGenerate::RegularHexaHedron();
 	CenterCube = new SceneObject_PolyHedraObject();
-	CenterCube -> Data.DisplayObject = &ObjectManagerBasic.TakeDisplayObject(PalletManager.Take(*Cube));
+	CenterCube -> Data.DisplayObject = &NewPolyHedraManagerBasic.TakeDisplayObject(NewPolyHedraPalletManager.Take(*Cube));
 	Collection.Objects.Insert(CenterCube);
 
 	/* Random
@@ -164,16 +167,16 @@ void Light3DContext::InitLights()
 	DirectoryInfo dir(MediaDirectory.Directory("YMT/Light"));
 	if (Cube_UI_manager == nullptr)
 	{
-		Cube_UI_manager = &ObjectManagerTSC.TakeDisplayObject(
-			PalletManager.Take(
+		Cube_UI_manager = &NewPolyHedraManagerTSC.TakeDisplayObject(
+			NewPolyHedraPalletManager.Take(
 				*Cube
 			)
 		);
 	}
 	if (stage_light_manager == nullptr)
 	{
-		stage_light_manager = &ObjectManagerBasic.TakeDisplayObject(
-			PalletManager.Take(
+		stage_light_manager = &NewPolyHedraManagerBasic.TakeDisplayObject(
+			NewPolyHedraPalletManager.Take(
 				*PolyHedraFileCollection.FindMake(
 					dir.File("Stage_Light.polyhedra.ymt")
 				)
@@ -182,8 +185,8 @@ void Light3DContext::InitLights()
 	}
 	if (light_bulb_manager == nullptr)
 	{
-		light_bulb_manager = &ObjectManagerTSC.TakeDisplayObject(
-			PalletManager.Take(
+		light_bulb_manager = &NewPolyHedraManagerTSC.TakeDisplayObject(
+			NewPolyHedraPalletManager.Take(
 				*PolyHedraFileCollection.FindMake(
 					dir.File("LightBulb.polyhedra")
 				)
@@ -409,9 +412,9 @@ void Light3DContext::PolyHedraPalletChangeFunc(ClickArgs args)
 			UIPolyHedraPalletList.Show();
 			UIPolyHedraPalletList.List.ItemsClear();
 			UIPolyHedraPalletList.Object = nullptr;
-			for (unsigned int i = 0; i < PalletManager.Pallets.Count(); i++)
+			for (unsigned int i = 0; i < NewPolyHedraPalletManager.Pallets.Count(); i++)
 			{
-				NewPolyHedra::Pallet * pallet = PalletManager.Pallets[i];
+				NewPolyHedra::Pallet * pallet = NewPolyHedraPalletManager.Pallets[i];
 				//UIPolyHedraPalletList.List.ItemNew(pallet -> Object -> File.Path.ToString(), pallet);
 				UIPolyHedraPalletList.List.ItemNew(pallet -> Object -> File.Path.Name(), pallet);
 			}
@@ -429,7 +432,7 @@ void Light3DContext::PolyHedraPalletUpdate()
 			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(Object_Selected);
 			if (UIPolyHedraPalletList.Object != nullptr && obj != nullptr)
 			{
-				obj -> Data.DisplayObject = &ObjectManagerBasic.TakeDisplayObject(*((NewPolyHedra::Pallet *)UIPolyHedraPalletList.Object));
+				obj -> Data.DisplayObject = &NewPolyHedraManagerBasic.TakeDisplayObject(*((NewPolyHedra::Pallet *)UIPolyHedraPalletList.Object));
 			}
 			DoPolyHedraPalletChange = false;
 		}
@@ -445,9 +448,10 @@ Light3DContext::Light3DContext(const Container::Array<FileInfo> & files)
 {
 	MediaDirectory = DirectoryInfo("../../media/"); // Set Media Directory with MakeFile Macro ?
 
-	NewPolyHedra_Manager.PalletManager = &PalletManager;
-	NewPolyHedra_Manager.BaseManagers.Insert(&ObjectManagerBasic);
-	NewPolyHedra_Manager.BaseManagers.Insert(&ObjectManagerTSC);
+	NewPolyHedraManager.PalletManager = &NewPolyHedraPalletManager;
+	NewPolyHedraManager.BaseManagers.Insert(&NewPolyHedraManagerBasic);
+	NewPolyHedraManager.BaseManagers.Insert(&NewPolyHedraManagerTSC);
+	NewPolyHedraManager.BaseManagers.Insert(&NewPolyHedraManagerUI);
 
 	DisplayMode.Indicators = SceneObjectDisplayMode::EIndicators::Show;
 	DisplayMode.Objects = SceneObjectDisplayMode::EObjects::Full;
@@ -471,8 +475,6 @@ void Light3DContext::ChangeMedia()
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
 		&UIManager.GraphManager.ShaderLayout,
-		&ObjectManagerTSC_ShaderFullLayout,
-		&ObjectManagerTSC_ShaderWireLayout,
 	});
 	LayoutMultiform.Find(layouts);
 
@@ -489,11 +491,9 @@ void Light3DContext::GraphicsCreate()
 
 	LightBuffer.Create();
 
-	NewPolyHedra_Manager.GraphicsCreate();
+	NewPolyHedraManager.GraphicsCreate();
 
 	std::cout << "Light3DContext::GraphicsCreate done\n";
-
-	ObjectManagerTSC.DisplayManager().ShaderFull.LogInfo();
 }
 void Light3DContext::GraphicsDelete()
 {
@@ -503,7 +503,7 @@ void Light3DContext::GraphicsDelete()
 
 	LightBuffer.Delete();
 
-	NewPolyHedra_Manager.GraphicsDelete();
+	NewPolyHedraManager.GraphicsDelete();
 
 	std::cout << "Light3DContext::GraphicsDelete done\n";
 }
@@ -635,7 +635,7 @@ void Light3DContext::User(FrameTime frame_time)
 
 	if (window[Keys::Insert] == State::Press)
 	{
-		NewPolyHedra::Basic3D::DisplayObject * manager = &ObjectManagerBasic.TakeDisplayObject(PalletManager.Take(*Cube));
+		NewPolyHedra::Basic3D::DisplayObject * manager = &NewPolyHedraManagerBasic.TakeDisplayObject(NewPolyHedraPalletManager.Take(*Cube));
 		Collection.Objects.Insert(new SceneObject_PolyHedraObject(manager, Trans3D()));
 	}
 
@@ -735,15 +735,10 @@ void Light3DContext::Draw()
 	VertexArray::Base::BindNone();
 	LightBuffer.DataFull(Container::Void(LightManager.ToBufferData()));
 
-	{
-		TransScaleColor3D::Object obj(*Cube);
-		obj.Data().Trans = Trans3D(VectorF3(0, 0, 16));
-		obj.Data().Scale = VectorF3(4);
-	}
 	// Instances
 
-	NewPolyHedra_Manager.InstancesClear();
-	NewPolyHedra_Manager.InstancesMake();
+	NewPolyHedraManager.InstancesClear();
+	NewPolyHedraManager.InstancesMake();
 
 	Collection.Display(DisplayMode);
 
@@ -760,13 +755,13 @@ void Light3DContext::Draw()
 	GL::Enable(GL::Capability::DepthTest);
 	GL::Enable(GL::Capability::CullFace);
 
-	ObjectManagerBasic.GraphicsDrawFull();
-	ObjectManagerBasic.GraphicsDrawWire();
+	NewPolyHedraManagerBasic.GraphicsDrawFull();
+	NewPolyHedraManagerBasic.GraphicsDrawWire();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 
-	ObjectManagerTSC.GraphicsDrawFull();
-	ObjectManagerTSC.GraphicsDrawWire();
+	NewPolyHedraManagerTSC.GraphicsDrawFull();
+	NewPolyHedraManagerTSC.GraphicsDrawWire();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GL::Disable(GL::Capability::DepthTest);
@@ -775,11 +770,18 @@ void Light3DContext::Draw()
 	UIManager.GraphicsMake();
 	UIManager.GraphicsDraw();
 
+	GL::Clear(GL::ClearMask::DepthBufferBit);
+	GL::Enable(GL::Capability::DepthTest);
+	GL::Enable(GL::Capability::CullFace);
+
+	NewPolyHedraManagerUI.GraphicsDrawFull();
+	NewPolyHedraManagerUI.GraphicsDrawWire();
+
 
 
 	// Remove
 
-	NewPolyHedra_Manager.CleanObjects();
+	NewPolyHedraManager.CleanObjects();
 }
 
 
@@ -838,6 +840,93 @@ void Light3DContext::Frame(FrameTime frame_time)
 	CenterCube -> Data.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
 
 	ViewFunc();
+
+	VectorF3 posO(24, 16, 16);
+	{
+		TransScaleColor3D::Object obj(*Cube);
+		obj.Data().Trans = Trans3D(posO);
+		obj.Data().Scale = VectorF3(4);
+	}
+	{
+		VectorF3 posX = posO + (VectorF3(1, 0, 0) * 12.0f);
+		VectorF3 posY = posO + (VectorF3(0, 1, 0) * 12.0f);
+		VectorF3 posZ = posO + (VectorF3(0, 0, 1) * 12.0f);
+
+		VectorF3 pos3_O = View.Trans.reverse(posO);
+		VectorF3 pos3_X = View.Trans.reverse(posX);
+		VectorF3 pos3_Y = View.Trans.reverse(posY);
+		VectorF3 pos3_Z = View.Trans.reverse(posZ);
+
+		float s = 1.0f / (View.FOV / 2.0f).Tan();
+
+		pos3_O.X = (pos3_O.X * s * window.Size.Ratio.Value.X) / pos3_O.Z;
+		pos3_O.Y = (pos3_O.Y * s * window.Size.Ratio.Value.Y) / pos3_O.Z;
+		pos3_O.Z = 1.0f;
+
+		pos3_X.X = (pos3_X.X * s * window.Size.Ratio.Value.X) / pos3_X.Z;
+		pos3_X.Y = (pos3_X.Y * s * window.Size.Ratio.Value.Y) / pos3_X.Z;
+		pos3_X.Z = 1.0f;
+
+		pos3_Y.X = (pos3_Y.X * s * window.Size.Ratio.Value.X) / pos3_Y.Z;
+		pos3_Y.Y = (pos3_Y.Y * s * window.Size.Ratio.Value.Y) / pos3_Y.Z;
+		pos3_Y.Z = 1.0f;
+
+		pos3_Z.X = (pos3_Z.X * s * window.Size.Ratio.Value.X) / pos3_Z.Z;
+		pos3_Z.Y = (pos3_Z.Y * s * window.Size.Ratio.Value.Y) / pos3_Z.Z;
+		pos3_Z.Z = 1.0f;
+
+		VectorF2 pos2_O = VectorF2(+pos3_O.X, -pos3_O.Y);
+		VectorF2 pos2_X = VectorF2(+pos3_X.X, -pos3_X.Y);
+		VectorF2 pos2_Y = VectorF2(+pos3_Y.X, -pos3_Y.Y);
+		VectorF2 pos2_Z = VectorF2(+pos3_Z.X, -pos3_Z.Y);
+
+		pos2_O = ((pos2_O + 1.0f) / 2.0f);
+		pos2_X = ((pos2_X + 1.0f) / 2.0f);
+		pos2_Y = ((pos2_Y + 1.0f) / 2.0f);
+		pos2_Z = ((pos2_Z + 1.0f) / 2.0f);
+
+		pos2_O = pos2_O * window.Size.Buffer.Full;
+		pos2_X = pos2_X * window.Size.Buffer.Full;
+		pos2_Y = pos2_Y * window.Size.Buffer.Full;
+		pos2_Z = pos2_Z * window.Size.Buffer.Full;
+
+		VectorF3 & vPos = View.Trans.Position; (void)vPos;
+		EulerAngle3D & vRot = View.Trans.Rotation; (void)vRot;
+
+		EulerAngle3D rotO; // = vRot.forward(EulerAngle3D::PointToZ(posO - vPos));
+		EulerAngle3D rotX; // = vRot.forward(EulerAngle3D::PointToZ(posX - vPos));
+		EulerAngle3D rotY; // = vRot.forward(EulerAngle3D::PointToZ(posY - vPos));
+		EulerAngle3D rotZ; // = vRot.forward(EulerAngle3D::PointToZ(posZ - vPos));
+
+		{
+			NewPolyHedra::UserInterface::Object obj(*Cube);
+			obj.Data().Pos = pos2_O;
+			obj.Data().Size = VectorF2(20, 20);
+			obj.Data().Scale = 1.0f;
+			obj.Data().Rot = rotO;
+		}
+		{
+			NewPolyHedra::UserInterface::Object obj(*Cube);
+			obj.Data().Pos = pos2_X;
+			obj.Data().Size = VectorF2(20, 20);
+			obj.Data().Scale = 1.0f;
+			obj.Data().Rot = rotX;
+		}
+		{
+			NewPolyHedra::UserInterface::Object obj(*Cube);
+			obj.Data().Pos = pos2_Y;
+			obj.Data().Size = VectorF2(20, 20);
+			obj.Data().Scale = 1.0f;
+			obj.Data().Rot = rotY;
+		}
+		{
+			NewPolyHedra::UserInterface::Object obj(*Cube);
+			obj.Data().Pos = pos2_Z;
+			obj.Data().Size = VectorF2(20, 20);
+			obj.Data().Scale = 1.0f;
+			obj.Data().Rot = rotZ;
+		}
+	}
 
 	Draw();
 }
