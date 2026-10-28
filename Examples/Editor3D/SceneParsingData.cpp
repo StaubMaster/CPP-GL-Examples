@@ -7,7 +7,7 @@
 
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
-#include "PolyHedra/FileCollection.hpp"
+#include "PolyHedra/Manager.hpp"
 
 #include "SceneObject/SceneObject.hpp"
 #include "SceneObject/PolyHedraObject.hpp"
@@ -65,10 +65,10 @@ SceneParsingData::~SceneParsingData()
 		delete Commands[i];
 	}
 }
-SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & context, ::PolyHedraFileCollection & file_collection)
+SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & context, ::PolyHedraManager & manager)
 	: File(file)
 	, Context(context)
-	, PolyHedraFileCollection(file_collection)
+	, PolyHedraManager(manager)
 	, PolyHedras()
 {
 	MissingPolyHedra = &Context.NewPolyHedraManagerBasic.TakeDisplayObject(*NewPolyHedra::PalletManager::sTake(*PolyHedraGenerate::RegularHexaHedron(1.0f)));
@@ -122,8 +122,7 @@ void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
 
 	FileInfo file(File.Directory().File(cmd_args.ToString(0)));
 
-//	PolyHedra * polyhedra = PolyHedra::Load(file);
-	PolyHedra * polyhedra = PolyHedraFileCollection.FindMake(file);
+	PolyHedra * polyhedra = PolyHedraManager.Take(file);
 	if (polyhedra == nullptr)
 	{
 		std::cout << "PolyHedra " << file << " null\n";

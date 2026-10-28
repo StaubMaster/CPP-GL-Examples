@@ -15,9 +15,9 @@
 
 void Change3D::VectorF3::IndicatorsInit(const DirectoryInfo & dir)
 {
-	MoveAxisX.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisX.polyhedra"), nullptr, nullptr));
-	MoveAxisY.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisY.polyhedra"), nullptr, nullptr));
-	MoveAxisZ.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisZ.polyhedra"), nullptr, nullptr));
+	MoveAxisX.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisX.polyhedra"), nullptr, nullptr, nullptr));
+	MoveAxisY.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisY.polyhedra"), nullptr, nullptr, nullptr));
+	MoveAxisZ.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisZ.polyhedra"), nullptr, nullptr, nullptr));
 }
 
 void Change3D::VectorF3::IndicatorsShow()

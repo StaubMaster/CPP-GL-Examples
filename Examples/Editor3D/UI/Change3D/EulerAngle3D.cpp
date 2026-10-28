@@ -15,9 +15,9 @@
 
 void Change3D::EulerAngle3D::IndicatorsInit(const DirectoryInfo & dir)
 {
-	SpinRingX.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingX.polyhedra"), nullptr, nullptr));
-	SpinRingY.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingY.polyhedra"), nullptr, nullptr));
-	SpinRingZ.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingZ.polyhedra"), nullptr, nullptr));
+	SpinRingX.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingX.polyhedra"), nullptr, nullptr, nullptr));
+	SpinRingY.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingY.polyhedra"), nullptr, nullptr, nullptr));
+	SpinRingZ.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingZ.polyhedra"), nullptr, nullptr, nullptr));
 }
 
 void Change3D::EulerAngle3D::IndicatorsShow()

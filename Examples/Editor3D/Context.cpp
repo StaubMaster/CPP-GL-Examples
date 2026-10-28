@@ -28,7 +28,6 @@
 
 
 // NewPolyHedra
-#include "NewPolyHedra/Init/Pallet.hpp"
 #include "NewPolyHedra/Init/Basic3D.hpp"
 #include "NewPolyHedra/Init/TransScaleColor3D.hpp"
 #include "NewPolyHedra/UserInterface/Init.hpp"
@@ -38,7 +37,6 @@
 
 void Light3DContext::PolyHedra_ChangeMedia()
 {
-	NewPolyHedra::Pallet_ChangeMedia(NewPolyHedraPalletManager);
 	NewPolyHedra::Basic3D::ChangeMedia(MediaDirectory, LayoutMultiform, NewPolyHedraManagerBasic.DisplayManager());
 	TransScaleColor3D::ChangeMedia(MediaDirectory, LayoutMultiform, NewPolyHedraManagerTSC.DisplayManager());
 	NewPolyHedra::UserInterface::ChangeMedia(MediaDirectory, LayoutMultiform, NewPolyHedraManagerUI.DisplayManager());
@@ -177,8 +175,8 @@ void Light3DContext::InitLights()
 	{
 		stage_light_manager = &NewPolyHedraManagerBasic.TakeDisplayObject(
 			NewPolyHedraPalletManager.Take(
-				*PolyHedraFileCollection.FindMake(
-					dir.File("Stage_Light.polyhedra.ymt")
+				*PolyHedraManager.Take(
+					dir.File("Stage_Light.polyhedra")
 				)
 			)
 		);
@@ -187,7 +185,7 @@ void Light3DContext::InitLights()
 	{
 		light_bulb_manager = &NewPolyHedraManagerTSC.TakeDisplayObject(
 			NewPolyHedraPalletManager.Take(
-				*PolyHedraFileCollection.FindMake(
+				*PolyHedraManager.Take(
 					dir.File("LightBulb.polyhedra")
 				)
 			)
@@ -273,7 +271,7 @@ void Light3DContext::SceneInitLights()
 #include "FileParsing/TextCommand/ArgsStream.hpp"
 void Light3DContext::SceneLoad(FileInfo file)
 {
-	SceneParsingData data(file, *this, PolyHedraFileCollection);
+	SceneParsingData data(file, *this, PolyHedraManager);
 	TextCommand::ArgsStream stream(file.LoadText());
 	TextCommand::Args cmd_args;
 	while (stream.Continue(cmd_args))
@@ -412,11 +410,14 @@ void Light3DContext::PolyHedraPalletChangeFunc(ClickArgs args)
 			UIPolyHedraPalletList.Show();
 			UIPolyHedraPalletList.List.ItemsClear();
 			UIPolyHedraPalletList.Object = nullptr;
+			// use PolyHedraManager instead of PalletManager
 			for (unsigned int i = 0; i < NewPolyHedraPalletManager.Pallets.Count(); i++)
 			{
 				NewPolyHedra::Pallet * pallet = NewPolyHedraPalletManager.Pallets[i];
 				//UIPolyHedraPalletList.List.ItemNew(pallet -> Object -> File.Path.ToString(), pallet);
-				UIPolyHedraPalletList.List.ItemNew(pallet -> Object -> File.Path.Name(), pallet);
+				//UIPolyHedraPalletList.List.ItemNew(pallet -> Object -> File.Path.Name(), pallet);
+				//FIX: FILE NOW IN ENTRY
+				(void)pallet;
 			}
 			//UIPolyHedraPalletList.UpdateAutoAnchor();
 		}
@@ -531,15 +532,7 @@ void Light3DContext::Make()
 
 	SceneReMake();
 
-	{
-		std::cout << "PolyHedraFileCollection[" << PolyHedraFileCollection.FileObjects.Count() << "]\n";
-		std::cout << "[\n";
-		for (unsigned int i = 0; i < PolyHedraFileCollection.FileObjects.Count(); i++)
-		{
-			std::cout << "  " << PolyHedraFileCollection.FileObjects[i].File.Path << '\n';
-		}
-		std::cout << "]\n";
-	}
+	PolyHedraManager.ToInfo(std::cout);
 
 	UIManager.Window.ChildInsert(UISceneObject);
 	UIManager.Window.ChildInsert(UIPolyHedraPalletList);
@@ -848,9 +841,9 @@ void Light3DContext::Frame(FrameTime frame_time)
 		obj.Data().Scale = VectorF3(4);
 	}
 	{
-		VectorF3 posX = posO + (VectorF3(1, 0, 0) * 12.0f);
-		VectorF3 posY = posO + (VectorF3(0, 1, 0) * 12.0f);
-		VectorF3 posZ = posO + (VectorF3(0, 0, 1) * 12.0f);
+		VectorF3 posX = posO + (VectorF3(1, 0, 0) * 4.0f);
+		VectorF3 posY = posO + (VectorF3(0, 1, 0) * 4.0f);
+		VectorF3 posZ = posO + (VectorF3(0, 0, 1) * 4.0f);
 
 		VectorF3 pos3_O = View.Trans.reverse(posO);
 		VectorF3 pos3_X = View.Trans.reverse(posX);
@@ -893,10 +886,10 @@ void Light3DContext::Frame(FrameTime frame_time)
 		VectorF3 & vPos = View.Trans.Position; (void)vPos;
 		EulerAngle3D & vRot = View.Trans.Rotation; (void)vRot;
 
-		EulerAngle3D rotO; // = vRot.forward(EulerAngle3D::PointToZ(posO - vPos));
-		EulerAngle3D rotX; // = vRot.forward(EulerAngle3D::PointToZ(posX - vPos));
-		EulerAngle3D rotY; // = vRot.forward(EulerAngle3D::PointToZ(posY - vPos));
-		EulerAngle3D rotZ; // = vRot.forward(EulerAngle3D::PointToZ(posZ - vPos));
+		EulerAngle3D rotO = EulerAngle3D::PointToZ(View.Trans.reverse(posO));
+		EulerAngle3D rotX = EulerAngle3D::PointToZ(View.Trans.reverse(posX));
+		EulerAngle3D rotY = EulerAngle3D::PointToZ(View.Trans.reverse(posY));
+		EulerAngle3D rotZ = EulerAngle3D::PointToZ(View.Trans.reverse(posZ));
 
 		{
 			NewPolyHedra::UserInterface::Object obj(*Cube);

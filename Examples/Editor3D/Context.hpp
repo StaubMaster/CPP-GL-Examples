@@ -39,7 +39,7 @@
 # include "UI/Change3D/Trans3D.hpp"
 
 // PolyHedra
-# include "PolyHedra/FileCollection.hpp"
+# include "PolyHedra/Manager.hpp"
 
 // NewPolyHedra
 # include "NewPolyHedra/Manager.hpp"
@@ -65,11 +65,7 @@ Matrix4x4	ViewMatrix;
 
 
 
-/* rename PolyHedraFileCollection
-PolyHedraManager
-PolyHedraOrganizer
-*/
-::PolyHedraFileCollection	PolyHedraFileCollection;
+::PolyHedraManager		PolyHedraManager;
 
 NewPolyHedra::Manager					NewPolyHedraManager;
 NewPolyHedra::PalletManager				NewPolyHedraPalletManager;

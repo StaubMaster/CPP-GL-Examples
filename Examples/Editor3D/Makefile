@@ -27,7 +27,6 @@ FILES := \
 	UI/Change3D/EulerAngle3D.cpp \
 	UI/Change3D/Trans3D.cpp \
 \
-	NewPolyHedra/Init/Pallet.cpp \
 	NewPolyHedra/Init/Basic3D.cpp \
 	NewPolyHedra/Init/TransScaleColor3D.cpp \
 	\

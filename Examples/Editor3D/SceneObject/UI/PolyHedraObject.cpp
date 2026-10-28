@@ -59,10 +59,12 @@ void UI::Control::PolyHedraObject::Syncronize()
 	if (Object != nullptr)
 	{
 		const PolyHedra & polyhedra = *(Object -> DisplayObject -> PalletObject.Object);
+		// Find PolyHedraEntry
 		std::stringstream ss;
 		//ss.str(std::string()); ss << "Name:" << (polyhedra.Name); PalletName.SetText(ss.str());
-		ss.str(std::string()); ss << "Name:" << (polyhedra.File.Name()); PalletName.SetText(ss.str());
-		ss.str(std::string()); ss << "File:" << (polyhedra.File.Path); PalletFile.SetText(ss.str());
+		//ss.str(std::string()); ss << "Name:" << (polyhedra.File.Name()); PalletName.SetText(ss.str());
+		//ss.str(std::string()); ss << "File:" << (polyhedra.File.Path); PalletFile.SetText(ss.str());
+		//FIX: FILE NOW IN ENTRY
 		ss.str(std::string()); ss << "Skin:" << (polyhedra.Skin); PalletSkinsCount.SetText(ss.str());
 	}
 	else

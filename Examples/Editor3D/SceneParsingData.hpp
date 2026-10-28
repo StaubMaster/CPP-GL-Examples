@@ -15,7 +15,7 @@
 
 struct Light3DContext;
 
-class PolyHedraFileCollection;
+class PolyHedraManager;
 
 namespace TextCommand { class Args; };
 
@@ -32,7 +32,7 @@ struct SceneParsingData
 
 	Light3DContext &	Context;
 
-	::PolyHedraFileCollection &		PolyHedraFileCollection;
+	::PolyHedraManager &	PolyHedraManager;
 
 	Container::Binary<ParsingCommand*>	Commands;
 
@@ -45,7 +45,7 @@ struct SceneParsingData
 	float	ToFloat(const TextCommand::Args & cmd_args, unsigned int idx) const;
 
 	~SceneParsingData();
-	SceneParsingData(const FileInfo & file, Light3DContext & context, ::PolyHedraFileCollection & file_collection);
+	SceneParsingData(const FileInfo & file, Light3DContext & context, ::PolyHedraManager & file_collection);
 
 	void	Parse(const TextCommand::Args & cmd_args);
 
