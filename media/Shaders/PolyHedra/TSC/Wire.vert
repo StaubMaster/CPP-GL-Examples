@@ -92,4 +92,5 @@ void main()
 	////vs_out.Normal = (vec4(VPos + VNormal, 1) * ITrans).xyz - vs_out.Absolute;
 	//vs_out.Tex = MainTex;
 	vs_out.Color = InstColor;
+	vs_out.Color = vec4(1, 1, 1, 1);
 }

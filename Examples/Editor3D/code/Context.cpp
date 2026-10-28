@@ -819,6 +819,46 @@ void Light3DContext::ViewFunc()
 
 
 
+//static unsigned int DisplayTestIndex = 0;
+static void DisplayTest(const DisplaySize & display_size, const View3D & view, PolyHedra & polyHedra, const Trans3D & trans)
+{
+	NewPolyHedra::UserInterface::Object obj(polyHedra);
+	obj.Data().Size = VectorF2(20, 20);
+	obj.Data().Scale = 1.0f;
+
+	float s = 1.0f / (view.FOV / 2.0f).Tan();
+
+	VectorF3 pos = trans.Position;
+	pos = view.Trans.reverse(pos);
+
+	pos.X = pos.X * s;
+	pos.Y = pos.Y * s;
+
+	VectorF3 pos3 = pos;
+
+	pos3.X = pos3.X * display_size.Ratio.Value.X;
+	pos3.Y = pos3.Y * display_size.Ratio.Value.Y;
+
+	pos3.X = pos3.X / pos3.Z;
+	pos3.Y = pos3.Y / pos3.Z;
+	pos3.Z = 1.0f;
+
+	VectorF2 pos2 = VectorF2(+pos3.X, -pos3.Y);
+	pos2 = ((pos2 + 1.0f) / 2.0f);
+	pos2 = pos2 * display_size.Buffer.Full;
+
+	obj.Data().Pos = pos2;
+
+	EulerAngle3D rot;
+	rot = EulerAngle3D::PointToZ(pos);
+	rot = rot * -0.5f; // why ?
+
+	rot = rot.reverse(view.Trans.Rotation.reverse());
+	rot = rot.reverse(trans.Rotation);
+
+	obj.Data().Rot = rot;
+}
+
 void Light3DContext::Frame(FrameTime frame_time)
 {
 	static float frameSum = 0;
@@ -830,95 +870,32 @@ void Light3DContext::Frame(FrameTime frame_time)
 	Collection.Update();
 
 	CenterCube -> Data.Data.Trans.Position = VectorF3(0, 10, 0);
+	CenterCube -> Data.Data.Trans.Position = VectorF3(0, 0, 0);
 	CenterCube -> Data.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
 
 	ViewFunc();
 
-	VectorF3 posO(24, 16, 16);
+	//if (window[Keys::PageUp  ] == State::Press) { DisplayTestIndex++; std::cout << "DisplayTestIndex:" << DisplayTestIndex << '\n'; }
+	//if (window[Keys::PageDown] == State::Press) { DisplayTestIndex--; std::cout << "DisplayTestIndex:" << DisplayTestIndex << '\n'; }
+
 	{
+		static Trans3D trans(VectorF3(0, 0, 0), EulerAngle3D::Degrees(60, 15, 30));
+		//trans.Rotation.Y2 += Angle::Degrees(15) * frame_time.Delta;
+		//trans.Rotation.X1 += Angle::Degrees(20) * frame_time.Delta;
+		//trans.Rotation.Z0 += Angle::Degrees(25) * frame_time.Delta;
+
 		TransScaleColor3D::Object obj(*Cube);
-		obj.Data().Trans = Trans3D(posO);
-		obj.Data().Scale = VectorF3(4);
-	}
-	{
-		VectorF3 posX = posO + (VectorF3(1, 0, 0) * 4.0f);
-		VectorF3 posY = posO + (VectorF3(0, 1, 0) * 4.0f);
-		VectorF3 posZ = posO + (VectorF3(0, 0, 1) * 4.0f);
-
-		VectorF3 pos3_O = View.Trans.reverse(posO);
-		VectorF3 pos3_X = View.Trans.reverse(posX);
-		VectorF3 pos3_Y = View.Trans.reverse(posY);
-		VectorF3 pos3_Z = View.Trans.reverse(posZ);
-
-		float s = 1.0f / (View.FOV / 2.0f).Tan();
-
-		pos3_O.X = (pos3_O.X * s * window.Size.Ratio.Value.X) / pos3_O.Z;
-		pos3_O.Y = (pos3_O.Y * s * window.Size.Ratio.Value.Y) / pos3_O.Z;
-		pos3_O.Z = 1.0f;
-
-		pos3_X.X = (pos3_X.X * s * window.Size.Ratio.Value.X) / pos3_X.Z;
-		pos3_X.Y = (pos3_X.Y * s * window.Size.Ratio.Value.Y) / pos3_X.Z;
-		pos3_X.Z = 1.0f;
-
-		pos3_Y.X = (pos3_Y.X * s * window.Size.Ratio.Value.X) / pos3_Y.Z;
-		pos3_Y.Y = (pos3_Y.Y * s * window.Size.Ratio.Value.Y) / pos3_Y.Z;
-		pos3_Y.Z = 1.0f;
-
-		pos3_Z.X = (pos3_Z.X * s * window.Size.Ratio.Value.X) / pos3_Z.Z;
-		pos3_Z.Y = (pos3_Z.Y * s * window.Size.Ratio.Value.Y) / pos3_Z.Z;
-		pos3_Z.Z = 1.0f;
-
-		VectorF2 pos2_O = VectorF2(+pos3_O.X, -pos3_O.Y);
-		VectorF2 pos2_X = VectorF2(+pos3_X.X, -pos3_X.Y);
-		VectorF2 pos2_Y = VectorF2(+pos3_Y.X, -pos3_Y.Y);
-		VectorF2 pos2_Z = VectorF2(+pos3_Z.X, -pos3_Z.Y);
-
-		pos2_O = ((pos2_O + 1.0f) / 2.0f);
-		pos2_X = ((pos2_X + 1.0f) / 2.0f);
-		pos2_Y = ((pos2_Y + 1.0f) / 2.0f);
-		pos2_Z = ((pos2_Z + 1.0f) / 2.0f);
-
-		pos2_O = pos2_O * window.Size.Buffer.Full;
-		pos2_X = pos2_X * window.Size.Buffer.Full;
-		pos2_Y = pos2_Y * window.Size.Buffer.Full;
-		pos2_Z = pos2_Z * window.Size.Buffer.Full;
-
-		VectorF3 & vPos = View.Trans.Position; (void)vPos;
-		EulerAngle3D & vRot = View.Trans.Rotation; (void)vRot;
-
-		EulerAngle3D rotO = EulerAngle3D::PointToZ(View.Trans.reverse(posO));
-		EulerAngle3D rotX = EulerAngle3D::PointToZ(View.Trans.reverse(posX));
-		EulerAngle3D rotY = EulerAngle3D::PointToZ(View.Trans.reverse(posY));
-		EulerAngle3D rotZ = EulerAngle3D::PointToZ(View.Trans.reverse(posZ));
-
-		{
-			NewPolyHedra::UserInterface::Object obj(*Cube);
-			obj.Data().Pos = pos2_O;
-			obj.Data().Size = VectorF2(20, 20);
-			obj.Data().Scale = 1.0f;
-			obj.Data().Rot = rotO;
-		}
-		{
-			NewPolyHedra::UserInterface::Object obj(*Cube);
-			obj.Data().Pos = pos2_X;
-			obj.Data().Size = VectorF2(20, 20);
-			obj.Data().Scale = 1.0f;
-			obj.Data().Rot = rotX;
-		}
-		{
-			NewPolyHedra::UserInterface::Object obj(*Cube);
-			obj.Data().Pos = pos2_Y;
-			obj.Data().Size = VectorF2(20, 20);
-			obj.Data().Scale = 1.0f;
-			obj.Data().Rot = rotY;
-		}
-		{
-			NewPolyHedra::UserInterface::Object obj(*Cube);
-			obj.Data().Pos = pos2_Z;
-			obj.Data().Size = VectorF2(20, 20);
-			obj.Data().Scale = 1.0f;
-			obj.Data().Rot = rotZ;
-		}
+		obj.Data().Trans = trans;
+		obj.Data().Scale = 8;
+		obj.ShowWire();
+		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(-8, -8, -8))));
+		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(+8, -8, -8))));
+		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(-8, +8, -8))));
+		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(+8, +8, -8))));
+		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(-8, -8, +8))));
+		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(+8, -8, +8))));
+		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(-8, +8, +8))));
+		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(+8, +8, +8))));
 	}
 
 	Draw();
