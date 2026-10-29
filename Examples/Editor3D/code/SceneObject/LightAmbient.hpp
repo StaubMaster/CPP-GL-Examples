@@ -4,14 +4,15 @@
 # include "SceneObject.hpp"
 # include "ValueType/Light/Base.hpp"
 
-# include "Special/TransScaleColor3D/Logical/Object.hpp"
+# include "Special/TransScaleColor3D/Display/Object.hpp"
 # include "Special/TransScaleColor3D/Logical/Data.hpp"
 
 struct SceneObject_LightAmbient : public SceneObject
 {
 	LightBase *		Light;
 
-	TransScaleColor3D::LogicalObject	Data;
+	static	TransScaleColor3D::DisplayObject *		Display;
+			TransScaleColor3D::LogicalData			Data;
 
 	~SceneObject_LightAmbient();
 	SceneObject_LightAmbient();
@@ -21,6 +22,7 @@ struct SceneObject_LightAmbient : public SceneObject
 
 	void	Update() override;
 
+	bool	_ShowWire = false;
 	void	ShowWire() override;
 
 	void	DisplayObject(const SceneObjectDisplayMode & mode) override;

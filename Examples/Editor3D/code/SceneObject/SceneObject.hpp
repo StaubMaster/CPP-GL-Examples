@@ -21,6 +21,8 @@ struct SceneObject
 	virtual void	ShowWire() = 0;
 
 	virtual void	DisplayObject(const SceneObjectDisplayMode & mode) = 0;
+	// this kind of interferes with NewPolyHedra::Display Object
+	// rename to just Display
 
 	virtual RayHitF3	Hit(const RayF3 & ray) const = 0;
 };

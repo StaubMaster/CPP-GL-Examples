@@ -44,136 +44,29 @@ void Light3DContext::PolyHedra_ChangeMedia()
 
 
 
-GL::BlockBinding Light3DContext::BindingLight = 3;
-
-
-
 bool Light3DContext::IsHoveringControl() const
 {
 	return (UIManager.Hovering != nullptr && UIManager.Hovering != &UIManager.Window);
 }
 
-void Light3DContext::Objects_Change()
-{
-	Object_Hovering = nullptr;
-
-	if (IsHoveringControl()) { return; }
-	if (!UserChange.IsNone()) { return; }
-
-	Object_Hovering = Collection.FindObject(ViewRay);
-
-	if (window.MouseManager[MouseButtons::MouseL].IsPress())
-	{
-		Object_Selected = Object_Hovering;
-		UserChange_ChangeObject(Object_Selected);
-		UISceneObject.Change(Object_Selected);
-	}
-}
-void Light3DContext::Objects_Update()
-{
-	if (Object_Hovering != nullptr)
-	{
-		//Object_Hovering -> ShowWire();
-	}
-
-	if (Object_Selected != nullptr)
-	{
-		Object_Selected -> ShowWire();
-		UISceneObject.Syncronize();
-	}
-}
 
 
+GL::BlockBinding Light3DContext::LightBinding = 3;
 
-void Light3DContext::SceneClear()
-{
-	Object_Selected = nullptr;
-	Object_Hovering = nullptr;
-	Collection.Clear();
-	LightManager.Clear();
-//	UserTrans3DChange.HoveringMakeNone();
-//	UserTrans3DChange.SelectedMakeNone();
-}
-
-static PolyHedra * Cube = nullptr;
-
-void Light3DContext::SceneInitCubes()
-{
-	Cube = PolyHedraGenerate::RegularHexaHedron();
-	CenterCube = new SceneObject_PolyHedraObject();
-	CenterCube -> Data.DisplayObject = &NewPolyHedraManagerBasic.TakeDisplayObject(NewPolyHedraPalletManager.Take(*Cube));
-	Collection.Objects.Insert(CenterCube);
-
-	/* Random
-	int Range_Size1 = 0x1FF;
-	int Range_SizeH = 0x0FF;
-	int j_len = 16;
-	int i_len = 16;
-	for (int j = 0; j < j_len; j++)
-	{
-		VectorF3 center(
-			(std::rand() & Range_Size1) - Range_SizeH,
-			(std::rand() & Range_Size1) - Range_SizeH,
-			(std::rand() & Range_Size1) - Range_SizeH
-		);
-		EulerAngle3D rot = EulerAngle3D::Radians(
-			(std::rand() & Range_Size1) - Range_SizeH,
-			(std::rand() & Range_Size1) - Range_SizeH,
-			(std::rand() & Range_Size1) - Range_SizeH
-		);
-
-		for (int i = 0; i < i_len; i++)
-		{
-			Objects.Insert(new SceneObject_PolyHedraObject(Cube, Trans3D(
-				center + VectorF3(
-					(std::rand() & Range_Size1) - Range_SizeH,
-					(std::rand() & Range_Size1) - Range_SizeH,
-					(std::rand() & Range_Size1) - Range_SizeH
-				), rot
-			)));
-		}
-	}*/
-
-	//Sphere = PolyHedraGenerate::SphereY(1, 4, 1.0f); // TetraHedron
-	//Sphere = PolyHedraGenerate::SphereY(2, 5, 1.0f); // IcosaHedron
-	//Sphere = PolyHedraGenerate::SphereY(6, 12, 4.0f);
-	//Sphere = PolyHedra::Load(MediaDirectory.File("YMT/Light/Chair.polyhedra"));
-
-	//Torus = PolyHedraGenerate::TorusY(8, 2.0f, 16, 4.0f);
-	//Torus = PolyHedraGenerate::TorusY(32, 3.0f, 64, 8.0f);
-
-	//Sphere -> UseCornerNormals = true;
-	//Torus -> UseCornerNormals = true;
-	//NewPolyHedra_PalletObjectManager * sphere_manager = ObjectManagerBasic.FindMakePalletObjectManager(Sphere);
-	//NewPolyHedra_PalletObjectManager * torus_manager = ObjectManagerBasic.FindMakePalletObjectManager(Torus);
-
-	/*VectorF3 pos(0, 64, 0);
-	Objects.Insert(new SceneObject_PolyHedraObject(sphere_manager, Trans3D(pos)));
-	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(0, 8, 0), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos - VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 8, 0), EulerAngle3D::Degrees(0, 0, 90))));
-	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(8, 0, 0), EulerAngle3D::Degrees(90, 0, 0))));
-	Objects.Insert(new SceneObject_PolyHedraObject(torus_manager, Trans3D(pos + VectorF3(0, 0, 8), EulerAngle3D::Degrees(0, 90, 0))));*/
-}
-
-static TransScaleColor3D::DisplayObject *		Cube_UI_manager = nullptr;
-static NewPolyHedra::Basic3D::DisplayObject *	stage_light_manager = nullptr;
-static TransScaleColor3D::DisplayObject *		light_bulb_manager = nullptr;
 void Light3DContext::InitLights()
 {
 	DirectoryInfo dir(MediaDirectory.Directory("YMT/Light"));
-	if (Cube_UI_manager == nullptr)
+	if (SceneObject_LightDirection::Display == nullptr)
 	{
-		Cube_UI_manager = &NewPolyHedraManagerTSC.TakeDisplayObject(
+		SceneObject_LightDirection::Display = &NewPolyHedraManagerTSC.TakeDisplayObject(
 			NewPolyHedraPalletManager.Take(
-				*Cube
+				*PolyHedraGenerate::RegularHexaHedron()
 			)
 		);
 	}
-	if (stage_light_manager == nullptr)
+	if (SceneObject_LightSpot::Display == nullptr)
 	{
-		stage_light_manager = &NewPolyHedraManagerBasic.TakeDisplayObject(
+		SceneObject_LightSpot::Display = &NewPolyHedraManagerBasic.TakeDisplayObject(
 			NewPolyHedraPalletManager.Take(
 				*PolyHedraManager.Take(
 					dir.File("Stage_Light.polyhedra")
@@ -181,9 +74,9 @@ void Light3DContext::InitLights()
 			)
 		);
 	}
-	if (light_bulb_manager == nullptr)
+	if (SceneObject_LightAmbient::Display == nullptr)
 	{
-		light_bulb_manager = &NewPolyHedraManagerTSC.TakeDisplayObject(
+		SceneObject_LightAmbient::Display = &NewPolyHedraManagerTSC.TakeDisplayObject(
 			NewPolyHedraPalletManager.Take(
 				*PolyHedraManager.Take(
 					dir.File("LightBulb.polyhedra")
@@ -191,123 +84,33 @@ void Light3DContext::InitLights()
 			)
 		);
 	}
-}
-
-void Light3DContext::SceneInitLights()
-{
-	/*Light_Spot_Array[0] = LightSpot(
-		LightBase(1.0f, ColorF4(0.0f, 1.0f, 0.0f)),
-		LineF3(
-			//VectorF3(+32, 96, -32),
-			VectorF3(+16, 80, -16),
-			//VectorF3(+12, 76, -12),
-			VectorF3(0, 64, 0)
-		),
-		RangeF(0.80f, 0.95f)
-		//RangeF(0.80f, 0.80f)
-		//RangeF(0.95f, 0.95f)
-	);
-	Light_Spot_Count = 1;*/
-
-	/* Light Meta Indicators
-		LightBuld: LightPoint
-	*/
-	/* Ambient
-		takes the color of the light
-		difficult to find when same color as background ?
-		Sphere / Cube
-	*/
-	/* Solar
-		takes the color of the light
-		difficult to find when same color as background ?
-		Sphere with Cone
-		Cone points toward direction
-	*/
-	/* Spot / Cone
-		multiple thin Lines
-		Lines start at Position
-		Center Line Points in direction
-		Ring Lines show Cone
-	*/
-	/* all these would be nice if they had both fixed Color and optional Color
-	*/
-
-	// set Bodys of Light Objects
-	for (unsigned int i = 0; i < Collection.Objects.Count(); i++)
+	if (SceneObject_LightPoint::Display == nullptr)
 	{
-		SceneObject * scene_obj = Collection.Objects[i];
-		{
-			SceneObject_LightAmbient * obj = dynamic_cast<SceneObject_LightAmbient*>(scene_obj);
-			if (obj != nullptr)
-			{
-				obj -> Data.DisplayObject = light_bulb_manager;
-			}
-		}
-		{
-			SceneObject_LightDirection * obj = dynamic_cast<SceneObject_LightDirection*>(scene_obj);
-			if (obj != nullptr)
-			{
-				obj -> Data.DisplayObject = Cube_UI_manager;
-			}
-		}
-		{
-			SceneObject_LightPoint * obj = dynamic_cast<SceneObject_LightPoint*>(scene_obj);
-			if (obj != nullptr)
-			{
-				obj -> Data.DisplayObject = light_bulb_manager;
-			}
-		}
-		{
-			SceneObject_LightSpot * obj = dynamic_cast<SceneObject_LightSpot*>(scene_obj);
-			if (obj != nullptr)
-			{
-				obj -> Data.DisplayObject = stage_light_manager;
-			}
-		}
+		SceneObject_LightPoint::Display = &NewPolyHedraManagerTSC.TakeDisplayObject(
+			NewPolyHedraPalletManager.Take(
+				*PolyHedraManager.Take(
+					dir.File("LightBulb.polyhedra")
+				)
+			)
+		);
 	}
-}
 
-#include "SceneParsingData.hpp"
-#include "FileParsing/TextCommand/ArgsStream.hpp"
-void Light3DContext::SceneLoad(FileInfo file)
-{
-	SceneParsingData data(file, *this, PolyHedraManager);
-	TextCommand::ArgsStream stream(file.LoadText());
-	TextCommand::Args cmd_args;
-	while (stream.Continue(cmd_args))
-	{
-		data.Parse(cmd_args);
-	}
-}
-void Light3DContext::SceneSave(FileInfo file)
-{
-	std::stringstream ss;
-
-	file.SaveText(ss.str());
-}
-
-void Light3DContext::SceneReMake()
-{
-	// segfault when something is selected
-	std::cout << "Scene ReMake ....\n";
-	SceneClear();
-	SceneInitCubes();
-	std::cout << "ArgumentFiles\n";
-	std::cout << "[\n";
-	for (unsigned int i = 0; i < ArgumentFiles.Length(); i++)
-	{
-		std::cout << "  " << ArgumentFiles[i] << '\n';
-	}
-	std::cout << "]\n";
-	for (unsigned int i = 0; i < ArgumentFiles.Length(); i++)
-	{
-		SceneLoad(ArgumentFiles[i]);
-	}
-	//SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
-	//SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
-	//SceneLoad(MediaDirectory.File("42run/all.scene"));
-	SceneInitLights();
-	std::cout << "Scene ReMake done\n";
+	/* Light Indicators
+		Ambient
+		Direction
+			Indicator should point in Direction
+		Point
+			Light Bulb
+		Spot
+			Stage Light
+			make shorter
+			make it ignore Lighting, like other Indicators
+			put Lines that display the Cone
+			Line to display Center of Cone
+		change color of Indicators based on Color
+			have a seperate Texture Material
+			put other Color / Interpolate based on that other Material
+	*/
 }
 
 
@@ -442,6 +245,91 @@ void Light3DContext::PolyHedraPalletUpdate()
 
 
 
+void Light3DContext::Objects_Change()
+{
+	Object_Hovering = nullptr;
+
+	if (IsHoveringControl()) { return; }
+	if (!UserChange.IsNone()) { return; }
+
+	Object_Hovering = Collection.FindObject(ViewRay);
+
+	if (window.MouseManager[MouseButtons::MouseL].IsPress())
+	{
+		Object_Selected = Object_Hovering;
+		UserChange_ChangeObject(Object_Selected);
+		UISceneObject.Change(Object_Selected);
+	}
+}
+void Light3DContext::Objects_Update()
+{
+	if (Object_Hovering != nullptr)
+	{
+		//Object_Hovering -> ShowWire();
+	}
+
+	if (Object_Selected != nullptr)
+	{
+		Object_Selected -> ShowWire();
+		UISceneObject.Syncronize();
+	}
+}
+
+
+
+void Light3DContext::SceneClear()
+{
+	Object_Selected = nullptr;
+	Object_Hovering = nullptr;
+	Collection.Clear();
+	LightManager.Clear();
+//	UserTrans3DChange.HoveringMakeNone();
+//	UserTrans3DChange.SelectedMakeNone();
+}
+
+#include "SceneParsingData.hpp"
+#include "FileParsing/TextCommand/ArgsStream.hpp"
+void Light3DContext::SceneLoad(FileInfo file)
+{
+	SceneParsingData data(file, *this, PolyHedraManager);
+	TextCommand::ArgsStream stream(file.LoadText());
+	TextCommand::Args cmd_args;
+	while (stream.Continue(cmd_args))
+	{
+		data.Parse(cmd_args);
+	}
+}
+void Light3DContext::SceneSave(FileInfo file)
+{
+	std::stringstream ss;
+
+	file.SaveText(ss.str());
+}
+
+void Light3DContext::SceneReMake()
+{
+	// segfault when something is selected
+	std::cout << "Scene ReMake ....\n";
+	SceneClear();
+	std::cout << "ArgumentFiles\n";
+	std::cout << "[\n";
+	for (unsigned int i = 0; i < ArgumentFiles.Length(); i++)
+	{
+		std::cout << "  " << ArgumentFiles[i] << '\n';
+	}
+	std::cout << "]\n";
+	for (unsigned int i = 0; i < ArgumentFiles.Length(); i++)
+	{
+		SceneLoad(ArgumentFiles[i]);
+	}
+	//SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));
+	//SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
+	//SceneLoad(MediaDirectory.File("42run/all.scene"));
+	std::cout << "Scene ReMake done\n";
+}
+
+
+
 Light3DContext::Light3DContext(const Container::Array<FileInfo> & files)
 	: ContextBase()
 	, ArgumentFiles(files)
@@ -460,18 +348,15 @@ Light3DContext::Light3DContext(const Container::Array<FileInfo> & files)
 
 
 
-#include "Layout/Parser/Attribute.hpp"
-#include "Layout/Parser/Uniform.hpp"
 void Light3DContext::ChangeMedia()
 {
 	std::cout << "Light3DContext::ChangeMedia ....\n";
 
 	// MultiformLayout.Clear()
 
-	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
-
 	PolyHedra_ChangeMedia();
 
+	UIManager.ChangeMedia(MediaDirectory, window.glfw_window);
 	Container::Array<Uniform::Layout*> layouts({
 		&UIManager.ControlManager.ShaderLayout,
 		&UIManager.TextManager.ShaderLayout,
@@ -481,6 +366,7 @@ void Light3DContext::ChangeMedia()
 
 	std::cout << "Light3DContext::ChangeMedia done\n";
 }
+
 void Light3DContext::GraphicsCreate()
 {
 	std::cout << "Light3DContext::GraphicsCreate ....\n";
@@ -511,8 +397,6 @@ void Light3DContext::GraphicsDelete()
 
 
 
-static ::PolyHedra * TestPolyHedraSphere;
-
 void Light3DContext::Make()
 {
 	std::cout << "Light3DContext::Make() ....\n";
@@ -525,8 +409,6 @@ void Light3DContext::Make()
 
 	UserChange.IndicatorsInit(MediaDirectory.Directory("YMT/Meta/"));
 	UserChange.IndicatorsHide();
-
-	TestPolyHedraSphere = PolyHedraGenerate::SphereY(2, 5, 12.0f);
 
 	InitLights();
 
@@ -544,9 +426,9 @@ void Light3DContext::Make()
 	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
 
 	Shader::Base::BindNone();
-	LightBuffer.BindBase(BindingLight);
+	LightBuffer.BindBase(LightBinding);
 
-	LayoutMultiform.Lights.ChangeData(BindingLight);
+	LayoutMultiform.Lights.ChangeData(LightBinding);
 
 	std::cout << "Light3DContext::Make() done\n";
 }
@@ -626,11 +508,11 @@ void Light3DContext::User(FrameTime frame_time)
 		}
 	}
 
-	if (window[Keys::Insert] == State::Press)
+	/*if (window[Keys::Insert] == State::Press)
 	{
 		NewPolyHedra::Basic3D::DisplayObject * manager = &NewPolyHedraManagerBasic.TakeDisplayObject(NewPolyHedraPalletManager.Take(*Cube));
 		Collection.Objects.Insert(new SceneObject_PolyHedraObject(manager, Trans3D()));
-	}
+	}*/
 
 	if (window[Keys::D1] == State::Press)
 	{
@@ -657,6 +539,7 @@ void Light3DContext::User(FrameTime frame_time)
 }
 
 #include "ValueType/_Show.hpp"
+
 __attribute__((unused)) static void ToStringStream(const NewPolyHedra::BaseManager & manager)
 {
 	{
@@ -820,7 +703,7 @@ void Light3DContext::ViewFunc()
 
 
 //static unsigned int DisplayTestIndex = 0;
-static void DisplayTest(const DisplaySize & display_size, const View3D & view, PolyHedra & polyHedra, const Trans3D & trans)
+__attribute__((unused)) static void DisplayTest(const DisplaySize & display_size, const View3D & view, PolyHedra & polyHedra, const Trans3D & trans)
 {
 	NewPolyHedra::UserInterface::Object obj(polyHedra);
 	obj.Data().Size = VectorF2(20, 20);
@@ -869,21 +752,16 @@ void Light3DContext::Frame(FrameTime frame_time)
 	PolyHedraPalletUpdate();
 	Collection.Update();
 
-	CenterCube -> Data.Data.Trans.Position = VectorF3(0, 10, 0);
-	CenterCube -> Data.Data.Trans.Position = VectorF3(0, 0, 0);
-	CenterCube -> Data.Data.Trans.Rotation.Y2 += Angle::Radians(0.01f);
-
 	ViewFunc();
 
 	//if (window[Keys::PageUp  ] == State::Press) { DisplayTestIndex++; std::cout << "DisplayTestIndex:" << DisplayTestIndex << '\n'; }
 	//if (window[Keys::PageDown] == State::Press) { DisplayTestIndex--; std::cout << "DisplayTestIndex:" << DisplayTestIndex << '\n'; }
 
-	{
+	/*{
 		static Trans3D trans(VectorF3(0, 0, 0), EulerAngle3D::Degrees(60, 15, 30));
 		//trans.Rotation.Y2 += Angle::Degrees(15) * frame_time.Delta;
 		//trans.Rotation.X1 += Angle::Degrees(20) * frame_time.Delta;
 		//trans.Rotation.Z0 += Angle::Degrees(25) * frame_time.Delta;
-
 		TransScaleColor3D::Object obj(*Cube);
 		obj.Data().Trans = trans;
 		obj.Data().Scale = 8;
@@ -896,7 +774,7 @@ void Light3DContext::Frame(FrameTime frame_time)
 		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(+8, -8, +8))));
 		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(-8, +8, +8))));
 		DisplayTest(window.Size, View, *Cube, trans.forward(Trans3D(VectorF3(+8, +8, +8))));
-	}
+	}*/
 
 	Draw();
 }
@@ -909,9 +787,10 @@ void Light3DContext::Resize(DisplaySize display_size)
 
 
 
-void Light3DContext::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
-void Light3DContext::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
-void Light3DContext::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
-void Light3DContext::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
-void Light3DContext::KeyBoardKey(KeyArgs args) { UIManager.KeyBoardKey(args); }
-void Light3DContext::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
+void Light3DContext::MouseMove(MoveArgs args)		{ UIManager.MouseMove(args); }
+void Light3DContext::MouseClick(ClickArgs args)		{ UIManager.MouseClick(args); }
+void Light3DContext::MouseScroll(ScrollArgs args)	{ UIManager.MouseScroll(args); }
+void Light3DContext::MouseDrag(DragArgs args)		{ UIManager.MouseDrag(args); }
+
+void Light3DContext::KeyBoardKey(KeyArgs args)		{ UIManager.KeyBoardKey(args); }
+void Light3DContext::KeyBoardText(TextArgs args)	{ UIManager.KeyBoardText(args); }

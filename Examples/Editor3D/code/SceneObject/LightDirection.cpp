@@ -9,23 +9,27 @@
 
 
 
+TransScaleColor3D::DisplayObject * SceneObject_LightDirection::Display = nullptr;
+
+
+
 SceneObject_LightDirection::~SceneObject_LightDirection()
 { }
 SceneObject_LightDirection::SceneObject_LightDirection()
 {
-	Data.Data.Scale = VectorF3(1.0f);
-	Data.Data.Color = ColorF4();
+	Data.Scale = VectorF3(1.0f);
+	Data.Color = ColorF4();
 }
 
 
 
 Trans3D SceneObject_LightDirection::GetTrans() const
 {
-	return Data.Data.Trans;
+	return Data.Trans;
 }
 void SceneObject_LightDirection::SetTrans(const Trans3D & trans)
 {
-	Data.Data.Trans = trans;
+	Data.Trans = trans;
 }
 
 
@@ -37,21 +41,25 @@ void SceneObject_LightDirection::Update()
 
 void SceneObject_LightDirection::ShowWire()
 {
-	Data.ShowWire();
+	_ShowWire = true;
 }
 
 void SceneObject_LightDirection::DisplayObject(const SceneObjectDisplayMode & mode)
 {
 	if (mode.Indicators == SceneObjectDisplayMode::EIndicators::Show)
 	{
-		Data.InstancePut();
+		Display -> InstancesFullPut(Data);
+		if (_ShowWire)
+		{
+			Display -> InstancesWirePut(Data);
+		}
 	}
-	Data.HideWire();
+	_ShowWire = false;
 }
 
 
 
 RayHitF3 SceneObject_LightDirection::Hit(const RayF3 & ray) const
 {
-	return RayHitObject(ray, Data);
+	return RayHitObject(ray, *Display, Data);
 }

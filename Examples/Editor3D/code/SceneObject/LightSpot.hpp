@@ -4,7 +4,7 @@
 # include "SceneObject.hpp"
 # include "ValueType/Light/Spot.hpp"
 
-# include "Special/Basic3D/Logical/Object.hpp"
+# include "Special/Basic3D/Display/Object.hpp"
 # include "Special/Basic3D/Logical/Data.hpp"
 
 struct SceneObjectDisplayMode;
@@ -12,7 +12,8 @@ struct SceneObject_LightSpot : public SceneObject
 {
 	LightSpot *		Light;
 
-	NewPolyHedra::Basic3D::LogicalObject	Data;
+	static	NewPolyHedra::Basic3D::DisplayObject *	Display;
+			NewPolyHedra::Basic3D::LogicalData		Data;
 
 	~SceneObject_LightSpot();
 	SceneObject_LightSpot();
@@ -22,6 +23,7 @@ struct SceneObject_LightSpot : public SceneObject
 
 	void	Update() override;
 
+	bool	_ShowWire = false;
 	void	ShowWire() override;
 
 	void	DisplayObject(const SceneObjectDisplayMode & mode) override;

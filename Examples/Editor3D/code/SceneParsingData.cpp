@@ -197,7 +197,7 @@ void SceneParsingData::Parse_LightAmbient(const TextCommand::Args & cmd_args)
 
 	SceneObject_LightAmbient * obj = new SceneObject_LightAmbient();
 	obj -> Light = light;
-	obj -> Data.Data.Trans = trans;
+	obj -> Data.Trans = trans;
 	Context.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightDirectionD(const TextCommand::Args & cmd_args)
@@ -224,7 +224,7 @@ void SceneParsingData::Parse_LightDirectionD(const TextCommand::Args & cmd_args)
 
 	SceneObject_LightDirection * obj = new SceneObject_LightDirection();
 	obj -> Light = light;
-	obj -> Data.Data.Trans = trans;
+	obj -> Data.Trans = trans;
 	Context.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightPoint(const TextCommand::Args & cmd_args)
@@ -251,7 +251,7 @@ void SceneParsingData::Parse_LightPoint(const TextCommand::Args & cmd_args)
 
 	SceneObject_LightPoint * obj = new SceneObject_LightPoint();
 	obj -> Light = light;
-	obj -> Data.Data.Trans = trans;
+	obj -> Data.Trans = trans;
 	Context.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightSpotT(const TextCommand::Args & cmd_args)
@@ -280,6 +280,6 @@ void SceneParsingData::Parse_LightSpotT(const TextCommand::Args & cmd_args)
 
 	SceneObject_LightSpot * obj = new SceneObject_LightSpot();
 	obj -> Light = light;
-	obj -> Data.Data.Trans = trans;
+	obj -> Data.Trans = trans;
 	Context.Collection.Objects.Insert(obj);
 }

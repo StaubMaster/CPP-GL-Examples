@@ -88,12 +88,11 @@ bool	IsHoveringControl() const;
 
 
 // Light
-static GL::BlockBinding		BindingLight;
+static GL::BlockBinding		LightBinding;
+::LightManager				LightManager;
+Buffer::Uniform				LightBuffer;
 
-::LightManager		LightManager;
-Buffer::Uniform		LightBuffer;
-
-void InitLights();
+void	InitLights();
 
 
 
@@ -108,17 +107,16 @@ void	UserChange_Update();
 
 
 ListForm	UIPolyHedraPalletList;
-bool	DoPolyHedraPalletChange = false;
-void	PolyHedraPalletChangeFunc(ClickArgs args);
-void	PolyHedraPalletUpdate();
+bool		DoPolyHedraPalletChange = false;
+void		PolyHedraPalletChangeFunc(ClickArgs args);
+void		PolyHedraPalletUpdate();
 
 
 
-SceneObjectDisplayMode				DisplayMode;
-SceneObjectCollection				Collection;
-SceneObject *						Object_Selected = nullptr;
-SceneObject *						Object_Hovering = nullptr;
-SceneObject_PolyHedraObject *		CenterCube = nullptr;
+SceneObjectDisplayMode	DisplayMode;
+SceneObjectCollection	Collection;
+SceneObject *			Object_Selected = nullptr;
+SceneObject *			Object_Hovering = nullptr;
 
 void	Objects_Change();
 void	Objects_Update();
@@ -129,9 +127,6 @@ void	SceneClear();
 
 void	SceneLoad(FileInfo file);
 void	SceneSave(FileInfo file);
-
-void	SceneInitCubes();
-void	SceneInitLights();
 
 void	SceneReMake();
 
@@ -159,6 +154,7 @@ void	ViewFunc();
 
 
 void	Frame(FrameTime frame_time) override;
+
 void	Resize(DisplaySize display_size) override;
 
 
