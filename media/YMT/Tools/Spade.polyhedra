@@ -1,35 +1,15 @@
 Type PolyHedra
 Format Normal
 
-Skin Spade.skin
 
-# this uses Stick with stuff on it
-# have a way in read that .polyhedra file
-# and then add this stuff to it
 
-# make it so any .polyhedra file can be statically inserted into the current one
-# maybe apply a transformation (optional)
-#   move
-#   spin
-#   scale
-# recursion loop
+TransZero
+OtherFile Stick.polyhedra
+OtherStatic
 
 
 
-vertex -0,00 -00 -0,00
-circle>   6 6 0   0,0 -00 0,0   0,30   0,0 +1,0 0,0   0,0
-circle>   6 6 0   0,0 -10 0,0   0,30   0,0 +1,0 0,0   0,0
-vertex -0,00 -10 -0,00
-
-fan<   +00   +01 +02 +03 +04 +05 +06
-index +1 +0
-belt   +00 +01 +02 +03 +04 +05   +06 +07 +08 +09 +10 +11
-index +6 +0
-fan>   +00 +01 +02 +03 +04 +05   +06
-index +6 +0
-index +1 +0
-
-
+offset here
 
 Format Legacy
 
@@ -108,3 +88,7 @@ d +08 +09 +13
 d +09 +10 +13
 d +10 +11 +13
 d +11 +06 +13
+
+
+
+Skin Spade.skin
