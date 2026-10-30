@@ -1,19 +1,17 @@
 Type PolyHedra
 Format Normal
 
-#Skin Pipe_beige.skin
-
 
 
 param Radius0_Inn
-param Radius0_Out   #Radius0_Inn + 0.5
+param Radius0_Out
 param Radius1_Inn
-param Radius1_Out   #Radius1_Inn + 0.5
+param Radius1_Out
 
 param Distance0_Out
-param Distance0_Inn   #Distance0_Out + 1.0
+param Distance0_Inn
 param Distance1_Out
-param Distance1_Inn   #Distance1_Out - 1.0
+param Distance1_Inn
 
 
 
