@@ -1,6 +1,9 @@
 #include "UI/Change3D/VectorF3.hpp"
+#include "PolyHedra/Manager.hpp"
 
-#include "Special/TransScaleColor3D/Logical/Data.hpp"
+//#include "Special/TransScaleColor3D/Logical/Data.hpp"
+#include "Special/TransScaleColor3D/Display/ObjectManager.hpp"
+#include "NewPolyHedra/Pallet/Manager.hpp"
 
 #include "Ray3D_Hit.hpp"
 #include "ValueType/Ray/Hit/F3Type.hpp"
@@ -13,26 +16,24 @@
 
 
 
-void Change3D::VectorF3::IndicatorsInit(const DirectoryInfo & dir)
+void Change3D::VectorF3::IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir)
 {
-	MoveAxisX.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisX.polyhedra"), nullptr, nullptr, nullptr));
-	MoveAxisY.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisY.polyhedra"), nullptr, nullptr, nullptr));
-	MoveAxisZ.Create(*PolyHedraParser::Load(dir.File("MoveAxis/AxisZ.polyhedra"), nullptr, nullptr, nullptr));
+	MoveAxisX_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("MoveAxis/AxisX.polyhedra"))));
+	MoveAxisY_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("MoveAxis/AxisY.polyhedra"))));
+	MoveAxisZ_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("MoveAxis/AxisZ.polyhedra"))));
 }
 
+bool Change3D::VectorF3::IndicatorsIsVisible() const
+{
+	return IsVisible;
+}
 void Change3D::VectorF3::IndicatorsShow()
 {
-	MoveAxisX.ShowFull();
-	MoveAxisY.ShowFull();
-	MoveAxisZ.ShowFull();
-	Base::IndicatorsShow();
+	IsVisible = true;
 }
 void Change3D::VectorF3::IndicatorsHide()
 {
-	MoveAxisX.HideFull();
-	MoveAxisY.HideFull();
-	MoveAxisZ.HideFull();
-	Base::IndicatorsHide();
+	IsVisible = false;
 }
 
 RayHitF3 Change3D::VectorF3::IndicatorsFind(const RayF3 & ray)
@@ -42,9 +43,9 @@ RayHitF3 Change3D::VectorF3::IndicatorsFind(const RayF3 & ray)
 
 	RayHitF3Type<EIndicatorType> hit(EIndicatorType::None);
 
-	hit.Consider(RayHitObject(ray, MoveAxisX), EIndicatorType::MoveAxisX);
-	hit.Consider(RayHitObject(ray, MoveAxisY), EIndicatorType::MoveAxisY);
-	hit.Consider(RayHitObject(ray, MoveAxisZ), EIndicatorType::MoveAxisZ);
+	hit.Consider(RayHitObject(ray, *MoveAxisX_DisplayObject, MoveAxisX_Data), EIndicatorType::MoveAxisX);
+	hit.Consider(RayHitObject(ray, *MoveAxisY_DisplayObject, MoveAxisY_Data), EIndicatorType::MoveAxisY);
+	hit.Consider(RayHitObject(ray, *MoveAxisZ_DisplayObject, MoveAxisZ_Data), EIndicatorType::MoveAxisZ);
 
 	if (hit.Is())
 	{
@@ -62,36 +63,36 @@ void Change3D::VectorF3::IndicatorsUpdateColor()
 {
 	if (HoveringType != EIndicatorType::None)
 	{
-		MoveAxisX.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
-		MoveAxisY.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
-		MoveAxisZ.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
+		MoveAxisX_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
+		MoveAxisY_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
+		MoveAxisZ_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
 
 		switch (HoveringType)
 		{
-			case EIndicatorType::MoveAxisX: MoveAxisX.Data().Color = ColorF4(1, 0, 0); break;
-			case EIndicatorType::MoveAxisY: MoveAxisY.Data().Color = ColorF4(0, 1, 0); break;
-			case EIndicatorType::MoveAxisZ: MoveAxisZ.Data().Color = ColorF4(0, 0, 1); break;
+			case EIndicatorType::MoveAxisX: MoveAxisX_Data.Color = ColorF4(1, 0, 0); break;
+			case EIndicatorType::MoveAxisY: MoveAxisY_Data.Color = ColorF4(0, 1, 0); break;
+			case EIndicatorType::MoveAxisZ: MoveAxisZ_Data.Color = ColorF4(0, 0, 1); break;
 			default: break;
 		}
 	}
 	else
 	{
-		MoveAxisX.Data().Color = ColorF4(1, 0, 0);
-		MoveAxisY.Data().Color = ColorF4(0, 1, 0);
-		MoveAxisZ.Data().Color = ColorF4(0, 0, 1);
+		MoveAxisX_Data.Color = ColorF4(1, 0, 0);
+		MoveAxisY_Data.Color = ColorF4(0, 1, 0);
+		MoveAxisZ_Data.Color = ColorF4(0, 0, 1);
 	}
 }
 void Change3D::VectorF3::IndicatorsUpdateScale(float scale)
 {
-	MoveAxisX.Data().Scale = scale;
-	MoveAxisY.Data().Scale = scale;
-	MoveAxisZ.Data().Scale = scale;
+	MoveAxisX_Data.Scale = scale;
+	MoveAxisY_Data.Scale = scale;
+	MoveAxisZ_Data.Scale = scale;
 }
 void Change3D::VectorF3::IndicatorsUpdateTrans()
 {
-	MoveAxisX.Data().Trans.Position = Value;
-	MoveAxisY.Data().Trans.Position = Value;
-	MoveAxisZ.Data().Trans.Position = Value;
+	MoveAxisX_Data.Trans.Position = Value;
+	MoveAxisY_Data.Trans.Position = Value;
+	MoveAxisZ_Data.Trans.Position = Value;
 }
 
 #include "Display/DisplayPosition.hpp"
@@ -258,4 +259,16 @@ void Change3D::VectorF3::SelectedMakeR()
 		default: return value;
 	}
 	return value;
+}
+
+
+
+void Change3D::VectorF3::Display()
+{
+	if (IndicatorsIsVisible())
+	{
+		MoveAxisX_DisplayObject -> InstancesFullPut(MoveAxisX_Data);
+		MoveAxisY_DisplayObject -> InstancesFullPut(MoveAxisY_Data);
+		MoveAxisZ_DisplayObject -> InstancesFullPut(MoveAxisZ_Data);
+	}
 }

@@ -5,69 +5,141 @@
 
 
 
-void Change3D::Trans3D::IndicatorsInit(const DirectoryInfo & dir)
-{
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
+#include "Generics/Loop.hpp"
 
-	for (unsigned int i = 0; i < n; i++)
+// put in Container::Loop
+// these have double args to allow conversion if not identical
+
+
+template<
+	typename TypeItemObject,
+	typename TypeFuncObject,
+	typename ... TypeFuncArgs,
+	typename ... TypeItemArgs
+>
+static void		loop_invoke(
+	Container::Binary<TypeItemObject*> & container,
+	void (TypeFuncObject::*func)(TypeFuncArgs ...),
+	TypeItemArgs & ... args
+)
+{
+	unsigned long n = container.Count();
+	for (unsigned long i = 0; i < n; i++)
 	{
-		change3D[i] -> IndicatorsInit(dir);
+		TypeItemObject * obj = container.At(i);
+		if (obj != nullptr)
+		{
+			(*obj.*func)(args ...);
+		}
 	}
+}
+
+
+
+template<
+	typename TypeItemObject,
+	typename TypeFuncObject,
+	typename ... TypeFuncArgs,
+	typename ... TypeItemArgs
+>
+static bool		loop_check_all(
+	const Container::Binary<TypeItemObject*> & container,
+	bool (TypeFuncObject::*func)(TypeFuncArgs ...) const,
+	const TypeItemArgs & ... args
+)
+{
+	unsigned long n = container.Count();
+	for (unsigned long i = 0; i < n; i++)
+	{
+		const TypeItemObject * obj = container.At(i);
+		if (obj != nullptr)
+		{
+			if (!(*obj.*func)(args ...))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+
+
+template<
+	typename TypeItemObject,
+	typename TypeFuncObject,
+	typename ... TypeFuncArgs,
+	typename ... TypeItemArgs
+>
+static bool		loop_check_any(
+	const Container::Binary<TypeItemObject*> & container,
+	bool (TypeFuncObject::*func)(TypeFuncArgs ...) const,
+	const TypeItemArgs & ... args
+)
+{
+	unsigned long n = container.Count();
+	for (unsigned long i = 0; i < n; i++)
+	{
+		const TypeItemObject * obj = container.At(i);
+		if (obj != nullptr)
+		{
+			if ((*obj.*func)(args ...))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+
+
+
+Change3D::Trans3D::Trans3D()
+	: Changes()
+	, VectorF3()
+	, EulerAngle3D()
+{
+	Changes.Insert(&VectorF3);
+	Changes.Insert(&EulerAngle3D);
+}
+
+
+
+void Change3D::Trans3D::IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir)
+{
+	loop_invoke(Changes, &Change3D::Base::IndicatorsInit, manager, dir);
 }
 
 void Change3D::Trans3D::IndicatorsShow()
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> IndicatorsShow();
-	}
+	loop_invoke(Changes, &Change3D::Base::IndicatorsShow);
 }
 void Change3D::Trans3D::IndicatorsHide()
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> IndicatorsHide();
-	}
+	loop_invoke(Changes, &Change3D::Base::IndicatorsHide);
 }
 
-unsigned int Change3D::Trans3D::IndicatorsFind(const RayF3 & ray)
+Change3D::Base * Change3D::Trans3D::IndicatorsFind(const RayF3 & ray)
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
+	RayHitF3Type<Base *> hit(nullptr);
 
-	RayHitF3Type<unsigned int> hit;
-
-	for (unsigned int i = 0; i < n; i++)
+	for (unsigned int i = 0; i < Changes.Count(); i++)
 	{
-		hit.Consider(change3D[i] -> IndicatorsFind(ray), i);
+		if (Changes[i] != nullptr)
+		{
+			hit.Consider(Changes[i] -> IndicatorsFind(ray), Changes[i]);
+		}
 	}
 
 	if (hit.Is())
 	{
-		for (unsigned int i = 0; i < n; i++)
+		for (unsigned int i = 0; i < Changes.Count(); i++)
 		{
-			if (hit.Data != i)
+			if (Changes[i] != hit.Data)
 			{
-				change3D[i] -> HoveringMakeOther();
+				Changes[i] -> HoveringMakeOther();
 			}
 		}
 	}
@@ -77,165 +149,67 @@ unsigned int Change3D::Trans3D::IndicatorsFind(const RayF3 & ray)
 
 void Change3D::Trans3D::IndicatorsUpdate(const View3D & view, const DisplaySize & display_size)
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> IndicatorsUpdate(view, display_size);
-	}
+	loop_invoke(Changes, &Change3D::Base::IndicatorsUpdate, view, display_size);
 }
 
 
 
 bool Change3D::Trans3D::IsNone() const
 {
-	unsigned int n = 2;
-	const Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		if (!change3D[i] -> IsNone())
-		{
-			return false;
-		}
-	}
-
-	return true;
+	return loop_check_all(Changes, &Change3D::Base::IsNone);
 }
 
 
 
 bool Change3D::Trans3D::HoveringIsNone() const
 {
-	unsigned int n = 2;
-	const Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		if (!change3D[i] -> HoveringIsNone())
-		{
-			return false;
-		}
-	}
-
-	return true;
+	return loop_check_all(Changes, &Change3D::Base::HoveringIsNone);
 }
 void Change3D::Trans3D::HoveringMakeNone()
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> HoveringMakeNone();
-	}
+	loop_invoke(Changes, &Change3D::Base::HoveringMakeNone);
 }
 void Change3D::Trans3D::HoveringMakeOther()
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> HoveringMakeOther();
-	}
+	loop_invoke(Changes, &Change3D::Base::HoveringMakeOther);
 }
 
 
 
 bool Change3D::Trans3D::SelectedIsNone() const
 {
-	unsigned int n = 2;
-	const Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		if (!change3D[i] -> SelectedIsNone())
-		{
-			return false;
-		}
-	}
-
-	return true;
+	return loop_check_all(Changes, &Change3D::Base::SelectedIsNone);
 }
 void Change3D::Trans3D::SelectedMakeNone()
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> SelectedMakeNone();
-	}
+	loop_invoke(Changes, &Change3D::Base::SelectedMakeNone);
 }
 
-void Change3D::Trans3D::SelectedMakeL(unsigned int idx)
+/*void Change3D::Trans3D::SelectedMakeL(unsigned int idx)
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
+	if (Changes.Check(idx))
 	{
-		if (i == idx)
-		{
-			change3D[i] -> SelectedMakeL();
-		}
+		Changes[idx] -> SelectedMakeL();
 	}
-}
-void Change3D::Trans3D::SelectedMakeR(unsigned int idx)
+}*/
+/*void Change3D::Trans3D::SelectedMakeR(unsigned int idx)
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
-
-	for (unsigned int i = 0; i < n; i++)
+	if (Changes.Check(idx))
 	{
-		if (i == idx)
-		{
-			change3D[i] -> SelectedMakeR();
-		}
+		Changes[idx] -> SelectedMakeR();
 	}
-}
+}*/
 
 
 
 void Change3D::Trans3D::ChangeValue(const RayF3 & ray)
 {
-	unsigned int n = 2;
-	Change3D::Base * change3D[n] = {
-		&VectorF3,
-		&EulerAngle3D,
-	};
+	loop_invoke(Changes, &Change3D::Base::ChangeValue, ray);
+}
 
-	for (unsigned int i = 0; i < n; i++)
-	{
-		change3D[i] -> ChangeValue(ray);
-	}
+
+
+void Change3D::Trans3D::Display()
+{
+	loop_invoke(Changes, &Change3D::Base::Display);
 }

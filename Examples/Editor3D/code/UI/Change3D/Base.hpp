@@ -8,21 +8,19 @@
 # include "Display/DisplaySize.hpp"
 
 class DirectoryInfo;
+class PolyHedraManager;
 
 namespace Change3D
 {
 struct Base
 {
 	public:
-	virtual void	IndicatorsInit(const DirectoryInfo & dir) = 0;
-
-	private:
-	bool	IsVisible = false;
+	virtual void	IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir) = 0;
 
 	public:
-	bool			IndicatorsIsVisible() const;
-	virtual void	IndicatorsShow();
-	virtual void	IndicatorsHide();
+	virtual bool	IndicatorsIsVisible() const = 0;
+	virtual void	IndicatorsShow() = 0;
+	virtual void	IndicatorsHide() = 0;
 
 	public:
 	virtual RayHitF3	IndicatorsFind(const RayF3 & ray) = 0;
@@ -60,6 +58,11 @@ struct Base
 	virtual void	RoundValue() = 0;
 	public:
 	virtual void	ChangeValue(const RayF3 & ray) = 0;
+
+
+
+	public:
+	virtual void	Display() = 0; // move this up
 };
 };
 

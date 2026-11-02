@@ -3,28 +3,43 @@
 
 # include "Base.hpp"
 
+# include "Generics/Container/Binary.hpp"
+
 # include "UI/Change3D/VectorF3.hpp"
 # include "UI/Change3D/EulerAngle3D.hpp"
 
 namespace Change3D
 {
-struct Trans3D
+struct Trans3D : public Base // make Change3D::Collection
 {
+	Container::Binary<Base *>	Changes;
+
+	~Trans3D() = default;
+	Trans3D();
+	Trans3D(const Trans3D & other) = delete;
+	Trans3D & operator=(const Trans3D & other) = delete;
+
 	Change3D::VectorF3		VectorF3;
 	Change3D::EulerAngle3D	EulerAngle3D;
 
 	public:
-	void	IndicatorsInit(const DirectoryInfo & dir);
+	void	IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir) override;
 
 	public:
-	void	IndicatorsHide();
-	void	IndicatorsShow();
+	bool	IndicatorsIsVisible() const override;
+	void	IndicatorsHide() override;
+	void	IndicatorsShow() override;
 
 	public:
-	unsigned int	IndicatorsFind(const RayF3 & ray);
+	Base *	IndicatorsFind(const RayF3 & ray);
+
+	private:
+	void	IndicatorsUpdateColor() override;
+	void	IndicatorsUpdateScale(float scale) override;
+	void	IndicatorsUpdateTrans() override;
 
 	public:
-	void	IndicatorsUpdate(const View3D & view, const DisplaySize & display_size);
+	void	IndicatorsUpdate(const View3D & view, const DisplaySize & display_size) override;
 
 	public:
 	bool	IsNone() const;
@@ -35,15 +50,26 @@ struct Trans3D
 	void	HoveringMakeOther();
 
 	public:
-	bool	SelectedIsNone() const;
-	void	SelectedMakeNone();
+	bool	SelectedIsNone() const override;
+	void	SelectedMakeNone() override;
 
 	public:
-	void	SelectedMakeL(unsigned int idx);
-	void	SelectedMakeR(unsigned int idx);
+	void	SelectedMakeL() override;
+	void	SelectedMakeR() override;
 
 	public:
-	void	ChangeValue(const RayF3 & ray);
+	//void	SelectedMakeL(unsigned int idx);
+	//void	SelectedMakeR(unsigned int idx);
+
+	private:
+	void	RoundValue() override;
+	public:
+	void	ChangeValue(const RayF3 & ray) override;
+
+
+
+	public:
+	void	Display();
 };
 };
 

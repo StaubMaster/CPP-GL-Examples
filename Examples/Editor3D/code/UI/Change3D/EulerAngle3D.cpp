@@ -1,6 +1,9 @@
 #include "UI/Change3D/EulerAngle3D.hpp"
+#include "PolyHedra/Manager.hpp"
 
-#include "Special/TransScaleColor3D/Logical/Data.hpp"
+//#include "Special/TransScaleColor3D/Logical/Data.hpp"
+#include "Special/TransScaleColor3D/Display/ObjectManager.hpp"
+#include "NewPolyHedra/Pallet/Manager.hpp"
 
 #include "Ray3D_Hit.hpp"
 #include "ValueType/Ray/Hit/F3Type.hpp"
@@ -13,26 +16,24 @@
 
 
 
-void Change3D::EulerAngle3D::IndicatorsInit(const DirectoryInfo & dir)
+void Change3D::EulerAngle3D::IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir)
 {
-	SpinRingX.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingX.polyhedra"), nullptr, nullptr, nullptr));
-	SpinRingY.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingY.polyhedra"), nullptr, nullptr, nullptr));
-	SpinRingZ.Create(*PolyHedraParser::Load(dir.File("SpinRing/RingZ.polyhedra"), nullptr, nullptr, nullptr));
+	SpinRingX_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("SpinRing/RingX.polyhedra"))));
+	SpinRingY_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("SpinRing/RingY.polyhedra"))));
+	SpinRingZ_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("SpinRing/RingZ.polyhedra"))));
 }
 
+bool Change3D::EulerAngle3D::IndicatorsIsVisible() const
+{
+	return IsVisible;
+}
 void Change3D::EulerAngle3D::IndicatorsShow()
 {
-	SpinRingX.ShowFull();
-	SpinRingY.ShowFull();
-	SpinRingZ.ShowFull();
-	Base::IndicatorsShow();
+	IsVisible = true;
 }
 void Change3D::EulerAngle3D::IndicatorsHide()
 {
-	SpinRingX.HideFull();
-	SpinRingY.HideFull();
-	SpinRingZ.HideFull();
-	Base::IndicatorsHide();
+	IsVisible = false;
 }
 
 RayHitF3 Change3D::EulerAngle3D::IndicatorsFind(const RayF3 & ray)
@@ -42,9 +43,9 @@ RayHitF3 Change3D::EulerAngle3D::IndicatorsFind(const RayF3 & ray)
 
 	RayHitF3Type<EIndicatorType> hit(EIndicatorType::None);
 
-	hit.Consider(RayHitObject(ray, SpinRingX), EIndicatorType::SpinRingX);
-	hit.Consider(RayHitObject(ray, SpinRingY), EIndicatorType::SpinRingY);
-	hit.Consider(RayHitObject(ray, SpinRingZ), EIndicatorType::SpinRingZ);
+	hit.Consider(RayHitObject(ray, *SpinRingX_DisplayObject, SpinRingX_Data), EIndicatorType::SpinRingX);
+	hit.Consider(RayHitObject(ray, *SpinRingY_DisplayObject, SpinRingY_Data), EIndicatorType::SpinRingY);
+	hit.Consider(RayHitObject(ray, *SpinRingZ_DisplayObject, SpinRingZ_Data), EIndicatorType::SpinRingZ);
 
 	if (hit.Is())
 	{
@@ -70,41 +71,41 @@ void Change3D::EulerAngle3D::IndicatorsUpdateColor()
 {
 	if (HoveringType != EIndicatorType::None)
 	{
-		SpinRingX.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
-		SpinRingY.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
-		SpinRingZ.Data().Color = ColorF4(0.5f, 0.5f, 0.5f);
+		SpinRingX_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
+		SpinRingY_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
+		SpinRingZ_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
 
 		switch (HoveringType)
 		{
-			case EIndicatorType::SpinRingX: SpinRingX.Data().Color = ColorF4(1, 0, 0); break;
-			case EIndicatorType::SpinRingY: SpinRingY.Data().Color = ColorF4(0, 1, 0); break;
-			case EIndicatorType::SpinRingZ: SpinRingZ.Data().Color = ColorF4(0, 0, 1); break;
+			case EIndicatorType::SpinRingX: SpinRingX_Data.Color = ColorF4(1, 0, 0); break;
+			case EIndicatorType::SpinRingY: SpinRingY_Data.Color = ColorF4(0, 1, 0); break;
+			case EIndicatorType::SpinRingZ: SpinRingZ_Data.Color = ColorF4(0, 0, 1); break;
 			default: break;
 		}
 	}
 	else
 	{
-		SpinRingX.Data().Color = ColorF4(1, 0, 0);
-		SpinRingY.Data().Color = ColorF4(0, 1, 0);
-		SpinRingZ.Data().Color = ColorF4(0, 0, 1);
+		SpinRingX_Data.Color = ColorF4(1, 0, 0);
+		SpinRingY_Data.Color = ColorF4(0, 1, 0);
+		SpinRingZ_Data.Color = ColorF4(0, 0, 1);
 	}
 }
 void Change3D::EulerAngle3D::IndicatorsUpdateScale(float scale)
 {
-	SpinRingX.Data().Scale = scale;
-	SpinRingY.Data().Scale = scale;
-	SpinRingZ.Data().Scale = scale;
+	SpinRingX_Data.Scale = scale;
+	SpinRingY_Data.Scale = scale;
+	SpinRingZ_Data.Scale = scale;
 }
 void Change3D::EulerAngle3D::IndicatorsUpdateTrans()
 {
-	SpinRingX.Data().Trans.Position = Center;
-	SpinRingY.Data().Trans.Position = Center;
-	SpinRingZ.Data().Trans.Position = Center;
+	SpinRingX_Data.Trans.Position = Center;
+	SpinRingY_Data.Trans.Position = Center;
+	SpinRingZ_Data.Trans.Position = Center;
 
 	::EulerAngle3D rot;
-	rot.Y2 = Value.Y2; SpinRingY.Data().Trans.Rotation = rot;
-	rot.X1 = Value.X1; SpinRingX.Data().Trans.Rotation = rot;
-	rot.Z0 = Value.Z0; SpinRingZ.Data().Trans.Rotation = rot;
+	rot.Y2 = Value.Y2; SpinRingY_Data.Trans.Rotation = rot;
+	rot.X1 = Value.X1; SpinRingX_Data.Trans.Rotation = rot;
+	rot.Z0 = Value.Z0; SpinRingZ_Data.Trans.Rotation = rot;
 }
 
 #include "Display/DisplayPosition.hpp"
@@ -253,4 +254,16 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 		default: return value;
 	}
 	return value;
+}
+
+
+
+void Change3D::EulerAngle3D::Display()
+{
+	if (IndicatorsIsVisible())
+	{
+		SpinRingX_DisplayObject -> InstancesFullPut(SpinRingX_Data);
+		SpinRingY_DisplayObject -> InstancesFullPut(SpinRingY_Data);
+		SpinRingZ_DisplayObject -> InstancesFullPut(SpinRingZ_Data);
+	}
 }

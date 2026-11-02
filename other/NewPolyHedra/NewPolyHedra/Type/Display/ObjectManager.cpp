@@ -33,9 +33,29 @@ template<typename LogicalData> NewPolyHedra::DataDisplayObjectManager<LogicalDat
 
 #include "Generics/Loop.hpp"
 
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayObjectManager<LogicalData, DisplayData> * NewPolyHedra::TypeDisplayObjectManager<LogicalData, DisplayData>::Current = nullptr;
+
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData> * NewPolyHedra::TypeDisplayObjectManager<LogicalData, DisplayData>::sFind(Pallet & pallet)
+{
+	if (Current == nullptr) { return nullptr; }
+	return (Current -> Find(pallet));
+}
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayObject<LogicalData, DisplayData> * NewPolyHedra::TypeDisplayObjectManager<LogicalData, DisplayData>::sTake(Pallet & pallet)
+{
+	if (Current == nullptr) { return nullptr; }
+	return &(Current -> Take(pallet));
+}
+
+
+
 template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayObjectManager<LogicalData, DisplayData>::~TypeDisplayObjectManager()
 {
 	Container::Loop::Delete(Objects);
+	Current = nullptr;
+}
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayObjectManager<LogicalData, DisplayData>::TypeDisplayObjectManager()
+{
+	Current = this;
 }
 
 template<typename LogicalData, typename DisplayData> unsigned int NewPolyHedra::TypeDisplayObjectManager<LogicalData, DisplayData>::Count() const

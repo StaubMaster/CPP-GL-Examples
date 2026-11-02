@@ -39,9 +39,15 @@ template<typename LogicalData> struct DataDisplayObjectManager : public BaseDisp
 template<typename LogicalData, typename DisplayData> struct TypeDisplayObject;
 template<typename LogicalData, typename DisplayData> struct TypeDisplayObjectManager : public DataDisplayObjectManager<LogicalData>
 {
+	private:
+	static TypeDisplayObjectManager *		Current;
+	public:
+	static TypeDisplayObject<LogicalData, DisplayData> *	sFind(Pallet & pallet);
+	static TypeDisplayObject<LogicalData, DisplayData> *	sTake(Pallet & pallet);
+
 	public:
 	~TypeDisplayObjectManager();
-	TypeDisplayObjectManager() = default;
+	TypeDisplayObjectManager();
 	TypeDisplayObjectManager(const TypeDisplayObjectManager & other) = delete;
 	TypeDisplayObjectManager & operator=(const TypeDisplayObjectManager & other) = delete;
 

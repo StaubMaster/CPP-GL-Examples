@@ -119,7 +119,7 @@ void Light3DContext::UserChange_ChangeObject(SceneObject * obj)
 {
 	if (obj != nullptr)
 	{
-		//UserChange.IndicatorsShow();
+		UserChange.IndicatorsShow();
 
 		Trans3D trans = obj -> GetTrans();
 
@@ -145,14 +145,17 @@ void Light3DContext::UserChange_HoverSelect()
 		}
 		else
 		{
-			unsigned int idx = UserChange.IndicatorsFind(ViewRay);
-			if (window[MouseButtons::MouseL].IsPress())
+			Change3D::Base * change = UserChange.IndicatorsFind(ViewRay);
+			if (change != nullptr)
 			{
-				UserChange.SelectedMakeL(idx);
-			}
-			if (window[MouseButtons::MouseR].IsPress())
-			{
-				UserChange.SelectedMakeR(idx);
+				if (window[MouseButtons::MouseL].IsPress())
+				{
+					change -> SelectedMakeL();
+				}
+				if (window[MouseButtons::MouseR].IsPress())
+				{
+					change -> SelectedMakeR();
+				}
 			}
 		}
 	}
@@ -407,7 +410,7 @@ void Light3DContext::Make()
 //	View.Trans = Trans3D(VectorF3(0, 430, -24), EulerAngle3D());
 	View.Trans = Trans3D(VectorF3(0, 0, -24), EulerAngle3D());
 
-	UserChange.IndicatorsInit(MediaDirectory.Directory("YMT/Meta/"));
+	UserChange.IndicatorsInit(PolyHedraManager, MediaDirectory.Directory("YMT/Meta/"));
 	UserChange.IndicatorsHide();
 
 	InitLights();
@@ -618,7 +621,7 @@ void Light3DContext::Draw()
 
 	Collection.Display(DisplayMode);
 
-
+	UserChange.Display();
 
 	//ToStringStream(ObjectManagerBasic);
 	//ToStringStream(ObjectManagerTSC);

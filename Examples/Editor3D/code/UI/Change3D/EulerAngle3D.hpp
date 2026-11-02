@@ -6,24 +6,35 @@
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/EulerAngle3D.hpp"
 
-# include "Special/TransScaleColor3D/Object.hpp"
+//# include "Special/TransScaleColor3D/Object.hpp"
+# include "Special/TransScaleColor3D/Display/Object.hpp"
+# include "Special/TransScaleColor3D/Logical/Data.hpp"
 
 namespace Change3D
 {
 struct EulerAngle3D : public Base
 {
 	private:
-	TransScaleColor3D::Object	SpinRingX;
-	TransScaleColor3D::Object	SpinRingY;
-	TransScaleColor3D::Object	SpinRingZ;
+	//TransScaleColor3D::Object				SpinRingX;
+	//TransScaleColor3D::Object				SpinRingY;
+	//TransScaleColor3D::Object				SpinRingZ;
+	TransScaleColor3D::DisplayObject *		SpinRingX_DisplayObject = nullptr;
+	TransScaleColor3D::DisplayObject *		SpinRingY_DisplayObject = nullptr;
+	TransScaleColor3D::DisplayObject *		SpinRingZ_DisplayObject = nullptr;
+	TransScaleColor3D::LogicalData			SpinRingX_Data;
+	TransScaleColor3D::LogicalData			SpinRingY_Data;
+	TransScaleColor3D::LogicalData			SpinRingZ_Data;
 
 	public:
 	::VectorF3	Center;
 
 	public:
-	void	IndicatorsInit(const DirectoryInfo & dir) override;
+	void	IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir) override;
 
+	private:
+	bool	IsVisible = false;
 	public:
+	bool	IndicatorsIsVisible() const override;
 	void	IndicatorsShow() override;
 	void	IndicatorsHide() override;
 
@@ -100,6 +111,11 @@ struct EulerAngle3D : public Base
 	::EulerAngle3D	CalculatePlaneZ(const RayF3 & ray) const;
 	private:
 	::EulerAngle3D	Calculate(const RayF3 & ray) const;
+
+
+
+	public:
+	void	Display() override;
 };
 };
 

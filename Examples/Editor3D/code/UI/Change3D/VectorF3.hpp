@@ -5,21 +5,32 @@
 
 # include "ValueType/Vector/F3.hpp"
 
-# include "Special/TransScaleColor3D/Object.hpp"
+//# include "Special/TransScaleColor3D/Object.hpp"
+# include "Special/TransScaleColor3D/Display/Object.hpp"
+# include "Special/TransScaleColor3D/Logical/Data.hpp"
 
 namespace Change3D
 {
 struct VectorF3 : public Base
 {
 	private:
-	TransScaleColor3D::Object	MoveAxisX;
-	TransScaleColor3D::Object	MoveAxisY;
-	TransScaleColor3D::Object	MoveAxisZ;
+	//TransScaleColor3D::Object				MoveAxisX;
+	//TransScaleColor3D::Object				MoveAxisY;
+	//TransScaleColor3D::Object				MoveAxisZ;
+	TransScaleColor3D::DisplayObject *		MoveAxisX_DisplayObject = nullptr;
+	TransScaleColor3D::DisplayObject *		MoveAxisY_DisplayObject = nullptr;
+	TransScaleColor3D::DisplayObject *		MoveAxisZ_DisplayObject = nullptr;
+	TransScaleColor3D::LogicalData			MoveAxisX_Data;
+	TransScaleColor3D::LogicalData			MoveAxisY_Data;
+	TransScaleColor3D::LogicalData			MoveAxisZ_Data;
 
 	public:
-	void	IndicatorsInit(const DirectoryInfo & dir) override;
+	void	IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir) override;
 
+	private:
+	bool	IsVisible = false;
 	public:
+	bool	IndicatorsIsVisible() const override;
 	void	IndicatorsShow() override;
 	void	IndicatorsHide() override;
 
@@ -102,6 +113,11 @@ struct VectorF3 : public Base
 	::VectorF3	CalculatePlane(const RayF3 & ray, const ::VectorF3 & axis) const;
 	private:
 	::VectorF3	Calculate(const RayF3 & ray) const;
+
+
+
+	public:
+	void	Display() override;
 };
 };
 
