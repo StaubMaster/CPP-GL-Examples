@@ -78,8 +78,8 @@ UI::Control::ScrollBox::ScrollBox()
 
 	ScrollBar.Anchor.X.AnchorMax(0, 10);
 	ScrollBar.Anchor.Y.AnchorBoth(0, 0);
-	ScrollBar.ValueMin.Y = 0.0f;
-	ScrollBar.ValueMax.Y = 1.0f;
+	ScrollBar.ValueRange.Min.Y = 0.0f;
+	ScrollBar.ValueRange.Max.Y = 1.0f;
 	ScrollBar.NubSize.X = 10.0f;
 	ScrollBar.NubSize.Y = 100.0f;
 	ScrollBar.ValueYChangedFunc.Assign(this, &ScrollBox::ScrollFunc);
@@ -124,8 +124,8 @@ void UI::Control::ScrollBox::ChildClear()
 void UI::Control::ScrollBox::ScrollNone()
 {
 	ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay.Max.Y - ScrollBar.BoxDisplay.Min.Y) / 2.0f;
-	ScrollBar.ValueMin.Y = 0.0f;
-	ScrollBar.ValueMax.Y = 1.0f;
+	ScrollBar.ValueRange.Min.Y = 0.0f;
+	ScrollBar.ValueRange.Max.Y = 1.0f;
 	ScrollBar.SetValueY(0.5f);
 	ScrollBar.MakeDisabled();
 }
@@ -144,8 +144,8 @@ void UI::Control::ScrollBox::ScrollCalc()
 	if (ratio < 1.0f)
 	{
 		ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay.Max.Y - ScrollBar.BoxDisplay.Min.Y) * ratio;
-		ScrollBar.ValueMin.Y = 0.0f;
-		ScrollBar.ValueMax.Y = control_range_size - content_size;
+		ScrollBar.ValueRange.Min.Y = 0.0f;
+		ScrollBar.ValueRange.Max.Y = control_range_size - content_size;
 		ScrollBar.MakeEnabled();
 	}
 	else

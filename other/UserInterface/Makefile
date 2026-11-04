@@ -8,12 +8,12 @@ FILES := \
 	Anchor1D.cpp \
 	Anchor2D.cpp \
 \
-	Control/General/ShaderLayout.cpp \
-	Control/General/BufferLayout.cpp \
-	Control/General/BufferData.cpp \
+	Control/General/Graphics/MainData.cpp \
+	Control/General/Graphics/InstData.cpp \
+	Control/General/Graphics/MainLayout.cpp \
+	Control/General/Graphics/InstLayout.cpp \
+	Control/General/Graphics/Layout.cpp \
 	Control/General/Manager.cpp \
-	Control/General/ObjectData.cpp \
-	Control/General/Object.cpp \
 	Control/General/Base.cpp \
 	Control/General/BaseText.cpp \
 \

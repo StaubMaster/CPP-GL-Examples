@@ -1,17 +1,18 @@
 #ifndef  UI_CONTROL_MANAGER_HPP
 # define UI_CONTROL_MANAGER_HPP
 
-# include "ShaderLayout.hpp"
-# include "BufferLayout.hpp"
-# include "BufferData.hpp"
-# include "Buffer.hpp"
-
+# include "Graphics/Shader/Base.hpp"
 # include "Graphics/VertexArray/MainInst.hpp"
 # include "Graphics/Buffer/Array.hpp"
 
-# include "Graphics/Shader/Base.hpp"
+# include "Graphics/Layout.hpp"
+# include "Graphics/MainLayout.hpp"
+# include "Graphics/InstLayout.hpp"
+
 
 # include "Generics/Container/Binary.hpp"
+# include "Graphics/MainData.hpp"
+# include "Graphics/InstData.hpp"
 
 
 
@@ -25,7 +26,7 @@ namespace Control
 class Base;
 class Form;
 
-struct ObjectData;
+//struct ObjectData;
 
 class Manager
 {
@@ -45,12 +46,10 @@ class Manager
 	::Shader::Base					Shader;
 	UI::Control::ShaderLayout		ShaderLayout;
 
-	VertexArray::MainInst				Buffer;
-	UI::Control::Main::BufferLayout		BufferLayoutMain;
-	UI::Control::Inst::BufferLayout		BufferLayoutInst;
-
-	Container::Binary<ObjectData*>					ObjectDatas;
-	Container::Binary<Control::Inst::BufferData>	Instances;
+	public:
+	VertexArray::MainInst			Buffer;
+	UI::Control::Main::Layout		BufferLayoutMain;
+	UI::Control::Inst::Layout		BufferLayoutInst;
 
 	public:
 	~Manager();
@@ -59,37 +58,32 @@ class Manager
 	Manager & operator=(const Manager & other) = delete;
 
 	public:
-	ObjectData *	PlaceObject();
-	ObjectData *	CopyObject(const ObjectData * obj);
-	// give these functions static Variants that return if no Current
-	// else they do the stuff with current
+	Container::Binary<Control::Inst::Data>		Instances;
+	void	InstancePut(const Control::Inst::Data & data);
 
 	public:
 	void	ChangeMedia(const DirectoryInfo & dir);
 
 	private:
-	bool	GraphicsExist;
+	bool	GraphicsExist = false;
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
 	void	GraphicsInit();
 
 	private:
-	bool	GraphicsNeedMain;
+	bool	GraphicsNeedMain = false;
 
 	private:
-	void	GraphicsMain();
-	void	GraphicsInst();
+	void	GraphicsPutMain();
+	void	GraphicsPutInst();
 
 	public:
-	void	InstancesClear();
-	void	InstancesMake();
-	public:
-	void	InstancePut(const ObjectData & data);
-	void	InstancePut(const Control::Inst::BufferData & data);
+	void	GraphicsClear();
+	void	GraphicsMake();
 
 	public:
-	void	Draw();
+	void	GraphicsDraw();
 };
 
 };

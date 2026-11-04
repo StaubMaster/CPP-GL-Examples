@@ -11,8 +11,8 @@ UserInterfaceMenu3::UserInterfaceMenu3()
 	Align.Anchor.X.AnchorMin(0, 50);
 	Align.Anchor.Y.AnchorMin(0, 50);
 	Align.NubSize = VectorF2(20.0f);
-	Align.ValueMin = VectorF2(0.0f);
-	Align.ValueMax = VectorF2(2.0f);
+	Align.ValueRange.Min = VectorF2(0.0f);
+	Align.ValueRange.Max = VectorF2(2.0f);
 	Align.ValueResolution = VectorF2(1.0f);
 	Align.ValueChangedFunc.Assign(this, &UserInterfaceMenu3::AlignFunc);
 

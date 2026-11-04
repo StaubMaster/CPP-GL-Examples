@@ -5,6 +5,9 @@
 
 # include "Generics/Function/Pointer.hpp"
 
+//# include "Object.hpp"
+//# include "ObjectData.hpp"
+
 namespace UI
 {
 namespace Control
@@ -12,7 +15,12 @@ namespace Control
 class Slider : public BaseText
 {
 	private:
-	Control::Object		SliderObject;
+	//Control::Object		SliderObject; // replace with directly putting stuff into Instances
+	bool		SliderObject_Is = false;
+	float		SliderObject_Depth;
+	BoxF2		SliderObject_Box;
+	ColorF4		SliderObject_Color;
+	BoxF2		SliderObject_Bound;
 	/* Area Slider
 		naturally creates a "dot"
 		make a Cross instead ?
@@ -29,9 +37,8 @@ class Slider : public BaseText
 	VectorF2	Value;
 	public:
 	VectorF2	ValueResolution;
-	// make this a Box
-	VectorF2	ValueMin;
-	VectorF2	ValueMax;
+	public:
+	BoxF2		ValueRange;
 	// Get/Set for these
 	// ValueScrollChange ? how much does the value change from Scrolling
 
@@ -64,6 +71,7 @@ class Slider : public BaseText
 	void	AssignDepth() override;
 	public:
 	void	BoxUpdate() override;
+	void	DisplayPut() const override;
 	void	DisplayShow() override;
 	void	DisplayHide() override;
 	

@@ -402,13 +402,14 @@ void UI::Control::Base::ColorUpdateRequestRecursive()
 
 
 
+#include "Graphics/InstData.hpp"
 void UI::Control::Base::DisplayPut() const
 {
 	if (Manager != nullptr)
 	{
 		if (Display)
 		{
-			Inst::BufferData data;
+			Inst::Data data;
 			data.Layer = Depth;
 			data.Box = BoxDisplay;
 			data.Color = Color;
@@ -437,9 +438,9 @@ void UI::Control::Base::DisplayPutRecursive() const
 void UI::Control::Base::DisplayShow()
 {
 	Display = true;
-
-	BoxUpdateIsRequested = true;
+	BoxUpdateRequest();
 	ColorUpdateRequest();
+	// Requests made to the Control should be stored while it is not being displayed
 }
 void UI::Control::Base::DisplayHide()
 {

@@ -15,7 +15,7 @@ struct UserInterfaceMenu2 : public UI::Control::Form
 	{
 		UI::Control::CheckBox		CheckBox;
 		VectorU2					Index;
-		FunctionPointer<VectorU2>	Func;
+		Function::Pointer<VectorU2>	Func;
 		void	ClickFunc(ClickArgs args);
 	};
 	CheckBoxTile	CheckBoxGrid[7][7];

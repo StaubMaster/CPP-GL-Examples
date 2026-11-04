@@ -20,7 +20,7 @@ struct Base
 	virtual void	IndicatorsHide() = 0;
 
 	public:
-	virtual void	IndicatorsDisplay() = 0;
+	virtual void	IndicatorsDisplay() = 0; // DisplayPut
 
 	private:
 	virtual void	IndicatorsUpdateColor() = 0;

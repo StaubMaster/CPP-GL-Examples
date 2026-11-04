@@ -189,13 +189,13 @@ void UI::Manager::GraphicsInit()
 
 void UI::Manager::GraphicsClear()
 {
-	ControlManager.InstancesClear();
+	ControlManager.GraphicsClear();
 	TextManager.InstancesClear();
 	GraphManager.InstancesClear();
 }
 void UI::Manager::GraphicsMake()
 {
-	ControlManager.InstancesMake();
+	ControlManager.GraphicsMake();
 	Window.WindowPutDisplay();
 	TextManager.InstancesMake();
 	GraphManager.InstancesMake();
@@ -203,7 +203,7 @@ void UI::Manager::GraphicsMake()
 void UI::Manager::GraphicsDraw()
 {
 	GL::Disable(GL::Capability::DepthClamp);
-	ControlManager.Draw();
+	ControlManager.GraphicsDraw();
 
 	GL::Enable(GL::Capability::DepthClamp);
 	TextManager.Draw();

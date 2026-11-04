@@ -25,8 +25,8 @@ UI::Control::Slider::Slider()
 
 	Value = VectorF2(0.0f, 0.0f);
 	ValueResolution = VectorF2(0.01f, 0.01f);
-	ValueMin = VectorF2(0.0f, 0.0f);
-	ValueMax = VectorF2(1.0f, 1.0f);
+	ValueRange.Min = VectorF2(0.0f, 0.0f);
+	ValueRange.Max = VectorF2(1.0f, 1.0f);
 }
 UI::Control::Slider::~Slider()
 { }
@@ -63,41 +63,41 @@ void UI::Control::Slider::SetValueY(float val)
 
 void UI::Control::Slider::PutSliderNub()
 {
-	if (SliderObject.Is())
+	if (SliderObject_Is)
 	{
 		VectorF2 slider_size_half = NubSize / 2.0f;
 		VectorF2 slider_min = BoxDisplay.Min + slider_size_half;
 		VectorF2 slider_max = BoxDisplay.Max - slider_size_half;
 
 		VectorF2 slider_normal = Value;
-		slider_normal -= ValueMin;
-		slider_normal /= (ValueMax - ValueMin);
+		slider_normal -= ValueRange.Min;
+		slider_normal /= ValueRange.Size();
 
 		VectorF2 slider_value = slider_normal;
 		slider_value *= (slider_max - slider_min);
 		slider_value += slider_min;
 
-		SliderObject.Box().Min = slider_value - slider_size_half;
-		SliderObject.Box().Max = slider_value + slider_size_half;
+		SliderObject_Box.Min = slider_value - slider_size_half;
+		SliderObject_Box.Max = slider_value + slider_size_half;
 
-		//SliderObject.Bound() = Object.Bound();
-		//SliderObject.Bound() = ObjectData.Bound;
+		//SliderObject_Bound = Object.Bound();
+		//SliderObject_Bound = ObjectData.Bound;
 		if (Parent != nullptr)
 		{
-			SliderObject.Bound() = Parent -> BoxBoarder;
+			SliderObject_Bound = Parent -> BoxBoarder;
 		}
 		else
 		{
-			SliderObject.Bound() = BoxF2();
+			SliderObject_Bound = BoxF2();
 		}
 	}
 }
 void UI::Control::Slider::ClampValue()
 {
-	if (Value.X < ValueMin.X) { Value.X = ValueMin.X; }
-	if (Value.X > ValueMax.X) { Value.X = ValueMax.X; }
-	if (Value.Y < ValueMin.Y) { Value.Y = ValueMin.Y; }
-	if (Value.Y > ValueMax.Y) { Value.Y = ValueMax.Y; }
+	if (Value.X < ValueRange.Min.X) { Value.X = ValueRange.Min.X; }
+	if (Value.X > ValueRange.Max.X) { Value.X = ValueRange.Max.X; }
+	if (Value.Y < ValueRange.Min.Y) { Value.Y = ValueRange.Min.Y; }
+	if (Value.Y > ValueRange.Max.Y) { Value.Y = ValueRange.Max.Y; }
 }
 
 void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
@@ -111,8 +111,8 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 	VectorF2 slider_value = mouse_pos.Buffer.Corner;
 	slider_value -= slider_pos_min;
 	slider_value /= (slider_pos_max - slider_pos_min);
-	slider_value *= (ValueMax - ValueMin);
-	slider_value += ValueMin;
+	slider_value *= ValueRange.Size();
+	slider_value += ValueRange.Min;
 
 	slider_value /= ValueResolution;
 	slider_value = slider_value.round(); // Vector.round that takes Vector Size
@@ -142,9 +142,9 @@ void UI::Control::Slider::AssignDepth()
 	float offset = Form -> DepthOffset;
 	float layer = Layer;
 
-	if (SliderObject.Is())
+	if (SliderObject_Is)
 	{
-		SliderObject.Depth() = -(((layer + (1.0f / 3.0f)) * size) + offset);
+		SliderObject_Depth = -(((layer + (1.0f / 3.0f)) * size) + offset);
 	}
 	if (TextObject.Is())
 	{
@@ -159,23 +159,36 @@ void UI::Control::Slider::BoxUpdate()
 	BaseText::BoxUpdate();
 	PutSliderNub();
 }
+#include "UIManager.hpp"
+void UI::Control::Slider::DisplayPut() const
+{
+	if (Manager != nullptr && SliderObject_Is)
+	{
+		Inst::Data data;
+		data.Layer = SliderObject_Depth;
+		data.Box = SliderObject_Box;
+		data.Color = SliderObject_Color;
+		data.Bound = SliderObject_Bound;
+		Manager -> ControlManager.InstancePut(data);
+	}
+}
 void UI::Control::Slider::DisplayShow()
 {
 	BaseText::DisplayShow();
-	if (!SliderObject.Is() && Manager != NULL)
+	if (!SliderObject_Is)
 	{
-		SliderObject.Create();
-		SliderObject.Color() = ColorF4(0.5f, 0.5f, 0.5f);
-		SliderObject.Depth() = Depth - 0.0005f;
+		SliderObject_Is = true;
+		SliderObject_Color = ColorF4(0.5f, 0.5f, 0.5f);
+		SliderObject_Depth = Depth - 0.0005f;
 		PutSliderNub();
 	}
 }
 void UI::Control::Slider::DisplayHide()
 {
 	BaseText::DisplayHide();
-	if (SliderObject.Is() || Manager == NULL)
+	if (SliderObject_Is)
 	{
-		SliderObject.Delete();
+		SliderObject_Is = false;
 	}
 }
 

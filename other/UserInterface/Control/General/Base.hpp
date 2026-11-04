@@ -1,8 +1,6 @@
 #ifndef  UI_CONTROL_BASE_HPP
 # define UI_CONTROL_BASE_HPP
 
-#include "BufferData.hpp"
-
 #include "Anchor2D.hpp"
 
 #include "User/MouseArgs.hpp"
@@ -13,10 +11,6 @@
 // include individual
 
 #include "Generics/Container/Binary.hpp"
-
-#include "Object.hpp"
-#include "ObjectData.hpp"
-
 
 #include "AnchorEnum.hpp"
 
