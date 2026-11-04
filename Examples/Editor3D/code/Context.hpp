@@ -99,10 +99,12 @@ void	InitLights();
 // User Change
 Change3D::Trans3D	UserChange;
 
-void	UserChange_ChangeObject(SceneObject * obj);
-
-void	UserChange_HoverSelect();
-void	UserChange_Update();
+void	UserChange_ChangeObject(const SceneObject * obj);
+void	UserChange_Update(Change3D::Trans3D & user_change) const;
+/* UserChange_Update()
+	this function is const for everything except UserChange
+	pass UserChange as referance and make function cosnt ?
+*/
 
 
 
@@ -118,7 +120,6 @@ SceneObjectCollection	Collection;
 SceneObject *			Object_Selected = nullptr;
 SceneObject *			Object_Hovering = nullptr;
 
-void	Objects_Change();
 void	Objects_Update();
 
 

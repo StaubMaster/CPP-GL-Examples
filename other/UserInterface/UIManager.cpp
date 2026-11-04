@@ -31,6 +31,7 @@ UI::Manager::Manager()
 void UI::Manager::MouseMove(MoveArgs args)
 {
 	(void)args;
+	//UpdateMouse(args.Position);
 }
 void UI::Manager::MouseClick(ClickArgs args)
 {

@@ -22,7 +22,8 @@ FILES := \
 	Ray3D_Hit.cpp \
 \
 	UI/ListForm.cpp \
-	UI/Change3D/Base.cpp \
+	UI/Change3D/General/Base.cpp \
+	UI/Change3D/General/Collection.cpp \
 	UI/Change3D/VectorF3.cpp \
 	UI/Change3D/EulerAngle3D.cpp \
 	UI/Change3D/Trans3D.cpp \

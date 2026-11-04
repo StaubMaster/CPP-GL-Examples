@@ -1,7 +1,7 @@
 #ifndef  CHANGE_3D_VECTOR_F_3_HPP
 # define CHANGE_3D_VECTOR_F_3_HPP
 
-# include "Base.hpp"
+# include "UI/Change3D/General/Base.hpp"
 
 # include "ValueType/Vector/F3.hpp"
 
@@ -12,16 +12,6 @@ namespace Change3D
 {
 struct VectorF3 : public Base
 {
-	public:
-	static TransScaleColor3D::DisplayObject *		MoveAxisX_DisplayObject;
-	static TransScaleColor3D::DisplayObject *		MoveAxisY_DisplayObject;
-	static TransScaleColor3D::DisplayObject *		MoveAxisZ_DisplayObject;
-
-	private:
-	TransScaleColor3D::LogicalData			MoveAxisX_Data;
-	TransScaleColor3D::LogicalData			MoveAxisY_Data;
-	TransScaleColor3D::LogicalData			MoveAxisZ_Data;
-
 	private:
 	bool	IsVisible = false;
 	public:
@@ -29,13 +19,16 @@ struct VectorF3 : public Base
 	void	IndicatorsShow() override;
 	void	IndicatorsHide() override;
 
-	/*combine
-		IndicatorsFind()
-		ChangeValue()
-	*/
-
 	public:
-	RayHitF3	IndicatorsFind(const RayF3 & ray) override;
+	static TransScaleColor3D::DisplayObject *		MoveAxisX_DisplayObject;
+	static TransScaleColor3D::DisplayObject *		MoveAxisY_DisplayObject;
+	static TransScaleColor3D::DisplayObject *		MoveAxisZ_DisplayObject;
+	private:
+	TransScaleColor3D::LogicalData			MoveAxisX_Data;
+	TransScaleColor3D::LogicalData			MoveAxisY_Data;
+	TransScaleColor3D::LogicalData			MoveAxisZ_Data;
+	public:
+	void	IndicatorsDisplay() override;
 
 	private:
 	void	IndicatorsUpdateColor() override;
@@ -45,25 +38,15 @@ struct VectorF3 : public Base
 	public:
 	void	IndicatorsUpdate(const View3D & view, const DisplaySize & display_size) override;
 
-
-
-	private:
-	::VectorF3	Value;
-
 	public:
-	const ::VectorF3 &	Get() const;
-	void				Set(const ::VectorF3 & val);
-
-	private:
-	void	RoundValue() override;
-	public:
-	void	ChangeValue(const RayF3 & ray) override;
+	RayHitF3	IndicatorsFind(const RayF3 & ray) override;
 
 
 
 	private:
 	enum class EType
 	{
+		// Intangible
 		None, // none gray
 		Other, // all gray
 		Hovering_MoveAxisX,
@@ -78,6 +61,7 @@ struct VectorF3 : public Base
 	};
 	EType	Type = EType::None;
 
+	private:
 	::VectorF3		Offset;
 
 	private:
@@ -93,10 +77,25 @@ struct VectorF3 : public Base
 	bool	IsSelected() const override;
 
 	public:
-	void	SelectedMakeL() override;
-	void	SelectedMakeR() override;
+	void	MakeL() override;
+	void	MakeR() override;
 
 
+
+	public:
+	~VectorF3() = default;
+	VectorF3() = default;
+	VectorF3(const VectorF3 & other) = delete;
+	VectorF3 & operator=(const VectorF3 & other) = delete;
+
+
+
+	private:
+	::VectorF3	Value;
+	public:
+	const ::VectorF3 &	Get() const;
+	void				Set(const ::VectorF3 & val);
+	// make operator= and const as synonyms for these ?
 
 	private:
 	::VectorF3	CalculateAxis(const RayF3 & ray, const ::VectorF3 & axis) const;
@@ -104,10 +103,8 @@ struct VectorF3 : public Base
 	private:
 	::VectorF3	Calculate(const RayF3 & ray) const;
 
-
-
 	public:
-	void	Display() override;
+	void	ChangeValue(const RayF3 & ray) override;
 };
 };
 

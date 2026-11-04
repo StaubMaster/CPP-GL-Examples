@@ -1,7 +1,6 @@
 #include "UI/Change3D/EulerAngle3D.hpp"
 #include "PolyHedra/Manager.hpp"
 
-//#include "Special/TransScaleColor3D/Logical/Data.hpp"
 #include "Special/TransScaleColor3D/Display/ObjectManager.hpp"
 #include "NewPolyHedra/Pallet/Manager.hpp"
 
@@ -16,54 +15,27 @@
 
 
 
+bool Change3D::EulerAngle3D::IndicatorsIsVisible() const	{ return IsVisible; }
+void Change3D::EulerAngle3D::IndicatorsShow()				{ IsVisible = true; }
+void Change3D::EulerAngle3D::IndicatorsHide()				{ IsVisible = false; }
+
 TransScaleColor3D::DisplayObject * Change3D::EulerAngle3D::SpinRingX_DisplayObject = nullptr;
 TransScaleColor3D::DisplayObject * Change3D::EulerAngle3D::SpinRingY_DisplayObject = nullptr;
 TransScaleColor3D::DisplayObject * Change3D::EulerAngle3D::SpinRingZ_DisplayObject = nullptr;
-
-
-
-bool Change3D::EulerAngle3D::IndicatorsIsVisible() const
+void Change3D::EulerAngle3D::IndicatorsDisplay()
 {
-	return IsVisible;
-}
-void Change3D::EulerAngle3D::IndicatorsShow()
-{
-	IsVisible = true;
-}
-void Change3D::EulerAngle3D::IndicatorsHide()
-{
-	IsVisible = false;
-}
-
-RayHitF3 Change3D::EulerAngle3D::IndicatorsFind(const RayF3 & ray)
-{
-	if (!IndicatorsIsVisible()) { return RayHitF3(); }
-	if (IsSelected()) { return RayHitF3(); }
-
-	RayHitF3Type<EType> hit(EType::None);
-
-	hit.Consider(RayHitObject(ray, *SpinRingX_DisplayObject, SpinRingX_Data), EType::Hovering_SpinRingX);
-	hit.Consider(RayHitObject(ray, *SpinRingY_DisplayObject, SpinRingY_Data), EType::Hovering_SpinRingY);
-	hit.Consider(RayHitObject(ray, *SpinRingZ_DisplayObject, SpinRingZ_Data), EType::Hovering_SpinRingZ);
-
-	if (hit.Is())
+	if (IndicatorsIsVisible())
 	{
-		Type = hit.Data;
-		VectorF3 rel = !(hit.Pos() - Center);
-		VectorF3 axisX(1, 0, 0);
-		VectorF3 axisY(0, 1, 0);
-		VectorF3 axisZ(0, 0, 1);
-		Offset.Z0 = Angle::aTan2(axisZ.dot(axisX.cross(rel)), axisX.dot(rel));
-		Offset.X1 = Angle::aTan2(axisX.dot(axisY.cross(rel)), axisY.dot(rel));
-		Offset.Y2 = Angle::aTan2(axisY.dot(axisZ.cross(rel)), axisZ.dot(rel));
-		IndicatorsUpdateColor();
+		SpinRingX_DisplayObject -> InstancesFullPut(SpinRingX_Data);
+		SpinRingY_DisplayObject -> InstancesFullPut(SpinRingY_Data);
+		SpinRingZ_DisplayObject -> InstancesFullPut(SpinRingZ_Data);
 	}
-	else
-	{
-		MakeNone();
-	}
+}
 
-	return hit;
+void Change3D::EulerAngle3D::CenterChange(const ::VectorF3 & center)
+{
+	Center = center;
+	IndicatorsUpdateTrans();
 }
 
 void Change3D::EulerAngle3D::IndicatorsUpdateColor()
@@ -107,6 +79,7 @@ void Change3D::EulerAngle3D::IndicatorsUpdateTrans()
 	rot.Z0 = Value.Z0; SpinRingZ_Data.Trans.Rotation = rot;
 }
 
+#include "ValueType/View/3D.hpp"
 #include "Display/DisplayPosition.hpp"
 void Change3D::EulerAngle3D::IndicatorsUpdate(const View3D & view, const DisplaySize & display_size)
 {
@@ -116,27 +89,35 @@ void Change3D::EulerAngle3D::IndicatorsUpdate(const View3D & view, const Display
 	(void)display_size;
 }
 
+RayHitF3 Change3D::EulerAngle3D::IndicatorsFind(const RayF3 & ray)
+{
+	if (!IndicatorsIsVisible()) { return RayHitF3(); }
+	if (IsSelected()) { return RayHitF3(); }
 
+	RayHitF3Type<EType> hit(EType::None);
 
-const ::EulerAngle3D & Change3D::EulerAngle3D::Get() const
-{
-	return Value;
-}
-void Change3D::EulerAngle3D::Set(const ::EulerAngle3D & val)
-{
-	Value = val;
-	IndicatorsUpdateTrans();
-}
+	hit.Consider(RayHitObject(ray, *SpinRingX_DisplayObject, SpinRingX_Data), EType::Hovering_SpinRingX);
+	hit.Consider(RayHitObject(ray, *SpinRingY_DisplayObject, SpinRingY_Data), EType::Hovering_SpinRingY);
+	hit.Consider(RayHitObject(ray, *SpinRingZ_DisplayObject, SpinRingZ_Data), EType::Hovering_SpinRingZ);
 
-void Change3D::EulerAngle3D::RoundValue()
-{
-	Value = Value.round(Angle::Degrees(15));
-}
-void Change3D::EulerAngle3D::ChangeValue(const RayF3 & ray)
-{
-	Value = Calculate(ray);
-	RoundValue();
-	IndicatorsUpdateTrans();
+	if (hit.Is())
+	{
+		Type = hit.Data;
+		VectorF3 rel = !(hit.Pos() - Center);
+		VectorF3 axisX(1, 0, 0);
+		VectorF3 axisY(0, 1, 0);
+		VectorF3 axisZ(0, 0, 1);
+		Offset.Z0 = Angle::aTan2(axisZ.dot(axisX.cross(rel)), axisX.dot(rel));
+		Offset.X1 = Angle::aTan2(axisX.dot(axisY.cross(rel)), axisY.dot(rel));
+		Offset.Y2 = Angle::aTan2(axisY.dot(axisZ.cross(rel)), axisZ.dot(rel));
+		IndicatorsUpdateColor();
+	}
+	else
+	{
+		MakeNone();
+	}
+
+	return hit;
 }
 
 
@@ -187,11 +168,8 @@ bool Change3D::EulerAngle3D::IsSelected() const
 	}
 }
 
-void Change3D::EulerAngle3D::SelectedMakeL()
+void Change3D::EulerAngle3D::MakeL()
 {
-	if (!IndicatorsIsVisible()) { return; }
-	if (!IsHovering()) { return; }
-	if (IsSelected()) { return; }
 	switch (Type)
 	{
 		case EType::Hovering_SpinRingX: Type = EType::Selected_SpinX; break;
@@ -201,11 +179,8 @@ void Change3D::EulerAngle3D::SelectedMakeL()
 	}
 	Offset = Value - Offset;
 }
-void Change3D::EulerAngle3D::SelectedMakeR()
+void Change3D::EulerAngle3D::MakeR()
 {
-	if (!IndicatorsIsVisible()) { return; }
-	if (!IsHovering()) { return; }
-	if (IsSelected()) { return; }
 	switch (Type)
 	{
 		case EType::Hovering_SpinRingX: Type = EType::Selected_SpinX; break;
@@ -217,6 +192,16 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 }
 
 
+
+const ::EulerAngle3D & Change3D::EulerAngle3D::Get() const
+{
+	return Value;
+}
+void Change3D::EulerAngle3D::Set(const ::EulerAngle3D & val)
+{
+	Value = val;
+	IndicatorsUpdateTrans();
+}
 
 ::EulerAngle3D Change3D::EulerAngle3D::CalculatePlaneX(const RayF3 & ray) const
 {
@@ -261,25 +246,18 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 }
 ::EulerAngle3D Change3D::EulerAngle3D::Calculate(const RayF3 & ray) const
 {
-	::EulerAngle3D value = Value;
 	switch (Type)
 	{
-		case EType::Selected_SpinX: value = CalculatePlaneX(ray); break;
-		case EType::Selected_SpinY: value = CalculatePlaneY(ray); break;
-		case EType::Selected_SpinZ: value = CalculatePlaneZ(ray); break;
-		default: return value;
+		case EType::Selected_SpinX: return CalculatePlaneX(ray);
+		case EType::Selected_SpinY: return CalculatePlaneY(ray);
+		case EType::Selected_SpinZ: return CalculatePlaneZ(ray);
+		default: return Value;
 	}
-	return value;
 }
 
-
-
-void Change3D::EulerAngle3D::Display()
+void Change3D::EulerAngle3D::ChangeValue(const RayF3 & ray)
 {
-	if (IndicatorsIsVisible())
-	{
-		SpinRingX_DisplayObject -> InstancesFullPut(SpinRingX_Data);
-		SpinRingY_DisplayObject -> InstancesFullPut(SpinRingY_Data);
-		SpinRingZ_DisplayObject -> InstancesFullPut(SpinRingZ_Data);
-	}
+	Value = Calculate(ray);
+	Value = Value.round(Angle::Degrees(15));
+	IndicatorsUpdateTrans();
 }

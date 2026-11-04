@@ -15,46 +15,21 @@
 
 
 
+bool Change3D::VectorF3::IndicatorsIsVisible() const	{ return IsVisible; }
+void Change3D::VectorF3::IndicatorsShow()				{ IsVisible = true; }
+void Change3D::VectorF3::IndicatorsHide()				{ IsVisible = false; }
+
 TransScaleColor3D::DisplayObject * Change3D::VectorF3::MoveAxisX_DisplayObject = nullptr;
 TransScaleColor3D::DisplayObject * Change3D::VectorF3::MoveAxisY_DisplayObject = nullptr;
 TransScaleColor3D::DisplayObject * Change3D::VectorF3::MoveAxisZ_DisplayObject = nullptr;
-
-
-
-bool Change3D::VectorF3::IndicatorsIsVisible() const
+void Change3D::VectorF3::IndicatorsDisplay()
 {
-	return IsVisible;
-}
-void Change3D::VectorF3::IndicatorsShow()
-{
-	IsVisible = true;
-}
-void Change3D::VectorF3::IndicatorsHide()
-{
-	IsVisible = false;
-}
-
-RayHitF3 Change3D::VectorF3::IndicatorsFind(const RayF3 & ray)
-{
-	if (!IndicatorsIsVisible()) { return RayHitF3(); }
-	if (IsSelected()) { return RayHitF3(); }
-
-	RayHitF3Type<EType> hit(EType::None);
-
-	hit.Consider(RayHitObject(ray, *MoveAxisX_DisplayObject, MoveAxisX_Data), EType::Hovering_MoveAxisX);
-	hit.Consider(RayHitObject(ray, *MoveAxisY_DisplayObject, MoveAxisY_Data), EType::Hovering_MoveAxisY);
-	hit.Consider(RayHitObject(ray, *MoveAxisZ_DisplayObject, MoveAxisZ_Data), EType::Hovering_MoveAxisZ);
-
-	if (hit.Is())
+	if (IndicatorsIsVisible())
 	{
-		Make(hit.Data, hit.Pos());
+		MoveAxisX_DisplayObject -> InstancesFullPut(MoveAxisX_Data);
+		MoveAxisY_DisplayObject -> InstancesFullPut(MoveAxisY_Data);
+		MoveAxisZ_DisplayObject -> InstancesFullPut(MoveAxisZ_Data);
 	}
-	else
-	{
-		MakeNone();
-	}
-
-	return hit;
 }
 
 void Change3D::VectorF3::IndicatorsUpdateColor()
@@ -93,6 +68,7 @@ void Change3D::VectorF3::IndicatorsUpdateTrans()
 	MoveAxisZ_Data.Trans.Position = Value;
 }
 
+#include "ValueType/View/3D.hpp"
 #include "Display/DisplayPosition.hpp"
 /*static VectorF3 Project(
 	VectorF3 pos,
@@ -137,27 +113,27 @@ void Change3D::VectorF3::IndicatorsUpdate(const View3D & view, const DisplaySize
 	*/
 }
 
+RayHitF3 Change3D::VectorF3::IndicatorsFind(const RayF3 & ray)
+{
+	if (!IndicatorsIsVisible()) { return RayHitF3(); }
+	if (IsSelected()) { return RayHitF3(); }
 
+	RayHitF3Type<EType> hit(EType::None);
 
-const ::VectorF3 & Change3D::VectorF3::Get() const
-{
-	return Value;
-}
-void Change3D::VectorF3::Set(const ::VectorF3 & val)
-{
-	Value = val;
-	IndicatorsUpdateTrans();
-}
+	hit.Consider(RayHitObject(ray, *MoveAxisX_DisplayObject, MoveAxisX_Data), EType::Hovering_MoveAxisX);
+	hit.Consider(RayHitObject(ray, *MoveAxisY_DisplayObject, MoveAxisY_Data), EType::Hovering_MoveAxisY);
+	hit.Consider(RayHitObject(ray, *MoveAxisZ_DisplayObject, MoveAxisZ_Data), EType::Hovering_MoveAxisZ);
 
-void Change3D::VectorF3::RoundValue()
-{
-	Value = Value.round(0.1f);
-}
-void Change3D::VectorF3::ChangeValue(const RayF3 & ray)
-{
-	Value = Calculate(ray);
-	RoundValue();
-	IndicatorsUpdateTrans();
+	if (hit.Is())
+	{
+		Make(hit.Data, hit.Pos());
+	}
+	else
+	{
+		MakeNone();
+	}
+
+	return hit;
 }
 
 
@@ -211,10 +187,8 @@ bool Change3D::VectorF3::IsSelected() const
 	}
 }
 
-void Change3D::VectorF3::SelectedMakeL()
+void Change3D::VectorF3::MakeL()
 {
-	if (!IndicatorsIsVisible()) { return; }
-	if (!IsHovering()) { return; } // this is the same switch ?
 	switch (Type)
 	{
 		case EType::Hovering_MoveAxisX: Type = EType::Selected_LineX; break;
@@ -224,10 +198,8 @@ void Change3D::VectorF3::SelectedMakeL()
 	}
 	Offset = Value - Offset;
 }
-void Change3D::VectorF3::SelectedMakeR()
+void Change3D::VectorF3::MakeR()
 {
-	if (!IndicatorsIsVisible()) { return; }
-	if (!IsHovering()) { return; } // this is the same switch ?
 	switch (Type)
 	{
 		case EType::Hovering_MoveAxisX: Type = EType::Selected_PlaneX; break;
@@ -239,6 +211,16 @@ void Change3D::VectorF3::SelectedMakeR()
 }
 
 
+
+const ::VectorF3 & Change3D::VectorF3::Get() const
+{
+	return Value;
+}
+void Change3D::VectorF3::Set(const ::VectorF3 & val)
+{
+	Value = val;
+	IndicatorsUpdateTrans();
+}
 
 ::VectorF3 Change3D::VectorF3::CalculateAxis(const RayF3 & ray, const ::VectorF3 & axis) const
 {
@@ -257,28 +239,21 @@ void Change3D::VectorF3::SelectedMakeR()
 }
 ::VectorF3 Change3D::VectorF3::Calculate(const RayF3 & ray) const
 {
-	::VectorF3 value = Value;
 	switch (Type)
 	{
-		case EType::Selected_LineX:  value = CalculateAxis(ray, ::VectorF3(1, 0, 0)); break;
-		case EType::Selected_LineY:  value = CalculateAxis(ray, ::VectorF3(0, 1, 0)); break;
-		case EType::Selected_LineZ:  value = CalculateAxis(ray, ::VectorF3(0, 0, 1)); break;
-		case EType::Selected_PlaneX: value = CalculatePlane(ray, ::VectorF3(1, 0, 0)); break;
-		case EType::Selected_PlaneY: value = CalculatePlane(ray, ::VectorF3(0, 1, 0)); break;
-		case EType::Selected_PlaneZ: value = CalculatePlane(ray, ::VectorF3(0, 0, 1)); break;
-		default: return value;
+		case EType::Selected_LineX:  return CalculateAxis( ray, ::VectorF3(1, 0, 0));
+		case EType::Selected_LineY:  return CalculateAxis( ray, ::VectorF3(0, 1, 0));
+		case EType::Selected_LineZ:  return CalculateAxis( ray, ::VectorF3(0, 0, 1));
+		case EType::Selected_PlaneX: return CalculatePlane(ray, ::VectorF3(1, 0, 0));
+		case EType::Selected_PlaneY: return CalculatePlane(ray, ::VectorF3(0, 1, 0));
+		case EType::Selected_PlaneZ: return CalculatePlane(ray, ::VectorF3(0, 0, 1));
+		default: return Value;
 	}
-	return value;
 }
 
-
-
-void Change3D::VectorF3::Display()
+void Change3D::VectorF3::ChangeValue(const RayF3 & ray)
 {
-	if (IndicatorsIsVisible())
-	{
-		MoveAxisX_DisplayObject -> InstancesFullPut(MoveAxisX_Data);
-		MoveAxisY_DisplayObject -> InstancesFullPut(MoveAxisY_Data);
-		MoveAxisZ_DisplayObject -> InstancesFullPut(MoveAxisZ_Data);
-	}
+	Value = Calculate(ray);
+	Value = Value.round(0.1f);
+	IndicatorsUpdateTrans();
 }

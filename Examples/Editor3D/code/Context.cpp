@@ -115,18 +115,13 @@ void Light3DContext::InitLights()
 
 
 
-void Light3DContext::UserChange_ChangeObject(SceneObject * obj)
+void Light3DContext::UserChange_ChangeObject(const SceneObject * obj)
 {
 	if (obj != nullptr)
 	{
 		UserChange.IndicatorsShow();
-
 		Trans3D trans = obj -> GetTrans();
-
-		UserChange.VectorF3.Set(trans.Position);
-
-		UserChange.EulerAngle3D.Set(trans.Rotation);
-		UserChange.EulerAngle3D.Center = trans.Position;
+		UserChange.Set(trans);
 	}
 	else
 	{
@@ -134,72 +129,55 @@ void Light3DContext::UserChange_ChangeObject(SceneObject * obj)
 		UserChange.IndicatorsHide();
 	}
 }
-
-void Light3DContext::UserChange_HoverSelect()
+void Light3DContext::UserChange_Update(Change3D::Trans3D & user_change) const
 {
-	if (!UserChange.IsSelected())
+	if (IsHoveringControl())
 	{
-		/*if (IsHoveringControl())
+		if (!user_change.IsSelected())
 		{
-			UserChange.MakeNone();
-		}
-		else*/
-		{
-			UserChange.IndicatorsFind(ViewRay);
-			if (window[MouseButtons::MouseL].IsPress())
-			{
-				UserChange.SelectedMakeL();
-			}
-			if (window[MouseButtons::MouseR].IsPress())
-			{
-				UserChange.SelectedMakeR();
-			}
+			user_change.MakeNone();
 		}
 	}
 	else
 	{
-		/*if (IsHoveringControl())
+		if (!user_change.IsSelected()) // check this inside UserChange ?
 		{
+			user_change.IndicatorsFind(ViewRay);
 		}
-		else*/
+		else
 		{
-			if (window[MouseButtons::MouseL].IsRelease())
-			{
-				UserChange.MakeNone();
-			}
-			if (window[MouseButtons::MouseR].IsRelease())
-			{
-				UserChange.MakeNone();
-			}
+			user_change.ChangeValue(ViewRay);
 		}
 	}
-}
-void Light3DContext::UserChange_Update()
-{
-	// skip this if
-	//  Object_Selected == nullptr
-	//  UserChange.SelectedIsNone()
 
-	UserChange.ChangeValue(ViewRay);
-
-	Trans3D trans;
-
-	trans.Position = UserChange.VectorF3.Get();
-	trans.Rotation = UserChange.EulerAngle3D.Get();
-
-	UserChange.VectorF3.Set(trans.Position);
-	UserChange.EulerAngle3D.Set(trans.Rotation);
-	UserChange.EulerAngle3D.Center = trans.Position;
-
-	if (Object_Selected != nullptr)
+	if (user_change.IsHovering())
 	{
-		Object_Selected -> SetTrans(trans);
+		if (window[MouseButtons::MouseL].IsPress())
+		{
+			user_change.MakeL();
+		}
+		if (window[MouseButtons::MouseR].IsPress())
+		{
+			user_change.MakeR();
+		}
+	}
+	if (user_change.IsSelected())
+	{
+		// check for IsL and IsR ?
+		if (window[MouseButtons::MouseL].IsRelease())
+		{
+			user_change.MakeNone();
+		}
+		if (window[MouseButtons::MouseR].IsRelease())
+		{
+			user_change.MakeNone();
+		}
 	}
 
 	// UserChange.EulerAngle3D Indicators Update Scale 1 frame later
 	// noticable when Scale changes a lot between frames
 	// like when moving something far away
-	UserChange.IndicatorsUpdate(View, window.Size);
+	user_change.IndicatorsUpdate(View, window.Size);
 }
 
 
@@ -240,38 +218,6 @@ void Light3DContext::PolyHedraPalletUpdate()
 			}
 			DoPolyHedraPalletChange = false;
 		}
-	}
-}
-
-
-
-void Light3DContext::Objects_Change()
-{
-	Object_Hovering = nullptr;
-
-	if (IsHoveringControl()) { return; }
-	if (!UserChange.IsNone()) { return; }
-
-	Object_Hovering = Collection.FindObject(ViewRay);
-
-	if (window.MouseManager[MouseButtons::MouseL].IsPress())
-	{
-		Object_Selected = Object_Hovering;
-		UserChange_ChangeObject(Object_Selected);
-		UISceneObject.Change(Object_Selected);
-	}
-}
-void Light3DContext::Objects_Update()
-{
-	if (Object_Hovering != nullptr)
-	{
-		//Object_Hovering -> ShowWire();
-	}
-
-	if (Object_Selected != nullptr)
-	{
-		Object_Selected -> ShowWire();
-		UISceneObject.Syncronize();
 	}
 }
 
@@ -626,7 +572,7 @@ void Light3DContext::Draw()
 
 	Collection.Display(DisplayMode);
 
-	UserChange.Display();
+	UserChange.IndicatorsDisplay();
 
 	//ToStringStream(ObjectManagerBasic);
 	//ToStringStream(ObjectManagerTSC);
@@ -701,11 +647,29 @@ void Light3DContext::ViewFunc()
 
 
 
-	UserChange_HoverSelect();
-	Objects_Change();
+	UserChange_Update(UserChange);
 
-	UserChange_Update();
-	Objects_Update();
+
+
+	// Object
+	Object_Hovering = nullptr;
+	if (!IsHoveringControl() && UserChange.IsNone())
+	{
+		Object_Hovering = Collection.FindObject(ViewRay);
+		if (window[MouseButtons::MouseL].IsPress())
+		{
+			Object_Selected = Object_Hovering;
+			UserChange_ChangeObject(Object_Selected);
+			UISceneObject.Change(Object_Selected);
+		}
+	}
+
+	if (Object_Selected != nullptr)
+	{
+		Object_Selected -> SetTrans(UserChange.Get());
+		Object_Selected -> ShowWire();
+		UISceneObject.Syncronize();
+	}
 }
 
 
