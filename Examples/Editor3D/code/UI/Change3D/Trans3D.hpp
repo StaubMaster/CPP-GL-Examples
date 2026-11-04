@@ -10,7 +10,8 @@
 
 namespace Change3D
 {
-struct Trans3D : public Base // make Change3D::Collection
+// make Change3D::Collection
+struct Trans3D : public Base
 {
 	Container::Binary<Base *>	Changes;
 
@@ -23,15 +24,14 @@ struct Trans3D : public Base // make Change3D::Collection
 	Change3D::EulerAngle3D	EulerAngle3D;
 
 	public:
-	void	IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir) override;
-
-	public:
 	bool	IndicatorsIsVisible() const override;
 	void	IndicatorsHide() override;
 	void	IndicatorsShow() override;
 
+	private:
+	Base *		Hovering = nullptr;
 	public:
-	Base *	IndicatorsFind(const RayF3 & ray);
+	RayHitF3	IndicatorsFind(const RayF3 & ray) override;
 
 	private:
 	void	IndicatorsUpdateColor() override;
@@ -41,25 +41,7 @@ struct Trans3D : public Base // make Change3D::Collection
 	public:
 	void	IndicatorsUpdate(const View3D & view, const DisplaySize & display_size) override;
 
-	public:
-	bool	IsNone() const;
 
-	public:
-	bool	HoveringIsNone() const;
-	void	HoveringMakeNone();
-	void	HoveringMakeOther();
-
-	public:
-	bool	SelectedIsNone() const override;
-	void	SelectedMakeNone() override;
-
-	public:
-	void	SelectedMakeL() override;
-	void	SelectedMakeR() override;
-
-	public:
-	//void	SelectedMakeL(unsigned int idx);
-	//void	SelectedMakeR(unsigned int idx);
 
 	private:
 	void	RoundValue() override;
@@ -69,7 +51,22 @@ struct Trans3D : public Base // make Change3D::Collection
 
 
 	public:
-	void	Display();
+	void	MakeNone() override;
+	void	MakeOther() override;
+
+	public:
+	bool	IsNone() const override;
+	bool	IsHovering() const override;
+	bool	IsSelected() const override;
+
+	public:
+	void	SelectedMakeL() override;
+	void	SelectedMakeR() override;
+
+
+
+	public:
+	void	Display() override;
 };
 };
 

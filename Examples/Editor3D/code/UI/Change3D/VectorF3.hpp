@@ -5,7 +5,6 @@
 
 # include "ValueType/Vector/F3.hpp"
 
-//# include "Special/TransScaleColor3D/Object.hpp"
 # include "Special/TransScaleColor3D/Display/Object.hpp"
 # include "Special/TransScaleColor3D/Logical/Data.hpp"
 
@@ -13,19 +12,15 @@ namespace Change3D
 {
 struct VectorF3 : public Base
 {
+	public:
+	static TransScaleColor3D::DisplayObject *		MoveAxisX_DisplayObject;
+	static TransScaleColor3D::DisplayObject *		MoveAxisY_DisplayObject;
+	static TransScaleColor3D::DisplayObject *		MoveAxisZ_DisplayObject;
+
 	private:
-	//TransScaleColor3D::Object				MoveAxisX;
-	//TransScaleColor3D::Object				MoveAxisY;
-	//TransScaleColor3D::Object				MoveAxisZ;
-	TransScaleColor3D::DisplayObject *		MoveAxisX_DisplayObject = nullptr;
-	TransScaleColor3D::DisplayObject *		MoveAxisY_DisplayObject = nullptr;
-	TransScaleColor3D::DisplayObject *		MoveAxisZ_DisplayObject = nullptr;
 	TransScaleColor3D::LogicalData			MoveAxisX_Data;
 	TransScaleColor3D::LogicalData			MoveAxisY_Data;
 	TransScaleColor3D::LogicalData			MoveAxisZ_Data;
-
-	public:
-	void	IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir) override;
 
 	private:
 	bool	IsVisible = false;
@@ -33,6 +28,11 @@ struct VectorF3 : public Base
 	bool	IndicatorsIsVisible() const override;
 	void	IndicatorsShow() override;
 	void	IndicatorsHide() override;
+
+	/*combine
+		IndicatorsFind()
+		ChangeValue()
+	*/
 
 	public:
 	RayHitF3	IndicatorsFind(const RayF3 & ray) override;
@@ -62,45 +62,35 @@ struct VectorF3 : public Base
 
 
 	private:
-	enum class EIndicatorType // EHoveringType
+	enum class EType
 	{
 		None, // none gray
 		Other, // all gray
-		MoveAxisX,
-		MoveAxisY,
-		MoveAxisZ,
+		Hovering_MoveAxisX,
+		Hovering_MoveAxisY,
+		Hovering_MoveAxisZ,
+		Selected_LineX,
+		Selected_LineY,
+		Selected_LineZ,
+		Selected_PlaneX,
+		Selected_PlaneY,
+		Selected_PlaneZ,
 	};
-	EIndicatorType		HoveringType = EIndicatorType::None;
-	::VectorF3			HoveringOffset;
+	EType	Type = EType::None;
 
-	public:
-	bool	HoveringIsNone() const override;
-	void	HoveringMakeNone() override;
-	void	HoveringMakeOther() override;
-	void	HoveringMake(EIndicatorType type, ::VectorF3 offset);
-
-
+	::VectorF3		Offset;
 
 	private:
-	enum class EChangeType // ESelectedType
-	{
-		None,
-		LineX,
-		LineY,
-		LineZ,
-		PlaneX,
-		PlaneY,
-		PlaneZ,
-	};
-	// seperate L and R
-	// seperate Enums, or seperate Changers ?
-	// seperate Changers would mean duplicate Indicators
-	EChangeType		SelectedType = EChangeType::None;
-	::VectorF3		SelectedOffset;
+	void	Make(EType type, ::VectorF3 offset);
 
 	public:
-	bool	SelectedIsNone() const override;
-	void	SelectedMakeNone() override;
+	void	MakeNone() override;
+	void	MakeOther() override;
+
+	public:
+	bool	IsNone() const override;
+	bool	IsHovering() const override;
+	bool	IsSelected() const override;
 
 	public:
 	void	SelectedMakeL() override;

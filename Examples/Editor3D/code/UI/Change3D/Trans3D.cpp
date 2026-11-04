@@ -107,11 +107,10 @@ Change3D::Trans3D::Trans3D()
 
 
 
-void Change3D::Trans3D::IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir)
+bool Change3D::Trans3D::IndicatorsIsVisible() const
 {
-	loop_invoke(Changes, &Change3D::Base::IndicatorsInit, manager, dir);
+	return loop_check_any(Changes, &Change3D::Base::IndicatorsIsVisible);
 }
-
 void Change3D::Trans3D::IndicatorsShow()
 {
 	loop_invoke(Changes, &Change3D::Base::IndicatorsShow);
@@ -121,7 +120,7 @@ void Change3D::Trans3D::IndicatorsHide()
 	loop_invoke(Changes, &Change3D::Base::IndicatorsHide);
 }
 
-Change3D::Base * Change3D::Trans3D::IndicatorsFind(const RayF3 & ray)
+RayHitF3 Change3D::Trans3D::IndicatorsFind(const RayF3 & ray)
 {
 	RayHitF3Type<Base *> hit(nullptr);
 
@@ -139,12 +138,24 @@ Change3D::Base * Change3D::Trans3D::IndicatorsFind(const RayF3 & ray)
 		{
 			if (Changes[i] != hit.Data)
 			{
-				Changes[i] -> HoveringMakeOther();
+				Changes[i] -> MakeOther();
 			}
 		}
 	}
 
-	return hit.Data;
+	Hovering = hit.Data;
+	return hit;
+}
+
+void Change3D::Trans3D::IndicatorsUpdateColor()
+{
+}
+void Change3D::Trans3D::IndicatorsUpdateScale(float scale)
+{
+	(void)scale;
+}
+void Change3D::Trans3D::IndicatorsUpdateTrans()
+{
 }
 
 void Change3D::Trans3D::IndicatorsUpdate(const View3D & view, const DisplaySize & display_size)
@@ -154,57 +165,47 @@ void Change3D::Trans3D::IndicatorsUpdate(const View3D & view, const DisplaySize 
 
 
 
+void Change3D::Trans3D::RoundValue()
+{
+}
+void Change3D::Trans3D::ChangeValue(const RayF3 & ray)
+{
+	loop_invoke(Changes, &Change3D::Base::ChangeValue, ray);
+}
+
+
+
+void Change3D::Trans3D::MakeNone()
+{
+	loop_invoke(Changes, &Change3D::Base::MakeNone);
+}
+void Change3D::Trans3D::MakeOther()
+{
+	loop_invoke(Changes, &Change3D::Base::MakeOther);
+}
+
 bool Change3D::Trans3D::IsNone() const
 {
 	return loop_check_all(Changes, &Change3D::Base::IsNone);
 }
-
-
-
-bool Change3D::Trans3D::HoveringIsNone() const
+bool Change3D::Trans3D::IsHovering() const
 {
-	return loop_check_all(Changes, &Change3D::Base::HoveringIsNone);
+	return loop_check_any(Changes, &Change3D::Base::IsHovering);
 }
-void Change3D::Trans3D::HoveringMakeNone()
+bool Change3D::Trans3D::IsSelected() const
 {
-	loop_invoke(Changes, &Change3D::Base::HoveringMakeNone);
-}
-void Change3D::Trans3D::HoveringMakeOther()
-{
-	loop_invoke(Changes, &Change3D::Base::HoveringMakeOther);
+	return loop_check_any(Changes, &Change3D::Base::IsSelected);
 }
 
-
-
-bool Change3D::Trans3D::SelectedIsNone() const
+void Change3D::Trans3D::SelectedMakeL()
 {
-	return loop_check_all(Changes, &Change3D::Base::SelectedIsNone);
+	if (Hovering == nullptr) { return; }
+	Hovering -> SelectedMakeL();
 }
-void Change3D::Trans3D::SelectedMakeNone()
+void Change3D::Trans3D::SelectedMakeR()
 {
-	loop_invoke(Changes, &Change3D::Base::SelectedMakeNone);
-}
-
-/*void Change3D::Trans3D::SelectedMakeL(unsigned int idx)
-{
-	if (Changes.Check(idx))
-	{
-		Changes[idx] -> SelectedMakeL();
-	}
-}*/
-/*void Change3D::Trans3D::SelectedMakeR(unsigned int idx)
-{
-	if (Changes.Check(idx))
-	{
-		Changes[idx] -> SelectedMakeR();
-	}
-}*/
-
-
-
-void Change3D::Trans3D::ChangeValue(const RayF3 & ray)
-{
-	loop_invoke(Changes, &Change3D::Base::ChangeValue, ray);
+	if (Hovering == nullptr) { return; }
+	Hovering -> SelectedMakeR();
 }
 
 

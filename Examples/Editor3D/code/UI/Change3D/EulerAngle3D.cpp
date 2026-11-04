@@ -16,12 +16,11 @@
 
 
 
-void Change3D::EulerAngle3D::IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir)
-{
-	SpinRingX_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("SpinRing/RingX.polyhedra"))));
-	SpinRingY_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("SpinRing/RingY.polyhedra"))));
-	SpinRingZ_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("SpinRing/RingZ.polyhedra"))));
-}
+TransScaleColor3D::DisplayObject * Change3D::EulerAngle3D::SpinRingX_DisplayObject = nullptr;
+TransScaleColor3D::DisplayObject * Change3D::EulerAngle3D::SpinRingY_DisplayObject = nullptr;
+TransScaleColor3D::DisplayObject * Change3D::EulerAngle3D::SpinRingZ_DisplayObject = nullptr;
+
+
 
 bool Change3D::EulerAngle3D::IndicatorsIsVisible() const
 {
@@ -39,29 +38,29 @@ void Change3D::EulerAngle3D::IndicatorsHide()
 RayHitF3 Change3D::EulerAngle3D::IndicatorsFind(const RayF3 & ray)
 {
 	if (!IndicatorsIsVisible()) { return RayHitF3(); }
-	if (!SelectedIsNone()) { return RayHitF3(); }
+	if (IsSelected()) { return RayHitF3(); }
 
-	RayHitF3Type<EIndicatorType> hit(EIndicatorType::None);
+	RayHitF3Type<EType> hit(EType::None);
 
-	hit.Consider(RayHitObject(ray, *SpinRingX_DisplayObject, SpinRingX_Data), EIndicatorType::SpinRingX);
-	hit.Consider(RayHitObject(ray, *SpinRingY_DisplayObject, SpinRingY_Data), EIndicatorType::SpinRingY);
-	hit.Consider(RayHitObject(ray, *SpinRingZ_DisplayObject, SpinRingZ_Data), EIndicatorType::SpinRingZ);
+	hit.Consider(RayHitObject(ray, *SpinRingX_DisplayObject, SpinRingX_Data), EType::Hovering_SpinRingX);
+	hit.Consider(RayHitObject(ray, *SpinRingY_DisplayObject, SpinRingY_Data), EType::Hovering_SpinRingY);
+	hit.Consider(RayHitObject(ray, *SpinRingZ_DisplayObject, SpinRingZ_Data), EType::Hovering_SpinRingZ);
 
 	if (hit.Is())
 	{
-		HoveringType = hit.Data;
+		Type = hit.Data;
 		VectorF3 rel = !(hit.Pos() - Center);
 		VectorF3 axisX(1, 0, 0);
 		VectorF3 axisY(0, 1, 0);
 		VectorF3 axisZ(0, 0, 1);
-		HoveringOffset.Z0 = Angle::aTan2(axisZ.dot(axisX.cross(rel)), axisX.dot(rel));
-		HoveringOffset.X1 = Angle::aTan2(axisX.dot(axisY.cross(rel)), axisY.dot(rel));
-		HoveringOffset.Y2 = Angle::aTan2(axisY.dot(axisZ.cross(rel)), axisZ.dot(rel));
+		Offset.Z0 = Angle::aTan2(axisZ.dot(axisX.cross(rel)), axisX.dot(rel));
+		Offset.X1 = Angle::aTan2(axisX.dot(axisY.cross(rel)), axisY.dot(rel));
+		Offset.Y2 = Angle::aTan2(axisY.dot(axisZ.cross(rel)), axisZ.dot(rel));
 		IndicatorsUpdateColor();
 	}
 	else
 	{
-		HoveringMakeNone();
+		MakeNone();
 	}
 
 	return hit;
@@ -69,17 +68,17 @@ RayHitF3 Change3D::EulerAngle3D::IndicatorsFind(const RayF3 & ray)
 
 void Change3D::EulerAngle3D::IndicatorsUpdateColor()
 {
-	if (HoveringType != EIndicatorType::None)
+	if (Type != EType::None)
 	{
 		SpinRingX_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
 		SpinRingY_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
 		SpinRingZ_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
 
-		switch (HoveringType)
+		switch (Type)
 		{
-			case EIndicatorType::SpinRingX: SpinRingX_Data.Color = ColorF4(1, 0, 0); break;
-			case EIndicatorType::SpinRingY: SpinRingY_Data.Color = ColorF4(0, 1, 0); break;
-			case EIndicatorType::SpinRingZ: SpinRingZ_Data.Color = ColorF4(0, 0, 1); break;
+			case EType::Hovering_SpinRingX: SpinRingX_Data.Color = ColorF4(1, 0, 0); break;
+			case EType::Hovering_SpinRingY: SpinRingY_Data.Color = ColorF4(0, 1, 0); break;
+			case EType::Hovering_SpinRingZ: SpinRingZ_Data.Color = ColorF4(0, 0, 1); break;
 			default: break;
 		}
 	}
@@ -142,61 +141,79 @@ void Change3D::EulerAngle3D::ChangeValue(const RayF3 & ray)
 
 
 
-bool Change3D::EulerAngle3D::HoveringIsNone() const
+void Change3D::EulerAngle3D::Make(EType type, ::EulerAngle3D offset)
 {
-	return (HoveringType == EIndicatorType::None);
-}
-void Change3D::EulerAngle3D::HoveringMakeNone()
-{
-	HoveringType = EIndicatorType::None;
-	HoveringOffset = ::EulerAngle3D();
-	IndicatorsUpdateColor();
-}
-void Change3D::EulerAngle3D::HoveringMakeOther()
-{
-	HoveringType = EIndicatorType::Other;
-	HoveringOffset = ::EulerAngle3D();
+	Type = type;
+	Offset = offset;
 	IndicatorsUpdateColor();
 }
 
-
-
-bool Change3D::EulerAngle3D::SelectedIsNone() const
+void Change3D::EulerAngle3D::MakeNone()
 {
-	return (SelectedType == EChangeType::None);
+	Make(EType::None, ::EulerAngle3D());
 }
-void Change3D::EulerAngle3D::SelectedMakeNone()
+void Change3D::EulerAngle3D::MakeOther()
 {
-	SelectedType = EChangeType::None;
+	Make(EType::Other, ::EulerAngle3D());
+}
+
+bool Change3D::EulerAngle3D::IsNone() const
+{
+	switch (Type)
+	{
+		case EType::None: return true;
+		case EType::Other: return true;
+		default: return false;
+	}
+}
+bool Change3D::EulerAngle3D::IsHovering() const
+{
+	switch (Type)
+	{
+		case EType::Hovering_SpinRingX: return true;
+		case EType::Hovering_SpinRingY: return true;
+		case EType::Hovering_SpinRingZ: return true;
+		default: return false;
+	}
+}
+bool Change3D::EulerAngle3D::IsSelected() const
+{
+	switch (Type)
+	{
+		case EType::Selected_SpinX: return true;
+		case EType::Selected_SpinY: return true;
+		case EType::Selected_SpinZ: return true;
+		default: return false;
+	}
 }
 
 void Change3D::EulerAngle3D::SelectedMakeL()
 {
 	if (!IndicatorsIsVisible()) { return; }
-	if (HoveringIsNone()) { return; }
-	if (!SelectedIsNone()) { return; }
-	switch (HoveringType)
+	if (!IsHovering()) { return; }
+	if (IsSelected()) { return; }
+	switch (Type)
 	{
-		case EIndicatorType::SpinRingX: SelectedType = EChangeType::SpinX; break;
-		case EIndicatorType::SpinRingY: SelectedType = EChangeType::SpinY; break;
-		case EIndicatorType::SpinRingZ: SelectedType = EChangeType::SpinZ; break;
-		default: SelectedType = EChangeType::None; break;
+		case EType::Hovering_SpinRingX: Type = EType::Selected_SpinX; break;
+		case EType::Hovering_SpinRingY: Type = EType::Selected_SpinY; break;
+		case EType::Hovering_SpinRingZ: Type = EType::Selected_SpinZ; break;
+		default: Type = EType::None; break;
 	}
-	SelectedOffset = Value - HoveringOffset;
+	Offset = Value - Offset;
 }
 void Change3D::EulerAngle3D::SelectedMakeR()
 {
 	if (!IndicatorsIsVisible()) { return; }
-	if (HoveringIsNone()) { return; }
-	if (!SelectedIsNone()) { return; }
-	switch (HoveringType)
+	if (!IsHovering()) { return; }
+	if (IsSelected()) { return; }
+	switch (Type)
 	{
-		case EIndicatorType::SpinRingX: SelectedType = EChangeType::SpinX; break;
-		case EIndicatorType::SpinRingY: SelectedType = EChangeType::SpinY; break;
-		case EIndicatorType::SpinRingZ: SelectedType = EChangeType::SpinZ; break;
-		default: SelectedType = EChangeType::None; break;
+		case EType::Hovering_SpinRingX: Type = EType::Selected_SpinX; break;
+		case EType::Hovering_SpinRingY: Type = EType::Selected_SpinY; break;
+		case EType::Hovering_SpinRingZ: Type = EType::Selected_SpinZ; break;
+		default: Type = EType::None; break;
 	}
-	SelectedOffset = Value - HoveringOffset;
+	Offset = Value - Offset;
 }
 
 
@@ -210,7 +227,7 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 	if (!hit.Is()) { return Value; }
 	VectorF3 rel = !(hit.Pos() - Center);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
-	return ::EulerAngle3D(Value.Z0, ang + SelectedOffset.X1, Value.Y2);
+	return ::EulerAngle3D(Value.Z0, ang + Offset.X1, Value.Y2);
 }
 ::EulerAngle3D Change3D::EulerAngle3D::CalculatePlaneY(const RayF3 & ray) const
 {
@@ -229,7 +246,7 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 	if (!hit.Is()) { return Value; }
 	VectorF3 rel = !(hit.Pos() - Center);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
-	return ::EulerAngle3D(Value.Z0, Value.X1, ang + SelectedOffset.Y2);
+	return ::EulerAngle3D(Value.Z0, Value.X1, ang + Offset.Y2);
 }
 ::EulerAngle3D Change3D::EulerAngle3D::CalculatePlaneZ(const RayF3 & ray) const
 {
@@ -240,17 +257,16 @@ void Change3D::EulerAngle3D::SelectedMakeR()
 	if (!hit.Is()) { return Value; }
 	VectorF3 rel = !(hit.Pos() - Center);
 	Angle ang = Angle::aTan2(axis0.dot(axis1.cross(rel)), axis1.dot(rel));
-	return ::EulerAngle3D(ang + SelectedOffset.Z0, Value.X1, Value.Y2);
+	return ::EulerAngle3D(ang + Offset.Z0, Value.X1, Value.Y2);
 }
 ::EulerAngle3D Change3D::EulerAngle3D::Calculate(const RayF3 & ray) const
 {
 	::EulerAngle3D value = Value;
-	switch (SelectedType)
+	switch (Type)
 	{
-		case EChangeType::None: return value;
-		case EChangeType::SpinX: value = CalculatePlaneX(ray); break;
-		case EChangeType::SpinY: value = CalculatePlaneY(ray); break;
-		case EChangeType::SpinZ: value = CalculatePlaneZ(ray); break;
+		case EType::Selected_SpinX: value = CalculatePlaneX(ray); break;
+		case EType::Selected_SpinY: value = CalculatePlaneY(ray); break;
+		case EType::Selected_SpinZ: value = CalculatePlaneZ(ray); break;
 		default: return value;
 	}
 	return value;

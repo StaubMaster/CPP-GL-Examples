@@ -2,8 +2,11 @@
 Change3D
 
 Base
+
 Collection : Base
-Trans3D : Collection
+: Base
 
 VectorF3 : Base
 EulerAngle3D : Base
+
+Trans3D : Collection

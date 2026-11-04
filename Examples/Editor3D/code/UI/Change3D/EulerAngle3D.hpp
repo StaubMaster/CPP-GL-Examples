@@ -6,7 +6,6 @@
 # include "ValueType/Vector/F3.hpp"
 # include "ValueType/EulerAngle3D.hpp"
 
-//# include "Special/TransScaleColor3D/Object.hpp"
 # include "Special/TransScaleColor3D/Display/Object.hpp"
 # include "Special/TransScaleColor3D/Logical/Data.hpp"
 
@@ -14,22 +13,18 @@ namespace Change3D
 {
 struct EulerAngle3D : public Base
 {
+	public:
+	static TransScaleColor3D::DisplayObject *		SpinRingX_DisplayObject;
+	static TransScaleColor3D::DisplayObject *		SpinRingY_DisplayObject;
+	static TransScaleColor3D::DisplayObject *		SpinRingZ_DisplayObject;
+
 	private:
-	//TransScaleColor3D::Object				SpinRingX;
-	//TransScaleColor3D::Object				SpinRingY;
-	//TransScaleColor3D::Object				SpinRingZ;
-	TransScaleColor3D::DisplayObject *		SpinRingX_DisplayObject = nullptr;
-	TransScaleColor3D::DisplayObject *		SpinRingY_DisplayObject = nullptr;
-	TransScaleColor3D::DisplayObject *		SpinRingZ_DisplayObject = nullptr;
 	TransScaleColor3D::LogicalData			SpinRingX_Data;
 	TransScaleColor3D::LogicalData			SpinRingY_Data;
 	TransScaleColor3D::LogicalData			SpinRingZ_Data;
 
 	public:
 	::VectorF3	Center;
-
-	public:
-	void	IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir) override;
 
 	private:
 	bool	IsVisible = false;
@@ -66,38 +61,32 @@ struct EulerAngle3D : public Base
 
 
 	private:
-	enum class EIndicatorType // EHoveringType
+	enum class EType
 	{
 		None,
 		Other,
-		SpinRingX,
-		SpinRingY,
-		SpinRingZ,
+		Hovering_SpinRingX,
+		Hovering_SpinRingY,
+		Hovering_SpinRingZ,
+		Selected_SpinX,
+		Selected_SpinY,
+		Selected_SpinZ,
 	};
-	EIndicatorType		HoveringType = EIndicatorType::None;
-	::EulerAngle3D		HoveringOffset;
+	EType	Type = EType::None;
 
-	public:
-	bool	HoveringIsNone() const override;
-	void	HoveringMakeNone() override;
-	void	HoveringMakeOther() override;
-
-
+	::EulerAngle3D		Offset;
 
 	private:
-	enum class EChangeType // ESelectedType
-	{
-		None,
-		SpinX,
-		SpinY,
-		SpinZ,
-	};
-	EChangeType		SelectedType = EChangeType::None;
-	::EulerAngle3D	SelectedOffset;
+	void	Make(EType type, ::EulerAngle3D offset);
 
 	public:
-	bool	SelectedIsNone() const  override;
-	void	SelectedMakeNone()  override;
+	void	MakeNone() override;
+	void	MakeOther() override;
+
+	public:
+	bool	IsNone() const override;
+	bool	IsHovering() const override;
+	bool	IsSelected() const override;
 
 	public:
 	void	SelectedMakeL() override;

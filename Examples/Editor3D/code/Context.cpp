@@ -130,49 +130,46 @@ void Light3DContext::UserChange_ChangeObject(SceneObject * obj)
 	}
 	else
 	{
-		UserChange.SelectedMakeNone();
+		UserChange.MakeNone();
 		UserChange.IndicatorsHide();
 	}
 }
 
 void Light3DContext::UserChange_HoverSelect()
 {
-	if (UserChange.SelectedIsNone())
+	if (!UserChange.IsSelected())
 	{
-		if (IsHoveringControl())
+		/*if (IsHoveringControl())
 		{
-			UserChange.HoveringMakeNone();
+			UserChange.MakeNone();
 		}
-		else
+		else*/
 		{
-			Change3D::Base * change = UserChange.IndicatorsFind(ViewRay);
-			if (change != nullptr)
+			UserChange.IndicatorsFind(ViewRay);
+			if (window[MouseButtons::MouseL].IsPress())
 			{
-				if (window[MouseButtons::MouseL].IsPress())
-				{
-					change -> SelectedMakeL();
-				}
-				if (window[MouseButtons::MouseR].IsPress())
-				{
-					change -> SelectedMakeR();
-				}
+				UserChange.SelectedMakeL();
+			}
+			if (window[MouseButtons::MouseR].IsPress())
+			{
+				UserChange.SelectedMakeR();
 			}
 		}
 	}
 	else
 	{
-		if (IsHoveringControl())
+		/*if (IsHoveringControl())
 		{
 		}
-		else
+		else*/
 		{
 			if (window[MouseButtons::MouseL].IsRelease())
 			{
-				UserChange.SelectedMakeNone();
+				UserChange.MakeNone();
 			}
 			if (window[MouseButtons::MouseR].IsRelease())
 			{
-				UserChange.SelectedMakeNone();
+				UserChange.MakeNone();
 			}
 		}
 	}
@@ -410,7 +407,15 @@ void Light3DContext::Make()
 //	View.Trans = Trans3D(VectorF3(0, 430, -24), EulerAngle3D());
 	View.Trans = Trans3D(VectorF3(0, 0, -24), EulerAngle3D());
 
-	UserChange.IndicatorsInit(PolyHedraManager, MediaDirectory.Directory("YMT/Meta/"));
+	{
+		DirectoryInfo dir(MediaDirectory.Directory("YMT/Meta/"));
+		Change3D::VectorF3::MoveAxisX_DisplayObject     = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("MoveAxis/AxisX.polyhedra"))));
+		Change3D::VectorF3::MoveAxisY_DisplayObject     = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("MoveAxis/AxisY.polyhedra"))));
+		Change3D::VectorF3::MoveAxisZ_DisplayObject     = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("MoveAxis/AxisZ.polyhedra"))));
+		Change3D::EulerAngle3D::SpinRingX_DisplayObject = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("SpinRing/RingX.polyhedra"))));
+		Change3D::EulerAngle3D::SpinRingY_DisplayObject = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("SpinRing/RingY.polyhedra"))));
+		Change3D::EulerAngle3D::SpinRingZ_DisplayObject = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("SpinRing/RingZ.polyhedra"))));
+	}
 	UserChange.IndicatorsHide();
 
 	InitLights();
@@ -504,7 +509,7 @@ void Light3DContext::User(FrameTime frame_time)
 			if (idx != 0xFFFFFFFF)
 			{
 				Collection.Objects.RemoveAt(idx);
-				UserChange.SelectedMakeNone();
+				UserChange.MakeNone();
 				UserChange.IndicatorsHide();
 				Object_Selected = nullptr;
 			}

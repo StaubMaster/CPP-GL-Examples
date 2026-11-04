@@ -10,13 +10,12 @@
 class DirectoryInfo;
 class PolyHedraManager;
 
+struct RayHitF3;
+
 namespace Change3D
 {
 struct Base
 {
-	public:
-	virtual void	IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir) = 0;
-
 	public:
 	virtual bool	IndicatorsIsVisible() const = 0;
 	virtual void	IndicatorsShow() = 0;
@@ -36,17 +35,13 @@ struct Base
 
 
 	public:
-	bool	IsNone() const;
-	void	MakeNone();
+	virtual void	MakeNone() = 0;
+	virtual void	MakeOther() = 0;
 
 	public:
-	virtual bool	HoveringIsNone() const = 0;
-	virtual void	HoveringMakeNone() = 0;
-	virtual void	HoveringMakeOther() = 0;
-
-	public:
-	virtual bool	SelectedIsNone() const = 0;
-	virtual void	SelectedMakeNone() = 0;
+	virtual bool	IsNone() const = 0;
+	virtual bool	IsHovering() const = 0;
+	virtual bool	IsSelected() const = 0;
 
 	public:
 	virtual void	SelectedMakeL() = 0;

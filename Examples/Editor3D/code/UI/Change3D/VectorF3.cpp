@@ -1,7 +1,6 @@
 #include "UI/Change3D/VectorF3.hpp"
 #include "PolyHedra/Manager.hpp"
 
-//#include "Special/TransScaleColor3D/Logical/Data.hpp"
 #include "Special/TransScaleColor3D/Display/ObjectManager.hpp"
 #include "NewPolyHedra/Pallet/Manager.hpp"
 
@@ -16,12 +15,11 @@
 
 
 
-void Change3D::VectorF3::IndicatorsInit(PolyHedraManager & manager, const DirectoryInfo & dir)
-{
-	MoveAxisX_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("MoveAxis/AxisX.polyhedra"))));
-	MoveAxisY_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("MoveAxis/AxisY.polyhedra"))));
-	MoveAxisZ_DisplayObject = TransScaleColor3D::DisplayObjectManager::sTake(*NewPolyHedra::PalletManager::sTake(*manager.Take(dir.File("MoveAxis/AxisZ.polyhedra"))));
-}
+TransScaleColor3D::DisplayObject * Change3D::VectorF3::MoveAxisX_DisplayObject = nullptr;
+TransScaleColor3D::DisplayObject * Change3D::VectorF3::MoveAxisY_DisplayObject = nullptr;
+TransScaleColor3D::DisplayObject * Change3D::VectorF3::MoveAxisZ_DisplayObject = nullptr;
+
+
 
 bool Change3D::VectorF3::IndicatorsIsVisible() const
 {
@@ -39,21 +37,21 @@ void Change3D::VectorF3::IndicatorsHide()
 RayHitF3 Change3D::VectorF3::IndicatorsFind(const RayF3 & ray)
 {
 	if (!IndicatorsIsVisible()) { return RayHitF3(); }
-	if (!SelectedIsNone()) { return RayHitF3(); }
+	if (IsSelected()) { return RayHitF3(); }
 
-	RayHitF3Type<EIndicatorType> hit(EIndicatorType::None);
+	RayHitF3Type<EType> hit(EType::None);
 
-	hit.Consider(RayHitObject(ray, *MoveAxisX_DisplayObject, MoveAxisX_Data), EIndicatorType::MoveAxisX);
-	hit.Consider(RayHitObject(ray, *MoveAxisY_DisplayObject, MoveAxisY_Data), EIndicatorType::MoveAxisY);
-	hit.Consider(RayHitObject(ray, *MoveAxisZ_DisplayObject, MoveAxisZ_Data), EIndicatorType::MoveAxisZ);
+	hit.Consider(RayHitObject(ray, *MoveAxisX_DisplayObject, MoveAxisX_Data), EType::Hovering_MoveAxisX);
+	hit.Consider(RayHitObject(ray, *MoveAxisY_DisplayObject, MoveAxisY_Data), EType::Hovering_MoveAxisY);
+	hit.Consider(RayHitObject(ray, *MoveAxisZ_DisplayObject, MoveAxisZ_Data), EType::Hovering_MoveAxisZ);
 
 	if (hit.Is())
 	{
-		HoveringMake(hit.Data, hit.Pos());
+		Make(hit.Data, hit.Pos());
 	}
 	else
 	{
-		HoveringMakeNone();
+		MakeNone();
 	}
 
 	return hit;
@@ -61,17 +59,17 @@ RayHitF3 Change3D::VectorF3::IndicatorsFind(const RayF3 & ray)
 
 void Change3D::VectorF3::IndicatorsUpdateColor()
 {
-	if (HoveringType != EIndicatorType::None)
+	if (Type != EType::None)
 	{
 		MoveAxisX_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
 		MoveAxisY_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
 		MoveAxisZ_Data.Color = ColorF4(0.5f, 0.5f, 0.5f);
 
-		switch (HoveringType)
+		switch (Type)
 		{
-			case EIndicatorType::MoveAxisX: MoveAxisX_Data.Color = ColorF4(1, 0, 0); break;
-			case EIndicatorType::MoveAxisY: MoveAxisY_Data.Color = ColorF4(0, 1, 0); break;
-			case EIndicatorType::MoveAxisZ: MoveAxisZ_Data.Color = ColorF4(0, 0, 1); break;
+			case EType::Hovering_MoveAxisX: MoveAxisX_Data.Color = ColorF4(1, 0, 0); break;
+			case EType::Hovering_MoveAxisY: MoveAxisY_Data.Color = ColorF4(0, 1, 0); break;
+			case EType::Hovering_MoveAxisZ: MoveAxisZ_Data.Color = ColorF4(0, 0, 1); break;
 			default: break;
 		}
 	}
@@ -164,98 +162,110 @@ void Change3D::VectorF3::ChangeValue(const RayF3 & ray)
 
 
 
-bool Change3D::VectorF3::HoveringIsNone() const
+void Change3D::VectorF3::Make(EType type, ::VectorF3 offset)
 {
-	return (HoveringType == EIndicatorType::None || HoveringType == EIndicatorType::Other);
-}
-void Change3D::VectorF3::HoveringMakeNone()
-{
-	HoveringType = EIndicatorType::None;
-	HoveringOffset = ::VectorF3();
-	IndicatorsUpdateColor();
-}
-void Change3D::VectorF3::HoveringMakeOther()
-{
-	HoveringType = EIndicatorType::Other;
-	HoveringOffset = ::VectorF3();
-	IndicatorsUpdateColor();
-}
-void Change3D::VectorF3::HoveringMake(EIndicatorType type, ::VectorF3 offset)
-{
-	HoveringType = type;
-	HoveringOffset = offset;
+	Type = type;
+	Offset = offset;
 	IndicatorsUpdateColor();
 }
 
-
-
-bool Change3D::VectorF3::SelectedIsNone() const
+void Change3D::VectorF3::MakeNone()
 {
-	return (SelectedType == EChangeType::None);
+	Make(EType::None, ::VectorF3());
 }
-void Change3D::VectorF3::SelectedMakeNone()
+void Change3D::VectorF3::MakeOther()
 {
-	SelectedType = EChangeType::None;
+	Make(EType::Other, ::VectorF3());
+}
+
+bool Change3D::VectorF3::IsNone() const
+{
+	switch (Type)
+	{
+		case EType::None: return true;
+		case EType::Other: return true;
+		default: return false;
+	}
+}
+bool Change3D::VectorF3::IsHovering() const
+{
+	switch (Type)
+	{
+		case EType::Hovering_MoveAxisX: return true;
+		case EType::Hovering_MoveAxisY: return true;
+		case EType::Hovering_MoveAxisZ: return true;
+		default: return false;
+	}
+}
+bool Change3D::VectorF3::IsSelected() const
+{
+	switch (Type)
+	{
+		case EType::Selected_LineX: return true;
+		case EType::Selected_LineY: return true;
+		case EType::Selected_LineZ: return true;
+		case EType::Selected_PlaneX: return true;
+		case EType::Selected_PlaneY: return true;
+		case EType::Selected_PlaneZ: return true;
+		default: return false;
+	}
 }
 
 void Change3D::VectorF3::SelectedMakeL()
 {
 	if (!IndicatorsIsVisible()) { return; }
-	if (HoveringIsNone()) { return; }
-	if (!SelectedIsNone()) { return; }
-	switch (HoveringType)
+	if (!IsHovering()) { return; } // this is the same switch ?
+	switch (Type)
 	{
-		case EIndicatorType::MoveAxisX: SelectedType = EChangeType::LineX; break;
-		case EIndicatorType::MoveAxisY: SelectedType = EChangeType::LineY; break;
-		case EIndicatorType::MoveAxisZ: SelectedType = EChangeType::LineZ; break;
-		default: SelectedType = EChangeType::None; break;
+		case EType::Hovering_MoveAxisX: Type = EType::Selected_LineX; break;
+		case EType::Hovering_MoveAxisY: Type = EType::Selected_LineY; break;
+		case EType::Hovering_MoveAxisZ: Type = EType::Selected_LineZ; break;
+		default: Type = EType::None; break;
 	}
-	SelectedOffset = Value - HoveringOffset;
+	Offset = Value - Offset;
 }
 void Change3D::VectorF3::SelectedMakeR()
 {
 	if (!IndicatorsIsVisible()) { return; }
-	if (HoveringIsNone()) { return; }
-	if (!SelectedIsNone()) { return; }
-	switch (HoveringType)
+	if (!IsHovering()) { return; } // this is the same switch ?
+	switch (Type)
 	{
-		case EIndicatorType::MoveAxisX: SelectedType = EChangeType::PlaneX; break;
-		case EIndicatorType::MoveAxisY: SelectedType = EChangeType::PlaneY; break;
-		case EIndicatorType::MoveAxisZ: SelectedType = EChangeType::PlaneZ; break;
-		default: SelectedType = EChangeType::None; break;
+		case EType::Hovering_MoveAxisX: Type = EType::Selected_PlaneX; break;
+		case EType::Hovering_MoveAxisY: Type = EType::Selected_PlaneY; break;
+		case EType::Hovering_MoveAxisZ: Type = EType::Selected_PlaneZ; break;
+		default: Type = EType::None; break;
 	}
-	SelectedOffset = Value - HoveringOffset;
+	Offset = Value - Offset;
 }
 
 
 
 ::VectorF3 Change3D::VectorF3::CalculateAxis(const RayF3 & ray, const ::VectorF3 & axis) const
 {
-	RayF3 axis_ray(Value - SelectedOffset, axis);
+	RayF3 axis_ray(Value - Offset, axis);
 	RayHitF3 axis_hit;
 	RayHitF3 hit;
 	Interact3D::Skew(ray, hit, axis_ray, axis_hit);
 	if (hit.Interval < 0.0f) { return Value; }
-	return (axis_hit.Pos() + SelectedOffset);
+	return (axis_hit.Pos() + Offset);
 }
 ::VectorF3 Change3D::VectorF3::CalculatePlane(const RayF3 & ray, const ::VectorF3 & axis) const
 {
-	RayHitF3 hit = Interact3D::Plane(ray, NormalPlaneF3(Value - SelectedOffset, axis));
+	RayHitF3 hit = Interact3D::Plane(ray, NormalPlaneF3(Value - Offset, axis));
 	if (!hit.Is()) { return Value; }
-	return (hit.Pos() + SelectedOffset);
+	return (hit.Pos() + Offset);
 }
 ::VectorF3 Change3D::VectorF3::Calculate(const RayF3 & ray) const
 {
 	::VectorF3 value = Value;
-	switch (SelectedType)
+	switch (Type)
 	{
-		case EChangeType::None: return value;
-		case EChangeType::LineX:  value = CalculateAxis(ray, ::VectorF3(1, 0, 0)); break;
-		case EChangeType::LineY:  value = CalculateAxis(ray, ::VectorF3(0, 1, 0)); break;
-		case EChangeType::LineZ:  value = CalculateAxis(ray, ::VectorF3(0, 0, 1)); break;
-		case EChangeType::PlaneX: value = CalculatePlane(ray, ::VectorF3(1, 0, 0)); break;
-		case EChangeType::PlaneY: value = CalculatePlane(ray, ::VectorF3(0, 1, 0)); break;
-		case EChangeType::PlaneZ: value = CalculatePlane(ray, ::VectorF3(0, 0, 1)); break;
+		case EType::Selected_LineX:  value = CalculateAxis(ray, ::VectorF3(1, 0, 0)); break;
+		case EType::Selected_LineY:  value = CalculateAxis(ray, ::VectorF3(0, 1, 0)); break;
+		case EType::Selected_LineZ:  value = CalculateAxis(ray, ::VectorF3(0, 0, 1)); break;
+		case EType::Selected_PlaneX: value = CalculatePlane(ray, ::VectorF3(1, 0, 0)); break;
+		case EType::Selected_PlaneY: value = CalculatePlane(ray, ::VectorF3(0, 1, 0)); break;
+		case EType::Selected_PlaneZ: value = CalculatePlane(ray, ::VectorF3(0, 0, 1)); break;
 		default: return value;
 	}
 	return value;
