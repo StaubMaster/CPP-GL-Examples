@@ -545,16 +545,22 @@ void UI::Text::Manager::BufferInstUpdateData()
 
 
 
+#include <iostream>
 void UI::Text::Manager::Draw()
 {
 	if (!GraphicsExist) { return; }
 
+	std::cout << "{\n";
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	Shader.Bind();
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	Buffer.Bind();
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	//Buffer.InitAttributes();
 
 	// do this stuff once / somewhere else
 	// check for Limit, display error, dont throw
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	{
 		const unsigned int binding = 0;
 		FontBuffer.Bind();
@@ -567,26 +573,48 @@ void UI::Text::Manager::Draw()
 		FontBuffer.DataFull(Container::Void(data));
 		ShaderLayout.Bind(ShaderLayout.Pallets, binding);
 	}
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	{
+		std::cout << "{\n";
+		std::cout << ":" << __LINE__ << '\n';
 		const unsigned int binding = 1;
+		std::cout << ":" << __LINE__ << '\n';
 		TextsBuffer.BindBase(binding);
+		std::cout << ":" << __LINE__ << '\n';
 		TextsBufferData data;
+		std::cout << ":" << __LINE__ << '\n';
+		std::cout << "Count: " << TextsList.Count() << '\n';
 		for (unsigned int i = 0; i < TextsList.Count(); i++)
 		{
+			//std::cout << '[' << i << ']' << '\n';
 			data.Array[i] = TextsList[i];
 		}
+		std::cout << ":" << __LINE__ << '\n';
 		TextsBuffer.DataFull(Container::Void(data));
+		std::cout << ":" << __LINE__ << '\n';
 		ShaderLayout.Bind(ShaderLayout.Texts, binding);
+		std::cout << ":" << __LINE__ << '\n';
+		std::cout << "}\n";
 	}
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	FontTexture.Bind();
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	TextureAssign();
 
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	BufferMainUpdateData();
 
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	BufferInstUpdateData();
 
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	FontBuffer.Bind();
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	TextsBuffer.Bind();
+	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	Buffer.Draw();
+
+	std::cout << "}\n";
 }

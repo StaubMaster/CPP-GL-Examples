@@ -140,13 +140,20 @@ void UI::Control::Manager::GraphicsMake()
 	}*/
 }
 
+#include <iostream>
 void UI::Control::Manager::GraphicsDraw()
 {
+	std::cout << "UI::Control::Manager::GraphicsDraw():" << __LINE__ << '\n';
 	GraphicsPutMain();
+	std::cout << "UI::Control::Manager::GraphicsDraw():" << __LINE__ << '\n';
 	GraphicsPutInst();
+	std::cout << "UI::Control::Manager::GraphicsDraw():" << __LINE__ << '\n';
 
 	Shader.Bind();
+	std::cout << "UI::Control::Manager::GraphicsDraw():" << __LINE__ << '\n';
 
 	Buffer.Bind();
+	std::cout << "UI::Control::Manager::GraphicsDraw():" << __LINE__ << '\n';
 	Buffer.Draw();
+	std::cout << "UI::Control::Manager::GraphicsDraw():" << __LINE__ << '\n';
 }

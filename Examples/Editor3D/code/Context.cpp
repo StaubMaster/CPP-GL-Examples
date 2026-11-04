@@ -257,6 +257,7 @@ void Light3DContext::SceneReMake()
 	// segfault when something is selected
 	std::cout << "Scene ReMake ....\n";
 	SceneClear();
+	// Clear NewPolyHedra Manager
 	std::cout << "ArgumentFiles\n";
 	std::cout << "[\n";
 	for (unsigned int i = 0; i < ArgumentFiles.Length(); i++)
@@ -266,6 +267,9 @@ void Light3DContext::SceneReMake()
 	std::cout << "]\n";
 	for (unsigned int i = 0; i < ArgumentFiles.Length(); i++)
 	{
+		// check Extension
+		// .scene
+		// .polyhedra
 		SceneLoad(ArgumentFiles[i]);
 	}
 	//SceneLoad(MediaDirectory.File("YMT/Light/Light.scene"));

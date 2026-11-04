@@ -13,8 +13,8 @@ UI::Control::LightBase::LightBase(const char * name)
 	Intensity.Anchor.X.AnchorBoth(0, 0);
 	Color.Anchor.X.AnchorBoth(0, 0);
 
-	Intensity.ValueMin.X = 0.0f;
-	Intensity.ValueMax.X = 1.0f;
+	Intensity.ValueRange.Min.X = 0.0f;
+	Intensity.ValueRange.Max.X = 1.0f;
 	Intensity.ValueXChangedFunc.Assign(this, &LightBase::IntensityFunc);
 
 	ChildInsert(Intensity);

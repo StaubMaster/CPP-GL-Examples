@@ -90,9 +90,6 @@ class Base
 	bool	IsEnabled() const;
 	void	MakeEnabled();
 	void	MakeDisabled();
-	/*
-		recursive change Color
-	*/
 
 	protected:
 	bool	_Visible = true;
@@ -100,9 +97,6 @@ class Base
 	bool	IsThisVisible() const;
 	void	Show();
 	void	Hide();
-	/*
-		recursive change Display
-	*/
 
 	protected:
 	bool	_Opaque = true;
@@ -111,9 +105,6 @@ class Base
 	bool	IsOpaque() const;
 	void	MakeTransparent();
 	void	MakeOpaque();
-	/*
-		change Display
-	*/
 
 	public:
 	bool	IsVisible() const;
@@ -123,23 +114,22 @@ class Base
 
 
 
-	protected:
+	protected: public:
 	VectorF2	AnchorSize;
 	VectorF2	AnchorNormal;
 	BoxF2		AnchorDist;
-	public: //protected:
+	protected: public:
 	BoxF2		AnchorMargin;
 	BoxF2		AnchorBoarder;
 	BoxF2		AnchorPadding;
-	// ContentOffset ?
-	public:
+	protected: public:
 	Anchor2D	Anchor;
-	// make Anchor for X and Y seperate
-	// do BoxUpdate seperately ?
+	protected: public:
+	//VectorF2	ContentOffset ?
 
 
 
-	public: //protected:
+	protected: public:
 	BoxF2	BoxDisplay; // used for displaying Control
 	BoxF2	BoxBoarder; // used for culling Children
 	BoxF2	BoxContent; // used for anchoring Children
@@ -224,9 +214,9 @@ idea
 
 
 
-	public:
+	protected: public:
 	ColorF4		ColorDefault;
-	//Color		ColorDisabled; // Gray Text
+	//ColorF4	ColorDisabled; // Gray Text
 	ColorF4		ColorHover;
 
 	protected:

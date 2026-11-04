@@ -200,14 +200,21 @@ void UI::Manager::GraphicsMake()
 	TextManager.InstancesMake();
 	GraphManager.InstancesMake();
 }
+#include <iostream>
 void UI::Manager::GraphicsDraw()
 {
+	std::cout << "UI::Manager::GraphicsDraw():" << __LINE__ << '\n';
 	GL::Disable(GL::Capability::DepthClamp);
+	std::cout << "UI::Manager::GraphicsDraw():" << __LINE__ << '\n';
 	ControlManager.GraphicsDraw();
-
+	
+	std::cout << "UI::Manager::GraphicsDraw():" << __LINE__ << '\n';
 	GL::Enable(GL::Capability::DepthClamp);
+	std::cout << "UI::Manager::GraphicsDraw():" << __LINE__ << '\n';
 	TextManager.Draw();
 
+	std::cout << "UI::Manager::GraphicsDraw():" << __LINE__ << '\n';
 	GL::Clear(GL::ClearMask::DepthBufferBit);
+	std::cout << "UI::Manager::GraphicsDraw():" << __LINE__ << '\n';
 	GraphManager.Draw();
 }

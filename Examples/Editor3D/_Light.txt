@@ -1,0 +1,12 @@
+
+make Ambient and Directional Lights part of Scene, only accessible with UI
+
+make nested UI Tree Control
+
+show all the stuff there
+
+thats kind of what the currenty SceneObjectUI is supposed to do
+
+but then the Tree would have a lot of redundant / invisible UI Controls
+
+so instead of just Showing/Hiding, just delete and allocate as needed

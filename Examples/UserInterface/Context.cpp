@@ -129,15 +129,15 @@ void UserInterfaceContext::Free()
 
 
 
-void UserInterfaceContext::Resize(DisplaySize display_size)
-{
-	UIManager.Resize(display_size);
-}
+#include <iostream>
 void UserInterfaceContext::Frame(FrameTime frame_time)
 {
 	(void)frame_time;
+	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
 	UIManager.Update();
+	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
 	/*UIManager.Update()
 		update Depth automatically
 			instead of using range ]0;1[
@@ -145,12 +145,16 @@ void UserInterfaceContext::Frame(FrameTime frame_time)
 			disable depth clamp
 			keep depth test
 	*/
+	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
 	UIManager.GraphicsMake();
+	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
 	UIManager.GraphicsDraw();
+	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
 }
-
-
-
+void UserInterfaceContext::Resize(DisplaySize display_size)
+{
+	UIManager.Resize(display_size);
+}
 void UserInterfaceContext::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
 void UserInterfaceContext::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
 void UserInterfaceContext::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }

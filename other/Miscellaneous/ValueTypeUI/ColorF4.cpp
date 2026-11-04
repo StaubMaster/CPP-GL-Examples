@@ -15,16 +15,16 @@ UI::Control::ColorF4::ColorF4(const char * name)
 	G.Anchor.X.AnchorBoth(0, 0);
 	B.Anchor.X.AnchorBoth(0, 0);
 
-	R.ValueMin.X = 0.0f;
-	R.ValueMax.X = 1.0f;
+	R.ValueRange.Min.X = 0.0f;
+	R.ValueRange.Max.X = 1.0f;
 	R.ValueXChangedFunc.Assign(this, &ColorF4::RFunc);
 
-	G.ValueMin.X = 0.0f;
-	G.ValueMax.X = 1.0f;
+	G.ValueRange.Min.X = 0.0f;
+	G.ValueRange.Max.X = 1.0f;
 	G.ValueXChangedFunc.Assign(this, &ColorF4::GFunc);
 
-	B.ValueMin.X = 0.0f;
-	B.ValueMax.X = 1.0f;
+	B.ValueRange.Min.X = 0.0f;
+	B.ValueRange.Max.X = 1.0f;
 	B.ValueXChangedFunc.Assign(this, &ColorF4::BFunc);
 
 	ChildInsert(R);

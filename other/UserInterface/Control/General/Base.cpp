@@ -253,8 +253,6 @@ void UI::Control::Base::BoxUpdate()
 {
 	if (Parent == nullptr) { return; }
 
-	//std::cout << "BoxUpdate\n";
-
 	BoxDisplay = Anchor.Calculate(Parent -> BoxContent);
 
 	BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
@@ -267,13 +265,14 @@ void UI::Control::Base::BoxUpdate()
 	{
 		Children[i] -> BoxUpdateRequest();
 	}
+
+	BoxUpdateIsRequested = false;
 }
 void UI::Control::Base::BoxUpdateResolve()
 {
 	if (BoxUpdateIsRequested)
 	{
 		BoxUpdate();
-		BoxUpdateIsRequested = false;
 	}
 }
 void UI::Control::Base::BoxUpdateRequest()
@@ -405,24 +404,21 @@ void UI::Control::Base::ColorUpdateRequestRecursive()
 #include "Graphics/InstData.hpp"
 void UI::Control::Base::DisplayPut() const
 {
-	if (Manager != nullptr)
+	if (Manager != nullptr && Display)
 	{
-		if (Display)
+		Inst::Data data;
+		data.Layer = Depth;
+		data.Box = BoxDisplay;
+		data.Color = Color;
+		if (Parent != nullptr)
 		{
-			Inst::Data data;
-			data.Layer = Depth;
-			data.Box = BoxDisplay;
-			data.Color = Color;
-			if (Parent != nullptr)
-			{
-				data.Bound = Parent -> BoxBoarder;
-			}
-			else
-			{
-				data.Bound = BoxF2();
-			}
-			Manager -> ControlManager.InstancePut(data);
+			data.Bound = Parent -> BoxBoarder;
 		}
+		else
+		{
+			data.Bound = BoxF2();
+		}
+		Manager -> ControlManager.InstancePut(data);
 	}
 }
 
