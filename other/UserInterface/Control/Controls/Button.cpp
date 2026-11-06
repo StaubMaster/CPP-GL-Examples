@@ -17,19 +17,10 @@ UI::Control::Button::Button()
 
 	ColorDefault = ColorF4(0.625f, 0.625f, 0.625f);
 	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
-}
-UI::Control::Button::~Button()
-{ }
 
+	AlignmentX = UI::Text::Alignment::Mid;
+	AlignmentY = UI::Text::Alignment::Mid;
 
-
-void UI::Control::Button::TextObjectAssignPosition()
-{
-	if (TextObject.Is())
-	{
-		TextObject.AlignMiddleMiddle();
-		TextObject.TextPosition() = BoxContent.Center();
-	}
 }
 
 

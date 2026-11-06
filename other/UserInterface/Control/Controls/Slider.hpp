@@ -65,7 +65,6 @@ class Slider : public BaseText
 
 	public:
 	Slider();
-	~Slider();
 
 	protected:
 	void	AssignDepth() override;

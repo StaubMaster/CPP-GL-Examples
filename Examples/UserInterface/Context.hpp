@@ -3,11 +3,10 @@
 
 # include "ContextBase.hpp"
 
-# include "Menu/0.hpp"
-# include "Menu/1.hpp"
-# include "Menu/2.hpp"
-# include "Menu/3.hpp"
-
+# include "Test/Selector.hpp"
+# include "Test/TileGrid.hpp"
+# include "Test/Text.hpp"
+# include "Test/Graph.hpp"
 # include "Test/Scroll.hpp"
 # include "Test/List.hpp"
 
@@ -19,21 +18,20 @@ struct UserInterfaceContext : public ContextBase
 {
 	UI::Manager				UIManager;
 
-	UserInterfaceMenu0		Menu0;
-	UserInterfaceMenu1		Menu1;
-	UserInterfaceMenu2		Menu2;
-	UserInterfaceMenu3		Menu3;
+	::TestSelector			Selector;
+	::TestTileGrid			TileGrid;
+	::TestText				Text;
+	::TestGraph				Graph;
 	::TestScroll			TestScroll;
 	::TestList				TestList;
 	::DirectoryNavigator	DirectoryNavigator;
 
-	~UserInterfaceContext();
 	UserInterfaceContext();
 	
 	void	Make();
-	void	ToggleMenu1(ClickArgs args);
-	void	ToggleMenu2(ClickArgs args);
-	void	ToggleMenu3(ClickArgs args);
+	void	ToggleTileGrid(ClickArgs args);
+	void	ToggleText(ClickArgs args);
+	void	ToggleGraph(ClickArgs args);
 	void	ToggleTestScroll(ClickArgs args);
 	void	ToggleTestList(ClickArgs args);
 	void	ToggleDirectoryNavigator(ClickArgs args);

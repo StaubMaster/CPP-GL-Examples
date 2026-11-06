@@ -7,11 +7,10 @@ FANCY_NAME := UserInterface
 FILES := \
 	Context.cpp \
 \
-	Menu/0.cpp \
-	Menu/1.cpp \
-	Menu/2.cpp \
-	Menu/3.cpp \
-\
+	Test/Selector.cpp \
+	Test/TileGrid.cpp \
+	Test/Text.cpp \
+	Test/Graph.cpp \
 	Test/Scroll.cpp \
 	Test/List.cpp \
 \

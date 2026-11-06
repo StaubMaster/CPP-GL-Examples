@@ -18,17 +18,7 @@ UI::Control::Label::Label()
 
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
-}
-UI::Control::Label::~Label()
-{ }
 
-
-
-void UI::Control::Label::TextObjectAssignPosition()
-{
-	if (TextObject.Is())
-	{
-		TextObject.AlignTopLeft();
-		TextObject.TextPosition() = BoxContent.Min;
-	}
+	AlignmentX = UI::Text::Alignment::Min;
+	AlignmentY = UI::Text::Alignment::Min;
 }

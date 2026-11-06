@@ -10,5 +10,3 @@ UI::Control::GroupBox::GroupBox() : Base()
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 }
-UI::Control::GroupBox::~GroupBox()
-{ }

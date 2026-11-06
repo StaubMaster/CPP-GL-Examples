@@ -15,11 +15,7 @@ class Button : public BaseText
 	Function::Pointer<ClickArgs>	ClickFunc; // FuncClick
 
 	public:
-	~Button();
 	Button();
-
-	private:
-	void	TextObjectAssignPosition() override;
 
 	public: // does this need to be public ?
 	void	RelayClick(ClickArgs args) override;

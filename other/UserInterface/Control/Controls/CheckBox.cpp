@@ -19,8 +19,6 @@ UI::Control::CheckBox::CheckBox() : Base()
 	ColorChecked = ColorF4(0.0f, 1.0f, 0.0f);
 	ColorCheckedHover = ColorF4(0.0f, 0.75f, 0.0f);
 }
-UI::Control::CheckBox::~CheckBox()
-{ }
 
 
 

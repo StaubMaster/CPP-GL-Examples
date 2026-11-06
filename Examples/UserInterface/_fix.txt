@@ -1,0 +1,14 @@
+
+Depth is wrong
+
+TileGrid is Form is below Selector Controls
+but TileGrid Controls are above Selector Controls
+
+
+
+make it so clicking a Form puts it above the others
+
+give Form a moving Area
+optional ?
+put it at the top, with an optional name ?
+and close button ?

@@ -18,109 +18,8 @@ UI::Control::TextBox::TextBox()
 	ColorDefault = ColorF4(1.0f, 1.0f, 1.0f);
 	ColorHover = ColorF4(0.875f, 0.875f, 0.875f);
 
-	Text = "";
-	TextCursor = 0;
-
-	ReadOnly = false;
-	MultiLine = false;
-
 	AlignmentX = UI::Text::Alignment::Min;
 	AlignmentY = UI::Text::Alignment::Min;
-}
-UI::Control::TextBox::~TextBox() { }
-
-
-
-void UI::Control::TextBox::PutAlignment()
-{
-	if (TextObject.Is())
-	{
-		VectorF2 & pos = TextObject.TextPosition();
-
-		if (AlignmentX == UI::Text::Alignment::Min) { pos.X = BoxContent.Min.X; }
-		if (AlignmentX == UI::Text::Alignment::Mid) { pos.X = BoxContent.Center().X; }
-		if (AlignmentX == UI::Text::Alignment::Max) { pos.X = BoxContent.Max.X; }
-
-		if (AlignmentY == UI::Text::Alignment::Min) { pos.Y = BoxContent.Min.Y; }
-		if (AlignmentY == UI::Text::Alignment::Mid) { pos.Y = BoxContent.Center().Y; }
-		if (AlignmentY == UI::Text::Alignment::Max) { pos.Y = BoxContent.Max.Y; }
-
-		TextObject.TextAlignmentX() = AlignmentX;
-		TextObject.TextAlignmentY() = AlignmentY;
-
-		TextObject.CharacterAlignmentX() = AlignmentX;
-		TextObject.CharacterAlignmentY() = AlignmentY;
-	}
-}
-void UI::Control::TextBox::PutCharactersEntrys()
-{
-	if (TextObject.Is())
-	{
-		TextObject.Text() = Text;
-		TextObject.Bound() = BoxContent;
-	}
-	PutAlignment();
-}
-
-
-
-std::string UI::Control::TextBox::GetText() const
-{
-	return Text;
-}
-void UI::Control::TextBox::SetText(std::string text)
-{
-	Text = text;
-	TextCursor = Text.length();
-	PutCharactersEntrys();
-	PutCursor();
-}
-
-
-
-void UI::Control::TextBox::AssignDepth()
-{
-	Base::AssignDepth();
-	if (TextObject.Is())
-	{
-		TextObject.Depth() = Depth - 0.001f;
-	}
-}
-
-
-
-void UI::Control::TextBox::BoxUpdate()
-{
-	Base::BoxUpdate();
-	if (TextObject.Is())
-	{
-		PutCharactersEntrys();
-		PutCursor();
-	}
-}
-
-void UI::Control::TextBox::DisplayShow()
-{
-	Base::DisplayShow();
-	if (Manager != nullptr)
-	{
-		if (!TextObject.Is())
-		{
-			TextObject.Create();
-			TextObject.Depth() = Depth - 0.001f;
-		}
-	}
-}
-void UI::Control::TextBox::DisplayHide()
-{
-	Base::DisplayHide();
-	if (Manager == nullptr)
-	{
-		if (TextObject.Is())
-		{
-			TextObject.Delete();
-		}
-	}
 }
 
 
@@ -133,63 +32,55 @@ void UI::Control::TextBox::RelayKey(KeyArgs args)
 	{
 		if (args.Key == Keys::Backspace)
 		{
-			if (TextCursor > 0)
+			if (TextObjectData.TextCursorIndex > 0)
 			{
-				if (TextCursor < Text.length())
+				if (TextObjectData.TextCursorIndex < TextObjectData.Text.length())
 				{
-					Text.erase(TextCursor - 1, 1);
-					TextCursor--;
+					TextObjectData.Text.erase(TextObjectData.TextCursorIndex - 1, 1);
+					TextObjectData.TextCursorIndex--;
 				}
 				else
 				{
-					Text.erase(Text.length() - 1, 1);
-					TextCursor = Text.length();
+					TextObjectData.Text.erase(TextObjectData.Text.length() - 1, 1);
+					TextObjectData.TextCursorIndex = TextObjectData.Text.length();
 				}
-				PutCharactersEntrys();
-				PutCursor();
 			}
 		}
 		if (args.Key == Keys::Enter)
 		{
-			if (TextCursor < Text.length())
+			if (TextObjectData.TextCursorIndex < TextObjectData.Text.length())
 			{
-				Text.insert(TextCursor, 1, '\n');
-				TextCursor++;
+				TextObjectData.Text.insert(TextObjectData.TextCursorIndex, 1, '\n');
+				TextObjectData.TextCursorIndex++;
 			}
 			else
 			{
-				Text += '\n';
-				TextCursor = Text.length();
+				TextObjectData.Text += '\n';
+				TextObjectData.TextCursorIndex = TextObjectData.Text.length();
 			}
-			PutCharactersEntrys();
-			PutCursor();
 		}
 
 		if (args.Key == Keys::Home)
 		{
-			TextCursor = 0;
-			PutCursor();
+			TextObjectData.TextCursorIndex = 0;
 		}
 		if (args.Key == Keys::End)
 		{
-			TextCursor = Text.length();
-			PutCursor();
+			TextObjectData.TextCursorIndex = TextObjectData.Text.length();
 		}
 
 		if (args.Key == Keys::Left)
 		{
-			if (TextCursor > 0)
+			if (TextObjectData.TextCursorIndex > 0)
 			{
-				TextCursor--;
-				PutCursor();
+				TextObjectData.TextCursorIndex--;
 			}
 		}
 		if (args.Key == Keys::Right)
 		{
-			if (TextCursor < Text.length())
+			if (TextObjectData.TextCursorIndex < TextObjectData.Text.length())
 			{
-				TextCursor++;
-				PutCursor();
+				TextObjectData.TextCursorIndex++;
 			}
 		}
 
@@ -204,28 +95,14 @@ void UI::Control::TextBox::RelayText(TextArgs args)
 	if (!IsInteractible() || ReadOnly) { return; }
 
 	char c = args.Codepoint;
-	if (TextCursor < Text.length())
+	if (TextObjectData.TextCursorIndex < TextObjectData.Text.length())
 	{
-		Text.insert(TextCursor, 1, c);
-		TextCursor++;
+		TextObjectData.Text.insert(TextObjectData.TextCursorIndex, 1, c);
+		TextObjectData.TextCursorIndex++;
 	}
 	else
 	{
-		Text += c;
-		TextCursor = Text.length();
-	}
-	PutCharactersEntrys();
-	PutCursor();
-}
-
-
-
-// when cursor changes, move Text so Cursor is allways visible
-void UI::Control::TextBox::PutCursor()
-{
-	if (TextObject.Is())
-	{
-		TextObject.ShowTextCursor();
-		TextObject.TextCursorIndex() = TextCursor;
+		TextObjectData.Text += c;
+		TextObjectData.TextCursorIndex = TextObjectData.Text.length();
 	}
 }

@@ -1,9 +1,9 @@
-#ifndef  USER_INTERFACE_MENU_2_HPP
-# define USER_INTERFACE_MENU_2_HPP
+#ifndef  USER_INTERFACE_TEST_TILE_GRID_HPP
+# define USER_INTERFACE_TEST_TILE_GRID_HPP
 
 # include "Control/_Include.hpp"
 
-struct UserInterfaceMenu2 : public UI::Control::Form
+struct TestTileGrid : public UI::Control::Form
 {
 	//UI::Control::CheckBox		CheckBoxGrid[7][7];
 
@@ -20,8 +20,7 @@ struct UserInterfaceMenu2 : public UI::Control::Form
 	};
 	CheckBoxTile	CheckBoxGrid[7][7];
 
-	~UserInterfaceMenu2();
-	UserInterfaceMenu2();
+	TestTileGrid();
 
 	void	Func(VectorU2 idx);
 };

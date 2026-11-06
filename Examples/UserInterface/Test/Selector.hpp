@@ -1,24 +1,22 @@
-#ifndef  USER_INTERFACE_MENU_0_HPP
-# define USER_INTERFACE_MENU_0_HPP
+#ifndef  USER_INTERFACE_TEST_SELECTOR_HPP
+# define USER_INTERFACE_TEST_SELECTOR_HPP
 
 # include "Control/_Include.hpp"
 
-struct UserInterfaceMenu0 : public UI::Control::Form
+struct TestSelector : public UI::Control::Form
 {
 	UI::Control::Label		TitleText;
 	UI::Control::Button		QuitButton;
 	UI::Control::Button		ReButton;
-	UI::Control::Button		BackButton;
 
-	UI::Control::Button		Menu1Button;
-	UI::Control::Button		Menu2Button;
-	UI::Control::Button		Menu3Button;
+	UI::Control::Button		TileGridButton;
+	UI::Control::Button		TextButton;
+	UI::Control::Button		GraphButton;
 	UI::Control::Button		TestScrollButton;
 	UI::Control::Button		TestListButton;
 	UI::Control::Button		DirectoryNavigatorButton;
 
-	~UserInterfaceMenu0();
-	UserInterfaceMenu0();
+	TestSelector();
 
 	void	QuitFunc(ClickArgs args);
 	void	ReFunc(ClickArgs args);

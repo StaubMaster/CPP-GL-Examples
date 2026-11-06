@@ -1,8 +1,8 @@
-#include "Menu/2.hpp"
+#include "Test/TileGrid.hpp"
 
 
 
-void UserInterfaceMenu2::CheckBoxTile::ClickFunc(ClickArgs args)
+void TestTileGrid::CheckBoxTile::ClickFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
@@ -12,8 +12,7 @@ void UserInterfaceMenu2::CheckBoxTile::ClickFunc(ClickArgs args)
 
 
 
-UserInterfaceMenu2::~UserInterfaceMenu2() { }
-UserInterfaceMenu2::UserInterfaceMenu2()
+TestTileGrid::TestTileGrid()
 	: UI::Control::Form()
 {
 	float yf = 0;
@@ -28,8 +27,8 @@ UserInterfaceMenu2::UserInterfaceMenu2()
 			CheckBoxGrid[y][x].CheckBox.Anchor.Y.AnchorMin(yf);
 			CheckBoxGrid[y][x].Index.X = x;
 			CheckBoxGrid[y][x].Index.Y = y;
-			CheckBoxGrid[y][x].CheckBox.ClickFunc.Assign(&CheckBoxGrid[y][x], &UserInterfaceMenu2::CheckBoxTile::ClickFunc);
-			CheckBoxGrid[y][x].Func.Assign(this, &UserInterfaceMenu2::Func);
+			CheckBoxGrid[y][x].CheckBox.ClickFunc.Assign(&CheckBoxGrid[y][x], &TestTileGrid::CheckBoxTile::ClickFunc);
+			CheckBoxGrid[y][x].Func.Assign(this, &TestTileGrid::Func);
 			xf = CheckBoxGrid[y][x].CheckBox.Anchor.X.GetMinSize();
 			yfn = CheckBoxGrid[y][x].CheckBox.Anchor.Y.GetMinSize();
 			ChildInsert(CheckBoxGrid[y][x].CheckBox);
@@ -42,7 +41,7 @@ UserInterfaceMenu2::UserInterfaceMenu2()
 
 #include <iostream>
 #include "ValueType/_Show.hpp"
-void UserInterfaceMenu2::Func(VectorU2 idx)
+void TestTileGrid::Func(VectorU2 idx)
 {
 	if (idx.X != 0) { CheckBoxGrid[idx.Y][idx.X - 1].CheckBox.Toggle(); }
 	if (idx.X != 6) { CheckBoxGrid[idx.Y][idx.X + 1].CheckBox.Toggle(); }

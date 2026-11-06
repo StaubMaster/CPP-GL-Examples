@@ -23,7 +23,6 @@ class CheckBox : public Base
 
 	public:
 	CheckBox();
-	~CheckBox();
 
 	public:
 	bool	IsChecked();

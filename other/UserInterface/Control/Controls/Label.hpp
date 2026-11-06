@@ -10,11 +10,7 @@ namespace Control
 class Label : public BaseText
 {
 	public:
-	~Label();
 	Label();
-
-	private:
-	void	TextObjectAssignPosition() override;
 };
 };
 };

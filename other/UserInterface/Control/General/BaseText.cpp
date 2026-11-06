@@ -3,96 +3,63 @@
 
 
 
-UI::Control::BaseText::~BaseText()
-{ }
 UI::Control::BaseText::BaseText()
 	: Base()
-	, Text()
-	, TextObject()
-	, TextObjectNewText(false)
-	, TextObjectNewBound(false)
 {
 	float padding = 0;
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
+
+	TextObjectData.AlignMiddleMiddle();
+	TextObjectData.Depth = Depth - 0.001f;
+
+	AlignmentX = UI::Text::Alignment::Min;
+	AlignmentY = UI::Text::Alignment::Min;
+	AlignmentUpdateFlag = true;
 }
 
 
 
 std::string UI::Control::BaseText::GetText() const
 {
-	return Text;
+	return TextObjectData.Text;
 }
 void UI::Control::BaseText::SetText(std::string text)
 {
-	Text = text;
-	TextObjectNewText = true;
-	TextObjectAssign();
+	TextObjectData.Text = text;
 }
 
 
 
-void UI::Control::BaseText::TextObjectAssign()
+void UI::Control::BaseText::AlignmentChangeX(UI::Text::Alignment alignment)
 {
-	if (TextObject.Is())
+	AlignmentX = alignment;
+	AlignmentUpdateRequest();
+}
+void UI::Control::BaseText::AlignmentChangeY(UI::Text::Alignment alignment)
+{
+	AlignmentY = alignment;
+	AlignmentUpdateRequest();
+}
+void UI::Control::BaseText::AlignmentUpdateRequest()
+{
+	AlignmentUpdateFlag = true;
+}
+void UI::Control::BaseText::AlignmentUpdateResolve()
+{
+	if (AlignmentUpdateFlag)
 	{
-		if (TextObjectNewText)
-		{
-			TextObjectAssignText();
-			TextObjectNewText = false;
-		}
-		if (TextObjectNewBound)
-		{
-			TextObjectAssignBound();
-			TextObjectNewBound = false;
-		}
+		AlignmentUpdate();
 	}
 }
-void UI::Control::BaseText::TextObjectAssignText()
+void UI::Control::BaseText::AlignmentUpdate()
 {
-	TextObject.Text() = Text;
-}
-void UI::Control::BaseText::TextObjectAssignBound()
-{
-	TextObjectAssignPosition();
-	/*if (Object.Is())
-	{
-		TextObject.Bound() = Object.Bound().InnerBox(BoxContent);
-	}
-	else
-	{
-		TextObject.Bound() = BoxContent;
-	}*/
-	//TextObject.Bound() = ObjectData.Bound.InnerBox(BoxContent);
-	if (Parent != nullptr)
-	{
-		TextObject.Bound() = Parent -> BoxBoarder.InnerBox(BoxContent);
-	}
-	else
-	{
-		TextObject.Bound() = BoxContent;
-	}
-}
-void UI::Control::BaseText::TextObjectAssignPosition()
-{
-	// Middle
-	TextObject.TextPosition() = BoxContent.Center();
-	/*if (Object.Is())
-	{
-		TextObject.Bound() = Object.Bound().InnerBox(BoxContent);
-	}
-	else
-	{
-		TextObject.Bound() = BoxContent;
-	}*/
-	//TextObject.Bound() = ObjectData.Bound.InnerBox(BoxContent);
-	if (Parent != nullptr)
-	{
-		TextObject.Bound() = Parent -> BoxBoarder.InnerBox(BoxContent);
-	}
-	else
-	{
-		TextObject.Bound() = BoxContent;
-	}
+	TextObjectData.TextAlignmentX = AlignmentX;
+	TextObjectData.TextAlignmentY = AlignmentY;
+
+	TextObjectData.CharacterAlignmentX = AlignmentX;
+	TextObjectData.CharacterAlignmentY = AlignmentY;
+
+	AlignmentUpdateFlag = false;
 }
 
 
@@ -110,46 +77,58 @@ void UI::Control::BaseText::AssignDepth()
 	float offset = Form -> DepthOffset;
 	float layer = Layer;
 
-	if (TextObject.Is())
-	{
-		TextObject.Depth() = -(((layer + (1.0f / 2.0f)) * size) + offset);
-	}
+	TextObjectData.Depth = -(((layer + (1.0f / 2.0f)) * size) + offset);
 }
-
-
 
 void UI::Control::BaseText::BoxUpdate()
 {
 	Base::BoxUpdate();
-	TextObjectNewBound = true;
-	TextObjectAssign();
+
+	VectorF2 & pos = TextObjectData.TextPosition;
+
+	if (AlignmentX == UI::Text::Alignment::Min) { pos.X = BoxContent.Min.X; }
+	if (AlignmentX == UI::Text::Alignment::Mid) { pos.X = BoxContent.Center().X; }
+	if (AlignmentX == UI::Text::Alignment::Max) { pos.X = BoxContent.Max.X; }
+
+	if (AlignmentY == UI::Text::Alignment::Min) { pos.Y = BoxContent.Min.Y; }
+	if (AlignmentY == UI::Text::Alignment::Mid) { pos.Y = BoxContent.Center().Y; }
+	if (AlignmentY == UI::Text::Alignment::Max) { pos.Y = BoxContent.Max.Y; }
+
+	if (Parent != nullptr)
+	{
+		TextObjectData.Bound = Parent -> BoxBoarder.InnerBox(BoxContent);
+	}
+	else
+	{
+		TextObjectData.Bound = BoxContent;
+	}
+}
+void UI::Control::BaseText::Update()
+{
+	AlignmentUpdateResolve();
+	Base::Update();
 }
 
-// is Checking Manager needed ?
+
+#include "UIManager.hpp"
+void UI::Control::BaseText::DisplayPut() const
+{
+	Base::DisplayPut();
+	if (Manager != nullptr)
+	{
+		if (TextObjectData.Display) // should be checked in InstancePut ?
+		{
+			Manager -> TextManager.InstancesPut(TextObjectData);
+		}
+	}
+}
 void UI::Control::BaseText::DisplayShow()
 {
 	Base::DisplayShow();
-	if (!TextObject.Is() && Manager != nullptr)
-	{
-		TextObject.Create();
-
-		// Middle
-		TextObject.TextAlignmentX() = Text::Alignment::Mid;
-		TextObject.TextAlignmentY() = Text::Alignment::Mid;
-		TextObject.CharacterAlignmentX() = Text::Alignment::Mid;
-		TextObject.CharacterAlignmentY() = Text::Alignment::Mid;
-
-		TextObject.Depth() = Depth - 0.001f;
-
-		TextObjectNewText = true;
-		TextObjectNewBound = true;
-	}
+	TextObjectData.Display = true;
 }
 void UI::Control::BaseText::DisplayHide()
 {
 	Base::DisplayHide();
-	if (TextObject.Is() || Manager == nullptr)
-	{
-		TextObject.Delete();
-	}
+	TextObjectData.Display = false;
 }

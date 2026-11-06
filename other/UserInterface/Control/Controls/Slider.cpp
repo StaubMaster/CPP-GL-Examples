@@ -28,8 +28,6 @@ UI::Control::Slider::Slider()
 	ValueRange.Min = VectorF2(0.0f, 0.0f);
 	ValueRange.Max = VectorF2(1.0f, 1.0f);
 }
-UI::Control::Slider::~Slider()
-{ }
 
 
 
@@ -146,9 +144,9 @@ void UI::Control::Slider::AssignDepth()
 	{
 		SliderObject_Depth = -(((layer + (1.0f / 3.0f)) * size) + offset);
 	}
-	if (TextObject.Is())
+	if (TextObjectData.Display)
 	{
-		TextObject.Depth() = -(((layer + (2.0f / 3.0f)) * size) + offset);
+		TextObjectData.Depth = -(((layer + (2.0f / 3.0f)) * size) + offset);
 	}
 }
 
@@ -162,6 +160,7 @@ void UI::Control::Slider::BoxUpdate()
 #include "UIManager.hpp"
 void UI::Control::Slider::DisplayPut() const
 {
+	BaseText::DisplayPut();
 	if (Manager != nullptr && SliderObject_Is)
 	{
 		Inst::Data data;

@@ -1,8 +1,6 @@
 #include "Base.hpp"
 #include "UIManager.hpp"
 
-//#include <iostream>
-
 
 
 void UI::Control::Base::ChangePointers(Base & control)
@@ -434,9 +432,6 @@ void UI::Control::Base::DisplayPutRecursive() const
 void UI::Control::Base::DisplayShow()
 {
 	Display = true;
-	BoxUpdateRequest();
-	ColorUpdateRequest();
-	// Requests made to the Control should be stored while it is not being displayed
 }
 void UI::Control::Base::DisplayHide()
 {

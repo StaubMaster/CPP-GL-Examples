@@ -9,26 +9,26 @@
 
 namespace UI
 {
-
 namespace Control
 {
-
-class Graph : public Base
+class Graph : public Base // GraphLine
 {
 	// multiple Lines per Graph
 	// show Center Line
 	// show Min/Max/Avg
 
+	// Hori / Vert
+	// automatically calculate Center and Magniture
+
 	public:
-	float	Center;
-	float	Magnitude;
+	float	Center = 64.0f;
+	float	Magnitude = 8.0f;
 
 	public:
 	ValueAccumulator<float>		Values;
 	UI::Graph::Object			GraphObject;
 
 	public:
-	~Graph();
 	Graph();
 
 	public:
@@ -37,9 +37,7 @@ class Graph : public Base
 	void	DisplayHide() override;
 
 };
-
 };
-
 };
 
 #endif

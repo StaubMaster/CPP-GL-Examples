@@ -2,8 +2,6 @@
 
 
 
-UI::Control::Graph::~Graph()
-{ }
 UI::Control::Graph::Graph()
 	: UI::Control::Base()
 	, Center(64)

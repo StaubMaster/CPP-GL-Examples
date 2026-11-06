@@ -10,8 +10,8 @@ namespace Control
 class GroupBox : public Base
 {
 	public:
+	virtual ~GroupBox() = default;
 	GroupBox();
-	virtual ~GroupBox();
 };
 };
 };

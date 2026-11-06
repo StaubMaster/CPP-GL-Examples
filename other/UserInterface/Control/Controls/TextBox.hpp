@@ -1,53 +1,26 @@
 #ifndef  UI_CONTROL_TEXTBOX_HPP
 # define UI_CONTROL_TEXTBOX_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/General/BaseText.hpp"
 
-# include "Text/Object.hpp"
+# include "Text/ObjectData.hpp"
 
 namespace UI
 {
 namespace Control
 {
-class TextBox : public Base
+class TextBox : public BaseText
 {
 	public:
-	bool	ReadOnly;
-	bool	MultiLine;
+	bool	ReadOnly = false;
+	bool	MultiLine = false;
 
 	public:
-	UI::Text::Alignment		AlignmentX;
-	UI::Text::Alignment		AlignmentY;
-
-	public:
-	~TextBox();
 	TextBox();
-
-	protected:
-	void	AssignDepth() override;
-	public:
-	void	BoxUpdate() override;
-	void	DisplayShow() override;
-	void	DisplayHide() override;
 
 	public:
 	void	RelayKey(KeyArgs args) override;
 	void	RelayText(TextArgs args) override;
-
-	private:
-	Text::Object	TextObject;
-	void			PutCharactersEntrys();
-	public:
-	void			PutAlignment();
-	private:
-	unsigned int	TextCursor;
-	void			PutCursor();
-
-	private:
-	std::string		Text;
-	public:
-	std::string		GetText() const;
-	void			SetText(std::string text);
 };
 };
 };

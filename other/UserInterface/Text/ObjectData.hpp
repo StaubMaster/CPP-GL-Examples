@@ -17,7 +17,6 @@ struct ObjectData
 {
 	bool	Remove = false;
 	bool	Display = true;
-	// Object. to set Data to null when this gets deleted
 
 	std::string		Text;
 	VectorF2		TextPosition;
@@ -41,7 +40,15 @@ struct ObjectData
 	ObjectData(const ObjectData & other) = default;
 	ObjectData & operator=(const ObjectData & other) = default;
 
-	// put default CharacterSize in TextManager
+	void	AlignTopLeft();
+	void	AlignTopMiddle();
+	void	AlignTopRight();
+	void	AlignMiddleLeft();
+	void	AlignMiddleMiddle();
+	void	AlignMiddleRight();
+	void	AlignBottomLeft();
+	void	AlignBottomMiddle();
+	void	AlignBottomRight();
 };
 };
 };

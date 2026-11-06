@@ -5,14 +5,13 @@
 
 
 
-UserInterfaceContext::~UserInterfaceContext() { }
 UserInterfaceContext::UserInterfaceContext()
 	: ContextBase()
 	, UIManager()
-	, Menu0()
-	, Menu1()
-	, Menu2()
-	, Menu3()
+	, Selector()
+	, TileGrid()
+	, Text()
+	, Graph()
 	, TestScroll()
 	, TestList()
 	, DirectoryNavigator()
@@ -24,29 +23,28 @@ UserInterfaceContext::UserInterfaceContext()
 
 void UserInterfaceContext::Make()
 {
-	UIManager.Window.ChildInsert(Menu0);
-	UIManager.Window.ChildInsert(Menu1);
-	UIManager.Window.ChildInsert(Menu2);
-	UIManager.Window.ChildInsert(Menu3);
+	UIManager.Window.ChildInsert(Selector);
+	UIManager.Window.ChildInsert(TileGrid);
+	UIManager.Window.ChildInsert(Text);
+	UIManager.Window.ChildInsert(Graph);
 	UIManager.Window.ChildInsert(TestScroll);
 	UIManager.Window.ChildInsert(TestList);
 	UIManager.Window.ChildInsert(DirectoryNavigator);
 	UIManager.Window.DepthUpdateRequest();
 
-	Menu1.Hide();
-	Menu2.Hide();
-	Menu3.Hide();
-	Menu3.Hide();
+	TileGrid.Hide();
+	Text.Hide();
+	Graph.Hide();
 	TestScroll.Hide();
 	TestList.Hide();
 	DirectoryNavigator.Hide();
 
-	Menu0.Menu1Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu1);
-	Menu0.Menu2Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu2);
-	Menu0.Menu3Button.ClickFunc.Assign(this, &UserInterfaceContext::ToggleMenu3);
-	Menu0.TestScrollButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestScroll);
-	Menu0.TestListButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestList);
-	Menu0.DirectoryNavigatorButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleDirectoryNavigator);
+	Selector.TileGridButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTileGrid);
+	Selector.TextButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleText);
+	Selector.GraphButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleGraph);
+	Selector.TestScrollButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestScroll);
+	Selector.TestListButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleTestList);
+	Selector.DirectoryNavigatorButton.ClickFunc.Assign(this, &UserInterfaceContext::ToggleDirectoryNavigator);
 
 	DirectoryNavigator.Change(MediaDirectory);
 	//DirectoryNavigator.Change(DirectoryInfo(MediaDirectory.Path.ToAbsolute()));
@@ -65,41 +63,33 @@ static void MenuToggleVisible(UI::Control::Form & form)
 		form.Show();
 	}
 }
+static void MenuToggleVisible(UI::Control::Form & form, ClickArgs args)
+{
+	if (args.Action == Action::Press)
+	{
+		MenuToggleVisible(form);
+	}
+}
 
-void UserInterfaceContext::ToggleMenu1(ClickArgs args)
+void UserInterfaceContext::ToggleTileGrid(ClickArgs args)
 {
-	if (args.Action == Action::Press)
-	{
-		MenuToggleVisible(Menu1);
-	}
+	MenuToggleVisible(TileGrid, args);
 }
-void UserInterfaceContext::ToggleMenu2(ClickArgs args)
+void UserInterfaceContext::ToggleText(ClickArgs args)
 {
-	if (args.Action == Action::Press)
-	{
-		MenuToggleVisible(Menu2);
-	}
+	MenuToggleVisible(Text, args);
 }
-void UserInterfaceContext::ToggleMenu3(ClickArgs args)
+void UserInterfaceContext::ToggleGraph(ClickArgs args)
 {
-	if (args.Action == Action::Press)
-	{
-		MenuToggleVisible(Menu3);
-	}
+	MenuToggleVisible(Graph, args);
 }
 void UserInterfaceContext::ToggleTestScroll(ClickArgs args)
 {
-	if (args.Action == Action::Press)
-	{
-		MenuToggleVisible(TestScroll);
-	}
+	MenuToggleVisible(TestScroll, args);
 }
 void UserInterfaceContext::ToggleTestList(ClickArgs args)
 {
-	if (args.Action == Action::Press)
-	{
-		MenuToggleVisible(TestList);
-	}
+	MenuToggleVisible(TestList, args);
 }
 void UserInterfaceContext::ToggleDirectoryNavigator(ClickArgs args)
 {
@@ -162,6 +152,13 @@ void UserInterfaceContext::Resize(DisplaySize display_size)
 {
 	UIManager.Resize(display_size);
 }
+
+/* make Function::Relay ?
+	Container of Function Pointers
+	calls each in order
+	maybe return bool to stop relaying ?
+*/
+
 void UserInterfaceContext::MouseMove(MoveArgs args)		{ UIManager.MouseMove(args); }
 void UserInterfaceContext::MouseClick(ClickArgs args)	{ UIManager.MouseClick(args); }
 void UserInterfaceContext::MouseScroll(ScrollArgs args)	{ UIManager.MouseScroll(args); }
@@ -172,17 +169,14 @@ void UserInterfaceContext::KeyBoardKey(KeyArgs args)
 	{
 		if (args.Action == Action::Press)
 		{
-			Menu1.Hide();
-			Menu2.Hide();
-			Menu3.Hide();
+			TileGrid.Hide();
+			Text.Hide();
+			Graph.Hide();
 			TestScroll.Hide();
 			TestList.Hide();
 			DirectoryNavigator.Hide();
 		}
 	}
-	else
-	{
-		UIManager.KeyBoardKey(args);
-	}
+	UIManager.KeyBoardKey(args);
 }
 void UserInterfaceContext::KeyBoardText(TextArgs args)	{ UIManager.KeyBoardText(args); }

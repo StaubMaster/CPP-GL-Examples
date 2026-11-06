@@ -2,6 +2,8 @@
 # define VALUE_ACCUMULATOR_HPP
 
 // take Count as template Parameter ?
+
+// reaname and put in Container
 template<typename ValueType>
 class ValueAccumulator
 {
