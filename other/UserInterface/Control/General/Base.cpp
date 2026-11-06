@@ -401,7 +401,7 @@ void UI::Control::Base::ColorUpdateRequestRecursive()
 
 
 
-#include "Graphics/InstData.hpp"
+#include "Graphics/Inst/Data.hpp"
 void UI::Control::Base::DisplayPut() const
 {
 	if (Manager != nullptr && Display)

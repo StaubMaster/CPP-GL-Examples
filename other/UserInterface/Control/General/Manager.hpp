@@ -5,14 +5,13 @@
 # include "Graphics/VertexArray/MainInst.hpp"
 # include "Graphics/Buffer/Array.hpp"
 
+# include "Graphics/Main/Layout.hpp"
+# include "Graphics/Inst/Layout.hpp"
 # include "Graphics/Layout.hpp"
-# include "Graphics/MainLayout.hpp"
-# include "Graphics/InstLayout.hpp"
 
-
+# include "Graphics/Main/Data.hpp"
+# include "Graphics/Inst/Data.hpp"
 # include "Generics/Container/Binary.hpp"
-# include "Graphics/MainData.hpp"
-# include "Graphics/InstData.hpp"
 
 
 

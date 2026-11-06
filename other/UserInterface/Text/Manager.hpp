@@ -1,20 +1,19 @@
 #ifndef  UI_TEXT_MANAGER_HPP
 # define UI_TEXT_MANAGER_HPP
 
-# include "DataMain.hpp"
-# include "DataInst.hpp"
+# include "Graphics/Main/Data.hpp"
+# include "Graphics/Inst/Data.hpp"
 
-# include "TextData.hpp"
-# include "FontData.hpp"
-
-# include "Layout/Uniform.hpp"
-# include "Layout/AttributeMain.hpp"
-# include "Layout/AttributeInst.hpp"
+# include "Graphics/Main/Layout.hpp"
+# include "Graphics/Inst/Layout.hpp"
+# include "Graphics/Layout.hpp"
 
 # include "Graphics/Shader/Base.hpp"
-
 # include "Graphics/VertexArray/MainInst.hpp"
 # include "Graphics/Buffer/Array.hpp"
+
+# include "Graphics/TextData.hpp"
+# include "Graphics/FontData.hpp"
 
 # include "Generics/Container/Binary.hpp"
 # include "Generics/Container/Array.hpp"
@@ -53,23 +52,30 @@ class Manager
 
 
 	public:
-	::Shader::Base				Shader;
-	UI::Text::LayoutUniform		ShaderLayout;
+	::Shader::Base		Shader;
+	UI::Text::Layout	ShaderLayout;
 
-	VertexArray::MainInst				Buffer;
-	UI::Text::LayoutAttributeMain		BufferLayoutMain;
-	UI::Text::LayoutAttributeInst		BufferLayoutInst;
+	VertexArray::MainInst		Buffer;
+	UI::Text::Main::Layout		BufferLayoutMain;
+	UI::Text::Inst::Layout		BufferLayoutInst;
 
-	Container::Binary<UI::Text::ObjectData*>				ObjectDatas;
-	Container::BlockLinkedList<1024, UI::Text::DataInst>	InstancesBlock;
-	Container::Array<UI::Text::DataInst>					InstancesArray;
+	Container::Binary<UI::Text::ObjectData *>				ObjectDatas;
+
+	Container::BlockLinkedList<1024, UI::Text::Inst::Data>	InstancesBlock;
+	Container::Array<UI::Text::Inst::Data>					InstancesArray;
 
 	UI::Text::Font *			Font = nullptr;
 	Texture::Array2D			FontTexture;
-	Container::Binary<BoxF2>	FontPalletsList;
+
+	// these are where all the Characters are in the Font
+	GL::BlockBinding			FontBinding = 0;
+	FontBufferData				FontData;
 	::Buffer::Uniform			FontBuffer;
 
-	Container::Binary<TextData>		TextsList;
+	// these are per Text Object (Position, Size, Bound, Color)
+	GL::BlockBinding				TextsBinding = 1;
+	unsigned int					TextsCount = 0;
+	TextsBufferData					TextsData;
 	::Buffer::Uniform				TextsBuffer;
 
 

@@ -5,12 +5,15 @@
 # include "ValueType/Box/F2.hpp"
 # include "ValueType/Color/F4.hpp"
 
+namespace Container
+{
+template<typename TypeItem> struct Array;
+};
+
 namespace UI
 {
-
 namespace Text
 {
-
 struct TextData
 {
 	BoxF2		Bound;
@@ -20,16 +23,12 @@ struct TextData
 	float		Depth;
 	float		Padding[1];
 };
-
-const static unsigned int	TextsLimit = 64;
-
 struct TextsBufferData
 {
-	TextData	Array[TextsLimit];
+	const static unsigned int	Limit = 64;
+	TextData	Array[Limit];
 };
-
 };
-
 };
 
 #endif

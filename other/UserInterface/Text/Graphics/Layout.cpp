@@ -1,8 +1,8 @@
-#include "Text/Layout/Uniform.hpp"
+#include "Layout.hpp"
 
 
 
-UI::Text::LayoutUniform::LayoutUniform()
+UI::Text::Layout::Layout()
 	: Uniform::Layout()
 	, DisplaySize(*this, "DisplaySize")
 	, Pallets(*this, "IPallets")

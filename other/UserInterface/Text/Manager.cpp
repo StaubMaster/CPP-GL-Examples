@@ -45,21 +45,21 @@ UI::Text::Manager::Manager()
 	Buffer.InstBuffer.AssignLayout(BufferLayoutInst);
 }
 
+
+
 void UI::Text::Manager::ChangeMedia(const DirectoryInfo & media_dir)
 {
-	{
-		Shader.Change({
-			media_dir.File("Shaders/UI/Text.vert"),
-			media_dir.File("Shaders/UI/Text.frag"),
-		});
-	}
-	{
-		BufferLayoutMain.Pos.Change(0);
-		BufferLayoutInst.TextPos.Change(1);
-		BufferLayoutInst.CharIdx.Change(2);
-		BufferLayoutInst.TextIdx.Change(3);
-	}
+	Shader.Change({
+		media_dir.File("Shaders/UI/Text.vert"),
+		media_dir.File("Shaders/UI/Text.frag"),
+	});
+
+	BufferLayoutMain.Pos.Change(0);
+	BufferLayoutInst.TextPos.Change(1);
+	BufferLayoutInst.CharIdx.Change(2);
+	BufferLayoutInst.TextIdx.Change(3);
 }
+
 #include "Font/Font.hpp"
 void UI::Text::Manager::InitFont()
 {
@@ -69,18 +69,23 @@ void UI::Text::Manager::InitFont()
 	{
 		for (unsigned int i = 0; i < Font -> CharacterRanges[j] -> Characters.Count(); i++)
 		{
-			FontPalletsList.Insert(Font -> CharacterRanges[j] -> Characters[i].Box);
+			FontData.Array[idx] = Font -> CharacterRanges[j] -> Characters[i].Box;
 			idx++;
 		}
 	}
 
 	for (unsigned int i = 0; i < Font -> Characters.Count(); i++)
 	{
-		FontPalletsList.Insert(Font -> Characters[i].Box);
+		FontData.Array[idx] = Font -> Characters[i].Box;
 		idx++;
 	}
 
-	FontPalletsList.Insert(Font -> DefaultCharacter.Box);
+	FontData.Array[idx] = Font -> DefaultCharacter.Box;
+
+	if (idx > FontData.Limit)
+	{
+		throw "UI::Text::Manager::InitFont() Font Character Limit exceeded";
+	}
 }
 
 
@@ -230,7 +235,7 @@ void UI::Text::Manager::InstancesClear()
 #ifdef TELEMETRY_TIME
 	WatchClear.Start();
 #endif
-	TextsList.Clear();
+	TextsCount = 0;
 	InstancesBlock.Clear();
 	InstancesArray.Clear();
 #ifdef TELEMETRY_TIME
@@ -376,7 +381,7 @@ void UI::Text::Manager::InstancesPut(const ObjectData & obj)
 #ifdef TELEMETRY_TIME
 		WatchNext0.Start();
 #endif
-		UI::Text::DataInst & data = InstancesBlock.MakeNext();
+		UI::Text::Inst::Data & data = InstancesBlock.MakeNext();
 #ifdef TELEMETRY_TIME
 		WatchNext0.Stop();
 #endif
@@ -405,7 +410,7 @@ void UI::Text::Manager::InstancesPut(const ObjectData & obj)
 #ifdef TELEMETRY_TIME
 		WatchAssign.Start();
 #endif
-		data.TextIdx = TextsList.Count();
+		data.TextIdx = TextsCount; // check for Limit
 #ifdef TELEMETRY_TIME
 		WatchAssign.Stop();
 #endif
@@ -442,20 +447,23 @@ void UI::Text::Manager::InstancesPut(const ObjectData & obj)
 			cursor = obj.TextPosition + (obj.CharacterSize * (rel_txt + rel_chr));
 		}
 
-		UI::Text::DataInst & data = InstancesBlock.MakeNext();
+		UI::Text::Inst::Data & data = InstancesBlock.MakeNext();
 		data.TextPos = cursor;
 		data.CharIdx = Font -> FindCodeIndex('^');
-		data.TextIdx = TextsList.Count();
+		data.TextIdx = TextsCount; // checkForLimit
 		InstancesBlock.Next();
 	}
 
-	TextData data;
-	data.Bound = obj.Bound;
-	data.Color0 = obj.Color0;
-	data.Color1 = obj.Color1;
-	data.CharSize = obj.CharacterSize;
-	data.Depth = obj.Depth;
-	TextsList.Insert(data);
+	if (TextsCount < TextsData.Limit)
+	{
+		TextData & data = TextsData.Array[TextsCount];
+		data.Bound = obj.Bound;
+		data.Color0 = obj.Color0;
+		data.Color1 = obj.Color1;
+		data.CharSize = obj.CharacterSize;
+		data.Depth = obj.Depth;
+	}
+	TextsCount++;
 
 #ifdef TELEMETRY_TIME
 	WatchLoop.Stop();
@@ -466,37 +474,47 @@ void UI::Text::Manager::InstancesPut(const ObjectData & obj)
 
 void UI::Text::Manager::GraphicsCreate()
 {
-	if (!GraphicsExist)
-	{
-		Shader.Create();
-		Buffer.Create();
-		FontTexture.Create();
-		FontBuffer.Create();
-		TextsBuffer.Create();
-		GraphicsExist = true;
-		TextureAssigned = false;
-		Buffer.MainBuffer.DataWant = true;
-		Buffer.MainBuffer.DataHave = false;
-		Buffer.InstBuffer.DataWant = false;
-		Buffer.InstBuffer.DataHave = false;
-	}
+	if (GraphicsExist) { return; }
+
+	Shader.Create();
+	Buffer.Create();
+	FontTexture.Create();
+	FontBuffer.Create();
+	TextsBuffer.Create();
+	
+	GraphicsExist = true;
+
+	TextureAssigned = false;
+	Buffer.MainBuffer.DataWant = true;
+	Buffer.MainBuffer.DataHave = false;
+	Buffer.InstBuffer.DataWant = false;
+	Buffer.InstBuffer.DataHave = false;
 }
 void UI::Text::Manager::GraphicsDelete()
 {
-	if (GraphicsExist)
-	{
-		Shader.Delete();
-		Buffer.Delete();
-		FontTexture.Delete();
-		FontBuffer.Delete();
-		TextsBuffer.Delete();
-		GraphicsExist = false;
-	}
+	if (!GraphicsExist) { return; }
+
+	Shader.Delete();
+	Buffer.Delete();
+	FontTexture.Delete();
+	FontBuffer.Delete();
+	TextsBuffer.Delete();
+
+	GraphicsExist = false;
 }
 
 void UI::Text::Manager::GraphicsInit()
 {
 	Buffer.Init();
+
+	FontBuffer.Bind();
+	FontBuffer.BindBase(FontBinding);
+
+	TextsBuffer.Bind();
+	TextsBuffer.BindBase(TextsBinding);
+
+	ShaderLayout.Bind(ShaderLayout.Pallets, FontBinding);
+	ShaderLayout.Bind(ShaderLayout.Texts, TextsBinding);
 }
 
 void UI::Text::Manager::TextureAssign()
@@ -516,14 +534,14 @@ void UI::Text::Manager::BufferMainUpdateData()
 {
 	if (!GraphicsExist || !Buffer.MainBuffer.DataWant) { return; }
 
-	Container::Binary<UI::Text::DataMain> data;
+	Container::Binary<UI::Text::Main::Data> data;
 
-	data.Insert(UI::Text::DataMain(VectorF2(-1, -1)));
-	data.Insert(UI::Text::DataMain(VectorF2(-1, +1)));
-	data.Insert(UI::Text::DataMain(VectorF2(+1, -1)));
-	data.Insert(UI::Text::DataMain(VectorF2(+1, -1)));
-	data.Insert(UI::Text::DataMain(VectorF2(-1, +1)));
-	data.Insert(UI::Text::DataMain(VectorF2(+1, +1)));
+	data.Insert(UI::Text::Main::Data(VectorF2(-1, -1)));
+	data.Insert(UI::Text::Main::Data(VectorF2(-1, +1)));
+	data.Insert(UI::Text::Main::Data(VectorF2(+1, -1)));
+	data.Insert(UI::Text::Main::Data(VectorF2(+1, -1)));
+	data.Insert(UI::Text::Main::Data(VectorF2(-1, +1)));
+	data.Insert(UI::Text::Main::Data(VectorF2(+1, +1)));
 
 	Buffer.MainBuffer.DataWant = false;
 	Buffer.MainBuffer.DataHave = true;
@@ -545,76 +563,23 @@ void UI::Text::Manager::BufferInstUpdateData()
 
 
 
-#include <iostream>
 void UI::Text::Manager::Draw()
 {
 	if (!GraphicsExist) { return; }
 
-	std::cout << "{\n";
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	Shader.Bind();
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	Buffer.Bind();
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
-	//Buffer.InitAttributes();
 
-	// do this stuff once / somewhere else
-	// check for Limit, display error, dont throw
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
-	{
-		const unsigned int binding = 0;
-		FontBuffer.Bind();
-		FontBuffer.BindBase(binding);
-		FontBufferData data;
-		for (unsigned int i = 0; i < FontPalletsList.Count(); i++)
-		{
-			data.Array[i] = FontPalletsList[i];
-		}
-		FontBuffer.DataFull(Container::Void(data));
-		ShaderLayout.Bind(ShaderLayout.Pallets, binding);
-	}
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
-	{
-		std::cout << "{\n";
-		std::cout << ":" << __LINE__ << '\n';
-		const unsigned int binding = 1;
-		std::cout << ":" << __LINE__ << '\n';
-		TextsBuffer.BindBase(binding);
-		std::cout << ":" << __LINE__ << '\n';
-		TextsBufferData data;
-		std::cout << ":" << __LINE__ << '\n';
-		std::cout << "Count: " << TextsList.Count() << '\n';
-		for (unsigned int i = 0; i < TextsList.Count(); i++)
-		{
-			//std::cout << '[' << i << ']' << '\n';
-			data.Array[i] = TextsList[i];
-		}
-		std::cout << ":" << __LINE__ << '\n';
-		TextsBuffer.DataFull(Container::Void(data));
-		std::cout << ":" << __LINE__ << '\n';
-		ShaderLayout.Bind(ShaderLayout.Texts, binding);
-		std::cout << ":" << __LINE__ << '\n';
-		std::cout << "}\n";
-	}
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
+	FontBuffer.DataFull(Container::Void(FontData));
+	TextsBuffer.DataFull(Container::Void(TextsData));
 
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	FontTexture.Bind();
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	TextureAssign();
 
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	BufferMainUpdateData();
-
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	BufferInstUpdateData();
 
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	FontBuffer.Bind();
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	TextsBuffer.Bind();
-	std::cout << "UI::Text::Manager::Draw():" << __LINE__ << '\n';
 	Buffer.Draw();
-
-	std::cout << "}\n";
 }

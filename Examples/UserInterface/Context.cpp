@@ -129,36 +129,43 @@ void UserInterfaceContext::Free()
 
 
 
-#include <iostream>
+#include "Text/ObjectData.hpp"
 void UserInterfaceContext::Frame(FrameTime frame_time)
 {
 	(void)frame_time;
-	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
+
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
-	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
 	UIManager.Update();
-	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
-	/*UIManager.Update()
-		update Depth automatically
-			instead of using range ]0;1[
-			just use 0 to n
-			disable depth clamp
-			keep depth test
-	*/
-	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
+
+	UIManager.GraphicsClear();
+	/*{
+		UI::Text::ObjectData data;
+		data.Text = "TEST\ntest";
+		data.TextPosition = window.Size.Buffer.Half;
+		data.TextAlignmentX = UI::Text::Alignment::Mid;
+		data.TextAlignmentY = UI::Text::Alignment::Mid;
+		data.CharacterSize = VectorF2(128);
+		data.CharacterAlignmentX = UI::Text::Alignment::Mid;
+		data.CharacterAlignmentY = UI::Text::Alignment::Mid;
+		data.Bound = BoxF2(VectorF2(), window.Size.Buffer.Full);
+		data.Color0 = ColorF4(1, 1, 1);
+		data.Color1 = ColorF4(0, 0, 0);
+		data.Depth = 0.5f;
+		UIManager.TextManager.InstancesPut(data);
+	}*/
 	UIManager.GraphicsMake();
-	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
+	UIManager.GraphicsDone();
+
 	UIManager.GraphicsDraw();
-	std::cout << "UserInterfaceContext::Frame():" << __LINE__ << '\n';
 }
 void UserInterfaceContext::Resize(DisplaySize display_size)
 {
 	UIManager.Resize(display_size);
 }
-void UserInterfaceContext::MouseMove(MoveArgs args) { UIManager.MouseMove(args); }
-void UserInterfaceContext::MouseClick(ClickArgs args) { UIManager.MouseClick(args); }
-void UserInterfaceContext::MouseScroll(ScrollArgs args) { UIManager.MouseScroll(args); }
-void UserInterfaceContext::MouseDrag(DragArgs args) { UIManager.MouseDrag(args); }
+void UserInterfaceContext::MouseMove(MoveArgs args)		{ UIManager.MouseMove(args); }
+void UserInterfaceContext::MouseClick(ClickArgs args)	{ UIManager.MouseClick(args); }
+void UserInterfaceContext::MouseScroll(ScrollArgs args)	{ UIManager.MouseScroll(args); }
+void UserInterfaceContext::MouseDrag(DragArgs args)		{ UIManager.MouseDrag(args); }
 void UserInterfaceContext::KeyBoardKey(KeyArgs args)
 {
 	if (args.Key == Keys::Escape)
@@ -178,4 +185,4 @@ void UserInterfaceContext::KeyBoardKey(KeyArgs args)
 		UIManager.KeyBoardKey(args);
 	}
 }
-void UserInterfaceContext::KeyBoardText(TextArgs args) { UIManager.KeyBoardText(args); }
+void UserInterfaceContext::KeyBoardText(TextArgs args)	{ UIManager.KeyBoardText(args); }

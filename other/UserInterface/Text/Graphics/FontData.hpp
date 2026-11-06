@@ -5,19 +5,14 @@
 
 namespace UI
 {
-
 namespace Text
 {
-
-const static unsigned int	PalletsLimit = 128;
-
 struct FontBufferData
 {
-	BoxF2	Array[PalletsLimit];
+	const static unsigned int	Limit = 128;
+	BoxF2	Array[Limit];
 };
-
 };
-
 };
 
 #endif

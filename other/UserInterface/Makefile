@@ -8,11 +8,12 @@ FILES := \
 	Anchor1D.cpp \
 	Anchor2D.cpp \
 \
-	Control/General/Graphics/MainData.cpp \
-	Control/General/Graphics/InstData.cpp \
-	Control/General/Graphics/MainLayout.cpp \
-	Control/General/Graphics/InstLayout.cpp \
+	Control/General/Graphics/Main/Data.cpp \
+	Control/General/Graphics/Main/Layout.cpp \
+	Control/General/Graphics/Inst/Data.cpp \
+	Control/General/Graphics/Inst/Layout.cpp \
 	Control/General/Graphics/Layout.cpp \
+	\
 	Control/General/Manager.cpp \
 	Control/General/Base.cpp \
 	Control/General/BaseText.cpp \
@@ -29,11 +30,12 @@ FILES := \
 	Control/Controls/ScrollBox.cpp \
 	Control/Controls/ListBox.cpp \
 \
-	Text/DataMain.cpp \
-	Text/DataInst.cpp \
-	Text/Layout/Uniform.cpp \
-	Text/Layout/AttributeMain.cpp \
-	Text/Layout/AttributeInst.cpp \
+	Text/Graphics/Main/Data.cpp \
+	Text/Graphics/Main/Layout.cpp \
+	Text/Graphics/Inst/Data.cpp \
+	Text/Graphics/Inst/Layout.cpp \
+	Text/Graphics/Layout.cpp \
+	\
 	Text/Manager.cpp \
 	Text/ObjectData.cpp \
 	Text/Object.cpp \
@@ -43,6 +45,7 @@ FILES := \
 	Graph/ShaderLayout.cpp \
 	Graph/BufferLayout.cpp \
 	Graph/BufferData.cpp \
+	\
 	Graph/Manager.cpp \
 	Graph/ObjectData.cpp \
 	Graph/Object.cpp \

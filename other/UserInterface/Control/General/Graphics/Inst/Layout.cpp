@@ -1,10 +1,10 @@
-#include "InstLayout.hpp"
-#include "InstData.hpp"
+#include "Layout.hpp"
+#include "Data.hpp"
 
 
 
 UI::Control::Inst::Layout::Layout()
-	: ::Attribute::Layout(1, sizeof(Inst::Data))
+	: ::Attribute::Layout(1, sizeof(Data))
 	, Box(*this)
 	, Layer(*this)
 	, Color(*this)

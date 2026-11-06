@@ -25,7 +25,7 @@ struct UserInterfaceContext : public ContextBase
 	
 	void	Resize(DisplaySize display_size) override;
 	void	Frame(FrameTime frame_time) override;
-	
+
 	void	MouseMove(MoveArgs args) override;
 	void	MouseClick(ClickArgs args) override;
 	void	MouseScroll(ScrollArgs args) override;

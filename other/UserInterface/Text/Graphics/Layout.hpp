@@ -1,5 +1,5 @@
-#ifndef  UI_TEXT_LAYOUT_UNIFORM_HPP
-# define UI_TEXT_LAYOUT_UNIFORM_HPP
+#ifndef  UI_TEXT_GRAPHICS_LAYOUT_HPP
+# define UI_TEXT_GRAPHICS_LAYOUT_HPP
 
 # include "Graphics/Uniform/General/Layout.hpp"
 # include "Graphics/Uniform/_Include.hpp"
@@ -7,24 +7,18 @@
 
 namespace UI
 {
-
 namespace Text
 {
-
-class LayoutUniform : public Uniform::Layout
+struct Layout : public Uniform::Layout
 {
-	public:
 	Uniform::DisplaySize		DisplaySize;
 
 	Uniform::Buffer		Pallets;
 	Uniform::Buffer		Texts;
 
-	public:
-	LayoutUniform();
+	Layout();
 };
-
 };
-
 };
 
 #endif

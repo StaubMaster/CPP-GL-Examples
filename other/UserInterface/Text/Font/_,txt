@@ -1,0 +1,7 @@
+
+Some Characters show bits of Neighbouring Characters
+most noticable on top
+
+this is probably due to floating point rounding
+
+try to round Boxes a bit to prevent this ?
