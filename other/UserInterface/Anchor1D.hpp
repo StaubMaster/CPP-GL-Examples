@@ -114,14 +114,14 @@ struct Anchor1D
 
 
 	public:
-	float GetSize();
-//	float GetHalfSize();
-	float GetMinDist();
-	float GetMinSize();
-	float GetMaxDist();
-	float GetMaxSize();
-//	float GetNormalCenter();
-//	float GetCenter();
+	float GetSize() const;
+//	float GetHalfSize() const;
+	float GetMinDist() const;
+	float GetMinSize() const;
+	float GetMaxDist() const;
+	float GetMaxSize() const;
+//	float GetNormalCenter() const;
+//	float GetCenter() const;
 
 	public:
 	void SetSize(float val);
@@ -143,12 +143,19 @@ struct Anchor1D
 	void	AnchorBoth(float min, float max);
 	// Anchor Center
 
+	// InnerBox
+	// OuterBox
+
 	private:
-	void	CalculateSize(float ParentSize);
-	void	CalculateNormalCenter(float ParentSize);
+	void	ChangeO_Size(float sizeO);
+	void	ChangeO_NormalCenter(float sizeO);
+
 	public:
-	BoxF1	Calculate(BoxF1 Parent);
-	void	Calculate(BoxF1 Parent, BoxF1 box);
+	void	UpdateO(const BoxF1 & boxO);
+	void	UpdateO(const BoxF1 & boxO, const BoxF1 & boxI);
+
+	public:
+	BoxF1	ToInnerBox(const BoxF1 & boxO) const;
 };
 
 #endif

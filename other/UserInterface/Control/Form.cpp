@@ -23,21 +23,20 @@ void UI::Control::Form::AssignPointers(Base & control)
 
 	Depth_ = -((layer * size) + offset);
 }*/
-float UI::Control::Form::Depth() const
+/*float UI::Control::Form::Depth() const
 {
 	if (Window == nullptr) { return 0.0f; }
+	if (Base::Form == nullptr) { return 0.0f; }
 
 	const float & size = Window -> DepthSize;
-	const float & offset = DepthOffset;
+	const float & offset = Base::Form -> DepthOffset;
 	float layer = Layer();
 
 	return -((layer * size) + offset);
-}
+}*/
 
 
 
-UI::Control::Form::~Form()
-{ }
 UI::Control::Form::Form()
 	: Base()
 	, IsMovable(true)
@@ -56,17 +55,55 @@ UI::Control::Form::Form()
 
 
 
-void UI::Control::Form::BoxUpdate()
+void UI::Control::Form::AnchorUpdate()
 {
 	if (Window == nullptr) { return; }
 
-	BoxDisplay = Anchor.Calculate(Window -> BoxContent);
+	Anchor.UpdateO(Window -> BoxContent());
 
-	BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
-	BoxBoarder.Max = BoxDisplay.Max - AnchorBoarder.Max;
+	AnchorUpdateIsRequested = false;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> AnchorUpdateRequest();
+	}
+}
 
-	BoxContent.Min = BoxBoarder.Min + AnchorPadding.Min;
-	BoxContent.Max = BoxBoarder.Max - AnchorPadding.Max;
+/*void UI::Control::Form::BoxUpdate()
+{
+	if (Window == nullptr) { return; }
+
+	Anchor.UpdateO(Window -> BoxContent());
+//	Anchor.UpdateO(Window -> BoxContent);
+//	BoxDisplay = Anchor.ToInnerBox(Window -> BoxContent);
+//
+//	BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
+//	BoxBoarder.Max = BoxDisplay.Max - AnchorBoarder.Max;
+//
+//	BoxContent.Min = BoxBoarder.Min + AnchorPadding.Min;
+//	BoxContent.Max = BoxBoarder.Max - AnchorPadding.Max;
+}*/
+BoxF2 UI::Control::Form::BoxDisplay() const
+{
+	if (Window == nullptr) { return BoxF2(); }
+	return Anchor.ToInnerBox(Window -> BoxContent());
+}
+BoxF2 UI::Control::Form::BoxBoarder() const
+{
+	if (Window == nullptr) { return BoxF2(); }
+	BoxF2 box = BoxDisplay();
+	return BoxF2(
+		box.Min + AnchorBoarder.Min,
+		box.Max - AnchorBoarder.Max
+	);
+}
+BoxF2 UI::Control::Form::BoxContent() const
+{
+	if (Window == nullptr) { return BoxF2(); }
+	BoxF2 box = BoxBoarder();
+	return BoxF2(
+		box.Min + AnchorPadding.Min,
+		box.Max - AnchorPadding.Max
+	);
 }
 
 
@@ -74,13 +111,13 @@ void UI::Control::Form::BoxUpdate()
 UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 mouse) const
 {
 	BoxF2 BoxBoarder;
-	BoxBoarder.Min = BoxDisplay.Min + 10.0f;
-	BoxBoarder.Max = BoxDisplay.Max - 10.0f;
+	BoxBoarder.Min = BoxDisplay().Min + 10.0f;
+	BoxBoarder.Max = BoxDisplay().Max - 10.0f;
 
-	BoxF2 MinX_Box(VectorF2(BoxDisplay.Min.X, BoxDisplay.Min.Y), VectorF2(BoxBoarder.Min.X, BoxDisplay.Max.Y));
-	BoxF2 MaxX_Box(VectorF2(BoxBoarder.Max.X, BoxDisplay.Min.Y), VectorF2(BoxDisplay.Max.X, BoxDisplay.Max.Y));
-	BoxF2 MinY_Box(VectorF2(BoxDisplay.Min.X, BoxDisplay.Min.Y), VectorF2(BoxDisplay.Max.X, BoxBoarder.Min.Y));
-	BoxF2 MaxY_Box(VectorF2(BoxDisplay.Min.X, BoxBoarder.Max.Y), VectorF2(BoxDisplay.Max.X, BoxDisplay.Max.Y));
+	BoxF2 MinX_Box(VectorF2(BoxDisplay().Min.X, BoxDisplay().Min.Y), VectorF2(BoxBoarder  .Min.X, BoxDisplay().Max.Y));
+	BoxF2 MaxX_Box(VectorF2(BoxBoarder  .Max.X, BoxDisplay().Min.Y), VectorF2(BoxDisplay().Max.X, BoxDisplay().Max.Y));
+	BoxF2 MinY_Box(VectorF2(BoxDisplay().Min.X, BoxDisplay().Min.Y), VectorF2(BoxDisplay().Max.X, BoxBoarder  .Min.Y));
+	BoxF2 MaxY_Box(VectorF2(BoxDisplay().Min.X, BoxBoarder  .Max.Y), VectorF2(BoxDisplay().Max.X, BoxDisplay().Max.Y));
 
 	bool MinX_Hovering = MinX_Box.ContainsExclusive(mouse).All(true);
 	bool MinY_Hovering = MinY_Box.ContainsExclusive(mouse).All(true);
@@ -121,8 +158,8 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 		// when resizing, keep other side
 
 		BoxF2 other_box;
-		other_box.Min = (Parent -> BoxContent.Min) + AnchorMargin.Min;
-		other_box.Max = (Parent -> BoxContent.Max) - AnchorMargin.Max;
+		other_box.Min = (Parent -> BoxContent().Min) + AnchorMargin.Min;
+		other_box.Max = (Parent -> BoxContent().Max) - AnchorMargin.Max;
 
 		Bool2 limit_min = box.Min <= other_box.Min;
 		Bool2 limit_max = box.Max >= other_box.Max;
@@ -155,8 +192,9 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 
 		Anchor.X.Anchor = anchor_type_x;
 		Anchor.Y.Anchor = anchor_type_y;
-		Anchor.Calculate(Parent -> BoxContent, box);
-		BoxUpdateRequestRecursive();
+		Anchor.UpdateO(Parent -> BoxContent(), box);
+		//BoxUpdateRequestRecursive();
+		AnchorUpdateRequest();
 	}
 }
 
@@ -197,8 +235,8 @@ void UI::Control::Form::RelayDrag(DragArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		ChangingBoxRel.Min = args.Position.Buffer.Corner - BoxDisplay.Min;
-		ChangingBoxRel.Max = args.Position.Buffer.Corner - BoxDisplay.Max;
+		ChangingBoxRel.Min = args.Position.Buffer.Corner - BoxDisplay().Min;
+		ChangingBoxRel.Max = args.Position.Buffer.Corner - BoxDisplay().Max;
 
 		/* Resize area
 			in vscode, the cursor needs to be a bit inside of the window to resize
@@ -218,7 +256,7 @@ void UI::Control::Form::RelayDrag(DragArgs args)
 		if (ChangingBoxType != EBoxChangeType::None)
 		{
 			const VectorF2 & mouse = args.Position.Buffer.Corner;
-			BoxF2 box = BoxDisplay;
+			BoxF2 box = BoxDisplay();
 			if (ChangingBoxType == EBoxChangeType::Move)
 			{
 				box.Min = mouse - ChangingBoxRel.Min;

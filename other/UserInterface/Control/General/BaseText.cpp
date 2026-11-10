@@ -80,27 +80,31 @@ void UI::Control::BaseText::AlignmentUpdate()
 	TextObjectData.Depth = -(((layer + (1.0f / 2.0f)) * size) + offset);
 }*/
 
-void UI::Control::BaseText::BoxUpdate()
+#include <iostream>
+#include "ValueType/_Show.hpp"
+//void UI::Control::BaseText::BoxUpdate()
+void UI::Control::BaseText::AnchorUpdate()
 {
-	Base::BoxUpdate();
+	Base::AnchorUpdate();
 
 	VectorF2 & pos = TextObjectData.TextPosition;
+	//std::cout << "BaseText::AnchorUpdate() " << pos << '\n';
 
-	if (AlignmentX == UI::Text::Alignment::Min) { pos.X = BoxContent.Min.X; }
-	if (AlignmentX == UI::Text::Alignment::Mid) { pos.X = BoxContent.Center().X; }
-	if (AlignmentX == UI::Text::Alignment::Max) { pos.X = BoxContent.Max.X; }
+	if (AlignmentX == UI::Text::Alignment::Min) { pos.X = BoxContent().Min.X; }
+	if (AlignmentX == UI::Text::Alignment::Mid) { pos.X = BoxContent().Center().X; }
+	if (AlignmentX == UI::Text::Alignment::Max) { pos.X = BoxContent().Max.X; }
 
-	if (AlignmentY == UI::Text::Alignment::Min) { pos.Y = BoxContent.Min.Y; }
-	if (AlignmentY == UI::Text::Alignment::Mid) { pos.Y = BoxContent.Center().Y; }
-	if (AlignmentY == UI::Text::Alignment::Max) { pos.Y = BoxContent.Max.Y; }
+	if (AlignmentY == UI::Text::Alignment::Min) { pos.Y = BoxContent().Min.Y; }
+	if (AlignmentY == UI::Text::Alignment::Mid) { pos.Y = BoxContent().Center().Y; }
+	if (AlignmentY == UI::Text::Alignment::Max) { pos.Y = BoxContent().Max.Y; }
 
 	if (Parent != nullptr)
 	{
-		TextObjectData.Bound = Parent -> BoxBoarder.InnerBox(BoxContent);
+		TextObjectData.Bound = Parent -> BoxBoarder().InnerBox(BoxContent());
 	}
 	else
 	{
-		TextObjectData.Bound = BoxContent;
+		TextObjectData.Bound = BoxContent();
 	}
 }
 void UI::Control::BaseText::Update()

@@ -64,8 +64,8 @@ void UI::Control::Slider::PutSliderNub()
 	if (SliderObject_Is)
 	{
 		VectorF2 slider_size_half = NubSize / 2.0f;
-		VectorF2 slider_min = BoxDisplay.Min + slider_size_half;
-		VectorF2 slider_max = BoxDisplay.Max - slider_size_half;
+		VectorF2 slider_min = BoxDisplay().Min + slider_size_half;
+		VectorF2 slider_max = BoxDisplay().Max - slider_size_half;
 
 		VectorF2 slider_normal = Value;
 		slider_normal -= ValueRange.Min;
@@ -82,7 +82,7 @@ void UI::Control::Slider::PutSliderNub()
 		//SliderObject_Bound = ObjectData.Bound;
 		if (Parent != nullptr)
 		{
-			SliderObject_Bound = Parent -> BoxBoarder;
+			SliderObject_Bound = Parent -> BoxBoarder();
 		}
 		else
 		{
@@ -103,8 +103,8 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 	if (!IsInteractible()) { return; }
 
 	VectorF2 slider_size_half = NubSize / 2.0f;
-	VectorF2 slider_pos_min = BoxDisplay.Min + slider_size_half;
-	VectorF2 slider_pos_max = BoxDisplay.Max - slider_size_half;
+	VectorF2 slider_pos_min = BoxDisplay().Min + slider_size_half;
+	VectorF2 slider_pos_max = BoxDisplay().Max - slider_size_half;
 
 	VectorF2 slider_value = mouse_pos.Buffer.Corner;
 	slider_value -= slider_pos_min;
@@ -152,10 +152,16 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 
 
-void UI::Control::Slider::BoxUpdate()
+//void UI::Control::Slider::BoxUpdate()
+void UI::Control::Slider::AnchorUpdate()
 {
-	BaseText::BoxUpdate();
+	//BaseText::BoxUpdate();
+	BaseText::AnchorUpdate();
 	PutSliderNub();
+}
+void UI::Control::Slider::Update()
+{
+	BaseText::Update();
 	if (Window != nullptr && Form != nullptr)
 	{
 		const float & size = Window -> DepthSize;
@@ -171,6 +177,7 @@ void UI::Control::Slider::BoxUpdate()
 		}
 	}
 }
+
 #include "UIManager.hpp"
 void UI::Control::Slider::DisplayPut() const
 {

@@ -17,12 +17,12 @@ UI::Control::Graph::Graph()
 
 #include "Graph/ObjectData.hpp"
 
-void UI::Control::Graph::BoxUpdate()
+void UI::Control::Graph::Update()
 {
-	Base::BoxUpdate();
+	Base::Update();
 	if (GraphObject.Is())
 	{
-		GraphObject.Box() = BoxContent;
+		GraphObject.Box() = BoxContent();
 		GraphObject.Data -> Center = Center;
 		GraphObject.Data -> Magnitede = Magnitude;
 		GraphObject.Data -> Col = ColorF4(0, 1, 0);

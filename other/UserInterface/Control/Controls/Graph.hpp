@@ -32,7 +32,7 @@ class Graph : public Base // GraphLine
 	Graph();
 
 	public:
-	void	BoxUpdate() override;
+	void	Update() override;
 	void	DisplayShow() override;
 	void	DisplayHide() override;
 

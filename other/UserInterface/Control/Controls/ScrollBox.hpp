@@ -22,7 +22,7 @@ class ScrollContent : public Base
 	ScrollContent(ScrollBox & box);
 
 	public:
-	void	BoxUpdate() override;
+	void	AnchorUpdate() override;
 
 	public:
 	void	AutoAnchorUpdate() override;

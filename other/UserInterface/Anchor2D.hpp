@@ -20,8 +20,12 @@ struct Anchor2D
 		VectorF2 & normal_center
 	);
 
-	BoxF2	Calculate(BoxF2 Parent);
-	void	Calculate(BoxF2 Parent, BoxF2 box);
+	public:
+	void	UpdateO(const BoxF2 & boxO);
+	void	UpdateO(const BoxF2 & boxO, const BoxF2 & boxI);
+
+	public:
+	BoxF2	ToInnerBox(const BoxF2 & boxO) const;
 };
 
 #endif

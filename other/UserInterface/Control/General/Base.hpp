@@ -14,6 +14,18 @@
 
 #include "AnchorEnum.hpp"
 
+/* ...Resolve
+are resolve functoins needed ?
+they should only be called in the Update function
+so just check there ?
+*/
+
+/* ...RequestRecursive
+sometimes, when something updates, it causes all children to also need to be updated
+this is known then the update is requested, so it immedeatly asks all children to update
+instead, only request one to update, and once it is done updating, it tells all children to update ?
+*/
+
 namespace UI
 {
 class Manager;
@@ -56,28 +68,12 @@ class Base
 	void	ChildRemove(Base * control);
 	void	ChildInsert(Base * control);
 
-//	private:	unsigned int	Layer_ = 0;
-//	public:		unsigned int	Layer() const;
-//	public:		void			LayerUpdate();
-//	public:		void			LayerUpdateRecursive();
-	public:		unsigned int	Layer() const;
-
-	public:		unsigned int	LayerLimit() const;
-
-//	protected:	float			Depth_ = 0.0f;
-//	public:		float			Depth() const;
-//	public:		virtual	void	DepthUpdate();
-//	protected:			void	DepthUpdateRecursive();
-	public:		virtual float	Depth() const;
-
 
 
 	public:
 	bool	Deletable = false;
 	// true means this should be deleted when Parent is deleted
 	// currently not used
-
-
 
 	protected:
 	bool	IsEnabled_ = true;
@@ -103,9 +99,25 @@ class Base
 
 	public:
 	bool	IsVisible() const;
-	bool	IsDrawable() const; // IsDisplayable
-	bool	IsThisInteractible() const;
+	bool	IsDisplay() const;
+//	bool	IsThisInteractible() const;
 	bool	IsInteractible() const;
+
+
+
+//	private:	unsigned int	Layer_ = 0;
+//	public:		unsigned int	Layer() const;
+//	public:		void			LayerUpdate();
+//	public:		void			LayerUpdateRecursive();
+	public:		unsigned int	Layer() const;
+
+	public:		unsigned int	LayerLimit() const;
+
+//	protected:	float			Depth_ = 0.0f;
+//	public:		float			Depth() const;
+//	public:		virtual	void	DepthUpdate();
+//	protected:			void	DepthUpdateRecursive();
+	public:		float			Depth() const;
 
 
 
@@ -120,21 +132,31 @@ class Base
 	protected: public:
 	Anchor2D	Anchor;
 	protected: public:
-	//VectorF2	ContentOffset ?
+//	VectorF2	ContentOffset ?
+
+	protected:	bool			AnchorUpdateIsRequested = false;
+	public:		void			AnchorUpdateRequest();
+//	public:		void			AnchorUpdateRequestRecursive();
+//	private:	void			AnchorUpdateResolve();
+	protected:	virtual	void	AnchorUpdate();
 
 
 
 	protected: public:
-	// these are cached Values, calculated from the Anchor. could be calculated on the fly
-	BoxF2	BoxDisplay; // used for displaying Control
-	BoxF2	BoxBoarder; // used for culling Children
-	BoxF2	BoxContent; // used for anchoring Children
+//	BoxF2	BoxDisplay; // used for displaying Control
+//	BoxF2	BoxBoarder; // used for culling Children
+//	BoxF2	BoxContent; // used for anchoring Children
 
-	private:	bool			BoxUpdateIsRequested = false;
-	public:		void			BoxUpdateRequest();
-	public:		void			BoxUpdateRequestRecursive();
-	private:	void			BoxUpdateResolve();
-	protected:	virtual	void	BoxUpdate();
+//	private:	bool			BoxUpdateIsRequested = false;
+//	public:		void			BoxUpdateRequest();
+//	public:		void			BoxUpdateRequestRecursive();
+//	private:	void			BoxUpdateResolve();
+//	protected:	virtual	void	BoxUpdate();
+
+	public:
+	virtual BoxF2	BoxDisplay() const; // used for displaying Control
+	virtual BoxF2	BoxBoarder() const; // used for culling Children
+	virtual BoxF2	BoxContent() const; // used for anchoring Children
 
 
 
@@ -150,7 +172,7 @@ class Base
 
 	private:		bool	AutoAnchorUpdateIsRequested = false;
 	public:			void	AutoAnchorUpdateRequest();
-	private:		void	AutoAnchorUpdateResolve();
+//	private:		void	AutoAnchorUpdateResolve();
 	public:	virtual	void	AutoAnchorUpdate();
 
 	private:		void	AutoAnchorUpdate_Y_StackMin();
@@ -205,14 +227,17 @@ idea
 	//ColorF4	ColorDisabled; // Gray Text
 	ColorF4		ColorHover;
 
-	protected:
-	ColorF4		Color;
+//	protected:
+//	ColorF4		Color;
 
-	private:				bool	ColorUpdateIsRequested = false;
-	public:					void	ColorUpdateRequest();
-	public:					void	ColorUpdateRequestRecursive();
-	private:				void	ColorUpdateResolve();
-	protected:	virtual		void	ColorUpdate();
+//	private:				bool	ColorUpdateIsRequested = false;
+//	public:					void	ColorUpdateRequest();
+//	public:					void	ColorUpdateRequestRecursive();
+//	private:				void	ColorUpdateResolve();
+//	protected:	virtual		void	ColorUpdate();
+
+	protected:
+	virtual ColorF4		Color() const;
 
 
 
@@ -225,8 +250,8 @@ idea
 
 	private:			bool	DisplayUpdateIsRequested = false;
 	private:			void	DisplayUpdateRequest();
-	private:			void	DisplayUpdateRequestRecursive();
-	private:			void	DisplayUpdateResolve();
+//	private:			void	DisplayUpdateRequestRecursive();
+//	private:			void	DisplayUpdateResolve();
 	protected:	virtual	void	DisplayUpdate();
 
 
@@ -278,7 +303,6 @@ idea
 	/* User Relay vs Func Pointer
 		Relays:		internal
 		Pointers:	external
-
 		put all FuncPointer for these here ?
 	*/
 };

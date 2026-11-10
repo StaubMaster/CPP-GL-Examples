@@ -89,14 +89,14 @@ Anchor1D::Anchor1D(
 ////void Anchor1D::SetNormalCenter(float val) { SetRealNormalCenter(val); }
 ////void Anchor1D::SetCenter(float val) { SetCenter(val); }
 
-float Anchor1D::GetSize() { return Size; }
-//float Anchor1D::GetHalfSize() { return GetRealHalfSize(); }
-float Anchor1D::GetMinDist() { return (Dist.Min) - Margin.Max; }
-float Anchor1D::GetMinSize() { return (Dist.Min + Size) + Margin.Max; }
-float Anchor1D::GetMaxDist() { return (Dist.Max) - Margin.Max; }
-float Anchor1D::GetMaxSize() { return (Dist.Max + Size) + Margin.Max; }
-//float Anchor1D::GetNormalCenter() { return GetRealNormalCenter(); }
-//float Anchor1D::GetCenter() { return GetRealCenter(); }
+float Anchor1D::GetSize() const { return Size; }
+//float Anchor1D::GetHalfSize() const { return GetRealHalfSize(); }
+float Anchor1D::GetMinDist() const { return (Dist.Min) - Margin.Max; }
+float Anchor1D::GetMinSize() const { return (Dist.Min + Size) + Margin.Max; }
+float Anchor1D::GetMaxDist() const { return (Dist.Max) - Margin.Max; }
+float Anchor1D::GetMaxSize() const { return (Dist.Max + Size) + Margin.Max; }
+//float Anchor1D::GetNormalCenter() const { return GetRealNormalCenter(); }
+//float Anchor1D::GetCenter() const { return GetRealCenter(); }
 
 void Anchor1D::SetSize(float val) { Size = val; }
 //void Anchor1D::SetHalfSize(float val) { SetRealHalfSize(val); }
@@ -140,40 +140,53 @@ void Anchor1D::AnchorBoth(float min, float max)
 
 
 
-void Anchor1D::CalculateSize(float ParentSize) { Size = ParentSize - (Dist.Min + Dist.Max); }
-void Anchor1D::CalculateNormalCenter(float ParentSize) { NormalCenter = (Dist.Min + (Size / 2)) / ParentSize; }
-
-BoxF1 Anchor1D::Calculate(BoxF1 Parent)
+void Anchor1D::ChangeO_Size(float sizeO)
 {
-	float ParentSize = Parent.Size();
+	Size = sizeO - (Dist.Min + Dist.Max);
+}
+void Anchor1D::ChangeO_NormalCenter(float sizeO)
+{
+	NormalCenter = (Dist.Min + (Size / 2)) / sizeO;
+}
+
+void Anchor1D::UpdateO(const BoxF1 & boxO)
+{
+	float size = boxO.Size();
 	if (Anchor == AnchorType::Both)
 	{
-		CalculateSize(ParentSize);
-		CalculateNormalCenter(ParentSize);
+		ChangeO_Size(size);
+		ChangeO_NormalCenter(size);
 	}
 	else if (Anchor == AnchorType::Min)
 	{
-		Dist.Max = ParentSize - (Dist.Min + Size);
-		CalculateNormalCenter(ParentSize);
+		Dist.Max = size - (Dist.Min + Size);
+		ChangeO_NormalCenter(size);
 	}
 	else if (Anchor == AnchorType::Max)
 	{
-		Dist.Min = ParentSize - (Dist.Max + Size);
-		CalculateNormalCenter(ParentSize);
+		Dist.Min = size - (Dist.Max + Size);
+		ChangeO_NormalCenter(size);
 	}
 	else if (Anchor == AnchorType::None)
 	{
-		Dist.Min = (ParentSize * NormalCenter) - (Size / 2);
-		Dist.Max = ParentSize - (Dist.Min + Size);
+		Dist.Min = (size * NormalCenter) - (Size / 2);
+		Dist.Max = size - (Dist.Min + Size);
 	}
-	return BoxF1(Parent.Min + Dist.Min, Parent.Max - Dist.Max);
 }
-void Anchor1D::Calculate(BoxF1 Parent, BoxF1 box)
+void Anchor1D::UpdateO(const BoxF1 & boxO, const BoxF1 & boxI)
 {
-	Dist.Min = +(box.Min - Parent.Min);
-	Dist.Max = -(box.Max - Parent.Max);
+	Dist.Min = +(boxI.Min - boxO.Min);
+	Dist.Max = -(boxI.Max - boxO.Max);
 
-	float ParentSize = Parent.Size();
-	CalculateSize(ParentSize);
-	CalculateNormalCenter(ParentSize);
+	float size = boxO.Size();
+	ChangeO_Size(size);
+	ChangeO_NormalCenter(size);
+}
+
+BoxF1 Anchor1D::ToInnerBox(const BoxF1 & boxO) const
+{
+	return BoxF1(
+		boxO.Min + Dist.Min,
+		boxO.Max - Dist.Max
+	);
 }

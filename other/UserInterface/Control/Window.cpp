@@ -45,15 +45,13 @@ void UI::Control::Window::AssignPointers(Base & control)
 	}
 	std::cout << '\n';
 }*/
-float UI::Control::Window::Depth() const
+/*float UI::Control::Window::Depth() const
 {
 	return 0.0f;
-}
+}*/
 
 
 
-UI::Control::Window::~Window()
-{ }
 UI::Control::Window::Window()
 {
 	Anchor.X.Anchor = AnchorType::Both;
@@ -67,12 +65,17 @@ UI::Control::Window::Window()
 
 
 
-void UI::Control::Window::BoxUpdate()
+//void UI::Control::Window::AnchorUpdate() { }
+/*void UI::Control::Window::BoxUpdate()
 {
-	BoxDisplay = BoxF2(VectorF2(), WindowSize);
-	BoxBoarder = BoxDisplay;
-	BoxContent = BoxDisplay;
-}
+	//BoxDisplay = BoxF2(VectorF2(), WindowSize);
+	//BoxBoarder = BoxDisplay;
+	//BoxContent = BoxDisplay;
+}*/
+
+BoxF2 UI::Control::Window::BoxDisplay() const { return BoxF2(VectorF2(), WindowSize); }
+BoxF2 UI::Control::Window::BoxBoarder() const { return BoxDisplay(); }
+BoxF2 UI::Control::Window::BoxContent() const { return BoxBoarder(); }
 
 
 
@@ -83,18 +86,17 @@ void UI::Control::Window::WindowPutDisplay()
 
 
 
-void UI::Control::Window::DepthCalculateResolve()
-{
-	if (DepthCalculateIsRequested)
-	{
-		DepthCalculate();
-		DepthCalculateIsRequested = false;
-	}
-}
 void UI::Control::Window::DepthCalculateRequest()
 {
 	DepthCalculateIsRequested = true;
 }
+/*void UI::Control::Window::DepthCalculateResolve()
+{
+	if (DepthCalculateIsRequested)
+	{
+		DepthCalculate();
+	}
+}*/
 void UI::Control::Window::DepthCalculate()
 {
 	unsigned int layer_sum = 0;
@@ -102,7 +104,6 @@ void UI::Control::Window::DepthCalculate()
 	{
 		const UI::Control::Form * form = dynamic_cast<const UI::Control::Form*>(Children[i]);
 		if (form == nullptr) { continue; }
-
 		unsigned int limit = form -> LayerLimit();
 		limit = limit + 1;
 		std::cout << "limit: " << limit << '\n';
@@ -129,4 +130,14 @@ void UI::Control::Window::DepthCalculate()
 
 	//LayerUpdateRecursive();
 	//AssignDepthRecursive();
+
+	DepthCalculateIsRequested = false;
+}
+
+void UI::Control::Window::Update()
+{
+	//DepthCalculateResolve();
+	if (DepthCalculateIsRequested) { DepthCalculate(); }
+
+	Base::Update();
 }

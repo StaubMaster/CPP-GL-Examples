@@ -1,5 +1,8 @@
 #ifndef  UI_CONTROL_MANAGER_HPP
 # define UI_CONTROL_MANAGER_HPP
+// move this out of Control/General into Control/ ?
+// rename to "Graphics" so it is UI::Control::Graphics ?
+// maybe GraphicsManager
 
 # include "Graphics/Shader/Base.hpp"
 # include "Graphics/VertexArray/MainInst.hpp"
@@ -19,14 +22,9 @@ class DirectoryInfo;
 
 namespace UI
 {
-
 namespace Control
 {
-class Base;
-class Form;
-
 //struct ObjectData;
-
 class Manager
 {
 	public:
@@ -84,9 +82,7 @@ class Manager
 	public:
 	void	GraphicsDraw();
 };
-
 };
-
 };
 
 #endif

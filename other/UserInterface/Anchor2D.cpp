@@ -30,17 +30,23 @@ Anchor2D::Anchor2D(
 	)
 { }
 
-BoxF2 Anchor2D::Calculate(BoxF2 Parent)
+void Anchor2D::UpdateO(const BoxF2 & boxO)
 {
-	BoxF1 x = X.Calculate(BoxF1(Parent.Min.X, Parent.Max.X));
-	BoxF1 y = Y.Calculate(BoxF1(Parent.Min.Y, Parent.Max.Y));
+	X.UpdateO(BoxF1(boxO.Min.X, boxO.Max.X));
+	Y.UpdateO(BoxF1(boxO.Min.Y, boxO.Max.Y));
+}
+void Anchor2D::UpdateO(const BoxF2 & boxO, const BoxF2 & boxI)
+{
+	X.UpdateO(BoxF1(boxO.Min.X, boxO.Max.X), BoxF1(boxI.Min.X, boxI.Max.X));
+	Y.UpdateO(BoxF1(boxO.Min.Y, boxO.Max.Y), BoxF1(boxI.Min.Y, boxI.Max.Y));
+}
+
+BoxF2 Anchor2D::ToInnerBox(const BoxF2 & boxO) const
+{
+	BoxF1 x = X.ToInnerBox(BoxF1(boxO.Min.X, boxO.Max.X));
+	BoxF1 y = Y.ToInnerBox(BoxF1(boxO.Min.Y, boxO.Max.Y));
 	return BoxF2(
 		VectorF2(x.Min, y.Min),
 		VectorF2(x.Max, y.Max)
 	);
-}
-void Anchor2D::Calculate(BoxF2 Parent, BoxF2 box)
-{
-	X.Calculate(BoxF1(Parent.Min.X, Parent.Max.X), BoxF1(box.Min.X, box.Max.X));
-	Y.Calculate(BoxF1(Parent.Min.Y, Parent.Max.Y), BoxF1(box.Min.Y, box.Max.Y));
 }

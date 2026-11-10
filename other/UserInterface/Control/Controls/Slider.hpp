@@ -67,9 +67,11 @@ class Slider : public BaseText
 	Slider();
 
 	protected:
-	//void	DepthUpdate() override;
+//	void	DepthUpdate() override;
+//	void	BoxUpdate() override;
+	void	AnchorUpdate() override;
+	void	Update() override;
 	public:
-	void	BoxUpdate() override;
 	void	DisplayPut() const override;
 	void	DisplayShow() override;
 	void	DisplayHide() override;

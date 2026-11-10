@@ -74,9 +74,15 @@ void UI::Control::Base::ChildInsert(Base & control)
 {
 	AssignPointers(control);
 	Children.Insert(&control);
-	control.DisplayUpdateRequestRecursive();
-	control.BoxUpdateRequestRecursive();
-	control.ColorUpdateRequestRecursive();
+
+	control.DisplayUpdateRequest();
+
+	control.AnchorUpdateRequest();
+
+	//control.BoxUpdateRequestRecursive();
+
+	//control.ColorUpdateRequestRecursive();
+
 	AutoAnchorUpdateRequest();
 }
 
@@ -93,6 +99,87 @@ void UI::Control::Base::ChildInsert(Base * control)
 	{
 		ChildInsert(*control);
 	}
+}
+
+
+
+bool UI::Control::Base::IsEnabled() const
+{
+	return IsEnabled_;
+}
+void UI::Control::Base::Enable()
+{
+	IsEnabled_ = true;
+	//ColorUpdateRequestRecursive();
+}
+void UI::Control::Base::Disable()
+{
+	IsEnabled_ = false;
+	//ColorUpdateRequestRecursive();
+}
+
+bool UI::Control::Base::IsThisVisible() const
+{
+	return IsVisible_;
+}
+void UI::Control::Base::Show()
+{
+	IsVisible_ = true;
+	//DisplayUpdateRequestRecursive();
+	DisplayUpdateRequest();
+	if (Parent != nullptr)
+	{
+		Parent -> AutoAnchorUpdateRequest();
+	}
+}
+void UI::Control::Base::Hide()
+{
+	IsVisible_ = false;
+	//DisplayUpdateRequestRecursive();
+	DisplayUpdateRequest();
+	if (Parent != nullptr)
+	{
+		Parent -> AutoAnchorUpdateRequest();
+	}
+}
+
+bool UI::Control::Base::IsOpaque() const
+{
+	return IsOpaque_;
+}
+void UI::Control::Base::MakeTransparent()
+{
+	IsOpaque_ = false;
+	DisplayUpdateRequest();
+}
+void UI::Control::Base::MakeOpaque()
+{
+	IsOpaque_ = true;
+	DisplayUpdateRequest();
+}
+
+bool UI::Control::Base::IsVisible() const
+{
+	if (Parent != nullptr)
+	{
+		return IsThisVisible() && (Parent -> IsVisible());
+	}
+	else
+	{
+		return IsThisVisible();
+	}
+}
+bool UI::Control::Base::IsDisplay() const
+{
+	return IsOpaque() && IsVisible();
+}
+/*bool UI::Control::Base::IsThisInteractible() const
+{
+	return IsEnabled() && IsDisplay();
+}*/
+bool UI::Control::Base::IsInteractible() const
+{
+	return IsEnabled() && IsVisible();
 }
 
 
@@ -185,132 +272,114 @@ float UI::Control::Base::Depth() const
 
 
 
-bool UI::Control::Base::IsEnabled() const
+void UI::Control::Base::AnchorUpdateRequest()
 {
-	return IsEnabled_;
+	AnchorUpdateIsRequested = true;
 }
-void UI::Control::Base::Enable()
+/*void UI::Control::Base::AnchorUpdateRequestRecursive()
 {
-	IsEnabled_ = true;
-	ColorUpdateRequestRecursive();
-}
-void UI::Control::Base::Disable()
-{
-	IsEnabled_ = false;
-	ColorUpdateRequestRecursive();
-}
-
-bool UI::Control::Base::IsThisVisible() const
-{
-	return IsVisible_;
-}
-void UI::Control::Base::Show()
-{
-	IsVisible_ = true;
-	DisplayUpdateRequestRecursive();
-	if (Parent != nullptr)
+	AnchorUpdateRequest();
+	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Parent -> AutoAnchorUpdateRequest();
+		Children[i] -> AnchorUpdateRequestRecursive();
 	}
-}
-void UI::Control::Base::Hide()
+}*/
+/*void UI::Control::Base::AnchorUpdateResolve()
 {
-	IsVisible_ = false;
-	DisplayUpdateRequestRecursive();
-	if (Parent != nullptr)
+	if (AnchorUpdateIsRequested)
 	{
-		Parent -> AutoAnchorUpdateRequest();
+		AnchorUpdate();
+	}
+}*/
+void UI::Control::Base::AnchorUpdate()
+{
+	if (Parent == nullptr) { return; }
+
+	Anchor.UpdateO(Parent -> BoxContent());
+
+	AnchorUpdateIsRequested = false;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> AnchorUpdateRequest();
 	}
 }
 
-bool UI::Control::Base::IsOpaque() const
-{
-	return IsOpaque_;
-}
-void UI::Control::Base::MakeTransparent()
-{
-	IsOpaque_ = false;
-	DisplayUpdateRequest();
-}
-void UI::Control::Base::MakeOpaque()
-{
-	IsOpaque_ = true;
-	DisplayUpdateRequest();
-}
-
-bool UI::Control::Base::IsVisible() const
-{
-	if (Parent != nullptr)
-	{
-		return IsThisVisible() && (Parent -> IsVisible());
-	}
-	else
-	{
-		return IsThisVisible();
-	}
-}
-bool UI::Control::Base::IsDrawable() const
-{
-	return IsOpaque() && IsVisible();
-}
-bool UI::Control::Base::IsThisInteractible() const
-{
-	return IsEnabled() && IsDrawable();
-}
-bool UI::Control::Base::IsInteractible() const
-{
-	return IsEnabled() && IsVisible();
-}
 
 
-
-void UI::Control::Base::BoxUpdateRequest()
+/*void UI::Control::Base::BoxUpdateRequest()
 {
 	BoxUpdateIsRequested = true;
-}
-void UI::Control::Base::BoxUpdateRequestRecursive()
+}*/
+/*void UI::Control::Base::BoxUpdateRequestRecursive()
 {
 	BoxUpdateRequest();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> BoxUpdateRequestRecursive();
 	}
-}
-void UI::Control::Base::BoxUpdateResolve()
+}*/
+/*void UI::Control::Base::BoxUpdateResolve()
 {
 	if (BoxUpdateIsRequested)
 	{
 		BoxUpdate();
 	}
-}
-void UI::Control::Base::BoxUpdate()
+}*/
+/*void UI::Control::Base::BoxUpdate()
 {
 	if (Parent == nullptr) { return; }
 
-	BoxDisplay = Anchor.Calculate(Parent -> BoxContent);
+	Anchor.UpdateO(Parent -> BoxContent());
 
-	BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
-	BoxBoarder.Max = BoxDisplay.Max - AnchorBoarder.Max;
-
-	BoxContent.Min = BoxBoarder.Min + AnchorPadding.Min;
-	BoxContent.Max = BoxBoarder.Max - AnchorPadding.Max;
+//	Anchor.UpdateO(Parent -> BoxContent);
+//	BoxDisplay = Anchor.ToInnerBox(Parent -> BoxContent);
+//
+//	BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
+//	BoxBoarder.Max = BoxDisplay.Max - AnchorBoarder.Max;
+//
+//	BoxContent.Min = BoxBoarder.Min + AnchorPadding.Min;
+//	BoxContent.Max = BoxBoarder.Max - AnchorPadding.Max;
 
 	BoxUpdateIsRequested = false;
+}*/
+
+BoxF2 UI::Control::Base::BoxDisplay() const
+{
+	if (Parent == nullptr) { return BoxF2(); }
+	return Anchor.ToInnerBox(Parent -> BoxContent());
+}
+BoxF2 UI::Control::Base::BoxBoarder() const
+{
+	if (Parent == nullptr) { return BoxF2(); }
+	BoxF2 box = BoxDisplay();
+	return BoxF2(
+		box.Min + AnchorBoarder.Min,
+		box.Max - AnchorBoarder.Max
+	);
+}
+BoxF2 UI::Control::Base::BoxContent() const
+{
+	if (Parent == nullptr) { return BoxF2(); }
+	BoxF2 box = BoxBoarder();
+	return BoxF2(
+		box.Min + AnchorPadding.Min,
+		box.Max - AnchorPadding.Max
+	);
 }
 
 
 
-void UI::Control::Base::AutoAnchorUpdateResolve()
+void UI::Control::Base::AutoAnchorUpdateRequest()
+{
+	AutoAnchorUpdateIsRequested = true;
+}
+/*void UI::Control::Base::AutoAnchorUpdateResolve()
 {
 	if (AutoAnchorUpdateIsRequested)
 	{
 		AutoAnchorUpdate();
 	}
-}
-void UI::Control::Base::AutoAnchorUpdateRequest()
-{
-	AutoAnchorUpdateIsRequested = true;
-}
+}*/
 void UI::Control::Base::AutoAnchorUpdate()
 {
 	if (!IsVisible()) { return; }
@@ -342,12 +411,8 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 		if (!control.IsVisible()) { continue; }
 		control.Anchor.Y.AnchorMin(y);
 		y = control.Anchor.Y.GetMinSize();
-		control.BoxUpdate(); // is this needed here ?
-
-		// AutoAnchor Children might need to update their Box again ?
-		// their Sizes stay the same, only their Y Offset changes
-		// Child BoxUpdate Anchor is bascially ignored / overridden
 	}
+	AnchorUpdateRequest();
 }
 void UI::Control::Base::AutoAnchorUpdate_Y_StackMinFit()
 {
@@ -361,31 +426,32 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMinFit()
 		y = control.Anchor.Y.GetMinSize();
 	}
 	Anchor.Y.SetSize(y + AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
-	BoxUpdateRequestRecursive();
+	//BoxUpdateRequestRecursive();
+	AnchorUpdateRequest();
 }
 
 
 
-void UI::Control::Base::ColorUpdateRequest()
+/*void UI::Control::Base::ColorUpdateRequest()
 {
 	ColorUpdateIsRequested = true;
-}
-void UI::Control::Base::ColorUpdateRequestRecursive()
+}*/
+/*void UI::Control::Base::ColorUpdateRequestRecursive()
 {
 	ColorUpdateRequest();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> ColorUpdateRequestRecursive();
 	}
-}
-void UI::Control::Base::ColorUpdateResolve()
+}*/
+/*void UI::Control::Base::ColorUpdateResolve()
 {
 	if (ColorUpdateIsRequested)
 	{
 		ColorUpdate();
 	}
-}
-void UI::Control::Base::ColorUpdate()
+}*/
+/*void UI::Control::Base::ColorUpdate()
 {
 	if (Manager == nullptr)
 	{
@@ -403,6 +469,24 @@ void UI::Control::Base::ColorUpdate()
 		}
 	}
 	ColorUpdateIsRequested = false;
+}*/
+ColorF4 UI::Control::Base::Color() const
+{
+	if (Manager == nullptr)
+	{
+		return ColorDefault;
+	}
+	else
+	{
+		if (Manager -> Hovering != this)
+		{
+			return ColorDefault;
+		}
+		else
+		{
+			return ColorHover;
+		}
+	}
 }
 
 
@@ -413,11 +497,11 @@ void UI::Control::Base::DisplayPut() const
 	{
 		Inst::Data data;
 		data.Layer = Depth();
-		data.Box = BoxDisplay;
-		data.Color = Color;
+		data.Box = BoxDisplay();
+		data.Color = Color();
 		if (Parent != nullptr)
 		{
-			data.Bound = Parent -> BoxBoarder;
+			data.Bound = Parent -> BoxBoarder();
 		}
 		else
 		{
@@ -448,24 +532,24 @@ void UI::Control::Base::DisplayUpdateRequest()
 {
 	DisplayUpdateIsRequested = true;
 }
-void UI::Control::Base::DisplayUpdateRequestRecursive()
+/*void UI::Control::Base::DisplayUpdateRequestRecursive()
 {
 	DisplayUpdateRequest();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> DisplayUpdateRequestRecursive();
 	}
-}
-void UI::Control::Base::DisplayUpdateResolve()
+}*/
+/*void UI::Control::Base::DisplayUpdateResolve()
 {
 	if (DisplayUpdateIsRequested)
 	{
 		DisplayUpdate();
 	}
-}
+}*/
 void UI::Control::Base::DisplayUpdate()
 {
-	if (IsDrawable())
+	if (IsDisplay())
 	{
 		DisplayShow();
 	}
@@ -473,17 +557,30 @@ void UI::Control::Base::DisplayUpdate()
 	{
 		DisplayHide();
 	}
+
 	DisplayUpdateIsRequested = false;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> DisplayUpdateRequest();
+	}
 }
 
 
 
 void UI::Control::Base::Update()
 {
-	AutoAnchorUpdateResolve();
-	BoxUpdateResolve();
-	ColorUpdateResolve();
-	DisplayUpdateResolve();
+	//AutoAnchorUpdateResolve();
+	if (AutoAnchorUpdateIsRequested)	{ AutoAnchorUpdate(); }
+
+	//BoxUpdateResolve();
+
+	//AnchorUpdateResolve();
+	if (AnchorUpdateIsRequested)		{ AnchorUpdate(); }
+
+	//ColorUpdateResolve();
+
+	//DisplayUpdateResolve();
+	if (DisplayUpdateIsRequested)		{ DisplayUpdate(); }
 }
 void UI::Control::Base::UpdateRecursive()
 {
@@ -532,7 +629,7 @@ UI::Control::Base * UI::Control::Base::FindHover(const VectorF2 & mouse)
 {
 	if (!IsThisVisible()) { return nullptr; }
 	if (!IsEnabled()) { return nullptr; }
-	if (!BoxDisplay.ContainsExclusive(mouse).All(true)) { return nullptr; }
+	if (!BoxDisplay().ContainsExclusive(mouse).All(true)) { return nullptr; }
 
 	// check BoxContent before checking children ?
 	Base * control = nullptr;

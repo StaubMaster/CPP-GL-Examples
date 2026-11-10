@@ -17,7 +17,7 @@ float UI::Control::ScrollContent::CalcRatio(float & control_range_size, float & 
 	{
 		UI::Control::Base & control = *Children[i];
 
-		BoxF1 control_box(control.BoxDisplay.Min.Y, control.BoxDisplay.Max.Y);
+		BoxF1 control_box(control.BoxDisplay().Min.Y, control.BoxDisplay().Max.Y);
 		//std::cout << "control_box: " << control_box << '\n';
 
 		control_range.Consider(control_box.Min);
@@ -28,7 +28,7 @@ float UI::Control::ScrollContent::CalcRatio(float & control_range_size, float & 
 	//std::cout << "ContentControlRange: " << control_range << '\n';
 	//std::cout << "ContentControlSize:  " << control_range_size << '\n';
 
-	BoxF1 content_range(BoxContent.Min.Y, BoxContent.Max.Y);
+	BoxF1 content_range(BoxContent().Min.Y, BoxContent().Max.Y);
 	content_size = content_range.Size();
 
 	return content_size / control_range_size;
@@ -43,13 +43,10 @@ UI::Control::ScrollContent::ScrollContent(ScrollBox & box)
 	, Box(box)
 { }
 
-void UI::Control::ScrollContent::BoxUpdate()
+void UI::Control::ScrollContent::AnchorUpdate()
 {
-//	std::cout << "==== BoxUpdate base\n";
-	Base::BoxUpdate();
-//	std::cout << "==== BoxUpdate ....\n";
+	Base::AnchorUpdate();
 	Box.ScrollCalc();
-//	std::cout << "==== BoxUpdate done\n";
 }
 
 void UI::Control::ScrollContent::AutoAnchorUpdate()
@@ -123,7 +120,7 @@ void UI::Control::ScrollBox::ChildClear()
 
 void UI::Control::ScrollBox::ScrollNone()
 {
-	ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay.Max.Y - ScrollBar.BoxDisplay.Min.Y) / 2.0f;
+	ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay().Max.Y - ScrollBar.BoxDisplay().Min.Y) / 2.0f;
 	ScrollBar.ValueRange.Min.Y = 0.0f;
 	ScrollBar.ValueRange.Max.Y = 1.0f;
 	ScrollBar.SetValueY(0.5f);
@@ -143,7 +140,7 @@ void UI::Control::ScrollBox::ScrollCalc()
 
 	if (ratio < 1.0f)
 	{
-		ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay.Max.Y - ScrollBar.BoxDisplay.Min.Y) * ratio;
+		ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay().Max.Y - ScrollBar.BoxDisplay().Min.Y) * ratio;
 		ScrollBar.ValueRange.Min.Y = 0.0f;
 		ScrollBar.ValueRange.Max.Y = control_range_size - content_size;
 		ScrollBar.Enable();
@@ -159,7 +156,8 @@ void UI::Control::ScrollBox::ScrollFunc(float val)
 {
 	Content.AnchorPadding.Min.Y = 5.0f - val;
 	Content.AnchorPadding.Max.Y = 5.0f + val;
-	Content.BoxUpdateRequestRecursive();
+	//Content.BoxUpdateRequestRecursive();
+	Content.AnchorUpdateRequest();
 }
 
 void UI::Control::ScrollBox::RelayScroll(ScrollArgs args)

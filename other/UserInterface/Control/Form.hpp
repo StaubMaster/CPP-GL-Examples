@@ -41,14 +41,19 @@ class Form : public Base
 
 	public:
 	//void	DepthUpdate() override;
-	float	Depth() const override;
+	//float	Depth() const override;
 
 	public:
-	virtual ~Form();
+	virtual ~Form() = default;
 	Form();
 
 	protected:
-	void	BoxUpdate() override;
+	void	AnchorUpdate() override;
+//	void	BoxUpdate() override;
+	public:
+	BoxF2	BoxDisplay() const override;
+	BoxF2	BoxBoarder() const override;
+	BoxF2	BoxContent() const override;
 
 	public:
 	bool	IsMovable;

@@ -39,7 +39,8 @@ class BaseText : public Base
 	//void	DepthUpdate() override;
 
 	public:
-	void	BoxUpdate() override;
+	void	AnchorUpdate() override;
+//	void	BoxUpdate() override;
 	void	Update() override;
 	public:
 	void	DisplayPut() const override;

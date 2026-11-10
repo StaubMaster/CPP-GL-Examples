@@ -109,13 +109,13 @@ void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 	{
 		if (Hovering != nullptr)
 		{
-			Hovering -> ColorUpdateRequest();
+			//Hovering -> ColorUpdateRequest();
 			Hovering -> RelayHover(HoverArgs(HoverType::Leave, mouse_pos));
 		}
 		Hovering = control;
 		if (Hovering != nullptr)
 		{
-			Hovering -> ColorUpdateRequest();
+			//Hovering -> ColorUpdateRequest();
 			Hovering -> RelayHover(HoverArgs(HoverType::Enter, mouse_pos));
 		}
 	}
@@ -139,12 +139,12 @@ void UI::Manager::Resize(DisplaySize display_size)
 	GraphManager.ShaderLayout.DisplaySize.Put(display_size);
 
 	Window.WindowSize = display_size.Buffer.Full;
-	Window.BoxUpdateRequestRecursive();
+	//Window.BoxUpdateRequestRecursive();
+	Window.AnchorUpdateRequest();
 }
 void UI::Manager::Update()
 {
 	Window.UpdateRecursive();
-	Window.DepthCalculateResolve();
 }
 
 
