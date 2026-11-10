@@ -36,7 +36,7 @@ class BaseText : public Base
 	private:	void	AlignmentUpdate();
 
 	protected:
-	void	AssignDepth() override;
+	//void	DepthUpdate() override;
 
 	public:
 	void	BoxUpdate() override;

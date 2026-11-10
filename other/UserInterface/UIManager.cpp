@@ -139,12 +139,12 @@ void UI::Manager::Resize(DisplaySize display_size)
 	GraphManager.ShaderLayout.DisplaySize.Put(display_size);
 
 	Window.WindowSize = display_size.Buffer.Full;
-	Window.BoxUpdateRequest();
+	Window.BoxUpdateRequestRecursive();
 }
 void UI::Manager::Update()
 {
 	Window.UpdateRecursive();
-	Window.DepthUpdateResolve();
+	Window.DepthCalculateResolve();
 }
 
 
@@ -162,7 +162,7 @@ void UI::Manager::ChangeMedia(const DirectoryInfo & dir, GLFWwindow * glfw_windo
 
 	Cursor.Create(dir, glfw_window);
 
-	Window.ChangeManagerRecursive(this);
+	Window.AssignPointerRecursive(this);
 }
 
 

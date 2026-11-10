@@ -101,7 +101,7 @@ void UI::Control::ScrollBox::ChildInsert(Base & control)
 	Content.AutoAnchorUpdateRequest();
 	if (Window != nullptr)
 	{
-		Window -> DepthUpdateRequest();
+		Window -> DepthCalculateRequest();
 	}
 }
 void UI::Control::ScrollBox::ChildRemove(Base & control)
@@ -110,7 +110,7 @@ void UI::Control::ScrollBox::ChildRemove(Base & control)
 	Content.AutoAnchorUpdateRequest();
 	if (Window != nullptr)
 	{
-		Window -> DepthUpdateRequest();
+		Window -> DepthCalculateRequest();
 	}
 }
 void UI::Control::ScrollBox::ChildClear()
@@ -127,7 +127,7 @@ void UI::Control::ScrollBox::ScrollNone()
 	ScrollBar.ValueRange.Min.Y = 0.0f;
 	ScrollBar.ValueRange.Max.Y = 1.0f;
 	ScrollBar.SetValueY(0.5f);
-	ScrollBar.MakeDisabled();
+	ScrollBar.Disable();
 }
 void UI::Control::ScrollBox::ScrollCalc()
 {
@@ -146,7 +146,7 @@ void UI::Control::ScrollBox::ScrollCalc()
 		ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay.Max.Y - ScrollBar.BoxDisplay.Min.Y) * ratio;
 		ScrollBar.ValueRange.Min.Y = 0.0f;
 		ScrollBar.ValueRange.Max.Y = control_range_size - content_size;
-		ScrollBar.MakeEnabled();
+		ScrollBar.Enable();
 	}
 	else
 	{
@@ -159,7 +159,7 @@ void UI::Control::ScrollBox::ScrollFunc(float val)
 {
 	Content.AnchorPadding.Min.Y = 5.0f - val;
 	Content.AnchorPadding.Max.Y = 5.0f + val;
-	Content.BoxUpdateRequest();
+	Content.BoxUpdateRequestRecursive();
 }
 
 void UI::Control::ScrollBox::RelayScroll(ScrollArgs args)

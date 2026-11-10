@@ -34,13 +34,14 @@ namespace Control
 class Form : public Base
 {
 	public:
-	void	ChangePointers(Base & control) override;
+	void	AssignPointers(Base & control) override;
 
 	public:
 	float	DepthOffset = 0.0f;
 
 	public:
-	void	AssignDepth() override;
+	//void	DepthUpdate() override;
+	float	Depth() const override;
 
 	public:
 	virtual ~Form();

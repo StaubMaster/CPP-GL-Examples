@@ -3,25 +3,35 @@
 
 
 
-void UI::Control::Form::ChangePointers(Base & control)
+void UI::Control::Form::AssignPointers(Base & control)
 {
 	control.Parent = this;
-	control.ChangeManagerRecursive(Manager);
-	control.ChangeManagerRecursive(Window);
-	control.ChangeManagerRecursive(this);
+	control.AssignPointerRecursive(Manager);
+	control.AssignPointerRecursive(Window);
+	control.AssignPointerRecursive(this);
 }
 
 
 
-void UI::Control::Form::AssignDepth()
+/*void UI::Control::Form::DepthUpdate()
 {
 	if (Window == nullptr) { return; }
 
 	float size = Window -> DepthSize;
 	float offset = DepthOffset;
-	float layer = Layer;
+	float layer = Layer();
 
-	Depth = -((layer * size) + offset);
+	Depth_ = -((layer * size) + offset);
+}*/
+float UI::Control::Form::Depth() const
+{
+	if (Window == nullptr) { return 0.0f; }
+
+	const float & size = Window -> DepthSize;
+	const float & offset = DepthOffset;
+	float layer = Layer();
+
+	return -((layer * size) + offset);
 }
 
 
@@ -57,11 +67,6 @@ void UI::Control::Form::BoxUpdate()
 
 	BoxContent.Min = BoxBoarder.Min + AnchorPadding.Min;
 	BoxContent.Max = BoxBoarder.Max - AnchorPadding.Max;
-
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> BoxUpdateRequest();
-	}
 }
 
 
@@ -151,7 +156,7 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 		Anchor.X.Anchor = anchor_type_x;
 		Anchor.Y.Anchor = anchor_type_y;
 		Anchor.Calculate(Parent -> BoxContent, box);
-		BoxUpdateRequest();
+		BoxUpdateRequestRecursive();
 	}
 }
 

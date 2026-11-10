@@ -30,7 +30,7 @@ void UserInterfaceContext::Make()
 	UIManager.Window.ChildInsert(TestScroll);
 	UIManager.Window.ChildInsert(TestList);
 	UIManager.Window.ChildInsert(DirectoryNavigator);
-	UIManager.Window.DepthUpdateRequest();
+//	UIManager.Window.DepthUpdateRequest();
 
 	TileGrid.Hide();
 	Text.Hide();
@@ -49,7 +49,7 @@ void UserInterfaceContext::Make()
 	DirectoryNavigator.Change(MediaDirectory);
 	//DirectoryNavigator.Change(DirectoryInfo(MediaDirectory.Path.ToAbsolute()));
 
-	UIManager.Window.DepthUpdateRequest();
+//	UIManager.Window.DepthUpdateRequest();
 }
 
 static void MenuToggleVisible(UI::Control::Form & form)

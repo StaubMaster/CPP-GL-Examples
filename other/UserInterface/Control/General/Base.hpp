@@ -28,18 +28,18 @@ class Base
 	UI::Control::Window *	Window = nullptr;
 	UI::Control::Form *		Form = nullptr;
 
+	public:
+	void	AssignPointer(UI::Manager * manager);
+	void	AssignPointer(UI::Control::Window * window);
+	void	AssignPointer(UI::Control::Form * form);
+
+	public:
+	void	AssignPointerRecursive(UI::Manager * manager);
+	void	AssignPointerRecursive(UI::Control::Window * window);
+	void	AssignPointerRecursive(UI::Control::Form * form);
+
 	protected:
-	virtual void	ChangePointers(Base & control);
-
-	public:
-	void	ChangeManager(UI::Manager * manager);
-	void	ChangeManager(UI::Control::Window * window);
-	void	ChangeManager(UI::Control::Form * form);
-
-	public:
-	void	ChangeManagerRecursive(UI::Manager * manager);
-	void	ChangeManagerRecursive(UI::Control::Window * window);
-	void	ChangeManagerRecursive(UI::Control::Form * form);
+	virtual void	AssignPointers(Base & control);
 
 	protected: public:
 	Base *	Parent = nullptr;
@@ -48,67 +48,62 @@ class Base
 	Container::Binary<Base *>	Children;
 
 	public:
-	virtual void	ChildInsert(Base & control);
-	virtual void	ChildRemove(Base & control);
 	virtual void	ChildClear();
+	virtual void	ChildRemove(Base & control);
+	virtual void	ChildInsert(Base & control);
 
 	public:
-	void	ChildInsert(Base * control);
 	void	ChildRemove(Base * control);
+	void	ChildInsert(Base * control);
 
-	public:
-	unsigned int	Layer = 0;
+//	private:	unsigned int	Layer_ = 0;
+//	public:		unsigned int	Layer() const;
+//	public:		void			LayerUpdate();
+//	public:		void			LayerUpdateRecursive();
+	public:		unsigned int	Layer() const;
 
-	public:
-	void	CalcLayer();
-	void	CalcLayerRecursive();
+	public:		unsigned int	LayerLimit() const;
 
-	public:
-//	unsigned int	Layer() const;
-	unsigned int	LayerLimit() const;
-
-	public:
-	float	Depth = 0.0f; // make this unsigend char. 255 should be more then enough Layers
-	// why so greedy ? just make this a uint32
-
-	public:
-	virtual void	AssignDepth();
-	
-	protected:
-	void	AssignDepthRecursive();
+//	protected:	float			Depth_ = 0.0f;
+//	public:		float			Depth() const;
+//	public:		virtual	void	DepthUpdate();
+//	protected:			void	DepthUpdateRecursive();
+	public:		virtual float	Depth() const;
 
 
 
 	public:
-	bool	Deletable = false;	//should be deleted when Parent is deleted
+	bool	Deletable = false;
+	// true means this should be deleted when Parent is deleted
+	// currently not used
 
 
 
 	protected:
-	bool	_Enabled = true;
+	bool	IsEnabled_ = true;
 	public:
 	bool	IsEnabled() const;
-	void	MakeEnabled();
-	void	MakeDisabled();
+	void	Enable();
+	void	Disable();
 
 	protected:
-	bool	_Visible = true;
+	bool	IsVisible_ = true;
 	public:
 	bool	IsThisVisible() const;
 	void	Show();
 	void	Hide();
 
+	// make this IsTransparent, so it defaults to false
 	protected:
-	bool	_Opaque = true;
+	bool	IsOpaque_ = true;
 	public:
-	bool	IsTransparent() const;
 	bool	IsOpaque() const;
 	void	MakeTransparent();
 	void	MakeOpaque();
 
 	public:
 	bool	IsVisible() const;
-	bool	IsDrawable() const;
+	bool	IsDrawable() const; // IsDisplayable
 	bool	IsThisInteractible() const;
 	bool	IsInteractible() const;
 
@@ -130,19 +125,16 @@ class Base
 
 
 	protected: public:
+	// these are cached Values, calculated from the Anchor. could be calculated on the fly
 	BoxF2	BoxDisplay; // used for displaying Control
 	BoxF2	BoxBoarder; // used for culling Children
 	BoxF2	BoxContent; // used for anchoring Children
 
-	protected:
-	virtual void	BoxUpdate();
-
-	private:
-	bool	BoxUpdateIsRequested = false;
-	void	BoxUpdateResolve();
-
-	public:
-	void	BoxUpdateRequest();
+	private:	bool			BoxUpdateIsRequested = false;
+	public:		void			BoxUpdateRequest();
+	public:		void			BoxUpdateRequestRecursive();
+	private:	void			BoxUpdateResolve();
+	protected:	virtual	void	BoxUpdate();
 
 
 
@@ -156,19 +148,13 @@ class Base
 	EAutoAnchorType		AutoAnchorXType = EAutoAnchorType::None;
 	EAutoAnchorType		AutoAnchorYType = EAutoAnchorType::None;
 
-	private:
-	bool	AutoAnchorUpdateIsRequested = false;
-	void	AutoAnchorUpdateResolve();
+	private:		bool	AutoAnchorUpdateIsRequested = false;
+	public:			void	AutoAnchorUpdateRequest();
+	private:		void	AutoAnchorUpdateResolve();
+	public:	virtual	void	AutoAnchorUpdate();
 
-	public:
-	void	AutoAnchorUpdateRequest();
-
-	public:
-	virtual void	AutoAnchorUpdate();
-
-	private:
-	void	AutoAnchorUpdate_Y_StackMin();
-	void	AutoAnchorUpdate_Y_StackMinFit();
+	private:		void	AutoAnchorUpdate_Y_StackMin();
+	private:		void	AutoAnchorUpdate_Y_StackMinFit();
 
 	/* Update Box
 		currently jitters because some things are updated on different frames
@@ -222,47 +208,31 @@ idea
 	protected:
 	ColorF4		Color;
 
-	protected:
-	virtual void	ColorUpdate();
-
-	private:
-	bool	ColorUpdateIsRequested = false;
-	void	ColorUpdateResolve();
-
-	public:
-	void	ColorUpdateRequest();
-	void	ColorUpdateRequestRecursive();
+	private:				bool	ColorUpdateIsRequested = false;
+	public:					void	ColorUpdateRequest();
+	public:					void	ColorUpdateRequestRecursive();
+	private:				void	ColorUpdateResolve();
+	protected:	virtual		void	ColorUpdate();
 
 
 
-	protected:
-	bool	Display;
+	protected:			bool	Display;
+	protected:	virtual	void	DisplayPut() const;
+	protected:			void	DisplayPutRecursive() const;
 
-	protected:
-	virtual void	DisplayPut() const;
+	protected:	virtual	void	DisplayShow();
+	protected:	virtual	void	DisplayHide();
 
-	protected:
-	void	DisplayPutRecursive() const;
-
-	protected:
-	virtual void	DisplayShow();
-	virtual void	DisplayHide();
-
-	private:
-	bool	DisplayChangeIsRequested = false;
-	void	DisplayChangeRequest();
-	void	DisplayChangeResolve();
-
-	protected:
-	virtual void	DisplayChange();
+	private:			bool	DisplayUpdateIsRequested = false;
+	private:			void	DisplayUpdateRequest();
+	private:			void	DisplayUpdateRequestRecursive();
+	private:			void	DisplayUpdateResolve();
+	protected:	virtual	void	DisplayUpdate();
 
 
 
-	protected:
-	virtual void	Update();
-
-	public:
-	void	UpdateRecursive();
+	protected:	virtual	void	Update();
+	public:				void	UpdateRecursive();
 
 
 

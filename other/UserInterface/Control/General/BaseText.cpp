@@ -10,7 +10,7 @@ UI::Control::BaseText::BaseText()
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	TextObjectData.AlignMiddleMiddle();
-	TextObjectData.Depth = Depth - 0.001f;
+	TextObjectData.Depth = Depth() - 0.001f;
 
 	AlignmentX = UI::Text::Alignment::Min;
 	AlignmentY = UI::Text::Alignment::Min;
@@ -66,19 +66,19 @@ void UI::Control::BaseText::AlignmentUpdate()
 
 #include "Control/Window.hpp"
 #include "Control/Form.hpp"
-void UI::Control::BaseText::AssignDepth()
+/*void UI::Control::BaseText::DepthUpdate()
 {
-	Base::AssignDepth();
+	Base::DepthUpdate();
 
 	if (Window == nullptr) { return; }
 	if (Form == nullptr) { return; }
 
 	float size = Window -> DepthSize;
 	float offset = Form -> DepthOffset;
-	float layer = Layer;
+	float layer = Layer();
 
 	TextObjectData.Depth = -(((layer + (1.0f / 2.0f)) * size) + offset);
-}
+}*/
 
 void UI::Control::BaseText::BoxUpdate()
 {
@@ -107,6 +107,13 @@ void UI::Control::BaseText::Update()
 {
 	AlignmentUpdateResolve();
 	Base::Update();
+	if (Window != nullptr && Form != nullptr)
+	{
+		const float & size = Window -> DepthSize;
+		const float & offset = Form -> DepthOffset;
+		float layer = Layer();
+		TextObjectData.Depth = -(((layer + (1.0f / 2.0f)) * size) + offset);
+	}
 }
 
 

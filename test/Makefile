@@ -7,7 +7,6 @@ FANCY_NAME := Examples
 FILES := \
 \
 	FindAngle.cpp
-#	main.cpp
 
 DIR_SRC := .
 DIR_OBJ := .

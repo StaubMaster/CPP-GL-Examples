@@ -10,14 +10,15 @@ namespace Control
 class Window : public Base
 {
 	public:
-	void	ChangePointers(Base & control) override;
+	void	AssignPointers(Base & control) override;
 
 	public:
 	float		DepthSize = 0.0f;
 	VectorF2	WindowSize;
 
 	public:
-	void	AssignDepth() override;
+	//void	DepthUpdate() override;
+	float	Depth() const override;
 
 	public:
 	~Window();
@@ -29,14 +30,10 @@ class Window : public Base
 	public:
 	void	WindowPutDisplay();
 
-	private:
-	bool	DepthUpdateIsRequested = false;
-	public:
-	void	DepthUpdateResolve();
-	public:
-	void	DepthUpdateRequest();
-	private:
-	void	DepthUpdate();
+	private:	bool	DepthCalculateIsRequested = false;
+	public:		void	DepthCalculateResolve();
+	public:		void	DepthCalculateRequest();
+	private:	void	DepthCalculate();
 };
 };
 };

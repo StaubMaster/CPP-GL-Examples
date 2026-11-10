@@ -30,3 +30,5 @@ place lampe_T8   3.2 1.7 -20   00 00 00
 pallet Leuchtstofflampe.polyhedra lampe
 place lampe   0 10 -20   00 00 00
 LightPoint        0.5   1.0 1.0 1.0     0.0 08.0 -20.0   0.0 0.0 0.0
+# Light Reflection stuff looks different from -Z and +Z
+# this should not be the case

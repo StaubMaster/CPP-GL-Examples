@@ -129,16 +129,16 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 #include "Control/Window.hpp"
 #include "Control/Form.hpp"
-void UI::Control::Slider::AssignDepth()
+/*void UI::Control::Slider::DepthUpdate()
 {
-	BaseText::AssignDepth();
+	BaseText::DepthUpdate();
 
 	if (Window == nullptr) { return; }
 	if (Form == nullptr) { return; }
 
-	float size = Window -> DepthSize;
-	float offset = Form -> DepthOffset;
-	float layer = Layer;
+	const float & size = Window -> DepthSize;
+	const float & offset = Form -> DepthOffset;
+	float layer = Layer();
 
 	if (SliderObject_Is)
 	{
@@ -148,7 +148,7 @@ void UI::Control::Slider::AssignDepth()
 	{
 		TextObjectData.Depth = -(((layer + (2.0f / 3.0f)) * size) + offset);
 	}
-}
+}*/
 
 
 
@@ -156,19 +156,37 @@ void UI::Control::Slider::BoxUpdate()
 {
 	BaseText::BoxUpdate();
 	PutSliderNub();
+	if (Window != nullptr && Form != nullptr)
+	{
+		const float & size = Window -> DepthSize;
+		const float & offset = Form -> DepthOffset;
+		float layer = Layer();
+		if (SliderObject_Is)
+		{
+			SliderObject_Depth = -(((layer + (1.0f / 3.0f)) * size) + offset);
+		}
+		if (TextObjectData.Display)
+		{
+			TextObjectData.Depth = -(((layer + (2.0f / 3.0f)) * size) + offset);
+		}
+	}
 }
 #include "UIManager.hpp"
 void UI::Control::Slider::DisplayPut() const
 {
 	BaseText::DisplayPut();
-	if (Manager != nullptr && SliderObject_Is)
+	if (Manager != nullptr)
 	{
-		Inst::Data data;
-		data.Layer = SliderObject_Depth;
-		data.Box = SliderObject_Box;
-		data.Color = SliderObject_Color;
-		data.Bound = SliderObject_Bound;
-		Manager -> ControlManager.InstancePut(data);
+		if (SliderObject_Is)
+		{
+			Inst::Data data;
+			data.Layer = SliderObject_Depth;
+			data.Box = SliderObject_Box;
+			data.Color = SliderObject_Color;
+			data.Bound = SliderObject_Bound;
+			Manager -> ControlManager.InstancePut(data);
+		}
+
 	}
 }
 void UI::Control::Slider::DisplayShow()
@@ -178,7 +196,7 @@ void UI::Control::Slider::DisplayShow()
 	{
 		SliderObject_Is = true;
 		SliderObject_Color = ColorF4(0.5f, 0.5f, 0.5f);
-		SliderObject_Depth = Depth - 0.0005f;
+		SliderObject_Depth = Depth() - 0.0005f;
 		PutSliderNub();
 	}
 }
