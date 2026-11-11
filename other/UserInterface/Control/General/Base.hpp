@@ -164,8 +164,8 @@ class Base
 	enum class EAutoAnchorType
 	{
 		None,
-		StackMin, //MinDist of next = MinSize of prev
-		StackMinFit, //StackMin but this Control is resized to fit Children
+		StackMin,		//next.MinDist = prev.MinSize
+		//StackMinFit,	//next.MinDist = prev.MinSize but this.Size is made to Fit
 	};
 	EAutoAnchorType		AutoAnchorXType = EAutoAnchorType::None;
 	EAutoAnchorType		AutoAnchorYType = EAutoAnchorType::None;
@@ -176,49 +176,19 @@ class Base
 	public:	virtual	void	AutoAnchorUpdate();
 
 	private:		void	AutoAnchorUpdate_Y_StackMin();
-	private:		void	AutoAnchorUpdate_Y_StackMinFit();
+//	private:		void	AutoAnchorUpdate_Y_StackMinFit();
 
-	/* Update Box
-		currently jitters because some things are updated on different frames
-
-currently
-{
-	BoxUpdate()
-	...
-	Children.BoxUpdate()
-	...
-	AutoAnchorUpdate()
-}
-
-idea
-{
-	BoxUpdate()
-	if (AutoAnchor)
-	{
-		Children.BoxUpdate()
-		AutoAnchorUpdate()
-		Children.BoxUpdate()
-	}
-}
-the first time, Children dont need to do full BoxUpdate
-what do Children do the first time ?
-Update Size maybe
-define themselves maybe
-
-what does AutoAnchor do ?
-	tell Children how to Anchor themselves
-	maybe change Size of this
-	so Children need to BoxUpdate after anyway
-	Sizes are gotten with Anchors, they are defined when Child is constructed
-
-idea
-{
-	AutoAnchorUpdate()
-	BoxUpdate()
-	...
-	Children.BoxUpdate()
-}
-*/
+	/* should Children be able to effect Parent ?
+		normal Controls dont do that ?
+		the only ones I can think of are HTML
+		HTML is very complex
+		Controls can have Maximum and Minimum Sizes
+		they also auto arange themselves
+		which is what I want
+		changing Children to is easy
+		maybe make another to automatically make all Children use the "Both" Anchor
+		making the Parent fit the Children is not really needed
+	*/
 
 
 
@@ -248,6 +218,8 @@ idea
 	protected:	virtual	void	DisplayShow();
 	protected:	virtual	void	DisplayHide();
 
+
+
 	private:			bool	DisplayUpdateIsRequested = false;
 	private:			void	DisplayUpdateRequest();
 //	private:			void	DisplayUpdateRequestRecursive();
@@ -264,7 +236,6 @@ idea
 	public:
 	virtual ~Base();
 	Base();
-
 	Base(const Base & other) = delete;
 	Base & operator=(const Base & other) = delete;
 

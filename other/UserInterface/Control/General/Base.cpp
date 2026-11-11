@@ -394,7 +394,7 @@ void UI::Control::Base::AutoAnchorUpdate()
 	{
 		case EAutoAnchorType::None: break;
 		case EAutoAnchorType::StackMin:		AutoAnchorUpdate_Y_StackMin(); break;
-		case EAutoAnchorType::StackMinFit:	AutoAnchorUpdate_Y_StackMinFit(); break;
+		//case EAutoAnchorType::StackMinFit:	AutoAnchorUpdate_Y_StackMinFit(); break;
 		default: break;
 	}
 
@@ -414,7 +414,7 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 	}
 	AnchorUpdateRequest();
 }
-void UI::Control::Base::AutoAnchorUpdate_Y_StackMinFit()
+/*void UI::Control::Base::AutoAnchorUpdate_Y_StackMinFit()
 {
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -428,7 +428,7 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMinFit()
 	Anchor.Y.SetSize(y + AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
 	//BoxUpdateRequestRecursive();
 	AnchorUpdateRequest();
-}
+}*/
 
 
 

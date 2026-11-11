@@ -78,7 +78,8 @@ TestSelector::TestSelector()
 	ChildInsert(TestListButton);
 	ChildInsert(DirectoryNavigatorButton);
 
-	AutoAnchorYType = EAutoAnchorType::StackMinFit;
+	//AutoAnchorYType = EAutoAnchorType::StackMinFit;
+	AutoAnchorYType = EAutoAnchorType::StackMin;
 }
 
 #include "new.hpp"

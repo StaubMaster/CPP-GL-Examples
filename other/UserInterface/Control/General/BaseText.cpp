@@ -10,7 +10,6 @@ UI::Control::BaseText::BaseText()
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	TextObjectData.AlignMiddleMiddle();
-	TextObjectData.Depth = Depth() - 0.001f;
 
 	AlignmentX = UI::Text::Alignment::Min;
 	AlignmentY = UI::Text::Alignment::Min;
@@ -44,13 +43,13 @@ void UI::Control::BaseText::AlignmentUpdateRequest()
 {
 	AlignmentUpdateFlag = true;
 }
-void UI::Control::BaseText::AlignmentUpdateResolve()
+/*void UI::Control::BaseText::AlignmentUpdateResolve()
 {
 	if (AlignmentUpdateFlag)
 	{
 		AlignmentUpdate();
 	}
-}
+}*/
 void UI::Control::BaseText::AlignmentUpdate()
 {
 	TextObjectData.TextAlignmentX = AlignmentX;
@@ -58,6 +57,16 @@ void UI::Control::BaseText::AlignmentUpdate()
 
 	TextObjectData.CharacterAlignmentX = AlignmentX;
 	TextObjectData.CharacterAlignmentY = AlignmentY;
+
+	VectorF2 & pos = TextObjectData.TextPosition;
+
+	if (AlignmentX == UI::Text::Alignment::Min) { pos.X = BoxContent().Min.X; }
+	if (AlignmentX == UI::Text::Alignment::Mid) { pos.X = BoxContent().Center().X; }
+	if (AlignmentX == UI::Text::Alignment::Max) { pos.X = BoxContent().Max.X; }
+
+	if (AlignmentY == UI::Text::Alignment::Min) { pos.Y = BoxContent().Min.Y; }
+	if (AlignmentY == UI::Text::Alignment::Mid) { pos.Y = BoxContent().Center().Y; }
+	if (AlignmentY == UI::Text::Alignment::Max) { pos.Y = BoxContent().Max.Y; }
 
 	AlignmentUpdateFlag = false;
 }
@@ -87,16 +96,7 @@ void UI::Control::BaseText::AnchorUpdate()
 {
 	Base::AnchorUpdate();
 
-	VectorF2 & pos = TextObjectData.TextPosition;
-	//std::cout << "BaseText::AnchorUpdate() " << pos << '\n';
-
-	if (AlignmentX == UI::Text::Alignment::Min) { pos.X = BoxContent().Min.X; }
-	if (AlignmentX == UI::Text::Alignment::Mid) { pos.X = BoxContent().Center().X; }
-	if (AlignmentX == UI::Text::Alignment::Max) { pos.X = BoxContent().Max.X; }
-
-	if (AlignmentY == UI::Text::Alignment::Min) { pos.Y = BoxContent().Min.Y; }
-	if (AlignmentY == UI::Text::Alignment::Mid) { pos.Y = BoxContent().Center().Y; }
-	if (AlignmentY == UI::Text::Alignment::Max) { pos.Y = BoxContent().Max.Y; }
+	AlignmentUpdateRequest();
 
 	if (Parent != nullptr)
 	{
@@ -109,8 +109,11 @@ void UI::Control::BaseText::AnchorUpdate()
 }
 void UI::Control::BaseText::Update()
 {
-	AlignmentUpdateResolve();
 	Base::Update();
+
+	//AlignmentUpdateResolve();
+	if (AlignmentUpdateFlag) { AlignmentUpdate(); }
+
 	if (Window != nullptr && Form != nullptr)
 	{
 		const float & size = Window -> DepthSize;
@@ -119,6 +122,7 @@ void UI::Control::BaseText::Update()
 		TextObjectData.Depth = -(((layer + (1.0f / 2.0f)) * size) + offset);
 	}
 }
+
 
 
 #include "UIManager.hpp"

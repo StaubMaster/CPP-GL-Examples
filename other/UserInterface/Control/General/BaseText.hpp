@@ -32,7 +32,7 @@ class BaseText : public Base
 	void	AlignmentChangeY(UI::Text::Alignment alignment);
 	private:	bool	AlignmentUpdateFlag = false;
 	protected:	void	AlignmentUpdateRequest();
-	private:	void	AlignmentUpdateResolve();
+//	private:	void	AlignmentUpdateResolve();
 	private:	void	AlignmentUpdate();
 
 	protected:
