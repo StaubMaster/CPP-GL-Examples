@@ -41,8 +41,6 @@ class BaseText : public Base
 
 	public:
 	void	DisplayPut() const override;
-	void	DisplayShow() override;
-	void	DisplayHide() override;
 };
 };
 };

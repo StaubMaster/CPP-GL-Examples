@@ -136,7 +136,9 @@ void UI::Control::Slider::AnchorUpdate()
 void UI::Control::Slider::Update()
 {
 	BaseText::Update();
+
 	if (NubUpdateRequested) { NubUpdate(); }
+
 	TextObjectData.Depth = Depth(2.0f / 3.0f);
 }
 
@@ -144,33 +146,14 @@ void UI::Control::Slider::Update()
 void UI::Control::Slider::DisplayPut() const
 {
 	BaseText::DisplayPut();
-	if (_Manager() != nullptr && Parent)
+	if (_Manager() != nullptr && Parent != nullptr)
 	{
-		if (NubObject_Display)
-		{
-			Inst::Data data;
-			data.Layer = Depth(1.0f / 3.0f);
-			data.Box = NubBox;
-			data.Color = ColorF4(0.5f, 0.5f, 0.5f);
-			data.Bound = Parent -> BoxBoarder(); // Bound should be this.BoxDisplay ?
-			_Manager() -> ControlManager.InstancePut(data);
-		}
-	}
-}
-void UI::Control::Slider::DisplayShow()
-{
-	BaseText::DisplayShow();
-	if (!NubObject_Display)
-	{
-		NubObject_Display = true;
-	}
-}
-void UI::Control::Slider::DisplayHide()
-{
-	BaseText::DisplayHide();
-	if (NubObject_Display)
-	{
-		NubObject_Display = false;
+		Inst::Data data;
+		data.Layer = Depth(1.0f / 3.0f);
+		data.Box = NubBox;
+		data.Color = ColorF4(0.5f, 0.5f, 0.5f);
+		data.Bound = Parent -> BoxBoarder(); // Bound should be this.BoxDisplay ?
+		_Manager() -> ControlManager.InstancePut(data);
 	}
 }
 

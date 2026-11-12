@@ -41,9 +41,6 @@ class Slider : public BaseText
 	VectorF2	NubSize;
 	private:
 	BoxF2		NubBox;
-
-	private:
-	bool		NubObject_Display = false;
 	/* Area Slider
 		naturally creates a "dot"
 		make a Cross instead ?
@@ -70,8 +67,6 @@ class Slider : public BaseText
 	void	Update() override;
 	public:
 	void	DisplayPut() const override;
-	void	DisplayShow() override;
-	void	DisplayHide() override;
 	
 	public:
 	void	RelayClick(ClickArgs args) override;

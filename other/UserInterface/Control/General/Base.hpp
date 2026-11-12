@@ -96,7 +96,6 @@ class Base
 	void	Show();
 	void	Hide();
 
-	// make this IsTransparent, so it defaults to false
 	protected:
 	bool	IsOpaque_ = true;
 	public:
@@ -109,6 +108,9 @@ class Base
 	bool	IsDisplay() const;
 //	bool	IsThisInteractible() const;
 	bool	IsInteractible() const;
+
+	// IsActive
+	// dont Update if not Active
 
 
 
@@ -144,8 +146,6 @@ class Base
 
 	protected:	bool			AnchorUpdateIsRequested = false;
 	public:		void			AnchorUpdateRequest();
-//	public:		void			AnchorUpdateRequestRecursive();
-//	private:	void			AnchorUpdateResolve();
 	protected:	virtual	void	AnchorUpdate();
 
 
@@ -157,8 +157,6 @@ class Base
 
 //	private:	bool			BoxUpdateIsRequested = false;
 //	public:		void			BoxUpdateRequest();
-//	public:		void			BoxUpdateRequestRecursive();
-//	private:	void			BoxUpdateResolve();
 //	protected:	virtual	void	BoxUpdate();
 
 	public:
@@ -180,7 +178,6 @@ class Base
 
 	private:		bool	AutoAnchorUpdateIsRequested = false;
 	public:			void	AutoAnchorUpdateRequest();
-//	private:		void	AutoAnchorUpdateResolve();
 	public:	virtual	void	AutoAnchorUpdate();
 
 	private:		void	AutoAnchorUpdate_Y_StackMin();
@@ -210,8 +207,6 @@ class Base
 
 //	private:				bool	ColorUpdateIsRequested = false;
 //	public:					void	ColorUpdateRequest();
-//	public:					void	ColorUpdateRequestRecursive();
-//	private:				void	ColorUpdateResolve();
 //	protected:	virtual		void	ColorUpdate();
 
 	protected:
@@ -219,10 +214,11 @@ class Base
 
 
 
-	protected:			bool	Display;
 	protected:	virtual	void	DisplayPut() const;
 	public:				void	DisplayPutRecursive() const;
 
+	// rename these to RelayShow and RelayHide
+	// they dont do anything else now
 	protected:	virtual	void	DisplayShow();
 	protected:	virtual	void	DisplayHide();
 
@@ -230,8 +226,6 @@ class Base
 
 	private:			bool	DisplayUpdateIsRequested = false;
 	private:			void	DisplayUpdateRequest();
-//	private:			void	DisplayUpdateRequestRecursive();
-//	private:			void	DisplayUpdateResolve();
 	protected:	virtual	void	DisplayUpdate();
 
 

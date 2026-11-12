@@ -256,21 +256,6 @@ void UI::Control::Base::AnchorUpdateRequest()
 {
 	AnchorUpdateIsRequested = true;
 }
-/*void UI::Control::Base::AnchorUpdateRequestRecursive()
-{
-	AnchorUpdateRequest();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> AnchorUpdateRequestRecursive();
-	}
-}*/
-/*void UI::Control::Base::AnchorUpdateResolve()
-{
-	if (AnchorUpdateIsRequested)
-	{
-		AnchorUpdate();
-	}
-}*/
 void UI::Control::Base::AnchorUpdate()
 {
 	if (Parent == nullptr) { return; }
@@ -289,21 +274,6 @@ void UI::Control::Base::AnchorUpdate()
 /*void UI::Control::Base::BoxUpdateRequest()
 {
 	BoxUpdateIsRequested = true;
-}*/
-/*void UI::Control::Base::BoxUpdateRequestRecursive()
-{
-	BoxUpdateRequest();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> BoxUpdateRequestRecursive();
-	}
-}*/
-/*void UI::Control::Base::BoxUpdateResolve()
-{
-	if (BoxUpdateIsRequested)
-	{
-		BoxUpdate();
-	}
 }*/
 /*void UI::Control::Base::BoxUpdate()
 {
@@ -353,13 +323,6 @@ void UI::Control::Base::AutoAnchorUpdateRequest()
 {
 	AutoAnchorUpdateIsRequested = true;
 }
-/*void UI::Control::Base::AutoAnchorUpdateResolve()
-{
-	if (AutoAnchorUpdateIsRequested)
-	{
-		AutoAnchorUpdate();
-	}
-}*/
 void UI::Control::Base::AutoAnchorUpdate()
 {
 	if (!IsVisible()) { return; }
@@ -416,21 +379,6 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 {
 	ColorUpdateIsRequested = true;
 }*/
-/*void UI::Control::Base::ColorUpdateRequestRecursive()
-{
-	ColorUpdateRequest();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> ColorUpdateRequestRecursive();
-	}
-}*/
-/*void UI::Control::Base::ColorUpdateResolve()
-{
-	if (ColorUpdateIsRequested)
-	{
-		ColorUpdate();
-	}
-}*/
 /*void UI::Control::Base::ColorUpdate()
 {
 	if (Manager == nullptr)
@@ -473,7 +421,8 @@ ColorF4 UI::Control::Base::Color() const
 
 void UI::Control::Base::DisplayPut() const
 {
-	if (_Manager() != nullptr && Parent != nullptr && Display)
+//	if (_Manager() != nullptr && Parent != nullptr && Display)
+	if (_Manager() != nullptr && Parent != nullptr && IsOpaque())
 	{
 		Inst::Data data;
 		data.Layer = Depth();
@@ -485,51 +434,27 @@ void UI::Control::Base::DisplayPut() const
 }
 void UI::Control::Base::DisplayPutRecursive() const
 {
-	DisplayPut();
-	for (unsigned int i = 0; i < Children.Count(); i++)
+	if (IsThisVisible())
 	{
-		Children[i] -> DisplayPutRecursive();
+		DisplayPut();
+		for (unsigned int i = 0; i < Children.Count(); i++)
+		{
+			Children[i] -> DisplayPutRecursive();
+		}
 	}
 }
 
-void UI::Control::Base::DisplayShow()
-{
-	Display = true;
-}
-void UI::Control::Base::DisplayHide()
-{
-	Display = false;
-}
+void UI::Control::Base::DisplayShow() { }
+void UI::Control::Base::DisplayHide() { }
 
 void UI::Control::Base::DisplayUpdateRequest()
 {
 	DisplayUpdateIsRequested = true;
 }
-/*void UI::Control::Base::DisplayUpdateRequestRecursive()
-{
-	DisplayUpdateRequest();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> DisplayUpdateRequestRecursive();
-	}
-}*/
-/*void UI::Control::Base::DisplayUpdateResolve()
-{
-	if (DisplayUpdateIsRequested)
-	{
-		DisplayUpdate();
-	}
-}*/
 void UI::Control::Base::DisplayUpdate()
 {
-	if (IsDisplay())
-	{
-		DisplayShow();
-	}
-	else
-	{
-		DisplayHide();
-	}
+	if (IsDisplay())	{ DisplayShow(); }
+	else				{ DisplayHide(); }
 
 	DisplayUpdateIsRequested = false;
 	for (unsigned int i = 0; i < Children.Count(); i++)

@@ -9,6 +9,8 @@ UI::Control::BaseText::BaseText()
 	float padding = 0;
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
+	TextObjectData.Display = true;
+
 	AlignmentX = UI::Text::Alignment::Min;
 	AlignmentY = UI::Text::Alignment::Min;
 	AlignmentUpdateFlag = true;
@@ -87,8 +89,6 @@ void UI::Control::BaseText::AnchorUpdate()
 	}
 }
 
-#include "Control/Window.hpp"
-#include "Control/Form.hpp"
 void UI::Control::BaseText::Update()
 {
 	Base::Update();
@@ -105,21 +105,8 @@ void UI::Control::BaseText::Update()
 void UI::Control::BaseText::DisplayPut() const
 {
 	Base::DisplayPut();
-	if (_Manager() != nullptr)
+	if (_Manager() != nullptr && TextObjectData.Display)
 	{
-		if (TextObjectData.Display) // should be checked in InstancePut ?
-		{
-			_Manager() -> TextManager.InstancesPut(TextObjectData);
-		}
+		_Manager() -> TextManager.InstancesPut(TextObjectData);
 	}
-}
-void UI::Control::BaseText::DisplayShow()
-{
-	Base::DisplayShow();
-	TextObjectData.Display = true;
-}
-void UI::Control::BaseText::DisplayHide()
-{
-	Base::DisplayHide();
-	TextObjectData.Display = false;
 }
