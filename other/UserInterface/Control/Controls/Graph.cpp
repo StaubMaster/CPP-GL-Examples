@@ -32,7 +32,7 @@ void UI::Control::Graph::Update()
 void UI::Control::Graph::DisplayShow()
 {
 	Base::DisplayShow();
-	if (!GraphObject.Is() && Manager != nullptr)
+	if (!GraphObject.Is() && _Manager() != nullptr)
 	{
 		GraphObject.Create();
 	}
@@ -40,7 +40,7 @@ void UI::Control::Graph::DisplayShow()
 void UI::Control::Graph::DisplayHide()
 {
 	Base::DisplayHide();
-	if (GraphObject.Is() || Manager == nullptr)
+	if (GraphObject.Is() || _Manager() == nullptr)
 	{
 		GraphObject.Delete();
 	}

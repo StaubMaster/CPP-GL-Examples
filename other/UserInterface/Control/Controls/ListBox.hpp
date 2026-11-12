@@ -21,7 +21,7 @@ struct ListBox : public UI::Control::ScrollBox
 
 		void *	Object;
 
-		~Item();
+		~Item() = default;
 		Item() = delete;
 		Item(const Item & other) = delete;
 		Item & operator=(const Item & other) = delete;

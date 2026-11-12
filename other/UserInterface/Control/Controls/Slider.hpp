@@ -14,13 +14,36 @@ namespace Control
 {
 class Slider : public BaseText
 {
+	private:	VectorF2	Value;
+	public:		BoxF2		ValueRange;
+	public:		VectorF2	ValueResolution;
+	// Get/Set for these
+	// ValueScrollChange ? how much does the value change from Scrolling
+
 	private:
-	//Control::Object		SliderObject; // replace with directly putting stuff into Instances
-	bool		SliderObject_Is = false;
-	float		SliderObject_Depth;
-	BoxF2		SliderObject_Box;
-	ColorF4		SliderObject_Color;
-	BoxF2		SliderObject_Bound;
+	void	ClampValue();
+
+	public:
+	VectorF2	GetValue() const;
+	float		GetValueX() const;
+	float		GetValueY() const;
+	public:
+	void		SetValue(VectorF2 val);
+	void		SetValueX(float val);
+	void		SetValueY(float val);
+
+	private:
+	void	ChangeValue(DisplayPosition mouse_pos);
+
+
+
+	public:
+	VectorF2	NubSize;
+	private:
+	BoxF2		NubBox;
+
+	private:
+	bool		NubObject_Display = false;
 	/* Area Slider
 		naturally creates a "dot"
 		make a Cross instead ?
@@ -28,35 +51,11 @@ class Slider : public BaseText
 		dont display the unused one, since it would cover the whole Control
 	*/
 
-	private:
-	bool		SliderChanged; // request/resolve ?
-	public:
-	VectorF2	NubSize;
+	private:	bool	NubUpdateRequested = false;
+	public:		void	NubUpdateRequest();
+	private:	void	NubUpdate();
 
-	private:
-	VectorF2	Value;
-	public:
-	VectorF2	ValueResolution;
-	public:
-	BoxF2		ValueRange;
-	// Get/Set for these
-	// ValueScrollChange ? how much does the value change from Scrolling
 
-	public:
-	VectorF2	GetValue() const;
-	float		GetValueX() const;
-	float		GetValueY() const;
-	void		SetValue(VectorF2 val);
-	void		SetValueX(float val);
-	void		SetValueY(float val);
-
-	private:
-	public: // temp
-	void	PutSliderNub();
-	void	ClampValue();
-
-	private:
-	void	ChangeValue(DisplayPosition mouse_pos);
 
 	public:
 	Function::Pointer<float>		ValueXChangedFunc;
@@ -67,8 +66,6 @@ class Slider : public BaseText
 	Slider();
 
 	protected:
-//	void	DepthUpdate() override;
-//	void	BoxUpdate() override;
 	void	AnchorUpdate() override;
 	void	Update() override;
 	public:
@@ -80,7 +77,7 @@ class Slider : public BaseText
 	void	RelayClick(ClickArgs args) override;
 	void	RelayDrag(DragArgs args) override;
 	void	RelayKey(KeyArgs args) override;
-	// Scroll
+	//void	RelayScroll(ScrollArgs args) override;
 };
 };
 };

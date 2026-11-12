@@ -5,49 +5,28 @@
 
 
 
-void UI::Control::Base::AssignPointers(Base & control)
-{
-	control.Parent = this;
-	control.AssignPointerRecursive(Manager);
-	control.AssignPointerRecursive(Window);
-	control.AssignPointerRecursive(Form);
-}
+		UI::Manager *			UI::Control::Base::_Manager()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
+		UI::Manager *			UI::Control::Base::_Manager()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
+		UI::Control::Window *	UI::Control::Base::_Window()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Window(); }
+const	UI::Control::Window *	UI::Control::Base::_Window()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Window(); }
+		UI::Control::Form *		UI::Control::Base::_Form()				{ return Form_; }
+const	UI::Control::Form *		UI::Control::Base::_Form()		const	{ return Form_; }
 
-void UI::Control::Base::AssignPointer(UI::Manager * manager)
+void UI::Control::Base::AssignPointers(Base & other)
 {
-	Manager = manager;
+	other.Parent = this;
+	other.AssignPointersRecursive(Form_);
 }
-void UI::Control::Base::AssignPointer(UI::Control::Window * window)
+void UI::Control::Base::AssignPointers(UI::Control::Form * form)
 {
-	Window = window;
+	Form_ = form;
 }
-void UI::Control::Base::AssignPointer(UI::Control::Form * form)
+void UI::Control::Base::AssignPointersRecursive(UI::Control::Form * form)
 {
-	Form = form;
-}
-
-void UI::Control::Base::AssignPointerRecursive(UI::Manager * manager)
-{
-	AssignPointer(manager);
+	AssignPointers(form);
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> AssignPointerRecursive(manager);
-	}
-}
-void UI::Control::Base::AssignPointerRecursive(UI::Control::Window * window)
-{
-	AssignPointer(window);
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> AssignPointerRecursive(window);
-	}
-}
-void UI::Control::Base::AssignPointerRecursive(UI::Control::Form * form)
-{
-	AssignPointer(form);
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> AssignPointerRecursive(form);
+		Children[i] -> AssignPointersRecursive(form);
 	}
 }
 
@@ -257,17 +236,18 @@ unsigned int UI::Control::Base::LayerLimit() const
 		Children[i] -> DepthUpdateRecursive();
 	}
 }*/
-float UI::Control::Base::Depth() const
+/*float UI::Control::Base::Depth() const
 {
 	// return NaN ?
 	if (Window == nullptr) { return 0.0f; }
 	if (Form == nullptr) { return 0.0f; }
-
-	const float & size = Window -> DepthSize;
-	const float & offset = Form -> DepthOffset;
-	float layer = Layer();
-
-	return -((layer * size) + offset);
+	return -((Layer() * (Window -> DepthSize)) + (Form -> DepthOffset));
+}*/
+float UI::Control::Base::Depth(float diff) const
+{
+	if (_Window() == nullptr) { return 0.0f; }
+	if (_Form() == nullptr) { return 0.0f; }
+	return -(((Layer() + diff) * (_Window() -> DepthSize)) + (_Form() -> DepthOffset)); // put this Calculation in Form ?
 }
 
 
@@ -472,13 +452,13 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 }*/
 ColorF4 UI::Control::Base::Color() const
 {
-	if (Manager == nullptr)
+	if (_Manager() == nullptr)
 	{
 		return ColorDefault;
 	}
 	else
 	{
-		if (Manager -> Hovering != this)
+		if (_Manager() -> Hovering != this)
 		{
 			return ColorDefault;
 		}
@@ -493,21 +473,14 @@ ColorF4 UI::Control::Base::Color() const
 
 void UI::Control::Base::DisplayPut() const
 {
-	if (Manager != nullptr && Display)
+	if (_Manager() != nullptr && Parent != nullptr && Display)
 	{
 		Inst::Data data;
 		data.Layer = Depth();
 		data.Box = BoxDisplay();
 		data.Color = Color();
-		if (Parent != nullptr)
-		{
-			data.Bound = Parent -> BoxBoarder();
-		}
-		else
-		{
-			data.Bound = BoxF2();
-		}
-		Manager -> ControlManager.InstancePut(data);
+		data.Bound = Parent -> BoxBoarder();
+		_Manager() -> ControlManager.InstancePut(data);
 	}
 }
 void UI::Control::Base::DisplayPutRecursive() const

@@ -3,45 +3,56 @@
 
 # include "Control/General/Base.hpp"
 
+struct DisplaySize;
+
 namespace UI
 {
+class Manager;
 namespace Control
 {
+class Form;
 class Window : public Base
 {
 	public:
+	UI::Manager *			Manager_ = nullptr;
+
+	public:
+			UI::Manager *			_Manager() override;
+			UI::Manager *			_Manager() const override;
+			UI::Control::Window *	_Window() override;
+	const	UI::Control::Window *	_Window() const override;
+			UI::Control::Form *		_Form() override;
+	const	UI::Control::Form *		_Form() const override;
+
+	public:
 	void	AssignPointers(Base & control) override;
 
-	public:
-	float		DepthSize = 0.0f;
-	VectorF2	WindowSize;
 
-	public:
-	//void	DepthUpdate() override;
-	//float	Depth() const override;
 
-	public:
-	~Window() = default;
-	Window();
+	private:	VectorF2	Size;
+	public:		void		SizeChange(const DisplaySize & display_size);
 
-	protected:
-//	void	AnchorUpdate() override;
-//	void	BoxUpdate() override;
-	public:
-	BoxF2	BoxDisplay() const override;
-	BoxF2	BoxBoarder() const override;
-	BoxF2	BoxContent() const override;
-
-	public:
-	void	WindowPutDisplay();
-
+	public:		float	DepthSize = 0.0f;
 	private:	bool	DepthCalculateIsRequested = false;
 	public:		void	DepthCalculateRequest();
 //	public:		void	DepthCalculateResolve();
 	private:	void	DepthCalculate();
 
+
+
+	public:
+	BoxF2	BoxDisplay() const override;
+	BoxF2	BoxBoarder() const override;
+	BoxF2	BoxContent() const override;
+
 	protected:
 	void	Update() override;
+
+
+
+	public:
+	~Window() = default;
+	Window();
 };
 };
 };

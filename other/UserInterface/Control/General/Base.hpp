@@ -35,26 +35,33 @@ class Window;
 class Form;
 class Base
 {
-	protected:
-	UI::Manager *			Manager = nullptr;
-	UI::Control::Window *	Window = nullptr;
-	UI::Control::Form *		Form = nullptr;
+	public:
+	UI::Control::Form *		Form_ = nullptr; // Forn and Window dont need this.
+	/*
+		make Base that ForM and Window inherit from,
+		and another Base,
+		that inhertis from the first Base
+		and that all of the actual Control inherit from
+	*/
 
 	public:
-	void	AssignPointer(UI::Manager * manager);
-	void	AssignPointer(UI::Control::Window * window);
-	void	AssignPointer(UI::Control::Form * form);
+	virtual			UI::Manager *			_Manager();
+	virtual			UI::Manager *			_Manager() const;
+	virtual			UI::Control::Window *	_Window();
+	virtual	const	UI::Control::Window *	_Window() const;
+	virtual			UI::Control::Form *		_Form();
+	virtual	const	UI::Control::Form *		_Form() const;
+	// these suck, find a way to replace them
 
 	public:
-	void	AssignPointerRecursive(UI::Manager * manager);
-	void	AssignPointerRecursive(UI::Control::Window * window);
-	void	AssignPointerRecursive(UI::Control::Form * form);
+	virtual void	AssignPointers(Base & other);
+	void			AssignPointers(UI::Control::Form * form);
+	void			AssignPointersRecursive(UI::Control::Form * form);
 
-	protected:
-	virtual void	AssignPointers(Base & control);
+
 
 	protected: public:
-	Base *	Parent = nullptr;
+	Base *	Parent = nullptr; // could this be const ?
 
 	protected: public:
 	Container::Binary<Base *>	Children;
@@ -117,7 +124,8 @@ class Base
 //	public:		float			Depth() const;
 //	public:		virtual	void	DepthUpdate();
 //	protected:			void	DepthUpdateRecursive();
-	public:		float			Depth() const;
+//	public:		float			Depth() const;
+	public:		float			Depth(float diff = 0.0f) const;
 
 
 
@@ -213,7 +221,7 @@ class Base
 
 	protected:			bool	Display;
 	protected:	virtual	void	DisplayPut() const;
-	protected:			void	DisplayPutRecursive() const;
+	public:				void	DisplayPutRecursive() const;
 
 	protected:	virtual	void	DisplayShow();
 	protected:	virtual	void	DisplayHide();

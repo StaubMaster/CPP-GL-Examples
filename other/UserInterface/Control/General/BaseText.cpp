@@ -9,8 +9,6 @@ UI::Control::BaseText::BaseText()
 	float padding = 0;
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
-	TextObjectData.AlignMiddleMiddle();
-
 	AlignmentX = UI::Text::Alignment::Min;
 	AlignmentY = UI::Text::Alignment::Min;
 	AlignmentUpdateFlag = true;
@@ -18,11 +16,11 @@ UI::Control::BaseText::BaseText()
 
 
 
-std::string UI::Control::BaseText::GetText() const
+const std::string & UI::Control::BaseText::GetText() const
 {
 	return TextObjectData.Text;
 }
-void UI::Control::BaseText::SetText(std::string text)
+void UI::Control::BaseText::SetText(const std::string & text)
 {
 	TextObjectData.Text = text;
 }
@@ -73,25 +71,6 @@ void UI::Control::BaseText::AlignmentUpdate()
 
 
 
-#include "Control/Window.hpp"
-#include "Control/Form.hpp"
-/*void UI::Control::BaseText::DepthUpdate()
-{
-	Base::DepthUpdate();
-
-	if (Window == nullptr) { return; }
-	if (Form == nullptr) { return; }
-
-	float size = Window -> DepthSize;
-	float offset = Form -> DepthOffset;
-	float layer = Layer();
-
-	TextObjectData.Depth = -(((layer + (1.0f / 2.0f)) * size) + offset);
-}*/
-
-#include <iostream>
-#include "ValueType/_Show.hpp"
-//void UI::Control::BaseText::BoxUpdate()
 void UI::Control::BaseText::AnchorUpdate()
 {
 	Base::AnchorUpdate();
@@ -107,6 +86,9 @@ void UI::Control::BaseText::AnchorUpdate()
 		TextObjectData.Bound = BoxContent();
 	}
 }
+
+#include "Control/Window.hpp"
+#include "Control/Form.hpp"
 void UI::Control::BaseText::Update()
 {
 	Base::Update();
@@ -114,13 +96,7 @@ void UI::Control::BaseText::Update()
 	//AlignmentUpdateResolve();
 	if (AlignmentUpdateFlag) { AlignmentUpdate(); }
 
-	if (Window != nullptr && Form != nullptr)
-	{
-		const float & size = Window -> DepthSize;
-		const float & offset = Form -> DepthOffset;
-		float layer = Layer();
-		TextObjectData.Depth = -(((layer + (1.0f / 2.0f)) * size) + offset);
-	}
+	TextObjectData.Depth = Depth(1.0f / 2.0f);
 }
 
 
@@ -129,11 +105,11 @@ void UI::Control::BaseText::Update()
 void UI::Control::BaseText::DisplayPut() const
 {
 	Base::DisplayPut();
-	if (Manager != nullptr)
+	if (_Manager() != nullptr)
 	{
 		if (TextObjectData.Display) // should be checked in InstancePut ?
 		{
-			Manager -> TextManager.InstancesPut(TextObjectData);
+			_Manager() -> TextManager.InstancesPut(TextObjectData);
 		}
 	}
 }

@@ -56,6 +56,8 @@ class Manager
 
 	public:
 	Container::Binary<Control::Inst::Data>		Instances;
+	void	InstancesClear();
+//	void	InstancesMake();
 	void	InstancePut(const Control::Inst::Data & data);
 
 	public:
@@ -74,10 +76,6 @@ class Manager
 	private:
 	void	GraphicsPutMain();
 	void	GraphicsPutInst();
-
-	public:
-	void	GraphicsClear();
-	void	GraphicsMake();
 
 	public:
 	void	GraphicsDraw();

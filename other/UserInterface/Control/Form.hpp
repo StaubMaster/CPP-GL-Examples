@@ -29,35 +29,48 @@ resizable
 
 namespace UI
 {
+class Manager;
 namespace Control
 {
+class Window;
 class Form : public Base
 {
 	public:
+	UI::Control::Window *	Window_ = nullptr;
+
+	public:
+			UI::Manager *			_Manager() override;
+			UI::Manager *			_Manager() const override;
+			UI::Control::Window *	_Window() override;
+	const	UI::Control::Window *	_Window() const override;
+			UI::Control::Form *		_Form() override;
+	const	UI::Control::Form *		_Form() const override;
+
+	public:
 	void	AssignPointers(Base & control) override;
 
-	public:
-	float	DepthOffset = 0.0f;
 
-	public:
-	//void	DepthUpdate() override;
-	//float	Depth() const override;
-
-	public:
-	virtual ~Form() = default;
-	Form();
 
 	protected:
 	void	AnchorUpdate() override;
-//	void	BoxUpdate() override;
+
 	public:
 	BoxF2	BoxDisplay() const override;
 	BoxF2	BoxBoarder() const override;
 	BoxF2	BoxContent() const override;
 
+
+
 	public:
-	bool	IsMovable;
-	bool	IsResizable;
+	virtual ~Form() = default;
+	Form();
+
+	public:
+	float	DepthOffset = 0.0f;
+
+	public:
+	bool	IsMovable = false;
+	bool	IsResizable = false;
 	//BoxF2	SizeLimit;
 
 

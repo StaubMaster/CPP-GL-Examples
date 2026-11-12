@@ -21,8 +21,8 @@ class BaseText : public Base
 	Text::ObjectData	TextObjectData;
 
 	public:
-	std::string		GetText() const;
-	void			SetText(std::string text);
+	const std::string &		GetText() const;
+	void					SetText(const std::string & text);
 
 	protected:
 	UI::Text::Alignment		AlignmentX;
@@ -35,13 +35,10 @@ class BaseText : public Base
 //	private:	void	AlignmentUpdateResolve();
 	private:	void	AlignmentUpdate();
 
-	protected:
-	//void	DepthUpdate() override;
-
 	public:
 	void	AnchorUpdate() override;
-//	void	BoxUpdate() override;
 	void	Update() override;
+
 	public:
 	void	DisplayPut() const override;
 	void	DisplayShow() override;

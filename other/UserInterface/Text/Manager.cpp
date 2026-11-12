@@ -502,7 +502,6 @@ void UI::Text::Manager::GraphicsDelete()
 
 	GraphicsExist = false;
 }
-
 void UI::Text::Manager::GraphicsInit()
 {
 	Buffer.Init();
@@ -528,8 +527,6 @@ void UI::Text::Manager::TextureAssign()
 
 	TextureAssigned = true;
 }
-
-// do this once in GraphicsInit ?
 void UI::Text::Manager::BufferMainUpdateData()
 {
 	if (!GraphicsExist || !Buffer.MainBuffer.DataWant) { return; }
@@ -563,22 +560,25 @@ void UI::Text::Manager::BufferInstUpdateData()
 
 
 
-void UI::Text::Manager::Draw()
+void UI::Text::Manager::GraphicsData()
 {
 	if (!GraphicsExist) { return; }
 
-	Shader.Bind();
-	Buffer.Bind();
-
-	FontBuffer.DataFull(Container::Void(FontData));
-	TextsBuffer.DataFull(Container::Void(TextsData));
-
-	FontTexture.Bind();
-	TextureAssign();
-
 	BufferMainUpdateData();
 	BufferInstUpdateData();
+	TextureAssign();
+	FontBuffer.DataFull(Container::Void(FontData));
+	TextsBuffer.DataFull(Container::Void(TextsData));
+}
+void UI::Text::Manager::GraphicsDraw()
+{
+	if (!GraphicsExist) { return; }
 
+	GraphicsData();
+
+	Shader.Bind();
+	Buffer.Bind();
+	FontTexture.Bind();
 	FontBuffer.Bind();
 	TextsBuffer.Bind();
 	Buffer.Draw();

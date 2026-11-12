@@ -19,6 +19,7 @@ struct ObjectData
 	bool	Display = true;
 
 	std::string		Text;
+//	const char *	Text;
 	VectorF2		TextPosition;
 	Alignment		TextAlignmentX;
 	Alignment		TextAlignmentY;

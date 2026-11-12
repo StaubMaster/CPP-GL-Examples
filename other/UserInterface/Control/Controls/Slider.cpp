@@ -8,6 +8,102 @@
 
 
 
+void UI::Control::Slider::ClampValue()
+{
+	if (Value.X < ValueRange.Min.X) { Value.X = ValueRange.Min.X; }
+	if (Value.X > ValueRange.Max.X) { Value.X = ValueRange.Max.X; }
+	if (Value.Y < ValueRange.Min.Y) { Value.Y = ValueRange.Min.Y; }
+	if (Value.Y > ValueRange.Max.Y) { Value.Y = ValueRange.Max.Y; }
+}
+
+VectorF2 UI::Control::Slider::GetValue() const { return Value; }
+float UI::Control::Slider::GetValueX() const { return Value.X; }
+float UI::Control::Slider::GetValueY() const { return Value.Y; }
+
+void UI::Control::Slider::SetValue(VectorF2 val)
+{
+	Value = val;
+	ClampValue();
+	NubUpdateRequest();
+	ValueXChangedFunc.TryInvoke(Value.X);
+	ValueYChangedFunc.TryInvoke(Value.Y);
+	ValueChangedFunc.TryInvoke(Value);
+}
+void UI::Control::Slider::SetValueX(float val)
+{
+	Value.X = val;
+	ClampValue();
+	NubUpdateRequest();
+	ValueXChangedFunc.TryInvoke(Value.X);
+}
+void UI::Control::Slider::SetValueY(float val)
+{
+	Value.Y = val;
+	ClampValue();
+	NubUpdateRequest();
+	ValueYChangedFunc.TryInvoke(Value.Y);
+}
+
+void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
+{
+	if (!IsInteractible()) { return; }
+
+	VectorF2 slider_size_half = NubSize / 2.0f;
+	BoxF2 slider_range(
+		BoxDisplay().Min + slider_size_half,
+		BoxDisplay().Max - slider_size_half
+	);
+
+	VectorF2 slider_value = mouse_pos.Buffer.Corner;
+	slider_value -= slider_range.Min;
+	slider_value /= slider_range.Size();
+
+	slider_value *= ValueRange.Size();
+	slider_value += ValueRange.Min;
+
+	slider_value /= ValueResolution;
+	slider_value = slider_value.round(); // Vector.round that takes Vector Size
+	slider_value *= ValueResolution;
+
+	Value = slider_value;
+	ClampValue();
+	NubUpdateRequest();
+
+	ValueXChangedFunc.TryInvoke(Value.X);
+	ValueYChangedFunc.TryInvoke(Value.Y);
+	ValueChangedFunc.TryInvoke(Value);
+}
+
+
+
+void UI::Control::Slider::NubUpdateRequest()
+{
+	NubUpdateRequested = true;
+}
+void UI::Control::Slider::NubUpdate()
+{
+	VectorF2 slider_size_half = NubSize / 2.0f;
+	BoxF2 slider_range(
+		BoxDisplay().Min + slider_size_half,
+		BoxDisplay().Max - slider_size_half
+	);
+
+	VectorF2 slider_normal = Value;
+	slider_normal -= ValueRange.Min;
+	slider_normal /= ValueRange.Size();
+
+	VectorF2 slider_value = slider_normal;
+	slider_value *= slider_range.Size();
+	slider_value += slider_range.Min;
+
+	NubBox.Min = slider_value - slider_size_half;
+	NubBox.Max = slider_value + slider_size_half;
+
+	NubUpdateRequested = false;
+}
+
+
+
 UI::Control::Slider::Slider()
 	: BaseText()
 {
@@ -31,188 +127,50 @@ UI::Control::Slider::Slider()
 
 
 
-VectorF2 UI::Control::Slider::GetValue() const { return Value; }
-float UI::Control::Slider::GetValueX() const { return Value.X; }
-float UI::Control::Slider::GetValueY() const { return Value.Y; }
-
-void UI::Control::Slider::SetValue(VectorF2 val)
-{
-	Value = val;
-	ClampValue();
-	PutSliderNub();
-	ValueXChangedFunc.TryInvoke(Value.X);
-	ValueYChangedFunc.TryInvoke(Value.Y);
-	ValueChangedFunc.TryInvoke(Value);
-}
-void UI::Control::Slider::SetValueX(float val)
-{
-	Value.X = val;
-	ClampValue();
-	PutSliderNub();
-	ValueXChangedFunc.TryInvoke(Value.X);
-}
-void UI::Control::Slider::SetValueY(float val)
-{
-	Value.Y = val;
-	ClampValue();
-	PutSliderNub();
-	ValueYChangedFunc.TryInvoke(Value.Y);
-}
-
-void UI::Control::Slider::PutSliderNub()
-{
-	if (SliderObject_Is)
-	{
-		VectorF2 slider_size_half = NubSize / 2.0f;
-		VectorF2 slider_min = BoxDisplay().Min + slider_size_half;
-		VectorF2 slider_max = BoxDisplay().Max - slider_size_half;
-
-		VectorF2 slider_normal = Value;
-		slider_normal -= ValueRange.Min;
-		slider_normal /= ValueRange.Size();
-
-		VectorF2 slider_value = slider_normal;
-		slider_value *= (slider_max - slider_min);
-		slider_value += slider_min;
-
-		SliderObject_Box.Min = slider_value - slider_size_half;
-		SliderObject_Box.Max = slider_value + slider_size_half;
-
-		//SliderObject_Bound = Object.Bound();
-		//SliderObject_Bound = ObjectData.Bound;
-		if (Parent != nullptr)
-		{
-			SliderObject_Bound = Parent -> BoxBoarder();
-		}
-		else
-		{
-			SliderObject_Bound = BoxF2();
-		}
-	}
-}
-void UI::Control::Slider::ClampValue()
-{
-	if (Value.X < ValueRange.Min.X) { Value.X = ValueRange.Min.X; }
-	if (Value.X > ValueRange.Max.X) { Value.X = ValueRange.Max.X; }
-	if (Value.Y < ValueRange.Min.Y) { Value.Y = ValueRange.Min.Y; }
-	if (Value.Y > ValueRange.Max.Y) { Value.Y = ValueRange.Max.Y; }
-}
-
-void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
-{
-	if (!IsInteractible()) { return; }
-
-	VectorF2 slider_size_half = NubSize / 2.0f;
-	VectorF2 slider_pos_min = BoxDisplay().Min + slider_size_half;
-	VectorF2 slider_pos_max = BoxDisplay().Max - slider_size_half;
-
-	VectorF2 slider_value = mouse_pos.Buffer.Corner;
-	slider_value -= slider_pos_min;
-	slider_value /= (slider_pos_max - slider_pos_min);
-	slider_value *= ValueRange.Size();
-	slider_value += ValueRange.Min;
-
-	slider_value /= ValueResolution;
-	slider_value = slider_value.round(); // Vector.round that takes Vector Size
-	slider_value *= ValueResolution;
-
-	Value = slider_value;
-	ClampValue();
-	PutSliderNub();
-
-	ValueXChangedFunc.TryInvoke(Value.X);
-	ValueYChangedFunc.TryInvoke(Value.Y);
-	ValueChangedFunc.TryInvoke(Value);
-}
-
-
-
-#include "Control/Window.hpp"
-#include "Control/Form.hpp"
-/*void UI::Control::Slider::DepthUpdate()
-{
-	BaseText::DepthUpdate();
-
-	if (Window == nullptr) { return; }
-	if (Form == nullptr) { return; }
-
-	const float & size = Window -> DepthSize;
-	const float & offset = Form -> DepthOffset;
-	float layer = Layer();
-
-	if (SliderObject_Is)
-	{
-		SliderObject_Depth = -(((layer + (1.0f / 3.0f)) * size) + offset);
-	}
-	if (TextObjectData.Display)
-	{
-		TextObjectData.Depth = -(((layer + (2.0f / 3.0f)) * size) + offset);
-	}
-}*/
-
-
-
-//void UI::Control::Slider::BoxUpdate()
 void UI::Control::Slider::AnchorUpdate()
 {
-	//BaseText::BoxUpdate();
 	BaseText::AnchorUpdate();
-	PutSliderNub();
+	NubUpdateRequest();
 }
+
 void UI::Control::Slider::Update()
 {
 	BaseText::Update();
-	if (Window != nullptr && Form != nullptr)
-	{
-		const float & size = Window -> DepthSize;
-		const float & offset = Form -> DepthOffset;
-		float layer = Layer();
-		if (SliderObject_Is)
-		{
-			SliderObject_Depth = -(((layer + (1.0f / 3.0f)) * size) + offset);
-		}
-		if (TextObjectData.Display)
-		{
-			TextObjectData.Depth = -(((layer + (2.0f / 3.0f)) * size) + offset);
-		}
-	}
+	if (NubUpdateRequested) { NubUpdate(); }
+	TextObjectData.Depth = Depth(2.0f / 3.0f);
 }
 
 #include "UIManager.hpp"
 void UI::Control::Slider::DisplayPut() const
 {
 	BaseText::DisplayPut();
-	if (Manager != nullptr)
+	if (_Manager() != nullptr && Parent)
 	{
-		if (SliderObject_Is)
+		if (NubObject_Display)
 		{
 			Inst::Data data;
-			data.Layer = SliderObject_Depth;
-			data.Box = SliderObject_Box;
-			data.Color = SliderObject_Color;
-			data.Bound = SliderObject_Bound;
-			Manager -> ControlManager.InstancePut(data);
+			data.Layer = Depth(1.0f / 3.0f);
+			data.Box = NubBox;
+			data.Color = ColorF4(0.5f, 0.5f, 0.5f);
+			data.Bound = Parent -> BoxBoarder(); // Bound should be this.BoxDisplay ?
+			_Manager() -> ControlManager.InstancePut(data);
 		}
-
 	}
 }
 void UI::Control::Slider::DisplayShow()
 {
 	BaseText::DisplayShow();
-	if (!SliderObject_Is)
+	if (!NubObject_Display)
 	{
-		SliderObject_Is = true;
-		SliderObject_Color = ColorF4(0.5f, 0.5f, 0.5f);
-		SliderObject_Depth = Depth() - 0.0005f;
-		PutSliderNub();
+		NubObject_Display = true;
 	}
 }
 void UI::Control::Slider::DisplayHide()
 {
 	BaseText::DisplayHide();
-	if (SliderObject_Is)
+	if (NubObject_Display)
 	{
-		SliderObject_Is = false;
+		NubObject_Display = false;
 	}
 }
 
@@ -238,7 +196,7 @@ void UI::Control::Slider::RelayKey(KeyArgs args)
 		if (args.Key == Keys::Up)		{ Value.Y -= ValueResolution.Y; }
 		if (args.Key == Keys::Down)		{ Value.Y += ValueResolution.Y; }
 		ClampValue();
-		PutSliderNub();
+		NubUpdateRequest();
 		if (args.Key == Keys::Left || args.Key == Keys::Right)
 		{
 			ValueXChangedFunc.TryInvoke(Value.X);
@@ -250,3 +208,4 @@ void UI::Control::Slider::RelayKey(KeyArgs args)
 		ValueChangedFunc.TryInvoke(Value);
 	}
 }
+// Scroll

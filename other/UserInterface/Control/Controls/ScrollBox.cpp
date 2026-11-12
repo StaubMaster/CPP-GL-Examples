@@ -36,8 +36,6 @@ float UI::Control::ScrollContent::CalcRatio(float & control_range_size, float & 
 
 
 
-UI::Control::ScrollContent::~ScrollContent()
-{ }
 UI::Control::ScrollContent::ScrollContent(ScrollBox & box)
 	: Base()
 	, Box(box)
@@ -60,8 +58,6 @@ void UI::Control::ScrollContent::AutoAnchorUpdate()
 
 
 
-UI::Control::ScrollBox::~ScrollBox()
-{ }
 UI::Control::ScrollBox::ScrollBox()
 	: Base()
 	, Content(*this)
@@ -96,18 +92,18 @@ void UI::Control::ScrollBox::ChildInsert(Base & control)
 {
 	Content.ChildInsert(control);
 	Content.AutoAnchorUpdateRequest();
-	if (Window != nullptr)
+	if (_Window() != nullptr)
 	{
-		Window -> DepthCalculateRequest();
+		_Window() -> DepthCalculateRequest();
 	}
 }
 void UI::Control::ScrollBox::ChildRemove(Base & control)
 {
 	Content.ChildRemove(control);
 	Content.AutoAnchorUpdateRequest();
-	if (Window != nullptr)
+	if (_Window() != nullptr)
 	{
-		Window -> DepthCalculateRequest();
+		_Window() -> DepthCalculateRequest();
 	}
 }
 void UI::Control::ScrollBox::ChildClear()
@@ -150,7 +146,7 @@ void UI::Control::ScrollBox::ScrollCalc()
 		ScrollNone();
 	}
 
-	ScrollBar.PutSliderNub();
+	ScrollBar.NubUpdateRequest();
 }
 void UI::Control::ScrollBox::ScrollFunc(float val)
 {

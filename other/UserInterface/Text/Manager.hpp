@@ -119,13 +119,13 @@ class Manager
 	private:
 	bool	TextureAssigned = false;
 	void	TextureAssign();
-
-	private:
 	void	BufferMainUpdateData();
 	void	BufferInstUpdateData();
 
+	private:
+	void	GraphicsData(); // put Data from Containers in Buffers. name comes from Buffer functions.
 	public:
-	void	Draw();
+	void	GraphicsDraw();
 };
 
 };

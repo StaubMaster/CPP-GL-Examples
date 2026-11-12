@@ -3,37 +3,60 @@
 
 
 
+		UI::Manager *			UI::Control::Form::_Manager()			{ if (Window_ == nullptr) { return nullptr; } return Window_ -> _Manager(); }
+		UI::Manager *			UI::Control::Form::_Manager()	const	{ if (Window_ == nullptr) { return nullptr; } return Window_ -> _Manager(); }
+		UI::Control::Window *	UI::Control::Form::_Window()			{ return Window_; }
+const	UI::Control::Window *	UI::Control::Form::_Window()	const	{ return Window_; }
+		UI::Control::Form *		UI::Control::Form::_Form()				{ return this; }
+const	UI::Control::Form *		UI::Control::Form::_Form()		const	{ return this; }
+
 void UI::Control::Form::AssignPointers(Base & control)
 {
 	control.Parent = this;
-	control.AssignPointerRecursive(Manager);
-	control.AssignPointerRecursive(Window);
-	control.AssignPointerRecursive(this);
+	//control.AssignPointerRecursive(Manager);
+	//control.AssignPointerRecursive(Window);
+	//control.AssignPointerRecursive(this);
+	control.AssignPointersRecursive(this);
 }
 
 
 
-/*void UI::Control::Form::DepthUpdate()
+void UI::Control::Form::AnchorUpdate()
 {
-	if (Window == nullptr) { return; }
+	if (_Window() == nullptr) { return; }
 
-	float size = Window -> DepthSize;
-	float offset = DepthOffset;
-	float layer = Layer();
+	Anchor.UpdateO(_Window() -> BoxContent());
 
-	Depth_ = -((layer * size) + offset);
-}*/
-/*float UI::Control::Form::Depth() const
+	AnchorUpdateIsRequested = false;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> AnchorUpdateRequest();
+	}
+}
+
+BoxF2 UI::Control::Form::BoxDisplay() const
 {
-	if (Window == nullptr) { return 0.0f; }
-	if (Base::Form == nullptr) { return 0.0f; }
-
-	const float & size = Window -> DepthSize;
-	const float & offset = Base::Form -> DepthOffset;
-	float layer = Layer();
-
-	return -((layer * size) + offset);
-}*/
+	if (_Window() == nullptr) { return BoxF2(); }
+	return Anchor.ToInnerBox(_Window() -> BoxContent());
+}
+BoxF2 UI::Control::Form::BoxBoarder() const
+{
+	if (_Window() == nullptr) { return BoxF2(); }
+	BoxF2 box = BoxDisplay();
+	return BoxF2(
+		box.Min + AnchorBoarder.Min,
+		box.Max - AnchorBoarder.Max
+	);
+}
+BoxF2 UI::Control::Form::BoxContent() const
+{
+	if (_Window() == nullptr) { return BoxF2(); }
+	BoxF2 box = BoxBoarder();
+	return BoxF2(
+		box.Min + AnchorPadding.Min,
+		box.Max - AnchorPadding.Max
+	);
+}
 
 
 
@@ -51,59 +74,6 @@ UI::Control::Form::Form()
 	AnchorNormal = VectorF2(0.5, 0.5);
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
-}
-
-
-
-void UI::Control::Form::AnchorUpdate()
-{
-	if (Window == nullptr) { return; }
-
-	Anchor.UpdateO(Window -> BoxContent());
-
-	AnchorUpdateIsRequested = false;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> AnchorUpdateRequest();
-	}
-}
-
-/*void UI::Control::Form::BoxUpdate()
-{
-	if (Window == nullptr) { return; }
-
-	Anchor.UpdateO(Window -> BoxContent());
-//	Anchor.UpdateO(Window -> BoxContent);
-//	BoxDisplay = Anchor.ToInnerBox(Window -> BoxContent);
-//
-//	BoxBoarder.Min = BoxDisplay.Min + AnchorBoarder.Min;
-//	BoxBoarder.Max = BoxDisplay.Max - AnchorBoarder.Max;
-//
-//	BoxContent.Min = BoxBoarder.Min + AnchorPadding.Min;
-//	BoxContent.Max = BoxBoarder.Max - AnchorPadding.Max;
-}*/
-BoxF2 UI::Control::Form::BoxDisplay() const
-{
-	if (Window == nullptr) { return BoxF2(); }
-	return Anchor.ToInnerBox(Window -> BoxContent());
-}
-BoxF2 UI::Control::Form::BoxBoarder() const
-{
-	if (Window == nullptr) { return BoxF2(); }
-	BoxF2 box = BoxDisplay();
-	return BoxF2(
-		box.Min + AnchorBoarder.Min,
-		box.Max - AnchorBoarder.Max
-	);
-}
-BoxF2 UI::Control::Form::BoxContent() const
-{
-	if (Window == nullptr) { return BoxF2(); }
-	BoxF2 box = BoxBoarder();
-	return BoxF2(
-		box.Min + AnchorPadding.Min,
-		box.Max - AnchorPadding.Max
-	);
 }
 
 
@@ -214,21 +184,21 @@ void UI::Control::Form::RelayHover(HoverArgs args)
 	}*/
 	if (args.Type == HoverType::Leave)
 	{
-		Manager -> Cursor.UseDefault();
+		_Manager() -> Cursor.UseDefault();
 	}
 	if (args.Type == HoverType::Move)
 	{
-		EBoxChangeType type = FindChangingArea(Manager -> Cursor.Position);
-		if (type == EBoxChangeType::Move) { Manager -> Cursor.UseDefault(); }
-		else if (type == EBoxChangeType::ResizeMinX) { Manager -> Cursor.UseBoxEdge(0); }
-		else if (type == EBoxChangeType::ResizeMinY) { Manager -> Cursor.UseBoxEdge(1); }
-		else if (type == EBoxChangeType::ResizeMaxX) { Manager -> Cursor.UseBoxEdge(2); }
-		else if (type == EBoxChangeType::ResizeMaxY) { Manager -> Cursor.UseBoxEdge(3); }
-		else if (type == EBoxChangeType::ResizeMinMin) { Manager -> Cursor.UseBoxCorn(0); }
-		else if (type == EBoxChangeType::ResizeMaxMin) { Manager -> Cursor.UseBoxCorn(1); }
-		else if (type == EBoxChangeType::ResizeMinMax) { Manager -> Cursor.UseBoxCorn(2); }
-		else if (type == EBoxChangeType::ResizeMaxMax) { Manager -> Cursor.UseBoxCorn(3); }
-		else { Manager -> Cursor.UseDefault(); }
+		EBoxChangeType type = FindChangingArea(_Manager() -> Cursor.Position);
+		if (type == EBoxChangeType::Move) { _Manager() -> Cursor.UseDefault(); }
+		else if (type == EBoxChangeType::ResizeMinX) { _Manager() -> Cursor.UseBoxEdge(0); }
+		else if (type == EBoxChangeType::ResizeMinY) { _Manager() -> Cursor.UseBoxEdge(1); }
+		else if (type == EBoxChangeType::ResizeMaxX) { _Manager() -> Cursor.UseBoxEdge(2); }
+		else if (type == EBoxChangeType::ResizeMaxY) { _Manager() -> Cursor.UseBoxEdge(3); }
+		else if (type == EBoxChangeType::ResizeMinMin) { _Manager() -> Cursor.UseBoxCorn(0); }
+		else if (type == EBoxChangeType::ResizeMaxMin) { _Manager() -> Cursor.UseBoxCorn(1); }
+		else if (type == EBoxChangeType::ResizeMinMax) { _Manager() -> Cursor.UseBoxCorn(2); }
+		else if (type == EBoxChangeType::ResizeMaxMax) { _Manager() -> Cursor.UseBoxCorn(3); }
+		else { _Manager() -> Cursor.UseDefault(); }
 	}
 }
 void UI::Control::Form::RelayDrag(DragArgs args)

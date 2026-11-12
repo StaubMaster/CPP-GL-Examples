@@ -2,9 +2,6 @@
 
 
 
-UI::Control::ListBox::Item::~Item()
-{ }
-
 UI::Control::ListBox::Item::Item(UI::Control::ListBox & listBox, unsigned int idx, const char * name, void * obj)
 	: BaseText()
 	, ListBox(listBox)

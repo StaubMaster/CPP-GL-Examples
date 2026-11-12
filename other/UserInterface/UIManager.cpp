@@ -99,6 +99,7 @@ void UI::Manager::KeyBoardText(TextArgs args)
 
 
 
+// put this in Window ?
 void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 {
 	Cursor.Position = mouse_pos.Buffer.Corner;
@@ -138,9 +139,7 @@ void UI::Manager::Resize(DisplaySize display_size)
 	GraphManager.Shader.Bind();
 	GraphManager.ShaderLayout.DisplaySize.Put(display_size);
 
-	Window.WindowSize = display_size.Buffer.Full;
-	//Window.BoxUpdateRequestRecursive();
-	Window.AnchorUpdateRequest();
+	Window.SizeChange(display_size);
 }
 void UI::Manager::Update()
 {
@@ -162,7 +161,8 @@ void UI::Manager::ChangeMedia(const DirectoryInfo & dir, GLFWwindow * glfw_windo
 
 	Cursor.Create(dir, glfw_window);
 
-	Window.AssignPointerRecursive(this);
+	//Window.AssignPointerRecursive(this);
+	Window.Manager_ = this;
 }
 
 
@@ -189,16 +189,16 @@ void UI::Manager::GraphicsInit()
 
 void UI::Manager::GraphicsClear()
 {
-	ControlManager.GraphicsClear();
+	ControlManager.InstancesClear();
 	TextManager.InstancesClear();
 	GraphManager.InstancesClear();
 }
 void UI::Manager::GraphicsMake()
 {
-	ControlManager.GraphicsMake();
-	Window.WindowPutDisplay();
+	//ControlManager.InstancesMake();
 	TextManager.InstancesMake();
 	GraphManager.InstancesMake();
+	Window.DisplayPutRecursive();
 }
 void UI::Manager::GraphicsDone()
 {
@@ -213,7 +213,7 @@ void UI::Manager::GraphicsDraw()
 	ControlManager.GraphicsDraw();
 
 	GL::Enable(GL::Capability::DepthClamp);
-	TextManager.Draw();
+	TextManager.GraphicsDraw();
 
 	GL::Clear(GL::ClearMask::DepthBufferBit);
 	GraphManager.Draw();

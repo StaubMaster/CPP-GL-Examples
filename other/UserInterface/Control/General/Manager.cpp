@@ -46,6 +46,27 @@ UI::Control::Manager::Manager()
 
 
 
+void UI::Control::Manager::InstancesClear()
+{
+	Instances.Clear();
+}
+/*void UI::Control::Manager::InstancesMake()
+{
+	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
+	{
+		if (ObjectDatas[i] != nullptr)
+		{
+			ObjectData & obj = *ObjectDatas[i];
+			InstancePut(obj);
+			if (obj.Remove)
+			{
+				ObjectDatas.RemoveAt(i);
+				delete &obj;
+				i--;
+			}
+		}
+	}
+}*/
 void UI::Control::Manager::InstancePut(const Control::Inst::Data & data)
 {
 	Instances.Insert(data);
@@ -116,28 +137,6 @@ void UI::Control::Manager::GraphicsPutInst()
 {
 	Buffer.InstBuffer.DataFull(Instances.ToVoid());
 	Buffer.InstBuffer.Count = Instances.Count();
-}
-
-void UI::Control::Manager::GraphicsClear()
-{
-	Instances.Clear();
-}
-void UI::Control::Manager::GraphicsMake()
-{
-	/*for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
-	{
-		if (ObjectDatas[i] != nullptr)
-		{
-			ObjectData & obj = *ObjectDatas[i];
-			InstancePut(obj);
-			if (obj.Remove)
-			{
-				ObjectDatas.RemoveAt(i);
-				delete &obj;
-				i--;
-			}
-		}
-	}*/
 }
 
 void UI::Control::Manager::GraphicsDraw()

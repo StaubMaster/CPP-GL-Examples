@@ -18,7 +18,6 @@ class ScrollContent : public Base
 	float	CalcRatio(float & control_range_size, float & content_size);
 
 	public:
-	~ScrollContent();
 	ScrollContent(ScrollBox & box);
 
 	public:
@@ -34,7 +33,6 @@ class ScrollBox : public Base
 	Slider			ScrollBar;
 
 	public:
-	~ScrollBox();
 	ScrollBox();
 
 	public:
