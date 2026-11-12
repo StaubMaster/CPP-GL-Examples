@@ -1,5 +1,6 @@
 #include "Control/Controls/TextBox.hpp"
 #include "Control/General/Manager.hpp"
+#include "AnchorEnum.hpp"
 
 #include "Text/Manager.hpp"
 #include <math.h>
@@ -24,6 +25,9 @@ UI::Control::TextBox::TextBox()
 
 
 
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
+#include "HoverArgs.hpp"
 void UI::Control::TextBox::RelayKey(KeyArgs args)
 {
 	if (!IsInteractible() || ReadOnly) { return; }

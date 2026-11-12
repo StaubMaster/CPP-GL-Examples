@@ -1,5 +1,6 @@
 #include "Control/Controls/Slider.hpp"
 #include "Control/General/Manager.hpp"
+#include "AnchorEnum.hpp"
 
 #include "User/MouseArgs.hpp"
 
@@ -143,22 +144,28 @@ void UI::Control::Slider::Update()
 }
 
 #include "UIManager.hpp"
+#include "Control/Form.hpp"
 void UI::Control::Slider::DisplayPut() const
 {
 	BaseText::DisplayPut();
-	if (_Manager() != nullptr && Parent != nullptr)
+	if (_Manager() != nullptr && (Parent != nullptr || Form_ != nullptr))
 	{
 		Inst::Data data;
 		data.Layer = Depth(1.0f / 3.0f);
 		data.Box = NubBox;
 		data.Color = ColorF4(0.5f, 0.5f, 0.5f);
-		data.Bound = Parent -> BoxBoarder(); // Bound should be this.BoxDisplay ?
+		if (Form_ != nullptr) { data.Bound = Form_ -> BoxBoarder(); }
+		if (Parent != nullptr) { data.Bound = Parent -> BoxBoarder(); }
+		// Bound should be this.BoxDisplay ?
 		_Manager() -> ControlManager.InstancePut(data);
 	}
 }
 
 
 
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
+#include "HoverArgs.hpp"
 void UI::Control::Slider::RelayClick(ClickArgs args)
 {
 	if (args.Action == Action::Press)

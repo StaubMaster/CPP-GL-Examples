@@ -12,21 +12,12 @@ const	UI::Control::Window *	UI::Control::Base::_Window()	const	{ if (Form_ == nu
 		UI::Control::Form *		UI::Control::Base::_Form()				{ return Form_; }
 const	UI::Control::Form *		UI::Control::Base::_Form()		const	{ return Form_; }
 
-void UI::Control::Base::AssignPointers(Base & other)
-{
-	other.Parent = this;
-	other.AssignPointersRecursive(Form_);
-}
-void UI::Control::Base::AssignPointers(UI::Control::Form * form)
+void UI::Control::Base::ChangeForm(UI::Control::Form * form)
 {
 	Form_ = form;
-}
-void UI::Control::Base::AssignPointersRecursive(UI::Control::Form * form)
-{
-	AssignPointers(form);
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> AssignPointersRecursive(form);
+		Children[i] -> ChangeForm(form);
 	}
 }
 
@@ -51,7 +42,8 @@ void UI::Control::Base::ChildRemove(Base & control)
 }
 void UI::Control::Base::ChildInsert(Base & control)
 {
-	AssignPointers(control);
+	control.Parent = this;
+	ChangeForm(Form_);
 	Children.Insert(&control);
 
 	control.DisplayUpdateRequest();
@@ -82,83 +74,41 @@ void UI::Control::Base::ChildInsert(Base * control)
 
 
 
-bool UI::Control::Base::IsEnabled() const
-{
-	return IsEnabled_;
-}
-void UI::Control::Base::Enable()
-{
-	IsEnabled_ = true;
-	//ColorUpdateRequestRecursive();
-}
-void UI::Control::Base::Disable()
-{
-	IsEnabled_ = false;
-	//ColorUpdateRequestRecursive();
-}
-
-bool UI::Control::Base::IsThisVisible() const
-{
-	return IsVisible_;
-}
-void UI::Control::Base::Show()
-{
-	IsVisible_ = true;
-	//DisplayUpdateRequestRecursive();
-	DisplayUpdateRequest();
-	if (Parent != nullptr)
-	{
-		Parent -> AutoAnchorUpdateRequest();
-	}
-}
-void UI::Control::Base::Hide()
-{
-	IsVisible_ = false;
-	//DisplayUpdateRequestRecursive();
-	DisplayUpdateRequest();
-	if (Parent != nullptr)
-	{
-		Parent -> AutoAnchorUpdateRequest();
-	}
-}
-
-bool UI::Control::Base::IsOpaque() const
-{
-	return IsOpaque_;
-}
-void UI::Control::Base::MakeTransparent()
-{
-	IsOpaque_ = false;
-	DisplayUpdateRequest();
-}
-void UI::Control::Base::MakeOpaque()
-{
-	IsOpaque_ = true;
-	DisplayUpdateRequest();
-}
-
 bool UI::Control::Base::IsVisible() const
 {
 	if (Parent != nullptr)
 	{
 		return IsThisVisible() && (Parent -> IsVisible());
 	}
-	else
+	if (Form_ != nullptr)
 	{
-		return IsThisVisible();
+		return IsThisVisible() && (Form_ -> IsVisible());
+	}
+	return ControlDisplay::IsVisible();
+}
+void UI::Control::Base::Show()
+{
+	ControlDisplay::Show();
+	if (Parent != nullptr)
+	{
+		Parent -> AutoAnchorUpdateRequest();
+	}
+	if (Form_ != nullptr)
+	{
+		Form_ -> AutoAnchorUpdateRequest();
 	}
 }
-bool UI::Control::Base::IsDisplay() const
+void UI::Control::Base::Hide()
 {
-	return IsOpaque() && IsVisible();
-}
-/*bool UI::Control::Base::IsThisInteractible() const
-{
-	return IsEnabled() && IsDisplay();
-}*/
-bool UI::Control::Base::IsInteractible() const
-{
-	return IsEnabled() && IsVisible();
+	ControlDisplay::Hide();
+	if (Parent != nullptr)
+	{
+		Parent -> AutoAnchorUpdateRequest();
+	}
+	if (Form_ != nullptr)
+	{
+		Form_ -> AutoAnchorUpdateRequest();
+	}
 }
 
 
@@ -191,6 +141,10 @@ unsigned int UI::Control::Base::Layer() const
 	if (Parent != nullptr)
 	{
 		return (Parent -> Layer()) + 1;
+	}
+	else if (Form_ != nullptr)
+	{
+		return (Form_ -> Layer()) + 1;
 	}
 	else
 	{
@@ -243,24 +197,15 @@ unsigned int UI::Control::Base::LayerLimit() const
 	if (Form == nullptr) { return 0.0f; }
 	return -((Layer() * (Window -> DepthSize)) + (Form -> DepthOffset));
 }*/
-float UI::Control::Base::Depth(float diff) const
-{
-	if (_Window() == nullptr) { return 0.0f; }
-	if (_Form() == nullptr) { return 0.0f; }
-	return -(((Layer() + diff) * (_Window() -> DepthSize)) + (_Form() -> DepthOffset)); // put this Calculation in Form ?
-}
 
 
 
-void UI::Control::Base::AnchorUpdateRequest()
-{
-	AnchorUpdateIsRequested = true;
-}
 void UI::Control::Base::AnchorUpdate()
 {
-	if (Parent == nullptr) { return; }
+	if (Parent == nullptr && Form_ == nullptr) { return; }
 
-	Anchor.UpdateO(Parent -> BoxContent());
+	if (Form_ != nullptr) { Anchor.UpdateO(Form_ -> BoxContent()); }
+	if (Parent != nullptr) { Anchor.UpdateO(Parent -> BoxContent()); }
 
 	AnchorUpdateIsRequested = false;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -295,12 +240,13 @@ void UI::Control::Base::AnchorUpdate()
 
 BoxF2 UI::Control::Base::BoxDisplay() const
 {
-	if (Parent == nullptr) { return BoxF2(); }
-	return Anchor.ToInnerBox(Parent -> BoxContent());
+	if (Parent != nullptr) { return Anchor.ToInnerBox(Parent -> BoxContent()); }
+	if (Form_ != nullptr) { return Anchor.ToInnerBox(Form_ -> BoxContent()); }
+	return BoxF2();
 }
 BoxF2 UI::Control::Base::BoxBoarder() const
 {
-	if (Parent == nullptr) { return BoxF2(); }
+	if (Form_ == nullptr && Parent == nullptr) { return BoxF2(); }
 	BoxF2 box = BoxDisplay();
 	return BoxF2(
 		box.Min + AnchorBoarder.Min,
@@ -309,7 +255,7 @@ BoxF2 UI::Control::Base::BoxBoarder() const
 }
 BoxF2 UI::Control::Base::BoxContent() const
 {
-	if (Parent == nullptr) { return BoxF2(); }
+	if (Form_ == nullptr && Parent == nullptr) { return BoxF2(); }
 	BoxF2 box = BoxBoarder();
 	return BoxF2(
 		box.Min + AnchorPadding.Min,
@@ -318,31 +264,6 @@ BoxF2 UI::Control::Base::BoxContent() const
 }
 
 
-
-void UI::Control::Base::AutoAnchorUpdateRequest()
-{
-	AutoAnchorUpdateIsRequested = true;
-}
-void UI::Control::Base::AutoAnchorUpdate()
-{
-	if (!IsVisible()) { return; }
-
-	switch (AutoAnchorXType)
-	{
-		case EAutoAnchorType::None: break;
-		default: break;
-	}
-
-	switch (AutoAnchorYType)
-	{
-		case EAutoAnchorType::None: break;
-		case EAutoAnchorType::StackMin:		AutoAnchorUpdate_Y_StackMin(); break;
-		//case EAutoAnchorType::StackMinFit:	AutoAnchorUpdate_Y_StackMinFit(); break;
-		default: break;
-	}
-
-	AutoAnchorUpdateIsRequested = false;
-}
 
 void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 {
@@ -421,14 +342,14 @@ ColorF4 UI::Control::Base::Color() const
 
 void UI::Control::Base::DisplayPut() const
 {
-//	if (_Manager() != nullptr && Parent != nullptr && Display)
-	if (_Manager() != nullptr && Parent != nullptr && IsOpaque())
+	if (_Manager() != nullptr && (Parent != nullptr || Form_ != nullptr) && IsOpaque())
 	{
 		Inst::Data data;
 		data.Layer = Depth();
 		data.Box = BoxDisplay();
 		data.Color = Color();
-		data.Bound = Parent -> BoxBoarder();
+		if (Form_ != nullptr) { data.Bound = Form_ -> BoxBoarder(); }
+		if (Parent != nullptr) { data.Bound = Parent -> BoxBoarder(); }
 		_Manager() -> ControlManager.InstancePut(data);
 	}
 }
@@ -444,42 +365,18 @@ void UI::Control::Base::DisplayPutRecursive() const
 	}
 }
 
-void UI::Control::Base::DisplayShow() { }
-void UI::Control::Base::DisplayHide() { }
-
-void UI::Control::Base::DisplayUpdateRequest()
-{
-	DisplayUpdateIsRequested = true;
-}
 void UI::Control::Base::DisplayUpdate()
 {
-	if (IsDisplay())	{ DisplayShow(); }
-	else				{ DisplayHide(); }
-
-	DisplayUpdateIsRequested = false;
+	ControlDisplay::DisplayUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> DisplayUpdateRequest();
+		// AutoAnchorUpdateRequest() ?
 	}
 }
 
 
 
-void UI::Control::Base::Update()
-{
-	//AutoAnchorUpdateResolve();
-	if (AutoAnchorUpdateIsRequested)	{ AutoAnchorUpdate(); }
-
-	//BoxUpdateResolve();
-
-	//AnchorUpdateResolve();
-	if (AnchorUpdateIsRequested)		{ AnchorUpdate(); }
-
-	//ColorUpdateResolve();
-
-	//DisplayUpdateResolve();
-	if (DisplayUpdateIsRequested)		{ DisplayUpdate(); }
-}
 void UI::Control::Base::UpdateRecursive()
 {
 	Update();
@@ -499,14 +396,6 @@ UI::Control::Base::~Base()
 	}*/
 }
 UI::Control::Base::Base()
-	: Anchor(
-			AnchorSize,
-			AnchorDist,
-			AnchorMargin,
-			AnchorBoarder,
-			AnchorPadding,
-			AnchorNormal
-		)
 {
 	AnchorSize = VectorF2(0, 0);
 	AnchorNormal = VectorF2(0, 0);
@@ -523,17 +412,17 @@ UI::Control::Base::Base()
 
 
 
-UI::Control::Base * UI::Control::Base::FindHover(const VectorF2 & mouse)
+UI::Control::ControlDisplay * UI::Control::Base::FindHover(const VectorF2 & mouse)
 {
 	if (!IsThisVisible()) { return nullptr; }
 	if (!IsEnabled()) { return nullptr; }
 	if (!BoxDisplay().ContainsExclusive(mouse).All(true)) { return nullptr; }
 
 	// check BoxContent before checking children ?
-	Base * control = nullptr;
+	ControlDisplay * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Base * c = Children[i] -> FindHover(mouse);
+		ControlDisplay * c = Children[i] -> FindHover(mouse);
 		if (c == nullptr) { continue; }
 		if (control == nullptr || ((c -> Depth()) < (control -> Depth())))
 		{
@@ -546,12 +435,3 @@ UI::Control::Base * UI::Control::Base::FindHover(const VectorF2 & mouse)
 	}
 	return this;
 }
-
-
-
-void UI::Control::Base::RelayHover(HoverArgs args) { (void)args; }
-void UI::Control::Base::RelayClick(ClickArgs args) { (void)args; }
-void UI::Control::Base::RelayScroll(ScrollArgs args) { (void)args; }
-void UI::Control::Base::RelayDrag(DragArgs args) { (void)args; }
-void UI::Control::Base::RelayKey(KeyArgs args) { (void)args; }
-void UI::Control::Base::RelayText(TextArgs args) { (void)args; }

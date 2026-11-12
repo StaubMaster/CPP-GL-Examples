@@ -1,39 +1,15 @@
 #ifndef  UI_CONTROL_BASE_HPP
 # define UI_CONTROL_BASE_HPP
 
-#include "Anchor2D.hpp"
+# include "ControlDisplay.hpp"
 
-#include "User/MouseArgs.hpp"
-#include "User/KeyBoardArgs.hpp"
-#include "HoverArgs.hpp"
-
-#include "ValueType/_Include.hpp"
-// include individual
-
-#include "Generics/Container/Binary.hpp"
-
-#include "AnchorEnum.hpp"
-
-/* ...Resolve
-are resolve functoins needed ?
-they should only be called in the Update function
-so just check there ?
-*/
-
-/* ...RequestRecursive
-sometimes, when something updates, it causes all children to also need to be updated
-this is known then the update is requested, so it immedeatly asks all children to update
-instead, only request one to update, and once it is done updating, it tells all children to update ?
-*/
+# include "Generics/Container/Binary.hpp"
 
 namespace UI
 {
-class Manager;
 namespace Control
 {
-class Window;
-class Form;
-class Base
+class Base : public ControlDisplay
 {
 	public:
 	UI::Control::Form *		Form_ = nullptr; // Forn and Window dont need this.
@@ -45,18 +21,16 @@ class Base
 	*/
 
 	public:
-	virtual			UI::Manager *			_Manager();
-	virtual			UI::Manager *			_Manager() const;
-	virtual			UI::Control::Window *	_Window();
-	virtual	const	UI::Control::Window *	_Window() const;
-	virtual			UI::Control::Form *		_Form();
-	virtual	const	UI::Control::Form *		_Form() const;
+	virtual			UI::Manager *			_Manager() override;
+	virtual			UI::Manager *			_Manager() const override;
+	virtual			UI::Control::Window *	_Window() override;
+	virtual	const	UI::Control::Window *	_Window() const override;
+	virtual			UI::Control::Form *		_Form() override;
+	virtual	const	UI::Control::Form *		_Form() const override;
 	// these suck, find a way to replace them
 
 	public:
-	virtual void	AssignPointers(Base & other);
-	void			AssignPointers(UI::Control::Form * form);
-	void			AssignPointersRecursive(UI::Control::Form * form);
+	void	ChangeForm(UI::Control::Form * form);
 
 
 
@@ -78,122 +52,31 @@ class Base
 
 
 	public:
-	bool	Deletable = false;
-	// true means this should be deleted when Parent is deleted
-	// currently not used
-
-	protected:
-	bool	IsEnabled_ = true;
-	public:
-	bool	IsEnabled() const;
-	void	Enable();
-	void	Disable();
-
-	protected:
-	bool	IsVisible_ = true;
-	public:
-	bool	IsThisVisible() const;
-	void	Show();
-	void	Hide();
-
-	protected:
-	bool	IsOpaque_ = true;
-	public:
-	bool	IsOpaque() const;
-	void	MakeTransparent();
-	void	MakeOpaque();
-
-	public:
-	bool	IsVisible() const;
-	bool	IsDisplay() const;
-//	bool	IsThisInteractible() const;
-	bool	IsInteractible() const;
-
-	// IsActive
-	// dont Update if not Active
+	bool	IsVisible() const override;
+	void	Show() override;
+	void	Hide() override;
 
 
 
-//	private:	unsigned int	Layer_ = 0;
-//	public:		unsigned int	Layer() const;
-//	public:		void			LayerUpdate();
-//	public:		void			LayerUpdateRecursive();
-	public:		unsigned int	Layer() const;
+	public:		unsigned int	Layer() const override;
 
-	public:		unsigned int	LayerLimit() const;
-
-//	protected:	float			Depth_ = 0.0f;
-//	public:		float			Depth() const;
-//	public:		virtual	void	DepthUpdate();
-//	protected:			void	DepthUpdateRecursive();
-//	public:		float			Depth() const;
-	public:		float			Depth(float diff = 0.0f) const;
+	public:		unsigned int	LayerLimit() const override;
 
 
 
-	protected: public:
-	VectorF2	AnchorSize;
-	VectorF2	AnchorNormal;
-	BoxF2		AnchorDist;
-	protected: public:
-	BoxF2		AnchorMargin;
-	BoxF2		AnchorBoarder;
-	BoxF2		AnchorPadding;
-	protected: public:
-	Anchor2D	Anchor;
-	protected: public:
-//	VectorF2	ContentOffset ?
-
-	protected:	bool			AnchorUpdateIsRequested = false;
-	public:		void			AnchorUpdateRequest();
-	protected:	virtual	void	AnchorUpdate();
-
-
-
-	protected: public:
-//	BoxF2	BoxDisplay; // used for displaying Control
-//	BoxF2	BoxBoarder; // used for culling Children
-//	BoxF2	BoxContent; // used for anchoring Children
-
-//	private:	bool			BoxUpdateIsRequested = false;
-//	public:		void			BoxUpdateRequest();
-//	protected:	virtual	void	BoxUpdate();
-
-	public:
-	virtual BoxF2	BoxDisplay() const; // used for displaying Control
-	virtual BoxF2	BoxBoarder() const; // used for culling Children
-	virtual BoxF2	BoxContent() const; // used for anchoring Children
+	protected:	virtual	void	AnchorUpdate() override;
 
 
 
 	public:
-	enum class EAutoAnchorType
-	{
-		None,
-		StackMin,		//next.MinDist = prev.MinSize
-		//StackMinFit,	//next.MinDist = prev.MinSize but this.Size is made to Fit
-	};
-	EAutoAnchorType		AutoAnchorXType = EAutoAnchorType::None;
-	EAutoAnchorType		AutoAnchorYType = EAutoAnchorType::None;
+	virtual BoxF2	BoxDisplay() const override; // used for displaying Control
+	virtual BoxF2	BoxBoarder() const override; // used for culling Children
+	virtual BoxF2	BoxContent() const override; // used for anchoring Children
 
-	private:		bool	AutoAnchorUpdateIsRequested = false;
-	public:			void	AutoAnchorUpdateRequest();
-	public:	virtual	void	AutoAnchorUpdate();
 
-	private:		void	AutoAnchorUpdate_Y_StackMin();
+
+	private:		void	AutoAnchorUpdate_Y_StackMin() override;
 //	private:		void	AutoAnchorUpdate_Y_StackMinFit();
-
-	/* should Children be able to effect Parent ?
-		normal Controls dont do that ?
-		the only ones I can think of are HTML
-		HTML is very complex
-		Controls can have Maximum and Minimum Sizes
-		they also auto arange themselves
-		which is what I want
-		changing Children to is easy
-		maybe make another to automatically make all Children use the "Both" Anchor
-		making the Parent fit the Children is not really needed
-	*/
 
 
 
@@ -202,36 +85,21 @@ class Base
 	//ColorF4	ColorDisabled; // Gray Text
 	ColorF4		ColorHover;
 
-//	protected:
-//	ColorF4		Color;
-
-//	private:				bool	ColorUpdateIsRequested = false;
-//	public:					void	ColorUpdateRequest();
-//	protected:	virtual		void	ColorUpdate();
-
 	protected:
-	virtual ColorF4		Color() const;
+	virtual ColorF4		Color() const override;
 
 
 
-	protected:	virtual	void	DisplayPut() const;
-	public:				void	DisplayPutRecursive() const;
-
-	// rename these to RelayShow and RelayHide
-	// they dont do anything else now
-	protected:	virtual	void	DisplayShow();
-	protected:	virtual	void	DisplayHide();
+	protected:	virtual	void	DisplayPut() const override;
+	public:				void	DisplayPutRecursive() const override;
 
 
 
-	private:			bool	DisplayUpdateIsRequested = false;
-	private:			void	DisplayUpdateRequest();
-	protected:	virtual	void	DisplayUpdate();
+	protected:	virtual	void	DisplayUpdate() override;
 
 
 
-	protected:	virtual	void	Update();
-	public:				void	UpdateRecursive();
+	public:				void	UpdateRecursive() override;
 
 
 
@@ -244,40 +112,7 @@ class Base
 
 
 	public:
-	Base *	FindHover(const VectorF2 & mouse);
-
-
-
-	/* User Relay
-		these should only be called automatically by the Window/Manager
-		these change the Controll internally,
-		and might call Function Pointers for external stuff
-		they should not be accessible to the outside
-		they should not be called from inside the Control
-	*/
-	/* User Relay Invoker
-		(const void *) or (const Control::Base *)
-		not const ?
-		? the Invoker Control is this
-		the Control Pointer would be needed for Func Pointers
-	*/
-	/* User Relay return
-		0: dont try to relay to parent
-		1: try to relay this event to parent
-	*/
-
-	virtual void	RelayHover(HoverArgs args);
-	virtual void	RelayClick(ClickArgs args);
-	virtual void	RelayScroll(ScrollArgs args);
-	virtual void	RelayDrag(DragArgs args);
-	virtual void	RelayKey(KeyArgs args);
-	virtual void	RelayText(TextArgs args);
-
-	/* User Relay vs Func Pointer
-		Relays:		internal
-		Pointers:	external
-		put all FuncPointer for these here ?
-	*/
+	ControlDisplay *	FindHover(const VectorF2 & mouse) override;
 };
 };
 };

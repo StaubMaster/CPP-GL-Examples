@@ -21,13 +21,16 @@ UI::Manager::Manager()
 	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
 	GraphManager.MakeCurrent();
-	Window.Show();
+//	Window.Show();
 }
 
 
 
 
 
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
+#include "HoverArgs.hpp"
 void UI::Manager::MouseMove(MoveArgs args)
 {
 	(void)args;
@@ -59,7 +62,7 @@ void UI::Manager::MouseScroll(ScrollArgs args)
 	// no. RelayScroll gets overridden
 	// would need a seperate InvokeRelayScroll
 	{
-		UI::Control::Base * control = Hovering;
+		UI::Control::Base * control = dynamic_cast<UI::Control::Base *>(Hovering);
 		while (control != nullptr)
 		{
 			control -> RelayScroll(args);
@@ -67,7 +70,7 @@ void UI::Manager::MouseScroll(ScrollArgs args)
 		}
 	}
 	{
-		UI::Control::Base * control = Selected;
+		UI::Control::Base * control = dynamic_cast<UI::Control::Base *>(Selected);
 		while (control != nullptr)
 		{
 			control -> RelayScroll(args);
@@ -103,7 +106,7 @@ void UI::Manager::KeyBoardText(TextArgs args)
 void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
 {
 	Cursor.Position = mouse_pos.Buffer.Corner;
-	UI::Control::Base * control = Window.FindHover(mouse_pos.Buffer.Corner);
+	UI::Control::ControlDisplay * control = Window.FindHover(mouse_pos.Buffer.Corner);
 
 	// change Hovering to null when removing Control
 	if (control != Hovering)
@@ -143,7 +146,8 @@ void UI::Manager::Resize(DisplaySize display_size)
 }
 void UI::Manager::Update()
 {
-	Window.UpdateRecursive();
+	//Window.UpdateRecursive();
+	Window.Update();
 }
 
 
@@ -198,7 +202,8 @@ void UI::Manager::GraphicsMake()
 	//ControlManager.InstancesMake();
 	TextManager.InstancesMake();
 	GraphManager.InstancesMake();
-	Window.DisplayPutRecursive();
+	//Window.DisplayPutRecursive();
+	Window.DisplayPut();
 }
 void UI::Manager::GraphicsDone()
 {

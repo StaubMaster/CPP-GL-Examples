@@ -106,6 +106,7 @@ void DirectoryNavigator::ClickItem(const UI::Control::ListBox::Item & item)
 	}*/
 }
 
+#include "User/MouseArgs.hpp"
 void DirectoryNavigator::ClickGoParent(ClickArgs args)
 {
 	if (args.Action != Action::Press) { return; }

@@ -15,6 +15,7 @@ FILES := \
 	Control/General/Graphics/Layout.cpp \
 	\
 	Control/General/Manager.cpp \
+	Control/General/ControlDisplay.cpp \
 	Control/General/Base.cpp \
 	Control/General/BaseText.cpp \
 \

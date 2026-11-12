@@ -1,6 +1,13 @@
 #ifndef  UI_MANAGER_HPP
 # define UI_MANAGER_HPP
 
+struct MoveArgs; // struct HoverArgs;
+struct ClickArgs;
+struct ScrollArgs;
+struct DragArgs;
+struct KeyArgs;
+struct TextArgs;
+
 # include "Control/General/Manager.hpp"
 # include "Text/Manager.hpp"
 # include "Graph/Manager.hpp"
@@ -31,8 +38,11 @@ class Manager
 
 
 
-	Control::Base *		Hovering;
-	Control::Base *		Selected;
+	// put this in Window and Forms
+	// Window should look for Forms
+	// Forms should look for Controls
+	Control::ControlDisplay *		Hovering;
+	Control::ControlDisplay *		Selected;
 
 	//Form *	BoxChanging;
 

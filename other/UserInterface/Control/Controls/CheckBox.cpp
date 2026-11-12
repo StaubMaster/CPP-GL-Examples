@@ -1,7 +1,6 @@
 #include "Control/Controls/CheckBox.hpp"
 #include "UIManager.hpp"
-
-#include "User/MouseArgs.hpp"
+#include "AnchorEnum.hpp"
 
 
 
@@ -107,6 +106,9 @@ ColorF4 UI::Control::CheckBox::Color() const
 
 
 
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
+#include "HoverArgs.hpp"
 void UI::Control::CheckBox::RelayClick(ClickArgs params)
 {
 	if (!IsInteractible()) { return; }

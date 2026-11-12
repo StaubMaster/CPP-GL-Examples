@@ -11,21 +11,35 @@ class Manager;
 namespace Control
 {
 class Form;
-class Window : public Base
+class Window
 {
 	public:
 	UI::Manager *			Manager_ = nullptr;
 
 	public:
-			UI::Manager *			_Manager() override;
-			UI::Manager *			_Manager() const override;
-			UI::Control::Window *	_Window() override;
-	const	UI::Control::Window *	_Window() const override;
-			UI::Control::Form *		_Form() override;
-	const	UI::Control::Form *		_Form() const override;
+			UI::Manager *			_Manager();
+			UI::Manager *			_Manager() const;
+			UI::Control::Window *	_Window();
+	const	UI::Control::Window *	_Window() const;
+			UI::Control::Form *		_Form();
+	const	UI::Control::Form *		_Form() const;
 
 	public:
-	void	AssignPointers(Base & control) override;
+	void	AssignPointers(Form & control);
+
+
+
+	protected: public:
+	Container::Binary<Form *>	Children;
+
+	public:
+	void	ChildClear();
+	void	ChildRemove(Form & control);
+	void	ChildInsert(Form & control);
+
+	public:
+	void	ChildRemove(Form * control);
+	void	ChildInsert(Form * control);
 
 
 
@@ -41,18 +55,25 @@ class Window : public Base
 
 
 	public:
-	BoxF2	BoxDisplay() const override;
-	BoxF2	BoxBoarder() const override;
-	BoxF2	BoxContent() const override;
+	BoxF2	BoxDisplay() const;
+	BoxF2	BoxBoarder() const;
+	BoxF2	BoxContent() const;
 
-	protected:
-	void	Update() override;
+	public:
+	void	DisplayPut();
+	public:
+	void	Update();
 
 
 
 	public:
 	~Window() = default;
 	Window();
+
+
+
+	public:
+	ControlDisplay *	FindHover(const VectorF2 & mouse);
 };
 };
 };

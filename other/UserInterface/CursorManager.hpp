@@ -5,6 +5,8 @@
 
 # include "Control/Window.hpp"
 
+# include "GLFW/glfw3.h"
+
 class DirectoryInfo;
 
 namespace UI

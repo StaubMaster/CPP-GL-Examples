@@ -1,5 +1,6 @@
 #include "Control/Controls/Label.hpp"
 #include "Control/General/Manager.hpp"
+#include "AnchorEnum.hpp"
 
 #include "Text/Manager.hpp"
 #include <math.h>

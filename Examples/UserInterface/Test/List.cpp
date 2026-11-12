@@ -54,6 +54,7 @@ void TestList::ItemFunc(const UI::Control::ListBox::Item & item)
 
 
 
+#include "User/MouseArgs.hpp"
 void TestList::ItemNew(ClickArgs args)
 {
 	if (args.Action == Action::Press)

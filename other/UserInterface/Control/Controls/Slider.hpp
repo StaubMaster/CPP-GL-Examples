@@ -8,6 +8,8 @@
 //# include "Object.hpp"
 //# include "ObjectData.hpp"
 
+struct DisplayPosition;
+
 namespace UI
 {
 namespace Control

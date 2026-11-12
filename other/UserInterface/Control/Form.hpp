@@ -1,7 +1,9 @@
 #ifndef  UI_CONTROL_FORM_HPP
 # define UI_CONTROL_FORM_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/General/ControlDisplay.hpp"
+
+# include "Generics/Container/Binary.hpp"
 
 /*	TODO
 dont overlap with other Forms
@@ -33,7 +35,7 @@ class Manager;
 namespace Control
 {
 class Window;
-class Form : public Base
+class Form : public ControlDisplay
 {
 	public:
 	UI::Control::Window *	Window_ = nullptr;
@@ -46,18 +48,64 @@ class Form : public Base
 			UI::Control::Form *		_Form() override;
 	const	UI::Control::Form *		_Form() const override;
 
+
+
+	protected: public:
+	Container::Binary<Base *>	Children;
+
 	public:
-	void	AssignPointers(Base & control) override;
+	void	ChildClear();
+	void	ChildRemove(Base & control);
+	void	ChildInsert(Base & control);
+
+	public:
+	void	ChildRemove(Base * control);
+	void	ChildInsert(Base * control);
 
 
 
-	protected:
-	void	AnchorUpdate() override;
+	public:
+	bool	IsVisible() const override;
+	void	Show() override;
+	void	Hide() override;
+
+
+
+	public:		unsigned int	Layer() const override;
+
+	public:		unsigned int	LayerLimit() const override;
+
+
+
+	protected:	virtual	void	AnchorUpdate() override;
 
 	public:
 	BoxF2	BoxDisplay() const override;
 	BoxF2	BoxBoarder() const override;
 	BoxF2	BoxContent() const override;
+
+	private:		void	AutoAnchorUpdate_Y_StackMin() override;
+
+	public:
+	virtual ColorF4		Color() const override;
+
+
+
+	protected:	virtual	void	DisplayPut() const override;
+	public:				void	DisplayPutRecursive() const override;
+
+
+
+	protected:	virtual	void	DisplayUpdate() override;
+
+
+
+	public:				void	UpdateRecursive() override;
+
+
+
+	public:
+	ControlDisplay *	FindHover(const VectorF2 & mouse) override;
 
 
 

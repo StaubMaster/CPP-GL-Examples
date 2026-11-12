@@ -1,5 +1,6 @@
 #include "Control/Form.hpp"
 #include "UIManager.hpp"
+#include "AnchorEnum.hpp"
 
 
 
@@ -10,16 +11,92 @@ const	UI::Control::Window *	UI::Control::Form::_Window()	const	{ return Window_;
 		UI::Control::Form *		UI::Control::Form::_Form()				{ return this; }
 const	UI::Control::Form *		UI::Control::Form::_Form()		const	{ return this; }
 
-void UI::Control::Form::AssignPointers(Base & control)
+
+
+void UI::Control::Form::ChildClear()
 {
-	control.Parent = this;
-	//control.AssignPointerRecursive(Manager);
-	//control.AssignPointerRecursive(Window);
-	//control.AssignPointerRecursive(this);
-	control.AssignPointersRecursive(this);
+	Children.Clear();
+	AutoAnchorUpdateRequest();
+}
+void UI::Control::Form::ChildRemove(Base & control)
+{
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		if (Children[i] == &control)
+		{
+			Children.RemoveAt(i);
+			i--;
+		}
+	}
+	AutoAnchorUpdateRequest();
+}
+void UI::Control::Form::ChildInsert(Base & control)
+{
+	control.ChangeForm(this);
+	Children.Insert(&control);
+
+	control.DisplayUpdateRequest();
+
+	control.AnchorUpdateRequest();
+
+	//control.BoxUpdateRequestRecursive();
+
+	//control.ColorUpdateRequestRecursive();
+
+	AutoAnchorUpdateRequest();
+}
+
+void UI::Control::Form::ChildRemove(Base * control)
+{
+	if (control != nullptr)
+	{
+		ChildRemove(*control);
+	}
+}
+void UI::Control::Form::ChildInsert(Base * control)
+{
+	if (control != nullptr)
+	{
+		ChildInsert(*control);
+	}
 }
 
 
+
+bool UI::Control::Form::IsVisible() const
+{
+	return ControlDisplay::IsVisible();
+}
+void UI::Control::Form::Show()
+{
+	ControlDisplay::Show();
+}
+void UI::Control::Form::Hide()
+{
+	ControlDisplay::Hide();
+}
+
+
+
+unsigned int UI::Control::Form::Layer() const
+{
+	return 0;
+}
+
+unsigned int UI::Control::Form::LayerLimit() const
+{
+	if (Children.Count() != 0)
+	{
+		unsigned int limit = 0;
+		for (unsigned int i = 0; i < Children.Count(); i++)
+		{
+			unsigned int l = Children[i] -> LayerLimit();
+			if (l > limit) { limit = l; }
+		}
+		return limit + 1;
+	}
+	return 0;
+}
 
 void UI::Control::Form::AnchorUpdate()
 {
@@ -58,10 +135,104 @@ BoxF2 UI::Control::Form::BoxContent() const
 	);
 }
 
+void UI::Control::Form::AutoAnchorUpdate_Y_StackMin()
+{
+	float y = 0.0f;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		if (Children[i] == nullptr) { continue; }
+		Base & control = *Children[i];
+		if (!control.IsVisible()) { continue; }
+		control.Anchor.Y.AnchorMin(y);
+		y = control.Anchor.Y.GetMinSize();
+	}
+	AnchorUpdateRequest();
+}
+
+ColorF4 UI::Control::Form::Color() const
+{
+	return ColorF4(0.75f, 0.75f, 0.75f);
+}
+
+
+
+void UI::Control::Form::DisplayPut() const
+{
+//	if (_Manager() != nullptr && Parent != nullptr && Display)
+	if (_Manager() != nullptr && Window_ != nullptr && IsOpaque())
+	{
+		Inst::Data data;
+		data.Layer = Depth();
+		data.Box = BoxDisplay();
+		data.Color = Color();
+		data.Bound = Window_ -> BoxBoarder();
+		_Manager() -> ControlManager.InstancePut(data);
+	}
+}
+void UI::Control::Form::DisplayPutRecursive() const
+{
+	if (IsThisVisible())
+	{
+		DisplayPut();
+		for (unsigned int i = 0; i < Children.Count(); i++)
+		{
+			Children[i] -> DisplayPutRecursive();
+		}
+	}
+}
+
+void UI::Control::Form::DisplayUpdate()
+{
+	ControlDisplay::DisplayUpdate();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> DisplayUpdateRequest();
+		// AutoAnchorUpdateRequest() ?
+	}
+}
+
+
+
+void UI::Control::Form::UpdateRecursive()
+{
+	Update();
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Children[i] -> UpdateRecursive();
+	}
+}
+
+
+
+UI::Control::ControlDisplay * UI::Control::Form::FindHover(const VectorF2 & mouse)
+{
+	if (!IsThisVisible()) { return nullptr; }
+	if (!IsEnabled()) { return nullptr; }
+	if (!BoxDisplay().ContainsExclusive(mouse).All(true)) { return nullptr; }
+
+	// check BoxContent before checking children ?
+	ControlDisplay * control = nullptr;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		ControlDisplay * c = Children[i] -> FindHover(mouse);
+		if (c == nullptr) { continue; }
+		if (control == nullptr || ((c -> Depth()) < (control -> Depth())))
+		{
+			control = c;
+		}
+	}
+	if (control != nullptr)
+	{
+		return control;
+	}
+	return this;
+}
+
+
 
 
 UI::Control::Form::Form()
-	: Base()
+	: ControlDisplay()
 	, IsMovable(true)
 	, IsResizable(true)
 	, ChangingBoxType(EBoxChangeType::None)
@@ -72,8 +243,6 @@ UI::Control::Form::Form()
 //	AnchorSize = VectorF2(480, 360);
 	AnchorSize = VectorF2(360, 240);
 	AnchorNormal = VectorF2(0.5, 0.5);
-	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
-	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 }
 
 
@@ -122,14 +291,14 @@ UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 m
 void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 {
 	if (type == EBoxChangeType::None) { return; }
-	if (Parent != nullptr)
+	if (Window_ != nullptr)
 	{
 		// when moving, keep size
 		// when resizing, keep other side
 
 		BoxF2 other_box;
-		other_box.Min = (Parent -> BoxContent().Min) + AnchorMargin.Min;
-		other_box.Max = (Parent -> BoxContent().Max) - AnchorMargin.Max;
+		other_box.Min = (Window_ -> BoxContent().Min) + AnchorMargin.Min;
+		other_box.Max = (Window_ -> BoxContent().Max) - AnchorMargin.Max;
 
 		Bool2 limit_min = box.Min <= other_box.Min;
 		Bool2 limit_max = box.Max >= other_box.Max;
@@ -162,7 +331,7 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 
 		Anchor.X.Anchor = anchor_type_x;
 		Anchor.Y.Anchor = anchor_type_y;
-		Anchor.UpdateO(Parent -> BoxContent(), box);
+		Anchor.UpdateO(Window_ -> BoxContent(), box);
 		//BoxUpdateRequestRecursive();
 		AnchorUpdateRequest();
 	}
@@ -171,6 +340,9 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 
 
 #include "Control/General/Manager.hpp"
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
+#include "HoverArgs.hpp"
 /* put into Manager
 	Cursors flicked when moving
 	put into Manager, Cursor should stay the same until changing ends

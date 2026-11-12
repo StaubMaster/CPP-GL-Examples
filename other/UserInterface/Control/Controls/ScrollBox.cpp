@@ -156,6 +156,11 @@ void UI::Control::ScrollBox::ScrollFunc(float val)
 	Content.AnchorUpdateRequest();
 }
 
+
+
+#include "User/MouseArgs.hpp"
+#include "User/KeyBoardArgs.hpp"
+#include "HoverArgs.hpp"
 void UI::Control::ScrollBox::RelayScroll(ScrollArgs args)
 {
 	if (ScrollBar.IsEnabled())
