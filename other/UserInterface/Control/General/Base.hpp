@@ -5,6 +5,8 @@
 
 # include "Generics/Container/Binary.hpp"
 
+struct DisplayPosition;
+
 namespace UI
 {
 namespace Control
@@ -104,15 +106,15 @@ class Base : public ControlDisplay
 
 
 	public:
-	virtual ~Base();
-	Base();
-	Base(const Base & other) = delete;
-	Base & operator=(const Base & other) = delete;
+	UI::Control::Base *		Find(const DisplayPosition & display_pos);
 
 
 
 	public:
-	ControlDisplay *	FindHover(const VectorF2 & mouse) override;
+	virtual ~Base();
+	Base();
+	Base(const Base & other) = delete;
+	Base & operator=(const Base & other) = delete;
 };
 };
 };

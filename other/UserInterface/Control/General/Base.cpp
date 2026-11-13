@@ -321,13 +321,13 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 }*/
 ColorF4 UI::Control::Base::Color() const
 {
-	if (_Manager() == nullptr)
+	if (_Form() == nullptr)
 	{
 		return ColorDefault;
 	}
 	else
 	{
-		if (_Manager() -> Hovering != this)
+		if (_Form() -> Hovering() != this)
 		{
 			return ColorDefault;
 		}
@@ -388,6 +388,35 @@ void UI::Control::Base::UpdateRecursive()
 
 
 
+#include "Display/DisplayPosition.hpp"
+UI::Control::Base * UI::Control::Base::Find(const DisplayPosition & display_pos)
+{
+	if (!IsThisVisible()) { return nullptr; }
+	if (!IsEnabled()) { return nullptr; }
+
+	const VectorF2 & mouse = display_pos.Buffer.Corner;
+	if (!BoxDisplay().ContainsExclusive(mouse).All(true)) { return nullptr; }
+
+	// check BoxContent before checking children ?
+	Base * control = nullptr;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Base * c = Children[i] -> Find(display_pos);
+		if (c == nullptr) { continue; }
+		if (control == nullptr || ((c -> Depth()) < (control -> Depth())))
+		{
+			control = c;
+		}
+	}
+	if (control != nullptr)
+	{
+		return control;
+	}
+	return this;
+}
+
+
+
 UI::Control::Base::~Base()
 {
 	/*for (unsigned int i = 0; i < Children.Count(); i++)
@@ -408,30 +437,4 @@ UI::Control::Base::Base()
 	AnchorMargin = BoxF2(VectorF2(margin, margin), VectorF2(margin, margin));
 	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
-}
-
-
-
-UI::Control::ControlDisplay * UI::Control::Base::FindHover(const VectorF2 & mouse)
-{
-	if (!IsThisVisible()) { return nullptr; }
-	if (!IsEnabled()) { return nullptr; }
-	if (!BoxDisplay().ContainsExclusive(mouse).All(true)) { return nullptr; }
-
-	// check BoxContent before checking children ?
-	ControlDisplay * control = nullptr;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		ControlDisplay * c = Children[i] -> FindHover(mouse);
-		if (c == nullptr) { continue; }
-		if (control == nullptr || ((c -> Depth()) < (control -> Depth())))
-		{
-			control = c;
-		}
-	}
-	if (control != nullptr)
-	{
-		return control;
-	}
-	return this;
 }

@@ -20,6 +20,21 @@ void UI::Control::ControlDisplay::Disable()
 	//ColorUpdateRequestRecursive();
 }
 
+bool UI::Control::ControlDisplay::IsOpaque() const
+{
+	return IsOpaque_;
+}
+void UI::Control::ControlDisplay::MakeTransparent()
+{
+	IsOpaque_ = false;
+	DisplayUpdateRequest();
+}
+void UI::Control::ControlDisplay::MakeOpaque()
+{
+	IsOpaque_ = true;
+	DisplayUpdateRequest();
+}
+
 bool UI::Control::ControlDisplay::IsThisVisible() const
 {
 	return IsVisible_;
@@ -36,21 +51,6 @@ void UI::Control::ControlDisplay::Show()
 void UI::Control::ControlDisplay::Hide()
 {
 	IsVisible_ = false;
-	DisplayUpdateRequest();
-}
-
-bool UI::Control::ControlDisplay::IsOpaque() const
-{
-	return IsOpaque_;
-}
-void UI::Control::ControlDisplay::MakeTransparent()
-{
-	IsOpaque_ = false;
-	DisplayUpdateRequest();
-}
-void UI::Control::ControlDisplay::MakeOpaque()
-{
-	IsOpaque_ = true;
 	DisplayUpdateRequest();
 }
 
@@ -188,22 +188,6 @@ void UI::Control::ControlDisplay::AutoAnchorUpdate()
 	AutoAnchorUpdateIsRequested = false;
 }
 
-/*void UI::Control::ControlDisplay::AutoAnchorUpdate_Y_StackMinFit()
-{
-	float y = 0.0f;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		if (Children[i] == nullptr) { continue; }
-		Base & control = *Children[i];
-		if (!control.IsVisible()) { continue; }
-		control.Anchor.Y.AnchorMin(y);
-		y = control.Anchor.Y.GetMinSize();
-	}
-	Anchor.Y.SetSize(y + AnchorMargin.Max.Y + AnchorBoarder.Max.Y + AnchorPadding.Max.Y);
-	//BoxUpdateRequestRecursive();
-	AnchorUpdateRequest();
-}*/
-
 
 
 /*void UI::Control::ControlDisplay::ColorUpdateRequest()
@@ -232,20 +216,18 @@ void UI::Control::ControlDisplay::AutoAnchorUpdate()
 
 
 
-void UI::Control::ControlDisplay::DisplayShow() { }
-void UI::Control::ControlDisplay::DisplayHide() { }
-
 void UI::Control::ControlDisplay::DisplayUpdateRequest()
 {
 	DisplayUpdateIsRequested = true;
 }
 void UI::Control::ControlDisplay::DisplayUpdate()
 {
-	if (IsDisplay())	{ DisplayShow(); }
-	else				{ DisplayHide(); }
+	if (IsDisplay())	{ RelayShow(); }
+	else				{ RelayHide(); }
 
 	DisplayUpdateIsRequested = false;
 }
+
 
 
 void UI::Control::ControlDisplay::Update()
@@ -290,6 +272,9 @@ UI::Control::ControlDisplay::ControlDisplay()
 }
 
 
+
+void UI::Control::ControlDisplay::RelayShow() { }
+void UI::Control::ControlDisplay::RelayHide() { }
 
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"

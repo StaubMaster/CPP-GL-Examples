@@ -4,6 +4,7 @@
 # include "Control/General/Base.hpp"
 
 struct DisplaySize;
+struct DisplayPosition;
 
 namespace UI
 {
@@ -45,19 +46,35 @@ class Window
 
 	private:	VectorF2	Size;
 	public:		void		SizeChange(const DisplaySize & display_size);
+	public:		BoxF2		Box() const;
 
-	public:		float	DepthSize = 0.0f;
+
+
+	private:
+	UI::Control::Form *		Find(const DisplayPosition & display_pos);
+	private:
+	UI::Control::Form *		Hovering_ = nullptr;
+	UI::Control::Form *		Selected_ = nullptr;
+	public:
+	UI::Control::Form *		Hovering() const;
+	UI::Control::Form *		Selected() const;
+	private:
+	void	HoveringChange(UI::Control::Form * form, const DisplayPosition & display_pos);
+	void	SelectedChange();
+	public:
+	void	HoveringUpdate(const DisplayPosition & display_pos);
+	void	SelectedUpdate();
+
+
+
 	private:	bool	DepthCalculateIsRequested = false;
 	public:		void	DepthCalculateRequest();
 //	public:		void	DepthCalculateResolve();
 	private:	void	DepthCalculate();
 
+	public:		float	DepthSize = 0.0f; // how much Depth does a Control take
 
 
-	public:
-	BoxF2	BoxDisplay() const;
-	BoxF2	BoxBoarder() const;
-	BoxF2	BoxContent() const;
 
 	public:
 	void	DisplayPut();
@@ -69,11 +86,6 @@ class Window
 	public:
 	~Window() = default;
 	Window();
-
-
-
-	public:
-	ControlDisplay *	FindHover(const VectorF2 & mouse);
 };
 };
 };

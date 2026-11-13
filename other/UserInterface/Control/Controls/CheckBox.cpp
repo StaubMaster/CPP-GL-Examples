@@ -1,5 +1,6 @@
 #include "Control/Controls/CheckBox.hpp"
 #include "UIManager.hpp"
+#include "Control/Form.hpp"
 #include "AnchorEnum.hpp"
 
 
@@ -73,13 +74,13 @@ void UI::Control::CheckBox::Check(bool state)
 }*/
 ColorF4 UI::Control::CheckBox::Color() const
 {
-	if (_Manager() == nullptr)
+	if (_Form() == nullptr)
 	{
 		return ColorDefault;
 	}
 	else
 	{
-		if (_Manager() -> Hovering != this)
+		if (_Form() -> Hovering() != this)
 		{
 			if (!Checked)
 			{

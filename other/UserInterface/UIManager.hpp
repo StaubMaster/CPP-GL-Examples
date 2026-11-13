@@ -41,8 +41,8 @@ class Manager
 	// put this in Window and Forms
 	// Window should look for Forms
 	// Forms should look for Controls
-	Control::ControlDisplay *		Hovering;
-	Control::ControlDisplay *		Selected;
+	//Control::ControlDisplay *		Hovering;
+	//Control::ControlDisplay *		Selected;
 
 	//Form *	BoxChanging;
 

@@ -102,7 +102,7 @@ void UI::Control::Form::AnchorUpdate()
 {
 	if (_Window() == nullptr) { return; }
 
-	Anchor.UpdateO(_Window() -> BoxContent());
+	Anchor.UpdateO(_Window() -> Box());
 
 	AnchorUpdateIsRequested = false;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -114,7 +114,7 @@ void UI::Control::Form::AnchorUpdate()
 BoxF2 UI::Control::Form::BoxDisplay() const
 {
 	if (_Window() == nullptr) { return BoxF2(); }
-	return Anchor.ToInnerBox(_Window() -> BoxContent());
+	return Anchor.ToInnerBox(_Window() -> Box());
 }
 BoxF2 UI::Control::Form::BoxBoarder() const
 {
@@ -165,7 +165,7 @@ void UI::Control::Form::DisplayPut() const
 		data.Layer = Depth();
 		data.Box = BoxDisplay();
 		data.Color = Color();
-		data.Bound = Window_ -> BoxBoarder();
+		data.Bound = Window_ -> Box();
 		_Manager() -> ControlManager.InstancePut(data);
 	}
 }
@@ -204,17 +204,20 @@ void UI::Control::Form::UpdateRecursive()
 
 
 
-UI::Control::ControlDisplay * UI::Control::Form::FindHover(const VectorF2 & mouse)
+#include "Display/DisplayPosition.hpp"
+#include "HoverArgs.hpp"
+UI::Control::Base * UI::Control::Form::Find(const DisplayPosition & display_pos)
 {
 	if (!IsThisVisible()) { return nullptr; }
 	if (!IsEnabled()) { return nullptr; }
-	if (!BoxDisplay().ContainsExclusive(mouse).All(true)) { return nullptr; }
+	const VectorF2 & pos = display_pos.Buffer.Corner;
+	if (!BoxDisplay().ContainsExclusive(pos).All(true)) { return nullptr; }
 
 	// check BoxContent before checking children ?
-	ControlDisplay * control = nullptr;
+	Base * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		ControlDisplay * c = Children[i] -> FindHover(mouse);
+		Base * c = Children[i] -> Find(display_pos);
 		if (c == nullptr) { continue; }
 		if (control == nullptr || ((c -> Depth()) < (control -> Depth())))
 		{
@@ -225,9 +228,36 @@ UI::Control::ControlDisplay * UI::Control::Form::FindHover(const VectorF2 & mous
 	{
 		return control;
 	}
-	return this;
+	return nullptr;
 }
-
+UI::Control::Base * UI::Control::Form::Hovering() const { return Hovering_; }
+UI::Control::Base * UI::Control::Form::Selected() const { return Selected_; }
+void UI::Control::Form::HoveringChange(UI::Control::Base * control, const DisplayPosition & display_pos)
+{
+	if (Hovering_ != control)
+	{
+		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Leave, display_pos)); }
+		Hovering_ = control;
+		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Enter, display_pos)); }
+	}
+	else
+	{
+		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Move, display_pos)); }
+	}
+}
+void UI::Control::Form::SelectedChange()
+{
+	Selected_ = Hovering_;
+}
+void UI::Control::Form::HoveringUpdate(const DisplayPosition & display_pos)
+{
+	UI::Control::Base * control = Find(display_pos);
+	HoveringChange(control, display_pos);
+}
+void UI::Control::Form::SelectedUpdate()
+{
+	SelectedChange();
+}
 
 
 
@@ -297,8 +327,8 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 		// when resizing, keep other side
 
 		BoxF2 other_box;
-		other_box.Min = (Window_ -> BoxContent().Min) + AnchorMargin.Min;
-		other_box.Max = (Window_ -> BoxContent().Max) - AnchorMargin.Max;
+		other_box.Min = (Window_ -> Box().Min) + AnchorMargin.Min;
+		other_box.Max = (Window_ -> Box().Max) - AnchorMargin.Max;
 
 		Bool2 limit_min = box.Min <= other_box.Min;
 		Bool2 limit_max = box.Max >= other_box.Max;
@@ -331,7 +361,7 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 
 		Anchor.X.Anchor = anchor_type_x;
 		Anchor.Y.Anchor = anchor_type_y;
-		Anchor.UpdateO(Window_ -> BoxContent(), box);
+		Anchor.UpdateO(Window_ -> Box(), box);
 		//BoxUpdateRequestRecursive();
 		AnchorUpdateRequest();
 	}

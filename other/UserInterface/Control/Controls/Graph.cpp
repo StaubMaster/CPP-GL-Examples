@@ -29,17 +29,17 @@ void UI::Control::Graph::Update()
 		GraphObject.Data -> Values = &Values;
 	}
 }
-void UI::Control::Graph::DisplayShow()
+void UI::Control::Graph::RelayShow()
 {
-	Base::DisplayShow();
+	Base::RelayShow();
 	if (!GraphObject.Is() && _Manager() != nullptr)
 	{
 		GraphObject.Create();
 	}
 }
-void UI::Control::Graph::DisplayHide()
+void UI::Control::Graph::RelayHide()
 {
-	Base::DisplayHide();
+	Base::RelayHide();
 	if (GraphObject.Is() || _Manager() == nullptr)
 	{
 		GraphObject.Delete();

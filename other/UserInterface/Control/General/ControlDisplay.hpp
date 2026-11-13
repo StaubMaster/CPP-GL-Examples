@@ -50,19 +50,19 @@ class ControlDisplay
 	void	Disable();
 
 	private:
+	bool	IsOpaque_ = true;
+	public:
+	bool	IsOpaque() const;
+	void	MakeTransparent();
+	void	MakeOpaque();
+
+	private:
 	bool	IsVisible_ = true;
 	public:
 			bool	IsThisVisible() const;
 	virtual	bool	IsVisible() const;
 	virtual	void	Show();
 	virtual	void	Hide();
-
-	private:
-	bool	IsOpaque_ = true;
-	public:
-	bool	IsOpaque() const;
-	void	MakeTransparent();
-	void	MakeOpaque();
 
 	public:
 	bool	IsDisplay() const;
@@ -172,11 +172,6 @@ class ControlDisplay
 	protected:	virtual	void	DisplayPut() const = 0;
 	public:		virtual	void	DisplayPutRecursive() const = 0;
 
-	// rename these to RelayShow and RelayHide
-	// they dont do anything else now
-	protected:	virtual	void	DisplayShow();
-	protected:	virtual	void	DisplayHide();
-
 
 
 	private:			bool	DisplayUpdateIsRequested = false;
@@ -198,10 +193,9 @@ class ControlDisplay
 
 
 
-	public:
-	virtual ControlDisplay *	FindHover(const VectorF2 & mouse) = 0;
-
-
+	protected:
+	virtual	void	RelayShow();
+	virtual	void	RelayHide();
 
 	/* User Relay
 		these should only be called automatically by the Window/Manager
@@ -221,6 +215,7 @@ class ControlDisplay
 		1: try to relay this event to parent
 	*/
 
+	public:
 	virtual void	RelayHover(HoverArgs args);
 	virtual void	RelayClick(ClickArgs args);
 	virtual void	RelayScroll(ScrollArgs args);

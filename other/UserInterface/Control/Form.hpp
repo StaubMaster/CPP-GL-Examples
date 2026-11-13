@@ -5,6 +5,8 @@
 
 # include "Generics/Container/Binary.hpp"
 
+struct DisplayPosition;
+
 /*	TODO
 dont overlap with other Forms
 	eighter completely behind another or infront of another
@@ -105,7 +107,19 @@ class Form : public ControlDisplay
 
 
 	public:
-	ControlDisplay *	FindHover(const VectorF2 & mouse) override;
+	UI::Control::Base *		Find(const DisplayPosition & display_pos);
+	private:
+	UI::Control::Base *		Hovering_ = nullptr;
+	UI::Control::Base *		Selected_ = nullptr;
+	public:
+	UI::Control::Base *		Hovering() const;
+	UI::Control::Base *		Selected() const;
+	public:
+	void	HoveringChange(UI::Control::Base * control, const DisplayPosition & display_pos);
+	void	SelectedChange();
+	public:
+	void	HoveringUpdate(const DisplayPosition & display_pos);
+	void	SelectedUpdate();
 
 
 

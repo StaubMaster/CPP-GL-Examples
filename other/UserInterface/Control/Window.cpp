@@ -92,6 +92,82 @@ void UI::Control::Window::SizeChange(const DisplaySize & display_size)
 		Children[i] -> AnchorUpdateRequest();
 	}
 }
+BoxF2 UI::Control::Window::Box() const
+{
+	return BoxF2(VectorF2(), Size);
+}
+
+
+
+#include "Display/DisplayPosition.hpp"
+#include "HoverArgs.hpp"
+UI::Control::Form * UI::Control::Window::Find(const DisplayPosition & display_pos)
+{
+	const VectorF2 & pos = display_pos.Buffer.Corner;
+
+	if (!Box().ContainsExclusive(pos).All(true)) { return nullptr; }
+
+	// check BoxContent before checking children ?
+	Form * control = nullptr;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Form * c = Children[i];
+		if (!c -> IsThisVisible()) { continue; }
+		if (!c -> IsEnabled()) { continue; }
+		if (!c -> BoxDisplay().ContainsExclusive(pos).All(true)) { continue; }
+		if (control == nullptr || ((c -> Depth()) < (control -> Depth())))
+		{
+			control = c;
+		}
+		/*Form * c = Children[i] -> Find(display_pos);
+		if (c == nullptr) { continue; }
+		if (control == nullptr || ((c -> Depth()) < (control -> Depth())))
+		{
+			control = c;
+		}*/
+	}
+	if (control != nullptr)
+	{
+		return control;
+	}
+	return nullptr;
+}
+UI::Control::Form *  UI::Control::Window::Hovering() const { return Hovering_; }
+UI::Control::Form *  UI::Control::Window::Selected() const { return Selected_; }
+void UI::Control::Window::HoveringChange(UI::Control::Form * form, const DisplayPosition & display_pos)
+{
+	if (Hovering_ != form)
+	{
+		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Leave, display_pos)); }
+		Hovering_ = form;
+		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Enter, display_pos)); }
+	}
+	else
+	{
+		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Move, display_pos)); }
+	}
+}
+void UI::Control::Window::SelectedChange()
+{
+	Selected_ = Hovering_;
+	if (Selected_ != nullptr)
+	{
+		Selected_ -> SelectedChange();
+	}
+}
+void UI::Control::Window::HoveringUpdate(const DisplayPosition & display_pos)
+{
+	UI::Control::Form * form = Find(display_pos);
+	HoveringChange(form, display_pos);
+	if (form != nullptr)
+	{
+		form -> HoveringUpdate(display_pos);
+	}
+}
+void UI::Control::Window::SelectedUpdate()
+{
+	SelectedChange();
+}
 
 
 
@@ -144,9 +220,6 @@ void UI::Control::Window::DepthCalculate()
 
 
 
-BoxF2 UI::Control::Window::BoxDisplay() const { return BoxF2(VectorF2(), Size); }
-BoxF2 UI::Control::Window::BoxBoarder() const { return BoxDisplay(); }
-BoxF2 UI::Control::Window::BoxContent() const { return BoxBoarder(); }
 
 
 
@@ -179,28 +252,4 @@ UI::Control::Window::Window()
 //	ColorDefault = ColorF4(0, 0, 0);
 //	ColorHover = ColorF4(0, 0, 0);
 //	MakeTransparent();
-}
-
-
-
-UI::Control::ControlDisplay * UI::Control::Window::FindHover(const VectorF2 & mouse)
-{
-	if (!BoxDisplay().ContainsExclusive(mouse).All(true)) { return nullptr; }
-
-	// check BoxContent before checking children ?
-	ControlDisplay * control = nullptr;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		ControlDisplay * c = Children[i] -> FindHover(mouse);
-		if (c == nullptr) { continue; }
-		if (control == nullptr || ((c -> Depth()) < (control -> Depth())))
-		{
-			control = c;
-		}
-	}
-	if (control != nullptr)
-	{
-		return control;
-	}
-	return nullptr;
 }

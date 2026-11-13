@@ -47,6 +47,7 @@ void UI::Control::PropertyControl::HideProperty()
 	AutoAnchorUpdate();
 }
 
+#include "User/MouseArgs.hpp"
 void UI::Control::PropertyControl::ToggleFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)

@@ -33,8 +33,10 @@ class Graph : public Base // GraphLine
 
 	public:
 	void	Update() override;
-	void	DisplayShow() override;
-	void	DisplayHide() override;
+
+	protected:
+	void	RelayShow() override;
+	void	RelayHide() override;
 
 };
 };

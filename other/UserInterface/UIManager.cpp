@@ -15,8 +15,6 @@ UI::Manager::~Manager()
 { }
 UI::Manager::Manager()
 	: Window()
-	, Hovering(nullptr)
-	, Selected(nullptr)
 {
 	ControlManager.MakeCurrent();
 	TextManager.MakeCurrent();
@@ -27,6 +25,7 @@ UI::Manager::Manager()
 
 
 
+#include "Control/Form.hpp"
 
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
@@ -38,11 +37,14 @@ void UI::Manager::MouseMove(MoveArgs args)
 }
 void UI::Manager::MouseClick(ClickArgs args)
 {
-	if (Hovering != nullptr)
+	if (Window.Hovering() != nullptr)
 	{
-		Hovering -> RelayClick(args);
+		if (Window.Hovering() -> Hovering() != nullptr)
+		{
+			Window.Hovering() -> Hovering() -> RelayClick(args);
+		}
 	}
-	Selected = Hovering;
+	Window.SelectedUpdate();
 }
 void UI::Manager::MouseScroll(ScrollArgs args)
 {
@@ -61,16 +63,18 @@ void UI::Manager::MouseScroll(ScrollArgs args)
 	// do loop in Base::RelayScroll
 	// no. RelayScroll gets overridden
 	// would need a seperate InvokeRelayScroll
+	if (Window.Hovering() != nullptr)
 	{
-		UI::Control::Base * control = dynamic_cast<UI::Control::Base *>(Hovering);
+		UI::Control::Base * control = dynamic_cast<UI::Control::Base *>(Window.Hovering() -> Hovering());
 		while (control != nullptr)
 		{
 			control -> RelayScroll(args);
 			control = control -> Parent;
 		}
 	}
+	if (Window.Selected() != nullptr)
 	{
-		UI::Control::Base * control = dynamic_cast<UI::Control::Base *>(Selected);
+		UI::Control::Base * control = dynamic_cast<UI::Control::Base *>(Window.Selected() -> Selected());
 		while (control != nullptr)
 		{
 			control -> RelayScroll(args);
@@ -80,56 +84,29 @@ void UI::Manager::MouseScroll(ScrollArgs args)
 }
 void UI::Manager::MouseDrag(DragArgs args)
 {
-	if (Selected != nullptr)
-	{
-		Selected -> RelayDrag(args);
-	}
+	if (Window.Selected() != nullptr)
+		Window.Selected() -> RelayDrag(args);
 }
 void UI::Manager::KeyBoardKey(KeyArgs args)
 {
-	if (Selected != nullptr)
-	{
-		Selected -> RelayKey(args);
-	}
+	if (Window.Selected() != nullptr)
+		Window.Selected() -> RelayKey(args);
 }
 void UI::Manager::KeyBoardText(TextArgs args)
 {
-	if (Selected != nullptr)
-	{
-		Selected -> RelayText(args);
-	}
+	if (Window.Selected() != nullptr)
+		Window.Selected() -> RelayText(args);
 }
 
 
 
 // put this in Window ?
-void UI::Manager::UpdateMouse(DisplayPosition mouse_pos)
+void UI::Manager::UpdateMouse(DisplayPosition display_pos)
 {
-	Cursor.Position = mouse_pos.Buffer.Corner;
-	UI::Control::ControlDisplay * control = Window.FindHover(mouse_pos.Buffer.Corner);
+	Cursor.Position = display_pos.Buffer.Corner;
 
-	// change Hovering to null when removing Control
-	if (control != Hovering)
-	{
-		if (Hovering != nullptr)
-		{
-			//Hovering -> ColorUpdateRequest();
-			Hovering -> RelayHover(HoverArgs(HoverType::Leave, mouse_pos));
-		}
-		Hovering = control;
-		if (Hovering != nullptr)
-		{
-			//Hovering -> ColorUpdateRequest();
-			Hovering -> RelayHover(HoverArgs(HoverType::Enter, mouse_pos));
-		}
-	}
-	else
-	{
-		if (Hovering != nullptr)
-		{
-			Hovering -> RelayHover(HoverArgs(HoverType::Move, mouse_pos));
-		}
-	}
+	// do this in Mouse Move
+	Window.HoveringUpdate(display_pos);
 }
 void UI::Manager::Resize(DisplaySize display_size)
 {
@@ -146,7 +123,6 @@ void UI::Manager::Resize(DisplaySize display_size)
 }
 void UI::Manager::Update()
 {
-	//Window.UpdateRecursive();
 	Window.Update();
 }
 
