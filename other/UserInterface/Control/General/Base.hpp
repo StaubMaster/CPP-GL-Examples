@@ -1,55 +1,46 @@
 #ifndef  UI_CONTROL_BASE_HPP
 # define UI_CONTROL_BASE_HPP
 
-# include "ControlDisplay.hpp"
-
-# include "Generics/Container/Binary.hpp"
-
-struct DisplayPosition;
+# include "Control_Display.hpp"
+# include "Control_UserRelay.hpp"
+# include "Control_Container.hpp"
 
 namespace UI
 {
 namespace Control
 {
-class Base : public ControlDisplay
+// rename from Base to Control
+// put outside of Control namespace
+class Base : public Control_Container<Base>, public Control_Display, public Control_UserRelay
 {
 	public:
 	UI::Control::Form *		Form_ = nullptr; // Forn and Window dont need this.
-	/*
-		make Base that ForM and Window inherit from,
-		and another Base,
-		that inhertis from the first Base
-		and that all of the actual Control inherit from
-	*/
 
 	public:
-	virtual			UI::Manager *			_Manager() override;
-	virtual			UI::Manager *			_Manager() const override;
-	virtual			UI::Control::Window *	_Window() override;
-	virtual	const	UI::Control::Window *	_Window() const override;
-	virtual			UI::Control::Form *		_Form() override;
-	virtual	const	UI::Control::Form *		_Form() const override;
+			UI::Manager *			_Manager();
+			UI::Manager *			_Manager() const;
+			UI::Control::Window *	_Window();
+	const	UI::Control::Window *	_Window() const;
 	// these suck, find a way to replace them
 
 	public:
-	void	ChangeForm(UI::Control::Form * form);
+	void	ChangeFormRecursive(UI::Control::Form * form);
 
 
 
-	protected: public:
-	Base *	Parent = nullptr; // could this be const ?
-
-	protected: public:
-	Container::Binary<Base *>	Children;
+	private:
+	Base *	Parent_ = nullptr;
+	public:
+	Base *	Parent() const;
 
 	public:
-	virtual void	ChildClear();
-	virtual void	ChildRemove(Base & control);
-	virtual void	ChildInsert(Base & control);
+	virtual void	ChildClear() override;
+	virtual void	ChildRemove(Base & control) override;
+	virtual void	ChildInsert(Base & control) override;
 
 	public:
-	void	ChildRemove(Base * control);
-	void	ChildInsert(Base * control);
+	bool					Check(const DisplayPosition & display_pos) const override;
+	UI::Control::Base *		Find(const DisplayPosition & display_pos) override;
 
 
 
@@ -64,16 +55,18 @@ class Base : public ControlDisplay
 
 	public:		unsigned int	LayerLimit() const override;
 
+	public:		float	Depth(float depth = 0.0f) const override;
+
 
 
 	protected:	virtual	void	AnchorUpdate() override;
 
 
 
-	public:
-	virtual BoxF2	BoxDisplay() const override; // used for displaying Control
-	virtual BoxF2	BoxBoarder() const override; // used for culling Children
-	virtual BoxF2	BoxContent() const override; // used for anchoring Children
+	protected:
+	bool	MetaIs() const override;
+	BoxF2	MetaBoxBoarder() const override;
+	BoxF2	MetaBoxContent() const override;
 
 
 
@@ -102,11 +95,6 @@ class Base : public ControlDisplay
 
 
 	public:				void	UpdateRecursive() override;
-
-
-
-	public:
-	UI::Control::Base *		Find(const DisplayPosition & display_pos);
 
 
 

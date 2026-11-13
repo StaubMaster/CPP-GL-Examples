@@ -1,11 +1,9 @@
 #ifndef  UI_CONTROL_FORM_HPP
 # define UI_CONTROL_FORM_HPP
 
-# include "Control/General/ControlDisplay.hpp"
-
-# include "Generics/Container/Binary.hpp"
-
-struct DisplayPosition;
+# include "Control/General/Control_Display.hpp"
+# include "Control/General/Control_UserRelay.hpp"
+# include "Control/General/Control_Container.hpp"
 
 /*	TODO
 dont overlap with other Forms
@@ -37,32 +35,39 @@ class Manager;
 namespace Control
 {
 class Window;
-class Form : public ControlDisplay
+class Base;
+class Form : public Control_Container<Base>, public Control_Display, public Control_UserRelay
 {
 	public:
 	UI::Control::Window *	Window_ = nullptr;
 
 	public:
-			UI::Manager *			_Manager() override;
-			UI::Manager *			_Manager() const override;
-			UI::Control::Window *	_Window() override;
-	const	UI::Control::Window *	_Window() const override;
-			UI::Control::Form *		_Form() override;
-	const	UI::Control::Form *		_Form() const override;
+			UI::Manager *			_Manager();
+			UI::Manager *			_Manager() const;
 
 
-
-	protected: public:
-	Container::Binary<Base *>	Children;
 
 	public:
-	void	ChildClear();
-	void	ChildRemove(Base & control);
-	void	ChildInsert(Base & control);
+	void	ChildClear() override;
+	void	ChildRemove(Base & control) override;
+	void	ChildInsert(Base & control) override;
 
 	public:
-	void	ChildRemove(Base * control);
-	void	ChildInsert(Base * control);
+	bool					Check(const DisplayPosition & display_pos) const override;
+	UI::Control::Base *		Find(const DisplayPosition & display_pos) override;
+
+	private:
+	UI::Control::Base *		Hovering_ = nullptr;
+	UI::Control::Base *		Selected_ = nullptr;
+	public:
+	UI::Control::Base *		Hovering() const;
+	UI::Control::Base *		Selected() const;
+	public:
+	void	HoveringChange(UI::Control::Base * control, const DisplayPosition & display_pos);
+	void	SelectedChange();
+	public:
+	void	HoveringUpdate(const DisplayPosition & display_pos);
+	void	SelectedUpdate();
 
 
 
@@ -77,14 +82,18 @@ class Form : public ControlDisplay
 
 	public:		unsigned int	LayerLimit() const override;
 
+	private: public:	float	Depth_ = 0.0f;
+	public:		void	DepthChange(float depth);
+	public:		float	Depth(float depth = 0.0f) const override;
+
 
 
 	protected:	virtual	void	AnchorUpdate() override;
 
-	public:
-	BoxF2	BoxDisplay() const override;
-	BoxF2	BoxBoarder() const override;
-	BoxF2	BoxContent() const override;
+	protected:
+	bool	MetaIs() const override;
+	BoxF2	MetaBoxBoarder() const override;
+	BoxF2	MetaBoxContent() const override;
 
 	private:		void	AutoAnchorUpdate_Y_StackMin() override;
 
@@ -107,28 +116,8 @@ class Form : public ControlDisplay
 
 
 	public:
-	UI::Control::Base *		Find(const DisplayPosition & display_pos);
-	private:
-	UI::Control::Base *		Hovering_ = nullptr;
-	UI::Control::Base *		Selected_ = nullptr;
-	public:
-	UI::Control::Base *		Hovering() const;
-	UI::Control::Base *		Selected() const;
-	public:
-	void	HoveringChange(UI::Control::Base * control, const DisplayPosition & display_pos);
-	void	SelectedChange();
-	public:
-	void	HoveringUpdate(const DisplayPosition & display_pos);
-	void	SelectedUpdate();
-
-
-
-	public:
 	virtual ~Form() = default;
 	Form();
-
-	public:
-	float	DepthOffset = 0.0f;
 
 	public:
 	bool	IsMovable = false;

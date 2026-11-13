@@ -148,14 +148,16 @@ void UI::Control::Slider::Update()
 void UI::Control::Slider::DisplayPut() const
 {
 	BaseText::DisplayPut();
-	if (_Manager() != nullptr && (Parent != nullptr || Form_ != nullptr))
+	//if (_Manager() != nullptr && (Parent != nullptr || Form_ != nullptr))
+	if (_Manager() != nullptr && MetaIs())
 	{
 		Inst::Data data;
-		data.Layer = Depth(1.0f / 3.0f);
+		data.Layer = -Depth(1.0f / 3.0f);
 		data.Box = NubBox;
 		data.Color = ColorF4(0.5f, 0.5f, 0.5f);
-		if (Form_ != nullptr) { data.Bound = Form_ -> BoxBoarder(); }
-		if (Parent != nullptr) { data.Bound = Parent -> BoxBoarder(); }
+		//if (Form_ != nullptr) { data.Bound = Form_ -> BoxBoarder(); }
+		//if (Parent != nullptr) { data.Bound = Parent -> BoxBoarder(); }
+		data.Bound = MetaBoxBoarder();
 		// Bound should be this.BoxDisplay ?
 		_Manager() -> ControlManager.InstancePut(data);
 	}

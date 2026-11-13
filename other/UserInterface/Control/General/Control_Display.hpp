@@ -24,19 +24,8 @@ namespace Control
 class Window;
 class Form;
 class Base;
-class ControlDisplay
+class Control_Display
 {
-	public:
-	virtual			UI::Manager *			_Manager() = 0;
-	virtual			UI::Manager *			_Manager() const = 0;
-	virtual			UI::Control::Window *	_Window() = 0;
-	virtual	const	UI::Control::Window *	_Window() const = 0;
-	virtual			UI::Control::Form *		_Form() = 0;
-	virtual	const	UI::Control::Form *		_Form() const = 0;
-	// these suck, find a way to replace them
-
-
-
 	public:
 	bool	Deletable = false;
 	// true means this should be deleted when Parent is deleted
@@ -87,7 +76,7 @@ class ControlDisplay
 //	public:		virtual	void	DepthUpdate();
 //	protected:			void	DepthUpdateRecursive();
 //	public:		float			Depth() const;
-	public:		float			Depth(float diff = 0.0f) const;
+	public:		virtual float	Depth(float depth = 0.0f) const = 0;
 
 
 
@@ -104,9 +93,9 @@ class ControlDisplay
 	protected: public:
 //	VectorF2	ContentOffset ?
 
-	protected:	bool			AnchorUpdateIsRequested = false;
+	private:	bool			AnchorUpdateIsRequested = false;
 	public:		void			AnchorUpdateRequest();
-	protected:	virtual	void	AnchorUpdate() = 0;
+	protected:	virtual	void	AnchorUpdate();
 
 
 
@@ -119,10 +108,15 @@ class ControlDisplay
 //	BoxF2	BoxBoarder; // used for culling Children
 //	BoxF2	BoxContent; // used for anchoring Children
 
+	protected:
+	virtual bool	MetaIs() const = 0;
+	virtual BoxF2	MetaBoxBoarder() const = 0;
+	virtual BoxF2	MetaBoxContent() const = 0;
+
 	public:
-	virtual BoxF2	BoxDisplay() const = 0; // used for displaying Control
-	virtual BoxF2	BoxBoarder() const = 0; // used for culling Children
-	virtual BoxF2	BoxContent() const = 0; // used for anchoring Children
+	BoxF2	BoxDisplay() const; // used for displaying Control
+	BoxF2	BoxBoarder() const; // used for culling Children
+	BoxF2	BoxContent() const; // used for anchoring Children
 
 
 
@@ -178,6 +172,9 @@ class ControlDisplay
 	public:				void	DisplayUpdateRequest();
 	protected:	virtual	void	DisplayUpdate();
 
+	protected:	virtual	void	RelayShow();
+	protected:	virtual	void	RelayHide();
+
 
 
 	protected:	virtual	void	Update();
@@ -186,42 +183,10 @@ class ControlDisplay
 
 
 	public:
-	virtual ~ControlDisplay() = default;
-	ControlDisplay();
-	ControlDisplay(const ControlDisplay & other) = delete;
-	ControlDisplay & operator=(const ControlDisplay & other) = delete;
-
-
-
-	protected:
-	virtual	void	RelayShow();
-	virtual	void	RelayHide();
-
-	/* User Relay
-		these should only be called automatically by the Window/Manager
-		these change the Controll internally,
-		and might call Function Pointers for external stuff
-		they should not be accessible to the outside
-		they should not be called from inside the Control
-	*/
-	/* User Relay Invoker
-		(const void *) or (const Control::Base *)
-		not const ?
-		? the Invoker Control is this
-		the Control Pointer would be needed for Func Pointers
-	*/
-	/* User Relay return
-		0: dont try to relay to parent
-		1: try to relay this event to parent
-	*/
-
-	public:
-	virtual void	RelayHover(HoverArgs args);
-	virtual void	RelayClick(ClickArgs args);
-	virtual void	RelayScroll(ScrollArgs args);
-	virtual void	RelayDrag(DragArgs args);
-	virtual void	RelayKey(KeyArgs args);
-	virtual void	RelayText(TextArgs args);
+	virtual ~Control_Display() = default;
+	Control_Display();
+	Control_Display(const Control_Display & other) = delete;
+	Control_Display & operator=(const Control_Display & other) = delete;
 };
 };
 };

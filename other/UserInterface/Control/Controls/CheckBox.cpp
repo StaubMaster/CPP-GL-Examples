@@ -74,13 +74,13 @@ void UI::Control::CheckBox::Check(bool state)
 }*/
 ColorF4 UI::Control::CheckBox::Color() const
 {
-	if (_Form() == nullptr)
+	if (Form_ == nullptr)
 	{
 		return ColorDefault;
 	}
 	else
 	{
-		if (_Form() -> Hovering() != this)
+		if (Form_ -> Hovering() != this)
 		{
 			if (!Checked)
 			{

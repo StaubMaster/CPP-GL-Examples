@@ -24,79 +24,15 @@ UI::Manager::Manager()
 
 
 
-
-#include "Control/Form.hpp"
-
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "HoverArgs.hpp"
-void UI::Manager::MouseMove(MoveArgs args)
-{
-	(void)args;
-	//UpdateMouse(args.Position);
-}
-void UI::Manager::MouseClick(ClickArgs args)
-{
-	if (Window.Hovering() != nullptr)
-	{
-		if (Window.Hovering() -> Hovering() != nullptr)
-		{
-			Window.Hovering() -> Hovering() -> RelayClick(args);
-		}
-	}
-	Window.SelectedUpdate();
-}
-void UI::Manager::MouseScroll(ScrollArgs args)
-{
-	/*
-		try scroll on Hovering
-		if no scroll
-			try scroll Parent
-			loop until scroll or no Parent
-		if no Parent
-			try scroll Selected
-			if no scroll
-				try scroll Parent
-				loop until scroll or no Parent
-	currently no way to determin if have scroll */
-
-	// do loop in Base::RelayScroll
-	// no. RelayScroll gets overridden
-	// would need a seperate InvokeRelayScroll
-	if (Window.Hovering() != nullptr)
-	{
-		UI::Control::Base * control = dynamic_cast<UI::Control::Base *>(Window.Hovering() -> Hovering());
-		while (control != nullptr)
-		{
-			control -> RelayScroll(args);
-			control = control -> Parent;
-		}
-	}
-	if (Window.Selected() != nullptr)
-	{
-		UI::Control::Base * control = dynamic_cast<UI::Control::Base *>(Window.Selected() -> Selected());
-		while (control != nullptr)
-		{
-			control -> RelayScroll(args);
-			control = control -> Parent;
-		}
-	}
-}
-void UI::Manager::MouseDrag(DragArgs args)
-{
-	if (Window.Selected() != nullptr)
-		Window.Selected() -> RelayDrag(args);
-}
-void UI::Manager::KeyBoardKey(KeyArgs args)
-{
-	if (Window.Selected() != nullptr)
-		Window.Selected() -> RelayKey(args);
-}
-void UI::Manager::KeyBoardText(TextArgs args)
-{
-	if (Window.Selected() != nullptr)
-		Window.Selected() -> RelayText(args);
-}
+void UI::Manager::MouseMove(MoveArgs args) { Window.RelayMove(args); }
+void UI::Manager::MouseClick(ClickArgs args) { Window.RelayClick(args); }
+void UI::Manager::MouseScroll(ScrollArgs args) { Window.RelayScroll(args); }
+void UI::Manager::MouseDrag(DragArgs args) { Window.RelayDrag(args); }
+void UI::Manager::KeyBoardKey(KeyArgs args) { Window.RelayKey(args); }
+void UI::Manager::KeyBoardText(TextArgs args) { Window.RelayText(args); }
 
 
 

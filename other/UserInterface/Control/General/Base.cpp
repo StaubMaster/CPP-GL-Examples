@@ -7,108 +7,98 @@
 
 		UI::Manager *			UI::Control::Base::_Manager()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
 		UI::Manager *			UI::Control::Base::_Manager()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
-		UI::Control::Window *	UI::Control::Base::_Window()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Window(); }
-const	UI::Control::Window *	UI::Control::Base::_Window()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Window(); }
-		UI::Control::Form *		UI::Control::Base::_Form()				{ return Form_; }
-const	UI::Control::Form *		UI::Control::Base::_Form()		const	{ return Form_; }
+		UI::Control::Window *	UI::Control::Base::_Window()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> Window_; }
+const	UI::Control::Window *	UI::Control::Base::_Window()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> Window_; }
 
-void UI::Control::Base::ChangeForm(UI::Control::Form * form)
+void UI::Control::Base::ChangeFormRecursive(UI::Control::Form * form)
 {
 	Form_ = form;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> ChangeForm(form);
+		Children[i] -> ChangeFormRecursive(form);
 	}
 }
 
 
 
+UI::Control::Base * UI::Control::Base::Parent() const
+{
+	return Parent_;
+}
+
 void UI::Control::Base::ChildClear()
 {
-	Children.Clear();
+	Control_Container::ChildClear();
 	AutoAnchorUpdateRequest();
 }
 void UI::Control::Base::ChildRemove(Base & control)
 {
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		if (Children[i] == &control)
-		{
-			Children.RemoveAt(i);
-			i--;
-		}
-	}
+	Control_Container::ChildRemove(control);
 	AutoAnchorUpdateRequest();
 }
 void UI::Control::Base::ChildInsert(Base & control)
 {
-	control.Parent = this;
-	ChangeForm(Form_);
-	Children.Insert(&control);
+	Control_Container::ChildInsert(control);
+	control.Parent_ = this;
+	ChangeFormRecursive(Form_);
 
 	control.DisplayUpdateRequest();
-
 	control.AnchorUpdateRequest();
-
-	//control.BoxUpdateRequestRecursive();
-
-	//control.ColorUpdateRequestRecursive();
-
 	AutoAnchorUpdateRequest();
 }
 
-void UI::Control::Base::ChildRemove(Base * control)
+#include "Display/DisplayPosition.hpp"
+bool UI::Control::Base::Check(const DisplayPosition & display_pos) const
 {
-	if (control != nullptr)
-	{
-		ChildRemove(*control);
-	}
+	if (!IsThisVisible()) { return false; }
+	if (!IsEnabled()) { return false; }
+
+	const VectorF2 & pos = display_pos.Buffer.Corner;
+	if (!BoxDisplay().ContainsExclusive(pos).All(true)) { return false; }
+
+	return true;
 }
-void UI::Control::Base::ChildInsert(Base * control)
+UI::Control::Base * UI::Control::Base::Find(const DisplayPosition & display_pos)
 {
+	if (!Check(display_pos)) { return nullptr; }
+
+	Base * control = nullptr;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		Base * c = Children[i] -> Find(display_pos);
+		if (c == nullptr) { continue; }
+		if (control == nullptr || ((c -> Depth()) > (control -> Depth())))
+		{
+			control = c;
+		}
+	}
 	if (control != nullptr)
 	{
-		ChildInsert(*control);
+		return control;
 	}
+	return this;
 }
 
 
 
 bool UI::Control::Base::IsVisible() const
 {
-	if (Parent != nullptr)
-	{
-		return IsThisVisible() && (Parent -> IsVisible());
-	}
-	if (Form_ != nullptr)
-	{
-		return IsThisVisible() && (Form_ -> IsVisible());
-	}
-	return ControlDisplay::IsVisible();
+	if (!IsThisVisible()) { return false; }
+	if (Parent_ != nullptr) { return Parent_ -> IsVisible(); }
+	if (Form_ != nullptr) { return Form_ -> IsVisible(); }
+	return false;
 }
 void UI::Control::Base::Show()
 {
-	ControlDisplay::Show();
-	if (Parent != nullptr)
-	{
-		Parent -> AutoAnchorUpdateRequest();
-	}
-	if (Form_ != nullptr)
-	{
-		Form_ -> AutoAnchorUpdateRequest();
-	}
+	Control_Display::Show();
+	if (Parent_ != nullptr) { Parent_ -> AutoAnchorUpdateRequest(); }
+	if (Form_ != nullptr) { Form_ -> AutoAnchorUpdateRequest(); }
 }
 void UI::Control::Base::Hide()
 {
-	ControlDisplay::Hide();
-	if (Parent != nullptr)
-	{
-		Parent -> AutoAnchorUpdateRequest();
-	}
-	if (Form_ != nullptr)
-	{
-		Form_ -> AutoAnchorUpdateRequest();
-	}
+	Control_Display::Hide();
+	if (Parent_ != nullptr) { Parent_ -> AutoAnchorUpdateRequest(); }
+	if (Form_ != nullptr) { Form_ -> AutoAnchorUpdateRequest(); }
 }
 
 
@@ -138,9 +128,9 @@ void UI::Control::Base::Hide()
 }*/
 unsigned int UI::Control::Base::Layer() const
 {
-	if (Parent != nullptr)
+	if (Parent_ != nullptr)
 	{
-		return (Parent -> Layer()) + 1;
+		return (Parent_ -> Layer()) + 1;
 	}
 	else if (Form_ != nullptr)
 	{
@@ -197,17 +187,19 @@ unsigned int UI::Control::Base::LayerLimit() const
 	if (Form == nullptr) { return 0.0f; }
 	return -((Layer() * (Window -> DepthSize)) + (Form -> DepthOffset));
 }*/
+float UI::Control::Base::Depth(float depth) const
+{
+	if (Form_ == nullptr) { return 0.0f; }
+	depth = depth + (Layer());
+	depth = Form_ -> Depth(depth);
+	return depth;
+}
 
 
 
 void UI::Control::Base::AnchorUpdate()
 {
-	if (Parent == nullptr && Form_ == nullptr) { return; }
-
-	if (Form_ != nullptr) { Anchor.UpdateO(Form_ -> BoxContent()); }
-	if (Parent != nullptr) { Anchor.UpdateO(Parent -> BoxContent()); }
-
-	AnchorUpdateIsRequested = false;
+	Control_Display::AnchorUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> AnchorUpdateRequest();
@@ -238,29 +230,21 @@ void UI::Control::Base::AnchorUpdate()
 	BoxUpdateIsRequested = false;
 }*/
 
-BoxF2 UI::Control::Base::BoxDisplay() const
+bool UI::Control::Base::MetaIs() const
 {
-	if (Parent != nullptr) { return Anchor.ToInnerBox(Parent -> BoxContent()); }
-	if (Form_ != nullptr) { return Anchor.ToInnerBox(Form_ -> BoxContent()); }
+	return (Parent_ != nullptr || Form_ != nullptr);
+}
+BoxF2 UI::Control::Base::MetaBoxBoarder() const
+{
+	if (Parent_ != nullptr) { return Parent_ -> BoxBoarder(); }
+	if (Form_ != nullptr) { return Form_ -> BoxBoarder(); }
 	return BoxF2();
 }
-BoxF2 UI::Control::Base::BoxBoarder() const
+BoxF2 UI::Control::Base::MetaBoxContent() const
 {
-	if (Form_ == nullptr && Parent == nullptr) { return BoxF2(); }
-	BoxF2 box = BoxDisplay();
-	return BoxF2(
-		box.Min + AnchorBoarder.Min,
-		box.Max - AnchorBoarder.Max
-	);
-}
-BoxF2 UI::Control::Base::BoxContent() const
-{
-	if (Form_ == nullptr && Parent == nullptr) { return BoxF2(); }
-	BoxF2 box = BoxBoarder();
-	return BoxF2(
-		box.Min + AnchorPadding.Min,
-		box.Max - AnchorPadding.Max
-	);
+	if (Parent_ != nullptr) { return Parent_ -> BoxContent(); }
+	if (Form_ != nullptr) { return Form_ -> BoxContent(); }
+	return BoxF2();
 }
 
 
@@ -321,13 +305,13 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 }*/
 ColorF4 UI::Control::Base::Color() const
 {
-	if (_Form() == nullptr)
+	if (Form_ == nullptr)
 	{
 		return ColorDefault;
 	}
 	else
 	{
-		if (_Form() -> Hovering() != this)
+		if (Form_ -> Hovering() != this)
 		{
 			return ColorDefault;
 		}
@@ -342,14 +326,13 @@ ColorF4 UI::Control::Base::Color() const
 
 void UI::Control::Base::DisplayPut() const
 {
-	if (_Manager() != nullptr && (Parent != nullptr || Form_ != nullptr) && IsOpaque())
+	if (_Manager() != nullptr && MetaIs() && IsOpaque())
 	{
 		Inst::Data data;
-		data.Layer = Depth();
+		data.Layer = -Depth();
 		data.Box = BoxDisplay();
 		data.Color = Color();
-		if (Form_ != nullptr) { data.Bound = Form_ -> BoxBoarder(); }
-		if (Parent != nullptr) { data.Bound = Parent -> BoxBoarder(); }
+		data.Bound = MetaBoxBoarder();
 		_Manager() -> ControlManager.InstancePut(data);
 	}
 }
@@ -367,7 +350,7 @@ void UI::Control::Base::DisplayPutRecursive() const
 
 void UI::Control::Base::DisplayUpdate()
 {
-	ControlDisplay::DisplayUpdate();
+	Control_Display::DisplayUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> DisplayUpdateRequest();
@@ -384,35 +367,6 @@ void UI::Control::Base::UpdateRecursive()
 	{
 		Children[i] -> UpdateRecursive();
 	}
-}
-
-
-
-#include "Display/DisplayPosition.hpp"
-UI::Control::Base * UI::Control::Base::Find(const DisplayPosition & display_pos)
-{
-	if (!IsThisVisible()) { return nullptr; }
-	if (!IsEnabled()) { return nullptr; }
-
-	const VectorF2 & mouse = display_pos.Buffer.Corner;
-	if (!BoxDisplay().ContainsExclusive(mouse).All(true)) { return nullptr; }
-
-	// check BoxContent before checking children ?
-	Base * control = nullptr;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Base * c = Children[i] -> Find(display_pos);
-		if (c == nullptr) { continue; }
-		if (control == nullptr || ((c -> Depth()) < (control -> Depth())))
-		{
-			control = c;
-		}
-	}
-	if (control != nullptr)
-	{
-		return control;
-	}
-	return this;
 }
 
 

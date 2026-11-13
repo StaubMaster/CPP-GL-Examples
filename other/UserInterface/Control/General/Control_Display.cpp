@@ -1,79 +1,79 @@
-#include "ControlDisplay.hpp"
+#include "Control_Display.hpp"
 #include "Control/Form.hpp"
 #include "UIManager.hpp"
 #include "Graphics/Inst/Data.hpp"
 
 
 
-bool UI::Control::ControlDisplay::IsEnabled() const
+bool UI::Control::Control_Display::IsEnabled() const
 {
 	return IsEnabled_;
 }
-void UI::Control::ControlDisplay::Enable()
+void UI::Control::Control_Display::Enable()
 {
 	IsEnabled_ = true;
 	//ColorUpdateRequestRecursive();
 }
-void UI::Control::ControlDisplay::Disable()
+void UI::Control::Control_Display::Disable()
 {
 	IsEnabled_ = false;
 	//ColorUpdateRequestRecursive();
 }
 
-bool UI::Control::ControlDisplay::IsOpaque() const
+bool UI::Control::Control_Display::IsOpaque() const
 {
 	return IsOpaque_;
 }
-void UI::Control::ControlDisplay::MakeTransparent()
+void UI::Control::Control_Display::MakeTransparent()
 {
 	IsOpaque_ = false;
 	DisplayUpdateRequest();
 }
-void UI::Control::ControlDisplay::MakeOpaque()
+void UI::Control::Control_Display::MakeOpaque()
 {
 	IsOpaque_ = true;
 	DisplayUpdateRequest();
 }
 
-bool UI::Control::ControlDisplay::IsThisVisible() const
+bool UI::Control::Control_Display::IsThisVisible() const
 {
 	return IsVisible_;
 }
-bool UI::Control::ControlDisplay::IsVisible() const
+bool UI::Control::Control_Display::IsVisible() const
 {
 	return IsThisVisible();
 }
-void UI::Control::ControlDisplay::Show()
+void UI::Control::Control_Display::Show()
 {
 	IsVisible_ = true;
 	DisplayUpdateRequest();
 }
-void UI::Control::ControlDisplay::Hide()
+void UI::Control::Control_Display::Hide()
 {
 	IsVisible_ = false;
 	DisplayUpdateRequest();
 }
 
-bool UI::Control::ControlDisplay::IsDisplay() const
+bool UI::Control::Control_Display::IsDisplay() const
 {
 	return IsOpaque() && IsVisible();
 }
-/*bool UI::Control::ControlDisplay::IsThisInteractible() const
+/*bool UI::Control::Control_Display::IsThisInteractible() const
 {
 	return IsEnabled() && IsDisplay();
 }*/
-bool UI::Control::ControlDisplay::IsInteractible() const
+bool UI::Control::Control_Display::IsInteractible() const
 {
 	return IsEnabled() && IsVisible();
 }
 
 
 
-/*unsigned int UI::Control::ControlDisplay::Layer() const
+/*unsigned int UI::Control::Control_Display::Layer() const
 {
 	return Layer_;
 }*/
-/*void UI::Control::ControlDisplay::LayerUpdate()
+/*void UI::Control::Control_Display::LayerUpdate()
 {
 	if (Parent != nullptr)
 	{
@@ -84,7 +84,7 @@ bool UI::Control::ControlDisplay::IsInteractible() const
 		Layer_ = 0;
 	}
 }*/
-/*void UI::Control::ControlDisplay::LayerUpdateRecursive()
+/*void UI::Control::Control_Display::LayerUpdateRecursive()
 {
 	LayerUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -93,11 +93,11 @@ bool UI::Control::ControlDisplay::IsInteractible() const
 	}
 }*/
 
-/*float UI::Control::ControlDisplay::Depth() const
+/*float UI::Control::Control_Display::Depth() const
 {
 	return Depth_;
 }*/
-/*void UI::Control::ControlDisplay::DepthUpdate()
+/*void UI::Control::Control_Display::DepthUpdate()
 {
 	if (Window == nullptr) { return; }
 	if (Form == nullptr) { return; }
@@ -108,7 +108,7 @@ bool UI::Control::ControlDisplay::IsInteractible() const
 
 	Depth_ = -((layer * size) + offset);
 }*/
-/*void UI::Control::ControlDisplay::DepthUpdateRecursive()
+/*void UI::Control::Control_Display::DepthUpdateRecursive()
 {
 	DepthUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -116,34 +116,49 @@ bool UI::Control::ControlDisplay::IsInteractible() const
 		Children[i] -> DepthUpdateRecursive();
 	}
 }*/
-/*float UI::Control::ControlDisplay::Depth() const
+/*float UI::Control::Control_Display::Depth() const
 {
 	// return NaN ?
 	if (Window == nullptr) { return 0.0f; }
 	if (Form == nullptr) { return 0.0f; }
 	return -((Layer() * (Window -> DepthSize)) + (Form -> DepthOffset));
 }*/
-float UI::Control::ControlDisplay::Depth(float diff) const
+/*float UI::Control::Control_Display::Depth(float diff) const
 {
 	if (_Window() == nullptr) { return 0.0f; }
 	if (_Form() == nullptr) { return 0.0f; }
-	return -(((Layer() + diff) * (_Window() -> DepthSize)) + (_Form() -> DepthOffset)); // put this Calculation in Form ?
-}
+	float depth;
+	depth = diff;
+	depth = depth + (Layer());
+	//Form.Depth(depth)
+	//{
+	depth = depth * (_Window() -> DepthSize);
+	depth = depth + (_Form() -> DepthOffset);
+	//}
+	// put this Calculation in Form ?
+	return -depth;
+}*/
 
 
 
-void UI::Control::ControlDisplay::AnchorUpdateRequest()
+void UI::Control::Control_Display::AnchorUpdateRequest()
 {
 	AnchorUpdateIsRequested = true;
 }
+void UI::Control::Control_Display::AnchorUpdate()
+{
+	if (!MetaIs()) { return; }
+	Anchor.UpdateO(MetaBoxContent());
+	AnchorUpdateIsRequested = false;
+}
 
 
 
-/*void UI::Control::ControlDisplay::BoxUpdateRequest()
+/*void UI::Control::Control_Display::BoxUpdateRequest()
 {
 	BoxUpdateIsRequested = true;
 }*/
-/*void UI::Control::ControlDisplay::BoxUpdate()
+/*void UI::Control::Control_Display::BoxUpdate()
 {
 	if (Parent == nullptr) { return; }
 
@@ -161,15 +176,39 @@ void UI::Control::ControlDisplay::AnchorUpdateRequest()
 	BoxUpdateIsRequested = false;
 }*/
 
+BoxF2 UI::Control::Control_Display::BoxDisplay() const
+{
+	if (!MetaIs()) { return BoxF2(); }
+	return Anchor.ToInnerBox(MetaBoxContent());
+}
+BoxF2 UI::Control::Control_Display::BoxBoarder() const
+{
+	if (!MetaIs()) { return BoxF2(); }
+	BoxF2 box = BoxDisplay();
+	return BoxF2(
+		box.Min + AnchorBoarder.Min,
+		box.Max - AnchorBoarder.Max
+	);
+}
+BoxF2 UI::Control::Control_Display::BoxContent() const
+{
+	if (!MetaIs()) { return BoxF2(); }
+	BoxF2 box = BoxBoarder();
+	return BoxF2(
+		box.Min + AnchorPadding.Min,
+		box.Max - AnchorPadding.Max
+	);
+}
 
 
-void UI::Control::ControlDisplay::AutoAnchorUpdateRequest()
+
+void UI::Control::Control_Display::AutoAnchorUpdateRequest()
 {
 	AutoAnchorUpdateIsRequested = true;
 }
-void UI::Control::ControlDisplay::AutoAnchorUpdate()
+void UI::Control::Control_Display::AutoAnchorUpdate()
 {
-	if (!IsVisible()) { return; }
+	if (!IsVisible()) { return; } // why is this check here ?
 
 	switch (AutoAnchorXType)
 	{
@@ -190,11 +229,11 @@ void UI::Control::ControlDisplay::AutoAnchorUpdate()
 
 
 
-/*void UI::Control::ControlDisplay::ColorUpdateRequest()
+/*void UI::Control::Control_Display::ColorUpdateRequest()
 {
 	ColorUpdateIsRequested = true;
 }*/
-/*void UI::Control::ControlDisplay::ColorUpdate()
+/*void UI::Control::Control_Display::ColorUpdate()
 {
 	if (Manager == nullptr)
 	{
@@ -216,11 +255,11 @@ void UI::Control::ControlDisplay::AutoAnchorUpdate()
 
 
 
-void UI::Control::ControlDisplay::DisplayUpdateRequest()
+void UI::Control::Control_Display::DisplayUpdateRequest()
 {
 	DisplayUpdateIsRequested = true;
 }
-void UI::Control::ControlDisplay::DisplayUpdate()
+void UI::Control::Control_Display::DisplayUpdate()
 {
 	if (IsDisplay())	{ RelayShow(); }
 	else				{ RelayHide(); }
@@ -228,9 +267,12 @@ void UI::Control::ControlDisplay::DisplayUpdate()
 	DisplayUpdateIsRequested = false;
 }
 
+void UI::Control::Control_Display::RelayShow() { }
+void UI::Control::Control_Display::RelayHide() { }
 
 
-void UI::Control::ControlDisplay::Update()
+
+void UI::Control::Control_Display::Update()
 {
 	//AutoAnchorUpdateResolve();
 	if (AutoAnchorUpdateIsRequested)	{ AutoAnchorUpdate(); }
@@ -248,7 +290,7 @@ void UI::Control::ControlDisplay::Update()
 
 
 
-UI::Control::ControlDisplay::ControlDisplay()
+UI::Control::Control_Display::Control_Display()
 	: Anchor(
 			AnchorSize,
 			AnchorDist,
@@ -270,18 +312,3 @@ UI::Control::ControlDisplay::ControlDisplay()
 	AnchorBoarder = BoxF2(VectorF2(boarder, boarder), VectorF2(boarder, boarder));
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 }
-
-
-
-void UI::Control::ControlDisplay::RelayShow() { }
-void UI::Control::ControlDisplay::RelayHide() { }
-
-#include "User/MouseArgs.hpp"
-#include "User/KeyBoardArgs.hpp"
-#include "HoverArgs.hpp"
-void UI::Control::ControlDisplay::RelayHover(HoverArgs args) { (void)args; }
-void UI::Control::ControlDisplay::RelayClick(ClickArgs args) { (void)args; }
-void UI::Control::ControlDisplay::RelayScroll(ScrollArgs args) { (void)args; }
-void UI::Control::ControlDisplay::RelayDrag(DragArgs args) { (void)args; }
-void UI::Control::ControlDisplay::RelayKey(KeyArgs args) { (void)args; }
-void UI::Control::ControlDisplay::RelayText(TextArgs args) { (void)args; }

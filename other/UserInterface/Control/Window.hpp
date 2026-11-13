@@ -1,10 +1,12 @@
 #ifndef  UI_CONTROL_WINDOW_HPP
 # define UI_CONTROL_WINDOW_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/General/Control_UserRelay.hpp"
+# include "Control/General/Control_Container.hpp"
+
+# include "ValueType/_Include.hpp"
 
 struct DisplaySize;
-struct DisplayPosition;
 
 namespace UI
 {
@@ -12,46 +14,22 @@ class Manager;
 namespace Control
 {
 class Form;
-class Window
+class Window : public Control_Container<Form>, public Control_UserRelay
 {
 	public:
 	UI::Manager *			Manager_ = nullptr;
 
-	public:
-			UI::Manager *			_Manager();
-			UI::Manager *			_Manager() const;
-			UI::Control::Window *	_Window();
-	const	UI::Control::Window *	_Window() const;
-			UI::Control::Form *		_Form();
-	const	UI::Control::Form *		_Form() const;
+
 
 	public:
-	void	AssignPointers(Form & control);
-
-
-
-	protected: public:
-	Container::Binary<Form *>	Children;
-
-	public:
-	void	ChildClear();
-	void	ChildRemove(Form & control);
-	void	ChildInsert(Form & control);
-
-	public:
-	void	ChildRemove(Form * control);
-	void	ChildInsert(Form * control);
-
-
-
-	private:	VectorF2	Size;
-	public:		void		SizeChange(const DisplaySize & display_size);
-	public:		BoxF2		Box() const;
-
-
+	void	ChildClear() override;
+	void	ChildRemove(Form & control) override;
+	void	ChildInsert(Form & control) override;
 
 	private:
-	UI::Control::Form *		Find(const DisplayPosition & display_pos);
+	bool					Check(const DisplayPosition & display_pos) const override;
+	UI::Control::Form *		Find(const DisplayPosition & display_pos) override;
+
 	private:
 	UI::Control::Form *		Hovering_ = nullptr;
 	UI::Control::Form *		Selected_ = nullptr;
@@ -67,12 +45,20 @@ class Window
 
 
 
+	private:	VectorF2	Size;
+	public:		void		SizeChange(const DisplaySize & display_size);
+	public:		BoxF2		Box() const;
+
+
+
 	private:	bool	DepthCalculateIsRequested = false;
 	public:		void	DepthCalculateRequest();
 //	public:		void	DepthCalculateResolve();
 	private:	void	DepthCalculate();
 
-	public:		float	DepthSize = 0.0f; // how much Depth does a Control take
+	private:	unsigned int	LayerCount = 0;
+	private:	float			LayerDepth = 0.0f;
+	public:		float	Depth(float depth = 0.0f) const;
 
 
 
@@ -86,6 +72,17 @@ class Window
 	public:
 	~Window() = default;
 	Window();
+
+
+
+	public:
+	void	RelayMove(MoveArgs args);
+	void	RelayHover(HoverArgs args) override;
+	void	RelayClick(ClickArgs args) override;
+	void	RelayScroll(ScrollArgs args) override;
+	void	RelayDrag(DragArgs args) override;
+	void	RelayKey(KeyArgs args) override;
+	void	RelayText(TextArgs args) override;
 };
 };
 };

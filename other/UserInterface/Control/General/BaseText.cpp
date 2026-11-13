@@ -79,9 +79,11 @@ void UI::Control::BaseText::AnchorUpdate()
 
 	AlignmentUpdateRequest();
 
-	if (Parent != nullptr)
+	//if (Parent_ != nullptr)
+	if (MetaIs())
 	{
-		TextObjectData.Bound = Parent -> BoxBoarder().InnerBox(BoxContent());
+		//TextObjectData.Bound = Parent_ -> BoxBoarder().InnerBox(BoxContent());
+		TextObjectData.Bound = MetaBoxBoarder().InnerBox(BoxContent());
 	}
 	else
 	{
@@ -96,7 +98,7 @@ void UI::Control::BaseText::Update()
 	//AlignmentUpdateResolve();
 	if (AlignmentUpdateFlag) { AlignmentUpdate(); }
 
-	TextObjectData.Depth = Depth(1.0f / 2.0f);
+	TextObjectData.Depth = -Depth(1.0f / 2.0f);
 }
 
 
