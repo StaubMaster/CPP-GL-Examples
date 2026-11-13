@@ -8,12 +8,13 @@
 # include "Graphics/VertexArray/MainInst.hpp"
 # include "Graphics/Buffer/Array.hpp"
 
-# include "Graphics/Main/Layout.hpp"
-# include "Graphics/Inst/Layout.hpp"
-# include "Graphics/Layout.hpp"
+# include "Main/Layout.hpp"
+# include "Inst/Layout.hpp"
+# include "Layout.hpp"
 
-# include "Graphics/Main/Data.hpp"
-# include "Graphics/Inst/Data.hpp"
+# include "Main/Data.hpp"
+# include "Inst/Data.hpp"
+
 # include "Generics/Container/Binary.hpp"
 
 

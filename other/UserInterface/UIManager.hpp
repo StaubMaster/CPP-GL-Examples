@@ -8,7 +8,7 @@ struct DragArgs;
 struct KeyArgs;
 struct TextArgs;
 
-# include "Control/General/Manager.hpp"
+# include "Control/Graphics/Manager.hpp"
 # include "Text/Manager.hpp"
 # include "Graph/Manager.hpp"
 

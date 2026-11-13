@@ -1,5 +1,5 @@
 #include "Control/Controls/Slider.hpp"
-#include "Control/General/Manager.hpp"
+#include "Control/Graphics/Manager.hpp"
 #include "AnchorEnum.hpp"
 
 #include "User/MouseArgs.hpp"

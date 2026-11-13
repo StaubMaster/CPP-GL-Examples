@@ -1,7 +1,7 @@
 #include "Base.hpp"
 #include "Control/Form.hpp"
 #include "UIManager.hpp"
-#include "Graphics/Inst/Data.hpp"
+#include "Control/Graphics/Inst/Data.hpp"
 
 
 

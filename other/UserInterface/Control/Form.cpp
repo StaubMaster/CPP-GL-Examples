@@ -356,7 +356,7 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 
 
 
-#include "Control/General/Manager.hpp"
+#include "Control/Graphics/Manager.hpp"
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "HoverArgs.hpp"

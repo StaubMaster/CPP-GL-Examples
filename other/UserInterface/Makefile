@@ -8,13 +8,13 @@ FILES := \
 	Anchor1D.cpp \
 	Anchor2D.cpp \
 \
-	Control/General/Graphics/Main/Data.cpp \
-	Control/General/Graphics/Main/Layout.cpp \
-	Control/General/Graphics/Inst/Data.cpp \
-	Control/General/Graphics/Inst/Layout.cpp \
-	Control/General/Graphics/Layout.cpp \
+	Control/Graphics/Main/Data.cpp \
+	Control/Graphics/Main/Layout.cpp \
+	Control/Graphics/Inst/Data.cpp \
+	Control/Graphics/Inst/Layout.cpp \
+	Control/Graphics/Layout.cpp \
+	Control/Graphics/Manager.cpp \
 	\
-	Control/General/Manager.cpp \
 	Control/General/Control_Display.cpp \
 	Control/General/Control_UserRelay.cpp \
 	Control/General/Base.cpp \
