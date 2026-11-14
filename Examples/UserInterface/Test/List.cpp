@@ -12,25 +12,29 @@ TestList::TestList()
 	, ButtonClear()
 	, ButtonNew()
 {
-	float y = 0.0f;
-	float x = 0.0f;
+	//float y = 0.0f;
+	//float x = 0.0f;
 
-	ButtonClear.Anchor.X.AnchorMin(x, 120);
-	ButtonClear.Anchor.Y.AnchorMax(y);
-	x = ButtonClear.Anchor.X.GetMinSize();
+	//x = ButtonClear.Anchor.X.AnchorMarginMin(x, 120);
+	//ButtonClear.Anchor.Y.AnchorMarginMax(y);
+	ButtonClear.Make_Anchor_X_Min(nullptr, 120);
+	ButtonClear.Make_Anchor_Y_Max(nullptr);
 	ButtonClear.SetText("Clear");
 	ButtonClear.ClickFunc.Assign(this, &TestList::ItemClear);
 	ChildInsert(ButtonClear);
 
-	ButtonNew.Anchor.X.AnchorMin(x, 80);
-	ButtonNew.Anchor.Y.AnchorMax(y);
-	y = ButtonNew.Anchor.Y.GetMaxSize();
+	//ButtonNew.Anchor.X.AnchorMarginMin(x, 80);
+	//y = ButtonNew.Anchor.Y.AnchorMarginMax(y);
+	ButtonNew.Make_Anchor_X_Min(&ButtonClear, 80);
+	ButtonNew.Make_Anchor_Y_Max(nullptr);
 	ButtonNew.SetText("New");
 	ButtonNew.ClickFunc.Assign(this, &TestList::ItemNew);
 	ChildInsert(ButtonNew);
 
-	List.Anchor.X.AnchorBoth(0, 0);
-	List.Anchor.Y.AnchorBoth(0, y);
+	//List.Anchor.X.AnchorMarginBoth(0, 0);
+	//List.Anchor.Y.AnchorMarginBoth(0, y);
+	List.Make_Anchor_X_Both(nullptr, nullptr);
+	List.Make_Anchor_Y_Both(nullptr, &ButtonNew);
 	List.ItemFunc.Assign(this, &TestList::ItemFunc);
 	ChildInsert(List);
 

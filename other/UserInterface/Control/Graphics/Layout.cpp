@@ -2,7 +2,7 @@
 
 
 
-UI::Control::ShaderLayout::ShaderLayout()
+UI::ControlGraphics::ShaderLayout::ShaderLayout()
 	: Uniform::Layout()
 	, DisplaySize(*this, "DisplaySize")
 { }

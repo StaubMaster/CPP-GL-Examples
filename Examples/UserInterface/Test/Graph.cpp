@@ -33,20 +33,27 @@ TestGraph::TestGraph()
 	AnchorSize = VectorF2(400);
 
 	SliderArea.NubSize = VectorF2(10);
-	SliderArea.Anchor.X.AnchorBoth(0, 200);
-	SliderArea.Anchor.Y.AnchorBoth(0, 200);
-	float x = SliderArea.Anchor.X.GetMaxDist();
-	float y = SliderArea.Anchor.Y.GetMaxDist();
+	//SliderArea.Anchor.X.AnchorMarginBoth(0, 200);
+	//SliderArea.Anchor.Y.AnchorMarginBoth(0, 200);
+	SliderArea.Make_Anchor_X_Min(nullptr, 200);
+	SliderArea.Make_Anchor_Y_Min(nullptr, 200);
+	//float x = SliderArea.Anchor.X.GetMarginMaxDist();
+	//float y = SliderArea.Anchor.Y.GetMarginMaxDist();
 
 	SliderArea.ValueChangedFunc.Assign(this, &TestGraph::SliderAreaChange);
 
-	GraphHori.Anchor.X.AnchorMax(0, x);
-	GraphHori.Anchor.Y.AnchorBoth(0, y);
+	// vars should be given as first params
+	//GraphHori.Anchor.X.AnchorMarginMax(0, x);
+	//GraphHori.Anchor.Y.AnchorMarginBoth(0, y);
+	GraphHori.Make_Anchor_X_Min(nullptr, 200);
+	GraphHori.Make_Anchor_Y_Both(&SliderArea, nullptr);
 	GraphHori.Center = 0.5f;
 	GraphHori.Magnitude = 0.5f;
 
-	GraphVert.Anchor.X.AnchorBoth(0, x);
-	GraphVert.Anchor.Y.AnchorMax(0, y);
+	//GraphVert.Anchor.X.AnchorMarginBoth(0, x);
+	//GraphVert.Anchor.Y.AnchorMarginMax(0, y);
+	GraphVert.Make_Anchor_X_Both(&SliderArea, nullptr);
+	GraphVert.Make_Anchor_Y_Min(nullptr, 200);
 	GraphVert.Center = 0.5f;
 	GraphVert.Magnitude = 0.5f;
 

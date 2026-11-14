@@ -28,12 +28,12 @@ class Base;
 class Manager
 {
 	public:
-	Control::Manager	ControlManager;
-	Text::Manager		TextManager;
-	Graph::Manager		GraphManager;
+	ControlGraphics::Manager	ControlManager;
+	Text::Manager				TextManager;
+	Graph::Manager				GraphManager;
 
 
-	
+
 	UI::Control::Window		Window;
 
 

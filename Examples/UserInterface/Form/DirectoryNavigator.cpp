@@ -7,20 +7,30 @@ DirectoryNavigator::~DirectoryNavigator()
 DirectoryNavigator::DirectoryNavigator()
 	: UI::Control::Form()
 {
-	DirectoryText.Anchor.X.AnchorBoth(0, 0);
-	DirectoryText.Anchor.Y.AnchorMin(0);
+	//float x, y0, y1;
 
-	GoChild.Anchor.X.AnchorMax(0, 120);
-	GoChild.Anchor.Y.AnchorMax(0);
+	//DirectoryText.Anchor.X.AnchorMarginBoth(0, 0);
+	//y0 = DirectoryText.Anchor.Y.AnchorMarginMin(0);
+	DirectoryText.Make_Anchor_X_Both(nullptr, nullptr);
+	DirectoryText.Make_Anchor_Y_Min(nullptr);
+
+	//x = GoChild.Anchor.X.AnchorMarginMax(0, 120);
+	//y1 = GoChild.Anchor.Y.AnchorMarginMax(0);
+	GoChild.Make_Anchor_X_Max(nullptr, 120);
+	GoChild.Make_Anchor_Y_Max(nullptr);
 	GoChild.SetText("Child");
 
-	GoParent.Anchor.X.AnchorMax(GoChild.Anchor.X.GetMaxSize(), 140);
-	GoParent.Anchor.Y.AnchorMax(0);
+	//GoParent.Anchor.X.AnchorMarginMax(x, 140);
+	//GoParent.Anchor.Y.AnchorMarginMax(0);
+	GoParent.Make_Anchor_X_Max(&GoChild, 140);
+	GoParent.Make_Anchor_Y_Max(nullptr);
 	GoParent.SetText("Parent");
 	GoParent.ClickFunc.Assign(this, &DirectoryNavigator::ClickGoParent);
 
-	FileList.Anchor.X.AnchorBoth(0, 0);
-	FileList.Anchor.Y.AnchorBoth(DirectoryText.Anchor.Y.GetMinSize(), GoChild.Anchor.Y.GetMaxSize());
+	//FileList.Anchor.X.AnchorMarginBoth(0, 0);
+	//FileList.Anchor.Y.AnchorMarginBoth(y0, y1);
+	FileList.Make_Anchor_X_Both(nullptr, nullptr);
+	FileList.Make_Anchor_Y_Both(&DirectoryText, &GoParent);
 	FileList.ItemFunc.Assign(this, &DirectoryNavigator::ClickItem);
 
 	ChildInsert(DirectoryText);

@@ -82,8 +82,8 @@ class Control_Display
 
 	protected: public:
 	VectorF2	AnchorSize;
-	VectorF2	AnchorNormal;
 	BoxF2		AnchorDist;
+	VectorF2	AnchorNormal;
 	protected: public:
 	BoxF2		AnchorMargin;
 	BoxF2		AnchorBoarder;
@@ -92,6 +92,55 @@ class Control_Display
 	Anchor2D	Anchor;
 	protected: public:
 //	VectorF2	ContentOffset ?
+
+	private: public:
+	float	MarginBox_Get_X_Min_Min() const;
+	float	MarginBox_Get_X_Min_Max() const;
+	float	MarginBox_Get_X_Max_Min() const;
+	float	MarginBox_Get_X_Max_Max() const;
+
+	private: public:
+	void	MarginBox_Set_X_Min_Min(float val);
+	void	MarginBox_Set_X_Min_Max(float val);
+	void	MarginBox_Set_X_Max_Min(float val);
+	void	MarginBox_Set_X_Max_Max(float val);
+
+	private: public:
+	float	MarginBox_Get_Y_Min_Min() const;
+	float	MarginBox_Get_Y_Min_Max() const;
+	float	MarginBox_Get_Y_Max_Min() const;
+	float	MarginBox_Get_Y_Max_Max() const;
+
+	private: public:
+	void	MarginBox_Set_Y_Min_Min(float val);
+	void	MarginBox_Set_Y_Min_Max(float val);
+	void	MarginBox_Set_Y_Max_Min(float val);
+	void	MarginBox_Set_Y_Max_Max(float val);
+
+	public:
+	void	Make_Anchor_X_Min(const Control_Display * other);
+	void	Make_Anchor_X_Min(const Control_Display * other, float size);
+	void	Make_Anchor_X_Max(const Control_Display * other);
+	void	Make_Anchor_X_Max(const Control_Display * other, float size);
+	void	Make_Anchor_X_Both(const Control_Display * other_min, const Control_Display * other_max);
+
+	public:
+	void	Make_Anchor_Y_Min(const Control_Display * other);
+	void	Make_Anchor_Y_Min(const Control_Display * other, float size);
+	void	Make_Anchor_Y_Max(const Control_Display * other);
+	void	Make_Anchor_Y_Max(const Control_Display * other, float size);
+	void	Make_Anchor_Y_Both(const Control_Display * other_min, const Control_Display * other_max);
+
+	/* Anchoring functions here ?
+		the actual Anchor does not need Margin for anything else, and Boarder and Padding arnt used by it anyway
+		also make them take pointers to Controls ?
+		so AnchorMin(null) puts the control to the left
+		but AnchorMin(other) puts the control to the right of other
+
+		how would this work with wanting things to be a specific distance ?
+		does that ever happen ?
+		the only distance is 0 or a variable that is the right side of another control
+	*/
 
 	private:	bool			AnchorUpdateIsRequested = false;
 	public:		void			AnchorUpdateRequest();

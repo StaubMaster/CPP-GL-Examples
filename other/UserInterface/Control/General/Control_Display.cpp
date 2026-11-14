@@ -141,6 +141,126 @@ bool UI::Control::Control_Display::IsInteractible() const
 
 
 
+#include "AnchorEnum.hpp"
+
+float UI::Control::Control_Display::MarginBox_Get_X_Min_Min() const { return (AnchorDist.Min.X               ) - AnchorMargin.Min.X; }
+float UI::Control::Control_Display::MarginBox_Get_X_Min_Max() const { return (AnchorDist.Min.X + AnchorSize.X) + AnchorMargin.Min.X; }
+float UI::Control::Control_Display::MarginBox_Get_X_Max_Min() const { return (AnchorDist.Max.X               ) - AnchorMargin.Max.X; }
+float UI::Control::Control_Display::MarginBox_Get_X_Max_Max() const { return (AnchorDist.Max.X + AnchorSize.X) + AnchorMargin.Max.X; }
+
+void UI::Control::Control_Display::MarginBox_Set_X_Min_Min(float val) { AnchorDist.Min.X = (val + AnchorMargin.Min.X)               ; }
+void UI::Control::Control_Display::MarginBox_Set_X_Min_Max(float val) { AnchorDist.Min.X = (val - AnchorMargin.Min.X) - AnchorSize.X; }
+void UI::Control::Control_Display::MarginBox_Set_X_Max_Min(float val) { AnchorDist.Max.X = (val + AnchorMargin.Max.X)               ; }
+void UI::Control::Control_Display::MarginBox_Set_X_Max_Max(float val) { AnchorDist.Max.X = (val - AnchorMargin.Max.X) - AnchorSize.X; }
+
+float UI::Control::Control_Display::MarginBox_Get_Y_Min_Min() const { return (AnchorDist.Min.Y               ) - AnchorMargin.Min.Y; }
+float UI::Control::Control_Display::MarginBox_Get_Y_Min_Max() const { return (AnchorDist.Min.Y + AnchorSize.Y) + AnchorMargin.Min.Y; }
+float UI::Control::Control_Display::MarginBox_Get_Y_Max_Min() const { return (AnchorDist.Max.Y               ) - AnchorMargin.Max.Y; }
+float UI::Control::Control_Display::MarginBox_Get_Y_Max_Max() const { return (AnchorDist.Max.Y + AnchorSize.Y) + AnchorMargin.Max.Y; }
+
+void UI::Control::Control_Display::MarginBox_Set_Y_Min_Min(float val) { AnchorDist.Min.Y = (val + AnchorMargin.Min.Y)               ; }
+void UI::Control::Control_Display::MarginBox_Set_Y_Min_Max(float val) { AnchorDist.Min.Y = (val - AnchorMargin.Min.Y) - AnchorSize.Y; }
+void UI::Control::Control_Display::MarginBox_Set_Y_Max_Min(float val) { AnchorDist.Max.Y = (val + AnchorMargin.Max.Y)               ; }
+void UI::Control::Control_Display::MarginBox_Set_Y_Max_Max(float val) { AnchorDist.Max.Y = (val - AnchorMargin.Max.Y) - AnchorSize.Y; }
+
+void UI::Control::Control_Display::Make_Anchor_X_Min(const Control_Display * other)
+{
+	Anchor.X.Anchor = AnchorType::Min;
+	float val = 0.0f;
+	if (other != nullptr) { val = other -> MarginBox_Get_X_Min_Max(); }
+	//Anchor.X.SetMarginMinDist(val);
+	MarginBox_Set_X_Min_Min(val);
+}
+void UI::Control::Control_Display::Make_Anchor_X_Min(const Control_Display * other, float size)
+{
+	Anchor.X.Anchor = AnchorType::Min;
+	float val = 0.0f;
+	if (other != nullptr) { val = other -> MarginBox_Get_X_Min_Max(); }
+	//Anchor.X.SetMarginMinDist(val);
+	MarginBox_Set_X_Min_Min(val);
+	//Anchor.X.SetSize(size);
+	AnchorSize.X = size;
+}
+void UI::Control::Control_Display::Make_Anchor_X_Max(const Control_Display * other)
+{
+	Anchor.X.Anchor = AnchorType::Max;
+	float val = 0.0f;
+	if (other != nullptr) { val = other -> MarginBox_Get_X_Max_Max(); }
+	//Anchor.X.SetMarginMaxDist(val);
+	MarginBox_Set_X_Max_Min(val);
+}
+void UI::Control::Control_Display::Make_Anchor_X_Max(const Control_Display * other, float size)
+{
+	Anchor.X.Anchor = AnchorType::Max;
+	float val = 0.0f;
+	if (other != nullptr) { val = other -> MarginBox_Get_X_Max_Max(); }
+	//Anchor.X.SetMarginMaxDist(val);
+	MarginBox_Set_X_Max_Min(val);
+	//Anchor.X.SetSize(size);
+	AnchorSize.X = size;
+}
+void UI::Control::Control_Display::Make_Anchor_X_Both(const Control_Display * other_min, const Control_Display * other_max)
+{
+	Anchor.X.Anchor = AnchorType::Both;
+	float val_min = 0.0f;
+	float val_max = 0.0f;
+	if (other_min != nullptr) { val_min = other_min -> MarginBox_Get_X_Min_Max(); }
+	if (other_max != nullptr) { val_max = other_max -> MarginBox_Get_X_Max_Max(); }
+	//Anchor.X.SetMarginMinDist(val_min);
+	//Anchor.X.SetMarginMaxDist(val_max);
+	MarginBox_Set_X_Min_Min(val_min);
+	MarginBox_Set_X_Max_Min(val_max);
+}
+
+void UI::Control::Control_Display::Make_Anchor_Y_Min(const Control_Display * other)
+{
+	Anchor.Y.Anchor = AnchorType::Min;
+	float val = 0.0f;
+	if (other != nullptr) { val = other -> MarginBox_Get_Y_Min_Max(); }
+	//Anchor.Y.SetMarginMinDist(val);
+	MarginBox_Set_Y_Min_Min(val);
+}
+void UI::Control::Control_Display::Make_Anchor_Y_Min(const Control_Display * other, float size)
+{
+	Anchor.Y.Anchor = AnchorType::Min;
+	float val = 0.0f;
+	if (other != nullptr) { val = other -> MarginBox_Get_Y_Min_Max(); }
+	//Anchor.Y.SetMarginMinDist(val);
+	MarginBox_Set_Y_Min_Min(val);
+	//Anchor.Y.SetSize(size);
+	AnchorSize.Y = size;
+}
+void UI::Control::Control_Display::Make_Anchor_Y_Max(const Control_Display * other)
+{
+	Anchor.Y.Anchor = AnchorType::Max;
+	float val = 0.0f;
+	if (other != nullptr) { val = other -> MarginBox_Get_Y_Max_Max(); }
+	//Anchor.Y.SetMarginMaxDist(val);
+	MarginBox_Set_Y_Max_Min(val);
+}
+void UI::Control::Control_Display::Make_Anchor_Y_Max(const Control_Display * other, float size)
+{
+	Anchor.Y.Anchor = AnchorType::Max;
+	float val = 0.0f;
+	if (other != nullptr) { val = other -> MarginBox_Get_Y_Max_Max(); }
+	//Anchor.Y.SetMarginMaxDist(val);
+	MarginBox_Set_Y_Max_Min(val);
+	//Anchor.Y.SetSize(size);
+	AnchorSize.Y = size;
+}
+void UI::Control::Control_Display::Make_Anchor_Y_Both(const Control_Display * other_min, const Control_Display * other_max)
+{
+	Anchor.Y.Anchor = AnchorType::Both;
+	float val_min = 0.0f;
+	float val_max = 0.0f;
+	if (other_min != nullptr) { val_min = other_min -> MarginBox_Get_Y_Min_Max(); }
+	if (other_max != nullptr) { val_max = other_max -> MarginBox_Get_Y_Max_Max(); }
+	//Anchor.Y.SetMarginMinDist(val_min);
+	//Anchor.Y.SetMarginMaxDist(val_max);
+	MarginBox_Set_Y_Min_Min(val_min);
+	MarginBox_Set_Y_Max_Min(val_max);
+}
+
 void UI::Control::Control_Display::AnchorUpdateRequest()
 {
 	AnchorUpdateIsRequested = true;
@@ -179,7 +299,7 @@ void UI::Control::Control_Display::AnchorUpdate()
 BoxF2 UI::Control::Control_Display::BoxDisplay() const
 {
 	if (!MetaIs()) { return BoxF2(); }
-	return Anchor.ToInnerBox(MetaBoxContent());
+	return Anchor.ToInnerBox(MetaBoxContent()); //MetaBoxBoarder() ?
 }
 BoxF2 UI::Control::Control_Display::BoxBoarder() const
 {
@@ -294,15 +414,15 @@ UI::Control::Control_Display::Control_Display()
 	: Anchor(
 			AnchorSize,
 			AnchorDist,
-			AnchorMargin,
-			AnchorBoarder,
-			AnchorPadding,
+			//AnchorMargin,
+			//AnchorBoarder,
+			//AnchorPadding,
 			AnchorNormal
 		)
 {
 	AnchorSize = VectorF2(0, 0);
-	AnchorNormal = VectorF2(0, 0);
 	AnchorDist = BoxF2(VectorF2(0, 0), VectorF2(0, 0));
+	AnchorNormal = VectorF2(0, 0);
 
 	float margin = 2.5f;
 	float boarder = 2.0f;

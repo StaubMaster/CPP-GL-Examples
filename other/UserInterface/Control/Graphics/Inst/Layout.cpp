@@ -3,7 +3,7 @@
 
 
 
-UI::Control::Inst::Layout::Layout()
+UI::ControlGraphics::Inst::Layout::Layout()
 	: ::Attribute::Layout(1, sizeof(Data))
 	, Box(*this)
 	, Layer(*this)

@@ -125,7 +125,7 @@ BoxF2 UI::Control::Window::Box() const
 
 
 
-#include <iostream>
+//#include <iostream>
 #include "Control/Form.hpp"
 void UI::Control::Window::DepthCalculateRequest()
 {
@@ -147,14 +147,14 @@ void UI::Control::Window::DepthCalculate()
 		if (form == nullptr) { continue; }
 
 		unsigned int limit = form -> LayerLimit();
-		std::cout << "limit: " << limit << "(+1)\n";
+		//std::cout << "limit: " << limit << "(+1)\n";
 		LayerCount += limit + 1;
 	}
-	std::cout << "LayerCount: " << LayerCount << "(+2)\n";
+	//std::cout << "LayerCount: " << LayerCount << "(+2)\n";
 	LayerCount += 2;
 
 	LayerDepth = 1.0f / LayerCount;
-	std::cout << "LayerDepth: " << LayerDepth << '\n';
+	//std::cout << "LayerDepth: " << LayerDepth << '\n';
 
 	unsigned int layer_offset_0 = 1;
 	unsigned int layer_offset_1;
@@ -173,14 +173,14 @@ void UI::Control::Window::DepthCalculate()
 
 		layer_offset_1 = layer_offset_0 + layer_range;
 		depth_offset_1 = depth_offset_0 + depth_range;
-		std::cout << "Form Depth";
-		std::cout << ' ' << "[" << (layer_offset_0) << " to " << (layer_offset_1) << "]";
-		std::cout << ' ' << "{" << (depth_offset_0) << " to " << (depth_offset_1) << "}";
-		std::cout << '\n';
+		//std::cout << "Form Depth";
+		//std::cout << ' ' << "[" << (layer_offset_0) << " to " << (layer_offset_1) << "]";
+		//std::cout << ' ' << "{" << (depth_offset_0) << " to " << (depth_offset_1) << "}";
+		//std::cout << '\n';
 		layer_offset_0 = layer_offset_1;
 		depth_offset_0 = depth_offset_1;
 	}
-	std::cout << '\n';
+	//std::cout << '\n';
 
 	DepthCalculateIsRequested = false;
 }

@@ -5,20 +5,6 @@ struct BoxF1;
 
 enum class AnchorType : unsigned char;
 
-/*	do I ever not use the Padded numbers ?
-if I dont want to have Padding, I can setReal it to 0
-if I introduce Margin for the Parents
-and I dont want a Margin to that Parent from the child:
-"suck to suck" ?
-of just subtract the Parent Margin
-the point of the Padding is that I dont have to worry about it
-so having to specify, that I want the Padded values defeats the point of that
-obviously have the real values internally, but make them private
-
-but when I add Boarders, should that specify the inside or the outside ?
-right now it is tecnically the outside, so just keep doing that
-*/
-
 struct refBoxF1
 {
 	float & Min;
@@ -31,120 +17,41 @@ struct Anchor1D
 	private:
 	float &		Size;
 	refBoxF1	Dist;
-	refBoxF1	Margin;
-	refBoxF1	Boarder;
-	refBoxF1	Padding;
+	//refBoxF1	Margin;
+	//refBoxF1	Boarder;
+	//refBoxF1	Padding;
 	float &		NormalCenter;
 
 	public:
-	AnchorType Anchor;
+	AnchorType	Anchor;
 
 	Anchor1D(
 		float & size,
 		refBoxF1 dist,
-		refBoxF1 margin,
-		refBoxF1 boarder,
-		refBoxF1 padding,
+		//refBoxF1 margin,
+		//refBoxF1 boarder,
+		//refBoxF1 padding,
 		float & normal_center
 	);
 
-/*
-	Stored			Calculated
-	----------------------------#
-	Size			HalfSize	|	should these be Padded ?
-	MinDist			MinSize		|	Padding is for Distance
-	MaxDist			MaxSize		|	Padding is for Distance
-	NormalCenter	Center		|	might change if Padding is not Equal
-	----------------------------#
-	Sizes Normal means the Space it Displays in
-	Sizes Padded means the Space it takes up
-*/
-
-	// remove Real vs Padded ?
-	// if you want to set directyl, just set Padding to 0
-	// also Paddign is actually margin
-
-	// Dist and Size names bad
-	// think of better names
-	// near and far. MinNear, MinFar. they arent the same length
-	// Min and Max. MinMin, MinMax. confusing
-	// MinDist is the distance of Control.Min(left) from Parent.Min(left)
-	// MinSize is the distance of Control.Max(right) from Parent.Min(left)
-
-	//private:
-	//float GetRealSize();
-	//float GetRealHalfSize();
-	//float GetRealMinDist();
-	//float GetRealMinSize();
-	//float GetRealMaxDist();
-	//float GetRealMaxSize();
-	//float GetRealNormalCenter();
-	//float GetRealCenter();
-
-
-
-	//private:
-	//void SetRealSize(float val);
-	//void SetRealHalfSize(float val);
-	//void SetRealMinDist(float val);
-	//void SetRealMinSize(float val);
-	//void SetRealMaxDist(float val);
-	//void SetRealMaxSize(float val);
-	//void SetRealNormalCenter(float val);
-	//void SetRealCenter(float val);
-
-
-
-	//private:
-	//float GetPaddedSize();
-	//float GetPaddedHalfSize();
-	//float GetPaddedMinDist();
-	//float GetPaddedMinSize();
-	//float GetPaddedMaxDist();
-	//float GetPaddedMaxSize();
-
-	//private:
-	//void SetPaddedSize(float val);
-	//void SetPaddedHalfSize(float val);
-	//void SetPaddedMinDist(float val);
-	//void SetPaddedMinSize(float val);
-	//void SetPaddedMaxDist(float val);
-	//void SetPaddedMaxSize(float val);
-
-
+	public:
+	//float	GetMarginMinDist() const;
+	//float	GetMarginMinSize() const;
+	//float	GetMarginMaxDist() const;
+	//float	GetMarginMaxSize() const;
 
 	public:
-	float GetSize() const;
-//	float GetHalfSize() const;
-	float GetMinDist() const;
-	float GetMinSize() const;
-	float GetMaxDist() const;
-	float GetMaxSize() const;
-//	float GetNormalCenter() const;
-//	float GetCenter() const;
+	//void	SetMarginMinDist(float val);
+	//void	SetMarginMinSize(float val);
+	//void	SetMarginMaxDist(float val);
+	//void	SetMarginMaxSize(float val);
 
 	public:
-	void SetSize(float val);
-//	void SetHalfSize(float val);
-	void SetMinDist(float val);
-	void SetMinSize(float val);
-	void SetMaxDist(float val);
-	void SetMaxSize(float val);
-//	void SetNormalCenter(float val);
-//	void SetCenter(float val);
-
-
-
-	public:
-	void	AnchorMin(float dist);
-	void	AnchorMin(float dist, float size);
-	void	AnchorMax(float dist);
-	void	AnchorMax(float dist, float size);
-	void	AnchorBoth(float min, float max);
-	// Anchor Center
-
-	// InnerBox
-	// OuterBox
+	//float	AnchorMarginMin(float dist);
+	//float	AnchorMarginMin(float dist, float size);
+	//float	AnchorMarginMax(float dist);
+	//float	AnchorMarginMax(float dist, float size);
+	//void	AnchorMarginBoth(float min, float max); // return Size ?
 
 	private:
 	void	ChangeO_Size(float sizeO);

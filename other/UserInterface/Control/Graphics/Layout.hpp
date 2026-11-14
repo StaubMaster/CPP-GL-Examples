@@ -7,7 +7,7 @@
 // this is a generic Layout
 namespace UI
 {
-namespace Control
+namespace ControlGraphics
 {
 class ShaderLayout : public Uniform::Layout
 {

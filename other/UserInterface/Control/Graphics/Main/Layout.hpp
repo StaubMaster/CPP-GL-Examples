@@ -6,7 +6,7 @@
 
 namespace UI
 {
-namespace Control
+namespace ControlGraphics
 {
 namespace Main
 {

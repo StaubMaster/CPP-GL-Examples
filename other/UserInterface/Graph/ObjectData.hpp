@@ -20,6 +20,7 @@ struct ObjectData
 	float		Magnitede;
 	ColorF4		Col;
 
+	// make a different Container for this
 	ValueAccumulator<float> *	Values;
 
 	~ObjectData();

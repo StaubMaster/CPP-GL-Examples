@@ -6,7 +6,7 @@
 
 namespace UI
 {
-namespace Control
+namespace ControlGraphics
 {
 namespace Inst
 {
@@ -21,9 +21,6 @@ struct Data
 	Data() = default;
 	Data(const Data & other) = default;
 	Data & operator=(const Data & other) = default;
-
-//	Data(BoxF2 box, float layer, ColorF4 color, BoxF2 bound);
-	// make from ObjectData
 };
 };
 };

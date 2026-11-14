@@ -1,0 +1,33 @@
+
+currently
+{
+	when Object is made
+	it allocates ObjectData
+	which is then stored in Manager
+	when Object is removed
+	the ObjectData is marked for deletion
+	later
+	Manager clears Instances
+	Manager makes Instances
+	Manager deletes ObjectDatas
+}
+
+Temporary Objects could be done without allocating ObjectData
+{
+	make Object
+	when Object is removed
+	put Instance
+	Manager makes Instances
+	Manager puts Instances in Buffer
+	Manager clears Instances
+}
+so the Instances Container is cleared before anything else in the frame happens
+so Instances can just be added to it
+
+how to do "Permanent" Objects with this ?
+{
+	Object is created at an arbitrary time
+	Object should be displayed
+	Object is deleted at an arbitrary time
+}
+how would the Manager continue to know about this ?

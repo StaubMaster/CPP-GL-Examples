@@ -25,7 +25,8 @@ UI::Control::ListBox::Item::Item(UI::Control::ListBox & listBox, unsigned int id
 
 
 //	AnchorMargin = BoxF2(VectorF2(0.0f), VectorF2(0.0f));
-	Anchor.X.AnchorBoth(0, 0);
+	//Anchor.X.AnchorMarginBoth(0, 0);
+	Make_Anchor_X_Both(nullptr, nullptr); // ?
 
 	SetText(name);
 }

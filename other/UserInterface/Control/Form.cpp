@@ -179,14 +179,14 @@ BoxF2 UI::Control::Form::MetaBoxContent() const
 
 void UI::Control::Form::AutoAnchorUpdate_Y_StackMin()
 {
-	float y = 0.0f;
+	Base * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		if (Children[i] == nullptr) { continue; }
-		Base & control = *Children[i];
-		if (!control.IsVisible()) { continue; }
-		control.Anchor.Y.AnchorMin(y);
-		y = control.Anchor.Y.GetMinSize();
+		Base & c = *Children[i];
+		if (!c.IsVisible()) { continue; }
+		c.Make_Anchor_Y_Min(control);
+		control = &c;
 	}
 	AnchorUpdateRequest();
 }
@@ -204,7 +204,7 @@ void UI::Control::Form::DisplayPut() const
 //	if (_Manager() != nullptr && Window_ != nullptr && IsOpaque())
 	if (_Manager() != nullptr && MetaIs() && IsOpaque())
 	{
-		Inst::Data data;
+		UI::ControlGraphics::Inst::Data data;
 		data.Layer = -Depth();
 		data.Box = BoxDisplay();
 		data.Color = Color();

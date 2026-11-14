@@ -151,7 +151,7 @@ void UI::Control::Slider::DisplayPut() const
 	//if (_Manager() != nullptr && (Parent != nullptr || Form_ != nullptr))
 	if (_Manager() != nullptr && MetaIs())
 	{
-		Inst::Data data;
+		UI::ControlGraphics::Inst::Data data;
 		data.Layer = -Depth(1.0f / 3.0f);
 		data.Box = NubBox;
 		data.Color = ColorF4(0.5f, 0.5f, 0.5f);

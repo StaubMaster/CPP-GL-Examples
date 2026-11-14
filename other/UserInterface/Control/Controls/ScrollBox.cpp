@@ -69,16 +69,20 @@ UI::Control::ScrollBox::ScrollBox()
 	Content.ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 	Content.ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 
-	ScrollBar.Anchor.X.AnchorMax(0, 10);
-	ScrollBar.Anchor.Y.AnchorBoth(0, 0);
+	//ScrollBar.Anchor.X.AnchorMarginMax(0, 10);
+	//ScrollBar.Anchor.Y.AnchorMarginBoth(0, 0);
+	ScrollBar.Make_Anchor_X_Max(nullptr, 10);
+	ScrollBar.Make_Anchor_Y_Both(nullptr, nullptr);
 	ScrollBar.ValueRange.Min.Y = 0.0f;
 	ScrollBar.ValueRange.Max.Y = 1.0f;
 	ScrollBar.NubSize.X = 10.0f;
 	ScrollBar.NubSize.Y = 100.0f;
 	ScrollBar.ValueYChangedFunc.Assign(this, &ScrollBox::ScrollFunc);
 
-	Content.Anchor.X.AnchorBoth(0, ScrollBar.Anchor.X.GetMaxSize());
-	Content.Anchor.Y.AnchorBoth(0, 0); // Content Y is not determined by Anchor ?
+	//Content.Anchor.X.AnchorMarginBoth(0, ScrollBar.Anchor.X.GetMarginMaxSize());
+	//Content.Anchor.Y.AnchorMarginBoth(0, 0); // Content Y is not determined by Anchor ?
+	Content.Make_Anchor_X_Both(nullptr, &ScrollBar);
+	Content.Make_Anchor_Y_Both(nullptr, nullptr);
 	Content.AutoAnchorYType = Base::EAutoAnchorType::StackMin;
 
 	Base::ChildInsert(Content);

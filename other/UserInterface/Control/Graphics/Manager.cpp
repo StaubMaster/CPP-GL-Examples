@@ -9,25 +9,25 @@
 
 
 
-UI::Control::Manager * UI::Control::Manager::CurrentPointer = nullptr;
-UI::Control::Manager & UI::Control::Manager::Current() { return *CurrentPointer; } // throw Exception instead of latting this cause a segfault ?
-bool UI::Control::Manager::CheckCurrent() { return (UI::Control::Manager::CurrentPointer != nullptr); }
-void UI::Control::Manager::ClearCurrent() { UI::Control::Manager::CurrentPointer = nullptr; }
-bool UI::Control::Manager::IsCurrent() const { return (UI::Control::Manager::CurrentPointer == this); }
-void UI::Control::Manager::MakeCurrent() { UI::Control::Manager::CurrentPointer = this; }
+UI::ControlGraphics::Manager * UI::ControlGraphics::Manager::CurrentPointer = nullptr;
+UI::ControlGraphics::Manager & UI::ControlGraphics::Manager::Current() { return *CurrentPointer; } // throw Exception instead of latting this cause a segfault ?
+bool UI::ControlGraphics::Manager::CheckCurrent() { return (UI::ControlGraphics::Manager::CurrentPointer != nullptr); }
+void UI::ControlGraphics::Manager::ClearCurrent() { UI::ControlGraphics::Manager::CurrentPointer = nullptr; }
+bool UI::ControlGraphics::Manager::IsCurrent() const { return (UI::ControlGraphics::Manager::CurrentPointer == this); }
+void UI::ControlGraphics::Manager::MakeCurrent() { UI::ControlGraphics::Manager::CurrentPointer = this; }
 
 
 
 
 
-UI::Control::Manager::~Manager()
+UI::ControlGraphics::Manager::~Manager()
 {
 	/*for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
 		delete ObjectDatas[i];
 	}*/
 }
-UI::Control::Manager::Manager()
+UI::ControlGraphics::Manager::Manager()
 	: Shader()
 	, ShaderLayout()
 	, Buffer()
@@ -46,11 +46,11 @@ UI::Control::Manager::Manager()
 
 
 
-void UI::Control::Manager::InstancesClear()
+void UI::ControlGraphics::Manager::InstancesClear()
 {
 	Instances.Clear();
 }
-/*void UI::Control::Manager::InstancesMake()
+/*void UI::ControlGraphics::Manager::InstancesMake()
 {
 	for (unsigned int i = 0; i < ObjectDatas.Count(); i++)
 	{
@@ -67,14 +67,14 @@ void UI::Control::Manager::InstancesClear()
 		}
 	}
 }*/
-void UI::Control::Manager::InstancePut(const Control::Inst::Data & data)
+void UI::ControlGraphics::Manager::InstancePut(const Inst::Data & data)
 {
 	Instances.Insert(data);
 }
 
 
 
-void UI::Control::Manager::ChangeMedia(const DirectoryInfo & dir)
+void UI::ControlGraphics::Manager::ChangeMedia(const DirectoryInfo & dir)
 {
 	Shader.Change({
 		dir.File("Shaders/UI/Control.vert"),
@@ -89,7 +89,7 @@ void UI::Control::Manager::ChangeMedia(const DirectoryInfo & dir)
 	BufferLayoutInst.Bound.Max.Change(6);
 }
 
-void UI::Control::Manager::GraphicsCreate()
+void UI::ControlGraphics::Manager::GraphicsCreate()
 {
 	if (GraphicsExist) { return; }
 
@@ -100,7 +100,7 @@ void UI::Control::Manager::GraphicsCreate()
 
 	GraphicsNeedMain = true;
 }
-void UI::Control::Manager::GraphicsDelete()
+void UI::ControlGraphics::Manager::GraphicsDelete()
 {
 	if (!GraphicsExist) { return; }
 
@@ -110,36 +110,36 @@ void UI::Control::Manager::GraphicsDelete()
 	GraphicsExist = false;
 }
 
-void UI::Control::Manager::GraphicsInit()
+void UI::ControlGraphics::Manager::GraphicsInit()
 {
 	Buffer.Init();
 }
 
-void UI::Control::Manager::GraphicsPutMain()
+void UI::ControlGraphics::Manager::GraphicsPutMain()
 {
 	if (!(GraphicsNeedMain && GraphicsExist)) { return; }
 
-	Container::Binary<Control::Main::Data> data;
+	Container::Binary<Main::Data> data;
 
-	data.Insert(UI::Control::Main::Data(VectorF2(-1, -1)));
-	data.Insert(UI::Control::Main::Data(VectorF2(+1, -1)));
-	data.Insert(UI::Control::Main::Data(VectorF2(-1, +1)));
-	data.Insert(UI::Control::Main::Data(VectorF2(-1, +1)));
-	data.Insert(UI::Control::Main::Data(VectorF2(+1, -1)));
-	data.Insert(UI::Control::Main::Data(VectorF2(+1, +1)));
+	data.Insert(Main::Data(VectorF2(-1, -1)));
+	data.Insert(Main::Data(VectorF2(+1, -1)));
+	data.Insert(Main::Data(VectorF2(-1, +1)));
+	data.Insert(Main::Data(VectorF2(-1, +1)));
+	data.Insert(Main::Data(VectorF2(+1, -1)));
+	data.Insert(Main::Data(VectorF2(+1, +1)));
 
 	Buffer.MainBuffer.DataFull(data.ToVoid());
 	Buffer.MainBuffer.Count = data.Count();
 
 	GraphicsNeedMain = false;
 }
-void UI::Control::Manager::GraphicsPutInst()
+void UI::ControlGraphics::Manager::GraphicsPutInst()
 {
 	Buffer.InstBuffer.DataFull(Instances.ToVoid());
 	Buffer.InstBuffer.Count = Instances.Count();
 }
 
-void UI::Control::Manager::GraphicsDraw()
+void UI::ControlGraphics::Manager::GraphicsDraw()
 {
 	GraphicsPutMain();
 	GraphicsPutInst();

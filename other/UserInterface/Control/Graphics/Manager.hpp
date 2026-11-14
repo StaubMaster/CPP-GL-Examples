@@ -23,9 +23,8 @@ class DirectoryInfo;
 
 namespace UI
 {
-namespace Control
+namespace ControlGraphics
 {
-//struct ObjectData;
 class Manager
 {
 	public:
@@ -41,13 +40,13 @@ class Manager
 
 
 	public:
-	::Shader::Base					Shader;
-	UI::Control::ShaderLayout		ShaderLayout;
+	::Shader::Base			Shader;
+	ShaderLayout			ShaderLayout;
 
 	public:
-	VertexArray::MainInst			Buffer;
-	UI::Control::Main::Layout		BufferLayoutMain;
-	UI::Control::Inst::Layout		BufferLayoutInst;
+	VertexArray::MainInst	Buffer;
+	Main::Layout			BufferLayoutMain;
+	Inst::Layout			BufferLayoutInst;
 
 	public:
 	~Manager();
@@ -56,10 +55,10 @@ class Manager
 	Manager & operator=(const Manager & other) = delete;
 
 	public:
-	Container::Binary<Control::Inst::Data>		Instances;
+	Container::Binary<Inst::Data>		Instances;
 	void	InstancesClear();
 //	void	InstancesMake();
-	void	InstancePut(const Control::Inst::Data & data);
+	void	InstancePut(const Inst::Data & data);
 
 	public:
 	void	ChangeMedia(const DirectoryInfo & dir);

@@ -15,25 +15,27 @@ TestSelector::TestSelector()
 	, TestListButton()
 	, DirectoryNavigatorButton()
 {
-	//float x = 0.0f;
-	float y = 0.0f;
+	//float y = 0.0f;
 
-	TitleText.Anchor.X.AnchorBoth(0, 0);
-	TitleText.Anchor.Y.AnchorMin(y);
+	//TitleText.Anchor.X.AnchorMarginBoth(0, 0);
+	//y = TitleText.Anchor.Y.AnchorMarginMin(y);
+	TitleText.Make_Anchor_X_Both(nullptr, nullptr);
+	TitleText.Make_Anchor_Y_Min(nullptr);
 	TitleText.SetText("User Interface Tests");
-	y = TitleText.Anchor.Y.GetMinSize();
 
-	QuitButton.Anchor.X.AnchorBoth(0, 0);
-	QuitButton.Anchor.Y.AnchorMin(y);
+	//QuitButton.Anchor.X.AnchorMarginBoth(0, 0);
+	//y = QuitButton.Anchor.Y.AnchorMarginMin(y);
+	QuitButton.Make_Anchor_X_Both(nullptr, nullptr);
+	QuitButton.Make_Anchor_Y_Min(&TitleText);
 	QuitButton.SetText("Quit");
 	QuitButton.ClickFunc.Assign(this, &TestSelector::QuitFunc);
-	y = QuitButton.Anchor.Y.GetMinSize();
 
-	ReButton.Anchor.X.AnchorBoth(0, 0);
-	ReButton.Anchor.Y.AnchorMin(y);
+	//ReButton.Anchor.X.AnchorMarginBoth(0, 0);
+	//y = ReButton.Anchor.Y.AnchorMarginMin(y);
+	ReButton.Make_Anchor_X_Both(nullptr, nullptr);
+	ReButton.Make_Anchor_Y_Min(&QuitButton);
 	ReButton.SetText("Re");
 	ReButton.ClickFunc.Assign(this, &TestSelector::ReFunc);
-	y = ReButton.Anchor.Y.GetMinSize();
 
 	ChildInsert(TitleText);
 	ChildInsert(QuitButton);
@@ -41,35 +43,41 @@ TestSelector::TestSelector()
 
 
 
-	TileGridButton.Anchor.X.AnchorBoth(0, 0);
-	TileGridButton.Anchor.Y.AnchorMin(y);
+	//TileGridButton.Anchor.X.AnchorMarginBoth(0, 0);
+	//y = TileGridButton.Anchor.Y.AnchorMarginMin(y);
+	TileGridButton.Make_Anchor_X_Both(nullptr, nullptr);
+	TileGridButton.Make_Anchor_Y_Min(&ReButton);
 	TileGridButton.SetText("TileGrid");
-	y = TileGridButton.Anchor.Y.GetMinSize();
 
-	TextButton.Anchor.X.AnchorBoth(0, 0);
-	TextButton.Anchor.Y.AnchorMin(y);
+	//TextButton.Anchor.X.AnchorMarginBoth(0, 0);
+	//y = TextButton.Anchor.Y.AnchorMarginMin(y);
+	TextButton.Make_Anchor_X_Both(nullptr, nullptr);
+	TextButton.Make_Anchor_Y_Min(&TileGridButton);
 	TextButton.SetText("Text");
-	y = TextButton.Anchor.Y.GetMinSize();
 
-	GraphButton.Anchor.X.AnchorBoth(0, 0);
-	GraphButton.Anchor.Y.AnchorMin(y);
+	//GraphButton.Anchor.X.AnchorMarginBoth(0, 0);
+	//y = GraphButton.Anchor.Y.AnchorMarginMin(y);
+	GraphButton.Make_Anchor_X_Both(nullptr, nullptr);
+	GraphButton.Make_Anchor_Y_Min(&TextButton);
 	GraphButton.SetText("Graph");
-	y = GraphButton.Anchor.Y.GetMinSize();
 
-	TestScrollButton.Anchor.X.AnchorBoth(0, 0);
-	TestScrollButton.Anchor.Y.AnchorMin(y);
+	//TestScrollButton.Anchor.X.AnchorMarginBoth(0, 0);
+	//y = TestScrollButton.Anchor.Y.AnchorMarginMin(y);
+	TestScrollButton.Make_Anchor_X_Both(nullptr, nullptr);
+	TestScrollButton.Make_Anchor_Y_Min(&GraphButton);
 	TestScrollButton.SetText("TestScroll");
-	y = TestScrollButton.Anchor.Y.GetMinSize();
 
-	TestListButton.Anchor.X.AnchorBoth(0, 0);
-	TestListButton.Anchor.Y.AnchorMin(y);
+	//TestListButton.Anchor.X.AnchorMarginBoth(0, 0);
+	//y = TestListButton.Anchor.Y.AnchorMarginMin(y);
+	TestListButton.Make_Anchor_X_Both(nullptr, nullptr);
+	TestListButton.Make_Anchor_Y_Min(&TestScrollButton);
 	TestListButton.SetText("TestList");
-	y = TestListButton.Anchor.Y.GetMinSize();
 
-	DirectoryNavigatorButton.Anchor.X.AnchorBoth(0, 0);
-	DirectoryNavigatorButton.Anchor.Y.AnchorMin(y);
+	//DirectoryNavigatorButton.Anchor.X.AnchorMarginBoth(0, 0);
+	//y = DirectoryNavigatorButton.Anchor.Y.AnchorMarginMin(y);
+	DirectoryNavigatorButton.Make_Anchor_X_Both(nullptr, nullptr);
+	DirectoryNavigatorButton.Make_Anchor_Y_Min(&TestListButton);
 	DirectoryNavigatorButton.SetText("DirectoryNavigator");
-	y = DirectoryNavigatorButton.Anchor.Y.GetMinSize();
 
 	ChildInsert(TileGridButton);
 	ChildInsert(TextButton);
