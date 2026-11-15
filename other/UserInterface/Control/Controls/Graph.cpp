@@ -2,8 +2,8 @@
 
 
 
-UI::Control::Graph::Graph()
-	: UI::Control::Base()
+UI::Control_::Graph::Graph()
+	: UI::Control_::Base()
 	, Center(64)
 	, Magnitude(8)
 	, Values(64)
@@ -17,7 +17,7 @@ UI::Control::Graph::Graph()
 
 #include "Graph/ObjectData.hpp"
 
-void UI::Control::Graph::Update()
+void UI::Control_::Graph::Update()
 {
 	Base::Update();
 	if (GraphObject.Is())
@@ -29,7 +29,7 @@ void UI::Control::Graph::Update()
 		GraphObject.Data -> Values = &Values;
 	}
 }
-void UI::Control::Graph::RelayShow()
+void UI::Control_::Graph::RelayShow()
 {
 	Base::RelayShow();
 	if (!GraphObject.Is() && _Manager() != nullptr)
@@ -37,7 +37,7 @@ void UI::Control::Graph::RelayShow()
 		GraphObject.Create();
 	}
 }
-void UI::Control::Graph::RelayHide()
+void UI::Control_::Graph::RelayHide()
 {
 	Base::RelayHide();
 	if (GraphObject.Is() || _Manager() == nullptr)

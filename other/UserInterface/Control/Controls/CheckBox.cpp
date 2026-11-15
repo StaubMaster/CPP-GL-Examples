@@ -5,7 +5,7 @@
 
 
 
-UI::Control::CheckBox::CheckBox()
+UI::Control_::CheckBox::CheckBox()
 	: Base()
 {
 	Anchor.X.Anchor = AnchorType::Min;
@@ -23,16 +23,16 @@ UI::Control::CheckBox::CheckBox()
 
 
 
-bool UI::Control::CheckBox::IsChecked()
+bool UI::Control_::CheckBox::IsChecked()
 {
 	return Checked;
 }
-void UI::Control::CheckBox::Toggle()
+void UI::Control_::CheckBox::Toggle()
 {
 	Checked = !Checked;
 	//ColorUpdateRequest();
 }
-void UI::Control::CheckBox::Check(bool state)
+void UI::Control_::CheckBox::Check(bool state)
 {
 	Checked = state;
 	//ColorUpdateRequest();
@@ -40,7 +40,7 @@ void UI::Control::CheckBox::Check(bool state)
 
 
 
-/*void UI::Control::CheckBox::ColorUpdate()
+/*void UI::Control_::CheckBox::ColorUpdate()
 {
 	if (Manager == nullptr)
 	{
@@ -72,7 +72,7 @@ void UI::Control::CheckBox::Check(bool state)
 		}
 	}
 }*/
-ColorF4 UI::Control::CheckBox::Color() const
+ColorF4 UI::Control_::CheckBox::Color() const
 {
 	if (Form_ == nullptr)
 	{
@@ -110,7 +110,7 @@ ColorF4 UI::Control::CheckBox::Color() const
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "HoverArgs.hpp"
-void UI::Control::CheckBox::RelayClick(ClickArgs params)
+void UI::Control_::CheckBox::RelayClick(ClickArgs params)
 {
 	if (!IsInteractible()) { return; }
 

@@ -5,7 +5,7 @@
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 class Label : public BaseText
 {

@@ -5,7 +5,7 @@ FANCY_NAME := UserInterface
 ################################################################
 
 FILES := \
-	Anchor1D.cpp \
+	AnchorAxis.cpp \
 	Anchor2D.cpp \
 \
 	Control/Graphics/Main/Data.cpp \
@@ -15,8 +15,11 @@ FILES := \
 	Control/Graphics/Layout.cpp \
 	Control/Graphics/Manager.cpp \
 	\
+	Control/General/Control_Flags.cpp \
+	Control/General/Control_Box.cpp \
 	Control/General/Control_Display.cpp \
 	Control/General/Control_UserRelay.cpp \
+	Control/General/Control_Base.cpp \
 	Control/General/Base.cpp \
 	Control/General/BaseText.cpp \
 \

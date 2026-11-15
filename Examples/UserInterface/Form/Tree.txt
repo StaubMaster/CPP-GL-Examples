@@ -1,0 +1,19 @@
+
+Node
+{
+	Node[]	Nodes
+}
+TextNode
+{
+	Label with Text
+}
+VectorF3Node
+{
+	X Y Z TextBoxes
+}
+
+Nodes can be collapsed or expanded
+Node should change Color when Selected (or Hovering)
+	need every Control to know Child Hovering and Selected
+
+

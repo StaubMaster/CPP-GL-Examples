@@ -7,7 +7,7 @@
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 class CheckBox : public Base
 {

@@ -11,7 +11,7 @@ struct DisplaySize;
 namespace UI
 {
 class Manager;
-namespace Control
+namespace Control_
 {
 class Form;
 class Window : public Control_Container<Form>, public Control_UserRelay
@@ -28,16 +28,16 @@ class Window : public Control_Container<Form>, public Control_UserRelay
 
 	private:
 	bool					Check(const DisplayPosition & display_pos) const override;
-	UI::Control::Form *		Find(const DisplayPosition & display_pos) override;
+	UI::Control_::Form *		Find(const DisplayPosition & display_pos) override;
 
 	private:
-	UI::Control::Form *		Hovering_ = nullptr;
-	UI::Control::Form *		Selected_ = nullptr;
+	UI::Control_::Form *		Hovering_ = nullptr;
+	UI::Control_::Form *		Selected_ = nullptr;
 	public:
-	UI::Control::Form *		Hovering() const;
-	UI::Control::Form *		Selected() const;
+	UI::Control_::Form *		Hovering() const;
+	UI::Control_::Form *		Selected() const;
 	private:
-	void	HoveringChange(UI::Control::Form * form, const DisplayPosition & display_pos);
+	void	HoveringChange(UI::Control_::Form * form, const DisplayPosition & display_pos);
 	void	SelectedChange();
 	public:
 	void	HoveringUpdate(const DisplayPosition & display_pos);
@@ -57,7 +57,8 @@ class Window : public Control_Container<Form>, public Control_UserRelay
 	private:	void	DepthCalculate();
 
 	private:	unsigned int	LayerCount = 0;
-	private:	float			LayerDepth = 0.0f;
+	private:	float			LayerDepth_ = 0.0f;
+	public:		float			LayerDepth() const;
 	public:		float	Depth(float depth = 0.0f) const;
 
 

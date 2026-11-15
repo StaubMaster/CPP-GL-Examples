@@ -3,17 +3,17 @@
 
 # include "Control/_Include.hpp"
 
-struct TestGraph : public UI::Control::Form
+struct TestGraph : public UI::Control_::Form
 {
-	//UI::Control::GroupBox	SliderGroupBox;
-	//UI::Control::Slider		SliderHori;
-	//UI::Control::Slider		SliderVert;
-	//UI::Control::Slider		SliderArea;
+	//UI::Control_::GroupBox	SliderGroupBox;
+	//UI::Control_::Slider		SliderHori;
+	//UI::Control_::Slider		SliderVert;
+	//UI::Control_::Slider		SliderArea;
 
-	UI::Control::Slider		SliderArea;
+	UI::Control_::Slider	SliderArea;
 
-	UI::Control::Graph		GraphHori;
-	UI::Control::Graph		GraphVert;
+	UI::Control_::Graph		GraphHori;
+	UI::Control_::Graph		GraphVert;
 
 	TestGraph();
 

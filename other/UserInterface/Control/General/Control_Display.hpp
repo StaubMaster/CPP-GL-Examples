@@ -1,214 +1,29 @@
 #ifndef  UI_CONTROL_CONTROL_DISPLAY_HPP
 # define UI_CONTROL_CONTROL_DISPLAY_HPP
 
-#include "Anchor2D.hpp"
-
-//#include "User/MouseArgs.hpp"
-//#include "User/KeyBoardArgs.hpp"
-//#include "HoverArgs.hpp"
-struct HoverArgs;
-struct ClickArgs;
-struct ScrollArgs;
-struct DragArgs;
-struct KeyArgs;
-struct TextArgs;
-
-#include "ValueType/_Include.hpp"
-// include individual
+# include "Control_Flags.hpp"
+# include "Control_Box.hpp"
+# include "Control_LayerDepth.hpp"
+# include "Control_Color.hpp"
 
 namespace UI
 {
 class Manager;
-namespace Control
+namespace Control_
 {
 class Window;
 class Form;
 class Base;
-class Control_Display
+};
+class Control_Display : public Control_Flags, public Control_LayerDepth, public Control_Box, public Control_Color
 {
 	public:
-	bool	Deletable = false;
-	// true means this should be deleted when Parent is deleted
-	// currently not used
-
-	private:
-	bool	IsEnabled_ = true;
-	public:
-	bool	IsEnabled() const;
-	void	Enable();
-	void	Disable();
-
-	private:
-	bool	IsOpaque_ = true;
-	public:
-	bool	IsOpaque() const;
-	void	MakeTransparent();
-	void	MakeOpaque();
-
-	private:
-	bool	IsVisible_ = true;
-	public:
-			bool	IsThisVisible() const;
-	virtual	bool	IsVisible() const;
-	virtual	void	Show();
-	virtual	void	Hide();
+	void	MakeTransparent() override;
+	void	MakeOpaque() override;
 
 	public:
-	bool	IsDisplay() const;
-//	bool	IsThisInteractible() const;
-	bool	IsInteractible() const;
-
-	// IsActive
-	// dont Update if not Active
-
-
-
-//	private:	unsigned int	Layer_ = 0;
-//	public:		unsigned int	Layer() const;
-//	public:		void			LayerUpdate();
-//	public:		void			LayerUpdateRecursive();
-	public:		virtual	unsigned int	Layer() const = 0;
-
-	public:		virtual	unsigned int	LayerLimit() const = 0;
-
-//	protected:	float			Depth_ = 0.0f;
-//	public:		float			Depth() const;
-//	public:		virtual	void	DepthUpdate();
-//	protected:			void	DepthUpdateRecursive();
-//	public:		float			Depth() const;
-	public:		virtual float	Depth(float depth = 0.0f) const = 0;
-
-
-
-	protected: public:
-	VectorF2	AnchorSize;
-	BoxF2		AnchorDist;
-	VectorF2	AnchorNormal;
-	protected: public:
-	BoxF2		AnchorMargin;
-	BoxF2		AnchorBoarder;
-	BoxF2		AnchorPadding;
-	protected: public:
-	Anchor2D	Anchor;
-	protected: public:
-//	VectorF2	ContentOffset ?
-
-	private: public:
-	float	MarginBox_Get_X_Min_Min() const;
-	float	MarginBox_Get_X_Min_Max() const;
-	float	MarginBox_Get_X_Max_Min() const;
-	float	MarginBox_Get_X_Max_Max() const;
-
-	private: public:
-	void	MarginBox_Set_X_Min_Min(float val);
-	void	MarginBox_Set_X_Min_Max(float val);
-	void	MarginBox_Set_X_Max_Min(float val);
-	void	MarginBox_Set_X_Max_Max(float val);
-
-	private: public:
-	float	MarginBox_Get_Y_Min_Min() const;
-	float	MarginBox_Get_Y_Min_Max() const;
-	float	MarginBox_Get_Y_Max_Min() const;
-	float	MarginBox_Get_Y_Max_Max() const;
-
-	private: public:
-	void	MarginBox_Set_Y_Min_Min(float val);
-	void	MarginBox_Set_Y_Min_Max(float val);
-	void	MarginBox_Set_Y_Max_Min(float val);
-	void	MarginBox_Set_Y_Max_Max(float val);
-
-	public:
-	void	Make_Anchor_X_Min(const Control_Display * other);
-	void	Make_Anchor_X_Min(const Control_Display * other, float size);
-	void	Make_Anchor_X_Max(const Control_Display * other);
-	void	Make_Anchor_X_Max(const Control_Display * other, float size);
-	void	Make_Anchor_X_Both(const Control_Display * other_min, const Control_Display * other_max);
-
-	public:
-	void	Make_Anchor_Y_Min(const Control_Display * other);
-	void	Make_Anchor_Y_Min(const Control_Display * other, float size);
-	void	Make_Anchor_Y_Max(const Control_Display * other);
-	void	Make_Anchor_Y_Max(const Control_Display * other, float size);
-	void	Make_Anchor_Y_Both(const Control_Display * other_min, const Control_Display * other_max);
-
-	/* Anchoring functions here ?
-		the actual Anchor does not need Margin for anything else, and Boarder and Padding arnt used by it anyway
-		also make them take pointers to Controls ?
-		so AnchorMin(null) puts the control to the left
-		but AnchorMin(other) puts the control to the right of other
-
-		how would this work with wanting things to be a specific distance ?
-		does that ever happen ?
-		the only distance is 0 or a variable that is the right side of another control
-	*/
-
-	private:	bool			AnchorUpdateIsRequested = false;
-	public:		void			AnchorUpdateRequest();
-	protected:	virtual	void	AnchorUpdate();
-
-
-
-//	private:	bool			BoxUpdateIsRequested = false;
-//	public:		void			BoxUpdateRequest();
-//	protected:	virtual	void	BoxUpdate();
-
-//	protected: public:
-//	BoxF2	BoxDisplay; // used for displaying Control
-//	BoxF2	BoxBoarder; // used for culling Children
-//	BoxF2	BoxContent; // used for anchoring Children
-
-	protected:
-	virtual bool	MetaIs() const = 0;
-	virtual BoxF2	MetaBoxBoarder() const = 0;
-	virtual BoxF2	MetaBoxContent() const = 0;
-
-	public:
-	BoxF2	BoxDisplay() const; // used for displaying Control
-	BoxF2	BoxBoarder() const; // used for culling Children
-	BoxF2	BoxContent() const; // used for anchoring Children
-
-
-
-	public:
-	enum class EAutoAnchorType
-	{
-		None,
-		StackMin,		//next.MinDist = prev.MinSize
-		//StackMinFit,	//next.MinDist = prev.MinSize but this.Size is made to Fit
-	};
-	EAutoAnchorType		AutoAnchorXType = EAutoAnchorType::None;
-	EAutoAnchorType		AutoAnchorYType = EAutoAnchorType::None;
-
-	private:		bool	AutoAnchorUpdateIsRequested = false;
-	public:			void	AutoAnchorUpdateRequest();
-	public:	virtual	void	AutoAnchorUpdate();
-
-	private:	virtual	void	AutoAnchorUpdate_Y_StackMin() = 0;
-//	private:			void	AutoAnchorUpdate_Y_StackMinFit();
-
-	/* should Children be able to effect Parent ?
-		normal Controls dont do that ?
-		the only ones I can think of are HTML
-		HTML is very complex
-		Controls can have Maximum and Minimum Sizes
-		they also auto arange themselves
-		which is what I want
-		changing Children to is easy
-		maybe make another to automatically make all Children use the "Both" Anchor
-		making the Parent fit the Children is not really needed
-	*/
-
-
-
-//	private:				bool	ColorUpdateIsRequested = false;
-//	public:					void	ColorUpdateRequest();
-//	protected:	virtual		void	ColorUpdate();
-
-//	protected:
-//	ColorF4		Color;
-
-	protected:
-	virtual ColorF4		Color() const = 0;
+	virtual	void	Show() override;
+	virtual	void	Hide() override;
 
 
 
@@ -233,10 +48,9 @@ class Control_Display
 
 	public:
 	virtual ~Control_Display() = default;
-	Control_Display();
+	Control_Display() = default;
 	Control_Display(const Control_Display & other) = delete;
 	Control_Display & operator=(const Control_Display & other) = delete;
-};
 };
 };
 

@@ -7,46 +7,29 @@
 Anchor2D::Anchor2D(
 		VectorF2 & size,
 		BoxF2 & dist,
-		//BoxF2 & margin,
-		//BoxF2 & boarder,
-		//BoxF2 & padding,
 		VectorF2 & normal_center
 )
 	: X(
 		size.X,
-		refBoxF1(dist.Min.X, dist.Max.X),
-		//refBoxF1(margin.Min.X, margin.Max.X),
-		//refBoxF1(boarder.Min.X, boarder.Max.X),
-		//refBoxF1(padding.Min.X, padding.Max.X),
+		dist.Min.X,
+		dist.Max.X,
 		normal_center.X
 	)
 	, Y(
 		size.Y,
-		refBoxF1(dist.Min.Y, dist.Max.Y),
-		//refBoxF1(margin.Min.Y, margin.Max.Y),
-		//refBoxF1(boarder.Min.Y, boarder.Max.Y),
-		//refBoxF1(padding.Min.Y, padding.Max.Y),
+		dist.Min.Y,
+		dist.Max.Y,
 		normal_center.Y
 	)
 { }
 
-void Anchor2D::UpdateO(const BoxF2 & boxO)
+void Anchor2D::ChangeBox(const BoxF2 & boxO, const BoxF2 & boxI)
 {
-	X.UpdateO(BoxF1(boxO.Min.X, boxO.Max.X));
-	Y.UpdateO(BoxF1(boxO.Min.Y, boxO.Max.Y));
+	X.ChangeBox(boxO.Min.X, boxO.Max.X, boxI.Min.X, boxI.Max.X);
+	Y.ChangeBox(boxO.Min.Y, boxO.Max.Y, boxI.Min.Y, boxI.Max.Y);
 }
-void Anchor2D::UpdateO(const BoxF2 & boxO, const BoxF2 & boxI)
+void Anchor2D::Update(const VectorF2 & size)
 {
-	X.UpdateO(BoxF1(boxO.Min.X, boxO.Max.X), BoxF1(boxI.Min.X, boxI.Max.X));
-	Y.UpdateO(BoxF1(boxO.Min.Y, boxO.Max.Y), BoxF1(boxI.Min.Y, boxI.Max.Y));
-}
-
-BoxF2 Anchor2D::ToInnerBox(const BoxF2 & boxO) const
-{
-	BoxF1 x = X.ToInnerBox(BoxF1(boxO.Min.X, boxO.Max.X));
-	BoxF1 y = Y.ToInnerBox(BoxF1(boxO.Min.Y, boxO.Max.Y));
-	return BoxF2(
-		VectorF2(x.Min, y.Min),
-		VectorF2(x.Max, y.Max)
-	);
+	X.Update(size.X);
+	Y.Update(size.Y);
 }

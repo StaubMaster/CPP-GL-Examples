@@ -4,10 +4,10 @@
 # include "Control/_Include.hpp"
 # include "Control/Controls/ScrollBox.hpp"
 
-struct TestScroll : public UI::Control::Form
+struct TestScroll : public UI::Control_::Form
 {
-	UI::Control::ScrollBox		ScrollBox;
-	UI::Control::Label *		Labels;
+	UI::Control_::ScrollBox		ScrollBox;
+	UI::Control_::Label *		Labels;
 
 	~TestScroll();
 	TestScroll();

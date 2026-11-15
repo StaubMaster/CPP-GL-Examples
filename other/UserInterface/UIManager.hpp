@@ -34,7 +34,7 @@ class Manager
 
 
 
-	UI::Control::Window		Window;
+	UI::Control_::Window		Window;
 
 
 

@@ -5,7 +5,7 @@
 DirectoryNavigator::~DirectoryNavigator()
 { }
 DirectoryNavigator::DirectoryNavigator()
-	: UI::Control::Form()
+	: UI::Control_::Form()
 {
 	//float x, y0, y1;
 
@@ -80,7 +80,7 @@ void DirectoryNavigator::Change(const DirectoryInfo & dir)
 
 #include <iostream>
 #include <string.h>
-void DirectoryNavigator::ClickItem(const UI::Control::ListBox::Item & item)
+void DirectoryNavigator::ClickItem(const UI::Control_::ListBox::Item & item)
 {
 	FileSystemInfo & info = *((FileSystemInfo*)item.Object);
 

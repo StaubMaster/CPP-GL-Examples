@@ -5,41 +5,47 @@
 
 
 
-		UI::Manager *			UI::Control::Base::_Manager()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
-		UI::Manager *			UI::Control::Base::_Manager()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
-		UI::Control::Window *	UI::Control::Base::_Window()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> Window_; }
-const	UI::Control::Window *	UI::Control::Base::_Window()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> Window_; }
+		UI::Manager *			UI::Control_::Base::_Manager()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
+		UI::Manager *			UI::Control_::Base::_Manager()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
+		UI::Control_::Window *	UI::Control_::Base::_Window()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> Window_; }
+const	UI::Control_::Window *	UI::Control_::Base::_Window()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> Window_; }
 
-void UI::Control::Base::ChangeFormRecursive(UI::Control::Form * form)
+void UI::Control_::Base::ChangeFormRecursive(UI::Control_::Form * form)
 {
 	Form_ = form;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Children[i] -> ChangeFormRecursive(form);
+		UI::Control_::Base * control = dynamic_cast<UI::Control_::Base *>(Children[i]);
+		if (control == nullptr) { continue; }
+		control -> ChangeFormRecursive(form);
 	}
 }
 
 
 
-UI::Control::Base * UI::Control::Base::Parent() const
+/*UI::Control_::Base * UI::Control_::Base::Parent() const
 {
 	return Parent_;
-}
+}*/
 
-void UI::Control::Base::ChildClear()
+void UI::Control_::Base::ChildClear()
 {
 	Control_Container::ChildClear();
 	AutoAnchorUpdateRequest();
 }
-void UI::Control::Base::ChildRemove(Base & control)
+void UI::Control_::Base::ChildRemove(Control_Base & control)
 {
 	Control_Container::ChildRemove(control);
 	AutoAnchorUpdateRequest();
 }
-void UI::Control::Base::ChildInsert(Base & control)
+void UI::Control_::Base::ChildInsert(Control_Base & control)
 {
 	Control_Container::ChildInsert(control);
-	control.Parent_ = this;
+	UI::Control_::Base * control_ = dynamic_cast<UI::Control_::Base *>(&control);
+	if (control_ != nullptr)
+	{
+		control_ -> Parent_ = this;
+	}
 	ChangeFormRecursive(Form_);
 
 	control.DisplayUpdateRequest();
@@ -48,7 +54,7 @@ void UI::Control::Base::ChildInsert(Base & control)
 }
 
 #include "Display/DisplayPosition.hpp"
-bool UI::Control::Base::Check(const DisplayPosition & display_pos) const
+bool UI::Control_::Base::Check(const DisplayPosition & display_pos) const
 {
 	if (!IsThisVisible()) { return false; }
 	if (!IsEnabled()) { return false; }
@@ -58,14 +64,14 @@ bool UI::Control::Base::Check(const DisplayPosition & display_pos) const
 
 	return true;
 }
-UI::Control::Base * UI::Control::Base::Find(const DisplayPosition & display_pos)
+UI::Control_Base * UI::Control_::Base::Find(const DisplayPosition & display_pos)
 {
 	if (!Check(display_pos)) { return nullptr; }
 
-	Base * control = nullptr;
+	Control_Base * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Base * c = Children[i] -> Find(display_pos);
+		Control_Base * c = Children[i] -> Find(display_pos);
 		if (c == nullptr) { continue; }
 		if (control == nullptr || ((c -> Depth()) > (control -> Depth())))
 		{
@@ -81,20 +87,20 @@ UI::Control::Base * UI::Control::Base::Find(const DisplayPosition & display_pos)
 
 
 
-bool UI::Control::Base::IsVisible() const
+bool UI::Control_::Base::IsVisible() const
 {
 	if (!IsThisVisible()) { return false; }
 	if (Parent_ != nullptr) { return Parent_ -> IsVisible(); }
 	if (Form_ != nullptr) { return Form_ -> IsVisible(); }
 	return false;
 }
-void UI::Control::Base::Show()
+void UI::Control_::Base::Show()
 {
 	Control_Display::Show();
 	if (Parent_ != nullptr) { Parent_ -> AutoAnchorUpdateRequest(); }
 	if (Form_ != nullptr) { Form_ -> AutoAnchorUpdateRequest(); }
 }
-void UI::Control::Base::Hide()
+void UI::Control_::Base::Hide()
 {
 	Control_Display::Hide();
 	if (Parent_ != nullptr) { Parent_ -> AutoAnchorUpdateRequest(); }
@@ -103,11 +109,11 @@ void UI::Control::Base::Hide()
 
 
 
-/*unsigned int UI::Control::Base::Layer() const
+/*unsigned int UI::Control_::Base::Layer() const
 {
 	return Layer_;
 }*/
-/*void UI::Control::Base::LayerUpdate()
+/*void UI::Control_::Base::LayerUpdate()
 {
 	if (Parent != nullptr)
 	{
@@ -118,7 +124,7 @@ void UI::Control::Base::Hide()
 		Layer_ = 0;
 	}
 }*/
-/*void UI::Control::Base::LayerUpdateRecursive()
+/*void UI::Control_::Base::LayerUpdateRecursive()
 {
 	LayerUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -126,7 +132,7 @@ void UI::Control::Base::Hide()
 		Children[i] -> LayerUpdateRecursive();
 	}
 }*/
-unsigned int UI::Control::Base::Layer() const
+unsigned int UI::Control_::Base::Layer() const
 {
 	if (Parent_ != nullptr)
 	{
@@ -142,7 +148,7 @@ unsigned int UI::Control::Base::Layer() const
 	}
 }
 
-unsigned int UI::Control::Base::LayerLimit() const
+unsigned int UI::Control_::Base::LayerLimit() const
 {
 	if (Children.Count() != 0)
 	{
@@ -157,11 +163,22 @@ unsigned int UI::Control::Base::LayerLimit() const
 	return 0;
 }
 
-/*float UI::Control::Base::Depth() const
+float UI::Control_::Base::LayerDepth() const
+{
+	if (Form_ == nullptr) { return 0.0f; }
+	return Form_ -> LayerDepth();
+}
+float UI::Control_::Base::DepthOffset() const
+{
+	if (Form_ == nullptr) { return 0.0f; }
+	return Form_ -> DepthOffset();
+}
+
+/*float UI::Control_::Base::Depth() const
 {
 	return Depth_;
 }*/
-/*void UI::Control::Base::DepthUpdate()
+/*void UI::Control_::Base::DepthUpdate()
 {
 	if (Window == nullptr) { return; }
 	if (Form == nullptr) { return; }
@@ -172,7 +189,7 @@ unsigned int UI::Control::Base::LayerLimit() const
 
 	Depth_ = -((layer * size) + offset);
 }*/
-/*void UI::Control::Base::DepthUpdateRecursive()
+/*void UI::Control_::Base::DepthUpdateRecursive()
 {
 	DepthUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -180,24 +197,25 @@ unsigned int UI::Control::Base::LayerLimit() const
 		Children[i] -> DepthUpdateRecursive();
 	}
 }*/
-/*float UI::Control::Base::Depth() const
+/*float UI::Control_::Base::Depth() const
 {
 	// return NaN ?
 	if (Window == nullptr) { return 0.0f; }
 	if (Form == nullptr) { return 0.0f; }
 	return -((Layer() * (Window -> DepthSize)) + (Form -> DepthOffset));
 }*/
-float UI::Control::Base::Depth(float depth) const
+float UI::Control_::Base::Depth(float depth) const
 {
 	if (Form_ == nullptr) { return 0.0f; }
-	depth = depth + (Layer());
-	depth = Form_ -> Depth(depth);
+	depth = depth + Layer();
+	depth = depth * LayerDepth();
+	depth = depth + DepthOffset();
 	return depth;
 }
 
 
 
-void UI::Control::Base::AnchorUpdate()
+void UI::Control_::Base::AnchorUpdate()
 {
 	Control_Display::AnchorUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -208,11 +226,11 @@ void UI::Control::Base::AnchorUpdate()
 
 
 
-/*void UI::Control::Base::BoxUpdateRequest()
+/*void UI::Control_::Base::BoxUpdateRequest()
 {
 	BoxUpdateIsRequested = true;
 }*/
-/*void UI::Control::Base::BoxUpdate()
+/*void UI::Control_::Base::BoxUpdate()
 {
 	if (Parent == nullptr) { return; }
 
@@ -230,17 +248,17 @@ void UI::Control::Base::AnchorUpdate()
 	BoxUpdateIsRequested = false;
 }*/
 
-bool UI::Control::Base::MetaIs() const
+bool UI::Control_::Base::MetaIs() const
 {
 	return (Parent_ != nullptr || Form_ != nullptr);
 }
-BoxF2 UI::Control::Base::MetaBoxBoarder() const
+BoxF2 UI::Control_::Base::MetaBoxBoarder() const
 {
 	if (Parent_ != nullptr) { return Parent_ -> BoxBoarder(); }
 	if (Form_ != nullptr) { return Form_ -> BoxBoarder(); }
 	return BoxF2();
 }
-BoxF2 UI::Control::Base::MetaBoxContent() const
+BoxF2 UI::Control_::Base::MetaBoxContent() const
 {
 	if (Parent_ != nullptr) { return Parent_ -> BoxContent(); }
 	if (Form_ != nullptr) { return Form_ -> BoxContent(); }
@@ -249,20 +267,20 @@ BoxF2 UI::Control::Base::MetaBoxContent() const
 
 
 
-void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
+void UI::Control_::Base::AutoAnchorUpdate_Y_StackMin()
 {
-	Base * control = nullptr;
+	Control_Base * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		if (Children[i] == nullptr) { continue; }
-		Base & c = *Children[i];
+		Control_Base & c = *Children[i];
 		if (!c.IsVisible()) { continue; }
 		c.Make_Anchor_Y_Min(control);
 		control = &c;
 	}
 	AnchorUpdateRequest();
 }
-/*void UI::Control::Base::AutoAnchorUpdate_Y_StackMinFit()
+/*void UI::Control_::Base::AutoAnchorUpdate_Y_StackMinFit()
 {
 	float y = 0.0f;
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -280,11 +298,11 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 
 
 
-/*void UI::Control::Base::ColorUpdateRequest()
+/*void UI::Control_::Base::ColorUpdateRequest()
 {
 	ColorUpdateIsRequested = true;
 }*/
-/*void UI::Control::Base::ColorUpdate()
+/*void UI::Control_::Base::ColorUpdate()
 {
 	if (Manager == nullptr)
 	{
@@ -303,7 +321,7 @@ void UI::Control::Base::AutoAnchorUpdate_Y_StackMin()
 	}
 	ColorUpdateIsRequested = false;
 }*/
-ColorF4 UI::Control::Base::Color() const
+ColorF4 UI::Control_::Base::Color() const
 {
 	if (Form_ == nullptr)
 	{
@@ -324,7 +342,7 @@ ColorF4 UI::Control::Base::Color() const
 
 
 
-void UI::Control::Base::DisplayPut() const
+void UI::Control_::Base::DisplayPut() const
 {
 	if (_Manager() != nullptr && MetaIs() && IsOpaque())
 	{
@@ -336,7 +354,7 @@ void UI::Control::Base::DisplayPut() const
 		_Manager() -> ControlManager.InstancePut(data);
 	}
 }
-void UI::Control::Base::DisplayPutRecursive() const
+void UI::Control_::Base::DisplayPutRecursive() const
 {
 	if (IsThisVisible())
 	{
@@ -348,7 +366,7 @@ void UI::Control::Base::DisplayPutRecursive() const
 	}
 }
 
-void UI::Control::Base::DisplayUpdate()
+void UI::Control_::Base::DisplayUpdate()
 {
 	Control_Display::DisplayUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -360,7 +378,7 @@ void UI::Control::Base::DisplayUpdate()
 
 
 
-void UI::Control::Base::UpdateRecursive()
+void UI::Control_::Base::UpdateRecursive()
 {
 	Update();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -371,14 +389,14 @@ void UI::Control::Base::UpdateRecursive()
 
 
 
-UI::Control::Base::~Base()
+UI::Control_::Base::~Base()
 {
 	/*for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		delete Children[i];
 	}*/
 }
-UI::Control::Base::Base()
+UI::Control_::Base::Base()
 {
 	AnchorSize = VectorF2(0, 0);
 	AnchorNormal = VectorF2(0, 0);

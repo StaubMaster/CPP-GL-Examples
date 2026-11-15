@@ -5,7 +5,7 @@
 
 
 
-void UI::Control::Window::ChildClear()
+void UI::Control_::Window::ChildClear()
 {
 	Control_Container::ChildClear();
 	//AutoAnchorUpdateRequest();
@@ -14,7 +14,7 @@ void UI::Control::Window::ChildClear()
 		Children[i] -> AutoAnchorUpdateRequest();
 	}
 }
-void UI::Control::Window::ChildRemove(Form & control)
+void UI::Control_::Window::ChildRemove(Form & control)
 {
 	Control_Container::ChildRemove(control);
 	//AutoAnchorUpdateRequest();
@@ -23,7 +23,7 @@ void UI::Control::Window::ChildRemove(Form & control)
 		Children[i] -> AutoAnchorUpdateRequest();
 	}
 }
-void UI::Control::Window::ChildInsert(Form & control)
+void UI::Control_::Window::ChildInsert(Form & control)
 {
 	Control_Container::ChildInsert(control);
 	control.Window_ = this;
@@ -40,14 +40,14 @@ void UI::Control::Window::ChildInsert(Form & control)
 
 #include "Display/DisplayPosition.hpp"
 #include "HoverArgs.hpp"
-bool UI::Control::Window::Check(const DisplayPosition & display_pos) const
+bool UI::Control_::Window::Check(const DisplayPosition & display_pos) const
 {
 	const VectorF2 & pos = display_pos.Buffer.Corner;
 	if (!Box().ContainsExclusive(pos).All(true)) { return false; }
 
 	return true;
 }
-UI::Control::Form * UI::Control::Window::Find(const DisplayPosition & display_pos)
+UI::Control_::Form * UI::Control_::Window::Find(const DisplayPosition & display_pos)
 {
 	if (!Check(display_pos)) { return nullptr; }
 
@@ -68,24 +68,30 @@ UI::Control::Form * UI::Control::Window::Find(const DisplayPosition & display_po
 	return nullptr;
 }
 
-UI::Control::Form *  UI::Control::Window::Hovering() const { return Hovering_; }
-UI::Control::Form *  UI::Control::Window::Selected() const { return Selected_; }
-void UI::Control::Window::HoveringChange(UI::Control::Form * form, const DisplayPosition & display_pos)
+UI::Control_::Form *  UI::Control_::Window::Hovering() const { return Hovering_; }
+UI::Control_::Form *  UI::Control_::Window::Selected() const { return Selected_; }
+void UI::Control_::Window::HoveringChange(UI::Control_::Form * form, const DisplayPosition & display_pos)
 {
-	if (Hovering_ != form)
-	{
-		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Leave, display_pos)); }
-		// Form.Hovering Relay Enter
-		Hovering_ = form;
-		// Form.Hovering Relay Leave
-		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Enter, display_pos)); }
-	}
-	else
+	if (Hovering_ == form)
 	{
 		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Move, display_pos)); }
 	}
+	else
+	{
+		if (Hovering_ != nullptr)
+		{
+			Hovering_ -> HoveringChange(nullptr, display_pos);
+			Hovering_ -> RelayHover(HoverArgs(HoverType::Leave, display_pos));
+		}
+		Hovering_ = form;
+		if (Hovering_ != nullptr)
+		{
+			// Hovering Enter
+			Hovering_ -> RelayHover(HoverArgs(HoverType::Enter, display_pos));
+		}
+	}
 }
-void UI::Control::Window::SelectedChange()
+void UI::Control_::Window::SelectedChange()
 {
 	Selected_ = Hovering_;
 	if (Selected_ != nullptr)
@@ -93,23 +99,23 @@ void UI::Control::Window::SelectedChange()
 		Selected_ -> SelectedChange();
 	}
 }
-void UI::Control::Window::HoveringUpdate(const DisplayPosition & display_pos)
+void UI::Control_::Window::HoveringUpdate(const DisplayPosition & display_pos)
 {
-	UI::Control::Form * form = Find(display_pos);
+	UI::Control_::Form * form = Find(display_pos);
 	HoveringChange(form, display_pos);
 	if (form != nullptr)
 	{
 		form -> HoveringUpdate(display_pos);
 	}
 }
-void UI::Control::Window::SelectedUpdate()
+void UI::Control_::Window::SelectedUpdate()
 {
 	SelectedChange();
 }
 
 
 
-void UI::Control::Window::SizeChange(const DisplaySize & display_size)
+void UI::Control_::Window::SizeChange(const DisplaySize & display_size)
 {
 	Size = display_size.Buffer.Full;
 	//AnchorUpdateRequest();
@@ -118,7 +124,7 @@ void UI::Control::Window::SizeChange(const DisplaySize & display_size)
 		Children[i] -> AnchorUpdateRequest();
 	}
 }
-BoxF2 UI::Control::Window::Box() const
+BoxF2 UI::Control_::Window::Box() const
 {
 	return BoxF2(VectorF2(), Size);
 }
@@ -127,23 +133,23 @@ BoxF2 UI::Control::Window::Box() const
 
 //#include <iostream>
 #include "Control/Form.hpp"
-void UI::Control::Window::DepthCalculateRequest()
+void UI::Control_::Window::DepthCalculateRequest()
 {
 	DepthCalculateIsRequested = true;
 }
-/*void UI::Control::Window::DepthCalculateResolve()
+/*void UI::Control_::Window::DepthCalculateResolve()
 {
 	if (DepthCalculateIsRequested)
 	{
 		DepthCalculate();
 	}
 }*/
-void UI::Control::Window::DepthCalculate()
+void UI::Control_::Window::DepthCalculate()
 {
 	LayerCount = 0;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		const UI::Control::Form * form = Children[i];
+		const UI::Control_::Form * form = Children[i];
 		if (form == nullptr) { continue; }
 
 		unsigned int limit = form -> LayerLimit();
@@ -153,22 +159,22 @@ void UI::Control::Window::DepthCalculate()
 	//std::cout << "LayerCount: " << LayerCount << "(+2)\n";
 	LayerCount += 2;
 
-	LayerDepth = 1.0f / LayerCount;
+	LayerDepth_ = 1.0f / LayerCount;
 	//std::cout << "LayerDepth: " << LayerDepth << '\n';
 
 	unsigned int layer_offset_0 = 1;
 	unsigned int layer_offset_1;
 	unsigned int layer_range;
-	float depth_offset_0 = LayerDepth;
+	float depth_offset_0 = LayerDepth_;
 	float depth_offset_1;
 	float depth_range;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		UI::Control::Form * form = Children[i];
+		UI::Control_::Form * form = Children[i];
 		if (form == nullptr) { continue; }
 
 		layer_range = form -> LayerLimit() + 1;
-		depth_range = layer_range * LayerDepth;
+		depth_range = layer_range * LayerDepth_;
 		form -> DepthChange(depth_offset_0);
 
 		layer_offset_1 = layer_offset_0 + layer_range;
@@ -188,23 +194,29 @@ void UI::Control::Window::DepthCalculate()
 	in terms of the FrameBuffer: - is in front of +
 */
 
-float UI::Control::Window::Depth(float depth) const
+float UI::Control_::Window::LayerDepth() const
 {
-	return depth * LayerDepth;
+	return LayerDepth_;
+}
+float UI::Control_::Window::Depth(float depth) const
+{
+	(void)depth;
+	return 0.0f;
+	//return depth * LayerDepth;
 }
 
 
 
 
 
-void UI::Control::Window::DisplayPut()
+void UI::Control_::Window::DisplayPut()
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		Children[i] -> DisplayPutRecursive();
 	}
 }
-void UI::Control::Window::Update()
+void UI::Control_::Window::Update()
 {
 	//DepthCalculateResolve();
 	if (DepthCalculateIsRequested) { DepthCalculate(); }
@@ -217,7 +229,7 @@ void UI::Control::Window::Update()
 
 
 
-UI::Control::Window::Window()
+UI::Control_::Window::Window()
 {
 //	Anchor.X.Anchor = AnchorType::Both;
 //	Anchor.Y.Anchor = AnchorType::Both;
@@ -235,16 +247,16 @@ UI::Control::Window::Window()
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "HoverArgs.hpp"
-void UI::Control::Window::RelayMove(MoveArgs args)
+void UI::Control_::Window::RelayMove(MoveArgs args)
 {
 	(void)args;
 	//UpdateMouse(args.Position);
 }
-void UI::Control::Window::RelayHover(HoverArgs args)
+void UI::Control_::Window::RelayHover(HoverArgs args)
 {
 	(void)args;
 }
-void UI::Control::Window::RelayClick(ClickArgs args)
+void UI::Control_::Window::RelayClick(ClickArgs args)
 {
 	if (Hovering() != nullptr)
 	{
@@ -255,7 +267,7 @@ void UI::Control::Window::RelayClick(ClickArgs args)
 	}
 	SelectedUpdate();
 }
-void UI::Control::Window::RelayScroll(ScrollArgs args)
+void UI::Control_::Window::RelayScroll(ScrollArgs args)
 {
 	/*
 		try scroll on Hovering
@@ -271,7 +283,7 @@ void UI::Control::Window::RelayScroll(ScrollArgs args)
 
 	if (Hovering() != nullptr)
 	{
-		UI::Control::Base * control = Hovering() -> Hovering();
+		UI::Control_Base * control = dynamic_cast<UI::Control_Base *>(Hovering() -> Hovering());
 		while (control != nullptr)
 		{
 			control -> RelayScroll(args);
@@ -281,7 +293,7 @@ void UI::Control::Window::RelayScroll(ScrollArgs args)
 
 	if (Selected() != nullptr)
 	{
-		UI::Control::Base * control = Selected() -> Selected();
+		UI::Control_Base * control = dynamic_cast<UI::Control_Base *>(Selected() -> Selected());
 		while (control != nullptr)
 		{
 			control -> RelayScroll(args);
@@ -289,14 +301,14 @@ void UI::Control::Window::RelayScroll(ScrollArgs args)
 		}
 	}
 }
-void UI::Control::Window::RelayDrag(DragArgs args)
+void UI::Control_::Window::RelayDrag(DragArgs args)
 {
 	if (Selected() != nullptr)
 		Selected() -> RelayDrag(args);
 }
 #include <iostream>
 #include "ValueType/_Show.hpp"
-static void DisplayControlCountRecursive(const UI::Control::Base & control)
+/*static void DisplayControlCountRecursive(const UI::Control_::Base & control)
 {
 	std::cout << control.Children.Count();
 	std::cout << ' ';
@@ -309,17 +321,17 @@ static void DisplayControlCountRecursive(const UI::Control::Base & control)
 		DisplayControlCountRecursive(*control.Children[i]);
 	}
 	std::cout << "]\n";
-}
-void UI::Control::Window::RelayKey(KeyArgs args)
+}*/
+void UI::Control_::Window::RelayKey(KeyArgs args)
 {
 	if (Selected() != nullptr)
 		Selected() -> RelayKey(args);
 
-	if (args.Key == Keys::Enter && args.Action == Action::Press)
+	/*if (args.Key == Keys::Enter && args.Action == Action::Press)
 	{
 		if (Hovering() != nullptr)
 		{
-			const UI::Control::Form & form = *Hovering();
+			const UI::Control_::Form & form = *Hovering();
 			std::cout << "Form Depth: " << (form.Depth_) << '\n';
 			if (form.Hovering() != nullptr)
 			{
@@ -331,9 +343,9 @@ void UI::Control::Window::RelayKey(KeyArgs args)
 				DisplayControlCountRecursive(*form.Children[i]);
 			}
 		}
-	}
+	}*/
 }
-void UI::Control::Window::RelayText(TextArgs args)
+void UI::Control_::Window::RelayText(TextArgs args)
 {
 	if (Selected() != nullptr)
 		Selected() -> RelayText(args);

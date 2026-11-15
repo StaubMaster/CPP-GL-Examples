@@ -52,7 +52,7 @@ void UserInterfaceContext::Make()
 //	UIManager.Window.DepthUpdateRequest();
 }
 
-static void MenuToggleVisible(UI::Control::Form & form)
+static void MenuToggleVisible(UI::Control_::Form & form)
 {
 	if (form.IsVisible())
 	{
@@ -63,7 +63,7 @@ static void MenuToggleVisible(UI::Control::Form & form)
 		form.Show();
 	}
 }
-static void MenuToggleVisible(UI::Control::Form & form, ClickArgs args)
+static void MenuToggleVisible(UI::Control_::Form & form, ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{

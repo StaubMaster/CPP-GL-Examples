@@ -7,7 +7,7 @@
 
 
 
-UI::Control::Label::Label()
+UI::Control_::Label::Label()
 	: BaseText()
 {
 	Anchor.X.Anchor = AnchorType::Min;

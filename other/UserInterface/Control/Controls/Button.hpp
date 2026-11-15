@@ -7,7 +7,7 @@
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 class Button : public BaseText
 {

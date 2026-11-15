@@ -3,18 +3,18 @@
 
 # include "Control/_Include.hpp"
 
-struct TestSelector : public UI::Control::Form
+struct TestSelector : public UI::Control_::Form
 {
-	UI::Control::Label		TitleText;
-	UI::Control::Button		QuitButton;
-	UI::Control::Button		ReButton;
+	UI::Control_::Label		TitleText;
+	UI::Control_::Button	QuitButton;
+	UI::Control_::Button	ReButton;
 
-	UI::Control::Button		TileGridButton;
-	UI::Control::Button		TextButton;
-	UI::Control::Button		GraphButton;
-	UI::Control::Button		TestScrollButton;
-	UI::Control::Button		TestListButton;
-	UI::Control::Button		DirectoryNavigatorButton;
+	UI::Control_::Button	TileGridButton;
+	UI::Control_::Button	TextButton;
+	UI::Control_::Button	GraphButton;
+	UI::Control_::Button	TestScrollButton;
+	UI::Control_::Button	TestListButton;
+	UI::Control_::Button	DirectoryNavigatorButton;
 
 	TestSelector();
 

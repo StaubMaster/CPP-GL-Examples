@@ -4,16 +4,16 @@
 # include "Control/_Include.hpp"
 # include "Control/Controls/ListBox.hpp"
 
-struct TestList : public UI::Control::Form
+struct TestList : public UI::Control_::Form
 {
-	UI::Control::ListBox	List;
-	UI::Control::Button		ButtonClear;
-	UI::Control::Button		ButtonNew;
+	UI::Control_::ListBox	List;
+	UI::Control_::Button		ButtonClear;
+	UI::Control_::Button		ButtonNew;
 
 	~TestList();
 	TestList();
 
-	void	ItemFunc(const UI::Control::ListBox::Item & item);
+	void	ItemFunc(const UI::Control_::ListBox::Item & item);
 
 	void	ItemNew(ClickArgs args);
 	void	ItemClear(ClickArgs args);

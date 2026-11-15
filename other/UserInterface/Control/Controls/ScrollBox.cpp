@@ -7,7 +7,7 @@
 
 
 
-float UI::Control::ScrollContent::CalcRatio(float & control_range_size, float & content_size)
+float UI::Control_::ScrollContent::CalcRatio(float & control_range_size, float & content_size)
 {
 	// calculating ContentSize and Ratio should be done in Content
 	//std::cout << "ContentChildren: " << Children.Count() << '\n';
@@ -15,7 +15,7 @@ float UI::Control::ScrollContent::CalcRatio(float & control_range_size, float & 
 	BoxF1 control_range = BoxF1::InverseLimit();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		UI::Control::Base & control = *Children[i];
+		UI::Control_Base & control = *Children[i];
 
 		BoxF1 control_box(control.BoxDisplay().Min.Y, control.BoxDisplay().Max.Y);
 		//std::cout << "control_box: " << control_box << '\n';
@@ -36,18 +36,18 @@ float UI::Control::ScrollContent::CalcRatio(float & control_range_size, float & 
 
 
 
-UI::Control::ScrollContent::ScrollContent(ScrollBox & box)
+UI::Control_::ScrollContent::ScrollContent(ScrollBox & box)
 	: Base()
 	, Box(box)
 { }
 
-void UI::Control::ScrollContent::AnchorUpdate()
+void UI::Control_::ScrollContent::AnchorUpdate()
 {
 	Base::AnchorUpdate();
 	Box.ScrollCalc();
 }
 
-void UI::Control::ScrollContent::AutoAnchorUpdate()
+void UI::Control_::ScrollContent::AutoAnchorUpdate()
 {
 //	std::cout << "==== AutoAnchorUpdate base\n";
 	Base::AutoAnchorUpdate();
@@ -58,7 +58,7 @@ void UI::Control::ScrollContent::AutoAnchorUpdate()
 
 
 
-UI::Control::ScrollBox::ScrollBox()
+UI::Control_::ScrollBox::ScrollBox()
 	: Base()
 	, Content(*this)
 	, ScrollBar()
@@ -92,7 +92,7 @@ UI::Control::ScrollBox::ScrollBox()
 
 
 #include "Control/Window.hpp"
-void UI::Control::ScrollBox::ChildInsert(Base & control)
+void UI::Control_::ScrollBox::ChildInsert(Control_Base & control)
 {
 	Content.ChildInsert(control);
 	Content.AutoAnchorUpdateRequest();
@@ -101,7 +101,7 @@ void UI::Control::ScrollBox::ChildInsert(Base & control)
 		_Window() -> DepthCalculateRequest();
 	}
 }
-void UI::Control::ScrollBox::ChildRemove(Base & control)
+void UI::Control_::ScrollBox::ChildRemove(Control_Base & control)
 {
 	Content.ChildRemove(control);
 	Content.AutoAnchorUpdateRequest();
@@ -110,7 +110,7 @@ void UI::Control::ScrollBox::ChildRemove(Base & control)
 		_Window() -> DepthCalculateRequest();
 	}
 }
-void UI::Control::ScrollBox::ChildClear()
+void UI::Control_::ScrollBox::ChildClear()
 {
 	Content.ChildClear();
 	Content.AutoAnchorUpdate();
@@ -118,7 +118,7 @@ void UI::Control::ScrollBox::ChildClear()
 
 
 
-void UI::Control::ScrollBox::ScrollNone()
+void UI::Control_::ScrollBox::ScrollNone()
 {
 	ScrollBar.NubSize.Y = (ScrollBar.BoxDisplay().Max.Y - ScrollBar.BoxDisplay().Min.Y) / 2.0f;
 	ScrollBar.ValueRange.Min.Y = 0.0f;
@@ -126,7 +126,7 @@ void UI::Control::ScrollBox::ScrollNone()
 	ScrollBar.SetValueY(0.5f);
 	ScrollBar.Disable();
 }
-void UI::Control::ScrollBox::ScrollCalc()
+void UI::Control_::ScrollBox::ScrollCalc()
 {
 	if (Content.Children.Count() == 0)
 	{
@@ -152,7 +152,7 @@ void UI::Control::ScrollBox::ScrollCalc()
 
 	ScrollBar.NubUpdateRequest();
 }
-void UI::Control::ScrollBox::ScrollFunc(float val)
+void UI::Control_::ScrollBox::ScrollFunc(float val)
 {
 	Content.AnchorPadding.Min.Y = 5.0f - val;
 	Content.AnchorPadding.Max.Y = 5.0f + val;
@@ -165,7 +165,7 @@ void UI::Control::ScrollBox::ScrollFunc(float val)
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "HoverArgs.hpp"
-void UI::Control::ScrollBox::RelayScroll(ScrollArgs args)
+void UI::Control_::ScrollBox::RelayScroll(ScrollArgs args)
 {
 	if (ScrollBar.IsEnabled())
 	{

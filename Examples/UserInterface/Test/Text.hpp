@@ -3,10 +3,10 @@
 
 # include "Control/_Include.hpp"
 
-struct TestText : public UI::Control::Form
+struct TestText : public UI::Control_::Form
 {
-	UI::Control::Slider		Align;
-	UI::Control::TextBox	Text;
+	UI::Control_::Slider		Align;
+	UI::Control_::TextBox	Text;
 
 	TestText();
 

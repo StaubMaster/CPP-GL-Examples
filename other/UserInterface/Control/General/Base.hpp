@@ -1,46 +1,52 @@
 #ifndef  UI_CONTROL_BASE_HPP
 # define UI_CONTROL_BASE_HPP
 
-# include "Control_Display.hpp"
-# include "Control_UserRelay.hpp"
-# include "Control_Container.hpp"
+# include "Control_Base.hpp"
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 // rename from Base to Control
 // put outside of Control namespace
-class Base : public Control_Container<Base>, public Control_Display, public Control_UserRelay
+class Base : public Control_Base
 {
 	public:
-	UI::Control::Form *		Form_ = nullptr; // Forn and Window dont need this.
+	UI::Control_::Form *		Form_ = nullptr; // Forn and Window dont need this.
+	/* what is Form used for ?
+		access to Window and Manager
+			Manager is only used for putting Instances
+		mostly it is used the same as Parent
+		Hovering for checking Color
+			this would be solved with the new Hovering/Selected system
+		Depth
+			Layer already recursivly asks Parent to calculate
+			do something similar for Depth
+	*/
 
-	public:
+	protected:
 			UI::Manager *			_Manager();
 			UI::Manager *			_Manager() const;
-			UI::Control::Window *	_Window();
-	const	UI::Control::Window *	_Window() const;
+			UI::Control_::Window *	_Window();
+	const	UI::Control_::Window *	_Window() const;
 	// these suck, find a way to replace them
 
 	public:
-	void	ChangeFormRecursive(UI::Control::Form * form);
+	void	ChangeFormRecursive(UI::Control_::Form * form);
 
 
 
-	private:
-	Base *	Parent_ = nullptr;
-	public:
-	Base *	Parent() const;
+	//private:	Base *	Parent_ = nullptr;
+	//public:	Base *	Parent() const;
 
 	public:
 	virtual void	ChildClear() override;
-	virtual void	ChildRemove(Base & control) override;
-	virtual void	ChildInsert(Base & control) override;
+	virtual void	ChildRemove(Control_Base & control) override;
+	virtual void	ChildInsert(Control_Base & control) override;
 
 	public:
 	bool					Check(const DisplayPosition & display_pos) const override;
-	UI::Control::Base *		Find(const DisplayPosition & display_pos) override;
+	UI::Control_Base *		Find(const DisplayPosition & display_pos) override;
 
 
 
@@ -55,6 +61,8 @@ class Base : public Control_Container<Base>, public Control_Display, public Cont
 
 	public:		unsigned int	LayerLimit() const override;
 
+	public:		float	LayerDepth() const override;
+	public:		float	DepthOffset() const override;
 	public:		float	Depth(float depth = 0.0f) const override;
 
 

@@ -6,7 +6,7 @@
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 class ScrollBox;
 class ScrollContent : public Base
@@ -36,8 +36,8 @@ class ScrollBox : public Base
 	ScrollBox();
 
 	public:
-	void	ChildInsert(Base & control) override;
-	void	ChildRemove(Base & control) override;
+	void	ChildInsert(Control_Base & control) override;
+	void	ChildRemove(Control_Base & control) override;
 	void	ChildClear() override;
 
 	public:

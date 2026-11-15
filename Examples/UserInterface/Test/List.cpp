@@ -7,7 +7,7 @@
 TestList::~TestList()
 { }
 TestList::TestList()
-	: UI::Control::Form()
+	: UI::Control_::Form()
 	, List()
 	, ButtonClear()
 	, ButtonNew()
@@ -51,7 +51,7 @@ TestList::TestList()
 
 
 
-void TestList::ItemFunc(const UI::Control::ListBox::Item & item)
+void TestList::ItemFunc(const UI::Control_::ListBox::Item & item)
 {
 	std::cout << "Item: " << '[' << item.Index << ']' << ' ' << '"' << (const char *)item.Object << '"' << '\n';
 }

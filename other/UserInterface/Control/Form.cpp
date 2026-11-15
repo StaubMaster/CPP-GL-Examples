@@ -4,26 +4,30 @@
 
 
 
-		UI::Manager *			UI::Control::Form::_Manager()			{ if (Window_ == nullptr) { return nullptr; } return Window_ -> Manager_; }
-		UI::Manager *			UI::Control::Form::_Manager()	const	{ if (Window_ == nullptr) { return nullptr; } return Window_ -> Manager_; }
+UI::Manager *	UI::Control_::Form::_Manager()			{ if (Window_ == nullptr) { return nullptr; } return Window_ -> Manager_; }
+UI::Manager *	UI::Control_::Form::_Manager()	const	{ if (Window_ == nullptr) { return nullptr; } return Window_ -> Manager_; }
 
 
 
 #include "Control/General/Base.hpp"
-void UI::Control::Form::ChildClear()
+void UI::Control_::Form::ChildClear()
 {
 	Control_Container::ChildClear();
 	AutoAnchorUpdateRequest();
 }
-void UI::Control::Form::ChildRemove(Base & control)
+void UI::Control_::Form::ChildRemove(Control_Base & control)
 {
 	Control_Container::ChildRemove(control);
 	AutoAnchorUpdateRequest();
 }
-void UI::Control::Form::ChildInsert(Base & control)
+void UI::Control_::Form::ChildInsert(Control_Base & control)
 {
 	Control_Container::ChildInsert(control);
-	control.ChangeFormRecursive(this);
+	UI::Control_::Base * control_ = dynamic_cast<UI::Control_::Base *>(&control);
+	if (control_ != nullptr)
+	{
+		control_ -> ChangeFormRecursive(this);
+	}
 
 	control.DisplayUpdateRequest();
 	control.AnchorUpdateRequest();
@@ -32,7 +36,7 @@ void UI::Control::Form::ChildInsert(Base & control)
 
 #include "Display/DisplayPosition.hpp"
 #include "HoverArgs.hpp"
-bool UI::Control::Form::Check(const DisplayPosition & display_pos) const
+bool UI::Control_::Form::Check(const DisplayPosition & display_pos) const
 {
 	if (!IsThisVisible()) { return false; }
 	if (!IsEnabled()) { return false; }
@@ -42,7 +46,7 @@ bool UI::Control::Form::Check(const DisplayPosition & display_pos) const
 
 	return true;
 }
-UI::Control::Base * UI::Control::Form::Find(const DisplayPosition & display_pos)
+UI::Control_Base * UI::Control_::Form::Find(const DisplayPosition & display_pos)
 {
 	if (!Check(display_pos)) { return nullptr; }
 
@@ -52,10 +56,10 @@ UI::Control::Base * UI::Control::Form::Find(const DisplayPosition & display_pos)
 	if (!BoxDisplay().ContainsExclusive(pos).All(true)) { return nullptr; }
 
 	// check BoxContent before checking children ?
-	Base * control = nullptr;
+	Control_Base * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Base * c = Children[i] -> Find(display_pos);
+		Control_Base * c = Children[i] -> Find(display_pos);
 		if (c == nullptr) { continue; }
 		if (control == nullptr || ((c -> Depth()) > (control -> Depth())))
 		{
@@ -69,9 +73,9 @@ UI::Control::Base * UI::Control::Form::Find(const DisplayPosition & display_pos)
 	return nullptr;
 }
 
-UI::Control::Base * UI::Control::Form::Hovering() const { return Hovering_; }
-UI::Control::Base * UI::Control::Form::Selected() const { return Selected_; }
-void UI::Control::Form::HoveringChange(UI::Control::Base * control, const DisplayPosition & display_pos)
+UI::Control_Base * UI::Control_::Form::Hovering() const { return Hovering_; }
+UI::Control_Base * UI::Control_::Form::Selected() const { return Selected_; }
+void UI::Control_::Form::HoveringChange(UI::Control_Base * control, const DisplayPosition & display_pos)
 {
 	if (Hovering_ != control)
 	{
@@ -84,43 +88,43 @@ void UI::Control::Form::HoveringChange(UI::Control::Base * control, const Displa
 		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Move, display_pos)); }
 	}
 }
-void UI::Control::Form::SelectedChange()
+void UI::Control_::Form::SelectedChange()
 {
 	Selected_ = Hovering_;
 }
-void UI::Control::Form::HoveringUpdate(const DisplayPosition & display_pos)
+void UI::Control_::Form::HoveringUpdate(const DisplayPosition & display_pos)
 {
-	UI::Control::Base * control = Find(display_pos);
+	UI::Control_Base * control = Find(display_pos);
 	HoveringChange(control, display_pos);
 }
-void UI::Control::Form::SelectedUpdate()
+void UI::Control_::Form::SelectedUpdate()
 {
 	SelectedChange();
 }
 
 
 
-bool UI::Control::Form::IsVisible() const
+bool UI::Control_::Form::IsVisible() const
 {
 	return Control_Display::IsVisible();
 }
-void UI::Control::Form::Show()
+void UI::Control_::Form::Show()
 {
 	Control_Display::Show();
 }
-void UI::Control::Form::Hide()
+void UI::Control_::Form::Hide()
 {
 	Control_Display::Hide();
 }
 
 
 
-unsigned int UI::Control::Form::Layer() const
+unsigned int UI::Control_::Form::Layer() const
 {
 	return 0;
 }
 
-unsigned int UI::Control::Form::LayerLimit() const
+unsigned int UI::Control_::Form::LayerLimit() const
 {
 	if (Children.Count() != 0)
 	{
@@ -135,21 +139,29 @@ unsigned int UI::Control::Form::LayerLimit() const
 	return 0;
 }
 
-void UI::Control::Form::DepthChange(float depth)
+void UI::Control_::Form::DepthChange(float depth)
 {
-	Depth_ = depth;
+	DepthOffset_ = depth;
 }
-float UI::Control::Form::Depth(float depth) const
+float  UI::Control_::Form::LayerDepth() const
 {
 	if (Window_ == nullptr) { return 0.0f; }
-	depth = Window_ -> Depth(depth);
-	depth = depth + Depth_;
+	return Window_ -> LayerDepth();
+}
+float UI::Control_::Form::DepthOffset() const
+{
+	return DepthOffset_;
+}
+float UI::Control_::Form::Depth(float depth) const
+{
+	depth = depth * LayerDepth();
+	depth = depth + DepthOffset();
 	return depth;
 }
 
 
 
-void UI::Control::Form::AnchorUpdate()
+void UI::Control_::Form::AnchorUpdate()
 {
 	Control_Display::AnchorUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -160,16 +172,16 @@ void UI::Control::Form::AnchorUpdate()
 
 
 
-bool UI::Control::Form::MetaIs() const
+bool UI::Control_::Form::MetaIs() const
 {
 	return (Window_ != nullptr);
 }
-BoxF2 UI::Control::Form::MetaBoxBoarder() const
+BoxF2 UI::Control_::Form::MetaBoxBoarder() const
 {
 	if (Window_ != nullptr) { return Window_ -> Box(); }
 	return BoxF2();
 }
-BoxF2 UI::Control::Form::MetaBoxContent() const
+BoxF2 UI::Control_::Form::MetaBoxContent() const
 {
 	if (Window_ != nullptr) { return Window_ -> Box(); }
 	return BoxF2();
@@ -177,13 +189,13 @@ BoxF2 UI::Control::Form::MetaBoxContent() const
 
 
 
-void UI::Control::Form::AutoAnchorUpdate_Y_StackMin()
+void UI::Control_::Form::AutoAnchorUpdate_Y_StackMin()
 {
-	Base * control = nullptr;
+	Control_Base * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		if (Children[i] == nullptr) { continue; }
-		Base & c = *Children[i];
+		Control_Base & c = *Children[i];
 		if (!c.IsVisible()) { continue; }
 		c.Make_Anchor_Y_Min(control);
 		control = &c;
@@ -191,14 +203,14 @@ void UI::Control::Form::AutoAnchorUpdate_Y_StackMin()
 	AnchorUpdateRequest();
 }
 
-ColorF4 UI::Control::Form::Color() const
+ColorF4 UI::Control_::Form::Color() const
 {
 	return ColorF4(0.75f, 0.75f, 0.75f);
 }
 
 
 
-void UI::Control::Form::DisplayPut() const
+void UI::Control_::Form::DisplayPut() const
 {
 //	if (_Manager() != nullptr && Parent != nullptr && Display)
 //	if (_Manager() != nullptr && Window_ != nullptr && IsOpaque())
@@ -213,7 +225,7 @@ void UI::Control::Form::DisplayPut() const
 		_Manager() -> ControlManager.InstancePut(data);
 	}
 }
-void UI::Control::Form::DisplayPutRecursive() const
+void UI::Control_::Form::DisplayPutRecursive() const
 {
 	if (IsThisVisible())
 	{
@@ -225,7 +237,7 @@ void UI::Control::Form::DisplayPutRecursive() const
 	}
 }
 
-void UI::Control::Form::DisplayUpdate()
+void UI::Control_::Form::DisplayUpdate()
 {
 	Control_Display::DisplayUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -237,7 +249,7 @@ void UI::Control::Form::DisplayUpdate()
 
 
 
-void UI::Control::Form::UpdateRecursive()
+void UI::Control_::Form::UpdateRecursive()
 {
 	Update();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -248,8 +260,8 @@ void UI::Control::Form::UpdateRecursive()
 
 
 
-UI::Control::Form::Form()
-	: Control_Display()
+UI::Control_::Form::Form()
+	: Control_Base()
 	, IsMovable(true)
 	, IsResizable(true)
 	, ChangingBoxType(EBoxChangeType::None)
@@ -264,7 +276,7 @@ UI::Control::Form::Form()
 
 
 
-UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 mouse) const
+UI::Control_::Form::EBoxChangeType UI::Control_::Form::FindChangingArea(VectorF2 mouse) const
 {
 	BoxF2 BoxBoarder;
 	BoxBoarder.Min = BoxDisplay().Min + 10.0f;
@@ -305,7 +317,7 @@ UI::Control::Form::EBoxChangeType UI::Control::Form::FindChangingArea(VectorF2 m
 	return EBoxChangeType::None;
 }
 
-void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
+void UI::Control_::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 {
 	if (type == EBoxChangeType::None) { return; }
 	if (Window_ != nullptr)
@@ -348,7 +360,7 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 
 		Anchor.X.Anchor = anchor_type_x;
 		Anchor.Y.Anchor = anchor_type_y;
-		Anchor.UpdateO(Window_ -> Box(), box);
+		Anchor.ChangeBox(Window_ -> Box(), box); // this is the only place where Anchor.ChangeBox is used
 		//BoxUpdateRequestRecursive();
 		AnchorUpdateRequest();
 	}
@@ -365,7 +377,7 @@ void UI::Control::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 	put into Manager, Cursor should stay the same until changing ends
 	dont do any Events (drag/move) while changing
 */
-void UI::Control::Form::RelayHover(HoverArgs args)
+void UI::Control_::Form::RelayHover(HoverArgs args)
 {
 	/*if (args == HoverArgs::Enter)
 	{
@@ -390,7 +402,7 @@ void UI::Control::Form::RelayHover(HoverArgs args)
 		else { _Manager() -> Cursor.UseDefault(); }
 	}
 }
-void UI::Control::Form::RelayDrag(DragArgs args)
+void UI::Control_::Form::RelayDrag(DragArgs args)
 {
 	// Check that no Control is being Hovered
 	if (args.Action == Action::Press)

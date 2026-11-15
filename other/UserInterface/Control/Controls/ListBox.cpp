@@ -3,9 +3,9 @@
 
 
 
-UI::Control::ListBox::Item::Item(UI::Control::ListBox & listBox, unsigned int idx, const char * name, void * obj)
+UI::Control_::ListBox::Item::Item(UI::Control_::ListBox & listBox, unsigned int idx, const char * name, void * obj)
 	: BaseText()
-	, ListBox(listBox)
+	, ListBox_(listBox)
 	, Index(idx)
 	, Object(obj)
 {
@@ -36,29 +36,29 @@ UI::Control::ListBox::Item::Item(UI::Control::ListBox & listBox, unsigned int id
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "HoverArgs.hpp"
-void UI::Control::ListBox::Item::RelayClick(ClickArgs args)
+void UI::Control_::ListBox::Item::RelayClick(ClickArgs args)
 {
-	ListBox.ItemClickFunc(args, *this);
+	ListBox_.ItemClickFunc(args, *this);
 }
 
 
 
 
 
-UI::Control::ListBox::~ListBox()
+UI::Control_::ListBox::~ListBox()
 {
 	for (unsigned int i = 0; i < Items.Count(); i++)
 	{
 		delete Items[i];
 	}
 }
-UI::Control::ListBox::ListBox()
-	: UI::Control::ScrollBox()
+UI::Control_::ListBox::ListBox()
+	: UI::Control_::ScrollBox()
 { }
 
 
 
-void UI::Control::ListBox::ItemsClear()
+void UI::Control_::ListBox::ItemsClear()
 {
 	ChildClear();
 	for (unsigned int i = 0; i < Items.Count(); i++)
@@ -68,7 +68,7 @@ void UI::Control::ListBox::ItemsClear()
 	Items.Clear();
 	ClickedObject = nullptr;
 }
-void UI::Control::ListBox::ItemNew(const char * name, void * obj)
+void UI::Control_::ListBox::ItemNew(const char * name, void * obj)
 {
 	Item * item = new Item(*this, Items.Count(), name, obj);
 	Items.Insert(item);
@@ -77,7 +77,7 @@ void UI::Control::ListBox::ItemNew(const char * name, void * obj)
 
 
 
-void UI::Control::ListBox::ItemClickFunc(ClickArgs args, const Item & item)
+void UI::Control_::ListBox::ItemClickFunc(ClickArgs args, const Item & item)
 {
 	if (args.Action == Action::Press)
 	{

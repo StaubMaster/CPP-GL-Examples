@@ -3,9 +3,9 @@
 
 # include "Control/_Include.hpp"
 
-struct TestTileGrid : public UI::Control::Form
+struct TestTileGrid : public UI::Control_::Form
 {
-	//UI::Control::CheckBox		CheckBoxGrid[7][7];
+	//UI::Control_::CheckBox		CheckBoxGrid[7][7];
 
 	// this is a workaround
 	// Callback Functions should get a Pointer/Referance to the Control/Invoker
@@ -13,7 +13,7 @@ struct TestTileGrid : public UI::Control::Form
 	// C# has it as a seperate Parameter
 	struct	CheckBoxTile
 	{
-		UI::Control::CheckBox		CheckBox;
+		UI::Control_::CheckBox		CheckBox;
 		VectorU2					Index;
 		Function::Pointer<VectorU2>	Func;
 		void	ClickFunc(ClickArgs args);

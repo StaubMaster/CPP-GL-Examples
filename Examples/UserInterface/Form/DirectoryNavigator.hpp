@@ -13,7 +13,7 @@
 	Items need to be selectable
 */
 
-class DirectoryNavigator : public UI::Control::Form
+class DirectoryNavigator : public UI::Control_::Form
 {
 	public:
 	DirectoryInfo						Directory;
@@ -22,10 +22,10 @@ class DirectoryNavigator : public UI::Control::Form
 	Container::Array<FileSystemInfo>	Infos;
 
 	public:
-	UI::Control::TextBox	DirectoryText;
-	UI::Control::ListBox	FileList;
-	UI::Control::Button		GoParent;
-	UI::Control::Button		GoChild;
+	UI::Control_::TextBox	DirectoryText;
+	UI::Control_::ListBox	FileList;
+	UI::Control_::Button	GoParent;
+	UI::Control_::Button	GoChild;
 
 	public:
 	~DirectoryNavigator();
@@ -35,7 +35,7 @@ class DirectoryNavigator : public UI::Control::Form
 	void	Change(const DirectoryInfo & dir);
 
 	private:
-	void	ClickItem(const UI::Control::ListBox::Item & item);
+	void	ClickItem(const UI::Control_::ListBox::Item & item);
 
 	public:
 	void	ClickGoParent(ClickArgs args);

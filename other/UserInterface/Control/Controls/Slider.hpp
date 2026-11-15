@@ -12,7 +12,7 @@ struct DisplayPosition;
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 class Slider : public BaseText
 {

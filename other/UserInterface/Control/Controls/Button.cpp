@@ -6,7 +6,7 @@
 
 
 
-UI::Control::Button::Button()
+UI::Control_::Button::Button()
 	: BaseText()
 {
 	Anchor.X.Anchor = AnchorType::Min;
@@ -26,7 +26,7 @@ UI::Control::Button::Button()
 
 
 
-void UI::Control::Button::RelayClick(ClickArgs params)
+void UI::Control_::Button::RelayClick(ClickArgs params)
 {
 	if (!IsInteractible()) { return; }
 

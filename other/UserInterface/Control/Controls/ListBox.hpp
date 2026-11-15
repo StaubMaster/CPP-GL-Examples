@@ -10,13 +10,13 @@
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
-struct ListBox : public UI::Control::ScrollBox
+struct ListBox : public ScrollBox
 {
-	struct Item : public UI::Control::BaseText
+	struct Item : public BaseText // rename to ListItem, make not nested
 	{
-		UI::Control::ListBox &		ListBox;
+		ListBox &		ListBox_;
 		unsigned int	Index;
 
 		void *	Object;
@@ -26,7 +26,7 @@ struct ListBox : public UI::Control::ScrollBox
 		Item(const Item & other) = delete;
 		Item & operator=(const Item & other) = delete;
 
-		Item(UI::Control::ListBox & listBox, unsigned int idx , const char * name, void * obj);
+		Item(ListBox & listBox, unsigned int idx , const char * name, void * obj);
 
 		void	RelayClick(ClickArgs args) override;
 	};

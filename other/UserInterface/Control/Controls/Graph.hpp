@@ -9,7 +9,7 @@
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 class Graph : public Base // GraphLine
 {

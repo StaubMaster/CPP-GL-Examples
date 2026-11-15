@@ -14,7 +14,7 @@ void TestTileGrid::CheckBoxTile::ClickFunc(ClickArgs args)
 
 
 TestTileGrid::TestTileGrid()
-	: UI::Control::Form()
+	: UI::Control_::Form()
 {
 	float yf = 0;
 	float xf = 0;

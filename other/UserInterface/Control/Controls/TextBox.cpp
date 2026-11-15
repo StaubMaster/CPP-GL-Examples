@@ -7,7 +7,7 @@
 
 
 
-UI::Control::TextBox::TextBox()
+UI::Control_::TextBox::TextBox()
 {
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
@@ -28,7 +28,7 @@ UI::Control::TextBox::TextBox()
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "HoverArgs.hpp"
-void UI::Control::TextBox::RelayKey(KeyArgs args)
+void UI::Control_::TextBox::RelayKey(KeyArgs args)
 {
 	if (!IsInteractible() || ReadOnly) { return; }
 
@@ -94,7 +94,7 @@ void UI::Control::TextBox::RelayKey(KeyArgs args)
 		{ }
 	}
 }
-void UI::Control::TextBox::RelayText(TextArgs args)
+void UI::Control_::TextBox::RelayText(TextArgs args)
 {
 	if (!IsInteractible() || ReadOnly) { return; }
 

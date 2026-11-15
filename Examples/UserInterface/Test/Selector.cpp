@@ -4,7 +4,7 @@
 
 
 TestSelector::TestSelector()
-	: UI::Control::Form()
+	: UI::Control_::Form()
 	, TitleText()
 	, QuitButton()
 	, ReButton()

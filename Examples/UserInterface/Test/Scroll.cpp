@@ -8,7 +8,7 @@ TestScroll::~TestScroll()
 	delete[] Labels;
 }
 TestScroll::TestScroll()
-	: UI::Control::Form()
+	: UI::Control_::Form()
 	, ScrollBox()
 	, Labels(nullptr)
 {
@@ -20,10 +20,10 @@ TestScroll::TestScroll()
 	ChildInsert(ScrollBox);
 
 	unsigned int n = 12;
-	Labels = new UI::Control::Label[n];
+	Labels = new UI::Control_::Label[n];
 
 	//float y = 0.0f;
-	UI::Control::Base * control = nullptr;
+	UI::Control_::Base * control = nullptr;
 	for (unsigned int i = 0; i < n; i++)
 	{
 		//Labels[i].Anchor.X.AnchorMarginBoth(0, 0);

@@ -7,9 +7,7 @@ struct DisplayPosition;
 
 namespace UI
 {
-namespace Control
-{
-template <typename Type>
+template <typename Type> // changing Form to also be a Control::Base would remove the need to have this be a template
 class Control_Container
 {
 	public:
@@ -57,12 +55,35 @@ class Control_Container
 
 
 
+/* Recursive : Hovering & Selected
+
+UpdateHovering()
+{
+	control = FindHovering()
+
+	if (control == Hovering)
+	{
+		Hovering.Relay(Move)
+	}
+	else
+	{
+		Hovering.Relay(Leave) recursive
+		Hovering = control
+		Hovering.Relay(Enter)
+	}
+
+	control.UpdateHovering()
+}
+
+*/
+
+
+
 	public:
 	virtual ~Control_Container() = default;
 	Control_Container() = default;
 	Control_Container(const Control_Container & other) = delete;
 	Control_Container & operator=(const Control_Container & other) = delete;
-};
 };
 };
 

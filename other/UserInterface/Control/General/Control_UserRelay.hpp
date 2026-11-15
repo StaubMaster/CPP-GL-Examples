@@ -11,8 +11,6 @@ struct TextArgs;
 
 namespace UI
 {
-namespace Control
-{
 class Control_UserRelay
 {
 	public:
@@ -47,7 +45,6 @@ class Control_UserRelay
 	virtual void	RelayKey(KeyArgs args);
 	virtual void	RelayText(TextArgs args);
 	// make args const & ?
-};
 };
 };
 

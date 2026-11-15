@@ -9,7 +9,7 @@
 
 
 
-void UI::Control::Slider::ClampValue()
+void UI::Control_::Slider::ClampValue()
 {
 	if (Value.X < ValueRange.Min.X) { Value.X = ValueRange.Min.X; }
 	if (Value.X > ValueRange.Max.X) { Value.X = ValueRange.Max.X; }
@@ -17,11 +17,11 @@ void UI::Control::Slider::ClampValue()
 	if (Value.Y > ValueRange.Max.Y) { Value.Y = ValueRange.Max.Y; }
 }
 
-VectorF2 UI::Control::Slider::GetValue() const { return Value; }
-float UI::Control::Slider::GetValueX() const { return Value.X; }
-float UI::Control::Slider::GetValueY() const { return Value.Y; }
+VectorF2 UI::Control_::Slider::GetValue() const { return Value; }
+float UI::Control_::Slider::GetValueX() const { return Value.X; }
+float UI::Control_::Slider::GetValueY() const { return Value.Y; }
 
-void UI::Control::Slider::SetValue(VectorF2 val)
+void UI::Control_::Slider::SetValue(VectorF2 val)
 {
 	Value = val;
 	ClampValue();
@@ -30,14 +30,14 @@ void UI::Control::Slider::SetValue(VectorF2 val)
 	ValueYChangedFunc.TryInvoke(Value.Y);
 	ValueChangedFunc.TryInvoke(Value);
 }
-void UI::Control::Slider::SetValueX(float val)
+void UI::Control_::Slider::SetValueX(float val)
 {
 	Value.X = val;
 	ClampValue();
 	NubUpdateRequest();
 	ValueXChangedFunc.TryInvoke(Value.X);
 }
-void UI::Control::Slider::SetValueY(float val)
+void UI::Control_::Slider::SetValueY(float val)
 {
 	Value.Y = val;
 	ClampValue();
@@ -45,7 +45,7 @@ void UI::Control::Slider::SetValueY(float val)
 	ValueYChangedFunc.TryInvoke(Value.Y);
 }
 
-void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
+void UI::Control_::Slider::ChangeValue(DisplayPosition mouse_pos)
 {
 	if (!IsInteractible()) { return; }
 
@@ -77,11 +77,11 @@ void UI::Control::Slider::ChangeValue(DisplayPosition mouse_pos)
 
 
 
-void UI::Control::Slider::NubUpdateRequest()
+void UI::Control_::Slider::NubUpdateRequest()
 {
 	NubUpdateRequested = true;
 }
-void UI::Control::Slider::NubUpdate()
+void UI::Control_::Slider::NubUpdate()
 {
 	VectorF2 slider_size_half = NubSize / 2.0f;
 	BoxF2 slider_range(
@@ -105,7 +105,7 @@ void UI::Control::Slider::NubUpdate()
 
 
 
-UI::Control::Slider::Slider()
+UI::Control_::Slider::Slider()
 	: BaseText()
 {
 	Anchor.X.Anchor = AnchorType::Min;
@@ -128,13 +128,13 @@ UI::Control::Slider::Slider()
 
 
 
-void UI::Control::Slider::AnchorUpdate()
+void UI::Control_::Slider::AnchorUpdate()
 {
 	BaseText::AnchorUpdate();
 	NubUpdateRequest();
 }
 
-void UI::Control::Slider::Update()
+void UI::Control_::Slider::Update()
 {
 	BaseText::Update();
 
@@ -145,7 +145,7 @@ void UI::Control::Slider::Update()
 
 #include "UIManager.hpp"
 #include "Control/Form.hpp"
-void UI::Control::Slider::DisplayPut() const
+void UI::Control_::Slider::DisplayPut() const
 {
 	BaseText::DisplayPut();
 	//if (_Manager() != nullptr && (Parent != nullptr || Form_ != nullptr))
@@ -168,18 +168,18 @@ void UI::Control::Slider::DisplayPut() const
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "HoverArgs.hpp"
-void UI::Control::Slider::RelayClick(ClickArgs args)
+void UI::Control_::Slider::RelayClick(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
 		ChangeValue(args.Position);
 	}
 }
-void UI::Control::Slider::RelayDrag(DragArgs args)
+void UI::Control_::Slider::RelayDrag(DragArgs args)
 {
 	ChangeValue(args.Position);
 }
-void UI::Control::Slider::RelayKey(KeyArgs args)
+void UI::Control_::Slider::RelayKey(KeyArgs args)
 {
 	if (args.Action == Action::Press || args.Action == Action::Repeat)
 	{

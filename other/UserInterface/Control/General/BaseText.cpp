@@ -3,7 +3,7 @@
 
 
 
-UI::Control::BaseText::BaseText()
+UI::Control_::BaseText::BaseText()
 	: Base()
 {
 	float padding = 0;
@@ -18,39 +18,39 @@ UI::Control::BaseText::BaseText()
 
 
 
-const std::string & UI::Control::BaseText::GetText() const
+const std::string & UI::Control_::BaseText::GetText() const
 {
 	return TextObjectData.Text;
 }
-void UI::Control::BaseText::SetText(const std::string & text)
+void UI::Control_::BaseText::SetText(const std::string & text)
 {
 	TextObjectData.Text = text;
 }
 
 
 
-void UI::Control::BaseText::AlignmentChangeX(UI::Text::Alignment alignment)
+void UI::Control_::BaseText::AlignmentChangeX(UI::Text::Alignment alignment)
 {
 	AlignmentX = alignment;
 	AlignmentUpdateRequest();
 }
-void UI::Control::BaseText::AlignmentChangeY(UI::Text::Alignment alignment)
+void UI::Control_::BaseText::AlignmentChangeY(UI::Text::Alignment alignment)
 {
 	AlignmentY = alignment;
 	AlignmentUpdateRequest();
 }
-void UI::Control::BaseText::AlignmentUpdateRequest()
+void UI::Control_::BaseText::AlignmentUpdateRequest()
 {
 	AlignmentUpdateFlag = true;
 }
-/*void UI::Control::BaseText::AlignmentUpdateResolve()
+/*void UI::Control_::BaseText::AlignmentUpdateResolve()
 {
 	if (AlignmentUpdateFlag)
 	{
 		AlignmentUpdate();
 	}
 }*/
-void UI::Control::BaseText::AlignmentUpdate()
+void UI::Control_::BaseText::AlignmentUpdate()
 {
 	TextObjectData.TextAlignmentX = AlignmentX;
 	TextObjectData.TextAlignmentY = AlignmentY;
@@ -73,7 +73,7 @@ void UI::Control::BaseText::AlignmentUpdate()
 
 
 
-void UI::Control::BaseText::AnchorUpdate()
+void UI::Control_::BaseText::AnchorUpdate()
 {
 	Base::AnchorUpdate();
 
@@ -91,7 +91,7 @@ void UI::Control::BaseText::AnchorUpdate()
 	}
 }
 
-void UI::Control::BaseText::Update()
+void UI::Control_::BaseText::Update()
 {
 	Base::Update();
 
@@ -104,7 +104,7 @@ void UI::Control::BaseText::Update()
 
 
 #include "UIManager.hpp"
-void UI::Control::BaseText::DisplayPut() const
+void UI::Control_::BaseText::DisplayPut() const
 {
 	Base::DisplayPut();
 	if (_Manager() != nullptr && TextObjectData.Display)

@@ -3,7 +3,7 @@
 
 
 TestText::TestText()
-	: UI::Control::Form()
+	: UI::Control_::Form()
 	, Align()
 	, Text()
 {

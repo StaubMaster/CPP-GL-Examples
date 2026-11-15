@@ -3,7 +3,7 @@
 
 
 TestGraph::TestGraph()
-	: UI::Control::Form()
+	: UI::Control_::Form()
 	//, SliderGroupBox()
 	//, SliderHori()
 	//, SliderVert()
