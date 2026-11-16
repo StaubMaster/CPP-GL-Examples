@@ -4,7 +4,7 @@
 
 
 UI::Control_::BaseText::BaseText()
-	: Base()
+	: Control()
 {
 	float padding = 0;
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
@@ -75,7 +75,7 @@ void UI::Control_::BaseText::AlignmentUpdate()
 
 void UI::Control_::BaseText::AnchorUpdate()
 {
-	Base::AnchorUpdate();
+	Control::AnchorUpdate();
 
 	AlignmentUpdateRequest();
 
@@ -93,7 +93,7 @@ void UI::Control_::BaseText::AnchorUpdate()
 
 void UI::Control_::BaseText::Update()
 {
-	Base::Update();
+	Control::Update();
 
 	//AlignmentUpdateResolve();
 	if (AlignmentUpdateFlag) { AlignmentUpdate(); }
@@ -106,7 +106,7 @@ void UI::Control_::BaseText::Update()
 #include "UIManager.hpp"
 void UI::Control_::BaseText::DisplayPut() const
 {
-	Base::DisplayPut();
+	Control::DisplayPut();
 	if (_Manager() != nullptr && TextObjectData.Display)
 	{
 		_Manager() -> TextManager.InstancesPut(TextObjectData);

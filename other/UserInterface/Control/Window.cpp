@@ -14,7 +14,7 @@ void UI::Control_::Window::ChildClear()
 		Children[i] -> AutoAnchorUpdateRequest();
 	}
 }
-void UI::Control_::Window::ChildRemove(Control_Base & control)
+void UI::Control_::Window::ChildRemove(Control & control)
 {
 	Control_Container::ChildRemove(control);
 	//AutoAnchorUpdateRequest();
@@ -23,7 +23,7 @@ void UI::Control_::Window::ChildRemove(Control_Base & control)
 		Children[i] -> AutoAnchorUpdateRequest();
 	}
 }
-void UI::Control_::Window::ChildInsert(Control_Base & control)
+void UI::Control_::Window::ChildInsert(Control & control)
 {
 	Control_Container::ChildInsert(control);
 	UI::Control_::Form * form = dynamic_cast<UI::Control_::Form *>(&control);
@@ -41,7 +41,6 @@ void UI::Control_::Window::ChildInsert(Control_Base & control)
 	}
 }
 
-
 #include "Display/DisplayPosition.hpp"
 #include "HoverArgs.hpp"
 bool UI::Control_::Window::Check(const DisplayPosition & display_pos) const
@@ -51,7 +50,7 @@ bool UI::Control_::Window::Check(const DisplayPosition & display_pos) const
 
 	return true;
 }
-UI::Control_Base * UI::Control_::Window::Find(const DisplayPosition & display_pos)
+UI::Control * UI::Control_::Window::Find(const DisplayPosition & display_pos)
 /*{
 	if (!Check(display_pos)) { return nullptr; }
 
@@ -74,10 +73,10 @@ UI::Control_Base * UI::Control_::Window::Find(const DisplayPosition & display_po
 {
 	if (!Check(display_pos)) { return nullptr; }
 
-	Control_Base * control = nullptr;
+	Control * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Control_Base * c = Children[i] -> Find(display_pos);
+		Control * c = Children[i] -> Find(display_pos);
 		if (c == nullptr) { continue; }
 		if (control == nullptr || ((c -> Depth()) > (control -> Depth())))
 		{
@@ -91,9 +90,9 @@ UI::Control_Base * UI::Control_::Window::Find(const DisplayPosition & display_po
 	return nullptr;
 }
 
-UI::Control_Base *  UI::Control_::Window::Hovering() const { return Hovering_; }
-UI::Control_Base *  UI::Control_::Window::Selected() const { return Selected_; }
-void UI::Control_::Window::HoveringChange(UI::Control_Base * form, const DisplayPosition & display_pos)
+UI::Control *  UI::Control_::Window::Hovering() const { return Hovering_; }
+UI::Control *  UI::Control_::Window::Selected() const { return Selected_; }
+void UI::Control_::Window::HoveringChange(UI::Control * form, const DisplayPosition & display_pos)
 {
 	if (Hovering_ == form)
 	{
@@ -124,7 +123,7 @@ void UI::Control_::Window::SelectedChange()
 }
 void UI::Control_::Window::HoveringUpdate(const DisplayPosition & display_pos)
 {
-	UI::Control_Base * control = Find(display_pos);
+	UI::Control * control = Find(display_pos);
 	HoveringChange(control, display_pos);
 	//UI::Control_::Form * form = Find(display_pos);
 	//HoveringChange(form, display_pos);
@@ -267,7 +266,7 @@ UI::Control_::Window::Window()
 
 
 
-#include "Control/General/Base.hpp"
+#include "Control/Control.hpp"
 // args
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
@@ -309,8 +308,8 @@ void UI::Control_::Window::RelayScroll(ScrollArgs args)
 
 	if (Hovering() != nullptr)
 	{
-		//UI::Control_Base * control = dynamic_cast<UI::Control_Base *>(Hovering() -> Hovering());
-		UI::Control_Base * control = dynamic_cast<UI::Control_Base *>(Hovering());
+		//UI::Control * control = dynamic_cast<UI::Control *>(Hovering() -> Hovering());
+		UI::Control * control = dynamic_cast<UI::Control *>(Hovering());
 		while (control != nullptr)
 		{
 			control -> RelayScroll(args);
@@ -320,8 +319,8 @@ void UI::Control_::Window::RelayScroll(ScrollArgs args)
 
 	if (Selected() != nullptr)
 	{
-		//UI::Control_Base * control = dynamic_cast<UI::Control_Base *>(Selected() -> Selected());
-		UI::Control_Base * control = dynamic_cast<UI::Control_Base *>(Selected());
+		//UI::Control * control = dynamic_cast<UI::Control *>(Selected() -> Selected());
+		UI::Control * control = dynamic_cast<UI::Control *>(Selected());
 		while (control != nullptr)
 		{
 			control -> RelayScroll(args);

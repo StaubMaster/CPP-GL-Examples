@@ -20,12 +20,12 @@ FILES := \
 	Control/General/Control_Display.cpp \
 	Control/General/Control_UserRelay.cpp \
 	Control/General/Control_Container.cpp \
-	Control/General/Control_Base.cpp \
-	Control/General/Base.cpp \
 	Control/General/BaseText.cpp \
 \
+	Control/Control.cpp \
 	Control/Window.cpp \
 	Control/Form.cpp \
+\
 	Control/Controls/GroupBox.cpp \
 	Control/Controls/Button.cpp \
 	Control/Controls/TextBox.cpp \

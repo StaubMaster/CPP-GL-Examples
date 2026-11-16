@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_GRAPH_HPP
 # define UI_CONTROL_GRAPH_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/Control.hpp"
 
 # include "../Miscellaneous/Telemetry/ValueAccumulator.hpp"
 
@@ -11,7 +11,7 @@ namespace UI
 {
 namespace Control_
 {
-class Graph : public Base // GraphLine
+class Graph : public Control // GraphLine
 {
 	// multiple Lines per Graph
 	// show Center Line

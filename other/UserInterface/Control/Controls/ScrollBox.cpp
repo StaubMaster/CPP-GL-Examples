@@ -15,7 +15,7 @@ float UI::Control_::ScrollContent::CalcRatio(float & control_range_size, float &
 	BoxF1 control_range = BoxF1::InverseLimit();
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		UI::Control_Base & control = *Children[i];
+		UI::Control & control = *Children[i];
 
 		BoxF1 control_box(control.BoxDisplay().Min.Y, control.BoxDisplay().Max.Y);
 		//std::cout << "control_box: " << control_box << '\n';
@@ -37,20 +37,20 @@ float UI::Control_::ScrollContent::CalcRatio(float & control_range_size, float &
 
 
 UI::Control_::ScrollContent::ScrollContent(ScrollBox & box)
-	: Base()
+	: Control()
 	, Box(box)
 { }
 
 void UI::Control_::ScrollContent::AnchorUpdate()
 {
-	Base::AnchorUpdate();
+	Control::AnchorUpdate();
 	Box.ScrollCalc();
 }
 
 void UI::Control_::ScrollContent::AutoAnchorUpdate()
 {
 //	std::cout << "==== AutoAnchorUpdate base\n";
-	Base::AutoAnchorUpdate();
+	Control::AutoAnchorUpdate();
 //	std::cout << "==== AutoAnchorUpdate ....\n";
 	Box.ScrollCalc();
 //	std::cout << "==== AutoAnchorUpdate done\n";
@@ -59,7 +59,7 @@ void UI::Control_::ScrollContent::AutoAnchorUpdate()
 
 
 UI::Control_::ScrollBox::ScrollBox()
-	: Base()
+	: Control()
 	, Content(*this)
 	, ScrollBar()
 {
@@ -81,21 +81,21 @@ UI::Control_::ScrollBox::ScrollBox()
 	//Content.Anchor.Y.AnchorMarginBoth(0, 0); // Content Y is not determined by Anchor ?
 	Content.Make_Anchor_X_Both(nullptr, &ScrollBar);
 	Content.Make_Anchor_Y_Both(nullptr, nullptr);
-	Content.AutoAnchorYType = Base::EAutoAnchorType::StackMin;
+	Content.AutoAnchorYType = Control::EAutoAnchorType::StackMin;
 
-	Base::ChildInsert(Content);
-	Base::ChildInsert(ScrollBar);
+	Control::ChildInsert(Content);
+	Control::ChildInsert(ScrollBar);
 }
 
 
 
 #include "Control/Window.hpp"
-void UI::Control_::ScrollBox::ChildInsert(Control_Base & control)
+void UI::Control_::ScrollBox::ChildInsert(Control & control)
 {
 	Content.ChildInsert(control);
 	Content.AutoAnchorUpdateRequest();
 }
-void UI::Control_::ScrollBox::ChildRemove(Control_Base & control)
+void UI::Control_::ScrollBox::ChildRemove(Control & control)
 {
 	Content.ChildRemove(control);
 	Content.AutoAnchorUpdateRequest();

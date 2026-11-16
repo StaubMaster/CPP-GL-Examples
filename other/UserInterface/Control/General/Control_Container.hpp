@@ -7,23 +7,23 @@ struct DisplayPosition;
 
 namespace UI
 {
-class Control_Base;
+class Control;
 class Control_Container
 {
 	public:
-	Container::Binary<Control_Base*>	Children;
+	Container::Binary<Control*>		Children;
 
 	public:
 	virtual void	ChildClear();
-	virtual void	ChildRemove(Control_Base & control);
-	virtual void	ChildInsert(Control_Base & control);
+	virtual void	ChildRemove(Control & control);
+	virtual void	ChildInsert(Control & control);
 
 	public:
-	void	ChildRemove(Control_Base * control);
-	void	ChildInsert(Control_Base * control);
+	void	ChildRemove(Control * control);
+	void	ChildInsert(Control * control);
 
-	private:	virtual	bool			Check(const DisplayPosition & display_pos) const = 0;
-	public:		virtual	Control_Base *	Find(const DisplayPosition & display_pos) = 0;
+	private:	virtual	bool		Check(const DisplayPosition & display_pos) const = 0;
+	public:		virtual	Control *	Find(const DisplayPosition & display_pos) = 0;
 
 
 

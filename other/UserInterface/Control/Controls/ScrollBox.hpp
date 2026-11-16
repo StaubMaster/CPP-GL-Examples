@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_SCROLL_BOX_HPP
 # define UI_CONTROL_SCROLL_BOX_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/Control.hpp"
 # include "Control/Controls/Slider.hpp"
 
 namespace UI
@@ -9,7 +9,7 @@ namespace UI
 namespace Control_
 {
 class ScrollBox;
-class ScrollContent : public Base
+class ScrollContent : public Control
 {
 	public:
 	ScrollBox &		Box;
@@ -26,7 +26,7 @@ class ScrollContent : public Base
 	public:
 	void	AutoAnchorUpdate() override;
 };
-class ScrollBox : public Base
+class ScrollBox : public Control
 {
 	private: public:
 	ScrollContent	Content;
@@ -36,8 +36,8 @@ class ScrollBox : public Base
 	ScrollBox();
 
 	public:
-	void	ChildInsert(Control_Base & control) override;
-	void	ChildRemove(Control_Base & control) override;
+	void	ChildInsert(Control & control) override;
+	void	ChildRemove(Control & control) override;
 	void	ChildClear() override;
 
 	public:

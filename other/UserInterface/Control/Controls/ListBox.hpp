@@ -1,7 +1,6 @@
 #ifndef  UI_CONTROL_LIST_BOX_HPP
 # define UI_CONTROL_LIST_BOX_HPP
 
-# include "Control/General/Base.hpp"
 # include "Control/General/BaseText.hpp"
 # include "Control/Controls/ScrollBox.hpp"
 

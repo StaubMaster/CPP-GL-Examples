@@ -11,7 +11,7 @@ struct DisplaySize;
 namespace UI
 {
 class Manager;
-class Control_Base;
+class Control;
 namespace Control_
 {
 class Form;
@@ -24,21 +24,21 @@ class Window : public Control_Container, public Control_UserRelay
 
 	public:
 	void	ChildClear() override;
-	void	ChildRemove(Control_Base & control) override;
-	void	ChildInsert(Control_Base & control) override;
+	void	ChildRemove(Control & control) override;
+	void	ChildInsert(Control & control) override;
 
 	private:
-	bool				Check(const DisplayPosition & display_pos) const override;
-	UI::Control_Base *	Find(const DisplayPosition & display_pos) override;
+	bool			Check(const DisplayPosition & display_pos) const override;
+	UI::Control *	Find(const DisplayPosition & display_pos) override;
 
 	private:
-	UI::Control_Base *	Hovering_ = nullptr;
-	UI::Control_Base *	Selected_ = nullptr;
+	UI::Control *	Hovering_ = nullptr;
+	UI::Control *	Selected_ = nullptr;
 	public:
-	UI::Control_Base *	Hovering() const;
-	UI::Control_Base *	Selected() const;
+	UI::Control *	Hovering() const;
+	UI::Control *	Selected() const;
 	private:
-	void	HoveringChange(UI::Control_Base * control, const DisplayPosition & display_pos);
+	void	HoveringChange(UI::Control * control, const DisplayPosition & display_pos);
 	void	SelectedChange();
 	public:
 	void	HoveringUpdate(const DisplayPosition & display_pos);

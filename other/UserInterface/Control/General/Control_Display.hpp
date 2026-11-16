@@ -8,13 +8,6 @@
 
 namespace UI
 {
-class Manager;
-namespace Control_
-{
-class Window;
-class Form;
-class Base;
-};
 class Control_Display : public Control_Flags, public Control_Color, public Control_LayerDepth, public Control_Box
 {
 	public:

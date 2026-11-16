@@ -9,4 +9,6 @@ enum class AnchorType : unsigned char
 	Both	= 0b11,
 };
 
+// normal UIs also have proportional and Pivot Stuff
+
 #endif

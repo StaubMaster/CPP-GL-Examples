@@ -20,11 +20,6 @@ struct TextArgs;
 namespace UI
 {
 
-namespace Control
-{
-class Base;
-};
-
 class Manager
 {
 	public:

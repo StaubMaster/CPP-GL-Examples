@@ -6,7 +6,7 @@
 
 
 UI::Control_::CheckBox::CheckBox()
-	: Base()
+	: Control()
 {
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;

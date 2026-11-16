@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_GENERAL_BASE_TEXT_HPP
 # define UI_CONTROL_GENERAL_BASE_TEXT_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/Control.hpp"
 
 # include "Text/ObjectData.hpp"
 
@@ -9,7 +9,7 @@ namespace UI
 {
 namespace Control_
 {
-class BaseText : public Base
+class BaseText : public Control
 {
 	public:
 	virtual ~BaseText() = default;

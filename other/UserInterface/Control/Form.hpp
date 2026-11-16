@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_FORM_HPP
 # define UI_CONTROL_FORM_HPP
 
-# include "Control/General/Control_Base.hpp"
+# include "Control/Control.hpp"
 
 /* ControlBar
 	X Button in Top Right to "close" Form
@@ -25,7 +25,7 @@ namespace Control_
 {
 class Window;
 class Base;
-class Form : public Control_Base
+class Form : public Control
 {
 	public:
 	UI::Control_::Window *	Window_ = nullptr;
@@ -35,18 +35,12 @@ class Form : public Control_Base
 			UI::Manager *			_Manager() const override;
 			UI::Control_::Window *	_Window() override;
 	const	UI::Control_::Window *	_Window() const override;
+			UI::Control_::Form *	_Form() override;
+	const	UI::Control_::Form *	_Form() const override;
 
 	private: public:	float	DepthOffset_ = 0.0f;
 	public:		void	DepthChange(float depth);
-	public:		float	LayerDepth() const override;
-	public:		float	DepthOffset() const override;
-
-
-
-	protected:
-	bool	MetaIs() const override;
-	BoxF2	MetaBoxBoarder() const override;
-	BoxF2	MetaBoxContent() const override;
+	public:		float	DepthOffset() const;
 
 
 

@@ -1,26 +1,34 @@
-#include "Control_Base.hpp"
+#include "Control.hpp"
+#include "Control/Form.hpp"
 #include "Control/Window.hpp"
 
 
 
-UI::Control_Base * UI::Control_Base::Parent() const
+		UI::Manager *			UI::Control::_Manager()			{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Manager(); }
+		UI::Manager *			UI::Control::_Manager()	const	{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Manager(); }
+		UI::Control_::Window *	UI::Control::_Window()			{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Window(); }
+const	UI::Control_::Window *	UI::Control::_Window()	const	{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Window(); }
+		UI::Control_::Form *	UI::Control::_Form()			{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Form(); }
+const	UI::Control_::Form *	UI::Control::_Form()	const	{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Form(); }
+
+UI::Control * UI::Control::Parent() const
 {
 	return Parent_;
 }
 
-void UI::Control_Base::ChildClear()
+void UI::Control::ChildClear()
 {
 	Control_Container::ChildClear();
 	AutoAnchorUpdateRequest();
 	if (_Window() != nullptr) { _Window() -> DepthCalculateRequest(); }
 }
-void UI::Control_Base::ChildRemove(Control_Base & control)
+void UI::Control::ChildRemove(Control & control)
 {
 	Control_Container::ChildRemove(control);
 	AutoAnchorUpdateRequest();
 	if (_Window() != nullptr) { _Window() -> DepthCalculateRequest(); }
 }
-void UI::Control_Base::ChildInsert(Control_Base & control)
+void UI::Control::ChildInsert(Control & control)
 {
 	Control_Container::ChildInsert(control);
 	control.Parent_ = this;
@@ -32,7 +40,7 @@ void UI::Control_Base::ChildInsert(Control_Base & control)
 }
 
 #include "Display/DisplayPosition.hpp"
-bool UI::Control_Base::Check(const DisplayPosition & display_pos) const
+bool UI::Control::Check(const DisplayPosition & display_pos) const
 {
 	if (!IsThisVisible()) { return false; }
 	if (!IsEnabled()) { return false; }
@@ -42,14 +50,14 @@ bool UI::Control_Base::Check(const DisplayPosition & display_pos) const
 
 	return true;
 }
-UI::Control_Base * UI::Control_Base::Find(const DisplayPosition & display_pos)
+UI::Control * UI::Control::Find(const DisplayPosition & display_pos)
 {
 	if (!Check(display_pos)) { return nullptr; }
 
-	Control_Base * control = nullptr;
+	Control * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		Control_Base * c = Children[i] -> Find(display_pos);
+		Control * c = Children[i] -> Find(display_pos);
 		if (c == nullptr) { continue; }
 		if (control == nullptr || ((c -> Depth()) > (control -> Depth())))
 		{
@@ -63,53 +71,47 @@ UI::Control_Base * UI::Control_Base::Find(const DisplayPosition & display_pos)
 	return this;
 }
 
-bool UI::Control_Base::IsHovering() const
+bool UI::Control::IsHovering() const
 {
 	return (_Window() != nullptr) && (_Window() -> Hovering() == this);
 }
 
 
 
-bool UI::Control_Base::IsVisible() const
+bool UI::Control::IsVisible() const
 {
 	if (!IsThisVisible()) { return false; }
-	if (Parent_ != nullptr) { return Parent_ -> IsVisible(); }
+	if (Parent() != nullptr) { return Parent() -> IsVisible(); }
 	return true; // should this return true or false
 	// a form in a window has no parent, so it should return true
 	// but a control that is nowhere cannot be displayed at all, so it should return false ?
 }
-void UI::Control_Base::Show()
+void UI::Control::Show()
 {
 	Control_Display::Show();
-	if (Parent_ != nullptr) { Parent_ -> AutoAnchorUpdateRequest(); }
+	if (Parent() != nullptr) { Parent() -> AutoAnchorUpdateRequest(); }
 }
-void UI::Control_Base::Hide()
+void UI::Control::Hide()
 {
 	Control_Display::Hide();
-	if (Parent_ != nullptr) { Parent_ -> AutoAnchorUpdateRequest(); }
+	if (Parent() != nullptr) { Parent() -> AutoAnchorUpdateRequest(); }
 }
 
 
 
-ColorF4 UI::Control_Base::Color() const
+ColorF4 UI::Control::Color() const
 {
 	return ColorDefault;
 }
 
 
 
-unsigned int UI::Control_Base::Layer() const
+unsigned int UI::Control::Layer() const
 {
-	if (Parent_ != nullptr)
-	{
-		return (Parent_ -> Layer()) + 1;
-	}
-	else
-	{
-		return 0;
-	}
+	if (Parent() != nullptr) { return (Parent() -> Layer()) + 1; }
+	return 0;
 }
-unsigned int UI::Control_Base::LayerLimit() const
+unsigned int UI::Control::LayerLimit() const
 {
 	if (Children.Count() != 0)
 	{
@@ -123,17 +125,19 @@ unsigned int UI::Control_Base::LayerLimit() const
 	}
 	return 0;
 }
-float UI::Control_Base::Depth(float depth) const
+float UI::Control::Depth(float depth) const
 {
+	if (_Window() == nullptr) { return 0.0f; }
+	if (_Form() == nullptr) { return 0.0f; }
 	depth = depth + Layer();
-	depth = depth * LayerDepth();
-	depth = depth + DepthOffset();
+	depth = depth * (_Window() -> LayerDepth());
+	depth = depth + (_Form() -> DepthOffset());
 	return depth;
 }
 
 
 
-void UI::Control_Base::AnchorUpdate()
+void UI::Control::AnchorUpdate()
 {
 	Control_Display::AnchorUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -142,13 +146,30 @@ void UI::Control_Base::AnchorUpdate()
 	}
 }
 
-void UI::Control_Base::AutoAnchorUpdate_Y_StackMin()
+bool UI::Control::MetaIs() const
 {
-	Control_Base * control = nullptr;
+	return (Parent() != nullptr || _Window() != nullptr);
+}
+BoxF2 UI::Control::MetaBoxBoarder() const
+{
+	if (Parent() != nullptr) { return Parent() -> BoxBoarder(); }
+	if (_Window() != nullptr) { return _Window() -> Box(); }
+	return BoxF2();
+}
+BoxF2 UI::Control::MetaBoxContent() const
+{
+	if (Parent() != nullptr) { return Parent() -> BoxContent(); }
+	if (_Window() != nullptr) { return _Window() -> Box(); }
+	return BoxF2();
+}
+
+void UI::Control::AutoAnchorUpdate_Y_StackMin()
+{
+	Control * control = nullptr;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		if (Children[i] == nullptr) { continue; }
-		Control_Base & c = *Children[i];
+		Control & c = *Children[i];
 		if (!c.IsVisible()) { continue; }
 		c.Make_Anchor_Y_Min(control);
 		control = &c;
@@ -160,7 +181,7 @@ void UI::Control_Base::AutoAnchorUpdate_Y_StackMin()
 
 #include "UIManager.hpp"
 #include "Control/Graphics/Inst/Data.hpp"
-void UI::Control_Base::DisplayPut() const
+void UI::Control::DisplayPut() const
 {
 	if (_Manager() != nullptr && MetaIs() && IsOpaque())
 	{
@@ -172,7 +193,7 @@ void UI::Control_Base::DisplayPut() const
 		_Manager() -> ControlManager.InstancePut(data);
 	}
 }
-void UI::Control_Base::DisplayPutRecursive() const
+void UI::Control::DisplayPutRecursive() const
 {
 	if (IsThisVisible())
 	{
@@ -184,7 +205,7 @@ void UI::Control_Base::DisplayPutRecursive() const
 	}
 }
 
-void UI::Control_Base::DisplayUpdate()
+void UI::Control::DisplayUpdate()
 {
 	Control_Display::DisplayUpdate();
 	for (unsigned int i = 0; i < Children.Count(); i++)
@@ -196,7 +217,7 @@ void UI::Control_Base::DisplayUpdate()
 
 
 
-void UI::Control_Base::UpdateRecursive()
+void UI::Control::UpdateRecursive()
 {
 	Update();
 	for (unsigned int i = 0; i < Children.Count(); i++)

@@ -1,7 +1,7 @@
 #ifndef  UI_CONTROL_CHECKBOX_HPP
 # define UI_CONTROL_CHECKBOX_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/Control.hpp"
 
 # include "Generics/Function/Pointer.hpp"
 
@@ -9,7 +9,7 @@ namespace UI
 {
 namespace Control_
 {
-class CheckBox : public Base
+class CheckBox : public Control
 {
 	public:
 	Function::Pointer<ClickArgs>	ClickFunc;

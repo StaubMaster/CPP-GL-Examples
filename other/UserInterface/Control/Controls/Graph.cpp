@@ -3,7 +3,7 @@
 
 
 UI::Control_::Graph::Graph()
-	: UI::Control_::Base()
+	: Control()
 	, Center(64)
 	, Magnitude(8)
 	, Values(64)
@@ -19,7 +19,7 @@ UI::Control_::Graph::Graph()
 
 void UI::Control_::Graph::Update()
 {
-	Base::Update();
+	Control::Update();
 	if (GraphObject.Is())
 	{
 		GraphObject.Box() = BoxContent();
@@ -31,7 +31,7 @@ void UI::Control_::Graph::Update()
 }
 void UI::Control_::Graph::RelayShow()
 {
-	Base::RelayShow();
+	Control::RelayShow();
 	if (!GraphObject.Is() && _Manager() != nullptr)
 	{
 		GraphObject.Create();
@@ -39,7 +39,7 @@ void UI::Control_::Graph::RelayShow()
 }
 void UI::Control_::Graph::RelayHide()
 {
-	Base::RelayHide();
+	Control::RelayHide();
 	if (GraphObject.Is() || _Manager() == nullptr)
 	{
 		GraphObject.Delete();

@@ -1,5 +1,5 @@
-#include "Control_Container.hpp"
-#include "Control_Base.hpp"
+#include "Control/General/Control_Container.hpp"
+#include "Control/Control.hpp"
 
 
 
@@ -7,7 +7,7 @@ void UI::Control_Container::ChildClear()
 {
 	Children.Clear();
 }
-void UI::Control_Container::ChildRemove(Control_Base & control)
+void UI::Control_Container::ChildRemove(Control & control)
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -21,7 +21,7 @@ void UI::Control_Container::ChildRemove(Control_Base & control)
 	// child might have had more depth then other children
 	// allways update depth ?
 }
-void UI::Control_Container::ChildInsert(Control_Base & control)
+void UI::Control_Container::ChildInsert(Control & control)
 {
 	// if count was 0, update Depth
 	// child might have had more depth then other children
@@ -31,14 +31,14 @@ void UI::Control_Container::ChildInsert(Control_Base & control)
 
 
 
-void UI::Control_Container::ChildRemove(Control_Base * control)
+void UI::Control_Container::ChildRemove(Control * control)
 {
 	if (control != nullptr)
 	{
 		ChildRemove(*control);
 	}
 }
-void UI::Control_Container::ChildInsert(Control_Base * control)
+void UI::Control_Container::ChildInsert(Control * control)
 {
 	if (control != nullptr)
 	{

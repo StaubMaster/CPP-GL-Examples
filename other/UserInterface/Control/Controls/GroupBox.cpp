@@ -3,7 +3,8 @@
 
 
 
-UI::Control_::GroupBox::GroupBox() : Base()
+UI::Control_::GroupBox::GroupBox()
+	: Control()
 {
 	Anchor.X.Anchor = AnchorType::None;
 	Anchor.Y.Anchor = AnchorType::None;

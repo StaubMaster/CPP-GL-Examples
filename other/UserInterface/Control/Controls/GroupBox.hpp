@@ -1,13 +1,13 @@
 #ifndef  UI_CONTROL_GROUPBOX_HPP
 # define UI_CONTROL_GROUPBOX_HPP
 
-# include "Control/General/Base.hpp"
+# include "Control/Control.hpp"
 
 namespace UI
 {
 namespace Control_
 {
-class GroupBox : public Base
+class GroupBox : public Control
 {
 	public:
 	virtual ~GroupBox() = default;

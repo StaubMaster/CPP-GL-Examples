@@ -1,5 +1,5 @@
 #include "Control/Form.hpp"
-#include "UIManager.hpp"
+#include "Control/Window.hpp"
 #include "AnchorEnum.hpp"
 
 
@@ -8,18 +8,14 @@
 		UI::Manager *			UI::Control_::Form::_Manager()	const	{ if (Window_ == nullptr) { return nullptr; } return Window_ -> Manager_; }
 		UI::Control_::Window *	UI::Control_::Form::_Window()			{ return Window_; }
 const	UI::Control_::Window *	UI::Control_::Form::_Window() const		{ return Window_; }
+		UI::Control_::Form *	UI::Control_::Form::_Form()				{ return this; }
+const	UI::Control_::Form *	UI::Control_::Form::_Form() const		{ return this; }
 
 
 
 void UI::Control_::Form::DepthChange(float depth)
 {
 	DepthOffset_ = depth;
-}
-
-float UI::Control_::Form::LayerDepth() const
-{
-	if (Window_ == nullptr) { return 0.0f; }
-	return Window_ -> LayerDepth();
 }
 float UI::Control_::Form::DepthOffset() const
 {
@@ -28,25 +24,8 @@ float UI::Control_::Form::DepthOffset() const
 
 
 
-bool UI::Control_::Form::MetaIs() const
-{
-	return (Window_ != nullptr);
-}
-BoxF2 UI::Control_::Form::MetaBoxBoarder() const
-{
-	if (Window_ != nullptr) { return Window_ -> Box(); }
-	return BoxF2();
-}
-BoxF2 UI::Control_::Form::MetaBoxContent() const
-{
-	if (Window_ != nullptr) { return Window_ -> Box(); }
-	return BoxF2();
-}
-
-
-
 UI::Control_::Form::Form()
-	: Control_Base()
+	: Control()
 	, IsMovable(true)
 	, IsResizable(true)
 	, ChangingBoxType(EBoxChangeType::None)
@@ -155,7 +134,7 @@ void UI::Control_::Form::ChangeAnchorBox(BoxF2 box, EBoxChangeType type)
 
 
 
-#include "Control/Graphics/Manager.hpp"
+#include "UIManager.hpp"
 #include "User/MouseArgs.hpp"
 #include "User/KeyBoardArgs.hpp"
 #include "HoverArgs.hpp"

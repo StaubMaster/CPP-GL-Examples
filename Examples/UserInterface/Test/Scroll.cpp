@@ -23,7 +23,7 @@ TestScroll::TestScroll()
 	Labels = new UI::Control_::Label[n];
 
 	//float y = 0.0f;
-	UI::Control_::Base * control = nullptr;
+	UI::Control * control = nullptr;
 	for (unsigned int i = 0; i < n; i++)
 	{
 		//Labels[i].Anchor.X.AnchorMarginBoth(0, 0);
