@@ -7,6 +7,20 @@
 
 
 
+ColorF4 UI::Control_::TextBox::Color() const
+{
+	if (IsHovering())
+	{
+		return ColorHover;
+	}
+	else
+	{
+		return ColorDefault;
+	}
+}
+
+
+
 UI::Control_::TextBox::TextBox()
 {
 	Anchor.X.Anchor = AnchorType::Min;

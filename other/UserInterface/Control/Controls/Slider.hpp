@@ -16,6 +16,11 @@ namespace Control_
 {
 class Slider : public BaseText
 {
+	protected: public:
+	ColorF4		ColorHover;
+	protected:
+	ColorF4		Color() const override;
+
 	private:	VectorF2	Value;
 	public:		BoxF2		ValueRange;
 	public:		VectorF2	ValueResolution;

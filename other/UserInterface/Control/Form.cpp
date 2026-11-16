@@ -4,103 +4,10 @@
 
 
 
-UI::Manager *	UI::Control_::Form::_Manager()			{ if (Window_ == nullptr) { return nullptr; } return Window_ -> Manager_; }
-UI::Manager *	UI::Control_::Form::_Manager()	const	{ if (Window_ == nullptr) { return nullptr; } return Window_ -> Manager_; }
-
-
-
-#include "Control/General/Base.hpp"
-void UI::Control_::Form::ChildClear()
-{
-	Control_Container::ChildClear();
-	AutoAnchorUpdateRequest();
-}
-void UI::Control_::Form::ChildRemove(Control_Base & control)
-{
-	Control_Container::ChildRemove(control);
-	AutoAnchorUpdateRequest();
-}
-void UI::Control_::Form::ChildInsert(Control_Base & control)
-{
-	Control_Container::ChildInsert(control);
-	UI::Control_::Base * control_ = dynamic_cast<UI::Control_::Base *>(&control);
-	if (control_ != nullptr)
-	{
-		control_ -> ChangeFormRecursive(this);
-	}
-
-	control.DisplayUpdateRequest();
-	control.AnchorUpdateRequest();
-	AutoAnchorUpdateRequest();
-}
-
-#include "Display/DisplayPosition.hpp"
-#include "HoverArgs.hpp"
-bool UI::Control_::Form::Check(const DisplayPosition & display_pos) const
-{
-	if (!IsThisVisible()) { return false; }
-	if (!IsEnabled()) { return false; }
-
-	const VectorF2 & pos = display_pos.Buffer.Corner;
-	if (!BoxDisplay().ContainsExclusive(pos).All(true)) { return false; }
-
-	return true;
-}
-UI::Control_Base * UI::Control_::Form::Find(const DisplayPosition & display_pos)
-{
-	if (!Check(display_pos)) { return nullptr; }
-
-	if (!IsThisVisible()) { return nullptr; }
-	if (!IsEnabled()) { return nullptr; }
-	const VectorF2 & pos = display_pos.Buffer.Corner;
-	if (!BoxDisplay().ContainsExclusive(pos).All(true)) { return nullptr; }
-
-	// check BoxContent before checking children ?
-	Control_Base * control = nullptr;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Control_Base * c = Children[i] -> Find(display_pos);
-		if (c == nullptr) { continue; }
-		if (control == nullptr || ((c -> Depth()) > (control -> Depth())))
-		{
-			control = c;
-		}
-	}
-	if (control != nullptr)
-	{
-		return control;
-	}
-	return nullptr;
-}
-
-UI::Control_Base * UI::Control_::Form::Hovering() const { return Hovering_; }
-UI::Control_Base * UI::Control_::Form::Selected() const { return Selected_; }
-void UI::Control_::Form::HoveringChange(UI::Control_Base * control, const DisplayPosition & display_pos)
-{
-	if (Hovering_ != control)
-	{
-		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Leave, display_pos)); }
-		Hovering_ = control;
-		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Enter, display_pos)); }
-	}
-	else
-	{
-		if (Hovering_ != nullptr) { Hovering_ -> RelayHover(HoverArgs(HoverType::Move, display_pos)); }
-	}
-}
-void UI::Control_::Form::SelectedChange()
-{
-	Selected_ = Hovering_;
-}
-void UI::Control_::Form::HoveringUpdate(const DisplayPosition & display_pos)
-{
-	UI::Control_Base * control = Find(display_pos);
-	HoveringChange(control, display_pos);
-}
-void UI::Control_::Form::SelectedUpdate()
-{
-	SelectedChange();
-}
+		UI::Manager *			UI::Control_::Form::_Manager()			{ if (Window_ == nullptr) { return nullptr; } return Window_ -> Manager_; }
+		UI::Manager *			UI::Control_::Form::_Manager()	const	{ if (Window_ == nullptr) { return nullptr; } return Window_ -> Manager_; }
+		UI::Control_::Window *	UI::Control_::Form::_Window()			{ return Window_; }
+const	UI::Control_::Window *	UI::Control_::Form::_Window() const		{ return Window_; }
 
 
 

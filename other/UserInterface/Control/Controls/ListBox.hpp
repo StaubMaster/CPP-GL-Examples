@@ -16,6 +16,12 @@ struct ListBox : public ScrollBox
 {
 	struct Item : public BaseText // rename to ListItem, make not nested
 	{
+		protected: public:
+		ColorF4		ColorHover;
+		protected:
+		ColorF4		Color() const override;
+
+		public:
 		ListBox &		ListBox_;
 		unsigned int	Index;
 

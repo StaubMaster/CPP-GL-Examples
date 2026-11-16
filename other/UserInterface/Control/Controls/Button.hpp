@@ -11,6 +11,11 @@ namespace Control_
 {
 class Button : public BaseText
 {
+	protected: public:
+	ColorF4		ColorHover;
+	protected:
+	ColorF4		Color() const override;
+
 	public:
 	Function::Pointer<ClickArgs>	ClickFunc; // FuncClick
 

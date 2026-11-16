@@ -18,7 +18,6 @@ UI::Control_::Label::Label()
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
-	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 
 	AlignmentX = UI::Text::Alignment::Min;
 	AlignmentY = UI::Text::Alignment::Min;

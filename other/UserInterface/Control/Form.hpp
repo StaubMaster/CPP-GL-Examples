@@ -31,32 +31,10 @@ class Form : public Control_Base
 	UI::Control_::Window *	Window_ = nullptr;
 
 	public:
-			UI::Manager *			_Manager();
-			UI::Manager *			_Manager() const;
-
-
-
-	public:
-	void	ChildClear() override;
-	void	ChildRemove(Control_Base & control) override;
-	void	ChildInsert(Control_Base & control) override;
-
-	public:
-	bool					Check(const DisplayPosition & display_pos) const override;
-	UI::Control_Base *		Find(const DisplayPosition & display_pos) override;
-
-	private:
-	UI::Control_Base *		Hovering_ = nullptr;
-	UI::Control_Base *		Selected_ = nullptr;
-	public:
-	UI::Control_Base *		Hovering() const;
-	UI::Control_Base *		Selected() const;
-	public:
-	void	HoveringChange(UI::Control_Base * control, const DisplayPosition & display_pos);
-	void	SelectedChange();
-	public:
-	void	HoveringUpdate(const DisplayPosition & display_pos);
-	void	SelectedUpdate();
+			UI::Manager *			_Manager() override;
+			UI::Manager *			_Manager() const override;
+			UI::Control_::Window *	_Window() override;
+	const	UI::Control_::Window *	_Window() const override;
 
 
 

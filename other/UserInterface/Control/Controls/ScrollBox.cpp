@@ -64,10 +64,8 @@ UI::Control_::ScrollBox::ScrollBox()
 	, ScrollBar()
 {
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
-	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 
 	Content.ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
-	Content.ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 
 	//ScrollBar.Anchor.X.AnchorMarginMax(0, 10);
 	//ScrollBar.Anchor.Y.AnchorMarginBoth(0, 0);

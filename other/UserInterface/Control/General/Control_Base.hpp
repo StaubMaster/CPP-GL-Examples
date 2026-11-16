@@ -7,10 +7,25 @@
 
 namespace UI
 {
-class Control_Base : public Control_Container<Control_Base>, public Control_Display, public Control_UserRelay
+class Control_Base : public Control_Container, public Control_Display, public Control_UserRelay
 {
+	public:
+	virtual			UI::Manager *			_Manager() = 0;
+	virtual			UI::Manager *			_Manager() const = 0;
+	virtual			UI::Control_::Window *	_Window() = 0;
+	virtual	const	UI::Control_::Window *	_Window() const = 0;
+
 	protected:	Control_Base *	Parent_ = nullptr;
 	public:		Control_Base *	Parent() const;
+
+	public:
+	virtual void	ChildClear() override;
+	virtual void	ChildRemove(Control_Base & control) override;
+	virtual void	ChildInsert(Control_Base & control) override;
+
+	public:
+	bool					Check(const DisplayPosition & display_pos) const override;
+	UI::Control_Base *		Find(const DisplayPosition & display_pos) override;
 
 	public:	virtual	float	LayerDepth() const = 0;
 	public:	virtual	float	DepthOffset() const = 0;

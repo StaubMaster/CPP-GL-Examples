@@ -9,6 +9,20 @@
 
 
 
+ColorF4 UI::Control_::Slider::Color() const
+{
+	if (IsHovering())
+	{
+		return ColorHover;
+	}
+	else
+	{
+		return ColorDefault;
+	}
+}
+
+
+
 void UI::Control_::Slider::ClampValue()
 {
 	if (Value.X < ValueRange.Min.X) { Value.X = ValueRange.Min.X; }

@@ -3,6 +3,20 @@
 
 
 
+ColorF4 UI::Control_::ListBox::Item::Color() const
+{
+	if (IsHovering())
+	{
+		return ColorHover;
+	}
+	else
+	{
+		return ColorDefault;
+	}
+}
+
+
+
 UI::Control_::ListBox::Item::Item(UI::Control_::ListBox & listBox, unsigned int idx, const char * name, void * obj)
 	: BaseText()
 	, ListBox_(listBox)

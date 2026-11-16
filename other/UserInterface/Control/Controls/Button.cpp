@@ -6,6 +6,20 @@
 
 
 
+ColorF4 UI::Control_::Button::Color() const
+{
+	if (IsHovering())
+	{
+		return ColorHover;
+	}
+	else
+	{
+		return ColorDefault;
+	}
+}
+
+
+
 UI::Control_::Button::Button()
 	: BaseText()
 {

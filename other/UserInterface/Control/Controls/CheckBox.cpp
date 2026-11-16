@@ -74,33 +74,26 @@ void UI::Control_::CheckBox::Check(bool state)
 }*/
 ColorF4 UI::Control_::CheckBox::Color() const
 {
-	if (Form_ == nullptr)
+	if (IsHovering())
 	{
-		return ColorDefault;
-	}
-	else
-	{
-		if (Form_ -> Hovering() != this)
+		if (!Checked)
 		{
-			if (!Checked)
-			{
-				return ColorDefault;
-			}
-			else
-			{
-				return ColorChecked;
-			}
+			return ColorHover;
 		}
 		else
 		{
-			if (!Checked)
-			{
-				return ColorHover;
-			}
-			else
-			{
-				return ColorCheckedHover;
-			}
+			return ColorCheckedHover;
+		}
+	}
+	else
+	{
+		if (!Checked)
+		{
+			return ColorDefault;
+		}
+		else
+		{
+			return ColorChecked;
 		}
 	}
 }

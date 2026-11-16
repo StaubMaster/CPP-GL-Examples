@@ -11,42 +11,18 @@ namespace Control_
 // put outside of Control namespace
 class Base : public Control_Base
 {
-	public:
-	UI::Control_::Form *		Form_ = nullptr; // Forn and Window dont need this.
-	/* what is Form used for ?
-		access to Window and Manager
-			Manager is only used for putting Instances
-		mostly it is used the same as Parent
-		Hovering for checking Color
-			this would be solved with the new Hovering/Selected system
-		Depth
-			Layer already recursivly asks Parent to calculate
-			do something similar for Depth
-	*/
+	protected:
+			UI::Manager *			_Manager() override;
+			UI::Manager *			_Manager() const override;
+			UI::Control_::Window *	_Window() override;
+	const	UI::Control_::Window *	_Window() const override;
+	// these suck, find a way to replace them
 
 	protected:
-			UI::Manager *			_Manager();
-			UI::Manager *			_Manager() const;
-			UI::Control_::Window *	_Window();
-	const	UI::Control_::Window *	_Window() const;
-	// these suck, find a way to replace them
+	bool	IsHovering() const;
 
 	public:
 	void	ChangeFormRecursive(UI::Control_::Form * form);
-
-
-
-	//private:	Base *	Parent_ = nullptr;
-	//public:	Base *	Parent() const;
-
-	public:
-	virtual void	ChildClear() override;
-	virtual void	ChildRemove(Control_Base & control) override;
-	virtual void	ChildInsert(Control_Base & control) override;
-
-	public:
-	bool					Check(const DisplayPosition & display_pos) const override;
-	UI::Control_Base *		Find(const DisplayPosition & display_pos) override;
 
 
 
@@ -86,7 +62,7 @@ class Base : public Control_Base
 	protected: public:
 	ColorF4		ColorDefault;
 	//ColorF4	ColorDisabled; // Gray Text
-	ColorF4		ColorHover;
+	//ColorF4		ColorHover; // Base does not need HoverColor
 
 	protected:
 	virtual ColorF4		Color() const override;

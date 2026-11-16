@@ -11,6 +11,11 @@ namespace Control_
 {
 class TextBox : public BaseText
 {
+	protected: public:
+	ColorF4		ColorHover;
+	protected:
+	ColorF4		Color() const override;
+
 	public:
 	bool	ReadOnly = false;
 	bool	MultiLine = false;

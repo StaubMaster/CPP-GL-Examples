@@ -7,51 +7,23 @@ struct DisplayPosition;
 
 namespace UI
 {
-template <typename Type> // changing Form to also be a Control::Base would remove the need to have this be a template
+class Control_Base;
 class Control_Container
 {
 	public:
-	Container::Binary<Type*>	Children;
+	Container::Binary<Control_Base*>	Children;
 
 	public:
-	virtual void	ChildClear()
-	{
-		Children.Clear();
-	}
-	virtual void	ChildRemove(Type & control)
-	{
-		for (unsigned int i = 0; i < Children.Count(); i++)
-		{
-			if (Children[i] == &control)
-			{
-				Children.RemoveAt(i);
-				i--;
-			}
-		}
-	}
-	virtual void	ChildInsert(Type & control)
-	{
-		Children.Insert(&control);
-	}
+	virtual void	ChildClear();
+	virtual void	ChildRemove(Control_Base & control);
+	virtual void	ChildInsert(Control_Base & control);
 
 	public:
-	void	ChildRemove(Type * control)
-	{
-		if (control != nullptr)
-		{
-			ChildRemove(*control);
-		}
-	}
-	void	ChildInsert(Type * control)
-	{
-		if (control != nullptr)
-		{
-			ChildInsert(*control);
-		}
-	}
+	void	ChildRemove(Control_Base * control);
+	void	ChildInsert(Control_Base * control);
 
-	private:	virtual	bool		Check(const DisplayPosition & display_pos) const = 0;
-	public:		virtual	Type *		Find(const DisplayPosition & display_pos) = 0;
+	private:	virtual	bool			Check(const DisplayPosition & display_pos) const = 0;
+	public:		virtual	Control_Base *	Find(const DisplayPosition & display_pos) = 0;
 
 
 

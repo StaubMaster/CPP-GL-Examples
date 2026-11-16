@@ -10,7 +10,7 @@ UI::Control_::Graph::Graph()
 	, GraphObject()
 {
 	ColorDefault = ColorF4(0.625f, 0.625f, 0.625f);
-	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
+	//ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
 }
 
 

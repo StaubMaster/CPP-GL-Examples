@@ -9,5 +9,4 @@ UI::Control_::GroupBox::GroupBox() : Base()
 	Anchor.Y.Anchor = AnchorType::None;
 	AnchorSize = VectorF2(120, 120);
 	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
-	ColorHover = ColorF4(0.75f, 0.75f, 0.75f);
 }

@@ -5,14 +5,19 @@
 
 
 
-		UI::Manager *			UI::Control_::Base::_Manager()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
-		UI::Manager *			UI::Control_::Base::_Manager()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> _Manager(); }
-		UI::Control_::Window *	UI::Control_::Base::_Window()			{ if (Form_ == nullptr) { return nullptr; } return Form_ -> Window_; }
-const	UI::Control_::Window *	UI::Control_::Base::_Window()	const	{ if (Form_ == nullptr) { return nullptr; } return Form_ -> Window_; }
+		UI::Manager *			UI::Control_::Base::_Manager()			{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Manager(); }
+		UI::Manager *			UI::Control_::Base::_Manager()	const	{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Manager(); }
+		UI::Control_::Window *	UI::Control_::Base::_Window()			{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Window(); }
+const	UI::Control_::Window *	UI::Control_::Base::_Window()	const	{ if (Parent_ == nullptr) { return nullptr; } return Parent_ -> _Window(); }
+
+bool UI::Control_::Base::IsHovering() const
+{
+	return (_Window() != nullptr) && (_Window() -> Hovering() == this);
+}
 
 void UI::Control_::Base::ChangeFormRecursive(UI::Control_::Form * form)
 {
-	Form_ = form;
+	//Form_ = form;
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		UI::Control_::Base * control = dynamic_cast<UI::Control_::Base *>(Children[i]);
@@ -23,88 +28,24 @@ void UI::Control_::Base::ChangeFormRecursive(UI::Control_::Form * form)
 
 
 
-/*UI::Control_::Base * UI::Control_::Base::Parent() const
-{
-	return Parent_;
-}*/
-
-void UI::Control_::Base::ChildClear()
-{
-	Control_Container::ChildClear();
-	AutoAnchorUpdateRequest();
-}
-void UI::Control_::Base::ChildRemove(Control_Base & control)
-{
-	Control_Container::ChildRemove(control);
-	AutoAnchorUpdateRequest();
-}
-void UI::Control_::Base::ChildInsert(Control_Base & control)
-{
-	Control_Container::ChildInsert(control);
-	UI::Control_::Base * control_ = dynamic_cast<UI::Control_::Base *>(&control);
-	if (control_ != nullptr)
-	{
-		control_ -> Parent_ = this;
-	}
-	ChangeFormRecursive(Form_);
-
-	control.DisplayUpdateRequest();
-	control.AnchorUpdateRequest();
-	AutoAnchorUpdateRequest();
-}
-
-#include "Display/DisplayPosition.hpp"
-bool UI::Control_::Base::Check(const DisplayPosition & display_pos) const
-{
-	if (!IsThisVisible()) { return false; }
-	if (!IsEnabled()) { return false; }
-
-	const VectorF2 & pos = display_pos.Buffer.Corner;
-	if (!BoxDisplay().ContainsExclusive(pos).All(true)) { return false; }
-
-	return true;
-}
-UI::Control_Base * UI::Control_::Base::Find(const DisplayPosition & display_pos)
-{
-	if (!Check(display_pos)) { return nullptr; }
-
-	Control_Base * control = nullptr;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Control_Base * c = Children[i] -> Find(display_pos);
-		if (c == nullptr) { continue; }
-		if (control == nullptr || ((c -> Depth()) > (control -> Depth())))
-		{
-			control = c;
-		}
-	}
-	if (control != nullptr)
-	{
-		return control;
-	}
-	return this;
-}
-
-
-
 bool UI::Control_::Base::IsVisible() const
 {
 	if (!IsThisVisible()) { return false; }
 	if (Parent_ != nullptr) { return Parent_ -> IsVisible(); }
-	if (Form_ != nullptr) { return Form_ -> IsVisible(); }
+	//if (Form_ != nullptr) { return Form_ -> IsVisible(); }
 	return false;
 }
 void UI::Control_::Base::Show()
 {
 	Control_Display::Show();
 	if (Parent_ != nullptr) { Parent_ -> AutoAnchorUpdateRequest(); }
-	if (Form_ != nullptr) { Form_ -> AutoAnchorUpdateRequest(); }
+	//if (Form_ != nullptr) { Form_ -> AutoAnchorUpdateRequest(); }
 }
 void UI::Control_::Base::Hide()
 {
 	Control_Display::Hide();
 	if (Parent_ != nullptr) { Parent_ -> AutoAnchorUpdateRequest(); }
-	if (Form_ != nullptr) { Form_ -> AutoAnchorUpdateRequest(); }
+	//if (Form_ != nullptr) { Form_ -> AutoAnchorUpdateRequest(); }
 }
 
 
@@ -138,10 +79,10 @@ unsigned int UI::Control_::Base::Layer() const
 	{
 		return (Parent_ -> Layer()) + 1;
 	}
-	else if (Form_ != nullptr)
+	/*else if (Form_ != nullptr)
 	{
 		return (Form_ -> Layer()) + 1;
-	}
+	}*/
 	else
 	{
 		return 0;
@@ -165,13 +106,17 @@ unsigned int UI::Control_::Base::LayerLimit() const
 
 float UI::Control_::Base::LayerDepth() const
 {
-	if (Form_ == nullptr) { return 0.0f; }
-	return Form_ -> LayerDepth();
+	//if (Form_ == nullptr) { return 0.0f; }
+	//return Form_ -> LayerDepth();
+	if (Parent_ == nullptr) { return 0.0f; }
+	return Parent_ -> LayerDepth();
 }
 float UI::Control_::Base::DepthOffset() const
 {
-	if (Form_ == nullptr) { return 0.0f; }
-	return Form_ -> DepthOffset();
+	//if (Form_ == nullptr) { return 0.0f; }
+	//return Form_ -> DepthOffset();
+	if (Parent_ == nullptr) { return 0.0f; }
+	return Parent_ -> DepthOffset();
 }
 
 /*float UI::Control_::Base::Depth() const
@@ -206,7 +151,8 @@ float UI::Control_::Base::DepthOffset() const
 }*/
 float UI::Control_::Base::Depth(float depth) const
 {
-	if (Form_ == nullptr) { return 0.0f; }
+	//if (Form_ == nullptr) { return 0.0f; }
+	if (Parent_ == nullptr) { return 0.0f; }
 	depth = depth + Layer();
 	depth = depth * LayerDepth();
 	depth = depth + DepthOffset();
@@ -250,18 +196,19 @@ void UI::Control_::Base::AnchorUpdate()
 
 bool UI::Control_::Base::MetaIs() const
 {
-	return (Parent_ != nullptr || Form_ != nullptr);
+	//return (Parent_ != nullptr || Form_ != nullptr);
+	return (Parent_ != nullptr);
 }
 BoxF2 UI::Control_::Base::MetaBoxBoarder() const
 {
 	if (Parent_ != nullptr) { return Parent_ -> BoxBoarder(); }
-	if (Form_ != nullptr) { return Form_ -> BoxBoarder(); }
+	//if (Form_ != nullptr) { return Form_ -> BoxBoarder(); }
 	return BoxF2();
 }
 BoxF2 UI::Control_::Base::MetaBoxContent() const
 {
 	if (Parent_ != nullptr) { return Parent_ -> BoxContent(); }
-	if (Form_ != nullptr) { return Form_ -> BoxContent(); }
+	//if (Form_ != nullptr) { return Form_ -> BoxContent(); }
 	return BoxF2();
 }
 
@@ -323,13 +270,14 @@ void UI::Control_::Base::AutoAnchorUpdate_Y_StackMin()
 }*/
 ColorF4 UI::Control_::Base::Color() const
 {
-	if (Form_ == nullptr)
+	return ColorDefault;
+	/*if (_Window() == nullptr)
 	{
 		return ColorDefault;
 	}
 	else
 	{
-		if (Form_ -> Hovering() != this)
+		if (_Window() -> Hovering() != this)
 		{
 			return ColorDefault;
 		}
@@ -337,7 +285,7 @@ ColorF4 UI::Control_::Base::Color() const
 		{
 			return ColorHover;
 		}
-	}
+	}*/
 }
 
 
