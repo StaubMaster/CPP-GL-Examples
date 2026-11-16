@@ -17,9 +17,15 @@ void UI::Control_Container::ChildRemove(Control_Base & control)
 			i--;
 		}
 	}
+	// if count becomes 0, update depth
+	// child might have had more depth then other children
+	// allways update depth ?
 }
 void UI::Control_Container::ChildInsert(Control_Base & control)
 {
+	// if count was 0, update Depth
+	// child might have had more depth then other children
+	// allways update depth ?
 	Children.Insert(&control);
 }
 

@@ -43,6 +43,5 @@ UI::Control_::Button::Button()
 void UI::Control_::Button::RelayClick(ClickArgs params)
 {
 	if (!IsInteractible()) { return; }
-
 	ClickFunc.TryInvoke(params);
 }

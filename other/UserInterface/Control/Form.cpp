@@ -11,46 +11,12 @@ const	UI::Control_::Window *	UI::Control_::Form::_Window() const		{ return Windo
 
 
 
-bool UI::Control_::Form::IsVisible() const
-{
-	return Control_Display::IsVisible();
-}
-void UI::Control_::Form::Show()
-{
-	Control_Display::Show();
-}
-void UI::Control_::Form::Hide()
-{
-	Control_Display::Hide();
-}
-
-
-
-unsigned int UI::Control_::Form::Layer() const
-{
-	return 0;
-}
-
-unsigned int UI::Control_::Form::LayerLimit() const
-{
-	if (Children.Count() != 0)
-	{
-		unsigned int limit = 0;
-		for (unsigned int i = 0; i < Children.Count(); i++)
-		{
-			unsigned int l = Children[i] -> LayerLimit();
-			if (l > limit) { limit = l; }
-		}
-		return limit + 1;
-	}
-	return 0;
-}
-
 void UI::Control_::Form::DepthChange(float depth)
 {
 	DepthOffset_ = depth;
 }
-float  UI::Control_::Form::LayerDepth() const
+
+float UI::Control_::Form::LayerDepth() const
 {
 	if (Window_ == nullptr) { return 0.0f; }
 	return Window_ -> LayerDepth();
@@ -58,23 +24,6 @@ float  UI::Control_::Form::LayerDepth() const
 float UI::Control_::Form::DepthOffset() const
 {
 	return DepthOffset_;
-}
-float UI::Control_::Form::Depth(float depth) const
-{
-	depth = depth * LayerDepth();
-	depth = depth + DepthOffset();
-	return depth;
-}
-
-
-
-void UI::Control_::Form::AnchorUpdate()
-{
-	Control_Display::AnchorUpdate();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> AnchorUpdateRequest();
-	}
 }
 
 
@@ -96,77 +45,6 @@ BoxF2 UI::Control_::Form::MetaBoxContent() const
 
 
 
-void UI::Control_::Form::AutoAnchorUpdate_Y_StackMin()
-{
-	Control_Base * control = nullptr;
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		if (Children[i] == nullptr) { continue; }
-		Control_Base & c = *Children[i];
-		if (!c.IsVisible()) { continue; }
-		c.Make_Anchor_Y_Min(control);
-		control = &c;
-	}
-	AnchorUpdateRequest();
-}
-
-ColorF4 UI::Control_::Form::Color() const
-{
-	return ColorF4(0.75f, 0.75f, 0.75f);
-}
-
-
-
-void UI::Control_::Form::DisplayPut() const
-{
-//	if (_Manager() != nullptr && Parent != nullptr && Display)
-//	if (_Manager() != nullptr && Window_ != nullptr && IsOpaque())
-	if (_Manager() != nullptr && MetaIs() && IsOpaque())
-	{
-		UI::ControlGraphics::Inst::Data data;
-		data.Layer = -Depth();
-		data.Box = BoxDisplay();
-		data.Color = Color();
-		//data.Bound = Window_ -> Box();
-		data.Bound = MetaBoxBoarder();
-		_Manager() -> ControlManager.InstancePut(data);
-	}
-}
-void UI::Control_::Form::DisplayPutRecursive() const
-{
-	if (IsThisVisible())
-	{
-		DisplayPut();
-		for (unsigned int i = 0; i < Children.Count(); i++)
-		{
-			Children[i] -> DisplayPutRecursive();
-		}
-	}
-}
-
-void UI::Control_::Form::DisplayUpdate()
-{
-	Control_Display::DisplayUpdate();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> DisplayUpdateRequest();
-		// AutoAnchorUpdateRequest() ?
-	}
-}
-
-
-
-void UI::Control_::Form::UpdateRecursive()
-{
-	Update();
-	for (unsigned int i = 0; i < Children.Count(); i++)
-	{
-		Children[i] -> UpdateRecursive();
-	}
-}
-
-
-
 UI::Control_::Form::Form()
 	: Control_Base()
 	, IsMovable(true)
@@ -179,6 +57,8 @@ UI::Control_::Form::Form()
 //	AnchorSize = VectorF2(480, 360);
 	AnchorSize = VectorF2(360, 240);
 	AnchorNormal = VectorF2(0.5, 0.5);
+
+	ColorDefault = ColorF4(0.75f, 0.75f, 0.75f);
 }
 
 

@@ -52,7 +52,7 @@ UpdateHovering()
 
 
 	public:
-	virtual ~Control_Container() = default;
+	virtual ~Control_Container() = default; // delete dynamic children ? or just use smart pointer ?
 	Control_Container() = default;
 	Control_Container(const Control_Container & other) = delete;
 	Control_Container & operator=(const Control_Container & other) = delete;

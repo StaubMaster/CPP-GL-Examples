@@ -27,8 +27,35 @@ class Control_Base : public Control_Container, public Control_Display, public Co
 	bool					Check(const DisplayPosition & display_pos) const override;
 	UI::Control_Base *		Find(const DisplayPosition & display_pos) override;
 
+	protected:
+	bool	IsHovering() const;
+
+	public:
+	bool	IsVisible() const override;
+	void	Show() override;
+	void	Hide() override;
+
+	protected: public:
+						ColorF4		ColorDefault;
+	protected:	virtual	ColorF4		Color() const override;
+
+	public:	unsigned int	Layer() const override;
+	public:	unsigned int	LayerLimit() const override;
+	public:	float			Depth(float depth = 0.0f) const override;
+
 	public:	virtual	float	LayerDepth() const = 0;
 	public:	virtual	float	DepthOffset() const = 0;
+
+	protected:	virtual	void	AnchorUpdate() override;
+
+	private:			void	AutoAnchorUpdate_Y_StackMin() override;
+
+	protected:	virtual	void	DisplayPut() const override;
+	public:				void	DisplayPutRecursive() const override;
+
+	protected:	virtual	void	DisplayUpdate() override;
+
+	public:				void	UpdateRecursive() override;
 
 	public:
 	virtual ~Control_Base() = default;

@@ -15,7 +15,7 @@ class Window;
 class Form;
 class Base;
 };
-class Control_Display : public Control_Flags, public Control_LayerDepth, public Control_Box, public Control_Color
+class Control_Display : public Control_Flags, public Control_Color, public Control_LayerDepth, public Control_Box
 {
 	public:
 	void	MakeTransparent() override;

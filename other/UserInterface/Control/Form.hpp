@@ -36,51 +36,17 @@ class Form : public Control_Base
 			UI::Control_::Window *	_Window() override;
 	const	UI::Control_::Window *	_Window() const override;
 
-
-
-	public:
-	bool	IsVisible() const override;
-	void	Show() override;
-	void	Hide() override;
-
-
-
-	public:		unsigned int	Layer() const override;
-
-	public:		unsigned int	LayerLimit() const override;
-
 	private: public:	float	DepthOffset_ = 0.0f;
 	public:		void	DepthChange(float depth);
 	public:		float	LayerDepth() const override;
 	public:		float	DepthOffset() const override;
-	public:		float	Depth(float depth = 0.0f) const override;
 
 
-
-	protected:	virtual	void	AnchorUpdate() override;
 
 	protected:
 	bool	MetaIs() const override;
 	BoxF2	MetaBoxBoarder() const override;
 	BoxF2	MetaBoxContent() const override;
-
-	private:		void	AutoAnchorUpdate_Y_StackMin() override;
-
-	public:
-	virtual ColorF4		Color() const override;
-
-
-
-	protected:	virtual	void	DisplayPut() const override;
-	public:				void	DisplayPutRecursive() const override;
-
-
-
-	protected:	virtual	void	DisplayUpdate() override;
-
-
-
-	public:				void	UpdateRecursive() override;
 
 
 

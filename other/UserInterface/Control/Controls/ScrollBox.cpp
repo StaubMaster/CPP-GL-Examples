@@ -94,19 +94,11 @@ void UI::Control_::ScrollBox::ChildInsert(Control_Base & control)
 {
 	Content.ChildInsert(control);
 	Content.AutoAnchorUpdateRequest();
-	if (_Window() != nullptr)
-	{
-		_Window() -> DepthCalculateRequest();
-	}
 }
 void UI::Control_::ScrollBox::ChildRemove(Control_Base & control)
 {
 	Content.ChildRemove(control);
 	Content.AutoAnchorUpdateRequest();
-	if (_Window() != nullptr)
-	{
-		_Window() -> DepthCalculateRequest();
-	}
 }
 void UI::Control_::ScrollBox::ChildClear()
 {

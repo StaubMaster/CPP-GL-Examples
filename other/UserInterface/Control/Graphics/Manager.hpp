@@ -40,8 +40,8 @@ class Manager
 
 
 	public:
-	::Shader::Base			Shader;
-	ShaderLayout			ShaderLayout;
+	::Shader::Base					Shader;
+	ControlGraphics::ShaderLayout	ShaderLayout;
 
 	public:
 	VertexArray::MainInst	Buffer;

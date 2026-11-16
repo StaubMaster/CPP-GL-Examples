@@ -288,7 +288,7 @@ void UI::Control_::Window::RelayClick(ClickArgs args)
 		/*if (Hovering() -> Hovering() != nullptr)
 		{
 			Hovering() -> Hovering() -> RelayClick(args);
-			}*/
+		}*/
 		Hovering() -> RelayClick(args);
 	}
 	SelectedUpdate();
