@@ -8,7 +8,7 @@ struct VectorF3;
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 struct VectorF3 : public PropertyControl
 {

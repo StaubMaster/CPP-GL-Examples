@@ -8,7 +8,7 @@ struct ColorF4;
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 struct ColorF4 : public PropertyControl
 {

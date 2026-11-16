@@ -110,8 +110,16 @@ class Control_Box
 		maybe make another to automatically make all Children use the "Both" Anchor
 		making the Parent fit the Children is not really needed
 	*/
-
-
+	/* replace Fit
+		make FitX() and FitY() functions
+		changes Size to fit the highest / lowest Children
+		checking for lowest child only makes sense if they are stacked from highest
+		Make_Anchor_X_Fit_Min()
+		{
+			finds Max Child
+			chanes Size to fit that
+		}
+	*/
 
 	public:
 	virtual ~Control_Box() = default;

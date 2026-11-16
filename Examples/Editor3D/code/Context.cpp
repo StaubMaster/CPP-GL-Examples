@@ -46,7 +46,8 @@ void Light3DContext::PolyHedra_ChangeMedia()
 
 bool Light3DContext::IsHoveringControl() const
 {
-	return (UIManager.Hovering != nullptr && UIManager.Hovering != &UIManager.Window);
+	//return (UIManager.Hovering() != nullptr && UIManager.Hovering() != &UIManager.Window);
+	return (UIManager.Window.Hovering() != nullptr);
 }
 
 
@@ -443,6 +444,7 @@ void Light3DContext::User(FrameTime frame_time)
 	}
 
 	UIManager.UpdateMouse(window.MouseManager.CursorPosition());
+	UIManager.Update();
 
 	if (window[Keys::Enter] == State::Press)
 	{

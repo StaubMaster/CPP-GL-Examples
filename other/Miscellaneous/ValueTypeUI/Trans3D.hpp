@@ -9,7 +9,7 @@ struct Trans3D;
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 struct Trans3D : public PropertyControl
 {

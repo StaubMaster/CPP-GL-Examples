@@ -15,16 +15,12 @@
 	override BoxUpdate
 */
 
-/* make Form a Control (again)
-*/
-
 namespace UI
 {
 class Manager;
 namespace Control_
 {
 class Window;
-class Base;
 class Form : public Control
 {
 	public:

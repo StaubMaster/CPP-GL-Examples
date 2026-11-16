@@ -2,18 +2,21 @@
 
 
 
-UI::Control::LightSpot::~LightSpot()
+UI::Control_::LightSpot::~LightSpot()
 { }
-UI::Control::LightSpot::LightSpot(const char * name)
+UI::Control_::LightSpot::LightSpot(const char * name)
 	: PropertyControl(name)
 	, Base("Base")
 	, Pos("Pos")
 	, Dir("Dir")
 	, Object(nullptr)
 {
-	Base.Anchor.X.AnchorBoth(0, 0);
-	Pos.Anchor.X.AnchorBoth(0, 0);
-	Dir.Anchor.X.AnchorBoth(0, 0);
+	//Base.Anchor.X.AnchorBoth(0, 0);
+	//Pos.Anchor.X.AnchorBoth(0, 0);
+	//Dir.Anchor.X.AnchorBoth(0, 0);
+	Base.Make_Anchor_X_Both(nullptr, nullptr);
+	Pos.Make_Anchor_X_Both(nullptr, nullptr);
+	Dir.Make_Anchor_X_Both(nullptr, nullptr);
 
 	ChildInsert(Base);
 	ChildInsert(Pos);
@@ -24,14 +27,14 @@ UI::Control::LightSpot::LightSpot(const char * name)
 
 
 
-void UI::Control::LightSpot::Syncronize()
+void UI::Control_::LightSpot::Syncronize()
 {
 	Base.Syncronize();
 	Pos.Syncronize();
 	Dir.Syncronize();
 }
 
-void UI::Control::LightSpot::Change(::LightSpot * obj)
+void UI::Control_::LightSpot::Change(::LightSpot * obj)
 {
 	Object = obj;
 	if (Object != nullptr)

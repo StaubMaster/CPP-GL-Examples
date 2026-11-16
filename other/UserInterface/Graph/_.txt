@@ -1,0 +1,21 @@
+
+Data
+{
+	uint		Index
+	VectorF2	Value
+	ColorF4		Color ?
+}
+
+UniformBlocks
+{
+	BoxF2		Bound
+	ColorF4		Color ?
+	VectorF2	AxisX
+	VectorF2	AxisY
+}
+
+Bound is the Range in which the Values are normalized
+
+so {0|0} is in the middle of the Box
+so {-1|-1} is Top Left
+so {+1|+1} is Bottom Right

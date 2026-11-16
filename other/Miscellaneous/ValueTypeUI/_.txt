@@ -4,3 +4,21 @@ rename
 /ValueTypeUI/
 
 UserInterface/ValueType/ ?
+
+
+
+based on include order
+UI::Control_::ColorF4 can cause conflict with UI::Control_Color::Color() return
+the same can probably happen for the other ValueTypes like VectorF2
+
+Solution:
+	change Namespace of ValueTypeUI to UI::ValueType::...
+		so UI::Control_::ColorF4
+		to UI::ValueType::ColorF4
+	this is not much longer then currently
+
+Solution:
+	add :: to everywhere that wants to use the actual ValueTypes
+		so virtual ColorF4		Color() const = 0;
+		to virtual ::ColorF4		Color() const = 0;
+	this seems annoying

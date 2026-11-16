@@ -2,16 +2,18 @@
 
 
 
-UI::Control::LightDirection::~LightDirection()
+UI::Control_::LightDirection::~LightDirection()
 { }
-UI::Control::LightDirection::LightDirection(const char * name)
+UI::Control_::LightDirection::LightDirection(const char * name)
 	: PropertyControl(name)
 	, Base("Base")
 	, Dir("Dir")
 	, Object(nullptr)
 {
-	Base.Anchor.X.AnchorBoth(0, 0);
-	Dir.Anchor.X.AnchorBoth(0, 0);
+	//Base.Anchor.X.AnchorBoth(0, 0);
+	//Dir.Anchor.X.AnchorBoth(0, 0);
+	Base.Make_Anchor_X_Both(nullptr, nullptr);
+	Dir.Make_Anchor_X_Both(nullptr, nullptr);
 
 	ChildInsert(Base);
 	ChildInsert(Dir);
@@ -21,13 +23,13 @@ UI::Control::LightDirection::LightDirection(const char * name)
 
 
 
-void UI::Control::LightDirection::Syncronize()
+void UI::Control_::LightDirection::Syncronize()
 {
 	Base.Syncronize();
 	Dir.Syncronize();
 }
 
-void UI::Control::LightDirection::Change(::LightDirection * obj)
+void UI::Control_::LightDirection::Change(::LightDirection * obj)
 {
 	Object = obj;
 	if (Object != nullptr)

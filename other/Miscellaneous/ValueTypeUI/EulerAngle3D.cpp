@@ -2,18 +2,21 @@
 
 
 
-UI::Control::EulerAngle3D::~EulerAngle3D()
+UI::Control_::EulerAngle3D::~EulerAngle3D()
 { }
-UI::Control::EulerAngle3D::EulerAngle3D(const char * name)
+UI::Control_::EulerAngle3D::EulerAngle3D(const char * name)
 	: PropertyControl(name)
 	, Z0()
 	, X1()
 	, Y2()
 	, Object(nullptr)
 {
-	Z0.Anchor.X.AnchorBoth(0, 0);
-	X1.Anchor.X.AnchorBoth(0, 0);
-	Y2.Anchor.X.AnchorBoth(0, 0);
+	//Z0.Anchor.X.AnchorBoth(0, 0);
+	//X1.Anchor.X.AnchorBoth(0, 0);
+	//Y2.Anchor.X.AnchorBoth(0, 0);
+	Z0.Make_Anchor_X_Both(nullptr, nullptr);
+	X1.Make_Anchor_X_Both(nullptr, nullptr);
+	Y2.Make_Anchor_X_Both(nullptr, nullptr);
 
 	ChildInsert(Z0);
 	ChildInsert(X1);
@@ -27,7 +30,7 @@ UI::Control::EulerAngle3D::EulerAngle3D(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::EulerAngle3D::Syncronize()
+void UI::Control_::EulerAngle3D::Syncronize()
 {
 	if (Object != nullptr)
 	{
@@ -44,7 +47,7 @@ void UI::Control::EulerAngle3D::Syncronize()
 	}
 }
 
-void UI::Control::EulerAngle3D::Change(::EulerAngle3D * obj)
+void UI::Control_::EulerAngle3D::Change(::EulerAngle3D * obj)
 {
 	Object = obj;
 }

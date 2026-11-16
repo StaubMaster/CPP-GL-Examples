@@ -6,7 +6,7 @@
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 struct PropertyControl : public GroupBox
 {

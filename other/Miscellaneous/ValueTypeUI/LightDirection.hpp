@@ -10,7 +10,7 @@ struct LightDirection;
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 struct LightDirection : public PropertyControl
 {

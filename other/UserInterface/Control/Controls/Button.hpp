@@ -5,6 +5,8 @@
 
 # include "Generics/Function/Pointer.hpp"
 
+# include "User/MouseArgs.hpp" // else Function Pointer complains
+
 namespace UI
 {
 namespace Control_

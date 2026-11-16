@@ -2,9 +2,9 @@
 
 
 
-UI::Control::PolyHedraObject::~PolyHedraObject()
+UI::Control_::PolyHedraObject::~PolyHedraObject()
 { }
-UI::Control::PolyHedraObject::PolyHedraObject()
+UI::Control_::PolyHedraObject::PolyHedraObject()
 	: GroupBox()
 	, Pallet()
 	, PalletName()
@@ -13,20 +13,30 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 	, PalletChange()
 	, Trans("Trans")
 {
-	AutoAnchorYType = EAutoAnchorType::StackMinFit;
-	Anchor.X.AnchorBoth(0, 0);
-	Anchor.Y.AnchorMin(0, 0);
+	//AutoAnchorYType = EAutoAnchorType::StackMinFit;
+	AutoAnchorYType = EAutoAnchorType::StackMin;
+	//Anchor.X.AnchorBoth(0, 0);
+	//Anchor.Y.AnchorMin(0, 0);
+	Make_Anchor_X_Both(nullptr, nullptr);
+	Make_Anchor_Y_Min(0, 100);
 
-	Pallet.AutoAnchorYType = EAutoAnchorType::StackMinFit;
-	Pallet.Anchor.X.AnchorBoth(0, 0);
-	PalletName.Anchor.X.AnchorBoth(0, 0);
-	PalletFile.Anchor.X.AnchorBoth(0, 0);
-	PalletSkinsCount.Anchor.X.AnchorBoth(0, 0);
-	PalletChange.Anchor.X.AnchorBoth(0, 0);
+	//Pallet.AutoAnchorYType = EAutoAnchorType::StackMinFit;
+	Pallet.AutoAnchorYType = EAutoAnchorType::StackMin;
+	//Pallet.Anchor.X.AnchorBoth(0, 0);
+	//PalletName.Anchor.X.AnchorBoth(0, 0);
+	//PalletFile.Anchor.X.AnchorBoth(0, 0);
+	//PalletSkinsCount.Anchor.X.AnchorBoth(0, 0);
+	//PalletChange.Anchor.X.AnchorBoth(0, 0);
+	Pallet.Make_Anchor_X_Both(nullptr, nullptr);
+	PalletName.Make_Anchor_X_Both(nullptr, nullptr);
+	PalletFile.Make_Anchor_X_Both(nullptr, nullptr);
+	PalletSkinsCount.Make_Anchor_X_Both(nullptr, nullptr);
+	PalletChange.Make_Anchor_X_Both(nullptr, nullptr);
 
 	PalletChange.SetText("Change Pallet");
 
-	Trans.Anchor.X.AnchorBoth(0, 0);
+	//Trans.Anchor.X.AnchorBoth(0, 0);
+	Trans.Make_Anchor_X_Both(nullptr, nullptr);
 
 	ChildInsert(Pallet);
 	Pallet.ChildInsert(PalletName);
@@ -54,7 +64,7 @@ UI::Control::PolyHedraObject::PolyHedraObject()
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::PolyHedraObject::Syncronize()
+void UI::Control_::PolyHedraObject::Syncronize()
 {
 	if (Object != nullptr)
 	{
@@ -76,7 +86,7 @@ void UI::Control::PolyHedraObject::Syncronize()
 	Trans.Syncronize();
 }
 
-void UI::Control::PolyHedraObject::Change(::SceneObject_PolyHedraObject * obj)
+void UI::Control_::PolyHedraObject::Change(::SceneObject_PolyHedraObject * obj)
 {
 	if (obj != nullptr)
 	{ Object = &(obj -> Data); }

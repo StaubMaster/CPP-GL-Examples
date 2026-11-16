@@ -12,15 +12,22 @@ SceneObjectUI::SceneObjectUI()
 	, LightSolar("LightSolar")
 	, LightSpot("LightSpot")
 {
-	AutoAnchorYType = EAutoAnchorType::StackMinFit;
+//	AutoAnchorYType = EAutoAnchorType::StackMinFit;
+	AutoAnchorYType = EAutoAnchorType::StackMin;
 
-	Anchor.X.AnchorMin(0, 400);
-	Anchor.Y.AnchorMin(0, 0);
+	//Anchor.X.AnchorMin(0, 400);
+	//Anchor.Y.AnchorMin(0, 0);
+	Make_Anchor_X_Min(nullptr, 400);
+	Make_Anchor_Y_Min(nullptr, 400);
 
-	PolyHedraObject.Anchor.X.AnchorBoth(0, 0);
-	LightAmbient.Anchor.X.AnchorBoth(0, 0);
-	LightSolar.Anchor.X.AnchorBoth(0, 0);
-	LightSpot.Anchor.X.AnchorBoth(0, 0);
+	//PolyHedraObject.Anchor.X.AnchorBoth(0, 0);
+	//LightAmbient.Anchor.X.AnchorBoth(0, 0);
+	//LightSolar.Anchor.X.AnchorBoth(0, 0);
+	//LightSpot.Anchor.X.AnchorBoth(0, 0);
+	PolyHedraObject.Make_Anchor_X_Both(nullptr, nullptr);
+	LightAmbient.Make_Anchor_X_Both(nullptr, nullptr);
+	LightSolar.Make_Anchor_X_Both(nullptr, nullptr);
+	LightSpot.Make_Anchor_X_Both(nullptr, nullptr);
 
 	PolyHedraObject.Hide();
 	LightAmbient.Hide();

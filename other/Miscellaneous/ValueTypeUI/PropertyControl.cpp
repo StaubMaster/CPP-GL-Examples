@@ -2,9 +2,9 @@
 
 
 
-UI::Control::PropertyControl::~PropertyControl()
+UI::Control_::PropertyControl::~PropertyControl()
 { }
-UI::Control::PropertyControl::PropertyControl(const char * name)
+UI::Control_::PropertyControl::PropertyControl(const char * name)
 	: GroupBox()
 	, Visible(true)
 	, Toggle()
@@ -12,7 +12,8 @@ UI::Control::PropertyControl::PropertyControl(const char * name)
 //	AutoAnchorYType = EAutoAnchorType::StackMinFit;
 	AutoAnchorYType = EAutoAnchorType::StackMin;
 
-	Toggle.Anchor.X.AnchorBoth(0, 0);
+	//Toggle.Anchor.X.AnchorBoth(0, 0);
+	Toggle.Make_Anchor_X_Both(nullptr, nullptr);
 	Toggle.SetText(name);
 	Toggle.ClickFunc.Assign(this, &PropertyControl::ToggleFunc);
 	ChildInsert(Toggle);
@@ -20,7 +21,7 @@ UI::Control::PropertyControl::PropertyControl(const char * name)
 
 
 
-void UI::Control::PropertyControl::ShowProperty()
+void UI::Control_::PropertyControl::ShowProperty()
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -33,7 +34,7 @@ void UI::Control::PropertyControl::ShowProperty()
 	//AutoAnchorUpdateRequest();
 	AutoAnchorUpdate();
 }
-void UI::Control::PropertyControl::HideProperty()
+void UI::Control_::PropertyControl::HideProperty()
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -48,7 +49,7 @@ void UI::Control::PropertyControl::HideProperty()
 }
 
 #include "User/MouseArgs.hpp"
-void UI::Control::PropertyControl::ToggleFunc(ClickArgs args)
+void UI::Control_::PropertyControl::ToggleFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{

@@ -163,21 +163,21 @@ void UI::Graph::Manager::InstancesPut(const ObjectData & obj)
 		data.Pos = VectorF2(-1, +1); Instances.Insert(data);
 		data.Pos = VectorF2(+1, +1); Instances.Insert(data);
 
-		/*{
+		{
 			float val;
 
-			val = ((obj.Values -> Min()) - Center) / Magnitede;
+			val = ((obj.Values -> Min()) - obj.Center) / obj.Magnitede;
 			data.Pos = VectorF2(-1, val); Instances.Insert(data);
 			data.Pos = VectorF2(+1, val); Instances.Insert(data);
-			
-			val = ((obj.Values -> Max()) - Center) / Magnitede;
+
+			val = ((obj.Values -> Max()) - obj.Center) / obj.Magnitede;
 			data.Pos = VectorF2(-1, val); Instances.Insert(data);
 			data.Pos = VectorF2(+1, val); Instances.Insert(data);
-			
-			val = ((obj.Values -> Average()) - Center) / Magnitede;
+
+			val = ((obj.Values -> Average()) - obj.Center) / obj.Magnitede;
 			data.Pos = VectorF2(-1, val); Instances.Insert(data);
 			data.Pos = VectorF2(+1, val); Instances.Insert(data);
-		}*/
+		}
 	}
 }
 

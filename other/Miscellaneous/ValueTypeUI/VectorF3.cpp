@@ -2,18 +2,21 @@
 
 
 
-UI::Control::VectorF3::~VectorF3()
+UI::Control_::VectorF3::~VectorF3()
 { }
-UI::Control::VectorF3::VectorF3(const char * name)
+UI::Control_::VectorF3::VectorF3(const char * name)
 	: PropertyControl(name)
 	, X()
 	, Y()
 	, Z()
 	, Object(nullptr)
 {
-	X.Anchor.X.AnchorBoth(0, 0);
-	Y.Anchor.X.AnchorBoth(0, 0);
-	Z.Anchor.X.AnchorBoth(0, 0);
+	//X.Anchor.X.AnchorBoth(0, 0);
+	//Y.Anchor.X.AnchorBoth(0, 0);
+	//Z.Anchor.X.AnchorBoth(0, 0);
+	X.Make_Anchor_X_Both(nullptr, nullptr);
+	Y.Make_Anchor_X_Both(nullptr, nullptr);
+	Z.Make_Anchor_X_Both(nullptr, nullptr);
 
 	ChildInsert(X);
 	ChildInsert(Y);
@@ -27,7 +30,7 @@ UI::Control::VectorF3::VectorF3(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control::VectorF3::Syncronize()
+void UI::Control_::VectorF3::Syncronize()
 {
 	if (Object != nullptr)
 	{
@@ -44,7 +47,7 @@ void UI::Control::VectorF3::Syncronize()
 	}
 }
 
-void UI::Control::VectorF3::Change(::VectorF3 * obj)
+void UI::Control_::VectorF3::Change(::VectorF3 * obj)
 {
 	Object = obj;
 }

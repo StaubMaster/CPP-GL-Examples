@@ -17,12 +17,16 @@
 # include "Generics/Container/Array.hpp"
 # include "Generics/Container/Binary.hpp"
 
-// File Manager
+// FileManager
 # include "FileInfo.hpp"
 # include "Image.hpp"
 
 // Hit
 # include "Ray3D_Hit.hpp"
+
+// UserInterface
+# include "UIManager.hpp"
+# include "UI/ListForm.hpp"
 
 // SceneObject
 # include "SceneObject/SceneObject.hpp"
@@ -30,9 +34,7 @@
 # include "SceneObject/DisplayMode.hpp"
 # include "SceneObject/Collection.hpp"
 
-// User Interface
-# include "UIManager.hpp"
-# include "UI/ListForm.hpp"
+// UserChange
 //# include "UI/UserTrans3DChange.hpp"
 # include "UI/Change3D/VectorF3.hpp"
 # include "UI/Change3D/EulerAngle3D.hpp"

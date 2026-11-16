@@ -9,7 +9,7 @@ struct LightBase;
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 struct LightBase : public PropertyControl
 {

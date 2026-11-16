@@ -20,17 +20,17 @@ struct SceneObject_PolyHedraObject;
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 struct PolyHedraObject : public GroupBox
 {
-	UI::Control::GroupBox	Pallet;
-	UI::Control::Label		PalletName;
-	UI::Control::Label		PalletFile;
-	UI::Control::Label		PalletSkinsCount;
-	UI::Control::Button		PalletChange;
+	UI::Control_::GroupBox	Pallet;
+	UI::Control_::Label		PalletName;
+	UI::Control_::Label		PalletFile;
+	UI::Control_::Label		PalletSkinsCount;
+	UI::Control_::Button	PalletChange;
 
-	UI::Control::Trans3D	Trans;
+	UI::Control_::Trans3D	Trans;
 
 	~PolyHedraObject();
 	PolyHedraObject();

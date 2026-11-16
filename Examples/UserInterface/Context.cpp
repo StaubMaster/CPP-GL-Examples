@@ -119,7 +119,7 @@ void UserInterfaceContext::Free()
 
 
 
-#include "Text/ObjectData.hpp"
+//#include "Text/ObjectData.hpp"
 void UserInterfaceContext::Frame(FrameTime frame_time)
 {
 	(void)frame_time;

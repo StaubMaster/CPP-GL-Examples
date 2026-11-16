@@ -2,16 +2,18 @@
 
 
 
-UI::Control::Trans3D::~Trans3D()
+UI::Control_::Trans3D::~Trans3D()
 { }
-UI::Control::Trans3D::Trans3D(const char * name)
+UI::Control_::Trans3D::Trans3D(const char * name)
 	: PropertyControl(name)
 	, Position("Position")
 	, Rotation("Rotation")
 	, Object(nullptr)
 {
-	Position.Anchor.X.AnchorBoth(0, 0);
-	Rotation.Anchor.X.AnchorBoth(0, 0);
+	//Position.Anchor.X.AnchorBoth(0, 0);
+	//Rotation.Anchor.X.AnchorBoth(0, 0);
+	Position.Make_Anchor_X_Both(nullptr, nullptr);
+	Rotation.Make_Anchor_X_Both(nullptr, nullptr);
 
 	ChildInsert(Position);
 	ChildInsert(Rotation);
@@ -21,13 +23,13 @@ UI::Control::Trans3D::Trans3D(const char * name)
 
 
 
-void UI::Control::Trans3D::Syncronize()
+void UI::Control_::Trans3D::Syncronize()
 {
 	Position.Syncronize();
 	Rotation.Syncronize();
 }
 
-void UI::Control::Trans3D::Change(::Trans3D * obj)
+void UI::Control_::Trans3D::Change(::Trans3D * obj)
 {
 	Object = obj;
 	if (Object != nullptr)

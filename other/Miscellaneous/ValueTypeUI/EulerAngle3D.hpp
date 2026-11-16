@@ -8,7 +8,7 @@ struct EulerAngle3D;
 
 namespace UI
 {
-namespace Control
+namespace Control_
 {
 struct EulerAngle3D : public PropertyControl
 {
