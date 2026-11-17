@@ -18,7 +18,7 @@ UI::Control_::PolyHedraObject::PolyHedraObject()
 	//Anchor.X.AnchorBoth(0, 0);
 	//Anchor.Y.AnchorMin(0, 0);
 	Make_Anchor_X_Both(nullptr, nullptr);
-	Make_Anchor_Y_Min(0, 100);
+	Make_Anchor_Y_Min(nullptr, 200);
 
 	//Pallet.AutoAnchorYType = EAutoAnchorType::StackMinFit;
 	Pallet.AutoAnchorYType = EAutoAnchorType::StackMin;
@@ -28,6 +28,7 @@ UI::Control_::PolyHedraObject::PolyHedraObject()
 	//PalletSkinsCount.Anchor.X.AnchorBoth(0, 0);
 	//PalletChange.Anchor.X.AnchorBoth(0, 0);
 	Pallet.Make_Anchor_X_Both(nullptr, nullptr);
+
 	PalletName.Make_Anchor_X_Both(nullptr, nullptr);
 	PalletFile.Make_Anchor_X_Both(nullptr, nullptr);
 	PalletSkinsCount.Make_Anchor_X_Both(nullptr, nullptr);

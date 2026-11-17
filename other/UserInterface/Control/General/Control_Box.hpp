@@ -26,20 +26,24 @@ class Control_Box
 	float	MarginBox_Get_X_Min_Max() const;
 	float	MarginBox_Get_X_Max_Min() const;
 	float	MarginBox_Get_X_Max_Max() const;
+	float	MarginBox_Get_X_Size() const;
 	float	MarginBox_Get_Y_Min_Min() const;
 	float	MarginBox_Get_Y_Min_Max() const;
 	float	MarginBox_Get_Y_Max_Min() const;
 	float	MarginBox_Get_Y_Max_Max() const;
+	float	MarginBox_Get_Y_Size() const;
 
 	private: public:
 	void	MarginBox_Set_X_Min_Min(float val);
 	void	MarginBox_Set_X_Min_Max(float val);
 	void	MarginBox_Set_X_Max_Min(float val);
 	void	MarginBox_Set_X_Max_Max(float val);
+	void	MarginBox_Set_X_Size(float val);
 	void	MarginBox_Set_Y_Min_Min(float val);
 	void	MarginBox_Set_Y_Min_Max(float val);
 	void	MarginBox_Set_Y_Max_Min(float val);
 	void	MarginBox_Set_Y_Max_Max(float val);
+	void	MarginBox_Set_Y_Size(float val);
 
 	public:
 	void	Make_Anchor_X_Min(const Control_Box * other);
@@ -110,6 +114,7 @@ class Control_Box
 		maybe make another to automatically make all Children use the "Both" Anchor
 		making the Parent fit the Children is not really needed
 	*/
+	public:		virtual	void	AutoFitMinY() = 0;
 	/* replace Fit
 		make FitX() and FitY() functions
 		changes Size to fit the highest / lowest Children

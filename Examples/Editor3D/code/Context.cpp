@@ -384,7 +384,6 @@ void Light3DContext::Make()
 
 	UIManager.Window.ChildInsert(UISceneObject);
 	UIManager.Window.ChildInsert(UIPolyHedraPalletList);
-	//UIManager.Window.UpdateDepth();
 
 	UISceneObject.Hide();
 	UIPolyHedraPalletList.Hide();

@@ -33,6 +33,7 @@ void UI::Control_::PropertyControl::ShowProperty()
 	Visible = true;
 	//AutoAnchorUpdateRequest();
 	AutoAnchorUpdate();
+	AutoFitMinY();
 }
 void UI::Control_::PropertyControl::HideProperty()
 {
@@ -46,6 +47,7 @@ void UI::Control_::PropertyControl::HideProperty()
 	Visible = false;
 	//AutoAnchorUpdateRequest();
 	AutoAnchorUpdate();
+	AutoFitMinY();
 }
 
 #include "User/MouseArgs.hpp"

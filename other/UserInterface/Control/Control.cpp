@@ -32,9 +32,9 @@ void UI::Control::ChildInsert(Control & control)
 {
 	Control_Container::ChildInsert(control);
 	control.Parent_ = this;
-
 	control.DisplayUpdateRequest();
 	control.AnchorUpdateRequest();
+
 	AutoAnchorUpdateRequest();
 	if (_Window() != nullptr) { _Window() -> DepthCalculateRequest(); }
 }
@@ -90,11 +90,13 @@ void UI::Control::Show()
 {
 	Control_Display::Show();
 	if (Parent() != nullptr) { Parent() -> AutoAnchorUpdateRequest(); }
+	if (_Window() != nullptr) { _Window() -> DepthCalculateRequest(); }
 }
 void UI::Control::Hide()
 {
 	Control_Display::Hide();
 	if (Parent() != nullptr) { Parent() -> AutoAnchorUpdateRequest(); }
+	if (_Window() != nullptr) { _Window() -> DepthCalculateRequest(); }
 }
 
 
@@ -163,19 +165,35 @@ BoxF2 UI::Control::MetaBoxContent() const
 	return BoxF2();
 }
 
+#include <iostream>
 void UI::Control::AutoAnchorUpdate_Y_StackMin()
 {
+	std::cout << "AutoAnchor ....\n";
 	Control * control = nullptr;
+	std::cout << "Count " << Children.Count() << '\n';
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
-		if (Children[i] == nullptr) { continue; }
-		Control & c = *Children[i];
-		if (!c.IsVisible()) { continue; }
-		c.Make_Anchor_Y_Min(control);
-		control = &c;
+		if (!Children[i] -> IsThisVisible()) { continue; }
+		std::cout << "control\n";
+		Children[i] -> Make_Anchor_Y_Min(control);
+		control = Children[i];
 	}
+	std::cout << "AutoAnchor done\n";
 	AnchorUpdateRequest();
 }
+void UI::Control::AutoFitMinY()
+{
+	float val = 0.0f;
+	for (unsigned int i = 0; i < Children.Count(); i++)
+	{
+		if (!Children[i] -> IsThisVisible()) { continue; }
+		float v = Children[i] -> MarginBox_Get_Y_Min_Max();
+		if (v > val) { val = v; }
+	}
+	std::cout << "AutoFitMinY " << val << '\n';
+	MarginBox_Set_Y_Size(val);
+}
+
 
 
 

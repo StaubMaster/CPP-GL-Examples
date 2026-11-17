@@ -58,7 +58,12 @@ class Control : public Control_Container, public Control_Display, public Control
 	BoxF2	MetaBoxBoarder() const override;
 	BoxF2	MetaBoxContent() const override;
 
+	/* Changing Parent
+		Fit it needed for Editor3D
+		how to prevent recursive loop
+	*/
 	private:			void	AutoAnchorUpdate_Y_StackMin() override;
+	public:				void	AutoFitMinY() override;
 
 	protected:	virtual	void	DisplayPut() const override;
 	public:				void	DisplayPutRecursive() const override;
