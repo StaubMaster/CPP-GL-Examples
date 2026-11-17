@@ -34,7 +34,7 @@ UI::Control_::ColorF4::ColorF4(const char * name)
 	ChildInsert(G);
 	ChildInsert(B);
 
-	HideProperty();
+	Minimize();
 }
 
 

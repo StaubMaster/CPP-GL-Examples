@@ -10,15 +10,19 @@ namespace Control_
 {
 struct PropertyControl : public GroupBox
 {
-	bool	Visible;
 	Button	Toggle;
 
-	~PropertyControl();
+	public:
 	PropertyControl(const char * name);
 
-	void	ShowProperty();
-	void	HideProperty();
+	private:
+	bool	Expanded = true;
+	public:
+	void	Maximize();
+	void	Minimize();
+	void	ExpansionChanged();
 
+	public:
 	void	ToggleFunc(ClickArgs args);
 };
 };

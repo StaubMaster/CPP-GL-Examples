@@ -191,7 +191,8 @@ void UI::Control::AutoFitMinY()
 		if (v > val) { val = v; }
 	}
 	std::cout << "AutoFitMinY " << val << '\n';
-	MarginBox_Set_Y_Size(val);
+	PaddingBox_Set_Y_Size(val);
+	AnchorUpdateRequest();
 }
 
 

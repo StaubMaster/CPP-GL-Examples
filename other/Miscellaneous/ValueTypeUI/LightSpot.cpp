@@ -22,7 +22,7 @@ UI::Control_::LightSpot::LightSpot(const char * name)
 	ChildInsert(Pos);
 	ChildInsert(Dir);
 
-	HideProperty();
+	Minimize();
 }
 
 

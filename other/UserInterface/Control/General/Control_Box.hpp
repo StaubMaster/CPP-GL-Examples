@@ -22,28 +22,32 @@ class Control_Box
 	Anchor2D	Anchor;
 
 	private: public:
+	float	PaddingBox_Get_X_Size() const;
+	float	PaddingBox_Get_Y_Size() const;
+
+	private: public:
+	void	PaddingBox_Set_X_Size(float val);
+	void	PaddingBox_Set_Y_Size(float val);
+
+	private: public:
 	float	MarginBox_Get_X_Min_Min() const;
 	float	MarginBox_Get_X_Min_Max() const;
 	float	MarginBox_Get_X_Max_Min() const;
 	float	MarginBox_Get_X_Max_Max() const;
-	float	MarginBox_Get_X_Size() const;
 	float	MarginBox_Get_Y_Min_Min() const;
 	float	MarginBox_Get_Y_Min_Max() const;
 	float	MarginBox_Get_Y_Max_Min() const;
 	float	MarginBox_Get_Y_Max_Max() const;
-	float	MarginBox_Get_Y_Size() const;
 
 	private: public:
 	void	MarginBox_Set_X_Min_Min(float val);
 	void	MarginBox_Set_X_Min_Max(float val);
 	void	MarginBox_Set_X_Max_Min(float val);
 	void	MarginBox_Set_X_Max_Max(float val);
-	void	MarginBox_Set_X_Size(float val);
 	void	MarginBox_Set_Y_Min_Min(float val);
 	void	MarginBox_Set_Y_Min_Max(float val);
 	void	MarginBox_Set_Y_Max_Min(float val);
 	void	MarginBox_Set_Y_Max_Max(float val);
-	void	MarginBox_Set_Y_Size(float val);
 
 	public:
 	void	Make_Anchor_X_Min(const Control_Box * other);

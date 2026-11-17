@@ -22,7 +22,7 @@ UI::Control_::EulerAngle3D::EulerAngle3D(const char * name)
 	ChildInsert(X1);
 	ChildInsert(Y2);
 
-	HideProperty();
+	Minimize();
 }
 
 

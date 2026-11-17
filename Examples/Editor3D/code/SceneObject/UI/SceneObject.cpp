@@ -12,7 +12,7 @@ SceneObjectUI::SceneObjectUI()
 	, LightSolar("LightSolar")
 	, LightSpot("LightSpot")
 {
-//	AutoAnchorYType = EAutoAnchorType::StackMinFit;
+	//AutoAnchorYType = EAutoAnchorType::StackMinFit;
 	//AutoAnchorYType = EAutoAnchorType::StackMin;
 
 	//Anchor.X.AnchorMin(0, 400);

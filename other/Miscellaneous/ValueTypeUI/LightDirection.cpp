@@ -18,7 +18,7 @@ UI::Control_::LightDirection::LightDirection(const char * name)
 	ChildInsert(Base);
 	ChildInsert(Dir);
 
-	HideProperty();
+	Minimize();
 }
 
 

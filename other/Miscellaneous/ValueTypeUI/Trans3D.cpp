@@ -18,7 +18,7 @@ UI::Control_::Trans3D::Trans3D(const char * name)
 	ChildInsert(Position);
 	ChildInsert(Rotation);
 
-	HideProperty();
+	Minimize();
 }
 
 

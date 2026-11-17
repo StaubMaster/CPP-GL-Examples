@@ -2,11 +2,8 @@
 
 
 
-UI::Control_::PropertyControl::~PropertyControl()
-{ }
 UI::Control_::PropertyControl::PropertyControl(const char * name)
 	: GroupBox()
-	, Visible(true)
 	, Toggle()
 {
 //	AutoAnchorYType = EAutoAnchorType::StackMinFit;
@@ -21,7 +18,7 @@ UI::Control_::PropertyControl::PropertyControl(const char * name)
 
 
 
-void UI::Control_::PropertyControl::ShowProperty()
+void UI::Control_::PropertyControl::Maximize()
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -30,12 +27,10 @@ void UI::Control_::PropertyControl::ShowProperty()
 			Children[i] -> Show();
 		}
 	}
-	Visible = true;
-	//AutoAnchorUpdateRequest();
-	AutoAnchorUpdate();
-	AutoFitMinY();
+	Expanded = true;
+	ExpansionChanged();
 }
-void UI::Control_::PropertyControl::HideProperty()
+void UI::Control_::PropertyControl::Minimize()
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -44,10 +39,18 @@ void UI::Control_::PropertyControl::HideProperty()
 			Children[i] -> Hide();
 		}
 	}
-	Visible = false;
-	//AutoAnchorUpdateRequest();
+	Expanded = false;
+	ExpansionChanged();
+}
+void UI::Control_::PropertyControl::ExpansionChanged()
+{
 	AutoAnchorUpdate();
 	AutoFitMinY();
+	PropertyControl * control = dynamic_cast<PropertyControl *>(Parent());
+	if (control != nullptr)
+	{
+		control -> ExpansionChanged();
+	}
 }
 
 #include "User/MouseArgs.hpp"
@@ -55,13 +58,13 @@ void UI::Control_::PropertyControl::ToggleFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{
-		if (Visible)
+		if (Expanded)
 		{
-			HideProperty();
+			Minimize();
 		}
 		else
 		{
-			ShowProperty();
+			Maximize();
 		}
 	}
 }

@@ -22,7 +22,7 @@ UI::Control_::LightBase::LightBase(const char * name)
 	ChildInsert(Intensity);
 	ChildInsert(Color);
 
-	HideProperty();
+	Minimize();
 }
 
 

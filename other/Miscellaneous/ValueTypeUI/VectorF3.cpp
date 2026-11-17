@@ -22,7 +22,7 @@ UI::Control_::VectorF3::VectorF3(const char * name)
 	ChildInsert(Y);
 	ChildInsert(Z);
 
-	HideProperty();
+	Minimize();
 }
 
 

@@ -61,6 +61,13 @@ class Control : public Control_Container, public Control_Display, public Control
 	/* Changing Parent
 		Fit it needed for Editor3D
 		how to prevent recursive loop
+		{
+AutoFitMinY()
+	does not change this.Dist
+	does     change this.Size
+	needs Children.Dist and Children.Size
+		}
+		rename AutoAnchor to AutoArranger
 	*/
 	private:			void	AutoAnchorUpdate_Y_StackMin() override;
 	public:				void	AutoFitMinY() override;
