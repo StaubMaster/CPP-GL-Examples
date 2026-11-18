@@ -1,17 +1,14 @@
-#include "ValueTypeUI/ColorF4.hpp"
+#include "UI/ValueType/ColorF4.hpp"
 
 
 
-UI::Control_::ColorF4::ColorF4(const char * name)
-	: PropertyControl(name)
+UI::ColorF4::ColorF4(const char * name)
+	: NestedProperty(name)
 	, R()
 	, G()
 	, B()
 	, Object(nullptr)
 {
-	//R.Anchor.X.AnchorBoth(0, 0);
-	//G.Anchor.X.AnchorBoth(0, 0);
-	//B.Anchor.X.AnchorBoth(0, 0);
 	R.Make_Anchor_X_Both(nullptr, nullptr);
 	G.Make_Anchor_X_Both(nullptr, nullptr);
 	B.Make_Anchor_X_Both(nullptr, nullptr);
@@ -40,7 +37,7 @@ UI::Control_::ColorF4::ColorF4(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control_::ColorF4::Syncronize()
+void UI::ColorF4::Syncronize()
 {
 	if (Object != nullptr)
 	{
@@ -55,14 +52,14 @@ void UI::Control_::ColorF4::Syncronize()
 		B.SetText("B:");
 	}
 }
-void UI::Control_::ColorF4::Change(::ColorF4 * obj)
+void UI::ColorF4::Change(::ColorF4 * obj)
 {
 	Object = obj;
 }
 
 
 
-void UI::Control_::ColorF4::RFunc(float val)
+void UI::ColorF4::RFunc(float val)
 {
 	if (Object == nullptr) { return; }
 	Object -> R = val;
@@ -70,7 +67,7 @@ void UI::Control_::ColorF4::RFunc(float val)
 	ss << "R:" << ToString(Object -> R, 2);
 	R.SetText(ss.str());
 }
-void UI::Control_::ColorF4::GFunc(float val)
+void UI::ColorF4::GFunc(float val)
 {
 	if (Object == nullptr) { return; }
 	Object -> G = val;
@@ -78,7 +75,7 @@ void UI::Control_::ColorF4::GFunc(float val)
 	ss << "G:" << ToString(Object -> G, 2);
 	G.SetText(ss.str());
 }
-void UI::Control_::ColorF4::BFunc(float val)
+void UI::ColorF4::BFunc(float val)
 {
 	if (Object == nullptr) { return; }
 	Object -> B = val;

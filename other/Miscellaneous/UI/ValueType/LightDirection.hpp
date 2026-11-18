@@ -1,18 +1,16 @@
 #ifndef  PROPERTY_CONTROL_LIGHT_DIRECTION_HPP
 # define PROPERTY_CONTROL_LIGHT_DIRECTION_HPP
 
-# include "PropertyControl.hpp"
-# include "ValueTypeUI/LightBase.hpp"
-# include "ValueTypeUI/VectorF3.hpp"
+# include "UI/NestedProperty.hpp"
+# include "UI/ValueType/LightBase.hpp"
+# include "UI/ValueType/VectorF3.hpp"
 
 // name conflicts. rename LightDirection to Light
 struct LightDirection;
 
 namespace UI
 {
-namespace Control_
-{
-struct LightDirection : public PropertyControl
+struct LightDirection : public NestedProperty
 {
 	LightBase	Base;
 	VectorF3	Dir;
@@ -22,7 +20,6 @@ struct LightDirection : public PropertyControl
 	::LightDirection * Object;
 	void	Syncronize();
 	void	Change(::LightDirection * obj);
-};
 };
 };
 

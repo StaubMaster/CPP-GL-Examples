@@ -1,17 +1,14 @@
-#include "ValueTypeUI/EulerAngle3D.hpp"
+#include "UI/ValueType/EulerAngle3D.hpp"
 
 
 
-UI::Control_::EulerAngle3D::EulerAngle3D(const char * name)
-	: PropertyControl(name)
+UI::EulerAngle3D::EulerAngle3D(const char * name)
+	: NestedProperty(name)
 	, Z0()
 	, X1()
 	, Y2()
 	, Object(nullptr)
 {
-	//Z0.Anchor.X.AnchorBoth(0, 0);
-	//X1.Anchor.X.AnchorBoth(0, 0);
-	//Y2.Anchor.X.AnchorBoth(0, 0);
 	Z0.Make_Anchor_X_Both(nullptr, nullptr);
 	X1.Make_Anchor_X_Both(nullptr, nullptr);
 	Y2.Make_Anchor_X_Both(nullptr, nullptr);
@@ -28,7 +25,7 @@ UI::Control_::EulerAngle3D::EulerAngle3D(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control_::EulerAngle3D::Syncronize()
+void UI::EulerAngle3D::Syncronize()
 {
 	if (Object != nullptr)
 	{
@@ -45,7 +42,7 @@ void UI::Control_::EulerAngle3D::Syncronize()
 	}
 }
 
-void UI::Control_::EulerAngle3D::Change(::EulerAngle3D * obj)
+void UI::EulerAngle3D::Change(::EulerAngle3D * obj)
 {
 	Object = obj;
 }

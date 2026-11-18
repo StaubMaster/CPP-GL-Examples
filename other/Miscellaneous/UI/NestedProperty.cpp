@@ -1,9 +1,9 @@
-#include "ValueTypeUI/PropertyControl.hpp"
+#include "UI/NestedProperty.hpp"
 
 
 
-UI::Control_::PropertyControl::PropertyControl(const char * name)
-	: GroupBox()
+UI::NestedProperty::NestedProperty(const char * name)
+	: UI::Control_::GroupBox()
 	, Toggle()
 {
 //	AutoAnchorYType = EAutoAnchorType::StackMinFit;
@@ -12,13 +12,13 @@ UI::Control_::PropertyControl::PropertyControl(const char * name)
 	//Toggle.Anchor.X.AnchorBoth(0, 0);
 	Toggle.Make_Anchor_X_Both(nullptr, nullptr);
 	Toggle.SetText(name);
-	Toggle.ClickFunc.Assign(this, &PropertyControl::ToggleFunc);
+	Toggle.ClickFunc.Assign(this, &NestedProperty::ToggleFunc);
 	ChildInsert(Toggle);
 }
 
 
 
-void UI::Control_::PropertyControl::Maximize()
+void UI::NestedProperty::Maximize()
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -30,7 +30,7 @@ void UI::Control_::PropertyControl::Maximize()
 	Expanded = true;
 	ExpansionChanged();
 }
-void UI::Control_::PropertyControl::Minimize()
+void UI::NestedProperty::Minimize()
 {
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
@@ -39,14 +39,14 @@ void UI::Control_::PropertyControl::Minimize()
 			Children[i] -> Hide();
 		}
 	}
-	Expanded = false;
+	Expanded = false; 
 	ExpansionChanged();
 }
-void UI::Control_::PropertyControl::ExpansionChanged()
+void UI::NestedProperty::ExpansionChanged()
 {
 	AutoAnchorUpdate();
 	AutoFitMinY();
-	PropertyControl * control = dynamic_cast<PropertyControl *>(Parent());
+	NestedProperty * control = dynamic_cast<NestedProperty *>(Parent());
 	if (control != nullptr)
 	{
 		control -> ExpansionChanged();
@@ -54,7 +54,7 @@ void UI::Control_::PropertyControl::ExpansionChanged()
 }
 
 #include "User/MouseArgs.hpp"
-void UI::Control_::PropertyControl::ToggleFunc(ClickArgs args)
+void UI::NestedProperty::ToggleFunc(ClickArgs args)
 {
 	if (args.Action == Action::Press)
 	{

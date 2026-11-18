@@ -1,15 +1,13 @@
-#include "ValueTypeUI/LightBase.hpp"
+#include "UI/ValueType/LightBase.hpp"
 
 
 
-UI::Control_::LightBase::LightBase(const char * name)
-	: PropertyControl(name)
+UI::LightBase::LightBase(const char * name)
+	: NestedProperty(name)
 	, Intensity()
 	, Color("Color")
 	, Object(nullptr)
 {
-	//Intensity.Anchor.X.AnchorBoth(0, 0);
-	//Color.Anchor.X.AnchorBoth(0, 0);
 	Intensity.Make_Anchor_X_Both(nullptr, nullptr);
 	Color.Make_Anchor_X_Both(nullptr, nullptr);
 
@@ -28,7 +26,7 @@ UI::Control_::LightBase::LightBase(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control_::LightBase::Syncronize()
+void UI::LightBase::Syncronize()
 {
 	if (Object != nullptr)
 	{
@@ -41,7 +39,7 @@ void UI::Control_::LightBase::Syncronize()
 	Color.Syncronize();
 }
 
-void UI::Control_::LightBase::Change(::LightBase * obj)
+void UI::LightBase::Change(::LightBase * obj)
 {
 	Object = obj;
 	if (Object != nullptr)
@@ -56,7 +54,7 @@ void UI::Control_::LightBase::Change(::LightBase * obj)
 
 
 
-void UI::Control_::LightBase::IntensityFunc(float val)
+void UI::LightBase::IntensityFunc(float val)
 {
 	if (Object == nullptr) { return; }
 	Object -> Intensity = val;

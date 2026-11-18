@@ -15,7 +15,6 @@ FILES := \
 	SceneObject/LightPoint.cpp \
 	SceneObject/LightSpot.cpp \
 	SceneObject/UI/SceneObject.cpp \
-	SceneObject/UI/PolyHedraObject.cpp \
 	\
 	SceneParsingData.cpp \
 \
@@ -27,6 +26,11 @@ FILES := \
 	UI/Change3D/VectorF3.cpp \
 	UI/Change3D/EulerAngle3D.cpp \
 	UI/Change3D/Trans3D.cpp \
+	\
+	UI/PolyHedra/PolyHedraEntry.cpp \
+	UI/PolyHedra/Pallet.cpp \
+	UI/PolyHedra/Basic3D/LogicalObject.cpp \
+	UI/PolyHedra/Basic3D/DisplayObject.cpp \
 \
 	NewPolyHedra/Init/Basic3D.cpp \
 	NewPolyHedra/Init/TransScaleColor3D.cpp \
@@ -57,11 +61,11 @@ include $(BASE_DIR)fancy.mk
 
 ################################################################
 
-include $(OTHER_DIR)/NewPolyHedra.mk
-include $(OTHER_DIR)/Miscellaneous.mk
-include $(OTHER_DIR)/UserInterface.mk
-
 include $(REPOS_DIR)/Engine.mk
+
+include $(OTHER_DIR)/UserInterface.mk
+include $(OTHER_DIR)/Miscellaneous.mk
+include $(OTHER_DIR)/NewPolyHedra.mk
 
 ################################################################
 

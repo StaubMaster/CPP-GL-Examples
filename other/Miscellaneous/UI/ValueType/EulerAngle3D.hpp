@@ -1,27 +1,24 @@
 #ifndef  PROPERTY_CONTROL_EULER_ANGLE_3D_HPP
 # define PROPERTY_CONTROL_EULER_ANGLE_3D_HPP
 
-# include "PropertyControl.hpp"
+# include "UI/NestedProperty.hpp"
 # include "Control/Controls/Label.hpp"
 
 struct EulerAngle3D;
 
 namespace UI
 {
-namespace Control_
+struct EulerAngle3D : public NestedProperty
 {
-struct EulerAngle3D : public PropertyControl
-{
-	Label	Z0;
-	Label	X1;
-	Label	Y2;
+	UI::Control_::Label	Z0;
+	UI::Control_::Label	X1;
+	UI::Control_::Label	Y2;
 
 	EulerAngle3D(const char * name);
 
 	::EulerAngle3D * Object;
 	void	Syncronize();
 	void	Change(::EulerAngle3D * obj);
-};
 };
 };
 

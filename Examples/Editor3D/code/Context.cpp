@@ -306,6 +306,7 @@ Light3DContext::Light3DContext(const Container::Array<FileInfo> & files)
 
 
 
+#include "UI/PolyHedra/PolyHedraEntry.hpp"
 void Light3DContext::ChangeMedia()
 {
 	std::cout << "Light3DContext::ChangeMedia ....\n";
@@ -321,6 +322,8 @@ void Light3DContext::ChangeMedia()
 		&UIManager.GraphManager.ShaderLayout,
 	});
 	LayoutMultiform.Find(layouts);
+
+	UI::PolyHedraEntry::Manager = &PolyHedraManager;
 
 	std::cout << "Light3DContext::ChangeMedia done\n";
 }
@@ -388,7 +391,7 @@ void Light3DContext::Make()
 	UISceneObject.Hide();
 	UIPolyHedraPalletList.Hide();
 
-	UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
+	//UISceneObject.PolyHedraObject.PalletChange.ClickFunc.Assign(this, &Light3DContext::PolyHedraPalletChangeFunc);
 
 	Shader::Base::BindNone();
 	LightBuffer.BindBase(LightBinding);

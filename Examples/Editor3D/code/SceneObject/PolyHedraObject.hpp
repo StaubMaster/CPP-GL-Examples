@@ -12,7 +12,7 @@
 struct SceneObjectDisplayMode;
 struct SceneObject_PolyHedraObject : public SceneObject
 {
-	NewPolyHedra::Basic3D::LogicalObject	Data;
+	NewPolyHedra::Basic3D::LogicalObject	Data; // make this a Pointer, like the other Scene Objects
 
 	~SceneObject_PolyHedraObject() = default;
 	SceneObject_PolyHedraObject() = default;

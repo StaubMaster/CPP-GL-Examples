@@ -1,0 +1,42 @@
+
+move this stuff out of SceneObject/UI/...
+maybe into just UI/...
+
+
+
+split:
+
+LogicalObject
+DisplayObject ?
+Pallet ?
+PolyHedra ?
+PolyHedraEntry
+
+
+
+seperate List:
+
+Pallets ?
+DisplayObjects
+PolyHedraManager
+
+
+
+the Font is too big / looks ugly
+
+
+
+how would changing DisplayObject work ?
+dont show a List of DisplayObjects, use DisplayObjectManager.Take(Pallet)
+dont show a List of Pallets, use PalletManager.Take(PolyHedra)
+dont show a List of PolyHedra, use PolyHedraManager.Take(File)
+show the FileManagerUI ?
+
+
+
+most of this information is unimportant ? (thats why it is nested, so you can ignore it)
+some of these point to eachother and might be recursive
+PolyHedra does not know about PolyHedraEntry, how would those be connected ?
+PolyHedra does not know about Pallet, Pallet does not know about DisplayObject
+
+

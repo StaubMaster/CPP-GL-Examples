@@ -17,14 +17,14 @@ FILES := \
 	Layout/Multiform/View3D.cpp \
 	Layout/Multiform/Light3D.cpp \
 \
-	ValueTypeUI/PropertyControl.cpp \
-	ValueTypeUI/VectorF3.cpp \
-	ValueTypeUI/EulerAngle3D.cpp \
-	ValueTypeUI/ColorF4.cpp \
-	ValueTypeUI/Trans3D.cpp \
-	ValueTypeUI/LightBase.cpp \
-	ValueTypeUI/LightDirection.cpp \
-	ValueTypeUI/LightSpot.cpp \
+	UI/NestedProperty.cpp \
+	UI/ValueType/VectorF3.cpp \
+	UI/ValueType/EulerAngle3D.cpp \
+	UI/ValueType/ColorF4.cpp \
+	UI/ValueType/Trans3D.cpp \
+	UI/ValueType/LightBase.cpp \
+	UI/ValueType/LightDirection.cpp \
+	UI/ValueType/LightSpot.cpp \
 \
 	Telemetry/Time.cpp \
 	Telemetry/StopWatch.cpp \

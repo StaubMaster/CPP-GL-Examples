@@ -1,17 +1,14 @@
-#include "ValueTypeUI/VectorF3.hpp"
+#include "UI/ValueType/VectorF3.hpp"
 
 
 
-UI::Control_::VectorF3::VectorF3(const char * name)
-	: PropertyControl(name)
+UI::VectorF3::VectorF3(const char * name)
+	: NestedProperty(name)
 	, X()
 	, Y()
 	, Z()
 	, Object(nullptr)
 {
-	//X.Anchor.X.AnchorBoth(0, 0);
-	//Y.Anchor.X.AnchorBoth(0, 0);
-	//Z.Anchor.X.AnchorBoth(0, 0);
 	X.Make_Anchor_X_Both(nullptr, nullptr);
 	Y.Make_Anchor_X_Both(nullptr, nullptr);
 	Z.Make_Anchor_X_Both(nullptr, nullptr);
@@ -28,7 +25,7 @@ UI::Control_::VectorF3::VectorF3(const char * name)
 #include "UnitToString.hpp"
 #include <sstream>
 
-void UI::Control_::VectorF3::Syncronize()
+void UI::VectorF3::Syncronize()
 {
 	if (Object != nullptr)
 	{
@@ -45,7 +42,7 @@ void UI::Control_::VectorF3::Syncronize()
 	}
 }
 
-void UI::Control_::VectorF3::Change(::VectorF3 * obj)
+void UI::VectorF3::Change(::VectorF3 * obj)
 {
 	Object = obj;
 }

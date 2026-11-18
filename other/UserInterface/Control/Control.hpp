@@ -30,6 +30,8 @@ class Control : public Control_Container, public Control_Display, public Control
 	virtual void	ChildClear() override;
 	virtual void	ChildRemove(Control & control) override;
 	virtual void	ChildInsert(Control & control) override;
+	using	Control_Container::ChildRemove;
+	using	Control_Container::ChildInsert;
 
 	public:
 	bool				Check(const DisplayPosition & display_pos) const override;

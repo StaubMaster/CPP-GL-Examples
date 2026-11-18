@@ -1,17 +1,15 @@
 #ifndef  PROPERTY_CONTROL_LIGHT_SPOT_HPP
 # define PROPERTY_CONTROL_LIGHT_SPOT_HPP
 
-# include "PropertyControl.hpp"
-# include "ValueTypeUI/LightBase.hpp"
-# include "ValueTypeUI/VectorF3.hpp"
+# include "UI/NestedProperty.hpp"
+# include "UI/ValueType/LightBase.hpp"
+# include "UI/ValueType/VectorF3.hpp"
 
 struct LightSpot;
 
 namespace UI
 {
-namespace Control_
-{
-struct LightSpot : public PropertyControl
+struct LightSpot : public NestedProperty
 {
 	LightBase	Base;
 	VectorF3	Pos;
@@ -22,7 +20,6 @@ struct LightSpot : public PropertyControl
 	::LightSpot * Object;
 	void	Syncronize();
 	void	Change(::LightSpot * obj);
-};
 };
 };
 

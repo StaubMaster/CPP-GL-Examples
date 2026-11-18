@@ -1,20 +1,18 @@
 #ifndef  PROPERTY_CONTROL_LIGHT_BASE_HPP
 # define PROPERTY_CONTROL_LIGHT_BASE_HPP
 
-# include "PropertyControl.hpp"
-# include "ValueTypeUI/ColorF4.hpp"
+# include "UI/NestedProperty.hpp"
+# include "UI/ValueType/ColorF4.hpp"
 # include "Control/Controls/Slider.hpp"
 
 struct LightBase;
 
 namespace UI
 {
-namespace Control_
+struct LightBase : public NestedProperty
 {
-struct LightBase : public PropertyControl
-{
-	Slider		Intensity;
-	ColorF4		Color;
+	UI::Control_::Slider		Intensity;
+	ColorF4						Color;
 
 	LightBase(const char * name);
 
@@ -23,7 +21,6 @@ struct LightBase : public PropertyControl
 	void	Change(::LightBase * obj);
 
 	void	IntensityFunc(float val);
-};
 };
 };
 

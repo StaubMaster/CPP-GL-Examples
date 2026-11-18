@@ -1,19 +1,17 @@
-#ifndef  PROPERTY_CONTROL_HPP
-# define PROPERTY_CONTROL_HPP
+#ifndef  UI_NESTED_PROPERTY_HPP
+# define UI_NESTED_PROPERTY_HPP
 
 # include "Control/Controls/GroupBox.hpp"
 # include "Control/Controls/Button.hpp"
 
 namespace UI
 {
-namespace Control_
+struct NestedProperty : public UI::Control_::GroupBox
 {
-struct PropertyControl : public GroupBox
-{
-	Button	Toggle;
+	UI::Control_::Button	Toggle;
 
 	public:
-	PropertyControl(const char * name);
+	NestedProperty(const char * name);
 
 	private:
 	bool	Expanded = true;
@@ -24,7 +22,9 @@ struct PropertyControl : public GroupBox
 
 	public:
 	void	ToggleFunc(ClickArgs args);
-};
+
+	public:
+	virtual void	Syncronize() = 0;
 };
 };
 

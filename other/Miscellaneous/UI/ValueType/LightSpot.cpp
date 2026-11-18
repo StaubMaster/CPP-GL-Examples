@@ -1,19 +1,20 @@
-#include "ValueTypeUI/LightDirection.hpp"
+#include "UI/ValueType/LightSpot.hpp"
 
 
 
-UI::Control_::LightDirection::LightDirection(const char * name)
-	: PropertyControl(name)
+UI::LightSpot::LightSpot(const char * name)
+	: NestedProperty(name)
 	, Base("Base")
+	, Pos("Pos")
 	, Dir("Dir")
 	, Object(nullptr)
 {
-	//Base.Anchor.X.AnchorBoth(0, 0);
-	//Dir.Anchor.X.AnchorBoth(0, 0);
 	Base.Make_Anchor_X_Both(nullptr, nullptr);
+	Pos.Make_Anchor_X_Both(nullptr, nullptr);
 	Dir.Make_Anchor_X_Both(nullptr, nullptr);
 
 	ChildInsert(Base);
+	ChildInsert(Pos);
 	ChildInsert(Dir);
 
 	Minimize();
@@ -21,23 +22,26 @@ UI::Control_::LightDirection::LightDirection(const char * name)
 
 
 
-void UI::Control_::LightDirection::Syncronize()
+void UI::LightSpot::Syncronize()
 {
 	Base.Syncronize();
+	Pos.Syncronize();
 	Dir.Syncronize();
 }
 
-void UI::Control_::LightDirection::Change(::LightDirection * obj)
+void UI::LightSpot::Change(::LightSpot * obj)
 {
 	Object = obj;
 	if (Object != nullptr)
 	{
 		Base.Change(&(Object -> Base));
+		Pos.Change(&(Object -> Pos));
 		Dir.Change(&(Object -> Dir));
 	}
 	else
 	{
 		Base.Change(nullptr);
+		Pos.Change(nullptr);
 		Dir.Change(nullptr);
 	}
 }
