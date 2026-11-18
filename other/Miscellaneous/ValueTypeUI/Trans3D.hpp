@@ -16,7 +16,6 @@ struct Trans3D : public PropertyControl
 	VectorF3		Position;
 	EulerAngle3D	Rotation;
 
-	~Trans3D();
 	Trans3D(const char * name);
 
 	::Trans3D *	Object;

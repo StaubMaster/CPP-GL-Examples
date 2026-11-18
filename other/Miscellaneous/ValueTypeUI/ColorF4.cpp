@@ -2,8 +2,6 @@
 
 
 
-UI::Control_::ColorF4::~ColorF4()
-{ }
 UI::Control_::ColorF4::ColorF4(const char * name)
 	: PropertyControl(name)
 	, R()

@@ -16,7 +16,6 @@ struct LightBase : public PropertyControl
 	Slider		Intensity;
 	ColorF4		Color;
 
-	~LightBase();
 	LightBase(const char * name);
 
 	::LightBase * Object;

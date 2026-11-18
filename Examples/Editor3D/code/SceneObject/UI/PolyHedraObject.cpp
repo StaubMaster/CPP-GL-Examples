@@ -2,8 +2,6 @@
 
 
 
-UI::Control_::PolyHedraObject::~PolyHedraObject()
-{ }
 UI::Control_::PolyHedraObject::PolyHedraObject()
 	: GroupBox()
 	, Pallet()

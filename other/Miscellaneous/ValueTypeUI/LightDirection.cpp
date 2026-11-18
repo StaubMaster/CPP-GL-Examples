@@ -2,8 +2,6 @@
 
 
 
-UI::Control_::LightDirection::~LightDirection()
-{ }
 UI::Control_::LightDirection::LightDirection(const char * name)
 	: PropertyControl(name)
 	, Base("Base")

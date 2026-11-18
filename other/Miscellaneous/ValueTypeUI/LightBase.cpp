@@ -2,8 +2,6 @@
 
 
 
-UI::Control_::LightBase::~LightBase()
-{ }
 UI::Control_::LightBase::LightBase(const char * name)
 	: PropertyControl(name)
 	, Intensity()

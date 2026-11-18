@@ -165,20 +165,15 @@ BoxF2 UI::Control::MetaBoxContent() const
 	return BoxF2();
 }
 
-#include <iostream>
 void UI::Control::AutoAnchorUpdate_Y_StackMin()
 {
-	std::cout << "AutoAnchor ....\n";
 	Control * control = nullptr;
-	std::cout << "Count " << Children.Count() << '\n';
 	for (unsigned int i = 0; i < Children.Count(); i++)
 	{
 		if (!Children[i] -> IsThisVisible()) { continue; }
-		std::cout << "control\n";
 		Children[i] -> Make_Anchor_Y_Min(control);
 		control = Children[i];
 	}
-	std::cout << "AutoAnchor done\n";
 	AnchorUpdateRequest();
 }
 void UI::Control::AutoFitMinY()
@@ -190,7 +185,6 @@ void UI::Control::AutoFitMinY()
 		float v = Children[i] -> MarginBox_Get_Y_Min_Max();
 		if (v > val) { val = v; }
 	}
-	std::cout << "AutoFitMinY " << val << '\n';
 	PaddingBox_Set_Y_Size(val);
 	AnchorUpdateRequest();
 }

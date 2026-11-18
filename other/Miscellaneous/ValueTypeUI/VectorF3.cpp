@@ -2,8 +2,6 @@
 
 
 
-UI::Control_::VectorF3::~VectorF3()
-{ }
 UI::Control_::VectorF3::VectorF3(const char * name)
 	: PropertyControl(name)
 	, X()

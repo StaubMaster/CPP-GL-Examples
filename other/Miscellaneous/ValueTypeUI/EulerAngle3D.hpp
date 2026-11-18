@@ -16,7 +16,6 @@ struct EulerAngle3D : public PropertyControl
 	Label	X1;
 	Label	Y2;
 
-	~EulerAngle3D();
 	EulerAngle3D(const char * name);
 
 	::EulerAngle3D * Object;

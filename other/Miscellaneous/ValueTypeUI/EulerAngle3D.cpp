@@ -2,8 +2,6 @@
 
 
 
-UI::Control_::EulerAngle3D::~EulerAngle3D()
-{ }
 UI::Control_::EulerAngle3D::EulerAngle3D(const char * name)
 	: PropertyControl(name)
 	, Z0()

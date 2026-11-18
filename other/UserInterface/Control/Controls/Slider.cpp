@@ -124,13 +124,16 @@ UI::Control_::Slider::Slider()
 {
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = VectorF2(75, 10);
+	AnchorSize = VectorF2(75, 20);
 
 	float padding = 0;
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	ColorDefault = ColorF4(0.375f, 0.375f, 0.375f);
 	ColorHover = ColorF4(0.25f, 0.25f, 0.25f);
+
+	AlignmentX = UI::Text::Alignment::Mid;
+	AlignmentY = UI::Text::Alignment::Mid;
 
 	NubSize = VectorF2(10, 25);
 

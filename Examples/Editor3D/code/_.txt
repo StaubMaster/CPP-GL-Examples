@@ -1,0 +1,10 @@
+Scene Object List
+
+ScrollBox
+contains List of SceneObjects
+each SceneObject can be expanded
+to show subObjects
+
+Propertys stay in the other Form
+
+

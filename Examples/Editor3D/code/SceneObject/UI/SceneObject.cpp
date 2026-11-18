@@ -3,14 +3,12 @@
 
 
 
-SceneObjectUI::~SceneObjectUI()
-{ }
 SceneObjectUI::SceneObjectUI()
 	: Form()
-	, PolyHedraObject()
-	, LightAmbient("LightAmbient")
-	, LightSolar("LightSolar")
-	, LightSpot("LightSpot")
+//	, PolyHedraObject()
+//	, LightAmbient("LightAmbient")
+//	, LightSolar("LightSolar")
+//	, LightSpot("LightSpot")
 {
 	//AutoAnchorYType = EAutoAnchorType::StackMinFit;
 	//AutoAnchorYType = EAutoAnchorType::StackMin;
@@ -24,24 +22,24 @@ SceneObjectUI::SceneObjectUI()
 	//LightAmbient.Anchor.X.AnchorBoth(0, 0);
 	//LightSolar.Anchor.X.AnchorBoth(0, 0);
 	//LightSpot.Anchor.X.AnchorBoth(0, 0);
-	PolyHedraObject.Make_Anchor_X_Both(nullptr, nullptr);
-	PolyHedraObject.Make_Anchor_Y_Both(nullptr, nullptr);
-	LightAmbient.Make_Anchor_X_Both(nullptr, nullptr);
-	LightAmbient.Make_Anchor_Y_Both(nullptr, nullptr);
-	LightSolar.Make_Anchor_X_Both(nullptr, nullptr);
-	LightSolar.Make_Anchor_Y_Both(nullptr, nullptr);
-	LightSpot.Make_Anchor_X_Both(nullptr, nullptr);
-	LightSpot.Make_Anchor_Y_Both(nullptr, nullptr);
+//	PolyHedraObject.Make_Anchor_X_Both(nullptr, nullptr);
+//	PolyHedraObject.Make_Anchor_Y_Both(nullptr, nullptr);
+//	LightAmbient.Make_Anchor_X_Both(nullptr, nullptr);
+//	LightAmbient.Make_Anchor_Y_Both(nullptr, nullptr);
+//	LightSolar.Make_Anchor_X_Both(nullptr, nullptr);
+//	LightSolar.Make_Anchor_Y_Both(nullptr, nullptr);
+//	LightSpot.Make_Anchor_X_Both(nullptr, nullptr);
+//	LightSpot.Make_Anchor_Y_Both(nullptr, nullptr);
 
-	PolyHedraObject.Hide();
-	LightAmbient.Hide();
-	LightSolar.Hide();
-	LightSpot.Hide();
+//	PolyHedraObject.Hide();
+//	LightAmbient.Hide();
+//	LightSolar.Hide();
+//	LightSpot.Hide();
 
-	ChildInsert(PolyHedraObject);
-	ChildInsert(LightAmbient);
-	ChildInsert(LightSolar);
-	ChildInsert(LightSpot);
+//	ChildInsert(PolyHedraObject);
+//	ChildInsert(LightAmbient);
+//	ChildInsert(LightSolar);
+//	ChildInsert(LightSpot);
 }
 
 
@@ -53,10 +51,21 @@ SceneObjectUI::SceneObjectUI()
 
 void SceneObjectUI::Change(::SceneObject * obj)
 {
+	ChildRemove(ObjectUI);
+	delete ObjectUI;
 	Object = obj;
 
-	PolyHedraObject.Change(dynamic_cast<SceneObject_PolyHedraObject*>(obj));
+	if (ObjectUI == nullptr)
+	{
+		//PolyHedraObject.Change(dynamic_cast<SceneObject_PolyHedraObject*>(obj));
+		SceneObject_PolyHedraObject * cast = dynamic_cast<SceneObject_PolyHedraObject*>(obj));
+		if (cast != nullptr)
+		{
+			
+		}
+	}
 
+	if (ObjectUI == nullptr)
 	{
 		SceneObject_LightAmbient * obj_ = dynamic_cast<SceneObject_LightAmbient*>(obj);
 		if (obj_ != nullptr)
@@ -71,6 +80,7 @@ void SceneObjectUI::Change(::SceneObject * obj)
 		}
 	}
 
+	if (ObjectUI == nullptr)
 	{
 		SceneObject_LightDirection * obj_ = dynamic_cast<SceneObject_LightDirection*>(obj);
 		if (obj_ != nullptr)
@@ -85,6 +95,7 @@ void SceneObjectUI::Change(::SceneObject * obj)
 		}
 	}
 
+	if (ObjectUI == nullptr)
 	{
 		SceneObject_LightSpot * obj_ = dynamic_cast<SceneObject_LightSpot*>(obj);
 		if (obj_ != nullptr)

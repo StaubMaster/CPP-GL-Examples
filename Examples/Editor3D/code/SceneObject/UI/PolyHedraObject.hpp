@@ -32,7 +32,6 @@ struct PolyHedraObject : public GroupBox
 
 	UI::Control_::Trans3D	Trans;
 
-	~PolyHedraObject();
 	PolyHedraObject();
 
 	NewPolyHedra::Basic3D::LogicalObject *	Object;

@@ -17,7 +17,6 @@ struct LightDirection : public PropertyControl
 	LightBase	Base;
 	VectorF3	Dir;
 
-	~LightDirection();
 	LightDirection(const char * name);
 
 	::LightDirection * Object;

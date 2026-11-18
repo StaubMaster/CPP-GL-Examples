@@ -25,13 +25,17 @@ UI::Control_::Button::Button()
 {
 	Anchor.X.Anchor = AnchorType::Min;
 	Anchor.Y.Anchor = AnchorType::Min;
-	AnchorSize = VectorF2(75, 16);
+	AnchorSize = VectorF2(75, 20);
 
 	float padding = 0;
 	AnchorPadding = BoxF2(VectorF2(padding, padding), VectorF2(padding, padding));
 
 	ColorDefault = ColorF4(0.625f, 0.625f, 0.625f);
 	ColorHover = ColorF4(0.5f, 0.5f, 0.5f);
+
+	TextObjectData.CharacterSize = VectorF2(16);
+	TextObjectData.Color0 = ColorF4(0, 0, 0);
+	TextObjectData.Color1 = ColorF4(0, 0, 0);
 
 	AlignmentX = UI::Text::Alignment::Mid;
 	AlignmentY = UI::Text::Alignment::Mid;

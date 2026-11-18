@@ -2,8 +2,6 @@
 
 
 
-UI::Control_::LightSpot::~LightSpot()
-{ }
 UI::Control_::LightSpot::LightSpot(const char * name)
 	: PropertyControl(name)
 	, Base("Base")

@@ -33,6 +33,10 @@ UI::Control_::TextBox::TextBox()
 	ColorDefault = ColorF4(1.0f, 1.0f, 1.0f);
 	ColorHover = ColorF4(0.875f, 0.875f, 0.875f);
 
+	TextObjectData.CharacterSize = VectorF2(16);
+	TextObjectData.Color0 = ColorF4(0, 0, 0);
+	TextObjectData.Color1 = ColorF4(0, 0, 0);
+
 	AlignmentX = UI::Text::Alignment::Min;
 	AlignmentY = UI::Text::Alignment::Min;
 }

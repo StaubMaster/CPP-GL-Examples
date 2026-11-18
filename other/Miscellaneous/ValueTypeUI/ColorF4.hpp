@@ -17,7 +17,6 @@ struct ColorF4 : public PropertyControl
 	Slider	B;
 	// A ?
 
-	~ColorF4();
 	ColorF4(const char * name);
 
 	::ColorF4 * Object;

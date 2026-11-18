@@ -16,7 +16,6 @@ struct VectorF3 : public PropertyControl
 	Label	Y;
 	Label	Z;
 
-	~VectorF3();
 	VectorF3(const char * name);
 
 	::VectorF3 * Object;

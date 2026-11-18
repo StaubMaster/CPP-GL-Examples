@@ -17,7 +17,6 @@ struct LightSpot : public PropertyControl
 	VectorF3	Pos;
 	VectorF3	Dir;
 
-	~LightSpot();
 	LightSpot(const char * name);
 
 	::LightSpot * Object;

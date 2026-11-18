@@ -2,8 +2,6 @@
 
 
 
-UI::Control_::Trans3D::~Trans3D()
-{ }
 UI::Control_::Trans3D::Trans3D(const char * name)
 	: PropertyControl(name)
 	, Position("Position")
