@@ -5,5 +5,5 @@
 
 NewPolyHedra::Basic3D::DisplayData::DisplayData(const LogicalData & data)
 	: Trans(Matrix4x4::TransformForward(data.Trans))
-	, Normal(Matrix4x4::Rotation(data.Trans.Rotation))
+	, Color()
 { }

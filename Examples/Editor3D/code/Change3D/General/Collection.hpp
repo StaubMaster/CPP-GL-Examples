@@ -1,7 +1,7 @@
 #ifndef  CHANGE_3D_COLLECTION_HPP
 # define CHANGE_3D_COLLECTION_HPP
 
-# include "UI/Change3D/General/Base.hpp"
+# include "Change3D/General/Base.hpp"
 
 # include "Generics/Container/Binary.hpp"
 

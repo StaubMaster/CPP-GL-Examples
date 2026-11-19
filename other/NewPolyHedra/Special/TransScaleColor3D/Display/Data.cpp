@@ -4,8 +4,9 @@
 
 
 TransScaleColor3D::DisplayData::DisplayData(const LogicalData & data)
-	: Trans(Matrix4x4::TransformForward(data.Trans))
-	, Normal(Matrix4x4::Rotation(data.Trans.Rotation))
-	, Scale(data.Scale)
+	: Trans(
+		Matrix4x4::TransformForward(data.Trans) *
+		Matrix4x4::Scale(data.Scale)
+	)
 	, Color(data.Color)
 { }

@@ -34,13 +34,13 @@ void SceneObject_PolyHedraObject::ShowWire()
 	Data.ShowWire();
 }
 
-void SceneObject_PolyHedraObject::DisplayObject(const SceneObjectDisplayMode & mode)
+void SceneObject_PolyHedraObject::DisplayObject(const SceneObject_DisplayMode & mode)
 {
-	if (mode.Objects == SceneObjectDisplayMode::EObjects::Full)
+	if (mode.Objects == SceneObject_DisplayMode::EObjects::Full)
 	{
 		Data.InstancePut();
 	}
-	else if (mode.Objects == SceneObjectDisplayMode::EObjects::Wire)
+	else if (mode.Objects == SceneObject_DisplayMode::EObjects::Wire)
 	{
 		bool full = Data.VisibleFull();
 		bool wire = Data.VisibleWire();

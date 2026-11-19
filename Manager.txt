@@ -1,0 +1,7 @@
+
+most of the Managers shouly only exist once
+most of the NewPolyHedra Manager CAN only exist once
+
+make all the other Managers static,
+so you dont have to pass Poitners/Referances to them around
+so you can just use them

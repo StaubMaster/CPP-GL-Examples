@@ -6,17 +6,20 @@
 struct RayF3;
 
 struct SceneObject;
-struct SceneObjectDisplayMode;
-struct SceneObjectCollection
+struct SceneObject_DisplayMode;
+struct SceneObject_Collection
 {
 	Container::Binary<SceneObject*>		Objects;
 
-	SceneObject *	FindObject(const RayF3 & ray) const;
-	unsigned int	FindObjectIndex(const SceneObject * obj) const;
-
 	void	Clear();
+	void	Remove(const SceneObject * obj);
+
 	void	Update();
-	void	Display(const SceneObjectDisplayMode & mode);
+	void	Display(const SceneObject_DisplayMode & mode);
+
+	unsigned int	FindIndex(const SceneObject * obj) const;
+
+	SceneObject *	FindHit(const RayF3 & ray) const;
 };
 
 #endif

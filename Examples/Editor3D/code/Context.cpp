@@ -18,7 +18,7 @@
 #include "Graphics/Shader/Code.hpp"
 
 // SceneObject
-#include "SceneObject/SceneObject.hpp"
+#include "SceneObject/.hpp"
 #include "SceneObject/PolyHedraObject.hpp"
 #include "SceneObject/LightAmbient.hpp"
 #include "SceneObject/LightDirection.hpp"
@@ -212,7 +212,7 @@ void Light3DContext::PolyHedraPalletUpdate()
 	{
 		if (!UIPolyHedraPalletList.IsVisible())
 		{
-			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(Object_Selected);
+			SceneObject_PolyHedraObject * obj = dynamic_cast<SceneObject_PolyHedraObject*>(SceneObject_Manager.Selected);
 			if (UIPolyHedraPalletList.Object != nullptr && obj != nullptr)
 			{
 				obj -> Data.DisplayObject = &NewPolyHedraManagerBasic.TakeDisplayObject(*((NewPolyHedra::Pallet *)UIPolyHedraPalletList.Object));
@@ -226,16 +226,17 @@ void Light3DContext::PolyHedraPalletUpdate()
 
 void Light3DContext::SceneClear()
 {
-	Object_Selected = nullptr;
-	Object_Hovering = nullptr;
-	Collection.Clear();
+	SceneObject_Manager.Selected = nullptr;
+	SceneObject_Manager.Hovering = nullptr;
+	SceneObject_Manager.Collection.Clear();
+
 	LightManager.Clear();
 	PolyHedraManager.Entrys.Clear();
 //	UserTrans3DChange.HoveringMakeNone();
 //	UserTrans3DChange.SelectedMakeNone();
 }
 
-#include "SceneParsingData.hpp"
+#include "SceneObject/Parsing.hpp"
 #include "FileParsing/TextCommand/ArgsStream.hpp"
 void Light3DContext::SceneLoad(FileInfo file)
 {
@@ -300,8 +301,8 @@ Light3DContext::Light3DContext(const Container::Array<FileInfo> & files)
 	NewPolyHedraManager.BaseManagers.Insert(&NewPolyHedraManagerTSC);
 	NewPolyHedraManager.BaseManagers.Insert(&NewPolyHedraManagerUI);
 
-	DisplayMode.Indicators = SceneObjectDisplayMode::EIndicators::Show;
-	DisplayMode.Objects = SceneObjectDisplayMode::EObjects::Full;
+	SceneObject_Manager.DisplayMode.Indicators = SceneObject_DisplayMode::EIndicators::Show;
+	SceneObject_Manager.DisplayMode.Objects = SceneObject_DisplayMode::EObjects::Full;
 }
 
 
@@ -464,17 +465,9 @@ void Light3DContext::User(FrameTime frame_time)
 
 	if (window[Keys::Delete] == State::Press)
 	{
-		if (Object_Selected != nullptr)
-		{
-			unsigned int idx = Collection.FindObjectIndex(Object_Selected);
-			if (idx != 0xFFFFFFFF)
-			{
-				Collection.Objects.RemoveAt(idx);
-				UserChange.MakeNone();
-				UserChange.IndicatorsHide();
-				Object_Selected = nullptr;
-			}
-		}
+		SceneObject_Manager.RemoveSelected();
+		UserChange.MakeNone();
+		UserChange.IndicatorsHide();
 	}
 
 	/*if (window[Keys::Insert] == State::Press)
@@ -483,23 +476,8 @@ void Light3DContext::User(FrameTime frame_time)
 		Collection.Objects.Insert(new SceneObject_PolyHedraObject(manager, Trans3D()));
 	}*/
 
-	if (window[Keys::D1] == State::Press)
-	{
-		switch (DisplayMode.Objects)
-		{
-			case SceneObjectDisplayMode::EObjects::Full: DisplayMode.Objects = SceneObjectDisplayMode::EObjects::Wire; break;
-			case SceneObjectDisplayMode::EObjects::Wire: DisplayMode.Objects = SceneObjectDisplayMode::EObjects::None; break;
-			case SceneObjectDisplayMode::EObjects::None: DisplayMode.Objects = SceneObjectDisplayMode::EObjects::Full; break;
-		}
-	}
-	if (window[Keys::D2] == State::Press)
-	{
-		switch (DisplayMode.Indicators)
-		{
-			case SceneObjectDisplayMode::EIndicators::Show: DisplayMode.Indicators = SceneObjectDisplayMode::EIndicators::Hide; break;
-			case SceneObjectDisplayMode::EIndicators::Hide: DisplayMode.Indicators = SceneObjectDisplayMode::EIndicators::Show; break;
-		}
-	}
+	if (window[Keys::D1] == State::Press) { SceneObject_Manager.DisplayMode.ObjectsCycle(); }
+	if (window[Keys::D2] == State::Press) { SceneObject_Manager.DisplayMode.IndicatorsCycle(); }
 
 	if (window[Keys::F5] == State::Press)
 	{
@@ -585,7 +563,7 @@ void Light3DContext::Draw()
 	NewPolyHedraManager.InstancesClear();
 	NewPolyHedraManager.InstancesMake();
 
-	Collection.Display(DisplayMode);
+	SceneObject_Manager.Display();
 
 	UserChange.IndicatorsDisplay();
 
@@ -669,22 +647,31 @@ void Light3DContext::ViewFunc()
 
 
 	// Object
-	Object_Hovering = nullptr;
 	if (!IsHoveringControl() && UserChange.IsNone())
 	{
-		Object_Hovering = Collection.FindObject(ViewRay);
+		//HoveringFind()
+		SceneObject_Manager.Hovering = SceneObject_Manager.Collection.FindHit(ViewRay);
+	}
+	else
+	{
+		//HoveringNone()
+		SceneObject_Manager.Hovering = nullptr;
+	}
+
+	if (SceneObject_Manager.Hovering != nullptr)
+	{
 		if (window[MouseButtons::MouseL].IsPress())
 		{
-			Object_Selected = Object_Hovering;
-			UserChange_ChangeObject(Object_Selected);
-			UISceneObject.Change(Object_Selected);
+			SceneObject_Manager.Selected = SceneObject_Manager.Hovering;
+			UserChange_ChangeObject(SceneObject_Manager.Selected);
+			UISceneObject.Change(SceneObject_Manager.Selected);
 		}
 	}
 
-	if (Object_Selected != nullptr)
+	if (SceneObject_Manager.Selected != nullptr)
 	{
-		Object_Selected -> SetTrans(UserChange.Get());
-		Object_Selected -> ShowWire();
+		SceneObject_Manager.Selected -> SetTrans(UserChange.Get()); // only do this when UserChange changes
+		SceneObject_Manager.Selected -> ShowWire(); // do this in Display() ?
 		UISceneObject.Syncronize();
 	}
 }
@@ -739,7 +726,7 @@ void Light3DContext::Frame(FrameTime frame_time)
 	User(frame_time);
 
 	PolyHedraPalletUpdate();
-	Collection.Update();
+	SceneObject_Manager.Collection.Update();
 
 	ViewFunc();
 

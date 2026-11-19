@@ -5,32 +5,7 @@ FANCY_NAME := Editor3D
 ################################################################
 
 FILES := \
-	SceneObject/SceneObject.cpp \
-	SceneObject/DisplayMode.cpp \
-	SceneObject/Collection.cpp \
-	\
-	SceneObject/PolyHedraObject.cpp \
-	SceneObject/LightAmbient.cpp \
-	SceneObject/LightDirection.cpp \
-	SceneObject/LightPoint.cpp \
-	SceneObject/LightSpot.cpp \
-	SceneObject/UI/SceneObject.cpp \
-	\
-	SceneParsingData.cpp \
-\
 	Ray3D_Hit.cpp \
-\
-	UI/ListForm.cpp \
-	UI/Change3D/General/Base.cpp \
-	UI/Change3D/General/Collection.cpp \
-	UI/Change3D/VectorF3.cpp \
-	UI/Change3D/EulerAngle3D.cpp \
-	UI/Change3D/Trans3D.cpp \
-	\
-	UI/PolyHedra/PolyHedraEntry.cpp \
-	UI/PolyHedra/Pallet.cpp \
-	UI/PolyHedra/Basic3D/LogicalObject.cpp \
-	UI/PolyHedra/Basic3D/DisplayObject.cpp \
 \
 	NewPolyHedra/Init/Basic3D.cpp \
 	NewPolyHedra/Init/TransScaleColor3D.cpp \
@@ -39,6 +14,33 @@ FILES := \
 	NewPolyHedra/UserInterface/Layout.cpp \
 	NewPolyHedra/UserInterface/Special.cpp \
 	NewPolyHedra/UserInterface/Init.cpp \
+\
+	SceneObject/.cpp \
+	SceneObject/DisplayMode.cpp \
+	SceneObject/Collection.cpp \
+	SceneObject/Manager.cpp \
+	\
+	SceneObject/PolyHedraObject.cpp \
+	SceneObject/LightAmbient.cpp \
+	SceneObject/LightDirection.cpp \
+	SceneObject/LightPoint.cpp \
+	SceneObject/LightSpot.cpp \
+	SceneObject/UI/SceneObject.cpp \
+	\
+	SceneObject/Parsing.cpp \
+\
+	Change3D/General/Base.cpp \
+	Change3D/General/Collection.cpp \
+	Change3D/VectorF3.cpp \
+	Change3D/EulerAngle3D.cpp \
+	Change3D/Trans3D.cpp \
+\
+	UI/PolyHedra/PolyHedraEntry.cpp \
+	UI/PolyHedra/Pallet.cpp \
+	UI/PolyHedra/Basic3D/LogicalObject.cpp \
+	UI/PolyHedra/Basic3D/DisplayObject.cpp \
+	\
+	UI/ListForm.cpp \
 \
 	Context.cpp \
 	main.cpp \

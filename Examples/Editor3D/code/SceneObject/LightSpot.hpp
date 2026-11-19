@@ -1,13 +1,13 @@
 #ifndef  SCENE_OBJECT_LIGHT_SPOT_HPP
 # define SCENE_OBJECT_LIGHT_SPOT_HPP
 
-# include "SceneObject.hpp"
+# include "SceneObject/.hpp"
 # include "ValueType/Light/Spot.hpp"
 
 # include "Special/Basic3D/Display/Object.hpp"
 # include "Special/Basic3D/Logical/Data.hpp"
 
-struct SceneObjectDisplayMode;
+struct SceneObject_DisplayMode;
 struct SceneObject_LightSpot : public SceneObject
 {
 	LightSpot *		Light;
@@ -26,7 +26,7 @@ struct SceneObject_LightSpot : public SceneObject
 	bool	_ShowWire = false;
 	void	ShowWire() override;
 
-	void	DisplayObject(const SceneObjectDisplayMode & mode) override;
+	void	DisplayObject(const SceneObject_DisplayMode & mode) override;
 
 	RayHitF3	Hit(const RayF3 & ray) const override;
 };

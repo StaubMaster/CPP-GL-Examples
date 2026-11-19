@@ -1,13 +1,13 @@
 #ifndef  SCENE_OBJECT_LIGHT_POINT_HPP
 # define SCENE_OBJECT_LIGHT_POINT_HPP
 
-# include "SceneObject.hpp"
+# include "SceneObject/.hpp"
 # include "ValueType/Light/Point.hpp"
 
 # include "Special/TransScaleColor3D/Display/Object.hpp"
 # include "Special/TransScaleColor3D/Logical/Data.hpp"
 
-struct SceneObjectDisplayMode;
+struct SceneObject_DisplayMode;
 struct SceneObject_LightPoint : public SceneObject
 {
 	LightPoint *	Light;
@@ -26,7 +26,7 @@ struct SceneObject_LightPoint : public SceneObject
 	bool	_ShowWire = false;
 	void	ShowWire() override;
 
-	void	DisplayObject(const SceneObjectDisplayMode & mode) override;
+	void	DisplayObject(const SceneObject_DisplayMode & mode) override;
 
 	RayHitF3	Hit(const RayF3 & ray) const override;
 };

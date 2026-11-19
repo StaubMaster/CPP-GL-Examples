@@ -8,7 +8,7 @@
 
 # include "Generics/Container/Binary.hpp"
 # include "Generics/Function/Pointer.hpp"
-# include "SceneObject/SceneObject.hpp"
+# include "SceneObject/.hpp"
 
 # include "Special/Basic3D/Display/Object.hpp"
 # include "Special/Basic3D/Display/Data.hpp"
@@ -30,7 +30,20 @@ struct SceneParsingData
 
 	FileInfo		File;
 
-	Light3DContext &	Context;
+	Light3DContext &	Context; // use SceneObject_Collection
+	/* why is Context needed ?
+		NewPolyHedra Managers
+		LightManager
+	*/
+	/* what does .scene File actually give ?
+		File of PolyHedra
+
+		store that in SceneObject
+		then make actual NewPolyHedra stuff later
+
+		how to do LightManager ?
+			take from LightObjects when Displaying
+	*/
 
 	::PolyHedraManager &	PolyHedraManager;
 

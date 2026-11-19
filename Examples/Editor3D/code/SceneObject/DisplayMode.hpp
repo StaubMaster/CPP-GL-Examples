@@ -1,7 +1,7 @@
 #ifndef  SCENE_OBJECT_DISPLAY_MODE_HPP
 # define SCENE_OBJECT_DISPLAY_MODE_HPP
 
-struct SceneObjectDisplayMode
+struct SceneObject_DisplayMode
 {
 	enum class EIndicators
 	{
@@ -9,6 +9,7 @@ struct SceneObjectDisplayMode
 		Hide,
 	};
 	EIndicators		Indicators;
+	void			IndicatorsCycle();
 
 	enum class EObjects
 	{
@@ -17,6 +18,7 @@ struct SceneObjectDisplayMode
 		None,
 	};
 	EObjects	Objects;
+	void		ObjectsCycle();
 };
 
 #endif

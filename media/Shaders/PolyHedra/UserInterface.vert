@@ -46,8 +46,7 @@ layout(location =  2) in vec3 MainTex;
 layout(location =  3) in vec4 MainColor;
 
 layout(location =  4) in mat4 InstTrans; // 4 5 6 7
-layout(location =  8) in vec3 InstScale;
-layout(location =  9) in vec4 InstColor;
+layout(location =  8) in vec4 InstColor;
 
 
 
@@ -79,7 +78,8 @@ vec4 proj(in vec3 p_inn)
 
 void main()
 {
-	vs_out.Original = MainPos * InstScale;
+	//vs_out.Original = MainPos * InstScale;
+	vs_out.Original = MainPos;
 	vs_out.Absolute = (vec4(vs_out.Original, 1.0) * InstTrans).xyz;
 	vs_out.Relative = (vec4(vs_out.Absolute, 1.0) * View).xyz;
 	gl_Position = proj(vs_out.Relative);

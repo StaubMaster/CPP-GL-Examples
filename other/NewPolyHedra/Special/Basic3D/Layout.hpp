@@ -3,6 +3,7 @@
 
 # include "Graphics/Attribute/General/Layout.hpp"
 # include "Graphics/Attribute/TypeDefs/Matrix4x4.hpp"
+# include "Graphics/Attribute/TypeDefs/ColorF4.hpp"
 
 namespace NewPolyHedra
 {
@@ -12,7 +13,7 @@ class BufferLayout : public ::Attribute::Layout
 {
 	public:
 	::Attribute::Matrix4x4	Trans;
-	::Attribute::Matrix4x4	Normal;
+	::Attribute::ColorF4	Color;
 	public:
 	BufferLayout();
 };

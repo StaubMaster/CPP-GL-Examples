@@ -44,9 +44,9 @@ void SceneObject_LightAmbient::ShowWire()
 	_ShowWire = true;
 }
 
-void SceneObject_LightAmbient::DisplayObject(const SceneObjectDisplayMode & mode)
+void SceneObject_LightAmbient::DisplayObject(const SceneObject_DisplayMode & mode)
 {
-	if (mode.Indicators == SceneObjectDisplayMode::EIndicators::Show)
+	if (mode.Indicators == SceneObject_DisplayMode::EIndicators::Show)
 	{
 		Display -> InstancesFullPut(Data);
 		if (_ShowWire)

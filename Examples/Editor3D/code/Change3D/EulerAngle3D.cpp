@@ -1,4 +1,4 @@
-#include "UI/Change3D/EulerAngle3D.hpp"
+#include "Change3D/EulerAngle3D.hpp"
 #include "PolyHedra/Manager.hpp"
 
 #include "Special/TransScaleColor3D/Display/ObjectManager.hpp"

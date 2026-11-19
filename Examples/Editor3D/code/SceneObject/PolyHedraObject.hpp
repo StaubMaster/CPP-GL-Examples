@@ -1,7 +1,7 @@
 #ifndef  SCENE_OBJECT_POLYHEDRA_OBJECT_HPP
 # define SCENE_OBJECT_POLYHEDRA_OBJECT_HPP
 
-# include "SceneObject.hpp"
+# include "SceneObject/.hpp"
 
 # include "Special/Basic3D/Logical/Object.hpp"
 # include "Special/Basic3D/Logical/Data.hpp"
@@ -9,7 +9,7 @@
 # include "Special/Basic3D/Display/Object.hpp"
 # include "Special/Basic3D/Display/Data.hpp"
 
-struct SceneObjectDisplayMode;
+struct SceneObject_DisplayMode;
 struct SceneObject_PolyHedraObject : public SceneObject
 {
 	NewPolyHedra::Basic3D::LogicalObject	Data; // make this a Pointer, like the other Scene Objects
@@ -26,7 +26,7 @@ struct SceneObject_PolyHedraObject : public SceneObject
 
 	void	ShowWire() override;
 
-	void	DisplayObject(const SceneObjectDisplayMode & mode) override;
+	void	DisplayObject(const SceneObject_DisplayMode & mode) override;
 
 	RayHitF3	Hit(const RayF3 & ray) const override;
 };

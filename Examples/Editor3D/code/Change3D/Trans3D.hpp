@@ -1,9 +1,9 @@
 #ifndef  CHANGE_3D_TRANS_3D_HPP
 # define CHANGE_3D_TRANS_3D_HPP
 
-# include "UI/Change3D/General/Collection.hpp"
-# include "UI/Change3D/VectorF3.hpp"
-# include "UI/Change3D/EulerAngle3D.hpp"
+# include "Change3D/General/Collection.hpp"
+# include "Change3D/VectorF3.hpp"
+# include "Change3D/EulerAngle3D.hpp"
 
 namespace Change3D
 {

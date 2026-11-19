@@ -29,9 +29,7 @@ void TransScaleColor3D::ChangeMedia(const DirectoryInfo & media_dir, Multiform::
 			{
 				TransScaleColor3D::BufferLayout * layout = new TransScaleColor3D::BufferLayout();
 				layout -> Trans.Change(4);
-				layout -> Normal.Change(-1);
-				layout -> Scale.Change(8);
-				layout -> Color.Change(9);
+				layout -> Color.Change(8);
 				graphics.BufferFullInstLayout = layout;
 			}
 			graphics.ShaderWire.Change({
@@ -51,9 +49,7 @@ void TransScaleColor3D::ChangeMedia(const DirectoryInfo & media_dir, Multiform::
 			{
 				TransScaleColor3D::BufferLayout * layout = new TransScaleColor3D::BufferLayout();
 				layout -> Trans.Change(3);
-				layout -> Normal.Change(-1);
-				layout -> Scale.Change(11);
-				layout -> Color.Change(12);
+				layout -> Color.Change(-1);
 				graphics.BufferWireInstLayout = layout;
 			}
 }

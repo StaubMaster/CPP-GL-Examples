@@ -1,4 +1,4 @@
-#include "SceneParsingData.hpp"
+#include "SceneObject/Parsing.hpp"
 
 #include "FileParsing/TextCommand/Args.hpp"
 #include "FileParsing/TextCommand/Exceptions.hpp"
@@ -9,7 +9,7 @@
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/Manager.hpp"
 
-#include "SceneObject/SceneObject.hpp"
+#include "SceneObject/.hpp"
 #include "SceneObject/PolyHedraObject.hpp"
 #include "SceneObject/LightAmbient.hpp"
 #include "SceneObject/LightDirection.hpp"
@@ -167,7 +167,7 @@ void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 		)
 	);
 
-	Context.Collection.Objects.Insert(new SceneObject_PolyHedraObject(object, trans));
+	Context.SceneObject_Manager.Collection.Objects.Insert(new SceneObject_PolyHedraObject(object, trans));
 }
 
 #include "Special/TransScaleColor3D/Logical/Object.hpp"
@@ -198,7 +198,7 @@ void SceneParsingData::Parse_LightAmbient(const TextCommand::Args & cmd_args)
 	SceneObject_LightAmbient * obj = new SceneObject_LightAmbient();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	Context.Collection.Objects.Insert(obj);
+	Context.SceneObject_Manager.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightDirectionD(const TextCommand::Args & cmd_args)
 {
@@ -225,7 +225,7 @@ void SceneParsingData::Parse_LightDirectionD(const TextCommand::Args & cmd_args)
 	SceneObject_LightDirection * obj = new SceneObject_LightDirection();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	Context.Collection.Objects.Insert(obj);
+	Context.SceneObject_Manager.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightPoint(const TextCommand::Args & cmd_args)
 {
@@ -252,7 +252,7 @@ void SceneParsingData::Parse_LightPoint(const TextCommand::Args & cmd_args)
 	SceneObject_LightPoint * obj = new SceneObject_LightPoint();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	Context.Collection.Objects.Insert(obj);
+	Context.SceneObject_Manager.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightSpotT(const TextCommand::Args & cmd_args)
 {
@@ -281,5 +281,5 @@ void SceneParsingData::Parse_LightSpotT(const TextCommand::Args & cmd_args)
 	SceneObject_LightSpot * obj = new SceneObject_LightSpot();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	Context.Collection.Objects.Insert(obj);
+	Context.SceneObject_Manager.Collection.Objects.Insert(obj);
 }

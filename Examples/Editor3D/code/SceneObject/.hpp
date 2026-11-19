@@ -6,11 +6,11 @@
 
 struct PolyHedraManager;
 
-struct SceneObjectDisplayMode;
+struct SceneObject_DisplayMode;
 struct SceneObject
 {
-	virtual ~SceneObject();
-	SceneObject();
+	virtual ~SceneObject() = default;
+	SceneObject() = default;
 
 	virtual Trans3D		GetTrans() const = 0;
 	virtual void		SetTrans(const Trans3D & trans) = 0;
@@ -20,7 +20,7 @@ struct SceneObject
 
 	virtual void	ShowWire() = 0;
 
-	virtual void	DisplayObject(const SceneObjectDisplayMode & mode) = 0;
+	virtual void	DisplayObject(const SceneObject_DisplayMode & mode) = 0;
 	// this kind of interferes with NewPolyHedra::DisplayObject
 	// rename to just Display
 

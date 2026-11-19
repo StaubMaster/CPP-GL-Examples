@@ -29,16 +29,16 @@
 # include "UI/ListForm.hpp"
 
 // SceneObject
-# include "SceneObject/SceneObject.hpp"
-# include "SceneObject/UI/SceneObject.hpp"
+# include "SceneObject/.hpp"
 # include "SceneObject/DisplayMode.hpp"
 # include "SceneObject/Collection.hpp"
+# include "SceneObject/Manager.hpp"
+# include "SceneObject/UI/SceneObject.hpp"
 
-// UserChange
-//# include "UI/UserTrans3DChange.hpp"
-# include "UI/Change3D/VectorF3.hpp"
-# include "UI/Change3D/EulerAngle3D.hpp"
-# include "UI/Change3D/Trans3D.hpp"
+// Change3D
+# include "Change3D/VectorF3.hpp"
+# include "Change3D/EulerAngle3D.hpp"
+# include "Change3D/Trans3D.hpp"
 
 // PolyHedra
 # include "PolyHedra/Manager.hpp"
@@ -117,10 +117,11 @@ void		PolyHedraPalletUpdate();
 
 
 
-SceneObjectDisplayMode	DisplayMode;
-SceneObjectCollection	Collection;
-SceneObject *			Object_Selected = nullptr;
-SceneObject *			Object_Hovering = nullptr;
+//SceneObject_DisplayMode	DisplayMode;
+//SceneObject_Collection	Collection;
+//SceneObject *			Object_Selected = nullptr;
+//SceneObject *			Object_Hovering = nullptr;
+::SceneObject_Manager		SceneObject_Manager;
 
 void	Objects_Update();
 

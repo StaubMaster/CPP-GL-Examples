@@ -30,7 +30,7 @@ void NewPolyHedra::Basic3D::ChangeMedia(const DirectoryInfo & media_dir, Multifo
 			{
 				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
 				layout -> Trans.Change(4);
-				layout -> Normal.Change(-1);
+				layout -> Color.Change(8);
 				graphics.BufferFullInstLayout = layout;
 			}
 			graphics.ShaderWire.Change({
@@ -50,7 +50,7 @@ void NewPolyHedra::Basic3D::ChangeMedia(const DirectoryInfo & media_dir, Multifo
 			{
 				NewPolyHedra::Basic3D::BufferLayout * layout = new NewPolyHedra::Basic3D::BufferLayout();
 				layout -> Trans.Change(3);
-				layout -> Normal.Change(-1);
+				layout -> Color.Change(-1);
 				graphics.BufferWireInstLayout = layout;
 			}
 }

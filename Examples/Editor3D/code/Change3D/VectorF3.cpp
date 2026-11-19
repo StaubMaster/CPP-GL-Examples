@@ -1,4 +1,4 @@
-#include "UI/Change3D/VectorF3.hpp"
+#include "Change3D/VectorF3.hpp"
 #include "PolyHedra/Manager.hpp"
 
 #include "Special/TransScaleColor3D/Display/ObjectManager.hpp"
