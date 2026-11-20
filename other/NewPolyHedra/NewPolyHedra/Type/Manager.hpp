@@ -10,9 +10,6 @@ namespace NewPolyHedra
 {
 template<typename LogicalData> struct DataManager : public BaseManager
 {
-	public:
-	static DataManager *	Current;
-
 	private:
 	TypeLogicalObjectManager<LogicalData>		_LogicalManager;
 	public:
@@ -26,10 +23,22 @@ template<typename LogicalData> struct DataManager : public BaseManager
 	virtual			DataDisplayObject<LogicalData> &			TakeDisplayObject(      Pallet & pallet)	= 0;
 
 	public:
-	virtual ~DataManager();
-	DataManager();
+	virtual ~DataManager() = default;
+	DataManager() = default;
 	DataManager(const DataManager & other) = delete;
 	DataManager & operator=(const DataManager & other) = delete;
+
+
+
+	//private:
+	//static DataManager *	Current_;
+	//public:
+	//static DataManager &	Current();
+	//static bool		CheckCurrent();
+	//private:
+	//static void		ClearCurrent();
+	//bool	IsCurrent() const;
+	//void	MakeCurrent();
 };
 
 
@@ -45,10 +54,22 @@ template<typename LogicalData, typename DisplayData> struct TypeManager : public
 			TypeDisplayObject<LogicalData, DisplayData> &			TakeDisplayObject(      Pallet & pallet)	override;
 
 	public:
-	~TypeManager() = default;
-	TypeManager() = default;
+	~TypeManager();
+	TypeManager();
 	TypeManager(const TypeManager & other) = delete;
 	TypeManager & operator=(const TypeManager & other) = delete;
+
+
+
+	private:
+	static TypeManager *	Current_;
+	public:
+	static TypeManager &	Current();
+	static bool		CheckCurrent();
+	private:
+	static void		ClearCurrent();
+	bool	IsCurrent() const;
+	void	MakeCurrent();
 };
 };
 

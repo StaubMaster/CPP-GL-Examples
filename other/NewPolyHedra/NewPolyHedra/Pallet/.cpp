@@ -16,8 +16,8 @@
 bool NewPolyHedra::Pallet::Equals(const PolyHedra * polyhedra) const	{ return Object == polyhedra; }
 bool NewPolyHedra::Pallet::Equals(const PolyHedra & polyhedra) const	{ return Object == &polyhedra; }
 
-bool NewPolyHedra::Pallet::Equals(const std::string & name) const		{ return Name == name; }
-bool NewPolyHedra::Pallet::Equals(const char * name) const				{ return Name == name; }
+//bool NewPolyHedra::Pallet::Equals(const std::string & name) const		{ return Name == name; }
+//bool NewPolyHedra::Pallet::Equals(const char * name) const				{ return Name == name; }
 
 
 
@@ -27,7 +27,7 @@ NewPolyHedra::Pallet::~Pallet()
 }
 NewPolyHedra::Pallet::Pallet()
 	: Object(nullptr)
-	, Name()
+	//, Name()
 	, BufferFull(GL::BufferDataUsage::StaticDraw)
 	, BufferWire(GL::BufferDataUsage::StaticDraw)
 	, BufferWireElem(GL::BufferDataUsage::StaticDraw, GL::DrawIndexType::UnsignedInt)
@@ -35,20 +35,20 @@ NewPolyHedra::Pallet::Pallet()
 { }
 NewPolyHedra::Pallet::Pallet(PolyHedra * object)
 	: Object(object)
-	, Name()
+	//, Name()
 	, BufferFull(GL::BufferDataUsage::StaticDraw)
 	, BufferWire(GL::BufferDataUsage::StaticDraw)
 	, BufferWireElem(GL::BufferDataUsage::StaticDraw, GL::DrawIndexType::UnsignedInt)
 	, Texture()
 { }
-NewPolyHedra::Pallet::Pallet(PolyHedra * object, std::string name)
+/*NewPolyHedra::Pallet::Pallet(PolyHedra * object, std::string name)
 	: Object(object)
 	, Name(name)
 	, BufferFull(GL::BufferDataUsage::StaticDraw)
 	, BufferWire(GL::BufferDataUsage::StaticDraw)
 	, BufferWireElem(GL::BufferDataUsage::StaticDraw, GL::DrawIndexType::UnsignedInt)
 	, Texture()
-{ }
+{ }*/
 
 
 

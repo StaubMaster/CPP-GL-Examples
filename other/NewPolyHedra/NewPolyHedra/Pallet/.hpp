@@ -17,15 +17,15 @@ struct Pallet // PalletObject
 {
 	private: public: // get PolyHedra
 	PolyHedra *		Object = nullptr;
-	std::string		Name;
+	//std::string		Name;
 
 	public:
 	bool	Equals(const PolyHedra * polyhedra) const;
 	bool	Equals(const PolyHedra & polyhedra) const;
 
-	public:
-	bool	Equals(const std::string & name) const;
-	bool	Equals(const char * name) const;
+	//public:
+	//bool	Equals(const std::string & name) const;
+	//bool	Equals(const char * name) const;
 
 	public:
 	~Pallet();
@@ -35,7 +35,7 @@ struct Pallet // PalletObject
 
 	public:
 	Pallet(PolyHedra * object);
-	Pallet(PolyHedra * object, std::string name);
+	//Pallet(PolyHedra * object, std::string name);
 
 
 

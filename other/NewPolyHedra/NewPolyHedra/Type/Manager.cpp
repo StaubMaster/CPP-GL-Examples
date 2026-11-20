@@ -4,16 +4,14 @@
 
 
 
-template<typename LogicalData> NewPolyHedra::DataManager<LogicalData> * NewPolyHedra::DataManager<LogicalData>::Current = nullptr;
-
-template<typename LogicalData> NewPolyHedra::DataManager<LogicalData>::~DataManager()
+/*template<typename LogicalData> NewPolyHedra::DataManager<LogicalData>::~DataManager()
 {
-	Current = nullptr;
-}
-template<typename LogicalData> NewPolyHedra::DataManager<LogicalData>::DataManager()
+	if (IsCurrent()) { ClearCurrent(); }
+}*/
+/*template<typename LogicalData> NewPolyHedra::DataManager<LogicalData>::DataManager()
 {
-	Current = this;
-}
+	if (!CheckCurrent()) { MakeCurrent(); }
+}*/
 
 template<typename LogicalData> NewPolyHedra::TypeLogicalObjectManager<LogicalData> & NewPolyHedra::DataManager<LogicalData>::LogicalManager()
 {
@@ -27,6 +25,17 @@ template<typename LogicalData> const NewPolyHedra::TypeLogicalObjectManager<Logi
 {
 	return _LogicalManager.New(pallet);
 }*/
+
+
+
+//template<typename LogicalData> NewPolyHedra::DataManager<LogicalData> * NewPolyHedra::DataManager<LogicalData>::Current_ = nullptr;
+//template<typename LogicalData> NewPolyHedra::DataManager<LogicalData> & NewPolyHedra::DataManager<LogicalData>::Current() { return *Current_; }
+//template<typename LogicalData> bool NewPolyHedra::DataManager<LogicalData>::CheckCurrent() { return (Current_ != nullptr); }
+//template<typename LogicalData> void NewPolyHedra::DataManager<LogicalData>::ClearCurrent() { Current_ = nullptr; }
+//template<typename LogicalData> bool NewPolyHedra::DataManager<LogicalData>::IsCurrent() const { return (Current_ == this); }
+//template<typename LogicalData> void NewPolyHedra::DataManager<LogicalData>::MakeCurrent() { Current_ = this; }
+
+
 
 
 
@@ -48,3 +57,21 @@ template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeDisplayOb
 {
 	return _DisplayManager.Take(pallet);
 }
+
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeManager<LogicalData, DisplayData>::~TypeManager()
+{
+	if (IsCurrent()) { ClearCurrent(); }
+}
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeManager<LogicalData, DisplayData>::TypeManager()
+{
+	if (!CheckCurrent()) { MakeCurrent(); }
+}
+
+
+
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeManager<LogicalData, DisplayData> * NewPolyHedra::TypeManager<LogicalData, DisplayData>::Current_ = nullptr;
+template<typename LogicalData, typename DisplayData> NewPolyHedra::TypeManager<LogicalData, DisplayData> & NewPolyHedra::TypeManager<LogicalData, DisplayData>::Current() { return *Current_; }
+template<typename LogicalData, typename DisplayData> bool NewPolyHedra::TypeManager<LogicalData, DisplayData>::CheckCurrent() { return (Current_ != nullptr); }
+template<typename LogicalData, typename DisplayData> void NewPolyHedra::TypeManager<LogicalData, DisplayData>::ClearCurrent() { Current_ = nullptr; }
+template<typename LogicalData, typename DisplayData> bool NewPolyHedra::TypeManager<LogicalData, DisplayData>::IsCurrent() const { return (Current_ == this); }
+template<typename LogicalData, typename DisplayData> void NewPolyHedra::TypeManager<LogicalData, DisplayData>::MakeCurrent() { Current_ = this; }

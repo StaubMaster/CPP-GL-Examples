@@ -7,22 +7,9 @@
 
 
 
-NewPolyHedra::PalletManager * NewPolyHedra::PalletManager::Current = nullptr;
-
-NewPolyHedra::Pallet * NewPolyHedra::PalletManager::sFind(PolyHedra & polyhedra)
-{
-	if (Current == nullptr) { return nullptr; }
-	return (Current -> Find(polyhedra));
-}
-NewPolyHedra::Pallet * NewPolyHedra::PalletManager::sTake(PolyHedra & polyhedra)
-{
-	if (Current == nullptr) { return nullptr; }
-	return &(Current -> Take(polyhedra));
-}
-
 NewPolyHedra::PalletManager::~PalletManager()
 {
-	Current = nullptr;
+	if (IsCurrent()) { ClearCurrent(); }
 	Container::Loop::Delete(Pallets);
 }
 NewPolyHedra::PalletManager::PalletManager()
@@ -30,7 +17,7 @@ NewPolyHedra::PalletManager::PalletManager()
 //	, BufferFullLayout()
 //	, BufferWireLayout()
 {
-	Current = this;
+	if (!CheckCurrent()) { MakeCurrent(); }
 }
 
 
@@ -84,4 +71,28 @@ void NewPolyHedra::PalletManager::GraphicsCreate()
 void NewPolyHedra::PalletManager::GraphicsDelete()
 {
 	Container::Loop::Invoke(Pallets, &NewPolyHedra::Pallet::GraphicsDelete);
+}
+
+
+
+
+
+NewPolyHedra::PalletManager * NewPolyHedra::PalletManager::Current_ = nullptr;
+NewPolyHedra::PalletManager & NewPolyHedra::PalletManager::Current() { return *Current_; }
+bool NewPolyHedra::PalletManager::CheckCurrent() { return (Current_ != nullptr); }
+void NewPolyHedra::PalletManager::ClearCurrent() { Current_ = nullptr; }
+bool NewPolyHedra::PalletManager::IsCurrent() const { return (Current_ == this); }
+void NewPolyHedra::PalletManager::MakeCurrent() { Current_ = this; }
+
+
+
+NewPolyHedra::Pallet * NewPolyHedra::PalletManager::sFind(PolyHedra & polyhedra)
+{
+	if (!CheckCurrent()) { return nullptr; }
+	return (Current().Find(polyhedra));
+}
+NewPolyHedra::Pallet * NewPolyHedra::PalletManager::sTake(PolyHedra & polyhedra)
+{
+	if (!CheckCurrent()) { return nullptr; }
+	return &(Current().Take(polyhedra));
 }

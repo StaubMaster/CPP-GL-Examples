@@ -13,12 +13,6 @@ namespace NewPolyHedra
 struct Pallet;
 struct PalletManager
 {
-	private:
-	static PalletManager *		Current;
-	public:
-	static Pallet *		sFind(PolyHedra & polyhedra);
-	static Pallet *		sTake(PolyHedra & polyhedra);
-
 	public:
 	~PalletManager();
 	PalletManager();
@@ -52,6 +46,20 @@ struct PalletManager
 	public:
 	void	GraphicsCreate();
 	void	GraphicsDelete();
+
+
+
+	public:
+	static PalletManager *	Current_;
+	static PalletManager &	Current();
+	static bool		CheckCurrent();
+	static void		ClearCurrent();
+	bool	IsCurrent() const;
+	void	MakeCurrent();
+
+	public:
+	static Pallet *		sFind(PolyHedra & polyhedra);
+	static Pallet *		sTake(PolyHedra & polyhedra);
 };
 };
 

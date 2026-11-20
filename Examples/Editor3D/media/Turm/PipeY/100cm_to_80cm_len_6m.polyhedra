@@ -1,8 +1,6 @@
 Type PolyHedra
 Format Normal
 
-Skin Pipe_gray.skin
-
 
 
 varFloat Radius0_Inn 10.0
@@ -15,5 +13,6 @@ varFloat Distance0_Inn   1.0   #Distance0_Out + 1.0
 varFloat Distance1_Out  60.0
 varFloat Distance1_Inn  59.0   #Distance1_Out - 1.0
 
-OtherFile Segment24.polyhedra
-OtherStatic
+paramFile Segment24.polyhedra
+
+Skin Pipe_gray.skin

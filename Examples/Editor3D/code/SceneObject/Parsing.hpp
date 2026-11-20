@@ -4,31 +4,67 @@
 # include "FileInfo.hpp"
 # include "FileParsing/Variables/Float.hpp"
 
-//# include "PolyHedra/Manager.hpp"
+# include "FileParsing/TextCommand/Func.hpp"
+# include "FileParsing/TextCommand/Loop.hpp"
+
+namespace TextCommand { class Args; };
 
 # include "Generics/Container/Binary.hpp"
 # include "Generics/Function/Pointer.hpp"
+
 # include "SceneObject/.hpp"
+# include "SceneObject/Manager.hpp"
 
 # include "Special/Basic3D/Display/Object.hpp"
 # include "Special/Basic3D/Display/Data.hpp"
 
 struct Light3DContext;
 
-class PolyHedraManager;
+# include <string>
 
-namespace TextCommand { class Args; };
+namespace NewPolyHedra { struct Pallet; };
 
-struct SceneParsingData
+// this is just a map<>
+template<typename Type> class NamedCollection
 {
-	struct ParsingCommand // TextCommandFunc ?
+	private:
+	struct NamedObject
 	{
 		std::string		Name;
-		Function::Pointer<const TextCommand::Args &>	Func;
-		ParsingCommand(std::string name);
+		Type *			Data = nullptr;
 	};
+	Type *							Missing = nullptr;
+	Container::Binary<NamedObject>	Objects;
 
-	FileInfo		File;
+	public:
+	void	ChangeMissing(Type * data)
+	{
+		Missing = data;
+	}
+	public:
+	void	Put(const std::string name, Type * data)
+	{
+		NamedObject entry;
+		entry.Name = name;
+		entry.Data = data;
+		Objects.Insert(entry);
+	}
+	Type *	Find_Data(const std::string & name) const
+	{
+		for (unsigned int i = 0; i < Objects.Count(); i++)
+		{
+			if (Objects[i].Name == name)
+			{
+				return Objects[i].Data;
+			}
+		}
+		return Missing;
+	}
+};
+
+struct SceneParsingData : public TextCommand::Loop
+{
+	SceneObject_Manager &	Manager;
 
 	Light3DContext &	Context; // use SceneObject_Collection
 	/* why is Context needed ?
@@ -45,22 +81,23 @@ struct SceneParsingData
 			take from LightObjects when Displaying
 	*/
 
-	::PolyHedraManager &	PolyHedraManager;
 
-	Container::Binary<ParsingCommand*>	Commands;
-
-	// these should be Pallets ?
-	NewPolyHedra::Basic3D::DisplayObject *							MissingPolyHedra;
-	Container::Binary<NewPolyHedra::Basic3D::DisplayObject *>		PolyHedras;
 
 	ParsingVariable::FloatMemory	VariableFloats;
 	void	PutFloat(const TextCommand::Args & cmd_args);
 	float	ToFloat(const TextCommand::Args & cmd_args, unsigned int idx) const;
 
-	~SceneParsingData();
-	SceneParsingData(const FileInfo & file, Light3DContext & context, ::PolyHedraManager & file_collection);
 
-	void	Parse(const TextCommand::Args & cmd_args);
+
+	NamedCollection<NewPolyHedra::Pallet>	NamedPallets;
+
+
+
+	SceneParsingData(const FileInfo & file, SceneObject_Manager & manager, Light3DContext & context);
+
+
+
+	//void	Parse(const TextCommand::Args & cmd_args);
 
 	void	Parse_Pallet(const TextCommand::Args & cmd_args);
 	void	Parse_Place(const TextCommand::Args & cmd_args);

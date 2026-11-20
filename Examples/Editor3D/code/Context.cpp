@@ -240,13 +240,8 @@ void Light3DContext::SceneClear()
 #include "FileParsing/TextCommand/ArgsStream.hpp"
 void Light3DContext::SceneLoad(FileInfo file)
 {
-	SceneParsingData data(file, *this, PolyHedraManager);
-	TextCommand::ArgsStream stream(file.LoadText());
-	TextCommand::Args cmd_args;
-	while (stream.Continue(cmd_args))
-	{
-		data.Parse(cmd_args);
-	}
+	SceneParsingData parser(file, SceneObject_Manager, *this);
+	parser.ParseFile();
 }
 void Light3DContext::SceneSave(FileInfo file)
 {
@@ -295,8 +290,6 @@ Light3DContext::Light3DContext(const Container::Array<FileInfo> & files)
 	, LightBuffer(GL::BufferDataUsage::StreamDraw)
 {
 	MediaDirectory = DirectoryInfo("../../media/"); // Set Media Directory with MakeFile Macro ?
-
-	PolyHedraManager.MakeCurrent();
 
 	NewPolyHedraManager.PalletManager = &NewPolyHedraPalletManager;
 	NewPolyHedraManager.BaseManagers.Insert(&NewPolyHedraManagerBasic);
@@ -437,7 +430,7 @@ void Light3DContext::User(FrameTime frame_time)
 		Trans3D trans = window.MoveSpinFromKeysCursor();
 
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { trans.Position *= 10; }
-		//trans.Position *= 20;
+		trans.Position *= 20;
 		trans.Rotation *= View.FOV.ToRadians() * 0.05f;
 
 		trans.Position *= frame_time.Delta;

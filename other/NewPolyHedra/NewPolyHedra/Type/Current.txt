@@ -1,0 +1,24 @@
+
+how to upcast ?
+
+I generally want the highest Current
+so store it in TypeManager
+
+but the Objects dont know DisplayData
+so they want the DataManager
+
+so DataManager::Current() functions, need to return the TypeManager Current
+
+member functions can be overridden, and will automatically change cast
+how to do that with the static functions ?
+
+making the TypeManager call the static functions of DataManager is easy
+since TypeManager is above DataManager
+how to make DataManager call static functions of TypeManager ?
+
+
+
+for each DataManager with a specific LogicalManager, there should be exactly one TypeManager with the same LogicalData
+make them the same class somehow, instead of making them inherited ?
+
+

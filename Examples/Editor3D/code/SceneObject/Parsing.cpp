@@ -1,14 +1,20 @@
 #include "SceneObject/Parsing.hpp"
 
+// FileParsing
 #include "FileParsing/TextCommand/Args.hpp"
 #include "FileParsing/TextCommand/Exceptions.hpp"
+#include "FileParsing/TextCommand/FuncNormal.hpp"
 
-#include "Context.hpp"
-
+// PolyHedra
 #include "PolyHedra/PolyHedra.hpp"
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/Manager.hpp"
 
+// NewPolyHedra
+#include "Special/Basic3D/Logical/Data.hpp"
+#include "Special/Basic3D/Logical/ObjectManager.hpp"
+
+// SceneObject
 #include "SceneObject/.hpp"
 #include "SceneObject/PolyHedraObject.hpp"
 #include "SceneObject/LightAmbient.hpp"
@@ -16,25 +22,11 @@
 #include "SceneObject/LightPoint.hpp"
 #include "SceneObject/LightSpot.hpp"
 
-#include "Special/Basic3D/Logical/Data.hpp"
-#include "Special/Basic3D/Logical/ObjectManager.hpp"
-
+// Debug
 #include <iostream>
 
-
-
-SceneParsingData::ParsingCommand::ParsingCommand(std::string name)
-	: Name(name)
-{ }
-
-template<typename ObjectType>
-static void NewParsingCommand(SceneParsingData * parsing, const char * name, ObjectType * obj, void (ObjectType::*func)(const TextCommand::Args &))
-{
-	SceneParsingData::ParsingCommand * cmd_func;
-	cmd_func = new SceneParsingData::ParsingCommand(name);
-	cmd_func -> Func.Assign(obj, func);
-	parsing -> Commands.Insert(cmd_func);
-}
+// Context
+#include "Context.hpp"
 
 
 
@@ -58,62 +50,22 @@ float SceneParsingData::ToFloat(const TextCommand::Args & cmd_args, unsigned int
 
 
 
-SceneParsingData::~SceneParsingData()
-{
-	for (unsigned int i = 0; i < Commands.Count(); i++)
-	{
-		delete Commands[i];
-	}
-}
-SceneParsingData::SceneParsingData(const FileInfo & file, Light3DContext & context, ::PolyHedraManager & manager)
-	: File(file)
+SceneParsingData::SceneParsingData(const FileInfo & file, SceneObject_Manager & manager, Light3DContext & context)
+	: TextCommand::Loop()
+	, Manager(manager)
 	, Context(context)
-	, PolyHedraManager(manager)
-	, PolyHedras()
+	, NamedPallets()
 {
-	MissingPolyHedra = &Context.NewPolyHedraManagerBasic.TakeDisplayObject(*NewPolyHedra::PalletManager::sTake(*PolyHedraGenerate::RegularHexaHedron(1.0f)));
+	File = file;
+	NamedPallets.ChangeMissing(NewPolyHedra::PalletManager::sTake(*PolyHedraGenerate::RegularHexaHedron(1.0f)));
 
-	/* Problem
-		some commands like belt have variants
-		variants are somewhat normalized
-			> <   direction
-			0 1   closure
-	*/
-
-	NewParsingCommand(this, "varFloat",			this, &SceneParsingData::PutFloat);
-	NewParsingCommand(this, "pallet",			this, &SceneParsingData::Parse_Pallet);
-	NewParsingCommand(this, "place",			this, &SceneParsingData::Parse_Place);
-	NewParsingCommand(this, "LightAmbient",		this, &SceneParsingData::Parse_LightAmbient);
-	NewParsingCommand(this, "LightDirectionD",	this, &SceneParsingData::Parse_LightDirectionD);
-	NewParsingCommand(this, "LightPoint",		this, &SceneParsingData::Parse_LightPoint);
-	NewParsingCommand(this, "LightSpotT",		this, &SceneParsingData::Parse_LightSpotT);
-}
-
-void SceneParsingData::Parse(const TextCommand::Args & cmd_args)
-{
-	try
-	{
-		std::string name = cmd_args.Name();
-		if (name == "")
-		{
-			return;
-		}
-		for (unsigned int i = 0; i < Commands.Count(); i++)
-		{
-			ParsingCommand * cmd_func = Commands[i];
-			if (cmd_func -> Name == name)
-			{
-				cmd_func -> Func(cmd_args);
-				return;
-			}
-		}
-		throw TextCommand::Exception::Unknown(cmd_args);
-	}
-	catch (std::exception & ex)
-	{
-		std::cout << "Exception while Parsing Scene: " << ex.what() << '\n';
-		std::cout << "Exception on TextCommand: " << cmd_args << '\n';
-	}
+	Commands.Insert(new TextCommand::FuncNormal("varFloat",			this, &SceneParsingData::PutFloat));
+	Commands.Insert(new TextCommand::FuncNormal("pallet",			this, &SceneParsingData::Parse_Pallet));
+	Commands.Insert(new TextCommand::FuncNormal("place",			this, &SceneParsingData::Parse_Place));
+	Commands.Insert(new TextCommand::FuncNormal("LightAmbient",		this, &SceneParsingData::Parse_LightAmbient));
+	Commands.Insert(new TextCommand::FuncNormal("LightDirectionD",	this, &SceneParsingData::Parse_LightDirectionD));
+	Commands.Insert(new TextCommand::FuncNormal("LightPoint",		this, &SceneParsingData::Parse_LightPoint));
+	Commands.Insert(new TextCommand::FuncNormal("LightSpotT",		this, &SceneParsingData::Parse_LightSpotT));
 }
 
 void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
@@ -122,37 +74,20 @@ void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
 
 	FileInfo file(File.Directory().File(cmd_args.ToString(0)));
 
-	PolyHedra * polyhedra = PolyHedraManager.Take_Data(file);
+	PolyHedra * polyhedra = PolyHedraManager::sTake_Data(file);
 	if (polyhedra == nullptr)
 	{
 		std::cout << "PolyHedra " << file << " null\n";
 		return;
 	}
 
-	NewPolyHedra::Pallet & pallet = Context.NewPolyHedraPalletManager.Take(*polyhedra);
-	pallet.Name = cmd_args.ToString(1);
-
-	NewPolyHedra::Basic3D::DisplayObject & manager = Context.NewPolyHedraManagerBasic.TakeDisplayObject(pallet);
-	PolyHedras.Insert(&manager);
+	NamedPallets.Put(cmd_args.ToString(1), NewPolyHedra::PalletManager::sTake(*polyhedra));
 }
 void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 7)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 7"); }
 
-	std::string name = cmd_args.ToString(0);
-	NewPolyHedra::Basic3D::DisplayObject * object = MissingPolyHedra;
-	for (unsigned int i = 0; i < PolyHedras.Count(); i++)
-	{
-		if (PolyHedras[i] -> PalletObject.Name == name)
-		{
-			object = PolyHedras[i];
-		}
-	}
-	if (object == nullptr)
-	{
-		std::cout << "Pallet " << name << " not found\n";
-		return;
-	}
+	NewPolyHedra::Pallet * pallet = NamedPallets.Find_Data(cmd_args.ToString(0));
 
 	Trans3D trans(
 		VectorF3(
@@ -167,7 +102,7 @@ void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 		)
 	);
 
-	Context.SceneObject_Manager.Collection.Objects.Insert(new SceneObject_PolyHedraObject(object, trans));
+	Manager.Collection.Objects.Insert(new SceneObject_PolyHedraObject(&NewPolyHedra::Basic3D::Manager::Current().TakeDisplayObject(*pallet), trans));
 }
 
 #include "Special/TransScaleColor3D/Logical/Object.hpp"
@@ -198,7 +133,8 @@ void SceneParsingData::Parse_LightAmbient(const TextCommand::Args & cmd_args)
 	SceneObject_LightAmbient * obj = new SceneObject_LightAmbient();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	Context.SceneObject_Manager.Collection.Objects.Insert(obj);
+	//Context.SceneObject_Manager.Collection.Objects.Insert(obj);
+	Manager.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightDirectionD(const TextCommand::Args & cmd_args)
 {
@@ -225,7 +161,8 @@ void SceneParsingData::Parse_LightDirectionD(const TextCommand::Args & cmd_args)
 	SceneObject_LightDirection * obj = new SceneObject_LightDirection();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	Context.SceneObject_Manager.Collection.Objects.Insert(obj);
+	//Context.SceneObject_Manager.Collection.Objects.Insert(obj);
+	Manager.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightPoint(const TextCommand::Args & cmd_args)
 {
@@ -252,7 +189,8 @@ void SceneParsingData::Parse_LightPoint(const TextCommand::Args & cmd_args)
 	SceneObject_LightPoint * obj = new SceneObject_LightPoint();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	Context.SceneObject_Manager.Collection.Objects.Insert(obj);
+	//Context.SceneObject_Manager.Collection.Objects.Insert(obj);
+	Manager.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightSpotT(const TextCommand::Args & cmd_args)
 {
@@ -281,5 +219,6 @@ void SceneParsingData::Parse_LightSpotT(const TextCommand::Args & cmd_args)
 	SceneObject_LightSpot * obj = new SceneObject_LightSpot();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	Context.SceneObject_Manager.Collection.Objects.Insert(obj);
+	//Context.SceneObject_Manager.Collection.Objects.Insert(obj);
+	Manager.Collection.Objects.Insert(obj);
 }
