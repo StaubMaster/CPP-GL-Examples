@@ -1,9 +1,6 @@
 #include "UI/PolyHedra/PolyHedraEntry.hpp"
+#include "PolyHedra/Entry.hpp"
 #include "PolyHedra/Manager.hpp"
-
-
-
-::PolyHedraManager * UI::PolyHedraEntry::Manager = nullptr;
 
 
 
@@ -46,18 +43,7 @@ void UI::PolyHedraEntry::Syncronize()
 
 void UI::PolyHedraEntry::Change(::PolyHedra * obj)
 {
-	Object = nullptr;
-	if (Manager != nullptr)
-	{
-		for (unsigned int i = 0; i < Manager -> Entrys.Count(); i++)
-		{
-			::PolyHedraEntry & entry = Manager -> Entrys[i];
-			if (entry.Object == obj)
-			{
-				Object = &entry; // this points inside Container, might become invalid
-			}
-		}
-	}
+	Object = PolyHedraManager::sFind(obj);
 
 	if (Object != nullptr)
 	{

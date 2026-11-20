@@ -6,14 +6,11 @@
 
 class PolyHedra;
 struct PolyHedraEntry;
-class PolyHedraManager;
 
 namespace UI
 {
 struct PolyHedraEntry : public NestedProperty
 {
-	static ::PolyHedraManager *	Manager;
-
 	UI::Control_::Label		File;
 	// PolyHedra
 

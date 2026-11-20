@@ -122,7 +122,7 @@ void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
 
 	FileInfo file(File.Directory().File(cmd_args.ToString(0)));
 
-	PolyHedra * polyhedra = PolyHedraManager.Take(file);
+	PolyHedra * polyhedra = PolyHedraManager.Take_Data(file);
 	if (polyhedra == nullptr)
 	{
 		std::cout << "PolyHedra " << file << " null\n";

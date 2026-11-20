@@ -69,7 +69,7 @@ void Light3DContext::InitLights()
 	{
 		SceneObject_LightSpot::Display = &NewPolyHedraManagerBasic.TakeDisplayObject(
 			NewPolyHedraPalletManager.Take(
-				*PolyHedraManager.Take(
+				*PolyHedraManager.Take_Data(
 					dir.File("Stage_Light.polyhedra")
 				)
 			)
@@ -79,7 +79,7 @@ void Light3DContext::InitLights()
 	{
 		SceneObject_LightAmbient::Display = &NewPolyHedraManagerTSC.TakeDisplayObject(
 			NewPolyHedraPalletManager.Take(
-				*PolyHedraManager.Take(
+				*PolyHedraManager.Take_Data(
 					dir.File("LightBulb.polyhedra")
 				)
 			)
@@ -89,7 +89,7 @@ void Light3DContext::InitLights()
 	{
 		SceneObject_LightPoint::Display = &NewPolyHedraManagerTSC.TakeDisplayObject(
 			NewPolyHedraPalletManager.Take(
-				*PolyHedraManager.Take(
+				*PolyHedraManager.Take_Data(
 					dir.File("LightBulb.polyhedra")
 				)
 			)
@@ -296,6 +296,8 @@ Light3DContext::Light3DContext(const Container::Array<FileInfo> & files)
 {
 	MediaDirectory = DirectoryInfo("../../media/"); // Set Media Directory with MakeFile Macro ?
 
+	PolyHedraManager.MakeCurrent();
+
 	NewPolyHedraManager.PalletManager = &NewPolyHedraPalletManager;
 	NewPolyHedraManager.BaseManagers.Insert(&NewPolyHedraManagerBasic);
 	NewPolyHedraManager.BaseManagers.Insert(&NewPolyHedraManagerTSC);
@@ -323,8 +325,6 @@ void Light3DContext::ChangeMedia()
 		&UIManager.GraphManager.ShaderLayout,
 	});
 	LayoutMultiform.Find(layouts);
-
-	UI::PolyHedraEntry::Manager = &PolyHedraManager;
 
 	std::cout << "Light3DContext::ChangeMedia done\n";
 }
@@ -371,12 +371,12 @@ void Light3DContext::Make()
 
 	{
 		DirectoryInfo dir(MediaDirectory.Directory("YMT/Meta/"));
-		Change3D::VectorF3::MoveAxisX_DisplayObject     = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("MoveAxis/AxisX.polyhedra"))));
-		Change3D::VectorF3::MoveAxisY_DisplayObject     = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("MoveAxis/AxisY.polyhedra"))));
-		Change3D::VectorF3::MoveAxisZ_DisplayObject     = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("MoveAxis/AxisZ.polyhedra"))));
-		Change3D::EulerAngle3D::SpinRingX_DisplayObject = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("SpinRing/RingX.polyhedra"))));
-		Change3D::EulerAngle3D::SpinRingY_DisplayObject = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("SpinRing/RingY.polyhedra"))));
-		Change3D::EulerAngle3D::SpinRingZ_DisplayObject = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take(dir.File("SpinRing/RingZ.polyhedra"))));
+		Change3D::VectorF3::MoveAxisX_DisplayObject     = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take_Data(dir.File("MoveAxis/AxisX.polyhedra"))));
+		Change3D::VectorF3::MoveAxisY_DisplayObject     = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take_Data(dir.File("MoveAxis/AxisY.polyhedra"))));
+		Change3D::VectorF3::MoveAxisZ_DisplayObject     = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take_Data(dir.File("MoveAxis/AxisZ.polyhedra"))));
+		Change3D::EulerAngle3D::SpinRingX_DisplayObject = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take_Data(dir.File("SpinRing/RingX.polyhedra"))));
+		Change3D::EulerAngle3D::SpinRingY_DisplayObject = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take_Data(dir.File("SpinRing/RingY.polyhedra"))));
+		Change3D::EulerAngle3D::SpinRingZ_DisplayObject = &NewPolyHedraManagerTSC.DisplayManager().Take(NewPolyHedraPalletManager.Take(*PolyHedraManager.Take_Data(dir.File("SpinRing/RingZ.polyhedra"))));
 	}
 	UserChange.IndicatorsHide();
 
@@ -658,7 +658,8 @@ void Light3DContext::ViewFunc()
 		SceneObject_Manager.Hovering = nullptr;
 	}
 
-	if (SceneObject_Manager.Hovering != nullptr)
+	//if (SceneObject_Manager.Hovering != nullptr)
+	if (!IsHoveringControl() && UserChange.IsNone())
 	{
 		if (window[MouseButtons::MouseL].IsPress())
 		{
