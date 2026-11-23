@@ -4,46 +4,37 @@ Format Normal
 
 
 circle>   12 12 0   0,0 0,05 0,0   0,10   0,0 -1,0 0,0   0,0
+var index[] list0 return
 circle>   12 12 0   0,0 0,05 0,0   0,45   0,0 -1,0 0,0   0,0
+var index[] list1 return
 circle>   12 12 0   0,0 1,30 0,0   0,70   0,0 -1,0 0,0   0,0
+var index[] list2 return
 circle>   12 12 0   0,0 1,30 0,0   0,75   0,0 -1,0 0,0   0,0
+var index[] list3 return
 circle>   12 12 0   0,0 1,00 0,0   0,75   0,0 -1,0 0,0   0,0
+var index[] list4 return
 circle>   12 12 0   0,0 1,00 0,0   0,70   0,0 -1,0 0,0   0,0
+var index[] list5 return
 circle>   12 12 0   0,0 0,00 0,0   0,50   0,0 -1,0 0,0   0,0
+var index[] list6 return
 circle>   12 12 0   0,0 0,00 0,0   0,10   0,0 -1,0 0,0   0,0
+var index[] list7 return
 
 normal 0
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11   +12 +13 +14 +15 +16 +17 +18 +19 +20 +21 +22 +23
-offset +12
-
+beltI list0 list1
 normal 1
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11   +12 +13 +14 +15 +16 +17 +18 +19 +20 +21 +22 +23
-offset +12
-
+beltI list1 list2
 normal 2
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11   +12 +13 +14 +15 +16 +17 +18 +19 +20 +21 +22 +23
-offset +12
-
+beltI list2 list3
 normal 3
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11   +12 +13 +14 +15 +16 +17 +18 +19 +20 +21 +22 +23
-offset +12
-
+beltI list3 list4
 normal 4
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11   +12 +13 +14 +15 +16 +17 +18 +19 +20 +21 +22 +23
-offset +12
-
+beltI list4 list5
 normal 5
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11   +12 +13 +14 +15 +16 +17 +18 +19 +20 +21 +22 +23
-offset +12
-
+beltI list5 list6
 normal 6
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11   +12 +13 +14 +15 +16 +17 +18 +19 +20 +21 +22 +23
-offset +12
-
+beltI list6 list7
 normal 7
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11   00 01 02 03 04 05 06 07 08 09 10 11
-#offset +12
-
-
+beltI list7 list0
 
 Skin BlumenTopf.skin

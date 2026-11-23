@@ -34,7 +34,7 @@ void SceneParsingData::PutFloat(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 2)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 2"); }
 
-	VariableFloats.Put(cmd_args.ToString(0), cmd_args.ToFloat(1));
+	Variables.Set(cmd_args.ToString(0), cmd_args.ToFloat(1));
 }
 float SceneParsingData::ToFloat(const TextCommand::Args & cmd_args, unsigned int idx) const
 {
@@ -44,7 +44,8 @@ float SceneParsingData::ToFloat(const TextCommand::Args & cmd_args, unsigned int
 		return ParsingVariable::Float::ParseLiteral(str);
 	}
 	char sign = ParsingVariable::Float::SignTake(str);
-	float value = VariableFloats.To(str);
+	float value;
+	Variables.Get(str, value);
 	return ParsingVariable::Float::SignPut(value, sign);
 }
 

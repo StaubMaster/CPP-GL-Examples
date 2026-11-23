@@ -430,7 +430,7 @@ void Light3DContext::User(FrameTime frame_time)
 		Trans3D trans = window.MoveSpinFromKeysCursor();
 
 		if (window.KeyBoardManager[Keys::LeftControl].State == State::Down) { trans.Position *= 10; }
-		trans.Position *= 20;
+		//trans.Position *= 20;
 		trans.Rotation *= View.FOV.ToRadians() * 0.05f;
 
 		trans.Position *= frame_time.Delta;

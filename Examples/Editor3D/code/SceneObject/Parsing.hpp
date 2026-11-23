@@ -3,6 +3,7 @@
 
 # include "FileInfo.hpp"
 # include "FileParsing/Variables/Float.hpp"
+# include "FileParsing/Variables/Memory.hpp"
 
 # include "FileParsing/TextCommand/Func.hpp"
 # include "FileParsing/TextCommand/Loop.hpp"
@@ -83,7 +84,8 @@ struct SceneParsingData : public TextCommand::Loop
 
 
 
-	ParsingVariable::FloatMemory	VariableFloats;
+	VariableMemory		Variables;
+
 	void	PutFloat(const TextCommand::Args & cmd_args);
 	float	ToFloat(const TextCommand::Args & cmd_args, unsigned int idx) const;
 
