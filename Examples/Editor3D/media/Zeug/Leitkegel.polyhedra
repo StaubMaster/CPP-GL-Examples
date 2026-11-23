@@ -4,98 +4,95 @@ Format Normal
 
 
 circle>   16 16 0   0,0 3,00 0,0   0,10   0,0 -1,0 0,0   0,0
+var index[] list00 return
 circle>   16 16 0   0,0 2,45 0,0   0,20   0,0 -1,0 0,0   0,0
+var index[] list01 return
 circle>   16 16 0   0,0 1,90 0,0   0,30   0,0 -1,0 0,0   0,0
+var index[] list02 return
 circle>   16 16 0   0,0 1,35 0,0   0,40   0,0 -1,0 0,0   0,0
+var index[] list03 return
 circle>   16 16 0   0,0 0,80 0,0   0,50   0,0 -1,0 0,0   0,0
+var index[] list04 return
 circle>   16 16 0   0,0 0,25 0,0   0,60   0,0 -1,0 0,0   0,0
+var index[] list05 return
 circle>   16 16 0   0,0 0,25 0,0   0,75   0,0 -1,0 0,0   0,0
+var index[] list06 return
 circle>   16 16 0   0,0 0,10 0,0   0,75   0,0 -1,0 0,0   0,0
-
-
-
-normal 0
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
-
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
-
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
-
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
-
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
-
-normal 1
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
-
-normal 2
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
+var index[] list07 return
 
 
 
 vertex            +1,0 0,10  0,0
+var index   temp0 return
 circle>   8 3 0   +0,8 0,10 +0,8   0,20   0,0 -1,0 0,0   0,0
+var index[] temp1 return
 vertex             0,0 0,10 +1,0
+var index   temp2 return
 circle>   8 3 2   -0,8 0,10 +0,8   0,20   0,0 -1,0 0,0   0,0
+var index[] temp3 return
 vertex            -1,0 0,10  0,0
+var index   temp4 return
 circle>   8 3 4   -0,8 0,10 -0,8   0,20   0,0 -1,0 0,0   0,0
+var index[] temp5 return
 vertex             0,0 0,10 -1,0
+var index   temp6 return
 circle>   8 3 6   +0,8 0,10 -0,8   0,20   0,0 -1,0 0,0   0,0
+var index[] temp7 return
 
-normal 3
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
+var index[] list08 temp0 temp1[0] temp1[1] temp1[2] temp2 temp3[0] temp3[1] temp3[2] temp4 temp5[0] temp5[1] temp5[2] temp6 temp7[0] temp7[1] temp7[2]
 
 
 
 vertex            +1,0 0,00  0,0
+var index   temp0 return
 circle>   8 3 0   +0,8 0,00 +0,8   0,20   0,0 -1,0 0,0   0,0
+var index[] temp1 return
 vertex             0,0 0,00 +1,0
+var index   temp2 return
 circle>   8 3 2   -0,8 0,00 +0,8   0,20   0,0 -1,0 0,0   0,0
+var index[] temp3 return
 vertex            -1,0 0,00  0,0
+var index   temp4 return
 circle>   8 3 4   -0,8 0,00 -0,8   0,20   0,0 -1,0 0,0   0,0
+var index[] temp5 return
 vertex             0,0 0,00 -1,0
+var index   temp6 return
 circle>   8 3 6   +0,8 0,00 -0,8   0,20   0,0 -1,0 0,0   0,0
+var index[] temp7 return
 
-normal 4
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
+var index[] list09 temp0 temp1[0] temp1[1] temp1[2] temp2 temp3[0] temp3[1] temp3[2] temp4 temp5[0] temp5[1] temp5[2] temp6 temp7[0] temp7[1] temp7[2]
 
 
 
 circle>   16 16 0   0,0 0,00 0,0   0,65   0,0 -1,0 0,0   0,0
-
-normal 5
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
-
-
-
+var index[] list10 return
 circle>   16 16 0   0,0 0,25 0,0   0,575   0,0 -1,0 0,0   0,0
-
-normal 5
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
-
-
-
+var index[] list11 return
 circle>   16 16 0   0,0 3,00 0,0   0,075   0,0 -1,0 0,0   0,0
+var index[] list12 return
 
+normal 0
+beltI list00 list01
+beltI list01 list02
+beltI list02 list03
+beltI list03 list04
+beltI list04 list05
+normal 1
+beltI list05 list06
+normal 2
+beltI list06 list07
+normal 3
+beltI list07 list08
+normal 4
+beltI list08 list09
+normal 5
+beltI list09 list10
 normal 6
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   +16 +17 +18 +19 +20 +21 +22 +23 +24 +25 +26 +27 +28 +29 +30 +31
-offset +16
-
-
-
+beltI list10 list11
 normal 7
-belt}1   +00 +01 +02 +03 +04 +05 +06 +07 +08 +09 +10 +11 +12 +13 +14 +15   00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+beltI list11 list12
+normal 8
+beltI list12 list00
 
 
 
