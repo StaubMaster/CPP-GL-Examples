@@ -250,6 +250,7 @@ void Light3DContext::SceneSave(FileInfo file)
 	file.SaveText(ss.str());
 }
 
+#include "FileParsing/StringHelp/.hpp"
 void Light3DContext::SceneReMake()
 {
 	// segfault when something is selected
@@ -280,6 +281,7 @@ void Light3DContext::SceneReMake()
 	//SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
 	//SceneLoad(MediaDirectory.File("42run/all.scene"));
 	std::cout << "Scene ReMake done\n";
+	StringHelp::Test();
 }
 
 

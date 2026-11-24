@@ -3,32 +3,19 @@ Format Normal
 
 
 
-vertex              0,0 0,05 0,0
-var index   idx0 return
-circle>   12 12 0   0,0 0,05 0,0   0,65   0,0 -1,0 0,0   0,0
-var index[] idx1 return
-circle>   12 12 0   0,0 0,15 0,0   0,75   0,0 -1,0 0,0   0,0
-var index[] idx2 return
-circle>   12 12 0   0,0 0,15 0,0   0,80   0,0 -1,0 0,0   0,0
-var index[] idx3 return
-circle>   12 12 0   0,0 0,10 0,0   0,80   0,0 -1,0 0,0   0,0
-var index[] idx4 return
-circle>   12 12 0   0,0 0,00 0,0   0,65   0,0 -1,0 0,0   0,0
-var index[] idx5 return
-vertex              0,0 0,00 0,0
-var index   idx6 return
+vertex              0,0 0,05 0,0;								var index   idx0 return
+circle>   12 12 0   0,0 0,05 0,0   0,65   0,0 -1,0 0,0   0,0;	var index[] idx1 return
+circle>   12 12 0   0,0 0,15 0,0   0,75   0,0 -1,0 0,0   0,0;	var index[] idx2 return
+circle>   12 12 0   0,0 0,15 0,0   0,80   0,0 -1,0 0,0   0,0;	var index[] idx3 return
+circle>   12 12 0   0,0 0,10 0,0   0,80   0,0 -1,0 0,0   0,0;	var index[] idx4 return
+circle>   12 12 0   0,0 0,00 0,0   0,65   0,0 -1,0 0,0   0,0;	var index[] idx5 return
+vertex              0,0 0,00 0,0;								var index   idx6 return
 
-normal 0
-fanI< idx0 idx1
-normal 1
-beltI idx1 idx2
-normal 2
-beltI idx2 idx3
-normal 3
-beltI idx3 idx4
-normal 4
-beltI idx4 idx5
-normal 5
-fanI> idx5 idx6
+normal 0;	fanI< idx0 idx1
+normal 1;	beltI idx1 idx2
+normal 2;	beltI idx2 idx3
+normal 3;	beltI idx3 idx4
+normal 4;	beltI idx4 idx5
+normal 5;	fanI> idx5 idx6
 
 Skin BlumenTopfUnterSetzer.skin

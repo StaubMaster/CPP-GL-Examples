@@ -3,38 +3,22 @@ Format Normal
 
 
 
-circle>   12 12 0   0,0 0,05 0,0   0,10   0,0 -1,0 0,0   0,0
-var index[] list0 return
-circle>   12 12 0   0,0 0,05 0,0   0,45   0,0 -1,0 0,0   0,0
-var index[] list1 return
-circle>   12 12 0   0,0 1,30 0,0   0,70   0,0 -1,0 0,0   0,0
-var index[] list2 return
-circle>   12 12 0   0,0 1,30 0,0   0,75   0,0 -1,0 0,0   0,0
-var index[] list3 return
-circle>   12 12 0   0,0 1,00 0,0   0,75   0,0 -1,0 0,0   0,0
-var index[] list4 return
-circle>   12 12 0   0,0 1,00 0,0   0,70   0,0 -1,0 0,0   0,0
-var index[] list5 return
-circle>   12 12 0   0,0 0,00 0,0   0,50   0,0 -1,0 0,0   0,0
-var index[] list6 return
-circle>   12 12 0   0,0 0,00 0,0   0,10   0,0 -1,0 0,0   0,0
-var index[] list7 return
+circle>   12 12 0   0,0 0,05 0,0   0,10   0,0 -1,0 0,0   0,0;	var index[] list0 return
+circle>   12 12 0   0,0 0,05 0,0   0,45   0,0 -1,0 0,0   0,0;	var index[] list1 return
+circle>   12 12 0   0,0 1,30 0,0   0,70   0,0 -1,0 0,0   0,0;	var index[] list2 return
+circle>   12 12 0   0,0 1,30 0,0   0,75   0,0 -1,0 0,0   0,0;	var index[] list3 return
+circle>   12 12 0   0,0 1,00 0,0   0,75   0,0 -1,0 0,0   0,0;	var index[] list4 return
+circle>   12 12 0   0,0 1,00 0,0   0,70   0,0 -1,0 0,0   0,0;	var index[] list5 return
+circle>   12 12 0   0,0 0,00 0,0   0,50   0,0 -1,0 0,0   0,0;	var index[] list6 return
+circle>   12 12 0   0,0 0,00 0,0   0,10   0,0 -1,0 0,0   0,0;	var index[] list7 return
 
-normal 0
-beltI list0 list1
-normal 1
-beltI list1 list2
-normal 2
-beltI list2 list3
-normal 3
-beltI list3 list4
-normal 4
-beltI list4 list5
-normal 5
-beltI list5 list6
-normal 6
-beltI list6 list7
-normal 7
-beltI list7 list0
+normal 0;	beltI list0 list1
+normal 1;	beltI list1 list2
+normal 2;	beltI list2 list3
+normal 3;	beltI list3 list4
+normal 4;	beltI list4 list5
+normal 5;	beltI list5 list6
+normal 6;	beltI list6 list7
+normal 7;	beltI list7 list0
 
 Skin BlumenTopf.skin
