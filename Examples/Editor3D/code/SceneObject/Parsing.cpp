@@ -55,10 +55,8 @@ SceneParsingData::SceneParsingData(const FileInfo & file, SceneObject_Manager & 
 	: TextCommand::Loop()
 	, Manager(manager)
 	, Context(context)
-	, NamedPallets()
 {
 	File = file;
-	NamedPallets.ChangeMissing(NewPolyHedra::PalletManager::sTake(*PolyHedraGenerate::RegularHexaHedron(1.0f)));
 
 	Commands.Insert(new TextCommand::FuncNormal("varFloat",			this, &SceneParsingData::PutFloat));
 	Commands.Insert(new TextCommand::FuncNormal("pallet",			this, &SceneParsingData::Parse_Pallet));
@@ -82,13 +80,14 @@ void SceneParsingData::Parse_Pallet(const TextCommand::Args & cmd_args)
 		return;
 	}
 
-	NamedPallets.Put(cmd_args.ToString(1), NewPolyHedra::PalletManager::sTake(*polyhedra));
+	Variables.Set(cmd_args.ToString(1), NewPolyHedra::PalletManager::sTake(*polyhedra));
 }
 void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 {
 	if (!(cmd_args.Count() == 7)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 7"); }
 
-	NewPolyHedra::Pallet * pallet = NamedPallets.Find_Data(cmd_args.ToString(0));
+	NewPolyHedra::Pallet * pallet;
+	Variables.Get(cmd_args.ToString(0), pallet);
 
 	Trans3D trans(
 		VectorF3(
@@ -107,7 +106,6 @@ void SceneParsingData::Parse_Place(const TextCommand::Args & cmd_args)
 }
 
 #include "Special/TransScaleColor3D/Logical/Object.hpp"
-//#include "NewPolyHedra/PalletObjectData.hpp"
 
 void SceneParsingData::Parse_LightAmbient(const TextCommand::Args & cmd_args)
 {
@@ -134,7 +132,6 @@ void SceneParsingData::Parse_LightAmbient(const TextCommand::Args & cmd_args)
 	SceneObject_LightAmbient * obj = new SceneObject_LightAmbient();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	//Context.SceneObject_Manager.Collection.Objects.Insert(obj);
 	Manager.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightDirectionD(const TextCommand::Args & cmd_args)
@@ -162,7 +159,6 @@ void SceneParsingData::Parse_LightDirectionD(const TextCommand::Args & cmd_args)
 	SceneObject_LightDirection * obj = new SceneObject_LightDirection();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	//Context.SceneObject_Manager.Collection.Objects.Insert(obj);
 	Manager.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightPoint(const TextCommand::Args & cmd_args)
@@ -190,7 +186,6 @@ void SceneParsingData::Parse_LightPoint(const TextCommand::Args & cmd_args)
 	SceneObject_LightPoint * obj = new SceneObject_LightPoint();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	//Context.SceneObject_Manager.Collection.Objects.Insert(obj);
 	Manager.Collection.Objects.Insert(obj);
 }
 void SceneParsingData::Parse_LightSpotT(const TextCommand::Args & cmd_args)
@@ -220,6 +215,5 @@ void SceneParsingData::Parse_LightSpotT(const TextCommand::Args & cmd_args)
 	SceneObject_LightSpot * obj = new SceneObject_LightSpot();
 	obj -> Light = light;
 	obj -> Data.Trans = trans;
-	//Context.SceneObject_Manager.Collection.Objects.Insert(obj);
 	Manager.Collection.Objects.Insert(obj);
 }

@@ -25,44 +25,6 @@ struct Light3DContext;
 
 namespace NewPolyHedra { struct Pallet; };
 
-// this is just a map<>
-template<typename Type> class NamedCollection
-{
-	private:
-	struct NamedObject
-	{
-		std::string		Name;
-		Type *			Data = nullptr;
-	};
-	Type *							Missing = nullptr;
-	Container::Binary<NamedObject>	Objects;
-
-	public:
-	void	ChangeMissing(Type * data)
-	{
-		Missing = data;
-	}
-	public:
-	void	Put(const std::string name, Type * data)
-	{
-		NamedObject entry;
-		entry.Name = name;
-		entry.Data = data;
-		Objects.Insert(entry);
-	}
-	Type *	Find_Data(const std::string & name) const
-	{
-		for (unsigned int i = 0; i < Objects.Count(); i++)
-		{
-			if (Objects[i].Name == name)
-			{
-				return Objects[i].Data;
-			}
-		}
-		return Missing;
-	}
-};
-
 struct SceneParsingData : public TextCommand::Loop
 {
 	SceneObject_Manager &	Manager;
@@ -88,10 +50,6 @@ struct SceneParsingData : public TextCommand::Loop
 
 	void	PutFloat(const TextCommand::Args & cmd_args);
 	float	ToFloat(const TextCommand::Args & cmd_args, unsigned int idx) const;
-
-
-
-	NamedCollection<NewPolyHedra::Pallet>	NamedPallets;
 
 
 
