@@ -5,9 +5,9 @@ Format Normal
 
 OtherFile Connector.polyhedra
 TransRot   0 0 +90
-OtherStatic
+OtherCombine
 
 OtherFile Circle_96cm_Base.polyhedra
 TransPos   +2.5 0 0
 TransRot   0 0 0
-OtherStatic
+OtherCombine

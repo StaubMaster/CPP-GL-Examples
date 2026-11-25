@@ -1,0 +1,34 @@
+Type PolyHedra
+Format Normal
+
+
+
+circle   24 24 0   0 0000 0   42.5   0 +1 0   0;	var index[] idx0_0 return
+circle   24 24 0   0 0870 0   22.5   0 +1 0   0;	var index[] idx0_1 return
+circle   24 24 0   0 1770 0   22.5   0 +1 0   0;	var index[] idx0_2 return
+
+normal 0;	beltI idx0_0 idx0_1
+normal 1;	beltI idx0_1 idx0_2
+
+
+
+normal
+
+var index[] idx1_0 0 0 0 0
+var index[] idx1_1 0 0 0 0
+vertex   -25.0 1770 -90.0;	var index idx1_0[0] return
+vertex   -25.0 1770 +30.0;	var index idx1_0[1] return
+vertex   +25.0 1770 +30.0;	var index idx1_0[2] return
+vertex   +25.0 1770 -90.0;	var index idx1_0[3] return
+vertex   -25.0 1810 -90.0;	var index idx1_1[0] return
+vertex   -25.0 1810 +30.0;	var index idx1_1[1] return
+vertex   +25.0 1810 +30.0;	var index idx1_1[2] return
+vertex   +25.0 1810 -90.0;	var index idx1_1[3] return
+
+face idx1_0[1] idx1_0[0] idx1_0[2] idx1_0[3]
+face idx1_1[0] idx1_1[1] idx1_1[3] idx1_1[2]
+beltI idx1_0 idx1_1
+
+
+
+

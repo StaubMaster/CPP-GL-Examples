@@ -1,0 +1,28 @@
+Type PolyHedra
+Format Normal
+
+
+
+param Radius_Inn
+param Radius_Out
+
+param Distance_Out
+param Distance_Inn
+
+param Distance
+
+
+
+default 1
+default {
+
+circle   24 24 0   0,0 Distance_Out 0,0   Radius_Out   0 +1 0   0;	var index[] idx0 return
+circle   24 24 0   0,0 Distance_Inn 0,0   Radius_Out   0 +1 0   0;	var index[] idx1 return
+circle   24 24 0   0,0 Distance_Inn 0,0   Radius_Inn   0 +1 0   0;	var index[] idx2 return
+circle   24 24 0   0,0 Distance     0,0   Radius_Inn   0 +1 0   0;	var index[] idx3 return
+vertex             0,0 Distance     0,0;							var index   idx4 return
+
+normal 0;	beltI idx0 idx1
+normal 1;	beltI idx1 idx2
+normal 2;	beltI idx2 idx3
+normal 3;	fanI> idx3 idx4

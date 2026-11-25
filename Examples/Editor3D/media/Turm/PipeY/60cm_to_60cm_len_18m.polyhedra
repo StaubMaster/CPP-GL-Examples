@@ -3,16 +3,18 @@ Format Normal
 
 
 
-varFloat Radius0_Inn  6.0
-varFloat Radius0_Out  6.5   #Radius0_Inn + 0.5
-varFloat Radius1_Inn  6.0
-varFloat Radius1_Out  6.5   #Radius1_Inn + 0.5
+var float Radius0_Inn  6.0
+var float Radius0_Out  6.5   #Radius0_Inn + 0.5
+var float Radius1_Inn  6.0
+var float Radius1_Out  6.5   #Radius1_Inn + 0.5
 
-varFloat Distance0_Out   0.0
-varFloat Distance0_Inn   1.0   #Distance0_Out + 1.0
-varFloat Distance1_Out 180.0
-varFloat Distance1_Inn 179.0   #Distance1_Out - 1.0
+var float Distance0_Out   0.0
+var float Distance0_Inn   1.0   #Distance0_Out + 1.0
+var float Distance1_Out 180.0
+var float Distance1_Inn 179.0   #Distance1_Out - 1.0
 
-paramFile Segment24.polyhedra
 
-Skin Pipe_beige.skin
+
+paramFile Pipe24.polyhedra
+
+Skin Pipe24_beige.skin

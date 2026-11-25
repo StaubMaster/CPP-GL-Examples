@@ -1,0 +1,32 @@
+Type PolyHedra
+Format Normal
+
+
+
+param Radius0_Inn
+param Radius0_Out
+param Radius1_Inn
+param Radius1_Out
+
+param Distance0_Out
+param Distance0_Inn
+param Distance1_Out
+param Distance1_Inn
+
+
+
+default 1
+default {
+
+circle   24 24 0   0 Distance0_Out 0   Radius0_Out   0 +1 0   0;	var index[] idx0 return
+circle   24 24 0   0 Distance0_Inn 0   Radius0_Out   0 +1 0   0;	var index[] idx1 return
+circle   24 24 0   0 Distance0_Inn 0   Radius0_Inn   0 +1 0   0;	var index[] idx2 return
+circle   24 24 0   0 Distance1_Inn 0   Radius1_Inn   0 +1 0   0;	var index[] idx3 return
+circle   24 24 0   0 Distance1_Inn 0   Radius1_Out   0 +1 0   0;	var index[] idx4 return
+circle   24 24 0   0 Distance1_Out 0   Radius1_Out   0 +1 0   0;	var index[] idx5 return
+
+normal 0;	beltI idx0 idx1
+normal 1;	beltI idx1 idx2
+normal 2;	beltI idx2 idx3
+normal 3;	beltI idx3 idx4
+normal 4;	beltI idx4 idx5
