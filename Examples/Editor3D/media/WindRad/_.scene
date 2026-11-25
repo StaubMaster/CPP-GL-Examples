@@ -5,7 +5,7 @@ LightDirectionD   1.0   1.0 1.0 1.0    +1.0 -3.0  +2.0   0.0 45.0 0.0
 
 
 pallet ../Turm/Tower.polyhedra tower
-place tower   0 0 100   0 0 0
+place tower   100 0 0   0 0 0
 
 pallet WindRan.polyhedra wind
 place wind   0 -1770 0   0 0 180

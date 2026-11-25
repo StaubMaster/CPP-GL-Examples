@@ -330,9 +330,6 @@ void Light3DContext::GraphicsCreate()
 
 	UIManager.GraphicsCreate();
 
-	LayoutMultiform.Depth.ChangeData(View.Depth);
-	LayoutMultiform.FOV.ChangeData(View.FOV);
-
 	LightBuffer.Create();
 
 	NewPolyHedraManager.GraphicsCreate();
@@ -360,9 +357,13 @@ void Light3DContext::Make()
 
 	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
 	View.Depth.Color = window.DefaultColor;
+	View.Depth.Factors.SetFar(5000);
 //	View.Trans = Trans3D(VectorF3(0, 64, -2), EulerAngle3D());
 //	View.Trans = Trans3D(VectorF3(0, 430, -24), EulerAngle3D());
 	View.Trans = Trans3D(VectorF3(0, 0, -24), EulerAngle3D());
+
+	LayoutMultiform.Depth.ChangeData(View.Depth);
+	LayoutMultiform.FOV.ChangeData(View.FOV);
 
 	{
 		DirectoryInfo dir(MediaDirectory.Directory("YMT/Meta/"));

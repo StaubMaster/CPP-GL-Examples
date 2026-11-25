@@ -4,10 +4,9 @@ Format Normal
 
 
 OtherFile Connector.polyhedra
-TransRot   0 0 +90
-OtherCombine
+var trans3D trans   0 0 0   0 0 +90
+OtherCombine trans
 
 OtherFile Circle_96cm_Base.polyhedra
-TransPos   +2.5 0 0
-TransRot   0 0 0
-OtherCombine
+var trans3D trans   +2.5 0 0   0 0 0
+OtherCombine trans
