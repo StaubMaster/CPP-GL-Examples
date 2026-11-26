@@ -25,6 +25,26 @@ struct Light3DContext;
 
 namespace NewPolyHedra { struct Pallet; };
 
+/* .scene
+	View Depth
+		Near Far
+		Fade
+		Color (also Background Color)
+*/
+
+/* seperate scenes and subscenes and stuff
+
+PolyHedra
+	should just be the Grometry Data stuff
+	can parse other PolyHedra to combine, but no dynamic stuff
+	dynamic stuff should be a different thing
+	PolySoma maybe ?
+PolySoma
+	multiple dynamic PolyHedra
+	can include other PolySoma
+	can put other PolySoma at a relative Orientation to the Parent ?
+*/
+
 struct SceneParsingData : public TextCommand::Loop
 {
 	SceneObject_Manager &	Manager;
@@ -66,6 +86,8 @@ struct SceneParsingData : public TextCommand::Loop
 	void	Parse_LightDirectionD(const TextCommand::Args & cmd_args);
 	void	Parse_LightPoint(const TextCommand::Args & cmd_args);
 	void	Parse_LightSpotT(const TextCommand::Args & cmd_args);
+
+	void	Other_Scene(const TextCommand::Args & cmd_args);
 };
 
 #endif

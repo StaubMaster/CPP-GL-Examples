@@ -1,0 +1,53 @@
+Type PolyHedra
+Format Normal
+
+
+
+default 1
+default {
+
+
+
+circle   16 04 4   -1.5 +0.05 -2.0   0.5   0 0 -1   0;	var index[] idx0_0 return
+circle   16 07 1    0.0 +0.05 -2.0   0.5   0 0 -1   0;	var index[] idx0_1 return
+circle   16 04 1   +1.5 +0.05 -2.0   0.5   0 0 -1   0;	var index[] idx0_2 return
+circle   16 04 4   +1.5 -0.05 -2.0   0.5   0 0 +1   0;	var index[] idx0_3 return
+circle   16 07 1    0.0 -0.05 -2.0   0.5   0 0 +1   0;	var index[] idx0_4 return
+circle   16 04 1   -1.5 -0.05 -2.0   0.5   0 0 +1   0;	var index[] idx0_5 return
+
+circle   16 04 4   -1.5 +0.05 +2.0   0.5   0 0 -1   0;	var index[] idx1_0 return
+circle   16 07 1    0.0 +0.05 +2.0   0.5   0 0 -1   0;	var index[] idx1_1 return
+circle   16 04 1   +1.5 +0.05 +2.0   0.5   0 0 -1   0;	var index[] idx1_2 return
+circle   16 04 4   +1.5 -0.05 +2.0   0.5   0 0 +1   0;	var index[] idx1_3 return
+circle   16 07 1    0.0 -0.05 +2.0   0.5   0 0 +1   0;	var index[] idx1_4 return
+circle   16 04 1   -1.5 -0.05 +2.0   0.5   0 0 +1   0;	var index[] idx1_5 return
+
+beltI}0 idx0_0 idx1_0
+beltI}0 idx0_1 idx1_1
+beltI}0 idx0_2 idx1_2
+beltI}0 idx0_3 idx1_3
+beltI}0 idx0_4 idx1_4
+beltI}0 idx0_5 idx1_5
+
+belt}0   idx0_0[3] idx0_1[0]   idx1_0[3] idx1_1[0]
+belt}0   idx0_1[6] idx0_2[0]   idx1_1[6] idx1_2[0]
+belt}0   idx0_2[3] idx0_3[0]   idx1_2[3] idx1_3[0]
+belt}0   idx0_3[3] idx0_4[0]   idx1_3[3] idx1_4[0]
+belt}0   idx0_4[6] idx0_5[0]   idx1_4[6] idx1_5[0]
+belt}0   idx0_5[3] idx0_0[0]   idx1_5[3] idx1_0[0]
+
+belt{0   idx0_0[0] idx0_0[1] idx0_0[2] idx0_0[3]   idx0_5[3] idx0_5[2] idx0_5[1] idx0_5[0]
+belt{0   idx0_0[3] idx0_1[0]   idx0_5[0] idx0_4[6]
+belt{0   idx0_1[0] idx0_1[1] idx0_1[2] idx0_1[3] idx0_1[4] idx0_1[5] idx0_1[6]   idx0_4[6] idx0_4[5] idx0_4[4] idx0_4[3] idx0_4[2] idx0_4[1] idx0_4[0]
+belt{0   idx0_1[6] idx0_2[0]   idx0_4[0] idx0_3[3]
+belt{0   idx0_2[0] idx0_2[1] idx0_2[2] idx0_2[3]   idx0_3[3] idx0_3[2] idx0_3[1] idx0_3[0]
+
+belt}0   idx1_0[0] idx1_0[1] idx1_0[2] idx1_0[3]   idx1_5[3] idx1_5[2] idx1_5[1] idx1_5[0]
+belt}0   idx1_0[3] idx1_1[0]   idx1_5[0] idx1_4[6]
+belt}0   idx1_1[0] idx1_1[1] idx1_1[2] idx1_1[3] idx1_1[4] idx1_1[5] idx1_1[6]   idx1_4[6] idx1_4[5] idx1_4[4] idx1_4[3] idx1_4[2] idx1_4[1] idx1_4[0]
+belt}0   idx1_1[6] idx1_2[0]   idx1_4[0] idx1_3[3]
+belt}0   idx1_2[0] idx1_2[1] idx1_2[2] idx1_2[3]   idx1_3[3] idx1_3[2] idx1_3[1] idx1_3[0]
+
+
+
+Skin RoofTile.skin

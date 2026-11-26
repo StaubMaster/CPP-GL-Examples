@@ -1,0 +1,53 @@
+Type PolyHedra
+Format Normal
+
+
+
+default 1
+default {
+
+
+
+vertex -15 00 -20
+vertex +15 00 -20
+vertex +15 00 +20
+vertex -15 00 +20
+
+vertex -15 20 -20
+vertex +15 20 -20
+vertex +15 20 +20
+vertex -15 20 +20
+
+belt}   +0 +1 +2 +3   +4 +5 +6 +7
+offset +4
+
+vertex 0 30 -20
+vertex 0 30 +20
+fan>0} +0 +1 +4
+fan>0} +2 +3 +5
+offset +4
+offset +2
+
+
+
+vertex -18 18 +22
+vertex  00 30 +22
+vertex +18 18 +22
+vertex +18 18 -22
+vertex  00 30 -22
+vertex -18 18 -22
+
+vertex -18 20 +22
+vertex  00 32 +22
+vertex +18 20 +22
+vertex +18 20 -22
+vertex  00 32 -22
+vertex -18 20 -22
+
+belt0}   +00 +01 +02   +05 +04 +03
+belt   +00 +01 +02 +03 +04 +05   +06 +07 +08 +09 +10 +11
+belt0{   +06 +07 +08   +11 +10 +09
+
+
+
+Skin Haus.skin

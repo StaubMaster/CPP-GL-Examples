@@ -1,0 +1,15 @@
+Type PolyHedra
+Format Normal
+
+
+
+vertex -1000 00 -1000
+vertex -1000 00 +1000
+vertex +1000 00 +1000
+vertex +1000 00 -1000
+
+belt0 +0 +1 +3 +2
+
+
+
+Skin Boden.skin

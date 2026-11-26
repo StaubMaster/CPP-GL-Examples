@@ -217,3 +217,10 @@ void SceneParsingData::Parse_LightSpotT(const TextCommand::Args & cmd_args)
 	obj -> Data.Trans = trans;
 	Manager.Collection.Objects.Insert(obj);
 }
+
+void SceneParsingData::Other_Scene(const TextCommand::Args & cmd_args)
+{
+	if (!(cmd_args.Count() == 1)) { throw TextCommand::Exception::InvalidArgumentCount(cmd_args, "n == 1"); }
+
+	
+}

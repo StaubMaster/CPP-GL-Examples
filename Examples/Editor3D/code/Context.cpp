@@ -351,13 +351,19 @@ void Light3DContext::GraphicsDelete()
 
 
 
+
 void Light3DContext::Make()
 {
 	std::cout << "Light3DContext::Make() ....\n";
 
-	window.DefaultColor = ColorF4(0.25f, 0.0f, 0.0f);
+	//window.DefaultColor = ColorF4(1.0f, 1.0f, 1.0f);
+	window.DefaultColor = ColorF4(0.1f, 0.1f, 0.1f);
+
 	View.Depth.Color = window.DefaultColor;
-	View.Depth.Factors.SetFar(5000);
+	View.Depth.Factors.SetFar(400);
+	View.Depth.Range.SetMax(1.0f);
+	View.Depth.Range.SetMin(0.0f);
+	//View.Depth.Factors.SetFar(5000);
 //	View.Trans = Trans3D(VectorF3(0, 64, -2), EulerAngle3D());
 //	View.Trans = Trans3D(VectorF3(0, 430, -24), EulerAngle3D());
 	View.Trans = Trans3D(VectorF3(0, 0, -24), EulerAngle3D());

@@ -1,0 +1,42 @@
+Type PolyHedra
+Format Normal
+
+
+
+default 1
+default {
+
+
+
+vertex -4,15 -10,00 +0,15
+vertex -4,15 +09,85 +0,15
+vertex +4,15 +09,85 +0,15
+vertex +4,15 -10,00 +0,15
+face +1 +0 +2 +3
+offset +4
+
+vertex -4,15 -10,00 +0,00
+vertex -4,15 +09,85 +0,00
+vertex +4,15 +09,85 +0,00
+vertex +4,15 -10,00 +0,00
+belt -4 -3 -2 -1 +0 +1 +2 +3
+offset +4
+
+vertex -4,30 -10,00 -0,00
+vertex -4,30 +10,00 -0,00
+vertex +4,30 +10,00 -0,00
+vertex +4,30 -10,00 -0,00
+belt -4 -3 -2 -1 +0 +1 +2 +3
+offset +4
+
+vertex -4,30 -10,00 -0,15
+vertex -4,30 +10,00 -0,15
+vertex +4,30 +10,00 -0,15
+vertex +4,30 -10,00 -0,15
+belt -4 -3 -2 -1 +0 +1 +2 +3
+
+face +0 +1 +3 +2
+
+
+
+Skin DoorPanel.skin

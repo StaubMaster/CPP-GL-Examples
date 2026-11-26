@@ -57,6 +57,17 @@
 
 # include "NewPolyHedra/UserInterface/Manager.hpp"
 
+/* Display
+	no Light
+	turn off Meta stuff
+*/
+
+/* UI
+	View
+		Trans ?
+		FOV
+*/
+
 struct Light3DContext : public ContextBase
 {
 Container::Array<FileInfo>	ArgumentFiles;

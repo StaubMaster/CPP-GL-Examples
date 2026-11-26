@@ -1,0 +1,91 @@
+Type PolyHedra
+Format Normal
+
+
+
+#87.5m
+#875dm
+
+circle   16 16 0   0 000 0   15.0   0 +1 0   0;	var index[] idx0 return
+circle   16 16 0   0 025 0   15.0   0 +1 0   0;	var index[] idx1 return
+
+var index[] idx2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+vertex +15.00 050  00.00;	var index idx2[00] return
+vertex +13.86 050 -05.74;	var index idx2[01] return
+vertex +10.60 050 -10.60;	var index idx2[02] return
+vertex +05.74 050 -13.86;	var index idx2[03] return
+vertex  00.00 050 -15.00;	var index idx2[04] return
+vertex -13.74 050 -09.86;	var index idx2[05] return
+vertex -26.60 050 -06.60;	var index idx2[06] return
+vertex -37.86 050 -01.74;	var index idx2[07] return
+vertex -47.00 050  00.00;	var index idx2[08] return
+vertex -37.86 050 +01.74;	var index idx2[09] return
+vertex -26.60 050 +06.60;	var index idx2[10] return
+vertex -13.74 050 +09.86;	var index idx2[11] return
+vertex  00.00 050 +15.00;	var index idx2[12] return
+vertex +05.74 050 +13.86;	var index idx2[13] return
+vertex +10.60 050 +10.60;	var index idx2[14] return
+vertex +13.86 050 +05.74;	var index idx2[15] return
+
+var index[] idx3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+vertex +15.00 075  00.00;	var index idx3[00] return
+vertex +13.86 075 -03.30;	var index idx3[01] return
+vertex +10.60 075 -07.95;	var index idx3[02] return
+vertex +05.74 075 -10.40;	var index idx3[03] return
+vertex  00.00 075 -11.25;	var index idx3[04] return
+vertex -13.74 075 -07.40;	var index idx3[05] return
+vertex -26.60 075 -04.95;	var index idx3[06] return
+vertex -37.86 075 -01.30;	var index idx3[07] return
+vertex -47.00 075  00.00;	var index idx3[08] return
+vertex -37.86 075 +01.30;	var index idx3[09] return
+vertex -26.60 075 +04.95;	var index idx3[10] return
+vertex -13.74 075 +07.40;	var index idx3[11] return
+vertex  00.00 075 +11.25;	var index idx3[12] return
+vertex +05.74 075 +10.40;	var index idx3[13] return
+vertex +10.60 075 +07.95;	var index idx3[14] return
+vertex +13.86 075 +03.30;	var index idx3[15] return
+
+var index[] idx4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+vertex +15.00 475  00.00;	var index idx4[00] return
+vertex +13.86 475 -02.87;	var index idx4[01] return
+vertex +10.60 475 -05.30;	var index idx4[02] return
+vertex +05.74 475 -06.93;	var index idx4[03] return
+vertex  00.00 475 -07.50;	var index idx4[04] return
+vertex -09.16 475 -04.93;	var index idx4[05] return
+vertex -17.74 475 -03.30;	var index idx4[06] return
+vertex -25.24 475 -00.87;	var index idx4[07] return
+vertex -31.33 475  00.00;	var index idx4[08] return
+vertex -25.24 475 +00.87;	var index idx4[09] return
+vertex -17.74 475 +03.30;	var index idx4[10] return
+vertex -09.16 475 +04.93;	var index idx4[11] return
+vertex  00.00 475 +07.50;	var index idx4[12] return
+vertex +05.74 475 +06.93;	var index idx4[13] return
+vertex +10.60 475 +05.30;	var index idx4[14] return
+vertex +13.86 475 +02.87;	var index idx4[15] return
+
+var index[] idx4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+vertex +15.00 875  00.00;	var index idx4[00] return
+vertex +13.86 875 -01.43;	var index idx4[01] return
+vertex +10.60 875 -02.65;	var index idx4[02] return
+vertex +05.74 875 -03.46;	var index idx4[03] return
+vertex  00.00 875 -03.75;	var index idx4[04] return
+vertex -04.58 875 -02.46;	var index idx4[05] return
+vertex -08.87 875 -01.65;	var index idx4[06] return
+vertex -12.62 875 -00.43;	var index idx4[07] return
+vertex -14.66 875  00.00;	var index idx4[08] return
+vertex -12.62 875 +00.43;	var index idx4[09] return
+vertex -08.87 875 +01.65;	var index idx4[10] return
+vertex -04.58 875 +02.46;	var index idx4[11] return
+vertex  00.00 875 +03.75;	var index idx4[12] return
+vertex +05.74 875 +03.46;	var index idx4[13] return
+vertex +10.60 875 +02.65;	var index idx4[14] return
+vertex +13.86 875 +01.43;	var index idx4[15] return
+
+normal 0
+beltI idx0 idx1
+beltI idx1 idx2
+beltI idx2 idx3
+beltI idx3 idx4
+
+vertex 0 875 0;	var index idx_ return
+fanI> idx4 idx_
