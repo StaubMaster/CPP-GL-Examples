@@ -12,4 +12,14 @@ belt0 +0 +1 +3 +2
 
 
 
-Skin Boden.skin
+
+
+Format Skin
+
+Size 64 64
+
+Img Boden.png
+
+TexI 0
+
+axisAlign   0 0 0   1 0 0   10   0 0 1   10   2

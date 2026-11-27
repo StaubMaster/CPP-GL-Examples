@@ -62,4 +62,12 @@ face +01 +03 +06 +04
 
 
 
-Skin DoorFrame.skin
+
+
+Format Skin
+
+vIndex here
+
+colD 150 111 050 255
+
+multi +0 60

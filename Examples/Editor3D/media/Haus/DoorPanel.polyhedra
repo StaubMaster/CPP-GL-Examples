@@ -39,4 +39,12 @@ face +0 +1 +3 +2
 
 
 
-Skin DoorPanel.skin
+
+
+Format Skin
+
+vIndex here
+
+colD 150 111 050 255
+
+multi +0 28

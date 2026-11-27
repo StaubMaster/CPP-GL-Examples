@@ -59,10 +59,11 @@ void NewPolyHedra::Pallet::GraphicsPut()
 	{
 		GraphicsPutFull();
 		GraphicsPutWire();
-		if (Object -> Skin != nullptr)
+		/*if (Object -> Skin != nullptr)
 		{
 			Texture = Object -> Skin -> ToTexture();
-		}
+		}*/
+		Texture = Object -> Skin.ToTexture();
 	}
 }
 void NewPolyHedra::Pallet::GraphicsPutFull()
@@ -159,9 +160,10 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 		}
 	}
 
-	if (Object -> Skin != nullptr)
+	//if (Object -> Skin != nullptr)
 	{
-		const Skin & skin = *(Object -> Skin);
+		//const Skin & skin = *(Object -> Skin);
+		const Skin & skin = (Object -> Skin);
 		for (unsigned int i = 0; i < data.Length(); i++)
 		{
 			PalletFull::Triangle & tri = data[i];
@@ -190,7 +192,7 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 			}
 		}
 	}
-	else
+	/*else
 	{
 		for (unsigned int i = 0; i < data.Length(); i++)
 		{
@@ -202,7 +204,7 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 				vert.Color = ColorF4(1.0f, 1.0f, 1.0f, 1.0f);;
 			}
 		}
-	}
+	}*/
 
 	BufferFull.DataFull(data.ToVoid());
 	BufferFull.Count = data.Length() * 3;

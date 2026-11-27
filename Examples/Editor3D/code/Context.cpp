@@ -234,6 +234,8 @@ void Light3DContext::SceneClear()
 	PolyHedraManager.Entrys.Clear();
 //	UserTrans3DChange.HoveringMakeNone();
 //	UserTrans3DChange.SelectedMakeNone();
+
+	InitLights();
 }
 
 #include "SceneObject/Parsing.hpp"
@@ -256,6 +258,7 @@ void Light3DContext::SceneReMake()
 	// segfault when something is selected
 	std::cout << "Scene ReMake ....\n";
 	SceneClear();
+	InitLights();
 	// Clear NewPolyHedra Manager
 	std::cout << "ArgumentFiles\n";
 	std::cout << "[\n";
@@ -281,6 +284,7 @@ void Light3DContext::SceneReMake()
 	//SceneLoad(MediaDirectory.File("YMT/Tower/Tower.scene"));
 	//SceneLoad(MediaDirectory.File("42run/all.scene"));
 	std::cout << "Scene ReMake done\n";
+	PolyHedraManager.ToInfo(std::cout);
 	StringHelp::Test();
 }
 
@@ -382,11 +386,7 @@ void Light3DContext::Make()
 	}
 	UserChange.IndicatorsHide();
 
-	InitLights();
-
 	SceneReMake();
-
-	PolyHedraManager.ToInfo(std::cout);
 
 	UIManager.Window.ChildInsert(UISceneObject);
 	UIManager.Window.ChildInsert(UIPolyHedraPalletList);

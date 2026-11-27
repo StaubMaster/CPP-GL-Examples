@@ -32,19 +32,6 @@ namespace NewPolyHedra { struct Pallet; };
 		Color (also Background Color)
 */
 
-/* seperate scenes and subscenes and stuff
-
-PolyHedra
-	should just be the Grometry Data stuff
-	can parse other PolyHedra to combine, but no dynamic stuff
-	dynamic stuff should be a different thing
-	PolySoma maybe ?
-PolySoma
-	multiple dynamic PolyHedra
-	can include other PolySoma
-	can put other PolySoma at a relative Orientation to the Parent ?
-*/
-
 struct SceneParsingData : public TextCommand::Loop
 {
 	SceneObject_Manager &	Manager;

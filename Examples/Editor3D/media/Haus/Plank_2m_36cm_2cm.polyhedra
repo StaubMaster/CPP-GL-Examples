@@ -24,4 +24,20 @@ belt0   +4 +5 +7 +6
 
 
 
-Skin Plank.skin
+
+
+Format Skin
+
+vIndex here
+
+colD 138 086 057 255
+colD 116 071 048 255
+
+multi +1 2
+
+multi +1 2
+multi +0 2
+multi +1 2
+multi +0 2
+
+multi +1 2
