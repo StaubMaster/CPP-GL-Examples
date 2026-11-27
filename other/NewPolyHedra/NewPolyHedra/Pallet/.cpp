@@ -1,9 +1,6 @@
 #include "NewPolyHedra/Pallet/.hpp"
 
-#include "PolyHedra/PolyHedra.hpp"
-#include "PolyHedra/Data.hpp"
-#include "PolyHedra/Skin/Skin.hpp"
-#include "PolyHedra/Skin/Data.hpp"
+#include "PolyHedra/.hpp"
 
 #include "NewPolyHedra/Pallet/Full/Data.hpp"
 #include "NewPolyHedra/Pallet/Wire/Data.hpp"
@@ -68,18 +65,18 @@ void NewPolyHedra::Pallet::GraphicsPut()
 }
 void NewPolyHedra::Pallet::GraphicsPutFull()
 {
-	Container::Array<PalletFull::Triangle> data(Object -> Faces.Count());
+	Container::Array<PalletFull::Triangle> data(Object -> Flesh.Faces.Count());
 
-	for (unsigned int i = 0; i < Object -> Faces.Count(); i++)
+	for (unsigned int i = 0; i < Object -> Flesh.Faces.Count(); i++)
 	{
-		const PolyHedra::Face & face = Object -> Faces[i];
-		if (face.Check(Object -> Corners.Count()))
+		const PolyHedraFlesh::Face & face = Object -> Flesh.Faces[i];
+		if (face.Check(Object -> Flesh.Corners.Count()))
 		{
 			PalletFull::Triangle & tri = data[i];
 
-			const PolyHedra::Corner & corner0 = Object -> Corners[face.idx[0]];
-			const PolyHedra::Corner & corner1 = Object -> Corners[face.idx[1]];
-			const PolyHedra::Corner & corner2 = Object -> Corners[face.idx[2]];
+			const PolyHedraFlesh::Corner & corner0 = Object -> Flesh.Corners[face.idx[0]];
+			const PolyHedraFlesh::Corner & corner1 = Object -> Flesh.Corners[face.idx[1]];
+			const PolyHedraFlesh::Corner & corner2 = Object -> Flesh.Corners[face.idx[2]];
 
 			PalletFull::Vertex & vert0 = tri.Data[0];
 			PalletFull::Vertex & vert1 = tri.Data[1];
@@ -106,9 +103,9 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 
 	// Normals (unoptimized)
 	unsigned int normal_group_limit = 0xFFFFFFFF;
-	for (unsigned int i = 0; i < Object -> Faces.Count(); i++)
+	for (unsigned int i = 0; i < Object -> Flesh.Faces.Count(); i++)
 	{
-		const PolyHedra::Face & face = Object -> Faces[i];
+		const PolyHedraFlesh::Face & face = Object -> Flesh.Faces[i];
 		if (face.NormalGroup != 0xFFFFFFFF)
 		{
 			if (normal_group_limit == 0xFFFFFFFF || face.NormalGroup > normal_group_limit)
@@ -119,16 +116,16 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 	}
 	if (normal_group_limit != 0xFFFFFFFF)
 	{
-		Container::Array<VectorF3> normals(Object -> Corners.Count());
+		Container::Array<VectorF3> normals(Object -> Flesh.Corners.Count());
 		for (unsigned int normal_group = 0; normal_group <= normal_group_limit; normal_group++)
 		{
 			for (unsigned int i = 0; i < normals.Length(); i++)
 			{
 				normals[i] = VectorF3();
 			}
-			for (unsigned int i = 0; i < Object -> Faces.Count(); i++)
+			for (unsigned int i = 0; i < Object -> Flesh.Faces.Count(); i++)
 			{
-				const PolyHedra::Face & face = Object -> Faces[i];
+				const PolyHedraFlesh::Face & face = Object -> Flesh.Faces[i];
 				if (face.NormalGroup == normal_group)
 				{
 					if (face.Check(normals.Length()))
@@ -143,9 +140,9 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 			{
 				normals[i] = normals[i].normalize();
 			}
-			for (unsigned int i = 0; i < Object -> Faces.Count(); i++)
+			for (unsigned int i = 0; i < Object -> Flesh.Faces.Count(); i++)
 			{
-				const PolyHedra::Face & face = Object -> Faces[i];
+				const PolyHedraFlesh::Face & face = Object -> Flesh.Faces[i];
 				if (face.NormalGroup == normal_group)
 				{
 					PalletFull::Triangle & tri = data[i];
@@ -163,7 +160,7 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 	//if (Object -> Skin != nullptr)
 	{
 		//const Skin & skin = *(Object -> Skin);
-		const Skin & skin = (Object -> Skin);
+		const PolyHedraSkin & skin = (Object -> Skin);
 		for (unsigned int i = 0; i < data.Length(); i++)
 		{
 			PalletFull::Triangle & tri = data[i];
@@ -176,13 +173,13 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 		}
 		for (unsigned int i = 0; i < skin.Faces.Count(); i++)
 		{
-			const Skin::Face & face = skin.Faces[i];
+			const PolyHedraSkin::Face & face = skin.Faces[i];
 			if (i < data.Length())
 			{
 				PalletFull::Triangle & tri = data[i];
 				for (unsigned int j = 0; j < 3; j++)
 				{
-					const Skin::Corner & corner = skin.Corners[face.idx[j]];
+					const PolyHedraSkin::Corner & corner = skin.Corners[face.idx[j]];
 					PalletFull::Vertex & vert = tri.Data[j];
 					vert.Texture.X = corner.Coord.X;
 					vert.Texture.Y = corner.Coord.Y;
@@ -212,11 +209,11 @@ void NewPolyHedra::Pallet::GraphicsPutFull()
 void NewPolyHedra::Pallet::GraphicsPutWire()
 {
 	{
-		Container::Array<PalletWire::Data> data(Object -> Corners.Count());
-		for (unsigned int i = 0; i < Object -> Corners.Count(); i++)
+		Container::Array<PalletWire::Data> data(Object -> Flesh.Corners.Count());
+		for (unsigned int i = 0; i < Object -> Flesh.Corners.Count(); i++)
 		{
 			//data[i] = PalletWireData(Object -> Corners[i].Position, ColorF4(1, 1, 1));
-			data[i].Pos = Object -> Corners[i].Position;
+			data[i].Pos = Object -> Flesh.Corners[i].Position;
 			data[i].Col = ColorF4(1, 1, 1);
 		}
 		BufferWire.DataFull(data.ToVoid());
@@ -224,7 +221,7 @@ void NewPolyHedra::Pallet::GraphicsPutWire()
 	}
 
 	{
-		Container::Array<PolyHedra::Edge> data = Object -> Edges.ToArray();
+		Container::Array<PolyHedraFlesh::Edge> data = Object -> Flesh.Edges.ToArray();
 		BufferWireElem.DataFull(data.ToVoid());
 		BufferWireElem.Count = data.Length() * 2;
 	}

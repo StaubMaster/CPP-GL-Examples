@@ -1,10 +1,8 @@
 #include "Ray3D_Hit.hpp"
 
-
+#include "PolyHedra/.hpp"
 
 #include "ValueType/Trans/3D.hpp"
-
-#include "PolyHedra/Data.hpp"
 
 #include "Special/Basic3D/Logical/Object.hpp"
 #include "Special/Basic3D/Logical/Data.hpp"
@@ -26,15 +24,15 @@
 RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans)
 {
 	RayHitF3Type<unsigned int> hit_return;
-	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
+	for (unsigned int i = 0; i < polyhedra.Flesh.Faces.Count(); i++)
 	{
-		const PolyHedra::Face & face = polyhedra.Faces[i];
-		if (!face.Check(polyhedra.Corners.Count())) { continue; }
+		const PolyHedraFlesh::Face & face = polyhedra.Flesh.Faces[i];
+		if (!face.Check(polyhedra.Flesh.Corners.Count())) { continue; }
 
 		TriangleF3 triangle(
-			polyhedra.Corners[face.idx[0]].Position,
-			polyhedra.Corners[face.idx[1]].Position,
-			polyhedra.Corners[face.idx[2]].Position
+			polyhedra.Flesh.Corners[face.idx[0]].Position,
+			polyhedra.Flesh.Corners[face.idx[1]].Position,
+			polyhedra.Flesh.Corners[face.idx[2]].Position
 		);
 
 		triangle.A = trans.forward(triangle.A);
@@ -48,15 +46,15 @@ RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & pol
 RayHitF3Type<unsigned int> RayHitObject(const RayF3 & ray, const PolyHedra & polyhedra, const Trans3D & trans, float scale)
 {
 	RayHitF3Type<unsigned int> hit_return;
-	for (unsigned int i = 0; i < polyhedra.Faces.Count(); i++)
+	for (unsigned int i = 0; i < polyhedra.Flesh.Faces.Count(); i++)
 	{
-		const PolyHedra::Face & face = polyhedra.Faces[i];
-		if (!face.Check(polyhedra.Corners.Count())) { continue; }
+		const PolyHedraFlesh::Face & face = polyhedra.Flesh.Faces[i];
+		if (!face.Check(polyhedra.Flesh.Corners.Count())) { continue; }
 
 		TriangleF3 triangle(
-			polyhedra.Corners[face.idx[0]].Position,
-			polyhedra.Corners[face.idx[1]].Position,
-			polyhedra.Corners[face.idx[2]].Position
+			polyhedra.Flesh.Corners[face.idx[0]].Position,
+			polyhedra.Flesh.Corners[face.idx[1]].Position,
+			polyhedra.Flesh.Corners[face.idx[2]].Position
 		);
 
 		triangle.A = trans.forward(triangle.A * scale);

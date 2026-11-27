@@ -1,5 +1,4 @@
 #include "Change3D/VectorF3.hpp"
-#include "PolyHedra/Manager.hpp"
 
 #include "Special/TransScaleColor3D/Display/ObjectManager.hpp"
 #include "NewPolyHedra/Pallet/Manager.hpp"
@@ -9,8 +8,6 @@
 #include "ValueType/Interact/3D.hpp"
 #include "ValueType/NormalPlaneF3.hpp"
 
-#include "PolyHedra/PolyHedra.hpp"
-#include "PolyHedra/Parser.hpp"
 #include "DirectoryInfo.hpp"
 
 

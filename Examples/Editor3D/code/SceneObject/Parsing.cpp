@@ -6,7 +6,7 @@
 #include "FileParsing/TextCommand/FuncNormal.hpp"
 
 // PolyHedra
-#include "PolyHedra/PolyHedra.hpp"
+#include "PolyHedra/.hpp"
 #include "PolyHedra/Generate.hpp"
 #include "PolyHedra/Manager.hpp"
 

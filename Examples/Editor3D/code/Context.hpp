@@ -11,7 +11,7 @@
 # include "Light/Manager.hpp"
 
 // PolyHedra
-# include "PolyHedra/PolyHedra.hpp"
+# include "PolyHedra/.hpp"
 
 // Containers
 # include "Generics/Container/Array.hpp"

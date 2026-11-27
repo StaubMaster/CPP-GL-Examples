@@ -613,9 +613,6 @@ void Light3DContext::Draw()
 
 
 
-#include "PolyHedra/Data.hpp"
-#include "PolyHedra/Skin/Skin.hpp"
-
 /* lots of repeating
 
 put functions in UserChange struct
